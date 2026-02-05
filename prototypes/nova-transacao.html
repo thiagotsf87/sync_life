@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyncLife - Nova Transação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sync: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#0a2e19',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        
+        /* Type toggle */
+        .type-toggle {
+            transition: all 0.3s ease;
+        }
+        .type-toggle.expense {
+            background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+        }
+        .type-toggle.income {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+        
+        /* Category card */
+        .category-card {
+            transition: all 0.2s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-2px);
+        }
+        .category-card.selected {
+            ring: 2px;
+            ring-offset: 2px;
+        }
+        
+        /* Input focus */
+        .form-input:focus {
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+        }
+        
+        /* Modal animation */
+        .modal-backdrop {
+            animation: fadeIn 0.2s ease;
+        }
+        .modal-content {
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 min-h-screen font-sans text-white">
+    
+    <!-- Modal backdrop -->
+    <div class="modal-backdrop fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        
+        <!-- Modal content -->
+        <div class="modal-content bg-slate-900 rounded-2xl border border-slate-800 w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+            
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-6 border-b border-slate-800">
+                <h2 class="text-xl font-semibold text-white">Nova Transação</h2>
+                <a href="transacoes.html" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </a>
+            </div>
+            
+            <!-- Modal body -->
+            <div class="flex-1 overflow-y-auto p-6">
+                
+                <!-- Transaction type toggle -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-slate-400 mb-3">Tipo de transação</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="setTransactionType('expense')" id="btn-expense" class="type-toggle expense flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-white ring-2 ring-rose-500/50">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                            </svg>
+                            Despesa
+                        </button>
+                        <button onclick="setTransactionType('income')" id="btn-income" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium bg-slate-800 text-slate-400 border border-slate-700 hover:border-emerald-500/50 hover:text-emerald-400 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                            </svg>
+                            Receita
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <div class="mb-5">
+                    <label for="description" class="block text-sm font-medium text-slate-400 mb-2">Descrição</label>
+                    <input 
+                        type="text" 
+                        id="description" 
+                        placeholder="Ex: Supermercado, Salário, Netflix..."
+                        class="form-input w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-sync-500 transition-all"
+                    >
+                </div>
+                
+                <!-- Value and Date row -->
+                <div class="grid grid-cols-2 gap-4 mb-5">
+                    <!-- Value -->
+                    <div>
+                        <label for="value" class="block text-sm font-medium text-slate-400 mb-2">Valor</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-medium">R$</span>
+                            <input 
+                                type="text" 
+                                id="value" 
+                                placeholder="0,00"
+                                oninput="formatCurrency(this)"
+                                class="form-input w-full bg-slate-800 border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-sync-500 transition-all text-right font-semibold"
+                            >
+                        </div>
+                    </div>
+                    
+                    <!-- Date -->
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-slate-400 mb-2">Data</label>
+                        <input 
+                            type="date" 
+                            id="date" 
+                            value="2026-02-04"
+                            class="form-input w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-sync-500 transition-all"
+                        >
+                    </div>
+                </div>
+                
+                <!-- Category -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-slate-400 mb-3">Categoria</label>
+                    
+                    <!-- Expense categories -->
+                    <div id="expense-categories" class="grid grid-cols-3 gap-2">
+                        <button onclick="selectCategory(this, 'alimentacao')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-orange-500/50 transition-all">
+                            <span class="text-2xl">🍔</span>
+                            <span class="text-xs text-slate-400">Alimentação</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'moradia')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-violet-500/50 transition-all">
+                            <span class="text-2xl">🏠</span>
+                            <span class="text-xs text-slate-400">Moradia</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'transporte')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-cyan-500/50 transition-all">
+                            <span class="text-2xl">🚗</span>
+                            <span class="text-xs text-slate-400">Transporte</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'lazer')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-sync-500/50 transition-all">
+                            <span class="text-2xl">🎮</span>
+                            <span class="text-xs text-slate-400">Lazer</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'saude')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-rose-500/50 transition-all">
+                            <span class="text-2xl">💊</span>
+                            <span class="text-xs text-slate-400">Saúde</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'educacao')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-blue-500/50 transition-all">
+                            <span class="text-2xl">📚</span>
+                            <span class="text-xs text-slate-400">Educação</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'compras')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-pink-500/50 transition-all">
+                            <span class="text-2xl">🛍️</span>
+                            <span class="text-xs text-slate-400">Compras</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'servicos')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-amber-500/50 transition-all">
+                            <span class="text-2xl">🔧</span>
+                            <span class="text-xs text-slate-400">Serviços</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'outros')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-slate-500/50 transition-all">
+                            <span class="text-2xl">📦</span>
+                            <span class="text-xs text-slate-400">Outros</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Income categories (hidden by default) -->
+                    <div id="income-categories" class="grid grid-cols-3 gap-2 hidden">
+                        <button onclick="selectCategory(this, 'salario')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-emerald-500/50 transition-all">
+                            <span class="text-2xl">💼</span>
+                            <span class="text-xs text-slate-400">Salário</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'freelance')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-emerald-500/50 transition-all">
+                            <span class="text-2xl">💰</span>
+                            <span class="text-xs text-slate-400">Freelance</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'investimentos')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-emerald-500/50 transition-all">
+                            <span class="text-2xl">📈</span>
+                            <span class="text-xs text-slate-400">Investimentos</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'presente')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-emerald-500/50 transition-all">
+                            <span class="text-2xl">🎁</span>
+                            <span class="text-xs text-slate-400">Presente</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'reembolso')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-emerald-500/50 transition-all">
+                            <span class="text-2xl">🔄</span>
+                            <span class="text-xs text-slate-400">Reembolso</span>
+                        </button>
+                        <button onclick="selectCategory(this, 'outros-receita')" class="category-card flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-800 border-2 border-transparent hover:border-emerald-500/50 transition-all">
+                            <span class="text-2xl">✨</span>
+                            <span class="text-xs text-slate-400">Outros</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Notes (optional) -->
+                <div class="mb-2">
+                    <label for="notes" class="block text-sm font-medium text-slate-400 mb-2">
+                        Observações <span class="text-slate-600">(opcional)</span>
+                    </label>
+                    <textarea 
+                        id="notes" 
+                        rows="2"
+                        placeholder="Adicione detalhes sobre esta transação..."
+                        class="form-input w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-sync-500 transition-all resize-none"
+                    ></textarea>
+                </div>
+                
+                <!-- Recurrence toggle -->
+                <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-slate-700 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-white">Transação recorrente</p>
+                            <p class="text-xs text-slate-500">Repetir todo mês automaticamente</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" id="recurrence">
+                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sync-500 peer-checked:after:bg-white"></div>
+                    </label>
+                </div>
+                
+            </div>
+            
+            <!-- Modal footer -->
+            <div class="flex items-center gap-3 p-6 border-t border-slate-800 bg-slate-900/50">
+                <a href="transacoes.html" class="flex-1 py-3 px-4 text-center font-medium text-slate-400 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors">
+                    Cancelar
+                </a>
+                <button onclick="saveTransaction()" class="flex-1 py-3 px-4 text-center font-medium text-white bg-sync-500 hover:bg-sync-600 rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Salvar transação
+                </button>
+            </div>
+            
+        </div>
+        
+    </div>
+    
+    <script>
+        let currentType = 'expense';
+        let selectedCategory = null;
+        
+        function setTransactionType(type) {
+            currentType = type;
+            const btnExpense = document.getElementById('btn-expense');
+            const btnIncome = document.getElementById('btn-income');
+            const expenseCategories = document.getElementById('expense-categories');
+            const incomeCategories = document.getElementById('income-categories');
+            
+            if (type === 'expense') {
+                btnExpense.className = 'type-toggle expense flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-white ring-2 ring-rose-500/50';
+                btnIncome.className = 'flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium bg-slate-800 text-slate-400 border border-slate-700 hover:border-emerald-500/50 hover:text-emerald-400 transition-all';
+                expenseCategories.classList.remove('hidden');
+                incomeCategories.classList.add('hidden');
+            } else {
+                btnIncome.className = 'type-toggle income flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium text-white ring-2 ring-emerald-500/50';
+                btnExpense.className = 'flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium bg-slate-800 text-slate-400 border border-slate-700 hover:border-rose-500/50 hover:text-rose-400 transition-all';
+                expenseCategories.classList.add('hidden');
+                incomeCategories.classList.remove('hidden');
+            }
+            
+            // Reset category selection
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.classList.remove('border-sync-500', 'bg-sync-500/10');
+                card.classList.add('border-transparent');
+            });
+            selectedCategory = null;
+        }
+        
+        function selectCategory(btn, category) {
+            // Remove selection from all
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.classList.remove('border-sync-500', 'bg-sync-500/10');
+                card.classList.add('border-transparent');
+            });
+            
+            // Select current
+            btn.classList.remove('border-transparent');
+            btn.classList.add('border-sync-500', 'bg-sync-500/10');
+            selectedCategory = category;
+        }
+        
+        function formatCurrency(input) {
+            // Remove non-numeric characters
+            let value = input.value.replace(/\D/g, '');
+            
+            // Convert to number and format
+            if (value) {
+                value = (parseInt(value) / 100).toFixed(2);
+                value = value.replace('.', ',');
+                value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
+            
+            input.value = value;
+        }
+        
+        function saveTransaction() {
+            const description = document.getElementById('description').value;
+            const value = document.getElementById('value').value;
+            const date = document.getElementById('date').value;
+            const notes = document.getElementById('notes').value;
+            const isRecurrent = document.getElementById('recurrence').checked;
+            
+            // Validation
+            if (!description) {
+                alert('Por favor, preencha a descrição');
+                return;
+            }
+            if (!value) {
+                alert('Por favor, preencha o valor');
+                return;
+            }
+            if (!selectedCategory) {
+                alert('Por favor, selecione uma categoria');
+                return;
+            }
+            
+            // Success feedback
+            alert(`Transação salva com sucesso!\n\nTipo: ${currentType === 'expense' ? 'Despesa' : 'Receita'}\nDescrição: ${description}\nValor: R$ ${value}\nCategoria: ${selectedCategory}\nRecorrente: ${isRecurrent ? 'Sim' : 'Não'}`);
+            
+            // Redirect back
+            window.location.href = 'transacoes.html';
+        }
+    </script>
+    
+</body>
+</html>

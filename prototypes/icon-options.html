@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyncLife - Opções de Ícone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sync: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#0a2e19',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        .icon-card {
+            transition: all 0.3s ease;
+        }
+        .icon-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.15);
+        }
+        .icon-box {
+            transition: all 0.3s ease;
+        }
+        .icon-card:hover .icon-box {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 min-h-screen font-sans text-white p-8">
+    
+    <div class="max-w-6xl mx-auto">
+        
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4">Opções de Ícone</h1>
+            <p class="text-slate-400 text-lg">Escolha o ícone que melhor representa o SyncLife</p>
+        </div>
+        
+        <!-- Icons Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Option 1: Current (Sync arrows) -->
+            <div class="icon-card bg-slate-900/80 rounded-2xl p-8 border border-slate-800">
+                <div class="flex flex-col items-center text-center">
+                    <div class="icon-box w-20 h-20 bg-gradient-to-br from-sync-400 to-sync-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl font-bold">Sync</span><span class="text-xl font-bold text-sync-400">Life</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-sync-400">Opção 1: Sync Arrows</h3>
+                    <p class="text-slate-400 text-sm">Atual - Representa sincronização e ciclo contínuo</p>
+                    <span class="mt-4 px-3 py-1 bg-slate-800 rounded-full text-xs text-slate-400">ATUAL</span>
+                </div>
+            </div>
+            
+            <!-- Option 2: Infinity Loop -->
+            <div class="icon-card bg-slate-900/80 rounded-2xl p-8 border border-slate-800">
+                <div class="flex flex-col items-center text-center">
+                    <div class="icon-box w-20 h-20 bg-gradient-to-br from-sync-400 to-sync-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25" />
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl font-bold">Sync</span><span class="text-xl font-bold text-sync-400">Life</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-sync-400">Opção 2: Infinity Flow</h3>
+                    <p class="text-slate-400 text-sm">Loop infinito - Jornada contínua de evolução</p>
+                </div>
+            </div>
+            
+            <!-- Option 3: Connected Circles -->
+            <div class="icon-card bg-slate-900/80 rounded-2xl p-8 border border-slate-800">
+                <div class="flex flex-col items-center text-center">
+                    <div class="icon-box w-20 h-20 bg-gradient-to-br from-sync-400 to-sync-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="7" r="3" />
+                            <circle cx="7" cy="16" r="3" />
+                            <circle cx="17" cy="16" r="3" />
+                            <path d="M10.5 9.5L8.5 13.5" stroke-linecap="round" />
+                            <path d="M13.5 9.5L15.5 13.5" stroke-linecap="round" />
+                            <path d="M10 16H14" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl font-bold">Sync</span><span class="text-xl font-bold text-sync-400">Life</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-sync-400">Opção 3: Connected</h3>
+                    <p class="text-slate-400 text-sm">Círculos conectados - Áreas da vida em harmonia</p>
+                </div>
+            </div>
+            
+            <!-- Option 4: Stylized S -->
+            <div class="icon-card bg-slate-900/80 rounded-2xl p-8 border border-slate-800">
+                <div class="flex flex-col items-center text-center">
+                    <div class="icon-box w-20 h-20 bg-gradient-to-br from-sync-400 to-sync-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M17 8C17 8 16 5 12 5C8 5 7 8 7 9C7 12 10 12 12 12C14 12 17 12 17 15C17 16 16 19 12 19C8 19 7 16 7 16" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 3V5M12 19V21" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl font-bold">Sync</span><span class="text-xl font-bold text-sync-400">Life</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-sync-400">Opção 4: S Flow</h3>
+                    <p class="text-slate-400 text-sm">"S" estilizado - Simples, memorável, remete a finanças</p>
+                </div>
+            </div>
+            
+            <!-- Option 5: Pulse/Heartbeat -->
+            <div class="icon-card bg-slate-900/80 rounded-2xl p-8 border border-slate-800">
+                <div class="flex flex-col items-center text-center">
+                    <div class="icon-box w-20 h-20 bg-gradient-to-br from-sync-400 to-sync-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="9" stroke-opacity="0.3"/>
+                            <path d="M4 12H8L10 8L12 16L14 10L16 12H20" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl font-bold">Sync</span><span class="text-xl font-bold text-sync-400">Life</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-sync-400">Opção 5: Life Pulse</h3>
+                    <p class="text-slate-400 text-sm">Batimento/Pulso - Vida ativa, saúde, vitalidade</p>
+                </div>
+            </div>
+            
+            <!-- Option 6: Hexagon Modules -->
+            <div class="icon-card bg-slate-900/80 rounded-2xl p-8 border border-slate-800">
+                <div class="flex flex-col items-center text-center">
+                    <div class="icon-box w-20 h-20 bg-gradient-to-br from-sync-400 to-sync-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" />
+                            <path d="M12 8L16 10.5V15.5L12 18L8 15.5V10.5L12 8Z" fill="currentColor" fill-opacity="0.3"/>
+                            <circle cx="12" cy="13" r="2" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl font-bold">Sync</span><span class="text-xl font-bold text-sync-400">Life</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-sync-400">Opção 6: Hexagon Core</h3>
+                    <p class="text-slate-400 text-sm">Hexágono - Módulos, estrutura, organização</p>
+                </div>
+            </div>
+            
+            <!-- Option 7: Orbit -->
+            <div class="icon-card bg-slate-900/80 rounded-2xl p-8 border border-slate-800">
+                <div class="flex flex-col items-center text-center">
+                    <div class="icon-box w-20 h-20 bg-gradient-to-br from-sync-400 to-sync-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                            <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(0 12 12)" stroke-opacity="0.5"/>
+                            <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(60 12 12)" stroke-opacity="0.5"/>
+                            <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(120 12 12)" stroke-opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl font-bold">Sync</span><span class="text-xl font-bold text-sync-400">Life</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-sync-400">Opção 7: Orbit</h3>
+                    <p class="text-slate-400 text-sm">Órbitas - Vida como centro, áreas ao redor</p>
+                </div>
+            </div>
+            
+            <!-- Option 8: Balance Scale -->
+            <div class="icon-card bg-slate-900/80 rounded-2xl p-8 border border-slate-800">
+                <div class="flex flex-col items-center text-center">
+                    <div class="icon-box w-20 h-20 bg-gradient-to-br from-sync-400 to-sync-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="5" r="2"/>
+                            <path d="M12 7V10"/>
+                            <path d="M5 10H19"/>
+                            <path d="M7 10L5 16H9L7 10Z" fill="currentColor" fill-opacity="0.2"/>
+                            <path d="M17 10L15 16H19L17 10Z" fill="currentColor" fill-opacity="0.2"/>
+                            <path d="M12 10V20"/>
+                            <path d="M9 20H15"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl font-bold">Sync</span><span class="text-xl font-bold text-sync-400">Life</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-sync-400">Opção 8: Balance</h3>
+                    <p class="text-slate-400 text-sm">Balança - Equilíbrio, finanças, decisões</p>
+                </div>
+            </div>
+            
+            <!-- Option 9: Leaf Growth -->
+            <div class="icon-card bg-slate-900/80 rounded-2xl p-8 border border-slate-800">
+                <div class="flex flex-col items-center text-center">
+                    <div class="icon-box w-20 h-20 bg-gradient-to-br from-sync-400 to-sync-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22V12" stroke-linecap="round"/>
+                            <path d="M12 12C12 12 12 7 17 4C17 9 14 12 12 12Z" fill="currentColor" fill-opacity="0.2"/>
+                            <path d="M12 12C12 12 12 7 7 4C7 9 10 12 12 12Z" fill="currentColor" fill-opacity="0.2"/>
+                            <path d="M12 12C12 12 12 7 17 4C17 9 14 12 12 12Z"/>
+                            <path d="M12 12C12 12 12 7 7 4C7 9 10 12 12 12Z"/>
+                        </svg>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl font-bold">Sync</span><span class="text-xl font-bold text-sync-400">Life</span>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-sync-400">Opção 9: Growth</h3>
+                    <p class="text-slate-400 text-sm">Broto/Planta - Crescimento, evolução, vida</p>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Comparison Section -->
+        <div class="mt-16 bg-slate-900/50 rounded-2xl p-8 border border-slate-800">
+            <h2 class="text-2xl font-bold mb-6 text-center">Comparativo Lado a Lado</h2>
+            <div class="flex flex-wrap justify-center gap-6">
+                
+                <!-- Mini versions for comparison -->
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-gradient-to-br from-sync-400 to-sync-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-500">1</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-gradient-to-br from-sync-400 to-sync-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25" />
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-500">2</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-gradient-to-br from-sync-400 to-sync-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="7" r="3" />
+                            <circle cx="7" cy="16" r="3" />
+                            <circle cx="17" cy="16" r="3" />
+                            <path d="M10.5 9.5L8.5 13.5" stroke-linecap="round" />
+                            <path d="M13.5 9.5L15.5 13.5" stroke-linecap="round" />
+                            <path d="M10 16H14" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-500">3</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-gradient-to-br from-sync-400 to-sync-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M17 8C17 8 16 5 12 5C8 5 7 8 7 9C7 12 10 12 12 12C14 12 17 12 17 15C17 16 16 19 12 19C8 19 7 16 7 16" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 3V5M12 19V21" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-500">4</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-gradient-to-br from-sync-400 to-sync-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="9" stroke-opacity="0.3"/>
+                            <path d="M4 12H8L10 8L12 16L14 10L16 12H20" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-500">5</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-gradient-to-br from-sync-400 to-sync-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" />
+                            <path d="M12 8L16 10.5V15.5L12 18L8 15.5V10.5L12 8Z" fill="currentColor" fill-opacity="0.3"/>
+                            <circle cx="12" cy="13" r="2" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-500">6</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-gradient-to-br from-sync-400 to-sync-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                            <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(0 12 12)" stroke-opacity="0.5"/>
+                            <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(60 12 12)" stroke-opacity="0.5"/>
+                            <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(120 12 12)" stroke-opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-500">7</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-gradient-to-br from-sync-400 to-sync-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="5" r="2"/>
+                            <path d="M12 7V10"/>
+                            <path d="M5 10H19"/>
+                            <path d="M7 10L5 16H9L7 10Z" fill="currentColor" fill-opacity="0.2"/>
+                            <path d="M17 10L15 16H19L17 10Z" fill="currentColor" fill-opacity="0.2"/>
+                            <path d="M12 10V20"/>
+                            <path d="M9 20H15"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-500">8</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 bg-gradient-to-br from-sync-400 to-sync-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22V12" stroke-linecap="round"/>
+                            <path d="M12 12C12 12 12 7 17 4C17 9 14 12 12 12Z" fill="currentColor" fill-opacity="0.2"/>
+                            <path d="M12 12C12 12 12 7 7 4C7 9 10 12 12 12Z" fill="currentColor" fill-opacity="0.2"/>
+                            <path d="M12 12C12 12 12 7 17 4C17 9 14 12 12 12Z"/>
+                            <path d="M12 12C12 12 12 7 7 4C7 9 10 12 12 12Z"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-slate-500">9</span>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Legend -->
+        <div class="mt-8 text-center text-slate-500 text-sm">
+            <p>1: Sync Arrows | 2: Infinity | 3: Connected | 4: S Flow | 5: Pulse | 6: Hexagon | 7: Orbit | 8: Balance | 9: Growth</p>
+        </div>
+        
+        <!-- My Recommendation -->
+        <div class="mt-12 bg-sync-900/30 border border-sync-700/30 rounded-2xl p-8">
+            <h2 class="text-xl font-bold mb-4 text-sync-400">💡 Minha Recomendação</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <p class="text-slate-300 font-medium mb-2">Se foco em FINANÇAS:</p>
+                    <p class="text-sync-400 font-bold">Opção 4 (S Flow) ou 8 (Balance)</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-slate-300 font-medium mb-2">Se foco em VIDA/EVOLUÇÃO:</p>
+                    <p class="text-sync-400 font-bold">Opção 9 (Growth) ou 5 (Pulse)</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-slate-300 font-medium mb-2">Se foco em ORGANIZAÇÃO:</p>
+                    <p class="text-sync-400 font-bold">Opção 3 (Connected) ou 6 (Hexagon)</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="mt-12 text-center text-slate-600 text-sm">
+            <p>Qual opção você prefere? Me diz o número!</p>
+        </div>
+        
+    </div>
+    
+</body>
+</html>
