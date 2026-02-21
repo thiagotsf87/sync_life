@@ -1,6 +1,8 @@
 # Análise completa – MVP V1 SyncLife
 
-Documento gerado a partir do [02-MVP-V1.md](02-MVP-V1.md), [07-V1-PENDENCIAS.md](07-V1-PENDENCIAS.md) e validação com **Playwright** (navegador + testes E2E). Objetivo: listar o que falta implementar para **finalizar o MVP V1**.
+Documento gerado a partir do [02-MVP-V1.md](02-MVP-V1.md), [07-V1-PENDENCIAS.md](07-V1-PENDENCIAS.md) e validação com **Playwright** (navegador + testes E2E).
+
+**Última atualização:** 21/02/2026 — MVP V1 funcionalmente completo; pendente apenas o deploy.
 
 ---
 
@@ -10,10 +12,13 @@ Documento gerado a partir do [02-MVP-V1.md](02-MVP-V1.md), [07-V1-PENDENCIAS.md]
 
 | Tela / Fluxo | URL | Resultado |
 |--------------|-----|-----------|
-| Landing | `/` | OK – Logo, "Entrar", "Criar conta", heading "Sua vida em sincronia..." |
-| Login | `/login` | OK – "Bem-vindo de volta", E-mail, Senha, "Esqueceu a senha?", "Criar conta grátis" |
-| Cadastro | `/cadastro` | OK – "Criar conta grátis", Nome, E-mail, Senha, Confirmar senha, checkbox Termos, botão desabilitado até aceitar termos |
-| Rotas protegidas | `/dashboard` sem login | OK – Redireciona para `/login` |
+| Landing | `/` | OK – Logo, "Entrar", "Criar conta", heading correto |
+| Login | `/login` | OK – campos, validação, link "Esqueceu a senha?" |
+| Cadastro | `/cadastro` | OK – validação, botão habilitado após aceitar termos |
+| Rotas protegidas | `/dashboard` sem login | OK – redireciona para `/login` |
+| Dashboard com dados | `/dashboard` logado | OK – cards, gráficos e últimas transações com dados reais |
+| Transações | `/transacoes` | OK – listagem, CRUD, filtros, paginação |
+| Configurações | `/configuracoes` | OK – perfil e gerenciador de categorias |
 
 ### 1.2 Testes E2E (auth.spec.ts)
 
@@ -21,120 +26,129 @@ Documento gerado a partir do [02-MVP-V1.md](02-MVP-V1.md), [07-V1-PENDENCIAS.md]
 16 passed (15.6s)
 ```
 
-- Landing: logo e links Entrar / Criar conta
-- Login: redireciona para /login, erro com credenciais inválidas, links Esqueceu senha e Criar conta, permanece em /login com campos vazios, navegação para Cadastro
-- Cadastro: botão habilitado após termos, link para login, erro senha &lt; 6 caracteres, erro senhas não coincidem, botão desabilitado sem termos
-- Esqueceu senha: formulário e mensagem de sucesso, link Voltar para login
-- Rotas protegidas: /dashboard, /transacoes e /configuracoes redirecionam para /login sem autenticação
+- Landing, Login, Cadastro, Esqueceu senha, Rotas protegidas – todos validados.
 
-**Conclusão:** Fluxos de autenticação e rotas protegidas estão consistentes com o MVP e estáveis para testes automatizados.
+**Conclusão:** Autenticação, rotas protegidas e fluxos core estão estáveis.
 
 ---
 
 ## 2. Estado atual por módulo
 
-### 2.1 Autenticação e perfil (OK para V1)
+### 2.1 Autenticação e perfil ✅
 
-| Item | Status | Observação |
-|------|--------|------------|
-| Cadastro email/senha | OK | Validado em E2E |
-| Login email/senha | OK | Validado em E2E |
-| Logout | OK | Implementado |
-| Recuperação de senha | OK | Validado em E2E |
-| Perfil: nome, email, moeda | OK | Configurações leem/salvam no Supabase |
-| Layout: sidebar, header, responsivo | OK | Implementado |
+| Item | Status |
+|------|--------|
+| Cadastro email/senha | OK |
+| Login email/senha | OK |
+| Logout | OK |
+| Recuperação de senha | OK |
+| Perfil: nome, email, moeda | OK – Configurações lêem/salvam no Supabase |
+| Layout: sidebar, header, responsivo | OK |
 
-### 2.2 Transações (pendências)
-
-| Item | Status | Detalhe |
-|------|--------|---------|
-| Listar transações | Mock | Lista vem de `mockTransactions`; não busca no Supabase |
-| Adicionar transação | Quebrado | Form envia `category_id` com **slug** (ex: `alimentacao`); banco espera **UUID** (FK `categories`) → insert falha |
-| Editar transação | Quebrado | Mesmo problema de `category_id` (slug vs UUID); lista continua mock |
-| Excluir transação | Só local | Remove apenas do state (mock); **não chama Supabase** |
-| Filtrar por mês | Não funcional | Inputs de data são `defaultValue` (não controlados); não há state nem filtro por período |
-| Filtros tipo/categoria/busca | OK | Funcionam em cima da lista (mock) |
-
-**Evidência no código:**
-
-- `web/src/app/(app)/transacoes/page.tsx`: `useState(mockTransactions)`, `handleDelete` só faz `setTransactions(prev => prev.filter(...))`.
-- `web/src/components/transactions/transaction-form.tsx`: `category_id: categoryId` com `categoryId` = slug (ex: `alimentacao`).
-- Schema `web/supabase/schema.sql`: `transactions.category_id UUID REFERENCES categories(id)`.
-
-### 2.3 Dashboard (pendências)
+### 2.2 Transações ✅
 
 | Item | Status | Detalhe |
 |------|--------|---------|
-| Cards (Receitas, Despesas, Saldo) | Mock | Valores de `mockChartData` (não calculados do Supabase) |
-| Gráfico Receitas vs Despesas | Mock | `ExpenseChart` usa `mockChartData` |
-| Gráfico pizza por categoria | Mock | `CategoryChart` usa `mockCategoryData` |
-| Últimas transações | Mock | `RecentTransactions` usa `mockTransactions` |
-| Seletor de mês | Parcial | Troca `currentDate`, mas **todos os dados continuam mock**; não reflete mês selecionado |
-| Gráfico Projeção | Mock/estático | `ProjectionChart` – dados fixos; opcional para V1 |
+| Listar transações | OK | Busca do Supabase; refetch após CRUD |
+| Adicionar transação | OK | Salva `category_key` (slug ou UUID custom) |
+| Editar transação | OK | Atualiza no Supabase; modal de confirmação com categoria |
+| Excluir transação | OK | Delete no Supabase; modal de confirmação com categoria |
+| Filtrar por data | OK | Inputs controlados, filtro lexicográfico por `date` |
+| Filtrar por tipo | OK | Chips Todas / Receitas / Despesas |
+| Filtrar por categoria | OK | Dropdown com grupos (Despesas / Receitas), inclui custom |
+| Busca por descrição | OK | Input de busca em tempo real |
+| Paginação | OK | 10 itens/página com controles Anterior/Próximo |
 
-**Evidência no código:**
+### 2.3 Dashboard ✅
 
-- `web/src/app/(app)/dashboard/page.tsx`: `mockChartData`, `mockCategoryData`, `mockTransactions`; `currentMonthData`/`previousMonthData` vêm do mock; seletor de mês não dispara fetch por mês.
+| Item | Status | Detalhe |
+|------|--------|---------|
+| Cards (Receitas, Despesas, Saldo) | OK | Calculados do Supabase; variação vs mês anterior |
+| Gráfico Receitas vs Despesas | OK | Últimos 12 meses, dados reais |
+| Gráfico pizza por categoria | OK | Despesas do mês por `category_key`; resolve defaults e custom |
+| Últimas transações | OK | 6 mais recentes do Supabase |
+| Seletor de mês | OK | Altera todos os dados (cards + gráficos + últimas) |
+| Atualização pós-transação | OK | Evento `transaction:changed` + `visibilitychange` |
 
-### 2.4 Formulário de transação (ajustes necessários)
+### 2.4 Categorias ✅ (novo – Fev/2026)
 
-- **Create/Update:** Ajustar payload para o que o banco aceitar: ou usar **`category_key`** (slug) no schema e no app, ou fazer **seed de categorias** e enviar **`category_id`** (UUID).
-- **Após sucesso:** Na página de transações, fazer **refetch** da lista no Supabase e fechar o form / limpar edição.
+| Item | Status | Detalhe |
+|------|--------|---------|
+| 17 categorias default (readonly) | OK | Badge "Padrão", não editáveis/deletáveis |
+| Criar categoria custom | OK | Nome, tipo, ícone (30 opções), cor (12 swatches) |
+| Editar categoria custom | OK | Pré-visualização em tempo real |
+| Excluir com verificação de uso | OK | Aviso se categoria está em uso em transações |
+| Resolução slug/UUID unificada | OK | `resolveCategory()` em todos os componentes |
+| Custom no seletor de transação | OK | Mescladas com defaults por tipo |
+| Custom nos filtros de transações | OK | Dropdown dinâmico |
+| Custom no gráfico pizza | OK | Via `resolveCategory` + `customCategories` |
 
----
+### 2.5 Formulário de transação ✅
 
-## 3. Schema e categorias (decisão necessária)
-
-**Problema:** App usa categorias fixas por **slug** (`constants/categories.ts`); tabela `transactions` tem `category_id UUID REFERENCES categories(id)` e não existe coluna para slug.
-
-**Opções:**
-
-| Opção | Ação | Prós | Contras |
-|-------|------|------|---------|
-| **A (recomendada para V1)** | Adicionar `category_key TEXT` em `transactions`; manter `category_id` nullable; no app usar só `category_key` no V1 | Pouca mudança, sem seed, rápido | Duplicação conceitual (key + id) |
-| **B** | Seed de categorias (globais ou por usuário); mapear slug → UUID no front e enviar `category_id` | Modelo normalizado | Mais trabalho (migration, seed, mapeamento) |
-
-Recomendação: **Opção A** para fechar o V1 com menos risco e depois evoluir para categorias customizáveis (V2) usando `category_id`.
-
----
-
-## 4. Checklist para fechar o MVP V1
-
-Com base no [02-MVP-V1.md](02-MVP-V1.md) e [07-V1-PENDENCIAS.md](07-V1-PENDENCIAS.md):
-
-| # | Item | Prioridade | Observação |
-|---|------|------------|------------|
-| 1 | Definir modelo de categoria: **`category_key`** em `transactions` OU seed + **`category_id`** UUID | Alta | Necessário para create/update funcionarem |
-| 2 | **Listar transações** do Supabase (e refetch após create/update/delete) | Alta | Substituir `mockTransactions` por fetch |
-| 3 | **Excluir** transação no Supabase e atualizar a lista | Alta | Chamar `delete().eq('id', id)` e refetch |
-| 4 | **Filtrar transações por mês** (e opcionalmente tipo/categoria) | Média | Conectar inputs de data ao state e filtrar (ou query por período) |
-| 5 | Dashboard: **cards do mês** (receitas, despesas, saldo) a partir do Supabase | Alta | Calcular somas por tipo e mês/ano |
-| 6 | Dashboard: **gráfico Receitas vs Despesas** com dados reais (agregados por mês) | Média | Substituir `mockChartData` por agregação de `transactions` |
-| 7 | Dashboard: **gráfico pizza** despesas por categoria com dados reais do mês | Média | Substituir `mockCategoryData` por agregação por `category_key`/categoria |
-| 8 | Dashboard: **últimas transações** vindas do Supabase | Alta | Query limit 5 (ou 6) ordenado por data |
-| 9 | **Seletor de mês** do dashboard alterar todos os dados (cards + gráficos + últimas) | Alta | Passar mês/ano para fetches e recalcular |
-| 10 | **Deploy na Vercel** e testes com 5 pessoas | Alta | Conforme [08-DEPLOY-VERCEL.md](08-DEPLOY-VERCEL.md) e critérios de sucesso do MVP |
+| Item | Status | Detalhe |
+|------|--------|---------|
+| Create/Update com `category_key` | OK | Slug para defaults, UUID para custom |
+| Grid de categorias | OK | Defaults + custom do usuário filtrados por tipo |
+| Modal de confirmação de edição | OK | Exibe tipo, descrição, valor, data, categoria |
+| Refetch após sucesso | OK | `onSuccess` + `router.refresh()` |
 
 ---
 
-## 5. Definição de “Pronto” (02-MVP-V1) – Status
+## 3. Modelo de categorias (decisão implementada)
+
+**Opção A foi implementada para o MVP V1:**
+
+- `transactions.category_key TEXT` — slug para categorias default (`'alimentacao'`), UUID para custom
+- `transactions.category_id` — mantido nullable para compatibilidade
+- `categories` — tabela para custom do usuário (`is_default: false`)
+- `resolveCategory(key, customCategories)` — resolução unificada: slug → lookup em constants, UUID → lookup em custom
+
+---
+
+## 4. Checklist MVP V1
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | `category_key` em `transactions` + form alinhado | ✅ |
+| 2 | Listar transações do Supabase + refetch | ✅ |
+| 3 | Excluir transação no Supabase | ✅ |
+| 4 | Filtrar transações por mês e categoria | ✅ |
+| 5 | Dashboard: cards com dados reais | ✅ |
+| 6 | Dashboard: gráfico Receitas vs Despesas real | ✅ |
+| 7 | Dashboard: gráfico pizza por categoria real | ✅ |
+| 8 | Dashboard: últimas transações do Supabase | ✅ |
+| 9 | Seletor de mês sincroniza todos os dados | ✅ |
+| 10 | Deploy na Vercel + testes com 5 pessoas | ⏳ |
+
+---
+
+## 5. Definição de "Pronto" (02-MVP-V1) – Status
 
 | Critério | Status |
 |----------|--------|
-| Usuário consegue se cadastrar e logar | OK (validado com Playwright) |
-| Usuário consegue adicionar, editar e excluir transações | Parcial – fluxo de UI existe; create/update falham por categoria; delete não persiste no Supabase |
-| Dashboard mostra resumo correto do mês | Não – dados mock |
-| Gráfico de pizza funciona | Parcial – componente existe; dados mock |
-| Funciona no celular (responsivo) | OK (layout responsivo implementado) |
-| Deploy realizado na Vercel | A definir (doc de deploy pronto) |
-| 5 pessoas de fora testaram e deram feedback | A fazer |
+| Usuário consegue se cadastrar e logar | ✅ OK |
+| Usuário consegue adicionar, editar e excluir transações | ✅ OK |
+| Dashboard mostra resumo correto do mês | ✅ OK |
+| Gráfico de pizza funciona com dados reais | ✅ OK |
+| Funciona no celular (responsivo) | ✅ OK |
+| Deploy realizado na Vercel | ⏳ A definir |
+| 5 pessoas de fora testaram e deram feedback | ⏳ A fazer |
 
 ---
 
 ## 6. Resumo executivo
 
-- **Autenticação, perfil, layout e rotas protegidas** estão alinhados ao MVP e **validados** (Playwright + E2E).
-- **Transações e Dashboard** ainda dependem de **dados mock**; create/update de transação falham por incompatibilidade **category_id (slug vs UUID)**; delete não persiste; filtro por mês não funcional.
-- **Próximos passos críticos:** (1) Adicionar `category_key` (ou seed) e alinhar form + Supabase; (2) Trocar listagem e exclusão de transações para Supabase + refetch; (3) Alimentar dashboard (cards, gráficos, últimas) com dados reais e sincronizar com o seletor de mês; (4) Deploy Vercel e testes com usuários.
+- **MVP V1 está funcionalmente completo.** Todas as pendências de produto foram resolvidas: transações reais, dashboard com dados do Supabase, filtros funcionais, CRUD de categorias custom.
+- **Único pendente:** deploy na Vercel + coleta de feedback com usuários externos (ver [08-DEPLOY-VERCEL.md](08-DEPLOY-VERCEL.md)).
+- **Bônus implementado:** Gerenciamento de categorias custom (Configurações) — feature que estava prevista para o V2, antecipada para o V1.
 
-Após esses itens, o MVP V1 estará pronto em termos de produto; critérios de sucesso (performance, feedback, etc.) seguem o [02-MVP-V1.md](02-MVP-V1.md).
+---
+
+## 7. Funcionalidades além do escopo V1 (antecipadas)
+
+| Funcionalidade | Prevista em | Status |
+|---------------|-------------|--------|
+| Categorias custom (CRUD) | V2 | ✅ Implementado no V1 |
+| Categoria visível nos modais de confirmação | — | ✅ Implementado |
+| Filtro de categoria como dropdown dinâmico | — | ✅ Implementado |
+| Atualização automática do dashboard via evento | — | ✅ Implementado |

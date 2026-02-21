@@ -40,3 +40,28 @@ export const getCategoryById = (id: string): DefaultCategory | undefined => {
 export const getCategoryByName = (name: string): DefaultCategory | undefined => {
   return ALL_CATEGORIES.find(cat => cat.name.toLowerCase() === name.toLowerCase())
 }
+
+export interface CustomCategory {
+  id: string   // UUID — usado como category_key nas transactions custom
+  name: string
+  icon: string
+  color: string
+  type: 'income' | 'expense'
+}
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+export function isUUID(value: string): boolean {
+  return UUID_REGEX.test(value)
+}
+
+export function resolveCategory(
+  key: string | null,
+  customCategories: CustomCategory[]
+): { name: string; icon: string; color: string } {
+  if (!key) return { name: 'Outros', icon: '📦', color: '#64748b' }
+  if (isUUID(key)) {
+    return customCategories.find(c => c.id === key) ?? { name: 'Outros', icon: '📦', color: '#64748b' }
+  }
+  return getCategoryById(key) ?? { name: 'Outros', icon: '📦', color: '#64748b' }
+}

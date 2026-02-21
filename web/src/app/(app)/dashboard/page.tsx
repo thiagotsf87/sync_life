@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { SummaryCards } from '@/components/dashboard/summary-cards'
@@ -10,61 +10,58 @@ import { ProjectionChart } from '@/components/dashboard/projection-chart'
 import { RecentTransactions } from '@/components/dashboard/recent-transactions'
 import { formatMonthYear } from '@/lib/format'
 import { createClient } from '@/lib/supabase/client'
+import { resolveCategory } from '@/constants/categories'
+import { useUserCategories } from '@/hooks/use-user-categories'
 
-// Mock data for demo
-const mockChartData = [
-  { month: 'Março 2025', shortMonth: 'Mar', income: 5200, expense: 3890 },
-  { month: 'Abril 2025', shortMonth: 'Abr', income: 5600, expense: 4120 },
-  { month: 'Maio 2025', shortMonth: 'Mai', income: 5450, expense: 4560 },
-  { month: 'Junho 2025', shortMonth: 'Jun', income: 5780, expense: 3650 },
-  { month: 'Julho 2025', shortMonth: 'Jul', income: 6000, expense: 3980 },
-  { month: 'Agosto 2025', shortMonth: 'Ago', income: 5600, expense: 4380 },
-  { month: 'Setembro 2025', shortMonth: 'Set', income: 5450, expense: 4720 },
-  { month: 'Outubro 2025', shortMonth: 'Out', income: 5780, expense: 4150 },
-  { month: 'Novembro 2025', shortMonth: 'Nov', income: 6250, expense: 4890 },
-  { month: 'Dezembro 2025', shortMonth: 'Dez', income: 6800, expense: 5890 },
-  { month: 'Janeiro 2026', shortMonth: 'Jan', income: 5180, expense: 3089 },
-  { month: 'Fevereiro 2026', shortMonth: 'Fev', income: 5800, expense: 3246, isCurrent: true },
-]
-
-const mockCategoryData = [
-  { name: 'Alimentação', value: 1136, color: '#f97316', percent: 35 },
-  { name: 'Moradia', value: 908.89, color: '#8b5cf6', percent: 28 },
-  { name: 'Transporte', value: 584.22, color: '#06b6d4', percent: 18 },
-  { name: 'Lazer', value: 389.48, color: '#22c55e', percent: 12 },
-  { name: 'Outros', value: 227.08, color: '#64748b', percent: 7 },
-]
-
-const mockTransactions = [
-  { id: '1', description: 'iFood - Jantar', amount: 67.90, type: 'expense' as const, category_id: 'alimentacao', date: '2026-02-04' },
-  { id: '2', description: 'Salário', amount: 5800, type: 'income' as const, category_id: 'salario', date: '2026-02-01' },
-  { id: '3', description: 'Aluguel', amount: 1500, type: 'expense' as const, category_id: 'moradia', date: '2026-02-01' },
-  { id: '4', description: 'Uber', amount: 32.50, type: 'expense' as const, category_id: 'transporte', date: '2026-01-31' },
-  { id: '5', description: 'Netflix', amount: 55.90, type: 'expense' as const, category_id: 'lazer', date: '2026-01-30' },
-  { id: '6', description: 'Mercado', amount: 342.15, type: 'expense' as const, category_id: 'alimentacao', date: '2026-01-29' },
-]
+interface Transaction {
+  id: string
+  description: string
+  amount: number
+  type: 'income' | 'expense'
+  category_key: string | null
+  date: string
+}
 
 export default function DashboardPage() {
   const router = useRouter()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [userName, setUserName] = useState('Usuário')
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
+  const { customCategories } = useUserCategories()
+
+  const fetchData = useCallback(async () => {
+    const supabase = createClient()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: { user } } = await (supabase as any).auth.getUser()
+    if (!user) return
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: profile } = await (supabase as any)
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single() as { data: { full_name: string | null } | null }
+    setUserName(profile?.full_name || user.email?.split('@')[0] || 'Usuário')
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: transactions } = await (supabase as any)
+      .from('transactions')
+      .select('id, description, amount, type, category_key, date')
+      .eq('user_id', user.id)
+      .order('date', { ascending: false }) as { data: Transaction[] | null }
+    setAllTransactions(transactions || [])
+  }, [])
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: profile } = await (supabase as any)
-          .from('profiles')
-          .select('full_name')
-          .eq('id', user.id)
-          .single() as { data: { full_name: string | null } | null }
-        setUserName(profile?.full_name || user.email?.split('@')[0] || 'Usuário')
-      }
+    fetchData()
+    const handleVisibility = () => { if (!document.hidden) fetchData() }
+    document.addEventListener('visibilitychange', handleVisibility)
+    window.addEventListener('transaction:changed', fetchData)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility)
+      window.removeEventListener('transaction:changed', fetchData)
     }
-    fetchUser()
-  }, [])
+  }, [fetchData])
 
   const handlePrevMonth = () => {
     setCurrentDate(prev => {
@@ -86,9 +83,90 @@ export default function DashboardPage() {
     router.push('/transacoes?new=true')
   }
 
-  // Current month data (from mock for now)
-  const currentMonthData = mockChartData.find(d => d.isCurrent) || mockChartData[mockChartData.length - 1]
-  const previousMonthData = mockChartData[mockChartData.length - 2]
+  // --- Derived data computed inline ---
+
+  const currentYear = currentDate.getFullYear()
+  const currentMonth = currentDate.getMonth() // 0-indexed
+
+  const currentMonthTxs = allTransactions.filter(tx => {
+    const [y, m] = tx.date.split('-').map(Number)
+    return y === currentYear && m - 1 === currentMonth
+  })
+
+  const prevDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+  const prevMonthTxs = allTransactions.filter(tx => {
+    const [y, m] = tx.date.split('-').map(Number)
+    return y === prevDate.getFullYear() && m - 1 === prevDate.getMonth()
+  })
+
+  const currentIncome = currentMonthTxs
+    .filter(t => t.type === 'income')
+    .reduce((sum, t) => sum + Number(t.amount), 0)
+  const currentExpenses = currentMonthTxs
+    .filter(t => t.type === 'expense')
+    .reduce((sum, t) => sum + Number(t.amount), 0)
+  const previousIncome = prevMonthTxs
+    .filter(t => t.type === 'income')
+    .reduce((sum, t) => sum + Number(t.amount), 0)
+  const previousExpenses = prevMonthTxs
+    .filter(t => t.type === 'expense')
+    .reduce((sum, t) => sum + Number(t.amount), 0)
+
+  // Category breakdown for current month expenses
+  const catMap: Record<string, number> = {}
+  currentMonthTxs
+    .filter(t => t.type === 'expense')
+    .forEach(t => {
+      const key = t.category_key || 'outros-despesa'
+      catMap[key] = (catMap[key] || 0) + Number(t.amount)
+    })
+  const totalExpenses = Object.values(catMap).reduce((a, b) => a + b, 0)
+  const categoryData = Object.entries(catMap)
+    .map(([key, value]) => {
+      const cat = resolveCategory(key, customCategories)
+      return {
+        name: cat.name,
+        value,
+        color: cat.color,
+        percent: totalExpenses > 0 ? Math.round((value / totalExpenses) * 100) : 0,
+      }
+    })
+    .sort((a, b) => b.value - a.value)
+
+  // Last 12 months chart data relative to currentDate
+  const chartData = []
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1)
+    const y = d.getFullYear()
+    const m = d.getMonth() // 0-indexed
+    const monthTxs = allTransactions.filter(tx => {
+      const [ty, tm] = tx.date.split('-').map(Number)
+      return ty === y && tm - 1 === m
+    })
+    const income = monthTxs
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + Number(t.amount), 0)
+    const expense = monthTxs
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + Number(t.amount), 0)
+    const monthName = new Intl.DateTimeFormat('pt-BR', {
+      month: 'long',
+      year: 'numeric',
+    }).format(d)
+    const shortMonth = new Intl.DateTimeFormat('pt-BR', { month: 'short' })
+      .format(d)
+      .replace('.', '')
+    chartData.push({
+      month: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+      shortMonth: shortMonth.charAt(0).toUpperCase() + shortMonth.slice(1),
+      income,
+      expense,
+      isCurrent: i === 0,
+    })
+  }
+
+  // Last 6 transactions (already sorted by date desc)
+  const recentTransactions = allTransactions.slice(0, 6)
 
   return (
     <>
@@ -105,28 +183,28 @@ export default function DashboardPage() {
 
       <div className="flex-1 min-w-0 overflow-x-hidden p-4 lg:p-8">
         <div className="max-w-[1400px] mx-auto">
-        {/* Summary Cards */}
-        <SummaryCards
-          income={currentMonthData.income}
-          expenses={currentMonthData.expense}
-          previousIncome={previousMonthData.income}
-          previousExpenses={previousMonthData.expense}
-        />
+          {/* Summary Cards */}
+          <SummaryCards
+            income={currentIncome}
+            expenses={currentExpenses}
+            previousIncome={previousIncome}
+            previousExpenses={previousExpenses}
+          />
 
-        {/* Charts Row */}
-        <ExpenseChart data={mockChartData} />
+          {/* Receitas vs Despesas */}
+          <ExpenseChart data={chartData} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 mb-6 min-w-0">
-          <div className="min-w-0 lg:col-span-2">
-            <ProjectionChart />
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 mb-6 min-w-0">
+            <div className="min-w-0 lg:col-span-2">
+              <ProjectionChart />
+            </div>
+            <div className="min-w-0 lg:col-span-3">
+              <CategoryChart data={categoryData} totalCategories={categoryData.length} />
+            </div>
           </div>
-          <div className="min-w-0 lg:col-span-3">
-            <CategoryChart data={mockCategoryData} totalCategories={5} />
-          </div>
-        </div>
 
-        {/* Recent Transactions */}
-        <RecentTransactions transactions={mockTransactions} />
+          {/* Recent Transactions */}
+          <RecentTransactions transactions={recentTransactions} customCategories={customCategories} />
         </div>
       </div>
     </>

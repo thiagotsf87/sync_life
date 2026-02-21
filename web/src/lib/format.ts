@@ -25,8 +25,12 @@ export function formatCompactCurrency(value: number): string {
  * Format a date in Brazilian format (DD/MM/YYYY)
  */
 export function formatDate(date: Date | string): string {
-  const d = typeof date === 'string' ? new Date(date) : date
-  return new Intl.DateTimeFormat('pt-BR').format(d)
+  if (typeof date === 'string') {
+    // Parse YYYY-MM-DD directly to avoid UTC → local timezone offset
+    const [year, month, day] = date.split('-').map(Number)
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`
+  }
+  return new Intl.DateTimeFormat('pt-BR').format(date)
 }
 
 /**

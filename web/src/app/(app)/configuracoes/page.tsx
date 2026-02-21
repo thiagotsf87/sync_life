@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { User, Mail, DollarSign, Save } from 'lucide-react'
+import { CategoryManager } from '@/components/settings/category-manager'
 
 interface ProfileData {
   full_name: string | null
@@ -174,6 +175,10 @@ export default function ConfiguracoesPage() {
               </p>
             </div>
           </div>
+        </div>
+
+        <div className="mt-6 lg:mt-8">
+          <CategoryManager />
         </div>
       </div>
     </>

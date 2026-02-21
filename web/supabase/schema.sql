@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+    category_key TEXT,  -- slug da categoria (ex: 'alimentacao', 'salario')
     amount DECIMAL(12,2) NOT NULL CHECK (amount > 0),
     type TEXT NOT NULL CHECK (type IN ('income', 'expense')),
     description TEXT,
