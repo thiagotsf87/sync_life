@@ -41,39 +41,7 @@ export default function EsqueceuSenhaPage() {
 
   if (isEmailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 relative z-10">
-        <div className="w-full max-w-md">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <Logo size="lg" href="/" />
-            </div>
-          </div>
-
-          {/* Success card */}
-          <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 card-glow text-center">
-            <div className="w-16 h-16 bg-[var(--color-sync-500)]/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-8 h-8 text-[var(--color-sync-400)]" />
-            </div>
-            <h2 className="text-2xl font-semibold text-white mb-3">E-mail enviado!</h2>
-            <p className="text-slate-400 mb-6">
-              Enviamos um link de recuperação para <strong className="text-white">{email}</strong>. 
-              Verifique sua caixa de entrada e spam.
-            </p>
-            <Link href="/login">
-              <Button className="w-full bg-gradient-to-r from-[var(--color-sync-500)] to-[var(--color-sync-600)] hover:from-[var(--color-sync-400)] hover:to-[var(--color-sync-500)] text-white font-semibold py-6 rounded-xl">
-                Voltar para o login
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative z-10">
-      <div className="w-full max-w-md">
+      <>
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
@@ -81,16 +49,54 @@ export default function EsqueceuSenhaPage() {
           </div>
         </div>
 
-        {/* Forgot password card */}
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 card-glow">
+        {/* Success card */}
+        <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 card-glow text-center">
+          <div className="w-16 h-16 bg-[var(--color-sync-500)]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-8 h-8 text-[var(--color-sync-400)]" />
+          </div>
+          <h2 className="text-2xl font-semibold text-white mb-3">E-mail enviado!</h2>
+          <p className="text-slate-400 mb-6">
+            Enviamos um link de recuperação para <strong className="text-white">{email}</strong>. 
+            Verifique sua caixa de entrada e spam.
+          </p>
+          <Link href="/login">
+            <Button className="w-full bg-gradient-to-r from-[var(--color-sync-500)] to-[var(--color-sync-600)] hover:from-[var(--color-sync-400)] hover:to-[var(--color-sync-500)] text-white font-semibold py-6 rounded-xl">
+              Voltar para o login
+            </Button>
+          </Link>
+        </div>
+      </>
+    )
+  }
+
+  return (
+    <>
+      {/* Logo */}
+      <div className="text-center mb-8">
+        <div className="flex justify-center mb-4">
+          <Logo size="lg" href="/" />
+        </div>
+      </div>
+
+      {/* Forgot password card */}
+      <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-10 py-12 card-glow">
           {/* Back link */}
           <Link href="/login" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-6">
             <ArrowLeft className="w-4 h-4" />
             Voltar para login
           </Link>
 
+          {/* Icon */}
+          <div className="flex justify-center mb-6">
+            <div className="w-20 h-20 bg-[var(--color-sync-500)]/15 rounded-2xl flex items-center justify-center">
+              <svg className="w-10 h-10 text-[var(--color-sync-400)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+          </div>
+
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-8 text-center">
             <h2 className="text-2xl font-semibold text-white mb-2">Esqueceu a senha?</h2>
             <p className="text-slate-400 text-sm">
               Digite seu e-mail e enviaremos um link para você redefinir sua senha.
@@ -129,11 +135,10 @@ export default function EsqueceuSenhaPage() {
           </form>
         </div>
 
-        {/* Footer */}
-        <p className="text-center mt-6 text-slate-600 text-xs">
-          © 2026 SyncLife. Organize sua vida, transforme sua história.
-        </p>
-      </div>
-    </div>
+      {/* Footer */}
+      <p className="text-center mt-6 text-slate-600 text-xs">
+        © 2026 SyncLife. Organize sua vida, transforme sua história.
+      </p>
+    </>
   )
 }

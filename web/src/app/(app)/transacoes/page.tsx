@@ -226,7 +226,7 @@ export default function TransacoesPage() {
               return (
                 <div
                   key={transaction.id}
-                  className="grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-4 px-4 lg:px-6 py-4 items-center hover:bg-slate-800/30 transition-colors"
+                  className="grid grid-cols-1 lg:grid-cols-12 gap-2 lg:gap-4 px-4 lg:px-6 py-4 items-center hover:bg-slate-800/30 transition-colors min-h-[72px]"
                 >
                   <div className="col-span-5 flex items-center gap-3">
                     <div
@@ -236,13 +236,32 @@ export default function TransacoesPage() {
                     >
                       <span className="text-lg">{category?.icon || '💰'}</span>
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
-                        {transaction.description}
-                      </p>
-                      <p className="text-xs text-slate-500 lg:hidden">
-                        {category?.name} • {formatDate(transaction.date)}
-                      </p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2 lg:block">
+                        <p className="text-sm font-medium text-white truncate">
+                          {transaction.description}
+                        </p>
+                        <p
+                          className={`text-base font-bold lg:hidden flex-shrink-0 ${
+                            transaction.type === 'income' ? 'text-emerald-400' : 'text-rose-400'
+                          }`}
+                        >
+                          {transaction.type === 'income' ? '+ ' : '- '}
+                          {formatCurrency(transaction.amount)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1 lg:hidden">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            transaction.type === 'income'
+                              ? 'bg-emerald-500/15 text-emerald-400'
+                              : 'bg-orange-500/15 text-orange-400'
+                          }`}
+                        >
+                          {category?.name || 'Outros'}
+                        </span>
+                        <span className="text-xs text-slate-500">{formatDate(transaction.date)}</span>
+                      </div>
                     </div>
                   </div>
                   <div className="hidden lg:block col-span-2">
@@ -259,7 +278,7 @@ export default function TransacoesPage() {
                   <div className="hidden lg:block col-span-2 text-sm text-slate-400">
                     {formatDate(transaction.date)}
                   </div>
-                  <div className="col-span-2 text-right">
+                  <div className="hidden lg:block col-span-2 text-right">
                     <p
                       className={`text-sm font-semibold ${
                         transaction.type === 'income' ? 'text-emerald-400' : 'text-rose-400'

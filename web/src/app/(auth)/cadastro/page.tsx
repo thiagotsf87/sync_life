@@ -59,7 +59,7 @@ export default function CadastroPage() {
 
     try {
       const supabase = createClient()
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -72,6 +72,18 @@ export default function CadastroPage() {
       if (error) {
         toast.error(error.message)
         return
+      }
+
+      // Criar perfil no public.profiles (fallback se o trigger do DB falhar; só funciona se já houver sessão)
+      if (data.user?.id) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (supabase as any)
+            .from('profiles')
+            .upsert({ id: data.user.id, full_name: name }, { onConflict: 'id' })
+        } catch {
+          // Ignora; o trigger no Supabase deve criar o perfil, ou será criado no próximo login
+        }
       }
 
       toast.success('Conta criada com sucesso! Verifique seu e-mail.')
@@ -102,20 +114,19 @@ export default function CadastroPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative z-10">
-      <div className="w-full max-w-md">
-        {/* Logo and tagline */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <Logo size="lg" href="/" />
-          </div>
-          <p className="text-slate-400 text-sm">
-            Comece sua jornada de organização hoje.
-          </p>
+    <>
+      {/* Logo and tagline */}
+      <div className="text-center mb-8">
+        <div className="flex justify-center mb-4">
+          <Logo size="lg" href="/" />
         </div>
+        <p className="text-slate-400 text-sm">
+          Comece sua jornada de organização hoje.
+        </p>
+      </div>
 
-        {/* Register card */}
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 card-glow">
+      {/* Register card */}
+      <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 card-glow">
           {/* Header */}
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-white mb-2">Criar conta grátis</h2>
@@ -227,23 +238,28 @@ export default function CadastroPage() {
               )}
             </div>
 
-            {/* Terms checkbox */}
+            {/* Terms checkbox — quebra controlada para não estourar o modal nem órfãos */}
             <div className="flex items-start gap-3">
               <Checkbox
                 id="terms"
                 checked={acceptTerms}
                 onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
-                className="mt-1 border-slate-600 data-[state=checked]:bg-[var(--color-sync-500)] data-[state=checked]:border-[var(--color-sync-500)]"
+                className="mt-1 shrink-0 border-slate-600 data-[state=checked]:bg-[var(--color-sync-500)] data-[state=checked]:border-[var(--color-sync-500)]"
               />
-              <Label htmlFor="terms" className="text-sm text-slate-400 cursor-pointer leading-relaxed">
-                Li e concordo com os{' '}
-                <Link href="#" className="text-[var(--color-sync-400)] hover:text-[var(--color-sync-300)] transition-colors">
-                  Termos de Uso
-                </Link>{' '}
-                e{' '}
-                <Link href="#" className="text-[var(--color-sync-400)] hover:text-[var(--color-sync-300)] transition-colors">
-                  Política de Privacidade
-                </Link>
+              <Label
+                htmlFor="terms"
+                className="text-sm text-slate-400 cursor-pointer leading-relaxed flex-1 min-w-0"
+              >
+                <span className="block w-full">Li e concordo com os</span>
+                <span className="block w-full mt-0.5">
+                  <Link href="#" className="text-[var(--color-sync-400)] hover:text-[var(--color-sync-300)] transition-colors">
+                    Termos{'\u00a0'}de{'\u00a0'}Uso
+                  </Link>
+                  {' e '}
+                  <Link href="#" className="text-[var(--color-sync-400)] hover:text-[var(--color-sync-300)] transition-colors">
+                    Política{'\u00a0'}de{'\u00a0'}Privacidade
+                  </Link>
+                </span>
               </Label>
             </div>
 
@@ -292,11 +308,10 @@ export default function CadastroPage() {
           </Link>
         </p>
 
-        {/* Footer */}
-        <p className="text-center mt-6 text-slate-600 text-xs">
-          © 2026 SyncLife. Organize sua vida, transforme sua história.
-        </p>
-      </div>
-    </div>
+      {/* Footer */}
+      <p className="text-center mt-6 text-slate-600 text-xs">
+        © 2026 SyncLife. Organize sua vida, transforme sua história.
+      </p>
+    </>
   )
 }

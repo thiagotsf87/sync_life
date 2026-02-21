@@ -52,8 +52,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-anon-key
 
 ### 4. Configurar autenticação
 
-1. No Supabase, vá em **Authentication > Providers**
-2. Habilite **Email** (já vem habilitado por padrão)
+1. No Supabase, vá em **Authentication > Providers > Email**
+2. Para **desenvolvimento/testes**: desmarque **"Confirm email"** para permitir login sem confirmar e-mail
 3. (Opcional) Configure **Google OAuth**:
    - Crie credenciais no [Google Cloud Console](https://console.cloud.google.com)
    - Adicione as credenciais no Supabase
@@ -65,6 +65,11 @@ npm run dev
 ```
 
 Acesse [http://localhost:3000](http://localhost:3000)
+
+## 🧪 Testes E2E (Playwright)
+
+- **Sem login:** `npm run test:e2e:auth` — Landing, Login (erro), Cadastro (form), Esqueceu senha, redirecionamento de rotas protegidas.
+- **Com login:** desmarque "Confirm email" no Supabase (Authentication > Email). Defina `PLAYWRIGHT_TEST_EMAIL` e `PLAYWRIGHT_TEST_PASSWORD` no ambiente e rode `npm run test:e2e` para incluir Dashboard, Transações, Nova transação e Configurações.
 
 ## 🚀 Deploy na Vercel
 

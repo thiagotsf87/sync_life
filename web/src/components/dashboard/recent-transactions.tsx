@@ -19,8 +19,8 @@ interface RecentTransactionsProps {
 
 export function RecentTransactions({ transactions }: RecentTransactionsProps) {
   return (
-    <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800 min-w-0 overflow-hidden">
+      <div className="flex items-center justify-between mb-6 min-w-0">
         <h2 className="text-lg font-semibold text-white">Últimas transações</h2>
         <Link
           href="/transacoes"

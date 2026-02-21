@@ -82,11 +82,20 @@ ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE budgets ENABLE ROW LEVEL SECURITY;
 
--- Policies: usuários só veem seus próprios dados
+-- Policies: usuários só veem seus próprios dados (DROP evita erro ao rodar de novo)
+DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
+DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
 CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+/* Permite insert pelo usuário (auth.uid() = id) OU pelo trigger (id já existe em auth.users) */
+CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (
+  auth.uid() = id OR EXISTS (SELECT 1 FROM auth.users u WHERE u.id = profiles.id)
+);
 
+DROP POLICY IF EXISTS "Users can manage own categories" ON categories;
+DROP POLICY IF EXISTS "Users can manage own transactions" ON transactions;
+DROP POLICY IF EXISTS "Users can manage own budgets" ON budgets;
 CREATE POLICY "Users can manage own categories" ON categories FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can manage own transactions" ON transactions FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can manage own budgets" ON budgets FOR ALL USING (auth.uid() = user_id);
@@ -104,6 +113,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS profiles_updated_at ON profiles;
+DROP TRIGGER IF EXISTS transactions_updated_at ON transactions;
 CREATE TRIGGER profiles_updated_at BEFORE UPDATE ON profiles
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
@@ -111,14 +122,14 @@ CREATE TRIGGER transactions_updated_at BEFORE UPDATE ON transactions
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- Criar profile automaticamente após signup
-CREATE OR REPLACE FUNCTION handle_new_user()
+CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO profiles (id, full_name)
-    VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name');
+    INSERT INTO public.profiles (id, full_name)
+    VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'full_name', ''));
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Criar trigger apenas se não existir
 DO $$

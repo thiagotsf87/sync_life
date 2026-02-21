@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
+import { Outfit } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-outfit",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "SyncLife - Organize sua vida, transforme sua história",
@@ -14,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className="antialiased">
+    <html lang="pt-BR" className={outfit.variable}>
+      <body className={`${outfit.className} antialiased`}>
         {children}
         <Toaster position="top-right" />
       </body>

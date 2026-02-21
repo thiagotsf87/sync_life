@@ -19,10 +19,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [emailNotConfirmed, setEmailNotConfirmed] = useState(false)
+  const [resendLoading, setResendLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setEmailNotConfirmed(false)
 
     try {
       const supabase = createClient()
@@ -32,10 +35,14 @@ export default function LoginPage() {
       })
 
       if (error) {
-        toast.error(error.message === 'Invalid login credentials' 
-          ? 'E-mail ou senha incorretos' 
-          : error.message
-        )
+        if (error.message === 'Email not confirmed') {
+          setEmailNotConfirmed(true)
+          toast.error('E-mail ainda não confirmado. Verifique sua caixa de entrada ou reenvie o link.')
+        } else if (error.message === 'Invalid login credentials') {
+          toast.error('E-mail ou senha incorretos')
+        } else {
+          toast.error(error.message)
+        }
         return
       }
 
@@ -46,6 +53,31 @@ export default function LoginPage() {
       toast.error('Erro ao fazer login. Tente novamente.')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleResendConfirmation = async () => {
+    if (!email?.trim()) {
+      toast.error('Informe o e-mail para reenviar.')
+      return
+    }
+    setResendLoading(true)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.trim(),
+      })
+      if (error) {
+        toast.error(error.message)
+        return
+      }
+      toast.success('E-mail de confirmação reenviado! Verifique sua caixa de entrada.')
+      setEmailNotConfirmed(false)
+    } catch {
+      toast.error('Erro ao reenviar. Tente novamente.')
+    } finally {
+      setResendLoading(false)
     }
   }
 
@@ -68,20 +100,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative z-10">
-      <div className="w-full max-w-md">
-        {/* Logo and tagline */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <Logo size="lg" href="/" />
-          </div>
-          <p className="text-slate-400 text-sm">
-            Sua vida em sincronia. Organize, evolua, conquiste.
-          </p>
+    <>
+      {/* Logo and tagline */}
+      <div className="text-center mb-8">
+        <div className="flex justify-center mb-4">
+          <Logo size="lg" href="/" />
         </div>
+        <p className="text-slate-400 text-sm">
+          Sua vida em sincronia. Organize, evolua, conquiste.
+        </p>
+      </div>
 
-        {/* Login card */}
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 card-glow">
+      {/* Login card */}
+      <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 card-glow">
           {/* Header */}
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-white mb-2">Bem-vindo de volta</h2>
@@ -161,6 +192,25 @@ export default function LoginPage() {
             >
               {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
+
+            {/* E-mail não confirmado: reenviar link */}
+            {emailNotConfirmed && (
+              <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-4 space-y-3">
+                <p className="text-sm text-amber-200">
+                  Confirme seu e-mail antes de entrar. Verifique a caixa de entrada e spam.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={resendLoading}
+                  onClick={handleResendConfirmation}
+                  className="w-full border-amber-500/50 text-amber-200 hover:bg-amber-500/20"
+                >
+                  {resendLoading ? 'Enviando...' : 'Reenviar e-mail de confirmação'}
+                </Button>
+              </div>
+            )}
           </form>
 
           {/* Divider */}
@@ -198,11 +248,10 @@ export default function LoginPage() {
           </Link>
         </p>
 
-        {/* Footer */}
-        <p className="text-center mt-6 text-slate-600 text-xs">
-          © 2026 SyncLife. Organize sua vida, transforme sua história.
-        </p>
-      </div>
-    </div>
+      {/* Footer */}
+      <p className="text-center mt-6 text-slate-600 text-xs">
+        © 2026 SyncLife. Organize sua vida, transforme sua história.
+      </p>
+    </>
   )
 }

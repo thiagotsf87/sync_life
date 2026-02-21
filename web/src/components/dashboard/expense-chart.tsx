@@ -27,8 +27,8 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
   }
 
   return (
-    <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800 mb-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800 mb-6 min-w-0 overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 min-w-0">
         <div>
           <h2 className="text-lg font-semibold text-white">Receitas vs Despesas</h2>
           <p className="text-sm text-slate-400">Comparativo dos últimos 12 meses</p>
@@ -68,17 +68,18 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
         </div>
       </div>
 
-      {/* Bar chart */}
-      <div className="relative h-64">
-        {/* Y-axis labels */}
-        <div className="absolute left-0 top-0 bottom-8 w-12 flex flex-col justify-between text-xs text-slate-500">
-          {yAxisLabels.map((label, i) => (
-            <span key={i}>{label}</span>
-          ))}
-        </div>
+      {/* Bar chart — scroll horizontal em telas estreitas para não ultrapassar o layout */}
+      <div className="relative h-64 min-w-0 overflow-x-auto lg:overflow-hidden overflow-y-visible">
+        <div className="relative h-64 w-full min-w-[480px]">
+          {/* Y-axis labels */}
+          <div className="absolute left-0 top-0 bottom-8 w-12 flex flex-col justify-between text-xs text-slate-500 flex-shrink-0">
+            {yAxisLabels.map((label, i) => (
+              <span key={i}>{label}</span>
+            ))}
+          </div>
 
-        {/* Chart area */}
-        <div className="ml-14 h-full flex items-end gap-2 pb-8 border-b border-slate-800">
+          {/* Chart area */}
+          <div className="ml-14 h-full flex items-end gap-1 sm:gap-2 pb-8 border-b border-slate-800 pr-2">
           {data.map((item, index) => {
             const isHovered = hoveredIndex === index
 
@@ -139,17 +140,19 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
         </div>
 
         {/* X-axis labels */}
-        <div className="ml-14 flex gap-2 mt-2">
+        <div className="ml-14 flex gap-1 sm:gap-2 mt-2 pr-2">
           {data.map((item, index) => (
             <span
               key={index}
-              className={`flex-1 text-center text-[10px] ${
+              className={`flex-1 min-w-0 text-center text-[10px] truncate ${
                 item.isCurrent ? 'text-[var(--color-sync-400)] font-medium' : 'text-slate-500'
               }`}
+              title={item.month}
             >
               {item.shortMonth}
             </span>
           ))}
+        </div>
         </div>
       </div>
 

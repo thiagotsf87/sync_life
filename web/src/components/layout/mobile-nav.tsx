@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Logo } from '@/components/shared/logo'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import {
   Menu,
   LayoutDashboard,
@@ -34,6 +34,13 @@ export function MobileNav({ userName = 'Usuário' }: MobileNavProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  // Evita hydration mismatch: Radix gera IDs (aria-controls) no client que diferem do server.
+  // Só montamos o Sheet após a hidratação para server e client renderizarem o mesmo HTML inicial.
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -47,14 +54,28 @@ export function MobileNav({ userName = 'Usuário' }: MobileNavProps) {
     return name.charAt(0).toUpperCase()
   }
 
+  // Antes da montagem: botão estático (mesmo HTML no server e client → sem mismatch de IDs do Radix).
+  if (!mounted) {
+    return (
+      <button
+        type="button"
+        className="lg:hidden p-2 text-slate-400 hover:text-white -ml-2"
+        aria-label="Abrir menu de navegação"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+    )
+  }
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="lg:hidden p-2 text-slate-400 hover:text-white -ml-2">
+        <button className="lg:hidden p-2 text-slate-400 hover:text-white -ml-2" aria-label="Abrir menu de navegação">
           <Menu className="w-6 h-6" />
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 bg-slate-900 border-r border-slate-800 p-0">
+      <SheetContent side="left" className="w-64 bg-slate-900 border-r border-slate-800 p-0" aria-describedby={undefined}>
+        <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
         {/* Header */}
         <div className="p-6 border-b border-slate-800 flex items-center justify-between">
           <Logo size="md" href="/dashboard" />

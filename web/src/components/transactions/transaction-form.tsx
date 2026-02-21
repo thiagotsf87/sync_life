@@ -129,14 +129,14 @@ export function TransactionForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-800 max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="bg-slate-900 border-slate-800 sm:max-w-lg lg:max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-white">
             {editTransaction ? 'Editar Transação' : 'Nova Transação'}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-6 py-4 overflow-y-auto flex-1 min-h-0 pr-1">
           {/* Transaction type toggle */}
           <div>
             <Label className="text-slate-400 mb-3 block">Tipo de transação</Label>
@@ -216,7 +216,7 @@ export function TransactionForm({
           {/* Category */}
           <div>
             <Label className="text-slate-400 mb-3 block">Categoria</Label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 lg:grid-cols-4 gap-2">
               {categories.map((category) => (
                 <button
                   key={category.id}
@@ -278,7 +278,7 @@ export function TransactionForm({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center gap-3 pt-4 border-t border-slate-800">
+        <div className="flex items-center gap-3 pt-4 border-t border-slate-800 flex-shrink-0">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
