@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Metas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── TOKENS ── */
+:root{
+  --bg:   #03071a; --s1:#07112b; --s2:#0c1a3a; --s3:#132248;
+  --border:rgba(255,255,255,.06); --border-h:rgba(255,255,255,.13);
+  --t1:#dff0ff; --t2:#6e90b8; --t3:#2e4a6e;
+  --em:#10b981; --el:#0055ff; --em-g:rgba(16,185,129,.14); --el-g:rgba(0,85,255,.14);
+  --green:#10b981; --yellow:#f59e0b; --red:#f43f5e; --orange:#f97316; --cyan:#06b6d4;
+}
+body.light{
+  --bg:#e6edf5; --s1:#fff; --s2:#f0f6fa; --s3:#dde8f2;
+  --border:rgba(3,7,26,.08); --border-h:rgba(3,7,26,.16);
+  --t1:#03071a; --t2:#1e3a5c; --t3:#5a7a9e;
+  --em-g:rgba(16,185,129,.10); --el-g:rgba(0,85,255,.10);
+}
+body.jornada{
+  --bg:#020d08; --s1:#061410; --s2:#0b1e18; --s3:#112b22;
+  --border:rgba(16,185,129,.08); --border-h:rgba(16,185,129,.18);
+  --t1:#d6faf0; --t2:#4da888; --t3:#235c48;
+}
+body.light.jornada{
+  --bg:#c8f0e4; --s1:#fff; --s2:#e0f7ef; --s3:#c4eede;
+  --border:rgba(5,80,56,.12); --border-h:rgba(5,80,56,.24);
+  --t1:#022016; --t2:#0d5c3e; --t3:#4da888;
+}
+
+html,body{min-height:100vh}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;transition:background .3s,color .25s}
+
+/* ── PAGE ── */
+.page{max-width:1140px;margin:0 auto;padding:28px 24px 80px}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;gap:14px;margin-bottom:28px;flex-wrap:wrap}
+.page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--t1)}
+body.jornada .page-title{
+  background:linear-gradient(90deg,var(--em),var(--el));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+}
+.topbar-spacer{flex:1}
+.tab-group{display:flex;background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:3px;gap:2px}
+.tab-btn{padding:5px 16px;border-radius:16px;border:none;background:transparent;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;color:var(--t3);cursor:pointer;transition:all .18s;white-space:nowrap}
+.tab-btn:hover{color:var(--t2)}
+.tab-btn.act{background:var(--em-g);color:var(--em)}
+.add-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;border:none;background:var(--em);color:#fff;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .15s}
+.add-btn:hover{opacity:.85}
+.theme-toggle{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--s2);cursor:pointer;font-size:12px;color:var(--t2);font-family:'DM Sans',sans-serif;transition:all .15s}
+.theme-toggle:hover{border-color:var(--border-h)}
+.mode-toggle{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--s2);cursor:pointer;font-size:12px;color:var(--t2);font-family:'DM Sans',sans-serif;transition:all .15s}
+.mode-toggle:hover{border-color:var(--border-h)}
+
+/* ── SUMMARY STRIP ── */
+.sum-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.sum-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px 18px;transition:border-color .15s;animation:fadeUp .4s ease both}
+body.light .sum-card{box-shadow:0 2px 10px rgba(3,7,26,.06)}
+body.light.jornada .sum-card{box-shadow:0 2px 10px rgba(5,80,56,.08)}
+.sum-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:6px}
+.sum-value{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--t1);line-height:1}
+.sum-value.g{color:var(--green)}.sum-value.b{color:var(--el)}.sum-value.y{color:var(--yellow)}
+.sum-delta{font-size:11px;color:var(--t3);margin-top:4px}
+
+/* ── JORNADA HERO ── */
+.jornada-hero{display:none;align-items:center;gap:24px;padding:20px 24px;background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(0,85,255,.10));border:1px solid rgba(16,185,129,.20);border-radius:18px;margin-bottom:20px;animation:fadeUp .4s ease both}
+body.jornada .jornada-hero{display:flex}
+body.light.jornada .jornada-hero{background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(0,85,255,.06));border-color:rgba(16,185,129,.20)}
+.hero-score-wrap{flex-shrink:0;position:relative;width:90px;height:90px}
+.hero-score-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;background:linear-gradient(135deg,#10b981,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-score-sub{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);-webkit-text-fill-color:var(--t3)}
+.hero-right{flex:1}
+.hero-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.hero-phrase{font-size:13px;color:var(--t3);font-style:italic;margin-bottom:12px}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap}
+.hero-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;background:var(--s2);border:1px solid var(--border);font-size:11px;color:var(--t2)}
+
+/* ── METAS GRID ── */
+.metas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+@media(max-width:900px){.metas-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.metas-grid{grid-template-columns:1fr};.sum-strip{grid-template-columns:repeat(2,1fr)}}
+
+/* ── META CARD ── */
+.meta-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:22px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .18s,transform .18s,box-shadow .18s;animation:fadeUp .4s ease both}
+.meta-card:hover{border-color:var(--border-h);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.2)}
+body.light .meta-card{box-shadow:0 2px 12px rgba(3,7,26,.07)}
+body.light .meta-card:hover{box-shadow:0 12px 32px rgba(3,7,26,.12)}
+body.light.jornada .meta-card{box-shadow:0 2px 12px rgba(5,80,56,.09)}
+
+/* Status accent top bar */
+.meta-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc-accent,var(--em));border-radius:20px 20px 0 0;opacity:.8}
+
+/* Jornada: subtle bg glow */
+body.jornada .meta-card{background:linear-gradient(160deg,var(--s1) 70%,rgba(16,185,129,.03))}
+
+/* Progress ring */
+.ring-wrap{display:flex;justify-content:center;margin-bottom:16px;position:relative}
+.ring-svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--s3);stroke-width:8}
+.ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.ring-pct{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;line-height:1}
+.ring-status{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--t3)}
+
+/* Card content */
+.mc-icon{font-size:22px;margin-bottom:6px}
+.mc-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.mc-sub{font-size:12px;color:var(--t3);margin-bottom:14px}
+.mc-amounts{display:flex;justify-content:space-between;margin-bottom:10px}
+.mc-curr{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--t1)}
+.mc-total{font-family:'DM Mono',monospace;font-size:12px;color:var(--t3)}
+.mc-bar-bg{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.mc-bar-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.mc-deadline{display:flex;justify-content:space-between;font-size:11px;color:var(--t3)}
+.mc-dl-val{font-weight:600}
+.mc-dl-val.ok{color:var(--green)}.mc-dl-val.warn{color:var(--yellow)}.mc-dl-val.bad{color:var(--red)}
+
+/* Jornada extra: tip */
+.mc-tip{display:none;margin-top:10px;padding:8px 10px;border-radius:8px;font-size:11px;line-height:1.5}
+body.jornada .mc-tip{display:block}
+.mc-tip.ok{background:rgba(16,185,129,.08);color:var(--green);border:1px solid rgba(16,185,129,.15)}
+.mc-tip.warn{background:rgba(245,158,11,.08);color:var(--yellow);border:1px solid rgba(245,158,11,.15)}
+.mc-tip.bad{background:rgba(244,63,94,.08);color:var(--red);border:1px solid rgba(244,63,94,.15)}
+.mc-tip.celebrate{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.25);font-weight:600}
+
+/* NEW GOAL card */
+.meta-card-new{background:transparent;border:2px dashed var(--border);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:280px;cursor:pointer;transition:border-color .15s,background .15s}
+.meta-card-new:hover{border-color:var(--em);background:var(--em-g)}
+.new-ico{width:44px;height:44px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:20px}
+.meta-card-new:hover .new-ico{background:var(--em);font-size:22px}
+.new-lbl{font-size:13px;color:var(--t3);transition:color .15s}
+.meta-card-new:hover .new-lbl{color:var(--em)}
+
+/* ── SIMULATOR PANEL ── */
+.simulator{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:24px;animation:fadeUp .5s ease both}
+body.light .simulator{box-shadow:0 2px 12px rgba(3,7,26,.07)}
+.sim-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.sim-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--t1)}
+.sim-goal-pick{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t2)}
+.sim-goal-pick select{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer}
+.sim-body{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:center}
+@media(max-width:800px){.sim-body{grid-template-columns:1fr}}
+.sim-left{}
+.sim-slider-label{font-size:12px;color:var(--t3);margin-bottom:8px;display:flex;justify-content:space-between}
+.sim-slider-label span{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--em)}
+.sim-slider{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--s3);outline:none;cursor:pointer;margin-bottom:20px}
+.sim-slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--em);cursor:pointer;border:3px solid var(--s1);box-shadow:0 0 0 2px var(--em)}
+.sim-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--em);cursor:pointer;border:3px solid var(--s1)}
+.sim-scenarios{display:flex;flex-direction:column;gap:10px}
+.sim-sc-row{display:flex;align-items:center;gap:10px}
+.sim-sc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sim-sc-label{font-size:12px;color:var(--t3);flex:1}
+.sim-sc-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500}
+.sim-sc-val.g{color:var(--green)}.sim-sc-val.b{color:var(--el)}.sim-sc-val.r{color:var(--red)}
+.sim-sc-val.y{color:var(--yellow)}
+
+/* Result box */
+.sim-result{background:linear-gradient(135deg,var(--em-g),var(--el-g));border:1px solid rgba(16,185,129,.20);border-radius:14px;padding:20px;text-align:center}
+body.light .sim-result{border-color:rgba(16,185,129,.18)}
+.sim-result-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:6px}
+.sim-result-date{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#10b981,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.sim-result-sub{font-size:12px;color:var(--t3);margin-bottom:14px}
+.sim-result-progress{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.sim-result-fill{height:100%;background:linear-gradient(90deg,#10b981,#0055ff);border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.sim-result-note{font-size:11px;color:var(--t3)}
+.sim-compare{display:flex;justify-content:center;gap:4px;margin-top:10px;font-size:11px;color:var(--t3)}
+.sim-compare strong{color:var(--green)}
+
+/* ── CONQUISTAS / TIMELINE ── */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.bottom-grid{grid-template-columns:1fr}}
+
+.card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:20px;animation:fadeUp .5s ease both}
+body.light .card{box-shadow:0 2px 12px rgba(3,7,26,.07)}
+body.light.jornada .card{box-shadow:0 2px 12px rgba(5,80,56,.09)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1)}
+.card-action{font-size:11px;color:var(--em);cursor:pointer;transition:opacity .12s}
+.card-action:hover{opacity:.7}
+
+/* Milestone timeline */
+.milestone-list{display:flex;flex-direction:column;gap:0;position:relative}
+.milestone-list::before{content:'';position:absolute;left:16px;top:8px;bottom:8px;width:2px;background:var(--border)}
+.milestone-item{display:flex;align-items:flex-start;gap:14px;padding:10px 0;position:relative}
+.ml-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);background:var(--s2);flex-shrink:0;margin-top:3px;position:relative;z-index:1;transition:all .3s}
+.ml-dot.done{background:var(--em);border-color:var(--em);box-shadow:0 0 8px var(--em-g)}
+.ml-dot.current{background:var(--el);border-color:var(--el);box-shadow:0 0 8px rgba(0,85,255,.3);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 8px rgba(0,85,255,.3)}50%{box-shadow:0 0 16px rgba(0,85,255,.6)}}
+.ml-content{flex:1}
+.ml-name{font-size:13px;font-weight:500;color:var(--t2)}
+.ml-name.done{color:var(--green)}.ml-name.current{color:var(--t1);font-weight:600}
+.ml-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.ml-tag{font-size:10px;padding:1px 7px;border-radius:5px;margin-left:auto;flex-shrink:0;margin-top:3px}
+.ml-tag.done{background:rgba(16,185,129,.12);color:var(--green)}
+.ml-tag.active{background:rgba(0,85,255,.12);color:var(--el)}
+.ml-tag.fut{background:var(--s3);color:var(--t3)}
+
+/* Conquistas (badges) — Jornada */
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bdg{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:12px;background:var(--s2);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.bdg:hover{border-color:var(--border-h);transform:translateY(-2px)}
+.bdg.locked{opacity:.3;filter:grayscale(1);cursor:default}
+.bdg.locked:hover{transform:none}
+.bdg-ico{font-size:22px}
+.bdg-name{font-size:9px;color:var(--t3);text-align:center;font-weight:500}
+.bdg-pts{font-size:9px;color:var(--em);font-weight:700}
+
+/* ── CONTROLS ── */
+.controls{position:fixed;bottom:20px;right:20px;background:var(--s2);border:1px solid var(--border-h);border-radius:16px;padding:14px;z-index:999;display:flex;flex-direction:column;gap:8px;min-width:200px;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+body.light .controls{background:#fff;box-shadow:0 4px 20px rgba(3,7,26,.14)}
+.ctrl-t{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3)}
+.ctrl-g{display:flex;gap:5px;flex-wrap:wrap}
+.ctrl-b{padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:var(--s3);color:var(--t2);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s}
+.ctrl-b:hover{border-color:var(--border-h);color:var(--t1)}
+.ctrl-b.on{background:var(--em-g);color:var(--em);border-color:rgba(16,185,129,.3)}
+.ctrl-b.on-b{background:var(--el-g);color:var(--el);border-color:rgba(0,85,255,.3)}
+.ctrl-b.on-n{background:rgba(255,255,255,.08);color:var(--t1);border-color:rgba(255,255,255,.15)}
+body.light .ctrl-b.on-n{background:var(--s3);border-color:rgba(3,7,26,.15)}
+.ctrl-d{height:1px;background:var(--border)}
+.ann{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.08);border:1px dashed rgba(245,158,11,.3);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--yellow);margin-bottom:18px}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.d1{animation-delay:.05s}.d2{animation-delay:.10s}.d3{animation-delay:.15s}.d4{animation-delay:.20s}.d5{animation-delay:.25s}
+</style>
+</head>
+<body>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="ctrl-t">🧪 Controles</div>
+  <div class="ctrl-g">
+    <button class="ctrl-b on-n" id="cb-foco"    onclick="setMode('foco')">🎯 Foco</button>
+    <button class="ctrl-b"      id="cb-jornada" onclick="setMode('jornada')">🌱 Jornada</button>
+  </div>
+  <div class="ctrl-d"></div>
+  <div class="ctrl-g">
+    <button class="ctrl-b on-n" id="cb-dark"  onclick="setTheme('dark')">🌙 Dark</button>
+    <button class="ctrl-b"      id="cb-light" onclick="setTheme('light')">☀️ Light</button>
+  </div>
+</div>
+
+<div class="page">
+
+<div class="ann">⬇ Alterne Modo e Tema nos controles — clique nas metas para simular aportes</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="page-title">🎯 Metas</div>
+  <div class="tab-group">
+    <button class="tab-btn act" onclick="setTab(this,'ativas')">Ativas</button>
+    <button class="tab-btn"     onclick="setTab(this,'concluidas')">Concluídas</button>
+    <button class="tab-btn"     onclick="setTab(this,'arquivadas')">Arquivadas</button>
+  </div>
+  <div class="topbar-spacer"></div>
+  <button class="add-btn">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Nova Meta
+  </button>
+</div>
+
+<!-- SUMMARY STRIP -->
+<div class="sum-strip">
+  <div class="sum-card d1">
+    <div class="sum-label">Metas Ativas</div>
+    <div class="sum-value b">3</div>
+    <div class="sum-delta">1 em risco ⚠</div>
+  </div>
+  <div class="sum-card d2">
+    <div class="sum-label">Total Investido</div>
+    <div class="sum-value g">R$ 13.950</div>
+    <div class="sum-delta">em 3 metas</div>
+  </div>
+  <div class="sum-card d3">
+    <div class="sum-label">Aporte Mensal</div>
+    <div class="sum-value">R$ 2.700</div>
+    <div class="sum-delta">54% da renda disponível</div>
+  </div>
+  <div class="sum-card d4">
+    <div class="sum-label">Próxima Conclusão</div>
+    <div class="sum-value y">Jun/2026</div>
+    <div class="sum-delta">Reserva de Emergência</div>
+  </div>
+</div>
+
+<!-- JORNADA HERO -->
+<div class="jornada-hero">
+  <div class="hero-score-wrap">
+    <!-- Progress ring for jornada hero -->
+    <svg class="ring-svg" width="90" height="90" viewBox="0 0 90 90">
+      <circle class="ring-bg" cx="45" cy="45" r="36"/>
+      <circle class="ring-fill" cx="45" cy="45" r="36"
+        stroke="url(#heroGrad)"
+        style="stroke-dasharray:226;stroke-dashoffset:75"
+        id="heroRing"/>
+      <defs>
+        <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#10b981"/>
+          <stop offset="100%" stop-color="#0055ff"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="hero-score-num">
+      67<div class="hero-score-sub">Score</div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-title">Você está progredindo! 💪</div>
+    <div class="hero-phrase">"2 de 3 metas no ritmo certo. A Viagem Europa precisa de mais atenção."</div>
+    <div class="hero-pills">
+      <div class="hero-pill">🔥 7 dias ativos</div>
+      <div class="hero-pill">✅ 2 metas no ritmo</div>
+      <div class="hero-pill">⚠ 1 meta em risco</div>
+      <div class="hero-pill">+R$ 342 este mês</div>
+    </div>
+  </div>
+</div>
+
+<!-- METAS GRID -->
+<div class="metas-grid" id="metasGrid">
+
+  <!-- META 1: Viagem Europa — em risco -->
+  <div class="meta-card d1" style="--mc-accent:var(--yellow)" onclick="selectMeta('europa')">
+    <div class="ring-wrap">
+      <svg class="ring-svg" width="110" height="110" viewBox="0 0 110 110">
+        <circle class="ring-bg" cx="55" cy="55" r="44"/>
+        <circle class="ring-fill" cx="55" cy="55" r="44"
+          stroke="#f59e0b"
+          style="stroke-dasharray:276;stroke-dashoffset:199"
+          id="ring-europa"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-pct" style="color:var(--yellow)">28%</div>
+        <div class="ring-status">em risco</div>
+      </div>
+    </div>
+    <div class="mc-icon">✈️</div>
+    <div class="mc-name">Viagem Europa</div>
+    <div class="mc-sub">Intercâmbio 30 dias — ago/2027</div>
+    <div class="mc-amounts">
+      <span class="mc-curr">R$ 4.200</span>
+      <span class="mc-total">de R$ 15.000</span>
+    </div>
+    <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:28%;background:var(--yellow)"></div></div>
+    <div class="mc-deadline">
+      <span>Prazo: Ago/2027</span>
+      <span class="mc-dl-val warn">2 meses atrasada</span>
+    </div>
+    <div class="mc-tip warn">⚠ Precisaria aportar R$ 850/mês para recuperar o ritmo</div>
+  </div>
+
+  <!-- META 2: Reserva Emergência — no ritmo -->
+  <div class="meta-card d2" style="--mc-accent:var(--green)" onclick="selectMeta('reserva')">
+    <div class="ring-wrap">
+      <svg class="ring-svg" width="110" height="110" viewBox="0 0 110 110">
+        <circle class="ring-bg" cx="55" cy="55" r="44"/>
+        <circle class="ring-fill" cx="55" cy="55" r="44"
+          stroke="#10b981"
+          style="stroke-dasharray:276;stroke-dashoffset:97"
+          id="ring-reserva"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-pct" style="color:var(--green)">65%</div>
+        <div class="ring-status">no ritmo ✓</div>
+      </div>
+    </div>
+    <div class="mc-icon">🛡️</div>
+    <div class="mc-name">Reserva de Emergência</div>
+    <div class="mc-sub">6 meses de despesas</div>
+    <div class="mc-amounts">
+      <span class="mc-curr">R$ 9.750</span>
+      <span class="mc-total">de R$ 15.000</span>
+    </div>
+    <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:65%;background:var(--green)"></div></div>
+    <div class="mc-deadline">
+      <span>Prazo: Jun/2026</span>
+      <span class="mc-dl-val ok">no prazo ✓</span>
+    </div>
+    <div class="mc-tip ok">💚 No ritmo! Em junho você conclui essa meta.</div>
+  </div>
+
+  <!-- META 3: Certificação AWS — no ritmo -->
+  <div class="meta-card d3" style="--mc-accent:var(--el)" onclick="selectMeta('aws')">
+    <div class="ring-wrap">
+      <svg class="ring-svg" width="110" height="110" viewBox="0 0 110 110">
+        <circle class="ring-bg" cx="55" cy="55" r="44"/>
+        <circle class="ring-fill" cx="55" cy="55" r="44"
+          stroke="url(#gradAws)"
+          style="stroke-dasharray:276;stroke-dashoffset:166"
+          id="ring-aws"/>
+        <defs>
+          <linearGradient id="gradAws" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981"/>
+            <stop offset="100%" stop-color="#0055ff"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-pct" style="background:linear-gradient(135deg,#10b981,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">40%</div>
+        <div class="ring-status">no ritmo ✓</div>
+      </div>
+    </div>
+    <div class="mc-icon">📚</div>
+    <div class="mc-name">Certificação AWS</div>
+    <div class="mc-sub">Developer Associate — mai/2026</div>
+    <div class="mc-amounts">
+      <span class="mc-curr">40h estudadas</span>
+      <span class="mc-total">de 100h</span>
+    </div>
+    <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:40%;background:linear-gradient(90deg,#10b981,#0055ff)"></div></div>
+    <div class="mc-deadline">
+      <span>Prazo: Mai/2026</span>
+      <span class="mc-dl-val ok">3 meses restantes</span>
+    </div>
+    <div class="mc-tip ok">📚 Estudar 5h/semana garante a certificação em abril.</div>
+  </div>
+
+  <!-- NOVA META -->
+  <div class="meta-card-new d4">
+    <div class="new-ico">+</div>
+    <div class="new-lbl">Criar nova meta</div>
+  </div>
+
+</div><!-- /metas-grid -->
+
+<!-- SIMULADOR -->
+<div class="simulator" id="simulator">
+  <div class="sim-header">
+    <div class="sim-title">🔮 Simulador de Aportes</div>
+    <div class="sim-goal-pick">
+      Meta:
+      <select id="simSelect" onchange="updateSim()">
+        <option value="europa">✈️ Viagem Europa</option>
+        <option value="reserva">🛡️ Reserva Emergência</option>
+        <option value="aws">📚 Certificação AWS</option>
+      </select>
+    </div>
+  </div>
+  <div class="sim-body">
+    <div class="sim-left">
+      <div class="sim-slider-label">
+        Aporte mensal
+        <span id="sliderVal">R$ 700</span>
+      </div>
+      <input type="range" class="sim-slider" id="simSlider" min="100" max="3000" step="50" value="700" oninput="updateSim()">
+      <div class="sim-scenarios">
+        <div class="sim-sc-row">
+          <div class="sim-sc-dot" style="background:var(--green)"></div>
+          <div class="sim-sc-label">Com esse aporte</div>
+          <div class="sim-sc-val g" id="sc-main">Jun/2027</div>
+        </div>
+        <div class="sim-sc-row">
+          <div class="sim-sc-dot" style="background:var(--yellow);opacity:.6"></div>
+          <div class="sim-sc-label">Ritmo atual (R$ 500/mês)</div>
+          <div class="sim-sc-val y" id="sc-atual">Ago/2027</div>
+        </div>
+        <div class="sim-sc-row">
+          <div class="sim-sc-dot" style="background:var(--el)"></div>
+          <div class="sim-sc-label">Meta do prazo (ago/27)</div>
+          <div class="sim-sc-val b" id="sc-prazo">R$ 850/mês</div>
+        </div>
+        <div class="sim-sc-row">
+          <div class="sim-sc-dot" style="background:var(--red);opacity:.6"></div>
+          <div class="sim-sc-label">Sem novos aportes</div>
+          <div class="sim-sc-val r" id="sc-zero">Nov/2028</div>
+        </div>
+      </div>
+    </div>
+    <div class="sim-result">
+      <div class="sim-result-label">Conclusão estimada</div>
+      <div class="sim-result-date" id="simDate">Jun/2027</div>
+      <div class="sim-result-sub" id="simSub">R$ 700/mês — 16 meses restantes</div>
+      <div class="sim-result-progress">
+        <div class="sim-result-fill" id="simFill" style="width:28%"></div>
+      </div>
+      <div class="sim-result-note" id="simNote">Faltam R$ 10.800 para a meta</div>
+      <div class="sim-compare">
+        Economia vs ritmo atual: <strong id="simSaving">+2 meses mais rápido</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM GRID -->
+<div class="bottom-grid">
+
+  <!-- Milestones -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🗺️ Marcos — Reserva de Emergência</div>
+    </div>
+    <div class="milestone-list">
+      <div class="milestone-item">
+        <div class="ml-dot done"></div>
+        <div class="ml-content">
+          <div class="ml-name done">1º mês de reserva — R$ 2.500</div>
+          <div class="ml-sub">Concluído em out/2025</div>
+        </div>
+        <div class="ml-tag done">✓ Feito</div>
+      </div>
+      <div class="milestone-item">
+        <div class="ml-dot done"></div>
+        <div class="ml-content">
+          <div class="ml-name done">3 meses de reserva — R$ 7.500</div>
+          <div class="ml-sub">Concluído em jan/2026</div>
+        </div>
+        <div class="ml-tag done">✓ Feito</div>
+      </div>
+      <div class="milestone-item">
+        <div class="ml-dot current"></div>
+        <div class="ml-content">
+          <div class="ml-name current">4 meses — R$ 10.000 ← aqui</div>
+          <div class="ml-sub">R$ 9.750 de R$ 10.000 · 97%</div>
+        </div>
+        <div class="ml-tag active">Em progresso</div>
+      </div>
+      <div class="milestone-item">
+        <div class="ml-dot"></div>
+        <div class="ml-content">
+          <div class="ml-name">5 meses — R$ 12.500</div>
+          <div class="ml-sub">Previsto abr/2026</div>
+        </div>
+        <div class="ml-tag fut">Futuro</div>
+      </div>
+      <div class="milestone-item">
+        <div class="ml-dot"></div>
+        <div class="ml-content">
+          <div class="ml-name">🎉 6 meses — R$ 15.000 (META!)</div>
+          <div class="ml-sub">Previsto jun/2026</div>
+        </div>
+        <div class="ml-tag fut">Jun/2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conquistas — Jornada / Histórico — Foco -->
+  <div class="card" id="rightCard">
+    <div class="card-header">
+      <div class="card-title" id="rightTitle">🏆 Conquistas</div>
+      <div class="card-action">Ver todas →</div>
+    </div>
+    <div id="rightContent"></div>
+  </div>
+
+</div><!-- /bottom-grid -->
+
+</div><!-- /page -->
+
+<script>
+// ─── STATE ───────────────────────────────
+let curMode  = 'foco';
+let curTheme = 'dark';
+let curMeta  = 'europa';
+
+// ─── META DATA ───────────────────────────
+const METAS = {
+  europa: {
+    name: '✈️ Viagem Europa',
+    atual: 4200, total: 15000,
+    aporteAtual: 500,
+    prazoMeses: 18,   // ago/2027
+  },
+  reserva: {
+    name: '🛡️ Reserva Emergência',
+    atual: 9750, total: 15000,
+    aporteAtual: 1500,
+    prazoMeses: 4,   // jun/2026
+  },
+  aws: {
+    name: '📚 Certificação AWS',
+    atual: 40, total: 100,
+    aporteAtual: 8,    // h/mês (≈ estudo)
+    prazoMeses: 3,     // mai/2026
+    unit: 'h',
+  }
+};
+
+const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+function addMonths(base, n) {
+  const d = new Date(2026, 1, 1); // Feb 2026
+  d.setMonth(d.getMonth() + n);
+  return MONTHS[d.getMonth()] + '/' + ('' + d.getFullYear()).slice(2);
+}
+
+// ─── SIMULATOR ───────────────────────────
+function updateSim() {
+  const meta   = METAS[document.getElementById('simSelect').value];
+  const aporte = parseInt(document.getElementById('simSlider').value);
+  const falta  = meta.total - meta.atual;
+
+  document.getElementById('sliderVal').textContent =
+    meta.unit === 'h' ? aporte + 'h/mês' : 'R$ ' + aporte.toLocaleString('pt-BR');
+
+  // Months to complete with new aporte
+  const mesesMain  = Math.ceil(falta / aporte);
+  const mesesAtual = Math.ceil(falta / meta.aporteAtual);
+  const mesesPrazo = meta.prazoMeses;
+  const mesesZero  = falta > 0 ? '∞' : 0;
+
+  const pct = Math.min(100, Math.round((meta.atual / meta.total) * 100));
+  const diff = mesesAtual - mesesMain;
+
+  document.getElementById('sc-main').textContent  = addMonths(null, mesesMain);
+  document.getElementById('sc-atual').textContent = addMonths(null, mesesAtual);
+
+  // Required aporte for prazo
+  const reqPrazo = Math.ceil(falta / mesesPrazo);
+  document.getElementById('sc-prazo').textContent =
+    (meta.unit === 'h' ? reqPrazo + 'h/mês' : 'R$ ' + reqPrazo.toLocaleString('pt-BR') + '/mês');
+
+  document.getElementById('sc-zero').textContent  = addMonths(null, Math.min(mesesAtual * 3, 48));
+
+  // Result box
+  document.getElementById('simDate').textContent  = addMonths(null, mesesMain);
+  document.getElementById('simFill').style.width  = pct + '%';
+  document.getElementById('simNote').textContent  =
+    'Faltam ' + (meta.unit === 'h' ? (falta + 'h') : 'R$ ' + falta.toLocaleString('pt-BR')) + ' para a meta';
+
+  const sub = (meta.unit === 'h'
+    ? aporte + 'h/mês'
+    : 'R$ ' + aporte.toLocaleString('pt-BR') + '/mês') +
+    ' — ' + mesesMain + ' meses restantes';
+  document.getElementById('simSub').textContent = sub;
+
+  if (diff > 0) {
+    document.getElementById('simSaving').textContent = '+' + diff + ' meses mais rápido';
+    document.getElementById('simSaving').style.color = 'var(--green)';
+  } else if (diff < 0) {
+    document.getElementById('simSaving').textContent = Math.abs(diff) + ' meses mais lento';
+    document.getElementById('simSaving').style.color = 'var(--red)';
+  } else {
+    document.getElementById('simSaving').textContent = 'Mesmo ritmo atual';
+    document.getElementById('simSaving').style.color = 'var(--t3)';
+  }
+}
+
+function selectMeta(id) {
+  document.getElementById('simSelect').value = id;
+  updateSim();
+  document.getElementById('simulator').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ─── MODE / THEME ────────────────────────
+function setMode(m) {
+  curMode = m;
+  document.body.classList.toggle('jornada', m === 'jornada');
+  document.getElementById('cb-foco').className    = 'ctrl-b' + (m === 'foco'    ? ' on-n' : '');
+  document.getElementById('cb-jornada').className = 'ctrl-b' + (m === 'jornada' ? ' on'   : '');
+
+  renderRightCard(m);
+}
+
+function setTheme(t) {
+  curTheme = t;
+  document.body.classList.toggle('light', t === 'light');
+  document.getElementById('cb-dark').className  = 'ctrl-b' + (t === 'dark'  ? ' on-n' : '');
+  document.getElementById('cb-light').className = 'ctrl-b' + (t === 'light' ? ' on-n' : '');
+}
+
+function setTab(el, tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('act'));
+  el.classList.add('act');
+}
+
+// ─── RIGHT CARD ───────────────────────────
+const BADGES = [
+  { ico:'🔥', name:'7 dias',   pts:'50 pts', locked:false },
+  { ico:'💚', name:'Mês verde',pts:'100 pts',locked:false },
+  { ico:'📊', name:'Planejad.',pts:'75 pts', locked:false },
+  { ico:'🎯', name:'1ª Meta',  pts:'200 pts',locked:true  },
+  { ico:'💎', name:'3 meses',  pts:'300 pts',locked:true  },
+  { ico:'🏅', name:'Top saver',pts:'500 pts',locked:true  },
+  { ico:'🚀', name:'Streaker', pts:'150 pts',locked:true  },
+  { ico:'⭐', name:'Lendário', pts:'1k pts', locked:true  },
+];
+
+const HISTORY = [
+  { date:'fev/26', action:'Aporte R$ 700 → Europa', type:'g' },
+  { date:'fev/26', action:'Aporte R$ 1.500 → Reserva', type:'g' },
+  { date:'jan/26', action:'Marco atingido: 3 meses', type:'b' },
+  { date:'jan/26', action:'Meta Inglês concluída 🎉', type:'g' },
+  { date:'dez/25', action:'Aporte R$ 1.500 → Reserva', type:'g' },
+];
+
+function renderRightCard(m) {
+  const title   = document.getElementById('rightTitle');
+  const content = document.getElementById('rightContent');
+
+  if (m === 'jornada') {
+    title.textContent = '🏆 Conquistas';
+    content.innerHTML = `
+      <div class="badge-grid">
+        ${BADGES.map(b => `
+          <div class="bdg${b.locked ? ' locked' : ''}">
+            <div class="bdg-ico">${b.ico}</div>
+            <div class="bdg-name">${b.name}</div>
+            ${!b.locked ? `<div class="bdg-pts">${b.pts}</div>` : ''}
+          </div>`).join('')}
+      </div>
+      <div style="margin-top:14px;padding:10px;background:rgba(16,185,129,.07);border-radius:10px;border:1px solid rgba(16,185,129,.14)">
+        <div style="font-size:10px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Próxima conquista</div>
+        <div style="font-size:12px;color:var(--t2)">🎯 Conclua a meta <strong>Reserva de Emergência</strong> para desbloquear <strong>1ª Meta</strong> — 200 pts</div>
+        <div style="margin-top:8px;height:4px;background:var(--s3);border-radius:2px"><div style="width:65%;height:100%;background:linear-gradient(90deg,#10b981,#0055ff);border-radius:2px"></div></div>
+      </div>`;
+  } else {
+    title.textContent = '📋 Histórico de Aportes';
+    content.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:0">
+        ${HISTORY.map(h => `
+          <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+            <div style="font-size:11px;color:var(--t3);white-space:nowrap;font-family:'DM Mono',monospace">${h.date}</div>
+            <div style="font-size:13px;color:var(--t2);flex:1">${h.action}</div>
+          </div>`).join('')}
+      </div>`;
+  }
+}
+
+// ─── INIT ─────────────────────────────────
+renderRightCard('foco');
+updateSim();
+</script>
+</body>
+</html>

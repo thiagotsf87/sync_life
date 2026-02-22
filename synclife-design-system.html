@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DESIGN SYSTEM PAGE — uses its own vars, renders tokens inline
+═══════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:#0a0f1e;
+  color:#c8d8f0;
+  font-size:14px;
+  line-height:1.6;
+  min-height:100vh;
+}
+
+/* ── CODE blocks ── */
+code{
+  font-family:'DM Mono',monospace;
+  font-size:12px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.09);
+  border-radius:5px;
+  padding:1px 6px;
+  color:#7dd3fc;
+}
+pre{
+  font-family:'DM Mono',monospace;
+  font-size:12px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:10px;
+  padding:16px;
+  overflow-x:auto;
+  line-height:1.7;
+  color:#94a3b8;
+  position:relative;
+}
+pre .kw{color:#7dd3fc}
+pre .val{color:#86efac}
+pre .str{color:#fbbf24}
+pre .cm{color:#475569}
+pre .fn{color:#c084fc}
+
+/* ── Layout ── */
+.ds-shell{display:flex;min-height:100vh}
+
+/* SIDEBAR NAV */
+.ds-nav{
+  width:220px;flex-shrink:0;
+  background:#060b18;
+  border-right:1px solid rgba(255,255,255,0.06);
+  padding:24px 0;
+  position:sticky;top:0;height:100vh;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,0.1) transparent;
+}
+.ds-nav::-webkit-scrollbar{width:3px}
+.ds-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  padding:0 20px 20px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  margin-bottom:16px;
+}
+.nav-logo-mark{
+  width:32px;height:32px;border-radius:9px;
+  background:linear-gradient(135deg,#051c14,#03091f);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+}
+.nav-logo-txt{
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:800;
+  background:linear-gradient(90deg,#10b981,#0055ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+}
+.nav-ver{font-size:9px;color:#334155;margin-top:-2px}
+
+.nav-section{
+  font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:#334155;
+  padding:8px 20px 4px;margin-top:8px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 20px;font-size:12px;color:#64748b;
+  cursor:pointer;transition:color .15s,background .15s;
+  text-decoration:none;
+  border-left:2px solid transparent;
+}
+.nav-item:hover{color:#94a3b8;background:rgba(255,255,255,0.03)}
+.nav-item.active{color:#10b981;border-left-color:#10b981;background:rgba(16,185,129,0.06)}
+.nav-item .ni{font-size:13px;width:16px;text-align:center;flex-shrink:0}
+
+/* MAIN CONTENT */
+.ds-main{flex:1;min-width:0;padding:40px 48px;max-width:1100px}
+
+/* Sections */
+.ds-section{margin-bottom:64px;scroll-margin-top:32px}
+.ds-section-title{
+  font-family:'Syne',sans-serif;font-size:24px;font-weight:800;
+  color:#f1f5f9;margin-bottom:6px;
+  display:flex;align-items:center;gap:12px;
+}
+.ds-section-title::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,0.08),transparent);
+}
+.ds-section-sub{font-size:13px;color:#475569;margin-bottom:28px;max-width:640px;line-height:1.7}
+
+/* Sub-sections */
+.ds-sub{margin-bottom:36px}
+.ds-sub-title{
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
+  color:#94a3b8;margin-bottom:14px;
+  padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+/* ── TOKEN DISPLAY ── */
+.token-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.token-item{
+  background:#0d1526;border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;padding:12px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.token-swatch{height:36px;border-radius:6px;margin-bottom:2px;border:1px solid rgba(255,255,255,0.08)}
+.token-name{font-family:'DM Mono',monospace;font-size:11px;color:#64748b}
+.token-value{font-family:'DM Mono',monospace;font-size:11px;color:#94a3b8}
+.token-desc{font-size:10px;color:#475569}
+
+/* Mode comparison grid */
+.mode-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.mode-col{border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.07)}
+.mode-col-hdr{
+  padding:8px 12px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.07em;
+  display:flex;align-items:center;gap:6px;
+}
+.mode-col-body{padding:10px 12px;min-height:80px;display:flex;flex-direction:column;gap:6px}
+
+/* ── TYPOGRAPHY DISPLAY ── */
+.type-sample{
+  background:#0d1526;border:1px solid rgba(255,255,255,0.06);
+  border-radius:12px;padding:20px 24px;margin-bottom:10px;
+  display:flex;align-items:baseline;gap:20px;
+}
+.type-meta{flex-shrink:0;width:140px}
+.type-meta-name{font-size:11px;font-weight:600;color:#10b981;margin-bottom:2px}
+.type-meta-spec{font-size:10px;color:#475569;font-family:'DM Mono',monospace}
+.type-preview{flex:1}
+
+/* ── COMPONENT DEMOS ── */
+.component-demo{
+  background:#0d1526;border:1px solid rgba(255,255,255,0.07);
+  border-radius:14px;overflow:hidden;margin-bottom:10px;
+}
+.demo-label{
+  font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+  color:#334155;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.05);
+  background:rgba(0,0,0,0.2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.demo-label .copy-btn{
+  font-size:9px;color:#475569;cursor:pointer;padding:2px 8px;
+  border-radius:4px;border:1px solid rgba(255,255,255,0.08);
+  background:transparent;font-family:'DM Mono',monospace;
+  transition:all .12s;
+}
+.demo-label .copy-btn:hover{color:#94a3b8;border-color:rgba(255,255,255,0.15)}
+.demo-label .copy-btn.copied{color:#10b981;border-color:rgba(16,185,129,0.3)}
+.demo-body{padding:24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.demo-code{padding:0 16px 16px}
+
+/* ── SPACING SCALE ── */
+.space-row{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+.space-box{background:rgba(16,185,129,0.25);border:1px solid rgba(16,185,129,0.4);border-radius:3px;flex-shrink:0}
+.space-label{font-family:'DM Mono',monospace;font-size:11px;color:#64748b;width:60px}
+.space-value{font-family:'DM Mono',monospace;font-size:11px;color:#94a3b8}
+
+/* ── RADIUS SCALE ── */
+.radius-row{display:flex;gap:12px;flex-wrap:wrap}
+.radius-item{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.radius-box{
+  width:64px;height:64px;
+  background:rgba(0,85,255,0.2);
+  border:2px solid rgba(0,85,255,0.4);
+}
+.radius-lbl{font-family:'DM Mono',monospace;font-size:10px;color:#64748b}
+
+/* ── GRID/LAYOUT DEMO ── */
+.layout-demo{
+  background:#0d1526;border:1px solid rgba(255,255,255,0.07);
+  border-radius:12px;padding:16px;margin-bottom:10px;
+}
+.layout-row{display:flex;gap:8px;margin-bottom:8px}
+.layout-col{
+  background:rgba(0,85,255,0.12);border:1px solid rgba(0,85,255,0.2);
+  border-radius:6px;padding:8px;text-align:center;
+  font-size:10px;color:#6b8fd1;font-family:'DM Mono',monospace;
+}
+
+/* ── BADGE/TAG DEMOS ── */
+.tags-row{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ── ICON system ── */
+.icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.icon-item{
+  background:#0d1526;border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;padding:12px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  font-size:11px;color:#475569;cursor:pointer;transition:border-color .12s;
+}
+.icon-item:hover{border-color:rgba(16,185,129,0.3)}
+.icon-item .ico{font-size:22px}
+
+/* ── ACTUAL SYNCLIFE COMPONENTS (using vars) ── */
+/* These render in their real theme inside .demo-body */
+
+/* Dark Foco demo wrapper */
+.th-dark-foco{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,.06);--border-h:rgba(255,255,255,.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;--em-g:rgba(16,185,129,.14);--el-g:rgba(0,85,255,.14);
+  background:var(--bg);border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,0.06);
+  flex:1;min-width:180px;
+}
+/* Dark Jornada */
+.th-dark-jorn{
+  --bg:#020d08;--s1:#061410;--s2:#0b1e18;--s3:#112b22;
+  --border:rgba(16,185,129,.08);--border-h:rgba(16,185,129,.18);
+  --t1:#d6faf0;--t2:#4da888;--t3:#235c48;
+  --em:#10b981;--el:#0055ff;--em-g:rgba(16,185,129,.14);--el-g:rgba(0,85,255,.14);
+  background:var(--bg);border-radius:10px;padding:16px;border:1px solid rgba(16,185,129,0.1);
+  flex:1;min-width:180px;
+}
+/* Light Foco */
+.th-light-foco{
+  --bg:#e6edf5;--s1:#fff;--s2:#f0f6fa;--s3:#dde8f2;
+  --border:rgba(3,7,26,.08);--border-h:rgba(3,7,26,.16);
+  --t1:#03071a;--t2:#1e3a5c;--t3:#5a7a9e;
+  --em:#10b981;--el:#0055ff;--em-g:rgba(16,185,129,.10);--el-g:rgba(0,85,255,.10);
+  background:var(--bg);border-radius:10px;padding:16px;border:1px solid rgba(3,7,26,0.08);
+  flex:1;min-width:180px;
+}
+/* Light Jornada */
+.th-light-jorn{
+  --bg:#c8f0e4;--s1:#fff;--s2:#e0f7ef;--s3:#c4eede;
+  --border:rgba(5,80,56,.12);--border-h:rgba(5,80,56,.24);
+  --t1:#022016;--t2:#0d5c3e;--t3:#4da888;
+  --em:#10b981;--el:#0055ff;--em-g:rgba(16,185,129,.10);--el-g:rgba(0,85,255,.10);
+  background:var(--bg);border-radius:10px;padding:16px;border:1px solid rgba(5,80,56,0.12);
+  flex:1;min-width:180px;
+}
+
+/* Theme label */
+.th-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;opacity:.5}
+
+/* ── COMPONENT: Card ── */
+.sl-card{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:16px;padding:16px;
+  transition:border-color .15s;
+}
+.sl-card:hover{border-color:var(--border-h)}
+.sl-card-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--t1);margin-bottom:10px}
+.sl-card-body{font-size:11px;color:var(--t2)}
+
+/* ── COMPONENT: KPI Card ── */
+.sl-kpi{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:14px;padding:14px;position:relative;overflow:hidden;
+}
+.sl-kpi::before{content:'';position:absolute;top:0;left:16px;right:16px;height:2px;border-radius:0 0 2px 2px;background:var(--kpi-c,var(--em));opacity:.8}
+.sl-kpi-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:4px}
+.sl-kpi-value{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--t1);line-height:1}
+.sl-kpi-delta{font-size:10px;color:var(--t3);margin-top:4px}
+.sl-kpi-delta.up{color:#10b981}.sl-kpi-delta.down{color:#f43f5e}.sl-kpi-delta.warn{color:#f59e0b}
+
+/* ── COMPONENT: Buttons ── */
+.sl-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:10px;border:none;
+  font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:opacity .15s,transform .12s;
+  white-space:nowrap;
+}
+.sl-btn:hover{opacity:.85}.sl-btn:active{transform:scale(.97)}
+.sl-btn-primary{background:linear-gradient(135deg,#10b981,#0055ff);color:#fff}
+.sl-btn-secondary{background:var(--s2);color:var(--t2);border:1px solid var(--border)}
+.sl-btn-secondary:hover{border-color:var(--border-h);color:var(--t1)}
+.sl-btn-danger{background:rgba(244,63,94,.15);color:#f43f5e;border:1px solid rgba(244,63,94,.25)}
+.sl-btn-ghost{background:transparent;color:var(--em);border:1px solid rgba(16,185,129,.25)}
+.sl-btn-ghost:hover{background:var(--em-g)}
+.sl-btn-sm{padding:5px 10px;font-size:11px;border-radius:8px}
+.sl-btn-lg{padding:12px 24px;font-size:14px;border-radius:12px}
+.sl-btn-icon{width:34px;height:34px;padding:0;justify-content:center;border-radius:9px;background:var(--s2);border:1px solid var(--border);color:var(--t2)}
+.sl-btn-icon:hover{border-color:var(--border-h);color:var(--t1)}
+
+/* ── COMPONENT: Input ── */
+.sl-input{
+  width:100%;padding:9px 12px;
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:10px;color:var(--t1);
+  font-size:13px;font-family:'DM Sans',sans-serif;
+  outline:none;transition:border-color .15s;
+}
+.sl-input:focus{border-color:var(--em)}
+.sl-input::placeholder{color:var(--t3)}
+.sl-input-group{display:flex;flex-direction:column;gap:5px;width:100%}
+.sl-input-label{font-size:11px;font-weight:600;color:var(--t2)}
+.sl-input-hint{font-size:10px;color:var(--t3)}
+
+/* ── COMPONENT: Progress Bar ── */
+.sl-progress-bg{height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
+.sl-progress-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+
+/* ── COMPONENT: Tags / Badges ── */
+.sl-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:7px;font-size:10px;font-weight:600}
+.sl-tag-green{background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.2)}
+.sl-tag-blue{background:rgba(0,85,255,.12);color:#6699ff;border:1px solid rgba(0,85,255,.2)}
+.sl-tag-red{background:rgba(244,63,94,.12);color:#f43f5e;border:1px solid rgba(244,63,94,.2)}
+.sl-tag-yellow{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.2)}
+.sl-tag-cyan{background:rgba(6,182,212,.12);color:#06b6d4;border:1px solid rgba(6,182,212,.2)}
+.sl-tag-gray{background:rgba(255,255,255,.06);color:#64748b;border:1px solid rgba(255,255,255,.08)}
+
+/* ── COMPONENT: Pill toggle ── */
+.sl-pill-group{display:flex;background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:3px;gap:2px}
+.sl-pill{padding:5px 14px;border-radius:16px;border:none;background:transparent;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;color:var(--t3);cursor:pointer;transition:all .18s}
+.sl-pill:hover{color:var(--t2)}
+.sl-pill.act{background:var(--em-g);color:var(--em)}
+
+/* ── COMPONENT: List item ── */
+.sl-list-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+  transition:background .12s;cursor:pointer;
+}
+.sl-list-item:last-child{border-bottom:none}
+.sl-list-item:hover{background:var(--s2);margin:0 -8px;padding:10px 8px;border-radius:8px}
+.sl-list-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sl-list-label{font-size:13px;color:var(--t2);flex:1}
+.sl-list-value{font-family:'DM Mono',monospace;font-size:13px;flex-shrink:0}
+
+/* ── COMPONENT: Mode/Jornada insight block ── */
+.sl-insight{
+  display:flex;align-items:flex-start;gap:12px;padding:14px 16px;
+  background:linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.09));
+  border:1px solid rgba(16,185,129,.18);border-radius:14px;
+}
+.sl-insight-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.sl-insight-text{font-size:12px;color:var(--t2);line-height:1.7}
+.sl-insight-text strong{color:var(--t1)}
+
+/* ── COMPONENT: Envelope (budget bar) ── */
+.sl-envelope{display:flex;flex-direction:column;gap:5px}
+.sl-env-top{display:flex;align-items:center;justify-content:space-between}
+.sl-env-name{font-size:12px;color:var(--t2)}
+.sl-env-amounts{font-family:'DM Mono',monospace;font-size:11px;color:var(--t3)}
+.sl-env-amounts span{color:var(--t2)}
+.sl-env-pct{font-size:11px;font-weight:600}
+
+/* ── COMPONENT: Meta ring ── */
+.sl-ring-wrap{display:flex;justify-content:center;position:relative;width:80px;height:80px}
+.sl-ring-svg{transform:rotate(-90deg)}
+.sl-ring-bg{fill:none;stroke:var(--s3);stroke-width:7}
+.sl-ring-fill{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)}
+.sl-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.sl-ring-pct{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;line-height:1}
+.sl-ring-sub{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3)}
+
+/* ── COMPONENT: Achievement badge ── */
+.sl-badge{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px;border-radius:12px;background:var(--s2);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;min-width:64px;
+}
+.sl-badge:hover{border-color:var(--border-h);transform:translateY(-2px)}
+.sl-badge.locked{opacity:.3;filter:grayscale(1)}
+.sl-badge-ico{font-size:20px}
+.sl-badge-name{font-size:9px;color:var(--t3);font-weight:500}
+.sl-badge-pts{font-size:9px;color:var(--em);font-weight:700}
+
+/* ── COMPONENT: Summary strip card ── */
+.sl-sum{
+  background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:14px 16px;
+}
+.sl-sum-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:5px}
+.sl-sum-value{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;line-height:1}
+.sl-sum-delta{font-size:10px;color:var(--t3);margin-top:3px}
+
+/* ── COMPONENT: Streak badge ── */
+.sl-streak{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:20px;
+  background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.25);
+  font-size:12px;color:#f97316;font-weight:600;
+}
+
+/* ── Color text helpers ── */
+.c-green{color:#10b981}.c-red{color:#f43f5e}.c-yellow{color:#f59e0b}.c-blue{color:#0055ff}.c-cyan{color:#06b6d4}.c-orange{color:#f97316}
+.c-t1{color:var(--t1)}.c-t2{color:var(--t2)}.c-t3{color:var(--t3)}
+
+/* ── DS Page helpers ── */
+.info-box{
+  background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);
+  border-radius:10px;padding:14px 16px;font-size:12px;color:#6b9f8e;
+  line-height:1.7;margin-bottom:16px;
+}
+.info-box strong{color:#10b981}
+.warn-box{
+  background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);
+  border-radius:10px;padding:14px 16px;font-size:12px;color:#9a8060;line-height:1.7;margin-bottom:16px;
+}
+.warn-box strong{color:#f59e0b}
+.rule-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.rule-list li{display:flex;gap:10px;font-size:12px;color:#64748b;line-height:1.6}
+.rule-list li::before{content:'→';color:#10b981;flex-shrink:0;font-weight:700}
+.rule-list li strong{color:#94a3b8}
+
+/* ── TOP BANNER ── */
+.ds-banner{
+  background:linear-gradient(135deg,#051c14 0%,#03091f 60%,#050820 100%);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  padding:32px 48px 28px;
+  margin-bottom:0;
+}
+.ds-banner-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#10b981;margin-bottom:8px}
+.ds-banner-title{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:#f1f5f9;margin-bottom:8px}
+.ds-banner-sub{font-size:14px;color:#475569;max-width:560px;line-height:1.7}
+.ds-banner-pills{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.ds-banner-pill{font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);color:#64748b}
+.ds-banner-pill.hi{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25);color:#10b981}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- BANNER -->
+<div class="ds-banner">
+  <div class="ds-banner-eyebrow">SyncLife · v1.0</div>
+  <div class="ds-banner-title">Design System</div>
+  <div class="ds-banner-sub">Referência canônica de tokens, componentes e padrões de interface. Use este documento como fonte única de verdade antes de criar qualquer nova tela.</div>
+  <div class="ds-banner-pills">
+    <div class="ds-banner-pill hi">4 modos de tema</div>
+    <div class="ds-banner-pill hi">2 fontes</div>
+    <div class="ds-banner-pill">Dark Foco · Dark Jornada</div>
+    <div class="ds-banner-pill">Light Foco · Light Jornada</div>
+    <div class="ds-banner-pill">Syne + DM Sans + DM Mono</div>
+    <div class="ds-banner-pill">Esmeralda + Azul Elétrico</div>
+  </div>
+</div>
+
+<div class="ds-shell">
+
+<!-- NAV -->
+<nav class="ds-nav">
+  <div class="nav-logo">
+    <div class="nav-logo-mark">⚡</div>
+    <div>
+      <div class="nav-logo-txt">SyncLife</div>
+      <div class="nav-ver">Design System v1.0</div>
+    </div>
+  </div>
+
+  <div class="nav-section">Fundamentos</div>
+  <a class="nav-item active" href="#tokens"><span class="ni">🎨</span> Tokens de Cor</a>
+  <a class="nav-item" href="#typography"><span class="ni">✍️</span> Tipografia</a>
+  <a class="nav-item" href="#spacing"><span class="ni">📐</span> Espaçamento</a>
+  <a class="nav-item" href="#radius"><span class="ni">⬜</span> Border Radius</a>
+  <a class="nav-item" href="#modes"><span class="ni">🌓</span> Modos de Tema</a>
+
+  <div class="nav-section">Componentes</div>
+  <a class="nav-item" href="#cards"><span class="ni">🃏</span> Cards</a>
+  <a class="nav-item" href="#buttons"><span class="ni">🔘</span> Botões</a>
+  <a class="nav-item" href="#inputs"><span class="ni">⌨️</span> Inputs</a>
+  <a class="nav-item" href="#tags"><span class="ni">🏷️</span> Tags e Badges</a>
+  <a class="nav-item" href="#progress"><span class="ni">📊</span> Progresso</a>
+  <a class="nav-item" href="#lists"><span class="ni">📋</span> Listas</a>
+  <a class="nav-item" href="#insight"><span class="ni">💡</span> Insight Block</a>
+  <a class="nav-item" href="#achievements"><span class="ni">🏆</span> Conquistas</a>
+
+  <div class="nav-section">Padrões</div>
+  <a class="nav-item" href="#layout"><span class="ni">🔲</span> Layout / Grid</a>
+  <a class="nav-item" href="#pages"><span class="ni">📄</span> Estrutura de Tela</a>
+  <a class="nav-item" href="#modes-rules"><span class="ni">🎯</span> Regras Foco vs Jornada</a>
+  <a class="nav-item" href="#modules"><span class="ni">🧩</span> Módulos</a>
+  <a class="nav-item" href="#animations"><span class="ni">✨</span> Animações</a>
+  <a class="nav-item" href="#icons"><span class="ni">🔤</span> Ícones por Módulo</a>
+</nav>
+
+<!-- MAIN -->
+<main class="ds-main">
+
+<!-- ════════════════════════════════════════
+  1. TOKENS DE COR
+════════════════════════════════════════ -->
+<section class="ds-section" id="tokens">
+  <div class="ds-section-title">🎨 Tokens de Cor</div>
+  <div class="ds-section-sub">Todos os tokens são CSS custom properties (<code>--var</code>). O tema é aplicado na <code>body</code> via classes <code>.light</code> e <code>.jornada</code>. Sem classes = Dark Foco (padrão).</div>
+
+  <div class="ds-sub">
+    <div class="ds-sub-title">Paleta de Marca — Invariante (igual em todos os temas)</div>
+    <div class="token-grid">
+      <div class="token-item">
+        <div class="token-swatch" style="background:#10b981"></div>
+        <div class="token-name">--em (Esmeralda)</div>
+        <div class="token-value">#10b981</div>
+        <div class="token-desc">Cor primária. Finanças, progresso, ações positivas.</div>
+      </div>
+      <div class="token-item">
+        <div class="token-swatch" style="background:#0055ff"></div>
+        <div class="token-name">--el (Azul Elétrico)</div>
+        <div class="token-value">#0055ff</div>
+        <div class="token-desc">Acento. Metas, Jornada, elementos aspiracionais.</div>
+      </div>
+      <div class="token-item">
+        <div class="token-swatch" style="background:linear-gradient(135deg,#10b981,#0055ff)"></div>
+        <div class="token-name">Gradiente Marca</div>
+        <div class="token-value">em → el (135deg)</div>
+        <div class="token-desc">Score, logo, barras de destaque, botão primary.</div>
+      </div>
+      <div class="token-item">
+        <div class="token-swatch" style="background:#f43f5e"></div>
+        <div class="token-name">--red</div>
+        <div class="token-value">#f43f5e</div>
+        <div class="token-desc">Erros, despesas, alertas críticos.</div>
+      </div>
+      <div class="token-item">
+        <div class="token-swatch" style="background:#f59e0b"></div>
+        <div class="token-name">--yellow</div>
+        <div class="token-value">#f59e0b</div>
+        <div class="token-desc">Avisos, metas em risco, atenção.</div>
+      </div>
+      <div class="token-item">
+        <div class="token-swatch" style="background:#f97316"></div>
+        <div class="token-name">--orange</div>
+        <div class="token-value">#f97316</div>
+        <div class="token-desc">Streaks, alertas moderados, recorrentes.</div>
+      </div>
+      <div class="token-item">
+        <div class="token-swatch" style="background:#06b6d4"></div>
+        <div class="token-name">--cyan</div>
+        <div class="token-value">#06b6d4</div>
+        <div class="token-desc">Agenda, saúde, dados de tempo.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-sub">
+    <div class="ds-sub-title">Tokens de Superfície — por tema</div>
+    <div class="mode-grid">
+      <div class="mode-col" style="background:#03071a;border-color:rgba(255,255,255,0.07)">
+        <div class="mode-col-hdr" style="background:#07112b;color:#6e90b8;font-size:10px">🌙 Dark Foco</div>
+        <div class="mode-col-body">
+          <div style="font-size:9px;font-family:'DM Mono',monospace;line-height:2;color:#2e4a6e">
+            --bg: <span style="color:#dff0ff">#03071a</span><br>
+            --s1: <span style="color:#dff0ff">#07112b</span><br>
+            --s2: <span style="color:#dff0ff">#0c1a3a</span><br>
+            --s3: <span style="color:#dff0ff">#132248</span><br>
+            --border: <span style="color:#dff0ff">rgba(255,255,255,.06)</span><br>
+            --t1: <span style="color:#dff0ff">#dff0ff</span><br>
+            --t2: <span style="color:#6e90b8">#6e90b8</span><br>
+            --t3: <span style="color:#2e4a6e">#2e4a6e</span>
+          </div>
+        </div>
+      </div>
+      <div class="mode-col" style="background:#020d08;border-color:rgba(16,185,129,0.1)">
+        <div class="mode-col-hdr" style="background:#061410;color:#4da888;font-size:10px">🌙 Dark Jornada</div>
+        <div class="mode-col-body">
+          <div style="font-size:9px;font-family:'DM Mono',monospace;line-height:2;color:#235c48">
+            --bg: <span style="color:#d6faf0">#020d08</span><br>
+            --s1: <span style="color:#d6faf0">#061410</span><br>
+            --s2: <span style="color:#d6faf0">#0b1e18</span><br>
+            --s3: <span style="color:#d6faf0">#112b22</span><br>
+            --border: <span style="color:#d6faf0">rgba(16,185,129,.08)</span><br>
+            --t1: <span style="color:#d6faf0">#d6faf0</span><br>
+            --t2: <span style="color:#4da888">#4da888</span><br>
+            --t3: <span style="color:#235c48">#235c48</span>
+          </div>
+        </div>
+      </div>
+      <div class="mode-col" style="background:#e6edf5;border-color:rgba(3,7,26,0.08)">
+        <div class="mode-col-hdr" style="background:#f0f6fa;color:#1e3a5c;font-size:10px">☀️ Light Foco</div>
+        <div class="mode-col-body">
+          <div style="font-size:9px;font-family:'DM Mono',monospace;line-height:2;color:#5a7a9e">
+            --bg: <span style="color:#03071a">#e6edf5</span><br>
+            --s1: <span style="color:#03071a">#ffffff</span><br>
+            --s2: <span style="color:#03071a">#f0f6fa</span><br>
+            --s3: <span style="color:#03071a">#dde8f2</span><br>
+            --border: <span style="color:#03071a">rgba(3,7,26,.08)</span><br>
+            --t1: <span style="color:#03071a">#03071a</span><br>
+            --t2: <span style="color:#1e3a5c">#1e3a5c</span><br>
+            --t3: <span style="color:#5a7a9e">#5a7a9e</span>
+          </div>
+        </div>
+      </div>
+      <div class="mode-col" style="background:#c8f0e4;border-color:rgba(5,80,56,0.12)">
+        <div class="mode-col-hdr" style="background:#e0f7ef;color:#0d5c3e;font-size:10px">☀️ Light Jornada</div>
+        <div class="mode-col-body">
+          <div style="font-size:9px;font-family:'DM Mono',monospace;line-height:2;color:#4da888">
+            --bg: <span style="color:#022016">#c8f0e4</span><br>
+            --s1: <span style="color:#022016">#ffffff</span><br>
+            --s2: <span style="color:#022016">#e0f7ef</span><br>
+            --s3: <span style="color:#022016">#c4eede</span><br>
+            --border: <span style="color:#022016">rgba(5,80,56,.12)</span><br>
+            --t1: <span style="color:#022016">#022016</span><br>
+            --t2: <span style="color:#0d5c3e">#0d5c3e</span><br>
+            --t3: <span style="color:#4da888">#4da888</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-sub">
+    <div class="ds-sub-title">CSS — Boilerplate completo de tokens</div>
+    <pre><span class="cm">/* ── Aplicar no body. Sem classe = Dark Foco (padrão) ── */</span>
+<span class="kw">:root</span> {
+  <span class="cm">/* Marca — não mudam */</span>
+  <span class="fn">--em</span>: <span class="val">#10b981</span>;   <span class="cm">/* Esmeralda */</span>
+  <span class="fn">--el</span>: <span class="val">#0055ff</span>;   <span class="cm">/* Azul Elétrico */</span>
+  <span class="fn">--em-g</span>: <span class="val">rgba(16,185,129,0.14)</span>;
+  <span class="fn">--el-g</span>: <span class="val">rgba(0,85,255,0.14)</span>;
+  <span class="cm">/* Status */</span>
+  <span class="fn">--green</span>: <span class="val">#10b981</span>;  <span class="fn">--red</span>: <span class="val">#f43f5e</span>;
+  <span class="fn">--yellow</span>: <span class="val">#f59e0b</span>; <span class="fn">--orange</span>: <span class="val">#f97316</span>; <span class="fn">--cyan</span>: <span class="val">#06b6d4</span>;
+  <span class="cm">/* Dark Foco (superfície) */</span>
+  <span class="fn">--bg</span>: <span class="val">#03071a</span>; <span class="fn">--s1</span>: <span class="val">#07112b</span>; <span class="fn">--s2</span>: <span class="val">#0c1a3a</span>; <span class="fn">--s3</span>: <span class="val">#132248</span>;
+  <span class="fn">--border</span>: <span class="val">rgba(255,255,255,.06)</span>; <span class="fn">--border-h</span>: <span class="val">rgba(255,255,255,.13)</span>;
+  <span class="fn">--t1</span>: <span class="val">#dff0ff</span>; <span class="fn">--t2</span>: <span class="val">#6e90b8</span>; <span class="fn">--t3</span>: <span class="val">#2e4a6e</span>;
+}
+<span class="kw">body.jornada</span> {
+  <span class="fn">--bg</span>: <span class="val">#020d08</span>; <span class="fn">--s1</span>: <span class="val">#061410</span>; <span class="fn">--s2</span>: <span class="val">#0b1e18</span>; <span class="fn">--s3</span>: <span class="val">#112b22</span>;
+  <span class="fn">--border</span>: <span class="val">rgba(16,185,129,.08)</span>; <span class="fn">--border-h</span>: <span class="val">rgba(16,185,129,.18)</span>;
+  <span class="fn">--t1</span>: <span class="val">#d6faf0</span>; <span class="fn">--t2</span>: <span class="val">#4da888</span>; <span class="fn">--t3</span>: <span class="val">#235c48</span>;
+}
+<span class="kw">body.light</span> {
+  <span class="fn">--bg</span>: <span class="val">#e6edf5</span>; <span class="fn">--s1</span>: <span class="val">#ffffff</span>; <span class="fn">--s2</span>: <span class="val">#f0f6fa</span>; <span class="fn">--s3</span>: <span class="val">#dde8f2</span>;
+  <span class="fn">--border</span>: <span class="val">rgba(3,7,26,.08)</span>; <span class="fn">--border-h</span>: <span class="val">rgba(3,7,26,.16)</span>;
+  <span class="fn">--t1</span>: <span class="val">#03071a</span>; <span class="fn">--t2</span>: <span class="val">#1e3a5c</span>; <span class="fn">--t3</span>: <span class="val">#5a7a9e</span>;
+}
+<span class="kw">body.light.jornada</span> {
+  <span class="fn">--bg</span>: <span class="val">#c8f0e4</span>; <span class="fn">--s1</span>: <span class="val">#ffffff</span>; <span class="fn">--s2</span>: <span class="val">#e0f7ef</span>; <span class="fn">--s3</span>: <span class="val">#c4eede</span>;
+  <span class="fn">--border</span>: <span class="val">rgba(5,80,56,.12)</span>; <span class="fn">--border-h</span>: <span class="val">rgba(5,80,56,.24)</span>;
+  <span class="fn">--t1</span>: <span class="val">#022016</span>; <span class="fn">--t2</span>: <span class="val">#0d5c3e</span>; <span class="fn">--t3</span>: <span class="val">#4da888</span>;
+}</pre>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  2. TIPOGRAFIA
+════════════════════════════════════════ -->
+<section class="ds-section" id="typography">
+  <div class="ds-section-title">✍️ Tipografia</div>
+  <div class="ds-section-sub">Três famílias com papéis específicos. Nunca substituir por fontes genéricas (Arial, Inter, Roboto). Import via Google Fonts.</div>
+
+  <pre style="margin-bottom:20px"><span class="cm">/* Google Fonts import */</span>
+<span class="kw">@import</span> <span class="str">url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap')</span>;</pre>
+
+  <div class="type-sample">
+    <div class="type-meta">
+      <div class="type-meta-name">Syne</div>
+      <div class="type-meta-spec">Display · Títulos</div>
+      <div class="type-meta-spec">800, 700, 600</div>
+    </div>
+    <div class="type-preview">
+      <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#f1f5f9;line-height:1.1">Dashboard</div>
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#94a3b8;margin-top:4px">Títulos de seção</div>
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:#64748b;margin-top:4px">Card titles · Tab labels</div>
+    </div>
+  </div>
+
+  <div class="type-sample">
+    <div class="type-meta">
+      <div class="type-meta-name">DM Sans</div>
+      <div class="type-meta-spec">Body · UI</div>
+      <div class="type-meta-spec">300–600 · italic</div>
+    </div>
+    <div class="type-preview">
+      <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;color:#94a3b8;line-height:1.7">Texto de corpo, descrições, labels de input, conteúdo de cards, itens de lista. Peso 400 para corpo, 500 para semi-destaque, 600 para labels e botões.</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:#64748b;margin-top:6px;text-transform:uppercase;letter-spacing:0.07em">Labels uppercase · 9–11px · weight 700</div>
+    </div>
+  </div>
+
+  <div class="type-sample">
+    <div class="type-meta">
+      <div class="type-meta-name">DM Mono</div>
+      <div class="type-meta-spec">Números · Código</div>
+      <div class="type-meta-spec">400, 500</div>
+    </div>
+    <div class="type-preview">
+      <div style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#10b981">R$ 5.000</div>
+      <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:400;color:#6e90b8;margin-top:4px">74% · Fev/2026 · #03071a</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:#475569;margin-top:4px">Todos valores monetários, percentuais, datas e códigos usam DM Mono.</div>
+    </div>
+  </div>
+
+  <div class="ds-sub" style="margin-top:20px">
+    <div class="ds-sub-title">Escala tipográfica</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:grid;grid-template-columns:80px 80px 1fr;gap:12px;align-items:baseline">
+        <code>9–10px</code><code>DM Sans 700</code>
+        <div style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#475569">LABELS · TAGS · BADGES</div>
+      </div>
+      <div style="display:grid;grid-template-columns:80px 80px 1fr;gap:12px;align-items:baseline">
+        <code>11–12px</code><code>DM Sans 400</code>
+        <div style="font-family:'DM Sans',sans-serif;font-size:11px;color:#475569">Deltas, hints, metadados secundários</div>
+      </div>
+      <div style="display:grid;grid-template-columns:80px 80px 1fr;gap:12px;align-items:baseline">
+        <code>13px</code><code>DM Sans 400</code>
+        <div style="font-family:'DM Sans',sans-serif;font-size:13px;color:#64748b">Corpo padrão — itens de lista, descrições curtas</div>
+      </div>
+      <div style="display:grid;grid-template-columns:80px 80px 1fr;gap:12px;align-items:baseline">
+        <code>14px</code><code>DM Sans 400</code>
+        <div style="font-family:'DM Sans',sans-serif;font-size:14px;color:#94a3b8">Base body — parágrafos, tooltips</div>
+      </div>
+      <div style="display:grid;grid-template-columns:80px 80px 1fr;gap:12px;align-items:baseline">
+        <code>13–14px</code><code>Syne 700</code>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#94a3b8">Card titles · Section headers</div>
+      </div>
+      <div style="display:grid;grid-template-columns:80px 80px 1fr;gap:12px;align-items:baseline">
+        <code>18–22px</code><code>DM Mono 500</code>
+        <div style="font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:#10b981">KPI values · R$ 1.800</div>
+      </div>
+      <div style="display:grid;grid-template-columns:80px 80px 1fr;gap:12px;align-items:baseline">
+        <code>22–24px</code><code>Syne 800</code>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#f1f5f9">Page titles</div>
+      </div>
+      <div style="display:grid;grid-template-columns:80px 80px 1fr;gap:12px;align-items:baseline">
+        <code>60–80px</code><code>Syne 800</code>
+        <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:800;background:linear-gradient(135deg,#10b981,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">74</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  3. ESPAÇAMENTO
+════════════════════════════════════════ -->
+<section class="ds-section" id="spacing">
+  <div class="ds-section-title">📐 Espaçamento</div>
+  <div class="ds-section-sub">Escala baseada em múltiplos de 4px. Usar esses valores para gaps, paddings e margins.</div>
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div class="space-row"><div class="space-label">sp-1</div><div class="space-box" style="width:4px;height:16px"></div><div class="space-value">4px — micro gaps entre ícone e texto</div></div>
+    <div class="space-row"><div class="space-label">sp-2</div><div class="space-box" style="width:8px;height:16px"></div><div class="space-value">8px — gap padrão entre chips/tags</div></div>
+    <div class="space-row"><div class="space-label">sp-3</div><div class="space-box" style="width:12px;height:16px"></div><div class="space-value">12px — padding horizontal de button-sm / gap em topbar</div></div>
+    <div class="space-row"><div class="space-label">sp-4</div><div class="space-box" style="width:16px;height:16px"></div><div class="space-value">16px — padding de cards pequenos / gap de grid</div></div>
+    <div class="space-row"><div class="space-label">sp-5</div><div class="space-box" style="width:20px;height:16px"></div><div class="space-value">20px — padding padrão de card / padding de topbar</div></div>
+    <div class="space-row"><div class="space-label">sp-6</div><div class="space-box" style="width:24px;height:16px"></div><div class="space-value">24px — padding de page / gap principal de grid</div></div>
+    <div class="space-row"><div class="space-label">sp-8</div><div class="space-box" style="width:32px;height:16px"></div><div class="space-value">32px — margin entre seções / padding de page header</div></div>
+    <div class="space-row"><div class="space-label">sp-10</div><div class="space-box" style="width:40px;height:16px"></div><div class="space-value">40px — padding de page (desktop)</div></div>
+    <div class="space-row"><div class="space-label">sp-12</div><div class="space-box" style="width:48px;height:16px"></div><div class="space-value">48px — padding lateral de page principal</div></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  4. BORDER RADIUS
+════════════════════════════════════════ -->
+<section class="ds-section" id="radius">
+  <div class="ds-section-title">⬜ Border Radius</div>
+  <div class="ds-section-sub">Escala de arredondamentos. Componentes maiores pedem radius maior.</div>
+
+  <div class="radius-row">
+    <div class="radius-item">
+      <div class="radius-box" style="border-radius:4px"></div>
+      <div class="radius-lbl">r-1 · 4px</div>
+      <div style="font-size:10px;color:#475569">Tags XS</div>
+    </div>
+    <div class="radius-item">
+      <div class="radius-box" style="border-radius:6px"></div>
+      <div class="radius-lbl">r-2 · 6px</div>
+      <div style="font-size:10px;color:#475569">Tags, chips</div>
+    </div>
+    <div class="radius-item">
+      <div class="radius-box" style="border-radius:8px"></div>
+      <div class="radius-lbl">r-3 · 8px</div>
+      <div style="font-size:10px;color:#475569">Botões SM</div>
+    </div>
+    <div class="radius-item">
+      <div class="radius-box" style="border-radius:10px"></div>
+      <div class="radius-lbl">r-4 · 10px</div>
+      <div style="font-size:10px;color:#475569">Inputs, botões</div>
+    </div>
+    <div class="radius-item">
+      <div class="radius-box" style="border-radius:12px"></div>
+      <div class="radius-lbl">r-5 · 12px</div>
+      <div style="font-size:10px;color:#475569">Tooltips, modais</div>
+    </div>
+    <div class="radius-item">
+      <div class="radius-box" style="border-radius:14px"></div>
+      <div class="radius-lbl">r-6 · 14px</div>
+      <div style="font-size:10px;color:#475569">Cards KPI</div>
+    </div>
+    <div class="radius-item">
+      <div class="radius-box" style="border-radius:16px"></div>
+      <div class="radius-lbl">r-7 · 16px</div>
+      <div style="font-size:10px;color:#475569">Cards padrão</div>
+    </div>
+    <div class="radius-item">
+      <div class="radius-box" style="border-radius:18px"></div>
+      <div class="radius-lbl">r-8 · 18px</div>
+      <div style="font-size:10px;color:#475569">Cards seção</div>
+    </div>
+    <div class="radius-item">
+      <div class="radius-box" style="border-radius:20px"></div>
+      <div class="radius-lbl">r-9 · 20px</div>
+      <div style="font-size:10px;color:#475569">Cards hero</div>
+    </div>
+    <div class="radius-item">
+      <div class="radius-box" style="border-radius:9999px"></div>
+      <div class="radius-lbl">r-full</div>
+      <div style="font-size:10px;color:#475569">Pills, avatares</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  5. MODOS DE TEMA
+════════════════════════════════════════ -->
+<section class="ds-section" id="modes">
+  <div class="ds-section-title">🌓 Modos de Tema</div>
+  <div class="ds-section-sub">O SyncLife tem 4 combinações: 2 temas (Dark/Light) × 2 modos de uso (Foco/Jornada). As classes na <code>body</code> controlam tudo.</div>
+
+  <div class="info-box">
+    <strong>Como aplicar:</strong> A classe <code>.light</code> altera o tema de cor. A classe <code>.jornada</code> altera o modo de uso (personalidade, extras motivacionais). As duas podem coexistir: <code>body.light.jornada</code> = Light Jornada.
+  </div>
+
+  <pre><span class="cm">/* Dark Foco   */</span> <span class="kw">&lt;body&gt;</span>
+<span class="cm">/* Dark Jornada */</span> <span class="kw">&lt;body class=</span><span class="str">"jornada"</span><span class="kw">&gt;</span>
+<span class="cm">/* Light Foco  */</span> <span class="kw">&lt;body class=</span><span class="str">"light"</span><span class="kw">&gt;</span>
+<span class="cm">/* Light Jornada*/</span> <span class="kw">&lt;body class=</span><span class="str">"light jornada"</span><span class="kw">&gt;</span></pre>
+</section>
+
+<!-- ════════════════════════════════════════
+  6. CARDS
+════════════════════════════════════════ -->
+<section class="ds-section" id="cards">
+  <div class="ds-section-title">🃏 Cards</div>
+  <div class="ds-section-sub">Base de toda a interface. Existem 3 variantes: Card padrão, Card KPI e Card Hero (Jornada).</div>
+
+  <div class="component-demo">
+    <div class="demo-label">Card padrão — nos 4 temas <button class="copy-btn" onclick="copyCode(this,'card-css')">Copiar CSS</button></div>
+    <div class="demo-body" style="flex-wrap:wrap;gap:10px">
+      <div class="th-dark-foco" style="flex:1;min-width:160px;max-width:220px">
+        <div class="th-label">Dark Foco</div>
+        <div class="sl-card">
+          <div class="sl-card-title">💼 Orçamentos</div>
+          <div class="sl-card-body">Moradia · R$ 1.200</div>
+        </div>
+      </div>
+      <div class="th-dark-jorn" style="flex:1;min-width:160px;max-width:220px">
+        <div class="th-label">Dark Jornada</div>
+        <div class="sl-card">
+          <div class="sl-card-title">🎯 Metas</div>
+          <div class="sl-card-body">Reserva · 65%</div>
+        </div>
+      </div>
+      <div class="th-light-foco" style="flex:1;min-width:160px;max-width:220px">
+        <div class="th-label">Light Foco</div>
+        <div class="sl-card" style="box-shadow:0 2px 10px rgba(3,7,26,.07)">
+          <div class="sl-card-title">📅 Agenda</div>
+          <div class="sl-card-body">1:1 com gestor — 10h</div>
+        </div>
+      </div>
+      <div class="th-light-jorn" style="flex:1;min-width:160px;max-width:220px">
+        <div class="th-label">Light Jornada</div>
+        <div class="sl-card" style="box-shadow:0 2px 10px rgba(5,80,56,.09)">
+          <div class="sl-card-title">✈️ Europa</div>
+          <div class="sl-card-body">28% concluído</div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-code">
+      <pre id="card-css"><span class="kw">.card</span> {
+  <span class="fn">background</span>: <span class="val">var(--s1)</span>;
+  <span class="fn">border</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="fn">border-radius</span>: <span class="val">16px</span>;
+  <span class="fn">padding</span>: <span class="val">20px</span>;
+  <span class="fn">transition</span>: <span class="val">border-color .15s</span>;
+}
+<span class="kw">.card:hover</span> { <span class="fn">border-color</span>: <span class="val">var(--border-h)</span>; }
+<span class="cm">/* Light mode — adicionar shadow */</span>
+<span class="kw">body.light .card</span> { <span class="fn">box-shadow</span>: <span class="val">0 2px 12px rgba(3,7,26,.07)</span>; }
+<span class="kw">body.light.jornada .card</span> { <span class="fn">box-shadow</span>: <span class="val">0 2px 12px rgba(5,80,56,.09)</span>; }</pre>
+    </div>
+  </div>
+
+  <div class="component-demo">
+    <div class="demo-label">Card KPI — com barra de acento top <button class="copy-btn" onclick="copyCode(this,'kpi-css')">Copiar CSS</button></div>
+    <div class="demo-body">
+      <div class="th-dark-foco" style="display:flex;gap:8px;flex-wrap:wrap;flex:1">
+        <div class="sl-kpi" style="--kpi-c:#10b981;flex:1;min-width:120px">
+          <div class="sl-kpi-label">Receitas</div>
+          <div class="sl-kpi-value" style="color:#10b981">R$ 5.000</div>
+          <div class="sl-kpi-delta up">↑ +12% vs jan</div>
+        </div>
+        <div class="sl-kpi" style="--kpi-c:#f43f5e;flex:1;min-width:120px">
+          <div class="sl-kpi-label">Despesas</div>
+          <div class="sl-kpi-value" style="color:#f43f5e">R$ 3.200</div>
+          <div class="sl-kpi-delta down">↓ -5% vs jan</div>
+        </div>
+        <div class="sl-kpi" style="--kpi-c:#f59e0b;flex:1;min-width:120px">
+          <div class="sl-kpi-label">Metas ativas</div>
+          <div class="sl-kpi-value">3</div>
+          <div class="sl-kpi-delta warn">⚠ 1 em risco</div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-code">
+      <pre id="kpi-css"><span class="kw">.kpi-card</span> {
+  <span class="fn">background</span>: <span class="val">var(--s1)</span>;
+  <span class="fn">border</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="fn">border-radius</span>: <span class="val">16px</span>;
+  <span class="fn">padding</span>: <span class="val">20px</span>;
+  <span class="fn">position</span>: <span class="val">relative</span>;
+  <span class="fn">overflow</span>: <span class="val">hidden</span>;
+}
+<span class="cm">/* Barra acento no topo — cor via --kpi-accent */</span>
+<span class="kw">.kpi-card::before</span> {
+  <span class="fn">content</span>: <span class="val">''</span>;
+  <span class="fn">position</span>: <span class="val">absolute</span>; <span class="fn">top</span>: <span class="val">0</span>; <span class="fn">left</span>: <span class="val">20px</span>; <span class="fn">right</span>: <span class="val">20px</span>;
+  <span class="fn">height</span>: <span class="val">2px</span>; <span class="fn">border-radius</span>: <span class="val">0 0 2px 2px</span>;
+  <span class="fn">background</span>: <span class="val">var(--kpi-accent, var(--em))</span>;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  7. BOTÕES
+════════════════════════════════════════ -->
+<section class="ds-section" id="buttons">
+  <div class="ds-section-title">🔘 Botões</div>
+  <div class="ds-section-sub">5 variantes de botão + 3 tamanhos. Sempre usar <code>font-family: 'DM Sans'</code> nos botões.</div>
+
+  <div class="component-demo">
+    <div class="demo-label">Variantes</div>
+    <div class="demo-body th-dark-foco" style="background:transparent;border:none;padding:20px">
+      <div class="th-dark-foco" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px;border-radius:10px">
+        <button class="sl-btn sl-btn-primary">+ Nova Meta</button>
+        <button class="sl-btn sl-btn-secondary" style="background:var(--s2);color:var(--t2);border:1px solid var(--border)">Cancelar</button>
+        <button class="sl-btn sl-btn-danger" style="background:rgba(244,63,94,.15);color:#f43f5e;border:1px solid rgba(244,63,94,.25)">Excluir</button>
+        <button class="sl-btn sl-btn-ghost" style="background:transparent;color:var(--em);border:1px solid rgba(16,185,129,.25)">Ver todos →</button>
+        <button class="sl-btn sl-btn-icon" style="background:var(--s2);border:1px solid var(--border);color:var(--t2);width:34px;height:34px;padding:0;justify-content:center">🔔</button>
+      </div>
+    </div>
+    <div class="demo-body" style="border-top:1px solid rgba(255,255,255,0.05)">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div style="padding:4px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);font-size:11px;color:#64748b;font-family:'DM Mono',monospace">.sl-btn-sm</div>
+        <div style="padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);font-size:13px;color:#94a3b8;font-family:'DM Mono',monospace">.sl-btn (default)</div>
+        <div style="padding:12px 24px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);font-size:14px;color:#f1f5f9;font-family:'DM Mono',monospace">.sl-btn-lg</div>
+      </div>
+    </div>
+    <div class="demo-code">
+      <pre><span class="kw">.sl-btn</span> {
+  <span class="fn">padding</span>: <span class="val">8px 16px</span>; <span class="fn">border-radius</span>: <span class="val">10px</span>; <span class="fn">border</span>: <span class="val">none</span>;
+  <span class="fn">font-size</span>: <span class="val">13px</span>; <span class="fn">font-weight</span>: <span class="val">600</span>; <span class="fn">font-family</span>: <span class="val">'DM Sans'</span>;
+  <span class="fn">cursor</span>: <span class="val">pointer</span>; <span class="fn">transition</span>: <span class="val">opacity .15s</span>;
+}
+<span class="kw">.btn-primary</span> { <span class="fn">background</span>: <span class="val">linear-gradient(135deg, #10b981, #0055ff)</span>; <span class="fn">color</span>: <span class="val">#fff</span>; }
+<span class="kw">.btn-secondary</span> { <span class="fn">background</span>: <span class="val">var(--s2)</span>; <span class="fn">color</span>: <span class="val">var(--t2)</span>; <span class="fn">border</span>: <span class="val">1px solid var(--border)</span>; }
+<span class="kw">.btn-ghost</span> { <span class="fn">background</span>: <span class="val">transparent</span>; <span class="fn">color</span>: <span class="val">var(--em)</span>; <span class="fn">border</span>: <span class="val">1px solid rgba(16,185,129,.25)</span>; }
+<span class="kw">.btn-danger</span> { <span class="fn">background</span>: <span class="val">rgba(244,63,94,.15)</span>; <span class="fn">color</span>: <span class="val">#f43f5e</span>; <span class="fn">border</span>: <span class="val">1px solid rgba(244,63,94,.25)</span>; }</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  8. INPUTS
+════════════════════════════════════════ -->
+<section class="ds-section" id="inputs">
+  <div class="ds-section-title">⌨️ Inputs</div>
+  <div class="ds-section-sub">Inputs sempre usam <code>background: var(--s2)</code> e ganham borda <code>--em</code> no foco.</div>
+
+  <div class="component-demo">
+    <div class="demo-label">Input padrão e grupo com label</div>
+    <div class="demo-body" style="gap:16px">
+      <div class="th-dark-foco" style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:12px">
+        <div class="th-label">Dark Foco</div>
+        <input class="sl-input" placeholder="Digite um valor...">
+        <div class="sl-input-group">
+          <div class="sl-input-label">Valor do aporte</div>
+          <input class="sl-input" value="R$ 700,00">
+          <div class="sl-input-hint">Mínimo R$ 50,00</div>
+        </div>
+      </div>
+      <div class="th-light-foco" style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:12px">
+        <div class="th-label">Light Foco</div>
+        <input class="sl-input" style="background:#f0f6fa;border-color:rgba(3,7,26,.08);color:#03071a" placeholder="Digite um valor...">
+        <div class="sl-input-group">
+          <div class="sl-input-label" style="color:#1e3a5c">Categoria</div>
+          <input class="sl-input" style="background:#f0f6fa;border-color:rgba(3,7,26,.08);color:#03071a" value="Moradia">
+        </div>
+      </div>
+    </div>
+    <div class="demo-code">
+      <pre><span class="kw">.input</span> {
+  <span class="fn">width</span>: <span class="val">100%</span>; <span class="fn">padding</span>: <span class="val">9px 12px</span>;
+  <span class="fn">background</span>: <span class="val">var(--s2)</span>; <span class="fn">border</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="fn">border-radius</span>: <span class="val">10px</span>; <span class="fn">color</span>: <span class="val">var(--t1)</span>;
+  <span class="fn">font-size</span>: <span class="val">13px</span>; <span class="fn">font-family</span>: <span class="val">'DM Sans'</span>;
+  <span class="fn">outline</span>: <span class="val">none</span>; <span class="fn">transition</span>: <span class="val">border-color .15s</span>;
+}
+<span class="kw">.input:focus</span> { <span class="fn">border-color</span>: <span class="val">var(--em)</span>; }
+<span class="kw">.input::placeholder</span> { <span class="fn">color</span>: <span class="val">var(--t3)</span>; }</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  9. TAGS E BADGES
+════════════════════════════════════════ -->
+<section class="ds-section" id="tags">
+  <div class="ds-section-title">🏷️ Tags e Badges</div>
+
+  <div class="component-demo">
+    <div class="demo-label">Tags de status / categoria</div>
+    <div class="demo-body">
+      <div class="sl-tag sl-tag-green">✓ No ritmo</div>
+      <div class="sl-tag sl-tag-yellow">⚠ Em risco</div>
+      <div class="sl-tag sl-tag-red">✕ Atrasada</div>
+      <div class="sl-tag sl-tag-blue">🎯 Meta</div>
+      <div class="sl-tag sl-tag-cyan">📅 Agenda</div>
+      <div class="sl-tag sl-tag-gray">Arquivado</div>
+      <div class="sl-streak">🔥 7 dias</div>
+    </div>
+    <div class="demo-code">
+      <pre><span class="kw">.tag</span> { <span class="fn">display</span>: <span class="val">inline-flex</span>; <span class="fn">align-items</span>: <span class="val">center</span>; <span class="fn">gap</span>: <span class="val">4px</span>; <span class="fn">padding</span>: <span class="val">3px 9px</span>; <span class="fn">border-radius</span>: <span class="val">7px</span>; <span class="fn">font-size</span>: <span class="val">10px</span>; <span class="fn">font-weight</span>: <span class="val">600</span>; }
+<span class="kw">.tag-green</span> { <span class="fn">background</span>: <span class="val">rgba(16,185,129,.12)</span>; <span class="fn">color</span>: <span class="val">#10b981</span>; <span class="fn">border</span>: <span class="val">1px solid rgba(16,185,129,.2)</span>; }
+<span class="kw">.tag-yellow</span> { <span class="fn">background</span>: <span class="val">rgba(245,158,11,.12)</span>; <span class="fn">color</span>: <span class="val">#f59e0b</span>; <span class="fn">border</span>: <span class="val">1px solid rgba(245,158,11,.2)</span>; }
+<span class="kw">.tag-red</span>    { <span class="fn">background</span>: <span class="val">rgba(244,63,94,.12)</span>;  <span class="fn">color</span>: <span class="val">#f43f5e</span>; <span class="fn">border</span>: <span class="val">1px solid rgba(244,63,94,.2)</span>;  }
+<span class="kw">.tag-blue</span>   { <span class="fn">background</span>: <span class="val">rgba(0,85,255,.12)</span>;   <span class="fn">color</span>: <span class="val">#6699ff</span>; <span class="fn">border</span>: <span class="val">1px solid rgba(0,85,255,.2)</span>;   }</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  10. PROGRESSO
+════════════════════════════════════════ -->
+<section class="ds-section" id="progress">
+  <div class="ds-section-title">📊 Barras e Anéis de Progresso</div>
+
+  <div class="component-demo">
+    <div class="demo-label">Barras de progresso (envelopes, metas)</div>
+    <div class="demo-body th-dark-foco" style="flex-direction:column;gap:12px;padding:16px">
+      <div class="th-label">Exemplos por status</div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:5px"><span>🏠 Moradia</span><span style="color:var(--yellow);font-weight:600">80%</span></div>
+        <div class="sl-progress-bg"><div class="sl-progress-fill" style="width:80%;background:#f59e0b"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:5px"><span>🍽️ Alimentação</span><span style="color:#f43f5e;font-weight:600">97%</span></div>
+        <div class="sl-progress-bg"><div class="sl-progress-fill" style="width:97%;background:#f43f5e"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:5px"><span>🚗 Transporte</span><span style="color:#10b981;font-weight:600">70%</span></div>
+        <div class="sl-progress-bg"><div class="sl-progress-fill" style="width:70%;background:#10b981"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:5px"><span>🎯 Reserva Emergência</span><span style="font-weight:600;background:linear-gradient(90deg,#10b981,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">65%</span></div>
+        <div class="sl-progress-bg" style="height:6px"><div class="sl-progress-fill" style="width:65%;background:linear-gradient(90deg,#10b981,#0055ff)"></div></div>
+      </div>
+    </div>
+    <div class="demo-code">
+      <pre><span class="cm">/* Regra: cor da barra por % */</span>
+<span class="cm">/* ≤ 70% → var(--green)  */</span>
+<span class="cm">/* 70–85% → var(--yellow) */</span>
+<span class="cm">/* > 85% → var(--red)    */</span>
+<span class="cm">/* Metas → gradiente --em → --el */</span>
+<span class="kw">.progress-bar</span> { <span class="fn">height</span>: <span class="val">5–6px</span>; <span class="fn">background</span>: <span class="val">var(--s3)</span>; <span class="fn">border-radius</span>: <span class="val">3px</span>; <span class="fn">overflow</span>: <span class="val">hidden</span>; }
+<span class="kw">.progress-fill</span> { <span class="fn">height</span>: <span class="val">100%</span>; <span class="fn">border-radius</span>: <span class="val">3px</span>; <span class="fn">transition</span>: <span class="val">width 1s cubic-bezier(.4,0,.2,1)</span>; }</pre>
+    </div>
+  </div>
+
+  <div class="component-demo">
+    <div class="demo-label">Anéis de progresso (metas) — SVG</div>
+    <div class="demo-body th-dark-foco" style="gap:20px">
+      <div>
+        <div class="th-label" style="text-align:center;margin-bottom:8px">Em risco</div>
+        <div class="sl-ring-wrap">
+          <svg class="sl-ring-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle class="sl-ring-bg" cx="40" cy="40" r="32"/>
+            <circle class="sl-ring-fill" cx="40" cy="40" r="32" stroke="#f59e0b" style="stroke-dasharray:201;stroke-dashoffset:145"/>
+          </svg>
+          <div class="sl-ring-center"><div class="sl-ring-pct" style="color:#f59e0b">28%</div><div class="sl-ring-sub">em risco</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="th-label" style="text-align:center;margin-bottom:8px">No ritmo</div>
+        <div class="sl-ring-wrap">
+          <svg class="sl-ring-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle class="sl-ring-bg" cx="40" cy="40" r="32"/>
+            <circle class="sl-ring-fill" cx="40" cy="40" r="32" stroke="#10b981" style="stroke-dasharray:201;stroke-dashoffset:70"/>
+          </svg>
+          <div class="sl-ring-center"><div class="sl-ring-pct" style="color:#10b981">65%</div><div class="sl-ring-sub">no ritmo ✓</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="th-label" style="text-align:center;margin-bottom:8px">Gradiente</div>
+        <div class="sl-ring-wrap">
+          <svg class="sl-ring-svg" width="80" height="80" viewBox="0 0 80 80">
+            <defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#0055ff"/></linearGradient></defs>
+            <circle class="sl-ring-bg" cx="40" cy="40" r="32"/>
+            <circle class="sl-ring-fill" cx="40" cy="40" r="32" stroke="url(#g1)" style="stroke-dasharray:201;stroke-dashoffset:120"/>
+          </svg>
+          <div class="sl-ring-center"><div class="sl-ring-pct" style="background:linear-gradient(135deg,#10b981,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">40%</div><div class="sl-ring-sub">no ritmo</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-code">
+      <pre><span class="cm">/* stroke-dasharray = 2 * π * r  (r=44 → 276; r=32 → 201) */</span>
+<span class="cm">/* stroke-dashoffset = dasharray * (1 - pct/100)           */</span>
+<span class="cm">/* Exemplo: 65% em r=44 → offset = 276 * 0.35 = 97         */</span>
+<span class="kw">circle.ring-fill</span> {
+  <span class="fn">fill</span>: <span class="val">none</span>; <span class="fn">stroke-width</span>: <span class="val">8</span>; <span class="fn">stroke-linecap</span>: <span class="val">round</span>;
+  <span class="fn">transform</span>: <span class="val">rotate(-90deg)</span>; <span class="fn">transform-origin</span>: <span class="val">center</span>;
+  <span class="fn">transition</span>: <span class="val">stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)</span>;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  11. LISTAS
+════════════════════════════════════════ -->
+<section class="ds-section" id="lists">
+  <div class="ds-section-title">📋 Listas</div>
+
+  <div class="component-demo">
+    <div class="demo-label">Lista com hover</div>
+    <div class="demo-body">
+      <div class="th-dark-foco" style="flex:1;min-width:200px">
+        <div class="sl-list-item">
+          <div class="sl-list-dot" style="background:#10b981"></div>
+          <div class="sl-list-label">Salário recebido</div>
+          <div class="sl-list-value" style="color:#10b981">+R$ 5.000</div>
+        </div>
+        <div class="sl-list-item">
+          <div class="sl-list-dot" style="background:#f43f5e"></div>
+          <div class="sl-list-label">Aluguel 🏠</div>
+          <div class="sl-list-value" style="color:#f43f5e">-R$ 1.500</div>
+        </div>
+        <div class="sl-list-item">
+          <div class="sl-list-dot" style="background:#f59e0b"></div>
+          <div class="sl-list-label">Internet</div>
+          <div class="sl-list-value" style="color:#f43f5e">-R$ 99,90</div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-code">
+      <pre><span class="kw">.list-item</span> {
+  <span class="fn">display</span>: <span class="val">flex</span>; <span class="fn">align-items</span>: <span class="val">center</span>; <span class="fn">gap</span>: <span class="val">12px</span>;
+  <span class="fn">padding</span>: <span class="val">10px 0</span>; <span class="fn">border-bottom</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="fn">transition</span>: <span class="val">background .12s</span>; <span class="fn">cursor</span>: <span class="val">pointer</span>;
+}
+<span class="kw">.list-item:hover</span> {
+  <span class="fn">background</span>: <span class="val">var(--s2)</span>; <span class="fn">margin</span>: <span class="val">0 -8px</span>;
+  <span class="fn">padding</span>: <span class="val">10px 8px</span>; <span class="fn">border-radius</span>: <span class="val">8px</span>;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  12. INSIGHT BLOCK
+════════════════════════════════════════ -->
+<section class="ds-section" id="insight">
+  <div class="ds-section-title">💡 Insight Block (IA / Jornada)</div>
+  <div class="ds-section-sub">Bloco narrativo gerado pela IA. Aparece <strong>somente no Modo Jornada</strong>. No Foco, substituir por stats compactos.</div>
+
+  <div class="component-demo">
+    <div class="demo-label">Jornada — texto narrativo com highlight</div>
+    <div class="demo-body">
+      <div class="th-dark-jorn" style="flex:1">
+        <div class="sl-insight" style="background:linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.09))">
+          <div class="sl-insight-ico">💡</div>
+          <div class="sl-insight-text">
+            Em fevereiro você <strong>reduziu gastos em Alimentação em R$ 180</strong>. Saldo projetado: <strong style="color:#10b981">R$ 2.200</strong> ao final do mês.
+            Atenção: <strong style="color:#f59e0b">Lazer usou 78% do orçamento</strong> com 10 dias restantes.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-code">
+      <pre><span class="cm">/* Visível apenas em Jornada */</span>
+<span class="kw">.insight</span> { <span class="fn">display</span>: <span class="val">none</span>; }
+<span class="kw">body.jornada .insight</span> {
+  <span class="fn">display</span>: <span class="val">flex</span>; <span class="fn">gap</span>: <span class="val">12px</span>; <span class="fn">padding</span>: <span class="val">14px 16px</span>;
+  <span class="fn">background</span>: <span class="val">linear-gradient(135deg, rgba(16,185,129,.07), rgba(0,85,255,.09))</span>;
+  <span class="fn">border</span>: <span class="val">1px solid rgba(16,185,129,.18)</span>; <span class="fn">border-radius</span>: <span class="val">14px</span>;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  13. CONQUISTAS
+════════════════════════════════════════ -->
+<section class="ds-section" id="achievements">
+  <div class="ds-section-title">🏆 Conquistas (Jornada)</div>
+  <div class="ds-section-sub">Sistema de gamificação visível somente no Modo Jornada.</div>
+
+  <div class="component-demo">
+    <div class="demo-label">Badges — desbloqueado / bloqueado</div>
+    <div class="demo-body">
+      <div class="th-dark-jorn" style="flex:1;display:flex;flex-wrap:wrap;gap:8px">
+        <div class="sl-badge"><div class="sl-badge-ico">🔥</div><div class="sl-badge-name">7 dias</div><div class="sl-badge-pts">50 pts</div></div>
+        <div class="sl-badge"><div class="sl-badge-ico">💚</div><div class="sl-badge-name">Mês verde</div><div class="sl-badge-pts">100 pts</div></div>
+        <div class="sl-badge"><div class="sl-badge-ico">📊</div><div class="sl-badge-name">Planejador</div><div class="sl-badge-pts">75 pts</div></div>
+        <div class="sl-badge locked"><div class="sl-badge-ico">🏅</div><div class="sl-badge-name">1ª Meta</div></div>
+        <div class="sl-badge locked"><div class="sl-badge-ico">💎</div><div class="sl-badge-name">Lendário</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  14. LAYOUT / GRID
+════════════════════════════════════════ -->
+<section class="ds-section" id="layout">
+  <div class="ds-section-title">🔲 Layout e Grid</div>
+
+  <div class="ds-sub">
+    <div class="ds-sub-title">Breakpoints</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:12px;font-size:12px;align-items:center">
+        <code style="min-width:80px">≥ 1200px</code><span style="color:#64748b">Desktop full — max-width: 1100–1200px, centralizado com margin: 0 auto</span>
+      </div>
+      <div style="display:flex;gap:12px;font-size:12px;align-items:center">
+        <code style="min-width:80px">900–1199px</code><span style="color:#64748b">Desktop médio — grade colapsa de 3→2 colunas</span>
+      </div>
+      <div style="display:flex;gap:12px;font-size:12px;align-items:center">
+        <code style="min-width:80px">600–899px</code><span style="color:#64748b">Tablet — grade colapsa para 2 colunas, sidebar vira drawer</span>
+      </div>
+      <div style="display:flex;gap:12px;font-size:12px;align-items:center">
+        <code style="min-width:80px">< 600px</code><span style="color:#64748b">Mobile — 1 coluna, bottom tab bar, KPIs 2×2</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-sub">
+    <div class="ds-sub-title">Grades usadas</div>
+    <div class="layout-demo">
+      <div style="font-size:10px;color:#475569;margin-bottom:8px;font-family:'DM Mono',monospace">4 colunas — Summary strip (KPIs)</div>
+      <div class="layout-row">
+        <div class="layout-col" style="flex:1">Col 1</div>
+        <div class="layout-col" style="flex:1">Col 2</div>
+        <div class="layout-col" style="flex:1">Col 3</div>
+        <div class="layout-col" style="flex:1">Col 4</div>
+      </div>
+      <div style="font-size:10px;color:#475569;margin-bottom:8px;font-family:'DM Mono',monospace;margin-top:12px">Main grid — Conteúdo (1fr 340px)</div>
+      <div class="layout-row">
+        <div class="layout-col" style="flex:2">Esquerda (1fr)</div>
+        <div class="layout-col" style="flex:1">Direita (340px)</div>
+      </div>
+      <div style="font-size:10px;color:#475569;margin-bottom:8px;font-family:'DM Mono',monospace;margin-top:12px">Bottom grid — 3 colunas iguais</div>
+      <div class="layout-row">
+        <div class="layout-col" style="flex:1">1/3</div>
+        <div class="layout-col" style="flex:1">1/3</div>
+        <div class="layout-col" style="flex:1">1/3</div>
+      </div>
+      <div style="font-size:10px;color:#475569;margin-bottom:8px;font-family:'DM Mono',monospace;margin-top:12px">Metas — 3 colunas iguais</div>
+      <div class="layout-row">
+        <div class="layout-col" style="flex:1">Meta 1</div>
+        <div class="layout-col" style="flex:1">Meta 2</div>
+        <div class="layout-col" style="flex:1">Meta 3 / + Nova</div>
+      </div>
+    </div>
+    <pre><span class="cm">/* grades principais */</span>
+<span class="kw">.kpi-row</span>     { <span class="fn">grid-template-columns</span>: <span class="val">repeat(4, 1fr)</span>; <span class="fn">gap</span>: <span class="val">12px</span>; }
+<span class="kw">.main-grid</span>   { <span class="fn">grid-template-columns</span>: <span class="val">1fr 340px</span>;      <span class="fn">gap</span>: <span class="val">16px</span>; }
+<span class="kw">.bottom-grid</span> { <span class="fn">grid-template-columns</span>: <span class="val">repeat(3, 1fr)</span>; <span class="fn">gap</span>: <span class="val">16px</span>; }
+<span class="kw">.metas-grid</span>  { <span class="fn">grid-template-columns</span>: <span class="val">repeat(3, 1fr)</span>; <span class="fn">gap</span>: <span class="val">16px</span>; }
+<span class="cm">/* collapse */</span>
+<span class="kw">@media (max-width: 900px)</span> {
+  <span class="kw">.main-grid, .bottom-grid</span> { <span class="fn">grid-template-columns</span>: <span class="val">1fr</span>; }
+  <span class="kw">.kpi-row</span>  { <span class="fn">grid-template-columns</span>: <span class="val">repeat(2, 1fr)</span>; }
+}</pre>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  15. ESTRUTURA DE TELA
+════════════════════════════════════════ -->
+<section class="ds-section" id="pages">
+  <div class="ds-section-title">📄 Estrutura padrão de tela</div>
+  <div class="ds-section-sub">Toda tela do SyncLife segue a mesma anatomia. Nunca desviar dessa estrutura.</div>
+
+  <div class="layout-demo">
+    <div style="border:1px dashed rgba(0,85,255,0.3);border-radius:8px;padding:8px;margin-bottom:6px">
+      <div style="font-size:10px;color:#6699ff;font-family:'DM Mono',monospace;margin-bottom:6px">① .topbar — flex row, título à esquerda, ações à direita</div>
+      <div style="display:flex;justify-content:space-between">
+        <div class="layout-col" style="flex:none;padding:6px 12px">🎯 Título da Tela</div>
+        <div style="display:flex;gap:6px">
+          <div class="layout-col" style="flex:none;padding:6px 10px">Filtros / Pills</div>
+          <div class="layout-col" style="flex:none;padding:6px 10px;background:rgba(16,185,129,0.2);border-color:rgba(16,185,129,0.4)">+ Ação primária</div>
+        </div>
+      </div>
+    </div>
+    <div style="border:1px dashed rgba(16,185,129,0.3);border-radius:8px;padding:8px;margin-bottom:6px">
+      <div style="font-size:10px;color:#10b981;font-family:'DM Mono',monospace;margin-bottom:6px">② .sum-strip — 4 cards KPI resumo</div>
+      <div class="layout-row">
+        <div class="layout-col" style="flex:1;background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.2)">KPI 1</div>
+        <div class="layout-col" style="flex:1;background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.2)">KPI 2</div>
+        <div class="layout-col" style="flex:1;background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.2)">KPI 3</div>
+        <div class="layout-col" style="flex:1;background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.2)">KPI 4</div>
+      </div>
+    </div>
+    <div style="border:1px dashed rgba(245,158,11,0.3);border-radius:8px;padding:8px;margin-bottom:6px">
+      <div style="font-size:10px;color:#f59e0b;font-family:'DM Mono',monospace;margin-bottom:6px">③ .jornada-insight — SOMENTE body.jornada (display:none em Foco)</div>
+      <div class="layout-col" style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.2)">💡 Texto narrativo da IA com highlights coloridos</div>
+    </div>
+    <div style="border:1px dashed rgba(0,85,255,0.3);border-radius:8px;padding:8px;margin-bottom:6px">
+      <div style="font-size:10px;color:#6699ff;font-family:'DM Mono',monospace;margin-bottom:6px">④ Conteúdo principal — grid 1fr 340px ou específico da tela</div>
+      <div class="layout-row">
+        <div class="layout-col" style="flex:2;min-height:60px">Coluna principal</div>
+        <div class="layout-col" style="flex:1;min-height:60px">Coluna lateral</div>
+      </div>
+    </div>
+    <div style="border:1px dashed rgba(255,255,255,0.15);border-radius:8px;padding:8px">
+      <div style="font-size:10px;color:#475569;font-family:'DM Mono',monospace;margin-bottom:6px">⑤ Bottom grid — 3 colunas de suporte</div>
+      <div class="layout-row">
+        <div class="layout-col" style="flex:1">Card suporte 1</div>
+        <div class="layout-col" style="flex:1">Card suporte 2</div>
+        <div class="layout-col" style="flex:1">Card suporte 3</div>
+      </div>
+    </div>
+  </div>
+
+  <pre style="margin-top:16px"><span class="kw">.page</span> { <span class="fn">max-width</span>: <span class="val">1100–1200px</span>; <span class="fn">margin</span>: <span class="val">0 auto</span>; <span class="fn">padding</span>: <span class="val">28px 24px 60px</span>; }
+<span class="cm">/* Ordem dos blocos — SEMPRE nesta sequência: */</span>
+<span class="cm">/* 1. .topbar             — título + ações */</span>
+<span class="cm">/* 2. .sum-strip (4-col)  — KPIs resumo */</span>
+<span class="cm">/* 3. .jornada-insight    — só em body.jornada */</span>
+<span class="cm">/* 4. conteúdo principal  — grid específico */</span>
+<span class="cm">/* 5. .bottom-grid (3-col)— suporte/detalhes */</span></pre>
+</section>
+
+<!-- ════════════════════════════════════════
+  16. REGRAS FOCO vs JORNADA
+════════════════════════════════════════ -->
+<section class="ds-section" id="modes-rules">
+  <div class="ds-section-title">🎯 Regras: Foco vs Jornada</div>
+  <div class="ds-section-sub">Estas regras definem o caráter de cada modo. São obrigatórias em todas as telas.</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#94a3b8;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        🎯 Modo Foco
+        <span style="font-size:9px;background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:4px;font-weight:400;color:#475569">sem classe</span>
+      </div>
+      <ul class="rule-list">
+        <li>Saudação = <strong>título estático</strong> (ex: "Dashboard")</li>
+        <li><strong>Sem</strong> Life Sync Score visível</li>
+        <li><strong>Sem</strong> streak badge</li>
+        <li>Insight IA = <strong>stats compactos</strong> (números, sem texto narrativo)</li>
+        <li>Bottom card = <strong>histórico / resumo de dados</strong></li>
+        <li><strong>Sem</strong> badges de conquista</li>
+        <li><strong>Sem</strong> frases motivacionais nos cards de meta</li>
+        <li>Tom: <strong>preciso, analítico, neutro</strong></li>
+      </ul>
+    </div>
+    <div>
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#10b981;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        🌱 Modo Jornada
+        <span style="font-size:9px;background:rgba(16,185,129,0.1);padding:2px 8px;border-radius:4px;font-weight:400;color:#10b981">body.jornada</span>
+      </div>
+      <ul class="rule-list">
+        <li>Saudação = <strong>"Boa tarde, {nome}! ✨"</strong></li>
+        <li>Life Sync Score = <strong>Hero card com número grande</strong></li>
+        <li><strong>Streak badge</strong> no header (🔥 N dias)</li>
+        <li>Insight IA = <strong>texto narrativo</strong> com highlights em cor</li>
+        <li>Campo de <strong>perguntar para a IA</strong> no insight</li>
+        <li>Bottom card = <strong>conquistas / badges</strong></li>
+        <li>Cards de meta mostram <strong>dica contextual colorida</strong></li>
+        <li>Page title = <strong>gradiente esmeralda → azul</strong></li>
+        <li>Tom: <strong>motivacional, pessoal, celebrativo</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="warn-box" style="margin-top:16px">
+    <strong>Atenção:</strong> Elementos exclusivos do Jornada usam <code>display:none</code> por padrão e são ativados com <code>body.jornada .elemento { display: flex; }</code>. Nunca esconder com JavaScript — usar CSS puro para performance.
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  17. MÓDULOS
+════════════════════════════════════════ -->
+<section class="ds-section" id="modules">
+  <div class="ds-section-title">🧩 Cor por Módulo</div>
+  <div class="ds-section-sub">Cada módulo tem uma cor primária usada em ícones, barras de progresso e dots de agenda.</div>
+
+  <div class="token-grid">
+    <div class="token-item">
+      <div class="token-swatch" style="background:#10b981"></div>
+      <div class="token-name">Finanças</div>
+      <div class="token-value">#10b981 — var(--em)</div>
+      <div class="token-desc">Receitas, orçamentos, transações</div>
+    </div>
+    <div class="token-item">
+      <div class="token-swatch" style="background:#0055ff"></div>
+      <div class="token-name">Metas</div>
+      <div class="token-value">#0055ff — var(--el)</div>
+      <div class="token-desc">Goals, aportes, planejamento</div>
+    </div>
+    <div class="token-item">
+      <div class="token-swatch" style="background:#06b6d4"></div>
+      <div class="token-name">Agenda</div>
+      <div class="token-value">#06b6d4 — var(--cyan)</div>
+      <div class="token-desc">Eventos, compromissos, calendário</div>
+    </div>
+    <div class="token-item">
+      <div class="token-swatch" style="background:#f97316"></div>
+      <div class="token-name">Saúde</div>
+      <div class="token-value">#f97316 — var(--orange)</div>
+      <div class="token-desc">Hábitos, métricas, bem-estar</div>
+    </div>
+    <div class="token-item">
+      <div class="token-swatch" style="background:#a855f7"></div>
+      <div class="token-name">Estudos</div>
+      <div class="token-value">#a855f7</div>
+      <div class="token-desc">Cursos, certificações, trilhas</div>
+    </div>
+    <div class="token-item">
+      <div class="token-swatch" style="background:linear-gradient(135deg,#10b981,#0055ff)"></div>
+      <div class="token-name">Dashboard</div>
+      <div class="token-value">Gradiente marca</div>
+      <div class="token-desc">Score, visão geral, sincronização</div>
+    </div>
+    <div class="token-item">
+      <div class="token-swatch" style="background:#f59e0b"></div>
+      <div class="token-name">Carreira</div>
+      <div class="token-value">#f59e0b — var(--yellow)</div>
+      <div class="token-desc">Objetivos, vagas, networking</div>
+    </div>
+    <div class="token-item">
+      <div class="token-swatch" style="background:#f43f5e"></div>
+      <div class="token-name">Despesas</div>
+      <div class="token-value">#f43f5e — var(--red)</div>
+      <div class="token-desc">Saídas, vencimentos, alertas</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+  18. ANIMAÇÕES
+════════════════════════════════════════ -->
+<section class="ds-section" id="animations">
+  <div class="ds-section-title">✨ Animações e Transições</div>
+
+  <pre><span class="cm">/* ── Entrada de elementos (staggered) ── */</span>
+<span class="kw">@keyframes</span> <span class="fn">fadeUp</span> {
+  <span class="kw">from</span> { <span class="fn">opacity</span>: <span class="val">0</span>; <span class="fn">transform</span>: <span class="val">translateY(10px)</span>; }
+  <span class="kw">to</span>   { <span class="fn">opacity</span>: <span class="val">1</span>; <span class="fn">transform</span>: <span class="val">translateY(0)</span>; }
+}
+<span class="kw">.card</span>         { <span class="fn">animation</span>: <span class="val">fadeUp 0.4s ease both</span>; }
+<span class="kw">.card.delay-1</span> { <span class="fn">animation-delay</span>: <span class="val">0.05s</span>; }
+<span class="kw">.card.delay-2</span> { <span class="fn">animation-delay</span>: <span class="val">0.10s</span>; }
+<span class="kw">.card.delay-3</span> { <span class="fn">animation-delay</span>: <span class="val">0.15s</span>; }
+<span class="kw">.card.delay-4</span> { <span class="fn">animation-delay</span>: <span class="val">0.20s</span>; }
+
+<span class="cm">/* ── Transições padrão ── */</span>
+<span class="cm">/* Hover de card  */</span> <span class="fn">border-color</span>: <span class="val">.15s</span>; <span class="fn">transform</span>: <span class="val">.15s</span>;
+<span class="cm">/* Tema           */</span> <span class="fn">background</span>: <span class="val">.35s</span>; <span class="fn">color</span>: <span class="val">.25s</span>;
+<span class="cm">/* Botão          */</span> <span class="fn">opacity</span>: <span class="val">.15s</span>;
+<span class="cm">/* Barras progresso */</span> <span class="fn">width</span>: <span class="val">1s cubic-bezier(.4,0,.2,1)</span>;
+<span class="cm">/* Anel de meta   */</span> <span class="fn">stroke-dashoffset</span>: <span class="val">1.2s cubic-bezier(.4,0,.2,1)</span>;
+
+<span class="cm">/* ── Pulse (warning / streak) ── */</span>
+<span class="kw">@keyframes</span> <span class="fn">warn-pulse</span> {
+  <span class="val">0%,100%</span> { <span class="fn">border-color</span>: <span class="val">rgba(249,115,22,.25)</span>; }
+  <span class="val">50%</span>     { <span class="fn">border-color</span>: <span class="val">rgba(249,115,22,.6)</span>; }
+}
+
+<span class="cm">/* ── Score hero pulse (Jornada) ── */</span>
+<span class="kw">@keyframes</span> <span class="fn">pulse-border</span> {
+  <span class="val">0%,100%</span> { <span class="fn">border-color</span>: <span class="val">rgba(16,185,129,.20)</span>; }
+  <span class="val">50%</span>     { <span class="fn">border-color</span>: <span class="val">rgba(16,185,129,.40)</span>; }
+}</pre>
+</section>
+
+<!-- ════════════════════════════════════════
+  19. ÍCONES POR MÓDULO
+════════════════════════════════════════ -->
+<section class="ds-section" id="icons">
+  <div class="ds-section-title">🔤 Ícones por Módulo</div>
+  <div class="ds-section-sub">Emojis usados como ícones de módulo. Consistência em todas as telas — nunca trocar sem atualizar o Design System.</div>
+
+  <div class="icon-grid">
+    <div class="icon-item"><div class="ico">🐷</div>Finanças</div>
+    <div class="icon-item"><div class="ico">🎯</div>Metas</div>
+    <div class="icon-item"><div class="ico">📅</div>Agenda</div>
+    <div class="icon-item"><div class="ico">🏥</div>Saúde</div>
+    <div class="icon-item"><div class="ico">📚</div>Estudos</div>
+    <div class="icon-item"><div class="ico">💼</div>Carreira</div>
+    <div class="icon-item"><div class="ico">📈</div>Investimentos</div>
+    <div class="icon-item"><div class="ico">⚙️</div>Configurações</div>
+    <div class="icon-item"><div class="ico">💰</div>Receitas</div>
+    <div class="icon-item"><div class="ico">📤</div>Despesas</div>
+    <div class="icon-item"><div class="ico">🔄</div>Recorrentes</div>
+    <div class="icon-item"><div class="ico">🛡️</div>Reserva</div>
+    <div class="icon-item"><div class="ico">✈️</div>Viagem</div>
+    <div class="icon-item"><div class="ico">🏠</div>Moradia</div>
+    <div class="icon-item"><div class="ico">🚗</div>Transporte</div>
+    <div class="icon-item"><div class="ico">🍽️</div>Alimentação</div>
+    <div class="icon-item"><div class="ico">🎮</div>Lazer</div>
+    <div class="icon-item"><div class="ico">🔥</div>Streak</div>
+    <div class="icon-item"><div class="ico">🏆</div>Conquistas</div>
+    <div class="icon-item"><div class="ico">💡</div>IA Insight</div>
+    <div class="icon-item"><div class="ico">⭐</div>Score</div>
+    <div class="icon-item"><div class="ico">🌱</div>Jornada</div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+// Smooth nav highlight on scroll
+const sections = document.querySelectorAll('.ds-section');
+const navItems = document.querySelectorAll('.nav-item');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(ni => {
+        ni.classList.toggle('active', ni.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { threshold: 0.25, rootMargin: '-60px 0px -60% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// Copy CSS
+function copyCode(btn, id) {
+  const el = document.getElementById(id);
+  const text = el ? el.innerText : '';
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copiado ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copiar CSS'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>

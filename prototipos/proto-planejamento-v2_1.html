@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Planejamento Futuro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── TOKENS (same as other screens) ── */
+:root{
+  --bg:#03071a; --s1:#07112b; --s2:#0c1a3a; --s3:#132248;
+  --border:rgba(255,255,255,.06); --border-h:rgba(255,255,255,.13);
+  --t1:#dff0ff; --t2:#6e90b8; --t3:#2e4a6e;
+  --em:#10b981; --el:#0055ff; --em-g:rgba(16,185,129,.14); --el-g:rgba(0,85,255,.14);
+  --green:#10b981; --yellow:#f59e0b; --red:#f43f5e; --orange:#f97316; --cyan:#06b6d4;
+}
+body.light{
+  --bg:#e6edf5; --s1:#fff; --s2:#f0f6fa; --s3:#dde8f2;
+  --border:rgba(3,7,26,.08); --border-h:rgba(3,7,26,.16);
+  --t1:#03071a; --t2:#1e3a5c; --t3:#5a7a9e;
+  --em-g:rgba(16,185,129,.10); --el-g:rgba(0,85,255,.10);
+}
+body.jornada{
+  --bg:#020d08; --s1:#061410; --s2:#0b1e18; --s3:#112b22;
+  --border:rgba(16,185,129,.08); --border-h:rgba(16,185,129,.18);
+  --t1:#d6faf0; --t2:#4da888; --t3:#235c48;
+}
+body.light.jornada{
+  --bg:#c8f0e4; --s1:#fff; --s2:#e0f7ef; --s3:#c4eede;
+  --border:rgba(5,80,56,.12); --border-h:rgba(5,80,56,.24);
+  --t1:#022016; --t2:#0d5c3e; --t3:#4da888;
+}
+
+html,body{min-height:100vh}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;transition:background .3s,color .25s}
+
+/* ════════════════════════════════════
+   PAGE & HEADER — same pattern as other screens
+════════════════════════════════════ */
+.page{max-width:1200px;margin:0 auto;padding:28px 24px 60px}
+
+.topbar{display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--t1)}
+body.jornada .page-title{
+  background:linear-gradient(90deg,var(--em),var(--el));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+}
+.topbar-spacer{flex:1}
+
+/* Scenario selector */
+.scenario-group{display:flex;background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:3px;gap:2px}
+.sc-btn{padding:5px 14px;border-radius:16px;border:none;background:transparent;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;color:var(--t3);cursor:pointer;transition:all .18s;white-space:nowrap}
+.sc-btn:hover{color:var(--t2)}
+.sc-btn.act-p{background:rgba(244,63,94,.15);color:var(--red)}
+.sc-btn.act-r{background:rgba(16,185,129,.15);color:var(--em)}
+.sc-btn.act-o{background:rgba(0,85,255,.15);color:var(--el)}
+
+/* Pill buttons (mode/theme) */
+.pill-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--s2);cursor:pointer;font-size:12px;color:var(--t2);font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap}
+.pill-btn:hover{border-color:var(--border-h);color:var(--t1)}
+.pill-btn.on{border-color:rgba(16,185,129,.3);color:var(--em);background:var(--em-g)}
+.pill-btn.on-b{border-color:rgba(0,85,255,.3);color:var(--el);background:var(--el-g)}
+
+.add-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;border:none;background:var(--em);color:#fff;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .15s}
+.add-btn:hover{opacity:.85}
+
+/* ════════════════════════════════════
+   SUMMARY CARDS — 4-column like other screens
+════════════════════════════════════ */
+.sum-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.sum-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px 18px;transition:border-color .15s;animation:fadeUp .4s ease both}
+body.light .sum-card{box-shadow:0 2px 10px rgba(3,7,26,.06)}
+body.light.jornada .sum-card{box-shadow:0 2px 10px rgba(5,80,56,.08)}
+.sc-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:6px}
+.sc-value{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--t1);line-height:1;transition:color .3s}
+.sc-value.g{color:var(--green)}.sc-value.r{color:var(--red)}.sc-value.b{color:var(--el)}.sc-value.y{color:var(--yellow)}
+.sc-delta{font-size:11px;color:var(--t3);margin-top:4px}
+
+/* ════════════════════════════════════
+   JORNADA INSIGHT (like other screens)
+════════════════════════════════════ */
+.jornada-insight{display:none;align-items:flex-start;gap:14px;padding:16px 20px;background:linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.09));border:1px solid rgba(16,185,129,.18);border-radius:16px;margin-bottom:16px;animation:fadeUp .4s ease both}
+body.jornada .jornada-insight{display:flex}
+.ji-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.ji-text{font-size:13px;color:var(--t2);line-height:1.75}
+.ji-text strong{color:var(--t1)}
+.ji-text .hi{color:var(--green)}.ji-text .warn{color:var(--yellow)}.ji-text .bad{color:var(--red)}
+
+/* ════════════════════════════════════
+   TIMELINE CARD — single card like other screens
+════════════════════════════════════ */
+.tl-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;margin-bottom:16px;overflow:hidden;animation:fadeUp .4s ease both}
+body.light .tl-card{box-shadow:0 2px 16px rgba(3,7,26,.08)}
+body.light.jornada .tl-card{box-shadow:0 2px 16px rgba(5,80,56,.10)}
+
+.tl-card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.tl-card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1)}
+.tl-card-sub{font-size:11px;color:var(--t3)}
+.tl-card-right{display:flex;align-items:center;gap:8px}
+.tl-action{font-size:11px;color:var(--em);cursor:pointer;transition:opacity .12s}
+.tl-action:hover{opacity:.7}
+
+/* ════════════════════════════════════
+   LAYER LABELS + SCROLL AREA
+════════════════════════════════════ */
+.tl-body{display:flex;overflow:hidden}
+
+.layer-labels{
+  width:80px;flex-shrink:0;
+  display:flex;flex-direction:column;
+  border-right:1px solid var(--border);
+  background:var(--s2);
+  /* Match the tl-scroll height exactly */
+  overflow:hidden;
+}
+body.light .layer-labels{background:var(--s2)}
+.layer-lbl{
+  display:flex;flex-direction:column;
+  align-items:flex-end;justify-content:center;
+  padding:0 12px 0 6px;gap:2px;
+}
+.lbl-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;text-align:right}
+.lbl-name.g{color:var(--green)}.lbl-name.b{color:var(--el)}.lbl-name.r{color:var(--red)}
+.lbl-ico{font-size:13px}
+
+/* Scroll container */
+.tl-scroll{
+  flex:1;overflow-x:auto;overflow-y:hidden;
+  cursor:grab;scrollbar-width:thin;scrollbar-color:var(--s3) transparent;
+}
+.tl-scroll:active{cursor:grabbing}
+.tl-scroll::-webkit-scrollbar{height:4px}
+.tl-scroll::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+
+.tl-inner{display:inline-flex;flex-direction:column;min-height:100%}
+
+/* Month header row */
+.month-hdr-row{display:flex;position:sticky;top:0;z-index:20;background:var(--s1);border-bottom:1px solid var(--border)}
+body.light .month-hdr-row{background:var(--s2)}
+.month-hdr{
+  flex-shrink:0;display:flex;align-items:center;
+  padding:0 14px;height:36px;border-right:1px solid var(--border);gap:6px;
+}
+.mh-name{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--t2);letter-spacing:.03em}
+.month-hdr.current .mh-name{color:var(--em)}
+.mh-tag{font-size:9px;padding:1px 6px;border-radius:4px;background:var(--em-g);color:var(--em);font-weight:600}
+
+/* Canvas area */
+.canvas-area{position:relative;flex:1}
+.col-grid{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;pointer-events:none}
+.col-line{flex-shrink:0;border-right:1px solid var(--border)}
+.col-line.cur{background:rgba(16,185,129,.025)}
+
+/* Layer bands */
+.layers-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column}
+.band-income{flex-shrink:0;position:relative;border-bottom:1px solid var(--border);background:rgba(16,185,129,.02)}
+.band-balance{flex:1;position:relative;border-bottom:1px solid var(--border);min-height:0}
+.band-expense{flex-shrink:0;position:relative;background:rgba(244,63,94,.02)}
+
+/* Balance SVG */
+.balance-svg{position:absolute;top:0;left:0;pointer-events:none;z-index:3;overflow:visible}
+
+/* TODAY LINE */
+.today-line{position:absolute;top:0;bottom:0;width:2px;background:var(--em);z-index:10;pointer-events:none}
+.today-marker{position:absolute;top:-20px;left:50%;transform:translateX(-50%);background:var(--bg);color:var(--em);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;padding:0 4px}
+body.light .today-marker{background:var(--s1)}
+.today-dot{position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--em);box-shadow:0 0 8px var(--em)}
+
+/* ════════════════════════════════════
+   CATEGORY CHIPS inside bands
+════════════════════════════════════ */
+
+/* Column cell inside each band */
+.band-col{
+  position:absolute;top:0;bottom:0;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:4px 5px;gap:3px;
+  pointer-events:auto;
+}
+
+/* Individual chip */
+.cat-chip{
+  display:flex;align-items:center;gap:4px;
+  padding:3px 6px;border-radius:6px;
+  font-size:10px;font-weight:500;
+  white-space:nowrap;overflow:hidden;
+  cursor:pointer;border:1px solid transparent;
+  transition:border-color .12s,transform .12s;
+  max-width:130px;
+  line-height:1.3;
+}
+.cat-chip:hover{transform:scale(1.04);border-color:var(--border-h)}
+.cat-chip .chip-ico{font-size:11px;flex-shrink:0}
+.cat-chip .chip-txt{overflow:hidden;text-overflow:ellipsis}
+.cat-chip.income{background:rgba(16,185,129,.12);color:var(--green)}
+.cat-chip.expense{background:rgba(244,63,94,.10);color:var(--red)}
+.cat-chip.goal{background:rgba(0,85,255,.10);color:var(--el)}
+.cat-chip.recorr{background:rgba(245,158,11,.09);color:var(--yellow)}
+.cat-chip.warn{background:rgba(249,115,22,.10);color:var(--orange)}
+body.light .cat-chip.income{background:rgba(16,185,129,.10)}
+body.light .cat-chip.expense{background:rgba(244,63,94,.07)}
+
+/* Overflow "+N" badge */
+.cat-more{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:2px 7px;border-radius:6px;
+  font-size:10px;font-weight:700;
+  background:var(--s3);color:var(--t3);
+  cursor:pointer;border:1px dashed var(--border-h);
+  transition:background .12s,color .12s;
+  align-self:flex-start;
+  position:relative;
+}
+.cat-more:hover{background:var(--border-h);color:var(--t1)}
+
+/* Tooltip (shared with cat-more hover) */
+.ev-tooltip{
+  position:fixed;
+  background:var(--s1);border:1px solid var(--border-h);
+  border-radius:12px;padding:12px 14px;
+  z-index:1000;pointer-events:none;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  min-width:180px;max-width:260px;
+  opacity:0;transition:opacity .12s;
+  display:none;
+}
+body.light .ev-tooltip{box-shadow:0 8px 28px rgba(3,7,26,.18)}
+.ev-tooltip.show{opacity:1;display:block}
+.et-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.et-ico{font-size:18px;flex-shrink:0}
+.et-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1)}
+.et-date{font-size:10px;color:var(--t3)}
+.et-amount{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;margin-bottom:8px}
+.et-amount.g{color:var(--green)}.et-amount.r{color:var(--red)}.et-amount.b{color:var(--el)}.et-amount.y{color:var(--yellow)}
+.et-divider{height:1px;background:var(--border);margin-bottom:8px}
+.et-impact{font-size:11px;color:var(--t3);line-height:1.6}
+.et-impact strong{color:var(--t2)}
+.et-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;margin-top:6px}
+.et-tag.income{background:rgba(16,185,129,.12);color:var(--green)}
+.et-tag.expense{background:rgba(244,63,94,.12);color:var(--red)}
+.et-tag.goal{background:rgba(0,85,255,.12);color:var(--el)}
+.et-tag.recorr{background:rgba(245,158,11,.12);color:var(--yellow)}
+.et-tag.warn{background:rgba(249,115,22,.12);color:var(--orange)}
+
+/* overflow list inside tooltip */
+.et-overflow{display:flex;flex-direction:column;gap:4px;margin-top:2px}
+.et-ov-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2)}
+.et-ov-ico{font-size:12px;flex-shrink:0}
+
+/* ════════════════════════════════════
+   BOTTOM GRID — 2 cards
+════════════════════════════════════ */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.bottom-grid{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:20px;animation:fadeUp .5s ease both}
+body.light .card{box-shadow:0 2px 12px rgba(3,7,26,.07)}
+body.light.jornada .card{box-shadow:0 2px 12px rgba(5,80,56,.09)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1)}
+.card-action{font-size:11px;color:var(--em);cursor:pointer;transition:opacity .12s}
+.card-action:hover{opacity:.7}
+
+/* Upcoming events list */
+.upcoming-list{display:flex;flex-direction:column;gap:0}
+.upcoming-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.upcoming-item:last-child{border-bottom:none}
+.upcoming-item:hover{background:var(--s2);margin:0 -8px;padding:10px 8px;border-radius:8px}
+.ui-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ui-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--t3);flex-shrink:0;width:42px}
+.ui-name{font-size:13px;color:var(--t2);flex:1}
+.ui-amount{font-family:'DM Mono',monospace;font-size:13px;flex-shrink:0}
+.ui-amount.g{color:var(--green)}.ui-amount.r{color:var(--red)}.ui-amount.b{color:var(--el)}
+
+/* Saldo projetado sparkline */
+.spark-wrap{position:relative;height:80px;margin:0 -4px}
+.spark-wrap svg{width:100%;height:100%;overflow:visible}
+.spark-path{fill:none;stroke:var(--em);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.spark-area{fill:url(#spk-grad);opacity:.2}
+.spark-dot{fill:var(--em)}
+.spark-dot.end{fill:var(--el);r:4}
+.bal-row{display:flex;justify-content:space-between;margin-top:12px}
+.bal-col{display:flex;flex-direction:column;gap:2px}
+.bal-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.bal-val{font-family:'DM Mono',monospace;font-size:15px}
+.bal-val.g{color:var(--green)}.bal-val.r{color:var(--red)}.bal-val.b{color:var(--el)}
+.bal-warn{margin-top:10px;padding:9px 12px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.15);border-radius:9px;font-size:12px;color:var(--t3)}
+.bal-warn strong{color:var(--yellow)}
+
+/* ════════════════════════════════════
+   CONTROLS
+════════════════════════════════════ */
+.controls{position:fixed;bottom:20px;right:20px;background:var(--s2);border:1px solid var(--border-h);border-radius:16px;padding:14px;z-index:999;display:flex;flex-direction:column;gap:8px;min-width:200px;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+body.light .controls{background:#fff;box-shadow:0 4px 20px rgba(3,7,26,.14)}
+.ctrl-t{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3)}
+.ctrl-g{display:flex;gap:5px;flex-wrap:wrap}
+.ctrl-b{padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:var(--s3);color:var(--t2);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s}
+.ctrl-b:hover{border-color:var(--border-h);color:var(--t1)}
+.ctrl-b.on{background:var(--em-g);color:var(--em);border-color:rgba(16,185,129,.3)}
+.ctrl-b.on-n{background:rgba(255,255,255,.08);color:var(--t1);border-color:rgba(255,255,255,.15)}
+body.light .ctrl-b.on-n{background:var(--s3);border-color:rgba(3,7,26,.15)}
+.ctrl-d{height:1px;background:var(--border)}
+.ann{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.08);border:1px dashed rgba(245,158,11,.3);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--yellow);margin-bottom:16px}
+
+/* ════════════════════════════════════
+   ANIMATIONS
+════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- TOOLTIP (singleton, moved by JS) -->
+<div class="ev-tooltip" id="evTooltip">
+  <div class="et-header">
+    <div class="et-ico" id="etIco">💼</div>
+    <div>
+      <div class="et-name" id="etName">Salário</div>
+      <div class="et-date" id="etDate">1 de março</div>
+    </div>
+  </div>
+  <div class="et-amount g" id="etAmount">+R$ 5.000</div>
+  <div class="et-divider" id="etDivider"></div>
+  <div class="et-impact" id="etImpact">Saldo aumenta em R$ 5.000 neste dia</div>
+  <div class="et-tag" id="etTag">Receita</div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="ctrl-t">🧪 Controles</div>
+  <div class="ctrl-g">
+    <button class="ctrl-b on-n" id="cb-foco"    onclick="setMode('foco')">🎯 Foco</button>
+    <button class="ctrl-b"      id="cb-jornada" onclick="setMode('jornada')">🌱 Jornada</button>
+  </div>
+  <div class="ctrl-d"></div>
+  <div class="ctrl-g">
+    <button class="ctrl-b on-n" id="cb-dark"  onclick="setTheme('dark')">🌙 Dark</button>
+    <button class="ctrl-b"      id="cb-light" onclick="setTheme('light')">☀️ Light</button>
+  </div>
+  <div class="ctrl-d"></div>
+  <div style="font-size:10px;color:var(--t3)">↔ Arraste a timeline<br>🔵 Passe o mouse nos pontos</div>
+</div>
+
+<div class="page">
+
+<div class="ann">↔ Protótipo — Modo e Tema nos controles · Passe o mouse nos pontos da timeline</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="page-title">📈 Planejamento Futuro</div>
+  <div class="topbar-spacer"></div>
+
+  <div class="scenario-group">
+    <button class="sc-btn act-p" id="sc-p" onclick="setScenario('p')">📉 Pessimista</button>
+    <button class="sc-btn" id="sc-r" onclick="setScenario('r')">📊 Realista</button>
+    <button class="sc-btn" id="sc-o" onclick="setScenario('o')">🚀 Otimista</button>
+  </div>
+
+  <button class="add-btn" onclick="void 0">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Novo Evento
+  </button>
+</div>
+
+<!-- SUMMARY STRIP — values update per scenario -->
+<div class="sum-strip">
+  <div class="sum-card">
+    <div class="sc-label">Saldo Hoje</div>
+    <div class="sc-value g">R$ 1.800</div>
+    <div class="sc-delta">21 fev 2026</div>
+  </div>
+  <div class="sum-card">
+    <div class="sc-label">Saldo em 6 meses</div>
+    <div class="sc-value b" id="sum6m">R$ 8.640</div>
+    <div class="sc-delta"><span id="sum6m-lbl">ago/26 — Realista</span></div>
+  </div>
+  <div class="sum-card">
+    <div class="sc-label">Saldo em 12 meses</div>
+    <div class="sc-value g" id="sum12m">R$ 17.000</div>
+    <div class="sc-delta"><span id="sum12m-lbl">fev/27 — Realista</span></div>
+  </div>
+  <div class="sum-card">
+    <div class="sc-label">Próximo crítico</div>
+    <div class="sc-value r">R$ 300</div>
+    <div class="sc-delta">25/fev — aluguel</div>
+  </div>
+</div>
+
+<!-- JORNADA INSIGHT (hidden in Foco) -->
+<div class="jornada-insight">
+  <div class="ji-icon">💡</div>
+  <div class="ji-text" id="jiText">
+    No cenário realista, você atinge <span class="hi"><strong>R$ 17.000 em fevereiro/27</strong></span> 
+    e conclui a <strong>Reserva de Emergência em junho/26</strong>.
+    Atenção ao <span class="warn"><strong>aluguel em 25/fev</strong></span> — seu saldo cai para ~R$ 300 por 3 dias.
+  </div>
+</div>
+
+<!-- TIMELINE CARD -->
+<div class="tl-card">
+  <div class="tl-card-header">
+    <div>
+      <div class="tl-card-title">Curva de Saldo — 12 meses</div>
+      <div class="tl-card-sub" id="tl-subtitle">Projeção realista · Fev/2026 → Fev/2027</div>
+    </div>
+    <div class="tl-card-right">
+      <span style="font-size:11px;color:var(--t3)">Legenda:</span>
+      <span style="font-size:11px;display:flex;align-items:center;gap:4px;color:var(--green)"><span style="width:12px;height:2px;background:var(--green);display:inline-block;border-radius:1px"></span>Realista</span>
+      <span style="font-size:11px;display:flex;align-items:center;gap:4px;color:var(--el)"><span style="width:12px;height:2px;background:var(--el);display:inline-block;border-radius:1px;opacity:.6;border-top:2px dashed var(--el)"></span>Otimista</span>
+      <span style="font-size:11px;display:flex;align-items:center;gap:4px;color:var(--red)"><span style="width:12px;height:0;border-top:2px dashed var(--red);opacity:.6;display:inline-block"></span>Pessimista</span>
+      <div class="tl-action">Exportar →</div>
+    </div>
+  </div>
+
+  <div class="tl-body" style="height:320px">
+
+    <!-- Layer labels: a 36px header spacer + 3 bands matching canvas exactly -->
+    <div class="layer-labels" style="display:flex;flex-direction:column">
+      <!-- 36px spacer = month header row height -->
+      <div style="height:36px;flex-shrink:0;border-bottom:1px solid var(--border);background:var(--s1)"></div>
+      <!-- RECEITAS band -->
+      <div class="layer-lbl" style="height:90px;flex-shrink:0;border-bottom:1px solid var(--border)">
+        <div class="lbl-name g">Receitas</div>
+        <div class="lbl-ico">💰</div>
+      </div>
+      <!-- SALDO band (grows) -->
+      <div class="layer-lbl" style="flex:1;min-height:0;border-bottom:1px solid var(--border)">
+        <div class="lbl-name b">Saldo</div>
+        <div class="lbl-ico">📈</div>
+      </div>
+      <!-- DESPESAS band -->
+      <div class="layer-lbl" style="height:90px;flex-shrink:0">
+        <div class="lbl-name r">Despesas</div>
+        <div class="lbl-ico">📤</div>
+      </div>
+    </div>
+
+    <!-- Scrollable area -->
+    <div class="tl-scroll" id="tlScroll">
+      <div class="tl-inner" id="tlInner" style="height:100%;display:flex;flex-direction:column">
+        <div class="month-hdr-row" id="monthHdrs"></div>
+        <div style="position:relative;flex:1;min-height:284px" id="canvasWrap">
+          <div class="col-grid" id="colGrid"></div>
+          <div class="today-line" id="todayLine">
+            <div class="today-marker">Hoje</div>
+            <div class="today-dot"></div>
+          </div>
+          <div class="layers-wrap" id="layersWrap">
+            <div class="band-income"  id="bandIncome"  style="height:90px"></div>
+            <div class="band-balance" id="bandBalance">
+              <svg class="balance-svg" id="balSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+            <div class="band-expense" id="bandExpense" style="height:90px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM GRID -->
+<div class="bottom-grid">
+
+  <!-- Próximos eventos -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📋 Próximos Eventos</div>
+      <div class="card-action">Ver todos →</div>
+    </div>
+    <div class="upcoming-list">
+      <div class="upcoming-item">
+        <div class="ui-dot" style="background:var(--orange)"></div>
+        <div class="ui-date">25/Fev</div>
+        <div class="ui-name">🏠 Aluguel ⚠</div>
+        <div class="ui-amount r">-R$ 1.500</div>
+      </div>
+      <div class="upcoming-item">
+        <div class="ui-dot" style="background:var(--green)"></div>
+        <div class="ui-date">01/Mar</div>
+        <div class="ui-name">💼 Salário</div>
+        <div class="ui-amount g">+R$ 5.000</div>
+      </div>
+      <div class="upcoming-item">
+        <div class="ui-dot" style="background:var(--el)"></div>
+        <div class="ui-date">05/Mar</div>
+        <div class="ui-name">✈️ Aporte Europa</div>
+        <div class="ui-amount b">-R$ 700</div>
+      </div>
+      <div class="upcoming-item">
+        <div class="ui-dot" style="background:var(--yellow)"></div>
+        <div class="ui-date">10/Mar</div>
+        <div class="ui-name">🌐 Internet</div>
+        <div class="ui-amount r">-R$ 99,90</div>
+      </div>
+      <div class="upcoming-item">
+        <div class="ui-dot" style="background:var(--yellow)"></div>
+        <div class="ui-date">15/Mar</div>
+        <div class="ui-name">🎵 Spotify</div>
+        <div class="ui-amount r">-R$ 21,90</div>
+      </div>
+      <div class="upcoming-item">
+        <div class="ui-dot" style="background:var(--green)"></div>
+        <div class="ui-date">Jun/26</div>
+        <div class="ui-name">🛡️ Reserva — Meta concluída 🎉</div>
+        <div class="ui-amount g">+R$ 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Projeção de saldo -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📊 Projeção de Saldo</div>
+      <div class="card-action" id="projScLabel" style="color:var(--green)">● Realista</div>
+    </div>
+    <div class="spark-wrap">
+      <svg viewBox="0 0 320 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="spk-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path class="spark-area" d="M0,60 C30,55 60,42 90,32 C110,24 130,38 160,22 C185,10 210,16 240,12 C265,8 290,20 320,14 L320,80 L0,80 Z" id="spkArea"/>
+        <path class="spark-path" d="M0,60 C30,55 60,42 90,32 C110,24 130,38 160,22 C185,10 210,16 240,12 C265,8 290,20 320,14" id="spkPath"/>
+        <circle class="spark-dot" cx="0" cy="60" r="3" id="spkDot1"/>
+        <circle class="spark-dot end" cx="320" cy="14" r="4" id="spkDot2"/>
+      </svg>
+    </div>
+    <div class="bal-row">
+      <div class="bal-col">
+        <div class="bal-lbl">Hoje</div>
+        <div class="bal-val g">R$ 1.800</div>
+      </div>
+      <div class="bal-col" style="text-align:center">
+        <div class="bal-lbl">6 meses</div>
+        <div class="bal-val b" id="proj6m">R$ 8.640</div>
+      </div>
+      <div class="bal-col" style="text-align:right">
+        <div class="bal-lbl">12 meses</div>
+        <div class="bal-val g" id="proj12m">R$ 17.000</div>
+      </div>
+    </div>
+    <div class="bal-warn">
+      ⚠ <strong>25/fev</strong> — aluguel R$ 1.500 — saldo cai temporariamente para <strong>~R$ 300</strong>
+    </div>
+  </div>
+
+</div><!-- /bottom-grid -->
+</div><!-- /page -->
+
+<script>
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+const COL_W    = 140;
+const N_MONTHS = 13; // Feb 2026 → Feb 2027 inclusive
+const FIRST_MONTH = 1; // 0=Jan, 1=Feb
+const FIRST_YEAR  = 2026;
+const TODAY_DAY   = 21;
+const TODAY_COL   = 0; // Feb is col 0
+
+const MONTHS_PT   = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MONTHS_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// Scenario balance values: index 0 = Feb 2026, index 12 = Feb 2027
+const BAL = {
+  r: [1800, 300, 4200, 5200, 8400, 10200, 12000, 14500, 17000, 18500, 21000, 22000, 25000],
+  o: [1800, 900, 6200, 8500,12000, 15200, 18800, 23000, 27500, 31000, 35500, 39000, 43500],
+  p: [1800,-400, 2100, 2800,  4600,  6000,  7200,  8500, 10000, 10800, 12000, 12500, 13500],
+};
+
+const SC_COLORS = { r:'#10b981', o:'#0055ff', p:'#f43f5e' };
+const SC_LABELS = { r:'Realista', o:'Otimista', p:'Pessimista' };
+const SC_TEXTS  = {
+  r: 'No cenário <strong>realista</strong>, você atinge <span class="hi"><strong>R$ 17.000 em fevereiro/27</strong></span> e conclui a <strong>Reserva de Emergência em junho/26</strong>. Atenção ao <span class="warn"><strong>aluguel em 25/fev</strong></span> — saldo cai para ~R$ 300 por 3 dias.',
+  o: 'No cenário <strong>otimista</strong> — com renda extra ou gastos reduzidos — você pode alcançar <span class="hi"><strong>R$ 43.500 em fevereiro/27</strong></span>. A meta de viagem à Europa ficaria <strong>ao alcance já em dezembro/26</strong>.',
+  p: 'No cenário <strong>pessimista</strong> — com gastos maiores ou imprevistos — saldo pode ficar negativo em <span class="bad"><strong>março/26 (-R$ 400)</strong></span>. Reserva de emergência seria mais crítica nesse cenário.',
+};
+
+// Events: { month(offset from Feb=0), day, type, ico, name, amount, impact, cat }
+const EVENTS = [
+  { m:0, d:1,  type:'income',  ico:'💼', name:'Salário',        amount:'+R$ 5.000', impact:'Saldo +R$ 5.000 no dia',          cat:'Renda'      },
+  { m:0, d:15, type:'recorr',  ico:'🎵', name:'Spotify',         amount:'-R$ 21',    impact:'Assinatura mensal fixa',          cat:'Assinatura' },
+  { m:0, d:15, type:'recorr',  ico:'📺', name:'Netflix',          amount:'-R$ 48',    impact:'Assinatura mensal fixa',          cat:'Assinatura' },
+  { m:0, d:25, type:'warn',    ico:'🏠', name:'Aluguel ⚠',        amount:'-R$ 1.500', impact:'Saldo cai para ~R$ 300 após pagar', cat:'Moradia'  },
+  { m:1, d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:1, d:5,  type:'goal',    ico:'✈️', name:'Aporte Europa',   amount:'-R$ 700',   impact:'Meta Viagem Europa',              cat:'Meta'       },
+  { m:1, d:10, type:'recorr',  ico:'🌐', name:'Internet',         amount:'-R$ 100',   impact:'Despesa fixa mensal',            cat:'Assinatura' },
+  { m:1, d:20, type:'expense', ico:'🏠', name:'Aluguel',          amount:'-R$ 1.500', impact:'Maior despesa do mês',           cat:'Moradia'    },
+  { m:2, d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:2, d:5,  type:'goal',    ico:'🛡️', name:'Reserva Emerg.',  amount:'-R$ 1.000', impact:'Meta: 6 meses de reserva',       cat:'Meta'       },
+  { m:2, d:15, type:'income',  ico:'💰', name:'13º (parcela)',    amount:'+R$ 1.200', impact:'Bônus anual — cenário otimista', cat:'Extra'      },
+  { m:2, d:20, type:'expense', ico:'🏠', name:'Aluguel',          amount:'-R$ 1.500', impact:'Maior despesa do mês',           cat:'Moradia'    },
+  { m:3, d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:3, d:20, type:'expense', ico:'🏠', name:'Aluguel',          amount:'-R$ 1.500', impact:'Maior despesa do mês',           cat:'Moradia'    },
+  { m:4, d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:4, d:10, type:'goal',    ico:'🛡️', name:'🎉 Meta concluída!',amount:'R$ 0',    impact:'Reserva de Emergência completa!', cat:'Meta'       },
+  { m:4, d:20, type:'expense', ico:'🏠', name:'Aluguel',          amount:'-R$ 1.500', impact:'Maior despesa do mês',           cat:'Moradia'    },
+  { m:5, d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:5, d:20, type:'expense', ico:'🏠', name:'Aluguel',          amount:'-R$ 1.500', impact:'Maior despesa do mês',           cat:'Moradia'    },
+  { m:6, d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:6, d:20, type:'expense', ico:'🏠', name:'Aluguel',          amount:'-R$ 1.500', impact:'Maior despesa do mês',           cat:'Moradia'    },
+  { m:7, d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:7, d:20, type:'expense', ico:'🏠', name:'Aluguel',          amount:'-R$ 1.500', impact:'Maior despesa do mês',           cat:'Moradia'    },
+  { m:8, d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:9, d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:10,d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:11,d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+  { m:12,d:1,  type:'income',  ico:'💼', name:'Salário',          amount:'+R$ 5.000', impact:'Saldo sobe +R$ 5.000',           cat:'Renda'      },
+];
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let curSc    = 'r';
+let curMode  = 'foco';
+let curTheme = 'dark';
+
+// ══════════════════════════════════════
+// BUILD
+// ══════════════════════════════════════
+function build() {
+  const W = N_MONTHS * COL_W;
+
+  // Month headers
+  const hdrs = document.getElementById('monthHdrs');
+  hdrs.innerHTML = '';
+  hdrs.style.width = W + 'px';
+  for (let i = 0; i < N_MONTHS; i++) {
+    const mIdx = (FIRST_MONTH + i) % 12;
+    const yr   = FIRST_YEAR + Math.floor((FIRST_MONTH + i) / 12);
+    const isCur = i === 0;
+    const hd = document.createElement('div');
+    hd.className = 'month-hdr' + (isCur ? ' current' : '');
+    hd.style.width = COL_W + 'px';
+    hd.innerHTML = `<div class="mh-name">${MONTHS_PT[mIdx]} ${yr}</div>` + (isCur ? '<div class="mh-tag">Hoje</div>' : '');
+    hdrs.appendChild(hd);
+  }
+
+  // Canvas wrap sizing
+  const cw = document.getElementById('canvasWrap');
+  cw.style.width = W + 'px';
+
+  // Col grid
+  const cg = document.getElementById('colGrid');
+  cg.innerHTML = '';
+  cg.style.width = W + 'px';
+  for (let i = 0; i < N_MONTHS; i++) {
+    const d = document.createElement('div');
+    d.className = 'col-line' + (i === 0 ? ' cur' : '');
+    d.style.width = COL_W + 'px';
+    cg.appendChild(d);
+  }
+
+  // Today line
+  const todayX = TODAY_COL * COL_W + (TODAY_DAY / 28) * COL_W;
+  document.getElementById('todayLine').style.left = todayX + 'px';
+
+  // Events
+  placeEvents();
+
+  // Curve
+  drawCurve();
+}
+
+function colX(m, d) {
+  return m * COL_W + (d / 30) * (COL_W - 20) + 10;
+}
+
+const MAX_CHIPS = 3; // max visible chips per band-column before overflow
+
+function placeEvents() {
+  const bi = document.getElementById('bandIncome');
+  const be = document.getElementById('bandExpense');
+  // Remove old chips
+  bi.querySelectorAll('.band-col').forEach(e => e.remove());
+  be.querySelectorAll('.band-col').forEach(e => e.remove());
+
+  // Group events by month × band-type
+  const groups = {};
+  EVENTS.forEach(ev => {
+    const band = ev.type === 'income' ? 'i' : 'e';
+    const key  = `${ev.m}-${band}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(ev);
+  });
+
+  Object.entries(groups).forEach(([key, items]) => {
+    const [mStr, band] = key.split('-');
+    const m      = parseInt(mStr);
+    const parent = band === 'i'
+      ? document.getElementById('bandIncome')
+      : document.getElementById('bandExpense');
+
+    // Column container positioned at month column
+    const colLeft = m * COL_W;
+    const col = document.createElement('div');
+    col.className = 'band-col';
+    col.style.left  = colLeft + 'px';
+    col.style.width = COL_W + 'px';
+
+    const visible  = items.slice(0, MAX_CHIPS);
+    const overflow = items.slice(MAX_CHIPS);
+
+    visible.forEach(ev => {
+      const chip = document.createElement('div');
+      chip.className = `cat-chip ${ev.type}`;
+      chip.innerHTML = `<span class="chip-ico">${ev.ico}</span><span class="chip-txt">${ev.name}</span>`;
+      chip.addEventListener('mouseenter', e => showTooltip(e, ev));
+      chip.addEventListener('mousemove',  e => moveTooltip(e));
+      chip.addEventListener('mouseleave', hideTooltip);
+      col.appendChild(chip);
+    });
+
+    if (overflow.length > 0) {
+      const more = document.createElement('div');
+      more.className = 'cat-more';
+      more.textContent = `+${overflow.length}`;
+      more.addEventListener('mouseenter', e => showOverflowTooltip(e, overflow, m, band));
+      more.addEventListener('mousemove',  e => moveTooltip(e));
+      more.addEventListener('mouseleave', hideTooltip);
+      col.appendChild(more);
+    }
+
+    parent.appendChild(col);
+  });
+}
+
+// ── TOOLTIP ──────────────────────────
+function showTooltip(e, ev) {
+  const mIdx = (FIRST_MONTH + ev.m) % 12;
+  const yr   = FIRST_YEAR + Math.floor((FIRST_MONTH + ev.m) / 12);
+  const tip  = document.getElementById('evTooltip');
+  document.getElementById('etIco').textContent    = ev.ico;
+  document.getElementById('etName').textContent   = ev.name;
+  document.getElementById('etDate').textContent   = `${ev.d} de ${MONTHS_FULL[mIdx]} ${yr}`;
+  const amtEl = document.getElementById('etAmount');
+  amtEl.textContent = ev.amount;
+  amtEl.className   = 'et-amount ' + (ev.type==='income'?'g':ev.type==='goal'?'b':ev.type==='warn'?'y':'r');
+  document.getElementById('etImpact').innerHTML = ev.impact;
+  const tagEl = document.getElementById('etTag');
+  tagEl.className   = `et-tag ${ev.type}`;
+  const labels = {income:'Receita',expense:'Despesa',goal:'Meta',recorr:'Recorrente',warn:'Atenção!'};
+  tagEl.textContent = labels[ev.type] || ev.type;
+  tip.classList.add('show');
+  moveTooltip(e);
+}
+
+function showOverflowTooltip(e, evs, m, band) {
+  const mIdx = (FIRST_MONTH + m) % 12;
+  const yr   = FIRST_YEAR + Math.floor((FIRST_MONTH + m) / 12);
+  const tip  = document.getElementById('evTooltip');
+  const bandName = band === 'i' ? 'Receitas' : 'Despesas / Metas';
+  document.getElementById('etIco').textContent  = band==='i'?'💰':'📤';
+  document.getElementById('etName').textContent = `${bandName} — mais ${evs.length}`;
+  document.getElementById('etDate').textContent = `${MONTHS_FULL[mIdx]} ${yr}`;
+  document.getElementById('etAmount').textContent = '';
+  document.getElementById('etAmount').className    = 'et-amount';
+  document.getElementById('etImpact').innerHTML    =
+    evs.map(ev=>`<div class="et-ov-row"><span class="et-ov-ico">${ev.ico}</span><span><strong>${ev.name}</strong> — ${ev.amount}</span></div>`).join('');
+  document.getElementById('etTag').textContent = '';
+  document.getElementById('etTag').className   = 'et-tag';
+  tip.classList.add('show');
+  moveTooltip(e);
+}
+
+function moveTooltip(e) {
+  const tip = document.getElementById('evTooltip');
+  const tw  = tip.offsetWidth  || 220;
+  const th  = tip.offsetHeight || 160;
+  let lx = e.clientX + 14;
+  let ly = e.clientY - 20;
+  if (lx + tw > window.innerWidth  - 12) lx = e.clientX - tw - 14;
+  if (ly + th > window.innerHeight - 12) ly = e.clientY - th + 20;
+  tip.style.left = lx + 'px';
+  tip.style.top  = ly + 'px';
+}
+
+function hideTooltip() {
+  document.getElementById('evTooltip').classList.remove('show');
+}
+
+// ══════════════════════════════════════
+// BALANCE CURVE
+// ══════════════════════════════════════
+function drawCurve() {
+  const svg  = document.getElementById('balSvg');
+  const band = document.getElementById('bandBalance');
+  const H    = band.offsetHeight || 140;
+  const W    = N_MONTHS * COL_W;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.style.width  = W + 'px';
+  svg.style.height = H + 'px';
+
+  const vals   = BAL[curSc];
+  const allBal = Object.values(BAL).flat();
+  const maxV   = Math.max(...allBal) * 1.05;
+  const minV   = Math.min(...allBal, 0);
+  const range  = maxV - minV || 1;
+  const pad    = 18;
+
+  function yFor(v) { return pad + (1 - (v - minV) / range) * (H - pad * 2); }
+
+  function smoothPath(sc) {
+    const pts = BAL[sc].map((v, i) => [i * COL_W + COL_W * 0.5, yFor(v)]);
+    let d = `M ${pts[0][0]} ${pts[0][1]}`;
+    for (let i = 1; i < pts.length; i++) {
+      const cp1x = pts[i-1][0] + (pts[i][0] - pts[i-1][0]) * 0.45;
+      const cp1y = pts[i-1][1];
+      const cp2x = pts[i][0] - (pts[i][0] - pts[i-1][0]) * 0.45;
+      const cp2y = pts[i][1];
+      d += ` C ${cp1x} ${cp1y} ${cp2x} ${cp2y} ${pts[i][0]} ${pts[i][1]}`;
+    }
+    return { d, pts };
+  }
+
+  const { d: dR, pts: ptsR } = smoothPath('r');
+  const { d: dO }             = smoothPath('o');
+  const { d: dP }             = smoothPath('p');
+
+  const mainColor = SC_COLORS[curSc];
+  const { d: dMain, pts: ptsMain } = smoothPath(curSc);
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="balGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${mainColor}" stop-opacity="0.45"/>
+        <stop offset="100%" stop-color="${mainColor}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <!-- Pessimista dashed -->
+    <path d="${dP}" fill="none" stroke="${SC_COLORS.p}" stroke-width="1.5" stroke-dasharray="5 4" opacity="${curSc==='p'?'0':'0.45'}"/>
+    <!-- Otimista dashed -->
+    <path d="${dO}" fill="none" stroke="${SC_COLORS.o}" stroke-width="1.5" stroke-dasharray="5 4" opacity="${curSc==='o'?'0':'0.45'}"/>
+    <!-- Main area -->
+    <path d="${dMain} L ${ptsMain[ptsMain.length-1][0]} ${H} L ${ptsMain[0][0]} ${H} Z" fill="url(#balGrad)" opacity="0.22"/>
+    <!-- Main line -->
+    <path d="${dMain}" fill="none" stroke="${mainColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Zero line -->
+    <line x1="0" y1="${yFor(0)}" x2="${W}" y2="${yFor(0)}" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="4" y="${yFor(0)-4}" font-size="9" fill="var(--t3)" font-family="DM Mono">0</text>
+    <!-- Dots + labels on main curve -->
+    ${BAL[curSc].map((v, i) => {
+      const x = i * COL_W + COL_W * 0.5;
+      const y = yFor(v);
+      const neg = v < 0;
+      const isToday = i === 0;
+      const fmt = v >= 1000 ? 'R$'+(v/1000).toFixed(0)+'k' : (v<0 ? '-R$'+Math.abs(v) : 'R$'+v);
+      return `
+        <circle cx="${x}" cy="${y}" r="${isToday?5:3.5}" 
+          fill="${neg ? SC_COLORS.p : mainColor}" 
+          ${isToday ? `stroke="var(--bg)" stroke-width="2"` : ''}/>
+        ${i % 2 === 0 || i === BAL[curSc].length-1 ? 
+          `<text x="${x}" y="${y-9}" text-anchor="middle" font-size="9" font-family="DM Mono"
+            fill="${neg ? SC_COLORS.p : mainColor}">${fmt}</text>` : ''}
+      `;
+    }).join('')}
+  `;
+}
+
+// ══════════════════════════════════════
+// SCENARIO
+// ══════════════════════════════════════
+function setScenario(s) {
+  curSc = s;
+  ['p','r','o'].forEach(sc => {
+    document.getElementById('sc-'+sc).className = 'sc-btn' + (sc===s ? ` act-${sc}` : '');
+  });
+
+  const vals = BAL[s];
+  const fmt  = v => v < 0 ? '-R$ '+Math.abs(v).toLocaleString('pt-BR') : 'R$ '+v.toLocaleString('pt-BR');
+
+  // Update summary cards
+  document.getElementById('sum6m').textContent    = fmt(vals[6]);
+  document.getElementById('sum12m').textContent   = fmt(vals[12]);
+  document.getElementById('sum6m-lbl').textContent  = `ago/26 — ${SC_LABELS[s]}`;
+  document.getElementById('sum12m-lbl').textContent = `fev/27 — ${SC_LABELS[s]}`;
+  document.getElementById('sum6m').className  = 'sc-value ' + (vals[6]  >= 0 ? (s==='o'?'b':'g') : 'r');
+  document.getElementById('sum12m').className = 'sc-value ' + (vals[12] >= 0 ? 'g' : 'r');
+
+  // Update projection card
+  document.getElementById('proj6m').textContent  = fmt(vals[6]);
+  document.getElementById('proj12m').textContent = fmt(vals[12]);
+  document.getElementById('proj6m').className    = 'bal-val ' + (vals[6]  >= 0 ? (s==='o'?'b':'g') : 'r');
+  document.getElementById('proj12m').className   = 'bal-val ' + (vals[12] >= 0 ? 'g' : 'r');
+  document.getElementById('projScLabel').textContent = `● ${SC_LABELS[s]}`;
+  document.getElementById('projScLabel').style.color  = SC_COLORS[s];
+
+  // Jornada insight text
+  document.getElementById('jiText').innerHTML = SC_TEXTS[s];
+
+  // Subtitle
+  document.getElementById('tl-subtitle').textContent = `Projeção ${SC_LABELS[s]} · Fev/2026 → Fev/2027`;
+
+  // Redraw curve with new values
+  drawCurve();
+}
+
+// ══════════════════════════════════════
+// MODE / THEME
+// ══════════════════════════════════════
+function setMode(m) {
+  curMode = m;
+  document.body.classList.toggle('jornada', m === 'jornada');
+  document.getElementById('cb-foco').className    = 'ctrl-b' + (m==='foco'    ? ' on-n' : '');
+  document.getElementById('cb-jornada').className = 'ctrl-b' + (m==='jornada' ? ' on'   : '');
+}
+function setTheme(t) {
+  curTheme = t;
+  document.body.classList.toggle('light', t === 'light');
+  document.getElementById('cb-dark').className  = 'ctrl-b' + (t==='dark'  ? ' on-n' : '');
+  document.getElementById('cb-light').className = 'ctrl-b' + (t==='light' ? ' on-n' : '');
+  setTimeout(drawCurve, 60);
+}
+
+// ══════════════════════════════════════
+// DRAG TO SCROLL
+// ══════════════════════════════════════
+const tlScroll = document.getElementById('tlScroll');
+let drag = false, sx, sl;
+tlScroll.addEventListener('mousedown', e => {
+  if (e.target.closest('.ev-dot,.ev-cluster')) return;
+  drag=true; sx=e.pageX-tlScroll.offsetLeft; sl=tlScroll.scrollLeft; tlScroll.style.cursor='grabbing';
+});
+window.addEventListener('mouseup', () => { drag=false; tlScroll.style.cursor='grab'; });
+tlScroll.addEventListener('mousemove', e => {
+  if (!drag) return;
+  e.preventDefault();
+  tlScroll.scrollLeft = sl - (e.pageX - tlScroll.offsetLeft - sx) * 1.2;
+});
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+window.addEventListener('load', () => {
+  build();
+  setScenario('r');
+});
+window.addEventListener('resize', () => { build(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Protótipo Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ══════════════════════════════════════
+   TOKENS — Dark Foco (default)
+══════════════════════════════════════ */
+:root {
+  --bg:    #03071a;
+  --s1:    #07112b;
+  --s2:    #0c1a3a;
+  --s3:    #132248;
+  --border:   rgba(255,255,255,0.06);
+  --border-h: rgba(255,255,255,0.13);
+  --t1:  #dff0ff;
+  --t2:  #6e90b8;
+  --t3:  #2e4a6e;
+
+  --em:  #10b981;
+  --el:  #0055ff;
+  --em-g: rgba(16,185,129,0.15);
+  --el-g: rgba(0,85,255,0.15);
+  --fin: #10b981;
+  --meta:#0055ff;
+  --ag:  #06b6d4;
+
+  --green:  #10b981;
+  --yellow: #f59e0b;
+  --red:    #f43f5e;
+  --orange: #f97316;
+}
+
+/* Dark Jornada */
+body.jornada {
+  --bg:  #020d08;
+  --s1:  #061410;
+  --s2:  #0b1e18;
+  --s3:  #112b22;
+  --border:   rgba(16,185,129,0.08);
+  --border-h: rgba(16,185,129,0.18);
+  --t1:  #d6faf0;
+  --t2:  #4da888;
+  --t3:  #235c48;
+}
+
+/* Light Foco */
+body.light {
+  --bg:  #e6edf5;
+  --s1:  #ffffff;
+  --s2:  #f0f6fa;
+  --s3:  #e0eaf3;
+  --border:   rgba(3,7,26,0.09);
+  --border-h: rgba(3,7,26,0.18);
+  --t1:  #03071a;
+  --t2:  #1e3a5c;
+  --t3:  #5a7a9e;
+  --em-g: rgba(16,185,129,0.10);
+  --el-g: rgba(0,85,255,0.10);
+}
+
+/* Light Jornada */
+body.light.jornada {
+  --bg:  #c8f0e4;
+  --s1:  #ffffff;
+  --s2:  #e0f7ef;
+  --s3:  #c4eede;
+  --border:   rgba(5,80,56,0.12);
+  --border-h: rgba(5,80,56,0.24);
+  --t1:  #022016;
+  --t2:  #0d5c3e;
+  --t3:  #4da888;
+}
+
+html, body { height:100%; min-height:100vh; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  font-size: 14px;
+  line-height: 1.5;
+  transition: background 0.35s, color 0.25s;
+}
+
+/* ══════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════ */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+/* ══════════════════════════════════════
+   HEADER ROW
+══════════════════════════════════════ */
+.dash-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+}
+.dash-greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Foco: clean title */
+.greeting-foco .g-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 700;
+  color: var(--t1);
+}
+.greeting-foco .g-sub {
+  font-size: 13px; color: var(--t3);
+}
+
+/* Jornada: warm personal greeting */
+.greeting-jornada { display: none; }
+body.jornada .greeting-jornada { display: flex; flex-direction: column; gap: 3px; }
+body.jornada .greeting-foco { display: none; }
+
+.g-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px; font-weight: 800;
+  background: linear-gradient(90deg, var(--em), var(--el));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1.2;
+}
+body.light.jornada .g-name {
+  background: linear-gradient(90deg, #0c9e6e, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.g-phrase {
+  font-size: 13px; color: var(--t3); font-style: italic;
+}
+
+/* Header right */
+.dash-header-right {
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.period-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--s2); cursor: pointer;
+  font-size: 12px; color: var(--t2);
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+.period-btn:hover { border-color: var(--border-h); color: var(--t1); }
+.period-btn svg { width: 13px; height: 13px; }
+
+/* Streak badge — only Jornada */
+.streak-badge {
+  display: none;
+  align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: 20px;
+  background: rgba(249,115,22,0.12);
+  border: 1px solid rgba(249,115,22,0.25);
+  font-size: 12px; color: var(--orange);
+  font-weight: 600;
+}
+body.jornada .streak-badge { display: flex; }
+
+/* ══════════════════════════════════════
+   LIFE SYNC SCORE — Jornada only
+══════════════════════════════════════ */
+.score-hero {
+  display: none;
+  align-items: center; gap: 28px;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(0,85,255,0.10));
+  border: 1px solid rgba(16,185,129,0.20);
+  border-radius: 20px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.4s ease both;
+}
+body.jornada .score-hero { display: flex; }
+body.light.jornada .score-hero {
+  background: linear-gradient(135deg, rgba(16,185,129,0.07), rgba(0,85,255,0.07));
+  border-color: rgba(16,185,129,0.22);
+}
+
+/* Radial glow behind score number */
+.score-hero::before {
+  content: '';
+  position: absolute; left: -60px; top: -60px;
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, rgba(16,185,129,0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.score-num-wrap { flex-shrink: 0; }
+.score-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 80px; font-weight: 800; line-height: 1;
+  background: linear-gradient(135deg, #10b981, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.score-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--t3); margin-top: 2px;
+}
+
+.score-right { flex: 1; min-width: 0; }
+.score-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--t1); margin-bottom: 4px;
+}
+.score-phrase {
+  font-size: 13px; color: var(--t3);
+  font-style: italic; margin-bottom: 14px;
+}
+.score-bar-bg {
+  height: 6px; background: rgba(255,255,255,0.07);
+  border-radius: 3px; overflow: hidden; margin-bottom: 12px;
+}
+body.light .score-bar-bg { background: rgba(0,0,0,0.08); }
+.score-bar-fill {
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, #10b981, #0055ff);
+  border-radius: 3px;
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+.score-dims {
+  display: flex; gap: 20px; flex-wrap: wrap;
+}
+.score-dim {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.score-dim-label {
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--t3);
+}
+.score-dim-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 16px; font-weight: 500; color: var(--t1);
+}
+.score-dim-val.hi  { color: var(--green); }
+.score-dim-val.mid { color: var(--yellow); }
+
+.score-actions { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.score-cta {
+  padding: 8px 16px; border-radius: 10px;
+  border: none; cursor: pointer;
+  background: linear-gradient(135deg, #10b981, #0055ff);
+  color: #fff; font-size: 12px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.score-cta:hover { opacity: 0.85; }
+.score-delta {
+  font-size: 11px; color: var(--green); text-align: right;
+}
+
+/* ══════════════════════════════════════
+   KPI CARDS ROW
+══════════════════════════════════════ */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s, transform 0.15s;
+  cursor: default;
+  animation: fadeUp 0.4s ease both;
+}
+.kpi-card:hover { border-color: var(--border-h); transform: translateY(-1px); }
+body.light .kpi-card {
+  box-shadow: 0 2px 12px rgba(3,7,26,0.07);
+  border-color: rgba(3,7,26,0.07);
+}
+body.light.jornada .kpi-card {
+  box-shadow: 0 2px 12px rgba(5,80,56,0.09);
+  border-color: rgba(5,80,56,0.10);
+}
+
+/* Accent bar top */
+.kpi-card::before {
+  content: '';
+  position: absolute; top: 0; left: 20px; right: 20px;
+  height: 2px; border-radius: 0 0 2px 2px;
+  background: var(--kpi-accent, transparent);
+  transition: opacity 0.15s;
+}
+.kpi-card:hover::before { opacity: 1; }
+
+.kpi-icon {
+  width: 32px; height: 32px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px; font-size: 16px;
+  flex-shrink: 0;
+}
+.kpi-label {
+  font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--t3);
+  margin-bottom: 6px;
+}
+.kpi-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 26px; font-weight: 500;
+  color: var(--t1); line-height: 1;
+  margin-bottom: 6px;
+}
+.kpi-delta {
+  font-size: 12px; color: var(--t3);
+  display: flex; align-items: center; gap: 4px;
+}
+.kpi-delta.up   { color: var(--green); }
+.kpi-delta.down { color: var(--red); }
+.kpi-delta.warn { color: var(--yellow); }
+
+/* Progress mini-bar inside KPI */
+.kpi-bar {
+  margin-top: 10px;
+  height: 4px; background: var(--s3);
+  border-radius: 2px; overflow: hidden;
+}
+.kpi-bar-fill {
+  height: 100%; border-radius: 2px;
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ══════════════════════════════════════
+   MAIN GRID
+══════════════════════════════════════ */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .kpi-row { grid-template-columns: repeat(2,1fr); }
+}
+
+/* Card base */
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  transition: border-color 0.15s;
+  animation: fadeUp 0.4s ease both;
+}
+.card:hover { border-color: var(--border-h); }
+body.light .card { box-shadow: 0 2px 12px rgba(3,7,26,0.07); border-color: rgba(3,7,26,0.07); }
+body.light.jornada .card { box-shadow: 0 2px 12px rgba(5,80,56,0.09); border-color: rgba(5,80,56,0.10); }
+
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700;
+  color: var(--t1); letter-spacing: 0.01em;
+}
+.card-action {
+  font-size: 11px; color: var(--em);
+  cursor: pointer; transition: opacity 0.12s;
+}
+.card-action:hover { opacity: 0.7; }
+
+/* ══════════════════════════════════════
+   ORÇAMENTO / ENVELOPES
+══════════════════════════════════════ */
+.envelope-row {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.envelope-item {
+  display: flex; flex-direction: column; gap: 5px;
+}
+.envelope-top {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.envelope-name { font-size: 13px; color: var(--t2); }
+.envelope-amounts {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; color: var(--t3);
+}
+.envelope-amounts span { color: var(--t2); }
+.env-bar-bg {
+  height: 6px; background: var(--s3);
+  border-radius: 3px; overflow: hidden;
+}
+.env-bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.env-pct {
+  font-size: 11px; font-weight: 600;
+  margin-left: auto;
+}
+
+/* ══════════════════════════════════════
+   MINI CHART — gasto por categoria (barras)
+══════════════════════════════════════ */
+.chart-wrap {
+  display: flex; flex-direction: column; gap: 0;
+}
+.chart-bars {
+  display: flex; align-items: flex-end; gap: 6px;
+  height: 160px;
+  flex: 1;
+}
+.chart-bar-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 0;
+  height: 100%;
+  justify-content: flex-end; /* bars anchor to bottom */
+  position: relative;
+}
+/* percentage label floats above each bar */
+.chart-bar-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; font-weight: 600;
+  color: var(--t2); margin-bottom: 3px;
+  line-height: 1;
+}
+.chart-bar-fill {
+  width: 100%; border-radius: 4px 4px 0 0;
+  transition: height 0.9s cubic-bezier(0.4,0,0.2,1);
+  min-height: 4px;
+}
+/* base line under all bars */
+.chart-baseline {
+  height: 1px; background: var(--border); width: 100%; margin-top: 6px;
+}
+/* labels row below baseline */
+.chart-labels {
+  display: flex; gap: 6px; margin-top: 6px;
+}
+.chart-bar-label {
+  flex: 1; font-size: 9px; color: var(--t3);
+  text-align: center; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ══════════════════════════════════════
+   METAS
+══════════════════════════════════════ */
+.meta-list { display: flex; flex-direction: column; gap: 14px; }
+.meta-item {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.meta-top {
+  display: flex; align-items: center; gap: 10px;
+}
+.meta-icon { font-size: 20px; flex-shrink: 0; }
+.meta-info { flex: 1; min-width: 0; }
+.meta-name {
+  font-size: 13px; font-weight: 500; color: var(--t1);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.meta-sub { font-size: 11px; color: var(--t3); }
+.meta-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 14px; font-weight: 500;
+  flex-shrink: 0;
+}
+.meta-bar-bg {
+  height: 5px; background: var(--s3); border-radius: 3px; overflow: hidden;
+}
+.meta-bar-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--fin), var(--meta));
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Jornada: meta tip */
+.meta-tip {
+  display: none;
+  font-size: 11px; color: var(--yellow);
+  padding: 6px 8px;
+  background: rgba(245,158,11,0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(245,158,11,0.15);
+}
+body.jornada .meta-tip { display: block; }
+
+/* ══════════════════════════════════════
+   AGENDA PREVIEW
+══════════════════════════════════════ */
+.agenda-list { display: flex; flex-direction: column; gap: 0; }
+.agenda-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.12s;
+  border-radius: 0;
+}
+.agenda-item:last-child { border-bottom: none; }
+.agenda-item:hover { background: var(--s2); margin: 0 -8px; padding: 9px 8px; border-radius: 8px; }
+.agenda-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.agenda-time {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: var(--t3); flex-shrink: 0; width: 36px;
+}
+.agenda-name { font-size: 13px; color: var(--t2); flex: 1; }
+.agenda-name.today { color: var(--t1); font-weight: 500; }
+.agenda-tag {
+  font-size: 10px; font-weight: 600; padding: 2px 7px;
+  border-radius: 6px; flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════
+   AI INSIGHT CARD
+══════════════════════════════════════ */
+.ai-card {
+  background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(0,85,255,0.06));
+  border: 1px solid rgba(16,185,129,0.18);
+  border-radius: 16px; padding: 20px;
+  margin-bottom: 16px;
+  animation: fadeUp 0.4s ease both;
+}
+body.light .ai-card {
+  background: linear-gradient(135deg, rgba(16,185,129,0.05), rgba(0,85,255,0.04));
+  border-color: rgba(16,185,129,0.16);
+}
+.ai-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+}
+.ai-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.09em;
+  color: var(--em);
+}
+.ai-badge {
+  font-size: 9px; font-weight: 700; padding: 2px 7px;
+  border-radius: 6px; background: rgba(16,185,129,0.12);
+  color: var(--em); letter-spacing: 0.05em;
+}
+.ai-text {
+  font-size: 13px; color: var(--t2); line-height: 1.75;
+}
+.ai-text strong { color: var(--t1); }
+.ai-text .hi { color: var(--green); }
+.ai-text .warn { color: var(--yellow); }
+.ai-text .bad  { color: var(--red); }
+
+/* Foco: ai card is minimal / hidden by default, shows on demand */
+.ai-card-foco { display: block; }
+body.jornada .ai-card-foco { display: none; }
+.ai-card-jornada { display: none; }
+body.jornada .ai-card-jornada { display: block; }
+
+/* Foco version: compact numbers only */
+.ai-stats-row {
+  display: flex; gap: 28px;
+}
+.ai-stat { display: flex; flex-direction: column; gap: 2px; }
+.ai-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--t3); }
+.ai-stat-val {
+  font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500;
+}
+.ai-stat-val.g { color: var(--green); }
+.ai-stat-val.r { color: var(--red); }
+.ai-stat-val.y { color: var(--yellow); }
+.ai-stat-val.b { color: var(--el); }
+
+/* Ask AI input — Jornada */
+.ai-input-row {
+  display: none;
+  align-items: center; gap: 8px;
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid rgba(16,185,129,0.12);
+}
+body.jornada .ai-input-row { display: flex; }
+.ai-input {
+  flex: 1; padding: 8px 12px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--t1);
+  font-size: 13px; font-family: 'DM Sans', sans-serif;
+  outline: none; transition: border-color 0.15s;
+}
+.ai-input::placeholder { color: var(--t3); }
+.ai-input:focus { border-color: var(--em); }
+.ai-send {
+  padding: 8px 14px; border-radius: 10px;
+  border: none; background: var(--em);
+  color: #fff; font-size: 12px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif; cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.ai-send:hover { opacity: 0.85; }
+
+/* ══════════════════════════════════════
+   RECORRENTES — próximos vencimentos
+══════════════════════════════════════ */
+.recorr-list { display: flex; flex-direction: column; gap: 0; }
+.recorr-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+}
+.recorr-item:last-child { border-bottom: none; }
+.recorr-left { display: flex; align-items: center; gap: 10px; }
+.recorr-ico {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--s3); display: flex; align-items: center;
+  justify-content: center; font-size: 14px; flex-shrink: 0;
+}
+.recorr-name { font-size: 13px; color: var(--t2); }
+.recorr-date { font-size: 11px; color: var(--t3); }
+.recorr-right { text-align: right; }
+.recorr-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px; color: var(--red);
+}
+.recorr-status {
+  font-size: 10px; font-weight: 600; padding: 2px 6px;
+  border-radius: 4px; margin-top: 2px; display: inline-block;
+}
+.recorr-status.ok  { background: rgba(16,185,129,.12); color: var(--green); }
+.recorr-status.due { background: rgba(245,158,11,.12);  color: var(--yellow); }
+.recorr-status.fut { background: rgba(110,144,184,.1);  color: var(--t3); }
+
+/* ══════════════════════════════════════
+   BOTTOM ROW
+══════════════════════════════════════ */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .bottom-grid { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════
+   CONQUISTAS — Jornada only
+══════════════════════════════════════ */
+.badges-row {
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.badge-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 12px; border-radius: 12px;
+  background: var(--s2); border: 1px solid var(--border);
+  cursor: pointer; transition: border-color 0.15s, transform 0.15s;
+  min-width: 64px;
+}
+.badge-item:hover { border-color: var(--border-h); transform: translateY(-2px); }
+.badge-item.locked { opacity: 0.35; filter: grayscale(1); }
+.badge-emoji { font-size: 22px; }
+.badge-name { font-size: 9px; color: var(--t3); text-align: center; font-weight: 500; }
+
+/* Jornada section only */
+.jornada-only { display: none; }
+body.jornada .jornada-only { display: block; }
+
+/* ══════════════════════════════════════
+   SEMANA — mini timeline
+══════════════════════════════════════ */
+.week-strip {
+  display: flex; gap: 6px;
+}
+.week-day {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 4px; border-radius: 10px;
+  cursor: pointer; transition: background 0.12s;
+}
+.week-day:hover { background: var(--s2); }
+.week-day.today { background: var(--em-g); }
+.wd-name { font-size: 9px; color: var(--t3); text-transform: uppercase; letter-spacing: .05em; }
+.wd-num {
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.week-day.today .wd-num {
+  background: var(--em); color: #fff;
+}
+.wd-dots { display: flex; gap: 2px; }
+.wd-dot { width: 4px; height: 4px; border-radius: 50%; }
+
+/* ══════════════════════════════════════
+   PROJEÇÃO SALDO (mini sparkline)
+══════════════════════════════════════ */
+.sparkline-wrap {
+  position: relative; height: 60px;
+  margin: 0 -4px;
+}
+.sparkline-wrap svg {
+  width: 100%; height: 100%;
+  overflow: visible;
+}
+.spark-path {
+  fill: none; stroke: var(--em); stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.spark-area {
+  fill: url(#spark-grad);
+  opacity: 0.25;
+}
+.spark-dot {
+  fill: var(--em); r: 3;
+}
+.spark-dot.end { fill: var(--el); r: 4; }
+
+/* ══════════════════════════════════════
+   ANNOTATIONS
+══════════════════════════════════════ */
+.annotation {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(245,158,11,0.08);
+  border: 1px dashed rgba(245,158,11,0.3);
+  border-radius: 6px; padding: 3px 9px;
+  font-size: 11px; color: var(--yellow);
+  margin-bottom: 20px; cursor: default;
+}
+
+/* ══════════════════════════════════════
+   CONTROLS
+══════════════════════════════════════ */
+.controls {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--s2); border: 1px solid var(--border-h);
+  border-radius: 16px; padding: 14px; z-index: 999;
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 210px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+body.light .controls { box-shadow: 0 4px 24px rgba(3,7,26,0.14); background: #fff; }
+.ctrl-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing:.1em; color: var(--t3); }
+.ctrl-row { display: flex; flex-direction: column; gap: 5px; }
+.ctrl-lbl { font-size: 11px; color: var(--t3); font-weight: 500; }
+.ctrl-grp { display: flex; gap: 6px; flex-wrap: wrap; }
+.ctrl-btn {
+  padding: 5px 11px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--s3);
+  color: var(--t2); font-size: 12px;
+  font-family: 'DM Sans', sans-serif; cursor: pointer;
+  transition: all 0.15s;
+}
+.ctrl-btn:hover { border-color: var(--border-h); color: var(--t1); }
+.ctrl-btn.on { background: var(--em-g); color: var(--em); border-color: rgba(16,185,129,.3); }
+.ctrl-btn.on-b { background: var(--el-g); color: var(--el); border-color: rgba(0,85,255,.3); }
+.ctrl-btn.on-n { background: rgba(238,242,255,.08); color: var(--t1); border-color: rgba(238,242,255,.15); }
+.divider { height: 1px; background: var(--border); }
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.10s; }
+.delay-3 { animation-delay: 0.15s; }
+.delay-4 { animation-delay: 0.20s; }
+.delay-5 { animation-delay: 0.25s; }
+
+/* Jornada pulse on score card */
+@keyframes pulse-border {
+  0%, 100% { border-color: rgba(16,185,129,0.20); }
+  50%       { border-color: rgba(16,185,129,0.40); }
+}
+body.jornada .score-hero {
+  animation: fadeUp 0.4s ease both, pulse-border 3s ease-in-out infinite;
+}
+</style>
+</head>
+<body>
+
+<!-- CONTROLES -->
+<div class="controls">
+  <div class="ctrl-title">🧪 Controles</div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Modo</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-n" id="ctrl-foco"    onclick="setMode('foco')">🎯 Foco</button>
+      <button class="ctrl-btn"      id="ctrl-jornada" onclick="setMode('jornada')">🌱 Jornada</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Tema</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-n" id="ctrl-dark"  onclick="setTheme('dark')">🌙 Dark</button>
+      <button class="ctrl-btn"      id="ctrl-light" onclick="setTheme('light')">☀️ Light</button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ANNOTATION -->
+  <div class="annotation">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    Protótipo · Dashboard — alterne Modo e Tema nos controles →
+  </div>
+
+  <!-- HEADER -->
+  <div class="dash-header">
+    <div class="dash-greeting">
+      <!-- Modo Foco -->
+      <div class="greeting-foco">
+        <div class="g-title">Dashboard</div>
+        <div class="g-sub">Fevereiro 2026 · semana 3 de 4</div>
+      </div>
+      <!-- Modo Jornada -->
+      <div class="greeting-jornada">
+        <div class="g-name">Boa tarde, Thiago! ✨</div>
+        <div class="g-phrase">7 dias consecutivos de registros — continue assim.</div>
+      </div>
+    </div>
+
+    <div class="dash-header-right">
+      <!-- Streak — Jornada only -->
+      <div class="streak-badge">
+        🔥 7 dias
+      </div>
+      <button class="period-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="3"/>
+          <path d="M16 2v4M8 2v4M3 10h18"/>
+        </svg>
+        Fevereiro 2026
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- LIFE SYNC SCORE — Jornada -->
+  <div class="score-hero" id="scoreHero">
+    <div class="score-num-wrap">
+      <div class="score-num">74</div>
+      <div class="score-label">Life Sync Score</div>
+    </div>
+    <div class="score-right">
+      <div class="score-title">Evolução consistente</div>
+      <div class="score-phrase">"Você está em um bom ritmo. Financeiro excelente, metas precisam de atenção."</div>
+      <div class="score-bar-bg">
+        <div class="score-bar-fill" id="scoreBar" style="width:0%"></div>
+      </div>
+      <div class="score-dims">
+        <div class="score-dim">
+          <div class="score-dim-label">Financeiro</div>
+          <div class="score-dim-val hi">82</div>
+        </div>
+        <div class="score-dim">
+          <div class="score-dim-label">Metas</div>
+          <div class="score-dim-val mid">61</div>
+        </div>
+        <div class="score-dim">
+          <div class="score-dim-label">Consistência</div>
+          <div class="score-dim-val hi">78</div>
+        </div>
+        <div class="score-dim">
+          <div class="score-dim-label">Agenda</div>
+          <div class="score-dim-val mid">67</div>
+        </div>
+      </div>
+    </div>
+    <div class="score-actions">
+      <button class="score-cta">Ver análise completa</button>
+      <div class="score-delta">↑ +3 vs. semana passada</div>
+    </div>
+  </div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-row">
+    <div class="kpi-card" style="--kpi-accent: var(--green); animation-delay:.05s">
+      <div class="kpi-icon" style="background:rgba(16,185,129,.12)">💰</div>
+      <div class="kpi-label">Receitas</div>
+      <div class="kpi-value" style="color:var(--green)">R$ 5.000</div>
+      <div class="kpi-delta up">↑ +12% vs. jan</div>
+    </div>
+    <div class="kpi-card" style="--kpi-accent: var(--red); animation-delay:.10s">
+      <div class="kpi-icon" style="background:rgba(244,63,94,.12)">📤</div>
+      <div class="kpi-label">Despesas</div>
+      <div class="kpi-value" style="color:var(--red)">R$ 3.200</div>
+      <div class="kpi-delta down">↓ -5% vs. jan</div>
+      <div class="kpi-bar">
+        <div class="kpi-bar-fill" style="width:64%; background:var(--red); opacity:.6"></div>
+      </div>
+    </div>
+    <div class="kpi-card" style="--kpi-accent: var(--em); animation-delay:.15s">
+      <div class="kpi-icon" style="background:rgba(16,185,129,.12)">💚</div>
+      <div class="kpi-label">Saldo do Mês</div>
+      <div class="kpi-value">R$ 1.800</div>
+      <div class="kpi-delta up">↑ +R$ 342 vs. jan</div>
+    </div>
+    <div class="kpi-card" style="--kpi-accent: var(--yellow); animation-delay:.20s">
+      <div class="kpi-icon" style="background:rgba(245,158,11,.12)">🎯</div>
+      <div class="kpi-label">Metas Ativas</div>
+      <div class="kpi-value">3</div>
+      <div class="kpi-delta warn">⚠ 1 em risco</div>
+      <div class="kpi-bar">
+        <div class="kpi-bar-fill" style="width:67%; background:linear-gradient(90deg,var(--fin),var(--meta))"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI INSIGHT — Foco version (compact stats) -->
+  <div class="ai-card ai-card-foco">
+    <div class="ai-header">
+      <div class="ai-label">Resumo do mês</div>
+      <div class="ai-badge">AUTO</div>
+    </div>
+    <div class="ai-stats-row">
+      <div class="ai-stat">
+        <div class="ai-stat-label">Orçamentos estourados</div>
+        <div class="ai-stat-val r">1</div>
+      </div>
+      <div class="ai-stat">
+        <div class="ai-stat-label">Metas no ritmo</div>
+        <div class="ai-stat-val g">2/3</div>
+      </div>
+      <div class="ai-stat">
+        <div class="ai-stat-label">Streak de registro</div>
+        <div class="ai-stat-val b">7 dias</div>
+      </div>
+      <div class="ai-stat">
+        <div class="ai-stat-label">Poupança do mês</div>
+        <div class="ai-stat-val g">36%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI INSIGHT — Jornada version (narrative) -->
+  <div class="ai-card ai-card-jornada">
+    <div class="ai-header">
+      <div class="ai-label">💡 Consultor Financeiro IA</div>
+      <div class="ai-badge">ANÁLISE DE FEV/26</div>
+    </div>
+    <div class="ai-text">
+      Em fevereiro você <strong>reduziu gastos em Alimentação em R$ 180</strong> comparado a janeiro — ótima disciplina.
+      Seu saldo está projetado para <span class="hi"><strong>R$ 2.200 ao final do mês</strong></span>.
+      Atenção: <span class="warn"><strong>Lazer já usou 78% do orçamento</strong></span> com 10 dias restantes.
+      Sua meta <strong>Viagem Europa</strong> está <span class="warn">2 meses atrasada</span> — aportar mais R$ 400/mês
+      resolveria até dezembro.
+    </div>
+    <div class="ai-input-row">
+      <input class="ai-input" type="text" placeholder="Pergunte algo... ex: Como reduzir gastos em Lazer?">
+      <button class="ai-send">Perguntar</button>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT COLUMN -->
+    <div style="display:flex; flex-direction:column; gap:16px; flex:1">
+
+      <!-- Orçamentos -->
+      <div class="card delay-2">
+        <div class="card-header">
+          <div class="card-title">💼 Orçamentos do Mês</div>
+          <div class="card-action">Ver todos →</div>
+        </div>
+        <div class="envelope-row">
+          <!-- Moradia -->
+          <div class="envelope-item">
+            <div class="envelope-top">
+              <span class="envelope-name">🏠 Moradia</span>
+              <span class="envelope-amounts"><span>R$ 1.200</span> / R$ 1.500</span>
+              <span class="env-pct" style="color:var(--yellow)">80%</span>
+            </div>
+            <div class="env-bar-bg">
+              <div class="env-bar-fill" style="width:80%;background:var(--yellow)"></div>
+            </div>
+          </div>
+          <!-- Alimentação -->
+          <div class="envelope-item">
+            <div class="envelope-top">
+              <span class="envelope-name">🍽️ Alimentação</span>
+              <span class="envelope-amounts"><span>R$ 778</span> / R$ 800</span>
+              <span class="env-pct" style="color:var(--red)">97%</span>
+            </div>
+            <div class="env-bar-bg">
+              <div class="env-bar-fill" style="width:100%;background:var(--red)"></div>
+            </div>
+          </div>
+          <!-- Transporte -->
+          <div class="envelope-item">
+            <div class="envelope-top">
+              <span class="envelope-name">🚗 Transporte</span>
+              <span class="envelope-amounts"><span>R$ 280</span> / R$ 400</span>
+              <span class="env-pct" style="color:var(--green)">70%</span>
+            </div>
+            <div class="env-bar-bg">
+              <div class="env-bar-fill" style="width:70%;background:var(--green)"></div>
+            </div>
+          </div>
+          <!-- Lazer -->
+          <div class="envelope-item">
+            <div class="envelope-top">
+              <span class="envelope-name">🎮 Lazer</span>
+              <span class="envelope-amounts"><span>R$ 312</span> / R$ 400</span>
+              <span class="env-pct" style="color:var(--orange)">78%</span>
+            </div>
+            <div class="env-bar-bg">
+              <div class="env-bar-fill" style="width:78%;background:var(--orange)"></div>
+            </div>
+          </div>
+          <!-- Outros -->
+          <div class="envelope-item">
+            <div class="envelope-top">
+              <span class="envelope-name">📦 Outros</span>
+              <span class="envelope-amounts"><span>R$ 180</span> / R$ 350</span>
+              <span class="env-pct" style="color:var(--green)">51%</span>
+            </div>
+            <div class="env-bar-bg">
+              <div class="env-bar-fill" style="width:51%;background:var(--green)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gastos por Categoria (mini chart) -->
+      <div class="card delay-3" style="flex:1;display:flex;flex-direction:column;">
+        <div class="card-header">
+          <div class="card-title">📊 Gastos por Categoria</div>
+          <div class="card-action">Relatório →</div>
+        </div>
+        <div class="chart-wrap" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div class="chart-bars">
+          <div class="chart-bar-wrap">
+            <div class="chart-bar-pct">38%</div>
+            <div class="chart-bar-fill" style="height:128px;background:var(--em);opacity:.8"></div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-bar-pct">24%</div>
+            <div class="chart-bar-fill" style="height:104px;background:var(--orange);opacity:.8"></div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-bar-pct">9%</div>
+            <div class="chart-bar-fill" style="height:54px;background:var(--el);opacity:.8"></div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-bar-pct">10%</div>
+            <div class="chart-bar-fill" style="height:59px;background:var(--yellow);opacity:.8"></div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-bar-pct">4%</div>
+            <div class="chart-bar-fill" style="height:26px;background:var(--cyan);opacity:.8"></div>
+          </div>
+          <div class="chart-bar-wrap">
+            <div class="chart-bar-pct">5%</div>
+            <div class="chart-bar-fill" style="height:29px;background:var(--t2);opacity:.8"></div>
+          </div>
+          </div>
+          <div class="chart-baseline"></div>
+          <div class="chart-labels">
+          <div class="chart-bar-label">Moradia</div>
+          <div class="chart-bar-label">Aliment.</div>
+          <div class="chart-bar-label">Transp.</div>
+          <div class="chart-bar-label">Lazer</div>
+          <div class="chart-bar-label">Saúde</div>
+          <div class="chart-bar-label">Outros</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div style="display:flex; flex-direction:column; gap:16px">
+
+      <!-- Metas -->
+      <div class="card delay-2">
+        <div class="card-header">
+          <div class="card-title">🎯 Metas em Destaque</div>
+          <div class="card-action">Ver todas →</div>
+        </div>
+        <div class="meta-list">
+
+          <div class="meta-item">
+            <div class="meta-top">
+              <div class="meta-icon">✈️</div>
+              <div class="meta-info">
+                <div class="meta-name">Viagem Europa</div>
+                <div class="meta-sub">R$ 4.200 de R$ 15.000 · Dez/26</div>
+              </div>
+              <div class="meta-pct" style="color:var(--yellow)">28%</div>
+            </div>
+            <div class="meta-bar-bg">
+              <div class="meta-bar-fill" style="width:28%"></div>
+            </div>
+            <div class="meta-tip">⚠ 2 meses atrasada no ritmo atual</div>
+          </div>
+
+          <div class="meta-item">
+            <div class="meta-top">
+              <div class="meta-icon">🛡️</div>
+              <div class="meta-info">
+                <div class="meta-name">Reserva de Emergência</div>
+                <div class="meta-sub">R$ 9.750 de R$ 15.000 · Jun/26</div>
+              </div>
+              <div class="meta-pct" style="color:var(--green)">65%</div>
+            </div>
+            <div class="meta-bar-bg">
+              <div class="meta-bar-fill" style="width:65%"></div>
+            </div>
+          </div>
+
+          <div class="meta-item">
+            <div class="meta-top">
+              <div class="meta-icon">📚</div>
+              <div class="meta-info">
+                <div class="meta-name">Certificação AWS</div>
+                <div class="meta-sub">40% concluído · Mai/26</div>
+              </div>
+              <div class="meta-pct" style="color:var(--green)">40%</div>
+            </div>
+            <div class="meta-bar-bg">
+              <div class="meta-bar-fill" style="width:40%"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Agenda desta semana -->
+      <div class="card delay-3">
+        <div class="card-header">
+          <div class="card-title">📅 Agenda da Semana</div>
+          <div class="card-action">Ver agenda →</div>
+        </div>
+
+        <!-- Mini week strip -->
+        <div class="week-strip" style="margin-bottom:14px">
+          <div class="week-day">
+            <div class="wd-name">Seg</div>
+            <div class="wd-num">17</div>
+            <div class="wd-dots">
+              <div class="wd-dot" style="background:var(--fin)"></div>
+            </div>
+          </div>
+          <div class="week-day">
+            <div class="wd-name">Ter</div>
+            <div class="wd-num">18</div>
+            <div class="wd-dots">
+              <div class="wd-dot" style="background:var(--el)"></div>
+              <div class="wd-dot" style="background:var(--meta)"></div>
+            </div>
+          </div>
+          <div class="week-day">
+            <div class="wd-name">Qua</div>
+            <div class="wd-num">19</div>
+            <div class="wd-dots">
+              <div class="wd-dot" style="background:var(--red)"></div>
+            </div>
+          </div>
+          <div class="week-day">
+            <div class="wd-name">Qui</div>
+            <div class="wd-num">20</div>
+            <div class="wd-dots">
+              <div class="wd-dot" style="background:var(--green)"></div>
+              <div class="wd-dot" style="background:var(--meta)"></div>
+            </div>
+          </div>
+          <div class="week-day today">
+            <div class="wd-name">Sex</div>
+            <div class="wd-num">21</div>
+            <div class="wd-dots">
+              <div class="wd-dot" style="background:#fff;opacity:.6"></div>
+            </div>
+          </div>
+          <div class="week-day">
+            <div class="wd-name">Sáb</div>
+            <div class="wd-num">22</div>
+            <div class="wd-dots"></div>
+          </div>
+          <div class="week-day">
+            <div class="wd-name">Dom</div>
+            <div class="wd-num">23</div>
+            <div class="wd-dots">
+              <div class="wd-dot" style="background:var(--yellow)"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="agenda-list">
+          <div class="agenda-item">
+            <div class="agenda-dot" style="background:var(--fin)"></div>
+            <div class="agenda-time">Hoje</div>
+            <div class="agenda-name today">1:1 com gestor — 10h</div>
+            <div class="agenda-tag" style="background:rgba(16,185,129,.1);color:var(--fin)">Trabalho</div>
+          </div>
+          <div class="agenda-item">
+            <div class="agenda-dot" style="background:var(--red)"></div>
+            <div class="agenda-time">Qua</div>
+            <div class="agenda-name">Pagar aluguel R$ 1.500</div>
+            <div class="agenda-tag" style="background:rgba(244,63,94,.1);color:var(--red)">Finança</div>
+          </div>
+          <div class="agenda-item">
+            <div class="agenda-dot" style="background:var(--meta)"></div>
+            <div class="agenda-time">Ter</div>
+            <div class="agenda-name">Inglês — bloco de foco 19h</div>
+            <div class="agenda-tag" style="background:rgba(0,85,255,.1);color:var(--meta)">Meta</div>
+          </div>
+          <div class="agenda-item">
+            <div class="agenda-dot" style="background:var(--yellow)"></div>
+            <div class="agenda-time">Dom</div>
+            <div class="agenda-name">Review semanal 📊</div>
+            <div class="agenda-tag" style="background:rgba(245,158,11,.1);color:var(--yellow)">Review</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM GRID -->
+  <div class="bottom-grid">
+
+    <!-- Recorrentes próximas -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔄 Próximas Recorrentes</div>
+        <div class="card-action">Ver todas →</div>
+      </div>
+      <div class="recorr-list">
+        <div class="recorr-item">
+          <div class="recorr-left">
+            <div class="recorr-ico">🌐</div>
+            <div>
+              <div class="recorr-name">Internet</div>
+              <div class="recorr-date">vence hoje, 21/02</div>
+            </div>
+          </div>
+          <div class="recorr-right">
+            <div class="recorr-val">-R$ 99,90</div>
+            <div class="recorr-status due">hoje</div>
+          </div>
+        </div>
+        <div class="recorr-item">
+          <div class="recorr-left">
+            <div class="recorr-ico">🏠</div>
+            <div>
+              <div class="recorr-name">Aluguel</div>
+              <div class="recorr-date">vence em 4 dias, 25/02</div>
+            </div>
+          </div>
+          <div class="recorr-right">
+            <div class="recorr-val">-R$ 1.500</div>
+            <div class="recorr-status due">4 dias</div>
+          </div>
+        </div>
+        <div class="recorr-item">
+          <div class="recorr-left">
+            <div class="recorr-ico">🎵</div>
+            <div>
+              <div class="recorr-name">Spotify</div>
+              <div class="recorr-date">pago em 15/02</div>
+            </div>
+          </div>
+          <div class="recorr-right">
+            <div class="recorr-val">-R$ 21,90</div>
+            <div class="recorr-status ok">pago</div>
+          </div>
+        </div>
+        <div class="recorr-item">
+          <div class="recorr-left">
+            <div class="recorr-ico">📺</div>
+            <div>
+              <div class="recorr-name">Netflix</div>
+              <div class="recorr-date">pago em 15/02</div>
+            </div>
+          </div>
+          <div class="recorr-right">
+            <div class="recorr-val">-R$ 47,90</div>
+            <div class="recorr-status ok">pago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projeção de Saldo -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📈 Projeção de Saldo</div>
+        <div class="card-action">Planejamento →</div>
+      </div>
+      <div style="margin-bottom:8px;font-size:11px;color:var(--t3)">Próximos 30 dias</div>
+      <div class="sparkline-wrap">
+        <svg viewBox="0 0 280 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="spark-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#10b981" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Area fill -->
+          <path class="spark-area" d="M0,45 C20,42 40,30 70,28 C90,26 110,35 130,20 C150,8 170,15 200,10 C220,6 250,18 280,12 L280,60 L0,60 Z"/>
+          <!-- Line -->
+          <path class="spark-path" d="M0,45 C20,42 40,30 70,28 C90,26 110,35 130,20 C150,8 170,15 200,10 C220,6 250,18 280,12"/>
+          <!-- Dots -->
+          <circle class="spark-dot" cx="0" cy="45" r="3"/>
+          <circle class="spark-dot" cx="130" cy="20" r="3"/>
+          <circle class="spark-dot end" cx="280" cy="12" r="4"/>
+        </svg>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px">
+        <div>
+          <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">Hoje</div>
+          <div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--t2)">R$ 1.800</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">30 dias</div>
+          <div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--green)">R$ 2.640</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:8px;background:var(--s2);border-radius:8px;font-size:12px;color:var(--t3)">
+        ⚠ Aluguel R$ 1.500 vence em 25/02 — saldo cai temporariamente para <strong style="color:var(--t2)">R$ 300</strong>
+      </div>
+    </div>
+
+    <!-- Conquistas (Jornada) / Resumo Financeiro (Foco) -->
+    <div class="card jornada-only" id="badgesCard">
+      <div class="card-header">
+        <div class="card-title">🏆 Conquistas Recentes</div>
+        <div class="card-action">Ver todas →</div>
+      </div>
+      <div class="badges-row">
+        <div class="badge-item">
+          <div class="badge-emoji">🔥</div>
+          <div class="badge-name">7 dias seguidos</div>
+        </div>
+        <div class="badge-item">
+          <div class="badge-emoji">💚</div>
+          <div class="badge-name">Mês no verde</div>
+        </div>
+        <div class="badge-item">
+          <div class="badge-emoji">📊</div>
+          <div class="badge-name">Planejador</div>
+        </div>
+        <div class="badge-item locked">
+          <div class="badge-emoji">🏅</div>
+          <div class="badge-name">Meta concluída</div>
+        </div>
+        <div class="badge-item locked">
+          <div class="badge-emoji">💎</div>
+          <div class="badge-name">3 meses top</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding:10px;background:rgba(16,185,129,0.07);border-radius:10px;border:1px solid rgba(16,185,129,.12)">
+        <div style="font-size:11px;font-weight:600;color:var(--em);margin-bottom:3px">Próxima conquista</div>
+        <div style="font-size:12px;color:var(--t2)">🎯 Meta concluída — conclua a meta <strong>Reserva de Emergência</strong> para desbloquear</div>
+        <div style="margin-top:8px;height:4px;background:var(--s3);border-radius:2px">
+          <div style="width:65%;height:100%;background:linear-gradient(90deg,var(--fin),var(--meta));border-radius:2px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Foco: resumo financeiro simples -->
+    <div class="card" id="focoCard">
+      <div class="card-header">
+        <div class="card-title">📋 Resumo Financeiro</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px;color:var(--t2)">Taxa de poupança</span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green)">36%</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px;color:var(--t2)">Maior gasto</span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t1)">Moradia 38%</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px;color:var(--t2)">Orçamentos OK</span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green)">4 de 5</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:9px 0">
+          <span style="font-size:13px;color:var(--t2)">Transações este mês</span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t1)">47</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /page -->
+
+<script>
+let curMode  = 'foco';
+let curTheme = 'dark';
+
+function setMode(m) {
+  curMode = m;
+  document.body.classList.toggle('jornada', m === 'jornada');
+
+  document.getElementById('ctrl-foco').className    = 'ctrl-btn' + (m === 'foco'    ? ' on-n' : '');
+  document.getElementById('ctrl-jornada').className = 'ctrl-btn' + (m === 'jornada' ? ' on'   : '');
+
+  // Foco/Jornada card toggle at bottom
+  document.getElementById('badgesCard').style.display = m === 'jornada' ? 'block' : 'none';
+  document.getElementById('focoCard').style.display   = m === 'foco'    ? 'block' : 'none';
+
+  if (m === 'jornada') {
+    // Animate score bar fill
+    setTimeout(() => {
+      document.getElementById('scoreBar').style.width = '74%';
+    }, 200);
+  }
+}
+
+function setTheme(t) {
+  curTheme = t;
+  document.body.classList.toggle('light', t === 'light');
+  document.getElementById('ctrl-dark').className  = 'ctrl-btn' + (t === 'dark'  ? ' on-n' : '');
+  document.getElementById('ctrl-light').className = 'ctrl-btn' + (t === 'light' ? ' on-n' : '');
+}
+
+// Init
+setMode('foco');
+</script>
+</body>
+</html>

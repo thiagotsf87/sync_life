@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Protótipo de Navegação v3 · Paleta Esmeralda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── TOKENS — SyncLife Emerald System ── */
+:root {
+  /* Dark Foco: Navy profundo — premium fintech */
+  --bg:   #03071a;
+  --s1:   #07112b;
+  --s2:   #0c1a3a;
+  --s3:   #132248;
+  --border:   rgba(255,255,255,0.06);
+  --border-h: rgba(255,255,255,0.13);
+  --t1:   #dff0ff;
+  --t2:   #6e90b8;
+  --t3:   #2e4a6e;
+
+  /* Brand: Esmeralda */
+  --em:         #10b981;
+  --em-glow:    rgba(16,185,129,0.16);
+  /* Jornada accent: Azul elétrico */
+  --el:         #0055ff;
+  --el-glow:    rgba(0,85,255,0.16);
+  /* Módulos */
+  --fin:         #10b981;   /* esmeralda */
+  --fin-glow:    rgba(16,185,129,0.16);
+  --meta:        #0055ff;   /* azul elétrico */
+  --meta-glow:   rgba(0,85,255,0.16);
+  --agenda:      #06b6d4;   /* ciano */
+  --agenda-glow: rgba(6,182,212,0.16);
+  --cfg:         #64748b;
+  --cfg-glow:    rgba(100,116,139,0.12);
+
+  --green:  #10b981;
+  --yellow: #f59e0b;
+  --red:    #f43f5e;
+
+  --module-bar: 58px;
+  --sb-open:    228px;
+  --sb-closed:  0px;
+  --header-h:   54px;
+}
+
+/* ── DARK JORNADA: Verde-escuro profundo + azul elétrico ── */
+body.jornada {
+  --bg:       #020d08;
+  --s1:       #061410;
+  --s2:       #0b1e18;
+  --s3:       #112b22;
+  --border:   rgba(16,185,129,0.08);
+  --border-h: rgba(16,185,129,0.18);
+  --t1:       #d6faf0;
+  --t2:       #4da888;
+  --t3:       #235c48;
+}
+body.jornada .header {
+  background: linear-gradient(90deg, rgba(16,185,129,0.06), transparent 60%);
+}
+/* Score e elementos de destaque usam azul elétrico no Jornada */
+body.jornada .score-num {
+  background: linear-gradient(135deg, #10b981, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+body.jornada .score-bar-fill {
+  background: linear-gradient(90deg, #10b981, #0055ff);
+}
+body.jornada .sb-score {
+  border-color: rgba(16,185,129,0.22);
+  background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(0,85,255,0.10));
+}
+body.jornada .sb-score-num {
+  background: linear-gradient(135deg, #10b981, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+body.jornada .sb-score-fill { background: linear-gradient(90deg, #10b981, #0055ff); }
+body.jornada .score-hero {
+  background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(0,85,255,0.12));
+  border-color: rgba(16,185,129,0.22);
+}
+body.jornada .ai-card {
+  background: linear-gradient(135deg, rgba(16,185,129,0.07), rgba(0,85,255,0.07));
+  border-color: rgba(16,185,129,0.18);
+}
+body.jornada .ai-card-lbl { color: #10b981; }
+body.jornada .hd-greeting-name {
+  background: linear-gradient(90deg, #10b981, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+/* Dark Jornada — component overrides */
+body.jornada .demo-card {
+  border-color: rgba(16,185,129,0.12);
+  background: linear-gradient(135deg, rgba(6,20,16,0.9), rgba(11,30,24,0.95));
+}
+body.jornada .demo-card:hover { border-color: rgba(16,185,129,0.24); }
+body.jornada .agenda-wrap { border-color: rgba(16,185,129,0.12); }
+body.jornada .agenda-day-hd { background: linear-gradient(180deg, rgba(16,185,129,0.05), transparent); }
+body.jornada .day-num.today { background: #10b981; }
+
+/* ── LIGHT FOCO: Branco limpo com esmeralda ── */
+body.light {
+  --bg:       #e6eef5;
+  --s1:       #ffffff;
+  --s2:       #f0f6fa;
+  --s3:       #e0eaf3;
+  --border:   rgba(3,7,26,0.09);
+  --border-h: rgba(3,7,26,0.18);
+  --t1:       #03071a;
+  --t2:       #1e3a5c;
+  --t3:       #5a7a9e;
+  --fin-glow:    rgba(16,185,129,0.12);
+  --meta-glow:   rgba(0,85,255,0.12);
+  --agenda-glow: rgba(6,182,212,0.12);
+  --cfg-glow:    rgba(100,116,139,0.10);
+}
+/* Module bar: esmeralda escuro — ancora visual, não tudo branco */
+body.light .module-bar {
+  background: linear-gradient(180deg, #083d2c 0%, #052b1e 100%);
+  box-shadow: 2px 0 24px rgba(8,61,44,0.28);
+}
+body.light .module-bar .module-btn { color: rgba(255,255,255,0.42); }
+body.light .module-bar .module-btn:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.85); }
+body.light .module-bar .module-btn.act-fin,
+body.light .module-bar .module-btn.act-meta,
+body.light .module-bar .module-btn.act-agenda,
+body.light .module-bar .module-btn.act-home {
+  color: #6ee7b7; background: rgba(110,231,183,0.12);
+}
+body.light .module-bar .user-avatar { border-color: rgba(255,255,255,0.28); }
+/* stop-color overrides removed */
+/* Logo: transparent bg in light — module bar color shows through */
+body.light .logo-mark svg rect { fill: transparent; }
+/* Ensure brand gradient stays emerald→blue in light (not affected by module bar color) */
+body.light .logo-mark { background: linear-gradient(135deg, #051c14, #03091f); border-radius: 9px; }
+/* Sidebar: off-white levemente esmaecida com toque esmeralda */
+body.light .sidebar {
+  background: #f5fbf8;
+  border-right: 1px solid rgba(16,185,129,0.16);
+  box-shadow: 2px 0 20px rgba(16,185,129,0.06);
+}
+body.light .sidebar .sb-mod-label { color: #083d2c; }
+body.light .sidebar .sb-section-label { color: #4da888; }
+body.light .sidebar .sb-toggle { color: #4da888; }
+/* Cards: branco puro com sombra para destacar sobre fundo cinza */
+body.light .demo-card {
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(3,7,26,0.08);
+  border-color: rgba(3,7,26,0.07);
+}
+body.light .nav-item { color: #1a5c42; }
+body.light .nav-item:hover { background: rgba(16,185,129,0.07); color: #083d2c; }
+body.light .nav-item.act-fin,
+body.light .nav-item.act-meta,
+body.light .nav-item.act-agenda,
+body.light .nav-item.act-home { background: rgba(16,185,129,0.10); color: #10b981; }
+body.light .controls {
+  background: #ffffff;
+  box-shadow: 0 4px 24px rgba(3,7,26,0.12);
+}
+body.light .ctrl-btn { background: var(--s2); color: #1e3a5c; border-color: rgba(3,7,26,0.10); }
+body.light .ctrl-btn:hover { background: var(--s3); color: #03071a; }
+body.light .tip { background: #03071a; border-color: rgba(0,0,0,0.2); color: #dff0ff; }
+body.light .tip::before { background: #03071a; border-color: rgba(0,0,0,0.2); }
+body.light .score-hero {
+  background: linear-gradient(135deg, rgba(16,185,129,0.07), rgba(0,85,255,0.07));
+  border-color: rgba(16,185,129,0.18);
+}
+body.light .ai-card {
+  background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(0,85,255,0.05));
+  border-color: rgba(16,185,129,0.14);
+}
+body.light .score-bar-bg { background: rgba(0,0,0,0.08); }
+body.light .agenda-wrap { background: #fff; border-color: rgba(3,7,26,0.08); }
+body.light .agenda-col, body.light .cell,
+body.light .agenda-days-header, body.light .agenda-time-col,
+body.light .time-slot { border-color: rgba(3,7,26,0.07); }
+body.light .header {
+  background: linear-gradient(90deg, rgba(16,185,129,0.07) 0%, #ffffff 35%);
+  border-color: rgba(16,185,129,0.10);
+}
+body.light .mode-pill { background: var(--s2); border-color: rgba(3,7,26,0.12); }
+body.light .mode-pill:hover { background: var(--s3); }
+body.light .theme-pill { background: var(--s2); border-color: rgba(3,7,26,0.12); }
+body.light .theme-pill:hover { background: var(--s3); }
+body.light .sb-score { border-color: rgba(16,185,129,0.20); }
+body.light .annotation { background: rgba(245,158,11,0.07); }
+
+/* ── LIGHT + JORNADA: Mint vibrante + azul elétrico ── */
+body.light.jornada {
+  --bg:       #c8f0e4;   /* mint saturado — página vibrante */
+  --s1:       #ffffff;
+  --s2:       #e0f7ef;
+  --s3:       #c4eede;
+  --border:   rgba(5,80,56,0.12);
+  --border-h: rgba(5,80,56,0.24);
+  --t1:       #022016;
+  --t2:       #0d5c3e;
+  --t3:       #4da888;
+}
+/* Sidebar: gradiente esmeralda → azul elétrico — identidade forte */
+body.light.jornada .module-bar {
+  background: linear-gradient(180deg, #0c9e6e 0%, #0844cc 100%);
+  box-shadow: 2px 0 24px rgba(5,80,56,0.20);
+}
+body.light.jornada .module-bar .module-btn { color: rgba(255,255,255,0.65); }
+body.light.jornada .module-bar .module-btn:hover {
+  background: rgba(255,255,255,0.15); color: #ffffff;
+}
+body.light.jornada .module-bar .module-btn.act-fin,
+body.light.jornada .module-bar .module-btn.act-meta,
+body.light.jornada .module-bar .module-btn.act-agenda,
+body.light.jornada .module-bar .module-btn.act-home { color: #ffffff; }
+body.light.jornada .module-bar .logo-mark svg path,
+body.light.jornada .module-bar .logo-mark svg polyline,
+body.light.jornada .module-bar .logo-mark svg circle { stroke: #fff; }
+body.light.jornada .module-bar .user-avatar { border-color: rgba(255,255,255,0.4); }
+body.light.jornada .sidebar {
+  background: linear-gradient(180deg, #0fbe82 0%, #0a56d6 100%);
+  box-shadow: 2px 0 24px rgba(5,80,56,0.16);
+}
+body.light.jornada .nav-item { color: rgba(255,255,255,0.75); }
+body.light.jornada .nav-item:hover { background: rgba(255,255,255,0.15); color: #ffffff; }
+body.light.jornada .nav-item.act-fin,
+body.light.jornada .nav-item.act-meta,
+body.light.jornada .nav-item.act-agenda,
+body.light.jornada .nav-item.act-home {
+  background: rgba(255,255,255,0.20); color: #ffffff;
+}
+body.light.jornada .sb-mod-label { color: #ffffff; }
+body.light.jornada .sb-section-label { color: rgba(255,255,255,0.45); }
+body.light.jornada .sb-toggle { color: rgba(255,255,255,0.5); }
+body.light.jornada .sb-toggle:hover { background: rgba(255,255,255,0.15); color: #fff; }
+body.light.jornada .collapse-btn { color: rgba(255,255,255,0.5); }
+/* Score na sidebar: transparente sobre gradiente */
+body.light.jornada .sb-score {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.30);
+}
+body.light.jornada .sb-score-label { color: rgba(255,255,255,0.6); }
+body.light.jornada .sb-score-num { background: linear-gradient(135deg, #ffffff, #c4f8e8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+body.light.jornada .sb-score-fill { background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(196,248,232,0.8)); }
+body.light.jornada .sb-score-delta { color: rgba(255,255,255,0.8); }
+body.light.jornada .nav-badge { background: rgba(255,255,255,0.20); color: rgba(255,255,255,0.9); }
+/* Header com faixa mint */
+body.light.jornada .header {
+  /* Header acompanha o gradiente da sidebar: esmeralda → azul elétrico */
+  background: linear-gradient(90deg, #0fbe82 0%, #0a56d6 100%);
+  border-color: transparent;
+}
+/* Textos no header claro-jornada ficam brancos sobre gradiente colorido */
+body.light.jornada .hd-breadcrumb,
+body.light.jornada .hd-breadcrumb .mod-name,
+body.light.jornada #hdPageName,
+body.light.jornada .hd-breadcrumb .sep { color: rgba(255,255,255,0.85); }
+body.light.jornada .hd-greeting-name {
+  background: linear-gradient(90deg, #ffffff, #c4f8e8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+body.light.jornada .hd-greeting-phrase { color: rgba(255,255,255,0.65); }
+body.light.jornada .expand-from-bar { 
+  color: rgba(255,255,255,0.7); 
+  border-color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.12);
+}
+body.light.jornada .expand-from-bar:hover { background: rgba(255,255,255,0.22); color: #fff; }
+body.light.jornada .hd-notif { 
+  color: rgba(255,255,255,0.7); 
+  border-color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.10);
+}
+body.light.jornada .hd-notif:hover { background: rgba(255,255,255,0.20); color: #fff; }
+body.light.jornada .notif-dot { border-color: transparent; }
+body.light.jornada .mode-pill {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.30);
+  color: rgba(255,255,255,0.9);
+}
+body.light.jornada .mode-pill:hover { background: rgba(255,255,255,0.28); }
+body.light.jornada .theme-pill {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.30);
+  color: rgba(255,255,255,0.9);
+}
+body.light.jornada .theme-pill:hover { background: rgba(255,255,255,0.28); }
+/* Cards: branco puro — máximo contraste sobre mint */
+body.light.jornada .demo-card {
+  background: #ffffff;
+  box-shadow: 0 2px 16px rgba(5,80,56,0.10);
+  border-color: rgba(5,80,56,0.10);
+}
+body.light.jornada .ai-card {
+  background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(0,85,255,0.06));
+  border-color: rgba(16,185,129,0.18);
+}
+body.light.jornada .score-hero {
+  background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(0,85,255,0.08));
+  border-color: rgba(16,185,129,0.20);
+}
+body.light.jornada .controls {
+  background: #e8f9f2;
+  border-color: rgba(5,80,56,0.15);
+  box-shadow: 0 4px 24px rgba(5,80,56,0.14);
+}
+body.light.jornada .ctrl-btn {
+  background: rgba(255,255,255,0.7); color: #0d5c3e; border-color: rgba(5,80,56,0.15);
+}
+body.light.jornada .ctrl-btn:hover { background: #ffffff; color: #022016; }
+body.light.jornada .hd-greeting-name {
+  background: linear-gradient(90deg, #0c9e6e, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+body.light.jornada .expand-from-bar { color: #0d5c3e; border-color: rgba(5,80,56,0.2); }
+body.light.jornada .hd-notif { color: #0d5c3e; border-color: rgba(5,80,56,0.15); }
+body.light.jornada .mode-pill { background: rgba(255,255,255,0.6); border-color: rgba(5,80,56,0.15); color: #0d5c3e; }
+body.light.jornada .theme-pill { background: rgba(255,255,255,0.6); border-color: rgba(5,80,56,0.15); color: #0d5c3e; }
+body.light.jornada .annotation { background: rgba(245,158,11,0.08); }
+
+/* ── THEME PILL BUTTON ── */
+.theme-pill {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--s2); cursor: pointer;
+  font-size: 12px; color: var(--t2);
+  transition: all 0.15s; user-select: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.theme-pill:hover { border-color: var(--border-h); background: var(--s3); }
+
+/* ── DARK JORNADA ── */
+/* purple jornada block removed */
+
+/* Theme toggle button */
+.theme-btn {
+  width: 32px; height: 32px;
+  border-radius: 9px; border: 1px solid var(--border);
+  background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t3); font-size: 15px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.theme-btn:hover { background: var(--s3); color: var(--t2); border-color: var(--border-h); }
+
+html, body { height:100%; overflow:hidden; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  font-size: 14px;
+  line-height: 1.5;
+  transition: background 0.4s, color 0.3s;
+}
+
+/* ══════════════════════════════════
+   SHELL
+══════════════════════════════════ */
+.app { display:flex; height:100vh; overflow:hidden; }
+
+/* ── MODULE BAR ── */
+.module-bar {
+  width: var(--module-bar);
+  height: 100vh;
+  background: var(--s1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 2px;
+  z-index: 60;
+  flex-shrink: 0;
+  transition: background 0.4s, border-color 0.3s;
+}
+
+/* ── LOGO: símbolo de dois arcos sincronizados ── */
+.logo-mark {
+  width: 34px; height: 34px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+.logo-mark svg { width:34px; height:34px; }
+
+.module-btn {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+  color: var(--t3);
+}
+.module-btn svg { width: 21px; height: 21px; }
+.module-btn:hover { background: var(--s3); color: var(--t2); transform: scale(1.05); }
+
+.module-btn.act-fin    { background: var(--fin-glow);    color: var(--fin);    }
+.module-btn.act-meta   { background: var(--meta-glow);   color: var(--meta);   }
+.module-btn.act-agenda { background: var(--agenda-glow); color: var(--agenda); }
+.module-btn.act-home   { background: rgba(238,242,255,.1); color: var(--t1);   }
+.module-btn.act-cfg    { background: var(--cfg-glow);    color: var(--cfg);    }
+
+/* Pill indicator */
+.module-btn::before {
+  content: '';
+  position: absolute;
+  left: -8px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 0;
+  border-radius: 0 3px 3px 0;
+  background: currentColor;
+  transition: height 0.2s cubic-bezier(.4,0,.2,1);
+}
+.module-btn.act-fin::before, .module-btn.act-meta::before,
+.module-btn.act-agenda::before, .module-btn.act-home::before { height: 22px; }
+
+.module-bar .spacer { flex: 1; }
+
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--em,#10b981), var(--el,#0055ff));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 12px; color: #fff;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  transition: border-color 0.15s;
+  margin-top: 6px;
+}
+.user-avatar:hover { border-color: var(--border-h); }
+
+/* ── TOOLTIP (module bar) ── */
+.tip {
+  position: fixed;
+  left: calc(var(--module-bar) + 8px);
+  background: var(--s3);
+  border: 1px solid var(--border-h);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--t1);
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.12s;
+  transform: translateY(-50%);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.tip.show { opacity: 1; }
+.tip::before {
+  content: '';
+  position: absolute;
+  left: -5px; top: 50%; transform: translateY(-50%);
+  width: 8px; height: 8px;
+  background: var(--s3);
+  border-left: 1px solid var(--border-h);
+  border-bottom: 1px solid var(--border-h);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* ── SIDEBAR (nível 2) ── */
+.sidebar {
+  width: var(--sb-open);
+  height: 100vh;
+  background: var(--s1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: width 0.24s cubic-bezier(.4,0,.2,1), background 0.4s, border-color 0.3s;
+}
+.sidebar.closed { width: var(--sb-closed); }
+
+.sb-header {
+  height: var(--header-h);
+  display: flex; align-items: center;
+  padding: 0 14px;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sb-mod-icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sb-mod-icon svg { width: 15px; height: 15px; }
+
+.sb-mod-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  flex: 1;
+}
+
+/* Toggle button — ícone muda conforme estado */
+.sb-toggle {
+  width: 26px; height: 26px;
+  border-radius: 7px; border: none;
+  background: transparent; cursor: pointer;
+  color: var(--t3);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.sb-toggle:hover { background: var(--s3); color: var(--t2); }
+.sb-toggle svg { width: 15px; height: 15px; }
+
+/* Expand button — fica na module bar quando sidebar fechada */
+.expand-btn {
+  display: none;
+  width: 26px; height: 26px;
+  border-radius: 7px; border: 1px solid var(--border);
+  background: var(--s2); cursor: pointer;
+  color: var(--t3);
+  align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+.expand-btn:hover { background: var(--s3); color: var(--t2); border-color: var(--border-h); }
+.expand-btn svg { width: 14px; height: 14px; }
+.sidebar.closed ~ .main .expand-from-bar { display: flex; }
+
+/* Jornada score block */
+.sb-score {
+  margin: 10px 10px 0;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(16,185,129,0.22);
+  background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(0,85,255,0.10));
+  overflow: hidden;
+  flex-shrink: 0;
+  display: none; /* shown only in jornada */
+}
+body.jornada .sb-score { display: block; }
+
+.sb-score-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.sb-score-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px; font-weight: 800;
+  background: linear-gradient(135deg, var(--fin), #f59e0b);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1;
+}
+.sb-score-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--t3); margin-top: 2px; }
+.sb-score-delta { font-size: 11px; color: var(--green); }
+.sb-score-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+.sb-score-fill { height: 100%; width: 74%; background: linear-gradient(90deg, var(--fin), #f59e0b); border-radius: 2px; }
+
+/* Sidebar nav */
+.sb-nav { flex: 1; padding: 8px; overflow-y: auto; overflow-x: hidden; }
+.sb-section-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--t3); padding: 8px 8px 4px;
+  white-space: nowrap;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 10px;
+  cursor: pointer; color: var(--t2);
+  transition: background 0.12s, color 0.12s;
+  border: none; background: transparent;
+  width: 100%; text-align: left;
+  white-space: nowrap;
+  position: relative;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+}
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+.nav-item:hover { background: var(--s3); color: var(--t1); }
+.nav-item.act-fin    { background: var(--fin-glow);    color: var(--fin);    font-weight:500; }
+.nav-item.act-meta   { background: var(--meta-glow);   color: var(--meta);   font-weight:500; }
+.nav-item.act-agenda { background: var(--agenda-glow); color: var(--agenda); font-weight:500; }
+.nav-item.act-home   { background: rgba(238,242,255,.08); color: var(--t1); font-weight:500; }
+
+.nav-badge {
+  margin-left: auto;
+  font-size: 9px; font-weight: 700;
+  padding: 2px 6px; border-radius: 8px;
+}
+.badge-y { background: rgba(245,158,11,.15); color: var(--yellow); }
+.badge-r { background: rgba(244,63,94,.15);  color: var(--red);    }
+.badge-pro {
+  background: linear-gradient(135deg, var(--em,#10b981), var(--el,#0055ff));
+  color: #fff; font-size: 9px; font-weight:700;
+  padding: 2px 5px; border-radius: 4px; letter-spacing:.04em;
+}
+
+/* ── MAIN ── */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+
+/* ── HEADER ── */
+.header {
+  height: var(--header-h);
+  display: flex; align-items: center;
+  padding: 0 20px; gap: 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  transition: background 0.4s, border-color 0.3s;
+}
+
+/* expand btn from bar (when sidebar closed) */
+.expand-from-bar {
+  display: none;
+  width: 28px; height: 28px;
+  border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; cursor: pointer;
+  color: var(--t3); align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.expand-from-bar:hover { background: var(--s3); color: var(--t2); }
+.expand-from-bar svg { width: 15px; height: 15px; }
+
+/* Breadcrumb */
+.hd-breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--t3);
+}
+.hd-breadcrumb .mod-name { color: var(--t1); font-weight: 600; }
+.hd-breadcrumb .sep { opacity: 0.4; }
+
+/* Jornada greeting */
+.hd-greeting { display: none; }
+body.jornada .hd-greeting { display: flex; flex-direction: column; }
+body.jornada .hd-breadcrumb { display: none; }
+.hd-greeting-name {
+  font-size: 14px; font-weight: 600;
+  background: linear-gradient(90deg, var(--t1), #10b981);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hd-greeting-phrase { font-size: 11px; color: var(--t3); }
+
+.hd-spacer { flex: 1; }
+
+/* Mode toggle */
+.mode-pill {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 12px 5px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--s2);
+  cursor: pointer;
+  font-size: 12px; color: var(--t2);
+  transition: border-color 0.2s, background 0.2s;
+  user-select: none;
+}
+.mode-pill:hover { border-color: var(--border-h); background: var(--s3); }
+.mode-pill-dot {
+  width: 18px; height: 18px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(16,185,129,0.15);
+  color: #10b981;
+  font-size: 11px;
+  transition: background 0.3s, color 0.3s;
+}
+body.jornada .mode-pill-dot { background: rgba(16,185,129,0.18); color: #10b981; }
+body.jornada .mode-pill { border-color: rgba(16,185,129,0.15); }
+
+/* Jornada header pulse */
+
+
+/* Notif btn */
+.hd-notif {
+  width: 34px; height: 34px;
+  border-radius: 10px; border: 1px solid var(--border);
+  background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t3); position: relative;
+  transition: background 0.15s, color 0.15s;
+}
+.hd-notif:hover { background: var(--s3); color: var(--t2); }
+.hd-notif svg { width: 17px; height: 17px; }
+.notif-dot {
+  position: absolute; top: 8px; right: 8px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--red); border: 1.5px solid var(--bg);
+}
+
+/* ── CONTENT ── */
+.content { flex:1; overflow-y:auto; padding: 22px; }
+.content-inner { animation: fadeUp 0.2s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── JORNADA VISUAL OVERRIDES for content ── */
+
+
+
+/* Page headings */
+.page-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 800;
+  color: var(--t1); margin-bottom: 2px;
+  transition: color 0.3s;
+}
+body.jornada .page-title {
+  background: linear-gradient(90deg, var(--t1), #10b981);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.page-sub { font-size: 13px; color: var(--t3); margin-bottom: 22px; }
+
+/* Cards */
+.cards-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 14px; }
+.demo-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px;
+  transition: border-color 0.15s, background 0.4s;
+  cursor: default;
+}
+.demo-card:hover { border-color: var(--border-h); }
+.card-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--t3); margin-bottom: 8px; }
+.card-val { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; color: var(--t1); }
+.card-val.g { color: var(--green); }
+.card-val.r { color: var(--red); }
+.card-delta { font-size: 11px; color: var(--t3); margin-top: 4px; }
+
+/* Score card (jornada dashboard) */
+.score-hero {
+  display: flex; align-items: center; gap: 24px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(0,85,255,0.12));
+  border: 1px solid rgba(16,185,129,0.22);
+  border-radius: 16px; margin-bottom: 16px;
+  animation: fadeUp 0.3s ease both;
+}
+.score-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 72px; font-weight: 800; line-height: 1;
+  background: linear-gradient(135deg, #10b981, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.score-right { flex: 1; }
+.score-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--t1); margin-bottom: 4px; }
+.score-phrase { font-size: 13px; color: var(--t3); font-style: italic; margin-bottom: 12px; }
+.score-bar-bg { height: 6px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; }
+.score-bar-fill { height: 100%; width: 74%; background: linear-gradient(90deg, var(--fin), #f59e0b); border-radius: 3px; }
+.score-components { display: flex; gap: 20px; margin-top: 10px; }
+.score-comp { font-size: 11px; color: var(--t3); }
+.score-comp strong { color: var(--t2); }
+
+/* AI card */
+.ai-card {
+  background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(0,85,255,0.06));
+  border: 1px solid rgba(16,185,129,0.16);
+  border-radius: 14px; padding: 18px;
+  margin-bottom: 14px;
+}
+.ai-card-lbl { font-size: 11px; text-transform: uppercase; letter-spacing:.07em; color: var(--em,#10b981); margin-bottom: 8px; }
+.ai-card-body { font-size: 13px; color: var(--t2); line-height: 1.7; }
+.ai-card-body strong { color: var(--t1); }
+
+/* Annotation */
+.annotation {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(245,158,11,0.08);
+  border: 1px dashed rgba(245,158,11,0.3);
+  border-radius: 6px; padding: 3px 9px;
+  font-size: 11px; color: var(--yellow);
+  margin-bottom: 14px; cursor: default;
+}
+
+/* ══════════════════════════════════
+   AGENDA — grade de horários
+══════════════════════════════════ */
+.agenda-wrap {
+  display: flex; gap: 0;
+  height: calc(100vh - var(--header-h) - 110px);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.agenda-time-col {
+  width: 52px; flex-shrink: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--border);
+}
+.agenda-time-col .time-header {
+  height: 42px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.time-slots { overflow-y: auto; }
+.time-slot {
+  height: 56px; display: flex; align-items: flex-start;
+  padding: 4px 6px 0;
+  font-size: 10px; color: var(--t3);
+  border-bottom: 1px solid var(--border);
+  font-family: 'DM Mono', monospace;
+}
+.agenda-grid { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.agenda-days-header {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  height: 42px; flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+}
+.agenda-day-hd {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 2px;
+  border-right: 1px solid var(--border);
+  padding: 4px;
+}
+.agenda-day-hd:last-child { border-right: none; }
+.day-name { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing:.05em; }
+.day-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--t2);
+}
+.day-num.today { background: var(--fin); color: #fff; }
+
+.agenda-body { flex: 1; overflow-y: auto; overflow-x: hidden; }
+.agenda-cols {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  min-height: 100%;
+}
+.agenda-col {
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.agenda-col:last-child { border-right: none; }
+.cell {
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.evt {
+  position: absolute; left: 3px; right: 3px;
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 10px; font-weight: 500;
+  cursor: pointer; overflow: hidden;
+  transition: opacity 0.12s, transform 0.12s;
+  z-index: 2;
+}
+.evt:hover { opacity: 0.85; transform: scale(1.01); }
+.evt-name { color: #fff; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.evt-time { color: rgba(255,255,255,0.6); font-size: 9px; }
+
+/* Current time indicator */
+.time-now {
+  position: absolute; left: 0; right: 0;
+  height: 1px; background: var(--red);
+  z-index: 5;
+}
+.time-now::before {
+  content: '';
+  position: absolute; left: -4px; top: -4px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red);
+}
+
+/* Jornada agenda tint */
+
+
+body.jornada .day-num.today { background: var(--meta); }
+
+/* ══════════════════════════════════
+   CONTROLS
+══════════════════════════════════ */
+.controls {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--s2); border: 1px solid var(--border-h);
+  border-radius: 16px; padding: 14px; z-index: 999;
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 210px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.ctrl-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing:.1em; color: var(--t3); }
+.ctrl-row { display: flex; flex-direction: column; gap: 5px; }
+.ctrl-lbl { font-size: 11px; color: var(--t3); font-weight: 500; }
+.ctrl-grp { display: flex; gap: 6px; flex-wrap: wrap; }
+.ctrl-btn {
+  padding: 5px 11px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--s3);
+  color: var(--t2); font-size: 12px;
+  font-family: 'DM Sans', sans-serif; cursor: pointer;
+  transition: all 0.15s;
+}
+.ctrl-btn:hover { border-color: var(--border-h); color: var(--t1); }
+.ctrl-btn.on-fin    { background: var(--fin-glow);    color: var(--fin);    border-color: rgba(16,185,129,.3); }
+.ctrl-btn.on-meta   { background: var(--meta-glow);   color: var(--meta);   border-color: rgba(0,85,255,.3);}
+.ctrl-btn.on-agenda { background: var(--agenda-glow); color: var(--agenda); border-color: rgba(6,182,212,.3); }
+.ctrl-btn.on-home   { background: rgba(238,242,255,.08); color: var(--t1); border-color: rgba(238,242,255,.15);}
+.ctrl-btn.on-jornada { background: rgba(16,185,129,.12); color: #10b981; border-color: rgba(16,185,129,.25);}
+.ctrl-btn.on-foco   { background: var(--fin-glow); color: var(--fin); border-color: rgba(16,185,129,.3); }
+.divider { height: 1px; background: var(--border); }
+
+/* ══════════════════════════════════
+   MOBILE
+══════════════════════════════════ */
+.mob-bar {
+  display: none; position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 64px; padding: 0 4px;
+  background: var(--s1); border-top: 1px solid var(--border);
+  align-items: center; justify-content: space-around;
+  z-index: 200;
+}
+.mob-tab {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 14px; border-radius: 12px;
+  cursor: pointer; border: none; background: transparent;
+  color: var(--t3); transition: color 0.15s;
+}
+.mob-tab svg { width: 22px; height: 22px; }
+.mob-tab span { font-size: 10px; font-weight: 500; }
+.mob-tab.act-fin { color: var(--fin); }
+.mob-tab.act-meta { color: var(--meta); }
+.mob-tab.act-agenda { color: var(--agenda); }
+.mob-tab.act-home { color: var(--t1); }
+
+@media (max-width: 768px) {
+  .module-bar, .sidebar { display: none; }
+  .mob-bar { display: flex; }
+  .content { padding-bottom: 76px; }
+  .controls { bottom: 76px; right: 10px; min-width: 190px; }
+  .cards-row { grid-template-columns: 1fr 1fr; }
+  .agenda-wrap { height: calc(100vh - 200px); }
+}
+</style>
+</head>
+<body>
+
+<!-- Tooltip element -->
+<div class="tip" id="tip"></div>
+
+<div class="app">
+
+  <!-- ══ NÍVEL 1: BARRA DE MÓDULOS ══ -->
+  <nav class="module-bar" id="moduleBar">
+
+    <!-- Logo: dois arcos entrelaçados = sincronização -->
+    <div class="logo-mark" title="SyncLife">
+      <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
+        <defs>
+          <linearGradient id="sl-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#051c14"/>
+            <stop offset="100%" stop-color="#03091f"/>
+          </linearGradient>
+          <linearGradient id="sl-brand" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981"/>
+            <stop offset="100%" stop-color="#0055ff"/>
+          </linearGradient>
+          <linearGradient id="sl-r1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.7"/>
+            <stop offset="100%" stop-color="#0055ff" stop-opacity="0.7"/>
+          </linearGradient>
+          <linearGradient id="sl-r2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#0055ff" stop-opacity="0.35"/>
+          </linearGradient>
+          <filter id="sl-glow">
+            <feGaussianBlur stdDeviation="8" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="sl-sglow">
+            <feGaussianBlur stdDeviation="14" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <rect width="512" height="512" rx="112" ry="112" fill="url(#sl-bg)"/>
+        <circle cx="256" cy="256" r="210" fill="none" stroke="url(#sl-r2)" stroke-width="1.5"/>
+        <circle cx="256" cy="256" r="170" fill="none" stroke="url(#sl-r1)" stroke-width="2"/>
+        <circle cx="256" cy="256" r="130" fill="none" stroke="url(#sl-brand)" stroke-width="2.5"/>
+        <path d="M256 46 A210 210 0 0 1 466 256" fill="none" stroke="#10b981" stroke-width="3" stroke-opacity="0.5" stroke-linecap="round"/>
+        <path d="M256 466 A210 210 0 0 1 46 256" fill="none" stroke="#0055ff" stroke-width="3" stroke-opacity="0.5" stroke-linecap="round"/>
+        <circle cx="256" cy="256" r="108" fill="none" stroke="url(#sl-brand)" stroke-width="2.5" opacity="0.8"/>
+        <g filter="url(#sl-sglow)">
+          <text x="256" y="316" font-family="'Helvetica Neue','Arial',sans-serif" font-weight="800" font-size="190" text-anchor="middle" fill="url(#sl-brand)">S</text>
+        </g>
+        <circle cx="256" cy="86"  r="7" fill="#10b981" filter="url(#sl-glow)"/>
+        <circle cx="446" cy="256" r="6" fill="#0066ff" filter="url(#sl-glow)"/>
+        <circle cx="256" cy="426" r="6" fill="#0055ff" filter="url(#sl-glow)"/>
+        <circle cx="66"  cy="256" r="6" fill="#10b981" filter="url(#sl-glow)"/>
+      </svg>
+    </div>
+
+    <button class="module-btn act-home" id="mb-home"
+      data-tip="Home"
+      onclick="go('home')"
+      onmouseenter="showTip(this)" onmouseleave="hideTip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
+      </svg>
+    </button>
+
+    <button class="module-btn" id="mb-fin"
+      data-tip="Finanças"
+      onclick="go('fin')"
+      onmouseenter="showTip(this)" onmouseleave="hideTip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 9.5C19 6.46 15.866 4 12 4S5 6.46 5 9.5c0 1.04.31 2.01.85 2.84L5 15h2l.6 1h8.8l.6-1h2l-.85-2.66A5.9 5.9 0 0019 9.5z"/>
+        <circle cx="9.5" cy="9" r=".75" fill="currentColor" stroke="none"/>
+        <circle cx="14.5" cy="9" r=".75" fill="currentColor" stroke="none"/>
+        <path d="M12 13.5v2.5"/>
+        <path d="M9.5 16c0 .83 1.12 1.5 2.5 1.5s2.5-.67 2.5-1.5"/>
+        <path d="M19 9.5h2.5v2.5H19"/>
+      </svg>
+    </button>
+
+    <button class="module-btn" id="mb-meta"
+      data-tip="Metas"
+      onclick="go('meta')"
+      onmouseenter="showTip(this)" onmouseleave="hideTip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+      </svg>
+    </button>
+
+    <button class="module-btn" id="mb-agenda"
+      data-tip="Agenda"
+      onclick="go('agenda')"
+      onmouseenter="showTip(this)" onmouseleave="hideTip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="3" y="4" width="18" height="18" rx="3"/>
+        <path d="M16 2v4M8 2v4M3 10h18"/>
+        <rect x="7" y="14" width="3" height="3" rx="0.5"/>
+        <rect x="13" y="14" width="3" height="3" rx="0.5"/>
+      </svg>
+    </button>
+
+    <div class="spacer"></div>
+
+    <button class="module-btn" id="mb-cfg"
+      data-tip="Configurações"
+      onclick="go('cfg')"
+      onmouseenter="showTip(this)" onmouseleave="hideTip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+    </button>
+
+    <div class="user-avatar" title="Thiago">T</div>
+  </nav>
+
+  <!-- ══ NÍVEL 2: SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <div class="sb-mod-icon" id="sbIcon"></div>
+      <span class="sb-mod-label" id="sbLabel">Home</span>
+      <!-- Botão: colapsa sidebar -->
+      <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()" title="Recolher">
+        <!-- ícone muda via JS -->
+        <svg id="sbToggleIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Score Jornada na sidebar -->
+    <div class="sb-score">
+      <div class="sb-score-top">
+        <div>
+          <div class="sb-score-label">Life Sync Score</div>
+          <div class="sb-score-num">74</div>
+        </div>
+        <div style="text-align:right">
+          <div class="sb-score-delta">↑ +3 esta semana</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:2px">Financeiro: 80</div>
+        </div>
+      </div>
+      <div class="sb-score-bar"><div class="sb-score-fill"></div></div>
+    </div>
+
+    <nav class="sb-nav" id="sbNav"></nav>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main" id="main">
+    <header class="header">
+
+      <!-- Botão para expandir sidebar quando fechada -->
+      <button class="expand-from-bar" id="expandBtn" onclick="toggleSidebar()" title="Expandir menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+
+      <!-- Modo Foco: breadcrumb -->
+      <div class="hd-breadcrumb" id="hdBreadcrumb">
+        <span class="mod-name" id="hdModName">Home</span>
+        <span class="sep">›</span>
+        <span id="hdPageName">Dashboard</span>
+        <span class="sep">·</span>
+        <span>Fevereiro 2026</span>
+      </div>
+
+      <!-- Modo Jornada: greeting -->
+      <div class="hd-greeting" id="hdGreeting">
+        <span class="hd-greeting-name">Boa tarde, Thiago! ✨</span>
+        <span class="hd-greeting-phrase">Você está evoluindo — 74 pontos esta semana.</span>
+      </div>
+
+      <div class="hd-spacer"></div>
+
+      <!-- Toggle de modo -->
+      <button class="mode-pill" onclick="toggleMode()" id="modePill">
+        <div class="mode-pill-dot" id="modeDot">🎯</div>
+        <span id="modeLabel">Modo Foco</span>
+      </button>
+
+      <!-- Tema -->
+      <button class="theme-pill" id="themePill" onclick="cycleTheme()">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark</span>
+      </button>
+
+      <button class="hd-notif" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 01-3.46 0"/>
+        </svg>
+        <span class="notif-dot"></span>
+      </button>
+    </header>
+
+    <div class="content">
+      <div id="contentInner" class="content-inner"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM BAR -->
+<nav class="mob-bar">
+  <button class="mob-tab act-home" id="mob-home" onclick="go('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
+    </svg><span>Home</span>
+  </button>
+  <button class="mob-tab" id="mob-fin" onclick="go('fin')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 9.5C19 6.46 15.866 4 12 4S5 6.46 5 9.5c0 1.04.31 2.01.85 2.84L5 15h2l.6 1h8.8l.6-1h2l-.85-2.66A5.9 5.9 0 0019 9.5z"/>
+      <circle cx="9.5" cy="9" r=".75" fill="currentColor" stroke="none"/>
+      <circle cx="14.5" cy="9" r=".75" fill="currentColor" stroke="none"/>
+      <path d="M12 13.5v2.5"/><path d="M9.5 16c0 .83 1.12 1.5 2.5 1.5s2.5-.67 2.5-1.5"/>
+      <path d="M19 9.5h2.5v2.5H19"/>
+    </svg><span>Finanças</span>
+  </button>
+  <button class="mob-tab" id="mob-meta" onclick="go('meta')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+    </svg><span>Metas</span>
+  </button>
+  <button class="mob-tab" id="mob-agenda" onclick="go('agenda')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <rect x="3" y="4" width="18" height="18" rx="3"/>
+      <path d="M16 2v4M8 2v4M3 10h18"/>
+    </svg><span>Agenda</span>
+  </button>
+  <button class="mob-tab" id="mob-cfg" onclick="go('cfg')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+    </svg><span>Config</span>
+  </button>
+</nav>
+
+<!-- CONTROLES PROTÓTIPO -->
+<div class="controls">
+  <div class="ctrl-title">🧪 Controles do Protótipo</div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Módulo</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-home" id="ctrl-home" onclick="go('home')">Home</button>
+      <button class="ctrl-btn" id="ctrl-fin"  onclick="go('fin')">Finanças</button>
+      <button class="ctrl-btn" id="ctrl-meta" onclick="go('meta')">Metas</button>
+      <button class="ctrl-btn" id="ctrl-agenda" onclick="go('agenda')">Agenda</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Modo</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-foco" id="ctrl-foco" onclick="setMode('foco')">🎯 Foco</button>
+      <button class="ctrl-btn" id="ctrl-jornada" onclick="setMode('jornada')">🌱 Jornada</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Sidebar</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn" onclick="toggleSidebar()">⇆ Expandir / Recolher</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Tema</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-home" id="ctrl-dark"  onclick="setTheme('dark')">🌙 Dark</button>
+      <button class="ctrl-btn"         id="ctrl-light" onclick="setTheme('light')">☀️ Light</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let curMod  = 'home';
+let curMode = 'foco';
+let sbOpen  = true;
+
+// ── MODULE DEFINITIONS ──
+const MODS = {
+  home: {
+    label: 'Home', color: 'home', pageName: 'Dashboard',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#eef2ff" stroke-width="1.8"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>`,
+    nav: [
+      { id:'dashboard', label:'Dashboard', icon:'grid', active:true },
+    ],
+    render: renderHome,
+  },
+  fin: {
+    label: 'Finanças', color: 'fin', pageName: 'Dashboard',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9.5C19 6.46 15.866 4 12 4S5 6.46 5 9.5c0 1.04.31 2.01.85 2.84L5 15h2l.6 1h8.8l.6-1h2l-.85-2.66A5.9 5.9 0 0019 9.5z"/><circle cx="9.5" cy="9" r=".75" fill="#10b981" stroke="none"/><circle cx="14.5" cy="9" r=".75" fill="#10b981" stroke="none"/><path d="M12 13.5v2.5"/><path d="M9.5 16c0 .83 1.12 1.5 2.5 1.5s2.5-.67 2.5-1.5"/><path d="M19 9.5h2.5v2.5H19"/></svg>`,
+    nav: [
+      { id:'dash',       label:'Dashboard',   icon:'chart',  active:true },
+      { id:'trans',      label:'Transações',  icon:'list' },
+      { id:'recorr',     label:'Recorrentes', icon:'repeat' },
+      { id:'orcamento',  label:'Orçamentos',  icon:'wallet', badge:{t:'2 alertas',c:'y'} },
+      { id:'calendario', label:'Calendário',  icon:'cal' },
+      { id:'plan',       label:'Planejamento',icon:'trend',  badge:{t:'PRO',c:'pro'} },
+      { id:'rel',        label:'Relatórios',  icon:'doc' },
+    ],
+    render: renderFin,
+  },
+  meta: {
+    label: 'Metas', color: 'meta', pageName: 'Minhas Metas',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#0055ff" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+    nav: [
+      { id:'list',  label:'Minhas Metas', icon:'target', active:true, badge:{t:'3 ativas',c:'y'} },
+      { id:'nova',  label:'Nova Meta',    icon:'plus' },
+      { id:'badge', label:'Conquistas',   icon:'trophy', badge:{t:'5',c:'y'} },
+    ],
+    render: renderMeta,
+  },
+  agenda: {
+    label: 'Agenda', color: 'agenda', pageName: 'Semanal',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/><rect x="7" y="14" width="3" height="3" rx="0.5"/><rect x="13" y="14" width="3" height="3" rx="0.5"/></svg>`,
+    nav: [
+      { id:'sem',    label:'Semanal',       icon:'week',  active:true, badge:{t:'hoje',c:'y'} },
+      { id:'mensal', label:'Mensal',        icon:'month' },
+      { id:'novo',   label:'Novo Evento',   icon:'plus' },
+      { id:'foco',   label:'Blocos de Foco',icon:'clock' },
+    ],
+    render: renderAgenda,
+  },
+  cfg: {
+    label: 'Configurações', color: 'cfg', pageName: 'Perfil',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`,
+    nav: [
+      { id:'perfil', label:'Perfil',       icon:'user',   active:true },
+      { id:'modo',   label:'Modo de Uso',  icon:'toggle' },
+      { id:'notif',  label:'Notificações', icon:'bell' },
+      { id:'cat',    label:'Categorias',   icon:'tag' },
+      { id:'plano',  label:'Plano',        icon:'star',   badge:{t:'FREE',c:'y'} },
+    ],
+    render: renderCfg,
+  },
+};
+
+// ── ICONS ──
+function ic(name) {
+  const M = {
+    grid:   `<path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>`,
+    chart:  `<path d="M3 3v18h18M7 16l4-4 4 4 5-5"/>`,
+    list:   `<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>`,
+    repeat: `<path d="M17 1l4 4-4 4M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/>`,
+    wallet: `<path d="M20 12V8H4a2 2 0 010-4h16v4M20 12v4H4a2 2 0 000 4h16v-4M20 12H4"/>`,
+    cal:    `<rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/>`,
+    trend:  `<path d="M3 17l5-5 4 4 9-9M14 7h7v7"/>`,
+    doc:    `<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>`,
+    target: `<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>`,
+    plus:   `<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>`,
+    trophy: `<path d="M6 9H4a2 2 0 010-4h2M18 9h2a2 2 0 000-4h-2M6 9v2a6 6 0 0012 0V9M6 5v4h12V5"/><line x1="12" y1="15" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/>`,
+    week:   `<rect x="3" y="3" width="18" height="18" rx="3"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/>`,
+    month:  `<rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/>`,
+    clock:  `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
+    user:   `<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>`,
+    toggle: `<rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="16" cy="12" r="3"/>`,
+    bell:   `<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>`,
+    tag:    `<path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>`,
+    star:   `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`,
+  };
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">${M[name]||''}</svg>`;
+}
+
+// ── TOOLTIP ──
+const tipEl = document.getElementById('tip');
+function showTip(btn) {
+  const r = btn.getBoundingClientRect();
+  tipEl.textContent = btn.dataset.tip;
+  tipEl.style.top = (r.top + r.height/2) + 'px';
+  tipEl.classList.add('show');
+}
+function hideTip() { tipEl.classList.remove('show'); }
+
+// ── GO (switch module) ──
+function go(mod) {
+  curMod = mod;
+  const mdata = MODS[mod];
+
+  // Module bar active states
+  document.querySelectorAll('.module-btn').forEach(b => {
+    b.className = 'module-btn';
+  });
+  const mb = document.getElementById('mb-' + mod);
+  if (mb) mb.classList.add('act-' + mdata.color);
+
+  // Mobile tabs
+  document.querySelectorAll('.mob-tab').forEach(b => b.className = 'mob-tab');
+  const mobMap = {home:'mob-home',fin:'mob-fin',meta:'mob-meta',agenda:'mob-agenda',cfg:'mob-cfg'};
+  const mobBtn = document.getElementById(mobMap[mod]);
+  if (mobBtn) mobBtn.classList.add('act-' + mdata.color);
+
+  // Control buttons
+  ['home','fin','meta','agenda'].forEach(m => {
+    const b = document.getElementById('ctrl-' + m);
+    if (!b) return;
+    b.className = 'ctrl-btn';
+    if (m === mod) b.classList.add('on-' + MODS[m].color);
+  });
+
+  // Sidebar
+  document.getElementById('sbIcon').innerHTML = mdata.icon;
+  document.getElementById('sbLabel').textContent = mdata.label;
+
+  // Header breadcrumb
+  document.getElementById('hdModName').textContent = mdata.label;
+  document.getElementById('hdPageName').textContent = mdata.pageName;
+
+  renderSidebar(mod);
+  renderContent();
+}
+
+// ── SIDEBAR NAV ──
+function renderSidebar(mod) {
+  const mdata = MODS[mod];
+  const cls = mdata.color;
+  let html = '';
+  mdata.nav.forEach(item => {
+    let badgeHtml = '';
+    if (item.badge) {
+      if (item.badge.c === 'pro') {
+        badgeHtml = `<span class="nav-badge badge-pro">PRO</span>`;
+      } else {
+        badgeHtml = `<span class="nav-badge badge-${item.badge.c}">${item.badge.t}</span>`;
+      }
+    }
+    const act = item.active ? `act-${cls}` : '';
+    html += `<button class="nav-item ${act}" onclick="selectNav(this,'${mod}')">${ic(item.icon)}<span>${item.label}</span>${badgeHtml}</button>`;
+  });
+  document.getElementById('sbNav').innerHTML = html;
+}
+
+function selectNav(el, mod) {
+  document.querySelectorAll('.nav-item').forEach(b => {
+    b.className = 'nav-item';
+  });
+  el.classList.add('act-' + MODS[mod].color);
+}
+
+// ── SIDEBAR TOGGLE ──
+function toggleSidebar() {
+  sbOpen = !sbOpen;
+  const sb = document.getElementById('sidebar');
+  const expBtn = document.getElementById('expandBtn');
+  const icon = document.getElementById('sbToggleIcon');
+
+  sb.classList.toggle('closed', !sbOpen);
+
+  // Mostra botão de expandir no header quando fechada
+  expBtn.style.display = sbOpen ? 'none' : 'flex';
+
+  // Ícone do botão de toggle muda (seta esquerda = recolher, seta direita = expandir)
+  if (sbOpen) {
+    icon.innerHTML = `<path d="M15 18l-6-6 6-6"/>`;
+    document.getElementById('sbToggle').title = 'Recolher sidebar';
+  } else {
+    icon.innerHTML = `<path d="M9 18l6-6-6-6"/>`;
+    document.getElementById('sbToggle').title = 'Expandir sidebar';
+  }
+}
+
+// ── MODE TOGGLE ──
+function toggleMode() {
+  setMode(curMode === 'foco' ? 'jornada' : 'foco');
+}
+function setMode(mode) {
+  curMode = mode;
+  document.body.classList.toggle('jornada', mode === 'jornada');
+  const dot   = document.getElementById('modeDot');
+  const label = document.getElementById('modeLabel');
+  if (mode === 'jornada') {
+    dot.textContent = '🌱';
+    label.textContent = 'Modo Jornada';
+    document.getElementById('ctrl-jornada').className = 'ctrl-btn on-jornada';
+    document.getElementById('ctrl-foco').className    = 'ctrl-btn';
+  } else {
+    dot.textContent = '🎯';
+    label.textContent = 'Modo Foco';
+    document.getElementById('ctrl-foco').className    = 'ctrl-btn on-foco';
+    document.getElementById('ctrl-jornada').className = 'ctrl-btn';
+  }
+  renderContent();
+}
+
+// ── RENDER CONTENT ──
+function renderContent() {
+  const inner = document.getElementById('contentInner');
+  inner.style.animation = 'none';
+  inner.offsetHeight;
+  inner.style.animation = '';
+  inner.innerHTML = MODS[curMod].render();
+}
+
+// ── RENDERS ──
+function ann(txt) {
+  return `<div class="annotation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${txt}</div>`;
+}
+
+function renderHome() {
+  const j = curMode === 'jornada';
+  return `
+    ${ann('Protótipo · Home — ' + (j ? 'Modo Jornada 🌱' : 'Modo Foco 🎯'))}
+
+    ${j ? `
+    <div class="score-hero">
+      <div class="score-num">74</div>
+      <div class="score-right">
+        <div class="score-title">Life Sync Score</div>
+        <div class="score-phrase">"Você está consistente! Cada registro conta."</div>
+        <div class="score-bar-bg"><div class="score-bar-fill"></div></div>
+        <div class="score-components">
+          <div class="score-comp">Financeiro <strong>80</strong></div>
+          <div class="score-comp">Metas <strong>65</strong></div>
+          <div class="score-comp">Consistência <strong>78</strong></div>
+        </div>
+      </div>
+    </div>` : ''}
+
+    <div class="cards-row">
+      <div class="demo-card">
+        <div class="card-lbl">💰 Receitas</div>
+        <div class="card-val g">R$ 5.000</div>
+        <div class="card-delta">↑ +12% vs. jan</div>
+      </div>
+      <div class="demo-card">
+        <div class="card-lbl">📤 Despesas</div>
+        <div class="card-val r">R$ 3.200</div>
+        <div class="card-delta">↓ -5% vs. jan</div>
+      </div>
+      <div class="demo-card">
+        <div class="card-lbl">💚 Saldo</div>
+        <div class="card-val">R$ 1.800</div>
+        <div class="card-delta">↑ +23% vs. jan</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div class="demo-card">
+        <div class="card-lbl" style="margin-bottom:12px">📅 Esta Semana</div>
+        ${['Seg · Reunião cliente 14h','Qua · Pagar aluguel R$ 1.500','Sex · Academia 7h'].map(e=>`
+        <div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--t2)">${e}</div>`).join('')}
+        <div style="padding-top:8px;font-size:12px;color:var(--agenda);cursor:pointer">Ver agenda completa →</div>
+      </div>
+      <div class="demo-card">
+        <div class="card-lbl" style="margin-bottom:12px">🎯 Metas</div>
+        ${[['✈️ Viagem Europa','28%','var(--meta)',28],['🛡️ Reserva Emerg.','65%','var(--green)',65]].map(([n,p,c,w])=>`
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+            <span style="color:var(--t2)">${n}</span><span style="color:${c};font-weight:600">${p}</span>
+          </div>
+          <div style="height:5px;background:var(--s3);border-radius:3px">
+            <div style="height:100%;width:${w}%;background:${c};border-radius:3px"></div>
+          </div>
+        </div>`).join('')}
+        <div style="font-size:12px;color:var(--meta);cursor:pointer">Ver todas →</div>
+      </div>
+    </div>
+
+    ${j ? `
+    <div class="ai-card">
+      <div class="ai-card-lbl">💡 Análise de Fevereiro — Consultor IA</div>
+      <div class="ai-card-body">
+        Em fevereiro você reduziu gastos em <strong>Alimentação em R$ 180</strong> vs. janeiro — ótimo sinal.
+        Seu saldo deve chegar a <strong>R$ 2.200</strong> ao final do mês. Atenção: <strong>Lazer já usou 78%</strong>
+        do orçamento e ainda faltam 10 dias. Quer redirecionar R$ 100 de Outros para Lazer?
+      </div>
+    </div>` : `
+    <div class="demo-card" style="display:flex;gap:32px;align-items:center">
+      <div><div style="font-size:11px;color:var(--t3);margin-bottom:4px">Orçamentos estourados</div><div style="font-family:'DM Mono',monospace;font-size:24px;color:var(--red)">1</div></div>
+      <div><div style="font-size:11px;color:var(--t3);margin-bottom:4px">Metas no caminho</div><div style="font-family:'DM Mono',monospace;font-size:24px;color:var(--green)">2/3</div></div>
+      <div><div style="font-size:11px;color:var(--t3);margin-bottom:4px">Streak de registro</div><div style="font-family:'DM Mono',monospace;font-size:24px;color:var(--fin)">7d</div></div>
+      <div style="margin-left:auto;font-size:12px;color:var(--t3)">Fevereiro 2026</div>
+    </div>`}
+  `;
+}
+
+function renderFin() {
+  return `
+    ${ann('Protótipo · Finanças / Dashboard')}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <div class="page-title">Financeiro</div>
+        <div class="page-sub">Fevereiro 2026</div>
+      </div>
+      <button style="padding:8px 16px;border-radius:10px;border:none;background:var(--fin);color:#fff;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500">+ Transação</button>
+    </div>
+    <div class="cards-row">
+      <div class="demo-card"><div class="card-lbl">💰 Receitas</div><div class="card-val g">R$ 5.000</div><div class="card-delta">↑ +12%</div></div>
+      <div class="demo-card"><div class="card-lbl">📤 Despesas</div><div class="card-val r">R$ 3.200</div><div class="card-delta">↓ -5%</div></div>
+      <div class="demo-card"><div class="card-lbl">💚 Saldo</div><div class="card-val">R$ 1.800</div><div class="card-delta">↑ +23%</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="demo-card">
+        <div class="card-lbl" style="margin-bottom:12px">💼 Envelopes de Orçamento</div>
+        ${[['Moradia','R$ 1.200','R$ 1.500',80,'y'],['Alimentação','R$ 778','R$ 800',97,'r'],['Transporte','R$ 280','R$ 400',70,'g'],['Lazer','R$ 312','R$ 400',78,'y']].map(([c,s,t,p,col])=>`
+        <div style="margin-bottom:11px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+            <span style="color:var(--t2)">${c}</span>
+            <span style="color:${col==='y'?'var(--yellow)':col==='r'?'var(--red)':'var(--green)'}">${s} / ${t}</span>
+          </div>
+          <div style="height:5px;background:var(--s3);border-radius:3px">
+            <div style="height:100%;width:${p}%;background:${col==='y'?'var(--yellow)':col==='r'?'var(--red)':'var(--green)'};border-radius:3px"></div>
+          </div>
+        </div>`).join('')}
+      </div>
+      <div class="demo-card">
+        <div class="card-lbl" style="margin-bottom:12px">🔄 Recorrentes do Mês</div>
+        ${[['Aluguel','R$ 1.500','25/02','pago'],['Netflix','R$ 47,90','15/02','pago'],['Spotify','R$ 21,90','15/02','pago'],['Internet','R$ 99','10/03','futuro']].map(([n,v,d,s])=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px">
+          <span style="color:var(--t2)">${n}</span>
+          <span style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:10px;color:${s==='pago'?'var(--green)':'var(--t3)'};background:${s==='pago'?'rgba(34,197,94,0.1)':'var(--s3)'};padding:2px 6px;border-radius:4px">${s==='pago'?'✓ pago':'futuro'}</span>
+            <span style="font-family:'DM Mono',monospace;color:var(--red)">-${v}</span>
+          </span>
+        </div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderMeta() {
+  const j = curMode === 'jornada';
+  return `
+    ${ann('Protótipo · Metas — ' + (j ? 'Modo Jornada 🌱' : 'Modo Foco 🎯'))}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="page-title">Minhas Metas</div>
+      <button style="padding:8px 16px;border-radius:10px;border:none;background:var(--meta);color:#fff;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500">+ Nova Meta</button>
+    </div>
+    <div class="page-sub">3 ativas · 1 concluída · ${j ? '<span style="color:var(--yellow)">1 em risco</span>' : '1 em risco'}</div>
+
+    ${[
+      {icon:'✈️',name:'Viagem para Europa',pct:28,cur:'R$ 4.200',total:'R$ 15.000',status:'Em risco',sc:'y',detail:'Ritmo: R$ 700/mês · Precisa: R$ 1.100/mês',prazo:'Dez 2026',warn:j},
+      {icon:'🛡️',name:'Reserva de Emergência',pct:65,cur:'R$ 9.750',total:'R$ 15.000',status:'No caminho',sc:'g',detail:'Ritmo: R$ 1.050/mês ✅',prazo:'Jun 2026',warn:false},
+      {icon:'📚',name:'Certificação AWS',pct:40,cur:'40%',total:'100%',status:'No caminho',sc:'g',detail:'3 sessões/semana agendadas',prazo:'Mai 2026',warn:false},
+    ].map(m => `
+    <div class="demo-card" style="margin-bottom:12px;${m.sc==='y'?'border-color:rgba(245,158,11,0.2)':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:26px">${m.icon}</span>
+          <div>
+            <div style="font-weight:600;font-size:14px;color:var(--t1)">${m.name}</div>
+            <div style="font-size:12px;color:var(--t3)">Prazo: ${m.prazo}</div>
+          </div>
+        </div>
+        <span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;background:${m.sc==='y'?'rgba(245,158,11,0.1)':'rgba(34,197,94,0.1)'};color:${m.sc==='y'?'var(--yellow)':'var(--green)'}">${m.status}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+        <span style="color:var(--t3)">${m.cur} de ${m.total}</span>
+        <span style="font-weight:700;color:var(--meta)">${m.pct}%</span>
+      </div>
+      <div style="height:7px;background:var(--s3);border-radius:4px;margin-bottom:8px">
+        <div style="height:100%;width:${m.pct}%;background:linear-gradient(90deg,var(--fin),var(--meta));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)"></div>
+      </div>
+      <div style="font-size:12px;color:var(--t3)">${m.detail}</div>
+      ${m.warn ? `<div style="margin-top:10px;padding:9px;background:rgba(245,158,11,0.07);border-radius:8px;border:1px solid rgba(245,158,11,0.15);font-size:12px;color:var(--yellow)">💡 No ritmo atual você chega em fev/2027 — 2 meses além do planejado. Quer aumentar o aporte para R$ 1.100?</div>` : ''}
+    </div>`).join('')}
+  `;
+}
+
+function renderAgenda() {
+  const days = [
+    {name:'Seg',num:17},
+    {name:'Ter',num:18},
+    {name:'Qua',num:19},
+    {name:'Qui',num:20},
+    {name:'Sex',num:21,today:true},
+    {name:'Sáb',num:22},
+    {name:'Dom',num:23},
+  ];
+
+  const events = [
+    // col(0-6), startSlot(0=08h, each=30min), spanSlots, label, time, type
+    {col:0, start:2,  span:2, label:'Reunião de alinhamento', time:'09:00', type:'work'},
+    {col:1, start:12, span:2, label:'Call cliente', time:'14:00', type:'work'},
+    {col:1, start:22, span:3, label:'Inglês (Meta)', time:'19:00', type:'goal'},
+    {col:2, start:0,  span:1, label:'Pagar aluguel', time:'Dia todo', type:'fin'},
+    {col:3, start:0,  span:2, label:'Academia', time:'07:00', type:'health'},
+    {col:3, start:24, span:3, label:'Estudar AWS', time:'20:00', type:'goal'},
+    {col:4, start:4,  span:2, label:'1:1 Gestor', time:'10:00', type:'work'},
+    {col:6, start:22, span:2, label:'Review semanal', time:'19:00', type:'review'},
+  ];
+
+  const typeColor = {
+    work:   '#10b981',
+    goal:   '#0055ff',
+    fin:    '#f43f5e',
+    health: '#22c55e',
+    review: '#f59e0b',
+  };
+
+  const hours = ['08','09','10','11','12','13','14','15','16','17','18','19','20','21'];
+
+  // Build cells HTML for each day
+  function evtsForCol(c) {
+    return events.filter(e => e.col === c);
+  }
+
+  const SLOT_H = 44; // px per 60min slot
+
+  const colsHtml = days.map((d, ci) => {
+    const evList = evtsForCol(ci).map(e => {
+      const top = e.start * (SLOT_H / 2);
+      const height = e.span * (SLOT_H / 2) - 2;
+      return `<div class="evt" style="top:${top}px;height:${height}px;background:${typeColor[e.type]};opacity:${e.type==='fin'?'0.95':'0.85'}">
+        <div class="evt-time">${e.time}</div>
+        <div class="evt-name">${e.label}</div>
+      </div>`;
+    }).join('');
+
+    const timeMark = ci === 4 ? `<div class="time-now" style="top:${(10.5)*(SLOT_H/2)}px"></div>` : '';
+
+    const cellsHtml = hours.map(() => `<div class="cell" style="height:${SLOT_H}px"></div>`).join('');
+    return `<div class="agenda-col" style="position:relative">${timeMark}${cellsHtml}${evList}</div>`;
+  }).join('');
+
+  const timeColHtml = hours.map(h => `<div class="time-slot" style="height:${SLOT_H}px">${h}h</div>`).join('');
+
+  return `
+    ${ann('Protótipo · Agenda / Semanal — 17–23 Fev 2026')}
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div>
+        <div class="page-title">Agenda</div>
+        <div class="page-sub">Semana de 17–23 Fev 2026</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button style="padding:7px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--t2);cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center">◀</button>
+        <button style="padding:7px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--t2);cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center">▶</button>
+        <button style="padding:0 14px;height:32px;border-radius:9px;border:none;background:var(--agenda);color:#fff;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500">+ Evento</button>
+      </div>
+    </div>
+
+    <!-- Legenda -->
+    <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+      ${Object.entries({Trabalho:typeColor.work, Meta:typeColor.goal, Financeiro:typeColor.fin, Saúde:typeColor.health, Review:typeColor.review}).map(([l,c])=>`
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t3)">
+        <div style="width:8px;height:8px;border-radius:2px;background:${c}"></div>${l}
+      </div>`).join('')}
+    </div>
+
+    <div class="agenda-wrap">
+      <!-- Coluna de horários -->
+      <div class="agenda-time-col">
+        <div class="time-header"></div>
+        <div class="time-slots">${timeColHtml}</div>
+      </div>
+      <!-- Grade de dias -->
+      <div class="agenda-grid">
+        <div class="agenda-days-header">
+          ${days.map(d=>`
+          <div class="agenda-day-hd">
+            <div class="day-name">${d.name}</div>
+            <div class="day-num${d.today?' today':''}">${d.num}</div>
+          </div>`).join('')}
+        </div>
+        <div class="agenda-body">
+          <div class="agenda-cols">${colsHtml}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCfg() {
+  return `
+    ${ann('Protótipo · Configurações')}
+    <div class="page-title">Configurações</div>
+    <div class="page-sub">Personalize sua experiência no SyncLife</div>
+    <div style="max-width:480px">
+      <div class="demo-card" style="margin-bottom:12px">
+        <div class="card-lbl" style="margin-bottom:14px">Perfil</div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--fin),var(--meta));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff">T</div>
+          <div>
+            <div style="font-weight:600;font-size:15px">Thiago</div>
+            <div style="font-size:12px;color:var(--t3)">thiago@email.com</div>
+          </div>
+        </div>
+        ${[['Nome','Thiago'],['Moeda','R$ BRL']].map(([l,v])=>`
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;color:var(--t3);margin-bottom:4px">${l}</div>
+          <div style="padding:9px 12px;background:var(--s3);border:1px solid var(--border);border-radius:9px;font-size:13px;color:var(--t2)">${v}</div>
+        </div>`).join('')}
+      </div>
+      <div class="demo-card">
+        <div class="card-lbl" style="margin-bottom:12px">Plano atual</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--s3);border:1px solid var(--border);border-radius:10px">
+          <div>
+            <div style="font-weight:600">Plano Free</div>
+            <div style="font-size:12px;color:var(--t3)">3 metas · 200 transações/mês</div>
+          </div>
+          <button style="padding:7px 14px;border-radius:9px;border:none;background:linear-gradient(135deg,#10b981,#0055ff);color:#fff;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600">Upgrade PRO</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ── THEME ──
+let curTheme = 'dark';
+const THEMES = ['dark','light'];
+const THEME_META = {
+  dark:  { icon:'🌙', label:'Dark'  },
+  light: { icon:'☀️', label:'Light' },
+};
+
+function cycleTheme() {
+  const idx = THEMES.indexOf(curTheme);
+  setTheme(THEMES[(idx + 1) % THEMES.length]);
+}
+
+function setTheme(t) {
+  curTheme = t;
+  document.body.classList.toggle('light', t === 'light');
+
+  const meta = THEME_META[t];
+  document.getElementById('themeIcon').textContent  = meta.icon;
+  document.getElementById('themeLabel').textContent = meta.label;
+
+  // ctrl buttons
+  document.getElementById('ctrl-dark').className  = 'ctrl-btn' + (t === 'dark'  ? ' on-home' : '');
+  document.getElementById('ctrl-light').className = 'ctrl-btn' + (t === 'light' ? ' on-home' : '');
+}
+
+// ── INIT ──
+go('home');
+</script>
+</body>
+</html>

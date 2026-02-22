@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>SyncLife — Icon Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #0a0f1e;
+  color: #dff0ff;
+  min-height: 100vh;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px; font-weight: 800;
+  background: linear-gradient(90deg, #10b981, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.section { width: 100%; max-width: 900px; }
+.section-title {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: #2e4a6e; margin-bottom: 20px;
+}
+.row {
+  display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap;
+}
+.size-box {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.size-label { font-size: 11px; color: #2e4a6e; }
+.on-dark { background: #070b12; padding: 16px; border-radius: 20px; }
+.on-light { background: #e8edf7; padding: 16px; border-radius: 20px; }
+.on-white { background: #ffffff; padding: 16px; border-radius: 20px; }
+
+/* App context previews */
+.phone-frame {
+  background: #111;
+  border-radius: 32px;
+  padding: 12px;
+  border: 2px solid #222;
+  width: 200px;
+}
+.phone-status { height: 24px; display: flex; align-items: center; justify-content: center; }
+.phone-status-dot { width: 80px; height: 5px; background: #222; border-radius: 3px; }
+.app-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  padding: 20px 8px;
+}
+.app-slot {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.app-slot span { font-size: 9px; color: #999; }
+.app-icon-placeholder {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: #222;
+}
+
+.splash-preview {
+  width: 320px; height: 200px;
+  background: linear-gradient(135deg, #03071a, #020d08);
+  border-radius: 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px;
+  border: 1px solid rgba(16,185,129,0.15);
+}
+.splash-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 800;
+  background: linear-gradient(90deg, #10b981, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.splash-tagline { font-size: 11px; color: #2e4a6e; }
+
+.divider { width: 100%; height: 1px; background: rgba(255,255,255,0.05); }
+</style>
+</head>
+<body>
+
+<h1>SyncLife — Ícone</h1>
+
+<!-- SIZES -->
+<div class="section">
+  <div class="section-title">Tamanhos — fundo escuro</div>
+  <div class="row on-dark">
+    <div class="size-box">
+      <img src="synclife-icon.svg" width="16" height="16">
+      <span class="size-label">16px</span>
+    </div>
+    <div class="size-box">
+      <img src="synclife-icon.svg" width="24" height="24">
+      <span class="size-label">24px</span>
+    </div>
+    <div class="size-box">
+      <img src="synclife-icon.svg" width="32" height="32">
+      <span class="size-label">32px</span>
+    </div>
+    <div class="size-box">
+      <img src="synclife-icon.svg" width="48" height="48">
+      <span class="size-label">48px</span>
+    </div>
+    <div class="size-box">
+      <img src="synclife-icon.svg" width="64" height="64">
+      <span class="size-label">64px</span>
+    </div>
+    <div class="size-box">
+      <img src="synclife-icon.svg" width="96" height="96">
+      <span class="size-label">96px</span>
+    </div>
+    <div class="size-box">
+      <img src="synclife-icon.svg" width="128" height="128">
+      <span class="size-label">128px</span>
+    </div>
+    <div class="size-box">
+      <img src="synclife-icon.svg" width="256" height="256">
+      <span class="size-label">256px</span>
+    </div>
+  </div>
+</div>
+
+<!-- BACKGROUNDS -->
+<div class="section">
+  <div class="section-title">Fundos — 64px</div>
+  <div class="row">
+    <div class="size-box on-dark">
+      <img src="synclife-icon.svg" width="64" height="64">
+      <span class="size-label">Dark</span>
+    </div>
+    <div class="size-box on-light">
+      <img src="synclife-icon.svg" width="64" height="64">
+      <span class="size-label">Light</span>
+    </div>
+    <div class="size-box on-white">
+      <img src="synclife-icon.svg" width="64" height="64">
+      <span class="size-label">Branco</span>
+    </div>
+    <div class="size-box" style="background:#10b981;padding:16px;border-radius:20px">
+      <img src="synclife-icon.svg" width="64" height="64">
+      <span class="size-label" style="color:rgba(0,0,0,0.5)">Esmeralda</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- APP CONTEXTS -->
+<div class="section">
+  <div class="section-title">Contextos de uso</div>
+  <div class="row" style="align-items:flex-start">
+
+    <!-- Phone homescreen -->
+    <div class="size-box">
+      <div class="phone-frame">
+        <div class="phone-status"><div class="phone-status-dot"></div></div>
+        <div class="app-grid">
+          <div class="app-slot">
+            <div class="app-icon-placeholder"></div>
+            <span></span>
+          </div>
+          <div class="app-slot">
+            <div class="app-icon-placeholder"></div>
+            <span></span>
+          </div>
+          <!-- SyncLife icon -->
+          <div class="app-slot">
+            <img src="synclife-icon.svg" width="52" height="52" style="border-radius:14px">
+            <span style="color:#ddd">SyncLife</span>
+          </div>
+          <div class="app-slot">
+            <div class="app-icon-placeholder"></div>
+            <span></span>
+          </div>
+          <div class="app-slot">
+            <div class="app-icon-placeholder"></div>
+            <span></span>
+          </div>
+          <div class="app-slot">
+            <div class="app-icon-placeholder"></div>
+            <span></span>
+          </div>
+          <div class="app-slot">
+            <div class="app-icon-placeholder"></div>
+            <span></span>
+          </div>
+          <div class="app-slot">
+            <div class="app-icon-placeholder"></div>
+            <span></span>
+          </div>
+        </div>
+      </div>
+      <span class="size-label" style="margin-top:8px">Homescreen iOS</span>
+    </div>
+
+    <!-- Splash screen -->
+    <div class="size-box">
+      <div class="splash-preview">
+        <img src="synclife-icon.svg" width="80" height="80">
+        <div>
+          <div class="splash-name">SyncLife</div>
+          <div class="splash-tagline">Sua vida em sincronia</div>
+        </div>
+      </div>
+      <span class="size-label" style="margin-top:8px">Splash / Loading</span>
+    </div>
+
+    <!-- Favicon / Tab -->
+    <div class="size-box">
+      <div style="background:#1e2535;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;min-width:160px">
+        <img src="synclife-icon.svg" width="16" height="16">
+        <span style="font-size:12px;color:#8896b3">SyncLife</span>
+      </div>
+      <span class="size-label" style="margin-top:8px">Browser Tab</span>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
