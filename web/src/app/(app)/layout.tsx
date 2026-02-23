@@ -8,6 +8,7 @@ interface ProfileData {
   mode: 'focus' | 'journey' | null
   theme: 'light' | 'dark' | 'system' | null
   sidebar_state: 'open' | 'collapsed' | null
+  onboarding_completed: boolean | null
 }
 
 export default async function AppLayout({
@@ -26,9 +27,14 @@ export default async function AppLayout({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: profile } = await (supabase as any)
     .from('profiles')
-    .select('full_name, mode, theme, sidebar_state')
+    .select('full_name, mode, theme, sidebar_state, onboarding_completed')
     .eq('id', user.id)
     .single() as { data: ProfileData | null }
+
+  // Guard: redirect to onboarding if not completed
+  if (!profile?.onboarding_completed) {
+    redirect('/onboarding')
+  }
 
   const userName = profile?.full_name || user.email?.split('@')[0] || 'Usuário'
 

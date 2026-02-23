@@ -92,10 +92,8 @@ DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
 CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
-/* Permite insert pelo usuário (auth.uid() = id) OU pelo trigger (id já existe em auth.users) */
-CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (
-  auth.uid() = id OR EXISTS (SELECT 1 FROM auth.users u WHERE u.id = profiles.id)
-);
+/* Trigger usa SECURITY DEFINER e ignora RLS — apenas o próprio usuário pode inserir via client */
+CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
 DROP POLICY IF EXISTS "Users can manage own categories" ON categories;
 DROP POLICY IF EXISTS "Users can manage own transactions" ON transactions;
