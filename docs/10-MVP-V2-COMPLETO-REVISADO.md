@@ -656,6 +656,47 @@ carregados, e sincroniza quando a conexão volta.
 
 ---
 
+## 8.5 TABELA CENTRALIZADA — Limites FREE vs PRO
+
+> **Adição (23/02/2026):** Tabela consolidada de todos os limites por plano,
+> extraída de todas as seções do MVP v2. Usar esta tabela como referência única
+> no desenvolvimento para implementar os gates de upsell.
+
+| Recurso | Plano FREE | Plano PRO | Onde implementar |
+|---------|-----------|-----------|-----------------|
+| **Finanças** | | | |
+| Transações recorrentes ativas | 5 | Ilimitadas | Tela de Recorrentes |
+| Horizonte de projeção futura | 3 meses | 12 meses | Tela de Planejamento |
+| Eventos pontuais na projeção | ❌ Não disponível | ✅ Ilimitados | Tela de Planejamento |
+| Relatórios | Apenas mês atual | Qualquer período | Tela de Relatórios |
+| Exportação (PDF/Excel/CSV) | Apenas mês atual | Qualquer período | Tela de Relatórios |
+| **Metas** | | | |
+| Metas ativas simultâneas | 3 | Ilimitadas | Tela de Metas / Nova Meta |
+| Metas com blocos de foco | 3 | Ilimitadas | Detalhe da Meta / Agenda |
+| **Agenda** | | | |
+| Eventos por mês | 50 | Ilimitados | Tela de Agenda |
+| Google Calendar Sync | ❌ Não disponível | ✅ Bidirecional | Configurações |
+| **IA** | | | |
+| Perguntas ao Consultor IA | 5/mês | Ilimitadas | Card do Consultor IA |
+| Regenerar análise IA | 3/dia | Ilimitado | Card do Consultor IA |
+| **Notificações** | | | |
+| Review semanal (domingo) | ❌ (Modo Jornada) | ✅ | Configurações |
+| Lembrete de registro diário | ❌ | ✅ (configurável) | Configurações |
+
+### Regras de implementação dos gates de upsell
+
+1. **Soft limit:** Quando o usuário atinge 80% do limite FREE, exibir banner discreto:
+   "Você está usando 4 de 5 recorrentes. [Upgrade para ilimitadas]"
+2. **Hard limit:** Quando atinge 100%, bloquear a ação com modal de upgrade:
+   "Limite atingido. Faça upgrade para PRO para continuar. [Ver planos]"
+3. **Preview lock:** Para recursos exclusivos PRO, exibir o UI com um overlay de lock:
+   visualização parcial + ícone de cadeado + "Disponível no PRO"
+4. **Nenhum dado é perdido:** Se o usuário fizer downgrade de PRO para FREE e tiver
+   mais itens que o limite, os itens existentes continuam visíveis (somente leitura)
+   mas novos não podem ser criados até que esteja dentro do limite.
+
+---
+
 ## 9. MODELO DE DADOS — Adições ao v1
 
 ```sql
@@ -831,4 +872,4 @@ CREATE TABLE IF NOT EXISTS recurring_transactions (
 ---
 
 *Documento criado em: Fevereiro 2026*
-*Versão: 1.0 — MVP v2 Revisado*
+*Versão: 1.1 — Tabela FREE/PRO centralizada + regras de upsell adicionadas (23/02/2026)*

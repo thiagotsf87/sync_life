@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Configurações</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── TOKENS ── */
+:root {
+  --bg:   #03071a; --s1: #07112b; --s2: #0c1a3a; --s3: #132248;
+  --border: rgba(255,255,255,0.06); --border-h: rgba(255,255,255,0.13);
+  --t1: #dff0ff; --t2: #6e90b8; --t3: #2e4a6e;
+  --em: #10b981; --em-glow: rgba(16,185,129,0.16);
+  --el: #0055ff; --el-glow: rgba(0,85,255,0.16);
+  --fin: #10b981; --fin-glow: rgba(16,185,129,0.16);
+  --meta: #0055ff; --meta-glow: rgba(0,85,255,0.16);
+  --agenda: #06b6d4; --agenda-glow: rgba(6,182,212,0.16);
+  --cfg: #64748b; --cfg-glow: rgba(100,116,139,0.12);
+  --green: #10b981; --yellow: #f59e0b; --red: #f43f5e;
+  --module-bar: 58px; --sb-open: 228px; --sb-closed: 0px; --header-h: 54px;
+}
+
+/* ── JORNADA ── */
+body.jornada {
+  --bg: #020d08; --s1: #061410; --s2: #0b1e18; --s3: #112b22;
+  --border: rgba(16,185,129,0.08); --border-h: rgba(16,185,129,0.18);
+  --t1: #d6faf0; --t2: #4da888; --t3: #235c48;
+}
+body.jornada .hd-greeting-name { background: linear-gradient(90deg,#10b981,#0055ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+body.jornada .sb-score { display:block; }
+body.jornada .sb-score-fill { background: linear-gradient(90deg,#10b981,#0055ff); }
+body.jornada .sb-score-num { background: linear-gradient(135deg,#10b981,#0055ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+body.jornada .header { background: linear-gradient(90deg,rgba(16,185,129,0.06),transparent 60%); }
+
+/* ── LIGHT ── */
+body.light {
+  --bg: #e6eef5; --s1: #ffffff; --s2: #f0f6fa; --s3: #e0eaf3;
+  --border: rgba(3,7,26,0.09); --border-h: rgba(3,7,26,0.18);
+  --t1: #03071a; --t2: #1e3a5c; --t3: #5a7a9e;
+  --fin-glow: rgba(16,185,129,0.12); --meta-glow: rgba(0,85,255,0.12);
+  --agenda-glow: rgba(6,182,212,0.12); --cfg-glow: rgba(100,116,139,0.10);
+}
+body.light .module-bar { background: linear-gradient(180deg,#083d2c,#052b1e); box-shadow: 2px 0 24px rgba(8,61,44,0.28); }
+body.light .module-bar .module-btn { color: rgba(255,255,255,0.42); }
+body.light .module-bar .module-btn:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.85); }
+body.light .module-bar .module-btn.act-fin, body.light .module-bar .module-btn.act-cfg,
+body.light .module-bar .module-btn.act-meta, body.light .module-bar .module-btn.act-agenda,
+body.light .module-bar .module-btn.act-home { color:#6ee7b7; background:rgba(110,231,183,0.12); }
+body.light .logo-mark { background: linear-gradient(135deg,#051c14,#03091f); border-radius:9px; }
+body.light .module-bar .user-avatar { border-color: rgba(255,255,255,0.28); }
+body.light .sidebar { background:#f5fbf8; border-right:1px solid rgba(16,185,129,0.16); box-shadow:2px 0 20px rgba(16,185,129,0.06); }
+body.light .sidebar .sb-mod-label { color:#083d2c; }
+body.light .sidebar .sb-section-label { color:#4da888; }
+body.light .sidebar .sb-toggle { color:#4da888; }
+body.light .nav-item { color:#1a5c42; }
+body.light .nav-item:hover { background:rgba(16,185,129,0.07); color:#083d2c; }
+body.light .nav-item.act-cfg { background:rgba(16,185,129,0.10); color:#10b981; }
+body.light .header { background: linear-gradient(90deg,rgba(16,185,129,0.07),#ffffff 35%); border-color:rgba(16,185,129,0.10); }
+body.light .mode-pill, body.light .theme-pill { background:var(--s2); border-color:rgba(3,7,26,0.12); }
+body.light .cfg-menu-item { color:#1e3a5c; }
+body.light .cfg-menu-item:hover { background:rgba(16,185,129,0.06); }
+body.light .cfg-menu-item.active { background:rgba(16,185,129,0.10); color:#10b981; }
+body.light .setting-card { background:#fff; box-shadow:0 2px 12px rgba(3,7,26,0.07); border-color:rgba(3,7,26,0.07); }
+body.light .setting-input { background:var(--s2); border-color:rgba(3,7,26,0.12); color:var(--t1); }
+body.light .setting-input:focus { border-color:rgba(16,185,129,0.4); }
+body.light .mode-card { background:#fff; border-color:rgba(3,7,26,0.10); }
+body.light .mode-card.selected { border-color:#10b981; background:rgba(16,185,129,0.04); }
+body.light .notif-row { border-color:rgba(3,7,26,0.07); }
+body.light .intg-card { background:#fff; border-color:rgba(3,7,26,0.08); }
+body.light .plan-card { background:#fff; border-color:rgba(3,7,26,0.10); }
+body.light .plan-card.featured { border-color:#10b981; }
+body.light .plan-feature { color:#1e3a5c; }
+body.light .danger-zone { background:rgba(244,63,94,0.04); border-color:rgba(244,63,94,0.14); }
+
+/* ── LIGHT + JORNADA ── */
+body.light.jornada {
+  --bg: #c8f0e4; --s1:#ffffff; --s2:#e0f7ef; --s3:#c4eede;
+  --border: rgba(5,80,56,0.12); --border-h: rgba(5,80,56,0.24);
+  --t1: #022016; --t2: #0d5c3e; --t3: #4da888;
+}
+body.light.jornada .module-bar { background: linear-gradient(180deg,#0c9e6e,#0844cc); }
+body.light.jornada .sidebar { background: linear-gradient(180deg,#0fbe82,#0a56d6); }
+body.light.jornada .nav-item { color: rgba(255,255,255,0.75); }
+body.light.jornada .nav-item:hover { background: rgba(255,255,255,0.15); color:#fff; }
+body.light.jornada .nav-item.act-cfg { background: rgba(255,255,255,0.20); color:#fff; }
+body.light.jornada .sb-mod-label { color:#fff; }
+body.light.jornada .sb-section-label { color:rgba(255,255,255,0.45); }
+body.light.jornada .sb-toggle { color:rgba(255,255,255,0.5); }
+body.light.jornada .header { background: linear-gradient(90deg,#0fbe82,#0a56d6); border-color:transparent; }
+body.light.jornada .hd-breadcrumb, body.light.jornada #hdPageName,
+body.light.jornada .mod-name, body.light.jornada .sep { color: rgba(255,255,255,0.85); }
+body.light.jornada .hd-greeting-name { background: linear-gradient(90deg,#fff,#c4f8e8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+body.light.jornada .hd-greeting-phrase { color: rgba(255,255,255,0.65); }
+body.light.jornada .mode-pill, body.light.jornada .theme-pill { background:rgba(255,255,255,0.6); border-color:rgba(5,80,56,0.15); color:#0d5c3e; }
+body.light.jornada .hd-notif { color:#0d5c3e; border-color:rgba(5,80,56,0.15); }
+body.light.jornada .setting-card { background:#fff; box-shadow:0 2px 16px rgba(5,80,56,0.10); border-color:rgba(5,80,56,0.10); }
+body.light.jornada .mode-card { background:#fff; border-color:rgba(5,80,56,0.10); }
+body.light.jornada .mode-card.selected { border-color:#0fbe82; }
+body.light.jornada .intg-card { background:#fff; border-color:rgba(5,80,56,0.08); }
+body.light.jornada .plan-card { background:#fff; border-color:rgba(5,80,56,0.10); }
+body.light.jornada .plan-card.featured { border-color:#0fbe82; }
+body.light.jornada .cfg-menu-item { color:#0d5c3e; }
+body.light.jornada .cfg-menu-item:hover { background:rgba(255,255,255,0.4); }
+body.light.jornada .cfg-menu-item.active { background:rgba(255,255,255,0.5); color:#022016; }
+
+/* ── BASE ── */
+html, body { height:100%; overflow:hidden; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--t1); font-size:14px; line-height:1.5; transition:background 0.4s, color 0.3s; }
+
+/* ── SHELL ── */
+.app { display:flex; height:100vh; overflow:hidden; }
+
+/* ── MODULE BAR ── */
+.module-bar { width:var(--module-bar); height:100vh; background:var(--s1); border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:12px 0; gap:2px; z-index:60; flex-shrink:0; transition:background 0.4s, border-color 0.3s; }
+.logo-mark { width:34px; height:34px; margin-bottom:14px; cursor:pointer; position:relative; flex-shrink:0; }
+.logo-mark svg { width:34px; height:34px; }
+.module-btn { width:42px; height:42px; border-radius:12px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; transition:background 0.15s, color 0.15s, transform 0.1s; color:var(--t3); }
+.module-btn svg { width:21px; height:21px; }
+.module-btn:hover { background:var(--s3); color:var(--t2); transform:scale(1.05); }
+.module-btn.act-fin    { background:var(--fin-glow);    color:var(--fin); }
+.module-btn.act-meta   { background:var(--meta-glow);   color:var(--meta); }
+.module-btn.act-agenda { background:var(--agenda-glow); color:var(--agenda); }
+.module-btn.act-home   { background:rgba(238,242,255,.1); color:var(--t1); }
+.module-btn.act-cfg    { background:var(--cfg-glow);    color:var(--cfg); }
+.module-btn::before { content:''; position:absolute; left:-8px; top:50%; transform:translateY(-50%); width:3px; height:0; border-radius:0 3px 3px 0; background:currentColor; transition:height 0.2s cubic-bezier(.4,0,.2,1); }
+.module-btn.act-fin::before, .module-btn.act-meta::before,
+.module-btn.act-agenda::before, .module-btn.act-home::before, .module-btn.act-cfg::before { height:22px; }
+.module-bar .spacer { flex:1; }
+.user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--em),var(--el)); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:12px; color:#fff; cursor:pointer; border:2px solid var(--border); transition:border-color 0.15s; margin-top:6px; }
+.user-avatar:hover { border-color:var(--border-h); }
+
+/* ── TOOLTIP ── */
+.tip { position:fixed; left:calc(var(--module-bar) + 8px); background:var(--s3); border:1px solid var(--border-h); border-radius:8px; padding:5px 10px; font-size:12px; font-weight:500; color:var(--t1); pointer-events:none; z-index:999; white-space:nowrap; opacity:0; transition:opacity 0.12s; transform:translateY(-50%); box-shadow:0 4px 16px rgba(0,0,0,0.3); }
+.tip.show { opacity:1; }
+.tip::before { content:''; position:absolute; left:-5px; top:50%; width:8px; height:8px; background:var(--s3); border-left:1px solid var(--border-h); border-bottom:1px solid var(--border-h); transform:translateY(-50%) rotate(45deg); }
+
+/* ── SIDEBAR ── */
+.sidebar { width:var(--sb-open); height:100vh; background:var(--s1); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; flex-shrink:0; transition:width 0.24s cubic-bezier(.4,0,.2,1), background 0.4s, border-color 0.3s; }
+.sidebar.closed { width:var(--sb-closed); }
+.sb-header { height:var(--header-h); display:flex; align-items:center; padding:0 14px; gap:10px; border-bottom:1px solid var(--border); flex-shrink:0; overflow:hidden; }
+.sb-mod-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.sb-mod-icon svg { width:15px; height:15px; }
+.sb-mod-label { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; white-space:nowrap; letter-spacing:0.02em; flex:1; }
+.sb-toggle { width:26px; height:26px; border-radius:7px; border:none; background:transparent; cursor:pointer; color:var(--t3); display:flex; align-items:center; justify-content:center; transition:background 0.15s, color 0.15s; flex-shrink:0; }
+.sb-toggle:hover { background:var(--s3); color:var(--t2); }
+.sb-toggle svg { width:15px; height:15px; }
+.sb-score { margin:10px 10px 0; padding:12px; border-radius:12px; border:1px solid rgba(16,185,129,0.22); background:linear-gradient(135deg,rgba(16,185,129,0.10),rgba(0,85,255,0.10)); overflow:hidden; flex-shrink:0; display:none; }
+body.jornada .sb-score { display:block; }
+.sb-score-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.sb-score-num { font-family:'Syne',sans-serif; font-size:32px; font-weight:800; background:linear-gradient(135deg,var(--fin),#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+.sb-score-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--t3); margin-top:2px; }
+.sb-score-delta { font-size:11px; color:var(--green); }
+.sb-score-bar { height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden; }
+.sb-score-fill { height:100%; width:74%; background:linear-gradient(90deg,var(--fin),#f59e0b); border-radius:2px; }
+.sb-nav { flex:1; padding:8px; overflow-y:auto; overflow-x:hidden; }
+.sb-section-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--t3); padding:8px 8px 4px; white-space:nowrap; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; cursor:pointer; color:var(--t2); transition:background 0.12s, color 0.12s; border:none; background:transparent; width:100%; text-align:left; white-space:nowrap; position:relative; font-family:'DM Sans',sans-serif; font-size:13px; }
+.nav-item svg { width:16px; height:16px; flex-shrink:0; }
+.nav-item:hover { background:var(--s3); color:var(--t1); }
+.nav-item.act-cfg { background:var(--cfg-glow); color:var(--cfg); font-weight:500; }
+
+/* ── MAIN ── */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+
+/* ── HEADER ── */
+.header { height:var(--header-h); display:flex; align-items:center; padding:0 20px; gap:10px; border-bottom:1px solid var(--border); flex-shrink:0; background:var(--s1); transition:background 0.4s, border-color 0.3s; }
+.expand-from-bar { display:none; width:26px; height:26px; border-radius:7px; border:1px solid var(--border); background:transparent; cursor:pointer; color:var(--t3); align-items:center; justify-content:center; transition:all 0.15s; flex-shrink:0; }
+.expand-from-bar svg { width:14px; height:14px; }
+.sidebar.closed ~ .main .expand-from-bar { display:flex; }
+.hd-breadcrumb { display:flex; align-items:center; gap:6px; font-size:13px; }
+.mod-name { color:var(--t3); }
+.sep { color:var(--t3); opacity:0.5; }
+#hdPageName { color:var(--t2); font-weight:500; }
+.hd-greeting { display:none; flex-direction:column; gap:1px; }
+body.jornada .hd-breadcrumb { display:none; }
+body.jornada .hd-greeting { display:flex; }
+.hd-greeting-name { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; }
+.hd-greeting-phrase { font-size:11px; color:var(--t3); }
+.hd-spacer { flex:1; }
+.mode-pill { display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:20px; border:1px solid var(--border); background:var(--s2); cursor:pointer; font-size:12px; color:var(--t2); transition:all 0.15s; font-family:'DM Sans',sans-serif; }
+.mode-pill:hover { border-color:var(--border-h); }
+.theme-pill { display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:20px; border:1px solid var(--border); background:var(--s2); cursor:pointer; font-size:12px; color:var(--t2); transition:all 0.15s; font-family:'DM Sans',sans-serif; }
+.theme-pill:hover { border-color:var(--border-h); }
+.hd-notif { width:32px; height:32px; border-radius:9px; border:1px solid var(--border); background:transparent; cursor:pointer; color:var(--t3); display:flex; align-items:center; justify-content:center; position:relative; transition:all 0.15s; }
+.hd-notif svg { width:16px; height:16px; }
+.hd-notif:hover { background:var(--s3); color:var(--t2); }
+.notif-dot { position:absolute; top:6px; right:6px; width:6px; height:6px; border-radius:50%; background:var(--red); border:1.5px solid var(--s1); }
+
+/* ── CONTENT ── */
+.content { flex:1; overflow:hidden; display:flex; }
+.content-inner { flex:1; overflow:hidden; display:flex; height:100%; }
+
+/* ══════════════════════════════════
+   CONFIGURAÇÕES — LAYOUT DOIS PAINÉIS
+══════════════════════════════════ */
+.cfg-layout { display:flex; height:100%; width:100%; overflow:hidden; }
+
+/* Menu lateral de seções */
+.cfg-menu { width:220px; flex-shrink:0; border-right:1px solid var(--border); padding:20px 10px; display:flex; flex-direction:column; gap:2px; overflow-y:auto; background:var(--s1); }
+.cfg-menu-section { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--t3); padding:10px 10px 4px; margin-top:6px; }
+.cfg-menu-section:first-child { margin-top:0; }
+.cfg-menu-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; cursor:pointer; color:var(--t2); font-size:13px; font-weight:500; transition:background 0.12s, color 0.12s; border:none; background:transparent; width:100%; text-align:left; font-family:'DM Sans',sans-serif; }
+.cfg-menu-item svg { width:16px; height:16px; flex-shrink:0; opacity:0.7; }
+.cfg-menu-item:hover { background:var(--s3); color:var(--t1); }
+.cfg-menu-item.active { background:var(--cfg-glow); color:var(--t1); font-weight:600; }
+.cfg-menu-item.active svg { opacity:1; }
+.cfg-menu-badge { margin-left:auto; font-size:9px; font-weight:700; padding:2px 6px; border-radius:6px; background:rgba(16,185,129,0.15); color:var(--em); }
+
+/* Painel de conteúdo */
+.cfg-content { flex:1; overflow-y:auto; padding:28px 32px; }
+.cfg-content::-webkit-scrollbar { width:4px; }
+.cfg-content::-webkit-scrollbar-thumb { background:var(--s3); border-radius:2px; }
+
+/* Seção */
+.cfg-section { display:none; }
+.cfg-section.active { display:block; }
+.cfg-section-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.02em; margin-bottom:4px; }
+.cfg-section-sub { font-size:13px; color:var(--t3); margin-bottom:24px; }
+
+/* Cards de configuração */
+.setting-card { background:var(--s2); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:14px; transition:border-color 0.15s; }
+.setting-card-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--t3); margin-bottom:16px; }
+.setting-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); gap:16px; }
+.setting-row:last-child { border-bottom:none; padding-bottom:0; }
+.setting-row:first-child { padding-top:0; }
+.setting-row-info { flex:1; min-width:0; }
+.setting-row-label { font-size:13px; font-weight:600; color:var(--t1); margin-bottom:2px; }
+.setting-row-desc { font-size:11px; color:var(--t3); line-height:1.5; }
+.setting-input { background:var(--s3); border:1px solid var(--border); border-radius:9px; padding:8px 12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--t1); outline:none; transition:border-color 0.2s; width:100%; margin-top:8px; }
+.setting-input:focus { border-color:rgba(16,185,129,0.4); }
+.setting-input-sm { width:180px; margin-top:0; }
+.setting-select { background:var(--s3); border:1px solid var(--border); border-radius:9px; padding:8px 12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--t1); outline:none; cursor:pointer; }
+
+/* Toggle switch */
+.sw { position:relative; width:44px; height:24px; flex-shrink:0; }
+.sw input { opacity:0; width:0; height:0; position:absolute; }
+.sw-track { position:absolute; inset:0; border-radius:100px; background:var(--s3); border:1px solid var(--border); cursor:pointer; transition:all 0.2s; }
+.sw input:checked + .sw-track { background:rgba(16,185,129,0.25); border-color:rgba(16,185,129,0.4); }
+.sw-knob { position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:var(--t3); transition:all 0.2s; pointer-events:none; }
+.sw input:checked ~ .sw-knob { left:23px; background:var(--em); }
+
+/* Avatar */
+.avatar-wrap { display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+.avatar-lg { width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,var(--em),var(--el)); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:26px; color:#fff; flex-shrink:0; position:relative; cursor:pointer; }
+.avatar-edit-btn { position:absolute; bottom:-2px; right:-2px; width:22px; height:22px; border-radius:50%; background:var(--s3); border:2px solid var(--bg); display:flex; align-items:center; justify-content:center; }
+.avatar-edit-btn svg { width:11px; height:11px; color:var(--t2); }
+.avatar-info h3 { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; margin-bottom:2px; }
+.avatar-info p { font-size:12px; color:var(--t3); }
+.btn-secondary { padding:7px 14px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--t2); font-size:12px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+.btn-secondary:hover { border-color:var(--border-h); color:var(--t1); background:var(--s3); }
+.btn-primary { padding:8px 18px; border-radius:9px; border:none; background:linear-gradient(135deg,#10b981,#0055ff); color:#fff; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+.btn-primary:hover { filter:brightness(1.08); transform:translateY(-1px); }
+.btn-danger { padding:8px 18px; border-radius:9px; border:1px solid rgba(244,63,94,0.3); background:rgba(244,63,94,0.08); color:var(--red); font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+.btn-danger:hover { background:rgba(244,63,94,0.15); border-color:rgba(244,63,94,0.4); }
+
+/* ── MODO DE USO: cards visuais ── */
+.mode-cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
+.mode-card { border:2px solid var(--border); border-radius:16px; padding:20px; cursor:pointer; transition:all 0.2s; background:var(--s2); position:relative; overflow:hidden; }
+.mode-card::before { content:''; position:absolute; inset:0; opacity:0; transition:opacity 0.2s; }
+.mode-card-foco::before { background: radial-gradient(circle at top left, rgba(16,185,129,0.06), transparent 70%); }
+.mode-card-jornada::before { background: radial-gradient(circle at top right, rgba(0,85,255,0.08), transparent 70%); }
+.mode-card.selected { border-color:var(--em); }
+.mode-card.selected::before { opacity:1; }
+.mode-card.selected .mode-card-jornada-sel { border-color:var(--el); }
+.mode-card-jornada.selected { border-color:var(--el); }
+.mode-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.mode-card-ico { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+.mode-card-foco .mode-card-ico { background:rgba(16,185,129,0.12); }
+.mode-card-jornada .mode-card-ico { background:rgba(0,85,255,0.12); }
+.mode-check { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0; }
+.mode-card.selected .mode-check { border-color:var(--em); background:var(--em); }
+.mode-card-jornada.selected .mode-check { border-color:var(--el); background:var(--el); }
+.mode-check svg { width:10px; height:10px; color:#fff; opacity:0; transition:opacity 0.2s; }
+.mode-card.selected .mode-check svg { opacity:1; }
+.mode-card-name { font-family:'Syne',sans-serif; font-size:15px; font-weight:800; margin-bottom:4px; }
+.mode-card-desc { font-size:12px; color:var(--t3); line-height:1.5; }
+.mode-card-tags { display:flex; gap:6px; margin-top:12px; flex-wrap:wrap; }
+.mode-tag { font-size:10px; font-weight:600; padding:3px 8px; border-radius:6px; }
+.mode-card-foco .mode-tag { background:rgba(16,185,129,0.10); color:var(--em); }
+.mode-card-jornada .mode-tag { background:rgba(0,85,255,0.10); color:var(--el); }
+.mode-applied-toast { display:none; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; background:rgba(16,185,129,0.10); border:1px solid rgba(16,185,129,0.2); color:var(--em); font-size:13px; font-weight:500; margin-top:4px; }
+.mode-applied-toast.show { display:flex; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+
+/* ── NOTIFICAÇÕES ── */
+.notif-section-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--t3); padding:14px 0 6px; }
+.notif-row { display:flex; align-items:flex-start; justify-content:space-between; padding:13px 0; border-bottom:1px solid var(--border); gap:16px; }
+.notif-row:last-child { border-bottom:none; }
+.notif-ico { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; background:var(--s3); margin-top:1px; }
+.notif-info { flex:1; min-width:0; }
+.notif-label { font-size:13px; font-weight:600; color:var(--t1); margin-bottom:2px; }
+.notif-desc { font-size:11px; color:var(--t3); line-height:1.5; }
+.notif-badge-foco { font-size:9px; font-weight:700; padding:1px 6px; border-radius:5px; background:rgba(16,185,129,0.1); color:var(--em); margin-left:6px; vertical-align:middle; }
+.notif-badge-jornada { font-size:9px; font-weight:700; padding:1px 6px; border-radius:5px; background:rgba(0,85,255,0.1); color:var(--el); margin-left:6px; vertical-align:middle; }
+.notif-time-sel { margin-top:8px; display:flex; align-items:center; gap:8px; }
+.notif-time-sel label { font-size:11px; color:var(--t3); }
+.notif-time-input { background:var(--s3); border:1px solid var(--border); border-radius:8px; padding:5px 10px; font-family:'DM Mono',monospace; font-size:12px; color:var(--t1); outline:none; width:90px; }
+
+/* ── INTEGRAÇÕES ── */
+.intg-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px; }
+.intg-card { background:var(--s2); border:1px solid var(--border); border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px; transition:border-color 0.2s; }
+.intg-card:hover { border-color:var(--border-h); }
+.intg-card-top { display:flex; align-items:center; gap:12px; }
+.intg-logo { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; background:var(--s3); }
+.intg-name { font-size:14px; font-weight:700; color:var(--t1); }
+.intg-type { font-size:11px; color:var(--t3); margin-top:1px; }
+.intg-desc { font-size:12px; color:var(--t3); line-height:1.6; }
+.intg-badge-pro { font-size:9px; font-weight:700; padding:2px 7px; border-radius:6px; background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(244,63,94,0.10)); color:var(--yellow); border:1px solid rgba(245,158,11,0.2); }
+.intg-status-connected { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; color:var(--green); }
+.intg-status-connected::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); }
+.intg-actions { display:flex; gap:8px; }
+.btn-intg-connect { flex:1; padding:7px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--t2); font-size:12px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; text-align:center; }
+.btn-intg-connect:hover { border-color:var(--border-h); color:var(--t1); background:var(--s3); }
+.btn-intg-connect.pro-lock { color:var(--yellow); border-color:rgba(245,158,11,0.25); }
+.btn-intg-connect.connected { color:var(--green); border-color:rgba(16,185,129,0.25); background:rgba(16,185,129,0.05); }
+.export-row { display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); }
+.export-row:last-child { border-bottom:none; }
+.export-ico { width:36px; height:36px; border-radius:9px; background:var(--s3); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.export-info { flex:1; }
+.export-label { font-size:13px; font-weight:600; color:var(--t1); }
+.export-desc { font-size:11px; color:var(--t3); }
+
+/* ── PLANO ── */
+.plan-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
+.plan-card { background:var(--s2); border:2px solid var(--border); border-radius:18px; padding:22px; position:relative; overflow:hidden; transition:all 0.2s; }
+.plan-card.featured { border-color:var(--em); }
+.plan-card.featured::before { content:'Mais popular'; position:absolute; top:14px; right:14px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:3px 8px; border-radius:6px; background:rgba(16,185,129,0.15); color:var(--em); }
+.plan-badge { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:3px 8px; border-radius:6px; margin-bottom:12px; display:inline-block; }
+.plan-badge-free { background:rgba(100,116,139,0.15); color:var(--cfg); }
+.plan-badge-pro { background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(0,85,255,0.15)); color:var(--em); }
+.plan-price { font-family:'Syne',sans-serif; font-size:32px; font-weight:800; letter-spacing:-0.03em; margin-bottom:2px; }
+.plan-price sup { font-size:16px; font-weight:600; vertical-align:super; }
+.plan-price sub { font-size:13px; font-weight:400; color:var(--t3); vertical-align:baseline; }
+.plan-features { margin:14px 0; display:flex; flex-direction:column; gap:8px; }
+.plan-feature { display:flex; align-items:flex-start; gap:8px; font-size:12px; }
+.plan-feature svg { width:14px; height:14px; color:var(--green); flex-shrink:0; margin-top:1px; }
+.plan-feature.disabled svg { color:var(--t3); }
+.plan-feature.disabled span { color:var(--t3); }
+.plan-feature span { color:var(--t1); line-height:1.4; }
+.plan-cta { width:100%; padding:10px; border-radius:10px; border:none; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+.plan-cta-free { background:var(--s3); color:var(--t3); cursor:default; }
+.plan-cta-pro { background:linear-gradient(135deg,#10b981,#0055ff); color:#fff; box-shadow:0 4px 20px rgba(16,185,129,0.25); }
+.plan-cta-pro:hover { filter:brightness(1.08); transform:translateY(-1px); }
+.plan-compare { font-size:12px; color:var(--t3); text-align:center; margin-top:8px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+.plan-compare:hover { color:var(--t2); }
+
+/* ── DANGER ZONE ── */
+.danger-zone { background:rgba(244,63,94,0.05); border:1px solid rgba(244,63,94,0.12); border-radius:14px; padding:18px; margin-top:6px; }
+.danger-zone-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--red); margin-bottom:14px; }
+.danger-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(244,63,94,0.08); gap:16px; }
+.danger-row:last-child { border-bottom:none; padding-bottom:0; }
+
+/* ── APARÊNCIA ── */
+.theme-preview-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:4px; }
+.theme-preview { border-radius:12px; overflow:hidden; border:2px solid var(--border); cursor:pointer; transition:all 0.2s; aspect-ratio:16/10; position:relative; }
+.theme-preview.sel { border-color:var(--em); }
+.theme-preview-label { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); font-size:10px; font-weight:700; background:rgba(0,0,0,0.5); color:#fff; padding:2px 7px; border-radius:5px; white-space:nowrap; }
+.tp-df { background:linear-gradient(135deg,#03071a,#07112b); }
+.tp-dj { background:linear-gradient(135deg,#020d08,#061410); }
+.tp-lf { background:linear-gradient(135deg,#e6eef5,#f0f6fa); }
+.tp-lj { background:linear-gradient(135deg,#c8f0e4,#e0f7ef); }
+.theme-preview-stripe { height:40%; display:flex; }
+.theme-preview-stripe div { flex:1; }
+
+/* ── RECONFIGURAR ── */
+.reconfig-card { display:flex; align-items:center; gap:14px; padding:16px; background:var(--s2); border:1px solid var(--border); border-radius:14px; transition:border-color 0.15s; }
+.reconfig-card:hover { border-color:var(--border-h); }
+.reconfig-ico { width:40px; height:40px; border-radius:12px; background:rgba(16,185,129,0.10); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.reconfig-info { flex:1; }
+.reconfig-label { font-size:13px; font-weight:600; color:var(--t1); margin-bottom:2px; }
+.reconfig-desc { font-size:11px; color:var(--t3); }
+
+/* ── MOBILE ── */
+.mob-bar { display:none; position:fixed; bottom:0; left:0; right:0; height:64px; padding:0 4px; background:var(--s1); border-top:1px solid var(--border); align-items:center; justify-content:space-around; z-index:200; }
+.mob-tab { display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 14px; border-radius:12px; cursor:pointer; border:none; background:transparent; color:var(--t3); transition:color 0.15s; }
+.mob-tab svg { width:22px; height:22px; }
+.mob-tab span { font-size:10px; font-weight:500; }
+.mob-tab.act-cfg { color:var(--cfg); }
+.mob-tab.act-home { color:var(--t1); }
+@media(max-width:768px){
+  .module-bar, .sidebar { display:none; }
+  .mob-bar { display:flex; }
+  .content { padding-bottom:76px; }
+  .cfg-menu { display:none; }
+  .cfg-content { padding:16px; }
+  .mode-cards, .intg-grid, .plan-grid, .theme-preview-row { grid-template-columns:1fr; }
+}
+
+/* ── CONTROLS ── */
+.controls { position:fixed; bottom:20px; right:20px; background:var(--s2); border:1px solid var(--border-h); border-radius:16px; padding:14px; z-index:999; display:flex; flex-direction:column; gap:10px; min-width:210px; box-shadow:0 8px 40px rgba(0,0,0,0.5); }
+.ctrl-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--t3); }
+.ctrl-row { display:flex; flex-direction:column; gap:5px; }
+.ctrl-lbl { font-size:11px; color:var(--t3); font-weight:500; }
+.ctrl-grp { display:flex; gap:6px; flex-wrap:wrap; }
+.ctrl-btn { padding:5px 11px; border-radius:8px; border:1px solid var(--border); background:var(--s3); color:var(--t2); font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; transition:all 0.15s; }
+.ctrl-btn:hover { border-color:var(--border-h); color:var(--t1); }
+.ctrl-btn.on-home   { background:rgba(238,242,255,.08); color:var(--t1); border-color:rgba(238,242,255,.15); }
+.ctrl-btn.on-foco   { background:var(--fin-glow); color:var(--fin); border-color:rgba(16,185,129,.3); }
+.ctrl-btn.on-jornada{ background:rgba(16,185,129,.12); color:#10b981; border-color:rgba(16,185,129,.25); }
+.divider { height:1px; background:var(--border); }
+
+body.light .controls { background:#fff; box-shadow:0 4px 24px rgba(3,7,26,0.12); }
+body.light .ctrl-btn { background:var(--s2); color:#1e3a5c; border-color:rgba(3,7,26,0.10); }
+</style>
+</head>
+<body>
+
+<div class="tip" id="tip"></div>
+<div class="app">
+
+  <!-- ══ MÓDULOS ══ -->
+  <nav class="module-bar" id="moduleBar">
+    <div class="logo-mark" title="SyncLife">
+      <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
+        <defs>
+          <linearGradient id="sl-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/>
+          </linearGradient>
+          <linearGradient id="sl-brand" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#0055ff"/>
+          </linearGradient>
+          <linearGradient id="sl-r1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.7"/><stop offset="100%" stop-color="#0055ff" stop-opacity="0.7"/>
+          </linearGradient>
+          <linearGradient id="sl-r2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.35"/><stop offset="100%" stop-color="#0055ff" stop-opacity="0.35"/>
+          </linearGradient>
+          <filter id="sl-glow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="sl-sglow"><feGaussianBlur stdDeviation="14" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="512" height="512" rx="112" ry="112" fill="url(#sl-bg)"/>
+        <circle cx="256" cy="256" r="210" fill="none" stroke="url(#sl-r2)" stroke-width="1.5"/>
+        <circle cx="256" cy="256" r="170" fill="none" stroke="url(#sl-r1)" stroke-width="2"/>
+        <circle cx="256" cy="256" r="130" fill="none" stroke="url(#sl-brand)" stroke-width="2.5"/>
+        <path d="M256 46 A210 210 0 0 1 466 256" fill="none" stroke="#10b981" stroke-width="3" stroke-opacity="0.5" stroke-linecap="round"/>
+        <path d="M256 466 A210 210 0 0 1 46 256" fill="none" stroke="#0055ff" stroke-width="3" stroke-opacity="0.5" stroke-linecap="round"/>
+        <circle cx="256" cy="256" r="108" fill="none" stroke="url(#sl-brand)" stroke-width="2.5" opacity="0.8"/>
+        <g filter="url(#sl-sglow)"><text x="256" y="316" font-family="'Helvetica Neue','Arial',sans-serif" font-weight="800" font-size="190" text-anchor="middle" fill="url(#sl-brand)">S</text></g>
+        <circle cx="256" cy="86" r="7" fill="#10b981" filter="url(#sl-glow)"/>
+        <circle cx="446" cy="256" r="6" fill="#0066ff" filter="url(#sl-glow)"/>
+        <circle cx="256" cy="426" r="6" fill="#0055ff" filter="url(#sl-glow)"/>
+        <circle cx="66"  cy="256" r="6" fill="#10b981" filter="url(#sl-glow)"/>
+      </svg>
+    </div>
+    <button class="module-btn act-home" id="mb-home" data-tip="Home" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg></button>
+    <button class="module-btn" id="mb-fin" data-tip="Finanças" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></button>
+    <button class="module-btn" id="mb-meta" data-tip="Metas" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></button>
+    <button class="module-btn" id="mb-agenda" data-tip="Agenda" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+    <div class="spacer"></div>
+    <button class="module-btn act-cfg" id="mb-cfg" data-tip="Configurações" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+    <div class="user-avatar" title="Thiago">T</div>
+  </nav>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <div class="sb-mod-icon" style="background:var(--cfg-glow)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--cfg)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </div>
+      <span class="sb-mod-label">Configurações</span>
+      <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()" title="Recolher">
+        <svg id="sbToggleIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="sb-score">
+      <div class="sb-score-top">
+        <div><div class="sb-score-label">Life Sync Score</div><div class="sb-score-num">74</div></div>
+        <div style="text-align:right"><div class="sb-score-delta">↑ +3 esta semana</div></div>
+      </div>
+      <div class="sb-score-bar"><div class="sb-score-fill"></div></div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section-label">Conta</div>
+      <button class="nav-item act-cfg" onclick="cfgNav('perfil')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Perfil</button>
+      <button class="nav-item" onclick="cfgNav('modo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Modo de Uso</button>
+      <button class="nav-item" onclick="cfgNav('aparencia')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 010 20"/><path d="M12 12a4 4 0 000-8M12 12a4 4 0 010 8"/></svg>Aparência</button>
+      <div class="sb-section-label">Preferências</div>
+      <button class="nav-item" onclick="cfgNav('notificacoes')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notificações</button>
+      <button class="nav-item" onclick="cfgNav('integracoes')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>Integrações</button>
+      <div class="sb-section-label">Plano</div>
+      <button class="nav-item" onclick="cfgNav('plano')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Meu Plano</button>
+    </nav>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main" id="main">
+    <header class="header">
+      <button class="expand-from-bar" id="expandBtn" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div class="hd-breadcrumb">
+        <span class="mod-name">Configurações</span>
+        <span class="sep">›</span>
+        <span id="hdPageName">Perfil</span>
+      </div>
+      <div class="hd-greeting">
+        <span class="hd-greeting-name">Olá, Thiago! ⚙️</span>
+        <span class="hd-greeting-phrase">Personalize sua experiência no SyncLife.</span>
+      </div>
+      <div class="hd-spacer"></div>
+      <button class="mode-pill" onclick="toggleMode()" id="modePill">
+        <div id="modeDot">🎯</div>
+        <span id="modeLabel">Modo Foco</span>
+      </button>
+      <button class="theme-pill" onclick="cycleTheme()">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark</span>
+      </button>
+      <button class="hd-notif">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+    </header>
+
+    <div class="content">
+      <div class="content-inner">
+        <div class="cfg-layout">
+
+          <!-- ══ MENU LATERAL DE SEÇÕES ══ -->
+          <div class="cfg-menu" id="cfgMenu">
+            <div class="cfg-menu-section">Conta</div>
+            <button class="cfg-menu-item active" id="cmenu-perfil" onclick="cfgNav('perfil')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              Perfil
+            </button>
+            <button class="cfg-menu-item" id="cmenu-modo" onclick="cfgNav('modo')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+              Modo de Uso
+            </button>
+            <button class="cfg-menu-item" id="cmenu-aparencia" onclick="cfgNav('aparencia')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 010 20M12 12a4 4 0 000-8M12 12a4 4 0 010 8"/></svg>
+              Aparência
+            </button>
+            <div class="cfg-menu-section">Preferências</div>
+            <button class="cfg-menu-item" id="cmenu-notificacoes" onclick="cfgNav('notificacoes')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+              Notificações
+            </button>
+            <button class="cfg-menu-item" id="cmenu-integracoes" onclick="cfgNav('integracoes')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+              Integrações
+            </button>
+            <div class="cfg-menu-section">Plano</div>
+            <button class="cfg-menu-item" id="cmenu-plano" onclick="cfgNav('plano')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              Meu Plano
+              <span class="cfg-menu-badge">Free</span>
+            </button>
+          </div>
+
+          <!-- ══ CONTEÚDO DAS SEÇÕES ══ -->
+          <div class="cfg-content" id="cfgContent">
+
+            <!-- ─── PERFIL ─── -->
+            <div class="cfg-section active" id="sec-perfil">
+              <div class="cfg-section-title">Perfil</div>
+              <div class="cfg-section-sub">Suas informações pessoais e preferências de conta.</div>
+
+              <div class="setting-card">
+                <div class="avatar-wrap">
+                  <div class="avatar-lg">
+                    T
+                    <div class="avatar-edit-btn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </div>
+                  </div>
+                  <div class="avatar-info">
+                    <h3>Thiago</h3>
+                    <p>thiago@email.com · Membro desde jan/2026</p>
+                    <div style="margin-top:8px;display:flex;gap:8px">
+                      <button class="btn-secondary">Alterar foto</button>
+                      <button class="btn-secondary" style="color:var(--red);border-color:rgba(244,63,94,0.2)">Remover</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="setting-card-title">Informações básicas</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div>
+                    <label style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:5px">Nome</label>
+                    <input class="setting-input" type="text" value="Thiago">
+                  </div>
+                  <div>
+                    <label style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:5px">Sobrenome</label>
+                    <input class="setting-input" type="text" value="Silva">
+                  </div>
+                </div>
+                <div style="margin-bottom:12px">
+                  <label style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:5px">E-mail</label>
+                  <input class="setting-input" type="email" value="thiago@email.com">
+                </div>
+              </div>
+
+              <div class="setting-card">
+                <div class="setting-card-title">Preferências regionais</div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Moeda</div>
+                    <div class="setting-row-desc">Usada em todos os valores e gráficos</div>
+                  </div>
+                  <select class="setting-select">
+                    <option selected>R$ BRL — Real Brasileiro</option>
+                    <option>$ USD — Dólar Americano</option>
+                    <option>€ EUR — Euro</option>
+                  </select>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Fuso horário</div>
+                    <div class="setting-row-desc">Para alertas e lembretes na hora certa</div>
+                  </div>
+                  <select class="setting-select">
+                    <option selected>America/Sao_Paulo (UTC-3)</option>
+                    <option>America/Manaus (UTC-4)</option>
+                    <option>America/Belem (UTC-3)</option>
+                  </select>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Dia de início do mês</div>
+                    <div class="setting-row-desc">Define quando o orçamento é reiniciado</div>
+                  </div>
+                  <select class="setting-select">
+                    <option selected>Dia 1</option>
+                    <option>Dia 5</option>
+                    <option>Dia 10</option>
+                    <option>Dia 15</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="setting-card">
+                <div class="setting-card-title">Segurança</div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Senha</div>
+                    <div class="setting-row-desc">Última alteração há 3 meses</div>
+                  </div>
+                  <button class="btn-secondary">Alterar senha</button>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Autenticação em dois fatores</div>
+                    <div class="setting-row-desc">Proteja sua conta com um segundo fator de verificação</div>
+                  </div>
+                  <label class="sw"><input type="checkbox"><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+              </div>
+
+              <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:4px">
+                <button class="btn-secondary">Descartar</button>
+                <button class="btn-primary">Salvar alterações</button>
+              </div>
+
+              <div class="danger-zone" style="margin-top:20px">
+                <div class="danger-zone-title">⚠ Zona de perigo</div>
+                <div class="danger-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Exportar todos os dados</div>
+                    <div class="setting-row-desc">Baixe um arquivo JSON com todas as suas transações, metas e configurações</div>
+                  </div>
+                  <button class="btn-secondary">Exportar</button>
+                </div>
+                <div class="danger-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label" style="color:var(--red)">Excluir conta</div>
+                    <div class="setting-row-desc">Esta ação é irreversível. Todos os dados serão apagados permanentemente.</div>
+                  </div>
+                  <button class="btn-danger">Excluir conta</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ─── MODO DE USO ─── -->
+            <div class="cfg-section" id="sec-modo">
+              <div class="cfg-section-title">Modo de Uso</div>
+              <div class="cfg-section-sub">Escolha como o SyncLife se adapta ao seu estilo. Você pode mudar a qualquer momento.</div>
+
+              <div class="mode-cards">
+                <div class="mode-card mode-card-foco selected" id="card-foco" onclick="selectMode('foco')">
+                  <div class="mode-card-top">
+                    <div class="mode-card-ico">🎯</div>
+                    <div class="mode-check" id="check-foco">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                  </div>
+                  <div class="mode-card-name">Modo Foco</div>
+                  <div class="mode-card-desc">Interface limpa e objetiva. Dados diretos, sem distrações. Como um cockpit — tudo que você precisa, nada que não precisa.</div>
+                  <div class="mode-card-tags">
+                    <span class="mode-tag">Sem animações</span>
+                    <span class="mode-tag">Dados em destaque</span>
+                    <span class="mode-tag">Sidebar compacta</span>
+                  </div>
+                </div>
+                <div class="mode-card mode-card-jornada" id="card-jornada" onclick="selectMode('jornada')">
+                  <div class="mode-card-top">
+                    <div class="mode-card-ico">🌱</div>
+                    <div class="mode-check" id="check-jornada">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                  </div>
+                  <div class="mode-card-name">Modo Jornada</div>
+                  <div class="mode-card-desc">Interface motivacional e calorosa. Celebra seu progresso, oferece insights e te acompanha como um coach pessoal.</div>
+                  <div class="mode-card-tags">
+                    <span class="mode-tag">Life Sync Score</span>
+                    <span class="mode-tag">Conquistas</span>
+                    <span class="mode-tag">Frases motivacionais</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mode-applied-toast" id="mode-toast">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span id="mode-toast-text">Modo Foco ativado. Interface atualizada.</span>
+              </div>
+
+              <div class="setting-card" style="margin-top:14px">
+                <div class="setting-card-title">Diferenças entre os modos</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;font-size:12px">
+                  <div style="padding:8px 10px;font-weight:700;color:var(--t3);font-size:10px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)">Elemento</div>
+                  <div style="padding:8px 10px;font-weight:700;color:var(--em);font-size:10px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);border-left:1px solid var(--border)">🎯 Foco</div>
+                  <div style="padding:8px 10px;font-weight:700;color:var(--el);font-size:10px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);border-left:1px solid var(--border)">🌱 Jornada</div>
+                  <div style="padding:9px 10px;color:var(--t2);border-bottom:1px solid var(--border)">Dashboard</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-bottom:1px solid var(--border);border-left:1px solid var(--border)">Só números</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-bottom:1px solid var(--border);border-left:1px solid var(--border)">Score + frases</div>
+
+                  <div style="padding:9px 10px;color:var(--t2);border-bottom:1px solid var(--border)">Life Sync Score</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-bottom:1px solid var(--border);border-left:1px solid var(--border)">Oculto</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-bottom:1px solid var(--border);border-left:1px solid var(--border)">Em destaque</div>
+
+                  <div style="padding:9px 10px;color:var(--t2);border-bottom:1px solid var(--border)">Notificações</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-bottom:1px solid var(--border);border-left:1px solid var(--border)">Só alertas críticos</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-bottom:1px solid var(--border);border-left:1px solid var(--border)">Motivacionais também</div>
+
+                  <div style="padding:9px 10px;color:var(--t2);border-bottom:1px solid var(--border)">Review semanal</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-bottom:1px solid var(--border);border-left:1px solid var(--border)">Desativado</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-bottom:1px solid var(--border);border-left:1px solid var(--border)">Todo domingo</div>
+
+                  <div style="padding:9px 10px;color:var(--t2);border-bottom:1px solid var(--border)">Animações</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-bottom:1px solid var(--border);border-left:1px solid var(--border)">Nenhuma</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-bottom:1px solid var(--border);border-left:1px solid var(--border)">Micro-animações</div>
+
+                  <div style="padding:9px 10px;color:var(--t2)">Conquistas</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-left:1px solid var(--border)">Badge discreto</div>
+                  <div style="padding:9px 10px;color:var(--t3);border-left:1px solid var(--border)">Tela celebrativa</div>
+                </div>
+              </div>
+
+              <div class="setting-card" style="margin-top:0">
+                <div class="setting-card-title">Reconfigurar SyncLife</div>
+                <div class="reconfig-card">
+                  <div class="reconfig-ico">🔄</div>
+                  <div class="reconfig-info">
+                    <div class="reconfig-label">Refazer o onboarding</div>
+                    <div class="reconfig-desc">Reconfigure renda, preferências e primeiro orçamento como se fosse a primeira vez</div>
+                  </div>
+                  <button class="btn-secondary">Reconfigurar</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ─── APARÊNCIA ─── -->
+            <div class="cfg-section" id="sec-aparencia">
+              <div class="cfg-section-title">Aparência</div>
+              <div class="cfg-section-sub">Personalize o visual do SyncLife do seu jeito.</div>
+
+              <div class="setting-card">
+                <div class="setting-card-title">Tema</div>
+                <div class="theme-preview-row">
+                  <div class="theme-preview tp-df sel" id="tp-df" onclick="setThemeCombo('dark','foco')">
+                    <div class="theme-preview-stripe">
+                      <div style="background:#07112b"></div><div style="background:#10b981;opacity:.3"></div>
+                    </div>
+                    <div class="theme-preview-label">Dark Foco</div>
+                  </div>
+                  <div class="theme-preview tp-dj" id="tp-dj" onclick="setThemeCombo('dark','jornada')">
+                    <div class="theme-preview-stripe">
+                      <div style="background:#061410"></div><div style="background:#0055ff;opacity:.3"></div>
+                    </div>
+                    <div class="theme-preview-label">Dark Jornada</div>
+                  </div>
+                  <div class="theme-preview tp-lf" id="tp-lf" onclick="setThemeCombo('light','foco')">
+                    <div class="theme-preview-stripe">
+                      <div style="background:#e6eef5"></div><div style="background:#10b981;opacity:.2"></div>
+                    </div>
+                    <div class="theme-preview-label">Light Foco</div>
+                  </div>
+                  <div class="theme-preview tp-lj" id="tp-lj" onclick="setThemeCombo('light','jornada')">
+                    <div class="theme-preview-stripe">
+                      <div style="background:#c8f0e4"></div><div style="background:#0055ff;opacity:.2"></div>
+                    </div>
+                    <div class="theme-preview-label">Light Jornada</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="setting-card">
+                <div class="setting-card-title">Interface</div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Sidebar expandida por padrão</div>
+                    <div class="setting-row-desc">Mostra ícones + labels ao abrir o app</div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Animações reduzidas</div>
+                    <div class="setting-row-desc">Para quem prefere menos movimento ou tem sensibilidade</div>
+                  </div>
+                  <label class="sw"><input type="checkbox"><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Números compactos</div>
+                    <div class="setting-row-desc">Ex: R$ 1,2K em vez de R$ 1.200,00</div>
+                  </div>
+                  <label class="sw"><input type="checkbox"><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Visão padrão da Agenda</div>
+                    <div class="setting-row-desc">O que aparece ao abrir o módulo</div>
+                  </div>
+                  <select class="setting-select">
+                    <option>Semanal</option>
+                    <option>Mensal</option>
+                    <option>Diária</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- ─── NOTIFICAÇÕES ─── -->
+            <div class="cfg-section" id="sec-notificacoes">
+              <div class="cfg-section-title">Notificações</div>
+              <div class="cfg-section-sub">Controle exatamente o que e quando você quer ser avisado.</div>
+
+              <div class="setting-card">
+                <div class="setting-card-title">Canal de entrega</div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">Notificações push (PWA)</div>
+                    <div class="setting-row-desc">Receba alertas mesmo com o app fechado</div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-row-info">
+                    <div class="setting-row-label">E-mail</div>
+                    <div class="setting-row-desc">Resumos semanais e alertas importantes por e-mail</div>
+                  </div>
+                  <label class="sw"><input type="checkbox"><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+              </div>
+
+              <div class="setting-card">
+                <div class="setting-card-title">Alertas financeiros</div>
+                <div class="notif-row">
+                  <div class="notif-ico">💰</div>
+                  <div class="notif-info">
+                    <div class="notif-label">Orçamento atingindo 75%<span class="notif-badge-foco">Foco</span><span class="notif-badge-jornada">Jornada</span></div>
+                    <div class="notif-desc">Avisa quando um envelope chega a 75% do limite</div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="notif-row">
+                  <div class="notif-ico">🚨</div>
+                  <div class="notif-info">
+                    <div class="notif-label">Orçamento excedido<span class="notif-badge-foco">Foco</span><span class="notif-badge-jornada">Jornada</span></div>
+                    <div class="notif-desc">Alerta imediato ao estourar qualquer envelope</div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="notif-row">
+                  <div class="notif-ico">📅</div>
+                  <div class="notif-info">
+                    <div class="notif-label">Evento financeiro no dia seguinte<span class="notif-badge-foco">Foco</span><span class="notif-badge-jornada">Jornada</span></div>
+                    <div class="notif-desc">Lembrete 1 dia antes de contas a pagar e aportes</div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="notif-row">
+                  <div class="notif-ico">📉</div>
+                  <div class="notif-info">
+                    <div class="notif-label">Saldo projetado negativo<span class="notif-badge-foco">Foco</span><span class="notif-badge-jornada">Jornada</span></div>
+                    <div class="notif-desc">Quando o planejamento prevê saldo negativo nos próximos 30 dias</div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+              </div>
+
+              <div class="setting-card">
+                <div class="setting-card-title">Metas e progresso</div>
+                <div class="notif-row">
+                  <div class="notif-ico">⚠️</div>
+                  <div class="notif-info">
+                    <div class="notif-label">Meta em risco<span class="notif-badge-foco">Foco</span><span class="notif-badge-jornada">Jornada</span></div>
+                    <div class="notif-desc">Quando o ritmo atual não vai atingir o prazo</div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="notif-row">
+                  <div class="notif-ico">🎉</div>
+                  <div class="notif-info">
+                    <div class="notif-label">Meta concluída<span class="notif-badge-foco">Foco</span><span class="notif-badge-jornada">Jornada</span></div>
+                    <div class="notif-desc">Celebração ao atingir 100% de uma meta</div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+              </div>
+
+              <div class="setting-card">
+                <div class="setting-card-title">Modo Jornada — exclusivos</div>
+                <div class="notif-row">
+                  <div class="notif-ico">🔥</div>
+                  <div class="notif-info">
+                    <div class="notif-label">Lembrete diário de registro<span class="notif-badge-jornada">Jornada</span></div>
+                    <div class="notif-desc">Lembrete para registrar gastos do dia</div>
+                    <div class="notif-time-sel">
+                      <label>Horário:</label>
+                      <input class="notif-time-input" type="time" value="21:00">
+                    </div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="notif-row">
+                  <div class="notif-ico">📊</div>
+                  <div class="notif-info">
+                    <div class="notif-label">Review semanal (domingo)<span class="notif-badge-jornada">Jornada</span></div>
+                    <div class="notif-desc">Resumo guiado da semana todo domingo à noite</div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="notif-row">
+                  <div class="notif-ico">🏆</div>
+                  <div class="notif-info">
+                    <div class="notif-label">Conquistas desbloqueadas<span class="notif-badge-jornada">Jornada</span></div>
+                    <div class="notif-desc">Notificação ao ganhar badges e marcos</div>
+                  </div>
+                  <label class="sw"><input type="checkbox" checked><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+                <div class="notif-row">
+                  <div class="notif-ico">😴</div>
+                  <div class="notif-info">
+                    <div class="notif-label">Inatividade de 7 dias<span class="notif-badge-jornada">Jornada</span></div>
+                    <div class="notif-desc">"Sentimos sua falta! Volte para manter seu streak."</div>
+                  </div>
+                  <label class="sw"><input type="checkbox"><div class="sw-track"></div><div class="sw-knob"></div></label>
+                </div>
+              </div>
+            </div>
+
+            <!-- ─── INTEGRAÇÕES ─── -->
+            <div class="cfg-section" id="sec-integracoes">
+              <div class="cfg-section-title">Integrações</div>
+              <div class="cfg-section-sub">Conecte o SyncLife às suas ferramentas favoritas.</div>
+
+              <div class="intg-grid" style="margin-bottom:14px">
+                <div class="intg-card">
+                  <div class="intg-card-top">
+                    <div class="intg-logo">📅</div>
+                    <div>
+                      <div class="intg-name">Google Calendar</div>
+                      <div class="intg-type">Agenda <span class="intg-badge-pro">PRO</span></div>
+                    </div>
+                  </div>
+                  <div class="intg-desc">Importe seus eventos do Google Calendar e sincronize compromissos financeiros automaticamente.</div>
+                  <div class="intg-actions">
+                    <button class="btn-intg-connect pro-lock">🔒 Upgrade para conectar</button>
+                  </div>
+                </div>
+
+                <div class="intg-card">
+                  <div class="intg-card-top">
+                    <div class="intg-logo">🏦</div>
+                    <div>
+                      <div class="intg-name">Open Finance</div>
+                      <div class="intg-type">Bancos <span class="intg-badge-pro">PRO</span></div>
+                    </div>
+                  </div>
+                  <div class="intg-desc">Conecte sua conta bancária e importe transações automaticamente. Suporta Nubank, Itaú, Bradesco e mais.</div>
+                  <div class="intg-actions">
+                    <button class="btn-intg-connect pro-lock">🔒 Upgrade para conectar</button>
+                  </div>
+                </div>
+
+                <div class="intg-card">
+                  <div class="intg-card-top">
+                    <div class="intg-logo" style="background:rgba(16,185,129,0.1)">📊</div>
+                    <div>
+                      <div class="intg-name">Google Sheets</div>
+                      <div class="intg-type">Exportação automática</div>
+                    </div>
+                  </div>
+                  <div class="intg-desc">Exporte suas transações para uma planilha Google Sheets automaticamente todo mês.</div>
+                  <div style="margin-top:4px"><span class="intg-status-connected">Conectado</span></div>
+                  <div class="intg-actions">
+                    <button class="btn-intg-connect connected">✓ Gerenciar</button>
+                    <button class="btn-intg-connect" style="flex:0;padding:7px 12px;color:var(--red);border-color:rgba(244,63,94,0.2)">Desconectar</button>
+                  </div>
+                </div>
+
+                <div class="intg-card">
+                  <div class="intg-card-top">
+                    <div class="intg-logo">📱</div>
+                    <div>
+                      <div class="intg-name">WhatsApp Bot</div>
+                      <div class="intg-type">Registro rápido <span class="intg-badge-pro">PRO</span></div>
+                    </div>
+                  </div>
+                  <div class="intg-desc">Registre gastos pelo WhatsApp digitando "gastei 50 no almoço" — o bot categoriza automaticamente.</div>
+                  <div class="intg-actions">
+                    <button class="btn-intg-connect pro-lock">🔒 Upgrade para ativar</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="setting-card">
+                <div class="setting-card-title">Exportação manual</div>
+                <div class="export-row">
+                  <div class="export-ico">📄</div>
+                  <div class="export-info">
+                    <div class="export-label">Exportar como PDF</div>
+                    <div class="export-desc">Relatório mensal formatado — ideal para controle pessoal</div>
+                  </div>
+                  <button class="btn-secondary">Exportar</button>
+                </div>
+                <div class="export-row">
+                  <div class="export-ico">📊</div>
+                  <div class="export-info">
+                    <div class="export-label">Exportar como Excel (.xlsx)</div>
+                    <div class="export-desc">Todas as transações do período selecionado</div>
+                  </div>
+                  <button class="btn-secondary">Exportar</button>
+                </div>
+                <div class="export-row">
+                  <div class="export-ico">📋</div>
+                  <div class="export-info">
+                    <div class="export-label">Exportar como CSV</div>
+                    <div class="export-desc">Compatível com qualquer planilha ou software financeiro</div>
+                  </div>
+                  <button class="btn-secondary">Exportar</button>
+                </div>
+                <div class="export-row">
+                  <div class="export-ico">💾</div>
+                  <div class="export-info">
+                    <div class="export-label">Backup completo (JSON)</div>
+                    <div class="export-desc">Todos os dados — transações, metas, configurações e conquistas</div>
+                  </div>
+                  <button class="btn-secondary">Baixar backup</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ─── PLANO ─── -->
+            <div class="cfg-section" id="sec-plano">
+              <div class="cfg-section-title">Meu Plano</div>
+              <div class="cfg-section-sub">Você está no plano <strong>Free</strong>. Faça upgrade para desbloquear todo o potencial do SyncLife.</div>
+
+              <div class="plan-grid">
+                <div class="plan-card">
+                  <span class="plan-badge plan-badge-free">Free</span>
+                  <div class="plan-price">R$ <span>0</span><sub>/mês</sub></div>
+                  <div style="font-size:12px;color:var(--t3);margin-top:4px">Para sempre gratuito</div>
+                  <div class="plan-features">
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Transações: até 200/mês</span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Orçamentos por envelope</span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Metas: até 3 ativas</span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Recorrentes: até 5 ativas</span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Agenda: 50 eventos/mês</span></div>
+                    <div class="plan-feature disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span>Google Calendar</span></div>
+                    <div class="plan-feature disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span>Open Finance (bancos)</span></div>
+                    <div class="plan-feature disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span>WhatsApp Bot</span></div>
+                    <div class="plan-feature disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span>Exportação automática</span></div>
+                  </div>
+                  <button class="plan-cta plan-cta-free" disabled>Plano atual</button>
+                </div>
+
+                <div class="plan-card featured">
+                  <span class="plan-badge plan-badge-pro">Pro</span>
+                  <div class="plan-price">R$ <span>19</span><sup>,90</sup><sub>/mês</sub></div>
+                  <div style="font-size:12px;color:var(--t3);margin-top:4px">ou R$ 179/ano (25% off)</div>
+                  <div class="plan-features">
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Transações: <strong>ilimitadas</strong></span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Orçamentos por envelope</span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Metas: <strong>ilimitadas</strong></span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Recorrentes: <strong>ilimitadas</strong></span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Agenda: <strong>ilimitados</strong></span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Google Calendar (bidirecional)</span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Open Finance — 5 contas</span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>WhatsApp Bot</span></div>
+                    <div class="plan-feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Exportação automática mensal</span></div>
+                  </div>
+                  <button class="plan-cta plan-cta-pro">✦ Fazer upgrade para Pro</button>
+                  <div class="plan-compare">7 dias grátis, cancele quando quiser</div>
+                </div>
+              </div>
+
+              <div class="setting-card">
+                <div class="setting-card-title">Uso atual (plano Free)</div>
+                <div style="margin-bottom:14px">
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+                    <span style="color:var(--t2)">Transações</span>
+                    <span style="font-weight:600;color:var(--t2)">142 / 200</span>
+                  </div>
+                  <div style="height:5px;background:var(--s3);border-radius:3px">
+                    <div style="height:100%;width:71%;background:rgba(16,185,129,.5);border-radius:3px;transition:width .6s"></div>
+                  </div>
+                </div>
+                <div style="margin-bottom:14px">
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+                    <span style="color:var(--t2)">Metas ativas</span>
+                    <span style="font-weight:600;color:var(--t2)">2 / 3</span>
+                  </div>
+                  <div style="height:5px;background:var(--s3);border-radius:3px">
+                    <div style="height:100%;width:66%;background:rgba(16,185,129,.5);border-radius:3px;transition:width .6s"></div>
+                  </div>
+                </div>
+                <div style="margin-bottom:14px">
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+                    <span style="color:var(--t2)">Recorrentes ativas</span>
+                    <span style="font-weight:600;color:var(--yellow)">4 / 5</span>
+                  </div>
+                  <div style="height:5px;background:var(--s3);border-radius:3px">
+                    <div style="height:100%;width:80%;background:var(--yellow);border-radius:3px;transition:width .6s"></div>
+                  </div>
+                </div>
+                <div style="margin-bottom:14px">
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+                    <span style="color:var(--t2)">Eventos na agenda</span>
+                    <span style="font-weight:600;color:var(--t2)">23 / 50</span>
+                  </div>
+                  <div style="height:5px;background:var(--s3);border-radius:3px">
+                    <div style="height:100%;width:46%;background:var(--em);border-radius:3px;transition:width .6s"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /cfg-content -->
+        </div><!-- /cfg-layout -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE BAR -->
+<nav class="mob-bar">
+  <button class="mob-tab act-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Home</span></button>
+  <button class="mob-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></button>
+  <button class="mob-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span>Metas</span></button>
+  <button class="mob-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Agenda</span></button>
+  <button class="mob-tab act-cfg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span>Config</span></button>
+</nav>
+
+<!-- CONTROLES PROTÓTIPO -->
+<div class="controls">
+  <div class="ctrl-title">🧪 Controles do Protótipo</div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Modo</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-foco" id="ctrl-foco" onclick="setMode('foco')">🎯 Foco</button>
+      <button class="ctrl-btn" id="ctrl-jornada" onclick="setMode('jornada')">🌱 Jornada</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Tema</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-home" id="ctrl-dark" onclick="setTheme('dark')">🌙 Dark</button>
+      <button class="ctrl-btn" id="ctrl-light" onclick="setTheme('light')">☀️ Light</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Sidebar</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn" onclick="toggleSidebar()">⇆ Expandir / Recolher</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+var curMode = 'foco';
+var curTheme = 'dark';
+var sbOpen = true;
+
+// ── TOOLTIP ──
+function showTip(btn){ var t=document.getElementById('tip'); t.textContent=btn.dataset.tip; var r=btn.getBoundingClientRect(); t.style.top=(r.top+r.height/2)+'px'; t.classList.add('show'); }
+function hideTip(){ document.getElementById('tip').classList.remove('show'); }
+
+// ── SIDEBAR ──
+function toggleSidebar(){
+  sbOpen = !sbOpen;
+  var sb = document.getElementById('sidebar');
+  sb.classList.toggle('closed', !sbOpen);
+  var icon = document.getElementById('sbToggleIcon');
+  if(icon) icon.querySelector('path').setAttribute('d', sbOpen ? 'M15 18l-6-6 6-6' : 'M9 18l6-6-6-6');
+}
+
+// ── MODO ──
+var curModeState = 'foco';
+function toggleMode(){ setMode(curModeState==='foco'?'jornada':'foco'); }
+function setMode(m){
+  curModeState = m;
+  document.body.classList.toggle('jornada', m==='jornada');
+  document.getElementById('modeDot').textContent = m==='foco'?'🎯':'🌱';
+  document.getElementById('modeLabel').textContent = m==='foco'?'Modo Foco':'Modo Jornada';
+  document.getElementById('ctrl-foco').className = 'ctrl-btn'+(m==='foco'?' on-foco':'');
+  document.getElementById('ctrl-jornada').className = 'ctrl-btn'+(m==='jornada'?' on-jornada':'');
+  // atualiza card selecionado em modo de uso
+  var selMode = m==='foco'?'foco':'jornada';
+  updateModeCards(selMode);
+}
+
+// ── TEMA ──
+function cycleTheme(){ setTheme(curTheme==='dark'?'light':'dark'); }
+function setTheme(t){
+  curTheme = t;
+  document.body.classList.toggle('light', t==='light');
+  document.getElementById('themeIcon').textContent = t==='dark'?'🌙':'☀️';
+  document.getElementById('themeLabel').textContent = t==='dark'?'Dark':'Light';
+  document.getElementById('ctrl-dark').className = 'ctrl-btn'+(t==='dark'?' on-home':'');
+  document.getElementById('ctrl-light').className = 'ctrl-btn'+(t==='light'?' on-home':'');
+  updateThemePreviews();
+}
+
+// ── CFG NAVEGAÇÃO ──
+var CFG_SECTIONS = ['perfil','modo','aparencia','notificacoes','integracoes','plano'];
+var CFG_LABELS = {perfil:'Perfil',modo:'Modo de Uso',aparencia:'Aparência',notificacoes:'Notificações',integracoes:'Integrações',plano:'Meu Plano'};
+function cfgNav(sec){
+  CFG_SECTIONS.forEach(function(s){
+    var el = document.getElementById('sec-'+s);
+    var mn = document.getElementById('cmenu-'+s);
+    var nb = document.querySelector('.nav-item[onclick="cfgNav(\''+s+'\')"]');
+    if(el) el.classList.toggle('active', s===sec);
+    if(mn) mn.classList.toggle('active', s===sec);
+    if(nb) nb.classList.toggle('act-cfg', s===sec);
+  });
+  document.getElementById('hdPageName').textContent = CFG_LABELS[sec]||sec;
+  document.getElementById('cfgContent').scrollTop = 0;
+}
+
+// ── MODO DE USO — cards ──
+var selectedModeCard = 'foco';
+function selectMode(m){
+  selectedModeCard = m;
+  updateModeCards(m);
+  // Aplica modo na interface
+  setMode(m);
+  // Toast
+  var toast = document.getElementById('mode-toast');
+  var toastTxt = document.getElementById('mode-toast-text');
+  toastTxt.textContent = m==='foco'
+    ? '🎯 Modo Foco ativado. Interface atualizada para você.'
+    : '🌱 Modo Jornada ativado. Vamos juntos nessa jornada!';
+  toast.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ toast.classList.remove('show'); }, 3500);
+}
+function updateModeCards(m){
+  var cf = document.getElementById('card-foco');
+  var cj = document.getElementById('card-jornada');
+  if(!cf||!cj) return;
+  cf.classList.toggle('selected', m==='foco');
+  cj.classList.toggle('selected', m==='jornada');
+}
+
+// ── TEMA COMBO (aparência) ──
+function setThemeCombo(theme, mode){
+  setTheme(theme);
+  setMode(mode);
+  updateThemePreviews(theme, mode);
+}
+function updateThemePreviews(t, m){
+  var th = t||curTheme;
+  var mo = m||curModeState;
+  ['tp-df','tp-dj','tp-lf','tp-lj'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.classList.remove('sel');
+  });
+  var map = {dark:{foco:'tp-df',jornada:'tp-dj'},light:{foco:'tp-lf',jornada:'tp-lj'}};
+  var target = map[th] && map[th][mo];
+  if(target){ var el=document.getElementById(target); if(el) el.classList.add('sel'); }
+}
+
+// ── INIT ──
+cfgNav('perfil');
+updateThemePreviews('dark','foco');
+</script>
+</body>
+</html>

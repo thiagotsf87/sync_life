@@ -141,6 +141,23 @@
   --sl-el-g:  rgba(0,85,255,0.14);
   --sl-grad:  linear-gradient(135deg, #10b981, #0055ff);
 
+  /* Shell layout dimensions */
+  --module-bar-w: 58px;
+  --sb-open: 228px;
+  --sb-collapsed: 56px;
+  --header-h: 54px;
+  --bottom-bar-h: 64px;
+
+  /* Module glow colors */
+  --home-glow:  rgba(16,185,129,0.16);
+  --fin-glow:   rgba(16,185,129,0.16);
+  --meta-glow:  rgba(0,85,255,0.16);
+  --agenda-glow: rgba(6,182,212,0.16);
+  --conq-glow:  rgba(245,158,11,0.16);
+  --cfg-glow:   rgba(110,144,184,0.16);
+  --em-glow:    rgba(16,185,129,0.16);
+  --el-glow:    rgba(0,85,255,0.16);
+
   /* Superfície — Dark Foco */
   --sl-bg:       #03071a;
   --sl-s1:       #07112b;
@@ -224,6 +241,10 @@
     margin: 0;
     padding: 0;
     background: #0d1117;
+    transition: background-color 0.4s;
+  }
+  html.light {
+    background: #ffffff;
   }
   body {
     @apply bg-background text-foreground antialiased;
@@ -234,6 +255,7 @@
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    transition: background-color 0.4s, color 0.3s;
   }
 }
 
@@ -269,11 +291,110 @@
 .sl-delay-4  { animation-delay: 0.20s; }
 .sl-delay-5  { animation-delay: 0.25s; }
 
+/* ── Shell: Light Foco — ModuleBar escuro (âncora visual) ── */
+html.light:not(.jornada) .sl-module-bar {
+  background: linear-gradient(180deg, #083d2c 0%, #052b1e 100%);
+  border-right-color: transparent;
+  box-shadow: 2px 0 24px rgba(8,61,44,0.28);
+}
+html.light:not(.jornada) .sl-module-bar .sl-mod-btn {
+  color: rgba(255,255,255,0.45);
+}
+html.light:not(.jornada) .sl-module-bar .sl-mod-btn:hover {
+  background: rgba(255,255,255,0.09);
+  color: rgba(255,255,255,0.85);
+}
+html.light:not(.jornada) .sl-module-bar .sl-mod-btn-active {
+  color: #6ee7b7;
+  background: rgba(110,231,183,0.14);
+}
+
+/* ── Shell: Light Jornada — ModuleBar gradiente esmeralda→azul ── */
+html.light.jornada .sl-module-bar {
+  background: linear-gradient(180deg, #0c9e6e 0%, #0844cc 100%);
+  border-right-color: transparent;
+  box-shadow: 2px 0 24px rgba(5,80,56,0.20);
+}
+html.light.jornada .sl-module-bar .sl-mod-btn {
+  color: rgba(255,255,255,0.65);
+}
+html.light.jornada .sl-module-bar .sl-mod-btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: #ffffff;
+}
+html.light.jornada .sl-module-bar .sl-mod-btn-active {
+  color: #ffffff;
+  background: rgba(255,255,255,0.18);
+}
+
+/* ── Shell: Light Jornada — Sidebar gradiente esmeralda→azul ── */
+html.light.jornada .sl-sidebar {
+  background: linear-gradient(180deg, #0fbe82 0%, #0a56d6 100%) !important;
+  border-right-color: transparent;
+}
+html.light.jornada .sl-sidebar .sl-nav-item {
+  color: rgba(255,255,255,0.75);
+}
+html.light.jornada .sl-sidebar .sl-nav-item:hover {
+  background: rgba(255,255,255,0.15) !important;
+  color: #ffffff;
+}
+html.light.jornada .sl-sidebar .sl-nav-item-active {
+  background: rgba(255,255,255,0.22) !important;
+  color: #ffffff !important;
+}
+html.light.jornada .sl-sidebar .sl-sb-label {
+  color: rgba(255,255,255,0.45);
+}
+html.light.jornada .sl-sidebar .sl-sb-title {
+  color: #ffffff;
+}
+html.light.jornada .sl-sidebar .sl-sb-toggle {
+  color: rgba(255,255,255,0.5);
+}
+html.light.jornada .sl-sidebar .sl-sb-toggle:hover {
+  background: rgba(255,255,255,0.15);
+  color: #ffffff;
+}
+html.light.jornada .sl-sidebar .sl-sb-score {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.30);
+}
+
+/* ── Shell: Light Jornada — Header gradiente esmeralda→azul ── */
+html.light.jornada .sl-header {
+  background: linear-gradient(90deg, #0fbe82 0%, #0a56d6 100%) !important;
+  border-bottom-color: transparent;
+}
+html.light.jornada .sl-header .sl-breadcrumb {
+  color: rgba(255,255,255,0.85);
+}
+html.light.jornada .sl-header .sl-pill {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.30);
+  color: rgba(255,255,255,0.9);
+}
+html.light.jornada .sl-header .sl-pill:hover {
+  background: rgba(255,255,255,0.28);
+}
+html.light.jornada .sl-header .sl-notif-btn {
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.25);
+}
+html.light.jornada .sl-header .sl-notif-btn:hover {
+  background: rgba(255,255,255,0.20);
+  color: #ffffff;
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar        { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track  { background: #1e293b; }
 ::-webkit-scrollbar-thumb  { background: #475569; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+.light ::-webkit-scrollbar-track  { background: #e2e8f0; }
+.light ::-webkit-scrollbar-thumb  { background: #94a3b8; }
+.light ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
 /* ── Auth pages ── */
 .bg-animated {

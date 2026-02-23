@@ -35,25 +35,37 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protected routes - redirect to login if not authenticated
+  const pathname = request.nextUrl.pathname
+
+  // Public routes — accessible without authentication
+  const isPublicRoute =
+    pathname === '/' ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/cadastro') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/auth')
+
+  // Protected routes — require authentication
   const isProtectedRoute =
-    request.nextUrl.pathname.startsWith('/dashboard') ||
-    request.nextUrl.pathname.startsWith('/transacoes') ||
-    request.nextUrl.pathname.startsWith('/configuracoes')
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/transacoes') ||
+    pathname.startsWith('/configuracoes') ||
+    pathname.startsWith('/financas') ||
+    pathname.startsWith('/metas') ||
+    pathname.startsWith('/agenda') ||
+    pathname.startsWith('/conquistas') ||
+    pathname.startsWith('/onboarding')
+
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  // Redirect authenticated users away from auth pages
-  if (
-    user &&
-    (request.nextUrl.pathname.startsWith('/login') ||
-      request.nextUrl.pathname.startsWith('/cadastro'))
-  ) {
+  // Redirect authenticated users: landing page and auth pages → app
+  if (user && isPublicRoute) {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    url.pathname = '/financas'
     return NextResponse.redirect(url)
   }
 

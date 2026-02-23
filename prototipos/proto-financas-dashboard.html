@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Finanças · Visão Geral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── TOKENS — SyncLife Emerald System (referência: proto-navigation-v3.html) ── */
+:root{
+  /* Dark Foco: Navy profundo */
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  /* Brand */
+  --em:#10b981;--em-glow:rgba(16,185,129,0.16);
+  --el:#0055ff;--el-glow:rgba(0,85,255,0.16);
+  /* Módulos */
+  --fin:#10b981;--fin-glow:rgba(16,185,129,0.16);
+  --meta:#0055ff;--meta-glow:rgba(0,85,255,0.16);
+  --agenda:#06b6d4;--agenda-glow:rgba(6,182,212,0.16);
+  --cfg:#64748b;--cfg-glow:rgba(100,116,139,0.12);
+  /* Semânticas */
+  --green:#10b981;--yellow:#f59e0b;--orange:#f97316;--red:#f43f5e;--ag:#06b6d4;
+  /* Layout */
+  --mb:58px;--sb:228px;--hh:54px;--r:14px;
+}
+
+/* ── DARK JORNADA ── */
+body.jornada{
+  --bg:#020d08;--s1:#061410;--s2:#0b1e18;--s3:#112b22;
+  --border:rgba(16,185,129,0.08);--border-h:rgba(16,185,129,0.18);
+  --t1:#d6faf0;--t2:#4da888;--t3:#235c48;
+}
+body.jornada .top-hdr{background:linear-gradient(90deg,rgba(16,185,129,0.06),transparent 60%)}
+body.jornada .sb-score-n{background:linear-gradient(135deg,#10b981,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+body.jornada .sb-score-fill{background:linear-gradient(90deg,#10b981,#0055ff)}
+body.jornada .sb-score{border-color:rgba(16,185,129,0.22);background:linear-gradient(135deg,rgba(16,185,129,0.10),rgba(0,85,255,0.10))}
+
+/* ── LIGHT FOCO ── */
+body.light{
+  --bg:#e6eef5;--s1:#ffffff;--s2:#f0f6fa;--s3:#e0eaf3;
+  --border:rgba(3,7,26,0.09);--border-h:rgba(3,7,26,0.18);
+  --t1:#03071a;--t2:#1e3a5c;--t3:#5a7a9e;
+  --fin-glow:rgba(16,185,129,0.12);--meta-glow:rgba(0,85,255,0.12);
+  --agenda-glow:rgba(6,182,212,0.12);--cfg-glow:rgba(100,116,139,0.10);
+}
+body.light .module-bar{background:linear-gradient(180deg,#083d2c 0%,#052b1e 100%);box-shadow:2px 0 24px rgba(8,61,44,0.28)}
+body.light .module-bar .mb-btn{color:rgba(255,255,255,0.42)}
+body.light .module-bar .mb-btn:hover{background:rgba(255,255,255,0.09);color:rgba(255,255,255,0.85)}
+body.light .module-bar .mb-btn.act{color:#6ee7b7;background:rgba(110,231,183,0.12)}
+body.light .module-bar .mb-btn.act::before{background:#6ee7b7}
+body.light .mb-logo{background:linear-gradient(135deg,#051c14,#03091f);border-radius:9px}
+body.light .sidebar{background:#f5fbf8;border-right:1px solid rgba(16,185,129,0.16);box-shadow:2px 0 20px rgba(16,185,129,0.06)}
+body.light .sb-lbl{color:#083d2c}
+body.light .sb-sec{color:#4da888}
+body.light .nav-item{color:#1a5c42}
+body.light .nav-item:hover{background:rgba(16,185,129,0.07);color:#083d2c}
+body.light .nav-item.act{background:rgba(16,185,129,0.10);color:#10b981}
+body.light .top-hdr{background:linear-gradient(90deg,rgba(16,185,129,0.07),#ffffff 35%);border-color:rgba(16,185,129,0.10)}
+
+/* ── LIGHT + JORNADA ── */
+body.light.jornada{
+  --bg:#c8f0e4;--s1:#ffffff;--s2:#e0f7ef;--s3:#c4eede;
+  --border:rgba(5,80,56,0.12);--border-h:rgba(5,80,56,0.24);
+  --t1:#022016;--t2:#0d5c3e;--t3:#4da888;
+}
+body.light.jornada .module-bar{background:linear-gradient(180deg,#0c9e6e 0%,#0844cc 100%);box-shadow:2px 0 24px rgba(5,80,56,0.20)}
+body.light.jornada .module-bar .mb-btn{color:rgba(255,255,255,0.65)}
+body.light.jornada .module-bar .mb-btn:hover{background:rgba(255,255,255,0.15);color:#ffffff}
+body.light.jornada .module-bar .mb-btn.act{color:#ffffff;background:transparent}
+body.light.jornada .sidebar{background:linear-gradient(180deg,#0fbe82 0%,#0a56d6 100%);box-shadow:2px 0 24px rgba(5,80,56,0.16)}
+body.light.jornada .sb-lbl{color:#ffffff}
+body.light.jornada .sb-sec{color:rgba(255,255,255,0.45)}
+body.light.jornada .sb-score{background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.30)}
+body.light.jornada .sb-score-lbl{color:rgba(255,255,255,0.60)}
+body.light.jornada .sb-score-n{background:linear-gradient(135deg,#ffffff,#c4f8e8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+body.light.jornada .sb-score-fill{background:linear-gradient(90deg,rgba(255,255,255,0.9),rgba(196,248,232,0.8))}
+body.light.jornada .sb-score-d{color:rgba(255,255,255,0.80)}
+body.light.jornada .nav-item{color:rgba(255,255,255,0.75)}
+body.light.jornada .nav-item:hover{background:rgba(255,255,255,0.15);color:#ffffff}
+body.light.jornada .nav-item.act{background:rgba(255,255,255,0.20);color:#ffffff}
+body.light.jornada .top-hdr{background:linear-gradient(90deg,#0fbe82,#0a56d6);border-color:transparent}
+body.light.jornada .hd-crumb{color:rgba(255,255,255,0.75)}
+body.light.jornada .hd-crumb .mod{color:#ffffff}
+body.light.jornada .mode-pill,body.light.jornada .theme-pill{background:rgba(255,255,255,0.60);border-color:rgba(5,80,56,0.15);color:#0d5c3e}
+body.light.jornada .notif-btn{background:rgba(255,255,255,0.60);border-color:rgba(5,80,56,0.15);color:#0d5c3e}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;transition:background .35s,color .25s}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* MODULE BAR */
+.module-bar{width:var(--mb);flex-shrink:0;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;z-index:100}
+.mb-logo{width:36px;height:36px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mb-btn{width:40px;height:40px;border-radius:12px;border:none;background:transparent;cursor:pointer;color:var(--t3);display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;position:relative}
+.mb-btn svg{width:20px;height:20px}
+.mb-btn:hover{background:var(--s3);color:var(--t2)}
+.mb-btn.act{background:var(--fin-glow);color:var(--em)}
+.mb-btn.act::before{content:'';position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:3px;height:22px;border-radius:0 3px 3px 0;background:var(--em)}
+.mb-spacer{flex:1}
+
+/* SIDEBAR */
+.sidebar{width:var(--sb);flex-shrink:0;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sb-head{height:var(--hh);display:flex;align-items:center;padding:0 14px;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-icon{width:28px;height:28px;border-radius:8px;background:var(--fin-glow);color:var(--em);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-icon svg{width:15px;height:15px}
+.sb-lbl{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1)}
+.sb-score{display:none;margin:10px 10px 0;padding:11px;border-radius:12px;border:1px solid rgba(16,185,129,.22);background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(0,85,255,.1));flex-shrink:0}
+body.jornada .sb-score{display:block}
+.sb-score-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.sb-score-n{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;background:linear-gradient(135deg,#10b981,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sb-score-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-top:1px}
+.sb-score-d{font-size:11px;color:var(--green)}
+.sb-score-bar{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-top:5px}
+.sb-score-fill{height:100%;width:74%;background:linear-gradient(90deg,#10b981,#0055ff);border-radius:2px}
+.sb-nav{flex:1;padding:8px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--s3) transparent}
+.sb-sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);padding:8px 8px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;color:var(--t2);transition:background .12s,color .12s;border:none;background:transparent;width:100%;text-align:left;font-family:'DM Sans',sans-serif;font-size:13px;white-space:nowrap}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.nav-item:hover{background:var(--s3);color:var(--t1)}
+.nav-item.act{background:var(--fin-glow);color:var(--em);font-weight:500}
+.nav-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(244,63,94,.15);color:var(--red)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* HEADER */
+.top-hdr{height:var(--hh);display:flex;align-items:center;padding:0 20px;gap:12px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--s1)}
+.hd-crumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t3)}
+.hd-crumb .mod{color:var(--t1);font-weight:600}
+.hd-greet{display:none}
+body.jornada .hd-greet{display:flex;flex-direction:column}
+body.jornada .hd-crumb{display:none}
+.hd-greet-name{font-size:14px;font-weight:600;background:linear-gradient(90deg,#10b981,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hd-greet-sub{font-size:11px;color:var(--t3)}
+.hd-sp{flex:1}
+.mode-pill{display:flex;align-items:center;gap:6px;padding:5px 11px 5px 8px;border-radius:20px;border:1px solid var(--border);background:var(--s2);cursor:pointer;font-size:12px;color:var(--t2);font-family:'DM Sans',sans-serif;transition:all .15s}
+.mode-dot{width:18px;height:18px;border-radius:6px;background:rgba(16,185,129,.15);display:flex;align-items:center;justify-content:center;font-size:11px}
+.theme-pill{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:var(--s2);cursor:pointer;font-size:12px;color:var(--t2);font-family:'DM Sans',sans-serif;transition:all .15s}
+.notif-btn{width:32px;height:32px;border-radius:10px;border:1px solid var(--border);background:var(--s2);cursor:pointer;color:var(--t3);display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.notif-btn svg{width:16px;height:16px}
+.notif-dot{position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--red);border:1.5px solid var(--s2)}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px 20px 60px}
+.content::-webkit-scrollbar{width:4px}
+.content::-webkit-scrollbar-thumb{background:var(--s3);border-radius:4px}
+
+/* PAGE HEADER */
+.pg-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:16px}
+.eyebrow{font-size:10px;color:var(--em);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;display:flex;align-items:center;gap:5px}
+.eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--em)}
+.pg-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.02em}
+.pg-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.hdr-acts{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-month{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:9px;border:1px solid var(--border);background:var(--s1);color:var(--t2);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-cta{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:9px;border:none;background:var(--em);color:#fff;font-size:12px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer}
+
+/* KPI */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px;position:relative;overflow:hidden;transition:border-color .15s}
+.kpi::before{content:'';position:absolute;top:0;left:16px;right:16px;height:2px;border-radius:0 0 2px 2px;background:var(--kc,transparent)}
+.kpi-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:10px;background:var(--ki,var(--s3))}
+.kpi-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:3px}
+.kpi-val{font-family:'DM Mono',monospace;font-size:21px;font-weight:500;color:var(--t1);line-height:1;margin-bottom:4px}
+.kpi-delta{font-size:11px;display:flex;align-items:center;gap:3px;color:var(--t3)}
+.up{color:var(--green)}.dn{color:var(--red)}.wn{color:var(--yellow)}
+.kpi-extra{margin-top:8px;padding:4px 7px;border-radius:6px;background:var(--s2);font-size:11px;color:var(--t3)}
+.kpi-extra strong{color:var(--em)}
+
+/* SAUDE / FOCO */
+.saude-band{display:none;background:linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.07));border:1px solid rgba(16,185,129,.18);border-radius:var(--r);padding:13px 18px;margin-bottom:12px;align-items:center;gap:18px}
+body.jornada .saude-band{display:flex}
+.saude-score{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--em),var(--el));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0}
+.saude-score-sub{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-top:1px;text-align:center}
+.saude-div{width:1px;height:44px;background:var(--border);flex-shrink:0}
+.saude-body{flex:1;min-width:0}
+.saude-head{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.saude-txt{font-size:12px;color:var(--t3);font-style:italic;line-height:1.5}
+.saude-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.stag{padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600}
+.stag.ok{background:rgba(16,185,129,.12);color:var(--green)}
+.stag.wn{background:rgba(245,158,11,.12);color:var(--yellow)}
+.saude-cta{flex-shrink:0;padding:7px 13px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--em),var(--el));color:#fff;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer}
+.foco-band{display:flex;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+body.jornada .foco-band{display:none}
+.fm{flex:1;padding:11px 16px;border-right:1px solid var(--border)}
+.fm:last-child{border-right:none}
+.fm-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:3px}
+.fm-val{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;line-height:1}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;transition:border-color .15s}
+.card:hover{border-color:var(--border-h)}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:7px}
+.card-tag{padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700}
+.card-link{font-size:11px;color:var(--em);cursor:pointer}
+
+/* TOP GRID */
+.top-grid{display:grid;grid-template-columns:1fr 400px;gap:12px;margin-bottom:12px}
+.chart-outer{display:flex;gap:8px}
+.chart-y{display:flex;flex-direction:column;justify-content:space-between;padding-bottom:24px;flex-shrink:0;width:26px}
+.y-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);text-align:right;line-height:1}
+.chart-body{flex:1;min-width:0}
+.chart-bars{display:flex;align-items:flex-end;gap:4px;height:130px;position:relative}
+.hlines{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}
+.hl{width:100%;height:1px;background:var(--border)}
+.cmonth{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;position:relative;cursor:pointer}
+.cmonth:hover .ctip{opacity:1;transform:translateX(-50%) translateY(0)}
+.bar-grp{display:flex;gap:2px;align-items:flex-end;width:100%}
+.bar{flex:1;border-radius:3px 3px 0 0;transition:height .8s cubic-bezier(.4,0,.2,1);min-height:2px}
+.bar.rec{background:var(--green);opacity:.75}
+.bar.des{background:var(--red);opacity:.65}
+.cmonth.cur .bar.rec{opacity:1}
+.cmonth.cur .bar.des{opacity:.9}
+.m-lbl{font-size:10px;color:var(--t3);margin-top:6px;text-align:center;font-weight:500}
+.cmonth.cur .m-lbl{color:var(--t1);font-weight:700}
+.ctip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(6px);background:var(--s2);border:1px solid var(--border-h);border-radius:9px;padding:9px 12px;min-width:140px;z-index:20;opacity:0;transition:opacity .15s,transform .15s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.ctip-m{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
+.ctip-r{display:flex;justify-content:space-between;gap:12px;font-size:11px;margin-bottom:2px}
+.ctip-r.tot{padding-top:4px;border-top:1px solid var(--border);margin-bottom:0}
+.tl{color:var(--t3)}.tv{font-family:'DM Mono',monospace;font-weight:500;color:var(--t1)}
+.chart-legend{display:flex;gap:12px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.leg-i{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t3)}
+.leg-dot{width:7px;height:7px;border-radius:2px}
+.donut-wrap{display:flex;align-items:flex-start;gap:18px}
+.donut-svg{flex-shrink:0;position:relative;width:140px;height:140px}
+.donut-svg svg{width:100%;height:100%}
+.donut-ctr{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.donut-cv{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--t1);line-height:1}
+.donut-cl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.cat-list{flex:1;min-width:0}
+.cat-item{display:flex;align-items:center;gap:9px;padding:7px 4px;border-bottom:1px solid var(--border);cursor:pointer;position:relative;border-radius:6px;transition:background .12s}
+.cat-item:last-child{border-bottom:none}
+.cat-item:hover{background:var(--s3);border-bottom-color:transparent;margin:0 -4px;padding:7px 8px}
+.cat-item:hover .cat-tip{opacity:1;transform:translateX(0) translateY(0)}
+.cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.cat-nm{font-size:12px;color:var(--t2);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
+.cat-warn{font-size:10px;color:var(--orange);flex-shrink:0;opacity:.85}
+.cat-pct{font-size:13px;font-weight:700;flex-shrink:0;text-align:right;min-width:32px}
+/* tooltip valor */
+.cat-tip{
+  position:absolute;right:0;top:50%;transform:translateX(6px) translateY(-50%);
+  background:var(--s2);border:1px solid var(--border-h);
+  border-radius:9px;padding:8px 12px;z-index:40;
+  opacity:0;transition:opacity .15s,transform .15s;
+  pointer-events:none;white-space:nowrap;
+  box-shadow:0 6px 20px rgba(0,0,0,.4);
+  font-size:11px;right:calc(100% + 8px);
+}
+.cat-tip-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--t1);margin-bottom:2px}
+.cat-tip-row{display:flex;gap:8px;align-items:center;font-size:10px;color:var(--t3)}
+.cat-tip-delta{font-weight:700;color:var(--orange)}
+
+/* FLUXO DE CAIXA */
+.cf-explain{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--s2);border:1px solid var(--border);font-size:12px;color:var(--t3);line-height:1.6;margin-bottom:0}
+.cf-explain-ico{font-size:15px;flex-shrink:0;margin-top:1px}
+.cf-explain strong{color:var(--t1)}
+.cf-wrap{display:flex;gap:6px;align-items:flex-start;margin-top:28px;position:relative}
+.cf-yaxis{position:relative;flex-shrink:0;width:34px;height:88px}
+.cf-yl{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);text-align:right;line-height:1;position:absolute;right:0;transform:translateY(-50%)}
+.cf-chart{flex:1;min-width:0;position:relative}
+.cf-grid{display:flex;align-items:flex-end;gap:2px;height:110px;position:relative}
+.cf-hlines{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}
+.cf-day{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;position:relative;cursor:pointer;min-width:0}
+.cf-day:hover .cf-tip{opacity:1;transform:translateX(-50%) translateY(0)}
+.cf-bars{display:flex;flex-direction:column;align-items:center;width:100%;justify-content:flex-end;height:88px}
+.cf-bar{width:80%;max-width:13px;border-radius:2px 2px 0 0;transition:height .7s cubic-bezier(.4,0,.2,1);min-height:0}
+.cf-bar.inc{background:var(--green);opacity:.8}
+.cf-bar.exp{background:var(--red);opacity:.7;border-radius:0 0 2px 2px;margin-top:1px}
+.cf-day-lbl{font-size:7px;color:var(--t3);text-align:center;padding-top:4px;line-height:1}
+.cf-day.today .cf-day-lbl{color:var(--em);font-weight:700}
+.cf-day.future .cf-bars{opacity:.3}
+.cf-day.future .cf-day-lbl{opacity:.35}
+.cf-evt{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:7.5px;font-weight:700;white-space:nowrap;padding:1px 4px;border-radius:3px;z-index:6}
+.cf-today-line{position:absolute;top:0;bottom:22px;width:1px;background:var(--em);opacity:.5;z-index:4;pointer-events:none;left:50%;transform:translateX(-50%)}
+.cf-today-tag{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:var(--em);white-space:nowrap;background:rgba(16,185,129,.1);padding:1px 4px;border-radius:3px}
+.cf-balance-svg{position:absolute;top:0;left:0;width:100%;height:88px;pointer-events:none;z-index:5;overflow:visible}
+.cf-tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(6px);background:var(--s2);border:1px solid var(--border-h);border-radius:9px;padding:9px 12px;min-width:160px;z-index:30;opacity:0;transition:opacity .15s,transform .15s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:11px}
+.cf-tip-day{font-size:10px;font-weight:700;color:var(--t3);margin-bottom:5px;text-transform:uppercase}
+.cf-tip-row{display:flex;justify-content:space-between;gap:12px;margin-bottom:2px}
+.cf-tip-bal{padding-top:5px;border-top:1px solid var(--border);margin-top:2px;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:12px;font-weight:500}
+.cf-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.cf-sum{display:flex;flex-direction:column;gap:2px;padding:9px 11px;border-radius:10px;background:var(--s2);border:1px solid var(--border)}
+.cf-sum-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.cf-sum-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:500}
+.cf-sum-val.g{color:var(--green)}.cf-sum-val.r{color:var(--red)}.cf-sum-val.b{color:var(--el)}
+.cf-sum-sub{font-size:10px;color:var(--t3)}
+.cf-legend{display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);flex-wrap:wrap}
+.cf-leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t3)}
+.cf-leg-sq{width:9px;height:9px;border-radius:2px}
+.cf-leg-line{width:16px;height:2px;border-radius:1px}
+
+/* MID GRID */
+.mid-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.env-list{display:flex;flex-direction:column;gap:9px}
+.env{display:flex;flex-direction:column;gap:3px}
+.env-top{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.env-l{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+.env-ico{font-size:13px}
+.env-nm{font-size:12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.env-r{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.env-am{font-family:'DM Mono',monospace;font-size:11px;color:var(--t3);white-space:nowrap}
+.env-am strong{color:var(--t2)}
+.env-pct{font-size:10px;font-weight:700;width:26px;text-align:right;flex-shrink:0}
+.env-bg{height:4px;background:var(--s3);border-radius:3px;overflow:hidden}
+.env-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.bh{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 11px;background:var(--s2);border-radius:9px;border:1px solid var(--border)}
+.bh-lbl{font-size:11px;color:var(--t3);flex:1}
+.bh-dots{display:flex;gap:4px}
+.bh-dot{width:8px;height:8px;border-radius:50%}
+.bh-txt{font-size:11px;font-weight:700;color:var(--t2);white-space:nowrap}
+.nao-aloc{margin-top:10px;padding:8px 10px;border-radius:9px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.14);display:flex;align-items:center;justify-content:space-between}
+.na-lbl{font-size:11px;color:var(--t2)}
+.na-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--green)}
+.txn-list{display:flex;flex-direction:column}
+.txn{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.txn:last-child{border-bottom:none}
+.txn:hover{background:var(--s2);margin:0 -7px;padding:8px 7px;border-radius:8px}
+.txn-ico{width:29px;height:29px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:var(--s3)}
+.txn-info{flex:1;min-width:0}
+.txn-nm{font-size:12px;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.txn-meta{font-size:10px;color:var(--t3)}
+.txn-r{text-align:right;flex-shrink:0}
+.txn-val{font-family:'DM Mono',monospace;font-size:12px;font-weight:500}
+.txn-val.exp{color:var(--red)}.txn-val.inc{color:var(--green)}
+.txn-cat{font-size:10px;color:var(--t3);margin-top:1px}
+
+/* CONSULTOR IA DESTAQUE */
+.ai-featured{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(16,185,129,.1) 0%,rgba(0,85,255,.1) 100%);
+  border:1px solid rgba(16,185,129,.28);
+  border-radius:var(--r);padding:18px 20px;margin-bottom:12px;
+}
+body.light .ai-featured{background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(0,85,255,.06))}
+.ai-featured::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:220px;height:220px;
+  background:radial-gradient(circle,rgba(16,185,129,.14),transparent 70%);
+  pointer-events:none;
+}
+.ai-featured::after{
+  content:'';position:absolute;bottom:-40px;left:30%;
+  width:180px;height:180px;
+  background:radial-gradient(circle,rgba(0,85,255,.1),transparent 70%);
+  pointer-events:none;
+}
+.ai-feat-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.ai-feat-icon{
+  width:38px;height:38px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--em),var(--el));
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 4px 16px rgba(16,185,129,.35);
+}
+.ai-feat-meta{flex:1;min-width:0}
+.ai-feat-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--t1);letter-spacing:-.01em}
+.ai-feat-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.ai-feat-badge{
+  display:flex;align-items:center;gap:6px;padding:5px 10px;
+  border-radius:20px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.2);
+  font-size:10px;font-weight:700;color:var(--em);flex-shrink:0;white-space:nowrap;
+}
+.ai-feat-pulse{width:6px;height:6px;border-radius:50%;background:var(--em);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+/* insights grid 2x2 */
+.ai-ins-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.ai-ins-card{
+  display:flex;gap:10px;padding:11px 13px;
+  border-radius:11px;border:1px solid var(--border);
+  background:rgba(255,255,255,.035);
+  transition:border-color .2s,background .2s,box-shadow .2s;
+  cursor:default;position:relative;overflow:hidden;
+}
+body.light .ai-ins-card{background:rgba(0,0,0,.025)}
+/* sublinhado reluzente: pseudo-elemento bottom */
+.ai-ins-card::after{
+  content:'';position:absolute;bottom:0;left:10%;right:10%;height:2px;
+  border-radius:2px;opacity:0;
+  transition:opacity .2s,left .2s,right .2s;
+}
+.ai-ins-card:hover::after{opacity:1;left:6%;right:6%}
+.ai-ins-card.urgent{border-color:rgba(244,63,94,.25);background:rgba(244,63,94,.04)}
+.ai-ins-card.urgent::after{background:var(--red);box-shadow:0 0 8px rgba(244,63,94,.6)}
+.ai-ins-card.urgent:hover{border-color:rgba(244,63,94,.5);background:rgba(244,63,94,.08);box-shadow:0 2px 16px rgba(244,63,94,.12)}
+.ai-ins-card.positive{border-color:rgba(16,185,129,.2);background:rgba(16,185,129,.04)}
+.ai-ins-card.positive::after{background:var(--green);box-shadow:0 0 8px rgba(16,185,129,.6)}
+.ai-ins-card.positive:hover{border-color:rgba(16,185,129,.45);background:rgba(16,185,129,.09);box-shadow:0 2px 16px rgba(16,185,129,.12)}
+.ai-ins-card.action{border-color:rgba(0,85,255,.2);background:rgba(0,85,255,.04)}
+.ai-ins-card.action::after{background:var(--el);box-shadow:0 0 8px rgba(0,85,255,.6)}
+.ai-ins-card.action:hover{border-color:rgba(0,85,255,.45);background:rgba(0,85,255,.09);box-shadow:0 2px 16px rgba(0,85,255,.12)}
+.ai-ins-card.heads-up{border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.04)}
+.ai-ins-card.heads-up::after{background:var(--yellow);box-shadow:0 0 8px rgba(245,158,11,.6)}
+.ai-ins-card.heads-up:hover{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.09);box-shadow:0 2px 16px rgba(245,158,11,.12)}
+.ai-ins-card-ico{font-size:20px;flex-shrink:0;line-height:1;margin-top:1px}
+.ai-ins-card-body{flex:1;min-width:0}
+.ai-ins-card-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.ai-ins-card.urgent .ai-ins-card-tag{color:var(--red)}
+.ai-ins-card.positive .ai-ins-card-tag{color:var(--green)}
+.ai-ins-card.action .ai-ins-card-tag{color:var(--el)}
+.ai-ins-card.heads-up .ai-ins-card-tag{color:var(--yellow)}
+.ai-ins-card-txt{font-size:12px;color:var(--t2);line-height:1.55}
+.ai-ins-card-txt strong{color:var(--t1)}
+.ai-ins-card-txt .hi{color:var(--green)}
+.ai-ins-card-txt .wn{color:var(--yellow)}
+.ai-ins-card-txt .dn{color:var(--red)}
+/* input */
+.ai-feat-input{
+  display:flex;gap:8px;align-items:center;
+  padding:10px 14px;border-radius:12px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(16,185,129,.15);
+}
+body.light .ai-feat-input{background:rgba(0,0,0,.03)}
+.ai-feat-input:focus-within{border-color:rgba(16,185,129,.4)}
+.ai-feat-input-icon{font-size:14px;flex-shrink:0;opacity:.7}
+.ai-feat-input input{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--t1);font-family:'DM Sans',sans-serif;font-size:13px;
+}
+.ai-feat-input input::placeholder{color:var(--t3)}
+.ai-feat-send{
+  flex-shrink:0;padding:6px 14px;border-radius:8px;border:none;
+  background:linear-gradient(135deg,var(--em),var(--el));
+  color:#fff;font-size:12px;font-weight:700;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  transition:opacity .15s;white-space:nowrap;
+}
+.ai-feat-send:hover{opacity:.85}
+.proj-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.proj-today{display:flex;align-items:center;gap:14px;padding:11px 13px;border-radius:10px;background:linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.05));border:1px solid rgba(16,185,129,.14);margin-bottom:11px}
+.pt-i{display:flex;flex-direction:column;gap:2px}
+.pt-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.pt-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--t1)}
+.pt-val.g{color:var(--green)}.pt-val.r{color:var(--red)}
+.pt-div{width:1px;height:30px;background:var(--border)}
+.proj-spark{height:55px;margin:3px 0 9px}
+.proj-spark svg{width:100%;height:100%}
+.proj-months{display:flex;gap:7px}
+.proj-month{flex:1;padding:11px;border-radius:9px;background:var(--s2);border:1px solid var(--border);cursor:pointer}
+.proj-month.alrt{border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.04)}
+.pm-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--t3);margin-bottom:3px}
+.pm-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--t1);line-height:1;margin-bottom:2px}
+.pm-val.neg{color:var(--red)}
+.pm-d{font-size:10px;margin-bottom:2px}
+.pm-d.up{color:var(--green)}.pm-d.dn{color:var(--red)}
+.pm-note{font-size:10px;color:var(--t3)}
+.pm-note.alrt{color:var(--red)}
+.proj-alert{padding:8px 11px;border-radius:8px;margin-top:9px;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.2);font-size:11px;color:var(--red);display:flex;align-items:flex-start;gap:6px}
+.ai-card{background:linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.07));border:1px solid rgba(16,185,129,.2);border-radius:var(--r);padding:16px;display:flex;flex-direction:column}
+.ai-hdr{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.ai-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--em)}
+.ai-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(16,185,129,.12);color:var(--em)}
+.ai-ins-list{display:flex;flex-direction:column;gap:6px;flex:1;margin-bottom:12px}
+.ai-ins{display:flex;gap:9px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.ai-ins-ico{font-size:14px;flex-shrink:0;margin-top:1px}
+.ai-ins-txt{font-size:11px;color:var(--t2);line-height:1.6}
+.ai-ins-txt strong{color:var(--t1)}
+.ai-ins-txt .hi{color:var(--green)}.ai-ins-txt .wn{color:var(--yellow)}
+.ai-input-wrap{padding-top:11px;border-top:1px solid rgba(16,185,129,.12)}
+.ai-input-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:6px}
+.ai-input-row{display:flex;gap:7px}
+.ai-input{flex:1;padding:7px 11px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--t1);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.ai-input::placeholder{color:var(--t3)}
+.ai-input:focus{border-color:var(--em)}
+.ai-send{padding:7px 13px;border-radius:8px;border:none;background:var(--em);color:#fff;font-size:12px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer}
+
+/* RECORRENTES */
+.recorr-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.recorr-item{display:flex;flex-direction:column;gap:5px;padding:10px;border-radius:10px;background:var(--s2);border:1px solid var(--border);cursor:pointer}
+.r-top{display:flex;align-items:center;justify-content:space-between}
+.r-ico{font-size:16px}
+.r-status{font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px}
+.rs-ok{background:rgba(16,185,129,.12);color:var(--green)}
+.rs-due{background:rgba(245,158,11,.12);color:var(--yellow)}
+.rs-fut{background:rgba(110,144,184,.1);color:var(--t3)}
+.r-nm{font-size:11px;font-weight:600;color:var(--t1)}
+.r-dt{font-size:10px;color:var(--t3)}
+.r-val{font-family:'DM Mono',monospace;font-size:12px;color:var(--red);font-weight:500}
+
+/* PROJEÇÃO TIMELINE */
+.proj-featured{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);padding:18px 20px;margin-bottom:12px;
+}
+.proj-feat-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.proj-now{
+  display:flex;align-items:center;gap:16px;
+  padding:13px 16px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(0,85,255,.06));
+  border:1px solid rgba(16,185,129,.18);margin-bottom:16px;
+}
+.proj-now-main{flex:1}
+.proj-now-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:3px}
+.proj-now-val{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--t1);line-height:1}
+.proj-now-sub{font-size:11px;color:var(--t3);margin-top:3px}
+.proj-now-pills{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.proj-pill{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-radius:9px;background:var(--s2);border:1px solid var(--border);min-width:90px}
+.proj-pill-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.proj-pill-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500}
+.proj-timeline{position:relative;padding:8px 0 4px}
+.proj-tl-track{
+  position:absolute;top:28px;left:40px;right:40px;height:2px;
+  background:var(--border);border-radius:2px;z-index:0;
+}
+.proj-tl-fill{
+  position:absolute;top:0;left:0;height:100%;
+  background:linear-gradient(90deg,var(--em),var(--el));
+  border-radius:2px;width:18%;
+}
+.proj-tl-nodes{display:flex;justify-content:space-between;position:relative;z-index:1}
+.proj-node{display:flex;flex-direction:column;align-items:center;width:80px;cursor:pointer;transition:transform .15s}
+.proj-node:hover{transform:translateY(-2px)}
+.proj-node-dot{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid var(--s1);background:var(--s3);
+  margin-bottom:8px;box-shadow:0 0 0 2px var(--border);
+  transition:box-shadow .15s;
+}
+.proj-node.current .proj-node-dot{background:var(--em);box-shadow:0 0 0 3px rgba(16,185,129,.25)}
+.proj-node.good .proj-node-dot{background:var(--el);box-shadow:0 0 0 3px rgba(0,85,255,.2)}
+.proj-node.warn .proj-node-dot{background:var(--red);box-shadow:0 0 0 3px rgba(244,63,94,.25);animation:pulse 2s infinite}
+.proj-node-card{
+  width:100%;padding:9px 10px;border-radius:10px;
+  border:1px solid var(--border);background:var(--s2);
+  text-align:center;transition:border-color .15s,background .15s;
+}
+.proj-node.current .proj-node-card{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.06)}
+.proj-node.good .proj-node-card{border-color:rgba(0,85,255,.2);background:rgba(0,85,255,.04)}
+.proj-node.warn .proj-node-card{border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.05)}
+.proj-node:hover .proj-node-card{border-color:var(--border-h)}
+.proj-node-month{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);margin-bottom:4px}
+.proj-node.current .proj-node-month{color:var(--em)}
+.proj-node.warn .proj-node-month{color:var(--red)}
+.proj-node-val{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--t1);line-height:1;margin-bottom:3px}
+.proj-node.warn .proj-node-val{color:var(--red)}
+.proj-node-delta{font-size:10px;font-weight:600}
+.proj-node-note{font-size:9px;color:var(--t3);margin-top:2px;line-height:1.3}
+.proj-node.warn .proj-node-note{color:rgba(244,63,94,.8);font-weight:600}
+.proj-feat-alert{
+  display:flex;align-items:flex-start;gap:9px;
+  padding:9px 12px;border-radius:9px;margin-top:14px;
+  background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.2);
+  font-size:11px;color:var(--red);line-height:1.5;
+}
+.proj-feat-alert-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+
+/* HIGHLIGHT GRID (mantido para outros usos) */
+.hl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.fab{position:fixed;bottom:22px;right:22px;z-index:90;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.fab-main{width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--em),var(--el));color:#fff;font-size:22px;cursor:pointer;box-shadow:0 5px 20px rgba(16,185,129,.4);transition:transform .2s;display:flex;align-items:center;justify-content:center}
+.fab-main:hover{transform:scale(1.08)}
+.fab-main.open{transform:rotate(45deg)}
+.fab-items{display:flex;flex-direction:column;gap:5px;align-items:flex-end;opacity:0;pointer-events:none;transform:translateY(6px);transition:opacity .2s,transform .2s}
+.fab-items.open{opacity:1;pointer-events:all;transform:translateY(0)}
+.fab-row{display:flex;align-items:center;gap:7px;cursor:pointer}
+.fab-lbl{background:var(--s2);border:1px solid var(--border-h);border-radius:7px;padding:5px 10px;font-size:12px;font-weight:600;color:var(--t1);box-shadow:0 4px 12px rgba(0,0,0,.2);white-space:nowrap}
+.fab-ico{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--s2);border:1px solid var(--border-h)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.a1{animation:fadeUp .35s ease both}
+.a2{animation:fadeUp .35s .05s ease both}
+.a3{animation:fadeUp .35s .10s ease both}
+.a4{animation:fadeUp .35s .15s ease both}
+.a5{animation:fadeUp .35s .20s ease both}
+.a6{animation:fadeUp .35s .25s ease both}
+.a7{animation:fadeUp .35s .30s ease both}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- MODULE BAR -->
+<nav class="module-bar">
+  <div class="mb-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="34" height="34">
+      <defs>
+        <linearGradient id="sl-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/></linearGradient>
+        <linearGradient id="sl-brand" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#0055ff"/></linearGradient>
+        <linearGradient id="sl-r1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981" stop-opacity="0.7"/><stop offset="100%" stop-color="#0055ff" stop-opacity="0.7"/></linearGradient>
+        <linearGradient id="sl-r2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981" stop-opacity="0.35"/><stop offset="100%" stop-color="#0055ff" stop-opacity="0.35"/></linearGradient>
+        <linearGradient id="sl-r3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981" stop-opacity="0.15"/><stop offset="100%" stop-color="#0055ff" stop-opacity="0.15"/></linearGradient>
+        <filter id="sl-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="sl-sg" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="12" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="512" height="512" rx="112" ry="112" fill="url(#sl-bg)"/>
+      <circle cx="256" cy="256" r="210" fill="none" stroke="url(#sl-r3)" stroke-width="1.5"/>
+      <circle cx="256" cy="256" r="170" fill="none" stroke="url(#sl-r2)" stroke-width="2"/>
+      <circle cx="256" cy="256" r="130" fill="none" stroke="url(#sl-r1)" stroke-width="2.5"/>
+      <path d="M 256 46 A 210 210 0 0 1 466 256" fill="none" stroke="#10b981" stroke-width="3" stroke-opacity="0.5" stroke-linecap="round"/>
+      <path d="M 256 466 A 210 210 0 0 1 46 256" fill="none" stroke="#0055ff" stroke-width="3" stroke-opacity="0.5" stroke-linecap="round"/>
+      <circle cx="256" cy="256" r="110" fill="url(#sl-bg)" opacity="0.9"/>
+      <circle cx="256" cy="256" r="108" fill="none" stroke="url(#sl-brand)" stroke-width="2.5" opacity="0.8"/>
+      <g filter="url(#sl-sg)"><text x="256" y="316" font-family="'Helvetica Neue','Arial',sans-serif" font-weight="800" font-size="190" text-anchor="middle" fill="url(#sl-brand)" letter-spacing="-4">S</text></g>
+      <circle cx="256" cy="86" r="7" fill="#10b981" filter="url(#sl-glow)"/>
+      <circle cx="404" cy="138" r="6" fill="#10b981" opacity="0.8" filter="url(#sl-glow)"/>
+      <circle cx="446" cy="256" r="6" fill="#0066ff" opacity="0.8" filter="url(#sl-glow)"/>
+      <circle cx="374" cy="374" r="5" fill="#0055ff" opacity="0.7" filter="url(#sl-glow)"/>
+      <circle cx="256" cy="426" r="6" fill="#0055ff" opacity="0.8" filter="url(#sl-glow)"/>
+      <circle cx="138" cy="374" r="5" fill="#10b981" opacity="0.7" filter="url(#sl-glow)"/>
+      <circle cx="66" cy="256" r="6" fill="#10b981" opacity="0.8" filter="url(#sl-glow)"/>
+      <circle cx="108" cy="138" r="5" fill="#10b981" opacity="0.7" filter="url(#sl-glow)"/>
+      <g stroke="url(#sl-brand)" stroke-width="1" opacity="0.15">
+        <line x1="256" y1="146" x2="256" y2="86"/><line x1="256" y1="146" x2="404" y2="138"/>
+        <line x1="256" y1="146" x2="446" y2="256"/><line x1="256" y1="146" x2="374" y2="374"/>
+        <line x1="256" y1="146" x2="256" y2="426"/><line x1="256" y1="146" x2="138" y2="374"/>
+        <line x1="256" y1="146" x2="66" y2="256"/><line x1="256" y1="146" x2="108" y2="138"/>
+      </g>
+    </svg>
+  </div>
+  <button class="mb-btn" title="Home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+  </button>
+  <button class="mb-btn act" title="Finanças">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+  </button>
+  <button class="mb-btn" title="Metas">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+  </button>
+  <button class="mb-btn" title="Agenda">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+  </button>
+  <div class="mb-spacer"></div>
+  <button class="mb-btn" title="Configurações">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+  </button>
+</nav>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-head">
+    <div class="sb-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    </div>
+    <span class="sb-lbl">Finanças</span>
+  </div>
+  <div class="sb-score">
+    <div class="sb-score-top">
+      <div><div class="sb-score-lbl">Life Sync Score</div><div class="sb-score-n">74</div></div>
+      <div style="text-align:right"><div class="sb-score-d">↑ +3 esta semana</div><div style="font-size:10px;color:var(--t3);margin-top:2px">Financeiro: 88</div></div>
+    </div>
+    <div class="sb-score-bar"><div class="sb-score-fill"></div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Principal</div>
+    <button class="nav-item act">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Visão Geral
+    </button>
+    <button class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Transações
+    </button>
+    <button class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+      Orçamentos
+    </button>
+    <div class="sb-sec">Planejamento</div>
+    <button class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Planejamento
+    </button>
+    <button class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 014-4h12.8"/><path d="M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 01-4 4H4.2"/></svg>
+      Recorrentes
+    </button>
+    <button class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Calendário <span class="nav-badge">3</span>
+    </button>
+    <div class="sb-sec">Análise</div>
+    <button class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Relatórios
+    </button>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="top-hdr">
+    <div class="hd-crumb">
+      <span class="mod">Finanças</span>
+      <span style="opacity:.4">›</span>
+      <span>Visão Geral</span>
+      <span style="opacity:.4">·</span>
+      <span>Fevereiro 2026</span>
+    </div>
+    <div class="hd-greet">
+      <span class="hd-greet-name">Boa tarde, Thiago! ✨</span>
+      <span class="hd-greet-sub">Financeiro em 88 pts — melhor mês do semestre.</span>
+    </div>
+    <div class="hd-sp"></div>
+    <button class="mode-pill" onclick="toggleMode()">
+      <div class="mode-dot" id="modeDot">🎯</div>
+      <span id="modeLabel">Modo Foco</span>
+    </button>
+    <button class="theme-pill" onclick="cycleTheme()">
+      <span id="themeIcon">🌙</span>
+      <span id="themeLabel">Dark</span>
+    </button>
+    <button class="notif-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="notif-dot"></span>
+    </button>
+  </header>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="pg-hdr a1">
+      <div>
+        <div class="eyebrow"><div class="eyebrow-dot"></div>Módulo Finanças</div>
+        <div class="pg-title">Visão Geral</div>
+        <div class="pg-sub">Fevereiro 2026 · semana 3 de 4 · 8 dias restantes</div>
+      </div>
+      <div class="hdr-acts">
+        <button class="btn-month">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Fevereiro 2026
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <button class="btn-cta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nova Transação
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div class="kpi-strip a2">
+      <div class="kpi" style="--kc:var(--green);--ki:rgba(16,185,129,.12)">
+        <div class="kpi-ico">💰</div><div class="kpi-lbl">Receitas</div>
+        <div class="kpi-val" style="color:var(--green)">R$ 5.000</div>
+        <div class="kpi-delta up">↑ +12% vs. janeiro</div>
+      </div>
+      <div class="kpi" style="--kc:var(--red);--ki:rgba(244,63,94,.12)">
+        <div class="kpi-ico">📤</div><div class="kpi-lbl">Despesas</div>
+        <div class="kpi-val" style="color:var(--red)">R$ 3.200</div>
+        <div class="kpi-delta dn">↑ +8% vs. janeiro</div>
+      </div>
+      <div class="kpi" style="--kc:var(--em);--ki:rgba(16,185,129,.12)">
+        <div class="kpi-ico">💚</div><div class="kpi-lbl">Saldo do Mês</div>
+        <div class="kpi-val">R$ 1.800</div>
+        <div class="kpi-delta up">↑ +R$ 342 vs. janeiro</div>
+        <div class="kpi-extra">Disponível livre: <strong>R$ 620</strong></div>
+      </div>
+      <div class="kpi" style="--kc:var(--el);--ki:rgba(0,85,255,.12)">
+        <div class="kpi-ico">📊</div><div class="kpi-lbl">Taxa de Poupança</div>
+        <div class="kpi-val" style="color:var(--el)">36%</div>
+        <div class="kpi-delta up">↑ +4pp vs. janeiro</div>
+        <div class="kpi-extra">Meta: <strong>30%</strong> · <span style="color:var(--green)">✓ acima</span></div>
+      </div>
+    </div>
+
+    <!-- SAÚDE / FOCO BANDS -->
+    <div class="saude-band a3">
+      <div style="text-align:center;flex-shrink:0"><div class="saude-score">88</div><div class="saude-score-sub">Saúde Fin.</div></div>
+      <div class="saude-div"></div>
+      <div class="saude-body">
+        <div class="saude-head">Mês excelente até aqui! 🎉</div>
+        <div class="saude-txt">22 dias seguidos registrando tudo. Despesas 8% acima do planejado, mas receita compensou. Atenção ao Lazer nos próximos 8 dias.</div>
+        <div class="saude-tags">
+          <span class="stag ok">✓ Poupança acima da meta</span>
+          <span class="stag ok">✓ 3 metas no ritmo</span>
+          <span class="stag wn">⚠ Lazer em 82%</span>
+          <span class="stag wn">⚠ 1 meta atrasada</span>
+        </div>
+      </div>
+      <button class="saude-cta">Ver análise completa</button>
+    </div>
+    <div class="foco-band a3">
+      <div class="fm"><div class="fm-lbl">Orçamentos OK</div><div class="fm-val up">4 / 5</div></div>
+      <div class="fm"><div class="fm-lbl">Maior categoria</div><div class="fm-val" style="color:var(--el)">Moradia</div></div>
+      <div class="fm"><div class="fm-lbl">Streak de registro</div><div class="fm-val up">22 dias</div></div>
+      <div class="fm" style="border-right:none"><div class="fm-lbl">Recorrentes pendentes</div><div class="fm-val wn">2</div></div>
+    </div>
+
+    <!-- CONSULTOR IA — DESTAQUE -->
+    <div class="ai-featured a3">
+      <div class="ai-feat-top">
+        <div class="ai-feat-icon">💡</div>
+        <div class="ai-feat-meta">
+          <div class="ai-feat-title">Consultor Financeiro IA</div>
+          <div class="ai-feat-sub">Análise personalizada · Fevereiro 2026 · atualizado agora</div>
+        </div>
+        <div class="ai-feat-badge">
+          <div class="ai-feat-pulse"></div>
+          4 insights hoje
+        </div>
+      </div>
+
+      <div class="ai-ins-grid">
+        <div class="ai-ins-card urgent">
+          <div class="ai-ins-card-ico">🔥</div>
+          <div class="ai-ins-card-body">
+            <div class="ai-ins-card-tag">Alerta · Lazer</div>
+            <div class="ai-ins-card-txt"><strong>Envelope em 82%</strong> com <span class="dn">8 dias restantes.</span> Só resta <strong>R$ 72</strong> — qualquer saída maior estoura o limite do mês.</div>
+          </div>
+        </div>
+        <div class="ai-ins-card action">
+          <div class="ai-ins-card-ico">🎯</div>
+          <div class="ai-ins-card-body">
+            <div class="ai-ins-card-tag">Ação recomendada · Metas</div>
+            <div class="ai-ins-card-txt">Meta <strong>Viagem Europa</strong> está <span class="wn">2 meses atrasada.</span> Aportar <strong>R$ 400/mês</strong> do saldo livre (R$ 2.795) resolve até dezembro.</div>
+          </div>
+        </div>
+        <div class="ai-ins-card positive">
+          <div class="ai-ins-card-ico">✅</div>
+          <div class="ai-ins-card-body">
+            <div class="ai-ins-card-tag">Conquista · Alimentação</div>
+            <div class="ai-ins-card-txt"><span class="hi"><strong>Alimentação caiu R$ 180 vs. janeiro.</strong></span> Mantendo esse ritmo por 3 meses = <strong>R$ 540 extras</strong> no trimestre.</div>
+          </div>
+        </div>
+        <div class="ai-ins-card heads-up">
+          <div class="ai-ins-card-ico">📅</div>
+          <div class="ai-ins-card-body">
+            <div class="ai-ins-card-tag">Previsão · Maio</div>
+            <div class="ai-ins-card-txt">IPVA de <strong>R$ 2.260</strong> chega em maio. Reserve <span class="wn"><strong>R$ 375/mês</strong></span> agora para cobrir sem comprometer o saldo.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-feat-input">
+        <div class="ai-feat-input-icon">💬</div>
+        <input type="text" placeholder="Pergunte ao consultor · Ex: Como reduzir Lazer? Quando atinjo minha meta? Onde estou gastando mais?">
+        <button class="ai-feat-send">Perguntar</button>
+      </div>
+    </div>
+
+    <!-- TOP GRID: histórico + donut -->
+    <div class="top-grid">
+      <div class="card a4">
+        <div class="card-hdr">
+          <div class="card-title">📈 Histórico — Receitas vs Despesas <span class="card-tag" style="background:rgba(16,185,129,.12);color:var(--green)">6 meses</span></div>
+          <div class="card-link">Relatórios →</div>
+        </div>
+        <div class="chart-outer">
+          <div class="chart-y">
+            <div class="y-lbl">7k</div><div class="y-lbl">5k</div><div class="y-lbl">3k</div><div class="y-lbl">1k</div><div class="y-lbl">0</div>
+          </div>
+          <div class="chart-body">
+            <div class="chart-bars">
+              <div class="hlines"><div class="hl"></div><div class="hl"></div><div class="hl"></div><div class="hl"></div><div class="hl" style="opacity:.25"></div></div>
+              <div class="cmonth"><div class="ctip"><div class="ctip-m">Set/25</div><div class="ctip-r"><span class="tl">Receitas</span><span class="tv" style="color:var(--green)">R$ 4.200</span></div><div class="ctip-r"><span class="tl">Despesas</span><span class="tv" style="color:var(--red)">R$ 3.600</span></div><div class="ctip-r tot"><span class="tl">Saldo</span><span class="tv" style="color:var(--green)">+R$ 600</span></div></div><div class="bar-grp"><div class="bar rec" style="height:0" data-h="90px"></div><div class="bar des" style="height:0" data-h="77px"></div></div><div class="m-lbl">Set</div></div>
+              <div class="cmonth"><div class="ctip"><div class="ctip-m">Out/25</div><div class="ctip-r"><span class="tl">Receitas</span><span class="tv" style="color:var(--green)">R$ 4.500</span></div><div class="ctip-r"><span class="tl">Despesas</span><span class="tv" style="color:var(--red)">R$ 3.900</span></div><div class="ctip-r tot"><span class="tl">Saldo</span><span class="tv" style="color:var(--green)">+R$ 600</span></div></div><div class="bar-grp"><div class="bar rec" style="height:0" data-h="97px"></div><div class="bar des" style="height:0" data-h="84px"></div></div><div class="m-lbl">Out</div></div>
+              <div class="cmonth"><div class="ctip"><div class="ctip-m">Nov/25</div><div class="ctip-r"><span class="tl">Receitas</span><span class="tv" style="color:var(--green)">R$ 4.800</span></div><div class="ctip-r"><span class="tl">Despesas</span><span class="tv" style="color:var(--red)">R$ 4.200</span></div><div class="ctip-r tot"><span class="tl">Saldo</span><span class="tv" style="color:var(--green)">+R$ 600</span></div></div><div class="bar-grp"><div class="bar rec" style="height:0" data-h="103px"></div><div class="bar des" style="height:0" data-h="90px"></div></div><div class="m-lbl">Nov</div></div>
+              <div class="cmonth"><div class="ctip"><div class="ctip-m">Dez/25</div><div class="ctip-r"><span class="tl">Receitas</span><span class="tv" style="color:var(--green)">R$ 6.100</span></div><div class="ctip-r"><span class="tl">Despesas</span><span class="tv" style="color:var(--red)">R$ 5.400</span></div><div class="ctip-r tot"><span class="tl">Saldo</span><span class="tv" style="color:var(--green)">+R$ 700</span></div></div><div class="bar-grp"><div class="bar rec" style="height:0" data-h="131px"></div><div class="bar des" style="height:0" data-h="116px"></div></div><div class="m-lbl">Dez</div></div>
+              <div class="cmonth"><div class="ctip"><div class="ctip-m">Jan/26</div><div class="ctip-r"><span class="tl">Receitas</span><span class="tv" style="color:var(--green)">R$ 4.463</span></div><div class="ctip-r"><span class="tl">Despesas</span><span class="tv" style="color:var(--red)">R$ 2.963</span></div><div class="ctip-r tot"><span class="tl">Saldo</span><span class="tv" style="color:var(--green)">+R$ 1.500</span></div></div><div class="bar-grp"><div class="bar rec" style="height:0" data-h="96px"></div><div class="bar des" style="height:0" data-h="64px"></div></div><div class="m-lbl">Jan</div></div>
+              <div class="cmonth cur"><div class="ctip"><div class="ctip-m">Fev/26 — atual</div><div class="ctip-r"><span class="tl">Receitas</span><span class="tv" style="color:var(--green)">R$ 5.000</span></div><div class="ctip-r"><span class="tl">Despesas</span><span class="tv" style="color:var(--red)">R$ 3.200</span></div><div class="ctip-r tot"><span class="tl">Saldo</span><span class="tv" style="color:var(--green)">+R$ 1.800</span></div></div><div class="bar-grp"><div class="bar rec" style="height:0" data-h="107px"></div><div class="bar des" style="height:0" data-h="69px"></div></div><div class="m-lbl">Fev ●</div></div>
+            </div>
+            <div class="chart-legend">
+              <div class="leg-i"><div class="leg-dot" style="background:var(--green);opacity:.8"></div> Receitas</div>
+              <div class="leg-i"><div class="leg-dot" style="background:var(--red);opacity:.7"></div> Despesas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card a4">
+        <div class="card-hdr">
+          <div class="card-title">🍩 Gastos por Categoria</div>
+          <div style="display:flex;align-items:center;gap:7px">
+            <span style="font-size:10px;color:var(--orange);background:rgba(249,115,22,.1);padding:2px 6px;border-radius:4px;font-weight:700">⚠ Lazer +24%</span>
+            <div class="card-link">Detalhes →</div>
+          </div>
+        </div>
+        <div class="donut-wrap">
+          <div class="donut-svg">
+            <svg viewBox="0 0 36 36" style="transform:rotate(-90deg)">
+              <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--s3)" stroke-width="3.5"/>
+              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#3b82f6" stroke-width="3.5" stroke-dasharray="38 62" stroke-dashoffset="0"/>
+              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#10b981" stroke-width="3.5" stroke-dasharray="22 78" stroke-dashoffset="-38"/>
+              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-dasharray="13 87" stroke-dashoffset="-60"/>
+              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f97316" stroke-width="3.5" stroke-dasharray="12 88" stroke-dashoffset="-73"/>
+              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#8b5cf6" stroke-width="3.5" stroke-dasharray="9 91" stroke-dashoffset="-85"/>
+              <circle cx="18" cy="18" r="15.9" fill="none" stroke="#64748b" stroke-width="3.5" stroke-dasharray="6 94" stroke-dashoffset="-94"/>
+            </svg>
+            <div class="donut-ctr"><div class="donut-cv">R$ 3.200</div><div class="donut-cl">Total</div></div>
+          </div>
+          <div class="cat-list">
+            <div class="cat-item">
+              <div class="cat-dot" style="background:#3b82f6"></div>
+              <div class="cat-nm">🏠 Moradia <span class="cat-warn" style="color:var(--t3)">= 0%</span></div>
+              <div class="cat-pct" style="color:#3b82f6">38%</div>
+              <div class="cat-tip"><div class="cat-tip-val">R$ 1.216</div><div class="cat-tip-row"><span>38% do total</span> <span style="color:var(--t3)">= estável vs jan</span></div></div>
+            </div>
+            <div class="cat-item">
+              <div class="cat-dot" style="background:#10b981"></div>
+              <div class="cat-nm">🛒 Alimentação <span class="cat-warn" style="color:var(--green)">↓ -20%</span></div>
+              <div class="cat-pct" style="color:#10b981">22%</div>
+              <div class="cat-tip"><div class="cat-tip-val">R$ 704</div><div class="cat-tip-row"><span>22% do total</span> <span style="color:var(--green)">↓ -20% vs jan · ótimo!</span></div></div>
+            </div>
+            <div class="cat-item">
+              <div class="cat-dot" style="background:#f59e0b"></div>
+              <div class="cat-nm">🚗 Transporte <span class="cat-warn" style="color:var(--yellow)">↑ +8%</span></div>
+              <div class="cat-pct" style="color:#f59e0b">13%</div>
+              <div class="cat-tip"><div class="cat-tip-val">R$ 416</div><div class="cat-tip-row"><span>13% do total</span> <span style="color:var(--yellow)">↑ +8% vs jan</span></div></div>
+            </div>
+            <div class="cat-item">
+              <div class="cat-dot" style="background:#f97316"></div>
+              <div class="cat-nm">🎮 Lazer <span class="cat-warn">⚠ +24%</span></div>
+              <div class="cat-pct" style="color:#f97316">12%</div>
+              <div class="cat-tip"><div class="cat-tip-val">R$ 384</div><div class="cat-tip-row"><span>12% do total</span> <span class="cat-tip-delta">↑ +24% vs jan · atenção</span></div></div>
+            </div>
+            <div class="cat-item">
+              <div class="cat-dot" style="background:#8b5cf6"></div>
+              <div class="cat-nm">💊 Saúde <span class="cat-warn" style="color:var(--green)">↓ -5%</span></div>
+              <div class="cat-pct" style="color:#8b5cf6">9%</div>
+              <div class="cat-tip"><div class="cat-tip-val">R$ 288</div><div class="cat-tip-row"><span>9% do total</span> <span style="color:var(--green)">↓ -5% vs jan</span></div></div>
+            </div>
+            <div class="cat-item">
+              <div class="cat-dot" style="background:#64748b"></div>
+              <div class="cat-nm">📦 Outros <span class="cat-warn" style="color:var(--yellow)">↑ +12%</span></div>
+              <div class="cat-pct" style="color:#64748b">6%</div>
+              <div class="cat-tip"><div class="cat-tip-val">R$ 192</div><div class="cat-tip-row"><span>6% do total</span> <span style="color:var(--yellow)">↑ +12% vs jan</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLUXO DE CAIXA -->
+    <div class="card a5" style="margin-bottom:12px">
+      <div class="card-hdr">
+        <div class="card-title">💸 Fluxo de Caixa — Fevereiro dia a dia <span class="card-tag" style="background:rgba(6,182,212,.12);color:var(--ag)">28 dias</span></div>
+        <div class="card-link">Ver detalhado →</div>
+      </div>
+      <div class="cf-explain">
+        <div class="cf-explain-ico">💡</div>
+        <div>
+          <strong>Como ler:</strong> Cada coluna = 1 dia do mês.
+          <span style="color:var(--green)">■ Verde</span> = dinheiro que <strong>entrou</strong> naquele dia.
+          <span style="color:var(--red)">■ Vermelho</span> = quanto <strong>saiu</strong> em gastos.
+          <span style="color:var(--el)">— Linha azul</span> = <strong>saldo na sua conta</strong> ao final do dia.
+          Colunas esmaecidas após <strong>22/02</strong> são previsões.
+        </div>
+      </div>
+      <div class="cf-wrap">
+        <div class="cf-yaxis">
+          <div class="cf-yl" style="top:0%">5k</div>
+          <div class="cf-yl" style="top:33%">3.5k</div>
+          <div class="cf-yl" style="top:66%">2k</div>
+          <div class="cf-yl" style="top:100%">500</div>
+        </div>
+        <div class="cf-chart">
+          <div class="cf-grid" id="cfGrid">
+            <div class="cf-hlines"><div class="hl"></div><div class="hl"></div><div class="hl"></div><div class="hl" style="opacity:.25"></div></div>
+          </div>
+          <svg id="balanceSvg" style="position:absolute;top:0;left:0;width:100%;height:88px;pointer-events:none;z-index:5;overflow:visible">
+            <defs>
+              <linearGradient id="balGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0055ff" stop-opacity=".18"/>
+                <stop offset="100%" stop-color="#0055ff" stop-opacity=".01"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+      <div class="cf-summary">
+        <div class="cf-sum"><div class="cf-sum-lbl">Maior entrada</div><div class="cf-sum-val g">R$ 5.000</div><div class="cf-sum-sub">Dia 20 — Salário</div></div>
+        <div class="cf-sum"><div class="cf-sum-lbl">Maior saída num dia</div><div class="cf-sum-val r">R$ 1.600</div><div class="cf-sum-sub">Dia 25 — Aluguel (prev.)</div></div>
+        <div class="cf-sum"><div class="cf-sum-lbl">Saldo mais baixo</div><div class="cf-sum-val r">R$ 177</div><div class="cf-sum-sub">Dia 19 (antes do salário)</div></div>
+        <div class="cf-sum"><div class="cf-sum-lbl">Saldo hoje</div><div class="cf-sum-val b">R$ 4.495</div><div class="cf-sum-sub">22/02 · após condomínio</div></div>
+      </div>
+      <div class="cf-legend">
+        <div class="cf-leg"><div class="cf-leg-sq" style="background:var(--green);opacity:.8"></div> Entrada no dia</div>
+        <div class="cf-leg"><div class="cf-leg-sq" style="background:var(--red);opacity:.7"></div> Saída no dia</div>
+        <div class="cf-leg"><div class="cf-leg-line" style="background:var(--el)"></div> Saldo na conta</div>
+        <div class="cf-leg" style="margin-left:auto;opacity:.55"><div class="cf-leg-sq" style="border:1px dashed var(--t3)"></div> Dias previstos</div>
+      </div>
+    </div>
+
+    <!-- MID GRID -->
+    <div class="mid-grid">
+      <div class="card a5">
+        <div class="card-hdr"><div class="card-title">💼 Orçamentos do Mês</div><div class="card-link">Gerenciar →</div></div>
+        <div class="bh">
+          <div class="bh-lbl">Saúde dos envelopes</div>
+          <div class="bh-dots">
+            <div class="bh-dot" style="background:var(--green)"></div>
+            <div class="bh-dot" style="background:var(--green)"></div>
+            <div class="bh-dot" style="background:var(--green)"></div>
+            <div class="bh-dot" style="background:var(--yellow)"></div>
+            <div class="bh-dot" style="background:var(--orange)"></div>
+            <div class="bh-dot" style="background:var(--s3)"></div>
+          </div>
+          <div class="bh-txt">3 ok · 2 atenção · 1 inativo</div>
+        </div>
+        <div class="env-list">
+          <div class="env"><div class="env-top"><div class="env-l"><div class="env-ico">🏠</div><div class="env-nm">Moradia</div></div><div class="env-r"><div class="env-am"><strong>R$ 1.200</strong> / R$ 1.500</div><div class="env-pct" style="color:var(--yellow)">80%</div></div></div><div class="env-bg"><div class="env-fill" style="width:0%;background:var(--yellow)" data-w="80%"></div></div></div>
+          <div class="env"><div class="env-top"><div class="env-l"><div class="env-ico">🛒</div><div class="env-nm">Alimentação</div></div><div class="env-r"><div class="env-am"><strong>R$ 377</strong> / R$ 800</div><div class="env-pct" style="color:var(--green)">47%</div></div></div><div class="env-bg"><div class="env-fill" style="width:0%;background:var(--green)" data-w="47%"></div></div></div>
+          <div class="env"><div class="env-top"><div class="env-l"><div class="env-ico">🚗</div><div class="env-nm">Transporte</div></div><div class="env-r"><div class="env-am"><strong>R$ 260</strong> / R$ 500</div><div class="env-pct" style="color:var(--green)">52%</div></div></div><div class="env-bg"><div class="env-fill" style="width:0%;background:var(--green)" data-w="52%"></div></div></div>
+          <div class="env"><div class="env-top"><div class="env-l"><div class="env-ico">🎮</div><div class="env-nm">Lazer</div></div><div class="env-r"><div class="env-am"><strong>R$ 328</strong> / R$ 400</div><div class="env-pct" style="color:var(--orange)">82%</div></div></div><div class="env-bg"><div class="env-fill" style="width:0%;background:var(--orange)" data-w="82%"></div></div></div>
+          <div class="env"><div class="env-top"><div class="env-l"><div class="env-ico">💊</div><div class="env-nm">Saúde</div></div><div class="env-r"><div class="env-am"><strong>R$ 175</strong> / R$ 300</div><div class="env-pct" style="color:var(--green)">58%</div></div></div><div class="env-bg"><div class="env-fill" style="width:0%;background:var(--green)" data-w="58%"></div></div></div>
+          <div class="env" style="opacity:.45"><div class="env-top"><div class="env-l"><div class="env-ico">📚</div><div class="env-nm">Educação</div></div><div class="env-r"><div class="env-am"><strong>R$ 0</strong> / R$ 200</div><div class="env-pct" style="color:var(--t3)">0%</div></div></div><div class="env-bg"><div class="env-fill" style="width:0%" data-w="0%"></div></div></div>
+        </div>
+        <div class="nao-aloc"><div class="na-lbl">💡 Não alocado neste mês</div><div class="na-val">R$ 1.300</div></div>
+      </div>
+
+      <div class="card a5">
+        <div class="card-hdr"><div class="card-title">🧾 Últimas Transações</div><div class="card-link">Ver todas →</div></div>
+        <div class="txn-list">
+          <div class="txn"><div class="txn-ico">🏠</div><div class="txn-info"><div class="txn-nm">Condomínio</div><div class="txn-meta">Hoje · Débito automático</div></div><div class="txn-r"><div class="txn-val exp">-R$ 400</div><div class="txn-cat">Moradia</div></div></div>
+          <div class="txn"><div class="txn-ico">🛒</div><div class="txn-info"><div class="txn-nm">Supermercado Extra</div><div class="txn-meta">22/02 · Crédito</div></div><div class="txn-r"><div class="txn-val exp">-R$ 187,40</div><div class="txn-cat">Alimentação</div></div></div>
+          <div class="txn"><div class="txn-ico">💰</div><div class="txn-info"><div class="txn-nm">Salário</div><div class="txn-meta">20/02 · Transferência</div></div><div class="txn-r"><div class="txn-val inc">+R$ 5.000</div><div class="txn-cat">Receita</div></div></div>
+          <div class="txn"><div class="txn-ico">🎮</div><div class="txn-info"><div class="txn-nm">Steam — jogo</div><div class="txn-meta">19/02 · Crédito</div></div><div class="txn-r"><div class="txn-val exp">-R$ 79,90</div><div class="txn-cat">Lazer</div></div></div>
+          <div class="txn"><div class="txn-ico">🚗</div><div class="txn-info"><div class="txn-nm">Uber</div><div class="txn-meta">19/02 · Pix</div></div><div class="txn-r"><div class="txn-val exp">-R$ 34,20</div><div class="txn-cat">Transporte</div></div></div>
+          <div class="txn"><div class="txn-ico">🍕</div><div class="txn-info"><div class="txn-nm">iFood</div><div class="txn-meta">18/02 · Pix</div></div><div class="txn-r"><div class="txn-val exp">-R$ 62,00</div><div class="txn-cat">Alimentação</div></div></div>
+          <div class="txn"><div class="txn-ico">💊</div><div class="txn-info"><div class="txn-nm">Farmácia</div><div class="txn-meta">17/02 · Débito</div></div><div class="txn-r"><div class="txn-val exp">-R$ 42,50</div><div class="txn-cat">Saúde</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJEÇÃO DE SALDO — TIMELINE -->
+    <div class="proj-featured a6">
+      <div class="proj-feat-hdr">
+        <div class="card-title">📅 Projeção de Saldo <span class="card-tag" style="background:rgba(0,85,255,.12);color:var(--el)">próximos 5 meses</span></div>
+        <div class="card-link">Ver planejamento completo →</div>
+      </div>
+
+      <!-- Saldo atual em destaque -->
+      <div class="proj-now">
+        <div class="proj-now-main">
+          <div class="proj-now-lbl">💰 Saldo disponível agora</div>
+          <div class="proj-now-val">R$ 4.495</div>
+          <div class="proj-now-sub">22 de fevereiro de 2026 · após condomínio</div>
+        </div>
+        <div class="proj-now-pills">
+          <div class="proj-pill">
+            <div class="proj-pill-lbl">Comprometido</div>
+            <div class="proj-pill-val" style="color:var(--red)">R$ 1.700</div>
+          </div>
+          <div class="proj-pill">
+            <div class="proj-pill-lbl">Livre estimado</div>
+            <div class="proj-pill-val" style="color:var(--green)">R$ 2.795</div>
+          </div>
+          <div class="proj-pill">
+            <div class="proj-pill-lbl">Taxa de poupança</div>
+            <div class="proj-pill-val" style="color:var(--el)">36%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline dos próximos meses -->
+      <div class="proj-timeline">
+        <div class="proj-tl-track"><div class="proj-tl-fill"></div></div>
+        <div class="proj-tl-nodes">
+
+          <div class="proj-node current">
+            <div class="proj-node-dot"></div>
+            <div class="proj-node-card">
+              <div class="proj-node-month">Fev · Hoje</div>
+              <div class="proj-node-val">R$ 4.495</div>
+              <div class="proj-node-delta" style="color:var(--em)">● agora</div>
+              <div class="proj-node-note">saldo atual</div>
+            </div>
+          </div>
+
+          <div class="proj-node good">
+            <div class="proj-node-dot"></div>
+            <div class="proj-node-card">
+              <div class="proj-node-month">Março</div>
+              <div class="proj-node-val">R$ 5.295</div>
+              <div class="proj-node-delta up">↑ +R$ 800</div>
+              <div class="proj-node-note">+salário<br>-recorrentes</div>
+            </div>
+          </div>
+
+          <div class="proj-node good">
+            <div class="proj-node-dot"></div>
+            <div class="proj-node-card">
+              <div class="proj-node-month">Abril</div>
+              <div class="proj-node-val">R$ 6.095</div>
+              <div class="proj-node-delta up">↑ +R$ 800</div>
+              <div class="proj-node-note">poupança<br>acumulando</div>
+            </div>
+          </div>
+
+          <div class="proj-node warn">
+            <div class="proj-node-dot"></div>
+            <div class="proj-node-card">
+              <div class="proj-node-month">⚠ Maio</div>
+              <div class="proj-node-val">R$ 3.835</div>
+              <div class="proj-node-delta dn">↓ -R$ 2.260</div>
+              <div class="proj-node-note">IPVA chegando!<br>reserve já</div>
+            </div>
+          </div>
+
+          <div class="proj-node good">
+            <div class="proj-node-dot"></div>
+            <div class="proj-node-card">
+              <div class="proj-node-month">Junho</div>
+              <div class="proj-node-val">R$ 4.635</div>
+              <div class="proj-node-delta up">↑ +R$ 800</div>
+              <div class="proj-node-note">retoma<br>crescimento</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="proj-feat-alert">
+        <div class="proj-feat-alert-icon">⚠</div>
+        <span>Em <strong>maio</strong> o IPVA de <strong>R$ 2.260</strong> vai reduzir seu saldo significativamente. Reservando apenas <strong>R$ 375/mês</strong> a partir de agora você cobre o valor sem sentir impacto no dia a dia.</span>
+      </div>
+    </div>
+
+    <!-- RECORRENTES -->
+    <div class="card a7">
+      <div class="card-hdr"><div class="card-title">🔄 Próximas Recorrentes</div><div class="card-link">Gerenciar →</div></div>
+      <div class="recorr-grid">
+        <div class="recorr-item"><div class="r-top"><div class="r-ico">🌐</div><div class="r-status rs-due">hoje</div></div><div class="r-nm">Internet</div><div class="r-dt">vence hoje, 22/02</div><div class="r-val">-R$ 99,90</div></div>
+        <div class="recorr-item"><div class="r-top"><div class="r-ico">🏠</div><div class="r-status rs-due">3 dias</div></div><div class="r-nm">Aluguel</div><div class="r-dt">vence em 25/02</div><div class="r-val">-R$ 1.500</div></div>
+        <div class="recorr-item"><div class="r-top"><div class="r-ico">🎵</div><div class="r-status rs-ok">pago</div></div><div class="r-nm">Spotify</div><div class="r-dt">pago em 15/02</div><div class="r-val">-R$ 21,90</div></div>
+        <div class="recorr-item"><div class="r-top"><div class="r-ico">📺</div><div class="r-status rs-ok">pago</div></div><div class="r-nm">Netflix</div><div class="r-dt">pago em 15/02</div><div class="r-val">-R$ 47,90</div></div>
+        <div class="recorr-item"><div class="r-top"><div class="r-ico">🏋️</div><div class="r-status rs-fut">mar</div></div><div class="r-nm">Academia</div><div class="r-dt">vence em 01/03</div><div class="r-val">-R$ 89,90</div></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- FAB -->
+<div class="fab">
+  <div class="fab-items" id="fabItems">
+    <div class="fab-row"><div class="fab-lbl">Novo Orçamento</div><div class="fab-ico">💼</div></div>
+    <div class="fab-row"><div class="fab-lbl">Nova Recorrente</div><div class="fab-ico">🔄</div></div>
+    <div class="fab-row"><div class="fab-lbl">Nova Transação</div><div class="fab-ico">💳</div></div>
+  </div>
+  <button class="fab-main" id="fabBtn" onclick="toggleFab()">+</button>
+</div>
+
+<script>
+let mode='foco', theme='dark';
+function toggleMode(){
+  mode=mode==='foco'?'jornada':'foco';
+  document.body.classList.toggle('jornada',mode==='jornada');
+  document.getElementById('modeDot').textContent=mode==='foco'?'🎯':'🌱';
+  document.getElementById('modeLabel').textContent=mode==='foco'?'Modo Foco':'Modo Jornada';
+}
+function cycleTheme(){
+  theme=theme==='dark'?'light':'dark';
+  document.body.classList.toggle('light',theme==='light');
+  document.getElementById('themeIcon').textContent=theme==='dark'?'🌙':'☀️';
+  document.getElementById('themeLabel').textContent=theme==='dark'?'Dark':'Light';
+}
+let fabOpen=false;
+function toggleFab(){
+  fabOpen=!fabOpen;
+  document.getElementById('fabBtn').classList.toggle('open',fabOpen);
+  document.getElementById('fabItems').classList.toggle('open',fabOpen);
+}
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('act'));
+    item.classList.add('act');
+  });
+});
+
+// DADOS FLUXO DE CAIXA
+const days=[
+  {d:1,inc:0,exp:280,bal:1900,note:''},
+  {d:2,inc:0,exp:0,bal:1900,note:''},
+  {d:3,inc:0,exp:55,bal:1845,note:''},
+  {d:4,inc:0,exp:120,bal:1725,note:''},
+  {d:5,inc:0,exp:440,bal:1285,note:'⚡ Contas'},
+  {d:6,inc:0,exp:0,bal:1285,note:''},
+  {d:7,inc:0,exp:38,bal:1247,note:''},
+  {d:8,inc:0,exp:90,bal:1157,note:''},
+  {d:9,inc:0,exp:0,bal:1157,note:''},
+  {d:10,inc:0,exp:65,bal:1092,note:''},
+  {d:11,inc:0,exp:0,bal:1092,note:''},
+  {d:12,inc:0,exp:145,bal:947,note:''},
+  {d:13,inc:0,exp:0,bal:947,note:''},
+  {d:14,inc:0,exp:80,bal:867,note:''},
+  {d:15,inc:0,exp:472,bal:395,note:'🔄 Recorr.'},
+  {d:16,inc:0,exp:0,bal:395,note:''},
+  {d:17,inc:0,exp:42,bal:353,note:''},
+  {d:18,inc:0,exp:62,bal:291,note:''},
+  {d:19,inc:0,exp:114,bal:177,note:''},
+  {d:20,inc:5000,exp:0,bal:5177,note:'💰 Salário'},
+  {d:21,inc:0,exp:95,bal:5082,note:''},
+  {d:22,inc:0,exp:587,bal:4495,note:'🏠 Cond.',today:true},
+  {d:23,inc:0,exp:0,bal:4495,note:'',future:true},
+  {d:24,inc:0,exp:100,bal:4395,note:'',future:true},
+  {d:25,inc:0,exp:1600,bal:2795,note:'🏠 Aluguel',future:true},
+  {d:26,inc:0,exp:0,bal:2795,note:'',future:true},
+  {d:27,inc:0,exp:90,bal:2705,note:'',future:true},
+  {d:28,inc:0,exp:100,bal:2605,note:'',future:true}
+];
+
+const BAR_H=88, MAX_VAL=5500;
+
+function buildCashflow(){
+  const grid=document.getElementById('cfGrid');
+  days.forEach((day)=>{
+    const div=document.createElement('div');
+    div.className='cf-day'+(day.today?' today':'')+(day.future?' future':'');
+
+    const incH=day.inc>0?Math.max(4,(day.inc/MAX_VAL)*BAR_H):0;
+    const expH=day.exp>0?Math.max(2,(day.exp/MAX_VAL)*BAR_H):0;
+
+    let evtHtml='';
+    if(day.note){
+      const c=day.inc>0?'rgba(16,185,129,.15)':day.exp>300?'rgba(244,63,94,.12)':'rgba(245,158,11,.12)';
+      const tc=day.inc>0?'var(--green)':day.exp>300?'var(--red)':'var(--orange)';
+      evtHtml=`<div class="cf-evt" style="background:${c};color:${tc}">${day.note}</div>`;
+    }
+
+    let todayHtml='';
+    if(day.today) todayHtml='<div class="cf-today-line"><div class="cf-today-tag">Hoje</div></div>';
+
+    const prevTag=day.future?' <span style="color:var(--t3);font-size:9px">· prev.</span>':'';
+    const incRow=day.inc>0?`<div class="cf-tip-row"><span style="color:var(--t3)">Entrada</span><span style="color:var(--green);font-family:'DM Mono',monospace">+R$ ${day.inc.toLocaleString('pt-BR')}</span></div>`:'';
+    const expRow=day.exp>0?`<div class="cf-tip-row"><span style="color:var(--t3)">Saída</span><span style="color:var(--red);font-family:'DM Mono',monospace">-R$ ${day.exp.toLocaleString('pt-BR')}</span></div>`:'';
+    const balColor=day.bal>2000?'var(--green)':day.bal>500?'var(--yellow)':'var(--red)';
+    const noteRow=day.note?`<div class="cf-tip-row"><span style="color:var(--t3)">Evento</span><span>${day.note}</span></div>`:'';
+
+    div.innerHTML=`${evtHtml}${todayHtml}
+      <div class="cf-bars">
+        <div class="cf-bar inc" style="height:0" data-h="${incH}px"></div>
+        <div class="cf-bar exp" style="height:0" data-h="${expH}px"></div>
+      </div>
+      <div class="cf-day-lbl">${String(day.d).padStart(2,'0')}/02</div>
+      <div class="cf-tip">
+        <div class="cf-tip-day">Dia ${day.d}/02${prevTag}</div>
+        ${incRow}${expRow}${noteRow}
+        <div class="cf-tip-bal"><span style="color:var(--t3)">Saldo</span><span style="color:${balColor}">R$ ${day.bal.toLocaleString('pt-BR')}</span></div>
+      </div>`;
+    grid.appendChild(div);
+  });
+
+  setTimeout(()=>{
+    document.querySelectorAll('.cf-bar[data-h]').forEach(b=>{b.style.height=b.dataset.h});
+  },400);
+
+  requestAnimationFrame(()=>setTimeout(drawBalanceLine,650));
+}
+
+function drawBalanceLine(){
+  const grid=document.getElementById('cfGrid');
+  const svg=document.getElementById('balanceSvg');
+  const dayEls=grid.querySelectorAll('.cf-day');
+  if(!dayEls.length) return;
+
+  const svgW=grid.offsetWidth;
+  svg.setAttribute('viewBox',`0 0 ${svgW} ${BAR_H}`);
+
+  const pts=[];
+  dayEls.forEach((el,i)=>{
+    const rect=el.getBoundingClientRect();
+    const gRect=grid.getBoundingClientRect();
+    const cx=rect.left-gRect.left+rect.width/2;
+    const cy=BAR_H-(days[i].bal/MAX_VAL)*BAR_H;
+    pts.push({x:cx,y:Math.max(2,Math.min(BAR_H-2,cy))});
+  });
+
+  if(pts.length<2) return;
+
+  let d=`M ${pts[0].x},${pts[0].y}`;
+  for(let i=1;i<pts.length;i++){
+    const cp1x=pts[i-1].x+(pts[i].x-pts[i-1].x)/3;
+    const cp1y=pts[i-1].y;
+    const cp2x=pts[i].x-(pts[i].x-pts[i-1].x)/3;
+    const cp2y=pts[i].y;
+    d+=` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${pts[i].x},${pts[i].y}`;
+  }
+
+  const last=pts[pts.length-1];
+  const area=document.createElementNS('http://www.w3.org/2000/svg','path');
+  area.setAttribute('fill','url(#balGrad)');
+  area.setAttribute('d',d+` L ${last.x},${BAR_H} L ${pts[0].x},${BAR_H} Z`);
+  svg.appendChild(area);
+
+  const line=document.createElementNS('http://www.w3.org/2000/svg','path');
+  line.setAttribute('fill','none');
+  line.setAttribute('stroke','#0055ff');
+  line.setAttribute('stroke-width','2');
+  line.setAttribute('stroke-linecap','round');
+  line.setAttribute('d',d);
+  svg.appendChild(line);
+
+  // Ponto hoje
+  const ti=days.findIndex(d=>d.today);
+  if(ti>=0){
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',pts[ti].x);c.setAttribute('cy',pts[ti].y);
+    c.setAttribute('r','4');c.setAttribute('fill','#0055ff');
+    c.setAttribute('stroke','var(--s1)');c.setAttribute('stroke-width','2');
+    svg.appendChild(c);
+  }
+
+  // Ponto mínimo
+  const mi=days.findIndex(d=>d.d===19);
+  if(mi>=0){
+    const m=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    m.setAttribute('cx',pts[mi].x);m.setAttribute('cy',pts[mi].y);
+    m.setAttribute('r','3.5');m.setAttribute('fill','var(--red)');
+    m.setAttribute('stroke','var(--s1)');m.setAttribute('stroke-width','1.5');
+    svg.appendChild(m);
+  }
+}
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.querySelectorAll('.bar[data-h]').forEach(b=>{b.style.height=b.dataset.h});
+    document.querySelectorAll('.env-fill[data-w]').forEach(f=>{f.style.width=f.dataset.w});
+  },250);
+  buildCashflow();
+});
+
+window.addEventListener('resize',()=>{
+  const svg=document.getElementById('balanceSvg');
+  while(svg.children.length>1) svg.removeChild(svg.lastChild);
+  drawBalanceLine();
+});
+</script>
+</body>
+</html>

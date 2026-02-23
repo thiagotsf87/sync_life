@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — O sistema operacional da sua vida</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ══════════════════════════════════════
+   TOKENS — alinhados ao design system
+══════════════════════════════════════ */
+:root {
+  --bg:       #03071a;
+  --s1:       #07112b;
+  --s2:       #0c1a3a;
+  --s3:       #132248;
+  --border:   rgba(255,255,255,0.06);
+  --border-h: rgba(255,255,255,0.13);
+  --t1:  #dff0ff;
+  --t2:  #6e90b8;
+  --t3:  #2e4a6e;
+
+  --em:  #10b981;
+  --el:  #0055ff;
+  --em-g: rgba(16,185,129,0.15);
+  --el-g: rgba(0,85,255,0.15);
+
+  --fin:  #10b981;
+  --meta: #0055ff;
+  --ag:   #06b6d4;
+
+  --green:  #10b981;
+  --yellow: #f59e0b;
+  --red:    #f43f5e;
+  --orange: #f97316;
+
+  --radius-sm: 10px;
+  --radius:    16px;
+  --radius-lg: 24px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ══ SCROLL ANIMATIONS ══ */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ══ TYPOGRAPHY ══ */
+.font-syne { font-family: 'Syne', sans-serif; }
+.font-mono { font-family: 'DM Mono', monospace; }
+
+h1, h2, h3, .display {
+  font-family: 'Syne', sans-serif;
+  line-height: 1.15;
+}
+
+/* ══ GRADIENT TEXT ══ */
+.grad-em {
+  background: linear-gradient(135deg, var(--em), #34d399);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.grad-el {
+  background: linear-gradient(135deg, var(--el), #3b82f6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.grad-main {
+  background: linear-gradient(135deg, var(--em) 0%, #06b6d4 50%, var(--el) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+/* ══ BUTTONS ══ */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--em);
+  color: #03071a;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600; font-size: 15px;
+  padding: 14px 28px;
+  border-radius: 100px;
+  border: none; cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-primary:hover {
+  background: #0ed99a;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(16,185,129,0.35);
+}
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent;
+  color: var(--t2);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500; font-size: 15px;
+  padding: 14px 24px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-secondary:hover {
+  border-color: var(--border-h);
+  color: var(--t1);
+}
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: transparent;
+  color: var(--t2);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500; font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  border: none; cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.btn-ghost:hover { color: var(--t1); }
+
+/* ══ LAYOUT ══ */
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+section { position: relative; }
+
+/* ══════════════════════════════════════
+   NAVBAR
+══════════════════════════════════════ */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 32px;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(3,7,26,0.72);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.navbar.scrolled {
+  background: rgba(3,7,26,0.92);
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.nav-logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--em), var(--el));
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.nav-logo-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px; font-weight: 700;
+  color: var(--t1);
+}
+.nav-links {
+  display: flex; align-items: center; gap: 4px;
+}
+.nav-link {
+  padding: 6px 14px;
+  border-radius: 100px;
+  color: var(--t2);
+  font-size: 14px; font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-link:hover { color: var(--t1); }
+.nav-cta { display: flex; align-items: center; gap: 10px; }
+.nav-cta .btn-primary { padding: 9px 20px; font-size: 14px; }
+.nav-cta .btn-ghost { font-size: 14px; padding: 9px 16px; }
+
+/* Mobile nav hidden */
+.nav-hamburger { display: none; }
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px 32px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background mesh */
+.hero-bg {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.18;
+  animation: float 8s ease-in-out infinite;
+}
+.hero-orb-1 {
+  width: 600px; height: 600px;
+  background: var(--em);
+  top: -200px; left: -150px;
+  animation-delay: 0s;
+}
+.hero-orb-2 {
+  width: 500px; height: 500px;
+  background: var(--el);
+  top: -100px; right: -150px;
+  animation-delay: -3s;
+}
+.hero-orb-3 {
+  width: 400px; height: 400px;
+  background: var(--ag);
+  bottom: -100px; left: 30%;
+  animation-delay: -6s;
+  opacity: 0.10;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
+}
+
+/* Grid noise overlay */
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.25);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 12px; font-weight: 600;
+  color: var(--em);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  animation: fadeDown 0.6s ease both;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px;
+  background: var(--em);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+.hero-title {
+  font-size: clamp(44px, 7vw, 80px);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  max-width: 860px;
+  margin-bottom: 24px;
+  animation: fadeUp 0.7s ease 0.1s both;
+}
+.hero-title span { display: block; }
+
+.hero-sub {
+  font-size: clamp(17px, 2vw, 20px);
+  color: var(--t2);
+  max-width: 560px;
+  line-height: 1.65;
+  margin-bottom: 44px;
+  font-weight: 400;
+  animation: fadeUp 0.7s ease 0.2s both;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  animation: fadeUp 0.7s ease 0.3s both;
+}
+.btn-primary.hero-btn {
+  padding: 16px 36px;
+  font-size: 16px;
+  box-shadow: 0 0 40px rgba(16,185,129,0.25);
+}
+
+.hero-disclaimer {
+  font-size: 12px;
+  color: var(--t3);
+  animation: fadeUp 0.7s ease 0.4s both;
+}
+
+/* App preview */
+.hero-preview {
+  margin-top: 72px;
+  position: relative;
+  animation: fadeUp 0.9s ease 0.5s both;
+  max-width: 960px;
+  width: 100%;
+}
+.hero-preview-frame {
+  background: var(--s1);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 40px 120px rgba(0,0,0,0.5),
+    0 0 80px rgba(16,185,129,0.06);
+}
+.preview-topbar {
+  background: var(--s2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.preview-dots {
+  display: flex; gap: 6px;
+}
+.preview-dots span {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--border-h);
+}
+.preview-dots span:nth-child(1) { background: rgba(239,68,68,0.5); }
+.preview-dots span:nth-child(2) { background: rgba(245,158,11,0.5); }
+.preview-dots span:nth-child(3) { background: rgba(16,185,129,0.5); }
+.preview-url {
+  flex: 1;
+  background: var(--s3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--t3);
+  text-align: center;
+}
+
+/* Dashboard mockup inside */
+.preview-body {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  min-height: 420px;
+}
+.preview-sidebar {
+  background: var(--s2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center;
+  padding: 16px 0; gap: 8px;
+}
+.preview-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  color: var(--t3);
+}
+.preview-icon.active {
+  background: rgba(16,185,129,0.15);
+  color: var(--em);
+}
+.preview-icon:hover { background: var(--s3); }
+
+.preview-content {
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.preview-header {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.preview-header-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px; font-weight: 700; color: var(--t1);
+}
+.preview-header-sub { font-size: 11px; color: var(--t3); }
+.preview-period {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 11px; color: var(--t2);
+}
+
+/* Score bar */
+.preview-score {
+  background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(0,85,255,0.08));
+  border: 1px solid rgba(16,185,129,0.18);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 14px;
+}
+.score-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px; font-weight: 800;
+  background: linear-gradient(135deg, var(--em), var(--el));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1;
+}
+.score-info { flex: 1; }
+.score-label { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: 0.05em; }
+.score-phrase { font-size: 12px; color: var(--t2); margin-top: 2px; }
+.score-bar-wrap { width: 100%; height: 4px; background: var(--s3); border-radius: 2px; margin-top: 6px; }
+.score-bar-fill { height: 100%; width: 74%; background: linear-gradient(90deg, var(--em), var(--el)); border-radius: 2px; }
+
+/* Preview cards */
+.preview-cards {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.preview-card {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+.preview-card-label { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: 0.05em; }
+.preview-card-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 15px; font-weight: 500;
+  margin-top: 4px; color: var(--t1);
+}
+.preview-card-value.positive { color: var(--green); }
+.preview-card-value.negative { color: var(--red); }
+.preview-card-delta { font-size: 10px; color: var(--t3); margin-top: 2px; }
+
+/* Mini chart */
+.preview-chart {
+  background: var(--s2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px;
+  display: flex; align-items: flex-end; gap: 3px;
+  height: 70px;
+}
+.chart-bar {
+  flex: 1; background: var(--s3); border-radius: 3px 3px 0 0;
+  position: relative;
+}
+.chart-bar.income { background: rgba(16,185,129,0.35); }
+.chart-bar.expense { background: rgba(244,63,94,0.25); }
+
+/* Glowing border on frame hover */
+.hero-preview:hover .hero-preview-frame {
+  box-shadow:
+    0 0 0 1px rgba(16,185,129,0.15),
+    0 40px 120px rgba(0,0,0,0.5),
+    0 0 120px rgba(16,185,129,0.10);
+  transition: box-shadow 0.4s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   SECTION BASE
+══════════════════════════════════════ */
+.section {
+  padding: 112px 0;
+}
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--em);
+  margin-bottom: 16px;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 20px; height: 1px;
+  background: var(--em);
+}
+.section-title {
+  font-size: clamp(32px, 4.5vw, 52px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin-bottom: 16px;
+  line-height: 1.12;
+}
+.section-sub {
+  font-size: 17px;
+  color: var(--t2);
+  max-width: 520px;
+  line-height: 1.65;
+}
+
+/* ══════════════════════════════════════
+   LOGOS / SOCIAL PROOF STRIP
+══════════════════════════════════════ */
+.social-strip {
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.social-strip-label {
+  font-size: 11px; color: var(--t3);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+}
+.social-strip-track {
+  position: relative;
+  overflow: hidden;
+}
+/* Fade masks nas bordas */
+.social-strip-track::before,
+.social-strip-track::after {
+  content: '';
+  position: absolute; top: 0; bottom: 0;
+  width: 120px; z-index: 2;
+  pointer-events: none;
+}
+.social-strip-track::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg), transparent);
+}
+.social-strip-track::after {
+  right: 0;
+  background: linear-gradient(-90deg, var(--bg), transparent);
+}
+.social-logos {
+  display: flex; align-items: center; gap: 56px;
+  animation: marquee 22s linear infinite;
+  width: max-content;
+}
+.social-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--t3);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.social-logo:hover { opacity: 0.75; }
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ══════════════════════════════════════
+   FEATURES — 3 MÓDULOS
+══════════════════════════════════════ */
+.features-section {
+  padding: 112px 0;
+  background: linear-gradient(180deg, transparent, var(--s1) 30%, var(--s1) 70%, transparent);
+}
+.features-header {
+  text-align: center;
+  margin-bottom: 72px;
+}
+.features-header .section-label { justify-content: center; }
+.features-header .section-label::before { display: none; }
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.module-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+.module-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.module-card.fin::before {
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(16,185,129,0.08), transparent);
+}
+.module-card.meta::before {
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0,85,255,0.08), transparent);
+}
+.module-card.ag::before {
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(6,182,212,0.08), transparent);
+}
+.module-card:hover { border-color: var(--border-h); transform: translateY(-4px); }
+.module-card:hover::before { opacity: 1; }
+
+.module-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin-bottom: 24px;
+}
+.module-icon.fin { background: rgba(16,185,129,0.12); }
+.module-icon.meta { background: rgba(0,85,255,0.12); }
+.module-icon.ag { background: rgba(6,182,212,0.12); }
+
+.module-color {
+  display: inline-block;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.module-color.fin { color: var(--fin); }
+.module-color.meta { color: var(--meta); }
+.module-color.ag { color: var(--ag); }
+
+.module-title {
+  font-size: 22px; font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--t1);
+}
+.module-desc {
+  font-size: 14px; color: var(--t2);
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+.module-features {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.module-features li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 13px; color: var(--t2);
+  line-height: 1.5;
+}
+.module-features li::before {
+  content: '→';
+  font-size: 11px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.module-card.fin .module-features li::before { color: var(--fin); }
+.module-card.meta .module-features li::before { color: var(--meta); }
+.module-card.ag .module-features li::before { color: var(--ag); }
+
+/* ══════════════════════════════════════
+   MODO FOCO vs JORNADA
+══════════════════════════════════════ */
+.modes-section {
+  padding: 112px 0;
+  position: relative;
+  overflow: hidden;
+}
+.modes-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,85,255,0.05), transparent);
+  pointer-events: none;
+}
+.modes-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+.modes-header {
+  grid-column: 1 / -1;
+  margin-bottom: 16px;
+}
+.modes-toggle {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+.mode-toggle-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-align: left;
+}
+.mode-toggle-btn.active.foco {
+  border-color: rgba(16,185,129,0.4);
+  background: rgba(16,185,129,0.06);
+}
+.mode-toggle-btn.active.jornada {
+  border-color: rgba(0,85,255,0.4);
+  background: rgba(0,85,255,0.06);
+}
+.mode-toggle-btn:hover { border-color: var(--border-h); }
+.mtb-icon { font-size: 20px; }
+.mtb-text {}
+.mtb-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--t1);
+  line-height: 1;
+}
+.mtb-desc { font-size: 12px; color: var(--t3); margin-top: 2px; }
+
+/* Mode cards */
+.mode-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.mode-card.foco { border-color: rgba(16,185,129,0.2); }
+.mode-card.jornada { border-color: rgba(0,85,255,0.2); }
+
+.mode-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.mode-card-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 12px; border-radius: 100px;
+}
+.mode-card-badge.foco {
+  background: rgba(16,185,129,0.1);
+  color: var(--em);
+  border: 1px solid rgba(16,185,129,0.2);
+}
+.mode-card-badge.jornada {
+  background: rgba(0,85,255,0.1);
+  color: var(--el);
+  border: 1px solid rgba(0,85,255,0.2);
+}
+.mode-card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--t1);
+  margin-top: 8px;
+}
+.mode-card-sub { font-size: 12px; color: var(--t3); margin-top: 2px; }
+.mode-card-body { padding: 24px; }
+
+/* Foco card content — clean data panels */
+.foco-panel { display: flex; flex-direction: column; gap: 10px; }
+.foco-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.foco-row-label { font-size: 12px; color: var(--t3); font-family: 'DM Mono', monospace; }
+.foco-row-val { font-size: 14px; font-weight: 500; font-family: 'DM Mono', monospace; }
+.foco-row-val.pos { color: var(--green); }
+.foco-row-val.neg { color: var(--red); }
+.foco-row-val.neu { color: var(--t1); }
+.foco-bar-row {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 10px 14px;
+  background: var(--s2); border: 1px solid var(--border); border-radius: 8px;
+}
+.foco-bar-top { display: flex; justify-content: space-between; align-items: center; }
+.foco-bar-label { font-size: 12px; color: var(--t3); font-family: 'DM Mono', monospace; }
+.foco-bar-pct { font-size: 12px; font-weight: 500; font-family: 'DM Mono', monospace; }
+.foco-bar { height: 4px; background: var(--s3); border-radius: 2px; }
+.foco-bar-fill { height: 100%; border-radius: 2px; }
+
+/* Jornada card content — warm motivational */
+.jornada-panel { display: flex; flex-direction: column; gap: 12px; }
+.jornada-score-block {
+  background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(0,85,255,0.10));
+  border: 1px solid rgba(16,185,129,0.18);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex; align-items: center; gap: 16px;
+}
+.j-score-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 40px; font-weight: 800;
+  background: linear-gradient(135deg, var(--em), var(--el));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.j-score-info {}
+.j-score-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--t3); }
+.j-score-phrase { font-size: 13px; color: var(--t2); margin-top: 3px; font-style: italic; }
+.j-score-var { font-size: 12px; color: var(--em); margin-top: 4px; font-weight: 600; }
+
+.jornada-goal {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+}
+.jornada-goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.jornada-goal-name { font-size: 13px; font-weight: 600; color: var(--t1); display: flex; gap: 6px; align-items: center; }
+.jornada-goal-status { font-size: 11px; font-weight: 600; }
+.status-ok { color: var(--green); }
+.status-risk { color: var(--yellow); }
+.jornada-goal-bar { height: 6px; background: var(--s3); border-radius: 3px; margin-bottom: 6px; }
+.jornada-goal-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--em), #34d399); }
+.jornada-goal-foot { display: flex; justify-content: space-between; font-size: 11px; color: var(--t3); }
+
+.jornada-insight {
+  background: rgba(16,185,129,0.05);
+  border: 1px solid rgba(16,185,129,0.15);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.jornada-insight-icon { font-size: 16px; flex-shrink: 0; }
+.jornada-insight-text { font-size: 12px; color: var(--t2); line-height: 1.6; }
+.jornada-insight-text strong { color: var(--em); }
+
+/* Mode traits list */
+.mode-traits {
+  margin-top: 24px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.mode-trait {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: 14px; color: var(--t2);
+}
+.trait-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.trait-text {}
+.trait-label { font-weight: 600; color: var(--t1); display: block; }
+.trait-desc { font-size: 13px; color: var(--t3); }
+
+/* ══════════════════════════════════════
+   LIFE SYNC SCORE
+══════════════════════════════════════ */
+.score-section {
+  padding: 112px 0;
+  background: linear-gradient(180deg, transparent, var(--s1) 20%, var(--s1) 80%, transparent);
+}
+.score-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: center;
+}
+.score-visual {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  height: 380px;
+}
+.score-ring-outer {
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  background: conic-gradient(var(--em) 0deg, var(--el) 148deg, var(--s3) 148deg, var(--s3) 360deg);
+  display: flex; align-items: center; justify-content: center;
+  animation: rotate-ring 12s linear infinite;
+}
+@keyframes rotate-ring {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.score-ring-inner {
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: var(--s1);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  animation: rotate-ring 12s linear infinite reverse;
+  gap: 4px;
+}
+.score-big-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 64px; font-weight: 800;
+  background: linear-gradient(135deg, var(--em), var(--el));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1;
+}
+.score-big-label {
+  font-size: 11px; color: var(--t3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+
+.score-pillars {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  width: 380px; height: 380px;
+}
+.score-pillar-dot {
+  position: absolute;
+  width: 52px;
+  text-align: center;
+}
+.score-pillar-dot.fin { top: 10px; left: 50%; transform: translateX(-50%); }
+.score-pillar-dot.meta { bottom: 28px; left: 10px; }
+.score-pillar-dot.con { bottom: 28px; right: 10px; }
+
+.pillar-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+.pillar-pct { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--t1); }
+.pillar-lbl { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.score-content {}
+.score-pillars-list { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
+.pillar-item {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.pillar-item-top {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.pillar-item-name {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 600; color: var(--t1);
+}
+.pillar-item-icon { font-size: 16px; }
+.pillar-item-weight { font-size: 12px; color: var(--t3); }
+.pillar-item-bar { height: 6px; background: var(--s3); border-radius: 3px; }
+.pillar-item-fill { height: 100%; border-radius: 3px; }
+.pillar-item-fill.fin-fill { background: linear-gradient(90deg, var(--em), #34d399); width: 85%; }
+.pillar-item-fill.meta-fill { background: linear-gradient(90deg, var(--el), #60a5fa); width: 72%; }
+.pillar-item-fill.con-fill { background: linear-gradient(90deg, var(--ag), var(--el)); width: 60%; }
+.pillar-item-desc { font-size: 12px; color: var(--t3); }
+
+/* ══════════════════════════════════════
+   PLANEJAMENTO — Feature highlight
+══════════════════════════════════════ */
+.planning-section {
+  padding: 112px 0;
+}
+.planning-inner {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 72px;
+  align-items: center;
+}
+.planning-visual {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+}
+.planning-vis-header {
+  background: var(--s2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.planning-vis-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--t1); }
+.planning-vis-tabs {
+  display: flex; gap: 4px;
+}
+.pv-tab {
+  padding: 4px 10px; border-radius: 6px;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer;
+}
+.pv-tab.active { background: rgba(16,185,129,0.15); color: var(--em); }
+.pv-tab:not(.active) { color: var(--t3); }
+
+.planning-chart-area {
+  padding: 16px 18px 0;
+  position: relative;
+}
+.planning-chart-label { font-size: 10px; color: var(--t3); margin-bottom: 8px; }
+/* SVG line chart placeholder */
+.planning-svg { width: 100%; height: 120px; }
+
+.planning-months {
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  padding: 8px 18px;
+  gap: 4px;
+}
+.planning-month { text-align: center; }
+.planning-month-label { font-size: 10px; color: var(--t3); }
+.planning-month-val { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; margin-top: 2px; }
+.planning-month-val.pos { color: var(--green); }
+.planning-month-val.neg { color: var(--red); }
+
+.planning-events {
+  padding: 12px 18px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.planning-event {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  background: var(--s2); border: 1px solid var(--border); border-radius: 8px;
+}
+.event-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.event-dot.blue { background: #3b82f6; }
+.event-dot.green { background: var(--em); }
+.event-dot.purple { background: #8b5cf6; }
+.event-dot.yellow { background: var(--yellow); }
+.event-name { font-size: 11px; color: var(--t2); flex: 1; }
+.event-val { font-family: 'DM Mono', monospace; font-size: 11px; }
+.event-val.pos { color: var(--green); }
+.event-val.neg { color: var(--red); }
+.event-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; }
+.event-badge.recorrente { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.event-badge.planejado { background: rgba(139,92,246,0.15); color: #a78bfa; }
+
+.planning-insight {
+  margin: 0 18px 16px;
+  background: rgba(16,185,129,0.05);
+  border: 1px solid rgba(16,185,129,0.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex; gap: 8px;
+}
+.planning-insight-text { font-size: 11px; color: var(--t2); line-height: 1.6; }
+.planning-insight-text strong { color: var(--em); }
+
+.planning-content {}
+.planning-tags {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-top: 28px;
+}
+.planning-tag {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  font-size: 12px; font-weight: 600; color: var(--t2);
+}
+.tag-dot { width: 6px; height: 6px; border-radius: 50%; }
+.tag-dot.blue { background: #3b82f6; }
+.tag-dot.green { background: var(--em); }
+.tag-dot.purple { background: #8b5cf6; }
+.tag-dot.yellow { background: var(--yellow); }
+
+/* ══════════════════════════════════════
+   TESTIMONIALS
+══════════════════════════════════════ */
+.testimonials-section {
+  padding: 112px 0;
+  background: linear-gradient(180deg, transparent, var(--s1) 20%, var(--s1) 80%, transparent);
+}
+.testimonials-header { text-align: center; margin-bottom: 56px; }
+.testimonials-header .section-label { justify-content: center; }
+.testimonials-header .section-label::before { display: none; }
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.testimonial-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: all 0.3s;
+}
+.testimonial-card:hover {
+  border-color: var(--border-h);
+  transform: translateY(-2px);
+}
+.testimonial-stars {
+  display: flex; gap: 3px; margin-bottom: 16px;
+  color: var(--yellow); font-size: 14px;
+}
+.testimonial-text {
+  font-size: 14px; color: var(--t2);
+  line-height: 1.75;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+.testimonial-author {
+  display: flex; align-items: center; gap: 12px;
+}
+.author-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--s3), var(--s2));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  color: var(--t1); flex-shrink: 0;
+}
+.author-name { font-size: 13px; font-weight: 600; color: var(--t1); }
+.author-role { font-size: 11px; color: var(--t3); margin-top: 1px; }
+
+/* Score badge on testimonial */
+.testimonial-score {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600;
+  color: var(--em);
+  padding: 4px 10px;
+  background: rgba(16,185,129,0.08);
+  border-radius: 100px;
+  margin-top: 12px;
+}
+
+/* ══════════════════════════════════════
+   PRICING
+══════════════════════════════════════ */
+.pricing-section {
+  padding: 112px 0;
+}
+.pricing-header { text-align: center; margin-bottom: 56px; }
+.pricing-header .section-label { justify-content: center; }
+.pricing-header .section-label::before { display: none; }
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.pricing-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.pricing-card.pro {
+  border-color: rgba(16,185,129,0.3);
+  background: linear-gradient(135deg, rgba(16,185,129,0.04), rgba(0,85,255,0.04));
+}
+.pricing-card.pro::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(16,185,129,0.08), transparent);
+  pointer-events: none;
+}
+
+.pricing-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 100px;
+  margin-bottom: 24px;
+}
+.pricing-badge.free {
+  background: rgba(110,144,184,0.12);
+  color: var(--t2);
+  border: 1px solid var(--border);
+}
+.pricing-badge.pro-badge {
+  background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(0,85,255,0.15));
+  color: var(--em);
+  border: 1px solid rgba(16,185,129,0.3);
+}
+.pricing-recommended {
+  position: absolute; top: 16px; right: 16px;
+  background: var(--em);
+  color: #03071a;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 100px;
+}
+
+.pricing-price {
+  margin-bottom: 8px;
+  display: flex; align-items: flex-end; gap: 4px;
+}
+.price-currency {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--t2);
+  padding-bottom: 6px;
+}
+.price-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 52px; font-weight: 800;
+  color: var(--t1);
+  line-height: 1;
+}
+.price-period {
+  font-size: 14px; color: var(--t3);
+  padding-bottom: 8px;
+}
+.pricing-desc {
+  font-size: 14px; color: var(--t3);
+  margin-bottom: 28px;
+  min-height: 42px;
+}
+.pricing-divider {
+  height: 1px; background: var(--border); margin-bottom: 24px;
+}
+.pricing-features {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 12px;
+  margin-bottom: 32px;
+}
+.pricing-feature {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 14px; color: var(--t2);
+}
+.pf-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+.pf-text {}
+.pf-strong { font-weight: 600; color: var(--t1); }
+.pricing-card .btn-primary { width: 100%; justify-content: center; }
+.pricing-card .btn-secondary { width: 100%; justify-content: center; }
+
+/* ══════════════════════════════════════
+   CTA FINAL
+══════════════════════════════════════ */
+.cta-section {
+  padding: 112px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(16,185,129,0.07), transparent);
+  pointer-events: none;
+}
+.cta-grid-overlay {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+  pointer-events: none;
+}
+.cta-title {
+  font-size: clamp(36px, 5vw, 60px);
+  font-weight: 800; letter-spacing: -0.025em;
+  max-width: 720px; margin: 0 auto 24px;
+}
+.cta-sub {
+  font-size: 18px; color: var(--t2);
+  max-width: 460px; margin: 0 auto 44px;
+}
+.cta-actions {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+}
+.cta-actions .btn-primary { font-size: 17px; padding: 18px 42px; }
+.cta-note { margin-top: 20px; font-size: 13px; color: var(--t3); }
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 56px 0 36px;
+}
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+.footer-brand {}
+.footer-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; margin-bottom: 14px;
+}
+.footer-logo-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--em), var(--el));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+.footer-logo-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px; font-weight: 700; color: var(--t1);
+}
+.footer-tagline {
+  font-size: 13px; color: var(--t3); line-height: 1.7;
+  max-width: 240px;
+}
+.footer-col-title {
+  font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--t3);
+  margin-bottom: 16px;
+}
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-links a {
+  color: var(--t2); text-decoration: none;
+  font-size: 14px;
+  transition: color 0.15s;
+}
+.footer-links a:hover { color: var(--t1); }
+.footer-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--border); padding-top: 24px;
+}
+.footer-copy { font-size: 12px; color: var(--t3); }
+.footer-legal { display: flex; gap: 20px; }
+.footer-legal a { font-size: 12px; color: var(--t3); text-decoration: none; }
+.footer-legal a:hover { color: var(--t2); }
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .modules-grid { grid-template-columns: 1fr 1fr; }
+  .modules-grid .module-card:nth-child(3) { grid-column: 1 / -1; }
+  .modes-inner { grid-template-columns: 1fr; gap: 32px; }
+  .modes-header { grid-column: 1; }
+  .score-inner { grid-template-columns: 1fr; gap: 48px; }
+  .score-visual { height: 280px; }
+  .score-ring-outer { width: 200px; height: 200px; }
+  .score-ring-inner { width: 152px; height: 152px; }
+  .score-big-num { font-size: 48px; }
+  .planning-inner { grid-template-columns: 1fr; }
+  .planning-visual { order: 2; }
+  .planning-content { order: 1; }
+  .testimonials-grid { grid-template-columns: 1fr 1fr; }
+  .testimonials-grid .testimonial-card:nth-child(3) { grid-column: 1 / -1; }
+  .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
+  .container { padding: 0 20px; }
+  .section { padding: 72px 0; }
+  .modules-grid { grid-template-columns: 1fr; }
+  .modules-grid .module-card:nth-child(3) { grid-column: 1; }
+  .modes-toggle { gap: 8px; }
+  .mode-toggle-btn { flex: 1; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .testimonials-grid .testimonial-card:nth-child(3) { grid-column: 1; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 440px; }
+  .footer-inner { grid-template-columns: 1fr; gap: 28px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  .hero-preview { display: none; }
+  .hero { min-height: auto; padding: 100px 20px 60px; }
+  .preview-body { grid-template-columns: 44px 1fr; }
+  .preview-cards { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar" id="navbar">
+  <a href="#" class="nav-logo">
+    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPGRlZnM+CiAgICA8IS0tIEJhY2tncm91bmQgZ3JhZGllbnQ6IGRlZXAgbmF2eSAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDUxYzE0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzAzMDkxZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KCiAgICA8IS0tIEJyYW5kIGdyYWRpZW50OiBlbWVyYWxkIOKGkiBlbGVjdHJpYyBibHVlIC0tPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJicmFuZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDA1NWZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgoKICAgIDwhLS0gUmluZyBncmFkaWVudCAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZzEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiBzdG9wLW9wYWNpdHk9IjAuNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDU1ZmYiIHN0b3Atb3BhY2l0eT0iMC43Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJyaW5nMiIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiIHN0b3Atb3BhY2l0eT0iMC4zNSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDU1ZmYiIHN0b3Atb3BhY2l0eT0iMC4zNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZzMiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiBzdG9wLW9wYWNpdHk9IjAuMTUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDA1NWZmIiBzdG9wLW9wYWNpdHk9IjAuMTUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CgogICAgPCEtLSBHbG93IGZpbHRlciAtLT4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii0zMCUiIHk9Ii0zMCUiIHdpZHRoPSIxNjAlIiBoZWlnaHQ9IjE2MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI4IiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlTWVyZ2U+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJibHVyIi8+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+CiAgICAgIDwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgoKICAgIDwhLS0gU29mdCBnbG93IGZvciBTIC0tPgogICAgPGZpbHRlciBpZD0ic2dsb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iYmx1ciIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KCiAgICA8IS0tIFJvdW5kZWQgc3F1YXJlIGNsaXAgLS0+CiAgICA8Y2xpcFBhdGggaWQ9InJvdW5kZWQiPgogICAgICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgcnk9IjExMiIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CgogIDwhLS0gQmFja2dyb3VuZCAtLT4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgcnk9IjExMiIgZmlsbD0idXJsKCNiZykiLz4KCiAgPCEtLSBTdWJ0bGUgdGV4dHVyZSBkb3RzIC0tPgogIDxnIG9wYWNpdHk9IjAuMDQiPgogICAgPGNpcmNsZSBjeD0iODAiIGN5PSI4MCIgcj0iMiIgZmlsbD0iIzEwYjk4MSIvPgogICAgPGNpcmNsZSBjeD0iNDMyIiBjeT0iODAiIHI9IjIiIGZpbGw9IiMwMDU1ZmYiLz4KICAgIDxjaXJjbGUgY3g9IjgwIiBjeT0iNDMyIiByPSIyIiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI0MzIiIGN5PSI0MzIiIHI9IjIiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjgwIiByPSIxLjUiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjQzMiIgcj0iMS41IiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI4MCIgY3k9IjI1NiIgcj0iMS41IiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI0MzIiIGN5PSIyNTYiIHI9IjEuNSIgZmlsbD0iIzEwYjk4MSIvPgogIDwvZz4KCiAgPCEtLSBDb25jZW50cmljIHJpbmdzIOKAlCBwdWxzZSBvZiBsaWZlIC0tPgogIDwhLS0gT3V0ZXIgcmluZyAtLT4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI3JpbmczKSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIE1pZGRsZSByaW5nIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTcwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjcmluZzIpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8IS0tIElubmVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNyaW5nMSkiIHN0cm9rZS13aWR0aD0iMi41Ii8+CgogIDwhLS0gQXJjIGFjY2VudHMg4oCUIHBhcnRpYWwgcmluZ3MgZm9yIGR5bmFtaXNtIC0tPgogIDwhLS0gVG9wLXJpZ2h0IGFyYyAoZW1lcmFsZCBzaWRlKSAtLT4KICA8cGF0aCBkPSJNIDI1NiA0NiBBIDIxMCAyMTAgMCAwIDEgNDY2IDI1NiIgCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1vcGFjaXR5PSIwLjUiCiAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBCb3R0b20tbGVmdCBhcmMgKGJsdWUgc2lkZSkgLS0+CiAgPHBhdGggZD0iTSAyNTYgNDY2IEEgMjEwIDIxMCAwIDAgMSA0NiAyNTYiIAogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNTVmZiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2Utb3BhY2l0eT0iMC41IgogICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgoKICA8IS0tIENlbnRlciBkaXNjIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTEwIiBmaWxsPSJ1cmwoI2JnKSIgb3BhY2l0eT0iMC45Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNicmFuZCkiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjgiLz4KCiAgPCEtLSBTIGxldHRlcmZvcm0g4oCUIGN1c3RvbSBwYXRocyBmb3IgcHJlbWl1bSBmZWVsIC0tPgogIDwhLS0gVGhlIFMgaXMgZHJhd24gYXMgYSBjdXN0b20gc2hhcGUsIG5vdCBhIGZvbnQsIGZvciBwaXhlbC1wZXJmZWN0IGNvbnRyb2wgLS0+CiAgPGcgZmlsdGVyPSJ1cmwoI3NnbG93KSI+CiAgICA8dGV4dAogICAgICB4PSIyNTYiIHk9IjMxNiIKICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsICdBcmlhbCcsIHNhbnMtc2VyaWYiCiAgICAgIGZvbnQtd2VpZ2h0PSI4MDAiCiAgICAgIGZvbnQtc2l6ZT0iMTkwIgogICAgICB0ZXh0LWFuY2hvcj0ibWlkZGxlIgogICAgICBmaWxsPSJ1cmwoI2JyYW5kKSIKICAgICAgbGV0dGVyLXNwYWNpbmc9Ii00IgogICAgPlM8L3RleHQ+CiAgPC9nPgoKICA8IS0tIE5vZGUgZG90cyBvbiByaW5ncyDigJQgY29ubmVjdGluZyBsaWZlIG1vZHVsZXMgLS0+CiAgPCEtLSBUb3AgKEZpbmFuw6dhcykgLS0+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iODYiIHI9IjciIGZpbGw9IiMxMGI5ODEiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gVG9wLXJpZ2h0IChNZXRhcykgLS0+CiAgPGNpcmNsZSBjeD0iNDA0IiBjeT0iMTM4IiByPSI2IiBmaWxsPSIjMTBiOTgxIiBvcGFjaXR5PSIwLjgiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gUmlnaHQgKEFnZW5kYSkgLS0+CiAgPGNpcmNsZSBjeD0iNDQ2IiBjeT0iMjU2IiByPSI2IiBmaWxsPSIjMDA2NmZmIiBvcGFjaXR5PSIwLjgiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gQm90dG9tLXJpZ2h0IChFc3R1ZG9zKSAtLT4KICA8Y2lyY2xlIGN4PSIzNzQiIGN5PSIzNzQiIHI9IjUiIGZpbGw9IiMwMDU1ZmYiIG9wYWNpdHk9IjAuNyIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBCb3R0b20gKENhcnJlaXJhKSAtLT4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSI0MjYiIHI9IjYiIGZpbGw9IiMwMDU1ZmYiIG9wYWNpdHk9IjAuOCIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBCb3R0b20tbGVmdCAoU2HDumRlKSAtLT4KICA8Y2lyY2xlIGN4PSIxMzgiIGN5PSIzNzQiIHI9IjUiIGZpbGw9IiMxMGI5ODEiIG9wYWNpdHk9IjAuNyIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBMZWZ0IChIb21lKSAtLT4KICA8Y2lyY2xlIGN4PSI2NiIgY3k9IjI1NiIgcj0iNiIgZmlsbD0iIzEwYjk4MSIgb3BhY2l0eT0iMC44IiBmaWx0ZXI9InVybCgjZ2xvdykiLz4KICA8IS0tIFRvcC1sZWZ0IC0tPgogIDxjaXJjbGUgY3g9IjEwOCIgY3k9IjEzOCIgcj0iNSIgZmlsbD0iIzEwYjk4MSIgb3BhY2l0eT0iMC43IiBmaWx0ZXI9InVybCgjZ2xvdykiLz4KCiAgPCEtLSBUaGluIHNwb2tlIGxpbmVzIGZyb20gY2VudGVyIHRvIG5vZGVzICh2ZXJ5IHN1YnRsZSkgLS0+CiAgPGcgc3Ryb2tlPSJ1cmwoI2JyYW5kKSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjE1Ij4KICAgIDxsaW5lIHgxPSIyNTYiIHkxPSIxNDYiIHgyPSIyNTYiIHkyPSI4NiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjQwNCIgeTI9IjEzOCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjQ0NiIgeTI9IjI1NiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjM3NCIgeTI9IjM3NCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjI1NiIgeTI9IjQyNiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjEzOCIgeTI9IjM3NCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjY2IiB5Mj0iMjU2Ii8+CiAgICA8bGluZSB4MT0iMjU2IiB5MT0iMTQ2IiB4Mj0iMTA4IiB5Mj0iMTM4Ii8+CiAgPC9nPgo8L3N2Zz4K" width="32" height="32" alt="SyncLife" style="display:block;">
+    <span class="nav-logo-text">SyncLife</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features" class="nav-link">Funcionalidades</a>
+    <a href="#modos" class="nav-link">Modos</a>
+    <a href="#score" class="nav-link">Life Score</a>
+    <a href="#precos" class="nav-link">Preços</a>
+  </div>
+  <div class="nav-cta">
+    <a href="#" class="btn-ghost">Entrar</a>
+    <a href="#" class="btn-primary">Começar grátis</a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+    <div class="hero-grid"></div>
+  </div>
+
+  <div class="hero-badge">
+    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPGRlZnM+CiAgICA8IS0tIEJhY2tncm91bmQgZ3JhZGllbnQ6IGRlZXAgbmF2eSAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDUxYzE0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzAzMDkxZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KCiAgICA8IS0tIEJyYW5kIGdyYWRpZW50OiBlbWVyYWxkIOKGkiBlbGVjdHJpYyBibHVlIC0tPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJicmFuZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDA1NWZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgoKICAgIDwhLS0gUmluZyBncmFkaWVudCAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZzEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiBzdG9wLW9wYWNpdHk9IjAuNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDU1ZmYiIHN0b3Atb3BhY2l0eT0iMC43Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJyaW5nMiIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiIHN0b3Atb3BhY2l0eT0iMC4zNSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDU1ZmYiIHN0b3Atb3BhY2l0eT0iMC4zNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZzMiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiBzdG9wLW9wYWNpdHk9IjAuMTUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDA1NWZmIiBzdG9wLW9wYWNpdHk9IjAuMTUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CgogICAgPCEtLSBHbG93IGZpbHRlciAtLT4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii0zMCUiIHk9Ii0zMCUiIHdpZHRoPSIxNjAlIiBoZWlnaHQ9IjE2MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI4IiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlTWVyZ2U+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJibHVyIi8+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+CiAgICAgIDwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgoKICAgIDwhLS0gU29mdCBnbG93IGZvciBTIC0tPgogICAgPGZpbHRlciBpZD0ic2dsb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iYmx1ciIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KCiAgICA8IS0tIFJvdW5kZWQgc3F1YXJlIGNsaXAgLS0+CiAgICA8Y2xpcFBhdGggaWQ9InJvdW5kZWQiPgogICAgICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgcnk9IjExMiIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CgogIDwhLS0gQmFja2dyb3VuZCAtLT4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgcnk9IjExMiIgZmlsbD0idXJsKCNiZykiLz4KCiAgPCEtLSBTdWJ0bGUgdGV4dHVyZSBkb3RzIC0tPgogIDxnIG9wYWNpdHk9IjAuMDQiPgogICAgPGNpcmNsZSBjeD0iODAiIGN5PSI4MCIgcj0iMiIgZmlsbD0iIzEwYjk4MSIvPgogICAgPGNpcmNsZSBjeD0iNDMyIiBjeT0iODAiIHI9IjIiIGZpbGw9IiMwMDU1ZmYiLz4KICAgIDxjaXJjbGUgY3g9IjgwIiBjeT0iNDMyIiByPSIyIiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI0MzIiIGN5PSI0MzIiIHI9IjIiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjgwIiByPSIxLjUiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjQzMiIgcj0iMS41IiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI4MCIgY3k9IjI1NiIgcj0iMS41IiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI0MzIiIGN5PSIyNTYiIHI9IjEuNSIgZmlsbD0iIzEwYjk4MSIvPgogIDwvZz4KCiAgPCEtLSBDb25jZW50cmljIHJpbmdzIOKAlCBwdWxzZSBvZiBsaWZlIC0tPgogIDwhLS0gT3V0ZXIgcmluZyAtLT4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI3JpbmczKSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIE1pZGRsZSByaW5nIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTcwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjcmluZzIpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8IS0tIElubmVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNyaW5nMSkiIHN0cm9rZS13aWR0aD0iMi41Ii8+CgogIDwhLS0gQXJjIGFjY2VudHMg4oCUIHBhcnRpYWwgcmluZ3MgZm9yIGR5bmFtaXNtIC0tPgogIDwhLS0gVG9wLXJpZ2h0IGFyYyAoZW1lcmFsZCBzaWRlKSAtLT4KICA8cGF0aCBkPSJNIDI1NiA0NiBBIDIxMCAyMTAgMCAwIDEgNDY2IDI1NiIgCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1vcGFjaXR5PSIwLjUiCiAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBCb3R0b20tbGVmdCBhcmMgKGJsdWUgc2lkZSkgLS0+CiAgPHBhdGggZD0iTSAyNTYgNDY2IEEgMjEwIDIxMCAwIDAgMSA0NiAyNTYiIAogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNTVmZiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2Utb3BhY2l0eT0iMC41IgogICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgoKICA8IS0tIENlbnRlciBkaXNjIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTEwIiBmaWxsPSJ1cmwoI2JnKSIgb3BhY2l0eT0iMC45Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNicmFuZCkiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjgiLz4KCiAgPCEtLSBTIGxldHRlcmZvcm0g4oCUIGN1c3RvbSBwYXRocyBmb3IgcHJlbWl1bSBmZWVsIC0tPgogIDwhLS0gVGhlIFMgaXMgZHJhd24gYXMgYSBjdXN0b20gc2hhcGUsIG5vdCBhIGZvbnQsIGZvciBwaXhlbC1wZXJmZWN0IGNvbnRyb2wgLS0+CiAgPGcgZmlsdGVyPSJ1cmwoI3NnbG93KSI+CiAgICA8dGV4dAogICAgICB4PSIyNTYiIHk9IjMxNiIKICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsICdBcmlhbCcsIHNhbnMtc2VyaWYiCiAgICAgIGZvbnQtd2VpZ2h0PSI4MDAiCiAgICAgIGZvbnQtc2l6ZT0iMTkwIgogICAgICB0ZXh0LWFuY2hvcj0ibWlkZGxlIgogICAgICBmaWxsPSJ1cmwoI2JyYW5kKSIKICAgICAgbGV0dGVyLXNwYWNpbmc9Ii00IgogICAgPlM8L3RleHQ+CiAgPC9nPgoKICA8IS0tIE5vZGUgZG90cyBvbiByaW5ncyDigJQgY29ubmVjdGluZyBsaWZlIG1vZHVsZXMgLS0+CiAgPCEtLSBUb3AgKEZpbmFuw6dhcykgLS0+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iODYiIHI9IjciIGZpbGw9IiMxMGI5ODEiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gVG9wLXJpZ2h0IChNZXRhcykgLS0+CiAgPGNpcmNsZSBjeD0iNDA0IiBjeT0iMTM4IiByPSI2IiBmaWxsPSIjMTBiOTgxIiBvcGFjaXR5PSIwLjgiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gUmlnaHQgKEFnZW5kYSkgLS0+CiAgPGNpcmNsZSBjeD0iNDQ2IiBjeT0iMjU2IiByPSI2IiBmaWxsPSIjMDA2NmZmIiBvcGFjaXR5PSIwLjgiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gQm90dG9tLXJpZ2h0IChFc3R1ZG9zKSAtLT4KICA8Y2lyY2xlIGN4PSIzNzQiIGN5PSIzNzQiIHI9IjUiIGZpbGw9IiMwMDU1ZmYiIG9wYWNpdHk9IjAuNyIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBCb3R0b20gKENhcnJlaXJhKSAtLT4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSI0MjYiIHI9IjYiIGZpbGw9IiMwMDU1ZmYiIG9wYWNpdHk9IjAuOCIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBCb3R0b20tbGVmdCAoU2HDumRlKSAtLT4KICA8Y2lyY2xlIGN4PSIxMzgiIGN5PSIzNzQiIHI9IjUiIGZpbGw9IiMxMGI5ODEiIG9wYWNpdHk9IjAuNyIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBMZWZ0IChIb21lKSAtLT4KICA8Y2lyY2xlIGN4PSI2NiIgY3k9IjI1NiIgcj0iNiIgZmlsbD0iIzEwYjk4MSIgb3BhY2l0eT0iMC44IiBmaWx0ZXI9InVybCgjZ2xvdykiLz4KICA8IS0tIFRvcC1sZWZ0IC0tPgogIDxjaXJjbGUgY3g9IjEwOCIgY3k9IjEzOCIgcj0iNSIgZmlsbD0iIzEwYjk4MSIgb3BhY2l0eT0iMC43IiBmaWx0ZXI9InVybCgjZ2xvdykiLz4KCiAgPCEtLSBUaGluIHNwb2tlIGxpbmVzIGZyb20gY2VudGVyIHRvIG5vZGVzICh2ZXJ5IHN1YnRsZSkgLS0+CiAgPGcgc3Ryb2tlPSJ1cmwoI2JyYW5kKSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjE1Ij4KICAgIDxsaW5lIHgxPSIyNTYiIHkxPSIxNDYiIHgyPSIyNTYiIHkyPSI4NiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjQwNCIgeTI9IjEzOCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjQ0NiIgeTI9IjI1NiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjM3NCIgeTI9IjM3NCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjI1NiIgeTI9IjQyNiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjEzOCIgeTI9IjM3NCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjY2IiB5Mj0iMjU2Ii8+CiAgICA8bGluZSB4MT0iMjU2IiB5MT0iMTQ2IiB4Mj0iMTA4IiB5Mj0iMTM4Ii8+CiAgPC9nPgo8L3N2Zz4K" width="16" height="16" alt="SyncLife" style="display:block;">
+    MVP v2 — Beta aberto
+  </div>
+
+  <h1 class="hero-title font-syne">
+    <span>O sistema operacional</span>
+    <span class="grad-main">da sua vida.</span>
+  </h1>
+
+  <p class="hero-sub">
+    Finanças, metas e agenda num único app. Dois modos de uso — análise objetiva ou motivação diária — para quem quer evoluir, não só acompanhar.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#" class="btn-primary hero-btn">
+      Começar grátis
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <a href="#features" class="btn-secondary">Ver funcionalidades</a>
+  </div>
+
+  <p class="hero-disclaimer">Grátis para começar · Sem cartão de crédito · Cancele quando quiser</p>
+
+  <!-- App mockup -->
+  <div class="hero-preview">
+    <div class="hero-preview-frame">
+      <div class="preview-topbar">
+        <div class="preview-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="preview-url">app.synclife.com.br/dashboard</div>
+        <div style="width: 60px;"></div>
+      </div>
+      <div class="preview-body">
+        <!-- Sidebar mockup -->
+        <div class="preview-sidebar">
+          <div class="preview-icon" style="padding:0;overflow:hidden;background:transparent;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPGRlZnM+CiAgICA8IS0tIEJhY2tncm91bmQgZ3JhZGllbnQ6IGRlZXAgbmF2eSAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDUxYzE0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzAzMDkxZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KCiAgICA8IS0tIEJyYW5kIGdyYWRpZW50OiBlbWVyYWxkIOKGkiBlbGVjdHJpYyBibHVlIC0tPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJicmFuZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDA1NWZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgoKICAgIDwhLS0gUmluZyBncmFkaWVudCAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZzEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiBzdG9wLW9wYWNpdHk9IjAuNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDU1ZmYiIHN0b3Atb3BhY2l0eT0iMC43Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJyaW5nMiIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiIHN0b3Atb3BhY2l0eT0iMC4zNSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDU1ZmYiIHN0b3Atb3BhY2l0eT0iMC4zNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZzMiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiBzdG9wLW9wYWNpdHk9IjAuMTUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDA1NWZmIiBzdG9wLW9wYWNpdHk9IjAuMTUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CgogICAgPCEtLSBHbG93IGZpbHRlciAtLT4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii0zMCUiIHk9Ii0zMCUiIHdpZHRoPSIxNjAlIiBoZWlnaHQ9IjE2MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI4IiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlTWVyZ2U+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJibHVyIi8+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+CiAgICAgIDwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgoKICAgIDwhLS0gU29mdCBnbG93IGZvciBTIC0tPgogICAgPGZpbHRlciBpZD0ic2dsb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iYmx1ciIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KCiAgICA8IS0tIFJvdW5kZWQgc3F1YXJlIGNsaXAgLS0+CiAgICA8Y2xpcFBhdGggaWQ9InJvdW5kZWQiPgogICAgICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgcnk9IjExMiIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CgogIDwhLS0gQmFja2dyb3VuZCAtLT4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgcnk9IjExMiIgZmlsbD0idXJsKCNiZykiLz4KCiAgPCEtLSBTdWJ0bGUgdGV4dHVyZSBkb3RzIC0tPgogIDxnIG9wYWNpdHk9IjAuMDQiPgogICAgPGNpcmNsZSBjeD0iODAiIGN5PSI4MCIgcj0iMiIgZmlsbD0iIzEwYjk4MSIvPgogICAgPGNpcmNsZSBjeD0iNDMyIiBjeT0iODAiIHI9IjIiIGZpbGw9IiMwMDU1ZmYiLz4KICAgIDxjaXJjbGUgY3g9IjgwIiBjeT0iNDMyIiByPSIyIiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI0MzIiIGN5PSI0MzIiIHI9IjIiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjgwIiByPSIxLjUiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjQzMiIgcj0iMS41IiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI4MCIgY3k9IjI1NiIgcj0iMS41IiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI0MzIiIGN5PSIyNTYiIHI9IjEuNSIgZmlsbD0iIzEwYjk4MSIvPgogIDwvZz4KCiAgPCEtLSBDb25jZW50cmljIHJpbmdzIOKAlCBwdWxzZSBvZiBsaWZlIC0tPgogIDwhLS0gT3V0ZXIgcmluZyAtLT4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI3JpbmczKSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIE1pZGRsZSByaW5nIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTcwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjcmluZzIpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8IS0tIElubmVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNyaW5nMSkiIHN0cm9rZS13aWR0aD0iMi41Ii8+CgogIDwhLS0gQXJjIGFjY2VudHMg4oCUIHBhcnRpYWwgcmluZ3MgZm9yIGR5bmFtaXNtIC0tPgogIDwhLS0gVG9wLXJpZ2h0IGFyYyAoZW1lcmFsZCBzaWRlKSAtLT4KICA8cGF0aCBkPSJNIDI1NiA0NiBBIDIxMCAyMTAgMCAwIDEgNDY2IDI1NiIgCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1vcGFjaXR5PSIwLjUiCiAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBCb3R0b20tbGVmdCBhcmMgKGJsdWUgc2lkZSkgLS0+CiAgPHBhdGggZD0iTSAyNTYgNDY2IEEgMjEwIDIxMCAwIDAgMSA0NiAyNTYiIAogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNTVmZiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2Utb3BhY2l0eT0iMC41IgogICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgoKICA8IS0tIENlbnRlciBkaXNjIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTEwIiBmaWxsPSJ1cmwoI2JnKSIgb3BhY2l0eT0iMC45Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNicmFuZCkiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjgiLz4KCiAgPCEtLSBTIGxldHRlcmZvcm0g4oCUIGN1c3RvbSBwYXRocyBmb3IgcHJlbWl1bSBmZWVsIC0tPgogIDwhLS0gVGhlIFMgaXMgZHJhd24gYXMgYSBjdXN0b20gc2hhcGUsIG5vdCBhIGZvbnQsIGZvciBwaXhlbC1wZXJmZWN0IGNvbnRyb2wgLS0+CiAgPGcgZmlsdGVyPSJ1cmwoI3NnbG93KSI+CiAgICA8dGV4dAogICAgICB4PSIyNTYiIHk9IjMxNiIKICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsICdBcmlhbCcsIHNhbnMtc2VyaWYiCiAgICAgIGZvbnQtd2VpZ2h0PSI4MDAiCiAgICAgIGZvbnQtc2l6ZT0iMTkwIgogICAgICB0ZXh0LWFuY2hvcj0ibWlkZGxlIgogICAgICBmaWxsPSJ1cmwoI2JyYW5kKSIKICAgICAgbGV0dGVyLXNwYWNpbmc9Ii00IgogICAgPlM8L3RleHQ+CiAgPC9nPgoKICA8IS0tIE5vZGUgZG90cyBvbiByaW5ncyDigJQgY29ubmVjdGluZyBsaWZlIG1vZHVsZXMgLS0+CiAgPCEtLSBUb3AgKEZpbmFuw6dhcykgLS0+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iODYiIHI9IjciIGZpbGw9IiMxMGI5ODEiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gVG9wLXJpZ2h0IChNZXRhcykgLS0+CiAgPGNpcmNsZSBjeD0iNDA0IiBjeT0iMTM4IiByPSI2IiBmaWxsPSIjMTBiOTgxIiBvcGFjaXR5PSIwLjgiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gUmlnaHQgKEFnZW5kYSkgLS0+CiAgPGNpcmNsZSBjeD0iNDQ2IiBjeT0iMjU2IiByPSI2IiBmaWxsPSIjMDA2NmZmIiBvcGFjaXR5PSIwLjgiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gQm90dG9tLXJpZ2h0IChFc3R1ZG9zKSAtLT4KICA8Y2lyY2xlIGN4PSIzNzQiIGN5PSIzNzQiIHI9IjUiIGZpbGw9IiMwMDU1ZmYiIG9wYWNpdHk9IjAuNyIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBCb3R0b20gKENhcnJlaXJhKSAtLT4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSI0MjYiIHI9IjYiIGZpbGw9IiMwMDU1ZmYiIG9wYWNpdHk9IjAuOCIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBCb3R0b20tbGVmdCAoU2HDumRlKSAtLT4KICA8Y2lyY2xlIGN4PSIxMzgiIGN5PSIzNzQiIHI9IjUiIGZpbGw9IiMxMGI5ODEiIG9wYWNpdHk9IjAuNyIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBMZWZ0IChIb21lKSAtLT4KICA8Y2lyY2xlIGN4PSI2NiIgY3k9IjI1NiIgcj0iNiIgZmlsbD0iIzEwYjk4MSIgb3BhY2l0eT0iMC44IiBmaWx0ZXI9InVybCgjZ2xvdykiLz4KICA8IS0tIFRvcC1sZWZ0IC0tPgogIDxjaXJjbGUgY3g9IjEwOCIgY3k9IjEzOCIgcj0iNSIgZmlsbD0iIzEwYjk4MSIgb3BhY2l0eT0iMC43IiBmaWx0ZXI9InVybCgjZ2xvdykiLz4KCiAgPCEtLSBUaGluIHNwb2tlIGxpbmVzIGZyb20gY2VudGVyIHRvIG5vZGVzICh2ZXJ5IHN1YnRsZSkgLS0+CiAgPGcgc3Ryb2tlPSJ1cmwoI2JyYW5kKSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjE1Ij4KICAgIDxsaW5lIHgxPSIyNTYiIHkxPSIxNDYiIHgyPSIyNTYiIHkyPSI4NiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjQwNCIgeTI9IjEzOCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjQ0NiIgeTI9IjI1NiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjM3NCIgeTI9IjM3NCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjI1NiIgeTI9IjQyNiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjEzOCIgeTI9IjM3NCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjY2IiB5Mj0iMjU2Ii8+CiAgICA8bGluZSB4MT0iMjU2IiB5MT0iMTQ2IiB4Mj0iMTA4IiB5Mj0iMTM4Ii8+CiAgPC9nPgo8L3N2Zz4K" width="36" height="36" alt="SyncLife" style="display:block;"></div>
+          <div style="height: 12px;"></div>
+          <div class="preview-icon active">💰</div>
+          <div class="preview-icon">🎯</div>
+          <div class="preview-icon">📅</div>
+          <div style="flex: 1;"></div>
+          <div class="preview-icon">⚙️</div>
+        </div>
+        <!-- Content mockup -->
+        <div class="preview-content">
+          <div class="preview-header">
+            <div>
+              <div class="preview-header-title">Boa tarde, Thiago! ✨</div>
+              <div class="preview-header-sub">Fevereiro 2026</div>
+            </div>
+            <div class="preview-period">Fev 2026 ▼</div>
+          </div>
+          <!-- Score -->
+          <div class="preview-score">
+            <div class="score-num">74</div>
+            <div class="score-info">
+              <div class="score-label">Life Sync Score</div>
+              <div class="score-phrase">Você está consistente! ↑ +3 esta semana</div>
+              <div class="score-bar-wrap">
+                <div class="score-bar-fill"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Cards -->
+          <div class="preview-cards">
+            <div class="preview-card">
+              <div class="preview-card-label">Receitas</div>
+              <div class="preview-card-value positive">R$5.000</div>
+              <div class="preview-card-delta">↑ vs mês ant.</div>
+            </div>
+            <div class="preview-card">
+              <div class="preview-card-label">Despesas</div>
+              <div class="preview-card-value negative">R$3.200</div>
+              <div class="preview-card-delta">↓ vs mês ant.</div>
+            </div>
+            <div class="preview-card">
+              <div class="preview-card-label">Saldo</div>
+              <div class="preview-card-value positive">R$1.800</div>
+              <div class="preview-card-delta">↑ Positivo</div>
+            </div>
+          </div>
+          <!-- Chart bars -->
+          <div class="preview-chart">
+            <div class="chart-bar income" style="height:55%"></div>
+            <div class="chart-bar expense" style="height:38%"></div>
+            <div class="chart-bar income" style="height:62%"></div>
+            <div class="chart-bar expense" style="height:45%"></div>
+            <div class="chart-bar income" style="height:70%"></div>
+            <div class="chart-bar expense" style="height:60%"></div>
+            <div class="chart-bar income" style="height:58%"></div>
+            <div class="chart-bar expense" style="height:42%"></div>
+            <div class="chart-bar income" style="height:65%"></div>
+            <div class="chart-bar expense" style="height:50%"></div>
+            <div class="chart-bar income" style="height:72%"></div>
+            <div class="chart-bar expense" style="height:55%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SOCIAL PROOF STRIP ══ -->
+<div class="social-strip">
+  <div class="container">
+    <div class="social-strip-label">Inspirado por apps de referência</div>
+    <div class="social-strip-track">
+      <div class="social-logos">
+        <span class="social-logo">Monarch Money</span>
+        <span class="social-logo">Linear</span>
+        <span class="social-logo">Notion</span>
+        <span class="social-logo">Todoist</span>
+        <span class="social-logo">Fabulous</span>
+        <span class="social-logo">YNAB</span>
+        <span class="social-logo">Obsidian</span>
+        <!-- repeat for seamless marquee -->
+        <span class="social-logo">Monarch Money</span>
+        <span class="social-logo">Linear</span>
+        <span class="social-logo">Notion</span>
+        <span class="social-logo">Todoist</span>
+        <span class="social-logo">Fabulous</span>
+        <span class="social-logo">YNAB</span>
+        <span class="social-logo">Obsidian</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FEATURES — 3 MÓDULOS ══ -->
+<section class="features-section" id="features">
+  <div class="container">
+    <div class="features-header reveal">
+      <div class="section-label">Funcionalidades</div>
+      <h2 class="section-title">Três módulos.<br>Uma vida organizada.</h2>
+      <p class="section-sub" style="margin: 0 auto;">Cada módulo foi desenhado para funcionar sozinho — e se tornar ainda mais poderoso conectado aos outros.</p>
+    </div>
+
+    <div class="modules-grid">
+      <!-- Finanças -->
+      <div class="module-card fin reveal reveal-delay-1">
+        <div class="module-icon fin">💰</div>
+        <div class="module-color fin">Finanças</div>
+        <h3 class="module-title">Controle total do seu dinheiro</h3>
+        <p class="module-desc">Não apenas registrar gastos — mas entender o futuro do seu caixa e tomar decisões hoje que impactam amanhã.</p>
+        <ul class="module-features">
+          <li>Planejamento futuro com projeção de fluxo de caixa</li>
+          <li>Sistema de orçamentos por envelopes (modelo 50/30/20)</li>
+          <li>Transações recorrentes com geração automática</li>
+          <li>Calendário financeiro visual</li>
+          <li>Relatórios e exportação PDF/Excel</li>
+        </ul>
+      </div>
+      <!-- Metas -->
+      <div class="module-card meta reveal reveal-delay-2">
+        <div class="module-icon meta">🎯</div>
+        <div class="module-color meta">Metas</div>
+        <h3 class="module-title">Metas que você realmente atinge</h3>
+        <p class="module-desc">Crie metas com prazo, acompanhe o ritmo real e saiba exatamente o que precisa fazer hoje para chegar lá.</p>
+        <ul class="module-features">
+          <li>Metas financeiras conectadas ao orçamento</li>
+          <li>Projeção automática de data de conclusão</li>
+          <li>Registro de progresso com histórico</li>
+          <li>Alertas quando o ritmo estiver abaixo do necessário</li>
+          <li>Vínculo com agenda para bloqueio de tempo</li>
+        </ul>
+      </div>
+      <!-- Agenda -->
+      <div class="module-card ag reveal reveal-delay-3">
+        <div class="module-icon ag">📅</div>
+        <div class="module-color ag">Agenda</div>
+        <h3 class="module-title">Organize seu tempo com intenção</h3>
+        <p class="module-desc">Uma agenda que sabe para onde você quer ir. Blocos de tempo conectados às suas metas e ao seu planejamento financeiro.</p>
+        <ul class="module-features">
+          <li>Visão semanal e mensal integrada</li>
+          <li>Eventos vinculados às suas metas ativas</li>
+          <li>Compromissos financeiros no calendário</li>
+          <li>Lembretes inteligentes por contexto</li>
+          <li>Integração com Google Calendar (em breve)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MODO FOCO vs JORNADA ══ -->
+<section class="modes-section" id="modos">
+  <div class="modes-bg"></div>
+  <div class="container">
+    <div class="modes-inner">
+      <div class="modes-header reveal">
+        <div class="section-label">Personalização</div>
+        <h2 class="section-title">Um app, duas<br>personalidades.</h2>
+        <p class="section-sub">Você decide como quer enxergar sua vida. Dados objetivos ou motivação diária — e pode trocar quando quiser.</p>
+        <div class="modes-toggle">
+          <div class="mode-toggle-btn active foco">
+            <span class="mtb-icon">🎯</span>
+            <div class="mtb-text">
+              <div class="mtb-name">Modo Foco</div>
+              <div class="mtb-desc">Dados precisos, sem distrações</div>
+            </div>
+          </div>
+          <div class="mode-toggle-btn active jornada">
+            <span class="mtb-icon">🌱</span>
+            <div class="mtb-text">
+              <div class="mtb-name">Modo Jornada</div>
+              <div class="mtb-desc">Motivação e progresso visual</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Foco Card -->
+      <div class="mode-card foco reveal reveal-delay-1">
+        <div class="mode-card-header">
+          <div>
+            <div class="mode-card-badge foco">🎯 Modo Foco</div>
+            <div class="mode-card-title">Fevereiro 2026</div>
+            <div class="mode-card-sub">Dashboard financeiro</div>
+          </div>
+        </div>
+        <div class="mode-card-body">
+          <div class="foco-panel">
+            <div class="foco-row">
+              <span class="foco-row-label">receita_total</span>
+              <span class="foco-row-val pos">+R$ 5.000,00</span>
+            </div>
+            <div class="foco-row">
+              <span class="foco-row-label">despesa_total</span>
+              <span class="foco-row-val neg">−R$ 3.200,00</span>
+            </div>
+            <div class="foco-row">
+              <span class="foco-row-label">saldo_mes</span>
+              <span class="foco-row-val pos">+R$ 1.800,00</span>
+            </div>
+            <div class="foco-bar-row">
+              <div class="foco-bar-top">
+                <span class="foco-bar-label">alimentacao</span>
+                <span class="foco-bar-pct" style="color: var(--orange);">87%</span>
+              </div>
+              <div class="foco-bar"><div class="foco-bar-fill" style="width:87%; background: var(--orange);"></div></div>
+            </div>
+            <div class="foco-bar-row">
+              <div class="foco-bar-top">
+                <span class="foco-bar-label">transporte</span>
+                <span class="foco-bar-pct" style="color: var(--green);">54%</span>
+              </div>
+              <div class="foco-bar"><div class="foco-bar-fill" style="width:54%; background: var(--green);"></div></div>
+            </div>
+            <div class="foco-bar-row">
+              <div class="foco-bar-top">
+                <span class="foco-bar-label">lazer</span>
+                <span class="foco-bar-pct" style="color: var(--green);">38%</span>
+              </div>
+              <div class="foco-bar"><div class="foco-bar-fill" style="width:38%; background: var(--green);"></div></div>
+            </div>
+          </div>
+          <div class="mode-traits">
+            <div class="mode-trait">
+              <span class="trait-icon">📊</span>
+              <div class="trait-text">
+                <span class="trait-label">Interface compacta</span>
+                <span class="trait-desc">Só o que importa. Sem animações, sem distrações.</span>
+              </div>
+            </div>
+            <div class="mode-trait">
+              <span class="trait-icon">🔢</span>
+              <div class="trait-text">
+                <span class="trait-label">Números em destaque</span>
+                <span class="trait-desc">Tipografia mono para precisão técnica total.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jornada Card -->
+      <div class="mode-card jornada reveal reveal-delay-2">
+        <div class="mode-card-header">
+          <div>
+            <div class="mode-card-badge jornada">🌱 Modo Jornada</div>
+            <div class="mode-card-title">Boa tarde, Thiago! ✨</div>
+            <div class="mode-card-sub">Você está evoluindo. Continue assim! 🌟</div>
+          </div>
+        </div>
+        <div class="mode-card-body">
+          <div class="jornada-panel">
+            <div class="jornada-score-block">
+              <div class="j-score-num">74</div>
+              <div class="j-score-info">
+                <div class="j-score-title">Life Sync Score</div>
+                <div class="j-score-phrase">"Você está consistente!"</div>
+                <div class="j-score-var">↑ +3 esta semana</div>
+              </div>
+            </div>
+            <div class="jornada-goal">
+              <div class="jornada-goal-header">
+                <div class="jornada-goal-name">✈️ Viagem Europa</div>
+                <div class="jornada-goal-status status-risk">⚠️ Em risco</div>
+              </div>
+              <div class="jornada-goal-bar">
+                <div class="jornada-goal-bar-fill" style="width: 28%;"></div>
+              </div>
+              <div class="jornada-goal-foot">
+                <span>28% — R$4.200 / R$15.000</span>
+                <span>Dez 2026</span>
+              </div>
+            </div>
+            <div class="jornada-insight">
+              <span class="jornada-insight-icon">💡</span>
+              <div class="jornada-insight-text">
+                Se você adicionar <strong>R$200/mês</strong> a mais em Viagem Europa, atinge sua meta <strong>2 meses antes</strong>. Quer ajustar?
+              </div>
+            </div>
+          </div>
+          <div class="mode-traits">
+            <div class="mode-trait">
+              <span class="trait-icon">🏆</span>
+              <div class="trait-text">
+                <span class="trait-label">Conquistas e badges</span>
+                <span class="trait-desc">Celebra cada marco da sua jornada.</span>
+              </div>
+            </div>
+            <div class="mode-trait">
+              <span class="trait-icon">🤖</span>
+              <div class="trait-text">
+                <span class="trait-label">Insights com IA</span>
+                <span class="trait-desc">Sugestões personalizadas baseadas nos seus dados.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ LIFE SYNC SCORE ══ -->
+<section class="score-section" id="score">
+  <div class="container">
+    <div class="score-inner">
+      <div class="score-visual reveal">
+        <div class="score-ring-outer">
+          <div class="score-ring-inner">
+            <div class="score-big-num">74</div>
+            <div class="score-big-label">Life Score</div>
+          </div>
+        </div>
+        <div class="score-pillars">
+          <div class="score-pillar-dot fin">
+            <span class="pillar-icon">💰</span>
+            <div class="pillar-pct">85%</div>
+            <div class="pillar-lbl">Finanças</div>
+          </div>
+          <div class="score-pillar-dot meta">
+            <span class="pillar-icon">🎯</span>
+            <div class="pillar-pct">72%</div>
+            <div class="pillar-lbl">Metas</div>
+          </div>
+          <div class="score-pillar-dot con">
+            <span class="pillar-icon">🔥</span>
+            <div class="pillar-pct">60%</div>
+            <div class="pillar-lbl">Consistência</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="score-content reveal reveal-delay-2">
+        <div class="section-label">Life Sync Score</div>
+        <h2 class="section-title">Um número que resume<br>sua evolução.</h2>
+        <p class="section-sub">O Life Sync Score calcula, em tempo real, como você está indo nas três dimensões da vida organizada.</p>
+
+        <div class="score-pillars-list">
+          <div class="pillar-item">
+            <div class="pillar-item-top">
+              <div class="pillar-item-name">
+                <span class="pillar-item-icon">💰</span>
+                Saúde Financeira
+              </div>
+              <div class="pillar-item-weight">40% do score</div>
+            </div>
+            <div class="pillar-item-bar">
+              <div class="pillar-item-fill fin-fill"></div>
+            </div>
+            <div class="pillar-item-desc">Saldo positivo, orçamentos respeitados, nenhum alerta ativo.</div>
+          </div>
+          <div class="pillar-item">
+            <div class="pillar-item-top">
+              <div class="pillar-item-name">
+                <span class="pillar-item-icon">🎯</span>
+                Progresso em Metas
+              </div>
+              <div class="pillar-item-weight">35% do score</div>
+            </div>
+            <div class="pillar-item-bar">
+              <div class="pillar-item-fill meta-fill"></div>
+            </div>
+            <div class="pillar-item-desc">Metas no caminho, aportes em dia, nenhuma meta em risco.</div>
+          </div>
+          <div class="pillar-item">
+            <div class="pillar-item-top">
+              <div class="pillar-item-name">
+                <span class="pillar-item-icon">🔥</span>
+                Consistência de Uso
+              </div>
+              <div class="pillar-item-weight">25% do score</div>
+            </div>
+            <div class="pillar-item-bar">
+              <div class="pillar-item-fill con-fill"></div>
+            </div>
+            <div class="pillar-item-desc">Dias ativos no app, eventos da agenda concluídos, streak mantido.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PLANEJAMENTO FUTURO — Feature highlight ══ -->
+<section class="planning-section">
+  <div class="container">
+    <div class="planning-inner">
+      <!-- Visual -->
+      <div class="planning-visual reveal">
+        <div class="planning-vis-header">
+          <div class="planning-vis-title">📈 Planejamento Futuro</div>
+          <div class="planning-vis-tabs">
+            <div class="pv-tab">3m</div>
+            <div class="pv-tab active">6m</div>
+            <div class="pv-tab">12m</div>
+          </div>
+        </div>
+        <div class="planning-chart-area">
+          <div class="planning-chart-label">Saldo projetado (próximos 6 meses)</div>
+          <svg class="planning-svg" viewBox="0 0 400 120" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#10b981" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Grid lines -->
+            <line x1="0" y1="30" x2="400" y2="30" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="0" y1="60" x2="400" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="0" y1="90" x2="400" y2="90" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <!-- Area fill -->
+            <path d="M 0 70 C 50 65 80 50 120 55 C 160 60 170 20 220 25 C 270 30 290 75 320 80 C 350 85 380 40 400 35 L 400 120 L 0 120 Z" fill="url(#lineGrad)"/>
+            <!-- Main line -->
+            <path d="M 0 70 C 50 65 80 50 120 55 C 160 60 170 20 220 25 C 270 30 290 75 320 80 C 350 85 380 40 400 35" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+            <!-- Alert zone (red) -->
+            <path d="M 270 75 C 290 75 310 80 320 80" fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Dots -->
+            <circle cx="0" cy="70" r="4" fill="#10b981"/>
+            <circle cx="80" cy="50" r="4" fill="#10b981"/>
+            <circle cx="170" cy="20" r="4" fill="#10b981"/>
+            <circle cx="270" cy="75" r="4" fill="#f43f5e"/>
+            <circle cx="400" cy="35" r="4" fill="#10b981"/>
+            <!-- Alert label -->
+            <rect x="248" y="4" width="80" height="16" rx="4" fill="rgba(244,63,94,0.15)"/>
+            <text x="288" y="15" text-anchor="middle" fill="#f43f5e" font-size="9" font-family="DM Mono">⚠ IPVA</text>
+          </svg>
+        </div>
+        <div class="planning-months">
+          <div class="planning-month">
+            <div class="planning-month-label">Fev</div>
+            <div class="planning-month-val pos">1,8k</div>
+          </div>
+          <div class="planning-month">
+            <div class="planning-month-label">Mar</div>
+            <div class="planning-month-val pos">2,2k</div>
+          </div>
+          <div class="planning-month">
+            <div class="planning-month-label">Abr</div>
+            <div class="planning-month-val neg">620</div>
+          </div>
+          <div class="planning-month">
+            <div class="planning-month-label">Mai</div>
+            <div class="planning-month-val pos">1,9k</div>
+          </div>
+          <div class="planning-month">
+            <div class="planning-month-label">Jun</div>
+            <div class="planning-month-val pos">3,4k</div>
+          </div>
+          <div class="planning-month">
+            <div class="planning-month-label">Jul</div>
+            <div class="planning-month-val pos">2,8k</div>
+          </div>
+        </div>
+        <div class="planning-events">
+          <div class="planning-event">
+            <div class="event-dot green"></div>
+            <div class="event-name">Salário — todo dia 28</div>
+            <div class="event-val pos">+R$5.000</div>
+            <div class="event-badge recorrente">recorrente</div>
+          </div>
+          <div class="planning-event">
+            <div class="event-dot blue"></div>
+            <div class="event-name">Aluguel — todo dia 5</div>
+            <div class="event-val neg">−R$1.500</div>
+            <div class="event-badge recorrente">recorrente</div>
+          </div>
+          <div class="planning-event">
+            <div class="event-dot purple"></div>
+            <div class="event-name">IPVA — Abril</div>
+            <div class="event-val neg">−R$1.200</div>
+            <div class="event-badge planejado">planejado</div>
+          </div>
+          <div class="planning-event">
+            <div class="event-dot yellow"></div>
+            <div class="event-name">Meta: Viagem Europa</div>
+            <div class="event-val neg">−R$800/mês</div>
+            <div class="event-badge planejado">meta</div>
+          </div>
+        </div>
+        <div class="planning-insight">
+          <span>💡</span>
+          <div class="planning-insight-text">
+            Em abril seu saldo cai para <strong>R$620</strong> por causa do IPVA. Quer criar um envelope de reserva agora para suavizar esse impacto?
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="planning-content reveal reveal-delay-2">
+        <div class="section-label">Planejamento Futuro</div>
+        <h2 class="section-title">Veja seu dinheiro<br>daqui a 12 meses.</h2>
+        <p class="section-sub">A funcionalidade mais estratégica do SyncLife. Responde a pergunta que todo app brasileiro evita: <em style="color: var(--t1);">"Como vai estar meu dinheiro daqui a 6 meses?"</em></p>
+
+        <div class="planning-tags">
+          <div class="planning-tag"><span class="tag-dot green"></span> Receitas recorrentes</div>
+          <div class="planning-tag"><span class="tag-dot blue"></span> Despesas recorrentes</div>
+          <div class="planning-tag"><span class="tag-dot purple"></span> Eventos planejados</div>
+          <div class="planning-tag"><span class="tag-dot yellow"></span> Contribuições de metas</div>
+        </div>
+
+        <div class="mode-traits" style="margin-top: 32px;">
+          <div class="mode-trait">
+            <span class="trait-icon">📅</span>
+            <div class="trait-text">
+              <span class="trait-label">Horizonte de 3, 6 ou 12 meses</span>
+              <span class="trait-desc">Ajuste o quanto quer ver à frente conforme sua necessidade.</span>
+            </div>
+          </div>
+          <div class="mode-trait">
+            <span class="trait-icon">⚠️</span>
+            <div class="trait-text">
+              <span class="trait-label">Alertas de saldo negativo</span>
+              <span class="trait-desc">Quando o saldo projetado fica vermelho, o app sugere ações concretas.</span>
+            </div>
+          </div>
+          <div class="mode-trait">
+            <span class="trait-icon">🤖</span>
+            <div class="trait-text">
+              <span class="trait-label">Insights automáticos com IA</span>
+              <span class="trait-desc">Análise contextual baseada nos seus dados reais, não em templates genéricos.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIALS ══ -->
+<section class="testimonials-section">
+  <div class="container">
+    <div class="testimonials-header reveal">
+      <div class="section-label">Depoimentos</div>
+      <h2 class="section-title">Quem já está usando.</h2>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal reveal-delay-1">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"Finalmente um app que mostra o futuro do meu dinheiro. A função de planejamento mudou completamente como eu tomo decisões financeiras."</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">R</div>
+          <div>
+            <div class="author-name">Rafael M.</div>
+            <div class="author-role">Engenheiro de Software, 32 anos</div>
+          </div>
+        </div>
+        <div class="testimonial-score">🎯 Score: 81 ↑</div>
+      </div>
+
+      <div class="testimonial-card reveal reveal-delay-2">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"O Modo Jornada me motivou de um jeito que nenhum outro app conseguiu. Desbloqueei minha primeira conquista em 3 dias e não parei mais."</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">A</div>
+          <div>
+            <div class="author-name">Ana C.</div>
+            <div class="author-role">Designer, 27 anos</div>
+          </div>
+        </div>
+        <div class="testimonial-score">🌱 Score: 67 ↑ +8</div>
+      </div>
+
+      <div class="testimonial-card reveal reveal-delay-3">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"Uso no Modo Foco e é exatamente o que quero: dados objetivos sem frescura. A visão de orçamentos por envelope é a melhor que já vi em app brasileiro."</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">M</div>
+          <div>
+            <div class="author-name">Marcos T.</div>
+            <div class="author-role">Analista Financeiro, 38 anos</div>
+          </div>
+        </div>
+        <div class="testimonial-score">🎯 Score: 91</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRICING ══ -->
+<section class="pricing-section" id="precos">
+  <div class="container">
+    <div class="pricing-header reveal">
+      <div class="section-label">Preços</div>
+      <h2 class="section-title">Simples e transparente.</h2>
+      <p class="section-sub" style="margin: 0 auto;">Comece grátis. Escale quando sua vida exigir mais.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- FREE -->
+      <div class="pricing-card free reveal reveal-delay-1">
+        <div class="pricing-badge free">✦ Grátis</div>
+        <div class="pricing-price">
+          <span class="price-currency">R$</span>
+          <span class="price-num">0</span>
+          <span class="price-period">/mês</span>
+        </div>
+        <div class="pricing-desc">Tudo que você precisa para começar a organizar sua vida financeira.</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Transações ilimitadas</span></div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Dashboard financeiro completo</span></div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Módulo Metas</span> (até 3 metas)</div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Agenda básica</span></div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">5 recorrentes ativas</span></div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Planejamento futuro</span> (3 meses)</div></li>
+          <li class="pricing-feature"><span class="pf-icon">⬜</span><div class="pf-text" style="color: var(--t3);">Life Sync Score</div></li>
+          <li class="pricing-feature"><span class="pf-icon">⬜</span><div class="pf-text" style="color: var(--t3);">Exportação PDF/Excel</div></li>
+        </ul>
+        <a href="#" class="btn-secondary">Criar conta grátis</a>
+      </div>
+
+      <!-- PRO -->
+      <div class="pricing-card pro reveal reveal-delay-2">
+        <div class="pricing-recommended">⚡ Recomendado</div>
+        <div class="pricing-badge pro-badge">🚀 PRO</div>
+        <div class="pricing-price">
+          <span class="price-currency">R$</span>
+          <span class="price-num grad-em" style="font-family: 'Syne', sans-serif; font-size: 52px; font-weight: 800; line-height: 1;">29</span>
+          <span class="price-period">/mês</span>
+        </div>
+        <div class="pricing-desc">Para quem leva a sério a organização da vida. Desbloqueie tudo.</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Tudo do plano Grátis</span></div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Life Sync Score</span> com histórico</div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Metas ilimitadas</span></div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Recorrentes ilimitadas</span></div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Planejamento futuro</span> até 12 meses</div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Relatórios + Exportação</span> PDF e Excel</div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Insights com IA</span></div></li>
+          <li class="pricing-feature"><span class="pf-icon">✅</span><div class="pf-text"><span class="pf-strong">Suporte prioritário</span></div></li>
+        </ul>
+        <a href="#" class="btn-primary">Começar PRO — 14 dias grátis</a>
+        <p style="font-size: 12px; color: var(--t3); text-align: center; margin-top: 12px;">Sem compromisso. Cancele quando quiser.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA FINAL ══ -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="cta-grid-overlay"></div>
+  <div class="container" style="position: relative; z-index: 1;">
+    <div class="reveal">
+      <h2 class="cta-title font-syne">
+        Sua vida organizada<br>começa <span class="grad-main">hoje.</span>
+      </h2>
+      <p class="cta-sub">Crie sua conta em menos de 2 minutos. Comece grátis. Sem cartão de crédito.</p>
+      <div class="cta-actions">
+        <a href="#" class="btn-primary">Criar conta grátis</a>
+        <a href="#features" class="btn-secondary">Explorar funcionalidades</a>
+      </div>
+      <p class="cta-note">Já tem uma conta? <a href="#" style="color: var(--em); text-decoration: none;">Entrar →</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="#" class="footer-logo">
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPGRlZnM+CiAgICA8IS0tIEJhY2tncm91bmQgZ3JhZGllbnQ6IGRlZXAgbmF2eSAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDUxYzE0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzAzMDkxZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KCiAgICA8IS0tIEJyYW5kIGdyYWRpZW50OiBlbWVyYWxkIOKGkiBlbGVjdHJpYyBibHVlIC0tPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJicmFuZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDA1NWZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgoKICAgIDwhLS0gUmluZyBncmFkaWVudCAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZzEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiBzdG9wLW9wYWNpdHk9IjAuNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDU1ZmYiIHN0b3Atb3BhY2l0eT0iMC43Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJyaW5nMiIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiIHN0b3Atb3BhY2l0eT0iMC4zNSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDU1ZmYiIHN0b3Atb3BhY2l0eT0iMC4zNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZzMiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiBzdG9wLW9wYWNpdHk9IjAuMTUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDA1NWZmIiBzdG9wLW9wYWNpdHk9IjAuMTUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CgogICAgPCEtLSBHbG93IGZpbHRlciAtLT4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii0zMCUiIHk9Ii0zMCUiIHdpZHRoPSIxNjAlIiBoZWlnaHQ9IjE2MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI4IiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlTWVyZ2U+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJibHVyIi8+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+CiAgICAgIDwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgoKICAgIDwhLS0gU29mdCBnbG93IGZvciBTIC0tPgogICAgPGZpbHRlciBpZD0ic2dsb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iYmx1ciIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KCiAgICA8IS0tIFJvdW5kZWQgc3F1YXJlIGNsaXAgLS0+CiAgICA8Y2xpcFBhdGggaWQ9InJvdW5kZWQiPgogICAgICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgcnk9IjExMiIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CgogIDwhLS0gQmFja2dyb3VuZCAtLT4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgcnk9IjExMiIgZmlsbD0idXJsKCNiZykiLz4KCiAgPCEtLSBTdWJ0bGUgdGV4dHVyZSBkb3RzIC0tPgogIDxnIG9wYWNpdHk9IjAuMDQiPgogICAgPGNpcmNsZSBjeD0iODAiIGN5PSI4MCIgcj0iMiIgZmlsbD0iIzEwYjk4MSIvPgogICAgPGNpcmNsZSBjeD0iNDMyIiBjeT0iODAiIHI9IjIiIGZpbGw9IiMwMDU1ZmYiLz4KICAgIDxjaXJjbGUgY3g9IjgwIiBjeT0iNDMyIiByPSIyIiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI0MzIiIGN5PSI0MzIiIHI9IjIiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjgwIiByPSIxLjUiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjQzMiIgcj0iMS41IiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI4MCIgY3k9IjI1NiIgcj0iMS41IiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI0MzIiIGN5PSIyNTYiIHI9IjEuNSIgZmlsbD0iIzEwYjk4MSIvPgogIDwvZz4KCiAgPCEtLSBDb25jZW50cmljIHJpbmdzIOKAlCBwdWxzZSBvZiBsaWZlIC0tPgogIDwhLS0gT3V0ZXIgcmluZyAtLT4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI3JpbmczKSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIE1pZGRsZSByaW5nIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTcwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjcmluZzIpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8IS0tIElubmVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNyaW5nMSkiIHN0cm9rZS13aWR0aD0iMi41Ii8+CgogIDwhLS0gQXJjIGFjY2VudHMg4oCUIHBhcnRpYWwgcmluZ3MgZm9yIGR5bmFtaXNtIC0tPgogIDwhLS0gVG9wLXJpZ2h0IGFyYyAoZW1lcmFsZCBzaWRlKSAtLT4KICA8cGF0aCBkPSJNIDI1NiA0NiBBIDIxMCAyMTAgMCAwIDEgNDY2IDI1NiIgCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1vcGFjaXR5PSIwLjUiCiAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBCb3R0b20tbGVmdCBhcmMgKGJsdWUgc2lkZSkgLS0+CiAgPHBhdGggZD0iTSAyNTYgNDY2IEEgMjEwIDIxMCAwIDAgMSA0NiAyNTYiIAogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNTVmZiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2Utb3BhY2l0eT0iMC41IgogICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgoKICA8IS0tIENlbnRlciBkaXNjIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTEwIiBmaWxsPSJ1cmwoI2JnKSIgb3BhY2l0eT0iMC45Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNicmFuZCkiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjgiLz4KCiAgPCEtLSBTIGxldHRlcmZvcm0g4oCUIGN1c3RvbSBwYXRocyBmb3IgcHJlbWl1bSBmZWVsIC0tPgogIDwhLS0gVGhlIFMgaXMgZHJhd24gYXMgYSBjdXN0b20gc2hhcGUsIG5vdCBhIGZvbnQsIGZvciBwaXhlbC1wZXJmZWN0IGNvbnRyb2wgLS0+CiAgPGcgZmlsdGVyPSJ1cmwoI3NnbG93KSI+CiAgICA8dGV4dAogICAgICB4PSIyNTYiIHk9IjMxNiIKICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsICdBcmlhbCcsIHNhbnMtc2VyaWYiCiAgICAgIGZvbnQtd2VpZ2h0PSI4MDAiCiAgICAgIGZvbnQtc2l6ZT0iMTkwIgogICAgICB0ZXh0LWFuY2hvcj0ibWlkZGxlIgogICAgICBmaWxsPSJ1cmwoI2JyYW5kKSIKICAgICAgbGV0dGVyLXNwYWNpbmc9Ii00IgogICAgPlM8L3RleHQ+CiAgPC9nPgoKICA8IS0tIE5vZGUgZG90cyBvbiByaW5ncyDigJQgY29ubmVjdGluZyBsaWZlIG1vZHVsZXMgLS0+CiAgPCEtLSBUb3AgKEZpbmFuw6dhcykgLS0+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iODYiIHI9IjciIGZpbGw9IiMxMGI5ODEiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gVG9wLXJpZ2h0IChNZXRhcykgLS0+CiAgPGNpcmNsZSBjeD0iNDA0IiBjeT0iMTM4IiByPSI2IiBmaWxsPSIjMTBiOTgxIiBvcGFjaXR5PSIwLjgiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gUmlnaHQgKEFnZW5kYSkgLS0+CiAgPGNpcmNsZSBjeD0iNDQ2IiBjeT0iMjU2IiByPSI2IiBmaWxsPSIjMDA2NmZmIiBvcGFjaXR5PSIwLjgiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gQm90dG9tLXJpZ2h0IChFc3R1ZG9zKSAtLT4KICA8Y2lyY2xlIGN4PSIzNzQiIGN5PSIzNzQiIHI9IjUiIGZpbGw9IiMwMDU1ZmYiIG9wYWNpdHk9IjAuNyIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBCb3R0b20gKENhcnJlaXJhKSAtLT4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSI0MjYiIHI9IjYiIGZpbGw9IiMwMDU1ZmYiIG9wYWNpdHk9IjAuOCIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBCb3R0b20tbGVmdCAoU2HDumRlKSAtLT4KICA8Y2lyY2xlIGN4PSIxMzgiIGN5PSIzNzQiIHI9IjUiIGZpbGw9IiMxMGI5ODEiIG9wYWNpdHk9IjAuNyIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBMZWZ0IChIb21lKSAtLT4KICA8Y2lyY2xlIGN4PSI2NiIgY3k9IjI1NiIgcj0iNiIgZmlsbD0iIzEwYjk4MSIgb3BhY2l0eT0iMC44IiBmaWx0ZXI9InVybCgjZ2xvdykiLz4KICA8IS0tIFRvcC1sZWZ0IC0tPgogIDxjaXJjbGUgY3g9IjEwOCIgY3k9IjEzOCIgcj0iNSIgZmlsbD0iIzEwYjk4MSIgb3BhY2l0eT0iMC43IiBmaWx0ZXI9InVybCgjZ2xvdykiLz4KCiAgPCEtLSBUaGluIHNwb2tlIGxpbmVzIGZyb20gY2VudGVyIHRvIG5vZGVzICh2ZXJ5IHN1YnRsZSkgLS0+CiAgPGcgc3Ryb2tlPSJ1cmwoI2JyYW5kKSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjE1Ij4KICAgIDxsaW5lIHgxPSIyNTYiIHkxPSIxNDYiIHgyPSIyNTYiIHkyPSI4NiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjQwNCIgeTI9IjEzOCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjQ0NiIgeTI9IjI1NiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjM3NCIgeTI9IjM3NCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjI1NiIgeTI9IjQyNiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjEzOCIgeTI9IjM3NCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjY2IiB5Mj0iMjU2Ii8+CiAgICA8bGluZSB4MT0iMjU2IiB5MT0iMTQ2IiB4Mj0iMTA4IiB5Mj0iMTM4Ii8+CiAgPC9nPgo8L3N2Zz4K" width="28" height="28" alt="SyncLife" style="display:block;flex-shrink:0;">
+          <span class="footer-logo-text">SyncLife</span>
+        </a>
+        <p class="footer-tagline">O sistema operacional da sua vida. Finanças, metas e agenda num único lugar.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Produto</div>
+        <ul class="footer-links">
+          <li><a href="#">Funcionalidades</a></li>
+          <li><a href="#">Modo Foco</a></li>
+          <li><a href="#">Modo Jornada</a></li>
+          <li><a href="#">Life Sync Score</a></li>
+          <li><a href="#">Preços</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Empresa</div>
+        <ul class="footer-links">
+          <li><a href="#">Sobre nós</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Roadmap</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Suporte</div>
+        <ul class="footer-links">
+          <li><a href="#">Central de ajuda</a></li>
+          <li><a href="#">Contato</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 SyncLife. Todos os direitos reservados.</div>
+      <div class="footer-legal">
+        <a href="#">Termos de Uso</a>
+        <a href="#">Política de Privacidade</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Navbar scroll effect
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => observer.observe(el));
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if (!href || href === '#') return;
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Nova Meta (Wizard) · I.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── TOKENS ── */
+:root {
+  --bg:   #03071a;
+  --s1:   #07112b;
+  --s2:   #0c1a3a;
+  --s3:   #132248;
+  --border:   rgba(255,255,255,0.06);
+  --border-h: rgba(255,255,255,0.13);
+  --t1:   #dff0ff;
+  --t2:   #6e90b8;
+  --t3:   #2e4a6e;
+
+  --em:       #10b981;
+  --em-glow:  rgba(16,185,129,0.16);
+  --el:       #0055ff;
+  --el-glow:  rgba(0,85,255,0.16);
+  --fin:      #10b981;
+  --fin-glow: rgba(16,185,129,0.16);
+  --meta:     #0055ff;
+  --meta-glow:rgba(0,85,255,0.16);
+  --agenda:   #06b6d4;
+  --cfg:      #64748b;
+  --cfg-glow: rgba(100,116,139,0.12);
+
+  --green:  #10b981;
+  --yellow: #f59e0b;
+  --red:    #f43f5e;
+
+  --module-bar: 58px;
+  --sb-open:    228px;
+  --sb-closed:  0px;
+  --header-h:   54px;
+}
+
+/* ── DARK JORNADA ── */
+body.jornada {
+  --bg:       #020d08;
+  --s1:       #061410;
+  --s2:       #0b1e18;
+  --s3:       #112b22;
+  --border:   rgba(16,185,129,0.08);
+  --border-h: rgba(16,185,129,0.18);
+  --t1:       #d6faf0;
+  --t2:       #4da888;
+  --t3:       #235c48;
+}
+body.jornada .header {
+  background: linear-gradient(90deg, rgba(16,185,129,0.06), transparent 60%);
+}
+body.jornada .sb-score { display: block; }
+body.jornada .sb-score-num {
+  background: linear-gradient(135deg, #10b981, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+body.jornada .sb-score-fill { background: linear-gradient(90deg, #10b981, #0055ff); }
+body.jornada .sb-score { border-color: rgba(16,185,129,0.22); background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(0,85,255,0.10)); }
+body.jornada .hd-greeting-name {
+  background: linear-gradient(90deg, #10b981, #0055ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+/* ── LIGHT FOCO ── */
+body.light {
+  --bg:       #e6eef5;
+  --s1:       #ffffff;
+  --s2:       #f0f6fa;
+  --s3:       #e0eaf3;
+  --border:   rgba(3,7,26,0.09);
+  --border-h: rgba(3,7,26,0.18);
+  --t1:       #03071a;
+  --t2:       #1e3a5c;
+  --t3:       #5a7a9e;
+}
+body.light .module-bar {
+  background: linear-gradient(180deg, #083d2c 0%, #052b1e 100%);
+  box-shadow: 2px 0 24px rgba(8,61,44,0.28);
+}
+body.light .module-bar .module-btn { color: rgba(255,255,255,0.42); }
+body.light .module-bar .module-btn:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.85); }
+body.light .module-bar .module-btn.act-meta { color: #6ee7b7; background: rgba(110,231,183,0.12); }
+body.light .module-bar .user-avatar { border-color: rgba(255,255,255,0.28); }
+body.light .logo-mark { background: linear-gradient(135deg, #051c14, #03091f); border-radius: 9px; }
+body.light .sidebar { background: #f5fbf8; border-right: 1px solid rgba(16,185,129,0.16); }
+body.light .sidebar .sb-mod-label { color: #083d2c; }
+body.light .sidebar .sb-section-label { color: #4da888; }
+body.light .sidebar .sb-toggle { color: #4da888; }
+body.light .nav-item { color: #1a5c42; }
+body.light .nav-item:hover { background: rgba(16,185,129,0.07); color: #083d2c; }
+body.light .nav-item.act-meta { background: rgba(16,185,129,0.10); color: #10b981; }
+body.light .header { background: linear-gradient(90deg, rgba(16,185,129,0.07) 0%, #ffffff 35%); border-color: rgba(16,185,129,0.10); }
+body.light .mode-pill { background: var(--s2); border-color: rgba(3,7,26,0.12); }
+body.light .theme-pill { background: var(--s2); border-color: rgba(3,7,26,0.12); }
+body.light .controls { background: #ffffff; box-shadow: 0 4px 24px rgba(3,7,26,0.12); }
+body.light .ctrl-btn { background: var(--s2); color: #1e3a5c; border-color: rgba(3,7,26,0.10); }
+body.light .ctrl-btn:hover { background: var(--s3); color: #03071a; }
+body.light .tip { background: #03071a; color: #dff0ff; }
+
+/* ── LIGHT JORNADA ── */
+body.light.jornada {
+  --bg:     #c8f0e4;
+  --s1:     #ffffff;
+  --s2:     #e0f7ef;
+  --s3:     #c4eede;
+  --border: rgba(5,80,56,0.12);
+  --border-h: rgba(5,80,56,0.24);
+  --t1:     #022016;
+  --t2:     #0d5c3e;
+  --t3:     #4da888;
+}
+body.light.jornada .module-bar {
+  background: linear-gradient(180deg, #0c9e6e 0%, #0844cc 100%);
+}
+body.light.jornada .module-bar .module-btn { color: rgba(255,255,255,0.65); }
+body.light.jornada .module-bar .module-btn.act-meta { color: #ffffff; }
+body.light.jornada .sidebar {
+  background: linear-gradient(180deg, #0fbe82 0%, #0a56d6 100%);
+}
+body.light.jornada .nav-item { color: rgba(255,255,255,0.75); }
+body.light.jornada .nav-item:hover { background: rgba(255,255,255,0.15); color: #ffffff; }
+body.light.jornada .nav-item.act-meta { background: rgba(255,255,255,0.20); color: #ffffff; }
+body.light.jornada .sb-mod-label { color: #ffffff; }
+body.light.jornada .sb-toggle { color: rgba(255,255,255,0.5); }
+body.light.jornada .sb-score { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.30); }
+body.light.jornada .sb-score-num { background: linear-gradient(135deg, #ffffff, #c4f8e8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+body.light.jornada .sb-score-fill { background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(196,248,232,0.8)); }
+body.light.jornada .header { background: linear-gradient(90deg, #0fbe82 0%, #0a56d6 100%); border-color: transparent; }
+body.light.jornada .hd-breadcrumb, body.light.jornada #hdPageName, body.light.jornada .hd-breadcrumb .sep { color: rgba(255,255,255,0.85); }
+body.light.jornada .hd-greeting-name { background: linear-gradient(90deg, #ffffff, #c4f8e8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+body.light.jornada .hd-greeting-phrase { color: rgba(255,255,255,0.65); }
+body.light.jornada .expand-from-bar { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.12); }
+body.light.jornada .hd-notif { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.10); }
+body.light.jornada .mode-pill { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.30); color: rgba(255,255,255,0.9); }
+body.light.jornada .theme-pill { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.30); color: rgba(255,255,255,0.9); }
+body.light.jornada .controls { background: #e8f9f2; border-color: rgba(5,80,56,0.15); }
+body.light.jornada .ctrl-btn { background: rgba(255,255,255,0.7); color: #0d5c3e; border-color: rgba(5,80,56,0.15); }
+
+html, body { height:100%; overflow:hidden; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t1); font-size: 14px; line-height: 1.5; transition: background 0.4s, color 0.3s; }
+
+/* ══ SHELL ══ */
+.app { display:flex; height:100vh; overflow:hidden; }
+
+/* ── MODULE BAR ── */
+.module-bar {
+  width: var(--module-bar); height: 100vh;
+  background: var(--s1); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 2px; z-index: 60; flex-shrink: 0;
+  transition: background 0.4s, border-color 0.3s;
+}
+.logo-mark { width: 34px; height: 34px; margin-bottom: 14px; cursor: pointer; position: relative; flex-shrink: 0; }
+.logo-mark svg { width:34px; height:34px; }
+.module-btn {
+  width: 42px; height: 42px; border-radius: 12px; border: none;
+  background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; transition: background 0.15s, color 0.15s; color: var(--t3);
+}
+.module-btn svg { width: 21px; height: 21px; }
+.module-btn:hover { background: var(--s3); color: var(--t2); }
+.module-btn.act-meta { background: var(--meta-glow); color: var(--meta); }
+.module-btn.act-fin  { background: var(--fin-glow);  color: var(--fin);  }
+.module-btn.act-agenda { background: rgba(6,182,212,0.16); color: var(--agenda); }
+.module-btn.act-home { background: rgba(238,242,255,.1); color: var(--t1); }
+.module-btn::before {
+  content: ''; position: absolute; left: -8px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 0; border-radius: 0 3px 3px 0;
+  background: currentColor; transition: height 0.2s;
+}
+.module-btn.act-meta::before, .module-btn.act-fin::before,
+.module-btn.act-agenda::before, .module-btn.act-home::before { height: 22px; }
+.module-bar .spacer { flex: 1; }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--em), var(--el));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; color: #fff;
+  cursor: pointer; border: 2px solid var(--border); margin-top: 6px;
+}
+
+/* Tooltip */
+.tip {
+  position: fixed; left: calc(var(--module-bar) + 8px);
+  background: var(--s3); border: 1px solid var(--border-h);
+  border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 500;
+  color: var(--t1); pointer-events: none; z-index: 999; white-space: nowrap;
+  opacity: 0; transition: opacity 0.12s; transform: translateY(-50%);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.tip.show { opacity: 1; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sb-open); height: 100vh;
+  background: var(--s1); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+  transition: width 0.24s cubic-bezier(.4,0,.2,1), background 0.4s;
+}
+.sidebar.closed { width: var(--sb-closed); }
+.sb-header {
+  height: var(--header-h); display: flex; align-items: center;
+  padding: 0 14px; gap: 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; overflow: hidden;
+}
+.sb-mod-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sb-mod-icon svg { width: 15px; height: 15px; }
+.sb-mod-label { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; white-space: nowrap; letter-spacing: 0.02em; flex: 1; }
+.sb-toggle { width: 26px; height: 26px; border-radius: 7px; border: none; background: transparent; cursor: pointer; color: var(--t3); display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
+.sb-toggle:hover { background: var(--s3); color: var(--t2); }
+.sb-toggle svg { width: 15px; height: 15px; }
+.sb-score {
+  margin: 10px 10px 0; padding: 12px; border-radius: 12px;
+  border: 1px solid rgba(16,185,129,0.22);
+  background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(0,85,255,0.10));
+  flex-shrink: 0; display: none;
+}
+body.jornada .sb-score { display: block; }
+.sb-score-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.sb-score-num { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; background: linear-gradient(135deg, var(--fin), #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; }
+.sb-score-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--t3); margin-top: 2px; }
+.sb-score-delta { font-size: 11px; color: var(--green); }
+.sb-score-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+.sb-score-fill { height: 100%; width: 74%; background: linear-gradient(90deg, var(--fin), #f59e0b); border-radius: 2px; }
+.sb-nav { flex: 1; padding: 8px; overflow-y: auto; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px;
+  cursor: pointer; color: var(--t2); border: none; background: transparent;
+  width: 100%; text-align: left; white-space: nowrap; position: relative;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; transition: background 0.12s, color 0.12s;
+}
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+.nav-item:hover { background: var(--s3); color: var(--t1); }
+.nav-item.act-meta { background: var(--meta-glow); color: var(--meta); font-weight: 500; }
+.nav-badge { margin-left: auto; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 8px; }
+.badge-y { background: rgba(245,158,11,.15); color: var(--yellow); }
+
+/* ── MAIN ── */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+
+/* ── HEADER ── */
+.header {
+  height: var(--header-h); display: flex; align-items: center;
+  padding: 0 20px; gap: 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  transition: background 0.4s, border-color 0.3s;
+}
+.expand-from-bar {
+  display: none; width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; cursor: pointer; color: var(--t3); align-items: center; justify-content: center;
+  transition: background 0.15s; flex-shrink: 0;
+}
+.expand-from-bar:hover { background: var(--s3); color: var(--t2); }
+.expand-from-bar svg { width: 15px; height: 15px; }
+.sidebar.closed ~ .main .expand-from-bar { display: flex; }
+.hd-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t2); }
+.hd-breadcrumb .mod-name { font-weight: 600; color: var(--t1); }
+.hd-breadcrumb .sep { color: var(--t3); }
+.hd-greeting { display: none; flex-direction: column; gap: 1px; }
+body.jornada .hd-breadcrumb { display: none; }
+body.jornada .hd-greeting { display: flex; }
+.hd-greeting-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; background: linear-gradient(90deg, var(--t1), #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hd-greeting-phrase { font-size: 11px; color: var(--t3); }
+.hd-spacer { flex: 1; }
+.mode-pill {
+  display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--s2); cursor: pointer;
+  font-size: 12px; color: var(--t2); transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+}
+.mode-pill:hover { border-color: var(--border-h); }
+.mode-pill-dot { width: 18px; height: 18px; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: rgba(16,185,129,0.15); color: #10b981; font-size: 11px; }
+.theme-pill {
+  display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--s2); cursor: pointer;
+  font-size: 12px; color: var(--t2); transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+}
+.theme-pill:hover { border-color: var(--border-h); }
+.hd-notif { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--t3); position: relative; }
+.hd-notif:hover { background: var(--s3); color: var(--t2); }
+.hd-notif svg { width: 17px; height: 17px; }
+.notif-dot { position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--red); border: 1.5px solid var(--bg); }
+
+/* ── CONTENT ── */
+.content { flex:1; overflow-y:auto; }
+
+/* ══════════════════════════════════
+   WIZARD — CONTEÚDO PRINCIPAL
+══════════════════════════════════ */
+.wizard-outer {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+
+/* Annotation */
+.annotation {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(245,158,11,0.08); border: 1px dashed rgba(245,158,11,0.3);
+  border-radius: 6px; padding: 3px 9px; font-size: 11px; color: var(--yellow);
+  margin-bottom: 16px; cursor: default;
+}
+
+/* ── Top bar do wizard ── */
+.wz-topbar {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 28px;
+}
+.wz-exit-btn {
+  width: 34px; height: 34px; border-radius: 10px;
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; color: var(--t3); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.wz-exit-btn:hover { background: var(--s3); color: var(--t1); border-color: var(--border-h); }
+.wz-exit-btn svg { width: 16px; height: 16px; }
+.wz-steps-track { flex: 1; position: relative; }
+
+/* Steps indicator */
+.wz-steps-row {
+  display: flex; align-items: center; gap: 0;
+  position: relative;
+}
+.wz-step-item {
+  display: flex; flex-direction: column; align-items: center; flex: 1;
+  position: relative;
+}
+/* Line between steps */
+.wz-step-item:not(:last-child)::after {
+  content: '';
+  position: absolute; top: 16px; left: 50%; right: -50%;
+  height: 2px; background: var(--s3);
+  transition: background 0.4s;
+}
+.wz-step-item.done::after, .wz-step-item.active::after {
+  background: var(--meta);
+}
+.wz-step-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid var(--s3); background: var(--s2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+  color: var(--t3); transition: all 0.3s; position: relative; z-index: 1;
+}
+.wz-step-item.active .wz-step-dot {
+  border-color: var(--meta); background: var(--meta); color: #fff;
+  box-shadow: 0 0 14px rgba(0,85,255,0.35);
+}
+.wz-step-item.done .wz-step-dot {
+  border-color: var(--meta); background: rgba(0,85,255,0.12); color: var(--meta);
+}
+/* Jornada: active dot glow */
+body.jornada .wz-step-item.active .wz-step-dot {
+  box-shadow: 0 0 16px rgba(0,85,255,0.5);
+}
+body.light .wz-step-item.active .wz-step-dot {
+  background: var(--meta); color: #fff; border-color: var(--meta);
+  box-shadow: 0 0 14px rgba(0,85,255,0.25);
+}
+body.light .wz-step-item.done .wz-step-dot {
+  background: rgba(0,85,255,0.10); color: var(--meta); border-color: var(--meta);
+}
+.wz-step-label {
+  margin-top: 6px; font-size: 10px; font-weight: 500; color: var(--t3);
+  text-align: center; white-space: nowrap; letter-spacing: 0.02em;
+  transition: color 0.3s;
+}
+.wz-step-item.active .wz-step-label { color: var(--meta); font-weight: 600; }
+.wz-step-item.done .wz-step-label { color: var(--t2); }
+
+/* ── Wizard body ── */
+.wz-body {
+  flex: 1; display: flex; gap: 24px; align-items: flex-start;
+}
+
+/* Main panel */
+.wz-panel {
+  flex: 1; min-width: 0;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 18px; padding: 28px;
+  animation: fadeUp 0.22s ease both;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+body.jornada .wz-panel {
+  border-color: rgba(16,185,129,0.12);
+  background: linear-gradient(135deg, rgba(6,20,16,0.95), rgba(11,30,24,0.98));
+}
+/* Light Jornada: panel keeps white/light bg — do NOT inherit dark jornada override */
+body.light.jornada .wz-panel {
+  background: var(--s1);
+  border-color: rgba(5,80,56,0.14);
+}
+body.light.jornada .wz-panel-title {
+  background: linear-gradient(90deg, #022016, #10b981);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+body.light.jornada .wz-jornada-phrase {
+  background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(0,85,255,0.07));
+  border-color: rgba(16,185,129,0.20);
+}
+
+/* Jornada: motivational phrase at top */
+.wz-jornada-phrase {
+  display: none; align-items: center; gap: 10px;
+  padding: 12px 16px; border-radius: 12px;
+  background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(0,85,255,0.08));
+  border: 1px solid rgba(16,185,129,0.15);
+  margin-bottom: 24px; font-size: 13px; color: var(--t2); font-style: italic;
+}
+body.jornada .wz-jornada-phrase { display: flex; }
+.wz-jornada-phrase .phrase-icon { font-size: 20px; }
+
+/* Panel heading */
+.wz-panel-title {
+  font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800;
+  color: var(--t1); margin-bottom: 6px;
+}
+body.jornada .wz-panel-title {
+  background: linear-gradient(90deg, var(--t1), #10b981);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.wz-panel-sub { font-size: 13px; color: var(--t3); margin-bottom: 28px; line-height: 1.6; }
+
+/* Remove number input spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+/* Custom date picker: hide native, use styled selects */
+.date-picker-wrap { display: flex; gap: 8px; }
+.date-picker-select {
+  flex: 1; padding: 10px 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--s2);
+  color: var(--t1); font-family: 'DM Sans', sans-serif; font-size: 14px;
+  -webkit-appearance: none; appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%236e90b8' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; background-size: 15px;
+  transition: border-color 0.15s, background 0.15s; outline: none;
+}
+.date-picker-select:focus { border-color: var(--meta); background: var(--s3); }
+body.light .date-picker-select { color: var(--t1); }
+body.light .date-picker-select option { color: #03071a; background: #ffffff; }
+.date-picker-select option { color: var(--t1); background: var(--s2); }
+
+/* ─ STEP 1: Type cards ─ */
+.type-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+.type-card {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 20px 12px; border-radius: 16px;
+  border: 2px solid var(--border); background: var(--s2);
+  cursor: pointer; transition: all 0.2s; text-align: center;
+  position: relative; overflow: hidden;
+}
+.type-card:hover { border-color: var(--border-h); background: var(--s3); transform: translateY(-2px); }
+.type-card.selected { border-color: var(--meta); background: var(--meta-glow); transform: translateY(-2px); }
+body.jornada .type-card.selected { box-shadow: 0 4px 20px rgba(0,85,255,0.25); }
+.type-card .tc-icon { font-size: 28px; line-height: 1; }
+.type-card .tc-label { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--t2); letter-spacing: 0.02em; transition: color 0.2s; }
+.type-card.selected .tc-label { color: var(--meta); }
+.type-card .tc-check {
+  position: absolute; top: 8px; right: 8px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--meta); display: none;
+  align-items: center; justify-content: center;
+}
+.type-card.selected .tc-check { display: flex; }
+.tc-check svg { width: 10px; height: 10px; color: #fff; }
+.type-desc {
+  padding: 14px 18px; border-radius: 12px;
+  background: var(--meta-glow); border: 1px solid rgba(0,85,255,0.18);
+  font-size: 13px; color: var(--t2); line-height: 1.6;
+  animation: fadeUp 0.2s ease both;
+}
+body.jornada .type-desc { background: rgba(0,85,255,0.1); border-color: rgba(0,85,255,0.2); }
+
+/* ─ STEP 2: Details form ─ */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.form-field { display: flex; flex-direction: column; gap: 7px; }
+.form-field.full { grid-column: 1/-1; }
+.form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--t3); }
+.form-input {
+  width: 100%; padding: 10px 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--s2);
+  color: var(--t1); font-family: 'DM Sans', sans-serif; font-size: 14px;
+  transition: border-color 0.15s, background 0.15s;
+  outline: none;
+}
+.form-input:focus { border-color: var(--meta); background: var(--s3); }
+.form-input::placeholder { color: var(--t3); }
+.form-input-prefix { position: relative; }
+.form-input-prefix .prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--t3); font-size: 13px; }
+.form-input-prefix .form-input { padding-left: 42px; }
+
+/* Icon picker */
+.icon-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.icon-opt {
+  width: 40px; height: 40px; border-radius: 10px;
+  border: 1.5px solid var(--border); background: var(--s2);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; transition: all 0.15s;
+}
+.icon-opt:hover { border-color: var(--border-h); background: var(--s3); transform: scale(1.08); }
+.icon-opt.selected { border-color: var(--meta); background: var(--meta-glow); transform: scale(1.08); }
+
+/* Color picker */
+.color-grid { display: flex; gap: 8px; }
+.color-opt {
+  width: 30px; height: 30px; border-radius: 50%;
+  cursor: pointer; border: 2.5px solid transparent; transition: all 0.15s;
+}
+.color-opt:hover { transform: scale(1.15); }
+.color-opt.selected { border-color: var(--t1); transform: scale(1.15); box-shadow: 0 0 0 2px var(--bg); }
+
+/* ─ STEP 3: Financial link ─ */
+.link-info-card {
+  padding: 16px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--fin-glow), rgba(0,85,255,0.06));
+  border: 1px solid rgba(16,185,129,0.2);
+  margin-bottom: 20px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.link-info-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.link-info-body .link-info-title { font-weight: 700; font-size: 13px; color: var(--t1); margin-bottom: 4px; }
+.link-info-body .link-info-sub { font-size: 12px; color: var(--t3); line-height: 1.6; }
+
+.suggestion-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px;
+  background: var(--meta-glow); border: 1px solid rgba(0,85,255,0.2);
+  font-size: 12px; color: var(--meta); cursor: pointer; margin-top: 6px;
+  transition: background 0.15s;
+}
+.suggestion-pill:hover { background: rgba(0,85,255,0.2); }
+
+.envelope-select {
+  width: 100%; padding: 12px 14px; border-radius: 12px;
+  border: 1px solid var(--border); background: var(--s2);
+  color: var(--t1); font-family: 'DM Sans', sans-serif; font-size: 14px;
+  outline: none; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%236e90b8' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;
+  transition: border-color 0.15s;
+}
+.envelope-select:focus { border-color: var(--meta); }
+
+.contribution-calc {
+  padding: 14px 16px; border-radius: 12px;
+  background: var(--s2); border: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; color: var(--t3);
+}
+.contribution-calc .calc-value { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--meta); }
+
+/* ─ STEP 4: Confirmation ─ */
+.confirm-meta-card {
+  padding: 24px; border-radius: 18px;
+  border: 1px solid var(--border); background: var(--s2);
+  margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.confirm-meta-card .card-color-strip {
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--meta), var(--fin));
+}
+.confirm-meta-top { display: flex; align-items: flex-start; gap: 16px; }
+.confirm-meta-icon-wrap {
+  width: 56px; height: 56px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; flex-shrink: 0;
+}
+.confirm-meta-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--t1); margin-bottom: 4px; }
+.confirm-meta-type { font-size: 12px; color: var(--t3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 16px; }
+.confirm-meta-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.meta-stat { display: flex; flex-direction: column; gap: 2px; }
+.meta-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--t3); }
+.meta-stat-value { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--t1); }
+
+/* Projection card */
+.projection-card {
+  padding: 20px 24px; border-radius: 16px;
+  border: 1px solid rgba(16,185,129,0.22);
+  background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(0,85,255,0.06));
+  margin-bottom: 20px;
+}
+.projection-main {
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
+  color: var(--t1); margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+}
+.projection-main .proj-icon { font-size: 20px; }
+.projection-detail { font-size: 13px; color: var(--t3); display: flex; gap: 20px; }
+.proj-detail-item { display: flex; gap: 5px; }
+.proj-detail-item .lbl { color: var(--t3); }
+.proj-detail-item .val { color: var(--t2); font-weight: 600; font-family: 'DM Mono', monospace; font-size: 12px; }
+
+/* Jornada projection glow */
+body.jornada .projection-card {
+  background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(0,85,255,0.10));
+  border-color: rgba(16,185,129,0.3);
+  box-shadow: 0 4px 20px rgba(16,185,129,0.1);
+}
+body.jornada .projection-main { color: #10b981; }
+
+/* Confetti (jornada step 4) */
+.confetti-bar {
+  display: none; gap: 6px; margin-bottom: 20px; font-size: 22px;
+  animation: confettiSlide 0.6s ease both;
+}
+body.jornada .confetti-bar { display: flex; }
+@keyframes confettiSlide { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
+
+/* ── STEP 2: Preview card (right side) ── */
+.wz-preview { width: 240px; flex-shrink: 0; position: sticky; top: 24px; }
+.preview-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--t3); margin-bottom: 12px; }
+.preview-card {
+  border-radius: 18px; padding: 20px;
+  border: 1px solid var(--border); background: var(--s1);
+  transition: all 0.3s;
+}
+.preview-card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.preview-icon-wrap {
+  width: 44px; height: 44px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+  transition: all 0.3s;
+}
+.preview-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: var(--t1); margin-bottom: 2px; word-break: break-word; }
+.preview-type-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 20px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.preview-progress-bar-bg { height: 6px; background: var(--s3); border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
+.preview-progress-fill { height: 100%; width: 0%; border-radius: 3px; transition: width 0.5s; background: var(--meta); }
+.preview-stats { display: flex; justify-content: space-between; }
+.preview-stat { display: flex; flex-direction: column; gap: 1px; }
+.preview-stat .ps-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--t3); }
+.preview-stat .ps-val { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--t2); }
+.preview-stat .ps-val.highlight { color: var(--meta); font-weight: 600; }
+.preview-empty { color: var(--t3); font-size: 12px; line-height: 1.6; text-align: center; padding: 20px 0; font-style: italic; }
+
+/* ── Navigation buttons ── */
+.wz-nav-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+}
+.wz-btn-back {
+  display: flex; align-items: center; gap: 7px;
+  padding: 10px 18px; border-radius: 12px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--t2); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+}
+.wz-btn-back:hover { background: var(--s3); color: var(--t1); border-color: var(--border-h); }
+.wz-btn-back svg { width: 15px; height: 15px; }
+.wz-btn-next {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 24px; border-radius: 12px;
+  border: none; background: var(--meta); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+}
+.wz-btn-next:hover { background: #1a6aff; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,85,255,0.4); }
+.wz-btn-next svg { width: 16px; height: 16px; }
+.wz-btn-next.final { background: linear-gradient(135deg, var(--meta), var(--fin)); }
+.wz-btn-next.final:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,85,255,0.4); }
+.step-counter { font-size: 12px; color: var(--t3); }
+
+/* ── MOBILE ── */
+.mob-bar {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0;
+  height: 64px; padding: 0 4px;
+  background: var(--s1); border-top: 1px solid var(--border);
+  align-items: center; justify-content: space-around; z-index: 200;
+}
+.mob-tab {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 14px; border-radius: 12px;
+  cursor: pointer; border: none; background: transparent; color: var(--t3);
+}
+.mob-tab svg { width: 22px; height: 22px; }
+.mob-tab span { font-size: 10px; font-weight: 500; }
+.mob-tab.act-meta { color: var(--meta); }
+.mob-tab.act-home { color: var(--t1); }
+.mob-tab.act-fin  { color: var(--fin); }
+.mob-tab.act-agenda { color: var(--agenda); }
+
+@media (max-width: 768px) {
+  .module-bar, .sidebar { display: none; }
+  .mob-bar { display: flex; }
+  .wz-preview { display: none; }
+  .type-grid { grid-template-columns: repeat(3, 1fr); }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-field.full { grid-column: 1; }
+  .wizard-outer { padding: 16px; padding-bottom: 80px; }
+  .wz-step-label { display: none; }
+  .wz-body { flex-direction: column; }
+  .confirm-meta-stats { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── CONTROLS ── */
+.controls {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--s2); border: 1px solid var(--border-h);
+  border-radius: 16px; padding: 14px; z-index: 999;
+  display: flex; flex-direction: column; gap: 10px; min-width: 210px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.ctrl-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing:.1em; color: var(--t3); }
+.ctrl-row { display: flex; flex-direction: column; gap: 5px; }
+.ctrl-lbl { font-size: 11px; color: var(--t3); font-weight: 500; }
+.ctrl-grp { display: flex; gap: 6px; flex-wrap: wrap; }
+.ctrl-btn { padding: 5px 11px; border-radius: 8px; border: 1px solid var(--border); background: var(--s3); color: var(--t2); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s; }
+.ctrl-btn:hover { border-color: var(--border-h); color: var(--t1); }
+.ctrl-btn.on-meta { background: var(--meta-glow); color: var(--meta); border-color: rgba(0,85,255,.3); }
+.ctrl-btn.on-foco { background: var(--fin-glow); color: var(--fin); border-color: rgba(16,185,129,.3); }
+.ctrl-btn.on-jornada { background: rgba(16,185,129,.12); color: #10b981; border-color: rgba(16,185,129,.25); }
+.ctrl-btn.on-dark { background: rgba(238,242,255,.06); color: var(--t1); border-color: rgba(238,242,255,.15); }
+.divider { height: 1px; background: var(--border); }
+</style>
+</head>
+<body>
+
+<div class="tip" id="tip"></div>
+
+<div class="app">
+
+  <!-- ══ MÓDULO BAR ══ -->
+  <nav class="module-bar" id="moduleBar">
+    <div class="logo-mark" title="SyncLife">
+      <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
+        <defs>
+          <linearGradient id="sl-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/>
+          </linearGradient>
+          <linearGradient id="sl-brand" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#0055ff"/>
+          </linearGradient>
+          <linearGradient id="sl-r1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.7"/><stop offset="100%" stop-color="#0055ff" stop-opacity="0.7"/>
+          </linearGradient>
+          <linearGradient id="sl-r2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="0.35"/><stop offset="100%" stop-color="#0055ff" stop-opacity="0.35"/>
+          </linearGradient>
+          <filter id="sl-glow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="sl-sglow"><feGaussianBlur stdDeviation="14" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="512" height="512" rx="112" ry="112" fill="url(#sl-bg)"/>
+        <circle cx="256" cy="256" r="210" fill="none" stroke="url(#sl-r2)" stroke-width="1.5"/>
+        <circle cx="256" cy="256" r="170" fill="none" stroke="url(#sl-r1)" stroke-width="2"/>
+        <circle cx="256" cy="256" r="130" fill="none" stroke="url(#sl-brand)" stroke-width="2.5"/>
+        <path d="M256 46 A210 210 0 0 1 466 256" fill="none" stroke="#10b981" stroke-width="3" stroke-opacity="0.5" stroke-linecap="round"/>
+        <path d="M256 466 A210 210 0 0 1 46 256" fill="none" stroke="#0055ff" stroke-width="3" stroke-opacity="0.5" stroke-linecap="round"/>
+        <circle cx="256" cy="256" r="108" fill="none" stroke="url(#sl-brand)" stroke-width="2.5" opacity="0.8"/>
+        <g filter="url(#sl-sglow)"><text x="256" y="316" font-family="'Helvetica Neue','Arial',sans-serif" font-weight="800" font-size="190" text-anchor="middle" fill="url(#sl-brand)">S</text></g>
+        <circle cx="256" cy="86"  r="7" fill="#10b981" filter="url(#sl-glow)"/>
+        <circle cx="446" cy="256" r="6" fill="#0066ff" filter="url(#sl-glow)"/>
+        <circle cx="256" cy="426" r="6" fill="#0055ff" filter="url(#sl-glow)"/>
+        <circle cx="66"  cy="256" r="6" fill="#10b981" filter="url(#sl-glow)"/>
+      </svg>
+    </div>
+
+    <button class="module-btn" data-tip="Home" onmouseenter="showTip(this)" onmouseleave="hideTip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+    </button>
+    <button class="module-btn" data-tip="Finanças" onmouseenter="showTip(this)" onmouseleave="hideTip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9.5C19 6.46 15.866 4 12 4S5 6.46 5 9.5c0 1.04.31 2.01.85 2.84L5 15h2l.6 1h8.8l.6-1h2l-.85-2.66A5.9 5.9 0 0019 9.5z"/><circle cx="9.5" cy="9" r=".75" fill="currentColor" stroke="none"/><circle cx="14.5" cy="9" r=".75" fill="currentColor" stroke="none"/><path d="M12 13.5v2.5"/><path d="M9.5 16c0 .83 1.12 1.5 2.5 1.5s2.5-.67 2.5-1.5"/><path d="M19 9.5h2.5v2.5H19"/></svg>
+    </button>
+    <button class="module-btn act-meta" data-tip="Metas" onmouseenter="showTip(this)" onmouseleave="hideTip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    </button>
+    <button class="module-btn" data-tip="Agenda" onmouseenter="showTip(this)" onmouseleave="hideTip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/><rect x="7" y="14" width="3" height="3" rx="0.5"/><rect x="13" y="14" width="3" height="3" rx="0.5"/></svg>
+    </button>
+
+    <div class="spacer"></div>
+
+    <button class="module-btn" data-tip="Configurações" onmouseenter="showTip(this)" onmouseleave="hideTip()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    </button>
+    <div class="user-avatar" title="Thiago">T</div>
+  </nav>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <div class="sb-mod-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0055ff" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      </div>
+      <span class="sb-mod-label">Metas</span>
+      <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()" title="Recolher">
+        <svg id="sbToggleIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+    </div>
+
+    <div class="sb-score">
+      <div class="sb-score-top">
+        <div>
+          <div class="sb-score-label">Life Sync Score</div>
+          <div class="sb-score-num">74</div>
+        </div>
+        <div style="text-align:right">
+          <div class="sb-score-delta">↑ +3 esta semana</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:2px">Metas: 65</div>
+        </div>
+      </div>
+      <div class="sb-score-bar"><div class="sb-score-fill"></div></div>
+    </div>
+
+    <nav class="sb-nav">
+      <button class="nav-item" onclick="selectNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <span>Minhas Metas</span>
+        <span class="nav-badge badge-y">3 ativas</span>
+      </button>
+      <button class="nav-item act-meta" onclick="selectNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>Nova Meta</span>
+      </button>
+      <button class="nav-item" onclick="selectNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 9H4a2 2 0 010-4h2M18 9h2a2 2 0 000-4h-2M6 9v2a6 6 0 0012 0V9M6 5v4h12V5"/><line x1="12" y1="15" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+        <span>Conquistas</span>
+        <span class="nav-badge badge-y">5</span>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main" id="main">
+    <header class="header">
+      <button class="expand-from-bar" id="expandBtn" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+
+      <div class="hd-breadcrumb">
+        <span class="mod-name">Metas</span>
+        <span class="sep">›</span>
+        <span id="hdPageName">Nova Meta</span>
+      </div>
+      <div class="hd-greeting">
+        <span class="hd-greeting-name">Hora de criar um objetivo! 🎯</span>
+        <span class="hd-greeting-phrase">Cada meta começa com uma decisão.</span>
+      </div>
+
+      <div class="hd-spacer"></div>
+
+      <button class="mode-pill" onclick="toggleMode()" id="modePill">
+        <div class="mode-pill-dot" id="modeDot">🎯</div>
+        <span id="modeLabel">Modo Foco</span>
+      </button>
+      <button class="theme-pill" id="themePill" onclick="cycleTheme()">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark</span>
+      </button>
+      <button class="hd-notif">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+    </header>
+
+    <div class="content">
+      <div id="wizardRoot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM BAR -->
+<nav class="mob-bar">
+  <button class="mob-tab act-home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Home</span>
+  </button>
+  <button class="mob-tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 9.5C19 6.46 15.866 4 12 4S5 6.46 5 9.5c0 1.04.31 2.01.85 2.84L5 15h2l.6 1h8.8l.6-1h2l-.85-2.66A5.9 5.9 0 0019 9.5z"/></svg><span>Finanças</span>
+  </button>
+  <button class="mob-tab act-meta">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span>Metas</span>
+  </button>
+  <button class="mob-tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Agenda</span>
+  </button>
+  <button class="mob-tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span>Config</span>
+  </button>
+</nav>
+
+<!-- CONTROLS PANEL -->
+<div class="controls">
+  <div class="ctrl-title">🧪 Controles do Protótipo</div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Step atual</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-meta" id="ctrl-s1" onclick="goStep(1)">1</button>
+      <button class="ctrl-btn" id="ctrl-s2" onclick="goStep(2)">2</button>
+      <button class="ctrl-btn" id="ctrl-s3" onclick="goStep(3)">3</button>
+      <button class="ctrl-btn" id="ctrl-s4" onclick="goStep(4)">4</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Tipo de meta</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-meta" id="ctrl-tfin" onclick="setType('fin')">💰 Fin.</button>
+      <button class="ctrl-btn" id="ctrl-tvia" onclick="setType('via')">✈️ Via.</button>
+      <button class="ctrl-btn" id="ctrl-tpes" onclick="setType('pes')">🏃 Pes.</button>
+      <button class="ctrl-btn" id="ctrl-tlei" onclick="setType('lei')">📚 Lei.</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Modo</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-foco" id="ctrl-foco" onclick="setMode('foco')">🎯 Foco</button>
+      <button class="ctrl-btn" id="ctrl-jornada" onclick="setMode('jornada')">🌱 Jornada</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Tema</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-dark" id="ctrl-dark" onclick="setTheme('dark')">🌙 Dark</button>
+      <button class="ctrl-btn" id="ctrl-light" onclick="setTheme('light')">☀️ Light</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let curStep = 1;
+let curMode = 'foco';
+let curTheme = 'dark';
+let sbOpen = true;
+
+const state = {
+  type: 'fin',        // fin | pes | pro | sau | edu
+  title: '',
+  value: 1000,
+  deadline: '2026-12',
+  icon: '✈️',
+  color: '#0055ff',
+  contribution: 800,
+  envelope: 'viagem',
+};
+
+const TYPES = {
+  fin: { emoji: '💰', label: 'Financeira',    color: '#10b981', desc: 'Metas financeiras se conectam ao seu orçamento e planejamento. Você define um valor alvo e o app acompanha cada aporte automaticamente.' },
+  pes: { emoji: '🏃', label: 'Pessoal',       color: '#f59e0b', desc: 'Para objetivos de vida como perder peso, aprender algo novo ou construir um hábito. O progresso é registrado manualmente.' },
+  via: { emoji: '✈️', label: 'Viagem',        color: '#0055ff', desc: 'Planeje sua próxima aventura. Pode ser vinculada a um envelope financeiro se precisar guardar dinheiro para a viagem.' },
+  laz: { emoji: '🎉', label: 'Lazer',         color: '#ec4899', desc: 'Objetivos de entretenimento e qualidade de vida: comprar algo que quer, fazer um curso, um hobby novo.' },
+  fam: { emoji: '👨‍👩‍👧', label: 'Família',      color: '#f97316', desc: 'Metas relacionadas à família e à casa: uma reforma, uma viagem em família, um projeto para o lar.' },
+  lei: { emoji: '📚', label: 'Leitura',       color: '#8b5cf6', desc: 'Metas de leitura como ler X livros por ano, terminar uma série ou explorar um novo gênero. Integra com Estudos no v3.' },
+  pro: { emoji: '💼', label: 'Profissional',  color: '#64748b', desc: 'Crescimento na carreira, conquistas profissionais e habilidades. Integra com o módulo de Carreira no MVP v3.' },
+  sau: { emoji: '❤️', label: 'Saúde',         color: '#f43f5e', desc: 'Metas de bem-estar físico e mental. Integra com o módulo de Saúde no MVP v3.' },
+  edu: { emoji: '🎓', label: 'Educação',      color: '#06b6d4', desc: 'Cursos, diplomas, idiomas e qualquer objetivo de aprendizado. Integra com o módulo de Estudos no MVP v3.' },
+  out: { emoji: '🎯', label: 'Outro',         color: '#a78bfa', desc: 'Qualquer objetivo que não se encaixa nas categorias acima. Você define como medir o progresso.' },
+};
+
+const ICONS_BY_TYPE = {
+  fin: ['💰','🏠','🚗','💎','📱','💳','💵','🏦'],
+  pes: ['🏃','🧘','🎸','🌱','🎨','🍳','🏋️','🧗'],
+  via: ['✈️','🏖️','🗺️','🏔️','🚢','🎡','🌍','🏕️'],
+  laz: ['🎉','🎮','🎬','🎵','🍕','🍷','🎳','🏄'],
+  fam: ['👨‍👩‍👧','🏡','🛋️','🌻','🎠','🧸','🍰','🎁'],
+  lei: ['📚','📖','📝','🔖','📰','✏️','🗒️','🧠'],
+  pro: ['💼','🚀','🏆','📊','💡','🤝','📈','🎖️'],
+  sau: ['❤️','🏋️','🧠','😴','💊','🥗','🚴','🧘'],
+  edu: ['🎓','📚','✏️','🔬','🌐','🎵','🖥️','📐'],
+  out: ['🎯','⭐','🔥','💫','✨','🌟','🏅','🎪'],
+};
+
+const COLORS = ['#0055ff','#10b981','#f59e0b','#f43f5e','#8b5cf6','#06b6d4','#ec4899','#f97316'];
+const ENVELOPES = ['viagem','reserva','educacao','lazer','saude','investimento'];
+const ENVELOPE_LABELS = {'viagem':'✈️ Viagem','reserva':'🛡️ Reserva de Emergência','educacao':'🎓 Educação','lazer':'🎉 Lazer','saude':'❤️ Saúde','investimento':'📈 Investimento'};
+
+// ── TOOLTIP ──
+const tipEl = document.getElementById('tip');
+function showTip(btn) {
+  const r = btn.getBoundingClientRect();
+  tipEl.textContent = btn.dataset.tip;
+  tipEl.style.top = (r.top + r.height/2) + 'px';
+  tipEl.classList.add('show');
+}
+function hideTip() { tipEl.classList.remove('show'); }
+
+// ── SIDEBAR ──
+function toggleSidebar() {
+  sbOpen = !sbOpen;
+  document.getElementById('sidebar').classList.toggle('closed', !sbOpen);
+  const icon = document.getElementById('sbToggleIcon');
+  if (sbOpen) icon.innerHTML = `<path d="M15 18l-6-6 6-6"/>`;
+  else icon.innerHTML = `<path d="M9 18l6-6-6-6"/>`;
+}
+function selectNav(el) {
+  document.querySelectorAll('.nav-item').forEach(b => b.className = 'nav-item');
+  el.classList.add('act-meta');
+}
+
+// ── PROJECTION CALC ──
+function calcProjection() {
+  const val = state.value || 10000;
+  const contrib = state.contribution || 800;
+  if (contrib <= 0) return { months: '—', date: '—', viable: false };
+  const months = Math.ceil(val / contrib);
+  const now = new Date();
+  const proj = new Date(now.getFullYear(), now.getMonth() + months, 1);
+  const monthNames = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const date = `${monthNames[proj.getMonth()]}/${proj.getFullYear()}`;
+
+  // Parse deadline
+  let deadlineDate = null;
+  if (state.deadline) {
+    const [y,m] = state.deadline.split('-').map(Number);
+    deadlineDate = new Date(y, m-1, 1);
+  }
+  const viable = deadlineDate ? proj <= deadlineDate : true;
+  const deadlineStr = deadlineDate ? `${monthNames[deadlineDate.getMonth()]}/${deadlineDate.getFullYear()}` : '—';
+  return { months, date, viable, deadlineStr };
+}
+
+// ── STEP STEPS HTML ──
+function stepDots() {
+  const labels = ['Tipo','Detalhes','Vínculo','Confirmação'];
+  return labels.map((l,i) => {
+    const n = i+1;
+    const cls = n < curStep ? 'done' : n === curStep ? 'active' : '';
+    const inner = n < curStep
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>`
+      : n;
+    return `<div class="wz-step-item ${cls}">
+      <div class="wz-step-dot">${inner}</div>
+      <div class="wz-step-label">${l}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER STEP 1: TYPE ──
+function renderStep1() {
+  const isJornada = curMode === 'jornada';
+  const phrase = isJornada
+    ? `<div class="wz-jornada-phrase"><span class="phrase-icon">💡</span>O tipo certo de meta define a melhor forma de acompanhar seu progresso.</div>` : '';
+
+  const typeCards = Object.entries(TYPES).map(([k, t]) => {
+    const sel = state.type === k ? 'selected' : '';
+    return `<div class="type-card ${sel}" onclick="selectType('${k}')">
+      <div class="tc-icon">${t.emoji}</div>
+      <div class="tc-label">${t.label}</div>
+      <div class="tc-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>`;
+  }).join('');
+
+  const desc = state.type ? `<div class="type-desc">${TYPES[state.type].emoji} <strong>${TYPES[state.type].label}:</strong> ${TYPES[state.type].desc}</div>` : '';
+
+  return `
+  <div class="wz-body">
+    <div class="wz-panel">
+      ${phrase}
+      <div class="wz-panel-title">Qual é o seu objetivo?</div>
+      <div class="wz-panel-sub">Escolha a categoria que melhor descreve o que você quer alcançar. Isso define como o progresso será acompanhado.</div>
+      <div class="type-grid">${typeCards}</div>
+      ${desc}
+      <div class="wz-nav-row">
+        <div class="step-counter">Passo 1 de 4</div>
+        <button class="wz-btn-next" onclick="nextStep()">
+          Continuar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── RENDER STEP 2: DETAILS ──
+function renderStep2() {
+  const isJornada = curMode === 'jornada';
+  const phrase = isJornada
+    ? `<div class="wz-jornada-phrase"><span class="phrase-icon">✨</span>Quanto mais claro o seu objetivo, maior a chance de realizá-lo.</div>` : '';
+
+  const icons = (ICONS_BY_TYPE[state.type] || ICONS_BY_TYPE.fin).map(ic => {
+    const sel = state.icon === ic ? 'selected' : '';
+    return `<div class="icon-opt ${sel}" onclick="selectIcon('${ic}')">${ic}</div>`;
+  }).join('');
+
+  const colorOpts = COLORS.map(c => {
+    const sel = state.color === c ? 'selected' : '';
+    return `<div class="color-opt ${sel}" style="background:${c}" onclick="selectColor('${c}')"></div>`;
+  }).join('');
+
+  const isFinancial = state.type === 'fin';
+  const valueField = isFinancial ? `
+    <div class="form-field">
+      <div class="form-label">Valor alvo</div>
+      <div class="form-input-prefix">
+        <span class="prefix">R$</span>
+        <input class="form-input" type="number" placeholder="10.000" value="${state.value}" oninput="state.value=+this.value; updatePreview()" min="1">
+      </div>
+    </div>` : `
+    <div class="form-field">
+      <div class="form-label">Quantidade alvo <span style="color:var(--t3);font-weight:400;text-transform:none;">(opcional)</span></div>
+      <input class="form-input" type="number" placeholder="Ex: 30 sessões, 5 livros…" value="" oninput="state.value=+this.value; updatePreview()">
+    </div>`;
+
+  return `
+  <div class="wz-body">
+    <div class="wz-panel">
+      ${phrase}
+      <div class="wz-panel-title">Conta mais sobre o seu objetivo</div>
+      <div class="wz-panel-sub">Dê um nome claro e defina os números que vão guiar seu progresso.</div>
+
+      <div class="form-grid">
+        <div class="form-field full">
+          <div class="form-label">Nome da meta</div>
+          <input class="form-input" type="text" placeholder='Ex: "Viagem para Europa", "Reserva de Emergência"' value="${state.title}" oninput="state.title=this.value; updatePreview()" maxlength="60">
+        </div>
+
+        ${valueField}
+
+        <div class="form-field">
+          <div class="form-label">Prazo</div>
+          <div class="date-picker-wrap">
+            <select class="date-picker-select" onchange="setDeadlineMonth(this.value)">
+              ${buildMonthOptions(state.deadline)}
+            </select>
+            <select class="date-picker-select" style="flex:0 0 96px" onchange="setDeadlineYear(this.value)">
+              ${buildYearOptions(state.deadline)}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-field full">
+          <div class="form-label">Ícone</div>
+          <div class="icon-grid">${icons}</div>
+        </div>
+
+        <div class="form-field">
+          <div class="form-label">Cor do card</div>
+          <div class="color-grid">${colorOpts}</div>
+        </div>
+      </div>
+
+      <div class="wz-nav-row">
+        <button class="wz-btn-back" onclick="prevStep()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          Voltar
+        </button>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="step-counter">Passo 2 de 4</div>
+          <button class="wz-btn-next" onclick="nextStep()">
+            Continuar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIEW CARD -->
+    <div class="wz-preview">
+      <div class="preview-label">Prévia do card</div>
+      <div class="preview-card" id="previewCard">
+        <div class="preview-card-top">
+          <div class="preview-icon-wrap" id="prevIconWrap" style="background:${state.color}22">
+            <span id="prevIcon" style="font-size:22px">${state.icon}</span>
+          </div>
+          <div>
+            <div class="preview-title" id="prevTitle">${state.title || 'Nome da sua meta'}</div>
+            <span class="preview-type-badge" id="prevBadge" style="background:${state.color}22;color:${state.color}">${TYPES[state.type]?.emoji} ${TYPES[state.type]?.label}</span>
+          </div>
+        </div>
+        <div class="preview-progress-bar-bg">
+          <div class="preview-progress-fill" id="prevProgress" style="background:${state.color}"></div>
+        </div>
+        <div class="preview-stats">
+          <div class="preview-stat">
+            <div class="ps-label">Atual</div>
+            <div class="ps-val">R$ 0</div>
+          </div>
+          <div class="preview-stat">
+            <div class="ps-label">Meta</div>
+            <div class="ps-val highlight" id="prevTarget" style="color:${state.color}">R$ ${(state.value||0).toLocaleString('pt-BR')}</div>
+          </div>
+          <div class="preview-stat">
+            <div class="ps-label">Prazo</div>
+            <div class="ps-val" id="prevDeadline">${formatDeadline(state.deadline)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding:12px;border-radius:12px;background:var(--s2);border:1px solid var(--border)">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:8px">Status</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>
+          <div style="font-size:12px;color:var(--t2)">No caminho</div>
+        </div>
+        <div style="font-size:11px;color:var(--t3);margin-top:6px">0% concluído · ${state.deadline ? formatDeadline(state.deadline) : '—'}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function formatDeadline(d) {
+  if (!d) return '—';
+  const [y,m] = d.split('-');
+  const names = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return `${names[+m-1]}/${y}`;
+}
+
+function updatePreview() {
+  const t = document.getElementById('prevTitle');
+  const ic = document.getElementById('prevIcon');
+  const iw = document.getElementById('prevIconWrap');
+  const b = document.getElementById('prevBadge');
+  const tg = document.getElementById('prevTarget');
+  const dl = document.getElementById('prevDeadline');
+  if (t) t.textContent = state.title || 'Nome da sua meta';
+  if (ic) ic.textContent = state.icon;
+  if (iw) iw.style.background = state.color + '22';
+  if (b) { b.style.background = state.color + '22'; b.style.color = state.color; }
+  if (tg) { tg.textContent = `R$ ${(state.value||0).toLocaleString('pt-BR')}`; tg.style.color = state.color; }
+  if (dl) dl.textContent = formatDeadline(state.deadline);
+}
+
+// ── RENDER STEP 3: FINANCIAL LINK ──
+function renderStep3() {
+  const isFinancial = state.type === 'fin' || state.type === 'via';
+  const isJornada = curMode === 'jornada';
+
+  if (!isFinancial) {
+    // Non-financial: skip message
+    const phrase = isJornada
+      ? `<div class="wz-jornada-phrase"><span class="phrase-icon">🌱</span>Metas pessoais ganham força quando você as revê com frequência.</div>` : '';
+    return `
+    <div class="wz-body">
+      <div class="wz-panel">
+        ${phrase}
+        <div class="wz-panel-title">Vínculo financeiro</div>
+        <div class="wz-panel-sub">Metas do tipo <strong>${TYPES[state.type]?.label}</strong> não precisam de vínculo financeiro. Seu progresso será registrado manualmente.</div>
+        <div style="padding:40px 20px;text-align:center">
+          <div style="font-size:48px;margin-bottom:16px">${TYPES[state.type]?.emoji}</div>
+          <div style="font-size:15px;font-weight:700;color:var(--t1);margin-bottom:8px">Sem vínculo financeiro</div>
+          <div style="font-size:13px;color:var(--t3);line-height:1.7;max-width:360px;margin:0 auto">
+            Você vai registrar o progresso manualmente. O app vai calcular automaticamente a tendência e a projeção de conclusão.
+          </div>
+        </div>
+        <div class="wz-nav-row">
+          <button class="wz-btn-back" onclick="prevStep()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+            Voltar
+          </button>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="step-counter">Passo 3 de 4</div>
+            <button class="wz-btn-next" onclick="nextStep()">
+              Continuar
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  const phrase = isJornada
+    ? `<div class="wz-jornada-phrase"><span class="phrase-icon">🔗</span>Vincular sua meta ao orçamento é o segredo para realmente chegar lá.</div>` : '';
+
+  const sugg = state.value && state.deadline
+    ? calcMonthlyFromDeadline()
+    : state.value ? Math.round(state.value / 12) : 800;
+
+  const envOpts = Object.entries(ENVELOPE_LABELS).map(([k,v]) => {
+    const sel = state.envelope === k ? 'selected' : '';
+    return `<option value="${k}" ${sel}>${v}</option>`;
+  }).join('');
+
+  return `
+  <div class="wz-body">
+    <div class="wz-panel">
+      ${phrase}
+      <div class="wz-panel-title">Como você vai chegar lá?</div>
+      <div class="wz-panel-sub">Configure quanto pretende guardar por mês e vincule a um envelope do seu orçamento.</div>
+
+      <div class="link-info-card">
+        <div class="link-info-icon">📊</div>
+        <div class="link-info-body">
+          <div class="link-info-title">Por que vincular ao orçamento?</div>
+          <div class="link-info-sub">Ao vincular, o dinheiro reservado neste envelope conta automaticamente como progresso da sua meta. Você não precisa registrar manualmente.</div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <div class="form-label">Valor mensal de contribuição</div>
+          <div class="form-input-prefix">
+            <span class="prefix">R$</span>
+            <input class="form-input" type="number" id="contribInput" placeholder="800" value="${state.contribution}" oninput="state.contribution=+this.value; updateCalc()" min="1">
+          </div>
+          <div class="suggestion-pill" onclick="applySuggestion(${sugg})">
+            ✨ Sugestão automática: R$ ${sugg.toLocaleString('pt-BR')}/mês
+          </div>
+        </div>
+
+        <div class="form-field">
+          <div class="form-label">Vincular ao envelope</div>
+          <select class="envelope-select" onchange="state.envelope=this.value">
+            ${envOpts}
+            <option value="novo">+ Criar novo envelope exclusivo</option>
+          </select>
+          <div style="font-size:11px;color:var(--t3);margin-top:6px">Ao vincular, aportes neste envelope contam como progresso da meta.</div>
+        </div>
+      </div>
+
+      <div class="contribution-calc" id="calcCard">
+        <span>⏱️ Projeção de conclusão</span>
+        <span class="calc-value" id="calcValue">—</span>
+      </div>
+
+      <div class="wz-nav-row">
+        <button class="wz-btn-back" onclick="prevStep()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          Voltar
+        </button>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="step-counter">Passo 3 de 4</div>
+          <button class="wz-btn-next" onclick="nextStep()">
+            Ver confirmação
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function calcMonthlyFromDeadline() {
+  if (!state.deadline || !state.value) return 800;
+  const [y,m] = state.deadline.split('-').map(Number);
+  const now = new Date();
+  const target = new Date(y, m-1, 1);
+  const months = Math.max(1, Math.round((target - now) / (1000*60*60*24*30)));
+  return Math.ceil(state.value / months);
+}
+
+function applySuggestion(val) {
+  state.contribution = val;
+  const inp = document.getElementById('contribInput');
+  if (inp) inp.value = val;
+  updateCalc();
+}
+
+function updateCalc() {
+  const el = document.getElementById('calcValue');
+  if (!el) return;
+  const p = calcProjection();
+  el.textContent = p.viable ? `${p.date} ✅` : `${p.date} ⚠️ além do prazo`;
+  el.style.color = p.viable ? 'var(--green)' : 'var(--yellow)';
+}
+
+// ── RENDER STEP 4: CONFIRMATION ──
+function renderStep4() {
+  const isJornada = curMode === 'jornada';
+  const t = TYPES[state.type] || TYPES.fin;
+  const p = calcProjection();
+  const isFinancial = state.type === 'fin' || state.type === 'via';
+
+  const confetti = isJornada ? `<div class="confetti-bar">🎉 ✨ 🚀 ⭐ 🎯 💪 🌟</div>` : '';
+  const phrase = isJornada
+    ? `<div class="wz-jornada-phrase"><span class="phrase-icon">🚀</span>Sua meta está pronta! O primeiro passo é o mais importante.</div>` : '';
+
+  const projIcon = p.viable ? '✅' : '⚠️';
+  const projColor = p.viable ? 'var(--green)' : 'var(--yellow)';
+  const projMsg = isFinancial
+    ? (p.viable
+        ? `Se você guardar <strong>R$ ${state.contribution.toLocaleString('pt-BR')}/mês</strong>, você atinge esta meta em <strong>${p.date}</strong> — antes do prazo!`
+        : `No ritmo atual, você vai concluir em <strong>${p.date}</strong>. Para chegar até <strong>${p.deadlineStr}</strong>, guarde R$ ${calcMonthlyFromDeadline().toLocaleString('pt-BR')}/mês.`)
+    : `Você criou uma meta ${t.label.toLowerCase()}. Registre seu progresso regularmente para manter a tendência.`;
+
+  const stats = isFinancial ? `
+    <div class="meta-stat">
+      <div class="meta-stat-label">Valor alvo</div>
+      <div class="meta-stat-value">R$ ${(state.value||0).toLocaleString('pt-BR')}</div>
+    </div>
+    <div class="meta-stat">
+      <div class="meta-stat-label">Mensal</div>
+      <div class="meta-stat-value">R$ ${state.contribution.toLocaleString('pt-BR')}</div>
+    </div>
+    <div class="meta-stat">
+      <div class="meta-stat-label">Prazo</div>
+      <div class="meta-stat-value">${formatDeadline(state.deadline)}</div>
+    </div>` : `
+    <div class="meta-stat">
+      <div class="meta-stat-label">Tipo</div>
+      <div class="meta-stat-value">${t.label}</div>
+    </div>
+    <div class="meta-stat">
+      <div class="meta-stat-label">Prazo</div>
+      <div class="meta-stat-value">${formatDeadline(state.deadline)}</div>
+    </div>
+    <div class="meta-stat">
+      <div class="meta-stat-label">Status</div>
+      <div class="meta-stat-value" style="color:var(--green)">🟢 Ativa</div>
+    </div>`;
+
+  return `
+  <div class="wz-body" style="justify-content:center">
+    <div class="wz-panel" style="max-width:680px;width:100%">
+      ${confetti}
+      ${phrase}
+      <div class="wz-panel-title">Confirme sua meta</div>
+      <div class="wz-panel-sub">Revise tudo antes de criar. Você pode editar qualquer detalhe depois.</div>
+
+      <!-- Meta Card Preview -->
+      <div class="confirm-meta-card">
+        <div class="card-color-strip" style="background:linear-gradient(90deg, ${state.color}, ${state.color}88)"></div>
+        <div class="confirm-meta-top">
+          <div class="confirm-meta-icon-wrap" style="background:${state.color}22">
+            <span style="font-size:28px">${state.icon}</span>
+          </div>
+          <div style="flex:1">
+            <div class="confirm-meta-title">${state.title || 'Minha meta'}</div>
+            <div class="confirm-meta-type">${t.emoji} ${t.label}</div>
+            <div class="confirm-meta-stats">${stats}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projection -->
+      <div class="projection-card">
+        <div class="projection-main">
+          <span class="proj-icon">${projIcon}</span>
+          <span style="color:${projColor}">${p.viable ? 'Projeção favorável' : 'Ajuste recomendado'}</span>
+        </div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:10px">${projMsg}</div>
+        ${isFinancial ? `<div class="projection-detail">
+          <div class="proj-detail-item"><span class="lbl">Contribuição:</span> <span class="val">R$ ${state.contribution.toLocaleString('pt-BR')}/mês</span></div>
+          <div class="proj-detail-item"><span class="lbl">Duração:</span> <span class="val">${p.months} meses</span></div>
+          <div class="proj-detail-item"><span class="lbl">Conclusão:</span> <span class="val">${p.date}</span></div>
+        </div>` : ''}
+      </div>
+
+      ${isFinancial ? `
+      <div style="padding:12px 16px;border-radius:12px;background:var(--s2);border:1px solid var(--border);font-size:12px;color:var(--t3);display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <span style="font-size:16px">🔗</span>
+        Vinculada ao envelope <strong style="color:var(--t2)">${ENVELOPE_LABELS[state.envelope] || state.envelope}</strong>
+      </div>` : ''}
+
+      <div class="wz-nav-row">
+        <button class="wz-btn-back" onclick="prevStep()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          Ajustar detalhes
+        </button>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="step-counter">Passo 4 de 4</div>
+          <button class="wz-btn-next final" onclick="createGoal()">
+            Criar minha meta 🚀
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── DATE PICKER HELPERS ──
+const MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function buildMonthOptions(deadline) {
+  const selMonth = deadline ? +deadline.split('-')[1] : new Date().getMonth()+2;
+  return MONTHS_PT.map((m,i) => {
+    const v = i+1;
+    const sel = v === selMonth ? 'selected' : '';
+    return `<option value="${v}" ${sel}>${m}</option>`;
+  }).join('');
+}
+
+function buildYearOptions(deadline) {
+  const selYear = deadline ? +deadline.split('-')[0] : new Date().getFullYear()+1;
+  const nowYear = new Date().getFullYear();
+  let opts = '';
+  for (let y = nowYear; y <= nowYear+10; y++) {
+    opts += `<option value="${y}" ${y===selYear?'selected':''}>${y}</option>`;
+  }
+  return opts;
+}
+
+function setDeadlineMonth(m) {
+  const parts = (state.deadline || `${new Date().getFullYear()}-12`).split('-');
+  parts[1] = String(m).padStart(2,'0');
+  state.deadline = parts.join('-');
+  updatePreview();
+}
+
+function setDeadlineYear(y) {
+  const parts = (state.deadline || `${new Date().getFullYear()}-12`).split('-');
+  parts[0] = y;
+  state.deadline = parts.join('-');
+  updatePreview();
+}
+
+// ── WIZARD RENDER ──
+function renderWizard() {
+  const isJornada = curMode === 'jornada';
+  const modeLabel = isJornada ? 'Modo Jornada 🌱' : 'Modo Foco 🎯';
+
+  let body = '';
+  if (curStep === 1) body = renderStep1();
+  else if (curStep === 2) body = renderStep2();
+  else if (curStep === 3) body = renderStep3();
+  else if (curStep === 4) body = renderStep4();
+
+  document.getElementById('wizardRoot').innerHTML = `
+    <div class="wizard-outer">
+      <div class="annotation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Protótipo I.1 · Nova Meta (Wizard) · ${modeLabel}
+      </div>
+
+      <!-- TOP BAR: exit + steps -->
+      <div class="wz-topbar">
+        <button class="wz-exit-btn" title="Sair sem salvar" onclick="exitWizard()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="wz-steps-track">
+          <div class="wz-steps-row">${stepDots()}</div>
+        </div>
+      </div>
+
+      ${body}
+    </div>`;
+
+  // Run any post-render setup
+  if (curStep === 3 && state.type === 'fin') setTimeout(updateCalc, 50);
+}
+
+// ── NAVIGATION ──
+function nextStep() {
+  if (curStep < 4) { curStep++; updateStepControls(); renderWizard(); }
+}
+function prevStep() {
+  if (curStep > 1) { curStep--; updateStepControls(); renderWizard(); }
+}
+function goStep(n) {
+  curStep = n; updateStepControls(); renderWizard();
+}
+function updateStepControls() {
+  [1,2,3,4].forEach(n => {
+    const b = document.getElementById('ctrl-s' + n);
+    if (b) b.className = n === curStep ? 'ctrl-btn on-meta' : 'ctrl-btn';
+  });
+}
+function exitWizard() {
+  alert('Confirmação: "Você tem certeza que quer sair sem salvar?"\n\n[Sair] [Continuar editando]');
+}
+function createGoal() {
+  alert('✅ Meta criada com sucesso!\n\n→ Redirecionando para Minhas Metas...');
+}
+
+// ── TYPE SELECTION ──
+function selectType(t) {
+  state.type = t;
+  state.icon = ICONS_BY_TYPE[t]?.[0] || '🎯';
+  renderWizard();
+}
+
+function selectIcon(ic) {
+  state.icon = ic;
+  document.querySelectorAll('.icon-opt').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.icon-opt').forEach(el => {
+    if (el.textContent === ic) el.classList.add('selected');
+  });
+  updatePreview();
+}
+
+function selectColor(c) {
+  state.color = c;
+  document.querySelectorAll('.color-opt').forEach(el => el.classList.remove('selected'));
+  event.target.classList.add('selected');
+  updatePreview();
+}
+
+// ── TYPE CONTROL ──
+function setType(t) {
+  state.type = t;
+  state.icon = ICONS_BY_TYPE[state.type]?.[0] || '🎯';
+  ['tfin','tvia','tpes','tlei'].forEach(k => {
+    const b = document.getElementById('ctrl-' + k);
+    if (b) b.className = k === 'ctrl-t' + t ? 'ctrl-btn on-meta' : 'ctrl-btn';
+  });
+  document.getElementById('ctrl-tfin').className = t === 'fin' ? 'ctrl-btn on-meta' : 'ctrl-btn';
+  document.getElementById('ctrl-tvia').className = t === 'via' ? 'ctrl-btn on-meta' : 'ctrl-btn';
+  document.getElementById('ctrl-tpes').className = t === 'pes' ? 'ctrl-btn on-meta' : 'ctrl-btn';
+  document.getElementById('ctrl-tlei').className = t === 'lei' ? 'ctrl-btn on-meta' : 'ctrl-btn';
+  renderWizard();
+}
+
+// ── MODE / THEME ──
+function toggleMode() { setMode(curMode === 'foco' ? 'jornada' : 'foco'); }
+function setMode(m) {
+  curMode = m;
+  document.body.classList.toggle('jornada', m === 'jornada');
+  document.getElementById('modeDot').textContent = m === 'jornada' ? '🌱' : '🎯';
+  document.getElementById('modeLabel').textContent = m === 'jornada' ? 'Modo Jornada' : 'Modo Foco';
+  document.getElementById('ctrl-foco').className    = m === 'foco'    ? 'ctrl-btn on-foco'    : 'ctrl-btn';
+  document.getElementById('ctrl-jornada').className = m === 'jornada' ? 'ctrl-btn on-jornada' : 'ctrl-btn';
+  renderWizard();
+}
+
+const THEMES = ['dark','dark-jornada','light','light-jornada'];
+let themeIdx = 0;
+function cycleTheme() {
+  themeIdx = (themeIdx + 1) % THEMES.length;
+  const t = THEMES[themeIdx];
+  applyTheme(t);
+}
+function applyTheme(t) {
+  const isLight = t.includes('light');
+  const isJornada = t.includes('jornada');
+  document.body.classList.toggle('light', isLight);
+  setMode(isJornada ? 'jornada' : 'foco');
+  curTheme = isLight ? 'light' : 'dark';
+  const icons = { 'dark':'🌙','dark-jornada':'🌿','light':'☀️','light-jornada':'🌞' };
+  const labels = { 'dark':'Dark','dark-jornada':'Dark Jornada','light':'Light','light-jornada':'Light Jornada' };
+  document.getElementById('themeIcon').textContent = icons[t];
+  document.getElementById('themeLabel').textContent = labels[t];
+  document.getElementById('ctrl-dark').className  = !isLight ? 'ctrl-btn on-dark' : 'ctrl-btn';
+  document.getElementById('ctrl-light').className = isLight  ? 'ctrl-btn on-dark' : 'ctrl-btn';
+}
+function setTheme(t) {
+  const isJornada = curMode === 'jornada';
+  const key = t + (isJornada ? '-jornada' : '');
+  themeIdx = THEMES.indexOf(key);
+  if (themeIdx < 0) themeIdx = THEMES.indexOf(t);
+  applyTheme(THEMES[themeIdx < 0 ? 0 : themeIdx]);
+}
+
+// ── INIT ──
+state.title = 'Viagem para Europa';
+state.value = 10000;
+state.deadline = '2026-12';
+state.icon = '✈️';
+state.color = '#0055ff';
+state.contribution = 833;
+state.type = 'via';
+
+renderWizard();
+</script>
+</body>
+</html>

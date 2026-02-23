@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Conquistas · J.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ══ TOKENS ══ */
+:root {
+  --bg:#03071a; --s1:#07112b; --s2:#0c1a3a; --s3:#132248;
+  --border:rgba(255,255,255,0.06); --border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff; --t2:#6e90b8; --t3:#2e4a6e;
+  --em:#10b981; --em-glow:rgba(16,185,129,0.16);
+  --el:#0055ff; --el-glow:rgba(0,85,255,0.16);
+  --fin:#10b981; --meta:#0055ff; --meta-glow:rgba(0,85,255,0.16);
+  --green:#10b981; --yellow:#f59e0b; --red:#f43f5e; --purple:#8b5cf6;
+  --module-bar:58px; --sb-open:228px; --header-h:54px;
+}
+body.jornada {
+  --bg:#020d08; --s1:#061410; --s2:#0b1e18; --s3:#112b22;
+  --border:rgba(16,185,129,0.08); --border-h:rgba(16,185,129,0.18);
+  --t1:#d6faf0; --t2:#4da888; --t3:#235c48;
+}
+body.jornada .header { background:linear-gradient(90deg,rgba(16,185,129,0.06),transparent 60%); }
+body.jornada .sb-score { display:block; }
+body.jornada .hd-greeting { display:flex; }
+body.jornada .hd-breadcrumb { display:none; }
+body.jornada .hd-greeting-name { background:linear-gradient(90deg,#10b981,#0055ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+body.light {
+  --bg:#e6eef5; --s1:#ffffff; --s2:#f0f6fa; --s3:#e0eaf3;
+  --border:rgba(3,7,26,0.09); --border-h:rgba(3,7,26,0.18);
+  --t1:#03071a; --t2:#1e3a5c; --t3:#5a7a9e;
+}
+body.light .module-bar { background:linear-gradient(180deg,#083d2c,#052b1e); box-shadow:2px 0 24px rgba(8,61,44,0.28); }
+body.light .module-bar .module-btn { color:rgba(255,255,255,0.42); }
+body.light .module-bar .module-btn.act { color:#6ee7b7; background:rgba(110,231,183,0.12); }
+body.light .sidebar { background:#f5fbf8; border-right:1px solid rgba(16,185,129,0.16); }
+body.light .nav-item { color:#1a5c42; }
+body.light .nav-item:hover { background:rgba(16,185,129,0.07); }
+body.light .nav-item.act { background:rgba(16,185,129,0.10); color:#10b981; }
+body.light .header { background:linear-gradient(90deg,rgba(16,185,129,0.07),#ffffff 35%); border-color:rgba(16,185,129,0.10); }
+body.light .mode-pill, body.light .theme-pill { background:var(--s2); border-color:rgba(3,7,26,0.12); }
+body.light .controls { background:#ffffff; box-shadow:0 4px 24px rgba(3,7,26,0.12); }
+body.light .ctrl-btn { background:var(--s2); color:#1e3a5c; border-color:rgba(3,7,26,0.10); }
+body.light.jornada {
+  --bg:#c8f0e4; --s1:#ffffff; --s2:#e0f7ef; --s3:#c4eede;
+  --border:rgba(5,80,56,0.12); --border-h:rgba(5,80,56,0.24);
+  --t1:#022016; --t2:#0d5c3e; --t3:#4da888;
+}
+body.light.jornada .module-bar { background:linear-gradient(180deg,#0c9e6e,#0844cc); }
+body.light.jornada .module-bar .module-btn { color:rgba(255,255,255,0.65); }
+body.light.jornada .module-bar .module-btn.act { color:#ffffff; }
+body.light.jornada .sidebar { background:linear-gradient(180deg,#0fbe82,#0a56d6); }
+body.light.jornada .nav-item { color:rgba(255,255,255,0.75); }
+body.light.jornada .nav-item:hover { background:rgba(255,255,255,0.15); color:#fff; }
+body.light.jornada .nav-item.act { background:rgba(255,255,255,0.20); color:#fff; }
+body.light.jornada .sb-mod-label, body.light.jornada .sb-score { color:#fff; }
+body.light.jornada .sb-score { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.30); }
+body.light.jornada .header { background:linear-gradient(90deg,#0fbe82,#0a56d6); border-color:transparent; }
+body.light.jornada .hd-breadcrumb, body.light.jornada .hd-greeting-phrase { color:rgba(255,255,255,0.8); }
+body.light.jornada .hd-greeting-name { background:linear-gradient(90deg,#fff,#c4f8e8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+body.light.jornada .hd-notif, body.light.jornada .expand-from-bar { color:rgba(255,255,255,0.7); border-color:rgba(255,255,255,0.25); background:rgba(255,255,255,0.12); }
+body.light.jornada .mode-pill, body.light.jornada .theme-pill { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.30); color:rgba(255,255,255,0.9); }
+body.light.jornada .controls { background:#e8f9f2; border-color:rgba(5,80,56,0.15); }
+body.light.jornada .ctrl-btn { background:rgba(255,255,255,0.7); color:#0d5c3e; border-color:rgba(5,80,56,0.15); }
+
+html, body { height:100%; overflow:hidden; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--t1); font-size:14px; line-height:1.5; transition:background 0.4s,color 0.3s; }
+
+/* ══ SHELL ══ */
+.app { display:flex; height:100vh; overflow:hidden; }
+
+/* Module Bar */
+.module-bar { width:var(--module-bar); height:100vh; background:var(--s1); border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:12px 0; gap:2px; z-index:60; flex-shrink:0; }
+.logo-mark { width:34px; height:34px; margin-bottom:14px; cursor:pointer; }
+.module-btn { width:42px; height:42px; border-radius:12px; border:none; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; color:var(--t3); transition:all 0.15s; }
+.module-btn svg { width:21px; height:21px; }
+.module-btn:hover { background:var(--s3); color:var(--t2); }
+.module-btn.act { background:var(--el-glow); color:var(--el); }
+.module-btn::before { content:''; position:absolute; left:-8px; top:50%; transform:translateY(-50%); width:3px; height:0; border-radius:0 3px 3px 0; background:currentColor; transition:height 0.2s; }
+.module-btn.act::before { height:22px; }
+.module-bar .spacer { flex:1; }
+.user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--em),var(--el)); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:12px; color:#fff; cursor:pointer; border:2px solid var(--border); margin-top:6px; }
+.tip { position:fixed; left:calc(var(--module-bar)+8px); background:var(--s3); border:1px solid var(--border-h); border-radius:8px; padding:5px 10px; font-size:12px; color:var(--t1); pointer-events:none; z-index:999; white-space:nowrap; opacity:0; transition:opacity 0.12s; transform:translateY(-50%); box-shadow:0 4px 16px rgba(0,0,0,0.3); }
+.tip.show { opacity:1; }
+
+/* Sidebar */
+.sidebar { width:var(--sb-open); height:100vh; background:var(--s1); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; flex-shrink:0; transition:width 0.24s cubic-bezier(.4,0,.2,1); }
+.sidebar.closed { width:0; }
+.sb-header { height:var(--header-h); display:flex; align-items:center; padding:0 14px; gap:10px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.sb-mod-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+.sb-mod-label { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; white-space:nowrap; flex:1; }
+.sb-toggle { width:26px; height:26px; border-radius:7px; border:none; background:transparent; cursor:pointer; color:var(--t3); display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.sb-toggle:hover { background:var(--s3); color:var(--t2); }
+.sb-toggle svg { width:15px; height:15px; }
+.sb-score { margin:10px 10px 0; padding:12px; border-radius:12px; border:1px solid rgba(16,185,129,0.22); background:linear-gradient(135deg,rgba(16,185,129,0.10),rgba(0,85,255,0.10)); flex-shrink:0; display:none; }
+.sb-score-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.sb-score-num { font-family:'Syne',sans-serif; font-size:32px; font-weight:800; background:linear-gradient(135deg,#10b981,#0055ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+.sb-score-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--t3); margin-top:2px; }
+.sb-score-delta { font-size:11px; color:var(--green); }
+.sb-score-bar { height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden; }
+.sb-score-fill { height:100%; width:74%; background:linear-gradient(90deg,var(--em),var(--el)); border-radius:2px; }
+.sb-nav { flex:1; padding:8px; overflow-y:auto; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; cursor:pointer; color:var(--t2); border:none; background:transparent; width:100%; text-align:left; white-space:nowrap; font-family:'DM Sans',sans-serif; font-size:13px; transition:all 0.12s; }
+.nav-item svg { width:16px; height:16px; flex-shrink:0; }
+.nav-item:hover { background:var(--s3); color:var(--t1); }
+.nav-item.act { background:var(--el-glow); color:var(--el); font-weight:500; }
+.nav-badge { margin-left:auto; font-size:9px; font-weight:700; padding:2px 6px; border-radius:8px; }
+.badge-g { background:rgba(16,185,129,0.15); color:var(--green); }
+.badge-y { background:rgba(245,158,11,0.15); color:var(--yellow); }
+
+/* Main */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+
+/* Header */
+.header { height:var(--header-h); display:flex; align-items:center; padding:0 20px; gap:12px; border-bottom:1px solid var(--border); flex-shrink:0; transition:background 0.4s,border-color 0.3s; }
+.expand-from-bar { display:none; width:28px; height:28px; border-radius:8px; border:1px solid var(--border); background:transparent; cursor:pointer; color:var(--t3); align-items:center; justify-content:center; transition:all 0.15s; flex-shrink:0; }
+.expand-from-bar:hover { background:var(--s3); }
+.expand-from-bar svg { width:15px; height:15px; }
+.sidebar.closed ~ .main .expand-from-bar { display:flex; }
+.hd-breadcrumb { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--t2); }
+.hd-breadcrumb .mod-name { font-weight:600; color:var(--t1); }
+.hd-breadcrumb .sep { color:var(--t3); }
+.hd-greeting { display:none; flex-direction:column; gap:1px; }
+.hd-greeting-name { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; }
+.hd-greeting-phrase { font-size:11px; color:var(--t3); }
+.hd-spacer { flex:1; }
+.mode-pill { display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:20px; border:1px solid var(--border); background:var(--s2); cursor:pointer; font-size:12px; color:var(--t2); transition:all 0.15s; font-family:'DM Sans',sans-serif; }
+.mode-pill-dot { width:18px; height:18px; border-radius:6px; display:flex; align-items:center; justify-content:center; background:rgba(16,185,129,0.15); font-size:11px; }
+.theme-pill { display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:20px; border:1px solid var(--border); background:var(--s2); cursor:pointer; font-size:12px; color:var(--t2); font-family:'DM Sans',sans-serif; }
+.hd-notif { width:34px; height:34px; border-radius:10px; border:1px solid var(--border); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--t3); position:relative; }
+.hd-notif:hover { background:var(--s3); }
+.hd-notif svg { width:17px; height:17px; }
+.notif-dot { position:absolute; top:8px; right:8px; width:6px; height:6px; border-radius:50%; background:var(--red); border:1.5px solid var(--bg); }
+
+/* Content */
+.content { flex:1; overflow-y:auto; }
+
+/* ══════════════════════════════════
+   CONQUISTAS PAGE
+══════════════════════════════════ */
+.page { padding:24px; max-width:1100px; }
+
+/* Annotation */
+.annotation { display:inline-flex; align-items:center; gap:6px; background:rgba(245,158,11,0.08); border:1px dashed rgba(245,158,11,0.3); border-radius:6px; padding:3px 9px; font-size:11px; color:var(--yellow); margin-bottom:20px; }
+
+/* ── HERO SUMMARY ── */
+.hero-summary {
+  display:flex; gap:20px; align-items:stretch;
+  margin-bottom:22px;
+}
+.hero-score-card {
+  flex:1; padding:24px 28px; border-radius:20px;
+  background:var(--s1); border:1px solid var(--border);
+  position:relative; overflow:hidden;
+  animation:fadeUp 0.3s ease both;
+}
+body.jornada .hero-score-card { border-color:rgba(16,185,129,0.12); background:linear-gradient(135deg,rgba(6,20,16,0.9),rgba(11,30,24,0.95)); }
+body.light .hero-score-card { box-shadow:0 2px 14px rgba(3,7,26,0.07); }
+body.light.jornada .hero-score-card { background:#fff; box-shadow:0 2px 14px rgba(5,80,56,0.08); }
+
+.hero-score-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,#f59e0b,#f97316,#ec4899,#8b5cf6);
+}
+.hero-nums { display:flex; align-items:flex-end; gap:6px; margin-bottom:6px; }
+.hero-count { font-family:'Syne',sans-serif; font-size:44px; font-weight:800; line-height:1; background:linear-gradient(135deg,#f59e0b,#f97316); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.hero-total { font-size:18px; color:var(--t3); margin-bottom:4px; font-family:'DM Mono',monospace; }
+.hero-title { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--t1); margin-bottom:3px; }
+.hero-sub { font-size:12px; color:var(--t3); margin-bottom:16px; }
+.hero-bar-wrap { height:8px; background:var(--s3); border-radius:4px; overflow:hidden; margin-bottom:10px; }
+.hero-bar-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,#f59e0b,#f97316,#ec4899); transition:width 1.4s cubic-bezier(.4,0,.2,1); }
+.hero-pct { font-size:11px; color:var(--t3); }
+
+/* Recent unlocked strip */
+.recent-strip {
+  display:flex; flex-direction:column; gap:10px;
+  min-width:280px; flex-shrink:0;
+}
+.recent-card {
+  padding:14px 18px; border-radius:16px;
+  background:var(--s1); border:1px solid var(--border);
+  display:flex; align-items:center; gap:14px;
+  cursor:pointer; transition:all 0.15s;
+  animation:fadeUp 0.4s ease both;
+  position:relative; overflow:hidden;
+}
+body.jornada .recent-card { border-color:rgba(16,185,129,0.12); }
+body.light .recent-card { box-shadow:0 2px 10px rgba(3,7,26,0.06); }
+body.light.jornada .recent-card { background:#fff; }
+.recent-card:hover { border-color:var(--border-h); transform:translateX(2px); }
+.recent-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:0 2px 2px 0; }
+.recent-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--t3); margin-bottom:3px; }
+.recent-name { font-size:13px; font-weight:700; color:var(--t1); }
+.recent-date { font-size:11px; color:var(--t3); }
+.recent-badge-icon { font-size:28px; flex-shrink:0; }
+/* Jornada glow on recent */
+body.jornada .recent-card { box-shadow:0 0 0 0 transparent; transition:box-shadow 0.3s,transform 0.15s; }
+body.jornada .recent-card:hover { box-shadow:0 0 20px rgba(16,185,129,0.12); }
+
+/* ── JORNADA MOTIVATIONAL ── */
+.jornada-phrase {
+  display:none; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(135deg,rgba(16,185,129,0.07),rgba(0,85,255,0.07));
+  border:1px solid rgba(16,185,129,0.18);
+  margin-bottom:20px; font-size:13px; color:var(--t2); line-height:1.7;
+  animation:fadeUp 0.35s ease both;
+}
+body.jornada .jornada-phrase { display:flex; align-items:center; gap:12px; }
+.jornada-phrase-icon { font-size:22px; flex-shrink:0; }
+.jornada-phrase strong { color:var(--t1); }
+
+/* ── CATEGORY TABS ── */
+.cat-tabs-row { display:flex; align-items:center; gap:8px; margin-bottom:22px; flex-wrap:wrap; animation:fadeUp 0.4s ease both; }
+.cat-tab {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 14px; border-radius:20px; border:1px solid var(--border);
+  background:transparent; cursor:pointer; font-size:12px; font-weight:500;
+  color:var(--t3); transition:all 0.15s; font-family:'DM Sans',sans-serif;
+}
+.cat-tab:hover { border-color:var(--border-h); color:var(--t2); }
+.cat-tab.act { border-color:var(--el); background:var(--el-glow); color:var(--el); }
+.cat-tab-count { font-family:'DM Mono',monospace; font-size:10px; opacity:0.7; }
+.show-locked-toggle { margin-left:auto; display:flex; align-items:center; gap:7px; font-size:12px; color:var(--t3); cursor:pointer; }
+.show-locked-toggle input { accent-color:var(--el); cursor:pointer; }
+
+/* ── SECTION LABELS ── */
+.section-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; color:var(--t3); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ── BADGE GRID ── */
+.badges-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:28px; }
+
+/* ── BADGE CARD ── */
+.badge-card {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:16px; padding:18px 16px; text-align:center;
+  cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden;
+  animation:fadeUp 0.4s ease both;
+}
+body.light .badge-card { box-shadow:0 2px 10px rgba(3,7,26,0.06); }
+.badge-card:hover { transform:translateY(-3px); border-color:var(--border-h); }
+body.jornada .badge-card:hover { box-shadow:0 8px 28px rgba(0,0,0,0.25); }
+body.light .badge-card:hover { box-shadow:0 8px 24px rgba(3,7,26,0.12); }
+
+/* Unlocked */
+.badge-card.unlocked::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:3px;
+}
+/* Rarity borders */
+.badge-card.rarity-common.unlocked { }
+.badge-card.rarity-uncommon.unlocked { border-color:rgba(16,185,129,0.4); }
+.badge-card.rarity-rare.unlocked { border-color:rgba(139,92,246,0.5); box-shadow:0 0 20px rgba(139,92,246,0.12); }
+.badge-card.rarity-legendary.unlocked {
+  border-color:rgba(245,158,11,0.6);
+  box-shadow:0 0 24px rgba(245,158,11,0.15);
+  background:linear-gradient(135deg,var(--s1),rgba(245,158,11,0.04));
+}
+body.jornada .badge-card.rarity-legendary.unlocked { box-shadow:0 0 32px rgba(245,158,11,0.2); }
+
+/* Locked */
+.badge-card.locked { cursor:default; opacity:1; }
+.badge-card.locked .badge-icon-wrap { filter:grayscale(1) opacity(0.4); }
+.badge-card.locked .badge-name { color:var(--t3); }
+.badge-card.locked .badge-desc { color:var(--t3); opacity:0.5; }
+.badge-card.locked:hover { transform:none; border-color:var(--border); }
+body.light .badge-card.locked:hover { box-shadow:0 2px 10px rgba(3,7,26,0.06); }
+.lock-overlay { position:absolute; top:10px; right:10px; width:20px; height:20px; border-radius:6px; background:var(--s3); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--t3); font-size:11px; }
+
+/* Badge icon */
+.badge-icon-wrap {
+  width:54px; height:54px; border-radius:16px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px; margin:0 auto 12px; transition:transform 0.2s;
+}
+.badge-card:hover .badge-icon-wrap { transform:scale(1.08); }
+.badge-card.locked:hover .badge-icon-wrap { transform:none; }
+
+.badge-name { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; color:var(--t1); margin-bottom:4px; line-height:1.3; }
+.badge-desc { font-size:11px; color:var(--t2); line-height:1.5; margin-bottom:10px; }
+.badge-date { font-size:10px; color:var(--t3); }
+.badge-progress-wrap { margin-top:8px; }
+.badge-progress-bar { height:4px; background:var(--s3); border-radius:2px; overflow:hidden; margin-bottom:3px; }
+.badge-progress-fill { height:100%; border-radius:2px; transition:width 1s; }
+.badge-progress-label { font-size:10px; color:var(--t3); }
+
+/* Rarity badge */
+.rarity-pip {
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em;
+  padding:2px 7px; border-radius:8px; margin-bottom:6px;
+}
+.rarity-common   { background:rgba(100,116,139,0.15); color:#64748b; }
+.rarity-uncommon { background:rgba(16,185,129,0.12); color:#10b981; }
+.rarity-rare     { background:rgba(139,92,246,0.15); color:#8b5cf6; }
+.rarity-legendary{ background:rgba(245,158,11,0.15); color:#f59e0b; }
+
+/* Jornada: hover glow per category color */
+body.jornada .badge-card.unlocked.cat-fin:hover   { box-shadow:0 8px 28px rgba(16,185,129,0.18); }
+body.jornada .badge-card.unlocked.cat-meta:hover  { box-shadow:0 8px 28px rgba(0,85,255,0.18); }
+body.jornada .badge-card.unlocked.cat-cons:hover  { box-shadow:0 8px 28px rgba(245,158,11,0.18); }
+body.jornada .badge-card.unlocked.cat-agenda:hover{ box-shadow:0 8px 28px rgba(6,182,212,0.18); }
+
+/* Jornada: subtle shimmer on legendary */
+@keyframes shimmer { 0%,100%{opacity:0.6} 50%{opacity:1} }
+body.jornada .badge-card.rarity-legendary.unlocked .badge-icon-wrap { animation:shimmer 2.5s ease-in-out infinite; }
+
+/* Foco view: list */
+.badges-list { display:none; flex-direction:column; gap:8px; margin-bottom:28px; }
+.list-item {
+  display:flex; align-items:center; gap:14px; padding:12px 16px;
+  background:var(--s1); border:1px solid var(--border); border-radius:12px;
+  cursor:pointer; transition:all 0.12s; animation:fadeUp 0.3s ease both;
+}
+body.light .list-item { box-shadow:0 1px 6px rgba(3,7,26,0.05); }
+.list-item:hover { border-color:var(--border-h); }
+.list-item.locked { opacity:0.55; }
+.list-icon { font-size:22px; flex-shrink:0; width:36px; text-align:center; }
+.list-icon.locked-ico { filter:grayscale(1) opacity(0.5); }
+.list-info { flex:1; }
+.list-name { font-size:13px; font-weight:600; color:var(--t1); }
+.list-desc { font-size:12px; color:var(--t3); }
+.list-right { text-align:right; flex-shrink:0; }
+.list-date { font-size:11px; color:var(--t3); }
+.list-progress-text { font-family:'DM Mono',monospace; font-size:12px; color:var(--t2); }
+.list-status { font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; }
+.status-unlocked { background:rgba(16,185,129,0.12); color:#10b981; }
+.status-locked   { background:rgba(100,116,139,0.12); color:#64748b; }
+
+/* Flip animation (Jornada — new unlock) */
+@keyframes flipIn { 0%{transform:rotateY(90deg);opacity:0} 100%{transform:rotateY(0);opacity:1} }
+.badge-card.flip-animate { animation:flipIn 0.6s cubic-bezier(.4,0,.2,1) both; }
+
+/* Particles canvas */
+#particlesCanvas { position:fixed; inset:0; pointer-events:none; z-index:150; display:none; }
+
+/* ── MODAL ── */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:200; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.modal-overlay.open { display:flex; }
+.modal-box { background:var(--s1); border:1px solid var(--border-h); border-radius:22px; padding:32px; width:100%; max-width:440px; margin:16px; position:relative; animation:modalUp 0.25s cubic-bezier(.4,0,.2,1) both; }
+body.light .modal-box { background:#fff; box-shadow:0 20px 60px rgba(3,7,26,0.2); }
+body.jornada .modal-box { border-color:rgba(16,185,129,0.2); background:linear-gradient(135deg,rgba(6,20,16,0.98),rgba(11,30,24,0.99)); }
+body.light.jornada .modal-box { background:#fff; }
+@keyframes modalUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.modal-close { position:absolute; top:16px; right:16px; width:30px; height:30px; border-radius:8px; border:1px solid var(--border); background:transparent; cursor:pointer; color:var(--t3); display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.modal-close:hover { background:var(--s3); color:var(--t1); }
+.modal-close svg { width:14px; height:14px; }
+
+/* Modal badge display */
+.modal-badge-hero { text-align:center; margin-bottom:24px; }
+.modal-badge-icon-big { font-size:64px; display:block; margin-bottom:12px; animation:bounceIn 0.4s cubic-bezier(.4,0,.2,1) both; }
+@keyframes bounceIn { 0%{transform:scale(0)} 60%{transform:scale(1.15)} 100%{transform:scale(1)} }
+.modal-badge-name { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--t1); margin-bottom:6px; }
+.modal-badge-desc { font-size:13px; color:var(--t2); line-height:1.7; }
+.modal-badge-meta { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
+
+.modal-criteria { padding:14px 16px; border-radius:12px; background:var(--s2); border:1px solid var(--border); margin-bottom:16px; }
+.modal-criteria-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--t3); margin-bottom:6px; }
+.modal-criteria-text { font-size:13px; color:var(--t2); line-height:1.6; }
+.modal-criteria-text strong { color:var(--t1); }
+
+.modal-progress-wrap { margin-bottom:16px; }
+.modal-progress-bar { height:8px; background:var(--s3); border-radius:4px; overflow:hidden; margin-bottom:6px; }
+.modal-progress-fill { height:100%; border-radius:4px; transition:width 1s; }
+.modal-progress-label { font-size:12px; color:var(--t3); }
+
+.modal-unlocked-at { padding:12px 16px; border-radius:12px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); font-size:13px; color:var(--t2); display:flex; align-items:center; gap:8px; }
+.modal-unlocked-at strong { color:var(--green); }
+
+.modal-motivation { display:none; padding:12px 16px; border-radius:12px; background:linear-gradient(135deg,rgba(16,185,129,0.07),rgba(0,85,255,0.06)); border:1px solid rgba(16,185,129,0.18); font-size:13px; color:var(--t2); font-style:italic; margin-top:14px; }
+body.jornada .modal-motivation { display:block; }
+
+/* ── MOBILE ── */
+.mob-bar { display:none; position:fixed; bottom:0; left:0; right:0; height:64px; padding:0 4px; background:var(--s1); border-top:1px solid var(--border); align-items:center; justify-content:space-around; z-index:200; }
+.mob-tab { display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 14px; border-radius:12px; cursor:pointer; border:none; background:transparent; color:var(--t3); }
+.mob-tab svg { width:22px; height:22px; }
+.mob-tab span { font-size:10px; font-weight:500; }
+.mob-tab.act { color:var(--el); }
+@media (max-width:768px) {
+  .module-bar, .sidebar { display:none; }
+  .mob-bar { display:flex; }
+  .content { padding-bottom:76px; }
+  .badges-grid { grid-template-columns:repeat(2,1fr); }
+  .hero-summary { flex-direction:column; }
+  .recent-strip { flex-direction:row; overflow-x:auto; }
+  .recent-card { min-width:240px; }
+  .page { padding:16px; }
+}
+@media (max-width:900px) { .badges-grid { grid-template-columns:repeat(3,1fr); } }
+
+/* ── CONTROLS ── */
+.controls { position:fixed; bottom:20px; right:20px; background:var(--s2); border:1px solid var(--border-h); border-radius:16px; padding:14px; z-index:999; display:flex; flex-direction:column; gap:10px; min-width:210px; box-shadow:0 8px 40px rgba(0,0,0,0.5); }
+.ctrl-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--t3); }
+.ctrl-row { display:flex; flex-direction:column; gap:5px; }
+.ctrl-lbl { font-size:11px; color:var(--t3); font-weight:500; }
+.ctrl-grp { display:flex; gap:6px; flex-wrap:wrap; }
+.ctrl-btn { padding:5px 11px; border-radius:8px; border:1px solid var(--border); background:var(--s3); color:var(--t2); font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; transition:all 0.15s; }
+.ctrl-btn:hover { border-color:var(--border-h); color:var(--t1); }
+.ctrl-btn.on   { background:var(--el-glow); color:var(--el); border-color:rgba(0,85,255,.3); }
+.ctrl-btn.on-g { background:var(--em-glow); color:var(--em); border-color:rgba(16,185,129,.3); }
+.ctrl-btn.on-y { background:rgba(245,158,11,.12); color:var(--yellow); border-color:rgba(245,158,11,.3); }
+.ctrl-btn.on-d { background:rgba(238,242,255,.06); color:var(--t1); border-color:rgba(238,242,255,.15); }
+.divider { height:1px; background:var(--border); }
+</style>
+</head>
+<body>
+
+<canvas id="particlesCanvas"></canvas>
+
+<div class="tip" id="tip"></div>
+
+<!-- MODAL: Badge Detail -->
+<div class="modal-overlay" id="badgeModal" onclick="closeOnBg(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- MODULE BAR -->
+  <nav class="module-bar">
+    <div class="logo-mark" title="SyncLife">
+      <svg viewBox="0 0 512 512" width="34" height="34">
+        <defs>
+          <linearGradient id="slb" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/></linearGradient>
+          <linearGradient id="slbr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#0055ff"/></linearGradient>
+          <filter id="slbg"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="slbg2"><feGaussianBlur stdDeviation="14" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="512" height="512" rx="112" fill="url(#slb)"/>
+        <circle cx="256" cy="256" r="210" fill="none" stroke="url(#slbr)" stroke-width="1.5" opacity="0.35"/>
+        <circle cx="256" cy="256" r="130" fill="none" stroke="url(#slbr)" stroke-width="2.5"/>
+        <g filter="url(#slbg2)"><text x="256" y="316" font-family="'Helvetica Neue',sans-serif" font-weight="800" font-size="190" text-anchor="middle" fill="url(#slbr)">S</text></g>
+        <circle cx="256" cy="86"  r="7" fill="#10b981" filter="url(#slbg)"/>
+        <circle cx="446" cy="256" r="6" fill="#0066ff" filter="url(#slbg)"/>
+        <circle cx="256" cy="426" r="6" fill="#0055ff" filter="url(#slbg)"/>
+        <circle cx="66"  cy="256" r="6" fill="#10b981" filter="url(#slbg)"/>
+      </svg>
+    </div>
+    <button class="module-btn" data-tip="Home"        onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg></button>
+    <button class="module-btn" data-tip="Finanças"    onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></button>
+    <button class="module-btn" data-tip="Metas"       onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></button>
+    <button class="module-btn" data-tip="Agenda"      onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+    <button class="module-btn act" data-tip="Conquistas" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9H4a2 2 0 000 4h2M18 9h2a2 2 0 010 4h-2M6 9V5a2 2 0 012-2h8a2 2 0 012 2v4M6 9v2a6 6 0 0012 0V9M6 13l-1 4h14l-1-4"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg></button>
+    <div class="spacer"></div>
+    <button class="module-btn" data-tip="Configurações" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+    <div class="user-avatar">T</div>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <div class="sb-mod-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0055ff" stroke-width="1.8" width="15" height="15"><path d="M6 9H4a2 2 0 000 4h2M18 9h2a2 2 0 010 4h-2M6 9V5a2 2 0 012-2h8a2 2 0 012 2v4M6 9v2a6 6 0 0012 0V9M6 13l-1 4h14l-1-4"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg></div>
+      <span class="sb-mod-label">Conquistas</span>
+      <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()">
+        <svg id="sbIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="sb-score">
+      <div class="sb-score-top">
+        <div><div class="sb-score-label">Life Sync Score</div><div class="sb-score-num">74</div></div>
+        <div style="text-align:right"><div class="sb-score-delta">↑ +3 esta semana</div><div style="font-size:10px;color:var(--t3);margin-top:2px">Conquistas: 78pts</div></div>
+      </div>
+      <div class="sb-score-bar"><div class="sb-score-fill"></div></div>
+    </div>
+    <nav class="sb-nav">
+      <button class="nav-item act" onclick="selectNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="16" height="16"><path d="M6 9H4a2 2 0 000 4h2M18 9h2a2 2 0 010 4h-2M6 9V5a2 2 0 012-2h8a2 2 0 012 2v4M6 9v2a6 6 0 0012 0V9"/></svg>
+        <span>Minhas Conquistas</span><span class="nav-badge badge-g">12/34</span>
+      </button>
+      <button class="nav-item" onclick="selectNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="16" height="16"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/></svg>
+        <span>Lendárias</span><span class="nav-badge badge-y">2</span>
+      </button>
+      <button class="nav-item" onclick="selectNav(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Recentes</span>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <header class="header">
+      <button class="expand-from-bar" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div class="hd-breadcrumb">
+        <span class="mod-name">Conquistas</span>
+        <span class="sep">›</span>
+        <span>Minhas Conquistas</span>
+      </div>
+      <div class="hd-greeting">
+        <span class="hd-greeting-name">🏆 Suas Conquistas</span>
+        <span class="hd-greeting-phrase">12 desbloqueadas · continue crescendo!</span>
+      </div>
+      <div class="hd-spacer"></div>
+      <button class="mode-pill" onclick="toggleMode()" id="modePill">
+        <div class="mode-pill-dot" id="modeDot">🎯</div>
+        <span id="modeLabel">Modo Foco</span>
+      </button>
+      <button class="theme-pill" onclick="cycleTheme()">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark Foco</span>
+      </button>
+      <button class="hd-notif">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="17" height="17"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </button>
+    </header>
+
+    <div class="content">
+      <div class="page" id="pageRoot">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE -->
+<nav class="mob-bar">
+  <button class="mob-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Home</span></button>
+  <button class="mob-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></button>
+  <button class="mob-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span>Metas</span></button>
+  <button class="mob-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Agenda</span></button>
+  <button class="mob-tab act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><path d="M6 9H4a2 2 0 000 4h2M18 9h2a2 2 0 010 4h-2M6 9V5a2 2 0 012-2h8a2 2 0 012 2v4M6 9v2a6 6 0 0012 0V9"/></svg><span>Conquistas</span></button>
+</nav>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="ctrl-title">🧪 Controles do Protótipo</div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Modo</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-g" id="ctrl-foco"    onclick="setMode('foco')">🎯 Foco</button>
+      <button class="ctrl-btn"      id="ctrl-jornada" onclick="setMode('jornada')">🌱 Jornada</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Tema</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn on-d" id="ctrl-dark"  onclick="setTheme('dark')">🌙 Dark</button>
+      <button class="ctrl-btn"      id="ctrl-light" onclick="setTheme('light')">☀️ Light</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="ctrl-row">
+    <div class="ctrl-lbl">Simular desbloqueio</div>
+    <div class="ctrl-grp">
+      <button class="ctrl-btn" onclick="simulateUnlock()">🎉 Desbloquear</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─────────────── DATA ─────────────── */
+const BADGES = [
+  // FINANCEIRAS – desbloqueadas
+  { id:1, cat:'fin', icon:'💰', name:'Primeiro Passo',    desc:'Registrou a primeira transação',              rarity:'common',    unlocked:true,  date:'15 Jan 2026', criteria:'Registre sua primeira transação no app.', progress:100, progressMax:1,  motivation:'"Todo grande começo tem um pequeno passo."' },
+  { id:2, cat:'fin', icon:'🟢', name:'3 Meses no Verde',  desc:'Saldo positivo por 3 meses seguidos',         rarity:'uncommon',  unlocked:true,  date:'01 Fev 2026', criteria:'Mantenha saldo positivo por 3 meses consecutivos.', progress:3, progressMax:3, motivation:'"Consistência financeira é liberdade."' },
+  { id:3, cat:'fin', icon:'🎯', name:'Orçamento Cumprido',desc:'Respeitou o orçamento mensal',                rarity:'common',    unlocked:true,  date:'31 Jan 2026', criteria:'Termine o mês sem ultrapassar nenhuma categoria de orçamento.', progress:1, progressMax:1, motivation:'"Planejar é o primeiro ato de controle."' },
+  { id:4, cat:'fin', icon:'📊', name:'Analista',          desc:'Gerou seu primeiro relatório',                rarity:'common',    unlocked:true,  date:'10 Fev 2026', criteria:'Acesse e gere um relatório mensal.', progress:1, progressMax:1, motivation:'"Dados claros levam a decisões melhores."' },
+  // FINANCEIRAS – bloqueadas
+  { id:5, cat:'fin', icon:'🔥', name:'6 Meses no Verde',  desc:'Saldo positivo por 6 meses seguidos',         rarity:'rare',      unlocked:false, date:null,          criteria:'Mantenha saldo positivo por 6 meses consecutivos.', progress:3, progressMax:6, motivation:'"Metade do caminho já foi percorrido."' },
+  { id:6, cat:'fin', icon:'💎', name:'Investidor Iniciante',desc:'Registrou primeiro investimento',            rarity:'uncommon',  unlocked:false, date:null,          criteria:'Registre uma transação do tipo "Investimento".', progress:0, progressMax:1, motivation:'' },
+  { id:7, cat:'fin', icon:'🏦', name:'Reserva Construída',desc:'Atingiu meta de reserva de emergência',       rarity:'legendary', unlocked:false, date:null,          criteria:'Conclua uma meta financeira do tipo "Reserva de Emergência".', progress:75, progressMax:100, motivation:'' },
+
+  // METAS – desbloqueadas
+  { id:8, cat:'meta', icon:'🎯', name:'Sonhador',          desc:'Criou sua primeira meta',                    rarity:'common',    unlocked:true,  date:'12 Jan 2026', criteria:'Crie sua primeira meta no módulo de Metas.', progress:1, progressMax:1, motivation:'"Sonhos com prazo são objetivos."' },
+  { id:9, cat:'meta', icon:'🚀', name:'Na Velocidade',     desc:'Meta 25% acima do ritmo',                    rarity:'uncommon',  unlocked:true,  date:'20 Jan 2026', criteria:'Registre progresso 25% acima do ritmo necessário por 30 dias.', progress:1, progressMax:1, motivation:'"Quando você vai além do necessário, algo especial acontece."' },
+  { id:10,cat:'meta', icon:'🏆', name:'Meta Concluída',    desc:'Completou uma meta',                         rarity:'uncommon',  unlocked:true,  date:'05 Fev 2026', criteria:'Conclua qualquer meta (atingir 100% do objetivo).', progress:1, progressMax:1, motivation:'"Uma meta realizada abre espaço para uma nova."' },
+  // METAS – bloqueadas
+  { id:11,cat:'meta', icon:'⭐', name:'Triatleta de Metas', desc:'3 metas ativas simultaneamente',             rarity:'rare',      unlocked:false, date:null,          criteria:'Tenha 3 metas ativas ao mesmo tempo.', progress:1, progressMax:3, motivation:'' },
+  { id:12,cat:'meta', icon:'🌟', name:'Lendário',           desc:'Conclua 5 metas',                           rarity:'legendary', unlocked:false, date:null,          criteria:'Conclua um total de 5 metas quaisquer.', progress:1, progressMax:5, motivation:'' },
+
+  // CONSISTÊNCIA – desbloqueadas
+  { id:13,cat:'cons', icon:'🔥', name:'Sequência de 7 dias', desc:'Acessou o app 7 dias seguidos',            rarity:'common',    unlocked:true,  date:'22 Jan 2026', criteria:'Faça login e registre alguma atividade por 7 dias consecutivos.', progress:7, progressMax:7, motivation:'"7 dias. Hábito em formação."' },
+  { id:14,cat:'cons', icon:'📅', name:'Mês Completo',        desc:'Ativo todos os dias em um mês',            rarity:'uncommon',  unlocked:true,  date:'31 Jan 2026', criteria:'Faça login e registre alguma atividade todos os dias de um mês.', progress:31, progressMax:31, motivation:'"31 dias de consistência. Isso é caráter."' },
+  { id:15,cat:'cons', icon:'💪', name:'Madrugador',          desc:'3 registros antes das 8h',                 rarity:'common',    unlocked:true,  date:'18 Jan 2026', criteria:'Registre alguma atividade antes das 8:00 em 3 dias diferentes.', progress:3, progressMax:3, motivation:'"Quem controla a manhã, controla o dia."' },
+  // CONSISTÊNCIA – bloqueadas
+  { id:16,cat:'cons', icon:'🏅', name:'Sequência de 30 dias', desc:'30 dias seguidos usando o app',           rarity:'rare',      unlocked:false, date:null,          criteria:'Faça login e registre atividade por 30 dias consecutivos.', progress:22, progressMax:30, motivation:'' },
+  { id:17,cat:'cons', icon:'👑', name:'Veterano',             desc:'6 meses usando o SyncLife',               rarity:'legendary', unlocked:false, date:null,          criteria:'Use o app por 6 meses (não precisa ser consecutivo).', progress:2, progressMax:6, motivation:'' },
+
+  // AGENDA – desbloqueadas
+  { id:18,cat:'agenda', icon:'📅', name:'Organizador',       desc:'Criou o primeiro evento',                  rarity:'common',    unlocked:true,  date:'14 Jan 2026', criteria:'Crie seu primeiro evento no módulo de Agenda.', progress:1, progressMax:1, motivation:'"Agenda vazia é plano que não existe."' },
+  { id:19,cat:'agenda', icon:'✅', name:'100% Concluído',    desc:'Completou todos eventos de uma semana',    rarity:'uncommon',  unlocked:true,  date:'02 Fev 2026', criteria:'Marque como concluídos todos os eventos de uma semana.', progress:1, progressMax:1, motivation:'"Uma semana executada ao máximo."' },
+  // AGENDA – bloqueadas
+  { id:20,cat:'agenda', icon:'🔗', name:'Integrador',        desc:'Meta vinculada a um evento',               rarity:'uncommon',  unlocked:false, date:null,          criteria:'Crie um evento na Agenda vinculado a uma Meta.', progress:0, progressMax:1, motivation:'' },
+  { id:21,cat:'agenda', icon:'🗓️', name:'Planner Master',    desc:'50 eventos criados',                       rarity:'rare',      unlocked:false, date:null,          criteria:'Crie um total de 50 eventos no módulo de Agenda.', progress:12, progressMax:50, motivation:'' },
+];
+
+let curMode = 'foco';
+let curTheme = 'dark';
+let themeIdx = 0;
+let curCat = 'all';
+let showLocked = true;
+let sbOpen = true;
+
+const THEMES = ['dark','dark-jornada','light','light-jornada'];
+const CAT_LABELS = { all:'Todas', fin:'💰 Financeiras', meta:'🎯 Metas', cons:'📅 Consistência', agenda:'📆 Agenda' };
+const CAT_COLORS = { fin:'#10b981', meta:'#0055ff', cons:'#f59e0b', agenda:'#06b6d4', all:'#6e90b8' };
+const RARITY_LABELS = { common:'Comum', uncommon:'Incomum', rare:'Rara', legendary:'Lendária' };
+const unlocked = BADGES.filter(b=>b.unlocked);
+const recentUnlocked = [...unlocked].sort((a,b)=> new Date(b.date?.split(' ').reverse().join('-'))-new Date(a.date?.split(' ').reverse().join('-'))).slice(0,3);
+
+/* ─── TIP ─── */
+const tipEl = document.getElementById('tip');
+function showTip(btn) { const r=btn.getBoundingClientRect(); tipEl.textContent=btn.dataset.tip; tipEl.style.top=(r.top+r.height/2)+'px'; tipEl.classList.add('show'); }
+function hideTip() { tipEl.classList.remove('show'); }
+
+/* ─── SIDEBAR ─── */
+function toggleSidebar() {
+  sbOpen=!sbOpen;
+  document.getElementById('sidebar').classList.toggle('closed',!sbOpen);
+  const ic=document.getElementById('sbIcon');
+  ic.innerHTML=sbOpen?'<path d="M15 18l-6-6 6-6"/>':'<path d="M9 18l6-6-6-6"/>';
+}
+function selectNav(el) { document.querySelectorAll('.nav-item').forEach(b=>b.className='nav-item'); el.classList.add('act'); }
+
+/* ─── CAT COUNTS ─── */
+function catCount(cat) {
+  const all=BADGES.filter(b=>cat==='all'||b.cat===cat);
+  const done=all.filter(b=>b.unlocked).length;
+  return { done, total:all.length };
+}
+
+/* ─── RENDER ─── */
+function renderPage() {
+  const isJornada = curMode==='jornada';
+
+  // Filter badges
+  let visible = BADGES.filter(b=>(curCat==='all'||b.cat===curCat));
+  if (!showLocked) visible = visible.filter(b=>b.unlocked);
+  const visUnlocked = visible.filter(b=>b.unlocked);
+  const visLocked   = visible.filter(b=>!b.unlocked);
+
+  // Jornada phrase
+  const phrases = [
+    `Você está entre os <strong>top 15%</strong> dos usuários com conquistas financeiras. Cada badge representa uma decisão real que mudou sua rotina.`,
+    `<strong>${unlocked.length} conquistas desbloqueadas</strong> e contando. Seu próximo marco está a apenas ${BADGES.filter(b=>!b.unlocked)[0]?.name} de distância.`,
+    `O app registrou que você tem <strong>22 dias de sequência</strong>. Mais 8 dias e você desbloqueia "Sequência de 30 dias". Continue assim!`,
+  ];
+
+  // Category tabs
+  const tabs = ['all','fin','meta','cons','agenda'].map(c => {
+    const cnt = catCount(c);
+    return `<button class="cat-tab${c===curCat?' act':''}" onclick="setCat('${c}')">
+      ${CAT_LABELS[c]} <span class="cat-tab-count">${cnt.done}/${cnt.total}</span>
+    </button>`;
+  }).join('');
+
+  // Recent cards
+  const recentCards = recentUnlocked.map((b,i) => `
+  <div class="recent-card" style="animation-delay:${i*0.07}s;--rc:${CAT_COLORS[b.cat]}" onclick="openModal(${b.id})">
+    <div style="position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px;background:${CAT_COLORS[b.cat]}"></div>
+    <span class="recent-badge-icon">${b.icon}</span>
+    <div>
+      <div class="recent-label">Recente ${i===0?'· Última conquista':''}</div>
+      <div class="recent-name">${b.name}</div>
+      <div class="recent-date">${b.date}</div>
+    </div>
+  </div>`).join('');
+
+  // Unlocked grid / list
+  const unlockedCards = visUnlocked.map((b,i) => renderCard(b,i)).join('');
+  const lockedCards   = visLocked.map((b,i)   => renderCard(b,i+visUnlocked.length)).join('');
+  const unlockedList  = visUnlocked.map(b => renderListItem(b)).join('');
+  const lockedList    = visLocked.map(b   => renderListItem(b)).join('');
+
+  const totalUnlocked = unlocked.length;
+  const totalAll = BADGES.length;
+  const pct = Math.round(totalUnlocked/totalAll*100);
+
+  document.getElementById('pageRoot').innerHTML = `
+  <div class="annotation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Protótipo J.1 · Conquistas · ${isJornada ? 'Modo Jornada 🌱':'Modo Foco 🎯'}
+  </div>
+
+  <!-- HERO -->
+  <div class="hero-summary">
+    <div class="hero-score-card">
+      <div class="hero-nums">
+        <div class="hero-count" id="heroCount">0</div>
+        <div class="hero-total">/ ${totalAll}</div>
+      </div>
+      <div class="hero-title">Conquistas desbloqueadas</div>
+      <div class="hero-sub">Você está no <strong>Top 15%</strong> dos usuários do SyncLife.</div>
+      <div class="hero-bar-wrap">
+        <div class="hero-bar-fill" id="heroBar" style="width:0%"></div>
+      </div>
+      <div class="hero-pct" id="heroPct">0% do total</div>
+    </div>
+    <div class="recent-strip">${recentCards}</div>
+  </div>
+
+  <!-- JORNADA PHRASE -->
+  <div class="jornada-phrase">
+    <span class="jornada-phrase-icon">🤖</span>
+    <span>${phrases[1]}</span>
+  </div>
+
+  <!-- TABS -->
+  <div class="cat-tabs-row">
+    ${tabs}
+    <label class="show-locked-toggle">
+      <input type="checkbox" ${showLocked?'checked':''} onchange="toggleLocked(this.checked)"> Mostrar bloqueadas
+    </label>
+  </div>
+
+  <!-- FOCO: list view / JORNADA: grid view -->
+  <div id="gridView" style="display:${isJornada?'block':'none'}">
+    ${visUnlocked.length>0 ? `<div class="section-label">✅ Desbloqueadas (${visUnlocked.length})</div>
+    <div class="badges-grid">${unlockedCards}</div>` : ''}
+    ${showLocked && visLocked.length>0 ? `<div class="section-label">🔒 Bloqueadas (${visLocked.length})</div>
+    <div class="badges-grid">${lockedCards}</div>` : ''}
+  </div>
+
+  <div id="listView" style="display:${isJornada?'none':'block'}">
+    ${visUnlocked.length>0 ? `<div class="section-label">✅ Desbloqueadas (${visUnlocked.length})</div>
+    <div class="badges-list" style="display:flex">${unlockedList}</div>` : ''}
+    ${showLocked && visLocked.length>0 ? `<div class="section-label">🔒 Bloqueadas (${visLocked.length})</div>
+    <div class="badges-list" style="display:flex">${lockedList}</div>` : ''}
+  </div>
+  `;
+
+  // Animate count
+  animateCount(totalUnlocked, pct);
+}
+
+function renderCard(b, delay) {
+  const col = CAT_COLORS[b.cat];
+  const progressPct = Math.round(b.progress/b.progressMax*100);
+  const progressBar = b.unlocked ? '' : `
+    <div class="badge-progress-wrap">
+      <div class="badge-progress-bar"><div class="badge-progress-fill" style="width:${progressPct}%;background:${col}"></div></div>
+      <div class="badge-progress-label">${b.progress}/${b.progressMax} ${progressPct===100?'✅':''}</div>
+    </div>`;
+
+  return `
+  <div class="badge-card ${b.unlocked?'unlocked':'locked'} cat-${b.cat} rarity-${b.rarity}" 
+       style="animation-delay:${delay*0.04}s" 
+       onclick="${b.unlocked||true ? `openModal(${b.id})`:''}">
+    ${!b.unlocked ? '<div class="lock-overlay">🔒</div>' : ''}
+    <div class="rarity-pip rarity-${b.rarity}">${RARITY_LABELS[b.rarity]}</div>
+    <div class="badge-icon-wrap" style="background:${b.unlocked?col+'22':col+'11'}">
+      ${b.icon}
+    </div>
+    <div class="badge-name">${b.name}</div>
+    <div class="badge-desc">${b.desc}</div>
+    ${b.unlocked ? `<div class="badge-date">🗓 ${b.date}</div>` : progressBar}
+    ${b.unlocked ? `<div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:${col};border-radius:0 0 16px 16px"></div>` : ''}
+  </div>`;
+}
+
+function renderListItem(b) {
+  const col = CAT_COLORS[b.cat];
+  const pct = Math.round(b.progress/b.progressMax*100);
+  return `
+  <div class="list-item${b.unlocked?'':' locked'}" onclick="openModal(${b.id})">
+    <div class="list-icon${b.unlocked?'':' locked-ico'}" style="font-size:22px">${b.icon}</div>
+    <div style="width:12px;height:12px;border-radius:50%;background:${b.unlocked?col:col+'44'};flex-shrink:0"></div>
+    <div class="list-info">
+      <div class="list-name">${b.name}</div>
+      <div class="list-desc">${b.desc}</div>
+    </div>
+    <div class="list-right">
+      ${b.unlocked
+        ? `<div class="list-date">${b.date}</div><div class="list-status status-unlocked">✅ Obtida</div>`
+        : `<div class="list-progress-text">${b.progress}/${b.progressMax}</div><div class="list-status status-locked">🔒 ${pct}%</div>`
+      }
+    </div>
+  </div>`;
+}
+
+function animateCount(target, pct) {
+  const el = document.getElementById('heroCount');
+  const bar = document.getElementById('heroBar');
+  const pctEl = document.getElementById('heroPct');
+  if (!el) return;
+  let start = 0;
+  const step = () => {
+    start++;
+    el.textContent = start;
+    if (start < target) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+  setTimeout(() => {
+    if (bar) bar.style.width = pct+'%';
+    if (pctEl) pctEl.textContent = pct+'% do total desbloqueado';
+  }, 100);
+}
+
+/* ─── MODAL ─── */
+function openModal(id) {
+  const b = BADGES.find(x=>x.id===id);
+  if (!b) return;
+  const col = CAT_COLORS[b.cat];
+  const pct = Math.round(b.progress/b.progressMax*100);
+  const isJornada = curMode==='jornada';
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-badge-hero">
+      <span class="modal-badge-icon-big">${b.icon}</span>
+      <div class="modal-badge-name">${b.name}</div>
+      <div class="modal-badge-desc">${b.desc}</div>
+      <div class="modal-badge-meta">
+        <span class="rarity-pip rarity-${b.rarity}">${RARITY_LABELS[b.rarity]}</span>
+        <span style="font-size:11px;color:var(--t3);padding:2px 8px;border-radius:8px;background:var(--s2)">${CAT_LABELS[b.cat]}</span>
+      </div>
+    </div>
+    <div class="modal-criteria">
+      <div class="modal-criteria-label">Como desbloquear</div>
+      <div class="modal-criteria-text">${b.criteria}</div>
+    </div>
+    ${!b.unlocked ? `
+    <div class="modal-progress-wrap">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--t3);margin-bottom:6px">
+        <span>Progresso atual</span><span>${b.progress}/${b.progressMax} (${pct}%)</span>
+      </div>
+      <div class="modal-progress-bar"><div class="modal-progress-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="modal-progress-label">${pct < 100 ? `Faltam ${b.progressMax-b.progress} para desbloquear` : '✅ Critério atingido!'}</div>
+    </div>` : `
+    <div class="modal-unlocked-at">
+      <span style="font-size:20px">🏆</span>
+      <span>Conquistado em <strong>${b.date}</strong></span>
+    </div>`}
+    ${isJornada && b.motivation ? `<div class="modal-motivation">✨ ${b.motivation}</div>` : ''}
+  `;
+  document.getElementById('badgeModal').classList.add('open');
+}
+function closeModal() { document.getElementById('badgeModal').classList.remove('open'); }
+function closeOnBg(ev) { if (ev.target===document.getElementById('badgeModal')) closeModal(); }
+
+/* ─── FILTERS ─── */
+function setCat(c) { curCat=c; renderPage(); }
+function toggleLocked(v) { showLocked=v; renderPage(); }
+
+/* ─── UNLOCK SIMULATION ─── */
+let unlockIdx = 0;
+function simulateUnlock() {
+  const locked = BADGES.filter(b=>!b.unlocked);
+  if (!locked.length) return;
+  const b = locked[unlockIdx++ % locked.length];
+  b.unlocked = true;
+  b.date = '23 Fev 2026';
+  renderPage();
+  if (curMode==='jornada') launchParticles(CAT_COLORS[b.cat]);
+  setTimeout(() => openModal(b.id), 300);
+}
+
+/* ─── PARTICLES (Jornada) ─── */
+function launchParticles(color) {
+  const canvas = document.getElementById('particlesCanvas');
+  canvas.style.display='block';
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const particles = Array.from({length:80},()=>({
+    x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+    vx:(Math.random()-0.5)*4, vy:(Math.random()-0.5)*4-2,
+    r:Math.random()*4+2, alpha:1,
+    col:['#f59e0b','#10b981','#0055ff','#f43f5e','#8b5cf6','#ec4899'][Math.floor(Math.random()*6)]
+  }));
+  let frame=0;
+  function tick() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.alpha-=0.012;
+      ctx.save(); ctx.globalAlpha=Math.max(0,p.alpha);
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.col; ctx.fill(); ctx.restore();
+    });
+    frame++;
+    if (frame<100) requestAnimationFrame(tick);
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; }
+  }
+  tick();
+}
+
+/* ─── MODE / THEME ─── */
+function toggleMode() { setMode(curMode==='foco'?'jornada':'foco'); }
+function setMode(m) {
+  curMode=m;
+  document.body.classList.toggle('jornada',m==='jornada');
+  document.getElementById('modeDot').textContent   = m==='jornada'?'🌱':'🎯';
+  document.getElementById('modeLabel').textContent = m==='jornada'?'Modo Jornada':'Modo Foco';
+  document.getElementById('ctrl-foco').className    = m==='foco'    ?'ctrl-btn on-g':'ctrl-btn';
+  document.getElementById('ctrl-jornada').className = m==='jornada' ?'ctrl-btn on-g':'ctrl-btn';
+  renderPage();
+}
+function cycleTheme() { themeIdx=(themeIdx+1)%THEMES.length; applyTheme(THEMES[themeIdx]); }
+function setTheme(t) {
+  const isJ=curMode==='jornada'; const key=t+(isJ?'-jornada':'');
+  themeIdx=THEMES.indexOf(key); if(themeIdx<0)themeIdx=0;
+  applyTheme(THEMES[themeIdx]);
+}
+function applyTheme(t) {
+  const isLight=t.includes('light'), isJ=t.includes('jornada');
+  document.body.classList.toggle('light',isLight);
+  if(isJ&&curMode!=='jornada') setMode('jornada');
+  else if(!isJ&&curMode!=='foco') setMode('foco');
+  else renderPage();
+  const icons={'dark':'🌙','dark-jornada':'🌿','light':'☀️','light-jornada':'🌞'};
+  const labels={'dark':'Dark Foco','dark-jornada':'Dark Jornada','light':'Light Foco','light-jornada':'Light Jornada'};
+  document.getElementById('themeIcon').textContent=icons[t]||'🌙';
+  document.getElementById('themeLabel').textContent=labels[t]||'Dark';
+  document.getElementById('ctrl-dark').className  =!isLight?'ctrl-btn on-d':'ctrl-btn';
+  document.getElementById('ctrl-light').className = isLight?'ctrl-btn on-d':'ctrl-btn';
+}
+
+/* ─── INIT ─── */
+renderPage();
+</script>
+</body>
+</html>

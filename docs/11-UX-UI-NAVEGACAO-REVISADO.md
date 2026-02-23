@@ -270,24 +270,64 @@ o produto mais focado.
 
 ## 5. Sistema de Cores e Tokens de Design
 
-### Paleta Principal
+> **Nota (23/02/2026):** Seção inteiramente revisada para refletir os tokens reais
+> implementados nos 19 protótipos aprovados. O design system evoluiu do tema "quase
+> preto" (v1) para o tema "dark navy" durante a fase de prototipagem.
+
+### Paleta Principal — Tema Dark Navy (Modo Foco, padrão)
 
 ```
-MODO CLARO (Light):
-Background:     #ffffff (branco puro)
-Surface:        #f8fafc (slate-50)
-Surface Alt:    #f1f5f9 (slate-100)
-Border:         #e2e8f0 (slate-200)
-Text Primary:   #0f172a (slate-900)
-Text Secondary: #64748b (slate-500)
+--bg:   #03071a   (navy profundo — background da página)
+--s1:   #07112b   (surface 1 — cards, sidebars)
+--s2:   #0c1a3a   (surface 2 — inputs, badges, hover leve)
+--s3:   #132248   (surface 3 — hover states, seleções)
+--t1:   #dff0ff   (texto primário — títulos, valores)
+--t2:   #6e90b8   (texto secundário — labels, descrições)
+--t3:   #2e4a6e   (texto terciário — placeholders, metadados)
+```
 
-MODO ESCURO (Dark) — atual do v1:
-Background:     #0a0a0a (quase preto)
-Surface:        #111111 (slate-900 ajustado)
-Surface Alt:    #1a1a1a (slate-800)
-Border:         #2a2a2a (slate-700)
-Text Primary:   #f8fafc (slate-50)
-Text Secondary: #94a3b8 (slate-400)
+### Paleta Principal — Tema Light (Modo Foco)
+
+```
+--bg:   #e6eef5   (cinza-azulado claro — background da página)
+--s1:   #ffffff   (branco puro — cards, sidebars)
+--s2:   #f0f6fa   (cinza muito claro — inputs, badges)
+--s3:   #e0eaf3   (cinza claro — hover states)
+--t1:   #03071a   (navy profundo — texto primário)
+--t2:   #1e3a5c   (azul escuro — texto secundário)
+--t3:   #5a7a9e   (azul médio — texto terciário)
+```
+
+### Paleta Principal — Tema Dark Jornada (Esmeralda)
+
+```
+--bg:   #020d08   (verde profundo — background)
+--s1:   #061410   (surface 1 — cards)
+--s2:   #0b1e18   (surface 2 — inputs)
+--s3:   #112b22   (surface 3 — hover)
+--t1:   #d6faf0   (verde claro — texto primário)
+--t2:   #4da888   (verde médio — texto secundário)
+--t3:   #235c48   (verde escuro — texto terciário)
+```
+
+### Paleta Principal — Tema Light Jornada (Menta)
+
+```
+--bg:   #c8f0e4   (menta saturada — background)
+--s1:   #ffffff   (branco — cards)
+--s2:   #e0f7ef   (menta claro — inputs)
+--s3:   #c4eede   (menta médio — hover)
+--t1:   #022016   (verde escuro — texto primário)
+--t2:   #0d5c3e   (verde — texto secundário)
+--t3:   #4da888   (verde médio — texto terciário)
+```
+
+### Cores Brand
+
+```
+--em:   #10b981   (Esmeralda — brand primary, ações principais, sucesso)
+--el:   #0055ff   (Electric Blue — brand secondary, dados, informação)
+Gradiente brand: linear-gradient(135deg, #10b981, #0055ff)
 ```
 
 ### Cor de Acento por Módulo
@@ -296,21 +336,28 @@ Cada módulo tem sua cor identitária. Isso ajuda o usuário a saber visualmente
 módulo está, mesmo sem ler o texto.
 
 ```
-Finanças:  Indigo (#6366f1) — transmite confiança, seriedade financeira
-Metas:     Violet (#7c3aed) — transmite aspiração, crescimento
-Agenda:    Sky (#0ea5e9) — transmite organização, clareza, tempo
-Saúde:     Emerald (#10b981) — saúde, vitalidade (v3)
+Finanças:  Esmeralda (#10b981) — confiança, crescimento financeiro
+Metas:     Electric Blue (#0055ff) — ambição, progresso
+Agenda:    Ciano (#06b6d4) — organização, clareza temporal
+Saúde:     Emerald (#10b981) — vitalidade (v3, a definir diferenciação)
 Estudos:   Amber (#f59e0b) — conhecimento, energia (v3)
 Carreira:  Rose (#f43f5e) — ambição, destaque (v3)
+Config:    Slate (#64748b) — neutro, utilitário
 ```
 
 ### Cores Funcionais (iguais nos dois modos)
 
+> **Nota (23/02/2026):** Valores atualizados para refletir os protótipos aprovados.
+> Verde e Azul usam as mesmas cores brand (Esmeralda e Electric Blue) para manter
+> coesão visual. Vermelho usa Rose (#f43f5e) em vez de Red (#ef4444) por ser mais
+> suave e moderno. Laranja adicionado como estado intermediário de alerta.
+
 ```
-Verde (positivo/sucesso):  #22c55e
-Amarelo (atenção/aviso):   #f59e0b
-Vermelho (erro/alerta):    #ef4444
-Azul (informação):         #3b82f6
+Verde (positivo/sucesso):   #10b981 (Esmeralda — mesmo da brand primary)
+Amarelo (atenção/aviso):    #f59e0b (Amber)
+Laranja (quase no limite):  #f97316 (Orange — usado em barras de orçamento 80-99%)
+Vermelho (erro/alerta):     #f43f5e (Rose)
+Azul (informação):          #0055ff (Electric Blue — mesmo da brand secondary)
 ```
 
 ---
@@ -401,6 +448,18 @@ a diferença entre os dois modos antes de o usuário trocar:
 ---
 
 ## 7. Componentes de UI Críticos
+
+### 7.0 Escala de Border Radius
+
+> **Adição (23/02/2026):** Escala padronizada extraída dos protótipos aprovados.
+
+```
+--radius-sm:   8px    (inputs, badges, ícones de categoria)
+--radius-md:   12px   (botões, chips, module-bar buttons)
+--radius-lg:   14px   (cards, modais, containers)
+--radius-xl:   20px   (containers grandes, cards de destaque)
+--radius-full: 9999px (pills, avatares, toggles)
+```
 
 ### 7.1 Card de Módulo (Dashboard)
 
@@ -493,4 +552,6 @@ no browser.
 ---
 
 *Documento criado em: Fevereiro 2026*
-*Versão: 1.0*
+*Versão: 2.0 — Revisão completa pós-aprovação de todos os protótipos (23/02/2026)*
+*Alterações: Paleta principal atualizada para Dark Navy, cores de módulo corrigidas,*
+*cores funcionais alinhadas com protótipos, escala de border-radius adicionada.*

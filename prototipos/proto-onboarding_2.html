@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #03071a;
+  --s1:        #07112b;
+  --s2:        #0c1a3a;
+  --s3:        #132248;
+  --border:    rgba(255,255,255,0.06);
+  --border-h:  rgba(255,255,255,0.14);
+  --t1: #dff0ff;
+  --t2: #6e90b8;
+  --t3: #2e4a6e;
+  --em: #10b981;
+  --el: #0055ff;
+  --mode-accent: #10b981;
+  --mode-glow:   rgba(16,185,129,0.18);
+}
+body.mode-jornada {
+  --bg:  #020d08;
+  --s1:  #061410;
+  --s2:  #0b1e18;
+  --s3:  #112b22;
+  --border:   rgba(16,185,129,0.08);
+  --border-h: rgba(16,185,129,0.18);
+  --t1:  #d6faf0;
+  --t2:  #4da888;
+  --t3:  #235c48;
+  --mode-accent: #10b981;
+  --mode-glow:   rgba(16,185,129,0.22);
+}
+html, body {
+  min-height: 100vh;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  font-size: 15px;
+  line-height: 1.6;
+  transition: background 0.5s, color 0.3s;
+}
+
+/* ── BG ── */
+.bg-orbs {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0; overflow: hidden;
+}
+.orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(110px); opacity: 0.09;
+  transition: all 0.6s ease;
+}
+.orb-1 { width:500px; height:500px; background: var(--em); top:-150px; left:-80px; }
+.orb-2 { width:380px; height:380px; background: var(--el); bottom:-80px; right:-80px; }
+
+/* ── SHELL ── */
+.shell {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  position: relative; z-index: 1;
+  padding: 0 24px 80px;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  width: 100%; max-width: 660px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 28px 0 40px;
+}
+.logo-wrap { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.logo-text { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--t1); }
+.skip-btn {
+  font-size: 13px; color: var(--t3);
+  background: none; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: color 0.2s; padding: 6px 0;
+}
+.skip-btn:hover { color: var(--t2); }
+
+/* ── PROGRESS ── */
+.progress-wrap { width: 100%; max-width: 660px; margin-bottom: 48px; }
+.progress-steps { display: flex; align-items: center; }
+.progress-step { display: flex; align-items: center; flex: 1; }
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--border-h);
+  background: var(--s2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--t3);
+  flex-shrink: 0; transition: all 0.3s ease; z-index: 1;
+  font-family: 'DM Mono', monospace;
+}
+.step-dot.active {
+  border-color: var(--mode-accent);
+  background: var(--mode-accent);
+  color: #03071a;
+  box-shadow: 0 0 16px var(--mode-glow);
+}
+.step-dot.done {
+  border-color: var(--mode-accent);
+  background: rgba(16,185,129,0.12);
+  color: var(--mode-accent);
+}
+.step-dot.done::after { content: '✓'; font-size: 12px; font-weight: 700; }
+.step-dot.done span { display: none; }
+.step-line {
+  flex: 1; height: 2px;
+  background: var(--border); margin: 0 4px;
+  transition: background 0.4s;
+}
+.step-line.done { background: rgba(16,185,129,0.45); }
+.progress-labels { display: flex; margin-top: 8px; }
+.progress-label {
+  flex: 1; font-size: 10px; color: var(--t3);
+  text-align: center; transition: color 0.3s; letter-spacing: 0.02em;
+}
+.progress-label.active { color: var(--mode-accent); font-weight: 600; }
+.progress-label.done { color: var(--t2); }
+
+/* ── CARD ── */
+.step-card {
+  width: 100%; max-width: 660px;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 24px; padding: 48px;
+  display: none; animation: stepIn 0.35s ease both;
+}
+.step-card.active { display: block; }
+@keyframes stepIn {
+  from { opacity:0; transform: translateY(14px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+.step-eyebrow {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--mode-accent); margin-bottom: 12px;
+}
+.step-eyebrow::before {
+  content: ''; display: block; width: 16px; height: 1px; background: var(--mode-accent);
+}
+.step-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 3vw, 30px); font-weight: 800;
+  letter-spacing: -0.02em; line-height: 1.15;
+  color: var(--t1); margin-bottom: 10px;
+}
+.step-sub { font-size: 15px; color: var(--t2); line-height: 1.65; margin-bottom: 36px; max-width: 500px; }
+
+/* ── AÇÕES ── */
+.actions {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 12px; margin-top: 8px;
+}
+.btn-back {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 14px; color: var(--t3);
+  background: none; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: color 0.2s; padding: 8px 0;
+}
+.btn-back:hover { color: var(--t2); }
+.btn-back.hidden { opacity: 0; pointer-events: none; }
+.btn-next {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--mode-accent); color: #03071a;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 15px;
+  padding: 14px 32px; border-radius: 100px; border: none; cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px var(--mode-glow);
+}
+.btn-next:hover { transform: translateY(-1px); box-shadow: 0 8px 28px var(--mode-glow); filter: brightness(1.08); }
+.btn-next.finish { padding: 16px 40px; font-size: 16px; }
+
+/* ── STEP 1 — Nome ── */
+.name-input {
+  width: 100%;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 20px;
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 700; color: var(--t1);
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  margin-bottom: 8px;
+}
+.name-input::placeholder { color: var(--t3); font-weight: 600; }
+.name-input:focus {
+  border-color: rgba(16,185,129,0.5);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.08);
+}
+.name-hint { font-size: 12px; color: var(--t3); padding-left: 4px; margin-bottom: 36px; }
+
+/* ── STEP 2 — Momento de vida ── */
+.momento-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 12px;
+}
+.momento-card {
+  border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 18px 18px 16px;
+  cursor: pointer; background: var(--s2);
+  transition: all 0.22s; position: relative; overflow: hidden;
+}
+.momento-card::before {
+  content: ''; position: absolute; inset: 0; opacity: 0;
+  transition: opacity 0.3s;
+}
+.momento-card:hover { border-color: var(--border-h); transform: translateY(-1px); }
+.momento-card:hover::before { opacity: 1; }
+.momento-card.selected {
+  border-color: var(--mode-accent);
+  box-shadow: 0 0 0 3px var(--mode-glow);
+}
+.momento-card.selected::before { opacity: 1; background: radial-gradient(ellipse at 0% 0%, rgba(16,185,129,0.07), transparent 70%); }
+
+.mc-icon { font-size: 26px; display: block; margin-bottom: 10px; }
+.mc-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--t1); margin-bottom: 4px; }
+.mc-desc { font-size: 12px; color: var(--t2); line-height: 1.55; }
+.mc-check {
+  position: absolute; top: 12px; right: 12px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--mode-accent); color: #03071a;
+  font-size: 10px; font-weight: 700;
+  display: none; align-items: center; justify-content: center;
+}
+.momento-card.selected .mc-check { display: flex; }
+
+/* ── STEP 3 — Modo Foco/Jornada ── */
+.mode-cards {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; margin-bottom: 32px;
+}
+.mode-card {
+  border: 2px solid var(--border); border-radius: 16px;
+  padding: 28px 24px; cursor: pointer;
+  transition: all 0.25s; position: relative; overflow: hidden;
+  background: var(--s2);
+}
+.mode-card-glow {
+  position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s;
+}
+.foco-card .mode-card-glow { background: radial-gradient(ellipse at 20% 0%, rgba(16,185,129,0.09), transparent 65%); }
+.jornada-card .mode-card-glow { background: radial-gradient(ellipse at 20% 0%, rgba(0,85,255,0.09), transparent 65%); }
+.mode-card:hover { transform: translateY(-2px); border-color: var(--border-h); }
+.mode-card:hover .mode-card-glow { opacity: 1; }
+.mode-card.selected-foco { border-color: var(--em); background: rgba(16,185,129,0.04); box-shadow: 0 0 0 4px rgba(16,185,129,0.1); }
+.mode-card.selected-jornada { border-color: var(--el); background: rgba(0,85,255,0.04); box-shadow: 0 0 0 4px rgba(0,85,255,0.1); }
+.mode-card.selected-foco .mode-card-glow,
+.mode-card.selected-jornada .mode-card-glow { opacity: 1; }
+.mode-icon { font-size: 32px; margin-bottom: 14px; display: block; }
+.mode-tag {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 100px; margin-bottom: 10px;
+}
+.foco-card .mode-tag { background: rgba(16,185,129,0.1); color: var(--em); border: 1px solid rgba(16,185,129,0.2); }
+.jornada-card .mode-tag { background: rgba(0,85,255,0.1); color: #60a5fa; border: 1px solid rgba(0,85,255,0.2); }
+.mode-name { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: var(--t1); margin-bottom: 7px; }
+.mode-desc { font-size: 13px; color: var(--t2); line-height: 1.6; }
+.mode-traits { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.mode-trait { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--t3); }
+.trait-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.foco-card .trait-dot { background: var(--em); }
+.jornada-card .trait-dot { background: #60a5fa; }
+.mode-check {
+  position: absolute; top: 14px; right: 14px;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: none; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+}
+.mode-card.selected-foco .mode-check { display: flex; background: var(--em); color: #03071a; }
+.mode-card.selected-jornada .mode-check { display: flex; background: var(--el); color: white; }
+
+/* ── STEP 4 — Áreas ── */
+.areas-intro {
+  font-size: 13px; color: var(--t2);
+  margin-bottom: 20px; line-height: 1.6;
+}
+.areas-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 12px;
+}
+.area-card {
+  border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 16px 14px 14px;
+  cursor: pointer; background: var(--s2);
+  text-align: center; transition: all 0.22s;
+  position: relative;
+}
+.area-card:hover { border-color: var(--border-h); transform: translateY(-1px); }
+.area-card.selected {
+  border-color: var(--area-color, var(--mode-accent));
+  background: var(--area-bg, rgba(16,185,129,0.05));
+  box-shadow: 0 0 0 3px var(--area-glow, rgba(16,185,129,0.1));
+}
+.area-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+.area-name { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--t1); margin-bottom: 3px; }
+.area-sub { font-size: 11px; color: var(--t3); line-height: 1.4; }
+.area-check {
+  position: absolute; top: 8px; right: 8px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--area-color, var(--mode-accent)); color: #03071a;
+  font-size: 9px; font-weight: 700;
+  display: none; align-items: center; justify-content: center;
+}
+.area-card.selected .area-check { display: flex; }
+
+.areas-hint { font-size: 12px; color: var(--t3); margin-top: 8px; }
+
+/* Áreas — foco: cores individuais */
+.area-fin  { --area-color: #10b981; --area-bg: rgba(16,185,129,0.05); --area-glow: rgba(16,185,129,0.1); }
+.area-meta { --area-color: #8b5cf6; --area-bg: rgba(139,92,246,0.05); --area-glow: rgba(139,92,246,0.1); }
+.area-ag   { --area-color: #06b6d4; --area-bg: rgba(6,182,212,0.05); --area-glow: rgba(6,182,212,0.1); }
+.area-sau  { --area-color: #f43f5e; --area-bg: rgba(244,63,94,0.05);  --area-glow: rgba(244,63,94,0.1); }
+.area-car  { --area-color: #f59e0b; --area-bg: rgba(245,158,11,0.05); --area-glow: rgba(245,158,11,0.1); }
+.area-est  { --area-color: #0055ff; --area-bg: rgba(0,85,255,0.05);   --area-glow: rgba(0,85,255,0.1); }
+
+/* ── STEP 5 — Resumo ── */
+.summary-hero { text-align: center; margin-bottom: 36px; }
+.summary-emoji {
+  font-size: 52px; display: block; margin-bottom: 16px;
+  animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+@keyframes popIn {
+  from { transform: scale(0.3); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.summary-heading {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 3vw, 28px); font-weight: 800;
+  letter-spacing: -0.02em; color: var(--t1); margin-bottom: 8px;
+}
+.summary-heading span {
+  background: linear-gradient(135deg, var(--em), var(--el));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.summary-sub { font-size: 15px; color: var(--t2); }
+
+.summary-items { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+.sum-item {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px;
+}
+.sum-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.bg-em  { background: rgba(16,185,129,0.1); }
+.bg-el  { background: rgba(0,85,255,0.1); }
+.bg-pu  { background: rgba(139,92,246,0.1); }
+.bg-cy  { background: rgba(6,182,212,0.1); }
+.bg-yl  { background: rgba(245,158,11,0.1); }
+.sum-label { font-size: 11px; color: var(--t3); text-transform: uppercase; letter-spacing: 0.06em; }
+.sum-val   { font-size: 14px; font-weight: 600; color: var(--t1); margin-top: 1px; }
+
+/* áreas selecionadas no resumo */
+.areas-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.area-chip {
+  font-size: 12px; font-weight: 600;
+  padding: 3px 10px; border-radius: 100px;
+  border: 1px solid var(--border-h);
+  color: var(--t2);
+}
+
+/* Aviso PRO */
+.pro-notice {
+  background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.15);
+  border-radius: 10px; padding: 12px 16px;
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; color: var(--t2); margin-bottom: 28px;
+  line-height: 1.55;
+}
+.pro-notice-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+/* Confetti */
+.confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 999; display: none; }
+.confetti-container.active { display: block; }
+.confetti-piece {
+  position: absolute; border-radius: 2px;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 580px) {
+  .step-card { padding: 28px 20px; }
+  .mode-cards { grid-template-columns: 1fr; }
+  .momento-grid { grid-template-columns: 1fr; }
+  .areas-grid { grid-template-columns: repeat(2, 1fr); }
+  .topbar { padding: 18px 0 28px; }
+  .progress-wrap { margin-bottom: 28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="confetti-container" id="confetti"></div>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<div class="shell">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <a href="/" class="logo-wrap">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPGRlZnM+CiAgICA8IS0tIEJhY2tncm91bmQgZ3JhZGllbnQ6IGRlZXAgbmF2eSAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMDUxYzE0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzAzMDkxZiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KCiAgICA8IS0tIEJyYW5kIGdyYWRpZW50OiBlbWVyYWxkIOKGkiBlbGVjdHJpYyBibHVlIC0tPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJicmFuZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDA1NWZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgoKICAgIDwhLS0gUmluZyBncmFkaWVudCAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZzEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiBzdG9wLW9wYWNpdHk9IjAuNyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDU1ZmYiIHN0b3Atb3BhY2l0eT0iMC43Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJyaW5nMiIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiIHN0b3Atb3BhY2l0eT0iMC4zNSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDU1ZmYiIHN0b3Atb3BhY2l0eT0iMC4zNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0icmluZzMiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIiBzdG9wLW9wYWNpdHk9IjAuMTUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDA1NWZmIiBzdG9wLW9wYWNpdHk9IjAuMTUiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CgogICAgPCEtLSBHbG93IGZpbHRlciAtLT4KICAgIDxmaWx0ZXIgaWQ9Imdsb3ciIHg9Ii0zMCUiIHk9Ii0zMCUiIHdpZHRoPSIxNjAlIiBoZWlnaHQ9IjE2MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI4IiByZXN1bHQ9ImJsdXIiLz4KICAgICAgPGZlTWVyZ2U+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJibHVyIi8+CiAgICAgICAgPGZlTWVyZ2VOb2RlIGluPSJTb3VyY2VHcmFwaGljIi8+CiAgICAgIDwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgoKICAgIDwhLS0gU29mdCBnbG93IGZvciBTIC0tPgogICAgPGZpbHRlciBpZD0ic2dsb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJibHVyIi8+CiAgICAgIDxmZU1lcmdlPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iYmx1ciIvPgogICAgICAgIDxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPgogICAgICA8L2ZlTWVyZ2U+CiAgICA8L2ZpbHRlcj4KCiAgICA8IS0tIFJvdW5kZWQgc3F1YXJlIGNsaXAgLS0+CiAgICA8Y2xpcFBhdGggaWQ9InJvdW5kZWQiPgogICAgICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgcnk9IjExMiIvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CgogIDwhLS0gQmFja2dyb3VuZCAtLT4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgcnk9IjExMiIgZmlsbD0idXJsKCNiZykiLz4KCiAgPCEtLSBTdWJ0bGUgdGV4dHVyZSBkb3RzIC0tPgogIDxnIG9wYWNpdHk9IjAuMDQiPgogICAgPGNpcmNsZSBjeD0iODAiIGN5PSI4MCIgcj0iMiIgZmlsbD0iIzEwYjk4MSIvPgogICAgPGNpcmNsZSBjeD0iNDMyIiBjeT0iODAiIHI9IjIiIGZpbGw9IiMwMDU1ZmYiLz4KICAgIDxjaXJjbGUgY3g9IjgwIiBjeT0iNDMyIiByPSIyIiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI0MzIiIGN5PSI0MzIiIHI9IjIiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjgwIiByPSIxLjUiIGZpbGw9IiMxMGI5ODEiLz4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjQzMiIgcj0iMS41IiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI4MCIgY3k9IjI1NiIgcj0iMS41IiBmaWxsPSIjMDA1NWZmIi8+CiAgICA8Y2lyY2xlIGN4PSI0MzIiIGN5PSIyNTYiIHI9IjEuNSIgZmlsbD0iIzEwYjk4MSIvPgogIDwvZz4KCiAgPCEtLSBDb25jZW50cmljIHJpbmdzIOKAlCBwdWxzZSBvZiBsaWZlIC0tPgogIDwhLS0gT3V0ZXIgcmluZyAtLT4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI3JpbmczKSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KICA8IS0tIE1pZGRsZSByaW5nIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTcwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjcmluZzIpIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8IS0tIElubmVyIHJpbmcgLS0+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNyaW5nMSkiIHN0cm9rZS13aWR0aD0iMi41Ii8+CgogIDwhLS0gQXJjIGFjY2VudHMg4oCUIHBhcnRpYWwgcmluZ3MgZm9yIGR5bmFtaXNtIC0tPgogIDwhLS0gVG9wLXJpZ2h0IGFyYyAoZW1lcmFsZCBzaWRlKSAtLT4KICA8cGF0aCBkPSJNIDI1NiA0NiBBIDIxMCAyMTAgMCAwIDEgNDY2IDI1NiIgCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTBiOTgxIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1vcGFjaXR5PSIwLjUiCiAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPCEtLSBCb3R0b20tbGVmdCBhcmMgKGJsdWUgc2lkZSkgLS0+CiAgPHBhdGggZD0iTSAyNTYgNDY2IEEgMjEwIDIxMCAwIDAgMSA0NiAyNTYiIAogICAgICAgIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNTVmZiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2Utb3BhY2l0eT0iMC41IgogICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgoKICA8IS0tIENlbnRlciBkaXNjIC0tPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTEwIiBmaWxsPSJ1cmwoI2JnKSIgb3BhY2l0eT0iMC45Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxMDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNicmFuZCkiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjgiLz4KCiAgPCEtLSBTIGxldHRlcmZvcm0g4oCUIGN1c3RvbSBwYXRocyBmb3IgcHJlbWl1bSBmZWVsIC0tPgogIDwhLS0gVGhlIFMgaXMgZHJhd24gYXMgYSBjdXN0b20gc2hhcGUsIG5vdCBhIGZvbnQsIGZvciBwaXhlbC1wZXJmZWN0IGNvbnRyb2wgLS0+CiAgPGcgZmlsdGVyPSJ1cmwoI3NnbG93KSI+CiAgICA8dGV4dAogICAgICB4PSIyNTYiIHk9IjMxNiIKICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsICdBcmlhbCcsIHNhbnMtc2VyaWYiCiAgICAgIGZvbnQtd2VpZ2h0PSI4MDAiCiAgICAgIGZvbnQtc2l6ZT0iMTkwIgogICAgICB0ZXh0LWFuY2hvcj0ibWlkZGxlIgogICAgICBmaWxsPSJ1cmwoI2JyYW5kKSIKICAgICAgbGV0dGVyLXNwYWNpbmc9Ii00IgogICAgPlM8L3RleHQ+CiAgPC9nPgoKICA8IS0tIE5vZGUgZG90cyBvbiByaW5ncyDigJQgY29ubmVjdGluZyBsaWZlIG1vZHVsZXMgLS0+CiAgPCEtLSBUb3AgKEZpbmFuw6dhcykgLS0+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iODYiIHI9IjciIGZpbGw9IiMxMGI5ODEiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gVG9wLXJpZ2h0IChNZXRhcykgLS0+CiAgPGNpcmNsZSBjeD0iNDA0IiBjeT0iMTM4IiByPSI2IiBmaWxsPSIjMTBiOTgxIiBvcGFjaXR5PSIwLjgiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gUmlnaHQgKEFnZW5kYSkgLS0+CiAgPGNpcmNsZSBjeD0iNDQ2IiBjeT0iMjU2IiByPSI2IiBmaWxsPSIjMDA2NmZmIiBvcGFjaXR5PSIwLjgiIGZpbHRlcj0idXJsKCNnbG93KSIvPgogIDwhLS0gQm90dG9tLXJpZ2h0IChFc3R1ZG9zKSAtLT4KICA8Y2lyY2xlIGN4PSIzNzQiIGN5PSIzNzQiIHI9IjUiIGZpbGw9IiMwMDU1ZmYiIG9wYWNpdHk9IjAuNyIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBCb3R0b20gKENhcnJlaXJhKSAtLT4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSI0MjYiIHI9IjYiIGZpbGw9IiMwMDU1ZmYiIG9wYWNpdHk9IjAuOCIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBCb3R0b20tbGVmdCAoU2HDumRlKSAtLT4KICA8Y2lyY2xlIGN4PSIxMzgiIGN5PSIzNzQiIHI9IjUiIGZpbGw9IiMxMGI5ODEiIG9wYWNpdHk9IjAuNyIgZmlsdGVyPSJ1cmwoI2dsb3cpIi8+CiAgPCEtLSBMZWZ0IChIb21lKSAtLT4KICA8Y2lyY2xlIGN4PSI2NiIgY3k9IjI1NiIgcj0iNiIgZmlsbD0iIzEwYjk4MSIgb3BhY2l0eT0iMC44IiBmaWx0ZXI9InVybCgjZ2xvdykiLz4KICA8IS0tIFRvcC1sZWZ0IC0tPgogIDxjaXJjbGUgY3g9IjEwOCIgY3k9IjEzOCIgcj0iNSIgZmlsbD0iIzEwYjk4MSIgb3BhY2l0eT0iMC43IiBmaWx0ZXI9InVybCgjZ2xvdykiLz4KCiAgPCEtLSBUaGluIHNwb2tlIGxpbmVzIGZyb20gY2VudGVyIHRvIG5vZGVzICh2ZXJ5IHN1YnRsZSkgLS0+CiAgPGcgc3Ryb2tlPSJ1cmwoI2JyYW5kKSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjE1Ij4KICAgIDxsaW5lIHgxPSIyNTYiIHkxPSIxNDYiIHgyPSIyNTYiIHkyPSI4NiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjQwNCIgeTI9IjEzOCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjQ0NiIgeTI9IjI1NiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjM3NCIgeTI9IjM3NCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjI1NiIgeTI9IjQyNiIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjEzOCIgeTI9IjM3NCIvPgogICAgPGxpbmUgeDE9IjI1NiIgeTE9IjE0NiIgeDI9IjY2IiB5Mj0iMjU2Ii8+CiAgICA8bGluZSB4MT0iMjU2IiB5MT0iMTQ2IiB4Mj0iMTA4IiB5Mj0iMTM4Ii8+CiAgPC9nPgo8L3N2Zz4K" width="32" height="32" alt="SyncLife">
+      <span class="logo-text">SyncLife</span>
+    </a>
+    <button class="skip-btn" onclick="skipAll()">Pular configuração →</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-steps">
+      <div class="progress-step">
+        <div class="step-dot active" id="dot-1"><span>1</span></div>
+        <div class="step-line" id="line-1"></div>
+      </div>
+      <div class="progress-step">
+        <div class="step-dot" id="dot-2"><span>2</span></div>
+        <div class="step-line" id="line-2"></div>
+      </div>
+      <div class="progress-step">
+        <div class="step-dot" id="dot-3"><span>3</span></div>
+        <div class="step-line" id="line-3"></div>
+      </div>
+      <div class="progress-step">
+        <div class="step-dot" id="dot-4"><span>4</span></div>
+        <div class="step-line" id="line-4"></div>
+      </div>
+      <div class="progress-step" style="flex:0">
+        <div class="step-dot" id="dot-5"><span>5</span></div>
+      </div>
+    </div>
+    <div class="progress-labels">
+      <div class="progress-label active" id="lbl-1">Olá!</div>
+      <div class="progress-label" id="lbl-2">Momento</div>
+      <div class="progress-label" id="lbl-3">Estilo</div>
+      <div class="progress-label" id="lbl-4">Áreas</div>
+      <div class="progress-label" id="lbl-5">Pronto</div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 1 ══ -->
+  <div class="step-card active" id="step-1">
+    <div class="step-eyebrow">Passo 1 de 5</div>
+    <h2 class="step-title">Olá! Qual é o seu nome?</h2>
+    <p class="step-sub">Vamos personalizar o SyncLife do seu jeito.</p>
+    <input
+      class="name-input"
+      id="nome-input" type="text"
+      placeholder="Seu nome"
+      autocomplete="given-name"
+      oninput="state.nome = this.value"
+    >
+    <div class="name-hint">É assim que vamos te chamar no app.</div>
+    <div class="actions">
+      <div class="btn-back hidden"></div>
+      <button class="btn-next" onclick="goTo(2)">
+        Continuar
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2 — Momento de vida ══ -->
+  <div class="step-card" id="step-2">
+    <div class="step-eyebrow">Passo 2 de 5</div>
+    <h2 class="step-title">O que te trouxe até aqui?</h2>
+    <p class="step-sub">Pode escolher até 3 opções. Isso nos ajuda a personalizar sua experiência desde o primeiro dia.</p>
+
+    <div class="momento-grid">
+
+      <div class="momento-card" onclick="selectMomento(this, 'equilibrio')">
+        <div class="mc-check">✓</div>
+        <span class="mc-icon">⚖️</span>
+        <div class="mc-title">Quero mais equilíbrio</div>
+        <div class="mc-desc">Sentindo que a vida está desorganizada e quer colocar tudo nos trilhos.</div>
+      </div>
+
+      <div class="momento-card" onclick="selectMomento(this, 'crescimento')">
+        <div class="mc-check">✓</div>
+        <span class="mc-icon">🚀</span>
+        <div class="mc-title">Estou em fase de crescimento</div>
+        <div class="mc-desc">Carreira, estudos ou projetos em ascensão. Quer acompanhar cada passo.</div>
+      </div>
+
+      <div class="momento-card" onclick="selectMomento(this, 'virada')">
+        <div class="mc-check">✓</div>
+        <span class="mc-icon">🔄</span>
+        <div class="mc-title">Passando por uma virada</div>
+        <div class="mc-desc">Mudança de emprego, cidade, relacionamento ou outro marco importante.</div>
+      </div>
+
+      <div class="momento-card" onclick="selectMomento(this, 'financas')">
+        <div class="mc-check">✓</div>
+        <span class="mc-icon">💰</span>
+        <div class="mc-title">Quero controlar meu dinheiro</div>
+        <div class="mc-desc">Foco em organizar as finanças, criar hábitos e parar de perder o controle.</div>
+      </div>
+
+      <div class="momento-card" onclick="selectMomento(this, 'metas')">
+        <div class="mc-check">✓</div>
+        <span class="mc-icon">🏆</span>
+        <div class="mc-title">Tenho grandes metas</div>
+        <div class="mc-desc">Objetivos claros que precisa transformar em plano concreto e acompanhar.</div>
+      </div>
+
+      <div class="momento-card" onclick="selectMomento(this, 'habitos')">
+        <div class="mc-check">✓</div>
+        <span class="mc-icon">🌱</span>
+        <div class="mc-title">Quero construir hábitos</div>
+        <div class="mc-desc">Pequenas mudanças consistentes que, com o tempo, transformam a vida.</div>
+      </div>
+
+    </div>
+
+    <p id="momento-hint" style="font-size:12px;color:var(--t3);margin-top:10px;transition:color 0.3s;">Selecione até 3 opções.</p>
+
+    <div class="actions" style="margin-top:28px">
+      <button class="btn-back" onclick="goTo(1)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn-next" onclick="goTo(3)">
+        Continuar
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3 — Modo Foco / Jornada ══ -->
+  <div class="step-card" id="step-3">
+    <div class="step-eyebrow">Passo 3 de 5</div>
+    <h2 class="step-title">Como você prefere ver as informações?</h2>
+    <p class="step-sub">Dois estilos de interface, uma mesma plataforma. Pode mudar a qualquer hora.</p>
+
+    <div class="mode-cards">
+      <div class="mode-card foco-card" id="card-foco" onclick="selectMode('foco')">
+        <div class="mode-card-glow"></div>
+        <div class="mode-check">✓</div>
+        <span class="mode-icon">🎯</span>
+        <div class="mode-tag">Modo Foco</div>
+        <div class="mode-name">Direto ao ponto</div>
+        <p class="mode-desc">Interface objetiva, dados densos, sem distrações. Você quer números, não frases.</p>
+        <div class="mode-traits">
+          <div class="mode-trait"><span class="trait-dot"></span>Métricas em destaque</div>
+          <div class="mode-trait"><span class="trait-dot"></span>Sem animações</div>
+          <div class="mode-trait"><span class="trait-dot"></span>Sidebar compacta</div>
+        </div>
+      </div>
+      <div class="mode-card jornada-card" id="card-jornada" onclick="selectMode('jornada')">
+        <div class="mode-card-glow"></div>
+        <div class="mode-check">✓</div>
+        <span class="mode-icon">🌱</span>
+        <div class="mode-tag">Modo Jornada</div>
+        <div class="mode-name">Acompanhe sua evolução</div>
+        <p class="mode-desc">Insights, conquistas e motivação. O app celebra com você cada pequena vitória.</p>
+        <div class="mode-traits">
+          <div class="mode-trait"><span class="trait-dot"></span>Life Sync Score</div>
+          <div class="mode-trait"><span class="trait-dot"></span>Conquistas & badges</div>
+          <div class="mode-trait"><span class="trait-dot"></span>Insights com IA</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-back" onclick="goTo(2)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn-next" onclick="goTo(4)">
+        Continuar
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4 — Áreas da vida ══ -->
+  <div class="step-card" id="step-4">
+    <div class="step-eyebrow">Passo 4 de 5</div>
+    <h2 class="step-title">Quais áreas da sua vida quer gerenciar?</h2>
+    <p class="step-sub">Ativamos só o que você precisa agora. Você pode adicionar ou remover módulos depois.</p>
+
+    <div class="areas-grid">
+
+      <div class="area-card area-fin" onclick="toggleArea(this, 'financas')">
+        <div class="area-check">✓</div>
+        <span class="area-icon">💰</span>
+        <div class="area-name">Finanças</div>
+        <div class="area-sub">Gastos, orçamentos, planejamento</div>
+      </div>
+
+      <div class="area-card area-meta" onclick="toggleArea(this, 'metas')">
+        <div class="area-check">✓</div>
+        <span class="area-icon">🏆</span>
+        <div class="area-name">Metas</div>
+        <div class="area-sub">Objetivos pessoais e financeiros</div>
+      </div>
+
+      <div class="area-card area-ag" onclick="toggleArea(this, 'agenda')">
+        <div class="area-check">✓</div>
+        <span class="area-icon">📅</span>
+        <div class="area-name">Agenda</div>
+        <div class="area-sub">Compromissos e tempo</div>
+      </div>
+
+      <div class="area-card area-sau" onclick="toggleArea(this, 'saude')">
+        <div class="area-check">✓</div>
+        <span class="area-icon">🩺</span>
+        <div class="area-name">Saúde</div>
+        <div class="area-sub">Hábitos, sono, bem-estar</div>
+      </div>
+
+      <div class="area-card area-car" onclick="toggleArea(this, 'carreira')">
+        <div class="area-check">✓</div>
+        <span class="area-icon">💼</span>
+        <div class="area-name">Carreira</div>
+        <div class="area-sub">Evolução profissional</div>
+      </div>
+
+      <div class="area-card area-est" onclick="toggleArea(this, 'estudos')">
+        <div class="area-check">✓</div>
+        <span class="area-icon">📚</span>
+        <div class="area-name">Estudos</div>
+        <div class="area-sub">Aprendizado contínuo</div>
+      </div>
+
+    </div>
+    <div class="areas-hint">Selecione pelo menos uma área.</div>
+
+    <div class="actions" style="margin-top:28px">
+      <button class="btn-back" onclick="goTo(3)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn-next" onclick="goTo(5)">
+        Continuar
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 5 — Resumo ══ -->
+  <div class="step-card" id="step-5">
+    <div class="summary-hero">
+      <span class="summary-emoji" id="sum-emoji">✅</span>
+      <div class="summary-heading">Pronto, <span id="sum-nome">você</span>!</div>
+      <div class="summary-sub" id="sum-sub">Seu SyncLife está configurado. Vamos começar.</div>
+    </div>
+
+    <div class="summary-items">
+
+      <div class="sum-item">
+        <div class="sum-icon bg-cy">🙌</div>
+        <div>
+          <div class="sum-label">Seu momento</div>
+          <div class="sum-val" id="sum-momento">—</div>
+        </div>
+      </div>
+
+      <div class="sum-item">
+        <div class="sum-icon bg-em">🎯</div>
+        <div>
+          <div class="sum-label">Modo de interface</div>
+          <div class="sum-val" id="sum-modo">Modo Foco</div>
+        </div>
+      </div>
+
+      <div class="sum-item">
+        <div class="sum-icon bg-pu">🗂️</div>
+        <div>
+          <div class="sum-label">Módulos ativados</div>
+          <div class="areas-chips" id="sum-areas"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pro-notice" id="pro-notice" style="display:none">
+      <span class="pro-notice-icon">⭐</span>
+      <span>Saúde e Carreira fazem parte do plano PRO. Você pode usar gratuitamente por 14 dias e decidir depois.</span>
+    </div>
+
+    <p style="font-size:13px;color:var(--t3);text-align:center;margin-bottom:28px;">
+      Tudo pode ser ajustado nas configurações a qualquer momento.
+    </p>
+
+    <div class="actions" style="justify-content:space-between">
+      <button class="btn-back" onclick="goTo(4)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn-next finish" onclick="finish(event)">
+        Começar minha jornada 🚀
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const state = {
+  nome: '',
+  momentos: [],
+  modo: 'foco',
+  areas: [],
+};
+
+// ── Navegação ──
+function goTo(step) {
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('step-' + step).classList.add('active');
+  for (let i = 1; i <= 5; i++) {
+    const dot = document.getElementById('dot-' + i);
+    const lbl = document.getElementById('lbl-' + i);
+    dot.classList.remove('active','done');
+    lbl.classList.remove('active','done');
+    if (i < step)       { dot.classList.add('done'); lbl.classList.add('done'); }
+    else if (i === step) { dot.classList.add('active'); lbl.classList.add('active'); }
+    if (i < 5) document.getElementById('line-' + i).classList.toggle('done', i < step);
+  }
+  if (step === 5) buildSummary();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Step 2 ──
+const momentoTexts = {
+  equilibrio: 'Busco mais equilíbrio na vida',
+  crescimento: 'Estou em fase de crescimento',
+  virada: 'Passando por uma virada de fase',
+  financas: 'Quero controlar meu dinheiro',
+  metas: 'Tenho grandes metas para alcançar',
+  habitos: 'Quero construir bons hábitos',
+};
+function selectMomento(card, val) {
+  const idx = state.momentos.indexOf(val);
+  if (idx > -1) {
+    state.momentos.splice(idx, 1);
+    card.classList.remove('selected');
+  } else {
+    if (state.momentos.length >= 3) {
+      const hint = document.getElementById('momento-hint');
+      hint.style.color = '#f43f5e';
+      hint.textContent = 'Máximo de 3 seleções atingido.';
+      setTimeout(() => { hint.style.color = ''; hint.textContent = state.momentos.length + ' selecionada(s) · máximo 3'; }, 2000);
+      return;
+    }
+    state.momentos.push(val);
+    card.classList.add('selected');
+  }
+  const hint = document.getElementById('momento-hint');
+  const n = state.momentos.length;
+  hint.textContent = n === 0 ? 'Selecione até 3 opções.' : n + ' selecionada' + (n > 1 ? 's' : '') + ' · máximo 3';
+  hint.style.color = n >= 3 ? 'var(--mode-accent)' : 'var(--t3)';
+}
+
+// ── Step 3 ──
+function selectMode(modo) {
+  state.modo = modo;
+  document.getElementById('card-foco').classList.remove('selected-foco','selected-jornada');
+  document.getElementById('card-jornada').classList.remove('selected-foco','selected-jornada');
+  if (modo === 'foco') {
+    document.getElementById('card-foco').classList.add('selected-foco');
+    document.body.classList.remove('mode-jornada');
+  } else {
+    document.getElementById('card-jornada').classList.add('selected-jornada');
+    document.body.classList.add('mode-jornada');
+  }
+}
+
+// ── Step 4 ──
+const areaColors = {
+  financas: '#10b981', metas: '#8b5cf6', agenda: '#06b6d4',
+  saude: '#f43f5e', carreira: '#f59e0b', estudos: '#0055ff',
+};
+const areaNames = {
+  financas: 'Finanças', metas: 'Metas', agenda: 'Agenda',
+  saude: 'Saúde', carreira: 'Carreira', estudos: 'Estudos',
+};
+function toggleArea(card, val) {
+  const idx = state.areas.indexOf(val);
+  if (idx > -1) { state.areas.splice(idx, 1); card.classList.remove('selected'); }
+  else          { state.areas.push(val); card.classList.add('selected'); }
+}
+
+// ── Resumo ──
+const modoLabels = {
+  foco: '🎯 Modo Foco — Interface objetiva',
+  jornada: '🌱 Modo Jornada — Insights e motivação',
+};
+function buildSummary() {
+  const nome = state.nome.trim() || 'você';
+  document.getElementById('sum-nome').textContent = nome;
+  const mlist = (state.momentos||[]).map(m => momentoTexts[m]).join(' · ');
+  document.getElementById('sum-momento').textContent = mlist || 'Não informado';
+  document.getElementById('sum-modo').textContent = modoLabels[state.modo];
+
+  // chips de áreas
+  const container = document.getElementById('sum-areas');
+  container.innerHTML = '';
+  const list = state.areas.length > 0 ? state.areas : ['financas'];
+  list.forEach(a => {
+    const chip = document.createElement('span');
+    chip.className = 'area-chip';
+    chip.style.borderColor = areaColors[a] + '44';
+    chip.style.color = areaColors[a];
+    chip.textContent = areaNames[a];
+    container.appendChild(chip);
+  });
+
+  // aviso pro
+  const hasPro = state.areas.includes('saude') || state.areas.includes('carreira');
+  document.getElementById('pro-notice').style.display = hasPro ? 'flex' : 'none';
+
+  // emoji e sub por modo
+  if (state.modo === 'jornada') {
+    document.getElementById('sum-emoji').textContent = '🎉';
+    document.getElementById('sum-sub').textContent = 'Vamos acompanhar sua evolução juntos. Cada passo conta!';
+    launchConfetti();
+  } else {
+    document.getElementById('sum-emoji').textContent = '✅';
+    document.getElementById('sum-sub').textContent = 'Tudo configurado. Seu painel está pronto.';
+  }
+}
+
+// ── Confetti ──
+function launchConfetti() {
+  const colors = ['#10b981','#0055ff','#06b6d4','#f59e0b','#f43f5e','#8b5cf6'];
+  const container = document.getElementById('confetti');
+  container.innerHTML = ''; container.classList.add('active');
+  for (let i = 0; i < 70; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left: ${Math.random()*100}%; top:-10px;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      width: ${4+Math.random()*8}px; height: ${4+Math.random()*8}px;
+      animation-duration: ${1.5+Math.random()*2}s;
+      animation-delay: ${Math.random()*0.8}s;
+      border-radius: ${Math.random()>.5?'50%':'2px'};
+    `;
+    container.appendChild(el);
+  }
+  setTimeout(() => { container.classList.remove('active'); container.innerHTML=''; }, 3500);
+}
+
+// ── Finish ──
+function finish(e) {
+  const btn = e.target.closest('button');
+  btn.textContent = 'Abrindo seu painel...';
+  btn.style.opacity = '0.8'; btn.style.pointerEvents = 'none';
+  setTimeout(() => { btn.textContent = '✓ Redirecionando...'; }, 1200);
+}
+
+// ── Skip ──
+function skipAll() {
+  if (confirm('Pular configuração? Você pode refazer isso nas configurações a qualquer momento.')) goTo(5);
+}
+
+// init
+selectMode('foco');
+</script>
+</body>
+</html>

@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — 0.J.2 Agenda · Detalhe & CRUD de Compromissos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── TOKENS — SyncLife Emerald System ── */
+:root {
+  --bg:   #03071a;
+  --s1:   #07112b;
+  --s2:   #0c1a3a;
+  --s3:   #132248;
+  --border:   rgba(255,255,255,0.06);
+  --border-h: rgba(255,255,255,0.13);
+  --t1:   #dff0ff;
+  --t2:   #6e90b8;
+  --t3:   #2e4a6e;
+  --em:   #10b981;
+  --el:   #0055ff;
+  --fin:         #10b981;
+  --fin-glow:    rgba(16,185,129,0.16);
+  --meta:        #0055ff;
+  --meta-glow:   rgba(0,85,255,0.16);
+  --agenda:      #06b6d4;
+  --agenda-glow: rgba(6,182,212,0.16);
+  --cfg:         #64748b;
+  --cfg-glow:    rgba(100,116,139,0.12);
+  --green:  #10b981;
+  --yellow: #f59e0b;
+  --red:    #f43f5e;
+  --orange: #f97316;
+  --purple: #a855f7;
+  --module-bar: 58px;
+  --sb-open: 228px;
+  --header-h: 54px;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-xs: 7px;
+}
+
+/* ── DARK JORNADA ── */
+body.jornada {
+  --bg:#020d08;--s1:#061410;--s2:#0b1e18;--s3:#112b22;
+  --border:rgba(16,185,129,0.08);--border-h:rgba(16,185,129,0.18);
+  --t1:#d6faf0;--t2:#4da888;--t3:#235c48;
+}
+body.jornada .header { background: linear-gradient(90deg, rgba(16,185,129,0.06), transparent 60%); }
+body.jornada .sb-score { display: block; }
+body.jornada .sb-score-num { background: linear-gradient(135deg,#10b981,#0055ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+body.jornada .sb-score-fill { background: linear-gradient(90deg,#10b981,#0055ff); }
+body.jornada .sidebar { border-right-color: rgba(16,185,129,0.12); }
+body.jornada .hd-greeting { display: flex; }
+body.jornada .hd-breadcrumb { display: none; }
+body.jornada .hd-greeting-name { background: linear-gradient(90deg,#10b981,#0055ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+body.jornada .ai-insight-card { display: block; }
+body.jornada .ai-insight-lbl { background: linear-gradient(90deg,#10b981,#0055ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+/* ── LIGHT FOCO ── */
+body.light {
+  --bg:#e6eef5;--s1:#ffffff;--s2:#f0f6fa;--s3:#e0eaf3;
+  --border:rgba(3,7,26,0.09);--border-h:rgba(3,7,26,0.18);
+  --t1:#03071a;--t2:#1e3a5c;--t3:#5a7a9e;
+}
+body.light .module-bar { background: linear-gradient(180deg,#083d2c 0%,#052b1e 100%); box-shadow: 2px 0 24px rgba(8,61,44,0.28); }
+body.light .module-bar .module-btn { color: rgba(255,255,255,0.42); }
+body.light .module-bar .module-btn:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.85); }
+body.light .module-bar .module-btn.act-agenda { color: #6ee7b7; background: rgba(110,231,183,0.12); }
+body.light .module-bar .user-avatar { border-color: rgba(255,255,255,0.28); }
+body.light .logo-mark { background: linear-gradient(135deg,#051c14,#03091f); border-radius: 9px; }
+body.light .sidebar { background: #f5fbf8; border-right: 1px solid rgba(16,185,129,0.16); box-shadow: 2px 0 20px rgba(16,185,129,0.06); }
+body.light .sidebar .sb-mod-label { color: #083d2c; }
+body.light .sidebar .sb-section-label { color: #4da888; }
+body.light .sidebar .sb-toggle { color: #4da888; }
+body.light .nav-item { color: #1a5c42; }
+body.light .nav-item:hover { background: rgba(16,185,129,0.07); color: #083d2c; }
+body.light .nav-item.act-agenda { background: rgba(16,185,129,0.10); color: #10b981; }
+body.light .controls { background: #fff; box-shadow: 0 4px 24px rgba(3,7,26,0.12); }
+body.light .ctrl-btn { background: var(--s2); color: #1e3a5c; border-color: rgba(3,7,26,0.10); }
+body.light .ctrl-btn:hover { background: var(--s3); color: #03071a; }
+
+/* ── LIGHT JORNADA ── */
+body.light.jornada {
+  --bg:#ecf5f0;--s1:#ffffff;--s2:#f0faf5;--s3:#ddf0e6;
+  --border:rgba(16,185,129,0.12);--border-h:rgba(16,185,129,0.22);
+  --t1:#03071a;--t2:#1a5c42;--t3:#4da888;
+}
+
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg); color: var(--t1);
+  transition: background 0.4s, color 0.3s;
+}
+
+/* ═══════════════════════════════
+   SHELL: 3-LEVEL NAVIGATION
+═══════════════════════════════ */
+.app { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── LVL 1: MODULE BAR ── */
+.module-bar {
+  width: var(--module-bar); height: 100vh;
+  background: var(--s1); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 2px; z-index: 60; flex-shrink: 0;
+  transition: background 0.4s, border-color 0.3s;
+}
+.logo-mark { width: 34px; height: 34px; margin-bottom: 14px; cursor: pointer; flex-shrink: 0; }
+.logo-mark svg { width: 34px; height: 34px; display: block; }
+.module-btn {
+  width: 42px; height: 42px; border-radius: 12px; border: none;
+  background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; transition: all 0.15s; color: var(--t3);
+}
+.module-btn svg { width: 21px; height: 21px; }
+.module-btn:hover { background: var(--s3); color: var(--t2); transform: scale(1.05); }
+.module-btn.act-agenda { background: var(--agenda-glow); color: var(--agenda); }
+.module-btn.act-agenda::before {
+  content:''; position: absolute; left: -8px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 22px; border-radius: 0 3px 3px 0; background: var(--agenda);
+}
+.module-bar .spacer { flex: 1; }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--em), var(--el));
+  display: flex; align-items: center; justify-content: center;
+  font-family:'Syne',sans-serif; font-weight:700; font-size:12px; color:#fff;
+  cursor: pointer; border: 2px solid var(--border); margin-top: 6px;
+}
+
+/* Tooltip */
+.tip {
+  position: fixed; left: calc(var(--module-bar) + 8px);
+  background: var(--s3); border: 1px solid var(--border-h);
+  border-radius: 8px; padding: 5px 10px;
+  font-size: 12px; font-weight: 500; color: var(--t1);
+  pointer-events: none; z-index: 999; white-space: nowrap;
+  opacity: 0; transition: opacity 0.12s; transform: translateY(-50%);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.tip.show { opacity: 1; }
+.tip::before {
+  content:''; position: absolute; left: -5px; top: 50%;
+  width: 8px; height: 8px; background: var(--s3);
+  border-left: 1px solid var(--border-h); border-bottom: 1px solid var(--border-h);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* ── LVL 2: SIDEBAR ── */
+.sidebar {
+  width: var(--sb-open); height: 100vh;
+  background: var(--s1); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+  flex-shrink: 0; transition: width 0.24s cubic-bezier(.4,0,.2,1), background 0.4s;
+}
+.sidebar.closed { width: 0; }
+
+.sb-header {
+  height: var(--header-h);
+  display: flex; align-items: center; padding: 0 14px; gap: 10px;
+  border-bottom: 1px solid var(--border); flex-shrink: 0; overflow: hidden;
+}
+.sb-mod-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: var(--agenda-glow); color: var(--agenda);
+}
+.sb-mod-icon svg { width: 15px; height: 15px; }
+.sb-mod-label {
+  font-family:'Syne',sans-serif; font-size: 13px; font-weight: 700;
+  white-space: nowrap; letter-spacing: 0.02em; flex: 1;
+}
+.sb-toggle {
+  width: 26px; height: 26px; border-radius: 7px; border: none;
+  background: transparent; cursor: pointer; color: var(--t3);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s; flex-shrink: 0;
+}
+.sb-toggle:hover { background: var(--s3); color: var(--t2); }
+.sb-toggle svg { width: 15px; height: 15px; }
+
+/* Jornada Score */
+.sb-score {
+  margin: 10px 10px 0; padding: 12px; border-radius: 12px;
+  border: 1px solid rgba(16,185,129,0.22);
+  background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(0,85,255,0.10));
+  overflow: hidden; flex-shrink: 0; display: none;
+}
+.sb-score-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.sb-score-num { font-family:'Syne',sans-serif; font-size: 32px; font-weight: 800; line-height: 1; }
+.sb-score-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--t3); margin-top: 2px; }
+.sb-score-delta { font-size: 11px; color: var(--green); }
+.sb-score-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+.sb-score-fill { height: 100%; width: 74%; border-radius: 2px; }
+
+/* Sidebar nav */
+.sb-nav { flex: 1; padding: 8px; overflow-y: auto; overflow-x: hidden; }
+.sb-section-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--t3); padding: 8px 8px 4px; white-space: nowrap;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 10px;
+  cursor: pointer; color: var(--t2);
+  transition: background 0.12s, color 0.12s;
+  border: none; background: transparent;
+  width: 100%; text-align: left; white-space: nowrap;
+  font-family:'DM Sans',sans-serif; font-size: 13px;
+}
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+.nav-item:hover { background: var(--s3); color: var(--t1); }
+.nav-item.act-agenda { background: var(--agenda-glow); color: var(--agenda); font-weight: 500; }
+.nav-badge {
+  margin-left: auto; font-size: 9px; font-weight: 700;
+  padding: 2px 6px; border-radius: 8px;
+}
+.badge-y { background: rgba(245,158,11,.15); color: var(--yellow); }
+.badge-count { background: rgba(6,182,212,.12); color: var(--agenda); }
+
+/* ── LVL 3: MAIN AREA ── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+/* Header */
+.header {
+  height: var(--header-h); display: flex; align-items: center;
+  padding: 0 20px; gap: 12px;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+  transition: background 0.4s, border-color 0.3s;
+}
+.hd-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--t3); }
+.hd-breadcrumb .mod-name { color: var(--t1); font-weight: 600; }
+.hd-breadcrumb .sep { opacity: 0.4; }
+.hd-greeting { display: none; flex-direction: column; }
+.hd-greeting-name { font-size: 14px; font-weight: 600; }
+.hd-greeting-phrase { font-size: 11px; color: var(--t3); }
+.hd-spacer { flex: 1; }
+.hd-notif {
+  width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border);
+  background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t3); position: relative; transition: all 0.15s;
+}
+.hd-notif:hover { background: var(--s3); color: var(--t2); }
+.hd-notif svg { width: 17px; height: 17px; }
+.notif-dot { position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--red); border: 1.5px solid var(--bg); }
+
+/* ═══════════════════════════════
+   CONTENT: LIST + DETAIL SPLIT
+═══════════════════════════════ */
+.content-split { flex: 1; display: flex; overflow: hidden; }
+
+/* ── LIST PANEL ── */
+.list-panel {
+  width: 340px; flex-shrink: 0;
+  background: var(--s1); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.list-toolbar { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.ann {
+  background: rgba(6,182,212,.08); border: 1px dashed rgba(6,182,212,.25);
+  border-radius: 10px; padding: 7px 12px; margin-bottom: 12px;
+  font-size: 11px; font-weight: 600; color: var(--agenda); text-align: center;
+}
+.list-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 7px 12px; margin-bottom: 10px;
+}
+.list-search svg { width: 15px; height: 15px; color: var(--t3); flex-shrink: 0; }
+.list-search input { flex: 1; background: none; border: none; outline: none; font-family:'DM Sans',sans-serif; font-size: 12px; color: var(--t1); }
+.list-search input::placeholder { color: var(--t3); }
+
+.list-filters { display: flex; gap: 5px; flex-wrap: wrap; }
+.filter-chip {
+  padding: 4px 10px; border-radius: 100px;
+  border: 1px solid var(--border); background: none;
+  font-family:'DM Sans',sans-serif; font-size: 10px; font-weight: 600;
+  color: var(--t3); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.filter-chip:hover { border-color: var(--border-h); color: var(--t2); }
+.filter-chip.active { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.3); color: var(--agenda); }
+
+.list-header {
+  padding: 10px 16px 6px; display: flex; align-items: center;
+  justify-content: space-between; flex-shrink: 0;
+}
+.list-count { font-size: 11px; color: var(--t3); font-weight: 500; }
+.list-sort {
+  font-size: 11px; color: var(--t3); cursor: pointer;
+  display: flex; align-items: center; gap: 4px;
+  background: none; border: none; font-family:'DM Sans',sans-serif;
+}
+.list-sort:hover { color: var(--t2); }
+.list-sort svg { width: 12px; height: 12px; }
+
+.ev-list { flex: 1; overflow-y: auto; padding: 0 8px 20px; }
+.ev-list::-webkit-scrollbar { width: 4px; }
+.ev-list::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 2px; }
+
+.ev-day-group { margin-bottom: 2px; }
+.ev-day-label {
+  padding: 8px 8px 5px; font-size: 10px; font-weight: 700; color: var(--t3);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  display: flex; align-items: center; gap: 8px;
+  position: sticky; top: 0; z-index: 2; background: var(--s1);
+}
+.ev-day-label .today-badge {
+  padding: 1px 7px; border-radius: 100px;
+  background: var(--agenda); color: #03071a;
+  font-size: 9px; font-weight: 800;
+}
+.ev-card {
+  padding: 10px 12px; margin-bottom: 3px;
+  border-radius: var(--radius-xs); border: 1px solid var(--border);
+  background: var(--s2); cursor: pointer; transition: all 0.15s; position: relative;
+}
+.ev-card:hover { border-color: var(--border-h); background: var(--s3); }
+.ev-card.selected { border-color: rgba(6,182,212,0.4); background: rgba(6,182,212,0.06); }
+.ev-card.done { opacity: 0.5; }
+.ev-card.done .ev-card-title { text-decoration: line-through; }
+.ev-card-top { display: flex; align-items: flex-start; gap: 8px; }
+.ev-type-dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; margin-top: 5px; }
+.ev-card-info { flex: 1; min-width: 0; }
+.ev-card-title { font-size: 12px; font-weight: 600; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev-card-time { font-family:'DM Mono',monospace; font-size: 10px; color: var(--t3); margin-top: 1px; }
+.ev-card-badges { display: flex; align-items: center; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+.ev-badge {
+  padding: 1px 6px; border-radius: 4px;
+  font-size: 9px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 2px;
+}
+.ev-card-status { position: absolute; top: 10px; right: 10px; }
+.status-check {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid var(--border-h); background: none;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.status-check:hover { border-color: var(--agenda); background: rgba(6,182,212,0.1); }
+.status-check.done { border-color: var(--green); background: var(--green); }
+.status-check svg { width: 10px; height: 10px; color: #fff; opacity: 0; }
+.status-check.done svg { opacity: 1; }
+
+/* ── DETAIL PANEL ── */
+.detail-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+.detail-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px; color: var(--t3);
+}
+.detail-empty svg { width: 48px; height: 48px; opacity: 0.3; }
+.detail-empty-text { font-size: 14px; }
+.detail-empty-sub { font-size: 12px; opacity: 0.6; }
+.detail-scroll { flex: 1; overflow-y: auto; padding: 24px 28px 40px; }
+.detail-scroll::-webkit-scrollbar { width: 4px; }
+.detail-scroll::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 2px; }
+
+/* Detail content */
+.det-header { margin-bottom: 20px; }
+.det-status-row { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.det-status-pill { padding: 3px 10px; border-radius: 100px; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+.det-status-pill.pendente { background: rgba(6,182,212,0.1); color: var(--agenda); border: 1px solid rgba(6,182,212,0.2); }
+.det-status-pill.concluido { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.det-status-pill.cancelado { background: rgba(244,63,94,0.1); color: var(--red); border: 1px solid rgba(244,63,94,0.2); }
+.det-priority-pill { padding: 3px 9px; border-radius: 100px; font-size: 10px; font-weight: 700; }
+.det-priority-pill.baixa { background: rgba(110,144,184,0.08); color: var(--t3); }
+.det-priority-pill.normal { background: rgba(6,182,212,0.1); color: var(--agenda); }
+.det-priority-pill.alta { background: rgba(249,115,22,0.1); color: var(--orange); }
+.det-priority-pill.urgente { background: rgba(244,63,94,0.12); color: var(--red); }
+.det-title { font-family:'Syne',sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 8px; }
+.det-type-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 600;
+}
+
+.det-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.det-meta-card { padding: 12px 14px; background: var(--s1); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.det-meta-card.full { grid-column: 1 / -1; }
+.det-meta-lbl { font-size: 10px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; display: flex; align-items: center; gap: 4px; }
+.det-meta-lbl svg { width: 11px; height: 11px; }
+.det-meta-val { font-size: 13px; font-weight: 600; }
+.det-meta-sub { font-size: 10px; color: var(--t3); margin-top: 2px; }
+
+.det-section { margin-bottom: 20px; }
+.det-section-title { font-family:'Syne',sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 7px; }
+.det-section-title svg { width: 15px; height: 15px; color: var(--agenda); }
+.det-desc { padding: 12px 14px; background: var(--s1); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; color: var(--t2); line-height: 1.6; }
+
+/* Checklist */
+.checklist-item { display: flex; align-items: center; gap: 9px; padding: 9px 12px; margin-bottom: 3px; background: var(--s1); border: 1px solid var(--border); border-radius: var(--radius-xs); cursor: pointer; transition: all 0.15s; }
+.checklist-item:hover { border-color: var(--border-h); }
+.checklist-item.done { opacity: 0.5; }
+.checklist-item.done .cl-text { text-decoration: line-through; }
+.cl-check { width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0; border: 2px solid var(--border-h); background: none; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.cl-check.done { border-color: var(--green); background: var(--green); }
+.cl-check svg { width: 9px; height: 9px; color: #fff; opacity: 0; }
+.cl-check.done svg { opacity: 1; }
+.cl-text { font-size: 12px; flex: 1; }
+.cl-progress { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.cl-progress-bar { flex: 1; height: 4px; background: var(--s3); border-radius: 3px; overflow: hidden; }
+.cl-progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--agenda), var(--meta)); transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
+.cl-progress-text { font-size: 10px; color: var(--t3); font-weight: 600; white-space: nowrap; }
+
+/* Goal link */
+.goal-link-card { padding: 14px; background: var(--s1); border: 1px solid rgba(0,85,255,0.15); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; background: linear-gradient(135deg, rgba(0,85,255,0.04), rgba(6,182,212,0.04)); }
+.goal-link-card:hover { border-color: rgba(0,85,255,0.3); }
+.goal-link-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.goal-link-ico { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; background: rgba(0,85,255,0.1); }
+.goal-link-info { flex: 1; }
+.goal-link-name { font-size: 12px; font-weight: 700; }
+.goal-link-status { font-size: 10px; color: var(--meta); }
+.goal-link-bar { height: 5px; background: var(--s3); border-radius: 3px; overflow: hidden; }
+.goal-link-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--meta), var(--agenda)); }
+.goal-link-pct { font-size: 10px; color: var(--t3); margin-top: 3px; display: flex; justify-content: space-between; }
+
+/* Conflict */
+.conflict-card { padding: 12px 14px; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.18); border-radius: var(--radius-sm); display: flex; align-items: flex-start; gap: 8px; }
+.conflict-ico { font-size: 16px; flex-shrink: 0; line-height: 1.3; }
+.conflict-text { font-size: 11px; color: var(--t2); line-height: 1.5; }
+.conflict-text strong { color: var(--yellow); }
+
+/* AI Insight */
+.ai-insight-card { display: none; padding: 14px; background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(0,85,255,0.06)); border: 1px solid rgba(16,185,129,0.18); border-radius: var(--radius-sm); }
+.ai-insight-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 5px; }
+.ai-insight-text { font-size: 12px; color: var(--t2); line-height: 1.5; }
+
+/* Detail actions */
+.det-actions { padding: 12px 28px; flex-shrink: 0; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 6px; background: var(--s1); }
+.det-btn { padding: 7px 14px; border-radius: var(--radius-xs); font-family:'DM Sans',sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; border: none; }
+.det-btn svg { width: 13px; height: 13px; }
+.det-btn.primary { background: var(--agenda); color: #03071a; }
+.det-btn.primary:hover { filter: brightness(1.08); }
+.det-btn.secondary { background: var(--s2); color: var(--t1); border: 1px solid var(--border); }
+.det-btn.secondary:hover { border-color: var(--border-h); }
+.det-btn.success { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.det-btn.success:hover { background: rgba(16,185,129,0.2); }
+.det-btn.danger { background: rgba(244,63,94,0.08); color: var(--red); border: 1px solid rgba(244,63,94,0.15); }
+.det-btn.danger:hover { background: rgba(244,63,94,0.15); }
+.det-btn-spacer { flex: 1; }
+
+/* ═══════════════════════════════
+   DRAWER (CREATE / EDIT)
+═══════════════════════════════ */
+.drawer-overlay { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(3,7,26,0.7); backdrop-filter: blur(4px); }
+.drawer-overlay.open { display: flex; justify-content: flex-end; }
+.drawer { width: 500px; max-width: 100%; height: 100%; background: var(--s1); border-left: 1px solid var(--border); display: flex; flex-direction: column; animation: slideIn 0.25s ease both; }
+@keyframes slideIn { from { transform: translateX(100%); } to { transform: none; } }
+.drawer-hd { padding: 18px 22px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.drawer-title { font-family:'Syne',sans-serif; font-size: 17px; font-weight: 800; letter-spacing: -0.02em; }
+.drawer-close { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: none; cursor: pointer; color: var(--t3); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.drawer-close:hover { border-color: var(--border-h); color: var(--t1); }
+.drawer-close svg { width: 14px; height: 14px; }
+.drawer-body { flex: 1; overflow-y: auto; padding: 18px 22px 30px; }
+.drawer-body::-webkit-scrollbar { width: 4px; }
+.drawer-body::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 2px; }
+.drawer-footer { padding: 12px 22px; flex-shrink: 0; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+
+/* Form fields */
+.f-group { margin-bottom: 16px; }
+.f-label { font-size: 10px; font-weight: 700; color: var(--t2); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 5px; }
+.f-label .optional { font-weight: 400; color: var(--t3); text-transform: none; letter-spacing: 0; }
+.f-input { width: 100%; background: var(--s2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 9px 12px; font-family:'DM Sans',sans-serif; font-size: 12px; color: var(--t1); outline: none; transition: border-color 0.2s; }
+.f-input:focus { border-color: rgba(6,182,212,0.4); }
+.f-input.err { border-color: rgba(244,63,94,0.5) !important; }
+.f-input::placeholder { color: var(--t3); }
+.f-textarea { min-height: 70px; resize: vertical; line-height: 1.6; }
+.f-error { font-size: 10px; color: #f43f5e; margin-top: 3px; display: none; }
+.f-error.on { display: block; }
+.f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.type-option { padding: 8px 6px; border-radius: var(--radius-xs); border: 1.5px solid var(--border); background: var(--s2); cursor: pointer; text-align: center; transition: all 0.15s; }
+.type-option:hover { border-color: var(--border-h); }
+.type-option.selected { border-width: 2px; }
+.type-option-ico { font-size: 16px; display: block; margin-bottom: 2px; }
+.type-option-lbl { font-size: 10px; font-weight: 600; color: var(--t2); }
+
+.priority-grid { display: flex; gap: 5px; }
+.priority-option { flex: 1; padding: 7px; border-radius: var(--radius-xs); border: 1.5px solid var(--border); background: var(--s2); cursor: pointer; text-align: center; transition: all 0.15s; font-size: 10px; font-weight: 600; color: var(--t3); font-family:'DM Sans',sans-serif; }
+.priority-option:hover { border-color: var(--border-h); }
+.priority-option.selected { border-width: 2px; }
+
+.reminder-grid, .recur-grid { display: flex; gap: 5px; flex-wrap: wrap; }
+.reminder-option, .recur-option { padding: 6px 12px; border-radius: 100px; border: 1px solid var(--border); background: var(--s2); cursor: pointer; font-size: 10px; font-weight: 600; color: var(--t3); transition: all 0.15s; font-family:'DM Sans',sans-serif; }
+.reminder-option:hover, .recur-option:hover { border-color: var(--border-h); }
+.reminder-option.selected { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.3); color: var(--agenda); }
+.recur-option.selected { background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.3); color: #a855f7; }
+
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; background: var(--s2); border: 1px solid var(--border); border-radius: var(--radius-xs); cursor: pointer; transition: border-color 0.2s; }
+.toggle-row:hover { border-color: rgba(6,182,212,0.3); }
+.toggle-left { display: flex; align-items: center; gap: 8px; }
+.toggle-left-ico { font-size: 14px; }
+.toggle-left-lbl { font-size: 12px; font-weight: 600; }
+.toggle-left-sub { font-size: 10px; color: var(--t3); }
+.toggle-sw { width: 36px; height: 20px; border-radius: 100px; background: var(--s3); border: 1px solid var(--border); position: relative; flex-shrink: 0; transition: all 0.2s; }
+.toggle-sw.on { background: rgba(6,182,212,0.35); border-color: rgba(6,182,212,0.5); }
+.toggle-knob { width: 14px; height: 14px; border-radius: 50%; background: var(--t3); position: absolute; top: 2px; left: 2px; transition: all 0.2s; }
+.toggle-sw.on .toggle-knob { left: 18px; background: var(--agenda); }
+
+.goal-select-card { padding: 10px 12px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: var(--s2); cursor: pointer; transition: all 0.15s; margin-bottom: 5px; display: flex; align-items: center; gap: 9px; }
+.goal-select-card:hover { border-color: var(--border-h); }
+.goal-select-card.selected { border-color: rgba(0,85,255,0.3); background: rgba(0,85,255,0.06); }
+.goal-select-ico { font-size: 14px; }
+.goal-select-info { flex: 1; }
+.goal-select-name { font-size: 11px; font-weight: 600; }
+.goal-select-detail { font-size: 9px; color: var(--t3); }
+.goal-select-check { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border-h); display: flex; align-items: center; justify-content: center; }
+.goal-select-card.selected .goal-select-check { border-color: var(--meta); background: var(--meta); }
+
+.checklist-add-row { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+.checklist-add-input { flex: 1; background: var(--s2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 7px 10px; font-family:'DM Sans',sans-serif; font-size: 11px; color: var(--t1); outline: none; }
+.checklist-add-input::placeholder { color: var(--t3); }
+.checklist-add-btn { width: 28px; height: 28px; border-radius: 7px; border: none; background: var(--agenda); color: #03071a; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.checklist-add-btn:hover { filter: brightness(1.08); }
+.checklist-add-btn svg { width: 12px; height: 12px; }
+.form-cl-item { display: flex; align-items: center; gap: 7px; padding: 6px 9px; margin-bottom: 3px; background: var(--s2); border-radius: var(--radius-xs); font-size: 11px; }
+.form-cl-del { width: 18px; height: 18px; border-radius: 4px; border: none; background: none; color: var(--t3); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.form-cl-del:hover { color: var(--red); }
+.form-cl-item span { flex: 1; }
+
+/* ═══════════════════════════════
+   MODALS
+═══════════════════════════════ */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 600; background: rgba(3,7,26,0.8); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 24px; }
+.modal-overlay.open { display: flex; }
+.modal-box { max-width: 400px; width: 100%; padding: 24px; background: var(--s1); border: 1px solid var(--border); border-radius: 18px; animation: modalIn 0.22s ease both; }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: none; } }
+.modal-ico { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 12px; }
+.modal-title { font-family:'Syne',sans-serif; font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+.modal-desc { font-size: 12px; color: var(--t2); line-height: 1.6; margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 8px; }
+.modal-btn { flex: 1; padding: 9px; border-radius: var(--radius-xs); font-size: 12px; font-weight: 700; cursor: pointer; font-family:'DM Sans',sans-serif; border: none; transition: all 0.15s; }
+.modal-btn.cancel { background: none; border: 1px solid var(--border); color: var(--t2); }
+.modal-btn.cancel:hover { border-color: var(--border-h); color: var(--t1); }
+.modal-btn.confirm-del { background: #f43f5e; color: #fff; }
+.modal-btn.confirm-del:hover { filter: brightness(1.08); }
+.modal-btn.confirm-done { background: var(--green); color: #fff; }
+.modal-btn.confirm-done:hover { filter: brightness(1.08); }
+
+.recur-choice { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.recur-choice-btn { padding: 12px 14px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: var(--s2); cursor: pointer; transition: all 0.15s; text-align: left; }
+.recur-choice-btn:hover { border-color: var(--border-h); background: var(--s3); }
+.recur-choice-btn strong { display: block; font-size: 12px; margin-bottom: 1px; }
+.recur-choice-btn span { font-size: 10px; color: var(--t3); }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 10px 20px; border-radius: 12px; background: var(--s1); border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.4); font-size: 12px; font-weight: 600; z-index: 800; display: flex; align-items: center; gap: 7px; transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Controls */
+.controls { position: fixed; bottom: 20px; right: 20px; background: var(--s2); border: 1px solid var(--border-h); border-radius: 14px; padding: 12px; z-index: 400; display: flex; flex-direction: column; gap: 6px; min-width: 190px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+.ctrl-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--t3); }
+.ctrl-grp { display: flex; gap: 4px; flex-wrap: wrap; }
+.ctrl-btn { padding: 4px 9px; border-radius: 6px; border: 1px solid var(--border); background: var(--s3); color: var(--t2); font-size: 10px; font-family:'DM Sans',sans-serif; cursor: pointer; transition: all 0.15s; }
+.ctrl-btn:hover { border-color: var(--border-h); color: var(--t1); }
+.ctrl-btn.active { background: rgba(6,182,212,0.12); color: var(--agenda); border-color: rgba(6,182,212,0.3); }
+
+/* Responsive */
+@media (max-width: 1100px) { .list-panel { width: 280px; } }
+@media (max-width: 768px) {
+  .module-bar, .sidebar { display: none; }
+  .list-panel { width: 100%; }
+  .detail-panel { display: none; }
+  .detail-panel.mobile-show { display: flex; position: fixed; inset: 0; z-index: 300; }
+  .drawer { width: 100%; }
+  .det-meta-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="tip" id="tip"></div>
+
+<div class="app">
+
+  <!-- ═══ LVL 1: MODULE BAR ═══ -->
+  <nav class="module-bar" id="moduleBar">
+    <div class="logo-mark" title="SyncLife">
+      <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
+        <defs><linearGradient id="sl-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/></linearGradient><linearGradient id="sl-brand" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#0055ff"/></linearGradient></defs>
+        <rect width="512" height="512" rx="112" ry="112" fill="url(#sl-bg)"/>
+        <circle cx="256" cy="256" r="170" fill="none" stroke="url(#sl-brand)" stroke-width="2" opacity="0.3"/>
+        <circle cx="256" cy="256" r="130" fill="none" stroke="url(#sl-brand)" stroke-width="2.5" opacity="0.5"/>
+        <text x="256" y="316" font-family="'Helvetica Neue','Arial',sans-serif" font-weight="800" font-size="190" text-anchor="middle" fill="url(#sl-brand)">S</text>
+      </svg>
+    </div>
+    <button class="module-btn" data-tip="Home" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg></button>
+    <button class="module-btn" data-tip="Finanças" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></button>
+    <button class="module-btn" data-tip="Metas" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></button>
+    <button class="module-btn act-agenda" data-tip="Agenda" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+    <div class="spacer"></div>
+    <button class="module-btn" data-tip="Configurações" onmouseenter="showTip(this)" onmouseleave="hideTip()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.38.15.65.5.68.9V10h.01A2 2 0 0121 12a2 2 0 01-1.91 2h-.18z"/></svg></button>
+    <div class="user-avatar" data-tip="Perfil" onmouseenter="showTip(this)" onmouseleave="hideTip()">T</div>
+  </nav>
+
+  <!-- ═══ LVL 2: SIDEBAR ═══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <div class="sb-mod-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+      <div class="sb-mod-label">Agenda</div>
+      <button class="sb-toggle" onclick="toggleSidebar()" title="Recolher sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19l-7-7 7-7M4 12h16"/></svg></button>
+    </div>
+    <!-- Jornada Score -->
+    <div class="sb-score">
+      <div class="sb-score-top"><div><div class="sb-score-num">74</div><div class="sb-score-label">Life Sync Score</div></div><div class="sb-score-delta">▲ +3</div></div>
+      <div class="sb-score-bar"><div class="sb-score-fill"></div></div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section-label">Visualizações</div>
+      <button class="nav-item" onclick="navTo('sem')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg><span>Semanal</span><span class="nav-badge badge-y">hoje</span></button>
+      <button class="nav-item" onclick="navTo('mensal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Mensal</span></button>
+      <div class="sb-section-label" style="margin-top:8px">Gestão</div>
+      <button class="nav-item act-agenda" onclick="navTo('compromissos')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span>Compromissos</span><span class="nav-badge badge-count">16</span></button>
+      <button class="nav-item" onclick="navTo('novo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Novo Evento</span></button>
+      <button class="nav-item" onclick="navTo('foco')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Blocos de Foco</span></button>
+    </nav>
+  </aside>
+
+  <!-- ═══ LVL 3: MAIN AREA ═══ -->
+  <div class="main">
+    <!-- Header -->
+    <div class="header">
+      <div class="hd-breadcrumb"><span>Agenda</span><span class="sep">›</span><span class="mod-name">Compromissos</span></div>
+      <div class="hd-greeting"><div class="hd-greeting-name">Boa tarde, Thiago ☀️</div><div class="hd-greeting-phrase">Você tem 4 compromissos hoje</div></div>
+      <div class="hd-spacer"></div>
+      <button class="det-btn primary" onclick="openDrawer('create')" style="font-size:11px;padding:6px 14px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Novo evento
+      </button>
+      <button class="hd-notif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="notif-dot"></span></button>
+    </div>
+
+    <!-- Content Split -->
+    <div class="content-split">
+      <!-- LIST PANEL -->
+      <div class="list-panel">
+        <div class="list-toolbar">
+          <div class="ann">Protótipo 0.J.2 · Detalhe & CRUD de Compromissos</div>
+          <div class="list-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" placeholder="Buscar compromissos..." id="searchInput" oninput="filterEvents()">
+          </div>
+          <div class="list-filters" id="filterChips"></div>
+        </div>
+        <div class="list-header">
+          <div class="list-count" id="listCount">16 eventos</div>
+          <button class="list-sort" onclick="toggleSort()"><span id="sortLabel">Data ↓</span></button>
+        </div>
+        <div class="ev-list" id="evList"></div>
+      </div>
+
+      <!-- DETAIL PANEL -->
+      <div class="detail-panel" id="detailPanel">
+        <div class="detail-empty" id="detailEmpty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
+          <div class="detail-empty-text">Selecione um compromisso</div>
+          <div class="detail-empty-sub">Clique em um evento para ver detalhes</div>
+        </div>
+        <div class="detail-scroll" id="detailScroll" style="display:none"></div>
+        <div class="det-actions" id="detailActions" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="if(event.target===this)closeDrawer()"><div class="drawer" onclick="event.stopPropagation()"><div class="drawer-hd"><div class="drawer-title" id="drawerTitle">Novo Evento</div><button class="drawer-close" onclick="closeDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="drawer-body" id="drawerBody"></div><div class="drawer-footer" id="drawerFooter"></div></div></div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalDelete" onclick="if(event.target===this)closeModal('modalDelete')"><div class="modal-box"><div class="modal-ico" style="background:rgba(244,63,94,0.1)">🗑️</div><div class="modal-title">Excluir evento?</div><div class="modal-desc" id="deleteDesc">Esta ação não pode ser desfeita.</div><div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal('modalDelete')">Cancelar</button><button class="modal-btn confirm-del" onclick="confirmDelete()">Excluir</button></div></div></div>
+
+<div class="modal-overlay" id="modalRecur" onclick="if(event.target===this)closeModal('modalRecur')"><div class="modal-box"><div class="modal-ico" style="background:rgba(168,85,247,0.1)">🔁</div><div class="modal-title" id="recurModalTitle">Editar evento recorrente</div><div class="modal-desc">Este evento faz parte de uma série recorrente.</div><div class="recur-choice"><div class="recur-choice-btn" onclick="recurChoiceThis()"><strong>Apenas este evento</strong><span>Altera somente esta ocorrência</span></div><div class="recur-choice-btn" onclick="recurChoiceAll()"><strong>Todos os eventos da série</strong><span>Altera todas as ocorrências futuras</span></div></div><div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal('modalRecur')" style="flex:1">Cancelar</button></div></div></div>
+
+<div class="modal-overlay" id="modalDone" onclick="if(event.target===this)closeModal('modalDone')"><div class="modal-box"><div class="modal-ico" style="background:rgba(16,185,129,0.1)">✅</div><div class="modal-title">Marcar como concluído?</div><div class="modal-desc" id="doneDesc">Evento será marcado como concluído.</div><div id="doneGoalExtra" style="display:none;margin-bottom:14px;padding:10px;background:rgba(0,85,255,0.06);border:1px solid rgba(0,85,255,0.15);border-radius:8px;font-size:11px;color:var(--meta)">🎯 <strong>Tempo registrado na meta vinculada.</strong> Progresso contabilizado automaticamente.</div><div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal('modalDone')">Cancelar</button><button class="modal-btn confirm-done" onclick="confirmDone()">✓ Concluir</button></div></div></div>
+
+<div class="toast" id="toast"><span class="toast-ico"></span><span class="toast-text"></span></div>
+
+<!-- Controls -->
+<div class="controls"><div class="ctrl-title">Tema</div><div class="ctrl-grp"><button class="ctrl-btn active" id="ctrl-dark" onclick="setTheme('dark')">🌙 Dark</button><button class="ctrl-btn" id="ctrl-light" onclick="setTheme('light')">☀️ Light</button></div><div class="ctrl-title" style="margin-top:3px">Modo</div><div class="ctrl-grp"><button class="ctrl-btn active" id="ctrl-foco" onclick="setMode('foco')">Foco</button><button class="ctrl-btn" id="ctrl-jornada" onclick="setMode('jornada')">Jornada</button></div></div>
+
+<script>
+// ═══ TOOLTIP ═══
+function showTip(el){const t=document.getElementById('tip'),r=el.getBoundingClientRect();t.textContent=el.dataset.tip||el.title;t.style.top=r.top+r.height/2+'px';t.classList.add('show');}
+function hideTip(){document.getElementById('tip').classList.remove('show');}
+
+// ═══ SIDEBAR ═══
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('closed');}
+function navTo(id){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('act-agenda'));
+  if(id==='novo'){openDrawer('create');return;}
+  const btn=event?.target?.closest('.nav-item');if(btn)btn.classList.add('act-agenda');
+  // In real app, would switch content view. For this prototype, compromissos is the active view.
+  if(id==='compromissos') showToast('📋','Vista: Compromissos');
+  else if(id==='sem') showToast('📅','Vista: Semanal (proto-agenda.html)');
+  else if(id==='mensal') showToast('🗓️','Vista: Mensal (proto-agenda.html)');
+  else if(id==='foco') showToast('⏰','Blocos de Foco (em breve)');
+}
+
+// ═══ DATA ═══
+const EV_TYPES={trabalho:{ico:'💼',label:'Trabalho',color:'#8b5cf6'},meta:{ico:'🎯',label:'Meta',color:'#0055ff'},saude:{ico:'💪',label:'Saúde',color:'#22c55e'},pessoal:{ico:'🌟',label:'Pessoal',color:'#f59e0b'},financeiro:{ico:'💰',label:'Financeiro',color:'#10b981'},estudo:{ico:'📚',label:'Estudo',color:'#06b6d4'}};
+const PRIORITIES={baixa:{label:'Baixa',color:'#6e90b8'},normal:{label:'Normal',color:'#06b6d4'},alta:{label:'Alta',color:'#f97316'},urgente:{label:'Urgente',color:'#f43f5e'}};
+const REMINDERS=[{key:'5m',label:'5 min'},{key:'15m',label:'15 min'},{key:'30m',label:'30 min'},{key:'1h',label:'1 hora'},{key:'1d',label:'1 dia'}];
+const RECURRENCE=[{key:'none',label:'Não repete'},{key:'daily',label:'Diário'},{key:'weekly',label:'Semanal'},{key:'monthly',label:'Mensal'},{key:'custom',label:'Personalizado'}];
+const GOALS=[{id:'g1',name:'Viagem Europa',ico:'✈️',pct:45,detail:'R$ 5.400 de R$ 12.000',type:'financeira'},{id:'g2',name:'Aprender Next.js',ico:'💻',pct:68,detail:'34h de 50h',type:'educação'},{id:'g3',name:'Perder 5kg',ico:'🏋️',pct:40,detail:'2kg de 5kg',type:'saúde'}];
+
+let evList=[
+  {id:1,title:"Daily Standup",type:"trabalho",date:"2026-02-22",allDay:false,start:"09:00",end:"09:15",desc:"Reunião diária do time de produto",priority:"normal",status:"pendente",recurrence:"daily",reminder:"5m",goalId:null,location:"Google Meet",checklist:[],conflict:false},
+  {id:2,title:"Dentista — Limpeza",type:"saude",date:"2026-02-22",allDay:false,start:"15:00",end:"16:00",desc:"Dr. Marcos — Clínica OralCenter. Levar exames anteriores.",priority:"alta",status:"pendente",recurrence:"none",reminder:"1d",goalId:null,location:"Clínica OralCenter",checklist:[{id:'c1',text:'Levar exames',done:true},{id:'c2',text:'Confirmar horário',done:true},{id:'c3',text:'Levar carteirinha',done:false}],conflict:false},
+  {id:3,title:"Review semanal",type:"pessoal",date:"2026-02-22",allDay:false,start:"19:00",end:"20:00",desc:"Reflexão da semana: o que funcionou, o que pode melhorar.",priority:"normal",status:"pendente",recurrence:"weekly",reminder:"30m",goalId:null,location:"",checklist:[{id:'c4',text:'Revisar finanças',done:false},{id:'c5',text:'Checar metas',done:false},{id:'c6',text:'Planejar próxima semana',done:false}],conflict:false},
+  {id:4,title:"Estudar React — Hooks",type:"estudo",date:"2026-02-22",allDay:false,start:"20:30",end:"22:00",desc:"Focar em useReducer e useContext. Curso Udemy — Seção 12.",priority:"normal",status:"pendente",recurrence:"none",reminder:"15m",goalId:'g2',location:"",checklist:[{id:'c7',text:'Assistir aulas 12.1–12.5',done:false},{id:'c8',text:'Exercício prático',done:false}],conflict:false},
+  {id:5,title:"Sprint Planning Q1",type:"trabalho",date:"2026-02-23",allDay:false,start:"09:00",end:"10:30",desc:"Planejamento do sprint. Preparar backlog refinado.",priority:"alta",status:"pendente",recurrence:"none",reminder:"15m",goalId:null,location:"Sala 3B",checklist:[],conflict:false},
+  {id:6,title:"Aniversário — Mãe",type:"pessoal",date:"2026-02-23",allDay:true,start:"",end:"",desc:"🎂 Presente: voucher spa. Jantar no Galpão 18.",priority:"urgente",status:"pendente",recurrence:"none",reminder:"1d",goalId:null,location:"Galpão 18",checklist:[{id:'c9',text:'Comprar presente',done:true},{id:'c10',text:'Reservar restaurante',done:true},{id:'c11',text:'Buscar bolo',done:false}],conflict:false},
+  {id:7,title:"Academia — Treino A",type:"saude",date:"2026-02-24",allDay:false,start:"07:00",end:"08:00",desc:"Peito + tríceps + abdômen.",priority:"normal",status:"pendente",recurrence:"weekly",reminder:"30m",goalId:'g3',location:"SmartFit",checklist:[],conflict:false},
+  {id:8,title:"1:1 com Gestor",type:"trabalho",date:"2026-02-24",allDay:false,start:"10:00",end:"10:30",desc:"Alinhamento semanal. Pautas: promoção, SyncLife, férias.",priority:"alta",status:"pendente",recurrence:"weekly",reminder:"5m",goalId:null,location:"Google Meet",checklist:[],conflict:false},
+  {id:9,title:"Inglês — Aula 3",type:"estudo",date:"2026-02-25",allDay:false,start:"19:00",end:"20:30",desc:"Cambridge B2 — Unit 6: Conditionals.",priority:"normal",status:"pendente",recurrence:"weekly",reminder:"15m",goalId:null,location:"Zoom",checklist:[],conflict:false},
+  {id:10,title:"Pagar Aluguel",type:"financeiro",date:"2026-02-28",allDay:true,start:"",end:"",desc:"R$ 2.100,00 — PIX imobiliária.",priority:"urgente",status:"pendente",recurrence:"monthly",reminder:"1d",goalId:null,location:"",checklist:[],conflict:false},
+  {id:11,title:"Meta — Aporte Viagem",type:"meta",date:"2026-02-28",allDay:true,start:"",end:"",desc:"R$ 600 para conta investimento viagem.",priority:"alta",status:"pendente",recurrence:"monthly",reminder:"1d",goalId:'g1',location:"",checklist:[],conflict:false},
+  {id:12,title:"Apresentação Trimestral",type:"trabalho",date:"2026-02-26",allDay:false,start:"14:00",end:"15:30",desc:"Resultados Q4 para diretoria.",priority:"urgente",status:"pendente",recurrence:"none",reminder:"1h",goalId:null,location:"Sala Executiva — 7º andar",checklist:[{id:'c12',text:'Finalizar slides',done:false},{id:'c13',text:'Ensaiar apresentação',done:false}],conflict:false},
+  {id:13,title:"Corrida no parque",type:"saude",date:"2026-02-22",allDay:false,start:"06:30",end:"07:15",desc:"5km corrida leve.",priority:"baixa",status:"concluido",recurrence:"none",reminder:"",goalId:'g3',location:"Parque Farroupilha",checklist:[],conflict:false},
+  {id:14,title:"Reunião Cliente ABC",type:"trabalho",date:"2026-02-22",allDay:false,start:"14:30",end:"15:30",desc:"Proposta comercial.",priority:"alta",status:"pendente",recurrence:"none",reminder:"15m",goalId:null,location:"Av. Carlos Gomes",checklist:[{id:'c15',text:'Imprimir proposta',done:true},{id:'c16',text:'Levar contrato',done:false}],conflict:true},
+  {id:15,title:"Médico — Check-up",type:"saude",date:"2026-02-27",allDay:false,start:"08:30",end:"09:30",desc:"Dr. Roberto — exames rotina. Jejum 12h.",priority:"alta",status:"pendente",recurrence:"none",reminder:"1d",goalId:null,location:"Hospital Moinhos",checklist:[{id:'c17',text:'Jejum 12h',done:false},{id:'c18',text:'Levar exames',done:false}],conflict:false},
+  {id:16,title:"Estudar AWS — SAA-C03",type:"estudo",date:"2026-02-25",allDay:false,start:"20:30",end:"22:00",desc:"Módulo 8: VPC & Networking.",priority:"normal",status:"pendente",recurrence:"weekly",reminder:"15m",goalId:null,location:"",checklist:[],conflict:false},
+];
+let nextId=17,selectedId=null,editingId=null,deletingId=null,doneId=null,recurAction=null,sortAsc=true,activeFilter='todos';
+
+// ═══ HELPERS ═══
+function getEv(id){return evList.find(e=>e.id===id);}
+function formatDate(ds){const[y,m,d]=ds.split('-');const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];const dt=new Date(+y,+m-1,+d);return`${days[dt.getDay()]}, ${d} ${months[+m-1]}`;}
+function isToday(ds){return ds==='2026-02-22';}
+
+// ═══ FILTERS & LIST ═══
+function renderFilters(){const chips=[{key:'todos',label:'Todos'},...Object.entries(EV_TYPES).map(([k,v])=>({key:k,label:`${v.ico} ${v.label}`})),{key:'recorrente',label:'🔁 Recorrentes'},{key:'vinculado',label:'🎯 Com meta'}];document.getElementById('filterChips').innerHTML=chips.map(c=>`<button class="filter-chip${c.key===activeFilter?' active':''}" onclick="setFilter('${c.key}')">${c.label}</button>`).join('');}
+function setFilter(k){activeFilter=k;renderFilters();renderList();}
+function filterEvents(){renderList();}
+function toggleSort(){sortAsc=!sortAsc;document.getElementById('sortLabel').textContent=sortAsc?'Data ↓':'Data ↑';renderList();}
+function getFilteredEvents(){const q=document.getElementById('searchInput').value.toLowerCase().trim();let list=[...evList];if(q)list=list.filter(e=>e.title.toLowerCase().includes(q)||(e.desc||'').toLowerCase().includes(q)||(e.location||'').toLowerCase().includes(q));if(activeFilter!=='todos'){if(activeFilter==='recorrente')list=list.filter(e=>e.recurrence&&e.recurrence!=='none');else if(activeFilter==='vinculado')list=list.filter(e=>e.goalId);else list=list.filter(e=>e.type===activeFilter);}list.sort((a,b)=>{const da=a.date+(a.start||'99:99'),db=b.date+(b.start||'99:99');return sortAsc?da.localeCompare(db):db.localeCompare(da);});return list;}
+
+function renderList(){const list=getFilteredEvents();document.getElementById('listCount').textContent=`${list.length} evento${list.length!==1?'s':''}`;const groups={};list.forEach(e=>{if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e);});let html='';Object.keys(groups).sort((a,b)=>sortAsc?a.localeCompare(b):b.localeCompare(a)).forEach(date=>{html+=`<div class="ev-day-group"><div class="ev-day-label">${formatDate(date)}${isToday(date)?'<span class="today-badge">HOJE</span>':''}</div>`;groups[date].forEach(e=>{const tp=EV_TYPES[e.type]||EV_TYPES.pessoal;const isDone=e.status==='concluido';const timeStr=e.allDay?'Dia inteiro':`${e.start} → ${e.end}`;const badges=[`<span class="ev-badge" style="background:${tp.color}15;color:${tp.color}">${tp.ico} ${tp.label}</span>`];if(e.recurrence&&e.recurrence!=='none')badges.push(`<span class="ev-badge" style="background:rgba(168,85,247,0.1);color:#a78bfa">🔁</span>`);if(e.goalId){const g=GOALS.find(g=>g.id===e.goalId);if(g)badges.push(`<span class="ev-badge" style="background:rgba(0,85,255,0.1);color:var(--meta)">🎯</span>`);}if(e.priority==='alta')badges.push(`<span class="ev-badge" style="background:rgba(249,115,22,0.1);color:var(--orange)">⚡</span>`);if(e.priority==='urgente')badges.push(`<span class="ev-badge" style="background:rgba(244,63,94,0.1);color:var(--red)">🔴</span>`);if(e.conflict)badges.push(`<span class="ev-badge" style="background:rgba(245,158,11,0.1);color:var(--yellow)">⚠️</span>`);html+=`<div class="ev-card${isDone?' done':''}${e.id===selectedId?' selected':''}" onclick="selectEvent(${e.id})"><div class="ev-card-top"><div class="ev-type-dot" style="background:${tp.color}"></div><div class="ev-card-info"><div class="ev-card-title">${e.title}</div><div class="ev-card-time">${timeStr}</div></div><div class="ev-card-status"><button class="status-check${isDone?' done':''}" onclick="event.stopPropagation();toggleStatus(${e.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></button></div></div><div class="ev-card-badges">${badges.join('')}</div></div>`;});html+=`</div>`;});if(!list.length)html='<div style="text-align:center;padding:40px 20px;color:var(--t3)"><div style="font-size:28px;margin-bottom:8px">🔍</div><div style="font-size:12px">Nenhum evento encontrado</div></div>';document.getElementById('evList').innerHTML=html;}
+
+// ═══ DETAIL ═══
+function selectEvent(id){selectedId=id;renderList();renderDetail();}
+function renderDetail(){const ev=getEv(selectedId);if(!ev)return;const tp=EV_TYPES[ev.type]||EV_TYPES.pessoal;const pr=PRIORITIES[ev.priority]||PRIORITIES.normal;const timeStr=ev.allDay?'Dia inteiro':`${ev.start} → ${ev.end}`;const duration=ev.allDay?'':(()=>{const[h1,m1]=ev.start.split(':').map(Number),[h2,m2]=ev.end.split(':').map(Number);const mins=(h2*60+m2)-(h1*60+m1);return mins>=60?`${Math.floor(mins/60)}h${mins%60?` ${mins%60}min`:''}`:mins+'min';})();const recurLabel=RECURRENCE.find(r=>r.key===ev.recurrence)?.label||'Não repete';const reminderLabel=REMINDERS.find(r=>r.key===ev.reminder)?.label||'Nenhum';const goal=ev.goalId?GOALS.find(g=>g.id===ev.goalId):null;let h='';h+=`<div class="det-header"><div class="det-status-row"><span class="det-status-pill ${ev.status}">${ev.status==='concluido'?'✓ Concluído':ev.status==='cancelado'?'✗ Cancelado':'◉ Pendente'}</span><span class="det-priority-pill ${ev.priority}">${pr.label}</span>`;if(ev.recurrence&&ev.recurrence!=='none')h+=`<span style="padding:3px 9px;border-radius:100px;font-size:9px;font-weight:700;background:rgba(168,85,247,0.1);color:#a855f7">🔁 ${recurLabel}</span>`;h+=`</div><div class="det-title">${ev.title}</div><span class="det-type-tag" style="background:${tp.color}15;color:${tp.color};border:1px solid ${tp.color}33">${tp.ico} ${tp.label}</span></div>`;
+h+=`<div class="det-meta-grid"><div class="det-meta-card"><div class="det-meta-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Data</div><div class="det-meta-val">${formatDate(ev.date)}</div>${isToday(ev.date)?'<div class="det-meta-sub" style="color:var(--agenda)">📍 Hoje</div>':''}</div><div class="det-meta-card"><div class="det-meta-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Horário</div><div class="det-meta-val">${timeStr}</div>${duration?`<div class="det-meta-sub">Duração: ${duration}</div>`:''}</div>`;if(ev.location)h+=`<div class="det-meta-card full"><div class="det-meta-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Local</div><div class="det-meta-val" style="font-size:12px">${ev.location}</div></div>`;h+=`<div class="det-meta-card"><div class="det-meta-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg> Lembrete</div><div class="det-meta-val">${ev.reminder?'🔔 '+reminderLabel+' antes':'Nenhum'}</div></div><div class="det-meta-card"><div class="det-meta-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 014-4h14"/></svg> Recorrência</div><div class="det-meta-val">${recurLabel}</div></div></div>`;
+if(ev.conflict)h+=`<div class="det-section"><div class="conflict-card"><div class="conflict-ico">⚠️</div><div class="conflict-text"><strong>Conflito de horário!</strong><br>Sobrepõe com "Dentista — Limpeza" (15:00–16:00).</div></div></div>`;
+if(ev.desc)h+=`<div class="det-section"><div class="det-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Descrição</div><div class="det-desc">${ev.desc}</div></div>`;
+if(ev.checklist&&ev.checklist.length){const done=ev.checklist.filter(c=>c.done).length,total=ev.checklist.length,pct=Math.round(done/total*100);h+=`<div class="det-section"><div class="det-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Checklist</div><div class="cl-progress"><div class="cl-progress-bar"><div class="cl-progress-fill" style="width:${pct}%"></div></div><div class="cl-progress-text">${done}/${total}</div></div>`;ev.checklist.forEach(c=>{h+=`<div class="checklist-item${c.done?' done':''}" onclick="toggleChecklist(${ev.id},'${c.id}')"><div class="cl-check${c.done?' done':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><span class="cl-text">${c.text}</span></div>`;});h+=`</div>`;}
+if(goal)h+=`<div class="det-section"><div class="det-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Meta vinculada</div><div class="goal-link-card"><div class="goal-link-top"><div class="goal-link-ico">${goal.ico}</div><div class="goal-link-info"><div class="goal-link-name">${goal.name}</div><div class="goal-link-status">${goal.type}</div></div></div><div class="goal-link-bar"><div class="goal-link-fill" style="width:${goal.pct}%"></div></div><div class="goal-link-pct"><span>${goal.detail}</span><span style="font-weight:700;color:var(--meta)">${goal.pct}%</span></div></div></div>`;
+h+=`<div class="det-section"><div class="ai-insight-card"><div class="ai-insight-lbl">💡 SyncLife Insight</div><div class="ai-insight-text">${getAIInsight(ev)}</div></div></div>`;
+document.getElementById('detailScroll').innerHTML=h;document.getElementById('detailScroll').style.display='block';document.getElementById('detailEmpty').style.display='none';
+let a='';if(ev.status!=='concluido')a+=`<button class="det-btn success" onclick="promptDone(${ev.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Concluir</button>`;a+=`<button class="det-btn primary" onclick="openDrawer('edit',${ev.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>`;a+=`<button class="det-btn secondary" onclick="duplicateEvent(${ev.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Duplicar</button><span class="det-btn-spacer"></span><button class="det-btn danger" onclick="promptDelete(${ev.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> Excluir</button>`;document.getElementById('detailActions').innerHTML=a;document.getElementById('detailActions').style.display='flex';}
+
+function getAIInsight(ev){if(ev.goalId==='g2')return"Você estudou <strong>4h essa semana</strong> para Next.js — faltam 16h. Concluirá em <strong>4 semanas</strong> mantendo o ritmo! 🚀";if(ev.goalId==='g3')return"Cada treino contribui para perder 5kg. Já perdeu 2kg — mantenha a consistência! 💪";if(ev.goalId==='g1')return"Aporte mantém você no caminho. Faltam R$ 6.600 — em 11 meses chega lá. ✈️";if(ev.type==='trabalho')return"<strong>3 compromissos de trabalho</strong> essa semana — 35% do tempo. Mantenha espaço para foco pessoal.";if(ev.conflict)return"⚠️ Conflito! Slot livre às <strong>16:30</strong> — considere reagendar.";return"<strong>7 eventos planejados</strong> essa semana. Consistência em alta — contribui para seu Life Sync Score! ✨";}
+
+// ═══ ACTIONS ═══
+function toggleChecklist(evId,clId){const ev=getEv(evId);if(!ev)return;const item=ev.checklist.find(c=>c.id===clId);if(item)item.done=!item.done;renderDetail();}
+function toggleStatus(id){const ev=getEv(id);if(!ev)return;if(ev.status==='concluido'){ev.status='pendente';showToast('↩️','Evento reaberto');}else{promptDone(id);return;}renderList();if(selectedId===id)renderDetail();}
+function promptDone(id){doneId=id;const ev=getEv(id);document.getElementById('doneDesc').textContent=`Marcar "${ev.title}" como concluído?`;document.getElementById('doneGoalExtra').style.display=ev.goalId?'block':'none';openModal('modalDone');}
+function confirmDone(){const ev=getEv(doneId);ev.status='concluido';closeModal('modalDone');renderList();if(selectedId===doneId)renderDetail();showToast('✅',ev.goalId?'Concluído! Progresso registrado.':'Evento concluído!');}
+function promptDelete(id){const ev=getEv(id);if(ev.recurrence&&ev.recurrence!=='none'){recurAction='delete';deletingId=id;document.getElementById('recurModalTitle').textContent='Excluir evento recorrente';openModal('modalRecur');}else{deletingId=id;document.getElementById('deleteDesc').textContent=`Excluir "${ev.title}"?`;openModal('modalDelete');}}
+function confirmDelete(){evList=evList.filter(e=>e.id!==deletingId);closeModal('modalDelete');if(selectedId===deletingId){selectedId=null;document.getElementById('detailScroll').style.display='none';document.getElementById('detailActions').style.display='none';document.getElementById('detailEmpty').style.display='flex';}renderList();showToast('🗑️','Evento excluído');}
+function recurChoiceThis(){closeModal('modalRecur');if(recurAction==='delete'){document.getElementById('deleteDesc').textContent='Excluir apenas esta ocorrência?';openModal('modalDelete');}else openDrawerDirect('edit',editingId);}
+function recurChoiceAll(){closeModal('modalRecur');if(recurAction==='delete'){document.getElementById('deleteDesc').textContent='Excluir TODA a série recorrente?';openModal('modalDelete');}else openDrawerDirect('edit',editingId);}
+function duplicateEvent(id){const ev=getEv(id);const dup={...ev,id:nextId++,title:ev.title+' (cópia)',status:'pendente',checklist:ev.checklist.map(c=>({...c,done:false,id:'c'+Date.now()+Math.random().toString(36).substr(2,3)}))};evList.push(dup);selectedId=dup.id;renderList();renderDetail();showToast('📋','Evento duplicado');}
+
+// ═══ DRAWER ═══
+let formState={};
+function openDrawer(mode,id){if(mode==='edit'&&id){const ev=getEv(id);if(ev&&ev.recurrence&&ev.recurrence!=='none'){recurAction='edit';editingId=id;document.getElementById('recurModalTitle').textContent='Editar evento recorrente';openModal('modalRecur');return;}}openDrawerDirect(mode,id);}
+function openDrawerDirect(mode,id){editingId=mode==='edit'?id:null;const ev=mode==='edit'?getEv(id):null;formState={title:ev?.title||'',type:ev?.type||'',date:ev?.date||'2026-02-22',allDay:ev?.allDay||false,start:ev?.start||'09:00',end:ev?.end||'10:00',desc:ev?.desc||'',priority:ev?.priority||'normal',recurrence:ev?.recurrence||'none',reminder:ev?.reminder||'',goalId:ev?.goalId||null,location:ev?.location||'',checklist:ev?.checklist?ev.checklist.map(c=>({...c})):[]};document.getElementById('drawerTitle').textContent=mode==='edit'?'Editar Evento':'Novo Evento';renderDrawerForm();renderDrawerFooter(mode);document.getElementById('drawerOverlay').classList.add('open');}
+function closeDrawer(){document.getElementById('drawerOverlay').classList.remove('open');}
+
+function renderDrawerForm(){const s=formState;let h='';
+h+=`<div class="f-group"><label class="f-label">Título</label><input class="f-input" id="f-title" type="text" placeholder="Ex: Reunião, Academia..." value="${s.title}"><div class="f-error" id="fe-title">Título obrigatório</div></div>`;
+h+=`<div class="f-group"><label class="f-label">Tipo</label><div class="type-grid">`;Object.entries(EV_TYPES).forEach(([k,v])=>{h+=`<div class="type-option${s.type===k?' selected':''}" onclick="formSelectType('${k}')" style="${s.type===k?`border-color:${v.color};background:${v.color}18`:''}"><span class="type-option-ico">${v.ico}</span><span class="type-option-lbl" style="${s.type===k?`color:${v.color}`:''}">${v.label}</span></div>`;});h+=`</div><div class="f-error" id="fe-type">Selecione um tipo</div></div>`;
+h+=`<div class="f-group"><label class="f-label">Data</label><input class="f-input" id="f-date" type="date" value="${s.date}"></div>`;
+h+=`<div class="f-group"><div class="toggle-row" onclick="formToggleAllDay()"><div class="toggle-left"><span class="toggle-left-ico">📅</span><div><div class="toggle-left-lbl">Dia inteiro</div><div class="toggle-left-sub">Sem horário</div></div></div><div class="toggle-sw${s.allDay?' on':''}"><div class="toggle-knob"></div></div></div></div>`;
+h+=`<div style="display:${s.allDay?'none':'block'}"><div class="f-row"><div class="f-group"><label class="f-label">Início</label><input class="f-input" id="f-start" type="time" value="${s.start}"></div><div class="f-group"><label class="f-label">Fim</label><input class="f-input" id="f-end" type="time" value="${s.end}"></div></div></div>`;
+h+=`<div class="f-group"><label class="f-label">Prioridade</label><div class="priority-grid">`;Object.entries(PRIORITIES).forEach(([k,v])=>{h+=`<div class="priority-option${s.priority===k?' selected':''}" onclick="formSelectPriority('${k}')" style="${s.priority===k?`border-color:${v.color};color:${v.color};background:${v.color}15`:''}">${v.label}</div>`;});h+=`</div></div>`;
+h+=`<div class="f-group"><label class="f-label">Recorrência</label><div class="recur-grid">`;RECURRENCE.filter(r=>r.key!=='custom').forEach(r=>{h+=`<div class="recur-option${s.recurrence===r.key?' selected':''}" onclick="formSelectRecurrence('${r.key}')">${r.label}</div>`;});h+=`</div></div>`;
+h+=`<div class="f-group"><label class="f-label">Lembrete</label><div class="reminder-grid"><div class="reminder-option${!s.reminder?' selected':''}" onclick="formSelectReminder('')">Nenhum</div>`;REMINDERS.forEach(r=>{h+=`<div class="reminder-option${s.reminder===r.key?' selected':''}" onclick="formSelectReminder('${r.key}')">${r.label}</div>`;});h+=`</div></div>`;
+h+=`<div class="f-group"><label class="f-label">Local <span class="optional">(opcional)</span></label><input class="f-input" id="f-location" type="text" placeholder="Google Meet, Escritório..." value="${s.location}"></div>`;
+h+=`<div class="f-group"><label class="f-label">Vincular a meta <span class="optional">(opcional)</span></label><div class="goal-select-card${!s.goalId?' selected':''}" onclick="formSelectGoal(null)"><span class="goal-select-ico">—</span><div class="goal-select-info"><div class="goal-select-name" style="color:var(--t3)">Sem vínculo</div></div><div class="goal-select-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:9px;height:9px;color:#fff;opacity:${!s.goalId?'1':'0'}"><path d="M20 6L9 17l-5-5"/></svg></div></div>`;GOALS.forEach(g=>{h+=`<div class="goal-select-card${s.goalId===g.id?' selected':''}" onclick="formSelectGoal('${g.id}')"><span class="goal-select-ico">${g.ico}</span><div class="goal-select-info"><div class="goal-select-name">${g.name}</div><div class="goal-select-detail">${g.detail} · ${g.pct}%</div></div><div class="goal-select-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:9px;height:9px;color:#fff;opacity:${s.goalId===g.id?'1':'0'}"><path d="M20 6L9 17l-5-5"/></svg></div></div>`;});h+=`</div>`;
+h+=`<div class="f-group"><label class="f-label">Descrição <span class="optional">(opcional)</span></label><textarea class="f-input f-textarea" id="f-desc" placeholder="Detalhes...">${s.desc}</textarea></div>`;
+h+=`<div class="f-group"><label class="f-label">Checklist <span class="optional">(opcional)</span></label><div id="f-cl-items">`;s.checklist.forEach((c,i)=>{h+=`<div class="form-cl-item"><span>${c.text}</span><button class="form-cl-del" onclick="formRemoveChecklist(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>`;});h+=`</div><div class="checklist-add-row"><input class="checklist-add-input" id="f-cl-input" type="text" placeholder="Adicionar item..." onkeydown="if(event.key==='Enter')formAddChecklist()"><button class="checklist-add-btn" onclick="formAddChecklist()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></button></div></div>`;
+document.getElementById('drawerBody').innerHTML=h;}
+
+function renderDrawerFooter(mode){let h=`<button class="det-btn secondary" onclick="closeDrawer()">Cancelar</button>`;if(mode==='edit')h+=`<button class="det-btn danger" onclick="promptDelete(${editingId})">Excluir</button>`;h+=`<button class="det-btn primary" onclick="saveEvent()">✓ Salvar</button>`;document.getElementById('drawerFooter').innerHTML=h;}
+
+function formSelectType(k){formState.type=k;renderDrawerForm();}
+function formSelectPriority(k){formState.priority=k;renderDrawerForm();}
+function formSelectRecurrence(k){formState.recurrence=k;renderDrawerForm();}
+function formSelectReminder(k){formState.reminder=k;renderDrawerForm();}
+function formSelectGoal(id){formState.goalId=id;renderDrawerForm();}
+function formToggleAllDay(){formState.allDay=!formState.allDay;renderDrawerForm();}
+function formAddChecklist(){const input=document.getElementById('f-cl-input');const text=input.value.trim();if(!text)return;formState.checklist.push({id:'c'+Date.now(),text,done:false});input.value='';renderDrawerForm();}
+function formRemoveChecklist(idx){formState.checklist.splice(idx,1);renderDrawerForm();}
+
+function saveEvent(){const title=document.getElementById('f-title').value.trim(),date=document.getElementById('f-date').value,start=formState.allDay?'':document.getElementById('f-start').value,end=formState.allDay?'':document.getElementById('f-end').value,location=document.getElementById('f-location').value.trim(),desc=document.getElementById('f-desc').value.trim();let ok=true;if(!title){document.getElementById('fe-title').classList.add('on');document.getElementById('f-title').classList.add('err');ok=false;}if(!formState.type){document.getElementById('fe-type').classList.add('on');ok=false;}if(!ok)return;
+if(editingId){const ev=getEv(editingId);if(ev){Object.assign(ev,{title,type:formState.type,date,allDay:formState.allDay,start,end,desc,priority:formState.priority,recurrence:formState.recurrence,reminder:formState.reminder,goalId:formState.goalId,location,checklist:formState.checklist});}selectedId=editingId;showToast('✏️','Evento atualizado');}else{const n={id:nextId++,title,type:formState.type,date,allDay:formState.allDay,start,end,desc,priority:formState.priority,status:'pendente',recurrence:formState.recurrence,reminder:formState.reminder,goalId:formState.goalId,location,checklist:formState.checklist,conflict:false};evList.push(n);selectedId=n.id;showToast('✅','Evento criado!');}closeDrawer();renderList();renderDetail();}
+
+// ═══ MODALS & TOAST ═══
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function showToast(ico,text){const t=document.getElementById('toast');t.querySelector('.toast-ico').textContent=ico;t.querySelector('.toast-text').textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ═══ THEME / MODE ═══
+function setTheme(t){document.body.classList.toggle('light',t==='light');document.getElementById('ctrl-dark').classList.toggle('active',t==='dark');document.getElementById('ctrl-light').classList.toggle('active',t==='light');}
+function setMode(m){document.body.classList.toggle('jornada',m==='jornada');document.getElementById('ctrl-foco').classList.toggle('active',m==='foco');document.getElementById('ctrl-jornada').classList.toggle('active',m==='jornada');}
+
+// ═══ INIT ═══
+renderFilters();renderList();
+const todayEvs=evList.filter(e=>e.date==='2026-02-22'&&e.status!=='concluido');
+if(todayEvs.length)selectEvent(todayEvs[0].id);
+</script>
+</body>
+</html>

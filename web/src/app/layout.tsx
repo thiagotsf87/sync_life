@@ -48,6 +48,11 @@ export default function RootLayout({
       className={`${outfit.variable} ${syne.variable} ${dmMono.variable} ${dmSans.variable}`}
     >
       <body className={`${outfit.className} antialiased`}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('synclife-theme');var m=localStorage.getItem('synclife-mode');if(t==='light')document.documentElement.classList.add('light');if(m==='jornada')document.documentElement.classList.add('jornada');}catch(e){}})()`,
+          }}
+        />
         {children}
         <Toaster position="top-right" />
       </body>

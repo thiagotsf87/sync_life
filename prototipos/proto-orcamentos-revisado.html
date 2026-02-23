@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Orçamentos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── TOKENS ── */
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;--em-g:rgba(16,185,129,0.15);
+  --green:#10b981;--yellow:#f59e0b;--orange:#f97316;--red:#f43f5e;
+  --fin:#10b981;
+}
+body.jornada{
+  --bg:#020d08;--s1:#061410;--s2:#0b1e18;--s3:#112b22;
+  --border:rgba(16,185,129,0.08);--border-h:rgba(16,185,129,0.18);
+  --t1:#d6faf0;--t2:#4da888;--t3:#235c48;
+}
+body.light{
+  --bg:#e6eef5;--s1:#ffffff;--s2:#f0f6fa;--s3:#e0eaf3;
+  --border:rgba(3,7,26,0.09);--border-h:rgba(3,7,26,0.18);
+  --t1:#03071a;--t2:#1e3a5c;--t3:#5a7a9e;
+  --em-g:rgba(16,185,129,0.10);
+}
+body.light.jornada{
+  --bg:#c8f0e4;--s1:#ffffff;--s2:#e0f7ef;--s3:#c4eede;
+  --border:rgba(5,80,56,0.12);--border-h:rgba(5,80,56,0.24);
+  --t1:#022016;--t2:#0d5c3e;--t3:#4da888;
+}
+
+html,body{height:100%;min-height:100vh}
+body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;transition:background .35s,color .25s}
+
+/* ── PAGE ── */
+.page{max-width:1000px;margin:0 auto;padding:32px 24px 80px}
+
+/* ── DEV BAR ── */
+.dev-bar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(3,7,26,0.95);border-bottom:1px solid rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);
+  display:flex;align-items:center;gap:8px;padding:8px 20px;
+  font-size:11px;color:#6e90b8;
+}
+.dev-bar strong{color:#dff0ff;margin-right:4px}
+.dev-pill{
+  padding:4px 10px;border-radius:100px;border:1px solid rgba(255,255,255,0.1);
+  background:none;color:#6e90b8;cursor:pointer;font-size:11px;
+  transition:all .15s;font-family:"DM Sans",sans-serif;
+}
+.dev-pill:hover{border-color:rgba(255,255,255,0.25);color:#dff0ff}
+.dev-pill.on{background:var(--em);color:#03071a;border-color:transparent;font-weight:700}
+.dev-sep{width:1px;height:16px;background:rgba(255,255,255,0.1);margin:0 4px}
+body:not(.light) .dev-bar{background:rgba(3,7,26,0.95)}
+body.light .dev-bar{background:rgba(230,237,245,0.97);border-color:rgba(0,0,0,0.08);color:#1e3a5c}
+body.light .dev-pill{color:#1e3a5c;border-color:rgba(0,0,0,0.15)}
+body.light .dev-pill:hover{color:#03071a}
+
+/* ── HEADER ── */
+.page-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:28px;gap:16px;margin-top:48px;
+}
+.page-title-group{}
+.page-eyebrow{font-size:11px;color:var(--fin);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.page-title{font-family:"Syne",sans-serif;font-size:24px;font-weight:800;color:var(--t1);letter-spacing:-.02em}
+.header-right{display:flex;align-items:center;gap:10px}
+
+/* Seletor de mês */
+.month-select{
+  display:flex;align-items:center;gap:8px;
+  background:var(--s1);border:1px solid var(--border);border-radius:10px;
+  padding:8px 14px;cursor:pointer;transition:border-color .2s;
+}
+.month-select:hover{border-color:var(--border-h)}
+.month-select-label{font-size:13px;font-weight:600;color:var(--t1)}
+.month-select svg{width:14px;height:14px;color:var(--t3)}
+
+/* Botão novo envelope */
+.btn-new{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--em);color:#03071a;
+  font-family:"DM Sans",sans-serif;font-weight:700;font-size:13px;
+  padding:9px 18px;border-radius:100px;border:none;cursor:pointer;
+  transition:all .2s;box-shadow:0 4px 16px rgba(16,185,129,.25);
+  white-space:nowrap;
+}
+.btn-new:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,.35);filter:brightness(1.06)}
+.btn-new svg{width:14px;height:14px}
+
+/* ── SUMMARY STRIP ── */
+.summary-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:12px;margin-bottom:24px;
+}
+.sum-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:14px;
+  padding:16px 18px;
+}
+.sum-label{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.sum-value{font-family:"DM Mono",monospace;font-size:18px;font-weight:500;color:var(--t1)}
+.sum-value.green{color:var(--green)}
+.sum-value.yellow{color:var(--yellow)}
+.sum-value.red{color:var(--red)}
+.sum-sub{font-size:11px;color:var(--t3);margin-top:3px}
+
+/* ── 50-30-20 BANNER ── */
+.suggestion-banner{
+  display:flex;align-items:flex-start;gap:14px;
+  background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);
+  border-radius:14px;padding:16px 20px;margin-bottom:24px;
+  position:relative;overflow:hidden;
+}
+.suggestion-banner::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--em),transparent);
+}
+.sug-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.sug-body{flex:1}
+.sug-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.sug-desc{font-size:12px;color:var(--t2);line-height:1.55}
+.sug-actions{display:flex;gap:8px;margin-top:10px}
+.sug-btn{
+  font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;border:none;cursor:pointer;
+  font-family:"DM Sans",sans-serif;transition:all .15s;
+}
+.sug-btn.primary{background:var(--em);color:#03071a}
+.sug-btn.secondary{background:none;border:1px solid var(--border-h);color:var(--t2)}
+.sug-btn:hover{filter:brightness(1.1)}
+.sug-close{
+  background:none;border:none;cursor:pointer;
+  font-size:16px;color:var(--t3);padding:2px;flex-shrink:0;
+  transition:color .2s;
+}
+.sug-close:hover{color:var(--t1)}
+
+/* ── SEÇÕES ── */
+.section{margin-bottom:28px}
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.section-title{
+  font-family:"Syne",sans-serif;font-size:13px;font-weight:700;
+  color:var(--t2);text-transform:uppercase;letter-spacing:.06em;
+}
+.section-count{
+  font-size:11px;color:var(--t3);
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:100px;padding:2px 8px;
+}
+
+/* ── ENVELOPE CARD ── */
+.envelope-list{display:flex;flex-direction:column;gap:10px}
+.envelope-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:14px;
+  padding:16px 20px;transition:border-color .2s,box-shadow .2s;
+  position:relative;overflow:hidden;cursor:default;
+}
+.envelope-card:hover{border-color:var(--border-h);box-shadow:0 2px 12px rgba(0,0,0,.12)}
+.envelope-card.alert-75{border-left:3px solid var(--yellow)}
+.envelope-card.alert-100{border-left:3px solid var(--red)}
+.envelope-card.special{
+  border:1px solid rgba(16,185,129,.2);
+  background:rgba(16,185,129,.03);
+}
+
+/* Linha principal */
+.env-main{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.env-icon-wrap{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.env-info{flex:1;min-width:0}
+.env-name-row{display:flex;align-items:center;gap:8px;margin-bottom:1px}
+.env-name{font-size:14px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.env-badge{
+  font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;
+  flex-shrink:0;
+}
+.badge-alert{background:rgba(245,158,11,.15);color:var(--yellow);border:1px solid rgba(245,158,11,.25)}
+.badge-over{background:rgba(244,63,94,.15);color:var(--red);border:1px solid rgba(244,63,94,.25)}
+.badge-ok{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.badge-pro{background:rgba(139,92,246,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.2);font-size:9px}
+
+.env-amounts{
+  display:flex;align-items:baseline;gap:3px;
+  font-family:"DM Mono",monospace;font-size:12px;color:var(--t3);
+  white-space:nowrap;
+}
+.env-amounts .spent{color:var(--t1);font-size:13px;font-weight:500}
+
+/* Pct e actions */
+.env-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.env-pct{
+  font-family:"DM Mono",monospace;font-size:14px;font-weight:700;
+  min-width:36px;text-align:right;
+}
+.env-actions{display:flex;gap:4px}
+.env-action-btn{
+  background:none;border:1px solid var(--border);border-radius:8px;
+  padding:5px 10px;font-size:11px;color:var(--t3);cursor:pointer;
+  font-family:"DM Sans",sans-serif;transition:all .15s;white-space:nowrap;
+}
+.env-action-btn:hover{border-color:var(--border-h);color:var(--t1)}
+
+/* Barra */
+.env-bar-wrap{margin-bottom:8px}
+.env-bar-bg{height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
+.env-bar-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+/* Linha de detalhe */
+.env-detail{display:flex;align-items:center;justify-content:space-between}
+.env-remaining{font-size:12px;color:var(--t2)}
+.env-remaining strong{color:var(--t1)}
+.env-days{font-size:11px;color:var(--t3)}
+
+/* ── NAO ALOCADO card ── */
+.nao-alocado{
+  background:var(--s1);border:1px dashed rgba(16,185,129,.3);border-radius:14px;
+  padding:16px 20px;margin-bottom:24px;
+  display:flex;align-items:center;gap:14px;
+}
+.nao-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:rgba(16,185,129,.1);
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+}
+.nao-body{flex:1}
+.nao-label{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.nao-value{font-family:"DM Mono",monospace;font-size:20px;font-weight:500;color:var(--green)}
+.nao-sub{font-size:12px;color:var(--t2);margin-top:2px}
+.nao-cta{
+  font-size:12px;font-weight:600;padding:7px 14px;border-radius:100px;
+  border:1px solid rgba(16,185,129,.25);color:var(--em);
+  background:none;cursor:pointer;transition:all .15s;font-family:"DM Sans",sans-serif;
+}
+.nao-cta:hover{background:rgba(16,185,129,.08)}
+
+/* ── INSIGHT JORNADA ── */
+.jornada-insight{
+  display:none;
+  background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);
+  border-radius:14px;padding:14px 18px;margin-bottom:24px;
+  gap:12px;align-items:flex-start;
+}
+body.jornada .jornada-insight{display:flex}
+.ji-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.ji-text{font-size:13px;color:var(--t2);line-height:1.6}
+.ji-text strong{color:var(--t1)}
+
+/* ── MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(3,7,26,.7);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:24px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--s1);border:1px solid var(--border);border-radius:20px;
+  padding:36px;width:100%;max-width:480px;
+  animation:modalIn .25s ease both;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:none}}
+.modal-title{font-family:"Syne",sans-serif;font-size:20px;font-weight:800;color:var(--t1);margin-bottom:24px;letter-spacing:-.02em}
+.modal-field{margin-bottom:18px}
+.modal-label{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.05em}
+.modal-input{
+  width:100%;background:var(--s2);border:1px solid var(--border);
+  border-radius:10px;padding:11px 14px;
+  font-family:"DM Sans",sans-serif;font-size:14px;color:var(--t1);outline:none;
+  transition:border-color .2s;
+}
+.modal-input:focus{border-color:rgba(16,185,129,.45);box-shadow:0 0 0 3px rgba(16,185,129,.07)}
+
+/* Seletor de ícone */
+.icon-grid{display:flex;flex-wrap:wrap;gap:8px}
+.icon-opt{
+  width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--s2);cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.icon-opt:hover{border-color:var(--border-h);background:var(--s3)}
+.icon-opt.sel{border-color:var(--em);background:rgba(16,185,129,.1)}
+
+/* Seletor de cor */
+.color-row{display:flex;gap:8px}
+.color-opt{
+  width:30px;height:30px;border-radius:50%;cursor:pointer;
+  border:2px solid transparent;transition:all .15s;
+}
+.color-opt.sel{border-color:var(--t1);box-shadow:0 0 0 2px rgba(255,255,255,.2)}
+
+/* Sugestão baseada em renda */
+.modal-suggestion{
+  background:var(--s2);border-radius:10px;padding:12px 14px;
+  margin-bottom:18px;font-size:12px;color:var(--t2);line-height:1.55;
+}
+.modal-suggestion strong{color:var(--em)}
+
+/* Modal footer */
+.modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:24px}
+.btn-cancel{background:none;border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-size:14px;color:var(--t2);cursor:pointer;font-family:"DM Sans",sans-serif;transition:all .15s}
+.btn-cancel:hover{border-color:var(--border-h);color:var(--t1)}
+.btn-create{background:var(--em);color:#03071a;border:none;border-radius:10px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif;transition:all .15s}
+.btn-create:hover{filter:brightness(1.08)}
+
+/* ── MODAL TRANSFERÊNCIA ── */
+.transfer-info{
+  background:var(--s2);border-radius:10px;padding:14px;margin-bottom:18px;
+  display:flex;align-items:center;gap:12px;
+}
+.transfer-from,.transfer-to{flex:1;text-align:center}
+.tf-label{font-size:11px;color:var(--t3);margin-bottom:4px}
+.tf-name{font-size:13px;font-weight:600;color:var(--t1)}
+.transfer-arrow{font-size:20px;color:var(--t3)}
+
+/* ── HISTÓRICO DROPDOWN ── */
+.history-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.history-title{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
+.history-select{
+  background:var(--s1);border:1px solid var(--border);border-radius:8px;
+  padding:6px 10px;font-size:12px;color:var(--t1);cursor:pointer;
+  font-family:"DM Sans",sans-serif;outline:none;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  text-align:center;padding:48px 24px;
+  background:var(--s1);border:1px dashed var(--border);border-radius:14px;
+}
+.empty-emoji{font-size:40px;display:block;margin-bottom:12px;opacity:.7}
+.empty-title{font-family:"Syne",sans-serif;font-size:16px;font-weight:700;color:var(--t1);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--t2)}
+
+
+/* ══ TUTORIAL OVERLAY ══ */
+.tutorial-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(3,7,26,.85); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  transition: opacity .3s;
+}
+.tutorial-overlay.hidden { display: none; }
+
+.tutorial-card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 24px; width: 100%; max-width: 560px;
+  position: relative;
+  animation: tutIn .35s ease both;
+  display: flex; flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+}
+@keyframes tutIn {
+  from { opacity:0; transform: scale(.96) translateY(12px); }
+  to   { opacity:1; transform: none; }
+}
+
+/* Progress bar no topo */
+.tut-progress {
+  height: 3px; background: var(--s3);
+  position: relative; overflow: hidden;
+}
+.tut-progress-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--em);
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+}
+
+.tut-body {
+  padding: 40px 40px 24px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Step indicator */
+.tut-step-indicator {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 24px;
+}
+.tut-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--s3); transition: all .25s;
+}
+.tut-dot.active { background: var(--em); width: 18px; border-radius: 3px; }
+.tut-dot.done { background: rgba(16,185,129,.4); }
+
+.tut-step { display: none; animation: stepSlide .3s ease both; }
+.tut-step.active { display: block; }
+@keyframes stepSlide {
+  from { opacity:0; transform: translateX(16px); }
+  to   { opacity:1; transform: none; }
+}
+
+/* Hero icon */
+.tut-icon {
+  font-size: 48px; display: block; margin-bottom: 20px;
+  animation: iconBounce .5s cubic-bezier(.175,.885,.32,1.275) both;
+}
+@keyframes iconBounce {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.tut-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(20px,3vw,26px); font-weight: 800;
+  letter-spacing: -.02em; color: var(--t1);
+  margin-bottom: 10px; line-height: 1.2;
+}
+.tut-desc {
+  font-size: 14px; color: var(--t2); line-height: 1.7;
+  margin-bottom: 28px;
+}
+.tut-desc strong { color: var(--t1); }
+
+/* Regras cards */
+.rule-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+.rule-card {
+  border: 1.5px solid var(--border); border-radius: 14px;
+  padding: 16px 18px; cursor: pointer; background: var(--s2);
+  transition: all .2s; display: flex; align-items: center; gap: 14px;
+}
+.rule-card:hover { border-color: var(--border-h); background: var(--s3); }
+.rule-card.selected {
+  border-color: var(--em);
+  background: rgba(16,185,129,.05);
+  box-shadow: 0 0 0 3px rgba(16,185,129,.1);
+}
+.rule-icon { font-size: 24px; flex-shrink: 0; }
+.rule-info { flex: 1; }
+.rule-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 700; color: var(--t1); margin-bottom: 2px;
+}
+.rule-desc { font-size: 12px; color: var(--t2); line-height: 1.5; }
+.rule-pills {
+  display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap;
+}
+.rule-pill {
+  font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 100px;
+}
+.pill-nec { background: rgba(6,182,212,.12); color: #06b6d4; }
+.pill-des { background: rgba(245,158,11,.12); color: var(--yellow); }
+.pill-pou { background: rgba(16,185,129,.12); color: var(--green); }
+.rule-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--em); color: #03071a;
+  font-size: 10px; font-weight: 700;
+  display: none; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.rule-card.selected .rule-check { display: flex; }
+
+/* Renda input — step 3 */
+.renda-input-wrap {
+  position: relative; margin-bottom: 10px;
+}
+.renda-prefix {
+  position: absolute; left: 16px; top: 50%;
+  transform: translateY(-50%);
+  font-family: 'DM Mono', monospace;
+  font-size: 16px; font-weight: 500; color: var(--t3);
+}
+.renda-input {
+  width: 100%;
+  background: var(--s2); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 16px 16px 16px 44px;
+  font-family: 'DM Mono', monospace;
+  font-size: 24px; font-weight: 500; color: var(--t1);
+  outline: none; transition: border-color .2s, box-shadow .2s;
+  letter-spacing: .02em;
+}
+.renda-input:focus {
+  border-color: rgba(16,185,129,.5);
+  box-shadow: 0 0 0 3px rgba(16,185,129,.08);
+}
+.renda-hint { font-size: 12px; color: var(--t3); margin-bottom: 28px; }
+
+/* Distribuição preview — step 3 */
+.dist-preview {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+  margin-bottom: 28px;
+}
+.dist-title { font-size: 11px; color: var(--t3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+.dist-rows { display: flex; flex-direction: column; gap: 8px; }
+.dist-row { display: flex; align-items: center; gap: 10px; }
+.dist-label { font-size: 12px; color: var(--t2); flex: 1; }
+.dist-bar-bg { flex: 2; height: 5px; background: var(--s3); border-radius: 3px; overflow: hidden; }
+.dist-bar-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+.dist-value { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--t1); font-weight: 500; min-width: 80px; text-align: right; }
+
+/* Envelopes sugeridos — step 4 */
+.suggested-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; max-height: 280px; overflow-y: auto; }
+.suggested-item {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+}
+.sug-item-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.sug-item-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--t1); }
+.sug-item-group { font-size: 10px; color: var(--t3); margin-top: 1px; }
+.sug-item-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px; font-weight: 500; color: var(--t1);
+}
+.sug-item-val {
+  display: flex; align-items: center;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden;
+}
+.sug-val-prefix {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--t3); padding: 4px 6px 4px 8px; flex-shrink: 0;
+}
+.sug-item-val input {
+  background: transparent !important;
+  border: none !important;
+  padding: 4px 6px 4px 2px;
+  font-family: 'DM Mono', monospace; font-size: 13px;
+  color: var(--t1); width: 90px; text-align: right; outline: none;
+}
+.sug-item-val input:focus { border-color: rgba(16,185,129,.4); }
+
+/* Footer ações tutorial */
+.tut-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 20px 40px 28px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--s1);
+}
+.tut-back {
+  background: none; border: none; cursor: pointer;
+  font-size: 13px; color: var(--t3); font-family: 'DM Sans', sans-serif;
+  display: flex; align-items: center; gap: 5px;
+  transition: color .2s; padding: 4px 0;
+}
+.tut-back:hover { color: var(--t2); }
+.tut-back.invisible { opacity: 0; pointer-events: none; }
+.tut-next {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--em); color: #03071a;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+  padding: 12px 28px; border-radius: 100px; border: none; cursor: pointer;
+  transition: all .2s; box-shadow: 0 4px 16px rgba(16,185,129,.25);
+}
+.tut-next:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,.35); filter: brightness(1.06); }
+.tut-skip {
+  position: absolute; top: 20px; right: 20px;
+  background: none; border: none; cursor: pointer;
+  font-size: 13px; color: var(--t3); font-family: 'DM Sans', sans-serif;
+  transition: color .2s; z-index: 1;
+}
+.tut-skip:hover { color: var(--t2); }
+
+/* Scrollbar customizada */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-h); }
+
+/* Remove number input spinners */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+
+/* ── ENVELOPES EDITÁVEIS (step 4) ── */
+.suggested-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+
+.suggested-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px;
+  transition: border-color .2s;
+}
+.suggested-item:hover { border-color: var(--border-h); }
+
+.sug-item-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0; cursor: pointer;
+  transition: transform .15s;
+}
+.sug-item-icon:hover { transform: scale(1.15); }
+
+.sug-item-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+
+.sug-item-name-input {
+  background: transparent; border: none; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600; color: var(--t1);
+  width: 100%; padding: 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color .2s;
+}
+.sug-item-name-input:focus { border-bottom-color: rgba(16,185,129,.4); }
+
+.sug-item-group-select {
+  background: transparent; border: none; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: var(--t3);
+  cursor: pointer; padding: 0; width: 100%;
+  appearance: none; -webkit-appearance: none;
+}
+.sug-item-group-select option { background: var(--s2); color: var(--t1); }
+
+.sug-item-val {
+  display: flex; align-items: center;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden;
+  flex-shrink: 0;
+}
+.sug-val-prefix {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--t3); padding: 4px 4px 4px 8px; flex-shrink: 0;
+}
+.sug-item-val input {
+  background: transparent !important;
+  border: none !important;
+  padding: 4px 6px 4px 2px;
+  font-family: 'DM Mono', monospace; font-size: 13px;
+  color: var(--t1); width: 80px; outline: none;
+  -moz-appearance: textfield; appearance: textfield;
+}
+
+.sug-delete-btn {
+  background: none; border: none; cursor: pointer;
+  width: 28px; height: 28px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t3); flex-shrink: 0;
+  transition: all .15s;
+}
+.sug-delete-btn:hover { background: rgba(244,63,94,.12); color: var(--red); }
+.sug-delete-btn svg { width: 14px; height: 14px; }
+
+/* Botão adicionar envelope */
+.add-envelope-btn {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 11px 14px;
+  background: none; border: 1.5px dashed rgba(16,185,129,.25);
+  border-radius: 10px; cursor: pointer; color: var(--em);
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  transition: all .2s; margin-bottom: 16px;
+}
+.add-envelope-btn:hover { background: rgba(16,185,129,.05); border-color: rgba(16,185,129,.5); }
+.add-envelope-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* Totalizador */
+.sug-total-bar {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.sug-total-label { font-size: 12px; color: var(--t2); }
+.sug-total-val {
+  font-family: 'DM Mono', monospace; font-size: 13px;
+  font-weight: 600; color: var(--t1);
+}
+.sug-total-val.over { color: var(--red); }
+.sug-total-val.ok   { color: var(--green); }
+.sug-total-status { font-size: 11px; margin-top: 3px; color: var(--t3); text-align: right; }
+
+/* Mini picker de emoji */
+.emoji-picker-wrap {
+  display: none; position: absolute;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 12px; padding: 10px;
+  z-index: 500; box-shadow: 0 8px 32px rgba(0,0,0,.3);
+  display: none; flex-wrap: wrap; gap: 4px; width: 200px;
+}
+.emoji-picker-wrap.open { display: flex; }
+.ep-opt {
+  width: 30px; height: 30px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; cursor: pointer; transition: background .15s;
+}
+.ep-opt:hover { background: var(--s2); }
+
+
+/* ── MODAL CONFIRMAÇÃO FINAL ── */
+.confirm-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(3,7,26,.88); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-modal {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 24px; width: 100%; max-width: 480px;
+  padding: 40px; animation: tutIn .3s ease both;
+  position: relative;
+}
+.confirm-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin-bottom: 20px;
+}
+.confirm-title {
+  font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800;
+  letter-spacing: -.02em; color: var(--t1); margin-bottom: 8px;
+}
+.confirm-desc { font-size: 14px; color: var(--t2); line-height: 1.65; margin-bottom: 24px; }
+
+.confirm-summary {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; margin-bottom: 24px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.confirm-row {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.confirm-row-label { font-size: 12px; color: var(--t3); }
+.confirm-row-val { font-size: 13px; font-weight: 600; color: var(--t1); text-align: right; }
+.confirm-row-val.mono { font-family: 'DM Mono', monospace; }
+.confirm-divider { height: 1px; background: var(--border); }
+
+/* Lista compacta de envelopes no modal */
+.confirm-env-list {
+  display: flex; flex-direction: column; gap: 6px;
+  max-height: 180px; overflow-y: auto;
+}
+.confirm-env-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--t2);
+}
+.confirm-env-item span.icon { font-size: 14px; }
+.confirm-env-item span.name { flex: 1; color: var(--t1); font-weight: 500; }
+.confirm-env-item span.val { font-family: 'DM Mono', monospace; color: var(--t2); font-size: 11px; }
+.confirm-env-item span.grp {
+  font-size: 10px; padding: 1px 6px; border-radius: 100px;
+  background: var(--s3); color: var(--t3);
+}
+
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-btn-cancel {
+  flex: 1; background: none; border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px; font-size: 14px; color: var(--t2);
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s;
+}
+.confirm-btn-cancel:hover { border-color: var(--border-h); color: var(--t1); }
+.confirm-btn-confirm {
+  flex: 2; background: var(--em); color: #03071a;
+  border: none; border-radius: 12px; padding: 12px;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all .15s; box-shadow: 0 4px 16px rgba(16,185,129,.25);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.confirm-btn-confirm:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .summary-strip{grid-template-columns:1fr 1fr}
+  .env-action-btn{display:none}
+  .env-actions{gap:2px}
+  .page{padding:20px 16px 60px;margin-top:40px}
+}
+</style>
+</head>
+<body>
+
+<!-- Dev bar -->
+<div class="dev-bar">
+  <strong>Dev</strong>
+  <button class="dev-pill on" id="pill-dark" onclick="setTheme('dark')">Dark</button>
+  <button class="dev-pill" id="pill-light" onclick="setTheme('light')">Light</button>
+  <div class="dev-sep"></div>
+  <button class="dev-pill on" id="pill-foco" onclick="setMode('foco')">Foco</button>
+  <button class="dev-pill" id="pill-jornada" onclick="setMode('jornada')">Jornada</button>
+  <div class="dev-sep"></div>
+  <button class="dev-pill" onclick="openModal('modal-create')">+ Novo Envelope</button>
+  <button class="dev-pill" onclick="openModal('modal-transfer')">↔ Transferir</button>
+  <div class="dev-sep"></div>
+  <button class="dev-pill" onclick="document.getElementById('tutorial').classList.remove('hidden');tutGoTo(1)">▶ Ver tutorial</button>
+</div>
+
+<div class="page">
+
+  <!-- ══ HEADER ══ -->
+  <div class="page-header">
+    <div class="page-title-group">
+      <div class="page-eyebrow">💰 Finanças</div>
+      <h1 class="page-title">Orçamentos</h1>
+    </div>
+    <div class="header-right">
+      <!-- Seletor de mês -->
+      <div class="month-select" onclick="toggleMonthMenu()">
+        <span class="month-select-label" id="cur-month">Fevereiro 2026</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <button class="btn-new" onclick="openModal('modal-create')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Novo envelope
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ SUMMARY STRIP ══ -->
+  <div class="summary-strip">
+    <div class="sum-card">
+      <div class="sum-label">Renda do Mês</div>
+      <div class="sum-value">R$&nbsp;5.000</div>
+      <div class="sum-sub">base para orçamento</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Alocado</div>
+      <div class="sum-value" style="color:var(--t1)">R$&nbsp;4.700</div>
+      <div class="sum-sub">94% da renda</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Gasto até agora</div>
+      <div class="sum-value yellow">R$&nbsp;3.205</div>
+      <div class="sum-sub">68% do alocado</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Não alocado</div>
+      <div class="sum-value green">R$&nbsp;300</div>
+      <div class="sum-sub">ainda disponível</div>
+    </div>
+  </div>
+
+  <!-- ══ INSIGHT JORNADA ══ -->
+  <div class="jornada-insight">
+    <span class="ji-icon">💡</span>
+    <div class="ji-text">
+      <strong>Você está indo bem este mês!</strong> Alimentação está quase no limite e ainda faltam 6 dias — tente não gastar mais de <strong>R$ 22/dia</strong> nessa categoria para não estourar.
+    </div>
+  </div>
+
+  <!-- ══ NÃO ALOCADO ══ -->
+  <div class="nao-alocado">
+    <div class="nao-icon">📦</div>
+    <div class="nao-body">
+      <div class="nao-label">Não alocado</div>
+      <div class="nao-value">R$ 300</div>
+      <div class="nao-sub">Distribua esse valor para não perder o controle.</div>
+    </div>
+    <button class="nao-cta" onclick="openModal('modal-create')">Alocar agora →</button>
+  </div>
+
+  <!-- ══ BANNER 50-30-20 ══ -->
+  <div class="suggestion-banner" id="sug-banner">
+    <span class="sug-icon">⚡</span>
+    <div class="sug-body">
+      <div class="sug-title">Sugestão baseada na regra 50-30-20</div>
+      <div class="sug-desc">Para uma renda de R$ 5.000, o ideal seria: <strong style="color:var(--t1)">R$ 2.500 em necessidades</strong>, <strong style="color:var(--t1)">R$ 1.500 em desejos</strong> e <strong style="color:var(--t1)">R$ 1.000 em poupança/metas</strong>. Seu orçamento atual está próximo disso — ótimo!<br><span style="font-size:11px;opacity:.7;margin-top:3px;display:block">Sugestão baseada nos seus gastos dos últimos 3 meses.</span></div>
+      <div class="sug-actions">
+        <button class="sug-btn primary" onclick="applySuggestion()">Aplicar sugestão</button>
+        <button class="sug-btn secondary" onclick="document.getElementById('sug-banner').style.display='none'">Dispensar</button>
+      </div>
+    </div>
+    <button class="sug-close" onclick="document.getElementById('sug-banner').style.display='none'">×</button>
+  </div>
+
+  <!-- ══ ALERTAS ══ -->
+  <div class="section" id="sec-alert">
+    <div class="section-header">
+      <div class="section-title">⚠️ Precisam de atenção</div>
+      <div class="section-count">2 envelopes</div>
+    </div>
+    <div class="envelope-list">
+
+      <!-- Alimentação — 97% -->
+      <div class="envelope-card alert-100">
+        <div class="env-main">
+          <div class="env-icon-wrap" style="background:rgba(244,63,94,.1)">🍽️</div>
+          <div class="env-info">
+            <div class="env-name-row">
+              <span class="env-name">Alimentação</span>
+              <span class="env-badge badge-over">Quase estourado</span>
+            </div>
+            <div class="env-amounts">
+              <span class="spent">R$ 778</span>
+              <span>&nbsp;/ R$ 800</span>
+            </div>
+          </div>
+          <div class="env-right">
+            <div class="env-pct" style="color:var(--red)">97%</div>
+            <div class="env-actions">
+              <button class="env-action-btn" onclick="openModal('modal-transfer')">↔ Transferir</button>
+              <button class="env-action-btn">Editar</button>
+            </div>
+          </div>
+        </div>
+        <div class="env-bar-wrap">
+          <div class="env-bar-bg"><div class="env-bar-fill" style="width:97%;background:var(--red)"></div></div>
+        </div>
+        <div class="env-detail">
+          <span class="env-remaining">Restam <strong>R$ 22</strong> · 6 dias até o fim do mês</span>
+          <span class="env-days" style="color:var(--red)">≈ R$ 3,67/dia disponível</span>
+        </div>
+      </div>
+
+      <!-- Lazer — 78% -->
+      <div class="envelope-card alert-75">
+        <div class="env-main">
+          <div class="env-icon-wrap" style="background:rgba(245,158,11,.1)">🎮</div>
+          <div class="env-info">
+            <div class="env-name-row">
+              <span class="env-name">Lazer</span>
+              <span class="env-badge badge-alert">75% atingido</span>
+            </div>
+            <div class="env-amounts">
+              <span class="spent">R$ 312</span>
+              <span>&nbsp;/ R$ 400</span>
+            </div>
+          </div>
+          <div class="env-right">
+            <div class="env-pct" style="color:var(--yellow)">78%</div>
+            <div class="env-actions">
+              <button class="env-action-btn" onclick="openModal('modal-transfer')">↔ Transferir</button>
+              <button class="env-action-btn">Editar</button>
+            </div>
+          </div>
+        </div>
+        <div class="env-bar-wrap">
+          <div class="env-bar-bg"><div class="env-bar-fill" style="width:78%;background:var(--yellow)"></div></div>
+        </div>
+        <div class="env-detail">
+          <span class="env-remaining">Restam <strong>R$ 88</strong> · 6 dias até o fim do mês</span>
+          <span class="env-days">≈ R$ 14,67/dia disponível</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ NO CAMINHO ══ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">✅ No caminho certo</div>
+      <div class="section-count">4 envelopes</div>
+    </div>
+    <div class="envelope-list">
+
+      <!-- Moradia — 80% -->
+      <div class="envelope-card">
+        <div class="env-main">
+          <div class="env-icon-wrap" style="background:rgba(245,158,11,.08)">🏠</div>
+          <div class="env-info">
+            <div class="env-name-row"><span class="env-name">Moradia</span></div>
+            <div class="env-amounts"><span class="spent">R$ 1.200</span><span>&nbsp;/ R$ 1.500</span></div>
+          </div>
+          <div class="env-right">
+            <div class="env-pct" style="color:var(--yellow)">80%</div>
+            <div class="env-actions">
+              <button class="env-action-btn" onclick="openModal('modal-transfer')">↔ Transferir</button>
+              <button class="env-action-btn">Editar</button>
+            </div>
+          </div>
+        </div>
+        <div class="env-bar-wrap">
+          <div class="env-bar-bg"><div class="env-bar-fill" style="width:80%;background:var(--yellow)"></div></div>
+        </div>
+        <div class="env-detail">
+          <span class="env-remaining">Restam <strong>R$ 300</strong></span>
+          <span class="env-days">6 dias restantes</span>
+        </div>
+      </div>
+
+      <!-- Transporte — 70% -->
+      <div class="envelope-card">
+        <div class="env-main">
+          <div class="env-icon-wrap" style="background:rgba(16,185,129,.08)">🚗</div>
+          <div class="env-info">
+            <div class="env-name-row"><span class="env-name">Transporte</span></div>
+            <div class="env-amounts"><span class="spent">R$ 280</span><span>&nbsp;/ R$ 400</span></div>
+          </div>
+          <div class="env-right">
+            <div class="env-pct" style="color:var(--green)">70%</div>
+            <div class="env-actions">
+              <button class="env-action-btn" onclick="openModal('modal-transfer')">↔ Transferir</button>
+              <button class="env-action-btn">Editar</button>
+            </div>
+          </div>
+        </div>
+        <div class="env-bar-wrap">
+          <div class="env-bar-bg"><div class="env-bar-fill" style="width:70%;background:var(--green)"></div></div>
+        </div>
+        <div class="env-detail">
+          <span class="env-remaining">Restam <strong>R$ 120</strong></span>
+          <span class="env-days">6 dias restantes</span>
+        </div>
+      </div>
+
+      <!-- Saúde — 45% -->
+      <div class="envelope-card">
+        <div class="env-main">
+          <div class="env-icon-wrap" style="background:rgba(6,182,212,.08)">🩺</div>
+          <div class="env-info">
+            <div class="env-name-row"><span class="env-name">Saúde</span></div>
+            <div class="env-amounts"><span class="spent">R$ 90</span><span>&nbsp;/ R$ 200</span></div>
+          </div>
+          <div class="env-right">
+            <div class="env-pct" style="color:var(--green)">45%</div>
+            <div class="env-actions">
+              <button class="env-action-btn" onclick="openModal('modal-transfer')">↔ Transferir</button>
+              <button class="env-action-btn">Editar</button>
+            </div>
+          </div>
+        </div>
+        <div class="env-bar-wrap">
+          <div class="env-bar-bg"><div class="env-bar-fill" style="width:45%;background:var(--green)"></div></div>
+        </div>
+        <div class="env-detail">
+          <span class="env-remaining">Restam <strong>R$ 110</strong></span>
+          <span class="env-days">6 dias restantes</span>
+        </div>
+      </div>
+
+      <!-- Educação — 30% -->
+      <div class="envelope-card">
+        <div class="env-main">
+          <div class="env-icon-wrap" style="background:rgba(0,85,255,.08)">📚</div>
+          <div class="env-info">
+            <div class="env-name-row"><span class="env-name">Educação</span></div>
+            <div class="env-amounts"><span class="spent">R$ 75</span><span>&nbsp;/ R$ 250</span></div>
+          </div>
+          <div class="env-right">
+            <div class="env-pct" style="color:var(--green)">30%</div>
+            <div class="env-actions">
+              <button class="env-action-btn" onclick="openModal('modal-transfer')">↔ Transferir</button>
+              <button class="env-action-btn">Editar</button>
+            </div>
+          </div>
+        </div>
+        <div class="env-bar-wrap">
+          <div class="env-bar-bg"><div class="env-bar-fill" style="width:30%;background:var(--green)"></div></div>
+        </div>
+        <div class="env-detail">
+          <span class="env-remaining">Restam <strong>R$ 175</strong></span>
+          <span class="env-days">6 dias restantes</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ POUPANÇA / METAS ══ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🎯 Poupança & Metas</div>
+      <div class="section-count">2 envelopes</div>
+    </div>
+    <div class="envelope-list">
+
+      <!-- Viagem Europa — meta vinculada -->
+      <div class="envelope-card special">
+        <div class="env-main">
+          <div class="env-icon-wrap" style="background:rgba(16,185,129,.12)">✈️</div>
+          <div class="env-info">
+            <div class="env-name-row">
+              <span class="env-name">Viagem Europa</span>
+              <span class="env-badge badge-ok">Meta vinculada</span>
+            </div>
+            <div class="env-amounts"><span class="spent">R$ 700</span><span>&nbsp;/ R$ 1.000</span></div>
+          </div>
+          <div class="env-right">
+            <div class="env-pct" style="color:var(--green)">70%</div>
+            <div class="env-actions">
+              <button class="env-action-btn">Ver meta</button>
+              <button class="env-action-btn">Editar</button>
+            </div>
+          </div>
+        </div>
+        <div class="env-bar-wrap">
+          <div class="env-bar-bg"><div class="env-bar-fill" style="width:70%;background:var(--green)"></div></div>
+        </div>
+        <div class="env-detail">
+          <span class="env-remaining">Aporte mensal: <strong>R$ 1.000</strong></span>
+          <span class="env-days" style="color:var(--green)">Meta: Dez 2026</span>
+        </div>
+      </div>
+
+      <!-- Reserva de emergência -->
+      <div class="envelope-card special">
+        <div class="env-main">
+          <div class="env-icon-wrap" style="background:rgba(16,185,129,.12)">🛡️</div>
+          <div class="env-info">
+            <div class="env-name-row">
+              <span class="env-name">Reserva de emergência</span>
+              <span class="env-badge badge-ok">Meta vinculada</span>
+            </div>
+            <div class="env-amounts"><span class="spent">R$ 350</span><span>&nbsp;/ R$ 350</span></div>
+          </div>
+          <div class="env-right">
+            <div class="env-pct" style="color:var(--green)">100%</div>
+            <div class="env-actions">
+              <button class="env-action-btn">Ver meta</button>
+              <button class="env-action-btn">Editar</button>
+            </div>
+          </div>
+        </div>
+        <div class="env-bar-wrap">
+          <div class="env-bar-bg"><div class="env-bar-fill" style="width:100%;background:var(--green)"></div></div>
+        </div>
+        <div class="env-detail">
+          <span class="env-remaining">Aporte concluído este mês ✓</span>
+          <span class="env-days" style="color:var(--green)">R$ 9.750 acumulado</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ HISTÓRICO ══ -->
+  <div class="section">
+    <div class="history-row">
+      <span class="history-title">Histórico de meses</span>
+      <select class="history-select" onchange="loadHistory(this.value)">
+        <option value="fev-2026">Fevereiro 2026 (atual)</option>
+        <option value="jan-2026">Janeiro 2026</option>
+        <option value="dez-2025">Dezembro 2025</option>
+        <option value="nov-2025">Novembro 2025</option>
+      </select>
+    </div>
+    <!-- mini comparativo -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+      <div class="sum-card" style="border-color:rgba(16,185,129,.15)">
+        <div class="sum-label">Janeiro 2026</div>
+        <div class="sum-value" style="font-size:15px;color:var(--green)">Dentro</div>
+        <div class="sum-sub">Gastou R$ 4.320 / R$ 4.700</div>
+      </div>
+      <div class="sum-card" style="border-color:rgba(244,63,94,.15)">
+        <div class="sum-label">Dezembro 2025</div>
+        <div class="sum-value" style="font-size:15px;color:var(--red)">Estourou</div>
+        <div class="sum-sub">Gastou R$ 5.140 / R$ 4.700</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-label">Novembro 2025</div>
+        <div class="sum-value" style="font-size:15px;color:var(--green)">Dentro</div>
+        <div class="sum-sub">Gastou R$ 4.100 / R$ 4.700</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ MODAL: Novo Envelope ══ -->
+<div class="modal-overlay" id="modal-create" onclick="closeOnBg(event,'modal-create')">
+  <div class="modal">
+    <div class="modal-title">Novo envelope</div>
+
+    <div class="modal-suggestion">
+      💡 Você ainda tem <strong>R$ 300 não alocados</strong>. Quanto quer colocar nesse envelope?
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">Nome da categoria</label>
+      <input class="modal-input" type="text" placeholder="Ex: Streaming, Academia...">
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">Ícone</label>
+      <div class="icon-grid">
+        <div class="icon-opt sel" onclick="selIcon(this)">🏠</div>
+        <div class="icon-opt" onclick="selIcon(this)">🍽️</div>
+        <div class="icon-opt" onclick="selIcon(this)">🚗</div>
+        <div class="icon-opt" onclick="selIcon(this)">🎮</div>
+        <div class="icon-opt" onclick="selIcon(this)">📚</div>
+        <div class="icon-opt" onclick="selIcon(this)">🩺</div>
+        <div class="icon-opt" onclick="selIcon(this)">✈️</div>
+        <div class="icon-opt" onclick="selIcon(this)">🛡️</div>
+        <div class="icon-opt" onclick="selIcon(this)">🎵</div>
+        <div class="icon-opt" onclick="selIcon(this)">💪</div>
+        <div class="icon-opt" onclick="selIcon(this)">🐾</div>
+        <div class="icon-opt" onclick="selIcon(this)">🎁</div>
+      </div>
+    </div>
+
+    <div class="modal-field" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <label class="modal-label">Valor (R$)</label>
+        <input class="modal-input" type="number" placeholder="0,00" min="0">
+      </div>
+      <div>
+        <label class="modal-label">Cor</label>
+        <div class="color-row" style="margin-top:8px">
+          <div class="color-opt sel" style="background:#10b981" onclick="selColor(this)"></div>
+          <div class="color-opt" style="background:#0055ff" onclick="selColor(this)"></div>
+          <div class="color-opt" style="background:#f59e0b" onclick="selColor(this)"></div>
+          <div class="color-opt" style="background:#f43f5e" onclick="selColor(this)"></div>
+          <div class="color-opt" style="background:#8b5cf6" onclick="selColor(this)"></div>
+          <div class="color-opt" style="background:#06b6d4" onclick="selColor(this)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">Vincular a uma meta? <span style="color:var(--t3);font-weight:400">(opcional)</span></label>
+      <select class="modal-input">
+        <option value="">Nenhuma</option>
+        <option value="europa">✈️ Viagem Europa</option>
+        <option value="reserva">🛡️ Reserva de emergência</option>
+      </select>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-create')">Cancelar</button>
+      <button class="btn-create" onclick="closeModal('modal-create')">Criar envelope</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Transferir ══ -->
+<div class="modal-overlay" id="modal-transfer" onclick="closeOnBg(event,'modal-transfer')">
+  <div class="modal">
+    <div class="modal-title">Transferir entre envelopes</div>
+    <p style="font-size:13px;color:var(--t2);margin-bottom:20px;line-height:1.6">Mova valor de um envelope para outro sem afetar a renda total. Útil quando um envelope estourou e outro tem folga.</p>
+
+    <div class="transfer-info">
+      <div class="transfer-from">
+        <div class="tf-label">De</div>
+        <div class="tf-name">Lazer 🎮</div>
+      </div>
+      <span class="transfer-arrow">→</span>
+      <div class="transfer-to">
+        <div class="tf-label">Para</div>
+        <div class="tf-name">Alimentação 🍽️</div>
+      </div>
+    </div>
+
+    <div class="modal-field" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <label class="modal-label">De (origem)</label>
+        <select class="modal-input">
+          <option>🎮 Lazer — R$ 88 disp.</option>
+          <option>🚗 Transporte — R$ 120 disp.</option>
+          <option>📚 Educação — R$ 175 disp.</option>
+          <option>🩺 Saúde — R$ 110 disp.</option>
+        </select>
+      </div>
+      <div>
+        <label class="modal-label">Para (destino)</label>
+        <select class="modal-input">
+          <option>🍽️ Alimentação</option>
+          <option>🏠 Moradia</option>
+          <option>🎮 Lazer</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">Valor a transferir (R$)</label>
+      <input class="modal-input" type="number" placeholder="Ex: 50,00" value="50">
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-transfer')">Cancelar</button>
+      <button class="btn-create" onclick="closeModal('modal-transfer')">Transferir</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ TUTORIAL OVERLAY ══ -->
+<div class="tutorial-overlay" id="tutorial">
+  <div class="tutorial-card">
+
+    <!-- Progress bar -->
+    <div class="tut-progress">
+      <div class="tut-progress-fill" id="tut-bar" style="width:20%"></div>
+    </div>
+
+    <button class="tut-skip" onclick="skipTutorial()">Pular →</button>
+
+    <div class="tut-body">
+      <!-- Step dots -->
+      <div class="tut-step-indicator">
+        <div class="tut-dot active" id="tdot-1"></div>
+        <div class="tut-dot" id="tdot-2"></div>
+        <div class="tut-dot" id="tdot-3"></div>
+        <div class="tut-dot" id="tdot-4"></div>
+        <div class="tut-dot" id="tdot-5"></div>
+      </div>
+
+      <!-- ── Step 1: O que são envelopes ── -->
+      <div class="tut-step active" id="tstep-1">
+        <span class="tut-icon">📦</span>
+        <div class="tut-title">Bem-vindo aos Orçamentos</div>
+        <p class="tut-desc">
+          Imagine dividir seu salário em <strong>envelopes físicos</strong> antes de gastar.
+          Um para aluguel, um para comida, um para lazer.<br><br>
+          Quando o envelope acaba, acabou. Sem surpresas no fim do mês.
+          O SyncLife faz isso digitalmente — com alertas, metas e ajustes em tempo real.
+        </p>
+      </div>
+
+      <!-- ── Step 2: Escolher regra ── -->
+      <div class="tut-step" id="tstep-2">
+        <div class="tut-title">Como quer distribuir sua renda?</div>
+        <p class="tut-desc" style="margin-bottom:20px">
+          Escolha uma regra como ponto de partida. Você pode ajustar os valores depois — isso é só um guia.
+        </p>
+
+        <div class="rule-cards">
+
+          <div class="rule-card selected" id="rule-50" onclick="selectRule(this,'50-30-20')">
+            <div class="rule-check">✓</div>
+            <span class="rule-icon">⚖️</span>
+            <div class="rule-info">
+              <div class="rule-name">50 / 30 / 20 — Equilíbrio</div>
+              <div class="rule-desc">A mais popular do mundo. Metade para o essencial, um terço para qualidade de vida, o resto para o futuro.</div>
+              <div class="rule-pills">
+                <span class="rule-pill pill-nec">50% necessidades</span>
+                <span class="rule-pill pill-des">30% desejos</span>
+                <span class="rule-pill pill-pou">20% poupança</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rule-card" id="rule-70" onclick="selectRule(this,'70-20-10')">
+            <div class="rule-check">✓</div>
+            <span class="rule-icon">🏗️</span>
+            <div class="rule-info">
+              <div class="rule-name">70 / 20 / 10 — Construção</div>
+              <div class="rule-desc">Boa para quem está começando ou tem renda menor. Mais espaço para o dia a dia, ainda guarda algo.</div>
+              <div class="rule-pills">
+                <span class="rule-pill pill-nec">70% necessidades</span>
+                <span class="rule-pill pill-des">20% desejos</span>
+                <span class="rule-pill pill-pou">10% poupança</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rule-card" id="rule-55" onclick="selectRule(this,'55-15-30')">
+            <div class="rule-check">✓</div>
+            <span class="rule-icon">🚀</span>
+            <div class="rule-info">
+              <div class="rule-name">55 / 15 / 30 — Agressivo</div>
+              <div class="rule-desc">Para quem quer acelerar metas e investimentos. Corta nos desejos para guardar mais.</div>
+              <div class="rule-pills">
+                <span class="rule-pill pill-nec">55% necessidades</span>
+                <span class="rule-pill pill-des">15% desejos</span>
+                <span class="rule-pill pill-pou">30% poupança</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rule-card" id="rule-custom" onclick="selectRule(this,'custom')">
+            <div class="rule-check">✓</div>
+            <span class="rule-icon">✏️</span>
+            <div class="rule-info">
+              <div class="rule-name">Personalizado</div>
+              <div class="rule-desc">Você define os percentuais do zero. Para quem já sabe como prefere distribuir.</div>
+            </div>
+          </div>
+
+          <!-- Percentuais customizados — aparece só quando Personalizado selecionado -->
+          <div id="custom-pct-wrap" style="display:none;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-top:-2px">
+            <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Defina seus percentuais (total deve ser 100%)</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:13px;color:var(--t2);flex:1">🏗️ Necessidades</span>
+                <div style="display:flex;align-items:center;background:var(--s1);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+                  <input id="pct-nec" type="number" min="0" max="100" value="50"
+                    style="width:52px;background:transparent;border:none;padding:7px 4px 7px 10px;font-family:'DM Mono',monospace;font-size:13px;color:var(--t1);outline:none;-moz-appearance:textfield;appearance:textfield"
+                    oninput="syncCustomPct('nec')">
+                  <span style="font-size:12px;color:var(--t3);padding-right:8px">%</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:13px;color:var(--t2);flex:1">🎯 Desejos</span>
+                <div style="display:flex;align-items:center;background:var(--s1);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+                  <input id="pct-des" type="number" min="0" max="100" value="30"
+                    style="width:52px;background:transparent;border:none;padding:7px 4px 7px 10px;font-family:'DM Mono',monospace;font-size:13px;color:var(--t1);outline:none;-moz-appearance:textfield;appearance:textfield"
+                    oninput="syncCustomPct('des')">
+                  <span style="font-size:12px;color:var(--t3);padding-right:8px">%</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:13px;color:var(--t2);flex:1">💰 Poupança</span>
+                <div style="display:flex;align-items:center;background:var(--s1);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+                  <input id="pct-pou" type="number" min="0" max="100" value="20"
+                    style="width:52px;background:transparent;border:none;padding:7px 4px 7px 10px;font-family:'DM Mono',monospace;font-size:13px;color:var(--t1);outline:none;-moz-appearance:textfield;appearance:textfield"
+                    oninput="syncCustomPct('pou')">
+                  <span style="font-size:12px;color:var(--t3);padding-right:8px">%</span>
+                </div>
+              </div>
+            </div>
+            <div id="pct-total-msg" style="font-size:11px;color:var(--green);margin-top:10px">✓ Total: 100%</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── Step 3: Renda ── -->
+      <div class="tut-step" id="tstep-3">
+        <div class="tut-title">Qual é sua renda mensal?</div>
+        <p class="tut-desc" style="margin-bottom:20px">
+          Usamos esse valor para calcular os envelopes automaticamente. Pode ser seu salário líquido ou a média do que recebe por mês.
+        </p>
+
+        <div class="renda-input-wrap">
+          <span class="renda-prefix">R$</span>
+          <input
+            class="renda-input" id="renda-val" type="text"
+            placeholder="0.000" inputmode="numeric"
+            value="5.000"
+            oninput="maskRenda(this); updateDist()"
+          >
+        </div>
+        <div class="renda-hint">Não precisa ser exato. Você pode ajustar depois nas configurações.</div>
+
+        <div class="dist-preview">
+          <div class="dist-title">Distribuição com a regra escolhida</div>
+          <div class="dist-rows">
+            <div class="dist-row">
+              <span class="dist-label">🏗️ Necessidades</span>
+              <div class="dist-bar-bg"><div class="dist-bar-fill" id="bar-nec" style="width:50%;background:#06b6d4"></div></div>
+              <span class="dist-value" id="val-nec">R$ 2.500</span>
+            </div>
+            <div class="dist-row">
+              <span class="dist-label">🎯 Desejos</span>
+              <div class="dist-bar-bg"><div class="dist-bar-fill" id="bar-des" style="width:30%;background:var(--yellow)"></div></div>
+              <span class="dist-value" id="val-des">R$ 1.500</span>
+            </div>
+            <div class="dist-row">
+              <span class="dist-label">💰 Poupança</span>
+              <div class="dist-bar-bg"><div class="dist-bar-fill" id="bar-pou" style="width:20%;background:var(--green)"></div></div>
+              <span class="dist-value" id="val-pou">R$ 1.000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Step 4: Envelopes sugeridos ── -->
+      <div class="tut-step" id="tstep-4">
+        <div class="tut-title">Seus envelopes sugeridos</div>
+        <p class="tut-desc" style="margin-bottom:16px">
+          Ajuste os valores, renomeie, exclua ou adicione novos envelopes. O total alocado não pode passar da sua renda.
+        </p>
+
+        <!-- Totalizador -->
+        <div class="sug-total-bar">
+          <div>
+            <div class="sug-total-label">Total alocado</div>
+          </div>
+          <div style="text-align:right">
+            <div class="sug-total-val ok" id="sug-total-val">R$ 4.500 / R$ 5.000</div>
+            <div class="sug-total-status" id="sug-total-status">R$ 500 não alocado</div>
+          </div>
+        </div>
+
+        <!-- Lista editável -->
+        <div class="suggested-list" id="sug-list"></div>
+
+        <!-- Botão adicionar -->
+        <button class="add-envelope-btn" onclick="addEnvelope()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Adicionar envelope
+        </button>
+
+      </div>
+
+      <!-- Emoji picker (global, fora do step) -->
+      <div class="emoji-picker-wrap" id="emoji-picker"></div>
+
+      <!-- ── Step 5: Tudo pronto ── -->
+      <div class="tut-step" id="tstep-5">
+        <span class="tut-icon">🎉</span>
+        <div class="tut-title">Seus envelopes estão prontos!</div>
+        <p class="tut-desc">
+          Criamos <strong>7 envelopes</strong> para você com base na renda de <strong>R$ 5.000</strong> e na regra <strong>50/30/20</strong>.<br><br>
+          Agora é só registrar seus gastos nas categorias certas e o SyncLife cuida do resto — alertas, insights e histórico automático.
+        </p>
+        <div style="background:var(--s2);border-radius:12px;padding:14px 16px;margin-bottom:20px">
+          <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Resumo</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--t2)">Regra escolhida</span><span id="s5-regra" style="color:var(--t1);font-weight:600">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--t2)">Renda configurada</span><span id="s5-renda" style="color:var(--t1);font-weight:600;font-family:'DM Mono',monospace">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--t2)">Envelopes</span><span id="s5-count" style="color:var(--t1);font-weight:600">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--t2)">Total alocado</span><span id="s5-alocado" style="color:var(--t1);font-weight:600;font-family:'DM Mono',monospace">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--t2)">Não alocado</span><span id="s5-nao-alocado" style="color:var(--em);font-weight:600;font-family:'DM Mono',monospace">—</span></div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--t3)">Você pode alterar a regra de distribuição ou editar os envelopes a qualquer momento em <strong style="color:var(--t2)">Configurações → Orçamentos</strong>.</p>
+      </div>
+
+    </div><!-- /tut-body -->
+
+    <div class="tut-footer">
+      <button class="tut-back invisible" id="tut-back-btn" onclick="tutBack()">
+        ← Voltar
+      </button>
+      <button class="tut-next" id="tut-next-btn" onclick="tutNext()">
+        Começar
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+  </div><!-- /tutorial-card -->
+</div><!-- /tutorial-overlay -->
+
+<script>
+
+// ── Máscara de moeda ──
+function maskSugInput(input) {
+  let v = input.value.replace(/\D/g, '');
+  if (!v) { input.value = ''; return; }
+  v = parseInt(v, 10).toLocaleString('pt-BR');
+  input.value = v;
+}
+function parseBR(str) {
+  return parseFloat((str||'0').replace(/\./g,'').replace(',','.')) || 0;
+}
+// ── Gerenciamento de envelopes (step 4) ──
+const EMOJIS = ['🏠','🍽️','🚗','🎮','📚','🩺','✈️','🛡️','💪','🎵','🐾','🎁','💡','🛒','👗','☕','🏋️','🎓','💻','🏖️'];
+const GROUP_COLORS = {
+  'Necessidade': 'rgba(6,182,212,.12)',
+  'Desejo':      'rgba(245,158,11,.12)',
+  'Poupança':    'rgba(16,185,129,.12)',
+};
+
+let envelopes = [
+  { id:1, icon:'🏠', name:'Moradia',              group:'Necessidade', val:1500 },
+  { id:2, icon:'🍽️', name:'Alimentação',          group:'Necessidade', val:800  },
+  { id:3, icon:'🚗', name:'Transporte',            group:'Necessidade', val:400  },
+  { id:4, icon:'🎮', name:'Lazer',                 group:'Desejo',      val:500  },
+  { id:5, icon:'📚', name:'Educação',              group:'Desejo',      val:250  },
+  { id:6, icon:'🛡️', name:'Reserva de emergência', group:'Poupança',    val:550  },
+  { id:7, icon:'✈️', name:'Metas',                 group:'Poupança',    val:500  },
+];
+let nextId = 8;
+let activePickerTarget = null;
+
+function renderEnvelopes() {
+  const list = document.getElementById('sug-list');
+  if (!list) return;
+  list.innerHTML = '';
+  envelopes.forEach(env => {
+    const el = document.createElement('div');
+    el.className = 'suggested-item';
+    el.dataset.id = env.id;
+    const iconBg = GROUP_COLORS[env.group] || 'rgba(16,185,129,.1)';
+    const fmtVal = env.val.toLocaleString('pt-BR');
+    el.innerHTML = `
+      <div class="sug-item-icon" style="background:${iconBg}" onclick="openEmojiPicker(${env.id}, this)" title="Trocar ícone">${env.icon}</div>
+      <div class="sug-item-body">
+        <input class="sug-item-name-input" type="text" value="${env.name}" placeholder="Nome do envelope"
+          onchange="updateEnvField(${env.id},'name',this.value)">
+        <select class="sug-item-group-select" onchange="updateEnvField(${env.id},'group',this.value)">
+          <option ${env.group==='Necessidade'?'selected':''}>Necessidade</option>
+          <option ${env.group==='Desejo'?'selected':''}>Desejo</option>
+          <option ${env.group==='Poupança'?'selected':''}>Poupança</option>
+        </select>
+      </div>
+      <div class="sug-item-val">
+        <span class="sug-val-prefix">R$</span>
+        <input type="text" inputmode="numeric" value="${fmtVal}"
+          oninput="maskSugInput(this); updateEnvField(${env.id},'val', parseBR(this.value))">
+      </div>
+      <button class="sug-delete-btn" onclick="deleteEnvelope(${env.id})" title="Excluir">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+      </button>
+    `;
+    list.appendChild(el);
+  });
+  calcTotal();
+}
+
+function updateEnvField(id, field, val) {
+  const env = envelopes.find(e => e.id===id);
+  if (!env) return;
+  env[field] = field==='val' ? (parseFloat(val)||0) : val;
+  if (field==='group') {
+    // atualiza cor do ícone
+    const iconEl = document.querySelector(`[data-id="${id}"] .sug-item-icon`);
+    if (iconEl) iconEl.style.background = GROUP_COLORS[val]||'rgba(16,185,129,.1)';
+  }
+  if (field==='val') calcTotal();
+}
+
+function deleteEnvelope(id) {
+  if (envelopes.length <= 1) return;
+  envelopes = envelopes.filter(e => e.id !== id);
+  renderEnvelopes();
+}
+
+function addEnvelope() {
+  envelopes.push({ id: nextId++, icon:'📦', name:'Novo envelope', group:'Desejo', val:0 });
+  renderEnvelopes();
+  // scroll para o fim da lista
+  const list = document.getElementById('sug-list');
+  if (list) setTimeout(() => list.lastElementChild && list.lastElementChild.scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
+}
+
+function calcTotal() {
+  const renda = rendaNumeric() || 5000;
+  const total = envelopes.reduce((s,e) => s + (e.val||0), 0);
+  const restante = renda - total;
+  const tv = document.getElementById('sug-total-val');
+  const ts = document.getElementById('sug-total-status');
+  if (!tv) return;
+  tv.textContent = 'R$ ' + total.toLocaleString('pt-BR') + ' / R$ ' + renda.toLocaleString('pt-BR');
+  tv.className = 'sug-total-val ' + (total > renda ? 'over' : 'ok');
+  if (restante > 0)       ts.textContent = 'R$ ' + restante.toLocaleString('pt-BR') + ' não alocado';
+  else if (restante === 0) ts.textContent = '✓ Tudo alocado!';
+  else                     ts.textContent = '⚠ Passou R$ ' + Math.abs(restante).toLocaleString('pt-BR') + ' da renda';
+  ts.style.color = total > renda ? 'var(--red)' : total === renda ? 'var(--green)' : 'var(--t3)';
+}
+
+// ── Emoji picker ──
+function openEmojiPicker(envId, anchorEl) {
+  const picker = document.getElementById('emoji-picker');
+  if (!picker) return;
+  activePickerTarget = envId;
+  picker.innerHTML = EMOJIS.map(e =>
+    `<div class="ep-opt" onclick="selectEmoji('${e}')">${e}</div>`
+  ).join('');
+  // posicionar próximo ao ícone
+  const rect = anchorEl.getBoundingClientRect();
+  picker.style.cssText = `display:flex;position:fixed;top:${rect.bottom+6}px;left:${rect.left}px;flex-wrap:wrap;`;
+  picker.classList.add('open');
+  setTimeout(() => document.addEventListener('click', closePicker, {once:true}), 10);
+}
+function selectEmoji(emoji) {
+  const env = envelopes.find(e => e.id===activePickerTarget);
+  if (env) {
+    env.icon = emoji;
+    renderEnvelopes();
+  }
+  closePicker();
+}
+function closePicker() {
+  const picker = document.getElementById('emoji-picker');
+  if (picker) { picker.classList.remove('open'); picker.style.display='none'; }
+}
+function syncCustomPct(changed) {
+  const nec = parseFloat(document.getElementById('pct-nec').value)||0;
+  const des = parseFloat(document.getElementById('pct-des').value)||0;
+  const pou = parseFloat(document.getElementById('pct-pou').value)||0;
+  const total = nec+des+pou;
+  const msg = document.getElementById('pct-total-msg');
+  if (Math.abs(total-100) < 0.5) {
+    msg.style.color = 'var(--green)';
+    msg.textContent = '✓ Total: 100%';
+    ruleRatios['custom'] = [nec, des, pou];
+    updateDist();
+  } else {
+    msg.style.color = total > 100 ? 'var(--red)' : 'var(--yellow)';
+    msg.textContent = 'Total: ' + total + '% — precisa ser 100%';
+  }
+}
+
+function maskRenda(input) {
+  let v = input.value.replace(/\D/g, '');
+  v = parseInt(v || '0', 10).toLocaleString('pt-BR');
+  input.value = v;
+}
+function rendaNumeric() {
+  const v = document.getElementById('renda-val').value;
+  return parseFloat(v.replace(/\./g,'').replace(',','.')) || 0;
+}
+
+// ── Tutorial ──
+let tutStep = 1;
+const tutTotal = 5;
+let selectedRule = '50-30-20';
+const ruleRatios = {
+  '50-30-20': [50,30,20],
+  '70-20-10': [70,20,10],
+  '55-15-30': [55,15,30],
+  'custom':   [50,30,20],
+};
+const nextLabels = ['Começar','Escolher regra','Próximo','Confirmar envelopes','Criar meus envelopes'];
+const nextIcons  = ['→','→','→','→','🚀'];
+
+function tutGoTo(step) {
+  if (step === 4) setTimeout(renderEnvelopes, 50);
+  document.querySelectorAll('.tut-step').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tut-dot').forEach((d,i) => {
+    d.classList.remove('active','done');
+    if (i+1 < step) d.classList.add('done');
+    else if (i+1 === step) d.classList.add('active');
+  });
+  document.getElementById('tstep-'+step).classList.add('active');
+  document.getElementById('tut-bar').style.width = (step/tutTotal*100)+'%';
+  const btn = document.getElementById('tut-next-btn');
+  btn.innerHTML = (nextLabels[step-1]||'Próximo') + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  if (step === tutTotal) {
+    btn.innerHTML = '📋 Revisar e confirmar';
+    setTimeout(buildStep5, 50);
+  }
+  const backBtn = document.getElementById('tut-back-btn');
+  backBtn.classList.toggle('invisible', step === 1);
+  tutStep = step;
+}
+
+function tutNext() {
+  if (tutStep < tutTotal) { tutGoTo(tutStep+1); }
+  else { openConfirm(); }
+}
+function tutBack() {
+  if (tutStep > 1) tutGoTo(tutStep-1);
+}
+function skipTutorial() {
+  document.getElementById('tutorial').classList.add('hidden');
+}
+
+function selectRule(card, rule) {
+  document.querySelectorAll('.rule-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  selectedRule = rule;
+  const wrap = document.getElementById('custom-pct-wrap');
+  if (wrap) wrap.style.display = rule === 'custom' ? 'block' : 'none';
+  updateDist();
+}
+
+function updateDist() {
+  const renda = rendaNumeric();
+  const ratios = ruleRatios[selectedRule] || [50,30,20];
+  const nec = renda * ratios[0]/100;
+  const des = renda * ratios[1]/100;
+  const pou = renda * ratios[2]/100;
+  document.getElementById('val-nec').textContent = 'R$ '+nec.toLocaleString('pt-BR');
+  document.getElementById('val-des').textContent = 'R$ '+des.toLocaleString('pt-BR');
+  document.getElementById('val-pou').textContent = 'R$ '+pou.toLocaleString('pt-BR');
+  document.getElementById('bar-nec').style.width = ratios[0]+'%';
+  document.getElementById('bar-des').style.width = ratios[1]+'%';
+  document.getElementById('bar-pou').style.width = ratios[2]+'%';
+}
+
+// Botão dev para reabrir tutorial
+
+
+// ── Nomes legíveis de regra ──
+const ruleNames = {
+  '50-30-20': '50 / 30 / 20 — Equilíbrio',
+  '70-20-10': '70 / 20 / 10 — Construção',
+  '55-15-30': '55 / 15 / 30 — Agressivo',
+  'custom':   'Personalizado',
+};
+
+// ── Build step 5 com dados reais ──
+function buildStep5() {
+  const renda = rendaNumeric() || 5000;
+  const total = envelopes.reduce((s,e) => s + (e.val||0), 0);
+  const restante = renda - total;
+  const regra = ruleNames[selectedRule] || selectedRule;
+
+  const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  set('s5-regra', regra);
+  set('s5-renda', 'R$ ' + renda.toLocaleString('pt-BR'));
+  set('s5-count', envelopes.length + ' envelope' + (envelopes.length!==1?'s':''));
+  set('s5-alocado', 'R$ ' + total.toLocaleString('pt-BR'));
+  set('s5-nao-alocado', 'R$ ' + Math.max(0,restante).toLocaleString('pt-BR'));
+
+  // emoji do step 5 muda conforme modo
+  const emoji = document.querySelector('#tstep-5 .tut-icon');
+  if (emoji) emoji.textContent = total >= renda ? '🎉' : '✅';
+}
+
+// ── Abrir modal de confirmação ──
+function openConfirm() {
+  const renda = rendaNumeric() || 5000;
+  const total = envelopes.reduce((s,e) => s + (e.val||0), 0);
+  const restante = renda - total;
+  const regra = ruleNames[selectedRule] || selectedRule;
+
+  document.getElementById('cf-regra').textContent = regra;
+  document.getElementById('cf-renda').textContent = 'R$ ' + renda.toLocaleString('pt-BR');
+  document.getElementById('cf-alocado').textContent = 'R$ ' + total.toLocaleString('pt-BR');
+  document.getElementById('cf-nao-alocado').textContent = 'R$ ' + Math.max(0,restante).toLocaleString('pt-BR');
+  document.getElementById('cf-count').textContent = envelopes.length;
+
+  // lista de envelopes
+  const list = document.getElementById('cf-env-list');
+  list.innerHTML = envelopes.map(e => `
+    <div class="confirm-env-item">
+      <span class="icon">${e.icon}</span>
+      <span class="name">${e.name}</span>
+      <span class="grp">${e.group}</span>
+      <span class="val">R$ ${(e.val||0).toLocaleString('pt-BR')}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-modal').classList.remove('open');
+}
+
+function finalizarOnboarding() {
+  closeConfirm();
+  skipTutorial();
+}
+
+function setTheme(t){
+  document.body.classList.toggle('light',t==='light');
+  document.getElementById('pill-dark').classList.toggle('on',t==='dark');
+  document.getElementById('pill-light').classList.toggle('on',t==='light');
+}
+function setMode(m){
+  document.body.classList.toggle('jornada',m==='jornada');
+  document.getElementById('pill-foco').classList.toggle('on',m==='foco');
+  document.getElementById('pill-jornada').classList.toggle('on',m==='jornada');
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function closeOnBg(e,id){if(e.target===document.getElementById(id))closeModal(id)}
+function selIcon(el){document.querySelectorAll('.icon-opt').forEach(i=>i.classList.remove('sel'));el.classList.add('sel')}
+function selColor(el){document.querySelectorAll('.color-opt').forEach(i=>i.classList.remove('sel'));el.classList.add('sel')}
+function applySuggestion(){
+  document.getElementById('sug-banner').style.display='none';
+  alert('Sugestão aplicada! Os envelopes foram redistribuídos seguindo a regra 50-30-20.');
+}
+function loadHistory(val){
+  const months={
+    'jan-2026':'Janeiro 2026','dez-2025':'Dezembro 2025','nov-2025':'Novembro 2025','fev-2026':'Fevereiro 2026'
+  };
+  if(val!=='fev-2026'){
+    document.getElementById('cur-month').textContent=months[val]+' (histórico)';
+  } else {
+    document.getElementById('cur-month').textContent='Fevereiro 2026';
+  }
+}
+function toggleMonthMenu(){}
+</script>
+
+<!-- ══ MODAL DE CONFIRMAÇÃO FINAL ══ -->
+<div class="confirm-overlay" id="confirm-modal">
+  <div class="confirm-modal">
+    <div class="confirm-icon">📦</div>
+    <div class="confirm-title">Confirmar criação?</div>
+    <p class="confirm-desc">
+      Revise os dados abaixo antes de criar seus envelopes. Você poderá editar tudo depois nas configurações.
+    </p>
+
+    <div class="confirm-summary">
+      <div class="confirm-row">
+        <span class="confirm-row-label">Regra de distribuição</span>
+        <span class="confirm-row-val" id="cf-regra">50 / 30 / 20</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-row-label">Renda configurada</span>
+        <span class="confirm-row-val mono" id="cf-renda">R$ 5.000</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-row-label">Total alocado</span>
+        <span class="confirm-row-val mono" id="cf-alocado">R$ 4.500</span>
+      </div>
+      <div class="confirm-row">
+        <span class="confirm-row-label">Não alocado</span>
+        <span class="confirm-row-val mono" id="cf-nao-alocado" style="color:var(--green)">R$ 500</span>
+      </div>
+      <div class="confirm-divider"></div>
+      <div>
+        <div class="confirm-row-label" style="margin-bottom:8px">Envelopes (<span id="cf-count">7</span>)</div>
+        <div class="confirm-env-list" id="cf-env-list"></div>
+      </div>
+    </div>
+
+    <div class="confirm-actions">
+      <button class="confirm-btn-cancel" onclick="closeConfirm()">Revisar</button>
+      <button class="confirm-btn-confirm" onclick="finalizarOnboarding()">
+        🚀 Criar envelopes
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

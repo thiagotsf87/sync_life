@@ -18,6 +18,9 @@ CREATE TABLE IF NOT EXISTS profiles (
     currency TEXT DEFAULT 'BRL',
     theme TEXT DEFAULT 'dark' CHECK (theme IN ('light', 'dark', 'system')),
     onboarding_completed BOOLEAN DEFAULT FALSE,
+    monthly_income DECIMAL(12,2),                       -- renda mensal (onboarding)
+    life_moments TEXT[],                                 -- momentos de vida selecionados (onboarding)
+    active_modules TEXT[] DEFAULT '{financas}',          -- módulos ativos (onboarding)
     last_active_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
