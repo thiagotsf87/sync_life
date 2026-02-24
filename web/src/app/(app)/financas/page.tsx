@@ -282,7 +282,7 @@ function FluxoCaixaChart() {
               d % 7 === 1 || d === CF_DAYS[CF_DAYS.length - 1].d ? (
                 <div
                   key={d}
-                  className="flex-1 text-center font-[DM_Mono] text-[7px] text-[var(--sl-t3)]"
+                  className="flex-1 text-center font-[DM_Mono] text-[9px] text-[var(--sl-t3)]"
                   style={{ opacity: isFuture ? 0.45 : 1 }}
                 >
                   {String(d).padStart(2, '0')}
