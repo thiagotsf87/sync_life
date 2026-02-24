@@ -269,20 +269,11 @@ function FluxoCaixaChart() {
               points={balPts}
               fill="none"
               stroke="#0055ff"
-              strokeWidth="1.5"
+              strokeWidth="1"
               strokeLinejoin="round"
               strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
             />
-            {/* Dot for today */}
-            {CF_DAYS.map(({ d, isToday }, i) => isToday ? (
-              <circle
-                key={d}
-                cx={((i + 0.5) / n) * 100}
-                cy={(1 - (balances[i] - minBal) / balRange) * (h - 6) + 3}
-                r="2.5"
-                fill="#0055ff"
-              />
-            ) : null)}
           </svg>
 
           {/* X axis labels */}

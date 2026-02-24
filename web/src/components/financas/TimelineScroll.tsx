@@ -175,6 +175,7 @@ interface TimelineScrollProps {
   scenario: ScenarioKey
   todayCol: number
   isPro: boolean
+  freeLimit?: number  // how many months free users can see (default: 3)
 }
 
 export function TimelineScroll({
@@ -184,6 +185,7 @@ export function TimelineScroll({
   scenario,
   todayCol,
   isPro,
+  freeLimit = 3,
 }: TimelineScrollProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -285,11 +287,11 @@ export function TimelineScroll({
             </div>
           </div>
 
-          {/* FREE overlay: months 4-12 */}
-          {!isPro && (
+          {/* FREE overlay: beyond freeLimit months */}
+          {!isPro && months.length > freeLimit && (
             <div
               className="absolute top-0 bottom-0 z-30"
-              style={{ left: 3 * COL_W, right: 0 }}
+              style={{ left: freeLimit * COL_W, right: 0 }}
             >
               <div className="w-full h-full backdrop-blur-sm bg-[var(--sl-bg)]/70 flex flex-col items-center justify-center gap-3">
                 <span className="text-[15px] font-[Syne] font-bold text-[var(--sl-t1)]">

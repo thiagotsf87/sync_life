@@ -21,6 +21,7 @@ import {
   type PlanningEvent,
   type EventFormData,
   type BalanceDataPoint,
+  type MonthData,
 } from '@/hooks/use-planejamento'
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -35,40 +36,122 @@ const fmtDate = (iso: string) => {
 
 // ─── SPARKLINE ────────────────────────────────────────────────────────────────
 
-function SparklineSvg({ data, color }: { data: BalanceDataPoint[]; color: string }) {
-  if (data.length < 2) return <div className="h-[120px] bg-[var(--sl-s2)] rounded-lg animate-pulse" />
+function SparklineSvg({ data, months, color }: { data: BalanceDataPoint[]; months: MonthData[]; color: string }) {
+  if (data.length < 2) return <div className="h-[160px] bg-[var(--sl-s2)] rounded-lg animate-pulse" />
 
   const balances = data.map(d => d.balance)
-  const minBal = Math.min(...balances)
-  const maxBal = Math.max(...balances)
-  const range = maxBal - minBal || 1
+  const rawMin  = Math.min(...balances)
+  const rawMax  = Math.max(...balances)
+  const padding = Math.max((rawMax - rawMin) * 0.12, 500)
+  const lo      = rawMin - padding
+  const hi      = rawMax + padding
+  const range   = hi - lo || 1
 
-  const W = 300
-  const H = 110
-  const PAD = 8
-  const step = W / (data.length - 1)
+  // Layout constants (SVG user units)
+  const W    = 340
+  const H    = 160
+  const LPAD = 44   // Y-axis label area
+  const RPAD = 20   // right padding so last X-axis label isn't clipped
+  const TPAD = 10
+  const BPAD = 22   // X-axis label area
 
-  const pts = data.map((d, i) => {
-    const x = i * step
-    const y = H - PAD - ((d.balance - minBal) / range) * (H - 2 * PAD)
-    return `${x},${y}`
-  }).join(' ')
+  const cW = W - LPAD - RPAD   // chart area width
+  const cH = H - TPAD - BPAD   // chart area height
+  const n  = data.length
+  const step = n > 1 ? cW / (n - 1) : cW
 
-  const gradId = `spark-${color.replace('#', '')}`
+  const toX = (i: number)   => LPAD + i * step
+  const toY = (bal: number) => TPAD + cH - ((bal - lo) / range) * cH
+
+  const pts = data.map((d, i) => `${toX(i).toFixed(1)},${toY(d.balance).toFixed(1)}`).join(' ')
+
+  // 4 horizontal Y-axis ticks
+  const yTicks = 4
+  const yValues = Array.from({ length: yTicks }, (_, i) =>
+    lo + (range * i) / (yTicks - 1)
+  )
+
+  const gradId = `spk-${color.replace('#', '')}`
+
+  const fmtY = (v: number) => {
+    const abs = Math.abs(v)
+    if (abs >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`
+    if (abs >= 1000)      return `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k`
+    return `${Math.round(v)}`
+  }
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 120 }} preserveAspectRatio="none">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      className="w-full"
+      preserveAspectRatio="xMidYMid meet"
+    >
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.35" />
           <stop offset="100%" stopColor={color} stopOpacity="0.02" />
         </linearGradient>
       </defs>
+
+      {/* Y-axis gridlines + labels */}
+      {yValues.map((v, i) => {
+        const y = toY(v)
+        return (
+          <g key={i}>
+            <line
+              x1={LPAD} y1={y} x2={W - RPAD} y2={y}
+              stroke="var(--sl-border)"
+              strokeWidth="0.8"
+              strokeDasharray={i === 0 ? '0' : '3,3'}
+            />
+            <text
+              x={LPAD - 4} y={y}
+              textAnchor="end" dominantBaseline="middle"
+              fill="var(--sl-t3)" fontSize="8" fontFamily="DM Mono, monospace"
+            >
+              {fmtY(v)}
+            </text>
+          </g>
+        )
+      })}
+
+      {/* Area fill */}
       <polygon
-        points={`0,${H} ${pts} ${(data.length - 1) * step},${H}`}
+        points={`${toX(0).toFixed(1)},${(TPAD + cH).toFixed(1)} ${pts} ${toX(n - 1).toFixed(1)},${(TPAD + cH).toFixed(1)}`}
         fill={`url(#${gradId})`}
       />
-      <polyline points={pts} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+
+      {/* Balance line */}
+      <polyline
+        points={pts}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      {/* Endpoint dots */}
+      {data.map((d, i) => (
+        i === 0 || i === n - 1 ? (
+          <circle key={i} cx={toX(i).toFixed(1)} cy={toY(d.balance).toFixed(1)} r="3" fill={color} />
+        ) : null
+      ))}
+
+      {/* X-axis month labels */}
+      {months.slice(0, n).map((m, i) => (
+        <text
+          key={i}
+          x={toX(i).toFixed(1)}
+          y={H - 4}
+          textAnchor="middle"
+          fill="var(--sl-t3)"
+          fontSize="8"
+          fontFamily="DM Mono, monospace"
+        >
+          {m.label}
+        </text>
+      ))}
     </svg>
   )
 }
@@ -360,6 +443,7 @@ export default function PlanejamentoPage() {
             scenario={scenario}
             todayCol={todayCol}
             isPro={isPro}
+            freeLimit={7}
           />
         </div>
       </SLCard>
@@ -413,7 +497,7 @@ export default function PlanejamentoPage() {
             </span>
           </div>
 
-          <SparklineSvg data={balanceData.slice(0, 7)} color={SCENARIO_COLORS[scenario]} />
+          <SparklineSvg data={balanceData.slice(0, 7)} months={months.slice(0, 7)} color={SCENARIO_COLORS[scenario]} />
 
           {/* Bal row */}
           <div className="flex justify-between mt-4">
