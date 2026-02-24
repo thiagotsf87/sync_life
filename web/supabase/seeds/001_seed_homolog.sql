@@ -37,6 +37,12 @@ DECLARE
   cat_vestuario     UUID;
   cat_pets          UUID;
 
+  -- ── IDs de metas (Fase 3) ────────────────────────────────────────────────
+  goal_viagem   UUID;
+  goal_reserva  UUID;
+  goal_curso    UUID;
+  goal_carro    UUID;
+
   -- ── Referências de datas ─────────────────────────────────────────────────
   today  DATE := CURRENT_DATE;
   m0     DATE := DATE_TRUNC('month', CURRENT_DATE)::DATE;           -- início do mês atual
@@ -263,6 +269,84 @@ BEGIN
     (uid, cat_saude,     'Check-up anual',                      450.00, 'expense',
        today + 30,  FALSE, 'Exames de rotina + consultas');
 
+  -- ============================================================
+  -- FASE 3: Metas
+  -- ============================================================
+
+  -- Limpa dados antigos de metas
+  DELETE FROM public.goal_milestones WHERE user_id = uid;
+  DELETE FROM public.goal_contributions WHERE user_id = uid;
+  DELETE FROM public.goals WHERE user_id = uid;
+
+  -- ── Metas ──────────────────────────────────────────────────
+  INSERT INTO public.goals (user_id, name, description, icon, category, goal_type,
+    target_amount, current_amount, monthly_contribution, target_date, start_date, status, notes)
+  VALUES (uid, 'Viagem Europa', 'Mochilão de 30 dias pela Europa em julho',
+     '✈️', 'viagem', 'monetary', 15000.00, 7800.00, 1200.00, today + 150, today - 180, 'active', 'Passagens + hospedagem + passeios')
+  RETURNING id INTO goal_viagem;
+
+  INSERT INTO public.goals (user_id, name, description, icon, category, goal_type,
+    target_amount, current_amount, monthly_contribution, target_date, start_date, status, notes)
+  VALUES (uid, 'Reserva de Emergência', 'Fundo equivalente a 6 meses de despesas',
+     '🛡️', 'reserva', 'monetary', 36000.00, 22500.00, 2000.00, today + 360, today - 365, 'active', 'Meta prioritária')
+  RETURNING id INTO goal_reserva;
+
+  INSERT INTO public.goals (user_id, name, description, icon, category, goal_type,
+    target_amount, current_amount, monthly_contribution, target_date, start_date, status, completed_at, notes)
+  VALUES (uid, 'Curso de Dados', 'MBA em Data Science + certificacoes AWS',
+     '📚', 'educacao', 'monetary', 8000.00, 8000.00, 0.00, today - 10, today - 270, 'completed', today - 10, 'Curso concluido!')
+  RETURNING id INTO goal_curso;
+
+  INSERT INTO public.goals (user_id, name, description, icon, category, goal_type,
+    target_amount, current_amount, monthly_contribution, target_date, start_date, status, notes)
+  VALUES (uid, 'Carro Novo', 'Troca do carro atual por um SUV',
+     '🚗', 'veiculo', 'monetary', 80000.00, 12000.00, 3000.00, today + 730, today - 60, 'active', 'Entrada + financiamento planejado')
+  RETURNING id INTO goal_carro;
+
+  -- ── Contribuições ──────────────────────────────────────────
+  INSERT INTO public.goal_contributions (goal_id, user_id, amount, date, notes) VALUES
+    (goal_viagem, uid, 1200.00, today - 150, 'Aporte mensal'),
+    (goal_viagem, uid, 1200.00, today - 120, 'Aporte mensal'),
+    (goal_viagem, uid, 1500.00, today - 90,  'Aporte extra — 13o salario'),
+    (goal_viagem, uid, 1200.00, today - 60,  'Aporte mensal'),
+    (goal_viagem, uid, 1200.00, today - 30,  'Aporte mensal'),
+    (goal_viagem, uid, 1500.00, today - 5,   'Aporte mensal + extra'),
+    (goal_reserva, uid, 2000.00, today - 330, 'Aporte mensal'),
+    (goal_reserva, uid, 2000.00, today - 300, 'Aporte mensal'),
+    (goal_reserva, uid, 2500.00, today - 270, 'Aporte extra'),
+    (goal_reserva, uid, 2000.00, today - 240, 'Aporte mensal'),
+    (goal_reserva, uid, 2000.00, today - 210, 'Aporte mensal'),
+    (goal_reserva, uid, 2000.00, today - 180, 'Aporte mensal'),
+    (goal_reserva, uid, 2000.00, today - 150, 'Aporte mensal'),
+    (goal_reserva, uid, 2000.00, today - 120, 'Aporte mensal'),
+    (goal_reserva, uid, 2000.00, today - 90,  'Aporte mensal'),
+    (goal_reserva, uid, 2000.00, today - 60,  'Aporte mensal'),
+    (goal_reserva, uid, 2000.00, today - 30,  'Aporte mensal'),
+    (goal_curso, uid, 4000.00, today - 240, 'Primeira parcela'),
+    (goal_curso, uid, 4000.00, today - 120, 'Segunda parcela — quitacao'),
+    (goal_carro, uid, 5000.00, today - 50, 'Aporte inicial — poupanca anterior'),
+    (goal_carro, uid, 3000.00, today - 20, 'Aporte mensal'),
+    (goal_carro, uid, 4000.00, today - 5,  'Aporte extra — bonus');
+
+  -- ── Milestones ─────────────────────────────────────────────
+  INSERT INTO public.goal_milestones (goal_id, user_id, name, target_pct, reached_at) VALUES
+    (goal_viagem, uid, 'Primeiro quarto', 25, today - 90),
+    (goal_viagem, uid, 'Metade do caminho', 50, today - 10),
+    (goal_viagem, uid, 'Quase la!', 75, NULL),
+    (goal_viagem, uid, 'Meta concluida!', 100, NULL),
+    (goal_reserva, uid, 'Primeiro quarto', 25, today - 300),
+    (goal_reserva, uid, 'Metade do caminho', 50, today - 150),
+    (goal_reserva, uid, 'Quase la!', 75, NULL),
+    (goal_reserva, uid, 'Reserva completa!', 100, NULL),
+    (goal_curso, uid, 'Primeiro quarto', 25, today - 240),
+    (goal_curso, uid, 'Metade do caminho', 50, today - 200),
+    (goal_curso, uid, 'Quase la!', 75, today - 150),
+    (goal_curso, uid, 'Formado!', 100, today - 10),
+    (goal_carro, uid, 'Primeiro quarto', 25, NULL),
+    (goal_carro, uid, 'Metade do caminho', 50, NULL),
+    (goal_carro, uid, 'Quase la!', 75, NULL),
+    (goal_carro, uid, 'Carro novo!', 100, NULL);
+
   RAISE NOTICE '✅ Seed de homologação concluído com sucesso!';
   RAISE NOTICE '   Usuário: %', uid;
   RAISE NOTICE '   Categorias:    14 criadas';
@@ -270,6 +354,7 @@ BEGIN
   RAISE NOTICE '   Transações:    ~65 criadas (3 meses + mês atual)';
   RAISE NOTICE '   Orçamentos:    11 criados (mês atual + anterior)';
   RAISE NOTICE '   Planejamento:  7 eventos futuros';
+  RAISE NOTICE '   Metas:         4 criadas (3 ativas, 1 concluída) + contribuições + milestones';
 
 END;
 $$;
