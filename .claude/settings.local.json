@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_resize",
+      "mcp__playwright__browser_run_code",
+      "mcp__playwright__browser_snapshot",
+      "Bash(ls:*)",
+      "Bash(npx tsc:*)",
+      "mcp__playwright__browser_hover",
+      "Bash(curl:*)",
+      "mcp__playwright__browser_install",
+      "Bash(npm install:*)",
+      "Bash(timeout 15 npx next dev:*)",
+      "Bash(taskkill:*)",
+      "Bash(cat:*)",
+      "Bash(npm run build:*)",
+      "mcp__playwright__browser_evaluate",
+      "Bash(npx supabase --version)",
+      "mcp__playwright__browser_fill_form",
+      "mcp__playwright__browser_wait_for",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)"
+    ]
+  }
+}

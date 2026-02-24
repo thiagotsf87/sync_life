@@ -92,7 +92,7 @@ export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
                            ${isActive ? 'sl-mod-btn-active' : ''}`}
                 style={{
                   background: isActive ? mod.glowColor : 'transparent',
-                  color: isActive ? mod.color : 'var(--sl-t2)',
+                  color: isActive ? mod.color : undefined,
                 }}
               >
                 {/* Active pill indicator */}

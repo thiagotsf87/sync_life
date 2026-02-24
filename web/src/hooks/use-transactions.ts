@@ -99,8 +99,8 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
 
       const monthStr = String(options.month).padStart(2, '0')
       const startDate = `${options.year}-${monthStr}-01`
-      // use day 31 — Supabase/Postgres handles it correctly (clips to last day)
-      const endDate = `${options.year}-${monthStr}-31`
+      // new Date(year, month, 0) with month 1-indexed gives the last day of that month
+      const endDate = new Date(options.year, options.month, 0).toISOString().split('T')[0]
 
       let query = supabase
         .from('transactions')

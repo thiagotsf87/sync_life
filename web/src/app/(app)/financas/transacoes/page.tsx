@@ -548,11 +548,14 @@ export default function TransacoesPage() {
         {isLoading ? (
           <TableSkeleton />
         ) : error ? (
-          <div className="py-12 text-center">
+          <div className="py-12 text-center px-6">
             <AlertTriangle size={32} className="text-[#f43f5e] mx-auto mb-3" />
-            <p className="text-[13px] text-[var(--sl-t2)]">
+            <p className="text-[13px] text-[var(--sl-t2)] mb-1">
               Erro ao carregar transações.{' '}
               <button onClick={refresh} className="text-[#10b981] hover:underline">Tentar novamente</button>
+            </p>
+            <p className="text-[11px] text-[var(--sl-t3)] font-[DM_Mono] mt-2 max-w-md mx-auto break-all">
+              {error.message}
             </p>
           </div>
         ) : transactions.length === 0 ? (

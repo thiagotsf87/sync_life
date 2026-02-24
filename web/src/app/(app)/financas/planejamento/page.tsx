@@ -36,7 +36,7 @@ const fmtDate = (iso: string) => {
 // ─── SPARKLINE ────────────────────────────────────────────────────────────────
 
 function SparklineSvg({ data, color }: { data: BalanceDataPoint[]; color: string }) {
-  if (data.length < 2) return <div className="h-16 bg-[var(--sl-s2)] rounded-lg animate-pulse" />
+  if (data.length < 2) return <div className="h-[120px] bg-[var(--sl-s2)] rounded-lg animate-pulse" />
 
   const balances = data.map(d => d.balance)
   const minBal = Math.min(...balances)
@@ -44,8 +44,8 @@ function SparklineSvg({ data, color }: { data: BalanceDataPoint[]; color: string
   const range = maxBal - minBal || 1
 
   const W = 300
-  const H = 60
-  const PAD = 6
+  const H = 110
+  const PAD = 8
   const step = W / (data.length - 1)
 
   const pts = data.map((d, i) => {
@@ -57,7 +57,7 @@ function SparklineSvg({ data, color }: { data: BalanceDataPoint[]; color: string
   const gradId = `spark-${color.replace('#', '')}`
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 64 }} preserveAspectRatio="none">
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 120 }} preserveAspectRatio="none">
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.35" />
@@ -310,10 +310,10 @@ export default function PlanejamentoPage() {
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div>
             <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
-              Curva de Saldo — 12 meses
+              Curva de Saldo — 6 meses
             </p>
             <p className="text-[11px] text-[var(--sl-t3)]">
-              Projeção {SCENARIO_LABELS[scenario]} · {months[0]?.label} → {months[months.length - 1]?.label}
+              Projeção {SCENARIO_LABELS[scenario]} · {months[0]?.label} → {months[6]?.label}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -354,9 +354,9 @@ export default function PlanejamentoPage() {
 
           {/* Scrollable timeline */}
           <TimelineScroll
-            months={months}
-            events={projectedEvents}
-            balanceData={balanceData}
+            months={months.slice(0, 7)}
+            events={projectedEvents.filter(e => e.monthIndex < 7)}
+            balanceData={balanceData.slice(0, 7)}
             scenario={scenario}
             todayCol={todayCol}
             isPro={isPro}
@@ -413,7 +413,7 @@ export default function PlanejamentoPage() {
             </span>
           </div>
 
-          <SparklineSvg data={balanceData} color={SCENARIO_COLORS[scenario]} />
+          <SparklineSvg data={balanceData.slice(0, 7)} color={SCENARIO_COLORS[scenario]} />
 
           {/* Bal row */}
           <div className="flex justify-between mt-4">

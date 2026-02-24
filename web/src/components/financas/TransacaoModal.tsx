@@ -7,13 +7,29 @@ import type { Category } from '@/hooks/use-categories'
 import type { Transaction, TransacaoFormData } from '@/hooks/use-transactions'
 
 const PAYMENT_OPTIONS = [
-  { value: 'pix',      label: 'Pix' },
-  { value: 'credit',   label: 'Crédito' },
-  { value: 'debit',    label: 'Débito' },
-  { value: 'cash',     label: 'Dinheiro' },
-  { value: 'transfer', label: 'Transferência' },
-  { value: 'boleto',   label: 'Boleto' },
+  { value: 'pix',      label: 'Pix',           icon: '⚡' },
+  { value: 'credit',   label: 'Crédito',        icon: '💳' },
+  { value: 'debit',    label: 'Débito',          icon: '💸' },
+  { value: 'cash',     label: 'Dinheiro',        icon: '💵' },
+  { value: 'transfer', label: 'Transferência',   icon: '🏦' },
+  { value: 'boleto',   label: 'Boleto',          icon: '📄' },
 ] as const
+
+// ── Currency mask ──────────────────────────────────────────────────────────
+function maskCurrency(raw: string): string {
+  const digits = raw.replace(/\D/g, '')
+  if (!digits) return ''
+  const n = parseInt(digits, 10)
+  return (n / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+function parseCurrency(masked: string): number {
+  return parseFloat(masked.replace(/\./g, '').replace(',', '.')) || 0
+}
+
+function amountToMask(amount: number): string {
+  return amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
 
 interface TransacaoModalProps {
   open: boolean
@@ -47,7 +63,7 @@ export function TransacaoModal({
     if (mode === 'edit' && transaction) {
       setType(transaction.type)
       setDescription(transaction.description)
-      setAmountStr(String(transaction.amount))
+      setAmountStr(amountToMask(transaction.amount))
       setCategoryId(transaction.category?.id ?? '')
       setDate(transaction.date)
       setPaymentMethod((transaction.payment_method as TransacaoFormData['payment_method']) ?? 'pix')
@@ -76,7 +92,7 @@ export function TransacaoModal({
   function validate(): boolean {
     const errs: Record<string, string> = {}
     if (!description.trim()) errs.description = 'Descrição obrigatória'
-    const amt = parseFloat(amountStr.replace(',', '.'))
+    const amt = parseCurrency(amountStr)
     if (!amountStr || isNaN(amt) || amt <= 0) errs.amount = 'Valor inválido'
     if (!categoryId) errs.category = 'Selecione uma categoria'
     if (!date) errs.date = 'Data obrigatória'
@@ -88,7 +104,7 @@ export function TransacaoModal({
     if (!validate()) return
     setSaving(true)
     try {
-      const amt = parseFloat(amountStr.replace(',', '.'))
+      const amt = parseCurrency(amountStr)
       await onSave({
         type,
         description: description.trim(),
@@ -194,9 +210,9 @@ export function TransacaoModal({
               <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
               <input
                 type="text"
-                inputMode="decimal"
+                inputMode="numeric"
                 value={amountStr}
-                onChange={e => setAmountStr(e.target.value.replace(/[^0-9.,]/g, ''))}
+                onChange={e => setAmountStr(maskCurrency(e.target.value))}
                 placeholder="0,00"
                 className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
               />
@@ -253,15 +269,24 @@ export function TransacaoModal({
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Método</label>
-              <select
-                value={paymentMethod}
-                onChange={e => setPaymentMethod(e.target.value as TransacaoFormData['payment_method'])}
-                className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] outline-none focus:border-[#10b981] transition-colors cursor-pointer"
-              >
+              <div className="grid grid-cols-3 gap-1.5">
                 {PAYMENT_OPTIONS.map(p => (
-                  <option key={p.value} value={p.value}>{p.label}</option>
+                  <button
+                    key={p.value}
+                    type="button"
+                    onClick={() => setPaymentMethod(p.value as TransacaoFormData['payment_method'])}
+                    className={cn(
+                      'py-2 px-1.5 rounded-[9px] border-[1.5px] text-[11px] font-semibold transition-all flex items-center justify-center gap-1',
+                      paymentMethod === p.value
+                        ? 'border-[#10b981] bg-[rgba(16,185,129,.08)] text-[#10b981]'
+                        : 'border-[var(--sl-border)] bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
+                    )}
+                  >
+                    <span>{p.icon}</span>
+                    <span className="truncate">{p.label}</span>
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
           </div>
 

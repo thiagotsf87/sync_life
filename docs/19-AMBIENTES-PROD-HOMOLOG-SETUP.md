@@ -106,7 +106,7 @@ Não é necessário comprar domínio. A Vercel já fornece URLs para cada ambien
 | Ambiente | URL | Como obter |
 |----------|-----|------------|
 | **Produção** | `https://sync-life-alpha.vercel.app` | Já configurado em **Settings** → **Domains** (Production). Aponta para a branch `main`. |
-| **Homologação** | `https://sync-life-alpha-git-homologacao-seuuser.vercel.app` | Surge automaticamente ao fazer deploy da branch `homologacao`. |
+| **Homologação** | `https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app` | Surge automaticamente ao fazer deploy da branch `homologacao`. |
 
 **Como acessar a URL de homolog:**
 
@@ -115,7 +115,7 @@ Não é necessário comprar domínio. A Vercel já fornece URLs para cada ambien
 3. Clique no último deploy da branch `homologacao`
 4. Clique em **Visit** — a URL exibida é a de homolog
 
-A URL de homolog pode variar levemente (ex.: `homologacao-sync-life-alpha.vercel.app`). Use sempre a URL que aparece no deploy.
+> URL de homolog fixa: `https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app`
 
 > **Futuro:** Ao comprar domínio próprio (ex.: `app.synclife.com.br`), adicione em **Domains** → **Add Existing** e associe ao ambiente correto (Production ou Preview).
 
@@ -137,15 +137,12 @@ Cada projeto Supabase precisa aceitar os URLs de redirect da app. Use as URLs da
 
 ### 3.2 Projeto HOMOLOG (Supabase)
 
-1. Faça um deploy da branch `homologacao` (push) e anote a URL que a Vercel gera
-2. Abra o projeto **homolog** no Supabase
-3. **Authentication** → **URL Configuration**
-4. Configure:
-   - **Site URL**: a URL de homolog da Vercel (ex.: `https://sync-life-alpha-git-homologacao-xxx.vercel.app`)
-   - **Redirect URLs** — adicione a URL exata + `/**` (ex.: `https://sync-life-alpha-git-homologacao-xxx.vercel.app/**`)
-5. **Save**
-
-> A URL de homolog pode mudar entre deploys. Se o login falhar, confira em **Deployments** qual é a URL atual e atualize no Supabase.
+1. Abra o projeto **homolog** no Supabase
+2. **Authentication** → **URL Configuration**
+3. Configure:
+   - **Site URL**: `https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app`
+   - **Redirect URLs** — adicione: `https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app/**`
+4. **Save**
 
 ---
 
@@ -203,7 +200,7 @@ Marque conforme for concluindo:
 - [ ] Production: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Supabase **produção**)
 - [ ] Preview: `NEXT_PUBLIC_SUPABASE_ENV=homolog`, `NEXT_PUBLIC_SUPABASE_URL_HOMOL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY_HOMOL` (Supabase **homolog**)
 - [ ] Root Directory = `web`
-- [ ] URLs conhecidas: Produção = `sync-life-alpha.vercel.app`, Homolog = copiada do deploy da branch `homologacao`
+- [ ] URLs: Produção = `sync-life-alpha.vercel.app`, Homolog = `sync-life-git-homologacao-thiago-fortes-projects.vercel.app`
 
 ### Local
 - [ ] `.env.local` com credenciais do homolog (ou prod, conforme preferência)
@@ -220,9 +217,7 @@ git merge main   # ou merge da sua feature
 git push origin homologacao
 ```
 
-A Vercel fará deploy automático. Para acessar:
-1. Vercel → **Deployments** → clique no deploy da branch `homologacao`
-2. Clique em **Visit** — essa URL usa o Supabase **homolog** (dados de teste)
+A Vercel fará deploy automático. Acesse **https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app** — conecta no Supabase **homolog** (dados de teste).
 
 ### Deploy em produção
 
@@ -238,7 +233,7 @@ A Vercel fará deploy em produção. Acesse **https://sync-life-alpha.vercel.app
 
 ## 7. Resumo
 
-**URLs:** Produção = `https://sync-life-alpha.vercel.app`. Homolog = URL do deploy da branch `homologacao` (Deployments → Visit).
+**URLs:** Produção = `https://sync-life-alpha.vercel.app`. Homolog = `https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app`.
 
 **Git:** `homologacao` para testar, `main` para produção.
 

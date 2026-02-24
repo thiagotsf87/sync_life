@@ -247,7 +247,7 @@ export function useRecorrentes(): UseRecorrentesReturn {
       user_id: user.id,
       type: formData.type,
       name: formData.name.trim(),
-      amount: parseFloat(formData.amount.replace(',', '.')),
+      amount: parseFloat(formData.amount.replace(/\./g, '').replace(',', '.')),
       frequency: formData.frequency,
       day_of_month: formData.day_of_month || null,
       start_date: formData.start_date,
@@ -267,7 +267,7 @@ export function useRecorrentes(): UseRecorrentesReturn {
     const payload: Record<string, unknown> = { updated_at: new Date().toISOString() }
     if (updates.type) payload.type = updates.type
     if (updates.name) payload.name = updates.name.trim()
-    if (updates.amount) payload.amount = parseFloat(updates.amount.replace(',', '.'))
+    if (updates.amount) payload.amount = parseFloat(updates.amount.replace(/\./g, '').replace(',', '.'))
     if (updates.frequency) payload.frequency = updates.frequency
     if ('day_of_month' in updates) payload.day_of_month = updates.day_of_month || null
     if (updates.start_date) payload.start_date = updates.start_date

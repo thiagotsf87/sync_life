@@ -352,8 +352,7 @@ export default function RecorrentesPage() {
         </div>
         <button
           onClick={openCreate}
-          disabled={!canCreate}
-          className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full border-none cursor-pointer shadow-[0_4px_16px_rgba(16,185,129,0.25)] hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(16,185,129,0.35)] transition-all shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 text-[#03071a]"
+          className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full border-none cursor-pointer shadow-[0_4px_16px_rgba(16,185,129,0.25)] hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(16,185,129,0.35)] transition-all shrink-0 text-[#03071a]"
           style={{ background: '#10b981' }}
         >
           <Plus size={14} strokeWidth={2.5} />

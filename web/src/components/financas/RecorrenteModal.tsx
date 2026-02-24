@@ -6,6 +6,18 @@ import { cn } from '@/lib/utils'
 import type { Category } from '@/hooks/use-categories'
 import type { RecurrenteWithCategory, RecorrenteFormData, Frequency } from '@/hooks/use-recorrentes'
 
+// ── Currency mask ──────────────────────────────────────────────────────────
+function maskCurrency(raw: string): string {
+  const digits = raw.replace(/\D/g, '')
+  if (!digits) return ''
+  const n = parseInt(digits, 10)
+  return (n / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+function parseCurrency(masked: string): number {
+  return parseFloat(masked.replace(/\./g, '').replace(',', '.')) || 0
+}
+
 const FREQ_OPTIONS: { value: Frequency; label: string }[] = [
   { value: 'weekly',    label: 'Semanal' },
   { value: 'biweekly',  label: 'Quinzenal' },
@@ -46,7 +58,7 @@ export function RecorrenteModal({
     if (mode === 'edit' && recorrente) {
       setType(recorrente.type)
       setName(recorrente.name)
-      setAmount(String(recorrente.amount))
+      setAmount(recorrente.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
       setFrequency(recorrente.frequency)
       setDayOfMonth(recorrente.day_of_month ?? 1)
       setStartDate(recorrente.start_date)
@@ -75,7 +87,7 @@ export function RecorrenteModal({
   function validate(): boolean {
     const errs: Record<string, string> = {}
     if (name.trim().length < 2) errs.name = 'Nome deve ter ao menos 2 caracteres'
-    const amt = parseFloat(amount.replace(',', '.'))
+    const amt = parseCurrency(amount)
     if (!amount || isNaN(amt) || amt <= 0) errs.amount = 'Valor inválido'
     if (!startDate) errs.startDate = 'Data de início obrigatória'
     if (endDate && endDate <= startDate) errs.endDate = 'Encerramento deve ser após a data de início'
@@ -149,8 +161,8 @@ export function RecorrenteModal({
             <div className={cn('flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
               errors.amount ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus-within:border-[#10b981]')}>
               <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
-              <input type="text" inputMode="decimal" value={amount}
-                onChange={e => setAmount(e.target.value.replace(/[^0-9.,]/g, ''))}
+              <input type="text" inputMode="numeric" value={amount}
+                onChange={e => setAmount(maskCurrency(e.target.value))}
                 placeholder="0,00"
                 className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]" />
             </div>
