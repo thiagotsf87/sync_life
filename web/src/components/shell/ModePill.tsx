@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useShellStore } from '@/stores/shell-store'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { cn } from '@/lib/utils'
@@ -8,8 +9,12 @@ export function ModePill() {
   const mode = useShellStore((s) => s.mode)
   const setMode = useShellStore((s) => s.setMode)
   const { isFree } = useUserPlan()
+  const [mounted, setMounted] = useState(false)
 
-  const isFoco = mode === 'foco'
+  useEffect(() => { setMounted(true) }, [])
+
+  // Before hydration, always show Foco to match the server render
+  const isFoco = !mounted || mode === 'foco'
 
   return (
     <button

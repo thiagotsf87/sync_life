@@ -45,6 +45,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
+      suppressHydrationWarning
       className={`${outfit.variable} ${syne.variable} ${dmMono.variable} ${dmSans.variable}`}
     >
       <body className={`${outfit.className} antialiased`}>

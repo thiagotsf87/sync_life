@@ -162,9 +162,45 @@ function DonutChart() {
 function FluxoCaixaChart() {
   const maxVal = Math.max(...CF_DAYS.map(d => Math.max(d.inc, 5000, d.exp)))
   const h = 88
+  const n = CF_DAYS.length
+
+  // Cumulative balance line (starts at a seed balance of 14850)
+  const SEED_BAL = 14850
+  const balances: number[] = []
+  let running = SEED_BAL
+  for (const d of CF_DAYS) {
+    running += d.inc - d.exp
+    balances.push(running)
+  }
+  const minBal = Math.min(...balances)
+  const maxBal = Math.max(...balances)
+  const balRange = Math.max(1, maxBal - minBal)
+
+  const balPts = balances
+    .map((b, i) => {
+      const x = ((i + 0.5) / n) * 100
+      const y = (1 - (b - minBal) / balRange) * (h - 6) + 3
+      return `${x.toFixed(2)},${y.toFixed(2)}`
+    })
+    .join(' ')
 
   return (
     <div className="relative">
+      {/* Legend */}
+      <div className="flex items-center gap-3 mb-2">
+        <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+          <span className="w-3 h-2 rounded-sm inline-block" style={{ background: '#10b981', opacity: 0.8 }} />
+          Receitas
+        </span>
+        <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+          <span className="w-3 h-2 rounded-sm inline-block" style={{ background: '#f43f5e', opacity: 0.7 }} />
+          Despesas
+        </span>
+        <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+          <span className="w-6 h-px inline-block" style={{ background: '#0055ff' }} />
+          Saldo
+        </span>
+      </div>
       {/* Y axis */}
       <div className="flex gap-1.5 items-start">
         <div className="relative shrink-0 w-8" style={{ height: h + 22 }}>
@@ -194,7 +230,6 @@ function FluxoCaixaChart() {
                 <div
                   key={d}
                   className="flex-1 flex flex-col items-center justify-end h-full relative group"
-                  style={{ opacity: isFuture ? 1 : 1 }}
                 >
                   {isToday && (
                     <>
@@ -208,21 +243,13 @@ function FluxoCaixaChart() {
                     {incH > 0 && (
                       <div
                         className="w-4/5 max-w-[13px] rounded-t-sm"
-                        style={{
-                          height: incH,
-                          background: '#10b981',
-                          opacity: isFuture ? 0.3 : 0.8,
-                        }}
+                        style={{ height: incH, background: '#10b981', opacity: isFuture ? 0.3 : 0.8 }}
                       />
                     )}
                     {expH > 0 && (
                       <div
                         className="w-4/5 max-w-[13px] rounded-b-sm mt-px"
-                        style={{
-                          height: expH,
-                          background: '#f43f5e',
-                          opacity: isFuture ? 0.3 : 0.7,
-                        }}
+                        style={{ height: expH, background: '#f43f5e', opacity: isFuture ? 0.3 : 0.7 }}
                       />
                     )}
                   </div>
@@ -230,18 +257,38 @@ function FluxoCaixaChart() {
               )
             })}
           </div>
-          {/* X axis labels */}
-          <div className="flex gap-px mt-1">
-            {CF_DAYS.map(({ d, isFuture }) => (
-              d % 5 === 0 || d === 1 ? (
-                <div
-                  key={d}
-                  className="flex-1 text-center font-[DM_Mono] text-[7px] text-[var(--sl-t3)]"
-                  style={{ opacity: isFuture ? 0.35 : 1 }}
-                >
-                  {String(d).padStart(2, '0')}/02
-                </div>
-              ) : <div key={d} className="flex-1" />
+
+          {/* Balance line SVG overlay */}
+          <svg
+            className="absolute top-0 left-0 w-full pointer-events-none"
+            style={{ height: h }}
+            viewBox={`0 0 100 ${h}`}
+            preserveAspectRatio="none"
+          >
+            <polyline
+              points={balPts}
+              fill="none"
+              stroke="#0055ff"
+              strokeWidth="1"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+
+          {/* X axis labels — all 28 days */}
+          <div className="flex gap-px mt-1.5">
+            {CF_DAYS.map(({ d, isToday, isFuture }) => (
+              <div
+                key={d}
+                className={cn(
+                  'flex-1 text-center font-[DM_Mono] text-[7px]',
+                  isToday ? 'font-bold text-[#10b981]' : 'text-[var(--sl-t2)]'
+                )}
+                style={{ opacity: isFuture ? 0.4 : 1 }}
+              >
+                {String(d).padStart(2, '0')}
+              </div>
             ))}
           </div>
         </div>

@@ -291,6 +291,23 @@
 .sl-delay-4  { animation-delay: 0.20s; }
 .sl-delay-5  { animation-delay: 0.25s; }
 
+/* sl-fade: opacity-only (no transform) — usado no ContentArea para não criar stacking context
+   que quebraria position:fixed dos modais */
+@keyframes sl-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.sl-fade { animation: sl-fade 0.3s ease both; }
+
+/* Dark (default) — ícones inativos da ModuleBar sem tint do jornada */
+.sl-module-bar .sl-mod-btn:not(.sl-mod-btn-active) {
+  color: rgba(255,255,255,0.38);
+}
+
+/* Date inputs: esquema de cores correto por tema */
+input[type="date"] { color-scheme: dark; }
+html.light input[type="date"] { color-scheme: light; }
+
 /* ── Shell: Light Foco — ModuleBar escuro (âncora visual) ── */
 html.light:not(.jornada) .sl-module-bar {
   background: linear-gradient(180deg, #083d2c 0%, #052b1e 100%);

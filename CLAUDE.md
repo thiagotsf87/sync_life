@@ -533,5 +533,14 @@ Os protótipos HTML (na raiz do projeto) mostram exatamente como cada componente
 - `DESIGN-SYSTEM.md` — Documentação de tokens e regras
 
 ---
-
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Write(*)",
+      "Edit(*)",
+      "MultiEdit(*)"
+    ]
+  }
+}
 *SyncLife CLAUDE.md v1.0 — atualizar ao criar novos padrões globais*
