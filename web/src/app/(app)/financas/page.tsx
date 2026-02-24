@@ -276,18 +276,19 @@ function FluxoCaixaChart() {
             />
           </svg>
 
-          {/* X axis labels */}
+          {/* X axis labels — all 28 days */}
           <div className="flex gap-px mt-1.5">
-            {CF_DAYS.map(({ d, isFuture }) => (
-              d % 7 === 1 || d === CF_DAYS[CF_DAYS.length - 1].d ? (
-                <div
-                  key={d}
-                  className="flex-1 text-center font-[DM_Mono] text-[10px] text-[var(--sl-t2)]"
-                  style={{ opacity: isFuture ? 0.5 : 1 }}
-                >
-                  {String(d).padStart(2, '0')}
-                </div>
-              ) : <div key={d} className="flex-1" />
+            {CF_DAYS.map(({ d, isToday, isFuture }) => (
+              <div
+                key={d}
+                className={cn(
+                  'flex-1 text-center font-[DM_Mono] text-[7px]',
+                  isToday ? 'font-bold text-[#10b981]' : 'text-[var(--sl-t2)]'
+                )}
+                style={{ opacity: isFuture ? 0.4 : 1 }}
+              >
+                {String(d).padStart(2, '0')}
+              </div>
             ))}
           </div>
         </div>
