@@ -282,12 +282,20 @@ function TransactionRow({
               {formatDateShort(tx.date)} · {PAYMENT_LABELS[tx.payment_method] ?? tx.payment_method}
             </p>
           </div>
-          <p className={cn(
-            'font-[DM_Mono] text-[15px] font-medium shrink-0',
-            isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
-          )}>
-            {isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
-          </p>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <p className={cn(
+              'font-[DM_Mono] text-[15px] font-medium',
+              isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
+            )}>
+              {isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
+            </p>
+            <button
+              onClick={e => { e.stopPropagation(); onDelete(tx) }}
+              className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,.08)] transition-colors"
+            >
+              <Trash2 size={13} />
+            </button>
+          </div>
         </div>
         {tx.category && (
           <div className="flex items-center gap-2 ml-[46px]">
