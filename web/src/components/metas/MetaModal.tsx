@@ -8,10 +8,21 @@ import { calcProgress, calcProjectedDate } from '@/hooks/use-metas'
 
 // ── Currency mask ─────────────────────────────────────────────────────────
 function maskCurrency(raw: string): string {
-  const digits = raw.replace(/\D/g, '')
-  if (!digits) return ''
-  const n = parseInt(digits, 10)
-  return (n / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const cleaned = raw.replace(/[^\d,]/g, '')
+  const commaIdx = cleaned.indexOf(',')
+  let intStr: string
+  let decStr: string | undefined
+  if (commaIdx >= 0) {
+    intStr = cleaned.slice(0, commaIdx)
+    decStr = cleaned.slice(commaIdx + 1).replace(/,/g, '').slice(0, 2)
+  } else {
+    intStr = cleaned
+  }
+  intStr = intStr.replace(/^0+(\d)/, '$1')
+  if (!intStr && decStr === undefined) return ''
+  if (!intStr) intStr = '0'
+  const intFormatted = intStr.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  return decStr !== undefined ? `${intFormatted},${decStr}` : intFormatted
 }
 
 function parseCurrency(masked: string): number {
