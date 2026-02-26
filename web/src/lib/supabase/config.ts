@@ -6,14 +6,24 @@
 function getSupabaseConfig() {
   const env = process.env.NEXT_PUBLIC_SUPABASE_ENV
   const useHomolog = env === 'homolog'
+  const isVercelPreview = process.env.VERCEL_ENV === 'preview'
 
-  const url = useHomolog
+  let url = useHomolog
     ? process.env.NEXT_PUBLIC_SUPABASE_URL_HOMOL
     : process.env.NEXT_PUBLIC_SUPABASE_URL
-
-  const anonKey = useHomolog
+  let anonKey = useHomolog
     ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_HOMOL
     : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // Fallback: em Preview da Vercel, se vars de prod não existem mas _HOMOL existem, usa _HOMOL
+  if ((!url || !anonKey) && isVercelPreview) {
+    const homolUrl = process.env.NEXT_PUBLIC_SUPABASE_URL_HOMOL
+    const homolKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_HOMOL
+    if (homolUrl && homolKey) {
+      url = homolUrl
+      anonKey = homolKey
+    }
+  }
 
   if (!url || !anonKey) {
     throw new Error(
