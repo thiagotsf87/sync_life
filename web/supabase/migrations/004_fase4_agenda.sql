@@ -6,7 +6,7 @@
 -- ── Tabela de eventos de agenda ────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS agenda_events (
-  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id     UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   title       TEXT NOT NULL,
   description TEXT,
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS agenda_events (
   reminder    TEXT,              -- 5m | 15m | 30m | 1h | 1d
   recurrence  TEXT DEFAULT 'none',
   -- none | daily | weekly | monthly
-  goal_id     UUID REFERENCES metas(id) ON DELETE SET NULL,
+  goal_id     UUID REFERENCES goals(id) ON DELETE SET NULL,
   location    TEXT,
   checklist   JSONB DEFAULT '[]',
   created_at  TIMESTAMPTZ DEFAULT NOW(),
@@ -33,9 +33,9 @@ CREATE TABLE IF NOT EXISTS agenda_events (
 -- ── Tabela de sessões de foco ──────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS focus_sessions (
-  id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id          UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-  goal_id          UUID REFERENCES metas(id) ON DELETE SET NULL,
+  goal_id          UUID REFERENCES goals(id) ON DELETE SET NULL,
   event_id         UUID REFERENCES agenda_events(id) ON DELETE SET NULL,
   duration_minutes INTEGER NOT NULL,
   date             TEXT NOT NULL,  -- YYYY-MM-DD
