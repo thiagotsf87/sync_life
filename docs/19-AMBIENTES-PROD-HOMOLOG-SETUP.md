@@ -5,55 +5,32 @@
 
 ---
 
-## Visão geral
+## Pré-requisito (já concluído)
 
-| Sistema | O que fazer |
-|---------|-------------|
-| **1. GitHub** | Criar branch `homologacao` |
-| **2. Supabase** | Criar 2º projeto (homolog) + aplicar schema |
-| **3. Vercel** | Variáveis por ambiente + domínios por branch |
-| **4. Supabase Auth** | Redirect URLs para cada domínio |
-| **5. Local** | `.env.local` apontando para homolog (opcional) |
+- **GitHub**: Branch `homologacao` criada e enviada; fluxo `feature → homologacao → main` definido.
 
 ---
 
-## 1. GitHub — Branches
+## Visão geral — Passos restantes
 
-### 1.1 Criar branch de homologação
-
-```bash
-cd c:\Projetos\sync_life
-git checkout main
-git pull origin main
-git checkout -b homologacao
-git push -u origin homologacao
-```
-
-### 1.2 Proteger branches (opcional)
-
-No GitHub: **Settings** → **Branches** → **Add branch protection rule**:
-
-- **main**: exigir PR e aprovação antes de merge.
-- **homologacao**: pode exigir PR; normalmente menos restrito.
-
-### 1.3 Fluxo de trabalho
-
-```
-feature/xxx  →  homologacao  →  main
-                  (testar)      (produção)
-```
+| Passo | Sistema | O que fazer |
+|-------|---------|-------------|
+| **1** | Supabase | Criar 2º projeto (homolog) + aplicar schema |
+| **2** | Vercel | Variáveis por ambiente + domínios por branch |
+| **3** | Supabase Auth | Redirect URLs para cada domínio |
+| **4** | Local | `.env.local` apontando para homolog (opcional) |
 
 ---
 
-## 2. Supabase — Dois projetos
+## 1. Supabase — Dois projetos
 
-### 2.1 Projeto PRODUÇÃO (já existe)
+### 1.1 Projeto PRODUÇÃO (já existe)
 
 - URL: `https://xxxxx.supabase.co`
 - Anon key: já configurada
 - Mantenha como está.
 
-### 2.2 Criar projeto HOMOLOGAÇÃO
+### 1.2 Criar projeto HOMOLOGAÇÃO
 
 1. Acesse [supabase.com/dashboard](https://supabase.com/dashboard)
 2. Clique em **New Project**
@@ -63,40 +40,40 @@ feature/xxx  →  homologacao  →  main
    - **Region**: mesma da produção (ex.: South America)
 4. Clique em **Create new project** e aguarde a criação.
 
-### 2.3 Configurações do projeto homolog
+### 1.3 Configurações do projeto homolog
 
 1. No projeto **homolog**, vá em **Project Settings** (ícone engrenagem) → **API**
-2. Anote:
-   - **Project URL** → será `NEXT_PUBLIC_SUPABASE_URL` (homolog)
-   - **anon public** (Project API keys) → será `NEXT_PUBLIC_SUPABASE_ANON_KEY` (homolog)
+2. Anote (serão usados nas variáveis `_HOMOL` no passo 2.4 e no `.env.local`):
+   - **Project URL** → valor de `NEXT_PUBLIC_SUPABASE_URL_HOMOL`
+   - **anon public** (Project API keys) → valor de `NEXT_PUBLIC_SUPABASE_ANON_KEY_HOMOL`
 
-### 2.4 Aplicar schema no homolog
+### 1.4 Aplicar schema no homolog
 
 1. No projeto **homolog**, vá em **SQL Editor**
 2. Copie todo o conteúdo de `web/supabase/schema.sql`
 3. Cole no editor e execute (Run)
 4. Confirme que tabelas foram criadas (Table Editor)
 
-### 2.5 Políticas RLS (se houver)
+### 1.5 Migrações adicionais (se houver)
 
-Se o `schema.sql` inclui políticas RLS, elas já foram aplicadas. Caso você tenha migrações manuais, execute-as também no projeto homolog.
+Se o `schema.sql` inclui políticas RLS, elas já foram aplicadas. Caso existam arquivos em `web/supabase/migrations/`, execute cada um no SQL Editor do homolog, na ordem numérica.
 
 ---
 
-## 3. Vercel — Projeto e variáveis
+## 2. Vercel — Projeto e variáveis
 
-### 3.1 Acessar o projeto
+### 2.1 Acessar o projeto
 
 1. Acesse [vercel.com](https://vercel.com) e faça login
 2. Abra o projeto **sync-life** (ou o nome que você usa)
 
-### 3.2 Configurar branch de produção
+### 2.2 Configurar branch de produção
 
 1. **Settings** → **Git**
 2. Em **Production Branch**, confirme que está `main`
 3. Em **Preview Branches**, deixe como está (ou adicione `homologacao` se quiser previews só dela)
 
-### 3.3 Variáveis de ambiente — Produção
+### 2.3 Variáveis de ambiente — Produção
 
 1. **Settings** → **Environment Variables**
 2. Para cada variável abaixo, **se já existir**, edite e **marque só Production**:
@@ -107,101 +84,107 @@ Se o `schema.sql` inclui políticas RLS, elas já foram aplicadas. Caso você te
 | `NEXT_PUBLIC_SUPABASE_URL` | URL do Supabase **PRODUÇÃO** | ✅ Production |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon key do Supabase **PRODUÇÃO** | ✅ Production |
 
-4. Opcionalmente adicione `NEXT_PUBLIC_APP_URL` com a URL de produção (ex.: `https://app.synclife.com.br`).
+4. Opcionalmente adicione `NEXT_PUBLIC_APP_URL` com a URL de produção (ex.: `https://sync-life-alpha.vercel.app`).
 
-### 3.4 Variáveis de ambiente — Homologação (Preview)
+### 2.4 Variáveis de ambiente — Homologação (Preview)
 
-1. Na mesma tela **Environment Variables**
-2. Adicione (ou edite) as mesmas variáveis, mas com **valores do Supabase HOMOLOG** e marque **Preview**:
+1. Na mesma tela **Environment Variables** → **Add New**
+2. Adicione **três** variáveis com **valores do Supabase HOMOLOG**, marque **Preview** e, se disponível, associe ao branch `homologacao`:
 
-| Nome | Valor | Environment |
-|------|-------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | URL do Supabase **HOMOLOG** | ✅ Preview |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon key do Supabase **HOMOLOG** | ✅ Preview |
+| Nome | Valor | Environment | Branch (opcional) |
+|------|-------|-------------|-------------------|
+| `NEXT_PUBLIC_SUPABASE_ENV` | `homolog` | ✅ Preview | `homologacao` |
+| `NEXT_PUBLIC_SUPABASE_URL_HOMOL` | URL do Supabase **HOMOLOG** | ✅ Preview | `homologacao` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY_HOMOL` | anon key do Supabase **HOMOLOG** | ✅ Preview | `homologacao` |
 
-> **Importante:** Na Vercel, deploys de branches que não são `main` usam variáveis de **Preview** por padrão. O deploy da branch `homologacao` usará essas variáveis.
+> **Importante:** Use exatamente esses nomes com sufixo `_HOMOL` — o mesmo do `.env.local` do projeto. O código usa `NEXT_PUBLIC_SUPABASE_ENV=homolog` para ler essas variáveis.
 
-### 3.5 Domínios (opcional, mas recomendado)
+### 2.5 URLs da Vercel (domínios gratuitos)
 
-1. **Settings** → **Domains**
-2. Domínio de produção (ex.: `app.synclife.com.br`):
-   - Adicione o domínio
-   - Associe ao branch `main`
-3. Domínio de homologação (ex.: `homolog.synclife.com.br`):
-   - Adicione o domínio
-   - Associe ao branch `homologacao`
-4. Se não tiver domínio próprio, use os padrões da Vercel:
-   - Produção: `sync-life-xxx.vercel.app` (main)
-   - Homolog: `sync-life-xxx-git-homologacao-xxx.vercel.app` (preview)
+Não é necessário comprar domínio. A Vercel já fornece URLs para cada ambiente:
+
+| Ambiente | URL | Como obter |
+|----------|-----|------------|
+| **Produção** | `https://sync-life-alpha.vercel.app` | Já configurado em **Settings** → **Domains** (Production). Aponta para a branch `main`. |
+| **Homologação** | `https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app` | Surge automaticamente ao fazer deploy da branch `homologacao`. |
+
+**Como acessar a URL de homolog:**
+
+1. Faça push na branch `homologacao`
+2. Abra o projeto na Vercel → **Deployments**
+3. Clique no último deploy da branch `homologacao`
+4. Clique em **Visit** — a URL exibida é a de homolog
+
+> URL de homolog fixa: `https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app`
+
+> **Futuro:** Ao comprar domínio próprio (ex.: `app.synclife.com.br`), adicione em **Domains** → **Add Existing** e associe ao ambiente correto (Production ou Preview).
 
 ---
 
-## 4. Supabase Auth — Redirect URLs (em cada projeto)
+## 3. Supabase Auth — Redirect URLs (em cada projeto)
 
-Cada projeto Supabase precisa aceitar os URLs de redirect da app no seu ambiente.
+Cada projeto Supabase precisa aceitar os URLs de redirect da app. Use as URLs da Vercel:
 
-### 4.1 Projeto PRODUÇÃO (Supabase)
+### 3.1 Projeto PRODUÇÃO (Supabase)
 
 1. Abra o projeto **produção** no Supabase
 2. **Authentication** → **URL Configuration**
 3. Configure:
-   - **Site URL**: `https://app.synclife.com.br` (ou a URL real de produção)
-   - **Redirect URLs**: adicione:
-     - `https://app.synclife.com.br/**`
-     - `https://sync-life-xxx.vercel.app/**` (URL Vercel de prod, se usar)
+   - **Site URL**: `https://sync-life-alpha.vercel.app`
+   - **Redirect URLs** — adicione:
+     - `https://sync-life-alpha.vercel.app/**`
 4. **Save**
 
-### 4.2 Projeto HOMOLOG (Supabase)
+### 3.2 Projeto HOMOLOG (Supabase)
 
 1. Abra o projeto **homolog** no Supabase
 2. **Authentication** → **URL Configuration**
 3. Configure:
-   - **Site URL**: `https://homolog.synclife.com.br` (ou a URL real de homolog)
-   - **Redirect URLs**: adicione:
-     - `https://homolog.synclife.com.br/**`
-     - `https://sync-life-xxx-git-homologacao-xxx.vercel.app/**` (URL preview da Vercel)
+   - **Site URL**: `https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app`
+   - **Redirect URLs** — adicione: `https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app/**`
 4. **Save**
-
-> Se ainda não tiver domínios, use as URLs `.vercel.app` que a Vercel mostra em cada deploy.
 
 ---
 
-## 5. Desenvolvimento local
+## 4. Desenvolvimento local
 
-### 5.1 Escolher qual ambiente usar localmente
+### 4.1 Escolher qual ambiente usar localmente
 
 - Para testar contra **homolog**: use credenciais do projeto homolog no `.env.local`
 - Para testar contra **produção** (cuidado!): use credenciais do projeto produção — só para debug pontual
 
-### 5.2 Configurar `.env.local` (homolog)
+### 4.2 Configurar `.env.local` (ambos os ambientes)
 
-No arquivo `web/.env.local`:
+No arquivo `web/.env.local`, defina as variáveis de **produção** e **homolog**; use `NEXT_PUBLIC_SUPABASE_ENV` para escolher qual ambiente usar localmente:
 
 ```env
-# Homologação — Supabase homolog
-NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto-homolog.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-anon-key-homolog
+# Troque para "homolog" para usar o Supabase de homologação
+NEXT_PUBLIC_SUPABASE_ENV=production
+
+# Produção
+NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto-prod.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-anon-key-prod
+
+# Homologação
+NEXT_PUBLIC_SUPABASE_URL_HOMOL=https://seu-projeto-homolog.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY_HOMOL=sua-anon-key-homolog
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_APP_NAME=SyncLife
-
-# E2E (opcional)
-PLAYWRIGHT_TEST_EMAIL=teste@exemplo.com
-PLAYWRIGHT_TEST_PASSWORD=senha123
 ```
 
-> O `.env.local` não é versionado (está no `.gitignore`). Cada dev pode apontar para homolog ou prod conforme necessidade.
+> Basta alterar `NEXT_PUBLIC_SUPABASE_ENV=homolog` para testar contra homologação, sem comentar ou descomentar linhas.
 
 ---
 
-## 6. Checklist final
+## 5. Checklist final
 
 Marque conforme for concluindo:
 
-### GitHub
-- [ ] Branch `homologacao` criada e enviada
-- [ ] Branch `main` é produção
+### GitHub (pré-requisito)
+- [x] Branch `homologacao` criada e enviada
+- [x] Branch `main` é produção
 
 ### Supabase — Produção
 - [ ] Projeto produção com schema aplicado
@@ -214,17 +197,17 @@ Marque conforme for concluindo:
 - [ ] URL e anon key anotadas
 
 ### Vercel
-- [ ] Variáveis Production → Supabase **produção**
-- [ ] Variáveis Preview → Supabase **homolog**
+- [ ] Production: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Supabase **produção**)
+- [ ] Preview: `NEXT_PUBLIC_SUPABASE_ENV=homolog`, `NEXT_PUBLIC_SUPABASE_URL_HOMOL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY_HOMOL` (Supabase **homolog**)
 - [ ] Root Directory = `web`
-- [ ] Domínios opcionais configurados
+- [ ] URLs: Produção = `sync-life-alpha.vercel.app`, Homolog = `sync-life-git-homologacao-thiago-fortes-projects.vercel.app`
 
 ### Local
 - [ ] `.env.local` com credenciais do homolog (ou prod, conforme preferência)
 
 ---
 
-## 7. Como testar
+## 6. Como testar
 
 ### Deploy em homolog
 
@@ -234,7 +217,7 @@ git merge main   # ou merge da sua feature
 git push origin homologacao
 ```
 
-A Vercel fará deploy automático. Acesse a URL de preview → deve conectar no Supabase **homolog** (dados vazios ou de teste).
+A Vercel fará deploy automático. Acesse **https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app** — conecta no Supabase **homolog** (dados de teste).
 
 ### Deploy em produção
 
@@ -244,10 +227,16 @@ git merge homologacao   # após validar em homolog
 git push origin main
 ```
 
-A Vercel fará deploy em produção → conecta no Supabase **produção** (dados reais).
+A Vercel fará deploy em produção. Acesse **https://sync-life-alpha.vercel.app** → conecta no Supabase **produção** (dados reais).
 
 ---
 
-## 8. Resumo em uma frase
+## 7. Resumo
 
-**Git**: `homologacao` para testar, `main` para produção. **Vercel**: Production vars = Supabase prod, Preview vars = Supabase homolog. **Supabase**: dois projetos, cada um com seu Auth configurado para o domínio correto.
+**URLs:** Produção = `https://sync-life-alpha.vercel.app`. Homolog = `https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app`.
+
+**Git:** `homologacao` para testar, `main` para produção.
+
+**Vercel:** Production = `NEXT_PUBLIC_SUPABASE_URL` / `ANON_KEY` (prod). Preview = `NEXT_PUBLIC_SUPABASE_ENV=homolog` + `URL_HOMOL` / `ANON_KEY_HOMOL` (homolog).
+
+**Supabase Auth:** Configure Site URL e Redirect URLs em cada projeto usando as URLs da Vercel acima.

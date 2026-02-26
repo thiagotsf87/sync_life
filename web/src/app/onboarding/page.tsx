@@ -165,14 +165,29 @@ export default function OnboardingPage() {
       if (!user) { router.push('/login'); return }
 
       const areas = state.areas.length > 0 ? state.areas : ['financas']
+
+      // Passo 1 — campos obrigatórios (existem em qualquer versão do schema)
+      // Upsert garante que a linha existe mesmo sem o trigger handle_new_user
+      const { error } = await (supabase as any)
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          full_name: state.nome || null,
+          mode: state.modo === 'jornada' ? 'journey' : 'focus',
+          onboarding_completed: true,
+        })
+
+      if (error) {
+        toast.error('Erro ao salvar configurações. Tente novamente.')
+        return
+      }
+
+      // Passo 2 — campos da migration 001_mvp_v2.sql (non-blocking se não existirem)
       await (supabase as any)
         .from('profiles')
         .update({
-          full_name: state.nome || undefined,
           life_moments: state.momentos.length > 0 ? state.momentos : null,
-          mode: state.modo === 'jornada' ? 'journey' : 'focus',
           active_modules: areas,
-          onboarding_completed: true,
         })
         .eq('id', user.id)
 
@@ -180,7 +195,7 @@ export default function OnboardingPage() {
       router.push('/financas')
       router.refresh()
     } catch {
-      toast.error('Erro ao salvar configurações.')
+      toast.error('Erro inesperado. Tente novamente.')
     } finally {
       setIsLoading(false)
     }

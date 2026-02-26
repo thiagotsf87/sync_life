@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { useShellStore } from '@/stores/shell-store'
 import { MODULES, getActiveNavItem } from '@/lib/modules'
@@ -7,7 +8,6 @@ import { ModePill } from './ModePill'
 import { ThemePill } from './ThemePill'
 import { NotifButton } from './NotifButton'
 import { IconChevronRight } from './icons'
-import { cn } from '@/lib/utils'
 
 function getGreeting(name: string): { text: string; emoji: string } {
   const hour = new Date().getHours()
@@ -29,7 +29,10 @@ export function TopHeader({ userName }: TopHeaderProps) {
   const mod = MODULES[activeModule]
   const activeNavId = getActiveNavItem(pathname, activeModule)
   const activeNav = mod.navItems.find((item) => item.id === activeNavId)
-  const greeting = getGreeting(userName)
+
+  // Computed client-side only to avoid SSR/hydration mismatch (#418)
+  const [greeting, setGreeting] = useState({ text: `Olá, ${userName}!`, emoji: '👋' })
+  useEffect(() => { setGreeting(getGreeting(userName)) }, [userName])
 
   return (
     <header className="sl-header flex h-[54px] items-center gap-3 px-5 border-b border-[var(--sl-border)] bg-[var(--sl-s1)]/80 backdrop-blur-sm shrink-0 transition-[background,border-color] duration-400">

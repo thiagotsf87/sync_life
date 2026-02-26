@@ -1,8 +1,12 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { useShellStore } from '@/stores/shell-store'
+import { useBudgets } from '@/hooks/use-budgets'
+import { useTransactions } from '@/hooks/use-transactions'
+import { useRecorrentes } from '@/hooks/use-recorrentes'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTip,
   ResponsiveContainer
@@ -10,54 +14,10 @@ import {
 import { cn } from '@/lib/utils'
 import {
   CalendarDays, Plus, ChevronDown, ExternalLink,
-  TrendingUp, TrendingDown, AlertTriangle
+  TrendingUp, AlertTriangle
 } from 'lucide-react'
 
-// ─── MOCK DATA ───────────────────────────────────────────────────────────────
-
-const HIST_DATA = [
-  { mes: 'Set', rec: 4200, des: 3600 },
-  { mes: 'Out', rec: 4800, des: 3900 },
-  { mes: 'Nov', rec: 5100, des: 4400 },
-  { mes: 'Dez', rec: 6200, des: 5800 },
-  { mes: 'Jan', rec: 4600, des: 3750 },
-  { mes: 'Fev', rec: 5000, des: 3200 },
-]
-
-const CAT_DATA = [
-  { nome: '🏠 Moradia', pct: 38, val: 1216, cor: '#3b82f6', delta: '+2%', tipo: 'stable' as const },
-  { nome: '🍔 Alimentação', pct: 22, val: 704, cor: '#10b981', delta: '-8%', tipo: 'down' as const },
-  { nome: '🚗 Transporte', pct: 16, val: 512, cor: '#f59e0b', delta: '+18%', tipo: 'warn' as const },
-  { nome: '🎮 Lazer', pct: 13, val: 416, cor: '#f97316', delta: '+21%', tipo: 'alert' as const },
-  { nome: '💊 Saúde', pct: 7, val: 224, cor: '#8b5cf6', delta: '-3%', tipo: 'stable' as const },
-  { nome: '📦 Outros', pct: 4, val: 128, cor: '#64748b', delta: '0%', tipo: 'stable' as const },
-]
-
-const ENVELOPES = [
-  { ico: '🏠', nome: 'Moradia', gasto: 1216, limite: 1400, pct: 87 },
-  { ico: '🍔', nome: 'Alimentação', gasto: 704, limite: 900, pct: 78 },
-  { ico: '🚗', nome: 'Transporte', gasto: 512, limite: 500, pct: 102 },
-  { ico: '🎮', nome: 'Lazer', gasto: 416, limite: 500, pct: 83 },
-  { ico: '💊', nome: 'Saúde', gasto: 224, limite: 400, pct: 56 },
-]
-
-const ULTIMAS_TXN = [
-  { ico: '🏠', nome: 'Condomínio', data: '22/02', metodo: 'Débito', val: -850, cat: 'Moradia' },
-  { ico: '🍔', nome: 'Mercado Extra', data: '21/02', metodo: 'Crédito', val: -187.5, cat: 'Alimentação' },
-  { ico: '💰', nome: 'Salário', data: '20/02', metodo: 'Pix', val: 5000, cat: 'Receita' },
-  { ico: '🚗', nome: 'Gasolina', data: '19/02', metodo: 'Crédito', val: -182, cat: 'Transporte' },
-  { ico: '🎮', nome: 'Netflix', data: '18/02', metodo: 'Crédito', val: -45.9, cat: 'Lazer' },
-  { ico: '💊', nome: 'Farmácia', data: '17/02', metodo: 'Débito', val: -67, cat: 'Saúde' },
-  { ico: '🍔', nome: 'iFood', data: '16/02', metodo: 'Crédito', val: -89.9, cat: 'Alimentação' },
-]
-
-const RECORRENTES = [
-  { ico: '🏠', nome: 'Aluguel', dt: '05/03', val: 1200, status: 'fut' as const },
-  { ico: '💡', nome: 'Energia', dt: '10/03', val: 185, status: 'fut' as const },
-  { ico: '🎮', nome: 'Netflix', dt: '25/02', val: 45.9, status: 'due' as const },
-  { ico: '🎵', nome: 'Spotify', dt: 'pago', val: 21.9, status: 'ok' as const },
-  { ico: '☁️', nome: 'iCloud', dt: '28/02', val: 16.9, status: 'due' as const },
-]
+// ─── STATIC PROJECTION (illustrative — requires backend projection engine) ────
 
 const PROJ_MESES = [
   { mes: 'Fev', val: 1800, delta: '', nota: 'Mês atual', tipo: 'current' as const },
@@ -67,43 +27,26 @@ const PROJ_MESES = [
   { mes: 'Jun', val: 2600, delta: '+11%', nota: 'Tendência +', tipo: 'good' as const },
 ]
 
-// Cash flow: 28 days of Feb — deterministic data (no Math.random to avoid hydration errors)
-const today = 22
-const CF_DAYS = [
-  { d:  1, inc: 800,  exp: 0,   isToday: false, isFuture: false },
-  { d:  2, inc: 0,    exp: 120, isToday: false, isFuture: false },
-  { d:  3, inc: 0,    exp: 0,   isToday: false, isFuture: false },
-  { d:  4, inc: 0,    exp: 95,  isToday: false, isFuture: false },
-  { d:  5, inc: 0,    exp: 850, isToday: false, isFuture: false },
-  { d:  6, inc: 0,    exp: 0,   isToday: false, isFuture: false },
-  { d:  7, inc: 0,    exp: 65,  isToday: false, isFuture: false },
-  { d:  8, inc: 0,    exp: 45,  isToday: false, isFuture: false },
-  { d:  9, inc: 0,    exp: 0,   isToday: false, isFuture: false },
-  { d: 10, inc: 0,    exp: 180, isToday: false, isFuture: false },
-  { d: 11, inc: 0,    exp: 0,   isToday: false, isFuture: false },
-  { d: 12, inc: 0,    exp: 90,  isToday: false, isFuture: false },
-  { d: 13, inc: 0,    exp: 30,  isToday: false, isFuture: false },
-  { d: 14, inc: 0,    exp: 145, isToday: false, isFuture: false },
-  { d: 15, inc: 0,    exp: 0,   isToday: false, isFuture: false },
-  { d: 16, inc: 0,    exp: 90,  isToday: false, isFuture: false },
-  { d: 17, inc: 0,    exp: 67,  isToday: false, isFuture: false },
-  { d: 18, inc: 0,    exp: 46,  isToday: false, isFuture: false },
-  { d: 19, inc: 0,    exp: 182, isToday: false, isFuture: false },
-  { d: 20, inc: 5000, exp: 0,   isToday: false, isFuture: false },
-  { d: 21, inc: 0,    exp: 187, isToday: false, isFuture: false },
-  { d: 22, inc: 0,    exp: 0,   isToday: true,  isFuture: false },
-  { d: 23, inc: 0,    exp: 0,   isToday: false, isFuture: true  },
-  { d: 24, inc: 0,    exp: 0,   isToday: false, isFuture: true  },
-  { d: 25, inc: 0,    exp: 46,  isToday: false, isFuture: true  },
-  { d: 26, inc: 0,    exp: 0,   isToday: false, isFuture: true  },
-  { d: 27, inc: 0,    exp: 0,   isToday: false, isFuture: true  },
-  { d: 28, inc: 0,    exp: 850, isToday: false, isFuture: true  },
-]
+// ─── TYPES ────────────────────────────────────────────────────────────────────
+
+interface MonthlyAgg { mes: string; rec: number; des: number }
+interface CatDataItem { nome: string; pct: number; val: number; cor: string }
+interface CfDay { d: number; inc: number; exp: number; isToday: boolean; isFuture: boolean }
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
 function fmtR$(n: number): string {
   return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Math.abs(n))
+}
+
+function fmtDate(dateStr: string): string {
+  const parts = dateStr.split('-')
+  return `${parts[2]}/${parts[1]}`
+}
+
+const PAYMENT_LABELS: Record<string, string> = {
+  pix: 'Pix', credit: 'Crédito', debit: 'Débito',
+  cash: 'Dinheiro', transfer: 'Transferência', boleto: 'Boleto',
 }
 
 function getEnvColor(pct: number): string {
@@ -115,20 +58,19 @@ function getEnvColor(pct: number): string {
 
 // ─── DONUT CHART ─────────────────────────────────────────────────────────────
 
-function DonutChart() {
+function DonutChart({ data, totalGasto }: { data: CatDataItem[]; totalGasto: number }) {
   const R = 58, cx = 70, cy = 70, stroke = 11
-  const total = CAT_DATA.reduce((s, c) => s + c.pct, 0)
+  const total = data.reduce((s, c) => s + c.pct, 0) || 1
   let offset = 0
   const circ = 2 * Math.PI * R
-  const gaps = CAT_DATA.length * 2
+  const gaps = Math.max(data.length, 1) * 2
   const usable = circ - gaps
 
   return (
     <div className="relative w-[140px] h-[140px] shrink-0">
       <svg width="140" height="140" viewBox="0 0 140 140" style={{ transform: 'rotate(-90deg)' }}>
-        {/* Track */}
         <circle cx={cx} cy={cy} r={R} fill="none" stroke="var(--sl-s3)" strokeWidth={stroke} />
-        {CAT_DATA.map((cat) => {
+        {data.map((cat) => {
           const len = (cat.pct / total) * usable
           const dashArr = `${len} ${circ - len}`
           const dashOff = -offset
@@ -149,7 +91,7 @@ function DonutChart() {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
         <span className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)] leading-none">
-          R$ 3.200
+          R$ {fmtR$(totalGasto)}
         </span>
         <span className="text-[9px] uppercase tracking-wider text-[var(--sl-t3)]">Gasto</span>
       </div>
@@ -159,22 +101,58 @@ function DonutChart() {
 
 // ─── CASH FLOW CHART ─────────────────────────────────────────────────────────
 
-function FluxoCaixaChart() {
-  const maxVal = Math.max(...CF_DAYS.map(d => Math.max(d.inc, 5000, d.exp)))
+function FluxoCaixaChart({ days }: { days: CfDay[] }) {
+  const maxVal = days.length > 0 ? Math.max(...days.map(d => Math.max(d.inc, d.exp)), 100) : 100
   const h = 88
+  const n = days.length || 28
+
+  const balances: number[] = []
+  let running = 0
+  for (const d of days) {
+    running += d.inc - d.exp
+    balances.push(running)
+  }
+  const minBal = Math.min(...balances, 0)
+  const maxBal = Math.max(...balances, 1)
+  const balRange = Math.max(1, maxBal - minBal)
+
+  const balPts = balances
+    .map((b, i) => {
+      const x = ((i + 0.5) / n) * 100
+      const y = (1 - (b - minBal) / balRange) * (h - 6) + 3
+      return `${x.toFixed(2)},${y.toFixed(2)}`
+    })
+    .join(' ')
+
+  const yLabels = [maxVal, maxVal * 0.67, maxVal * 0.33, 0]
 
   return (
     <div className="relative">
+      {/* Legend */}
+      <div className="flex items-center gap-3 mb-2">
+        <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+          <span className="w-3 h-2 rounded-sm inline-block" style={{ background: '#10b981', opacity: 0.8 }} />
+          Receitas
+        </span>
+        <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+          <span className="w-3 h-2 rounded-sm inline-block" style={{ background: '#f43f5e', opacity: 0.7 }} />
+          Despesas
+        </span>
+        <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+          <span className="w-6 h-px inline-block" style={{ background: '#0055ff' }} />
+          Saldo
+        </span>
+      </div>
       {/* Y axis */}
       <div className="flex gap-1.5 items-start">
         <div className="relative shrink-0 w-8" style={{ height: h + 22 }}>
-          {[5, 3.5, 2, 0.5].map((v, i) => (
+          {yLabels.map((v, i) => (
             <span
-              key={v}
+              key={i}
               className="absolute right-0 font-[DM_Mono] text-[9px] text-[var(--sl-t3)]"
               style={{ top: `${(i / 3) * h}px`, transform: 'translateY(-50%)' }}
             >
-              {v}k
+              {v >= 1000 ? `${(v / 1000).toFixed(1)}k` : Math.round(v)}
             </span>
           ))}
         </div>
@@ -187,14 +165,13 @@ function FluxoCaixaChart() {
           </div>
           {/* Bars */}
           <div className="flex items-end gap-px" style={{ height: h }}>
-            {CF_DAYS.map(({ d, inc, exp, isToday, isFuture }) => {
+            {days.map(({ d, inc, exp, isToday, isFuture }) => {
               const incH = inc > 0 ? Math.max(4, (inc / maxVal) * h) : 0
               const expH = exp > 0 ? Math.max(2, (exp / maxVal) * h) : 0
               return (
                 <div
                   key={d}
                   className="flex-1 flex flex-col items-center justify-end h-full relative group"
-                  style={{ opacity: isFuture ? 1 : 1 }}
                 >
                   {isToday && (
                     <>
@@ -208,21 +185,13 @@ function FluxoCaixaChart() {
                     {incH > 0 && (
                       <div
                         className="w-4/5 max-w-[13px] rounded-t-sm"
-                        style={{
-                          height: incH,
-                          background: '#10b981',
-                          opacity: isFuture ? 0.3 : 0.8,
-                        }}
+                        style={{ height: incH, background: '#10b981', opacity: isFuture ? 0.3 : 0.8 }}
                       />
                     )}
                     {expH > 0 && (
                       <div
                         className="w-4/5 max-w-[13px] rounded-b-sm mt-px"
-                        style={{
-                          height: expH,
-                          background: '#f43f5e',
-                          opacity: isFuture ? 0.3 : 0.7,
-                        }}
+                        style={{ height: expH, background: '#f43f5e', opacity: isFuture ? 0.3 : 0.7 }}
                       />
                     )}
                   </div>
@@ -230,18 +199,38 @@ function FluxoCaixaChart() {
               )
             })}
           </div>
+
+          {/* Balance line SVG overlay */}
+          <svg
+            className="absolute top-0 left-0 w-full pointer-events-none"
+            style={{ height: h }}
+            viewBox={`0 0 100 ${h}`}
+            preserveAspectRatio="none"
+          >
+            <polyline
+              points={balPts}
+              fill="none"
+              stroke="#0055ff"
+              strokeWidth="1"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+
           {/* X axis labels */}
-          <div className="flex gap-px mt-1">
-            {CF_DAYS.map(({ d, isFuture }) => (
-              d % 5 === 0 || d === 1 ? (
-                <div
-                  key={d}
-                  className="flex-1 text-center font-[DM_Mono] text-[7px] text-[var(--sl-t3)]"
-                  style={{ opacity: isFuture ? 0.35 : 1 }}
-                >
-                  {String(d).padStart(2, '0')}/02
-                </div>
-              ) : <div key={d} className="flex-1" />
+          <div className="flex gap-px mt-1.5">
+            {days.map(({ d, isToday, isFuture }) => (
+              <div
+                key={d}
+                className={cn(
+                  'flex-1 text-center font-[DM_Mono] text-[7px]',
+                  isToday ? 'font-bold text-[#10b981]' : 'text-[var(--sl-t2)]'
+                )}
+                style={{ opacity: isFuture ? 0.4 : 1 }}
+              >
+                {String(d).padStart(2, '0')}
+              </div>
             ))}
           </div>
         </div>
@@ -252,7 +241,7 @@ function FluxoCaixaChart() {
 
 // ─── CUSTOM BAR TOOLTIP ───────────────────────────────────────────────────────
 
-function CustomHistTip({ active, payload, label }: { active?: boolean; payload?: {value:number;name:string}[]; label?: string }) {
+function CustomHistTip({ active, payload, label }: { active?: boolean; payload?: { value: number; name: string }[]; label?: string }) {
   if (!active || !payload?.length) return null
   const rec = payload.find(p => p.name === 'rec')?.value ?? 0
   const des = payload.find(p => p.name === 'des')?.value ?? 0
@@ -287,6 +276,141 @@ export default function FinancasDashboardPage() {
   const [aiQuery, setAiQuery] = useState('')
   const fabRef = useRef<HTMLDivElement>(null)
 
+  const [month] = useState(() => new Date().getMonth() + 1)
+  const [year] = useState(() => new Date().getFullYear())
+  const todayD = useMemo(() => new Date().getDate(), [])
+  const daysInMonth = useMemo(() => new Date(year, month, 0).getDate(), [month, year])
+
+  // ── Real data hooks ──────────────────────────────────────────────────────
+  const {
+    receitasMes, totalGasto, naoAlocado, activeBudgets, budgets,
+    qtdOk, qtdAlert, qtdOver, isLoading: loadingBudgets,
+  } = useBudgets({ month, year })
+
+  const { transactions, isLoading: loadingTxns } = useTransactions({
+    month, year, sort: 'newest', pageSize: 200,
+  })
+
+  const { upcomingOccurrences } = useRecorrentes()
+
+  // ── 6-month history for BarChart ─────────────────────────────────────────
+  const [histData, setHistData] = useState<MonthlyAgg[]>([])
+
+  useEffect(() => {
+    const supabase = createClient()
+    let cancelled = false
+
+    async function fetchHistory() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user || cancelled) return
+
+      const startDate6m = new Date(year, month - 7, 1).toISOString().split('T')[0]
+      const endDateCurrent = new Date(year, month, 0).toISOString().split('T')[0]
+
+      const { data: txns } = await supabase
+        .from('transactions')
+        .select('amount, type, date')
+        .eq('user_id', user.id)
+        .eq('is_future', false)
+        .gte('date', startDate6m)
+        .lte('date', endDateCurrent)
+
+      if (cancelled || !txns) return
+
+      const map = new Map<string, { rec: number; des: number }>()
+      for (const t of txns as { amount: number; type: string; date: string }[]) {
+        const key = t.date.slice(0, 7)
+        if (!map.has(key)) map.set(key, { rec: 0, des: 0 })
+        const v = map.get(key)!
+        if (t.type === 'income') v.rec += t.amount
+        else v.des += t.amount
+      }
+
+      const result: MonthlyAgg[] = []
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(year, month - 1 - i, 1)
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+        const mesLabel = d.toLocaleDateString('pt-BR', { month: 'short' })
+          .replace('.', '').replace(/^\w/, c => c.toUpperCase())
+        const v = map.get(key) ?? { rec: 0, des: 0 }
+        result.push({ mes: mesLabel, rec: v.rec, des: v.des })
+      }
+      setHistData(result)
+    }
+
+    fetchHistory()
+    return () => { cancelled = true }
+  }, [month, year])
+
+  // ── Derived data ──────────────────────────────────────────────────────────
+  const saldoMes = receitasMes - totalGasto
+  const taxaPoupanca = receitasMes > 0 ? Math.round((saldoMes / receitasMes) * 100) : 0
+
+  const catData = useMemo((): CatDataItem[] => {
+    if (!totalGasto || activeBudgets.length === 0) return []
+    return activeBudgets
+      .filter(b => b.gasto > 0)
+      .map(b => ({
+        nome: `${b.category?.icon ?? '📦'} ${b.category?.name ?? 'Outro'}`,
+        pct: Math.round((b.gasto / totalGasto) * 100),
+        val: b.gasto,
+        cor: b.category?.color ?? '#64748b',
+      }))
+      .sort((a, b) => b.val - a.val)
+  }, [activeBudgets, totalGasto])
+
+  const cfDays = useMemo((): CfDay[] => {
+    const days: CfDay[] = Array.from({ length: daysInMonth }, (_, i) => ({
+      d: i + 1,
+      inc: 0,
+      exp: 0,
+      isToday: i + 1 === todayD,
+      isFuture: i + 1 > todayD,
+    }))
+    for (const t of transactions) {
+      if (t.is_future) continue
+      const day = parseInt(t.date.slice(8, 10), 10)
+      if (day >= 1 && day <= daysInMonth) {
+        if (t.type === 'income') days[day - 1].inc += t.amount
+        else days[day - 1].exp += t.amount
+      }
+    }
+    return days
+  }, [transactions, daysInMonth, todayD])
+
+  const latestTxns = transactions.slice(0, 7)
+
+  const topCat = activeBudgets.length > 0
+    ? activeBudgets.reduce((max, b) => b.gasto > max.gasto ? b : max, activeBudgets[0])
+    : null
+
+  const pendingRecCount = upcomingOccurrences.filter(o => o.type === 'expense' && o.daysLeft <= 7).length
+
+  const daysLeftInMonth = daysInMonth - todayD
+  const weekOfMonth = Math.ceil(todayD / 7)
+  const totalWeeks = Math.ceil(daysInMonth / 7)
+
+  const alertCat = activeBudgets.find(b => b.pct >= 100) ?? activeBudgets.find(b => b.pct > 70)
+
+  const cfSummary = useMemo(() => {
+    const past = transactions.filter(t => !t.is_future)
+    const maxInTxn = past.filter(t => t.type === 'income')
+      .reduce((max: typeof past[0] | null, t) => (!max || t.amount > max.amount ? t : max), null)
+    const maxOutTxn = past.filter(t => t.type === 'expense')
+      .reduce((max: typeof past[0] | null, t) => (!max || t.amount > max.amount ? t : max), null)
+
+    let saldoHoje = 0
+    let minBal = 0
+    let minDay = 1
+    for (const d of cfDays) {
+      if (!d.isFuture && !d.isToday) {
+        saldoHoje += d.inc - d.exp
+        if (saldoHoje < minBal) { minBal = saldoHoje; minDay = d.d }
+      }
+    }
+    return { maxInTxn, maxOutTxn, saldoHoje, minBal, minDay }
+  }, [transactions, cfDays])
+
   // Close FAB on outside click
   useEffect(() => {
     const fn = (e: MouseEvent) => {
@@ -296,8 +420,8 @@ export default function FinancasDashboardPage() {
     return () => document.removeEventListener('mousedown', fn)
   }, [])
 
-  const now = new Date()
-  const mesAno = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+  const mesAno = new Date(year, month - 1, 1)
+    .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
     .replace(/^\w/, c => c.toUpperCase())
 
   return (
@@ -314,13 +438,13 @@ export default function FinancasDashboardPage() {
             Visão Geral
           </h1>
           <p className="text-[11px] text-[var(--sl-t3)] mt-1">
-            Fevereiro 2026 · semana 3 de 4 · 6 dias restantes
+            {mesAno} · semana {weekOfMonth} de {totalWeeks} · {daysLeftInMonth} dias restantes
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button className="flex items-center gap-1.5 px-3 py-2 rounded-[9px] border border-[var(--sl-border)] bg-[var(--sl-s1)] text-[var(--sl-t2)] text-[12px] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
             <CalendarDays size={12} />
-            Fevereiro 2026
+            {mesAno}
             <ChevronDown size={10} />
           </button>
           <button
@@ -341,26 +465,36 @@ export default function FinancasDashboardPage() {
           <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: '#10b981' }} />
           <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-sm mb-2.5" style={{ background: 'rgba(16,185,129,0.12)' }}>💰</div>
           <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Receitas</p>
-          <p className="font-[DM_Mono] text-[21px] font-medium leading-none text-[#10b981] mb-1">R$ 5.000</p>
-          <p className="text-[11px] text-[#10b981] flex items-center gap-1"><TrendingUp size={11} />↑ +12% vs. janeiro</p>
+          <p className="font-[DM_Mono] text-[21px] font-medium leading-none text-[#10b981] mb-1">
+            {loadingBudgets ? '—' : `R$ ${fmtR$(receitasMes)}`}
+          </p>
+          <p className="text-[11px] text-[var(--sl-t2)] flex items-center gap-1">
+            <TrendingUp size={11} />Mês atual
+          </p>
         </div>
         {/* Despesas */}
         <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] px-4 py-4 overflow-hidden hover:border-[var(--sl-border-h)] transition-colors">
           <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: '#f43f5e' }} />
           <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-sm mb-2.5" style={{ background: 'rgba(244,63,94,0.12)' }}>📤</div>
           <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Despesas</p>
-          <p className="font-[DM_Mono] text-[21px] font-medium leading-none text-[#f43f5e] mb-1">R$ 3.200</p>
-          <p className="text-[11px] text-[#f43f5e] flex items-center gap-1"><TrendingUp size={11} />↑ +8% vs. janeiro</p>
+          <p className="font-[DM_Mono] text-[21px] font-medium leading-none text-[#f43f5e] mb-1">
+            {loadingBudgets ? '—' : `R$ ${fmtR$(totalGasto)}`}
+          </p>
+          <p className="text-[11px] text-[var(--sl-t2)] flex items-center gap-1">
+            <TrendingUp size={11} />Mês atual
+          </p>
         </div>
         {/* Saldo */}
         <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] px-4 py-4 overflow-hidden hover:border-[var(--sl-border-h)] transition-colors">
-          <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: '#10b981' }} />
+          <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: saldoMes >= 0 ? '#10b981' : '#f43f5e' }} />
           <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-sm mb-2.5" style={{ background: 'rgba(16,185,129,0.12)' }}>💚</div>
           <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Saldo do Mês</p>
-          <p className="font-[DM_Mono] text-[21px] font-medium leading-none text-[var(--sl-t1)] mb-1">R$ 1.800</p>
-          <p className="text-[11px] text-[#10b981]">↑ +R$ 342 vs. janeiro</p>
+          <p className={cn('font-[DM_Mono] text-[21px] font-medium leading-none mb-1', saldoMes >= 0 ? 'text-[var(--sl-t1)]' : 'text-[#f43f5e]')}>
+            {loadingBudgets ? '—' : `R$ ${fmtR$(saldoMes)}`}
+          </p>
+          <p className="text-[11px] text-[var(--sl-t2)]">Receitas menos despesas</p>
           <div className="mt-2 px-1.5 py-1 rounded-[6px] bg-[var(--sl-s2)] text-[11px] text-[var(--sl-t3)]">
-            Disponível livre: <strong className="text-[#10b981]">R$ 620</strong>
+            Não alocado: <strong className="text-[#10b981]">{loadingBudgets ? '—' : `R$ ${fmtR$(Math.max(0, naoAlocado))}`}</strong>
           </div>
         </div>
         {/* Taxa Poupança */}
@@ -368,10 +502,16 @@ export default function FinancasDashboardPage() {
           <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: '#0055ff' }} />
           <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-sm mb-2.5" style={{ background: 'rgba(0,85,255,0.12)' }}>📊</div>
           <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Taxa de Poupança</p>
-          <p className="font-[DM_Mono] text-[21px] font-medium leading-none mb-1" style={{ color: '#0055ff' }}>36%</p>
-          <p className="text-[11px] text-[#10b981]">↑ +4pp vs. janeiro</p>
+          <p className="font-[DM_Mono] text-[21px] font-medium leading-none mb-1" style={{ color: '#0055ff' }}>
+            {loadingBudgets ? '—' : `${taxaPoupanca}%`}
+          </p>
+          <p className="text-[11px] text-[var(--sl-t2)]">Do total recebido</p>
           <div className="mt-2 px-1.5 py-1 rounded-[6px] bg-[var(--sl-s2)] text-[11px] text-[var(--sl-t3)]">
-            Meta: <strong className="text-[var(--sl-t1)]">30%</strong> · <span className="text-[#10b981]">✓ acima</span>
+            Meta: <strong className="text-[var(--sl-t1)]">30%</strong>
+            {' · '}
+            <span className={taxaPoupanca >= 30 ? 'text-[#10b981]' : 'text-[#f59e0b]'}>
+              {taxaPoupanca >= 30 ? '✓ acima' : '⚠ abaixo'}
+            </span>
           </div>
         </div>
       </div>
@@ -383,20 +523,26 @@ export default function FinancasDashboardPage() {
           style={{ background: 'linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.07))', border: '1px solid rgba(16,185,129,.18)' }}
         >
           <div className="shrink-0 text-center">
-            <p className="font-[Syne] font-extrabold text-[42px] leading-none" style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>88</p>
+            <p className="font-[Syne] font-extrabold text-[42px] leading-none" style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              {taxaPoupanca > 0 ? Math.min(Math.round(50 + taxaPoupanca), 99) : '—'}
+            </p>
             <p className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mt-0.5">Saúde Fin.</p>
           </div>
           <div className="w-px h-11 bg-[var(--sl-border)] shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-0.5">Mês excelente até aqui! 🎉</p>
-            <p className="text-[12px] text-[var(--sl-t3)] italic leading-snug">22 dias seguidos registrando tudo. Despesas 8% acima do planejado, mas receita compensou. Atenção ao Lazer.</p>
+            <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-0.5">
+              {saldoMes > 0 ? 'Mês positivo até aqui! 🎉' : 'Atenção ao saldo mensal'}
+            </p>
+            <p className="text-[12px] text-[var(--sl-t3)] italic leading-snug">
+              {receitasMes > 0
+                ? `Receitas de R$ ${fmtR$(receitasMes)} com R$ ${fmtR$(totalGasto)} em despesas. ${taxaPoupanca >= 30 ? 'Poupança acima da meta!' : 'Mantenha as despesas sob controle.'}`
+                : 'Nenhuma transação registrada este mês ainda.'}
+            </p>
             <div className="flex gap-1.5 flex-wrap mt-2">
-              {['✓ Poupança acima da meta', '✓ 3 metas no ritmo'].map(t => (
-                <span key={t} className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(16,185,129,0.12)] text-[#10b981]">{t}</span>
-              ))}
-              {['⚠ Lazer em 82%', '⚠ 1 meta atrasada'].map(t => (
-                <span key={t} className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(245,158,11,0.12)] text-[#f59e0b]">{t}</span>
-              ))}
+              {qtdOk > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(16,185,129,0.12)] text-[#10b981]">✓ {qtdOk} orçamento{qtdOk > 1 ? 's' : ''} no ritmo</span>}
+              {taxaPoupanca >= 30 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(16,185,129,0.12)] text-[#10b981]">✓ Poupança acima da meta</span>}
+              {qtdAlert > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(245,158,11,0.12)] text-[#f59e0b]">⚠ {qtdAlert} em atenção</span>}
+              {qtdOver > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(244,63,94,0.12)] text-[#f43f5e]">⚠ {qtdOver} estourado{qtdOver > 1 ? 's' : ''}</span>}
             </div>
           </div>
           <button
@@ -410,10 +556,10 @@ export default function FinancasDashboardPage() {
       ) : (
         <div className="flex bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] mb-3 overflow-hidden">
           {[
-            { lbl: 'Orçamentos OK', val: '4 / 5', color: '#10b981' },
-            { lbl: 'Maior categoria', val: 'Moradia', color: '#0055ff' },
-            { lbl: 'Streak de registro', val: '22 dias', color: '#10b981' },
-            { lbl: 'Recorrentes pendentes', val: '2', color: '#f59e0b' },
+            { lbl: 'Orçamentos OK', val: loadingBudgets ? '—' : `${qtdOk} / ${budgets.length}`, color: '#10b981' },
+            { lbl: 'Maior categoria', val: loadingBudgets ? '—' : (topCat?.category?.name ?? '—'), color: '#0055ff' },
+            { lbl: 'Recorrentes próximas', val: String(pendingRecCount), color: '#f59e0b' },
+            { lbl: 'Taxa de poupança', val: loadingBudgets ? '—' : `${taxaPoupanca}%`, color: '#10b981' },
           ].map((m, i) => (
             <div key={m.lbl} className={cn('flex-1 px-4 py-3', i < 3 && 'border-r border-[var(--sl-border)]')}>
               <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">{m.lbl}</p>
@@ -428,7 +574,6 @@ export default function FinancasDashboardPage() {
         className="relative overflow-hidden rounded-[14px] px-5 py-[18px] mb-3"
         style={{ background: 'linear-gradient(135deg,rgba(16,185,129,.10),rgba(0,85,255,.10))', border: '1px solid rgba(16,185,129,.28)' }}
       >
-        {/* Decorative glows */}
         <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(16,185,129,.14),transparent 70%)' }} />
         <div className="absolute -bottom-10 left-1/3 w-44 h-44 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(0,85,255,.10),transparent 70%)' }} />
 
@@ -438,7 +583,7 @@ export default function FinancasDashboardPage() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)] tracking-tight">Consultor Financeiro IA</p>
-            <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Análise personalizada · Fevereiro 2026 · atualizado agora</p>
+            <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Análise personalizada · {mesAno} · atualizado agora</p>
           </div>
           <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-bold text-[#10b981] shrink-0" style={{ background: 'rgba(16,185,129,.12)', border: '1px solid rgba(16,185,129,.20)' }}>
             <div className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" />
@@ -446,13 +591,12 @@ export default function FinancasDashboardPage() {
           </div>
         </div>
 
-        {/* Insights 2x2 grid */}
         <div className="grid grid-cols-2 gap-2 mb-4 max-sm:grid-cols-1 relative">
           {[
-            { type: 'urgent', ico: '🔥', tag: 'Alerta', border: 'rgba(244,63,94,.25)', bg: 'rgba(244,63,94,.04)', tagColor: '#f43f5e', text: <><strong>Lazer atingiu 82%</strong> do orçamento. Com 8 dias restantes, risco de estouro de <span className="text-[#f43f5e]">R$ 84</span>.</> },
-            { type: 'action', ico: '🎯', tag: 'Ação recomendada', border: 'rgba(0,85,255,.20)', bg: 'rgba(0,85,255,.04)', tagColor: '#0055ff', text: <>Meta <strong>Reserva de emergência</strong> está <span className="text-[#f43f5e]">3%</span> abaixo. Aporte de <span className="text-[#0055ff]">R$ 120</span> colocaria no ritmo.</> },
-            { type: 'positive', ico: '🌟', tag: 'Conquista', border: 'rgba(16,185,129,.20)', bg: 'rgba(16,185,129,.04)', tagColor: '#10b981', text: <><strong>Alimentação reduziu 8%</strong> vs. janeiro. Economia de <span className="text-[#10b981]">R$ 63</span> neste mês. Continue!</> },
-            { type: 'heads-up', ico: '📅', tag: 'Previsão', border: 'rgba(245,158,11,.20)', bg: 'rgba(245,158,11,.04)', tagColor: '#f59e0b', text: <>IPVA estimado em <strong>março</strong>: <span className="text-[#f59e0b]">R$ 820</span>. Reserve essa quantia este mês para não impactar o saldo.</> },
+            { type: 'urgent', ico: '🔥', tag: 'Alerta', border: 'rgba(244,63,94,.25)', bg: 'rgba(244,63,94,.04)', tagColor: '#f43f5e', text: <><strong>Lazer atingiu 82%</strong> do orçamento. Com {daysLeftInMonth} dias restantes, risco de estouro.</> },
+            { type: 'action', ico: '🎯', tag: 'Ação recomendada', border: 'rgba(0,85,255,.20)', bg: 'rgba(0,85,255,.04)', tagColor: '#0055ff', text: <>Meta <strong>Reserva de emergência</strong> está abaixo do ritmo. Considere um aporte extra este mês.</> },
+            { type: 'positive', ico: '🌟', tag: 'Conquista', border: 'rgba(16,185,129,.20)', bg: 'rgba(16,185,129,.04)', tagColor: '#10b981', text: <>Taxa de poupança em <strong>{taxaPoupanca}%</strong>{taxaPoupanca >= 30 ? ' — acima da meta de 30%! Continue!' : ' — tente chegar a 30% este mês.'}</> },
+            { type: 'heads-up', ico: '📅', tag: 'Previsão', border: 'rgba(245,158,11,.20)', bg: 'rgba(245,158,11,.04)', tagColor: '#f59e0b', text: <>Faltam <strong>{daysLeftInMonth} dias</strong> no mês. Revise seus orçamentos e planeje os gastos restantes.</> },
           ].map(ins => (
             <div
               key={ins.type}
@@ -466,13 +610,11 @@ export default function FinancasDashboardPage() {
                 <p className="text-[9px] font-bold uppercase tracking-[0.08em] mb-1" style={{ color: ins.tagColor }}>{ins.tag}</p>
                 <p className="text-[12px] text-[var(--sl-t2)] leading-snug">{ins.text}</p>
               </div>
-              {/* Shine line */}
               <div className="absolute bottom-0 left-[10%] right-[10%] h-0.5 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: ins.tagColor, boxShadow: `0 0 8px ${ins.tagColor}` }} />
             </div>
           ))}
         </div>
 
-        {/* Ask AI input */}
         <div
           className="flex items-center gap-2 px-3 py-2.5 rounded-[12px] relative"
           style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(16,185,129,.15)' }}
@@ -509,7 +651,7 @@ export default function FinancasDashboardPage() {
             </div>
             <div className="flex-1 min-w-0">
               <ResponsiveContainer width="100%" height={130}>
-                <BarChart data={HIST_DATA} barCategoryGap="20%" barGap={2}>
+                <BarChart data={histData} barCategoryGap="20%" barGap={2}>
                   <CartesianGrid vertical={false} stroke="var(--sl-border)" strokeOpacity={0.5} />
                   <XAxis dataKey="mes" tick={{ fill: 'var(--sl-t3)', fontSize: 10, fontFamily: 'DM Mono' }} axisLine={false} tickLine={false} />
                   <YAxis hide />
@@ -534,24 +676,27 @@ export default function FinancasDashboardPage() {
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 hover:border-[var(--sl-border-h)] transition-colors">
           <div className="flex items-center justify-between mb-4">
             <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Gastos por Categoria</p>
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[rgba(245,158,11,0.12)] text-[#f59e0b]">⚠ Lazer +21%</span>
+            {alertCat && (
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[rgba(245,158,11,0.12)] text-[#f59e0b]">
+                ⚠ {alertCat.category?.name ?? 'Cat.'} {alertCat.pct}%
+              </span>
+            )}
           </div>
           <div className="flex gap-4 items-start">
-            <DonutChart />
+            <DonutChart data={catData} totalGasto={totalGasto} />
             <div className="flex-1 min-w-0">
-              {CAT_DATA.map(cat => (
-                <div key={cat.nome} className="flex items-center gap-2 py-1.5 border-b border-[var(--sl-border)] last:border-b-0">
-                  <div className="w-[9px] h-[9px] rounded-full shrink-0" style={{ background: cat.cor }} />
-                  <span className="flex-1 min-w-0 text-[12px] text-[var(--sl-t2)] truncate">
-                    {cat.nome}
-                    {' '}
-                    <span className={cn('text-[10px]', cat.tipo === 'down' ? 'text-[#10b981]' : cat.tipo === 'warn' ? 'text-[#f59e0b]' : cat.tipo === 'alert' ? 'text-[#f97316]' : 'text-[var(--sl-t3)]')}>
-                      {cat.tipo === 'down' ? '↓' : cat.tipo === 'alert' ? '⚠' : cat.tipo === 'warn' ? '↑' : '='} {cat.delta}
-                    </span>
-                  </span>
-                  <span className="font-bold text-[13px] text-[var(--sl-t1)] shrink-0">{cat.pct}%</span>
-                </div>
-              ))}
+              {catData.length === 0 ? (
+                <p className="text-[12px] text-[var(--sl-t3)] py-4">Nenhum orçamento com gastos</p>
+              ) : (
+                catData.map(cat => (
+                  <div key={cat.nome} className="flex items-center gap-2 py-1.5 border-b border-[var(--sl-border)] last:border-b-0">
+                    <div className="w-[9px] h-[9px] rounded-full shrink-0" style={{ background: cat.cor }} />
+                    <span className="flex-1 min-w-0 text-[12px] text-[var(--sl-t2)] truncate">{cat.nome}</span>
+                    <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)]">R$ {fmtR$(cat.val)}</span>
+                    <span className="font-bold text-[13px] text-[var(--sl-t1)] shrink-0">{cat.pct}%</span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -562,24 +707,43 @@ export default function FinancasDashboardPage() {
         <div className="flex items-center justify-between mb-3">
           <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Fluxo de Caixa — Dia a Dia</p>
         </div>
-        {/* Explanation */}
         <div className="flex gap-2.5 px-3 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[12px] text-[var(--sl-t3)] leading-relaxed mb-4">
           <span className="text-[15px] shrink-0 mt-0.5">ℹ️</span>
           <p>
             <strong className="text-[var(--sl-t1)]">Como ler:</strong> Cada coluna = 1 dia.{' '}
             <strong className="text-[var(--sl-t1)]">■ Verde</strong> = dinheiro que entrou.{' '}
             <strong className="text-[var(--sl-t1)]">■ Vermelho</strong> = quanto saiu.
-            Colunas esmaecidas após {today}/02 são previsões.
+            {' '}Colunas esmaecidas após {String(todayD).padStart(2, '0')}/{String(month).padStart(2, '0')} são previsões.
           </p>
         </div>
-        <FluxoCaixaChart />
+        <FluxoCaixaChart days={cfDays} />
         {/* Summary cards */}
         <div className="grid grid-cols-4 gap-2 mt-3 max-sm:grid-cols-2">
           {[
-            { lbl: 'Maior entrada', val: 'R$ 5.000', sub: 'dia 20 · Salário', color: '#10b981' },
-            { lbl: 'Maior saída num dia', val: 'R$ 850', sub: 'dia 05 · Aluguel', color: '#f43f5e' },
-            { lbl: 'Saldo mais baixo', val: 'R$ 312', sub: 'dia 14', color: '#f43f5e' },
-            { lbl: 'Saldo hoje', val: 'R$ 2.150', sub: `22/02 · ${isJornada ? 'ótimo ritmo!' : 'disponível'}`, color: '#0055ff' },
+            {
+              lbl: 'Maior entrada',
+              val: cfSummary.maxInTxn ? `R$ ${fmtR$(cfSummary.maxInTxn.amount)}` : '—',
+              sub: cfSummary.maxInTxn ? `dia ${cfSummary.maxInTxn.date.slice(8)} · ${cfSummary.maxInTxn.description.slice(0, 14)}` : 'Sem receitas',
+              color: '#10b981',
+            },
+            {
+              lbl: 'Maior saída num dia',
+              val: cfSummary.maxOutTxn ? `R$ ${fmtR$(cfSummary.maxOutTxn.amount)}` : '—',
+              sub: cfSummary.maxOutTxn ? `dia ${cfSummary.maxOutTxn.date.slice(8)} · ${cfSummary.maxOutTxn.description.slice(0, 14)}` : 'Sem despesas',
+              color: '#f43f5e',
+            },
+            {
+              lbl: 'Saldo mais baixo',
+              val: cfSummary.minBal < 0 ? `-R$ ${fmtR$(cfSummary.minBal)}` : `R$ ${fmtR$(cfSummary.minBal)}`,
+              sub: cfSummary.minDay > 0 ? `dia ${cfSummary.minDay}` : '—',
+              color: cfSummary.minBal < 0 ? '#f43f5e' : '#10b981',
+            },
+            {
+              lbl: 'Saldo acumulado',
+              val: `R$ ${fmtR$(saldoMes)}`,
+              sub: `até dia ${String(todayD).padStart(2, '0')}/${String(month).padStart(2, '0')}`,
+              color: saldoMes >= 0 ? '#0055ff' : '#f43f5e',
+            },
           ].map(s => (
             <div key={s.lbl} className="flex flex-col gap-0.5 px-3 py-2 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)]">
               <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)]">{s.lbl}</p>
@@ -588,7 +752,6 @@ export default function FinancasDashboardPage() {
             </div>
           ))}
         </div>
-        {/* Legend */}
         <div className="flex gap-3.5 mt-2.5 pt-2.5 border-t border-[var(--sl-border)] flex-wrap">
           {[
             { tipo: 'sq', cor: '#10b981', label: 'Entrada no dia' },
@@ -618,42 +781,47 @@ export default function FinancasDashboardPage() {
             <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Orçamentos do Mês</p>
             <button onClick={() => router.push('/financas/orcamentos')} className="text-[11px] text-[#10b981] hover:underline">Ver todos</button>
           </div>
-          {/* Budget Health Score */}
           <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-[var(--sl-s2)] rounded-[9px] border border-[var(--sl-border)]">
             <span className="text-[11px] text-[var(--sl-t3)] flex-1">Saúde dos envelopes</span>
             <div className="flex gap-1">
-              {ENVELOPES.map(e => (
-                <div key={e.nome} className="w-2 h-2 rounded-full" style={{ background: getEnvColor(e.pct) }} />
+              {activeBudgets.slice(0, 5).map(b => (
+                <div key={b.id} className="w-2 h-2 rounded-full" style={{ background: getEnvColor(b.pct) }} />
               ))}
             </div>
-            <span className="text-[11px] font-bold text-[var(--sl-t2)]">3 ok · 2 atenção</span>
+            <span className="text-[11px] font-bold text-[var(--sl-t2)]">
+              {qtdOk} ok · {qtdAlert} atenção{qtdOver > 0 ? ` · ${qtdOver} ⚠` : ''}
+            </span>
           </div>
-          {/* Envelopes list */}
-          <div className="flex flex-col gap-2">
-            {ENVELOPES.map(e => (
-              <div key={e.nome} className="flex flex-col gap-1">
-                <div className="flex items-center justify-between gap-1.5">
-                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                    <span className="text-[13px]">{e.ico}</span>
-                    <span className="text-[12px] text-[var(--sl-t2)] truncate">{e.nome}</span>
+          {activeBudgets.length === 0 && !loadingBudgets ? (
+            <p className="text-[12px] text-[var(--sl-t3)] text-center py-4">Nenhum orçamento com gastos este mês</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {activeBudgets.slice(0, 5).map(b => (
+                <div key={b.id} className="flex flex-col gap-1">
+                  <div className="flex items-center justify-between gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <span className="text-[13px]">{b.category?.icon ?? '📦'}</span>
+                      <span className="text-[12px] text-[var(--sl-t2)] truncate">{b.category?.name ?? 'Categoria'}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)] whitespace-nowrap">
+                        <strong className="text-[var(--sl-t2)]">R$ {fmtR$(b.gasto)}</strong> / {fmtR$(b.amount)}
+                      </span>
+                      <span className="text-[10px] font-bold w-[26px] text-right" style={{ color: getEnvColor(b.pct) }}>{b.pct}%</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)] whitespace-nowrap">
-                      <strong className="text-[var(--sl-t2)]">R$ {fmtR$(e.gasto)}</strong> / {fmtR$(e.limite)}
-                    </span>
-                    <span className="text-[10px] font-bold w-[26px] text-right" style={{ color: getEnvColor(e.pct) }}>{e.pct}%</span>
+                  <div className="h-1 bg-[var(--sl-s3)] rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-[width] duration-700" style={{ width: `${Math.min(b.pct, 100)}%`, background: getEnvColor(b.pct) }} />
                   </div>
                 </div>
-                <div className="h-1 bg-[var(--sl-s3)] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-[width] duration-700" style={{ width: `${Math.min(e.pct, 100)}%`, background: getEnvColor(e.pct) }} />
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Não alocado */}
+              ))}
+            </div>
+          )}
           <div className="mt-3 px-2.5 py-2 rounded-[9px] flex items-center justify-between" style={{ background: 'rgba(16,185,129,.06)', border: '1px solid rgba(16,185,129,.14)' }}>
             <span className="text-[11px] text-[var(--sl-t2)]">Não alocado</span>
-            <span className="font-[DM_Mono] text-[13px] font-medium text-[#10b981]">R$ 300</span>
+            <span className="font-[DM_Mono] text-[13px] font-medium text-[#10b981]">
+              {loadingBudgets ? '—' : `R$ ${fmtR$(Math.max(0, naoAlocado))}`}
+            </span>
           </div>
         </div>
 
@@ -666,24 +834,35 @@ export default function FinancasDashboardPage() {
             </button>
           </div>
           <div className="flex flex-col">
-            {ULTIMAS_TXN.map((t, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2.5 py-2 border-b border-[var(--sl-border)] last:border-b-0 cursor-pointer rounded-[8px] hover:bg-[var(--sl-s2)] hover:px-2 hover:-mx-2 transition-all"
-              >
-                <div className="w-[29px] h-[29px] rounded-[8px] flex items-center justify-center text-[13px] shrink-0 bg-[var(--sl-s3)]">{t.ico}</div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[12px] text-[var(--sl-t1)] truncate">{t.nome}</p>
-                  <p className="text-[10px] text-[var(--sl-t3)]">{t.data} · {t.metodo}</p>
-                </div>
-                <div className="text-right shrink-0">
-                  <p className={cn('font-[DM_Mono] text-[12px] font-medium', t.val < 0 ? 'text-[#f43f5e]' : 'text-[#10b981]')}>
-                    {t.val > 0 ? '+' : ''}R$ {fmtR$(t.val)}
-                  </p>
-                  <p className="text-[10px] text-[var(--sl-t3)]">{t.cat}</p>
-                </div>
-              </div>
-            ))}
+            {loadingTxns ? (
+              <p className="text-[12px] text-[var(--sl-t3)] text-center py-4">Carregando...</p>
+            ) : latestTxns.length === 0 ? (
+              <p className="text-[12px] text-[var(--sl-t3)] text-center py-4">Nenhuma transação este mês</p>
+            ) : (
+              latestTxns.map((t) => {
+                const isIncome = t.type === 'income'
+                return (
+                  <div
+                    key={t.id}
+                    className="flex items-center gap-2.5 py-2 border-b border-[var(--sl-border)] last:border-b-0 cursor-pointer rounded-[8px] hover:bg-[var(--sl-s2)] hover:px-2 hover:-mx-2 transition-all"
+                  >
+                    <div className="w-[29px] h-[29px] rounded-[8px] flex items-center justify-center text-[13px] shrink-0 bg-[var(--sl-s3)]">
+                      {t.category?.icon ?? (isIncome ? '💰' : '📤')}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] text-[var(--sl-t1)] truncate">{t.description}</p>
+                      <p className="text-[10px] text-[var(--sl-t3)]">{fmtDate(t.date)} · {PAYMENT_LABELS[t.payment_method] ?? t.payment_method}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className={cn('font-[DM_Mono] text-[12px] font-medium', isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+                        {isIncome ? '+' : ''}R$ {fmtR$(t.amount)}
+                      </p>
+                      <p className="text-[10px] text-[var(--sl-t3)]">{t.category?.name ?? (isIncome ? 'Receita' : 'Despesa')}</p>
+                    </div>
+                  </div>
+                )
+              })
+            )}
           </div>
         </div>
       </div>
@@ -697,18 +876,21 @@ export default function FinancasDashboardPage() {
           </button>
         </div>
 
-        {/* Saldo atual highlight */}
         <div className="flex items-center gap-4 px-4 py-3 rounded-[12px] mb-4" style={{ background: 'linear-gradient(135deg,rgba(16,185,129,.08),rgba(0,85,255,.06))', border: '1px solid rgba(16,185,129,.18)' }}>
           <div className="flex-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Saldo disponível agora</p>
-            <p className="font-[DM_Mono] text-[28px] font-medium text-[var(--sl-t1)] leading-none">R$ 2.150</p>
-            <p className="text-[11px] text-[var(--sl-t3)] mt-1">22 de fevereiro de 2026 · após condomínio</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Saldo do mês (acumulado)</p>
+            <p className="font-[DM_Mono] text-[28px] font-medium text-[var(--sl-t1)] leading-none">
+              {loadingBudgets ? '—' : `R$ ${fmtR$(saldoMes)}`}
+            </p>
+            <p className="text-[11px] text-[var(--sl-t3)] mt-1">
+              {todayD} de {new Date(year, month - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })} · receitas menos despesas
+            </p>
           </div>
           <div className="flex gap-2 flex-wrap justify-end">
             {[
-              { lbl: 'Comprometido', val: 'R$ 1.530', cor: '#f43f5e' },
-              { lbl: 'Livre estimado', val: 'R$ 620', cor: '#10b981' },
-              { lbl: 'Taxa poupança', val: '36%', cor: '#0055ff' },
+              { lbl: 'Total despesas', val: loadingBudgets ? '—' : `R$ ${fmtR$(totalGasto)}`, cor: '#f43f5e' },
+              { lbl: 'Não alocado', val: loadingBudgets ? '—' : `R$ ${fmtR$(Math.max(0, naoAlocado))}`, cor: '#10b981' },
+              { lbl: 'Taxa poupança', val: loadingBudgets ? '—' : `${taxaPoupanca}%`, cor: '#0055ff' },
             ].map(p => (
               <div key={p.lbl} className="text-center px-3 py-1.5 rounded-[8px] bg-[var(--sl-s2)]">
                 <p className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)]">{p.lbl}</p>
@@ -720,7 +902,6 @@ export default function FinancasDashboardPage() {
 
         {/* Timeline */}
         <div className="relative">
-          {/* Rail */}
           <div className="absolute top-[18px] left-[10%] right-[10%] h-0.5 bg-[var(--sl-s3)] rounded">
             <div className="h-full rounded" style={{ width: '20%', background: 'linear-gradient(90deg,#10b981,#0055ff)' }} />
           </div>
@@ -734,7 +915,6 @@ export default function FinancasDashboardPage() {
                   background: m.tipo === 'current' ? 'rgba(16,185,129,.06)' : m.tipo === 'warn' ? 'rgba(244,63,94,.05)' : 'rgba(0,85,255,.04)',
                 }}
               >
-                {/* Dot */}
                 <div className="flex justify-center mb-2.5">
                   <div
                     className="w-3.5 h-3.5 rounded-full border-2 border-white"
@@ -759,11 +939,10 @@ export default function FinancasDashboardPage() {
           </div>
         </div>
 
-        {/* Alert */}
         <div className="flex items-start gap-2 mt-3 px-3 py-2 rounded-[8px]" style={{ background: 'rgba(244,63,94,.06)', border: '1px solid rgba(244,63,94,.20)' }}>
           <AlertTriangle size={14} className="text-[#f43f5e] shrink-0 mt-0.5" />
           <p className="text-[11px] text-[#f43f5e]">
-            <strong>Abril pode ter queda de 7%</strong> por causa do IPVA. Recomendamos reservar R$ 120/mês a partir de março para cobrir sem impacto no saldo.
+            <strong>Projeção ilustrativa.</strong> Em breve: projeção baseada em recorrentes + histórico real de gastos.
           </p>
         </div>
       </div>
@@ -774,29 +953,39 @@ export default function FinancasDashboardPage() {
           <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Próximas Recorrentes</p>
           <button onClick={() => router.push('/financas/recorrentes')} className="text-[11px] text-[#10b981] hover:underline">Ver todas</button>
         </div>
-        <div className="grid grid-cols-5 gap-2 max-sm:grid-cols-3">
-          {RECORRENTES.map(r => (
-            <div
-              key={r.nome}
-              className="flex flex-col gap-1.5 px-2.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] cursor-pointer hover:border-[var(--sl-border-h)] transition-colors"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-base">{r.ico}</span>
-                <span
-                  className="text-[9px] font-bold px-1.5 py-0.5 rounded"
-                  style={{
-                    background: r.status === 'ok' ? 'rgba(16,185,129,.12)' : r.status === 'due' ? 'rgba(245,158,11,.12)' : 'rgba(110,144,184,.10)',
-                    color: r.status === 'ok' ? '#10b981' : r.status === 'due' ? '#f59e0b' : 'var(--sl-t3)',
-                  }}
+        {upcomingOccurrences.length === 0 ? (
+          <p className="text-[12px] text-[var(--sl-t3)] text-center py-4">Nenhuma recorrente prevista nos próximos 30 dias</p>
+        ) : (
+          <div className="grid grid-cols-5 gap-2 max-sm:grid-cols-3">
+            {upcomingOccurrences.slice(0, 5).map(o => {
+              const isOver = o.daysLeft === 0
+              const isDue = o.daysLeft <= 3
+              const statusBg = isOver ? 'rgba(244,63,94,.12)' : isDue ? 'rgba(245,158,11,.12)' : 'rgba(110,144,184,.10)'
+              const statusColor = isOver ? '#f43f5e' : isDue ? '#f59e0b' : 'var(--sl-t3)'
+              const statusLabel = isOver ? 'hoje' : `${o.day}/${o.monthShort}`
+              return (
+                <div
+                  key={o.id}
+                  className="flex flex-col gap-1.5 px-2.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] cursor-pointer hover:border-[var(--sl-border-h)] transition-colors"
                 >
-                  {r.status === 'ok' ? 'pago' : r.status === 'due' ? r.dt : r.dt}
-                </span>
-              </div>
-              <p className="text-[11px] font-semibold text-[var(--sl-t1)] leading-tight">{r.nome}</p>
-              <p className="font-[DM_Mono] text-[12px] font-medium text-[#f43f5e]">R$ {fmtR$(r.val)}</p>
-            </div>
-          ))}
-        </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-base">{o.icon}</span>
+                    <span
+                      className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                      style={{ background: statusBg, color: statusColor }}
+                    >
+                      {statusLabel}
+                    </span>
+                  </div>
+                  <p className="text-[11px] font-semibold text-[var(--sl-t1)] leading-tight">{o.name}</p>
+                  <p className={cn('font-[DM_Mono] text-[12px] font-medium', o.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+                    R$ {fmtR$(o.amount)}
+                  </p>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* ⑩ FAB */}
