@@ -82,7 +82,7 @@ export function useBudgets({ month, year }: { month: number; year: number }): Us
 
       const monthStr = String(month).padStart(2, '0')
       const startDate = `${year}-${monthStr}-01`
-      const endDate = `${year}-${monthStr}-31`
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0]
 
       // Parallel: budgets, spends, receitas, profile, prev month budgets
       const [budgetsRes, spendsRes, receitasRes, profileRes, prevBudgetsRes] = await Promise.all([
@@ -159,7 +159,7 @@ export function useBudgets({ month, year }: { month: number; year: number }): Us
         .lte('date', (() => {
           const pm = month === 1 ? 12 : month - 1
           const py = month === 1 ? year - 1 : year
-          return `${py}-${String(pm).padStart(2, '0')}-31`
+          return new Date(py, pm, 0).toISOString().split('T')[0]
         })())
 
       if (cancelled.current) return

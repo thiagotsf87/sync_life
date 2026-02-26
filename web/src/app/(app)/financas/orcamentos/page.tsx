@@ -117,8 +117,7 @@ function EnvelopeCard({
           >
             {envelope.pct}%
           </span>
-          {!inactive && (
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => onEdit(envelope)}
                 className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#10b981] hover:bg-[rgba(16,185,129,.08)] transition-colors"
@@ -132,7 +131,6 @@ function EnvelopeCard({
                 <Trash2 size={13} />
               </button>
             </div>
-          )}
         </div>
       </div>
 
