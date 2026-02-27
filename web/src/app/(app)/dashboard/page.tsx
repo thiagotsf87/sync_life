@@ -8,6 +8,8 @@ import { useTransactions } from '@/hooks/use-transactions'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useMetas, calcProgress } from '@/hooks/use-metas'
 import { useAgenda, getWeekRange, EVENT_TYPES } from '@/hooks/use-agenda'
+import { useLifeMap } from '@/hooks/use-life-map'
+import { LifeMapRadar } from '@/components/futuro/LifeMapRadar'
 import { useRecorrentes } from '@/hooks/use-recorrentes'
 import { useCorpoDashboard } from '@/hooks/use-corpo'
 import { usePatrimonioDashboard } from '@/hooks/use-patrimonio'
@@ -144,11 +146,12 @@ export default function DashboardPage() {
   const { nextAppointment, weekActivities } = useCorpoDashboard()
   const { assets: patrimonioAssets } = usePatrimonioDashboard()
   const { trips: experienciaTrips } = useExperienciasDashboard()
+  const { dimensions: lifeDimensions, overallScore: lifeScore, loading: lifeLoading } = useLifeMap()
 
   useEffect(() => {
-    const t = setTimeout(() => setScoreBarWidth(74), 450)
+    const t = setTimeout(() => setScoreBarWidth(lifeScore || 74), 450)
     return () => clearTimeout(t)
-  }, [])
+  }, [lifeScore])
 
   // ── financial KPIs ──
   const totalIncome = useMemo(() => transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0), [transactions])
@@ -285,33 +288,47 @@ export default function DashboardPage() {
           style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.12), transparent 70%)' }} />
 
         <div className="flex-shrink-0 relative z-10">
-          <div className="font-[Syne] font-extrabold text-[80px] leading-none text-sl-grad">74</div>
+          <div className="font-[Syne] font-extrabold text-[80px] leading-none text-sl-grad">
+            {lifeScore > 0 ? lifeScore : '—'}
+          </div>
           <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mt-0.5">Life Sync Score</div>
         </div>
 
         <div className="flex-1 min-w-0 relative z-10">
-          <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1">Evolução consistente</p>
-          <p className="text-[13px] text-[var(--sl-t3)] italic mb-3">"Você está em um bom ritmo. Financeiro excelente, metas precisam de atenção."</p>
+          <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1">
+            {lifeScore >= 75 ? 'Excelente equilíbrio!' : lifeScore >= 50 ? 'Evolução consistente' : lifeScore > 0 ? 'Há espaço para crescer' : 'Registre dados para calcular'}
+          </p>
+          <p className="text-[13px] text-[var(--sl-t3)] italic mb-3">
+            {lifeDimensions.length > 0
+              ? (() => {
+                  const weakest = [...lifeDimensions].sort((a, b) => a.value - b.value)[0]
+                  const strongest = [...lifeDimensions].sort((a, b) => b.value - a.value)[0]
+                  return `${strongest?.icon} ${strongest?.fullLabel} em alta. Fortaleça ${weakest?.icon} ${weakest?.fullLabel} para subir o score.`
+                })()
+              : 'Use os módulos diariamente para calcular seu score real.'}
+          </p>
           <div className="h-1.5 rounded-full overflow-hidden mb-3" style={{ background: 'rgba(255,255,255,0.07)' }}>
             <div className="h-full rounded-full transition-[width] duration-[1200ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
               style={{ width: `${scoreBarWidth}%`, background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
           </div>
           <div className="grid grid-cols-4 gap-x-5 gap-y-2">
-            {[
-              { label: 'Financeiro', val: 82, color: '#10b981' },
-              { label: 'Metas', val: 61, color: '#f59e0b' },
-              { label: 'Corpo', val: 70, color: '#f97316' },
-              { label: 'Agenda', val: 67, color: '#f59e0b' },
-              { label: 'Patrimônio', val: 75, color: '#10b981' },
-              { label: 'Carreira', val: 55, color: '#f59e0b' },
-              { label: 'Experiências', val: 80, color: '#06b6d4' },
-              { label: 'Consistência', val: 78, color: '#10b981' },
-            ].map(d => (
-              <div key={d.label} className="flex flex-col gap-0.5">
-                <div className="text-[10px] uppercase tracking-[0.07em] text-[var(--sl-t3)]">{d.label}</div>
-                <div className="font-[DM_Mono] text-[16px] font-medium" style={{ color: d.color }}>{d.val}</div>
-              </div>
-            ))}
+            {lifeLoading
+              ? [...Array(8)].map((_, i) => (
+                  <div key={i} className="flex flex-col gap-0.5">
+                    <div className="h-2.5 w-16 rounded bg-[var(--sl-s3)] animate-pulse" />
+                    <div className="h-4 w-8 rounded bg-[var(--sl-s3)] animate-pulse mt-0.5" />
+                  </div>
+                ))
+              : lifeDimensions.map(d => {
+                  const c = d.value >= 75 ? '#10b981' : d.value >= 50 ? '#f59e0b' : '#f43f5e'
+                  return (
+                    <div key={d.key} className="flex flex-col gap-0.5">
+                      <div className="text-[10px] uppercase tracking-[0.07em] text-[var(--sl-t3)]">{d.icon} {d.label}</div>
+                      <div className="font-[DM_Mono] text-[16px] font-medium" style={{ color: c }}>{d.value}</div>
+                    </div>
+                  )
+                })
+            }
           </div>
         </div>
 
@@ -860,6 +877,32 @@ export default function DashboardPage() {
         </div>
 
       </div>
+
+      {/* ⑧ Mapa da Vida — Jornada only (RN-FUT-30) */}
+      <div className="hidden [.jornada_&]:block mt-4">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up
+                        hover:border-[var(--sl-border-h)] transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🗺️ Mapa da Vida</h3>
+              <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Equilíbrio entre todas as dimensões da sua vida</p>
+            </div>
+            <button
+              onClick={() => router.push('/futuro')}
+              className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
+            >
+              Ver detalhes →
+            </button>
+          </div>
+          <LifeMapRadar
+            dimensions={lifeDimensions}
+            overallScore={lifeScore}
+            loading={lifeLoading}
+            compact
+          />
+        </div>
+      </div>
+
     </div>
   )
 }

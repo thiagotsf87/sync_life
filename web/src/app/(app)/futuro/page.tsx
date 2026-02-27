@@ -8,11 +8,13 @@ import { cn } from '@/lib/utils'
 import { useShellStore } from '@/stores/shell-store'
 import { useObjectives, useCreateObjective, type ObjectiveStatus, type ObjectiveCategory } from '@/hooks/use-futuro'
 import { useUserPlan } from '@/hooks/use-user-plan'
+import { useLifeMap } from '@/hooks/use-life-map'
 import { checkPlanLimit } from '@/lib/plan-limits'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { ObjectiveCard } from '@/components/futuro/ObjectiveCard'
 import { ObjectiveWizard } from '@/components/futuro/ObjectiveWizard'
+import { LifeMapRadar } from '@/components/futuro/LifeMapRadar'
 
 // ─── Filter / Sort types ───────────────────────────────────────────────────────
 
@@ -48,6 +50,7 @@ export default function FuturoPage() {
   const createObjective = useCreateObjective()
 
   const { isPro } = useUserPlan()
+  const { dimensions: lifeDimensions, overallScore: lifeScore, loading: lifeLoading } = useLifeMap()
 
   const [wizardOpen, setWizardOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
@@ -177,7 +180,31 @@ export default function FuturoPage() {
         }
       />
 
-      {/* ④ Filters */}
+      {/* ④ Mapa da Vida — Jornada only (RN-FUT-26) */}
+      <div className="hidden [.jornada_&]:block mb-5">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up
+                        hover:border-[var(--sl-border-h)] transition-colors">
+          <LifeMapRadar
+            dimensions={lifeDimensions}
+            overallScore={lifeScore}
+            loading={lifeLoading}
+          />
+          {/* Weekly insight (RN-FUT-29) */}
+          {!lifeLoading && lifeDimensions.length > 0 && (() => {
+            const weakest = [...lifeDimensions].sort((a, b) => a.value - b.value)[0]
+            const strongest = [...lifeDimensions].sort((a, b) => b.value - a.value)[0]
+            return (
+              <div className="mt-4 pt-4 border-t border-[var(--sl-border)]">
+                <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed">
+                  💡 Seu ponto mais forte esta semana é <strong className="text-[var(--sl-t1)]">{strongest.icon} {strongest.fullLabel}</strong> ({strongest.value}%). Foque em <strong style={{ color: '#f59e0b' }}>{weakest.icon} {weakest.fullLabel}</strong> ({weakest.value}%) para equilibrar seu Mapa da Vida.
+                </p>
+              </div>
+            )
+          })()}
+        </div>
+      </div>
+
+      {/* ⑤ Filters */}
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         {STATUS_TABS.map(tab => (
           <button
