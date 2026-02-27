@@ -232,6 +232,40 @@ export function useNotifications() {
       }
     }
 
+    // ── 6. Retorno médico agendado para hoje (RN-CRP-03) ─────────────────
+    const todayStr = new Date().toISOString().split('T')[0]
+    const { data: todayFollowups } = await sb
+      .from('medical_appointments')
+      .select('id, specialty, return_date')
+      .eq('user_id', user.id)
+      .eq('return_status', 'pending')
+      .eq('return_date', todayStr)
+
+    if (todayFollowups) {
+      for (const appt of todayFollowups) {
+        const { data: existing } = await sb
+          .from('notifications')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('type', 'followup_due')
+          .eq('action_url', `/corpo/saude`)
+          .gte('created_at', new Date(Date.now() - 12 * 3600000).toISOString())
+          .like('body', `%hoje%`)
+          .limit(1)
+
+        if (!existing || existing.length === 0) {
+          await sb.from('notifications').insert({
+            user_id: user.id,
+            type: 'followup_due',
+            title: '📅 Retorno médico hoje',
+            body: `Você tem um retorno de ${appt.specialty} agendado para hoje!`,
+            module: 'corpo',
+            action_url: `/corpo/saude`,
+          })
+        }
+      }
+    }
+
     await fetchNotifications()
   }, [supabase, fetchNotifications])
 

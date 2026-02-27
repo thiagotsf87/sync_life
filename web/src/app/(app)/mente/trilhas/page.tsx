@@ -82,7 +82,14 @@ export default function TrilhasPage() {
   }, [updateTrack, reload])
 
   const handleDelete = useCallback(async (id: string, name: string) => {
-    if (!window.confirm(`Excluir a trilha "${name}"? Esta ação não pode ser desfeita.`)) return
+    // RN-MNT-26: avisar sobre vínculos antes de excluir
+    const track = tracks.find(t => t.id === id)
+    const hasLinkedSkill = !!track?.linked_skill_id
+    const hasCost = track?.cost && track.cost > 0
+    const warning = (hasLinkedSkill || hasCost)
+      ? '\n\n⚠️ Esta trilha pode estar vinculada a habilidades de carreira ou ter custo registrado em Finanças.'
+      : ''
+    if (!window.confirm(`Excluir a trilha "${name}"? Esta ação não pode ser desfeita.${warning}`)) return
     try {
       await deleteTrack(id)
       toast.success('Trilha excluída')
@@ -90,16 +97,28 @@ export default function TrilhasPage() {
     } catch {
       toast.error('Erro ao excluir trilha')
     }
-  }, [deleteTrack, reload])
+  }, [tracks, deleteTrack, reload])
 
   const handleToggleStep = useCallback(async (stepId: string, trackId: string, isCompleted: boolean) => {
     try {
+      // RN-MNT-06: detectar conclusão da trilha
+      const track = tracks.find(t => t.id === trackId)
+      const prevIncomplete = track?.steps?.filter(s => !s.is_completed) ?? []
+      const willComplete = isCompleted && prevIncomplete.length === 1 && prevIncomplete[0].id === stepId
+
       await toggleStep(stepId, trackId, isCompleted)
       await reload()
+
+      if (willComplete) {
+        toast.success(`🎉 Trilha "${track?.name}" concluída!`, {
+          description: 'Parabéns pelo aprendizado! Continue evoluindo.',
+          duration: 6000,
+        })
+      }
     } catch {
       toast.error('Erro ao atualizar etapa')
     }
-  }, [toggleStep, reload])
+  }, [tracks, toggleStep, reload])
 
   return (
     <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">

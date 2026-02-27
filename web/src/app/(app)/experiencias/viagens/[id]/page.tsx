@@ -7,6 +7,7 @@ import { TripAIChat } from '@/components/experiencias/TripAIChat'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
+import { createTransactionFromTripActual } from '@/lib/integrations/financas'
 import {
   useTripDetail, useUpdateTrip, useDeleteTrip,
   useAddAccommodation, useDeleteAccommodation,
@@ -137,9 +138,37 @@ export default function TripDetailPage() {
 
   async function handleStatusChange(newStatus: TripStatus) {
     if (!trip) return
+
+    // RN-EXP-32: confirmação ao cancelar viagem
+    if (newStatus === 'cancelled') {
+      const hasItems = accommodations.length + transports.length + itinerary.length + checklist.length
+      const warning = hasItems > 0 ? ` Esta viagem tem ${hasItems} item(ns) vinculado(s) que permanecerão no histórico.` : ''
+      if (!confirm(`Cancelar "${trip.name}"?${warning} Esta ação poderá ser revertida alterando o status.`)) return
+    }
+
     try {
       await updateTrip(trip.id, { status: newStatus })
-      toast.success('Status atualizado')
+
+      // RN-EXP-20: viagem concluída com gastos → oferecer registro em Finanças
+      if (newStatus === 'completed' && totalActual > 0) {
+        toast.success('Viagem concluída!', {
+          action: {
+            label: 'Registrar gasto em Finanças',
+            onClick: async () => {
+              await createTransactionFromTripActual({
+                tripName: trip.name,
+                actualSpent: totalActual,
+                completionDate: trip.end_date,
+              }).catch(() => {})
+              toast.success('Gasto registrado em Finanças!')
+            },
+          },
+          duration: 10000,
+        })
+      } else {
+        toast.success('Status atualizado')
+      }
+
       await reload()
     } catch {
       toast.error('Erro ao atualizar')

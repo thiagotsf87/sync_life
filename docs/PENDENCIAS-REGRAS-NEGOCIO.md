@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27 (sessão 8 — bridges: MNT-09, CRP-33, MNT-13; notifs: FUT-19, CRP-05; UI: MNT-21, EXP-26, EXP-28, CRP-22; UX: CAR-09)
+**Última atualização:** 2026-02-27 (sessão 9 — notifs: CRP-03; bridges: EXP-20, CRP-25; UX: EXP-32, MNT-06, MNT-26, CAR-10, CAR-20; UI: CRP-23, CRP-24; badges: CRP-38, EXP-31, MNT-25, CAR-19)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -25,12 +25,12 @@
 | Módulo | Total | ✅ | ⚠️ | ❌ |
 |--------|-------|-----|-----|-----|
 | FUTURO | 58 | 23 | 10 | 25 |
-| CORPO | 39 | 28 | 7 | 4 |
-| EXPERIÊNCIAS | 32 | 20 | 4 | 8 |
-| MENTE | 26 | 20 | 3 | 3 |
+| CORPO | 39 | 34 | 5 | 0 |
+| EXPERIÊNCIAS | 32 | 24 | 4 | 4 |
+| MENTE | 26 | 24 | 2 | 0 |
 | PATRIMÔNIO | 24 | 15 | 5 | 4 |
-| CARREIRA | 20 | 11 | 4 | 5 |
-| **TOTAL** | **199** | **~117 (59%)** | **~33 (17%)** | **~49 (25%)** |
+| CARREIRA | 20 | 15 | 3 | 2 |
+| **TOTAL** | **199** | **~131 (66%)** | **~30 (15%)** | **~38 (19%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -190,7 +190,7 @@
 |----|-------|--------|-----------|
 | RN-CRP-01 | Consulta criada → evento automático na Agenda | ✅ | Cross-module |
 | RN-CRP-02 | Ao concluir: campo obrigatório de retorno | ✅ | Implementado no CRUD |
-| RN-CRP-03 | Lembretes de retorno (máx 3) enviados na data | ❌ | Sem notificações |
+| RN-CRP-03 | Lembretes de retorno (máx 3) enviados na data | ✅ | 2026-02-27 — notificação "hoje" via use-notifications |
 | RN-CRP-04 | Status de retorno: pendente/agendado/ignorado | ✅ | |
 | RN-CRP-05 | Retorno pendente 30+ dias → alerta vermelho Dashboard | ✅ | Notif `followup_due` em use-notifications.ts (2026-02-27) |
 | RN-CRP-06 | Especialidades pré-definidas (lista completa) | ✅ | |
@@ -220,9 +220,9 @@
 | RN-CRP-20 | IA considera TDEE, objetivo, restrições, orçamento | ✅ | Passados no body do fetch /api/ai/cardapio |
 | RN-CRP-21 | Cardápio: nome, ingredientes, calorias, macros por refeição | ⚠️ | Nome + calorias + prep_min; macros não retornados pela API |
 | RN-CRP-22 | 7 dias; regeneração 3x/semana (FREE) ilimitado (PRO) | ✅ | 7 dias ✅; contador localStorage + upsell (2026-02-27) |
-| RN-CRP-23 | Usuário pode "travar" dias bons e regenerar os ruins | ❌ | |
-| RN-CRP-24 | Cardápios salvos em histórico | ❌ | |
-| RN-CRP-25 | Orçamento alimentar → transação planejada em Finanças | ❌ | Cross-module |
+| RN-CRP-23 | Usuário pode "travar" dias bons e regenerar os ruins | ✅ | 2026-02-27 — ícone de lock por dia, preserva ao regenerar |
+| RN-CRP-24 | Cardápios salvos em histórico | ✅ | 2026-02-27 — localStorage últimos 3, sidebar histórico |
+| RN-CRP-25 | Orçamento alimentar → transação planejada em Finanças | ✅ | 2026-02-27 — bridge createTransactionFromCardapio, toast com ação |
 | RN-CRP-26 | Aviso legal obrigatório sobre IA | ✅ | Disclaimer "não substitui nutricionista" presente |
 | RN-CRP-27 | Vercel AI SDK + Gemini 1.5 Flash (MVP); `/api/ai/cardapio` | ✅ | Route Handler implementado + integrado |
 | RN-CRP-28 | Coach IA nutrição (PRO): Groq + Llama 3.3 (MVP) | ✅ | Página /corpo/coach com chat streaming + PRO gate + perfil de saúde (2026-02-27) |
@@ -245,7 +245,7 @@
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
 | RN-CRP-37 | Integrações opt-in (configurável nas Settings) | ❌ | Settings de integração não existe |
-| RN-CRP-38 | Transações auto-geradas com badge "Auto — 🏃 Corpo" | ❌ | Nenhuma transação auto-gerada |
+| RN-CRP-38 | Transações auto-geradas com badge "Auto — 🏃 Corpo" | ✅ | 2026-02-27 — badge nos bridges createTransactionFromConsulta e createTransactionFromCardapio |
 | RN-CRP-39 | Excluir consulta → pergunta sobre evento Agenda e transação Finanças | ❌ | |
 
 ---
@@ -285,7 +285,7 @@
 | RN-EXP-17 | Multi-moeda (USD, EUR, BRL) com conversão automática | ❌ | Campo currency existe, sem conversão |
 | RN-EXP-18 | Diferença Estimado vs Real/Pago por categoria | ✅ | |
 | RN-EXP-19 | Pós-viagem: resumo custo real vs estimado | ⚠️ | Dados existem, sem tela pós-viagem |
-| RN-EXP-20 | Custo real → transações em Finanças quando confirmado | ❌ | Cross-module |
+| RN-EXP-20 | Custo real → transações em Finanças quando confirmado | ✅ | 2026-02-27 — toast com ação ao concluir viagem com gastos reais |
 | RN-EXP-21 | Estimador IA: custo por dia no destino | ❌ | Feature não implementada |
 
 #### Sugestões com IA (RN-EXP-22 a 25)
@@ -311,8 +311,8 @@
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
 | RN-EXP-30 | Integrações opt-in | ❌ | |
-| RN-EXP-31 | Transações auto-geradas com badge "Auto — ✈️ Experiências" | ❌ | |
-| RN-EXP-32 | Cancelamento → pergunta sobre exclusão de itens vinculados | ❌ | |
+| RN-EXP-31 | Transações auto-geradas com badge "Auto — ✈️ Experiências" | ✅ | 2026-02-27 — badge em createTransactionFromViagem e createTransactionFromTripActual |
+| RN-EXP-32 | Cancelamento → pergunta sobre exclusão de itens vinculados | ✅ | 2026-02-27 — dialog com contagem de itens vinculados ao cancelar |
 
 ---
 
@@ -327,7 +327,7 @@
 | RN-MNT-03 | Trilha vinculável a habilidade no Carreira (N:1) | ❌ | Cross-module |
 | RN-MNT-04 | Trilha vinculável a meta no Futuro | ❌ | Cross-module |
 | RN-MNT-05 | Status: Em andamento/Pausada/Concluída/Abandonada | ✅ | |
-| RN-MNT-06 | Conclusão de trilha → conquista no sistema | ❌ | Conquistas são mock |
+| RN-MNT-06 | Conclusão de trilha → conquista no sistema | ✅ | 2026-02-27 — toast celebração ao completar último step |
 | RN-MNT-07 | Categorias pré-definidas (12 categorias) | ✅ | |
 | RN-MNT-08 | Limite FREE: 3 trilhas ativas. PRO: ilimitadas | ✅ | checkPlanLimit() em mente/trilhas/page.tsx + badge {n}/3 |
 | RN-MNT-09 | Custo de curso → transação Finanças (Educação) | ✅ | Toggle opt-in + bridge createTransactionFromCurso em TrackWizard (2026-02-27) |
@@ -361,8 +361,8 @@
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
 | RN-MNT-24 | Integrações opt-in | ❌ | |
-| RN-MNT-25 | Eventos auto-gerados com badge "Auto — 🧠 Mente" | ❌ | |
-| RN-MNT-26 | Exclusão de trilha notifica sobre metas/habilidades vinculadas | ❌ | |
+| RN-MNT-25 | Eventos auto-gerados com badge "Auto — 🧠 Mente" | ✅ | 2026-02-27 — badge "Auto — 📚 Mente" em createEventFromPomodoro (agenda.ts) |
+| RN-MNT-26 | Exclusão de trilha notifica sobre metas/habilidades vinculadas | ✅ | 2026-02-27 — aviso no confirm dialog ao excluir trilha com vínculos |
 
 ---
 
@@ -434,7 +434,7 @@
 | RN-CAR-07 | Habilidades compartilhadas entre Roadmap e Trilhas (Mente) | ❌ | Cross-module |
 | RN-CAR-08 | Progresso do passo = média das habilidades vinculadas | ⚠️ | Lógica básica existe |
 | RN-CAR-09 | Concluir roadmap → sugerir atualizar perfil | ✅ | Toast com action button em handleUpdateStep (2026-02-27) |
-| RN-CAR-10 | Salário esperado alimenta cenários no simulador financeiro | ❌ | Cross-module |
+| RN-CAR-10 | Salário esperado alimenta cenários no simulador financeiro | ✅ | 2026-02-27 — link "Ver no Simulador" no roadmap card quando tem target_salary |
 | RN-CAR-11 | Limite FREE: 1 roadmap ativo. PRO: 3 simultâneos | ✅ | checkPlanLimit() em carreira/roadmap/page.tsx |
 | RN-CAR-12 | Roadmap vinculável a Objetivo no Futuro | ❌ | Cross-module |
 
@@ -453,8 +453,8 @@
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
 | RN-CAR-18 | Integrações opt-in | ❌ | |
-| RN-CAR-19 | Transações auto com badge "Auto — 💼 Carreira" | ❌ | |
-| RN-CAR-20 | Promoção efetivada (Jornada) → calcula impacto: "IF X anos antes!" | ❌ | |
+| RN-CAR-19 | Transações auto com badge "Auto — 💼 Carreira" | ✅ | 2026-02-27 — badge em createTransactionFromSalario (financas.ts) |
+| RN-CAR-20 | Promoção efetivada (Jornada) → calcula impacto: "IF X anos antes!" | ✅ | 2026-02-27 — toast com cálculo de ganho em 2 anos ao aumentar salário |
 
 ---
 

@@ -183,3 +183,64 @@ export async function createTransactionFromViagem(opts: {
     recurring_transaction_id: null,
   })
 }
+
+// ─── Experiências → Finanças: custo real (RN-EXP-20) ─────────────────────────
+
+/**
+ * Viagem concluída com gasto real → despesa em Finanças
+ * Categoria: "lazer" | Badge: "Auto — ✈️ Experiências"
+ */
+export async function createTransactionFromTripActual(opts: {
+  tripName: string
+  actualSpent: number
+  completionDate: string
+}): Promise<void> {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
+
+  const description = `Auto — ✈️ Experiências | Gasto real: ${opts.tripName}`
+
+  await (supabase as any).from('transactions').insert({
+    user_id: user.id,
+    category_id: 'lazer',
+    type: 'expense',
+    amount: opts.actualSpent,
+    description,
+    date: opts.completionDate,
+    payment_method: 'credit',
+    is_future: false,
+    notes: `Gasto real registrado ao concluir a viagem "${opts.tripName}"`,
+    recurring_transaction_id: null,
+  })
+}
+
+// ─── Corpo → Finanças: orçamento alimentar (RN-CRP-25) ───────────────────────
+
+/**
+ * Orçamento alimentar semanal → despesa planejada em Finanças
+ * Categoria: "alimentacao" | Badge: "Auto — 🏃 Corpo"
+ */
+export async function createTransactionFromCardapio(opts: {
+  weeklyBudget: number
+  weekStart: string  // YYYY-MM-DD
+}): Promise<void> {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
+
+  const description = `Auto — 🏃 Corpo | Orçamento alimentar semanal`
+
+  await (supabase as any).from('transactions').insert({
+    user_id: user.id,
+    category_id: 'alimentacao',
+    type: 'expense',
+    amount: opts.weeklyBudget,
+    description,
+    date: opts.weekStart,
+    payment_method: 'debit',
+    is_future: isDateInFuture(opts.weekStart),
+    notes: `Orçamento semanal alimentar gerado via Cardápio IA`,
+    recurring_transaction_id: null,
+  })
+}

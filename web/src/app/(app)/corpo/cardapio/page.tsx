@@ -1,13 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Sparkles, RefreshCw } from 'lucide-react'
+import { ArrowLeft, Sparkles, RefreshCw, Lock, Unlock, History } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
 import { useHealthProfile, WEIGHT_GOAL_LABELS } from '@/hooks/use-corpo'
 import { useUserPlan } from '@/hooks/use-user-plan'
+import { createTransactionFromCardapio } from '@/lib/integrations/financas'
 
 // RN-CRP-22: Limite FREE de 3 gerações/semana
 const REGEN_KEY = 'sl_cardapio_regen'
@@ -102,6 +103,35 @@ export default function CardapioPage() {
   const [extraRestrictions, setExtraRestrictions] = useState<string[]>(
     profile?.dietary_restrictions ?? []
   )
+  // RN-CRP-23: dias travados (não regeneram)
+  const [lockedDays, setLockedDays] = useState<Set<number>>(new Set())
+  // RN-CRP-24: histórico de cardápios gerados
+  const [planHistory, setPlanHistory] = useState<DayPlan[][]>([])
+  const [showHistory, setShowHistory] = useState(false)
+
+  useEffect(() => {
+    try {
+      const h = localStorage.getItem('sl_cardapio_history')
+      if (h) setPlanHistory(JSON.parse(h))
+    } catch { /* ignore */ }
+  }, [])
+
+  function saveToHistory(p: DayPlan[]) {
+    setPlanHistory(prev => {
+      const next = [p, ...prev].slice(0, 3)
+      try { localStorage.setItem('sl_cardapio_history', JSON.stringify(next)) } catch { /* ignore */ }
+      return next
+    })
+  }
+
+  function toggleLockDay(idx: number) {
+    setLockedDays(prev => {
+      const next = new Set(prev)
+      if (next.has(idx)) next.delete(idx)
+      else next.add(idx)
+      return next
+    })
+  }
 
   async function handleGenerate() {
     // RN-CRP-22: limite FREE 3 gerações/semana
@@ -131,7 +161,30 @@ export default function CardapioPage() {
       if (!res.ok) throw new Error(`Status ${res.status}`)
       const data = await res.json()
       if (data.week) {
-        setPlan(apiToUiPlan(data.week))
+        const newPlan = apiToUiPlan(data.week)
+        // RN-CRP-23: preserve locked days from current plan
+        const merged = plan && lockedDays.size > 0
+          ? newPlan.map((day, idx) => lockedDays.has(idx) ? plan[idx] : day)
+          : newPlan
+        setPlan(merged)
+        saveToHistory(merged)
+        // RN-CRP-25: offer to register budget in Finanças
+        if (budget) {
+          const weekStart = new Date(getWeekStart()).toISOString().split('T')[0]
+          toast.success('Cardápio gerado!', {
+            action: {
+              label: 'Registrar orçamento em Finanças',
+              onClick: async () => {
+                await createTransactionFromCardapio({
+                  weeklyBudget: Number(budget),
+                  weekStart,
+                }).catch(() => {})
+                toast.success('Orçamento alimentar registrado!')
+              },
+            },
+            duration: 8000,
+          })
+        }
       } else {
         throw new Error('Resposta inesperada da IA')
       }
@@ -260,18 +313,30 @@ export default function CardapioPage() {
 
               <div className="flex gap-1 mb-5 overflow-x-auto pb-1">
                 {DAYS_PT.map((day, idx) => (
-                  <button
-                    key={day}
-                    onClick={() => setSelectedDay(idx)}
-                    className={cn(
-                      'px-3 py-1.5 rounded-[8px] text-[11px] font-medium border whitespace-nowrap transition-all shrink-0',
-                      selectedDay === idx
-                        ? 'border-[#f59e0b] bg-[#f59e0b]/10 text-[var(--sl-t1)]'
-                        : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
-                    )}
-                  >
-                    {day}
-                  </button>
+                  <div key={day} className="relative shrink-0 flex flex-col items-center gap-0.5">
+                    <button
+                      onClick={() => setSelectedDay(idx)}
+                      className={cn(
+                        'px-3 py-1.5 rounded-[8px] text-[11px] font-medium border whitespace-nowrap transition-all',
+                        selectedDay === idx
+                          ? 'border-[#f59e0b] bg-[#f59e0b]/10 text-[var(--sl-t1)]'
+                          : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]',
+                        lockedDays.has(idx) && 'opacity-70'
+                      )}
+                    >
+                      {day}
+                    </button>
+                    {/* RN-CRP-23: lock day button */}
+                    <button
+                      onClick={() => toggleLockDay(idx)}
+                      title={lockedDays.has(idx) ? 'Dia travado (clique para destravar)' : 'Travar dia'}
+                      className="text-[var(--sl-t3)] hover:text-[#f59e0b] transition-colors"
+                    >
+                      {lockedDays.has(idx)
+                        ? <Lock size={10} className="text-[#f59e0b]" />
+                        : <Unlock size={10} />}
+                    </button>
+                  </div>
                 ))}
               </div>
 
@@ -352,6 +417,7 @@ export default function CardapioPage() {
                 'Complete seu perfil de saúde para cardápios mais precisos',
                 'Informe restrições alimentares para evitar ingredientes inadequados',
                 'O orçamento ajuda a IA a sugerir ingredientes acessíveis',
+                'Trave dias bons com o 🔒 para preservar ao regenerar',
               ].map((tip, i) => (
                 <div key={i} className="flex gap-2">
                   <span className="text-[#f59e0b] shrink-0 text-[11px]">→</span>
@@ -360,6 +426,36 @@ export default function CardapioPage() {
               ))}
             </div>
           </div>
+
+          {/* RN-CRP-24: Histórico de cardápios */}
+          {planHistory.length > 0 && (
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
+              <button
+                onClick={() => setShowHistory(h => !h)}
+                className="flex items-center justify-between w-full"
+              >
+                <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] flex items-center gap-2">
+                  <History size={13} />
+                  Histórico ({planHistory.length})
+                </h3>
+                <span className="text-[11px] text-[var(--sl-t3)]">{showHistory ? '▲' : '▼'}</span>
+              </button>
+              {showHistory && (
+                <div className="flex flex-col gap-2 mt-3">
+                  {planHistory.map((hist, hIdx) => (
+                    <button
+                      key={hIdx}
+                      onClick={() => { setPlan(hist); setShowHistory(false) }}
+                      className="text-left p-2 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] hover:border-[var(--sl-border-h)] transition-colors"
+                    >
+                      <p className="text-[11px] font-semibold text-[var(--sl-t1)]">Cardápio #{planHistory.length - hIdx}</p>
+                      <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">{hist[0]?.meals?.[0]?.name?.split('—')[1]?.trim() ?? '7 dias'}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

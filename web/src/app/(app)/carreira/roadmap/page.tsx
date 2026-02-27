@@ -230,6 +230,15 @@ export default function RoadmapPage() {
                     <p className="text-[12px] text-[var(--sl-t2)]">
                       {rm.current_title} → {rm.target_title}
                     </p>
+                    {/* RN-CAR-10: link para simulador quando tem salário alvo */}
+                    {rm.target_salary && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); router.push('/financas/planejamento') }}
+                        className="mt-1 text-[10px] text-[#f59e0b] hover:opacity-80 transition-opacity"
+                      >
+                        💰 {rm.target_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} alvo → Ver no Simulador →
+                      </button>
+                    )}
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="text-right hidden sm:block">

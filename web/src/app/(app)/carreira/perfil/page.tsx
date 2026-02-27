@@ -96,7 +96,26 @@ export default function PerfilCarreiraPage() {
           competenceDate: new Date().toISOString().split('T')[0],
         })
       }
-      toast.success('Perfil salvo!')
+      // RN-CAR-20: promoção efetivada (Jornada) → calcular impacto
+      if (isJornada && profile?.gross_salary && form.gross_salary) {
+        const oldSalary = profile.gross_salary
+        const newSalary = parseFloat(form.gross_salary)
+        if (newSalary > oldSalary) {
+          const monthlyGain = newSalary - oldSalary
+          const gain2y = monthlyGain * 24
+          toast.success(
+            `💼 +${monthlyGain.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/mês`,
+            {
+              description: `Se viesse 2 anos antes, seriam +${gain2y.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} a mais acumulados.`,
+              duration: 8000,
+            }
+          )
+        } else {
+          toast.success('Perfil salvo!')
+        }
+      } else {
+        toast.success('Perfil salvo!')
+      }
       await reload()
     } catch {
       toast.error('Erro ao salvar perfil')
