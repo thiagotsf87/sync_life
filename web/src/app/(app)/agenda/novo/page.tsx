@@ -1,10 +1,18 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
 export default function NovoEventoPage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.replace('/agenda?new=1')
+  }, [router])
+
   return (
-    <div className="max-w-[1140px] mx-auto">
-      <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)]">
-        📅 Novo Evento
-      </h1>
-      <p className="text-[var(--sl-t2)] mt-2 text-sm">Crie um novo evento na sua agenda.</p>
+    <div className="max-w-[1140px] mx-auto px-4 py-7 flex items-center justify-center min-h-[200px]">
+      <p className="text-[13px] text-[var(--sl-t3)]">Redirecionando...</p>
     </div>
   )
 }

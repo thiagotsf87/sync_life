@@ -2,38 +2,26 @@
 
 import { useState } from 'react'
 import { X, Loader2, AlertTriangle } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import type { Transaction } from '@/hooks/use-transactions'
-
-const PAYMENT_LABELS: Record<string, string> = {
-  pix:      'Pix',
-  credit:   'Crédito',
-  debit:    'Débito',
-  cash:     'Dinheiro',
-  transfer: 'Transferência',
-  boleto:   'Boleto',
-}
-
-function fmtR$(n: number): string {
-  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
-}
+import { EVENT_TYPES, type AgendaEvent } from '@/hooks/use-agenda'
 
 function formatDate(dateStr: string): string {
   const [y, m, d] = dateStr.split('-')
   return `${d}/${m}/${y}`
 }
 
-interface DeleteConfirmModalProps {
+interface DeleteEventModalProps {
   open: boolean
-  transaction: Transaction | null
+  event: AgendaEvent | null
   onClose: () => void
   onConfirm: () => Promise<void>
 }
 
-export function DeleteConfirmModal({ open, transaction, onClose, onConfirm }: DeleteConfirmModalProps) {
+export function DeleteEventModal({ open, event, onClose, onConfirm }: DeleteEventModalProps) {
   const [deleting, setDeleting] = useState(false)
 
-  if (!open || !transaction) return null
+  if (!open || !event) return null
+
+  const cfg = EVENT_TYPES[event.type]
 
   async function handleConfirm() {
     setDeleting(true)
@@ -62,7 +50,7 @@ export function DeleteConfirmModal({ open, transaction, onClose, onConfirm }: De
             <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(244,63,94,.12)]">
               <AlertTriangle size={16} className="text-[#f43f5e]" />
             </div>
-            <h2 className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)]">Excluir transação</h2>
+            <h2 className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)]">Excluir evento</h2>
           </div>
           <button
             onClick={onClose}
@@ -75,26 +63,30 @@ export function DeleteConfirmModal({ open, transaction, onClose, onConfirm }: De
         {/* Body */}
         <div className="px-5 py-4">
           <p className="text-[13px] text-[var(--sl-t2)] mb-4 leading-relaxed">
-            Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.
+            Tem certeza que deseja excluir este evento? Esta ação não pode ser desfeita.
           </p>
 
-          {/* Resumo da transação */}
           <div className="flex items-center gap-3 px-3.5 py-3 rounded-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)]">
-            <div className="w-10 h-10 rounded-[10px] bg-[var(--sl-s3)] flex items-center justify-center text-lg shrink-0">
-              {transaction.category?.icon ?? '💳'}
+            <div
+              className="w-10 h-10 rounded-[10px] flex items-center justify-center text-lg shrink-0"
+              style={{ background: `${cfg.color}18` }}
+            >
+              {cfg.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold text-[var(--sl-t1)] truncate">{transaction.description}</p>
+              <p className="text-[13px] font-semibold text-[var(--sl-t1)] truncate">{event.title}</p>
               <p className="text-[11px] text-[var(--sl-t3)]">
-                {formatDate(transaction.date)} · {PAYMENT_LABELS[transaction.payment_method] ?? transaction.payment_method}
+                {formatDate(event.date)}
+                {!event.all_day && event.start_time && ` · ${event.start_time}`}
+                {!event.all_day && event.start_time && event.end_time && `–${event.end_time}`}
               </p>
             </div>
-            <p className={cn(
-              'font-[DM_Mono] text-[15px] font-medium shrink-0',
-              transaction.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]'
-            )}>
-              {transaction.type === 'income' ? '+' : '-'}R$ {fmtR$(transaction.amount)}
-            </p>
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+              style={{ color: cfg.color, background: `${cfg.color}18` }}
+            >
+              {cfg.label}
+            </span>
           </div>
         </div>
 

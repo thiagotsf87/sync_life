@@ -28,6 +28,9 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
+    // Dashboard e rotas autenticadas fazem muitas requisições; evita timeout prematuro
+    navigationTimeout: 90000,
+    actionTimeout: 15000,
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
