@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Flame, Clock, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -12,6 +12,7 @@ import {
 } from '@/hooks/use-mente'
 import { PomodoroTimer } from '@/components/mente/PomodoroTimer'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
+import { createEventFromPomodoro } from '@/lib/integrations/agenda'
 
 export default function TimerPage() {
   const router = useRouter()
@@ -20,21 +21,31 @@ export default function TimerPage() {
 
   const { tracks, loading: tracksLoading } = useStudyTracks()
   const saveSession = useSaveSession()
+  const [syncToAgenda, setSyncToAgenda] = useState(false)
 
   // RN-MNT-16: stats semanais
   const { weekHours, streak, recentSessions, activeTracks: dashTracks, reload: reloadStats } = useMenteDashboard()
 
+  const activeTracks = tracks.filter(t => t.status === 'in_progress')
+
   const handleSessionComplete = useCallback(async (data: Omit<SaveSessionData, 'session_notes'>) => {
     try {
       await saveSession({ ...data })
+      // RN-MNT-13: registrar bloco de estudo na Agenda se opt-in
+      if (syncToAgenda && data.focus_minutes > 0) {
+        const trackName = activeTracks.find(t => t.id === data.track_id)?.name ?? null
+        await createEventFromPomodoro({
+          trackName,
+          focusMinutes: data.focus_minutes,
+          date: new Date().toISOString().split('T')[0],
+        }).catch(() => {})
+      }
       toast.success(`Sessão salva! ${data.focus_minutes}m de foco, ${data.cycles_completed} ciclos.`)
       await reloadStats()
     } catch {
       toast.error('Erro ao salvar sessão')
     }
-  }, [saveSession, reloadStats])
-
-  const activeTracks = tracks.filter(t => t.status === 'in_progress')
+  }, [saveSession, reloadStats, syncToAgenda, activeTracks])
 
   // Trilha mais estudada (maior total_hours entre as ativas)
   const topTrack = dashTracks.length > 0
@@ -85,6 +96,16 @@ export default function TimerPage() {
                 onSessionComplete={handleSessionComplete}
               />
             )}
+            {/* RN-MNT-13: Sync to Agenda */}
+            <label className="flex items-center gap-2 cursor-pointer select-none mt-4 justify-center">
+              <input
+                type="checkbox"
+                checked={syncToAgenda}
+                onChange={e => setSyncToAgenda(e.target.checked)}
+                className="accent-[#a855f7] w-3.5 h-3.5"
+              />
+              <span className="text-[11px] text-[var(--sl-t3)]">Registrar sessão na Agenda ao finalizar</span>
+            </label>
           </div>
 
           {/* Técnica Pomodoro — tips */}

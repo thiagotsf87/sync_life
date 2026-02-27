@@ -11,6 +11,7 @@ import {
   ACTIVITY_TYPES, calcCaloriesBurned,
 } from '@/hooks/use-corpo'
 import { ActivityCard } from '@/components/corpo/ActivityCard'
+import { createEventFromAtividade } from '@/lib/integrations/agenda'
 
 interface ActivityForm {
   type: string
@@ -20,6 +21,7 @@ interface ActivityForm {
   distance: string
   steps: string
   notes: string
+  syncToAgenda: boolean
 }
 
 const EMPTY_FORM: ActivityForm = {
@@ -30,6 +32,7 @@ const EMPTY_FORM: ActivityForm = {
   distance: '',
   steps: '',
   notes: '',
+  syncToAgenda: false,
 }
 
 export default function AtividadesPage() {
@@ -66,9 +69,18 @@ export default function AtividadesPage() {
         notes: form.notes || null,
       }
       await saveActivity(data)
+      // RN-CRP-33: registrar na Agenda se opt-in
+      if (form.syncToAgenda) {
+        const actMeta = ACTIVITY_TYPES.find(a => a.type === form.type)
+        await createEventFromAtividade({
+          activityLabel: actMeta?.label ?? form.type,
+          durationMinutes: form.duration_minutes,
+          recordedAt: form.recorded_at,
+        }).catch(() => {})
+      }
       toast.success('Atividade registrada!')
       setShowModal(false)
-      setForm({ ...EMPTY_FORM, distance: '', steps: '', notes: '' })
+      setForm({ ...EMPTY_FORM, distance: '', steps: '', notes: '', syncToAgenda: false })
       await reload()
     } catch {
       toast.error('Erro ao registrar atividade')
@@ -283,6 +295,17 @@ export default function AtividadesPage() {
                   className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#10b981]"
                 />
               </div>
+
+              {/* RN-CRP-33: Sync to Agenda */}
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={form.syncToAgenda}
+                  onChange={e => setForm(f => ({ ...f, syncToAgenda: e.target.checked }))}
+                  className="accent-[#10b981] w-3.5 h-3.5"
+                />
+                <span className="text-[12px] text-[var(--sl-t2)]">Adicionar à Agenda</span>
+              </label>
 
               <div className="flex gap-2 pt-1">
                 <button onClick={() => setShowModal(false)}

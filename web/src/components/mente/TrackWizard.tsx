@@ -5,6 +5,7 @@ import { X, Plus, Trash2, GripVertical } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { TrackCategory, CreateTrackData } from '@/hooks/use-mente'
 import { CATEGORY_LABELS } from '@/hooks/use-mente'
+import { createTransactionFromCurso } from '@/lib/integrations/financas'
 
 interface TrackWizardProps {
   open: boolean
@@ -32,6 +33,7 @@ interface FormState {
   notes: string
   steps: StepItem[]
   newStep: string
+  syncToFinancas: boolean
 }
 
 const INITIAL: FormState = {
@@ -42,6 +44,7 @@ const INITIAL: FormState = {
   notes: '',
   steps: [],
   newStep: '',
+  syncToFinancas: false,
 }
 
 export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackWizardProps) {
@@ -75,14 +78,23 @@ export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackW
   }
 
   async function handleSave() {
+    const cost = form.cost ? parseFloat(form.cost) : null
     await onSave({
       name: form.name.trim(),
       category: form.category,
       target_date: form.target_date || null,
-      cost: form.cost ? parseFloat(form.cost) : null,
+      cost,
       notes: form.notes.trim() || null,
       steps: form.steps.map((s, i) => ({ title: s.title, sort_order: i })),
     })
+    // RN-MNT-09: registrar custo em Finanças se opt-in
+    if (form.syncToFinancas && cost && cost > 0) {
+      await createTransactionFromCurso({
+        trackName: form.name.trim(),
+        cost,
+        enrollmentDate: new Date().toISOString().split('T')[0],
+      }).catch(() => {})
+    }
     setForm(INITIAL)
     setStep(0)
   }
@@ -246,6 +258,21 @@ export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackW
                   />
                 </div>
               </div>
+
+              {/* RN-MNT-09: Sync to Finanças */}
+              {form.cost && parseFloat(form.cost) > 0 && (
+                <label className="flex items-center gap-2 cursor-pointer select-none py-1">
+                  <input
+                    type="checkbox"
+                    checked={form.syncToFinancas}
+                    onChange={e => setForm(f => ({ ...f, syncToFinancas: e.target.checked }))}
+                    className="accent-[#a855f7] w-3.5 h-3.5"
+                  />
+                  <span className="text-[12px] text-[var(--sl-t2)]">
+                    Registrar custo em Finanças
+                  </span>
+                </label>
+              )}
 
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">

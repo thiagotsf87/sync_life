@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27 (sessão 7 — Agenda integrações P3: CRP-01, EXP-02; enforcement FREE/PRO: MNT-22, PTR-21, CRP-08)
+**Última atualização:** 2026-02-27 (sessão 8 — bridges: MNT-09, CRP-33, MNT-13; notifs: FUT-19, CRP-05; UI: MNT-21, EXP-26, EXP-28, CRP-22; UX: CAR-09)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -24,13 +24,13 @@
 
 | Módulo | Total | ✅ | ⚠️ | ❌ |
 |--------|-------|-----|-----|-----|
-| FUTURO | 58 | 22 | 10 | 26 |
-| CORPO | 39 | 26 | 9 | 4 |
-| EXPERIÊNCIAS | 32 | 18 | 6 | 8 |
-| MENTE | 26 | 17 | 5 | 4 |
+| FUTURO | 58 | 23 | 10 | 25 |
+| CORPO | 39 | 28 | 7 | 4 |
+| EXPERIÊNCIAS | 32 | 20 | 4 | 8 |
+| MENTE | 26 | 20 | 3 | 3 |
 | PATRIMÔNIO | 24 | 15 | 5 | 4 |
-| CARREIRA | 20 | 10 | 4 | 6 |
-| **TOTAL** | **199** | **~108 (54%)** | **~39 (20%)** | **~52 (26%)** |
+| CARREIRA | 20 | 11 | 4 | 5 |
+| **TOTAL** | **199** | **~117 (59%)** | **~33 (17%)** | **~49 (25%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -119,7 +119,7 @@
 | RN-FUT-16 | Progresso = Σ(progresso × peso) / Σ(pesos) | ⚠️ | Calculado mas pesos iguais |
 | RN-FUT-17 | Cálculo por tipo: monetário, peso, tarefa, frequência, etc. | ⚠️ | Tipos básicos implementados |
 | RN-FUT-18 | Metas vinculadas atualizam automaticamente | ❌ | Cross-module não implementado |
-| RN-FUT-19 | 100% em todas metas → notificação de celebração | ❌ | Sem sistema de notificação |
+| RN-FUT-19 | 100% em todas metas → notificação de celebração | ✅ | Notif `objective_completed` em use-notifications.ts (2026-02-27) |
 | RN-FUT-20 | Objetivos pausados excluídos do Life Sync Score | ⚠️ | Score não lê status pausado |
 | RN-FUT-21 | Adicionar metas a objetivo existente | ✅ | |
 | RN-FUT-22 | Remover metas com mínimo de 1 obrigatória | ⚠️ | Sem validação de mínimo |
@@ -192,7 +192,7 @@
 | RN-CRP-02 | Ao concluir: campo obrigatório de retorno | ✅ | Implementado no CRUD |
 | RN-CRP-03 | Lembretes de retorno (máx 3) enviados na data | ❌ | Sem notificações |
 | RN-CRP-04 | Status de retorno: pendente/agendado/ignorado | ✅ | |
-| RN-CRP-05 | Retorno pendente 30+ dias → alerta vermelho Dashboard | ❌ | Alerta não implementado |
+| RN-CRP-05 | Retorno pendente 30+ dias → alerta vermelho Dashboard | ✅ | Notif `followup_due` em use-notifications.ts (2026-02-27) |
 | RN-CRP-06 | Especialidades pré-definidas (lista completa) | ✅ | |
 | RN-CRP-07 | Custo da consulta → transação em Finanças (categoria Saúde) | ✅ | Cross-module |
 | RN-CRP-08 | Limite FREE: 3 consultas ativas/mês | ✅ | checkPlanLimit('consultations_per_month') em saude/page.tsx |
@@ -219,7 +219,7 @@
 |----|-------|--------|-----------|
 | RN-CRP-20 | IA considera TDEE, objetivo, restrições, orçamento | ✅ | Passados no body do fetch /api/ai/cardapio |
 | RN-CRP-21 | Cardápio: nome, ingredientes, calorias, macros por refeição | ⚠️ | Nome + calorias + prep_min; macros não retornados pela API |
-| RN-CRP-22 | 7 dias; regeneração 3x/semana (FREE) ilimitado (PRO) | ⚠️ | 7 dias ✅; contador de regenerações FREE ❌ |
+| RN-CRP-22 | 7 dias; regeneração 3x/semana (FREE) ilimitado (PRO) | ✅ | 7 dias ✅; contador localStorage + upsell (2026-02-27) |
 | RN-CRP-23 | Usuário pode "travar" dias bons e regenerar os ruins | ❌ | |
 | RN-CRP-24 | Cardápios salvos em histórico | ❌ | |
 | RN-CRP-25 | Orçamento alimentar → transação planejada em Finanças | ❌ | Cross-module |
@@ -235,7 +235,7 @@
 | RN-CRP-30 | Calorias = MET × peso × duração (horas) | ✅ | |
 | RN-CRP-31 | Meta de atividade: X vezes/semana, mínimo Y min/sessão | ✅ | |
 | RN-CRP-32 | Meta de passos diários configurável (padrão 8.000) | ✅ | |
-| RN-CRP-33 | Atividade registrada → evento na Agenda "🏃 Corpo" | ❌ | Cross-module |
+| RN-CRP-33 | Atividade registrada → evento na Agenda "🏃 Corpo" | ✅ | Toggle opt-in + bridge createEventFromAtividade (2026-02-27) |
 | RN-CRP-34 | Relatório semanal: total atividades, minutos, calorias | ⚠️ | Básico no Dashboard |
 | RN-CRP-35 | Streak de atividade física → conquistas | ❌ | Streak não calculado |
 | RN-CRP-36 | Meta exercício vinculada ao Futuro → sincroniza | ❌ | Cross-module |
@@ -301,9 +301,9 @@
 
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
-| RN-EXP-26 | Checklist base por destino (nacional/internacional), duração, tipo | ⚠️ | Checklist existe, sem geração automática |
+| RN-EXP-26 | Checklist base por destino (nacional/internacional), duração, tipo | ✅ | buildAutoChecklist por tipo+duração passa para createTrip (2026-02-27) |
 | RN-EXP-27 | Itens personalizáveis | ✅ | |
-| RN-EXP-28 | % concluída exibida no Dashboard | ⚠️ | Sem cálculo de % |
+| RN-EXP-28 | % concluída exibida no Dashboard | ✅ | checklistPct KPI no Dashboard de Experiências (2026-02-27) |
 | RN-EXP-29 | Alerta passaporte vence antes/até 6m após viagem | ❌ | |
 
 #### Integração (RN-EXP-30 a 32)
@@ -330,7 +330,7 @@
 | RN-MNT-06 | Conclusão de trilha → conquista no sistema | ❌ | Conquistas são mock |
 | RN-MNT-07 | Categorias pré-definidas (12 categorias) | ✅ | |
 | RN-MNT-08 | Limite FREE: 3 trilhas ativas. PRO: ilimitadas | ✅ | checkPlanLimit() em mente/trilhas/page.tsx + badge {n}/3 |
-| RN-MNT-09 | Custo de curso → transação Finanças (Educação) | ❌ | Cross-module |
+| RN-MNT-09 | Custo de curso → transação Finanças (Educação) | ✅ | Toggle opt-in + bridge createTransactionFromCurso em TrackWizard (2026-02-27) |
 
 #### Timer de Foco / Pomodoro (RN-MNT-10 a 18)
 
@@ -339,7 +339,7 @@
 | RN-MNT-10 | Padrão: 25min foco, 5min pausa curta, 15min longa, 4 ciclos | ✅ | DEFAULT_CONFIG em PomodoroTimer.tsx |
 | RN-MNT-11 | Personalizável (15-90 min foco, etc.) | ✅ | Settings panel com ±1 botões |
 | RN-MNT-12 | Pomodoro concluído → tempo registrado na trilha | ✅ | useSaveSession → atualiza total_hours |
-| RN-MNT-13 | Sessão associável a evento "Bloco de Estudo" na Agenda | ❌ | Cross-module |
+| RN-MNT-13 | Sessão associável a evento "Bloco de Estudo" na Agenda | ✅ | Toggle opt-in + bridge createEventFromPomodoro em timer/page.tsx (2026-02-27) |
 | RN-MNT-14 | Sons ambiente (chuva, lo-fi) — exclusivo Jornada/PRO | 🚫 | Adiado |
 | RN-MNT-15 | Streak: dias consecutivos com 1+ Pomodoro | ✅ | study_streaks atualizado; exibido no painel |
 | RN-MNT-16 | Relatório semanal: horas, média/dia, trilha mais estudada | ✅ | Painel stats em timer/page.tsx (KPIs + sessões recentes) |
@@ -352,7 +352,7 @@
 |----|-------|--------|-----------|
 | RN-MNT-19 | Tipos: Link, Livro, Vídeo, PDF, Nota, Outro | ✅ | |
 | RN-MNT-20 | Por trilha, filtráveis por status | ✅ | |
-| RN-MNT-21 | Nota pessoal em Markdown básico | ⚠️ | Texto simples, sem Markdown render |
+| RN-MNT-21 | Nota pessoal em Markdown básico | ✅ | renderMarkdown() com sanitização XSS em ResourceCard.tsx (2026-02-27) |
 | RN-MNT-22 | Limite FREE: 10 recursos/trilha. PRO: ilimitado | ✅ | checkPlanLimit('resources_per_track') em biblioteca/page.tsx |
 | RN-MNT-23 | Recursos são referências, não armazenam arquivos | ✅ | |
 
@@ -433,7 +433,7 @@
 | RN-CAR-06 | Cada passo: 0+ habilidades vinculadas | ✅ | |
 | RN-CAR-07 | Habilidades compartilhadas entre Roadmap e Trilhas (Mente) | ❌ | Cross-module |
 | RN-CAR-08 | Progresso do passo = média das habilidades vinculadas | ⚠️ | Lógica básica existe |
-| RN-CAR-09 | Concluir roadmap → sugerir atualizar perfil | ❌ | |
+| RN-CAR-09 | Concluir roadmap → sugerir atualizar perfil | ✅ | Toast com action button em handleUpdateStep (2026-02-27) |
 | RN-CAR-10 | Salário esperado alimenta cenários no simulador financeiro | ❌ | Cross-module |
 | RN-CAR-11 | Limite FREE: 1 roadmap ativo. PRO: 3 simultâneos | ✅ | checkPlanLimit() em carreira/roadmap/page.tsx |
 | RN-CAR-12 | Roadmap vinculável a Objetivo no Futuro | ❌ | Cross-module |

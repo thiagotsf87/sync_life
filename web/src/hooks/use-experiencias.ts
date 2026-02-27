@@ -295,6 +295,7 @@ export function useTripDetail(tripId: string) {
 
 export function useExperienciasDashboard() {
   const [trips, setTrips] = useState<Trip[]>([])
+  const [checklistPct, setChecklistPct] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const supabase = createClient()
@@ -312,7 +313,27 @@ export function useExperienciasDashboard() {
         .order('start_date', { ascending: true })
         .limit(10)
       if (error) throw error
-      setTrips(data ?? [])
+      const tripList: Trip[] = data ?? []
+      setTrips(tripList)
+
+      // RN-EXP-28: % checklist das viagens ativas
+      const activeIds = tripList
+        .filter(t => !['completed', 'cancelled'].includes(t.status))
+        .map(t => t.id)
+      if (activeIds.length > 0) {
+        const { data: checkItems } = await sb
+          .from('trip_checklist_items')
+          .select('is_completed')
+          .in('trip_id', activeIds)
+        if (checkItems && checkItems.length > 0) {
+          const done = checkItems.filter((c: { is_completed: boolean }) => c.is_completed).length
+          setChecklistPct(Math.round((done / checkItems.length) * 100))
+        } else {
+          setChecklistPct(null)
+        }
+      } else {
+        setChecklistPct(null)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar dashboard')
     } finally {
@@ -321,7 +342,7 @@ export function useExperienciasDashboard() {
   }, [])
 
   useEffect(() => { load() }, [load])
-  return { trips, loading, error, reload: load }
+  return { trips, checklistPct, loading, error, reload: load }
 }
 
 // ─── Mutations ────────────────────────────────────────────────────────────────

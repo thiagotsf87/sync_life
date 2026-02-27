@@ -19,7 +19,7 @@ export default function ExperienciasPage() {
   const mode = useShellStore((s) => s.mode)
   const isJornada = mode === 'jornada'
 
-  const { trips, loading, error } = useExperienciasDashboard()
+  const { trips, checklistPct, loading, error } = useExperienciasDashboard()
 
   // Derived stats
   const upcoming = trips.filter(t => ['planning', 'reserved', 'ongoing'].includes(t.status))
@@ -99,11 +99,11 @@ export default function ExperienciasPage() {
           accent="#f59e0b"
         />
         <KpiCard
-          label="Orçamento total"
-          value={totalBudget > 0 ? totalBudget.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}
-          delta={totalSpent > 0 ? `${totalSpent.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} gastos` : 'Sem gastos registrados'}
-          deltaType="neutral"
-          accent="#a855f7"
+          label="Checklist ativas"
+          value={checklistPct != null ? `${checklistPct}%` : '—'}
+          delta={checklistPct != null ? (checklistPct >= 80 ? 'Quase pronto!' : checklistPct >= 50 ? 'Em andamento' : 'Atenção pendente') : 'Sem itens'}
+          deltaType={checklistPct != null && checklistPct >= 80 ? 'up' : checklistPct != null && checklistPct < 30 ? 'warn' : 'neutral'}
+          accent="#f59e0b"
         />
       </div>
 

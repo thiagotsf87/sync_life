@@ -8,8 +8,8 @@ import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
 import {
   useTrips, useCreateTrip,
-  TRIP_TYPE_LABELS,
-  type TripType,
+  TRIP_TYPE_LABELS, DEFAULT_CHECKLIST_ITEMS,
+  type TripType, type ChecklistCategory,
 } from '@/hooks/use-experiencias'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
@@ -50,6 +50,39 @@ const EMPTY_DATA: WizardData = {
 }
 
 const CURRENCIES = ['BRL', 'USD', 'EUR', 'GBP', 'ARS']
+
+// RN-EXP-26: gera checklist personalizado por tipo e duração
+function buildAutoChecklist(tripType: TripType, days: number): { title: string; category: ChecklistCategory }[] {
+  const items: { title: string; category: ChecklistCategory }[] = [...DEFAULT_CHECKLIST_ITEMS]
+
+  if (tripType === 'work') {
+    items.push(
+      { title: 'Cartões de visita', category: 'documents' },
+      { title: 'Notebook e cabos carregados', category: 'luggage' },
+      { title: 'Agenda de reuniões impressa', category: 'documents' },
+    )
+  }
+  if (tripType === 'study') {
+    items.push(
+      { title: 'Material de estudo/apostilas', category: 'luggage' },
+      { title: 'Comprovante de matrícula', category: 'documents' },
+    )
+  }
+  if (days > 7) {
+    items.push(
+      { title: 'Reservar passeios com antecedência', category: 'before_trip' },
+      { title: 'Planejar lavanderia local', category: 'luggage' },
+    )
+  }
+  if (days > 14) {
+    items.push(
+      { title: 'Consulta médica preventiva', category: 'before_trip' },
+      { title: 'Medicamentos para viagem longa', category: 'luggage' },
+    )
+  }
+
+  return items
+}
 
 const STEP_LABELS = [
   '✈️ Destino',
@@ -99,6 +132,8 @@ export default function NovaViagemPage() {
     }
     setIsSaving(true)
     try {
+      // RN-EXP-26: checklist automática por tipo e duração
+      const autoChecklist = buildAutoChecklist(data.trip_type, stepDays)
       const trip = await createTrip({
         name: data.name.trim(),
         destinations: data.destinations,
@@ -109,7 +144,7 @@ export default function NovaViagemPage() {
         total_budget: data.total_budget ? parseFloat(data.total_budget) : null,
         currency: data.currency,
         notes: data.notes.trim() || null,
-      })
+      }, autoChecklist)
       // RN-EXP-02: criar eventos de partida e retorno na Agenda
       if (data.syncToAgenda) {
         await createEventsFromViagem({

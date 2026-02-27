@@ -4,8 +4,37 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Sparkles, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
 import { useHealthProfile, WEIGHT_GOAL_LABELS } from '@/hooks/use-corpo'
+import { useUserPlan } from '@/hooks/use-user-plan'
+
+// RN-CRP-22: Limite FREE de 3 gerações/semana
+const REGEN_KEY = 'sl_cardapio_regen'
+
+function getWeekStart(): number {
+  const now = new Date()
+  const day = now.getDay()
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1)
+  return new Date(now.getFullYear(), now.getMonth(), diff).getTime()
+}
+
+function getRegenCount(): number {
+  try {
+    const saved = localStorage.getItem(REGEN_KEY)
+    if (!saved) return 0
+    const parsed: { count: number; weekStart: number } = JSON.parse(saved)
+    if (parsed.weekStart !== getWeekStart()) return 0
+    return parsed.count
+  } catch { return 0 }
+}
+
+function incrementRegenCount(): void {
+  try {
+    const count = getRegenCount()
+    localStorage.setItem(REGEN_KEY, JSON.stringify({ count: count + 1, weekStart: getWeekStart() }))
+  } catch { /* ignore */ }
+}
 
 interface MealItem {
   name: string
@@ -63,6 +92,7 @@ export default function CardapioPage() {
   const isJornada = mode === 'jornada'
 
   const { profile } = useHealthProfile()
+  const { isPro } = useUserPlan()
 
   const [generating, setGenerating] = useState(false)
   const [plan, setPlan] = useState<DayPlan[] | null>(null)
@@ -74,6 +104,17 @@ export default function CardapioPage() {
   )
 
   async function handleGenerate() {
+    // RN-CRP-22: limite FREE 3 gerações/semana
+    if (!isPro) {
+      const count = getRegenCount()
+      if (count >= 3) {
+        toast.error('Limite de 3 gerações/semana no plano FREE. Assine o PRO para ilimitado.', {
+          action: { label: 'Ver Planos', onClick: () => router.push('/configuracoes/plano') },
+        })
+        return
+      }
+      incrementRegenCount()
+    }
     setGenerating(true)
     setError(null)
     try {

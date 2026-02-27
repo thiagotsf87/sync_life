@@ -128,8 +128,26 @@ export default function RoadmapPage() {
 
   async function handleUpdateStep(stepId: string, roadmapId: string, status: StepStatus) {
     try {
+      // RN-CAR-09: verificar antes de reload se este passo conclui o roadmap
+      let willComplete = false
+      if (status === 'completed') {
+        const roadmap = roadmaps.find(r => r.id === roadmapId)
+        const steps = roadmap?.steps ?? []
+        if (steps.length > 0) {
+          const remaining = steps.filter(s => s.id !== stepId && s.status !== 'completed')
+          willComplete = remaining.length === 0
+        }
+      }
+
       await updateStep(stepId, roadmapId, status)
       await reload()
+
+      if (willComplete) {
+        toast.success('🎉 Roadmap concluído! Atualize seu perfil de carreira.', {
+          action: { label: 'Atualizar Perfil', onClick: () => router.push('/carreira/perfil') },
+          duration: 8000,
+        })
+      }
     } catch {
       toast.error('Erro ao atualizar passo')
     }

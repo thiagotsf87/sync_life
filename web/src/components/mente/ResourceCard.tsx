@@ -28,6 +28,17 @@ const STATUS_COLORS: Record<ResourceStatus, string> = {
 
 const STATUS_SEQUENCE: ResourceStatus[] = ['to_study', 'studying', 'completed']
 
+// RN-MNT-21: render basic markdown in personal_notes (bold, italic, line breaks)
+function renderMarkdown(raw: string): string {
+  return raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/_(.+?)_/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>')
+}
+
 export function ResourceCard({ resource, onUpdateStatus, onDelete }: ResourceCardProps) {
   function cycleStatus() {
     if (!onUpdateStatus) return
@@ -78,9 +89,10 @@ export function ResourceCard({ resource, onUpdateStatus, onDelete }: ResourceCar
           </div>
 
           {resource.personal_notes && (
-            <p className="text-[11px] text-[var(--sl-t3)] mt-0.5 line-clamp-2">
-              {resource.personal_notes}
-            </p>
+            <p
+              className="text-[11px] text-[var(--sl-t3)] mt-0.5 line-clamp-2"
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(resource.personal_notes) }}
+            />
           )}
 
           <div className="flex items-center gap-2 mt-2">

@@ -200,6 +200,38 @@ export function useNotifications() {
       }
     }
 
+    // ── 5. Objetivos concluídos recentemente → celebração (RN-FUT-19) ───────
+    const recentCompletionDate = new Date(Date.now() - 24 * 3600000).toISOString()
+    const { data: completedObjectives } = await sb
+      .from('objectives')
+      .select('id, name, updated_at')
+      .eq('user_id', user.id)
+      .eq('status', 'completed')
+      .gte('updated_at', recentCompletionDate)
+
+    if (completedObjectives) {
+      for (const obj of completedObjectives) {
+        const { data: existing } = await sb
+          .from('notifications')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('type', 'objective_completed')
+          .eq('action_url', `/futuro/${obj.id}`)
+          .limit(1)
+
+        if (!existing || existing.length === 0) {
+          await sb.from('notifications').insert({
+            user_id: user.id,
+            type: 'objective_completed',
+            title: '🎉 Objetivo concluído!',
+            body: `Você concluiu "${obj.name}"! Hora de celebrar e definir o próximo objetivo.`,
+            module: 'futuro',
+            action_url: `/futuro/${obj.id}`,
+          })
+        }
+      }
+    }
+
     await fetchNotifications()
   }, [supabase, fetchNotifications])
 

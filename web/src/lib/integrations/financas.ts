@@ -6,7 +6,7 @@
  *
  * Badge "Auto — <módulo>" identifica transações geradas automaticamente.
  *
- * Regras: RN-PTR-12, RN-CAR-01, RN-EXP-03, RN-CRP-07
+ * Regras: RN-PTR-12, RN-CAR-01, RN-EXP-03, RN-CRP-07, RN-MNT-09
  *         RN-CRP-38, RN-PTR-23, RN-EXP-31, RN-CAR-19
  */
 
@@ -118,6 +118,37 @@ export async function createTransactionFromConsulta(opts: {
     payment_method: 'credit',
     is_future: isDateInFuture(dateOnly),
     notes: `Gerado automaticamente a partir da consulta de ${opts.specialty}`,
+    recurring_transaction_id: null,
+  })
+}
+
+// ─── Mente → Finanças (RN-MNT-09) ────────────────────────────────────────────
+
+/**
+ * Trilha de estudo com custo → despesa em Finanças
+ * Categoria: "educacao" | Badge: "Auto — 📚 Mente"
+ */
+export async function createTransactionFromCurso(opts: {
+  trackName: string
+  cost: number
+  enrollmentDate: string
+}): Promise<void> {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
+
+  const description = `Auto — 📚 Mente | Curso "${opts.trackName}"`
+
+  await (supabase as any).from('transactions').insert({
+    user_id: user.id,
+    category_id: 'educacao',
+    type: 'expense',
+    amount: opts.cost,
+    description,
+    date: opts.enrollmentDate,
+    payment_method: 'credit',
+    is_future: isDateInFuture(opts.enrollmentDate),
+    notes: `Gerado automaticamente ao criar trilha de estudo "${opts.trackName}"`,
     recurring_transaction_id: null,
   })
 }
