@@ -26,6 +26,15 @@ const CATEGORY_OPTIONS: { value: ObjectiveCategory; icon: string; label: string 
   { value: 'other', icon: '🎯', label: 'Outro' },
 ]
 
+// RN-FUT-09/41: hints de módulo por categoria
+const CATEGORY_TIPS: Partial<Record<ObjectiveCategory, string>> = {
+  financial: '💡 Módulo Finanças ativo? Receitas e despesas poderão alimentar este objetivo.',
+  health: '💡 Módulo Corpo ativo? Atividades físicas e consultas conectam-se automaticamente.',
+  professional: '💡 Módulo Carreira ativo? Roadmaps e histórico salarial alimentarão este objetivo.',
+  educational: '💡 Dica: vincule uma Trilha de Aprendizado no Mente para acompanhar o progresso.',
+  experience: '💡 Módulo Experiências ativo? Viagens planejadas conectam-se a este objetivo.',
+}
+
 const PRIORITY_OPTIONS: { value: ObjectivePriority; label: string; color: string; desc: string }[] = [
   { value: 'high', label: 'Alta', color: '#f43f5e', desc: 'Foco principal agora' },
   { value: 'medium', label: 'Média', color: '#f59e0b', desc: 'Importante, não urgente' },
@@ -214,6 +223,12 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
                   </button>
                 ))}
               </div>
+              {/* RN-FUT-09/41: module hint for selected category */}
+              {CATEGORY_TIPS[form.category] && (
+                <div className="mt-3 p-3 bg-[#10b981]/5 border border-[#10b981]/20 rounded-[10px]">
+                  <p className="text-[11px] text-[var(--sl-t2)]">{CATEGORY_TIPS[form.category]}</p>
+                </div>
+              )}
             </div>
           )}
 

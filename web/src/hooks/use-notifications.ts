@@ -11,6 +11,8 @@ export type NotificationType =
   | 'followup_due'
   | 'objective_completed'
   | 'trip_upcoming'
+  | 'archive_suggestion'
+  | 'weekly_summary'
 
 export interface AppNotification {
   id: string
@@ -232,7 +234,69 @@ export function useNotifications() {
       }
     }
 
-    // ── 6. Retorno médico agendado para hoje (RN-CRP-03) ─────────────────
+    // ── 6. Objetivos inativos 30+ dias → sugerir arquivamento (RN-FUT-57) ─
+    const archiveThreshold = new Date(Date.now() - 30 * 86400000).toISOString()
+    const { data: staleObjectives30 } = await sb
+      .from('objectives')
+      .select('id, name, progress, updated_at')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .lt('progress', 50)
+      .lt('updated_at', archiveThreshold)
+
+    if (staleObjectives30) {
+      for (const obj of staleObjectives30) {
+        const { data: existing } = await sb
+          .from('notifications')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('type', 'archive_suggestion')
+          .eq('action_url', `/futuro/${obj.id}`)
+          .gte('created_at', new Date(Date.now() - 14 * 86400000).toISOString())
+          .limit(1)
+
+        if (!existing || existing.length === 0) {
+          await sb.from('notifications').insert({
+            user_id: user.id,
+            type: 'archive_suggestion',
+            title: '📦 Pausar objetivo?',
+            body: `"${obj.name}" está inativo há mais de 30 dias com ${obj.progress ?? 0}% de progresso. Considere pausar ou arquivar.`,
+            module: 'futuro',
+            action_url: `/futuro/${obj.id}`,
+          })
+        }
+      }
+    }
+
+    // ── 7. Resumo semanal (RN-FUT-53) ────────────────────────────────────
+    const weeklyDate = new Date(Date.now() - 7 * 86400000).toISOString()
+    const { data: recentSummary } = await sb
+      .from('notifications')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('type', 'weekly_summary')
+      .gte('created_at', weeklyDate)
+      .limit(1)
+
+    if (!recentSummary || recentSummary.length === 0) {
+      const activeCount = objectives?.filter((o: { status: string }) => o.status === 'active').length ?? 0
+      const completedThisWeek = objectives?.filter(
+        (o: { status: string; updated_at: string | null }) =>
+          o.status === 'completed' && o.updated_at && new Date(o.updated_at) >= new Date(weeklyDate)
+      ).length ?? 0
+      if (activeCount > 0) {
+        await sb.from('notifications').insert({
+          user_id: user.id,
+          type: 'weekly_summary',
+          title: '📊 Resumo semanal',
+          body: `${activeCount} objetivo${activeCount !== 1 ? 's' : ''} ativo${activeCount !== 1 ? 's' : ''}${completedThisWeek > 0 ? `, ${completedThisWeek} concluído${completedThisWeek !== 1 ? 's' : ''} esta semana` : ''}. Continue firme!`,
+          module: 'futuro',
+          action_url: '/futuro',
+        })
+      }
+    }
+
+    // ── 8. Retorno médico agendado para hoje (RN-CRP-03) ─────────────────
     const todayStr = new Date().toISOString().split('T')[0]
     const { data: todayFollowups } = await sb
       .from('medical_appointments')

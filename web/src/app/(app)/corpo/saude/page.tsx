@@ -133,7 +133,8 @@ export default function SaudePage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Excluir esta consulta?')) return
+    // RN-CRP-39: avisar sobre itens vinculados (evento na Agenda, transação em Finanças)
+    if (!confirm('Excluir esta consulta?\n\n⚠️ Eventos criados automaticamente na Agenda e transações em Finanças vinculadas a esta consulta não serão removidos automaticamente.')) return
     try {
       await deleteAppointment(id)
       toast.success('Consulta excluída')

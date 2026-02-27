@@ -127,7 +127,8 @@ export default function CarteiraPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Excluir este ativo e todas as operações?')) return
+    // RN-PTR-24: avisar sobre transações vinculadas em Finanças
+    if (!confirm('Excluir este ativo e todas as operações?\n\n⚠️ Transações de proventos geradas automaticamente em Finanças vinculadas a este ativo não serão removidas.')) return
     try {
       await deleteAsset(id)
       toast.success('Ativo removido')

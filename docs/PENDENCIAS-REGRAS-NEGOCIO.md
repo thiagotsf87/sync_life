@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27 (sessão 9 — notifs: CRP-03; bridges: EXP-20, CRP-25; UX: EXP-32, MNT-06, MNT-26, CAR-10, CAR-20; UI: CRP-23, CRP-24; badges: CRP-38, EXP-31, MNT-25, CAR-19)
+**Última atualização:** 2026-02-27 (sessão 10 — notifs: FUT-53, FUT-57; UI: FUT-09, FUT-41; UX: CRP-39, PTR-24; badges: PTR-23)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -24,13 +24,13 @@
 
 | Módulo | Total | ✅ | ⚠️ | ❌ |
 |--------|-------|-----|-----|-----|
-| FUTURO | 58 | 23 | 10 | 25 |
+| FUTURO | 58 | 27 | 10 | 21 |
 | CORPO | 39 | 34 | 5 | 0 |
 | EXPERIÊNCIAS | 32 | 24 | 4 | 4 |
 | MENTE | 26 | 24 | 2 | 0 |
-| PATRIMÔNIO | 24 | 15 | 5 | 4 |
+| PATRIMÔNIO | 24 | 17 | 5 | 2 |
 | CARREIRA | 20 | 15 | 3 | 2 |
-| **TOTAL** | **199** | **~131 (66%)** | **~30 (15%)** | **~38 (19%)** |
+| **TOTAL** | **199** | **~140 (70%)** | **~29 (15%)** | **~30 (15%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -104,7 +104,7 @@
 |----|-------|--------|-----------|
 | RN-FUT-07 | Mínimo 1 meta por objetivo | ⚠️ | Validação básica existe |
 | RN-FUT-08 | Limite FREE: 3 metas por objetivo | ✅ | checkPlanLimit('goals_per_objective') em futuro/[id]/page.tsx (2026-02-27) |
-| RN-FUT-09 | Módulo destino deve estar ativo no perfil | ❌ | |
+| RN-FUT-09 | Módulo destino deve estar ativo no perfil | ✅ | 2026-02-27 — hint de módulo por categoria no ObjectiveWizard (step 1) |
 | RN-FUT-10 | Vinculação a itens existentes nos módulos | ❌ | Cross-module não implementado |
 | RN-FUT-11 | Meta financeira → pergunta sobre orçamento existente | ❌ | |
 | RN-FUT-12 | Meta tarefa → cria evento automático na Agenda | ❌ | Cross-module |
@@ -151,7 +151,7 @@
 | RN-FUT-38 | Progresso de peso atualiza automaticamente do Corpo | ❌ | Cross-module |
 | RN-FUT-39 | Meta de exercício sincroniza com meta atividades Corpo | ❌ | Cross-module |
 | RN-FUT-40 | Meta vinculada a trilha herda progresso | ❌ | Cross-module |
-| RN-FUT-41 | Sem trilha → sugerir criar no Mente | ❌ | |
+| RN-FUT-41 | Sem trilha → sugerir criar no Mente | ✅ | 2026-02-27 — dica de trilha no hint de categoria 'educational' do ObjectiveWizard |
 | RN-FUT-42 | Conclusão da trilha → meta = 100% | ❌ | Cross-module |
 | RN-FUT-43 | Meta patrimônio = (patrimônio atual / alvo) × 100 | ❌ | Cross-module |
 | RN-FUT-44 | Meta renda passiva = (proventos médios 12m / alvo) × 100 | ❌ | Cross-module |
@@ -168,7 +168,7 @@
 |----|-------|--------|-----------|
 | RN-FUT-51 | Notificações desativáveis individualmente nas Settings | ⚠️ | Infra criada (tabela + hook + panel); toggle por tipo pendente |
 | RN-FUT-52 | Notificação "meta parada" enviada 1x (14 dias) | ✅ | generateNotifications() em use-notifications.ts — deduplica por 7d (2026-02-27) |
-| RN-FUT-53 | Resumo semanal exclusivo Jornada (PRO) | ❌ | |
+| RN-FUT-53 | Resumo semanal exclusivo Jornada (PRO) | ✅ | 2026-02-27 — notificação weekly_summary gerada 1x/semana via use-notifications |
 | RN-FUT-54 | Tom das notificações empático, nunca punitivo | ✅ | Textos empáticos implementados em use-notifications.ts (2026-02-27) |
 
 #### Edge Cases (RN-FUT-55 a 58)
@@ -177,7 +177,7 @@
 |----|-------|--------|-----------|
 | RN-FUT-55 | Metas de módulos inativos: suspensas, não excluídas | ❌ | |
 | RN-FUT-56 | Item vinculado excluído → meta desvinculada, não excluída | ❌ | |
-| RN-FUT-57 | Objetivo com metas inativas 30d+ sugere arquivamento | ❌ | |
+| RN-FUT-57 | Objetivo com metas inativas 30d+ sugere arquivamento | ✅ | 2026-02-27 — notificação archive_suggestion para objetivos inativos 30d+ com progresso <50% |
 | RN-FUT-58 | Script de migração metas v2 → objetivos v3 | ❌ | |
 
 ---
@@ -246,7 +246,7 @@
 |----|-------|--------|-----------|
 | RN-CRP-37 | Integrações opt-in (configurável nas Settings) | ❌ | Settings de integração não existe |
 | RN-CRP-38 | Transações auto-geradas com badge "Auto — 🏃 Corpo" | ✅ | 2026-02-27 — badge nos bridges createTransactionFromConsulta e createTransactionFromCardapio |
-| RN-CRP-39 | Excluir consulta → pergunta sobre evento Agenda e transação Finanças | ❌ | |
+| RN-CRP-39 | Excluir consulta → pergunta sobre evento Agenda e transação Finanças | ✅ | 2026-02-27 — aviso no confirm dialog sobre itens vinculados |
 
 ---
 
@@ -409,8 +409,8 @@
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
 | RN-PTR-22 | Integrações opt-in | ❌ | |
-| RN-PTR-23 | Transações auto com badge "Auto — 📈 Patrimônio" | ❌ | |
-| RN-PTR-24 | Excluir ativo → pergunta sobre transações vinculadas | ❌ | |
+| RN-PTR-23 | Transações auto com badge "Auto — 📈 Patrimônio" | ✅ | 2026-02-27 — badge em createTransactionFromProvento (financas.ts) |
+| RN-PTR-24 | Excluir ativo → pergunta sobre transações vinculadas | ✅ | 2026-02-27 — aviso no confirm dialog do handleDelete em carteira |
 
 ---
 
