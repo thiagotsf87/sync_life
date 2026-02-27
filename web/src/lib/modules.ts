@@ -7,10 +7,10 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
     color: '#10b981',
     glowColor: 'rgba(16,185,129,0.16)',
     icon: 'home',
-    basePath: '/',
+    basePath: '/dashboard',
     defaultNavId: 'dashboard',
     navItems: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', href: '/' },
+      { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', href: '/dashboard' },
     ],
   },
   financas: {
@@ -117,7 +117,5 @@ export function getActiveNavItem(pathname: string, moduleId: ModuleId): string |
   const sorted = [...module.navItems].sort((a, b) => b.href.length - a.href.length)
   const prefix = sorted.find(item => pathname.startsWith(item.href) && item.href !== '/')
   if (prefix) return prefix.id
-  // Default for home module
-  if (moduleId === 'home' && pathname === '/') return 'dashboard'
   return module.defaultNavId
 }
