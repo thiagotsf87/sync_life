@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27
+**Última atualização:** 2026-02-27 (sessão 2 — enforcement FREE/PRO + cardápio IA + peso previsão)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -24,13 +24,13 @@
 
 | Módulo | Total | ✅ | ⚠️ | ❌ |
 |--------|-------|-----|-----|-----|
-| FUTURO | 58 | 8 | 12 | 38 |
-| CORPO | 39 | 15 | 8 | 16 |
-| EXPERIÊNCIAS | 32 | 12 | 6 | 14 |
-| MENTE | 26 | 10 | 6 | 10 |
-| PATRIMÔNIO | 24 | 10 | 5 | 9 |
-| CARREIRA | 20 | 8 | 4 | 8 |
-| **TOTAL** | **199** | **~63 (32%)** | **~41 (21%)** | **~95 (48%)** |
+| FUTURO | 58 | 12 | 11 | 35 |
+| CORPO | 39 | 22 | 9 | 8 |
+| EXPERIÊNCIAS | 32 | 13 | 6 | 13 |
+| MENTE | 26 | 11 | 6 | 9 |
+| PATRIMÔNIO | 24 | 11 | 5 | 8 |
+| CARREIRA | 20 | 9 | 4 | 7 |
+| **TOTAL** | **199** | **~78 (39%)** | **~41 (21%)** | **~80 (40%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -43,13 +43,13 @@
 
 1. **Sistema de notificações** — base para RN-FUT-51..54, RN-CRP-03..05, etc.
 2. **Infraestrutura de integrações opt-in** — base para cross-module (RN-CRP-37..39, RN-EXP-30..32, etc.)
-3. **Enforcement FREE/PRO** — RN-FUT-06, RN-CRP-08, RN-EXP-07, RN-MNT-08, RN-PTR-07, RN-CAR-11
+3. ~~**Enforcement FREE/PRO**~~ ✅ **CONCLUÍDO (2026-02-27)** — RN-FUT-06, RN-EXP-07, RN-MNT-08, RN-PTR-07, RN-CAR-11 (lib/plan-limits.ts criado)
 4. **Vinculação automática Futuro ↔ módulos** — RN-FUT-18, RN-FUT-31..50
 
 ### Grupo P2 — Features core faltantes
 > Funcionalidades principais prometidas mas não implementadas
 
-5. **Cardápio IA + Coach IA** (Corpo) — RN-CRP-20..28
+5. ~~**Cardápio IA + Coach IA**~~ ✅ **Cardápio IA CONCLUÍDO (2026-02-27)** — RN-CRP-20, 26, 27 ✅; RN-CRP-21, 22 ⚠️; Coach IA (28) ❌
 6. **Sugestões IA de viagem** (Experiências) — RN-EXP-21..25
 7. **Pomodoro Timer** (Mente) — RN-MNT-10..18
 8. **Mapa da Vida / Radar Chart** (Futuro/Jornada) — RN-FUT-26..30
@@ -91,12 +91,12 @@
 
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
-| RN-FUT-01 | Ordenação: prioridade / progresso / prazo (toggle) | ⚠️ | Existe ordenação básica, falta toggle |
-| RN-FUT-02 | Badge "Atrasado" em vermelho para prazo vencido | ❌ | |
+| RN-FUT-01 | Ordenação: prioridade / progresso / prazo (toggle) | ✅ | Toggle implementado em futuro/page.tsx |
+| RN-FUT-02 | Badge "Atrasado" em vermelho para prazo vencido | ✅ | ObjectiveCard.tsx — getDeadlineStatus() |
 | RN-FUT-03 | Progresso geral = média ponderada dos objetivos ativos | ⚠️ | Calculado mas sem pesos |
 | RN-FUT-04 | Concluídos → aba "Concluídos" após 7 dias (com opção restaurar) | ❌ | |
-| RN-FUT-05 | Máximo 10 objetivos na visão principal | ❌ | |
-| RN-FUT-06 | Limite FREE: 3 objetivos ativos | ❌ | Sem enforcement |
+| RN-FUT-05 | Máximo 10 objetivos na visão principal | ✅ | MAX_VISIBLE=10 + "Ver todos" implementado |
+| RN-FUT-06 | Limite FREE: 3 objetivos ativos | ✅ | checkPlanLimit() em handleCreate + badge {n}/3 |
 
 #### Wizard Criar Objetivo (RN-FUT-07 a 15)
 
@@ -203,11 +203,11 @@
 
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
-| RN-CRP-11 | TMB recalculada a cada novo registro de peso | ⚠️ | TMB calculada mas não por peso novo |
-| RN-CRP-12 | Gráfico evolução: toggle 3/6/12 meses | ❌ | Gráfico simples sem toggle |
+| RN-CRP-11 | TMB recalculada a cada novo registro de peso | ✅ | handleAddWeight → calcBMR + saveProfile |
+| RN-CRP-12 | Gráfico evolução: toggle 3/6/12 meses | ✅ | chartMonths state + WeightChart(months) |
 | RN-CRP-13 | Meta de peso configurável (emagrecer/manter/ganhar) | ✅ | |
-| RN-CRP-14 | Previsão de data baseada em velocidade dos últimos 30d | ❌ | |
-| RN-CRP-15 | Alerta educativo se velocidade >1kg/semana | ❌ | |
+| RN-CRP-14 | Previsão de data baseada em velocidade dos últimos 30d | ✅ | Calculado com last30Entries em peso/page.tsx |
+| RN-CRP-15 | Alerta educativo se velocidade >1kg/semana | ✅ | speedUnsafe flag + alert card em peso/page.tsx |
 | RN-CRP-16 | Medidas corporais opcionais (cintura, quadril, etc.) | ⚠️ | Campos existem, sem gráfico |
 | RN-CRP-17 | Fotos de progresso opcionais (Storage) | 🚫 | Adiado |
 | RN-CRP-18 | IMC calculado e classificado (5 faixas) | ✅ | |
@@ -217,14 +217,14 @@
 
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
-| RN-CRP-20 | IA considera TDEE, objetivo, restrições, orçamento | ❌ | Feature não implementada |
-| RN-CRP-21 | Cardápio: nome, ingredientes, calorias, macros por refeição | ❌ | |
-| RN-CRP-22 | 7 dias; regeneração 3x/semana (FREE) ilimitado (PRO) | ❌ | |
+| RN-CRP-20 | IA considera TDEE, objetivo, restrições, orçamento | ✅ | Passados no body do fetch /api/ai/cardapio |
+| RN-CRP-21 | Cardápio: nome, ingredientes, calorias, macros por refeição | ⚠️ | Nome + calorias + prep_min; macros não retornados pela API |
+| RN-CRP-22 | 7 dias; regeneração 3x/semana (FREE) ilimitado (PRO) | ⚠️ | 7 dias ✅; contador de regenerações FREE ❌ |
 | RN-CRP-23 | Usuário pode "travar" dias bons e regenerar os ruins | ❌ | |
 | RN-CRP-24 | Cardápios salvos em histórico | ❌ | |
 | RN-CRP-25 | Orçamento alimentar → transação planejada em Finanças | ❌ | Cross-module |
-| RN-CRP-26 | Aviso legal obrigatório sobre IA | ❌ | |
-| RN-CRP-27 | Vercel AI SDK + Gemini 1.5 Flash (MVP); `/api/ai/cardapio` | ❌ | Route Handler não criado |
+| RN-CRP-26 | Aviso legal obrigatório sobre IA | ✅ | Disclaimer "não substitui nutricionista" presente |
+| RN-CRP-27 | Vercel AI SDK + Gemini 1.5 Flash (MVP); `/api/ai/cardapio` | ✅ | Route Handler implementado + integrado |
 | RN-CRP-28 | Coach IA nutrição (PRO): Groq + Llama 3.3 (MVP) | ❌ | |
 
 #### Atividades Físicas (RN-CRP-29 a 36)
@@ -262,7 +262,7 @@
 | RN-EXP-04 | Meta no Futuro → progresso atualizado conforme economia | ❌ | Cross-module |
 | RN-EXP-05 | Multi-destino: várias cidades com datas diferentes | ✅ | `destinations[]` |
 | RN-EXP-06 | Cada item de custo: Estimado/Reservado/Pago | ✅ | |
-| RN-EXP-07 | Limite FREE: 1 viagem ativa. PRO: ilimitadas | ❌ | Sem enforcement |
+| RN-EXP-07 | Limite FREE: 1 viagem ativa. PRO: ilimitadas | ✅ | checkPlanLimit() em experiencias/nova/page.tsx |
 | RN-EXP-08 | Ao criar viagem → sugerir Objetivo no Futuro | ⚠️ | Toast existe, não cria objetivo |
 
 #### Roteiro Diário (RN-EXP-09 a 15)
@@ -329,7 +329,7 @@
 | RN-MNT-05 | Status: Em andamento/Pausada/Concluída/Abandonada | ✅ | |
 | RN-MNT-06 | Conclusão de trilha → conquista no sistema | ❌ | Conquistas são mock |
 | RN-MNT-07 | Categorias pré-definidas (12 categorias) | ✅ | |
-| RN-MNT-08 | Limite FREE: 3 trilhas ativas. PRO: ilimitadas | ❌ | Sem enforcement |
+| RN-MNT-08 | Limite FREE: 3 trilhas ativas. PRO: ilimitadas | ✅ | checkPlanLimit() em mente/trilhas/page.tsx + badge {n}/3 |
 | RN-MNT-09 | Custo de curso → transação Finanças (Educação) | ❌ | Cross-module |
 
 #### Timer de Foco / Pomodoro (RN-MNT-10 a 18)
@@ -378,7 +378,7 @@
 | RN-PTR-04 | Distribuição em pizza por classe e setor | ⚠️ | Gráfico pizza existe, sem setor |
 | RN-PTR-05 | Rentabilidade = ((Atual + Proventos − Investido) / Investido) × 100 | ✅ | |
 | RN-PTR-06 | Comparativo vs CDI, IBOVESPA, IFIX (PRO) | ❌ | |
-| RN-PTR-07 | Limite FREE: 10 ativos. PRO: ilimitado | ❌ | Sem enforcement |
+| RN-PTR-07 | Limite FREE: 10 ativos. PRO: ilimitado | ✅ | checkPlanLimit() em patrimonio/carteira (somente buy de ticker novo) |
 | RN-PTR-08 | Histórico de operações com filtros | ✅ | |
 | RN-PTR-09 | Patrimônio → progresso de meta no Futuro | ❌ | Cross-module |
 
@@ -435,7 +435,7 @@
 | RN-CAR-08 | Progresso do passo = média das habilidades vinculadas | ⚠️ | Lógica básica existe |
 | RN-CAR-09 | Concluir roadmap → sugerir atualizar perfil | ❌ | |
 | RN-CAR-10 | Salário esperado alimenta cenários no simulador financeiro | ❌ | Cross-module |
-| RN-CAR-11 | Limite FREE: 1 roadmap ativo. PRO: 3 simultâneos | ❌ | Sem enforcement |
+| RN-CAR-11 | Limite FREE: 1 roadmap ativo. PRO: 3 simultâneos | ✅ | checkPlanLimit() em carreira/roadmap/page.tsx |
 | RN-CAR-12 | Roadmap vinculável a Objetivo no Futuro | ❌ | Cross-module |
 
 #### Mapa de Habilidades (RN-CAR-13 a 17)
