@@ -13,7 +13,7 @@ export default function NovaMetaPage() {
     try {
       await create(data)
       toast.success('Meta criada com sucesso!')
-      router.push('/metas')
+      router.push('/futuro')
     } catch {
       toast.error('Erro ao criar meta')
       throw new Error('create failed')
@@ -26,7 +26,7 @@ export default function NovaMetaPage() {
       <MetaModal
         open
         mode="create"
-        onClose={() => router.push('/metas')}
+        onClose={() => router.push('/futuro')}
         onSave={handleSave}
       />
       {/* Fundo escuro caso o modal seja fechado antes do redirect */}

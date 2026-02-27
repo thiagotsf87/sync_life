@@ -10,7 +10,11 @@ import { createClient } from '@/lib/supabase/client'
 import { LogOut, Settings } from 'lucide-react'
 import type { ModuleId } from '@/types/shell'
 
-const MODULE_ORDER: ModuleId[] = ['home', 'financas', 'metas', 'agenda', 'conquistas', 'configuracoes']
+const MODULE_ORDER: ModuleId[] = [
+  'home', 'financas', 'futuro', 'tempo',
+  'corpo', 'mente', 'patrimonio', 'carreira', 'experiencias',
+  'conquistas', 'configuracoes',
+]
 
 interface ModuleBarProps {
   userName?: string

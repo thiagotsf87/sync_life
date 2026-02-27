@@ -7,7 +7,7 @@ export default function NovoEventoPage() {
   const router = useRouter()
 
   useEffect(() => {
-    router.replace('/agenda?new=1')
+    router.replace('/tempo?new=1')
   }, [router])
 
   return (

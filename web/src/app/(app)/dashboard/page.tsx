@@ -452,7 +452,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-[18px]">
               <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🎯 Metas em Destaque</span>
               <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
-                onClick={() => router.push('/metas')}>Ver todas →</button>
+                onClick={() => router.push('/futuro')}>Ver todas →</button>
             </div>
             {loadingGoals
               ? <div className="flex flex-col gap-3">{[...Array(3)].map((_, i) => <div key={i} className="h-14 rounded-lg bg-[var(--sl-s2)] animate-pulse" />)}</div>
@@ -468,7 +468,7 @@ export default function DashboardPage() {
                         ? new Date(goal.target_date).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })
                         : null
                       return (
-                        <div key={goal.id} className="flex flex-col gap-1.5 cursor-pointer" onClick={() => router.push(`/metas/${goal.id}`)}>
+                        <div key={goal.id} className="flex flex-col gap-1.5 cursor-pointer" onClick={() => router.push(`/futuro/${goal.id}`)}>
                           <div className="flex items-center gap-2.5">
                             <span className="text-[20px] flex-shrink-0">{goal.icon}</span>
                             <div className="flex-1 min-w-0">
@@ -503,7 +503,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-[14px]">
               <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📅 Agenda da Semana</span>
               <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
-                onClick={() => router.push('/agenda')}>Ver agenda →</button>
+                onClick={() => router.push('/tempo')}>Ver agenda →</button>
             </div>
             {/* week strip */}
             <div className="flex gap-1 mb-3.5">

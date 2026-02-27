@@ -52,8 +52,13 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/transacoes') ||
     pathname.startsWith('/configuracoes') ||
     pathname.startsWith('/financas') ||
-    pathname.startsWith('/metas') ||
-    pathname.startsWith('/agenda') ||
+    pathname.startsWith('/futuro') ||
+    pathname.startsWith('/tempo') ||
+    pathname.startsWith('/corpo') ||
+    pathname.startsWith('/mente') ||
+    pathname.startsWith('/patrimonio') ||
+    pathname.startsWith('/carreira') ||
+    pathname.startsWith('/experiencias') ||
     pathname.startsWith('/conquistas') ||
     pathname.startsWith('/onboarding')
 

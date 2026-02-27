@@ -188,11 +188,91 @@ export function IconChevronRight({ className, size = 18 }: IconProps) {
   )
 }
 
+export function IconFuturo({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={cn('shrink-0', className)}>
+      <path d="M12 2a7 7 0 1 0 7 7" />
+      <path d="M22 2 12 12" />
+      <path d="m22 2-5 0 0 5" />
+      <path d="M12 19v3" />
+      <path d="M8 21h8" />
+    </svg>
+  )
+}
+
+export function IconTempo({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={cn('shrink-0', className)}>
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  )
+}
+
+export function IconCorpo({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={cn('shrink-0', className)}>
+      <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+      <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+      <line x1="6" y1="1" x2="6" y2="4" />
+      <line x1="10" y1="1" x2="10" y2="4" />
+      <line x1="14" y1="1" x2="14" y2="4" />
+    </svg>
+  )
+}
+
+export function IconMente({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={cn('shrink-0', className)}>
+      <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-1.66" />
+      <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-1.66" />
+    </svg>
+  )
+}
+
+export function IconPatrimonio({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={cn('shrink-0', className)}>
+      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+      <polyline points="16 7 22 7 22 13" />
+    </svg>
+  )
+}
+
+export function IconCarreira({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={cn('shrink-0', className)}>
+      <rect width="20" height="14" x="2" y="7" rx="2" />
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    </svg>
+  )
+}
+
+export function IconExperiencias({ className, size = 22 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={cn('shrink-0', className)}>
+      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-2-5.5-.5L10 5 1.8 6.2c-.5.1-.9.6-.9 1.1l.1.9 2.8 2.8L1.4 19c-.2.6.1 1.2.6 1.5l.9.5 7.4-3.4 2.9 2.8c.3.3.7.5 1.1.5l.8-.1c.5-.2.9-.7.9-1.2z" />
+    </svg>
+  )
+}
+
 export const MODULE_ICONS = {
   home: IconHome,
   financas: IconFinancas,
-  metas: IconMetas,
-  agenda: IconAgenda,
+  futuro: IconFuturo,
+  tempo: IconTempo,
+  corpo: IconCorpo,
+  mente: IconMente,
+  patrimonio: IconPatrimonio,
+  carreira: IconCarreira,
+  experiencias: IconExperiencias,
   conquistas: IconConquistas,
   configuracoes: IconConfig,
 } as const

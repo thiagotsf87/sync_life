@@ -377,7 +377,7 @@ export default function AgendaMensalPage() {
 
   // Navigate to weekly view on day click
   function handleNavToWeek(dateStr: string) {
-    router.push(`/agenda?week=${dateStr}`)
+    router.push(`/tempo?week=${dateStr}`)
   }
 
   return (
@@ -539,7 +539,7 @@ export default function AgendaMensalPage() {
 
           {/* Link para semana */}
           <button
-            onClick={() => router.push('/agenda')}
+            onClick={() => router.push('/tempo')}
             className="w-full py-2.5 rounded-[10px] border border-[var(--sl-border)] text-[12px] font-semibold text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors"
           >
             Ver vista semanal →

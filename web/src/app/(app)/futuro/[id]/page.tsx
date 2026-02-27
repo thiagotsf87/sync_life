@@ -83,7 +83,7 @@ export default function MetaDetailPage() {
     try {
       await remove(goal.id)
       toast.success('Meta excluída')
-      router.push('/metas')
+      router.push('/futuro')
     } catch {
       toast.error('Erro ao excluir meta')
     }
@@ -110,7 +110,7 @@ export default function MetaDetailPage() {
         <p className="text-[#f43f5e] font-semibold mb-2">Meta não encontrada</p>
         <p className="text-[13px] text-[var(--sl-t3)] mb-4">{error?.message}</p>
         <button
-          onClick={() => router.push('/metas')}
+          onClick={() => router.push('/futuro')}
           className="px-4 py-2 rounded-[10px] text-[13px] font-semibold"
           style={{ background: '#10b981', color: '#03071a' }}
         >
@@ -128,7 +128,7 @@ export default function MetaDetailPage() {
       {/* Breadcrumb */}
       <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
         <button
-          onClick={() => router.push('/metas')}
+          onClick={() => router.push('/futuro')}
           className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
         >
           <ArrowLeft size={14} />

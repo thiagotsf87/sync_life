@@ -4,25 +4,25 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useShellStore } from '@/stores/shell-store'
 import { MODULES } from '@/lib/modules'
-import { IconHome, IconFinancas, IconMetas, IconAgenda } from './icons'
+import { IconHome, IconFinancas, IconFuturo, IconTempo } from './icons'
 import { MobileMoreSheet } from './MobileMoreSheet'
 import { MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { ModuleId } from '@/types/shell'
 
-const BOTTOM_TABS: { id: ModuleId | 'mais'; label: string; icon: 'home' | 'financas' | 'metas' | 'agenda' | 'mais' }[] = [
+const BOTTOM_TABS: { id: ModuleId | 'mais'; label: string; icon: 'home' | 'financas' | 'futuro' | 'tempo' | 'mais' }[] = [
   { id: 'home', label: 'Home', icon: 'home' },
   { id: 'financas', label: 'Finanças', icon: 'financas' },
-  { id: 'metas', label: 'Metas', icon: 'metas' },
-  { id: 'agenda', label: 'Agenda', icon: 'agenda' },
+  { id: 'futuro', label: 'Futuro', icon: 'futuro' },
+  { id: 'tempo', label: 'Tempo', icon: 'tempo' },
   { id: 'mais', label: 'Mais', icon: 'mais' },
 ]
 
 const ICON_MAP = {
   home: IconHome,
   financas: IconFinancas,
-  metas: IconMetas,
-  agenda: IconAgenda,
+  futuro: IconFuturo,
+  tempo: IconTempo,
 } as const
 
 export function MobileBottomBar() {

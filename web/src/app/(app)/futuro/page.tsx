@@ -201,7 +201,7 @@ export default function MetasPage() {
                 <div key={goal.id} className={`sl-delay-${Math.min(idx + 1, 5)}`}>
                   <MetaCard
                     goal={goal}
-                    onClick={() => router.push(`/metas/${goal.id}`)}
+                    onClick={() => router.push(`/futuro/${goal.id}`)}
                     onAddContribution={() => setContribGoal(goal)}
                   />
                   {/* Editar / Excluir */}
@@ -221,7 +221,7 @@ export default function MetasPage() {
                     </button>
                     <span className="text-[var(--sl-border)]">·</span>
                     <button
-                      onClick={() => router.push(`/metas/${goal.id}`)}
+                      onClick={() => router.push(`/futuro/${goal.id}`)}
                       className="text-[11px] text-[#10b981] hover:brightness-110 transition-colors"
                     >
                       Ver detalhe →
