@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27 (sessão 3 — Assistente IA de viagem RN-EXP-22/24/25 + chat streaming + histórico DB)
+**Última atualização:** 2026-02-27 (sessão 3 — IA viagem RN-EXP-22/24/25 + Mapa da Vida RN-FUT-26..30)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -24,13 +24,13 @@
 
 | Módulo | Total | ✅ | ⚠️ | ❌ |
 |--------|-------|-----|-----|-----|
-| FUTURO | 58 | 12 | 11 | 35 |
+| FUTURO | 58 | 17 | 11 | 30 |
 | CORPO | 39 | 22 | 9 | 8 |
 | EXPERIÊNCIAS | 32 | 16 | 6 | 10 |
 | MENTE | 26 | 16 | 5 | 5 |
 | PATRIMÔNIO | 24 | 11 | 5 | 8 |
 | CARREIRA | 20 | 9 | 4 | 7 |
-| **TOTAL** | **199** | **~86 (43%)** | **~40 (20%)** | **~73 (37%)** |
+| **TOTAL** | **199** | **~91 (46%)** | **~40 (20%)** | **~68 (34%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -52,7 +52,7 @@
 5. ~~**Cardápio IA + Coach IA**~~ ✅ **Cardápio IA CONCLUÍDO (2026-02-27)** — RN-CRP-20, 26, 27 ✅; RN-CRP-21, 22 ⚠️; Coach IA (28) ❌
 6. ~~**Sugestões IA de viagem**~~ ✅ **CONCLUÍDO (2026-02-27)** — RN-EXP-22, 24, 25 ✅; RN-EXP-21 ❌ (estimador custo); RN-EXP-23 ❌ (cross-module)
 7. ~~**Pomodoro Timer**~~ ✅ **CONCLUÍDO (2026-02-27)** — RN-MNT-10..12, 15, 16 ✅; MNT-13 ❌ (cross-module); MNT-17/18 ❌ (infra)
-8. **Mapa da Vida / Radar Chart** (Futuro/Jornada) — RN-FUT-26..30
+8. ~~**Mapa da Vida / Radar Chart**~~ ✅ **CONCLUÍDO (2026-02-27)** — RN-FUT-26/27/28/29/30 ✅
 
 ### Grupo P3 — Integrações cross-module
 > Após P1, implementar por ordem de impacto no UX
@@ -131,11 +131,11 @@
 
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
-| RN-FUT-26 | Mapa da Vida exclusivo Modo Jornada (PRO) | ❌ | Feature não criada |
-| RN-FUT-27 | Dimensão radar = média por módulo | ❌ | |
-| RN-FUT-28 | Radar atualiza em tempo real | ❌ | |
-| RN-FUT-29 | Insights gerados semanalmente | ❌ | |
-| RN-FUT-30 | Widget do Mapa disponível no Dashboard Home | ❌ | |
+| RN-FUT-26 | Mapa da Vida exclusivo Modo Jornada (PRO) | ✅ | LifeMapRadar em futuro/page.tsx (2026-02-27) |
+| RN-FUT-27 | Dimensão radar = média por módulo | ✅ | useLifeMap: 7 dimensões com scores reais Supabase |
+| RN-FUT-28 | Radar atualiza em tempo real | ✅ | useLifeMap reload ao montar, dados ao vivo |
+| RN-FUT-29 | Insights gerados semanalmente | ✅ | Insight mostrando ponto forte/fraco no futuro/page.tsx |
+| RN-FUT-30 | Widget do Mapa disponível no Dashboard Home | ✅ | LifeMapRadar compact + Life Sync Score dinâmico (2026-02-27) |
 
 #### Integrações com Módulos (RN-FUT-31 a 50)
 
