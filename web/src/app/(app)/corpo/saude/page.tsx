@@ -13,6 +13,9 @@ import {
 } from '@/hooks/use-corpo'
 import { AppointmentCard } from '@/components/corpo/AppointmentCard'
 import { createTransactionFromConsulta } from '@/lib/integrations/financas'
+import { createEventFromConsulta } from '@/lib/integrations/agenda'
+import { useUserPlan } from '@/hooks/use-user-plan'
+import { checkPlanLimit } from '@/lib/plan-limits'
 
 type FilterTab = 'upcoming' | 'all' | 'completed'
 
@@ -34,6 +37,7 @@ const EMPTY_FORM = {
   notes: '',
   follow_up_months: null as number | null,
   syncToFinancas: false,
+  syncToAgenda: false,
 }
 
 export default function SaudePage() {
@@ -44,6 +48,7 @@ export default function SaudePage() {
   const { appointments, loading, error, reload } = useAppointments()
   const saveAppointment = useSaveAppointment()
   const deleteAppointment = useDeleteAppointment()
+  const { isPro } = useUserPlan()
 
   const [tab, setTab] = useState<FilterTab>('upcoming')
   const [showModal, setShowModal] = useState(false)
@@ -53,6 +58,17 @@ export default function SaudePage() {
   async function handleSave() {
     if (!form.specialty || !form.appointment_date) {
       toast.error('Informe especialidade e data')
+      return
+    }
+    // RN-CRP-08: limite FREE de 3 consultas ativas/mês
+    const now = new Date()
+    const scheduledThisMonth = appointments.filter(a => {
+      const d = new Date(a.appointment_date)
+      return a.status === 'scheduled' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+    })
+    const limitCheck = checkPlanLimit(isPro, 'consultations_per_month', scheduledThisMonth.length)
+    if (!limitCheck.allowed) {
+      toast.error(limitCheck.upsellMessage)
       return
     }
     setIsSaving(true)
@@ -68,6 +84,15 @@ export default function SaudePage() {
         follow_up_months: form.follow_up_months,
       }
       await saveAppointment(data)
+      // RN-CRP-01: criar evento na Agenda
+      if (form.syncToAgenda) {
+        await createEventFromConsulta({
+          specialty: form.specialty,
+          doctorName: form.doctor_name || null,
+          location: form.location || null,
+          appointmentDate: form.appointment_date,
+        })
+      }
       // RN-CRP-07: sincronizar custo com Finanças
       if (form.cost && form.syncToFinancas) {
         await createTransactionFromConsulta({
@@ -332,6 +357,19 @@ export default function SaudePage() {
                   rows={2}
                   className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4] resize-none"
                 />
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
+                <div>
+                  <p className="text-[13px] font-medium text-[var(--sl-t1)]">Adicionar à Agenda</p>
+                  <p className="text-[11px] text-[var(--sl-t3)]">Cria evento automático na Agenda</p>
+                </div>
+                <button
+                  onClick={() => setForm(f => ({ ...f, syncToAgenda: !f.syncToAgenda }))}
+                  className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', form.syncToAgenda ? 'bg-[#06b6d4]' : 'bg-[var(--sl-s3)]')}
+                >
+                  <div className={cn('w-4 h-4 rounded-full bg-white absolute top-1 transition-all', form.syncToAgenda ? 'left-5' : 'left-1')} />
+                </button>
               </div>
 
               {form.cost && parseFloat(form.cost) > 0 && (

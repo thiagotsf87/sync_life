@@ -12,6 +12,8 @@ import {
 } from '@/hooks/use-mente'
 import { RESOURCE_TYPE_LABELS, RESOURCE_STATUS_LABELS } from '@/hooks/use-mente'
 import { ResourceCard } from '@/components/mente/ResourceCard'
+import { useUserPlan } from '@/hooks/use-user-plan'
+import { checkPlanLimit } from '@/lib/plan-limits'
 
 const RESOURCE_TYPES: ResourceType[] = ['link', 'book', 'video', 'pdf', 'note', 'other']
 const RESOURCE_STATUSES: ResourceStatus[] = ['to_study', 'studying', 'completed']
@@ -30,6 +32,7 @@ export default function BibliotecaPage() {
   const addResource = useAddResource()
   const deleteResource = useDeleteResource()
   const updateResourceStatus = useUpdateResourceStatus()
+  const { isPro } = useUserPlan()
 
   // Form state
   const [form, setForm] = useState<AddResourceData>({
@@ -48,6 +51,12 @@ export default function BibliotecaPage() {
 
   const handleAdd = useCallback(async () => {
     if (!selectedTrackId || !form.title.trim()) return
+    // RN-MNT-22: limite FREE de 10 recursos por trilha
+    const limitCheck = checkPlanLimit(isPro, 'resources_per_track', resources.length)
+    if (!limitCheck.allowed) {
+      toast.error(limitCheck.upsellMessage)
+      return
+    }
     setIsAdding(true)
     try {
       await addResource(selectedTrackId, {
@@ -66,7 +75,7 @@ export default function BibliotecaPage() {
     } finally {
       setIsAdding(false)
     }
-  }, [selectedTrackId, form, addResource, reload])
+  }, [selectedTrackId, form, addResource, reload, resources.length, isPro])
 
   const handleDelete = useCallback(async (id: string) => {
     try {

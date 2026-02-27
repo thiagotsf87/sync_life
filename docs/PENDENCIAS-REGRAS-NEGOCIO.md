@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27 (sessão 6 — integrações cross-module P3: PTR-12, CAR-01, CRP-07, EXP-03)
+**Última atualização:** 2026-02-27 (sessão 7 — Agenda integrações P3: CRP-01, EXP-02; enforcement FREE/PRO: MNT-22, PTR-21, CRP-08)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -25,12 +25,12 @@
 | Módulo | Total | ✅ | ⚠️ | ❌ |
 |--------|-------|-----|-----|-----|
 | FUTURO | 58 | 22 | 10 | 26 |
-| CORPO | 39 | 24 | 9 | 6 |
-| EXPERIÊNCIAS | 32 | 17 | 6 | 9 |
-| MENTE | 26 | 16 | 5 | 5 |
-| PATRIMÔNIO | 24 | 14 | 5 | 5 |
+| CORPO | 39 | 26 | 9 | 4 |
+| EXPERIÊNCIAS | 32 | 18 | 6 | 8 |
+| MENTE | 26 | 17 | 5 | 4 |
+| PATRIMÔNIO | 24 | 15 | 5 | 4 |
 | CARREIRA | 20 | 10 | 4 | 6 |
-| **TOTAL** | **199** | **~103 (52%)** | **~39 (20%)** | **~57 (29%)** |
+| **TOTAL** | **199** | **~108 (54%)** | **~39 (20%)** | **~52 (26%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -57,12 +57,12 @@
 ### Grupo P3 — Integrações cross-module
 > Após P1, implementar por ordem de impacto no UX
 
-9. Corpo → Agenda (consulta gera evento) — RN-CRP-01
+9. ~~Corpo → Agenda (consulta gera evento) — RN-CRP-01~~ ✅ **CONCLUÍDO (2026-02-27)**
 10. ~~Corpo → Finanças (custo consulta → transação) — RN-CRP-07~~ ✅ **CONCLUÍDO (2026-02-27)**
 11. ~~Patrimônio → Finanças (proventos → receitas) — RN-PTR-12~~ ✅ **CONCLUÍDO (2026-02-27)**
 12. ~~Carreira → Finanças (salário sync) — RN-CAR-01~~ ✅ **CONCLUÍDO (2026-02-27)**
 13. Mente → Carreira (trilha → habilidade) — RN-MNT-03
-14. Experiências → Agenda (dias viagem bloqueados) — RN-EXP-02
+14. ~~Experiências → Agenda (dias viagem bloqueados) — RN-EXP-02~~ ✅ **CONCLUÍDO (2026-02-27)**
 15. ~~Experiências → Finanças (custo viagem) — RN-EXP-03~~ ✅ **CONCLUÍDO (2026-02-27)**
 
 ### Grupo P4 — Cálculos e lógica avançada
@@ -188,14 +188,14 @@
 
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
-| RN-CRP-01 | Consulta criada → evento automático na Agenda | ❌ | Cross-module |
+| RN-CRP-01 | Consulta criada → evento automático na Agenda | ✅ | Cross-module |
 | RN-CRP-02 | Ao concluir: campo obrigatório de retorno | ✅ | Implementado no CRUD |
 | RN-CRP-03 | Lembretes de retorno (máx 3) enviados na data | ❌ | Sem notificações |
 | RN-CRP-04 | Status de retorno: pendente/agendado/ignorado | ✅ | |
 | RN-CRP-05 | Retorno pendente 30+ dias → alerta vermelho Dashboard | ❌ | Alerta não implementado |
 | RN-CRP-06 | Especialidades pré-definidas (lista completa) | ✅ | |
 | RN-CRP-07 | Custo da consulta → transação em Finanças (categoria Saúde) | ✅ | Cross-module |
-| RN-CRP-08 | Limite FREE: 3 consultas ativas/mês | ❌ | Sem enforcement |
+| RN-CRP-08 | Limite FREE: 3 consultas ativas/mês | ✅ | checkPlanLimit('consultations_per_month') em saude/page.tsx |
 | RN-CRP-09 | Histórico permanente com filtros | ✅ | |
 | RN-CRP-10 | Anexos opcionais (Supabase Storage) | 🚫 | Adiado — requer storage setup |
 
@@ -257,7 +257,7 @@
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
 | RN-EXP-01 | Status: Planejando/Reservado/Em andamento/Concluída/Cancelada | ✅ | |
-| RN-EXP-02 | Dias bloqueados na Agenda como eventos "✈️ Experiências" | ❌ | Cross-module |
+| RN-EXP-02 | Dias bloqueados na Agenda como eventos "✈️ Experiências" | ✅ | Cross-module |
 | RN-EXP-03 | Custo total → despesa planejada em Finanças | ✅ | Cross-module |
 | RN-EXP-04 | Meta no Futuro → progresso atualizado conforme economia | ❌ | Cross-module |
 | RN-EXP-05 | Multi-destino: várias cidades com datas diferentes | ✅ | `destinations[]` |
@@ -353,7 +353,7 @@
 | RN-MNT-19 | Tipos: Link, Livro, Vídeo, PDF, Nota, Outro | ✅ | |
 | RN-MNT-20 | Por trilha, filtráveis por status | ✅ | |
 | RN-MNT-21 | Nota pessoal em Markdown básico | ⚠️ | Texto simples, sem Markdown render |
-| RN-MNT-22 | Limite FREE: 10 recursos/trilha. PRO: ilimitado | ❌ | |
+| RN-MNT-22 | Limite FREE: 10 recursos/trilha. PRO: ilimitado | ✅ | checkPlanLimit('resources_per_track') em biblioteca/page.tsx |
 | RN-MNT-23 | Recursos são referências, não armazenam arquivos | ✅ | |
 
 #### Integração (RN-MNT-24 a 26)
@@ -402,7 +402,7 @@
 | RN-PTR-18 | IF = rendimento mensal ≥ renda desejada (retirada 4%) | ✅ | |
 | RN-PTR-19 | 3 cenários: pessimista (-2%), base, otimista (+2%) | ✅ | |
 | RN-PTR-20 | Aporte vinculável a meta Futuro e orçamento | ❌ | Cross-module |
-| RN-PTR-21 | Simulador exclusivo PRO/Jornada | ❌ | Sem enforcement PRO |
+| RN-PTR-21 | Simulador exclusivo PRO/Jornada | ✅ | PRO gate com upsell screen em patrimonio/simulador/page.tsx |
 
 #### Integração (RN-PTR-22 a 24)
 

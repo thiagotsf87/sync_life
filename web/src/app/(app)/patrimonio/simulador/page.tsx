@@ -10,6 +10,8 @@ import {
   usePortfolioAssets, usePortfolioDividends,
 } from '@/hooks/use-patrimonio'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
+import { useUserPlan } from '@/hooks/use-user-plan'
+import { Crown } from 'lucide-react'
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip as ReTooltip, ReferenceLine,
@@ -40,6 +42,7 @@ export default function SimuladorPage() {
   const mode = useShellStore((s) => s.mode)
   const isJornada = mode === 'jornada'
 
+  const { isPro } = useUserPlan()
   const { assets } = usePortfolioAssets()
   const { dividends } = usePortfolioDividends()
 
@@ -90,6 +93,43 @@ export default function SimuladorPage() {
     if (years === 0) return `${mths} meses`
     if (mths === 0) return `${years} anos`
     return `${years}a ${mths}m`
+  }
+
+  // RN-PTR-21: Simulador exclusivo PRO
+  if (!isPro) {
+    return (
+      <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+        <div className="flex items-center gap-3 mb-6 flex-wrap">
+          <button
+            onClick={() => router.push('/patrimonio')}
+            className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
+          >
+            <ArrowLeft size={16} />
+            Patrimônio
+          </button>
+          <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-[var(--sl-t1)]">
+            🧮 Simulador IF
+          </h1>
+        </div>
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-12 text-center max-w-[480px] mx-auto">
+          <Crown size={40} className="mx-auto mb-4 text-[#f59e0b]" />
+          <h2 className="font-[Syne] font-bold text-lg text-[var(--sl-t1)] mb-2">
+            Simulador IF — Recurso PRO
+          </h2>
+          <p className="text-[13px] text-[var(--sl-t2)] mb-6 leading-relaxed">
+            Projete quanto tempo falta para a independência financeira com 3 cenários, gráfico de evolução e integração com sua carteira real.
+          </p>
+          <button
+            onClick={() => router.push('/configuracoes/plano')}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] font-semibold text-[13px]
+                       bg-gradient-to-r from-[#10b981] to-[#0055ff] text-white hover:opacity-90 transition-opacity"
+          >
+            <Crown size={14} />
+            Assinar PRO
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -14,6 +14,7 @@ import {
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 import { createTransactionFromViagem } from '@/lib/integrations/financas'
+import { createEventsFromViagem } from '@/lib/integrations/agenda'
 
 interface WizardData {
   // Step 1 — Destino e Datas
@@ -28,6 +29,7 @@ interface WizardData {
   total_budget: string
   currency: string
   syncToFinancas: boolean
+  syncToAgenda: boolean
   // Step 3 — Resumo/notas
   notes: string
 }
@@ -43,6 +45,7 @@ const EMPTY_DATA: WizardData = {
   total_budget: '',
   currency: 'BRL',
   syncToFinancas: false,
+  syncToAgenda: false,
   notes: '',
 }
 
@@ -107,6 +110,14 @@ export default function NovaViagemPage() {
         currency: data.currency,
         notes: data.notes.trim() || null,
       })
+      // RN-EXP-02: criar eventos de partida e retorno na Agenda
+      if (data.syncToAgenda) {
+        await createEventsFromViagem({
+          tripName: data.name.trim(),
+          startDate: data.start_date,
+          endDate: data.end_date,
+        })
+      }
       // RN-EXP-03: sincronizar orçamento com Finanças
       if (data.syncToFinancas && data.total_budget && parseFloat(data.total_budget) > 0) {
         await createTransactionFromViagem({
@@ -341,6 +352,19 @@ export default function NovaViagemPage() {
               <p className="text-[12px] text-[var(--sl-t2)]">
                 💡 Você pode definir o orçamento por categoria (hospedagem, passagens, alimentação, etc.) no detalhe da viagem.
               </p>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
+              <div>
+                <p className="text-[13px] font-medium text-[var(--sl-t1)]">Bloquear datas na Agenda</p>
+                <p className="text-[11px] text-[var(--sl-t3)]">Cria eventos de partida e retorno automaticamente</p>
+              </div>
+              <button
+                onClick={() => setData(d => ({ ...d, syncToAgenda: !d.syncToAgenda }))}
+                className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', data.syncToAgenda ? 'bg-[#06b6d4]' : 'bg-[var(--sl-s3)]')}
+              >
+                <div className={cn('w-4 h-4 rounded-full bg-white absolute top-1 transition-all', data.syncToAgenda ? 'left-5' : 'left-1')} />
+              </button>
             </div>
 
             {data.total_budget && parseFloat(data.total_budget) > 0 && (
