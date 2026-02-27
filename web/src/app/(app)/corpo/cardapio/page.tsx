@@ -9,11 +9,8 @@ import { useHealthProfile, WEIGHT_GOAL_LABELS } from '@/hooks/use-corpo'
 
 interface MealItem {
   name: string
-  ingredients: string[]
   calories: number
-  protein_g: number
-  carbs_g: number
-  fat_g: number
+  prep_minutes?: number
 }
 
 interface DayPlan {
@@ -21,7 +18,37 @@ interface DayPlan {
   meals: MealItem[]
 }
 
-const MEAL_NAMES = ['☕ Café da manhã', '🥗 Almoço', '🍎 Lanche', '🍽️ Jantar', '🥛 Lanche da noite']
+// Schema retornado pela API /api/ai/cardapio
+interface ApiDayPlan {
+  day: 'seg' | 'ter' | 'qua' | 'qui' | 'sex' | 'sab' | 'dom'
+  breakfast: { name: string; calories: number; prep_minutes: number }
+  lunch: { name: string; calories: number; prep_minutes: number }
+  dinner: { name: string; calories: number; prep_minutes: number }
+  snacks?: { name: string; calories: number }[]
+}
+
+const DAY_MAP: Record<string, string> = {
+  seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta',
+  sex: 'Sexta', sab: 'Sábado', dom: 'Domingo',
+}
+
+const MEAL_LABELS: Record<string, string> = {
+  breakfast: '☕ Café da manhã',
+  lunch: '🥗 Almoço',
+  dinner: '🍽️ Jantar',
+}
+
+function apiToUiPlan(apiDays: ApiDayPlan[]): DayPlan[] {
+  return apiDays.map(d => {
+    const meals: MealItem[] = [
+      { name: `${MEAL_LABELS.breakfast} — ${d.breakfast.name}`, calories: d.breakfast.calories, prep_minutes: d.breakfast.prep_minutes },
+      { name: `${MEAL_LABELS.lunch} — ${d.lunch.name}`, calories: d.lunch.calories, prep_minutes: d.lunch.prep_minutes },
+      { name: `${MEAL_LABELS.dinner} — ${d.dinner.name}`, calories: d.dinner.calories, prep_minutes: d.dinner.prep_minutes },
+      ...(d.snacks ?? []).map((s, i) => ({ name: `${i === 0 ? '🍎' : '🥛'} Lanche — ${s.name}`, calories: s.calories })),
+    ]
+    return { day: DAY_MAP[d.day] ?? d.day, meals }
+  })
+}
 
 const RESTRICTION_OPTIONS = [
   'Vegetariano', 'Vegano', 'Sem lactose', 'Sem glúten',
@@ -29,23 +56,6 @@ const RESTRICTION_OPTIONS = [
 ]
 
 const DAYS_PT = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo']
-
-function buildMockPlan(tdee: number, goal: string, restrictions: string[]): DayPlan[] {
-  const target = goal === 'lose' ? tdee - 500 : goal === 'gain' ? tdee + 500 : tdee
-  const perMeal = Math.round(target / 5)
-
-  return DAYS_PT.map(day => ({
-    day,
-    meals: MEAL_NAMES.map((mealName, idx) => ({
-      name: mealName,
-      ingredients: ['Alimento 1', 'Alimento 2', 'Alimento 3'],
-      calories: Math.round(perMeal * [0.25, 0.35, 0.10, 0.25, 0.05][idx]),
-      protein_g: Math.round(perMeal * [0.25, 0.35, 0.10, 0.25, 0.05][idx] * 0.25 / 4),
-      carbs_g: Math.round(perMeal * [0.25, 0.35, 0.10, 0.25, 0.05][idx] * 0.50 / 4),
-      fat_g: Math.round(perMeal * [0.25, 0.35, 0.10, 0.25, 0.05][idx] * 0.25 / 9),
-    })),
-  }))
-}
 
 export default function CardapioPage() {
   const router = useRouter()
@@ -58,20 +68,34 @@ export default function CardapioPage() {
   const [plan, setPlan] = useState<DayPlan[] | null>(null)
   const [selectedDay, setSelectedDay] = useState(0)
   const [budget, setBudget] = useState('')
+  const [error, setError] = useState<string | null>(null)
   const [extraRestrictions, setExtraRestrictions] = useState<string[]>(
     profile?.dietary_restrictions ?? []
   )
 
   async function handleGenerate() {
     setGenerating(true)
+    setError(null)
     try {
-      // TODO: Replace with real AI call to /api/ai/cardapio
-      // For MVP, using deterministic mock based on profile
-      await new Promise(r => setTimeout(r, 1500)) // simulate API delay
-      const tdee = profile?.tdee ?? 2000
-      const goal = profile?.weight_goal_type ?? 'maintain'
-      const mock = buildMockPlan(tdee, goal, extraRestrictions)
-      setPlan(mock)
+      const res = await fetch('/api/ai/cardapio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tdee: profile?.tdee ?? 2000,
+          goal_type: profile?.weight_goal_type ?? 'maintain',
+          dietary_restrictions: extraRestrictions,
+          weekly_budget: budget ? Number(budget) : undefined,
+        }),
+      })
+      if (!res.ok) throw new Error(`Status ${res.status}`)
+      const data = await res.json()
+      if (data.week) {
+        setPlan(apiToUiPlan(data.week))
+      } else {
+        throw new Error('Resposta inesperada da IA')
+      }
+    } catch (e) {
+      setError('Não foi possível gerar o cardápio. Verifique a conexão e tente novamente.')
     } finally {
       setGenerating(false)
     }
@@ -160,6 +184,9 @@ export default function CardapioPage() {
               <p className="text-[13px] text-[var(--sl-t2)] mb-6 max-w-sm mx-auto">
                 A IA cria um plano alimentar de 7 dias baseado no seu perfil, restrições e objetivos.
               </p>
+              {error && (
+                <p className="text-[12px] text-[#f43f5e] mb-4 max-w-sm mx-auto">{error}</p>
+              )}
               <button
                 onClick={handleGenerate}
                 disabled={generating}
@@ -172,7 +199,7 @@ export default function CardapioPage() {
                 ) : (
                   <Sparkles size={16} />
                 )}
-                {generating ? 'Gerando cardápio...' : 'Gerar Cardápio'}
+                {generating ? 'Gerando com IA...' : 'Gerar Cardápio com IA'}
               </button>
             </div>
           ) : (
@@ -216,15 +243,14 @@ export default function CardapioPage() {
                   </div>
                   {dayPlan.meals.map((meal, idx) => (
                     <div key={idx} className="p-3 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="text-[12px] font-semibold text-[var(--sl-t1)]">{meal.name}</p>
-                        <span className="font-[DM_Mono] text-[11px] text-[#f97316]">{meal.calories} kcal</span>
-                      </div>
-                      <p className="text-[11px] text-[var(--sl-t3)] mb-1.5">{meal.ingredients.join(', ')}</p>
-                      <div className="flex gap-3">
-                        <span className="text-[10px] text-[var(--sl-t3)]">P: <span className="text-[var(--sl-t2)]">{meal.protein_g}g</span></span>
-                        <span className="text-[10px] text-[var(--sl-t3)]">C: <span className="text-[var(--sl-t2)]">{meal.carbs_g}g</span></span>
-                        <span className="text-[10px] text-[var(--sl-t3)]">G: <span className="text-[var(--sl-t2)]">{meal.fat_g}g</span></span>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-[12px] font-semibold text-[var(--sl-t1)] leading-snug">{meal.name}</p>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {meal.prep_minutes != null && (
+                            <span className="text-[10px] text-[var(--sl-t3)]">⏱ {meal.prep_minutes}m</span>
+                          )}
+                          <span className="font-[DM_Mono] text-[11px] text-[#f97316]">{meal.calories} kcal</span>
+                        </div>
                       </div>
                     </div>
                   ))}

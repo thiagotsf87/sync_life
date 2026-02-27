@@ -136,6 +136,36 @@ export default function PesoPage() {
     ? calcCaloriesTarget(profile.tdee, profile.weight_goal_type)
     : null
 
+  // RN-CRP-14 + RN-CRP-15: velocidade e previsão baseadas nos últimos 30 dias
+  const last30Entries = entries.filter(e => {
+    const d = new Date(e.recorded_at)
+    const now = new Date()
+    return (now.getTime() - d.getTime()) <= 30 * 24 * 60 * 60 * 1000
+  })
+
+  let weeklyVelocity: number | null = null
+  let predictedDate: Date | null = null
+
+  if (last30Entries.length >= 2) {
+    const oldest = last30Entries[last30Entries.length - 1]
+    const newest = last30Entries[0]
+    const days = Math.max(1, (new Date(newest.recorded_at).getTime() - new Date(oldest.recorded_at).getTime()) / (1000 * 60 * 60 * 24))
+    const totalChange = newest.weight - oldest.weight
+    const changePerDay = totalChange / days
+    weeklyVelocity = changePerDay * 7
+
+    if (profile?.weight_goal_kg && latestEntry && Math.abs(changePerDay) > 0.001) {
+      const diff = profile.weight_goal_kg - latestEntry.weight
+      const daysNeeded = diff / changePerDay
+      if (daysNeeded > 0 && daysNeeded < 3650) {
+        predictedDate = new Date()
+        predictedDate.setDate(predictedDate.getDate() + Math.round(daysNeeded))
+      }
+    }
+  }
+
+  const speedUnsafe = weeklyVelocity !== null && Math.abs(weeklyVelocity) > 1
+
   // Open profile modal and pre-fill
   function openProfileModal() {
     setProfileForm({
@@ -273,6 +303,28 @@ export default function PesoPage() {
                     </p>
                   )
                 })()}
+                {/* RN-CRP-14: Previsão de data */}
+                {predictedDate && (
+                  <p className="text-[11px] text-[var(--sl-t2)] mt-1.5">
+                    📅 Previsão: <strong className="text-[var(--sl-t1)]">
+                      {predictedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </strong>
+                    {weeklyVelocity !== null && (
+                      <span className="text-[var(--sl-t3)]"> ({Math.abs(weeklyVelocity).toFixed(1)} kg/sem)</span>
+                    )}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* RN-CRP-15: Alerta velocidade insegura */}
+            {speedUnsafe && (
+              <div className="bg-[#f43f5e]/10 border border-[#f43f5e]/30 rounded-xl p-3">
+                <p className="text-[11px] text-[var(--sl-t2)] leading-relaxed">
+                  ⚠️ Velocidade de {weeklyVelocity! > 0 ? 'ganho' : 'perda'} de peso acima de 1 kg/semana
+                  (<strong className="text-[#f43f5e]">{Math.abs(weeklyVelocity!).toFixed(1)} kg/sem</strong>).
+                  A faixa saudável é de 0,5 a 1 kg/semana. Considere consultar um profissional.
+                </p>
               </div>
             )}
           </div>

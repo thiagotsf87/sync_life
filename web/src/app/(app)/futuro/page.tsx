@@ -1,21 +1,24 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, ArrowUpDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useShellStore } from '@/stores/shell-store'
 import { useObjectives, useCreateObjective, type ObjectiveStatus, type ObjectiveCategory } from '@/hooks/use-futuro'
+import { useUserPlan } from '@/hooks/use-user-plan'
+import { checkPlanLimit } from '@/lib/plan-limits'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { ObjectiveCard } from '@/components/futuro/ObjectiveCard'
 import { ObjectiveWizard } from '@/components/futuro/ObjectiveWizard'
 
-// ─── Filter types ─────────────────────────────────────────────────────────────
+// ─── Filter / Sort types ───────────────────────────────────────────────────────
 
 type StatusFilter = 'all' | ObjectiveStatus
 type CategoryFilter = 'all' | ObjectiveCategory
+type SortMode = 'priority' | 'progress' | 'deadline'
 
 const STATUS_TABS: { value: StatusFilter; label: string }[] = [
   { value: 'all', label: 'Todos' },
@@ -23,6 +26,16 @@ const STATUS_TABS: { value: StatusFilter; label: string }[] = [
   { value: 'completed', label: 'Concluídos' },
   { value: 'paused', label: 'Pausados' },
 ]
+
+const SORT_LABELS: Record<SortMode, string> = {
+  priority: 'Prioridade',
+  progress: 'Progresso',
+  deadline: 'Prazo',
+}
+
+const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 }
+
+const MAX_VISIBLE = 10  // RN-FUT-05
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
@@ -34,20 +47,52 @@ export default function FuturoPage() {
   const { objectives, active, completed, avgProgress, nextDeadline, loading, error, reload } = useObjectives()
   const createObjective = useCreateObjective()
 
+  const { isPro } = useUserPlan()
+
   const [wizardOpen, setWizardOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [sortMode, setSortMode] = useState<SortMode>('priority')
+  const [showAll, setShowAll] = useState(false)
   const [search, setSearch] = useState('')
 
-  // ─── Filter objectives ──────────────────────────────────────────────────────
-  const filtered = objectives.filter(obj => {
-    if (statusFilter !== 'all' && obj.status !== statusFilter) return false
-    if (search && !obj.name.toLowerCase().includes(search.toLowerCase())) return false
-    return true
-  })
+  // ─── Filter + Sort objectives (RN-FUT-01, RN-FUT-05) ─────────────────────────
+  const filtered = useMemo(() => {
+    const list = objectives.filter(obj => {
+      if (statusFilter !== 'all' && obj.status !== statusFilter) return false
+      if (search && !obj.name.toLowerCase().includes(search.toLowerCase())) return false
+      return true
+    })
+
+    list.sort((a, b) => {
+      if (sortMode === 'priority') {
+        return (PRIORITY_ORDER[a.priority] ?? 2) - (PRIORITY_ORDER[b.priority] ?? 2)
+      }
+      if (sortMode === 'progress') {
+        return b.progress - a.progress
+      }
+      // deadline: sem prazo vai para o fim
+      if (!a.target_date && !b.target_date) return 0
+      if (!a.target_date) return 1
+      if (!b.target_date) return -1
+      return new Date(a.target_date).getTime() - new Date(b.target_date).getTime()
+    })
+
+    return list
+  }, [objectives, statusFilter, sortMode, search])
+
+  const displayed = showAll ? filtered : filtered.slice(0, MAX_VISIBLE)
+  const hasMore = filtered.length > MAX_VISIBLE && !showAll
 
   // ─── Handlers ───────────────────────────────────────────────────────────────
   const handleCreate = useCallback(async (data: Parameters<typeof createObjective>[0]) => {
+    // RN-FUT-06: Limite FREE = 3 objetivos ativos
+    const limitCheck = checkPlanLimit(isPro, 'active_objectives', active.length)
+    if (!limitCheck.allowed) {
+      toast.error(limitCheck.upsellMessage)
+      return
+    }
+
     setIsCreating(true)
     try {
       await createObjective(data)
@@ -59,7 +104,7 @@ export default function FuturoPage() {
     } finally {
       setIsCreating(false)
     }
-  }, [createObjective, reload])
+  }, [createObjective, reload, isPro, active.length])
 
   // ─── KPI formatting ──────────────────────────────────────────────────────────
   const nextDeadlineLabel = nextDeadline?.target_date
@@ -78,6 +123,11 @@ export default function FuturoPage() {
           🔮 Futuro
         </h1>
         <div className="flex-1" />
+        {!isPro && (
+          <span className="text-[11px] text-[var(--sl-t3)] font-medium">
+            {active.length}/3 FREE
+          </span>
+        )}
         <button
           onClick={() => setWizardOpen(true)}
           className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
@@ -143,6 +193,18 @@ export default function FuturoPage() {
             {tab.label}
           </button>
         ))}
+        {/* Sort toggle — RN-FUT-01 */}
+        <button
+          onClick={() => {
+            const modes: SortMode[] = ['priority', 'progress', 'deadline']
+            const next = modes[(modes.indexOf(sortMode) + 1) % modes.length]
+            setSortMode(next)
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] transition-all"
+        >
+          <ArrowUpDown size={12} />
+          {SORT_LABELS[sortMode]}
+        </button>
         <div className="ml-auto flex items-center gap-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] px-3 py-1.5 max-w-[180px]">
           <Search size={13} className="text-[var(--sl-t3)] shrink-0" />
           <input
@@ -200,16 +262,29 @@ export default function FuturoPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 max-lg:grid-cols-1">
-          {filtered.map((obj, idx) => (
-            <div key={obj.id} className={`sl-delay-${Math.min(idx + 1, 5)}`}>
-              <ObjectiveCard
-                objective={obj}
-                onClick={() => router.push(`/futuro/${obj.id}`)}
-              />
+        <>
+          <div className="grid grid-cols-2 gap-3 max-lg:grid-cols-1">
+            {displayed.map((obj, idx) => (
+              <div key={obj.id} className={`sl-delay-${Math.min(idx + 1, 5)}`}>
+                <ObjectiveCard
+                  objective={obj}
+                  onClick={() => router.push(`/futuro/${obj.id}`)}
+                />
+              </div>
+            ))}
+          </div>
+          {/* Ver todos — RN-FUT-05 */}
+          {hasMore && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setShowAll(true)}
+                className="px-5 py-2 rounded-[10px] text-[12px] font-semibold border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-all"
+              >
+                Ver todos ({filtered.length})
+              </button>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       {/* Wizard */}

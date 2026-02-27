@@ -12,6 +12,8 @@ import {
   type AssetClass, type AddTransactionData,
 } from '@/hooks/use-patrimonio'
 import { AssetCard } from '@/components/patrimonio/AssetCard'
+import { useUserPlan } from '@/hooks/use-user-plan'
+import { checkPlanLimit } from '@/lib/plan-limits'
 
 const ASSET_CLASSES: AssetClass[] = [
   'stocks_br', 'fiis', 'etfs_br', 'bdrs', 'fixed_income',
@@ -53,6 +55,7 @@ export default function CarteiraPage() {
   const addTransaction = useAddTransaction()
   const updatePrice = useUpdateAssetPrice()
   const deleteAsset = useDeleteAsset()
+  const { isPro } = useUserPlan()
 
   const [showModal, setShowModal] = useState(false)
   const [showPriceModal, setShowPriceModal] = useState<{ id: string; ticker: string } | null>(null)
@@ -66,6 +69,18 @@ export default function CarteiraPage() {
     if (!form.ticker.trim() || !form.asset_name.trim() || !form.quantity || !form.price) {
       toast.error('Preencha ticker, nome, quantidade e preço')
       return
+    }
+    // RN-PTR-07: Limite FREE = 10 ativos únicos (apenas em compras de ticker novo)
+    if (form.operation === 'buy') {
+      const tickerUpper = form.ticker.toUpperCase().trim()
+      const isNewTicker = !assets.some(a => a.ticker === tickerUpper)
+      if (isNewTicker) {
+        const limitCheck = checkPlanLimit(isPro, 'portfolio_assets', assets.length)
+        if (!limitCheck.allowed) {
+          toast.error(limitCheck.upsellMessage)
+          return
+        }
+      }
     }
     setIsSaving(true)
     try {

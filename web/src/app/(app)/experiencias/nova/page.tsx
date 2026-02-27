@@ -7,10 +7,12 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
 import {
-  useCreateTrip,
+  useTrips, useCreateTrip,
   TRIP_TYPE_LABELS,
   type TripType,
 } from '@/hooks/use-experiencias'
+import { useUserPlan } from '@/hooks/use-user-plan'
+import { checkPlanLimit } from '@/lib/plan-limits'
 
 interface WizardData {
   // Step 1 — Destino e Datas
@@ -54,6 +56,11 @@ export default function NovaViagemPage() {
   const mode = useShellStore((s) => s.mode)
   const isJornada = mode === 'jornada'
 
+  const { trips } = useTrips()
+  const { isPro } = useUserPlan()
+  // RN-EXP-07: Viagens ativas = status não completed/cancelled
+  const activeTrips = trips.filter(t => !['completed', 'cancelled'].includes(t.status))
+
   const [step, setStep] = useState(0)
   const [data, setData] = useState<WizardData>(EMPTY_DATA)
   const [isSaving, setIsSaving] = useState(false)
@@ -78,6 +85,12 @@ export default function NovaViagemPage() {
   }
 
   async function handleFinish() {
+    // RN-EXP-07: Limite FREE = 1 viagem ativa
+    const limitCheck = checkPlanLimit(isPro, 'active_trips', activeTrips.length)
+    if (!limitCheck.allowed) {
+      toast.error(limitCheck.upsellMessage)
+      return
+    }
     setIsSaving(true)
     try {
       const trip = await createTrip({

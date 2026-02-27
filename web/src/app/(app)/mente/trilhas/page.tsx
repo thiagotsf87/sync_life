@@ -12,6 +12,8 @@ import {
 import { STATUS_LABELS } from '@/hooks/use-mente'
 import { TrackCard } from '@/components/mente/TrackCard'
 import { TrackWizard } from '@/components/mente/TrackWizard'
+import { useUserPlan } from '@/hooks/use-user-plan'
+import { checkPlanLimit } from '@/lib/plan-limits'
 
 type FilterStatus = 'all' | TrackStatus
 
@@ -32,6 +34,9 @@ export default function TrilhasPage() {
   const updateTrack = useUpdateTrack()
   const deleteTrack = useDeleteTrack()
   const toggleStep = useToggleStep()
+  const { isPro } = useUserPlan()
+
+  const activeTracks = tracks.filter(t => t.status === 'in_progress')
 
   const [wizardOpen, setWizardOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
@@ -46,6 +51,12 @@ export default function TrilhasPage() {
   })
 
   const handleCreate = useCallback(async (data: Parameters<typeof createTrack>[0]) => {
+    // RN-MNT-08: Limite FREE = 3 trilhas ativas
+    const limitCheck = checkPlanLimit(isPro, 'active_study_tracks', activeTracks.length)
+    if (!limitCheck.allowed) {
+      toast.error(limitCheck.upsellMessage)
+      return
+    }
     setIsCreating(true)
     try {
       await createTrack(data)
@@ -102,6 +113,11 @@ export default function TrilhasPage() {
           📚 Trilhas de Aprendizado
         </h1>
         <div className="flex-1" />
+        {!isPro && (
+          <span className="text-[11px] text-[var(--sl-t3)] font-medium">
+            {activeTracks.length}/3 FREE
+          </span>
+        )}
         <button
           onClick={() => setWizardOpen(true)}
           className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold

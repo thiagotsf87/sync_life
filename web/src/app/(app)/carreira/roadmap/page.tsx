@@ -11,6 +11,8 @@ import {
   type CreateRoadmapData, type StepStatus,
 } from '@/hooks/use-carreira'
 import { RoadmapTimeline } from '@/components/carreira/RoadmapTimeline'
+import { useUserPlan } from '@/hooks/use-user-plan'
+import { checkPlanLimit } from '@/lib/plan-limits'
 
 const STATUS_LABELS: Record<string, string> = {
   active: 'Ativo',
@@ -49,6 +51,9 @@ export default function RoadmapPage() {
   const createRoadmap = useCreateRoadmap()
   const updateStep = useUpdateRoadmapStep()
   const deleteRoadmap = useDeleteRoadmap()
+  const { isPro } = useUserPlan()
+
+  const activeRoadmaps = roadmaps.filter(r => r.status === 'active')
 
   const [showModal, setShowModal] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -75,6 +80,12 @@ export default function RoadmapPage() {
   async function handleCreate() {
     if (!form.name.trim() || !form.current_title.trim() || !form.target_title.trim()) {
       toast.error('Preencha Nome, Cargo Atual e Cargo Alvo')
+      return
+    }
+    // RN-CAR-11: Limite FREE = 1 roadmap ativo
+    const limitCheck = checkPlanLimit(isPro, 'active_roadmaps', activeRoadmaps.length)
+    if (!limitCheck.allowed) {
+      toast.error(limitCheck.upsellMessage)
       return
     }
     setIsSaving(true)
