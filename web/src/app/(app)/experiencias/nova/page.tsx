@@ -13,6 +13,7 @@ import {
 } from '@/hooks/use-experiencias'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
+import { createTransactionFromViagem } from '@/lib/integrations/financas'
 
 interface WizardData {
   // Step 1 — Destino e Datas
@@ -26,6 +27,7 @@ interface WizardData {
   // Step 2 — Orçamento
   total_budget: string
   currency: string
+  syncToFinancas: boolean
   // Step 3 — Resumo/notas
   notes: string
 }
@@ -40,6 +42,7 @@ const EMPTY_DATA: WizardData = {
   travelers_count: 1,
   total_budget: '',
   currency: 'BRL',
+  syncToFinancas: false,
   notes: '',
 }
 
@@ -104,6 +107,14 @@ export default function NovaViagemPage() {
         currency: data.currency,
         notes: data.notes.trim() || null,
       })
+      // RN-EXP-03: sincronizar orçamento com Finanças
+      if (data.syncToFinancas && data.total_budget && parseFloat(data.total_budget) > 0) {
+        await createTransactionFromViagem({
+          tripName: data.name.trim(),
+          totalBudget: parseFloat(data.total_budget),
+          startDate: data.start_date,
+        })
+      }
       toast.success('Viagem criada com sucesso!')
       router.push(`/experiencias/viagens/${trip.id}`)
     } catch {
@@ -331,6 +342,21 @@ export default function NovaViagemPage() {
                 💡 Você pode definir o orçamento por categoria (hospedagem, passagens, alimentação, etc.) no detalhe da viagem.
               </p>
             </div>
+
+            {data.total_budget && parseFloat(data.total_budget) > 0 && (
+              <div className="flex items-center justify-between p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
+                <div>
+                  <p className="text-[13px] font-medium text-[var(--sl-t1)]">Registrar em Finanças</p>
+                  <p className="text-[11px] text-[var(--sl-t3)]">Cria despesa planejada automaticamente</p>
+                </div>
+                <button
+                  onClick={() => setData(d => ({ ...d, syncToFinancas: !d.syncToFinancas }))}
+                  className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', data.syncToFinancas ? 'bg-[#06b6d4]' : 'bg-[var(--sl-s3)]')}
+                >
+                  <div className={cn('w-4 h-4 rounded-full bg-white absolute top-1 transition-all', data.syncToFinancas ? 'left-5' : 'left-1')} />
+                </button>
+              </div>
+            )}
           </div>
         )}
 

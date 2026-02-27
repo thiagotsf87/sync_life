@@ -13,6 +13,7 @@ import {
   type DividendType, type DividendStatus,
 } from '@/hooks/use-patrimonio'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
+import { createTransactionFromProvento } from '@/lib/integrations/financas'
 
 interface DividendForm {
   asset_id: string
@@ -22,6 +23,7 @@ interface DividendForm {
   payment_date: string
   ex_date: string
   status: DividendStatus
+  syncToFinancas: boolean
 }
 
 const EMPTY_FORM: DividendForm = {
@@ -32,6 +34,7 @@ const EMPTY_FORM: DividendForm = {
   payment_date: new Date().toISOString().split('T')[0],
   ex_date: '',
   status: 'received',
+  syncToFinancas: false,
 }
 
 const DIVIDEND_TYPE_ICONS: Record<DividendType, string> = {
@@ -133,6 +136,16 @@ export default function ProventosPage() {
         ex_date: form.ex_date || null,
         status: form.status,
       })
+      // RN-PTR-12: sincronizar com Finanças
+      if (form.status === 'received' && form.syncToFinancas) {
+        const ticker = assetMap[form.asset_id]?.ticker ?? form.asset_id
+        await createTransactionFromProvento({
+          ticker,
+          dividendType: form.type,
+          totalAmount: parseFloat(form.total_amount),
+          paymentDate: form.payment_date,
+        })
+      }
       toast.success('Provento registrado!')
       setShowModal(false)
       setForm(EMPTY_FORM)
@@ -558,6 +571,21 @@ export default function ProventosPage() {
                   ))}
                 </div>
               </div>
+
+              {form.status === 'received' && (
+                <div className="flex items-center justify-between p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
+                  <div>
+                    <p className="text-[13px] font-medium text-[var(--sl-t1)]">Registrar em Finanças</p>
+                    <p className="text-[11px] text-[var(--sl-t3)]">Cria receita automática em Finanças</p>
+                  </div>
+                  <button
+                    onClick={() => setForm(f => ({ ...f, syncToFinancas: !f.syncToFinancas }))}
+                    className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', form.syncToFinancas ? 'bg-[#10b981]' : 'bg-[var(--sl-s3)]')}
+                  >
+                    <div className={cn('w-4 h-4 rounded-full bg-white absolute top-1 transition-all', form.syncToFinancas ? 'left-5' : 'left-1')} />
+                  </button>
+                </div>
+              )}
 
               <div className="flex gap-2 pt-1">
                 <button onClick={() => setShowModal(false)}

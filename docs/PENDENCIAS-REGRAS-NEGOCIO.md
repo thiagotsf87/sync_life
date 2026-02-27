@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27 (sessão 5 — notificações, cotações, YoC, Coach IA, Futuro melhorias)
+**Última atualização:** 2026-02-27 (sessão 6 — integrações cross-module P3: PTR-12, CAR-01, CRP-07, EXP-03)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -25,12 +25,12 @@
 | Módulo | Total | ✅ | ⚠️ | ❌ |
 |--------|-------|-----|-----|-----|
 | FUTURO | 58 | 22 | 10 | 26 |
-| CORPO | 39 | 23 | 9 | 7 |
-| EXPERIÊNCIAS | 32 | 16 | 6 | 10 |
+| CORPO | 39 | 24 | 9 | 6 |
+| EXPERIÊNCIAS | 32 | 17 | 6 | 9 |
 | MENTE | 26 | 16 | 5 | 5 |
-| PATRIMÔNIO | 24 | 13 | 5 | 6 |
-| CARREIRA | 20 | 9 | 4 | 7 |
-| **TOTAL** | **199** | **~99 (50%)** | **~39 (20%)** | **~61 (31%)** |
+| PATRIMÔNIO | 24 | 14 | 5 | 5 |
+| CARREIRA | 20 | 10 | 4 | 6 |
+| **TOTAL** | **199** | **~103 (52%)** | **~39 (20%)** | **~57 (29%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -58,12 +58,12 @@
 > Após P1, implementar por ordem de impacto no UX
 
 9. Corpo → Agenda (consulta gera evento) — RN-CRP-01
-10. Corpo → Finanças (custo consulta → transação) — RN-CRP-07
-11. Patrimônio → Finanças (proventos → receitas) — RN-PTR-12
-12. Carreira → Finanças (salário sync) — RN-CAR-01
+10. ~~Corpo → Finanças (custo consulta → transação) — RN-CRP-07~~ ✅ **CONCLUÍDO (2026-02-27)**
+11. ~~Patrimônio → Finanças (proventos → receitas) — RN-PTR-12~~ ✅ **CONCLUÍDO (2026-02-27)**
+12. ~~Carreira → Finanças (salário sync) — RN-CAR-01~~ ✅ **CONCLUÍDO (2026-02-27)**
 13. Mente → Carreira (trilha → habilidade) — RN-MNT-03
 14. Experiências → Agenda (dias viagem bloqueados) — RN-EXP-02
-15. Experiências → Finanças (custo viagem) — RN-EXP-03
+15. ~~Experiências → Finanças (custo viagem) — RN-EXP-03~~ ✅ **CONCLUÍDO (2026-02-27)**
 
 ### Grupo P4 — Cálculos e lógica avançada
 16. TMB/TDEE + Gráfico evolução peso (Corpo) — RN-CRP-11..18
@@ -194,7 +194,7 @@
 | RN-CRP-04 | Status de retorno: pendente/agendado/ignorado | ✅ | |
 | RN-CRP-05 | Retorno pendente 30+ dias → alerta vermelho Dashboard | ❌ | Alerta não implementado |
 | RN-CRP-06 | Especialidades pré-definidas (lista completa) | ✅ | |
-| RN-CRP-07 | Custo da consulta → transação em Finanças (categoria Saúde) | ❌ | Cross-module |
+| RN-CRP-07 | Custo da consulta → transação em Finanças (categoria Saúde) | ✅ | Cross-module |
 | RN-CRP-08 | Limite FREE: 3 consultas ativas/mês | ❌ | Sem enforcement |
 | RN-CRP-09 | Histórico permanente com filtros | ✅ | |
 | RN-CRP-10 | Anexos opcionais (Supabase Storage) | 🚫 | Adiado — requer storage setup |
@@ -258,7 +258,7 @@
 |----|-------|--------|-----------|
 | RN-EXP-01 | Status: Planejando/Reservado/Em andamento/Concluída/Cancelada | ✅ | |
 | RN-EXP-02 | Dias bloqueados na Agenda como eventos "✈️ Experiências" | ❌ | Cross-module |
-| RN-EXP-03 | Custo total → despesa planejada em Finanças | ❌ | Cross-module |
+| RN-EXP-03 | Custo total → despesa planejada em Finanças | ✅ | Cross-module |
 | RN-EXP-04 | Meta no Futuro → progresso atualizado conforme economia | ❌ | Cross-module |
 | RN-EXP-05 | Multi-destino: várias cidades com datas diferentes | ✅ | `destinations[]` |
 | RN-EXP-06 | Cada item de custo: Estimado/Reservado/Pago | ✅ | |
@@ -388,7 +388,7 @@
 |----|-------|--------|-----------|
 | RN-PTR-10 | Proventos cadastrados manualmente | ✅ | |
 | RN-PTR-11 | Tipos: Dividendos, JCP, Rendimentos FII, RF, Outros | ✅ | |
-| RN-PTR-12 | Provento recebido → receita automática em Finanças | ❌ | Cross-module |
+| RN-PTR-12 | Provento recebido → receita automática em Finanças | ✅ | Cross-module |
 | RN-PTR-13 | Proventos futuros → previsão no calendário financeiro | ❌ | Cross-module |
 | RN-PTR-14 | Yield on Cost = (Proventos 12m / Valor Investido) × 100 | ✅ | Card "Yield on Cost" por ativo na página proventos (2026-02-27) |
 | RN-PTR-15 | Projeção de proventos futuros (base 12m) | ✅ | KPI "Projeção anual" = média mensal × 12 em proventos/page.tsx (2026-02-27) |
@@ -420,7 +420,7 @@
 
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
-| RN-CAR-01 | Salário sincronizado como receita recorrente em Finanças (opt-in) | ❌ | Cross-module |
+| RN-CAR-01 | Salário sincronizado como receita recorrente em Finanças (opt-in) | ✅ | Cross-module |
 | RN-CAR-02 | Toda edição de cargo/salário → registro histórico com data | ✅ | |
 | RN-CAR-03 | Áreas pré-definidas (12 áreas) | ✅ | |
 | RN-CAR-04 | Níveis hierárquicos pré-definidos (11 níveis) | ✅ | |

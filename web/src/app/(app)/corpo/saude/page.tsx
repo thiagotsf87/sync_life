@@ -12,6 +12,7 @@ import {
   type SaveAppointmentData,
 } from '@/hooks/use-corpo'
 import { AppointmentCard } from '@/components/corpo/AppointmentCard'
+import { createTransactionFromConsulta } from '@/lib/integrations/financas'
 
 type FilterTab = 'upcoming' | 'all' | 'completed'
 
@@ -32,6 +33,7 @@ const EMPTY_FORM = {
   cost: '',
   notes: '',
   follow_up_months: null as number | null,
+  syncToFinancas: false,
 }
 
 export default function SaudePage() {
@@ -66,6 +68,14 @@ export default function SaudePage() {
         follow_up_months: form.follow_up_months,
       }
       await saveAppointment(data)
+      // RN-CRP-07: sincronizar custo com Finanças
+      if (form.cost && form.syncToFinancas) {
+        await createTransactionFromConsulta({
+          specialty: form.specialty,
+          cost: parseFloat(form.cost),
+          appointmentDate: form.appointment_date,
+        })
+      }
       toast.success('Consulta agendada!')
       setShowModal(false)
       setForm(EMPTY_FORM)
@@ -323,6 +333,21 @@ export default function SaudePage() {
                   className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4] resize-none"
                 />
               </div>
+
+              {form.cost && parseFloat(form.cost) > 0 && (
+                <div className="flex items-center justify-between p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
+                  <div>
+                    <p className="text-[13px] font-medium text-[var(--sl-t1)]">Registrar em Finanças</p>
+                    <p className="text-[11px] text-[var(--sl-t3)]">Cria despesa de saúde automaticamente</p>
+                  </div>
+                  <button
+                    onClick={() => setForm(f => ({ ...f, syncToFinancas: !f.syncToFinancas }))}
+                    className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', form.syncToFinancas ? 'bg-[#06b6d4]' : 'bg-[var(--sl-s3)]')}
+                  >
+                    <div className={cn('w-4 h-4 rounded-full bg-white absolute top-1 transition-all', form.syncToFinancas ? 'left-5' : 'left-1')} />
+                  </button>
+                </div>
+              )}
 
               <div className="flex gap-2 pt-1">
                 <button onClick={() => setShowModal(false)}

@@ -11,6 +11,7 @@ import {
   FIELD_LABELS, LEVEL_LABELS,
   type ProfessionalField, type CareerLevel,
 } from '@/hooks/use-carreira'
+import { createTransactionFromSalario } from '@/lib/integrations/financas'
 
 const FIELDS: ProfessionalField[] = ['technology', 'finance', 'health', 'education', 'law', 'engineering', 'marketing', 'sales', 'hr', 'design', 'management', 'other']
 const LEVELS: CareerLevel[] = ['intern', 'junior', 'mid', 'senior', 'specialist', 'coordinator', 'manager', 'director', 'c_level', 'freelancer', 'entrepreneur']
@@ -87,6 +88,14 @@ export default function PerfilCarreiraPage() {
         })
       }
 
+      // RN-CAR-01: sincronizar salário com Finanças
+      if (form.sync_salary_to_finance && form.gross_salary) {
+        await createTransactionFromSalario({
+          title: form.current_title,
+          grossSalary: parseFloat(form.gross_salary),
+          competenceDate: new Date().toISOString().split('T')[0],
+        })
+      }
       toast.success('Perfil salvo!')
       await reload()
     } catch {
