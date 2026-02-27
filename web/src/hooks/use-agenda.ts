@@ -70,16 +70,26 @@ export interface AgendaEventFormData {
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
+// Retorna string de data local YYYY-MM-DD sem conversão UTC
+function toLocalDateStr(d: Date): string {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 export function getWeekRange(referenceDate: Date): { weekStart: string; weekEnd: string } {
   const d = new Date(referenceDate)
-  const day = d.getDay() // 0 = Dom
-  const diff = d.getDate() - day
-  const sunday = new Date(d.setDate(diff))
-  const saturday = new Date(sunday)
-  saturday.setDate(saturday.getDate() + 6)
+  const dayOfWeek = d.getDay() // 0=Dom, 1=Seg, ..., 6=Sáb
+  // Semana BR: começa na Segunda (1). Se domingo (0), subtrai 6 dias; senão subtrai (dayOfWeek - 1).
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+  const monday = new Date(d)
+  monday.setDate(d.getDate() + mondayOffset)
+  const sunday = new Date(monday)
+  sunday.setDate(monday.getDate() + 6)
   return {
-    weekStart: sunday.toISOString().split('T')[0],
-    weekEnd: saturday.toISOString().split('T')[0],
+    weekStart: toLocalDateStr(monday),
+    weekEnd: toLocalDateStr(sunday),
   }
 }
 
