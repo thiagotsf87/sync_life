@@ -2,7 +2,7 @@
 
 import { use, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Plus, Pause, Play, CheckCircle, Trash2, Clock } from 'lucide-react'
+import { ArrowLeft, Plus, Pause, Play, CheckCircle, Trash2, Clock, TrendingDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useShellStore } from '@/stores/shell-store'
@@ -14,6 +14,8 @@ import {
   useDeleteObjective,
   useDeleteGoal,
   calcObjectiveProgress,
+  calcProgressVelocity,
+  isProgressAtRisk,
   CATEGORY_LABELS,
 } from '@/hooks/use-futuro'
 import { GoalCard } from '@/components/futuro/GoalCard'
@@ -191,6 +193,15 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
   const isCompleted = objective.status === 'completed'
   const isPaused = objective.status === 'paused'
 
+  // RN-FUT-24..25: velocity & at-risk
+  const velocity = calcProgressVelocity(milestones, objective.created_at, progress)
+  const atRisk = objective.status === 'active' && isProgressAtRisk(velocity, progress, objective.target_date)
+  const velocityLabel = velocity > 0
+    ? `+${velocity.toFixed(2)}%/dia`
+    : velocity < 0
+    ? `${velocity.toFixed(2)}%/dia`
+    : '—'
+
   return (
     <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
@@ -277,6 +288,30 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
                   Prazo: {new Date(objective.target_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
                   {objective.target_date_reason && ` — ${objective.target_date_reason}`}
                 </span>
+              </div>
+            )}
+
+            {/* RN-FUT-24..25: velocity row + at-risk alert */}
+            {objective.status === 'active' && (
+              <div className="mt-3 flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Velocidade</span>
+                  <span
+                    className="font-[DM_Mono] text-[12px] font-semibold"
+                    style={{ color: velocity > 0 ? '#10b981' : velocity < 0 ? '#f43f5e' : 'var(--sl-t3)' }}
+                  >
+                    {velocityLabel}
+                  </span>
+                </div>
+                {atRisk && (
+                  <div
+                    className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold"
+                    style={{ color: '#f59e0b', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)' }}
+                  >
+                    <TrendingDown size={12} />
+                    Ritmo insuficiente para o prazo
+                  </div>
+                )}
               </div>
             )}
           </div>

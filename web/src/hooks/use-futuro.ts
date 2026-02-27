@@ -81,6 +81,58 @@ export function calcObjectiveProgress(goals: ObjectiveGoal[]): number {
   return Math.round(weighted / totalWeight)
 }
 
+/**
+ * RN-FUT-24: Velocidade de progresso (% por dia).
+ * Usa o milestone com progress_snapshot mais antigo dos últimos 30 dias como baseline.
+ * Fallback: usa created_at com progress 0.
+ */
+export function calcProgressVelocity(
+  milestones: ObjectiveMilestone[],
+  createdAt: string,
+  currentProgress: number,
+): number {
+  const now = Date.now()
+  const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000
+
+  // Milestones com snapshot, ordenados do mais recente para o mais antigo
+  const withSnapshot = milestones
+    .filter(m => m.progress_snapshot !== null)
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+  // Procura o milestone mais recente que tenha 30+ dias atrás (baseline)
+  const baseline30 = withSnapshot.find(
+    m => new Date(m.created_at).getTime() <= thirtyDaysAgo
+  )
+
+  let baseProgress = 0
+  let baseTime: number
+
+  if (baseline30 && baseline30.progress_snapshot !== null) {
+    baseProgress = baseline30.progress_snapshot
+    baseTime = new Date(baseline30.created_at).getTime()
+  } else {
+    baseTime = new Date(createdAt).getTime()
+  }
+
+  const days = Math.max(1, (now - baseTime) / (1000 * 60 * 60 * 24))
+  return (currentProgress - baseProgress) / days
+}
+
+/**
+ * RN-FUT-25: Retorna true se o ritmo atual é insuficiente para atingir 100% antes do prazo.
+ */
+export function isProgressAtRisk(
+  velocityPerDay: number,
+  currentProgress: number,
+  targetDate: string | null,
+): boolean {
+  if (!targetDate || currentProgress >= 100) return false
+  const daysLeft = (new Date(targetDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  if (daysLeft <= 0) return currentProgress < 100
+  const requiredVelocity = (100 - currentProgress) / daysLeft
+  return velocityPerDay < requiredVelocity
+}
+
 export const CATEGORY_LABELS: Record<ObjectiveCategory, string> = {
   financial: 'Financeiro',
   health: 'Saúde',

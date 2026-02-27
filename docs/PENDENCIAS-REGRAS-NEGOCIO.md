@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27 (sessão 3 — IA viagem RN-EXP-22/24/25 + Mapa da Vida RN-FUT-26..30)
+**Última atualização:** 2026-02-27 (sessão 4 — velocidade progresso RN-FUT-24..25)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -24,13 +24,13 @@
 
 | Módulo | Total | ✅ | ⚠️ | ❌ |
 |--------|-------|-----|-----|-----|
-| FUTURO | 58 | 17 | 11 | 30 |
+| FUTURO | 58 | 19 | 11 | 28 |
 | CORPO | 39 | 22 | 9 | 8 |
 | EXPERIÊNCIAS | 32 | 16 | 6 | 10 |
 | MENTE | 26 | 16 | 5 | 5 |
 | PATRIMÔNIO | 24 | 11 | 5 | 8 |
 | CARREIRA | 20 | 9 | 4 | 7 |
-| **TOTAL** | **199** | **~91 (46%)** | **~40 (20%)** | **~68 (34%)** |
+| **TOTAL** | **199** | **~93 (47%)** | **~40 (20%)** | **~66 (33%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -67,7 +67,7 @@
 
 ### Grupo P4 — Cálculos e lógica avançada
 16. TMB/TDEE + Gráfico evolução peso (Corpo) — RN-CRP-11..18
-17. Velocidade de progresso + Alerta prazo (Futuro) — RN-FUT-24..25
+17. ~~**Velocidade de progresso + Alerta prazo (Futuro)**~~ ✅ **CONCLUÍDO (2026-02-27)** — RN-FUT-24..25
 18. Comparativo vs benchmarks (Patrimônio) — RN-PTR-06
 19. Previsão provento + Yield on Cost — RN-PTR-14..16
 
@@ -124,8 +124,8 @@
 | RN-FUT-21 | Adicionar metas a objetivo existente | ✅ | |
 | RN-FUT-22 | Remover metas com mínimo de 1 obrigatória | ⚠️ | Sem validação de mínimo |
 | RN-FUT-23 | Edições registradas na timeline de marcos | ❌ | Timeline não implementada |
-| RN-FUT-24 | Velocidade de progresso: últimos 30 dias | ❌ | |
-| RN-FUT-25 | Alerta amarelo se ritmo insuficiente para prazo | ❌ | |
+| RN-FUT-24 | Velocidade de progresso: últimos 30 dias | ✅ | calcProgressVelocity() em use-futuro.ts + exibido em [id]/page.tsx |
+| RN-FUT-25 | Alerta amarelo se ritmo insuficiente para prazo | ✅ | isProgressAtRisk() — chip ⚠ em ObjectiveCard + banner em [id]/page.tsx |
 
 #### Mapa da Vida — Jornada (RN-FUT-26 a 30)
 

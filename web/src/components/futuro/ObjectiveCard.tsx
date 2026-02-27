@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import type { Objective, ObjectiveGoal, ObjectiveCategory } from '@/hooks/use-futuro'
-import { calcObjectiveProgress, CATEGORY_LABELS, MODULE_LABELS } from '@/hooks/use-futuro'
+import { calcObjectiveProgress, calcProgressVelocity, isProgressAtRisk, CATEGORY_LABELS, MODULE_LABELS } from '@/hooks/use-futuro'
 
 // ─── Status deadlines ─────────────────────────────────────────────────────────
 
@@ -85,6 +85,10 @@ export function ObjectiveCard({ objective, onClick }: ObjectiveCardProps) {
   const isCompleted = objective.status === 'completed'
   const isPaused = objective.status === 'paused'
 
+  // RN-FUT-24..25: progress velocity + at-risk alert
+  const velocity = calcProgressVelocity(objective.milestones ?? [], objective.created_at, progress)
+  const atRisk = objective.status === 'active' && isProgressAtRisk(velocity, progress, objective.target_date)
+
   return (
     <button
       onClick={onClick}
@@ -138,6 +142,15 @@ export function ObjectiveCard({ objective, onClick }: ObjectiveCardProps) {
       <div className="flex items-center justify-between">
         <ModuleBadges goals={goals} />
         <div className="flex items-center gap-2">
+          {/* RN-FUT-25: at-risk alert chip */}
+          {atRisk && (
+            <span
+              className="text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0"
+              style={{ color: '#f59e0b', background: 'rgba(245,158,11,0.12)' }}
+            >
+              ⚠ Ritmo insuficiente
+            </span>
+          )}
           {goals.length > 0 && (
             <span className="text-[11px] text-[var(--sl-t3)] font-medium">
               {completedGoals}/{goals.length} metas
