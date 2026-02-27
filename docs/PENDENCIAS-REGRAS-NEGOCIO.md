@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27 (sessão 2 — enforcement FREE/PRO + cardápio IA + peso previsão)
+**Última atualização:** 2026-02-27 (sessão 2 — enforcement FREE/PRO + cardápio IA + peso previsão + Pomodoro stats)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -27,10 +27,10 @@
 | FUTURO | 58 | 12 | 11 | 35 |
 | CORPO | 39 | 22 | 9 | 8 |
 | EXPERIÊNCIAS | 32 | 13 | 6 | 13 |
-| MENTE | 26 | 11 | 6 | 9 |
+| MENTE | 26 | 16 | 5 | 5 |
 | PATRIMÔNIO | 24 | 11 | 5 | 8 |
 | CARREIRA | 20 | 9 | 4 | 7 |
-| **TOTAL** | **199** | **~78 (39%)** | **~41 (21%)** | **~80 (40%)** |
+| **TOTAL** | **199** | **~83 (42%)** | **~40 (20%)** | **~76 (38%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -51,7 +51,7 @@
 
 5. ~~**Cardápio IA + Coach IA**~~ ✅ **Cardápio IA CONCLUÍDO (2026-02-27)** — RN-CRP-20, 26, 27 ✅; RN-CRP-21, 22 ⚠️; Coach IA (28) ❌
 6. **Sugestões IA de viagem** (Experiências) — RN-EXP-21..25
-7. **Pomodoro Timer** (Mente) — RN-MNT-10..18
+7. ~~**Pomodoro Timer**~~ ✅ **CONCLUÍDO (2026-02-27)** — RN-MNT-10..12, 15, 16 ✅; MNT-13 ❌ (cross-module); MNT-17/18 ❌ (infra)
 8. **Mapa da Vida / Radar Chart** (Futuro/Jornada) — RN-FUT-26..30
 
 ### Grupo P3 — Integrações cross-module
@@ -336,13 +336,13 @@
 
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
-| RN-MNT-10 | Padrão: 25min foco, 5min pausa curta, 15min longa, 4 ciclos | ❌ | Feature não implementada |
-| RN-MNT-11 | Personalizável (15-90 min foco, etc.) | ❌ | |
-| RN-MNT-12 | Pomodoro concluído → tempo registrado na trilha | ❌ | |
+| RN-MNT-10 | Padrão: 25min foco, 5min pausa curta, 15min longa, 4 ciclos | ✅ | DEFAULT_CONFIG em PomodoroTimer.tsx |
+| RN-MNT-11 | Personalizável (15-90 min foco, etc.) | ✅ | Settings panel com ±1 botões |
+| RN-MNT-12 | Pomodoro concluído → tempo registrado na trilha | ✅ | useSaveSession → atualiza total_hours |
 | RN-MNT-13 | Sessão associável a evento "Bloco de Estudo" na Agenda | ❌ | Cross-module |
 | RN-MNT-14 | Sons ambiente (chuva, lo-fi) — exclusivo Jornada/PRO | 🚫 | Adiado |
-| RN-MNT-15 | Streak: dias consecutivos com 1+ Pomodoro | ❌ | |
-| RN-MNT-16 | Relatório semanal: horas, média/dia, trilha mais estudada | ⚠️ | Sem dados de sessão |
+| RN-MNT-15 | Streak: dias consecutivos com 1+ Pomodoro | ✅ | study_streaks atualizado; exibido no painel |
+| RN-MNT-16 | Relatório semanal: horas, média/dia, trilha mais estudada | ✅ | Painel stats em timer/page.tsx (KPIs + sessões recentes) |
 | RN-MNT-17 | Timer funciona em background (notificação nativa) | ❌ | Requer PWA/notif |
 | RN-MNT-18 | Pontos de foco → XP no sistema Jornada | ❌ | Sistema XP não existe |
 
