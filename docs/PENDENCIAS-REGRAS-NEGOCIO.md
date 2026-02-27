@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27 (sessão 4 — velocidade progresso RN-FUT-24..25)
+**Última atualização:** 2026-02-27 (sessão 5 — notificações, cotações, YoC, Coach IA, Futuro melhorias)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -24,13 +24,13 @@
 
 | Módulo | Total | ✅ | ⚠️ | ❌ |
 |--------|-------|-----|-----|-----|
-| FUTURO | 58 | 19 | 11 | 28 |
-| CORPO | 39 | 22 | 9 | 8 |
+| FUTURO | 58 | 22 | 10 | 26 |
+| CORPO | 39 | 23 | 9 | 7 |
 | EXPERIÊNCIAS | 32 | 16 | 6 | 10 |
 | MENTE | 26 | 16 | 5 | 5 |
-| PATRIMÔNIO | 24 | 11 | 5 | 8 |
+| PATRIMÔNIO | 24 | 13 | 5 | 6 |
 | CARREIRA | 20 | 9 | 4 | 7 |
-| **TOTAL** | **199** | **~93 (47%)** | **~40 (20%)** | **~66 (33%)** |
+| **TOTAL** | **199** | **~99 (50%)** | **~39 (20%)** | **~61 (31%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -94,7 +94,7 @@
 | RN-FUT-01 | Ordenação: prioridade / progresso / prazo (toggle) | ✅ | Toggle implementado em futuro/page.tsx |
 | RN-FUT-02 | Badge "Atrasado" em vermelho para prazo vencido | ✅ | ObjectiveCard.tsx — getDeadlineStatus() |
 | RN-FUT-03 | Progresso geral = média ponderada dos objetivos ativos | ⚠️ | Calculado mas sem pesos |
-| RN-FUT-04 | Concluídos → aba "Concluídos" após 7 dias (com opção restaurar) | ❌ | |
+| RN-FUT-04 | Concluídos → aba "Concluídos" após 7 dias (com opção restaurar) | ✅ | Botão "Restaurar" em ObjectiveCard + handleRestore no futuro/page.tsx (2026-02-27) |
 | RN-FUT-05 | Máximo 10 objetivos na visão principal | ✅ | MAX_VISIBLE=10 + "Ver todos" implementado |
 | RN-FUT-06 | Limite FREE: 3 objetivos ativos | ✅ | checkPlanLimit() em handleCreate + badge {n}/3 |
 
@@ -103,14 +103,14 @@
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
 | RN-FUT-07 | Mínimo 1 meta por objetivo | ⚠️ | Validação básica existe |
-| RN-FUT-08 | Limite FREE: 3 metas por objetivo | ❌ | |
+| RN-FUT-08 | Limite FREE: 3 metas por objetivo | ✅ | checkPlanLimit('goals_per_objective') em futuro/[id]/page.tsx (2026-02-27) |
 | RN-FUT-09 | Módulo destino deve estar ativo no perfil | ❌ | |
 | RN-FUT-10 | Vinculação a itens existentes nos módulos | ❌ | Cross-module não implementado |
 | RN-FUT-11 | Meta financeira → pergunta sobre orçamento existente | ❌ | |
 | RN-FUT-12 | Meta tarefa → cria evento automático na Agenda | ❌ | Cross-module |
 | RN-FUT-13 | Sugestões de metas são contextuais e opcionais | ✅ | Wizard informativo |
 | RN-FUT-14 | Nome do objetivo não duplicável | ✅ | Constraint DB |
-| RN-FUT-15 | Data alvo deve ser futura | ❌ | Sem validação de data |
+| RN-FUT-15 | Data alvo deve ser futura | ✅ | min=hoje no input + validação no handleSave do ObjectiveWizard (2026-02-27) |
 
 #### Detalhe do Objetivo (RN-FUT-16 a 25)
 
@@ -166,10 +166,10 @@
 
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
-| RN-FUT-51 | Notificações desativáveis individualmente nas Settings | ❌ | Sem sistema de notificações |
-| RN-FUT-52 | Notificação "meta parada" enviada 1x (14 dias) | ❌ | |
+| RN-FUT-51 | Notificações desativáveis individualmente nas Settings | ⚠️ | Infra criada (tabela + hook + panel); toggle por tipo pendente |
+| RN-FUT-52 | Notificação "meta parada" enviada 1x (14 dias) | ✅ | generateNotifications() em use-notifications.ts — deduplica por 7d (2026-02-27) |
 | RN-FUT-53 | Resumo semanal exclusivo Jornada (PRO) | ❌ | |
-| RN-FUT-54 | Tom das notificações empático, nunca punitivo | ❌ | Sem notificações |
+| RN-FUT-54 | Tom das notificações empático, nunca punitivo | ✅ | Textos empáticos implementados em use-notifications.ts (2026-02-27) |
 
 #### Edge Cases (RN-FUT-55 a 58)
 
@@ -225,7 +225,7 @@
 | RN-CRP-25 | Orçamento alimentar → transação planejada em Finanças | ❌ | Cross-module |
 | RN-CRP-26 | Aviso legal obrigatório sobre IA | ✅ | Disclaimer "não substitui nutricionista" presente |
 | RN-CRP-27 | Vercel AI SDK + Gemini 1.5 Flash (MVP); `/api/ai/cardapio` | ✅ | Route Handler implementado + integrado |
-| RN-CRP-28 | Coach IA nutrição (PRO): Groq + Llama 3.3 (MVP) | ❌ | |
+| RN-CRP-28 | Coach IA nutrição (PRO): Groq + Llama 3.3 (MVP) | ✅ | Página /corpo/coach com chat streaming + PRO gate + perfil de saúde (2026-02-27) |
 
 #### Atividades Físicas (RN-CRP-29 a 36)
 
@@ -374,7 +374,7 @@
 |----|-------|--------|-----------|
 | RN-PTR-01 | Classes: Ações BR, FIIs, ETFs, BDRs, RF, Cripto, Stocks US, REITs, Outros | ✅ | |
 | RN-PTR-02 | Preço médio ponderado. Vendas não alteram preço médio | ✅ | |
-| RN-PTR-03 | Cotações via API (Alpha Vantage/Brapi). FREE 1x/dia, PRO tempo real | ❌ | Sem integração de cotações |
+| RN-PTR-03 | Cotações via API (Alpha Vantage/Brapi). FREE 1x/dia, PRO tempo real | ✅ | useBulkUpdatePrices() + botão "Cotações" na carteira; FREE 1x/22h (2026-02-27) |
 | RN-PTR-04 | Distribuição em pizza por classe e setor | ⚠️ | Gráfico pizza existe, sem setor |
 | RN-PTR-05 | Rentabilidade = ((Atual + Proventos − Investido) / Investido) × 100 | ✅ | |
 | RN-PTR-06 | Comparativo vs CDI, IBOVESPA, IFIX (PRO) | ❌ | |
@@ -390,8 +390,8 @@
 | RN-PTR-11 | Tipos: Dividendos, JCP, Rendimentos FII, RF, Outros | ✅ | |
 | RN-PTR-12 | Provento recebido → receita automática em Finanças | ❌ | Cross-module |
 | RN-PTR-13 | Proventos futuros → previsão no calendário financeiro | ❌ | Cross-module |
-| RN-PTR-14 | Yield on Cost = (Proventos 12m / Valor Investido) × 100 | ❌ | |
-| RN-PTR-15 | Projeção de proventos futuros (base 12m) | ❌ | |
+| RN-PTR-14 | Yield on Cost = (Proventos 12m / Valor Investido) × 100 | ✅ | Card "Yield on Cost" por ativo na página proventos (2026-02-27) |
+| RN-PTR-15 | Projeção de proventos futuros (base 12m) | ✅ | KPI "Projeção anual" = média mensal × 12 em proventos/page.tsx (2026-02-27) |
 | RN-PTR-16 | Meta de renda passiva no Futuro alimentada por proventos | ❌ | Cross-module |
 
 #### Simulador IF (RN-PTR-17 a 21)

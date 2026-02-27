@@ -73,9 +73,10 @@ function ObjectiveProgressBar({ value, status }: { value: number; status: string
 interface ObjectiveCardProps {
   objective: Objective
   onClick: () => void
+  onRestore?: (id: string) => void  // RN-FUT-04: restaurar objetivo concluído
 }
 
-export function ObjectiveCard({ objective, onClick }: ObjectiveCardProps) {
+export function ObjectiveCard({ objective, onClick, onRestore }: ObjectiveCardProps) {
   const goals = objective.goals ?? []
   const progress = calcObjectiveProgress(goals)
   const completedGoals = goals.filter(g => g.status === 'completed').length
@@ -162,7 +163,19 @@ export function ObjectiveCard({ objective, onClick }: ObjectiveCardProps) {
             </span>
           )}
           {isCompleted && (
-            <span className="text-[10px] font-bold text-[#10b981]">Concluído</span>
+            <>
+              <span className="text-[10px] font-bold text-[#10b981]">✓ Concluído</span>
+              {onRestore && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onRestore(objective.id) }}
+                  className="text-[10px] font-semibold text-[var(--sl-t3)] hover:text-[#0055ff]
+                             px-1.5 py-0.5 rounded border border-[var(--sl-border)]
+                             hover:border-[#0055ff]/40 transition-colors"
+                >
+                  Restaurar
+                </button>
+              )}
+            </>
           )}
           {isPaused && (
             <span className="text-[10px] font-bold text-[#f59e0b]">Pausado</span>

@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Plus, Search } from 'lucide-react'
+import { ArrowLeft, Plus, Search, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
 import {
   usePortfolioAssets, useAddTransaction, useUpdateAssetPrice, useDeleteAsset,
+  useBulkUpdatePrices,
   ASSET_CLASS_LABELS, ASSET_CLASS_COLORS,
   type AssetClass, type AddTransactionData,
 } from '@/hooks/use-patrimonio'
@@ -55,6 +56,7 @@ export default function CarteiraPage() {
   const addTransaction = useAddTransaction()
   const updatePrice = useUpdateAssetPrice()
   const deleteAsset = useDeleteAsset()
+  const { updateAll, updating } = useBulkUpdatePrices()
   const { isPro } = useUserPlan()
 
   const [showModal, setShowModal] = useState(false)
@@ -165,6 +167,32 @@ export default function CarteiraPage() {
         )}>
           💼 Carteira
         </h1>
+        {/* Botão atualizar cotações (RN-PTR-03) */}
+        {assets.length > 0 && (
+          <button
+            onClick={async () => {
+              const result = await updateAll(assets, isPro)
+              if (result.blockedByLimit) {
+                toast.info('Cotações já atualizadas hoje. Plano PRO permite atualizações ilimitadas.')
+                return
+              }
+              if (result.updated > 0) {
+                toast.success(`${result.updated} cotação(ões) atualizada(s) via brapi.dev`)
+                reload()
+              }
+              if (result.failed.length > 0) {
+                toast.warning(`Sem cotação para: ${result.failed.join(', ')}`)
+              }
+            }}
+            disabled={updating}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-[13px] font-semibold
+                       border border-[var(--sl-border)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]
+                       hover:border-[var(--sl-border-h)] transition-colors disabled:opacity-50"
+          >
+            <RefreshCw size={14} className={updating ? 'animate-spin' : ''} />
+            {updating ? 'Atualizando…' : 'Cotações'}
+          </button>
+        )}
         <button onClick={() => setShowModal(true)}
           className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#10b981] text-[#03071a] hover:opacity-90">
           <Plus size={16} />

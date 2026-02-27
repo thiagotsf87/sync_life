@@ -402,3 +402,91 @@ export function useDeleteDividend() {
     if (error) throw error
   }, [])
 }
+
+// ─── Bulk cotações brapi (RN-PTR-03) ─────────────────────────────────────────
+
+interface BrapiQuote {
+  symbol: string
+  regularMarketPrice: number
+}
+
+interface BulkUpdateResult {
+  updated: number
+  failed: string[]
+  blockedByLimit?: boolean
+}
+
+/**
+ * Atualiza preços de todos os ativos via brapi.dev.
+ * FREE: 1x/dia (verifica last_price_update dos ativos)
+ * PRO: sem limite
+ */
+export function useBulkUpdatePrices() {
+  const supabase = createClient()
+  const sb = supabase as any
+  const [updating, setUpdating] = useState(false)
+
+  const updateAll = useCallback(async (
+    assets: PortfolioAsset[],
+    isPro: boolean
+  ): Promise<BulkUpdateResult> => {
+    // Filtra apenas ativos com ticker (exclui renda fixa / outros sem ticker)
+    const tickerAssets = assets.filter((a) =>
+      a.ticker && ['stocks_br', 'fiis', 'etfs_br', 'bdrs', 'stocks_us', 'reits'].includes(a.asset_class)
+    )
+    if (tickerAssets.length === 0) return { updated: 0, failed: [] }
+
+    // FREE: checa se algum ativo foi atualizado nas últimas 22h
+    if (!isPro) {
+      const threshold = new Date(Date.now() - 22 * 3600000).toISOString()
+      const alreadyUpdated = tickerAssets.some(
+        (a) => a.last_price_update && a.last_price_update > threshold
+      )
+      if (alreadyUpdated) {
+        return { updated: 0, failed: [], blockedByLimit: true }
+      }
+    }
+
+    setUpdating(true)
+    try {
+      const tickers = tickerAssets.map((a) => a.ticker).join(',')
+      const res = await fetch(`/api/cotacoes?tickers=${encodeURIComponent(tickers)}`)
+      if (!res.ok) throw new Error('API error')
+
+      const json = await res.json()
+      const quotes: BrapiQuote[] = json.results ?? []
+
+      const quoteMap = new Map<string, number>()
+      for (const q of quotes) {
+        if (q.symbol && q.regularMarketPrice > 0) {
+          quoteMap.set(q.symbol.toUpperCase(), q.regularMarketPrice)
+        }
+      }
+
+      const now = new Date().toISOString()
+      let updated = 0
+      const failed: string[] = []
+
+      for (const asset of tickerAssets) {
+        const price = quoteMap.get(asset.ticker.toUpperCase())
+        if (price) {
+          const { error } = await sb.from('portfolio_assets').update({
+            current_price: price,
+            last_price_update: now,
+            updated_at: now,
+          }).eq('id', asset.id)
+          if (!error) updated++
+          else failed.push(asset.ticker)
+        } else {
+          failed.push(asset.ticker)
+        }
+      }
+
+      return { updated, failed }
+    } finally {
+      setUpdating(false)
+    }
+  }, [sb])
+
+  return { updateAll, updating }
+}

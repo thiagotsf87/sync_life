@@ -80,6 +80,14 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
       { id: 'corpo-peso', label: 'Peso & Medidas', icon: 'Scale', href: '/corpo/peso' },
       { id: 'corpo-cardapio', label: 'Cardápio', icon: 'Utensils', href: '/corpo/cardapio' },
       { id: 'corpo-saude', label: 'Saúde Preventiva', icon: 'HeartPulse', href: '/corpo/saude' },
+      {
+        id: 'corpo-coach',
+        label: 'Coach IA',
+        icon: 'Bot',
+        href: '/corpo/coach',
+        badge: { text: 'PRO', variant: 'pro' as const },
+        isProOnly: true,
+      },
     ],
   },
   mente: {

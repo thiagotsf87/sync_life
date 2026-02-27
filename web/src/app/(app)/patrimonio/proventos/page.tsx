@@ -73,6 +73,31 @@ export default function ProventosPage() {
   const total12m = dividends.filter(d => d.status === 'received' && new Date(d.payment_date) >= year12Ago).reduce((s, d) => s + d.total_amount, 0)
   const monthlyAvg = total12m / 12
 
+  // Projeção anual = média mensal 12m × 12 (RN-PTR-15)
+  const annualProjection = monthlyAvg * 12
+
+  // Yield on Cost por ativo (RN-PTR-14): (proventos_12m / valor_investido) × 100
+  const yocByAsset = assets
+    .filter(a => a.quantity > 0 && a.avg_price > 0)
+    .map(a => {
+      const invested = a.quantity * a.avg_price
+      const div12m = dividends
+        .filter(d =>
+          d.asset_id === a.id &&
+          d.status === 'received' &&
+          new Date(d.payment_date) >= year12Ago
+        )
+        .reduce((s, d) => s + d.total_amount, 0)
+      const yoc = invested > 0 ? (div12m / invested) * 100 : 0
+      return { ticker: a.ticker, yoc, div12m, invested }
+    })
+    .filter(x => x.div12m > 0)
+    .sort((a, b) => b.yoc - a.yoc)
+
+  const avgYoc = yocByAsset.length > 0
+    ? yocByAsset.reduce((s, x) => s + x.yoc, 0) / yocByAsset.length
+    : 0
+
   // Monthly breakdown
   const monthlyTotals = Array.from({ length: 12 }, (_, i) => {
     const month = i + 1
@@ -165,11 +190,12 @@ export default function ProventosPage() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-3 gap-3 mb-5 max-sm:grid-cols-1">
+      <div className="grid grid-cols-4 gap-3 mb-5 max-lg:grid-cols-2 max-sm:grid-cols-1">
         {[
           { label: `Proventos ${filterYear}`, value: totalYear.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), color: '#10b981' },
           { label: 'Últimos 12 meses', value: total12m.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), color: '#f59e0b' },
           { label: 'Média mensal (12m)', value: monthlyAvg.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), color: '#0055ff' },
+          { label: 'Projeção anual', value: annualProjection.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), color: '#a855f7' },
         ].map(stat => (
           <div key={stat.label} className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 overflow-hidden">
             <div className="absolute top-0 left-5 right-5 h-0.5 rounded-b" style={{ background: stat.color }} />
@@ -383,6 +409,42 @@ export default function ProventosPage() {
                 )
               })()}
             </div>
+
+            {/* Yield on Cost (RN-PTR-14) */}
+            {yocByAsset.length > 0 && (
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 h-fit">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📊 Yield on Cost</h2>
+                  <span className="font-[DM_Mono] text-[11px] text-[#10b981]">
+                    Média: {avgYoc.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="flex flex-col gap-2.5">
+                  {yocByAsset.slice(0, 6).map(({ ticker, yoc, div12m }) => (
+                    <div key={ticker}>
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t1)]">{ticker}</span>
+                        <span className="font-[DM_Mono] text-[11px] text-[#10b981]">
+                          {yoc.toFixed(2)}% a.a.
+                        </span>
+                      </div>
+                      <div className="flex-1 bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height: '3px' }}>
+                        <div
+                          className="h-full rounded-full bg-[#10b981]"
+                          style={{ width: `${Math.min(yoc / 20 * 100, 100)}%` }}
+                        />
+                      </div>
+                      <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
+                        {div12m.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} em 12m
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] text-[var(--sl-t3)] mt-3">
+                  YoC = proventos 12m ÷ valor investido
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

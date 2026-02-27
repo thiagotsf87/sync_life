@@ -18,6 +18,8 @@ import {
   isProgressAtRisk,
   CATEGORY_LABELS,
 } from '@/hooks/use-futuro'
+import { useUserPlan } from '@/hooks/use-user-plan'
+import { checkPlanLimit } from '@/lib/plan-limits'
 import { GoalCard } from '@/components/futuro/GoalCard'
 import { AddGoalModal } from '@/components/futuro/AddGoalModal'
 
@@ -76,6 +78,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
   const updateGoalProgress = useUpdateGoalProgress()
   const deleteObjective = useDeleteObjective()
   const deleteGoal = useDeleteGoal()
+  const { isPro } = useUserPlan()
 
   const [addGoalOpen, setAddGoalOpen] = useState(false)
   const [isAddingGoal, setIsAddingGoal] = useState(false)
@@ -83,6 +86,14 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
 
   // ─── Actions ─────────────────────────────────────────────────────────────────
   const handleAddGoal = useCallback(async (data: Parameters<typeof addGoal>[1]) => {
+    // RN-FUT-08: Limite FREE = 3 metas por objetivo
+    const currentGoals = objective?.goals?.length ?? 0
+    const limitCheck = checkPlanLimit(isPro, 'goals_per_objective', currentGoals)
+    if (!limitCheck.allowed) {
+      toast.error(limitCheck.upsellMessage)
+      return
+    }
+
     setIsAddingGoal(true)
     try {
       await addGoal(id, data)
@@ -94,7 +105,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
     } finally {
       setIsAddingGoal(false)
     }
-  }, [addGoal, id, reload])
+  }, [addGoal, id, reload, objective?.goals?.length, isPro])
 
   const handleUpdateProgress = useCallback(async (goalId: string, currentValue: number) => {
     if (!objective) return

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { X, ChevronRight, ChevronLeft, Target, Calendar, Type, Flag } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 import type { ObjectiveCategory, ObjectivePriority, CreateObjectiveData } from '@/hooks/use-futuro'
 import { CATEGORY_LABELS } from '@/hooks/use-futuro'
 
@@ -71,6 +72,17 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
   }
 
   async function handleSave() {
+    // RN-FUT-15: Data alvo deve ser futura
+    if (form.target_date) {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const selected = new Date(form.target_date + 'T00:00:00')
+      if (selected <= today) {
+        toast.error('A data alvo deve ser uma data futura.')
+        return
+      }
+    }
+
     await onSave({
       name: form.name.trim(),
       description: form.description.trim() || undefined,

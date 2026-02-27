@@ -6,7 +6,7 @@ import { Plus, Search, ArrowUpDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useShellStore } from '@/stores/shell-store'
-import { useObjectives, useCreateObjective, type ObjectiveStatus, type ObjectiveCategory } from '@/hooks/use-futuro'
+import { useObjectives, useCreateObjective, useUpdateObjective, type ObjectiveStatus, type ObjectiveCategory } from '@/hooks/use-futuro'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { useLifeMap } from '@/hooks/use-life-map'
 import { checkPlanLimit } from '@/lib/plan-limits'
@@ -48,6 +48,7 @@ export default function FuturoPage() {
 
   const { objectives, active, completed, avgProgress, nextDeadline, loading, error, reload } = useObjectives()
   const createObjective = useCreateObjective()
+  const updateObjective = useUpdateObjective()
 
   const { isPro } = useUserPlan()
   const { dimensions: lifeDimensions, overallScore: lifeScore, loading: lifeLoading } = useLifeMap()
@@ -108,6 +109,17 @@ export default function FuturoPage() {
       setIsCreating(false)
     }
   }, [createObjective, reload, isPro, active.length])
+
+  // ─── Restaurar objetivo concluído (RN-FUT-04) ────────────────────────────────
+  const handleRestore = useCallback(async (id: string) => {
+    try {
+      await updateObjective(id, { status: 'active' })
+      toast.success('Objetivo restaurado!')
+      await reload()
+    } catch {
+      toast.error('Erro ao restaurar objetivo')
+    }
+  }, [updateObjective, reload])
 
   // ─── KPI formatting ──────────────────────────────────────────────────────────
   const nextDeadlineLabel = nextDeadline?.target_date
@@ -296,6 +308,7 @@ export default function FuturoPage() {
                 <ObjectiveCard
                   objective={obj}
                   onClick={() => router.push(`/futuro/${obj.id}`)}
+                  onRestore={obj.status === 'completed' ? handleRestore : undefined}
                 />
               </div>
             ))}
