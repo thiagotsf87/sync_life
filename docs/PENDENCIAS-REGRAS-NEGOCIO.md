@@ -4,7 +4,7 @@
 > Ao concluir uma regra, altere o status de ❌/⚠️ para ✅ e registre a data de conclusão.
 > Ao iniciar a implementação de um grupo, crie um commit referenciando os IDs das regras.
 
-**Última atualização:** 2026-02-27 (sessão 2 — enforcement FREE/PRO + cardápio IA + peso previsão + Pomodoro stats)
+**Última atualização:** 2026-02-27 (sessão 3 — Assistente IA de viagem RN-EXP-22/24/25 + chat streaming + histórico DB)
 **Responsável:** Claude Code (atualizar conforme progresso)
 
 ---
@@ -26,11 +26,11 @@
 |--------|-------|-----|-----|-----|
 | FUTURO | 58 | 12 | 11 | 35 |
 | CORPO | 39 | 22 | 9 | 8 |
-| EXPERIÊNCIAS | 32 | 13 | 6 | 13 |
+| EXPERIÊNCIAS | 32 | 16 | 6 | 10 |
 | MENTE | 26 | 16 | 5 | 5 |
 | PATRIMÔNIO | 24 | 11 | 5 | 8 |
 | CARREIRA | 20 | 9 | 4 | 7 |
-| **TOTAL** | **199** | **~83 (42%)** | **~40 (20%)** | **~76 (38%)** |
+| **TOTAL** | **199** | **~86 (43%)** | **~40 (20%)** | **~73 (37%)** |
 
 > Obs: Finanças (~95 regras implícitas) não catalogadas neste documento pois já estão em `financas-visao-geral-regras-de-negocio.md`.
 
@@ -50,7 +50,7 @@
 > Funcionalidades principais prometidas mas não implementadas
 
 5. ~~**Cardápio IA + Coach IA**~~ ✅ **Cardápio IA CONCLUÍDO (2026-02-27)** — RN-CRP-20, 26, 27 ✅; RN-CRP-21, 22 ⚠️; Coach IA (28) ❌
-6. **Sugestões IA de viagem** (Experiências) — RN-EXP-21..25
+6. ~~**Sugestões IA de viagem**~~ ✅ **CONCLUÍDO (2026-02-27)** — RN-EXP-22, 24, 25 ✅; RN-EXP-21 ❌ (estimador custo); RN-EXP-23 ❌ (cross-module)
 7. ~~**Pomodoro Timer**~~ ✅ **CONCLUÍDO (2026-02-27)** — RN-MNT-10..12, 15, 16 ✅; MNT-13 ❌ (cross-module); MNT-17/18 ❌ (infra)
 8. **Mapa da Vida / Radar Chart** (Futuro/Jornada) — RN-FUT-26..30
 
@@ -292,10 +292,10 @@
 
 | ID | Regra | Status | Observação |
 |----|-------|--------|-----------|
-| RN-EXP-22 | Vercel AI SDK + Gemini (MVP) em `/api/ai/viagem` | ❌ | Route Handler não criado |
-| RN-EXP-23 | Sugestão aceita → atividade no roteiro do dia | ❌ | |
-| RN-EXP-24 | Limite FREE: 5 interações IA/viagem. PRO: ilimitado | ❌ | |
-| RN-EXP-25 | Aviso: "sugestões podem estar desatualizadas" | ❌ | |
+| RN-EXP-22 | Vercel AI SDK + Gemini (MVP) em `/api/ai/viagem` | ✅ | Route Handler + TripAIChat com streaming (2026-02-27) |
+| RN-EXP-23 | Sugestão aceita → atividade no roteiro do dia | ❌ | Cross-module, adiado |
+| RN-EXP-24 | Limite FREE: 5 interações IA/viagem. PRO: ilimitado | ✅ | checkPlanLimit('ai_interactions_per_trip', count) (2026-02-27) |
+| RN-EXP-25 | Aviso: "sugestões podem estar desatualizadas" | ✅ | Banner de disclaimer no TripAIChat (2026-02-27) |
 
 #### Checklist (RN-EXP-26 a 29)
 

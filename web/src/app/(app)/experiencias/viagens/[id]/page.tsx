@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Plus, Trash2, Check } from 'lucide-react'
+import { TripAIChat } from '@/components/experiencias/TripAIChat'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
@@ -24,7 +25,7 @@ import {
   type ChecklistCategory, type BookingStatus,
 } from '@/hooks/use-experiencias'
 
-type Tab = 'overview' | 'itinerary' | 'budget' | 'checklist' | 'transports' | 'accommodation'
+type Tab = 'overview' | 'itinerary' | 'budget' | 'checklist' | 'transports' | 'accommodation' | 'ai'
 
 export default function TripDetailPage() {
   const router = useRouter()
@@ -293,6 +294,7 @@ export default function TripDetailPage() {
     { id: 'checklist', label: '✅ Checklist', badge: checklist.filter(c => !c.is_completed).length },
     { id: 'accommodation', label: '🏨 Hospedagem', badge: accommodations.length },
     { id: 'transports', label: '✈️ Transporte', badge: transports.length },
+    { id: 'ai', label: '🤖 Assistente IA' },
   ]
 
   return (
@@ -861,6 +863,11 @@ export default function TripDetailPage() {
             </div>
           )}
         </div>
+      )}
+
+      {/* AI CHAT */}
+      {activeTab === 'ai' && (
+        <TripAIChat tripId={tripId} trip={trip} />
       )}
 
       {/* ── MODALS ── */}
