@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -26,6 +27,7 @@ const STATUS_TABS: { value: FilterStatus; label: string }[] = [
 ]
 
 export default function TrilhasPage() {
+  const router = useRouter()
   const mode = useShellStore((s) => s.mode)
   const isJornada = mode === 'jornada'
 
@@ -114,6 +116,19 @@ export default function TrilhasPage() {
           description: 'Parabéns pelo aprendizado! Continue evoluindo.',
           duration: 6000,
         })
+        // RN-CAR-15: se trilha vinculada a habilidade, sugerir atualizar nível
+        if (track?.linked_skill_id) {
+          setTimeout(() => {
+            toast.info('💼 Habilidade vinculada detectada', {
+              description: 'Que tal atualizar o nível desta habilidade no Carreira?',
+              action: {
+                label: 'Ir para Habilidades',
+                onClick: () => router.push('/carreira/habilidades'),
+              },
+              duration: 10000,
+            })
+          }, 1500)
+        }
       }
     } catch {
       toast.error('Erro ao atualizar etapa')

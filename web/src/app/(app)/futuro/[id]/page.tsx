@@ -154,7 +154,12 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
   }, [objective, updateObjective, id, reload])
 
   const handleDelete = useCallback(async () => {
-    if (!window.confirm('Excluir este objetivo e todas suas metas? Esta ação não pode ser desfeita.')) return
+    // RN-FUT-33: aviso adicional para objetivos financeiros
+    const isFinancial = objective?.category === 'financial'
+    const warning = isFinancial
+      ? '\n\n💰 Nota: transações ou planejamentos em Finanças vinculados a este objetivo não serão removidos automaticamente.'
+      : ''
+    if (!window.confirm(`Excluir este objetivo e todas suas metas? Esta ação não pode ser desfeita.${warning}`)) return
     setIsDeleting(true)
     try {
       await deleteObjective(id)

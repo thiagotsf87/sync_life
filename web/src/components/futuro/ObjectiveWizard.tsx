@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { ObjectiveCategory, ObjectivePriority, CreateObjectiveData } from '@/hooks/use-futuro'
 import { CATEGORY_LABELS } from '@/hooks/use-futuro'
+import { createEventFromObjective } from '@/lib/integrations/agenda'
 
 interface ObjectiveWizardProps {
   open: boolean
@@ -49,6 +50,7 @@ interface FormState {
   priority: ObjectivePriority
   target_date: string
   target_date_reason: string
+  syncToAgenda: boolean
 }
 
 const INITIAL_FORM: FormState = {
@@ -59,6 +61,7 @@ const INITIAL_FORM: FormState = {
   priority: 'medium',
   target_date: '',
   target_date_reason: '',
+  syncToAgenda: false,
 }
 
 export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: ObjectiveWizardProps) {
@@ -101,6 +104,15 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
       target_date: form.target_date || null,
       target_date_reason: form.target_date_reason.trim() || undefined,
     })
+
+    // RN-FUT-35: criar lembrete na Agenda no dia do prazo
+    if (form.syncToAgenda && form.target_date) {
+      createEventFromObjective({
+        objectiveName: form.name.trim(),
+        targetDate: form.target_date,
+      }).catch(() => {})
+    }
+
     setForm(INITIAL_FORM)
     setStep(0)
   }
@@ -294,6 +306,21 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
                   />
                 </div>
               )}
+              {/* RN-FUT-35: Sync to Agenda toggle */}
+              {form.target_date && (
+                <label className="flex items-center gap-2.5 cursor-pointer p-2.5 rounded-[10px] hover:bg-[var(--sl-s2)] transition-colors -mx-1">
+                  <input
+                    type="checkbox"
+                    checked={form.syncToAgenda}
+                    onChange={e => setForm(f => ({ ...f, syncToAgenda: e.target.checked }))}
+                    className="accent-[#10b981] w-3.5 h-3.5 shrink-0"
+                  />
+                  <span className="text-[12px] text-[var(--sl-t2)]">
+                    📅 Criar lembrete na Agenda no dia do prazo
+                  </span>
+                </label>
+              )}
+
               {/* Preview */}
               <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[14px] p-4">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-2">Resumo</p>

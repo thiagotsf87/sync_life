@@ -6,7 +6,7 @@
  *
  * Badge "Auto — <módulo>" identifica eventos gerados automaticamente.
  *
- * Regras: RN-CRP-01, RN-EXP-02, RN-CRP-33, RN-MNT-13
+ * Regras: RN-CRP-01, RN-EXP-02, RN-CRP-33, RN-MNT-13, RN-FUT-35
  */
 
 import { createClient } from '@/lib/supabase/client'
@@ -128,6 +128,38 @@ export async function createEventFromPomodoro(opts: {
     end_time: null,
     priority: 'normal',
     status: 'done',
+    reminder: null,
+    recurrence: 'none',
+    location: null,
+    checklist: [],
+  })
+}
+
+// ─── Futuro → Agenda (prazo de objetivo) (RN-FUT-35) ─────────────────────────
+
+/**
+ * Prazo de objetivo → evento lembrete na Agenda no dia do prazo
+ * Tipo: 'pessoal' | Badge: "Auto — 🔮 Futuro"
+ */
+export async function createEventFromObjective(opts: {
+  objectiveName: string
+  targetDate: string  // YYYY-MM-DD
+}): Promise<void> {
+  const supabase = createClient() as any
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
+
+  await supabase.from('agenda_events').insert({
+    user_id: user.id,
+    title: `🔮 ${opts.objectiveName} — Prazo`,
+    description: `Auto — 🔮 Futuro | Lembrete de prazo do objetivo: ${opts.objectiveName}`,
+    type: 'pessoal',
+    date: opts.targetDate,
+    all_day: true,
+    start_time: null,
+    end_time: null,
+    priority: 'high',
+    status: 'pending',
     reminder: null,
     recurrence: 'none',
     location: null,
