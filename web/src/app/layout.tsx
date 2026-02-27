@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/sonner";
+import { ServiceWorkerRegistration } from "@/components/pwa/sw-register";
 import "./globals.css";
 import { Outfit, Syne, DM_Mono, DM_Sans } from "next/font/google";
 
@@ -35,6 +36,27 @@ export const metadata: Metadata = {
   title: "SyncLife - Organize sua vida, transforme sua história",
   description: "Controle financeiro inteligente que sincroniza todas as áreas da sua vida.",
   keywords: ["finanças pessoais", "controle financeiro", "organização", "produtividade"],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "SyncLife",
+  },
+  icons: {
+    icon: "/icons/icon.svg",
+    apple: "/icons/icon.svg",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)",  color: "#10b981" },
+    { media: "(prefers-color-scheme: light)", color: "#10b981" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -56,6 +78,7 @@ export default function RootLayout({
         />
         {children}
         <Toaster position="top-right" />
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );

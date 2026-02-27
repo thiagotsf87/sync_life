@@ -1,0 +1,52 @@
+{
+  "name": "SyncLife — Organize sua vida",
+  "short_name": "SyncLife",
+  "description": "Controle financeiro inteligente que sincroniza todas as áreas da sua vida.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#03071a",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["finance", "productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Finanças",
+      "short_name": "Finanças",
+      "description": "Ir para o módulo de finanças",
+      "url": "/financas",
+      "icons": [{ "src": "/icons/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Metas",
+      "short_name": "Metas",
+      "description": "Ver suas metas",
+      "url": "/metas",
+      "icons": [{ "src": "/icons/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Agenda",
+      "short_name": "Agenda",
+      "description": "Ver sua agenda",
+      "url": "/agenda",
+      "icons": [{ "src": "/icons/icon.svg", "sizes": "any" }]
+    }
+  ]
+}
