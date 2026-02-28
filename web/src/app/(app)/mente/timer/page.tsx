@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Flame, Clock, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -13,20 +13,29 @@ import {
 import { PomodoroTimer } from '@/components/mente/PomodoroTimer'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { createEventFromPomodoro } from '@/lib/integrations/agenda'
+import { useUserPlan } from '@/hooks/use-user-plan'
 
 export default function TimerPage() {
   const router = useRouter()
   const mode = useShellStore((s) => s.mode)
   const isJornada = mode === 'jornada'
+  const { isPro } = useUserPlan()
 
   const { tracks, loading: tracksLoading } = useStudyTracks()
   const saveSession = useSaveSession()
   const [syncToAgenda, setSyncToAgenda] = useState(false)
+  const [jornadaXp, setJornadaXp] = useState(0)
 
   // RN-MNT-16: stats semanais
   const { weekHours, streak, recentSessions, activeTracks: dashTracks, reload: reloadStats } = useMenteDashboard()
 
   const activeTracks = tracks.filter(t => t.status === 'in_progress')
+
+  // RN-MNT-18: XP local do modo Jornada
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    setJornadaXp(Number(window.localStorage.getItem('sl_jornada_xp') ?? '0'))
+  }, [])
 
   const handleSessionComplete = useCallback(async (data: Omit<SaveSessionData, 'session_notes'>) => {
     try {
@@ -94,6 +103,12 @@ export default function TimerPage() {
               <PomodoroTimer
                 tracks={activeTracks}
                 onSessionComplete={handleSessionComplete}
+                isJornada={isJornada}
+                enableAmbient={isJornada && isPro}
+                onXpEarned={({ gained, total }) => {
+                  setJornadaXp(total)
+                  toast.success(`+${gained} XP de foco conquistados!`)
+                }}
               />
             )}
             {/* RN-MNT-13: Sync to Agenda */}
@@ -183,6 +198,14 @@ export default function TimerPage() {
               </p>
             </div>
           </div>
+
+          {isJornada && (
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">XP Jornada</p>
+              <p className="font-[Syne] font-extrabold text-2xl text-sl-grad">{jornadaXp}</p>
+              <p className="text-[11px] text-[var(--sl-t2)] mt-1">Ganhe XP ao concluir sessões de foco.</p>
+            </div>
+          )}
 
           {/* Sessões recentes */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">

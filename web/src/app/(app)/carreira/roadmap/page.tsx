@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -13,6 +13,7 @@ import {
 import { RoadmapTimeline } from '@/components/carreira/RoadmapTimeline'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
+import { createClient } from '@/lib/supabase/client'
 
 const STATUS_LABELS: Record<string, string> = {
   active: 'Ativo',
@@ -40,6 +41,7 @@ const EMPTY_FORM = {
   target_title: '',
   target_salary: '',
   target_date: '',
+  linked_objective_id: '',
 }
 
 export default function RoadmapPage() {
@@ -61,6 +63,23 @@ export default function RoadmapPage() {
   const [form, setForm] = useState(EMPTY_FORM)
   const [steps, setSteps] = useState<StepDraft[]>([])
   const [stepInput, setStepInput] = useState('')
+  const [objectiveOptions, setObjectiveOptions] = useState<Array<{ id: string; name: string }>>([])
+
+  useEffect(() => {
+    const supabase = createClient() as any
+    supabase.auth.getUser().then(({ data: { user } }: any) => {
+      if (!user) return
+      supabase.from('objectives')
+        .select('id, name')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .order('priority', { ascending: true })
+        .order('created_at', { ascending: false })
+        .then(({ data }: any) => {
+          setObjectiveOptions(data ?? [])
+        })
+    })
+  }, [])
 
   function addStep() {
     const t = stepInput.trim()
@@ -96,6 +115,7 @@ export default function RoadmapPage() {
         target_title: form.target_title.trim(),
         target_salary: form.target_salary ? parseFloat(form.target_salary) : null,
         target_date: form.target_date || null,
+        linked_objective_id: form.linked_objective_id || null,
         steps: steps.map((s, i) => ({
           title: s.title,
           sort_order: i,
@@ -316,6 +336,21 @@ export default function RoadmapPage() {
                   />
                 </div>
               </div>
+
+              {objectiveOptions.length > 0 && (
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Objetivo no Futuro (opcional)</label>
+                  <select
+                    value={form.linked_objective_id}
+                    onChange={e => setForm(f => ({ ...f, linked_objective_id: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                  >
+                    <option value="">Nenhum</option>
+                    {objectiveOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                  </select>
+                  <p className="text-[10px] text-[var(--sl-t3)] mt-1">Ao concluir os passos do roadmap, as metas vinculadas no Futuro serão atualizadas.</p>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>

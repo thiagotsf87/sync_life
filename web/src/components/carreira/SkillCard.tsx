@@ -66,6 +66,11 @@ export function SkillCard({ skill, onEdit, onDelete }: SkillCardProps) {
       {skill.notes && (
         <p className="text-[11px] text-[var(--sl-t3)] mt-1.5 line-clamp-1 italic">{skill.notes}</p>
       )}
+      {skill.linked_track_ids && skill.linked_track_ids.length > 0 && (
+        <p className="text-[10px] text-[var(--sl-t3)] mt-1">
+          📚 {skill.linked_track_ids.length} trilha{skill.linked_track_ids.length !== 1 ? 's' : ''} vinculada{skill.linked_track_ids.length !== 1 ? 's' : ''}
+        </p>
+      )}
     </div>
   )
 }

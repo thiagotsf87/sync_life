@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { useShellStore } from '@/stores/shell-store'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useTransactions } from '@/hooks/use-transactions'
 import { useRecorrentes } from '@/hooks/use-recorrentes'
@@ -14,7 +13,7 @@ import {
 import { cn } from '@/lib/utils'
 import {
   CalendarDays, Plus, ChevronDown, ExternalLink,
-  TrendingUp, AlertTriangle
+  TrendingUp, AlertTriangle, Loader2
 } from 'lucide-react'
 
 // ─── STATIC PROJECTION (illustrative — requires backend projection engine) ────
@@ -269,11 +268,11 @@ function CustomHistTip({ active, payload, label }: { active?: boolean; payload?:
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function FinancasDashboardPage() {
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
   const router = useRouter()
   const [fabOpen, setFabOpen] = useState(false)
   const [aiQuery, setAiQuery] = useState('')
+  const [aiResponse, setAiResponse] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
   const fabRef = useRef<HTMLDivElement>(null)
 
   const [month] = useState(() => new Date().getMonth() + 1)
@@ -392,6 +391,84 @@ export default function FinancasDashboardPage() {
 
   const alertCat = activeBudgets.find(b => b.pct >= 100) ?? activeBudgets.find(b => b.pct > 70)
 
+  const mesAno = new Date(year, month - 1, 1)
+    .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    .replace(/^\w/, c => c.toUpperCase())
+
+  // ── AI Q&A handler ─────────────────────────────────────────────────────
+  const handleAiAsk = useCallback(async () => {
+    const q = aiQuery.trim()
+    if (!q || aiLoading) return
+
+    setAiLoading(true)
+    setAiResponse('')
+
+    const financialContext = {
+      mes: mesAno,
+      receitas: receitasMes,
+      despesas: totalGasto,
+      saldo: receitasMes - totalGasto,
+      taxaPoupanca,
+      diasRestantes: daysInMonth - todayD,
+      orcamentos: activeBudgets.map(b => ({
+        categoria: b.category?.name ?? 'Outro',
+        limite: b.amount,
+        gasto: b.gasto,
+        pct: b.pct,
+      })),
+      topCategorias: activeBudgets
+        .filter(b => b.gasto > 0)
+        .sort((a, b) => b.gasto - a.gasto)
+        .slice(0, 5)
+        .map(b => ({ nome: b.category?.name ?? 'Outro', valor: b.gasto })),
+      recorrentes: pendingRecCount,
+    }
+
+    try {
+      const res = await fetch('/api/ai/financas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: q }],
+          financialContext,
+        }),
+      })
+
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => '')
+        setAiResponse(errorText || 'Erro ao consultar a IA. Tente novamente.')
+        setAiLoading(false)
+        return
+      }
+
+      if (!res.body) {
+        setAiResponse('Erro ao consultar a IA. Tente novamente.')
+        setAiLoading(false)
+        return
+      }
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let text = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        text += decoder.decode(value, { stream: true })
+        setAiResponse(text)
+      }
+
+      if (!text.trim()) {
+        setAiResponse('A IA não retornou uma resposta. Verifique a configuração ou tente novamente.')
+      }
+    } catch {
+      setAiResponse('Erro de conexão. Verifique sua internet e tente novamente.')
+    } finally {
+      setAiLoading(false)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aiQuery, aiLoading, mesAno, receitasMes, totalGasto, taxaPoupanca, daysInMonth, todayD, activeBudgets, pendingRecCount])
+
   const cfSummary = useMemo(() => {
     const past = transactions.filter(t => !t.is_future)
     const maxInTxn = past.filter(t => t.type === 'income')
@@ -419,10 +496,6 @@ export default function FinancasDashboardPage() {
     document.addEventListener('mousedown', fn)
     return () => document.removeEventListener('mousedown', fn)
   }, [])
-
-  const mesAno = new Date(year, month - 1, 1)
-    .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
-    .replace(/^\w/, c => c.toUpperCase())
 
   return (
     <div className="max-w-[1140px] mx-auto">
@@ -516,58 +589,55 @@ export default function FinancasDashboardPage() {
         </div>
       </div>
 
-      {/* ③ SAÚDE / FOCO BAND */}
-      {isJornada ? (
-        <div
-          className="flex items-center gap-4 rounded-[14px] px-4 py-3 mb-3"
-          style={{ background: 'linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.07))', border: '1px solid rgba(16,185,129,.18)' }}
+      {/* ③ SAÚDE / FOCO BAND — CSS-based switch to avoid hydration mismatch */}
+      <div className="[.jornada_&]:hidden flex bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] mb-3 overflow-hidden">
+        {[
+          { lbl: 'Orçamentos OK', val: loadingBudgets ? '—' : `${qtdOk} / ${budgets.length}`, color: '#10b981' },
+          { lbl: 'Maior categoria', val: loadingBudgets ? '—' : (topCat?.category?.name ?? '—'), color: '#0055ff' },
+          { lbl: 'Recorrentes próximas', val: String(pendingRecCount), color: '#f59e0b' },
+          { lbl: 'Taxa de poupança', val: loadingBudgets ? '—' : `${taxaPoupanca}%`, color: '#10b981' },
+        ].map((m, i) => (
+          <div key={m.lbl} className={cn('flex-1 px-4 py-3', i < 3 && 'border-r border-[var(--sl-border)]')}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">{m.lbl}</p>
+            <p className="font-[DM_Mono] text-[18px] font-medium leading-none" style={{ color: m.color }}>{m.val}</p>
+          </div>
+        ))}
+      </div>
+      <div
+        className="hidden [.jornada_&]:flex items-center gap-4 rounded-[14px] px-4 py-3 mb-3"
+        style={{ background: 'linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.07))', border: '1px solid rgba(16,185,129,.18)' }}
+      >
+        <div className="shrink-0 text-center">
+          <p className="font-[Syne] font-extrabold text-[42px] leading-none" style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            {taxaPoupanca > 0 ? Math.min(Math.round(50 + taxaPoupanca), 99) : '—'}
+          </p>
+          <p className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mt-0.5">Saúde Fin.</p>
+        </div>
+        <div className="w-px h-11 bg-[var(--sl-border)] shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-0.5">
+            {saldoMes > 0 ? 'Mês positivo até aqui! 🎉' : 'Atenção ao saldo mensal'}
+          </p>
+          <p className="text-[12px] text-[var(--sl-t3)] italic leading-snug">
+            {receitasMes > 0
+              ? `Receitas de R$ ${fmtR$(receitasMes)} com R$ ${fmtR$(totalGasto)} em despesas. ${taxaPoupanca >= 30 ? 'Poupança acima da meta!' : 'Mantenha as despesas sob controle.'}`
+              : 'Nenhuma transação registrada este mês ainda.'}
+          </p>
+          <div className="flex gap-1.5 flex-wrap mt-2">
+            {qtdOk > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(16,185,129,0.12)] text-[#10b981]">✓ {qtdOk} orçamento{qtdOk > 1 ? 's' : ''} no ritmo</span>}
+            {taxaPoupanca >= 30 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(16,185,129,0.12)] text-[#10b981]">✓ Poupança acima da meta</span>}
+            {qtdAlert > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(245,158,11,0.12)] text-[#f59e0b]">⚠ {qtdAlert} em atenção</span>}
+            {qtdOver > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(244,63,94,0.12)] text-[#f43f5e]">⚠ {qtdOver} estourado{qtdOver > 1 ? 's' : ''}</span>}
+          </div>
+        </div>
+        <button
+          onClick={() => router.push('/financas/relatorios')}
+          className="shrink-0 px-3 py-1.5 rounded-[9px] border-none text-white text-[11px] font-bold"
+          style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)' }}
         >
-          <div className="shrink-0 text-center">
-            <p className="font-[Syne] font-extrabold text-[42px] leading-none" style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              {taxaPoupanca > 0 ? Math.min(Math.round(50 + taxaPoupanca), 99) : '—'}
-            </p>
-            <p className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mt-0.5">Saúde Fin.</p>
-          </div>
-          <div className="w-px h-11 bg-[var(--sl-border)] shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-0.5">
-              {saldoMes > 0 ? 'Mês positivo até aqui! 🎉' : 'Atenção ao saldo mensal'}
-            </p>
-            <p className="text-[12px] text-[var(--sl-t3)] italic leading-snug">
-              {receitasMes > 0
-                ? `Receitas de R$ ${fmtR$(receitasMes)} com R$ ${fmtR$(totalGasto)} em despesas. ${taxaPoupanca >= 30 ? 'Poupança acima da meta!' : 'Mantenha as despesas sob controle.'}`
-                : 'Nenhuma transação registrada este mês ainda.'}
-            </p>
-            <div className="flex gap-1.5 flex-wrap mt-2">
-              {qtdOk > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(16,185,129,0.12)] text-[#10b981]">✓ {qtdOk} orçamento{qtdOk > 1 ? 's' : ''} no ritmo</span>}
-              {taxaPoupanca >= 30 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(16,185,129,0.12)] text-[#10b981]">✓ Poupança acima da meta</span>}
-              {qtdAlert > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(245,158,11,0.12)] text-[#f59e0b]">⚠ {qtdAlert} em atenção</span>}
-              {qtdOver > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(244,63,94,0.12)] text-[#f43f5e]">⚠ {qtdOver} estourado{qtdOver > 1 ? 's' : ''}</span>}
-            </div>
-          </div>
-          <button
-            onClick={() => router.push('/financas/relatorios')}
-            className="shrink-0 px-3 py-1.5 rounded-[9px] border-none text-white text-[11px] font-bold"
-            style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)' }}
-          >
-            Ver análise
-          </button>
-        </div>
-      ) : (
-        <div className="flex bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] mb-3 overflow-hidden">
-          {[
-            { lbl: 'Orçamentos OK', val: loadingBudgets ? '—' : `${qtdOk} / ${budgets.length}`, color: '#10b981' },
-            { lbl: 'Maior categoria', val: loadingBudgets ? '—' : (topCat?.category?.name ?? '—'), color: '#0055ff' },
-            { lbl: 'Recorrentes próximas', val: String(pendingRecCount), color: '#f59e0b' },
-            { lbl: 'Taxa de poupança', val: loadingBudgets ? '—' : `${taxaPoupanca}%`, color: '#10b981' },
-          ].map((m, i) => (
-            <div key={m.lbl} className={cn('flex-1 px-4 py-3', i < 3 && 'border-r border-[var(--sl-border)]')}>
-              <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">{m.lbl}</p>
-              <p className="font-[DM_Mono] text-[18px] font-medium leading-none" style={{ color: m.color }}>{m.val}</p>
-            </div>
-          ))}
-        </div>
-      )}
+          Ver análise
+        </button>
+      </div>
 
       {/* ④ CONSULTOR IA */}
       <div
@@ -624,16 +694,30 @@ export default function FinancasDashboardPage() {
             type="text"
             value={aiQuery}
             onChange={e => setAiQuery(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') handleAiAsk() }}
             placeholder='Pergunte algo... ex: "Quanto gastei em lazer este mês?"'
             className="flex-1 bg-transparent border-none outline-none text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
           />
           <button
-            className="shrink-0 px-3 py-1.5 rounded-[8px] border-none text-white text-[12px] font-bold transition-opacity hover:opacity-85"
+            onClick={handleAiAsk}
+            disabled={aiLoading || !aiQuery.trim()}
+            className="shrink-0 px-3 py-1.5 rounded-[8px] border-none text-white text-[12px] font-bold transition-opacity hover:opacity-85 disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)' }}
           >
-            Perguntar
+            {aiLoading ? <Loader2 size={14} className="animate-spin" /> : 'Perguntar'}
           </button>
         </div>
+
+        {/* AI Response */}
+        {aiResponse && (
+          <div className="mt-3 px-4 py-3 rounded-[12px] relative" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(16,185,129,.12)' }}>
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#10b981]">Resposta da IA</span>
+              {aiLoading && <Loader2 size={10} className="animate-spin text-[#10b981]" />}
+            </div>
+            <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed whitespace-pre-wrap">{aiResponse}</p>
+          </div>
+        )}
       </div>
 
       {/* ⑤ TOP GRID: Histórico + Gastos por Categoria */}

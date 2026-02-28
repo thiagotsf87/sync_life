@@ -16,6 +16,7 @@ import { AssetCard } from '@/components/patrimonio/AssetCard'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
+import { createTransactionFromAporte } from '@/lib/integrations/financas'
 
 const ASSET_CLASSES: AssetClass[] = [
   'stocks_br', 'fiis', 'etfs_br', 'bdrs', 'fixed_income',
@@ -33,6 +34,7 @@ interface TransactionForm {
   fees: string
   operation_date: string
   notes: string
+  syncAporteToFinancas: boolean
 }
 
 const EMPTY_FORM: TransactionForm = {
@@ -46,6 +48,7 @@ const EMPTY_FORM: TransactionForm = {
   fees: '',
   operation_date: new Date().toISOString().split('T')[0],
   notes: '',
+  syncAporteToFinancas: false,
 }
 
 export default function CarteiraPage() {
@@ -100,6 +103,17 @@ export default function CarteiraPage() {
         notes: form.notes || null,
       }
       await addTransaction(data)
+
+      // RN-PTR-20: aporte pode ser vinculado ao orçamento via despesa em Finanças.
+      if (form.operation === 'buy' && form.syncAporteToFinancas) {
+        const aporteTotal = (parseFloat(form.quantity) * parseFloat(form.price)) + (parseFloat(form.fees || '0') || 0)
+        await createTransactionFromAporte({
+          ticker: data.ticker,
+          amount: aporteTotal,
+          operationDate: data.operation_date,
+        })
+      }
+
       toast.success(form.operation === 'buy' ? 'Compra registrada!' : 'Venda registrada!')
       setShowModal(false)
       setForm(EMPTY_FORM)
@@ -434,6 +448,36 @@ export default function CarteiraPage() {
                     Total: <strong className="font-[DM_Mono] text-[var(--sl-t1)]">
                       {(parseFloat(form.quantity) * parseFloat(form.price)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </strong>
+                  </p>
+                </div>
+              )}
+
+              {form.operation === 'buy' && (
+                <div className="p-3 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[12px] font-medium text-[var(--sl-t1)]">Vincular aporte ao orçamento</p>
+                      <p className="text-[11px] text-[var(--sl-t3)]">
+                        Cria despesa automática em Finanças (categoria investimentos).
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setForm(f => ({ ...f, syncAporteToFinancas: !f.syncAporteToFinancas }))}
+                      className={cn(
+                        'w-10 h-6 rounded-full transition-all relative shrink-0',
+                        form.syncAporteToFinancas ? 'bg-[#10b981]' : 'bg-[var(--sl-s3)]'
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          'w-4 h-4 rounded-full bg-white absolute top-1 transition-all',
+                          form.syncAporteToFinancas ? 'left-5' : 'left-1'
+                        )}
+                      />
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-[var(--sl-t3)] mt-2">
+                    Metas de patrimônio no Futuro já são atualizadas automaticamente por aporte.
                   </p>
                 </div>
               )}

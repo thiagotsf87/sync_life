@@ -14,6 +14,7 @@ import {
 } from '@/hooks/use-corpo'
 import { WeightChart } from '@/components/corpo/WeightChart'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { uploadCorpoFile } from '@/lib/storage/corpo'
 
 const ACTIVITY_LEVELS: ActivityLevelType[] = ['sedentary', 'light', 'moderate', 'very_active', 'extreme']
 const WEIGHT_GOALS: WeightGoalType[] = ['lose', 'maintain', 'gain']
@@ -53,6 +54,7 @@ export default function PesoPage() {
     hip_cm: '',
     notes: '',
   })
+  const [progressPhotoFile, setProgressPhotoFile] = useState<File | null>(null)
 
   async function handleSaveProfile() {
     if (!profileForm.height_cm || !profileForm.biological_sex || !profileForm.birth_date) {
@@ -96,6 +98,7 @@ export default function PesoPage() {
         hip_cm: weightForm.hip_cm ? parseFloat(weightForm.hip_cm) : null,
         body_fat_pct: null, arm_cm: null, thigh_cm: null, chest_cm: null,
         notes: weightForm.notes || null,
+        progress_photo_url: progressPhotoFile ? await uploadCorpoFile(progressPhotoFile, 'weight-progress') : null,
       })
 
       // Update profile current_weight + BMR/TDEE
@@ -109,6 +112,7 @@ export default function PesoPage() {
       toast.success('Peso registrado!')
       setShowWeightModal(false)
       setWeightForm({ weight: '', recorded_at: new Date().toISOString().split('T')[0], waist_cm: '', hip_cm: '', notes: '' })
+      setProgressPhotoFile(null)
       await Promise.all([reloadEntries(), reloadProfile()])
     } catch {
       toast.error('Erro ao registrar peso')
@@ -372,6 +376,11 @@ export default function PesoPage() {
                 <p className="font-[DM_Mono] font-medium text-[14px] text-[var(--sl-t1)]">{entry.weight} kg</p>
                 {entry.waist_cm && <p className="text-[11px] text-[var(--sl-t3)]">Cintura: {entry.waist_cm}cm</p>}
                 {entry.notes && <p className="flex-1 text-[11px] text-[var(--sl-t3)] truncate italic">{entry.notes}</p>}
+                {entry.progress_photo_url && (
+                  <a href={entry.progress_photo_url} target="_blank" rel="noreferrer" className="text-[11px] text-[#f97316] hover:opacity-80">
+                    📷 Foto
+                  </a>
+                )}
                 <button
                   onClick={() => handleDeleteEntry(entry.id)}
                   className="ml-auto p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors"
@@ -437,6 +446,18 @@ export default function PesoPage() {
                   placeholder="Opcional..."
                   className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
                 />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Foto de progresso (opcional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => setProgressPhotoFile(e.target.files?.[0] ?? null)}
+                  className="w-full text-[12px] text-[var(--sl-t2)]"
+                />
+                {progressPhotoFile && (
+                  <p className="text-[10px] text-[var(--sl-t3)] mt-1">{progressPhotoFile.name}</p>
+                )}
               </div>
               <div className="flex gap-2 pt-1">
                 <button onClick={() => setShowWeightModal(false)}

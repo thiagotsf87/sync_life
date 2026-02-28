@@ -108,6 +108,16 @@ export function AppointmentCard({ appointment, onComplete, onCancel, onDelete }:
           {appointment.notes}
         </p>
       )}
+      {appointment.attachment_url && (
+        <a
+          href={appointment.attachment_url}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-block text-[11px] text-[#06b6d4] mt-2 hover:opacity-80"
+        >
+          📎 Ver anexo
+        </a>
+      )}
     </div>
   )
 }

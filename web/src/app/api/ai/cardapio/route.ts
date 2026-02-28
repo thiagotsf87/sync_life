@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 // Migrar para Claude: trocar apenas a linha do model
-const model = google('gemini-1.5-flash')
+const model = google('gemini-2.5-flash')
 // const model = anthropic('claude-sonnet-4-5')
 
 // RN-CRP-21: incluir macronutrientes (proteína, carboidrato, gordura) em cada refeição
@@ -37,6 +37,10 @@ export async function POST(req: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    return NextResponse.json({ error: 'Serviço de IA indisponível. Configure a GOOGLE_GENERATIVE_AI_API_KEY.' }, { status: 503 })
   }
 
   const body = await req.json()

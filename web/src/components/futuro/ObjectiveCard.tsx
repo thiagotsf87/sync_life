@@ -91,11 +91,14 @@ export function ObjectiveCard({ objective, onClick, onRestore }: ObjectiveCardPr
   const atRisk = objective.status === 'active' && isProgressAtRisk(velocity, progress, objective.target_date)
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
       className={cn(
         'relative w-full text-left bg-[var(--sl-s1)] border border-[var(--sl-border)]',
-        'rounded-2xl p-5 sl-fade-up transition-all duration-200',
+        'rounded-2xl p-5 sl-fade-up transition-all duration-200 cursor-pointer',
         'hover:border-[var(--sl-border-h)] hover:shadow-sm dark:hover:shadow-none',
         isCompleted && 'opacity-75',
         isPaused && 'opacity-60',
@@ -189,6 +192,6 @@ export function ObjectiveCard({ objective, onClick, onRestore }: ObjectiveCardPr
           {objective.description}
         </p>
       )}
-    </button>
+    </div>
   )
 }

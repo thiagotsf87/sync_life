@@ -1,18 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Plus, Trash2, Check } from 'lucide-react'
+import { ArrowLeft, Plus, Trash2, Check, Crown } from 'lucide-react'
 import { TripAIChat } from '@/components/experiencias/TripAIChat'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
 import { createTransactionFromTripActual } from '@/lib/integrations/financas'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import { useUserPlan } from '@/hooks/use-user-plan'
+import { formatMoney, formatMoneyWithBrl } from '@/lib/currency'
 import {
   useTripDetail, useUpdateTrip, useDeleteTrip,
   useAddAccommodation, useDeleteAccommodation,
   useAddTransport, useDeleteTransport,
   useAddItineraryItem, useDeleteItineraryItem,
+  useReorderItineraryDay,
   useUpdateBudgetItem,
   useToggleChecklistItem, useAddChecklistItem, useDeleteChecklistItem,
   TRIP_STATUS_LABELS, TRIP_STATUS_COLORS,
@@ -34,6 +39,7 @@ export default function TripDetailPage() {
   const tripId = params.id as string
   const mode = useShellStore((s) => s.mode)
   const isJornada = mode === 'jornada'
+  const { isPro } = useUserPlan()
 
   const {
     trip, accommodations, transports, itinerary, budget, checklist,
@@ -48,6 +54,7 @@ export default function TripDetailPage() {
   const deleteTransport = useDeleteTransport()
   const addItineraryItem = useAddItineraryItem()
   const deleteItineraryItem = useDeleteItineraryItem()
+  const reorderItineraryDay = useReorderItineraryDay()
   const updateBudgetItem = useUpdateBudgetItem()
   const toggleChecklistItem = useToggleChecklistItem()
   const addChecklistItem = useAddChecklistItem()
@@ -61,6 +68,8 @@ export default function TripDetailPage() {
   const [showItineraryModal, setShowItineraryModal] = useState(false)
   const [showChecklistModal, setShowChecklistModal] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [draggingItineraryId, setDraggingItineraryId] = useState<string | null>(null)
+  const [passportExpiry, setPassportExpiry] = useState('')
 
   // Accommodation form
   const [accomForm, setAccomForm] = useState({
@@ -94,6 +103,12 @@ export default function TripDetailPage() {
   const [newChecklistTitle, setNewChecklistTitle] = useState('')
   const [newChecklistCategory, setNewChecklistCategory] = useState<ChecklistCategory>('other')
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const stored = window.localStorage.getItem(`synclife:trip:${tripId}:passport-expiry`)
+    setPassportExpiry(stored ?? '')
+  }, [tripId])
+
   if (loading) {
     return (
       <div className="max-w-[1140px] mx-auto px-6 py-7">
@@ -119,8 +134,29 @@ export default function TripDetailPage() {
   const budgetProgress = calcTripProgress(trip, budget)
   const totalEstimated = budget.reduce((s, b) => s + b.estimated_amount, 0)
   const totalActual = budget.reduce((s, b) => s + b.actual_amount, 0)
+  const tripEndDate = new Date(trip.end_date + 'T12:00:00')
+  const passportExpiryDate = passportExpiry ? new Date(passportExpiry + 'T12:00:00') : null
+  const passportLimitDate = new Date(tripEndDate)
+  passportLimitDate.setMonth(passportLimitDate.getMonth() + 6)
+  const passportRisk = passportExpiryDate
+    ? passportExpiryDate < tripEndDate
+      ? 'before_trip'
+      : passportExpiryDate <= passportLimitDate
+        ? 'within_6_months'
+        : 'ok'
+    : null
+  const shouldShowPassportCard = trip.currency !== 'BRL' || trip.destinations.length > 1
   const checklistDone = checklist.filter(c => c.is_completed).length
   const checklistPct = checklist.length > 0 ? (checklistDone / checklist.length) * 100 : 0
+  const itineraryAddresses = itinerary
+    .filter(item => item.address && item.address.trim().length > 0)
+    .map(item => ({
+      id: item.id,
+      title: item.title,
+      address: item.address!.trim(),
+      day: item.day_date,
+      time: item.estimated_time,
+    }))
 
   // Group itinerary by day
   const itineraryByDay = itinerary.reduce<Record<string, typeof itinerary>>((acc, item) => {
@@ -286,6 +322,82 @@ export default function TripDetailPage() {
     }
   }
 
+  async function handleReorderItinerary(dayDate: string, draggedId: string, targetId: string) {
+    if (!trip || draggedId === targetId) return
+    const dayItems = itineraryByDay[dayDate] ?? []
+    const fromIdx = dayItems.findIndex(i => i.id === draggedId)
+    const toIdx = dayItems.findIndex(i => i.id === targetId)
+    if (fromIdx < 0 || toIdx < 0 || fromIdx === toIdx) return
+
+    const reordered = [...dayItems]
+    const [moved] = reordered.splice(fromIdx, 1)
+    reordered.splice(toIdx, 0, moved)
+
+    try {
+      await reorderItineraryDay(trip.id, dayDate, reordered.map(i => i.id))
+      await reload()
+    } catch {
+      toast.error('Erro ao reordenar roteiro')
+    }
+  }
+
+  function handleExportItineraryPdf() {
+    if (!trip) return
+    if (!isPro) {
+      toast.info('Exportar roteiro em PDF é um recurso PRO.', {
+        action: {
+          label: 'Ver plano PRO',
+          onClick: () => router.push('/configuracoes/plano'),
+        },
+      })
+      return
+    }
+    if (itinerary.length === 0) {
+      toast.info('Adicione atividades ao roteiro para exportar.')
+      return
+    }
+
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' })
+    doc.setFontSize(16)
+    doc.text(`Roteiro da Viagem: ${trip.name}`, 40, 48)
+    doc.setFontSize(10)
+    doc.text(`Destino(s): ${trip.destinations.join(' -> ')}`, 40, 66)
+    doc.text(
+      `Periodo: ${new Date(trip.start_date + 'T12:00:00').toLocaleDateString('pt-BR')} a ${new Date(trip.end_date + 'T12:00:00').toLocaleDateString('pt-BR')}`,
+      40,
+      80
+    )
+
+    const rows = itinerary
+      .slice()
+      .sort((a, b) => {
+        if (a.day_date === b.day_date) return a.sort_order - b.sort_order
+        return a.day_date.localeCompare(b.day_date)
+      })
+      .map((item) => [
+        new Date(item.day_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+        item.estimated_time ? item.estimated_time.slice(0, 5) : '-',
+        item.title,
+        ITINERARY_CATEGORY_LABELS[item.category],
+        item.address ?? '-',
+        item.estimated_cost != null
+          ? formatTripAmountCompact(item.estimated_cost)
+          : '-',
+      ])
+
+    autoTable(doc, {
+      startY: 96,
+      head: [['Dia', 'Hora', 'Atividade', 'Categoria', 'Endereco', 'Custo']],
+      body: rows,
+      styles: { fontSize: 9, cellPadding: 5 },
+      headStyles: { fillColor: [6, 182, 212], textColor: [3, 7, 26] },
+    })
+
+    const safeName = trip.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    doc.save(`roteiro-${safeName}.pdf`)
+    toast.success('PDF do roteiro gerado!')
+  }
+
   async function handleUpdateBudget(id: string, field: 'estimated_amount' | 'actual_amount', value: string) {
     try {
       await updateBudgetItem(id, { [field]: parseFloat(value) || 0 })
@@ -313,6 +425,40 @@ export default function TripDetailPage() {
       await reload()
     } catch {
       toast.error('Erro ao adicionar item')
+    }
+  }
+
+  function getMapPinLink(address: string) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+  }
+
+  function getSuggestedRouteLink(addresses: string[]) {
+    if (addresses.length < 2) return null
+    return `https://www.google.com/maps/dir/${addresses.map(a => encodeURIComponent(a)).join('/')}`
+  }
+
+  const formatTripAmount = (value: number) => formatMoneyWithBrl(value, trip.currency)
+  const formatTripAmountCompact = (value: number) => formatMoney(value, trip.currency)
+
+  function estimateTransitMinutes(fromAddress?: string | null, toAddress?: string | null): number {
+    if (!fromAddress || !toAddress) return 30
+    const from = fromAddress.trim().toLowerCase()
+    const to = toAddress.trim().toLowerCase()
+    if (from === to) return 5
+    const fromToken = from.split(',')[0]?.trim()
+    const toToken = to.split(',')[0]?.trim()
+    if (fromToken && toToken && fromToken === toToken) return 15
+    return 35
+  }
+
+  function savePassportExpiry(value: string) {
+    setPassportExpiry(value)
+    if (typeof window === 'undefined') return
+    const key = `synclife:trip:${tripId}:passport-expiry`
+    if (value) {
+      window.localStorage.setItem(key, value)
+    } else {
+      window.localStorage.removeItem(key)
     }
   }
 
@@ -412,9 +558,9 @@ export default function TripDetailPage() {
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
                 <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Orçamento</p>
                 <p className="font-[DM_Mono] font-medium text-lg text-[var(--sl-t1)]">
-                  {totalEstimated > 0 ? totalEstimated.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}
+                  {totalEstimated > 0 ? formatTripAmount(totalEstimated) : '—'}
                 </p>
-                {totalActual > 0 && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">{totalActual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} gastos</p>}
+                {totalActual > 0 && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">{formatTripAmount(totalActual)} gastos</p>}
               </div>
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
                 <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Atividades</p>
@@ -454,6 +600,35 @@ export default function TripDetailPage() {
               </div>
             </div>
 
+            {shouldShowPassportCard && (
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
+                <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-2">🛂 Validade do passaporte</h3>
+                <p className="text-[11px] text-[var(--sl-t3)] mb-3">
+                  Para viagens internacionais, idealmente o passaporte deve vencer depois de {passportLimitDate.toLocaleDateString('pt-BR')} (6 meses após o retorno).
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <input
+                    type="date"
+                    value={passportExpiry}
+                    onChange={(e) => savePassportExpiry(e.target.value)}
+                    className="px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                  />
+                  {!passportExpiry && (
+                    <span className="text-[11px] text-[#f59e0b]">Informe a data para validar risco.</span>
+                  )}
+                  {passportRisk === 'before_trip' && (
+                    <span className="text-[11px] text-[#f43f5e]">⚠️ Passaporte vence antes do fim da viagem.</span>
+                  )}
+                  {passportRisk === 'within_6_months' && (
+                    <span className="text-[11px] text-[#f59e0b]">⚠️ Vence em até 6 meses após o retorno.</span>
+                  )}
+                  {passportRisk === 'ok' && (
+                    <span className="text-[11px] text-[#10b981]">✅ Validade adequada para o período da viagem.</span>
+                  )}
+                </div>
+              </div>
+            )}
+
             {trip.notes && (
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
                 <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-2">📝 Notas</h3>
@@ -474,7 +649,7 @@ export default function TripDetailPage() {
                     <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Gasto Total</p>
                     <p className="font-[DM_Mono] text-[15px] font-bold text-[var(--sl-t1)]">
                       {totalActual > 0
-                        ? totalActual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                        ? formatTripAmount(totalActual)
                         : '—'}
                     </p>
                   </div>
@@ -491,8 +666,8 @@ export default function TripDetailPage() {
                   <div className="mt-3 p-3 bg-[var(--sl-s1)] rounded-xl">
                     <p className="text-[11px] text-[var(--sl-t2)]">
                       {totalActual <= totalEstimated
-                        ? `✅ Ficou ${(totalEstimated - totalActual).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} abaixo do orçamento!`
-                        : `⚠️ Excedeu o orçamento em ${(totalActual - totalEstimated).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}.`}
+                        ? `✅ Ficou ${formatTripAmount(totalEstimated - totalActual)} abaixo do orçamento!`
+                        : `⚠️ Excedeu o orçamento em ${formatTripAmount(totalActual - totalEstimated)}.`}
                     </p>
                   </div>
                 )}
@@ -512,8 +687,8 @@ export default function TripDetailPage() {
                     <div className="flex justify-between mb-0.5">
                       <span className="text-[10px] text-[var(--sl-t3)]">{BUDGET_CATEGORY_LABELS[b.category]}</span>
                       <span className="font-[DM_Mono] text-[10px] text-[var(--sl-t2)]">
-                        {b.actual_amount > 0 ? `${b.actual_amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} / ` : ''}
-                        {b.estimated_amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        {b.actual_amount > 0 ? `${formatTripAmountCompact(b.actual_amount)} / ` : ''}
+                        {formatTripAmountCompact(b.estimated_amount)}
                       </span>
                     </div>
                     {b.estimated_amount > 0 && (
@@ -583,13 +758,75 @@ export default function TripDetailPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🗺️ Roteiro dia a dia</h2>
-            <button
-              onClick={() => { setItiForm(f => ({ ...f, day_date: trip.start_date })); setShowItineraryModal(true) }}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#06b6d4]/10 border border-[#06b6d4] text-[#06b6d4] hover:bg-[#06b6d4]/20"
-            >
-              <Plus size={13} />
-              Atividade
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleExportItineraryPdf}
+                className={cn(
+                  'flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium border',
+                  isPro
+                    ? 'bg-[#10b981]/10 border-[#10b981] text-[#10b981] hover:bg-[#10b981]/20'
+                    : 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
+                )}
+              >
+                {!isPro && <Crown size={12} />}
+                {isPro ? 'Exportar PDF' : 'PDF (PRO)'}
+              </button>
+              <button
+                onClick={() => { setItiForm(f => ({ ...f, day_date: trip.start_date })); setShowItineraryModal(true) }}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#06b6d4]/10 border border-[#06b6d4] text-[#06b6d4] hover:bg-[#06b6d4]/20"
+              >
+                <Plus size={13} />
+                Atividade
+              </button>
+            </div>
+          </div>
+
+          {/* RN-EXP-13: mapa com pins e rota sugerida (via links de mapas) */}
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-4">
+            <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
+              <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🗺️ Mapa da viagem</h3>
+              {(() => {
+                const routeLink = getSuggestedRouteLink(itineraryAddresses.map(i => i.address))
+                if (!routeLink) return null
+                return (
+                  <a
+                    href={routeLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] font-semibold text-[#06b6d4] hover:opacity-80"
+                  >
+                    Abrir rota sugerida →
+                  </a>
+                )
+              })()}
+            </div>
+            {itineraryAddresses.length === 0 ? (
+              <p className="text-[11px] text-[var(--sl-t3)]">
+                Adicione endereço nas atividades para visualizar pins e rota sugerida.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                {itineraryAddresses.slice(0, 6).map((pin, idx) => (
+                  <a
+                    key={pin.id}
+                    href={getMapPinLink(pin.address)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 p-2 rounded-[10px] border border-[var(--sl-border)] bg-[var(--sl-s2)] hover:border-[var(--sl-border-h)] transition-colors"
+                  >
+                    <span className="w-5 h-5 rounded-full bg-[#06b6d4]/15 border border-[#06b6d4]/30 flex items-center justify-center text-[10px] font-bold text-[#06b6d4] shrink-0">
+                      {idx + 1}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] text-[var(--sl-t1)] truncate">
+                        {pin.title} {pin.time ? `· ${pin.time.slice(0, 5)}` : ''}
+                      </p>
+                      <p className="text-[10px] text-[var(--sl-t3)] truncate">{pin.address}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {tripDays.map(day => {
@@ -597,6 +834,17 @@ export default function TripDetailPage() {
             const dayDate = new Date(day + 'T12:00:00')
             const dayLabel = dayDate.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })
             const dayCost = dayItems.reduce((s, i) => s + (i.estimated_cost ?? 0), 0)
+            const transitEstimates = dayItems
+              .map((item, idx) => {
+                const next = dayItems[idx + 1]
+                if (!next) return null
+                return {
+                  fromTitle: item.title,
+                  toTitle: next.title,
+                  etaMinutes: estimateTransitMinutes(item.address, next.address),
+                }
+              })
+              .filter(Boolean) as { fromTitle: string; toTitle: string; etaMinutes: number }[]
 
             return (
               <div key={day} className="mb-5">
@@ -604,7 +852,7 @@ export default function TripDetailPage() {
                   <div className="text-[11px] font-bold text-[#06b6d4] capitalize">{dayLabel}</div>
                   {dayCost > 0 && (
                     <span className="text-[10px] text-[var(--sl-t3)]">
-                      · {dayCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      · {formatTripAmountCompact(dayCost)}
                     </span>
                   )}
                   <button
@@ -622,32 +870,61 @@ export default function TripDetailPage() {
                 ) : (
                   <div className="flex flex-col gap-2">
                     {dayItems.map((item, idx) => (
-                      <div key={item.id} className="flex items-start gap-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-xl p-3">
-                        <div className="w-6 h-6 rounded-full bg-[#06b6d4]/10 border border-[#06b6d4]/30 flex items-center justify-center shrink-0">
-                          <span className="text-[10px] text-[#06b6d4] font-bold">{idx + 1}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="font-medium text-[12px] text-[var(--sl-t1)]">{item.title}</span>
-                            <span className="text-[9px] text-[var(--sl-t3)] bg-[var(--sl-s2)] px-1.5 py-0.5 rounded-full">
-                              {ITINERARY_CATEGORY_LABELS[item.category]}
-                            </span>
-                            {item.estimated_time && (
-                              <span className="text-[10px] text-[var(--sl-t3)]">🕐 {item.estimated_time.slice(0, 5)}</span>
+                      <div key={item.id}>
+                        <div
+                          draggable
+                          onDragStart={() => setDraggingItineraryId(item.id)}
+                          onDragEnd={() => setDraggingItineraryId(null)}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={async (e) => {
+                            e.preventDefault()
+                            if (!draggingItineraryId) return
+                            await handleReorderItinerary(day, draggingItineraryId, item.id)
+                            setDraggingItineraryId(null)
+                          }}
+                          className={cn(
+                            'flex items-start gap-3 bg-[var(--sl-s1)] border rounded-xl p-3',
+                            'transition-colors cursor-move',
+                            draggingItineraryId === item.id
+                              ? 'border-[#06b6d4] opacity-70'
+                              : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
+                          )}
+                        >
+                          <div className="w-6 h-6 rounded-full bg-[#06b6d4]/10 border border-[#06b6d4]/30 flex items-center justify-center shrink-0">
+                            <span className="text-[10px] text-[#06b6d4] font-bold">{idx + 1}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-medium text-[12px] text-[var(--sl-t1)]">{item.title}</span>
+                              <span className="text-[9px] text-[var(--sl-t3)] bg-[var(--sl-s2)] px-1.5 py-0.5 rounded-full">
+                                {ITINERARY_CATEGORY_LABELS[item.category]}
+                              </span>
+                              {item.estimated_time && (
+                                <span className="text-[10px] text-[var(--sl-t3)]">🕐 {item.estimated_time.slice(0, 5)}</span>
+                              )}
+                            </div>
+                            {item.address && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">📍 {item.address}</p>}
+                            {item.notes && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">{item.notes}</p>}
+                            {item.estimated_cost != null && (
+                              <p className="font-[DM_Mono] text-[10px] text-[var(--sl-t2)] mt-0.5">
+                                {formatTripAmountCompact(item.estimated_cost)}
+                              </p>
                             )}
                           </div>
-                          {item.address && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">📍 {item.address}</p>}
-                          {item.notes && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">{item.notes}</p>}
-                          {item.estimated_cost != null && (
-                            <p className="font-[DM_Mono] text-[10px] text-[var(--sl-t2)] mt-0.5">
-                              {item.estimated_cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                            </p>
-                          )}
+                          <button onClick={async () => { await deleteItineraryItem(item.id); await reload() }}
+                            className="p-1 rounded hover:bg-[rgba(244,63,94,0.1)] transition-colors shrink-0">
+                            <Trash2 size={11} className="text-[var(--sl-t3)]" />
+                          </button>
                         </div>
-                        <button onClick={async () => { await deleteItineraryItem(item.id); await reload() }}
-                          className="p-1 rounded hover:bg-[rgba(244,63,94,0.1)] transition-colors shrink-0">
-                          <Trash2 size={11} className="text-[var(--sl-t3)]" />
-                        </button>
+                        {transitEstimates[idx] && (
+                          <div className="ml-9 mt-1 mb-1 px-2.5 py-1.5 rounded-lg bg-[var(--sl-s2)] border border-[var(--sl-border)]">
+                            <p className="text-[10px] text-[var(--sl-t3)]">
+                              🚗 Deslocamento estimado (beta): ~{transitEstimates[idx].etaMinutes} min entre
+                              {' '}<span className="text-[var(--sl-t2)]">{transitEstimates[idx].fromTitle}</span> e
+                              {' '}<span className="text-[var(--sl-t2)]">{transitEstimates[idx].toTitle}</span>
+                            </p>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -664,18 +941,18 @@ export default function TripDetailPage() {
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
               <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Estimado</p>
-              <p className="font-[DM_Mono] text-xl text-[var(--sl-t1)]">{totalEstimated.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+              <p className="font-[DM_Mono] text-xl text-[var(--sl-t1)]">{formatTripAmount(totalEstimated)}</p>
             </div>
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
               <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Gasto</p>
               <p className="font-[DM_Mono] text-xl" style={{ color: totalActual > totalEstimated ? '#f43f5e' : '#10b981' }}>
-                {totalActual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                {formatTripAmount(totalActual)}
               </p>
             </div>
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
               <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Saldo</p>
               <p className="font-[DM_Mono] text-xl" style={{ color: totalEstimated - totalActual >= 0 ? '#06b6d4' : '#f43f5e' }}>
-                {(totalEstimated - totalActual).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                {formatTripAmount(totalEstimated - totalActual)}
               </p>
             </div>
           </div>
@@ -847,7 +1124,7 @@ export default function TripDetailPage() {
                     <div className="flex items-center gap-2">
                       {a.total_cost != null && (
                         <span className="font-[DM_Mono] text-[12px] text-[#06b6d4]">
-                          {a.total_cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                          {formatTripAmountCompact(a.total_cost)}
                         </span>
                       )}
                       <button onClick={async () => { await deleteAccommodation(a.id); await reload() }}
@@ -916,7 +1193,7 @@ export default function TripDetailPage() {
                     <div className="flex items-center gap-2">
                       {t.cost != null && (
                         <span className="font-[DM_Mono] text-[12px] text-[#06b6d4]">
-                          {t.cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                          {formatTripAmountCompact(t.cost)}
                         </span>
                       )}
                       <button onClick={async () => { await deleteTransport(t.id); await reload() }}
@@ -934,7 +1211,7 @@ export default function TripDetailPage() {
 
       {/* AI CHAT */}
       {activeTab === 'ai' && (
-        <TripAIChat tripId={tripId} trip={trip} />
+        <TripAIChat tripId={tripId} trip={trip} itinerary={itinerary} onItineraryAdded={reload} />
       )}
 
       {/* ── MODALS ── */}

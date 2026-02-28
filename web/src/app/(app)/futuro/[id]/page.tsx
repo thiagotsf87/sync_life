@@ -23,6 +23,8 @@ import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 import { GoalCard } from '@/components/futuro/GoalCard'
 import { AddGoalModal } from '@/components/futuro/AddGoalModal'
+import { createEventFromGoalTask } from '@/lib/integrations/agenda'
+import { createTransactionFromFuturoGoal } from '@/lib/integrations/financas'
 
 // ─── Milestone timeline ───────────────────────────────────────────────────────
 
@@ -97,7 +99,29 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
 
     setIsAddingGoal(true)
     try {
-      await addGoal(id, data)
+      const createdGoal = await addGoal(id, data)
+
+      // RN-FUT-12/34: meta tarefa cria evento automático na Agenda.
+      if (data.indicator_type === 'task' && objective?.target_date) {
+        await createEventFromGoalTask({
+          objectiveName: objective.name,
+          goalName: data.name,
+          goalId: createdGoal.id,
+          date: objective.target_date,
+        }).catch(() => {})
+      }
+
+      // RN-FUT-31: meta financeira gera entrada planejada em Finanças.
+      if (data.target_module === 'financas' && data.indicator_type === 'monetary' && (data.target_value ?? 0) > 0) {
+        const plannedDate = objective?.target_date ?? new Date().toISOString().split('T')[0]
+        await createTransactionFromFuturoGoal({
+          goalName: data.name,
+          objectiveName: objective?.name ?? 'Objetivo',
+          amount: data.target_value as number,
+          date: plannedDate,
+        }).catch(() => {})
+      }
+
       toast.success(`Meta "${data.name}" adicionada!`)
       setAddGoalOpen(false)
       await reload()

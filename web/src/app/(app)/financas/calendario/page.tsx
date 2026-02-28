@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { ChevronLeft, ChevronRight, X, Plus, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -411,9 +411,8 @@ export default function CalendarioFinanceiroPage() {
             {/* Day grid */}
             <div className="grid grid-cols-7">
               {calendarDays.map((day, index) => (
-                <>
+                <Fragment key={day.dateString}>
                   <CalendarDay
-                    key={day.dateString}
                     day={day}
                     isSelected={selectedDay?.dateString === day.dateString}
                     onClick={() => {
@@ -436,7 +435,7 @@ export default function CalendarioFinanceiroPage() {
                       </span>
                     </div>
                   )}
-                </>
+                </Fragment>
               ))}
             </div>
           </SLCard>

@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { Download, FileText, BarChart2, Lock, TrendingUp, Search, RefreshCw } from 'lucide-react'
+import { Download, FileText, BarChart2, Lock, TrendingUp, Search, RefreshCw, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SLCard } from '@/components/ui/sl-card'
 import { useShellStore } from '@/stores/shell-store'
@@ -68,6 +68,10 @@ export default function RelatoriosPage() {
   const [tableSearch, setTableSearch] = useState('')
   const [tableFilter, setTableFilter] = useState('todos')
   const [page, setPage] = useState(1)
+
+  // AI narrative state
+  const [aiNarrative, setAiNarrative] = useState('')
+  const [aiNarrativeLoading, setAiNarrativeLoading] = useState(false)
 
   // Derived
   const periodLabel = PERIOD_LABELS[period] ?? period
@@ -140,6 +144,68 @@ export default function RelatoriosPage() {
     if (type === 'expenses') return delta > 0 ? 'text-[#f43f5e]' : 'text-[#10b981]'
     return delta > 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
   }
+
+  // ── AI Narrative Regenerate ─────────────────────────────────────────────
+  const handleRegenerate = useCallback(async () => {
+    if (aiNarrativeLoading) return
+    setAiNarrativeLoading(true)
+    setAiNarrative('')
+
+    const financialContext = {
+      periodo: periodLabel,
+      meses: periodStats.monthCount,
+      transacoes: periodStats.txCount,
+      receitasTotais: periodStats.totalRecipes,
+      despesasTotais: periodStats.totalExpenses,
+      saldoAcumulado: periodStats.totalBalance,
+      taxaPoupancaMedia: periodStats.avgSavingsRate,
+      receitasAnterior: periodStats.prevTotalRecipes,
+      despesasAnterior: periodStats.prevTotalExpenses,
+      saldoAnterior: periodStats.prevTotalBalance,
+      taxaPoupancaAnterior: periodStats.prevAvgSavingsRate,
+      topCategorias: catCompData.slice(0, 5).map(c => ({
+        nome: c.name,
+        gastoAtual: c.currentTotal,
+        gastoAnterior: c.prevTotal,
+        delta: c.delta,
+      })),
+    }
+
+    try {
+      const res = await fetch('/api/ai/financas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{
+            role: 'user',
+            content: `Gere uma análise narrativa detalhada do período financeiro "${periodLabel}". Compare com o período anterior, destaque tendências positivas e negativas, e sugira 2-3 ações concretas para melhorar.`,
+          }],
+          financialContext,
+        }),
+      })
+
+      if (!res.ok || !res.body) {
+        setAiNarrative('Erro ao gerar análise. Tente novamente.')
+        setAiNarrativeLoading(false)
+        return
+      }
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let text = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        text += decoder.decode(value, { stream: true })
+        setAiNarrative(text)
+      }
+    } catch {
+      setAiNarrative('Erro de conexão. Verifique sua internet e tente novamente.')
+    } finally {
+      setAiNarrativeLoading(false)
+    }
+  }, [aiNarrativeLoading, periodLabel, periodStats, catCompData])
 
   return (
     <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
@@ -273,29 +339,42 @@ export default function RelatoriosPage() {
             <span className="px-1.5 py-0.5 rounded-[5px] text-[9px] font-bold bg-[rgba(16,185,129,0.15)] text-[#10b981] uppercase tracking-[0.05em]">
               IA Financeira
             </span>
-            <button className="ml-auto flex items-center gap-1 px-2.5 py-1 rounded-[8px] border border-[var(--sl-border)] bg-transparent text-[var(--sl-t3)] text-[11px] cursor-pointer hover:bg-[var(--sl-s2)] transition-all">
-              <RefreshCw size={12} />
-              Regenerar <span className="text-[10px]">(2/mês restantes)</span>
+            <button
+              onClick={handleRegenerate}
+              disabled={aiNarrativeLoading}
+              className="ml-auto flex items-center gap-1 px-2.5 py-1 rounded-[8px] border border-[var(--sl-border)] bg-transparent text-[var(--sl-t3)] text-[11px] cursor-pointer hover:bg-[var(--sl-s2)] transition-all disabled:opacity-50"
+            >
+              {aiNarrativeLoading ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+              Regenerar
             </button>
           </div>
-          <p
-            className="text-[13px] text-[var(--sl-t2)] leading-[1.65]"
-            dangerouslySetInnerHTML={{ __html: narrativeText }}
-          />
-          <div className="flex gap-1.5 mt-2.5 flex-wrap">
-            {narrativeTags.map(tag => (
-              <span
-                key={tag.text}
-                className={cn(
-                  'px-2.5 py-0.5 rounded-[7px] text-[11px] font-medium',
-                  tag.type === 'pos' ? 'bg-[rgba(16,185,129,0.12)] text-[#10b981]' :
-                  tag.type === 'neg' ? 'bg-[rgba(244,63,94,0.1)] text-[#f43f5e]' :
-                  'bg-[var(--sl-s2)] text-[var(--sl-t2)]'
-                )}>
-                {tag.text}
-              </span>
-            ))}
-          </div>
+          {aiNarrative ? (
+            <p className="text-[13px] text-[var(--sl-t2)] leading-[1.65] whitespace-pre-wrap">
+              {aiNarrative}
+              {aiNarrativeLoading && <Loader2 size={12} className="inline-block ml-1 animate-spin text-[#10b981]" />}
+            </p>
+          ) : (
+            <>
+              <p
+                className="text-[13px] text-[var(--sl-t2)] leading-[1.65]"
+                dangerouslySetInnerHTML={{ __html: narrativeText }}
+              />
+              <div className="flex gap-1.5 mt-2.5 flex-wrap">
+                {narrativeTags.map(tag => (
+                  <span
+                    key={tag.text}
+                    className={cn(
+                      'px-2.5 py-0.5 rounded-[7px] text-[11px] font-medium',
+                      tag.type === 'pos' ? 'bg-[rgba(16,185,129,0.12)] text-[#10b981]' :
+                      tag.type === 'neg' ? 'bg-[rgba(244,63,94,0.1)] text-[#f43f5e]' :
+                      'bg-[var(--sl-s2)] text-[var(--sl-t2)]'
+                    )}>
+                    {tag.text}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
 

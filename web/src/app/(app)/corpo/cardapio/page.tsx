@@ -7,34 +7,13 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
 import { useHealthProfile, WEIGHT_GOAL_LABELS } from '@/hooks/use-corpo'
-import { useUserPlan } from '@/hooks/use-user-plan'
 import { createTransactionFromCardapio } from '@/lib/integrations/financas'
-
-// RN-CRP-22: Limite FREE de 3 gerações/semana
-const REGEN_KEY = 'sl_cardapio_regen'
 
 function getWeekStart(): number {
   const now = new Date()
   const day = now.getDay()
   const diff = now.getDate() - day + (day === 0 ? -6 : 1)
   return new Date(now.getFullYear(), now.getMonth(), diff).getTime()
-}
-
-function getRegenCount(): number {
-  try {
-    const saved = localStorage.getItem(REGEN_KEY)
-    if (!saved) return 0
-    const parsed: { count: number; weekStart: number } = JSON.parse(saved)
-    if (parsed.weekStart !== getWeekStart()) return 0
-    return parsed.count
-  } catch { return 0 }
-}
-
-function incrementRegenCount(): void {
-  try {
-    const count = getRegenCount()
-    localStorage.setItem(REGEN_KEY, JSON.stringify({ count: count + 1, weekStart: getWeekStart() }))
-  } catch { /* ignore */ }
 }
 
 // RN-CRP-21: macronutrientes por refeição
@@ -109,8 +88,6 @@ export default function CardapioPage() {
   const isJornada = mode === 'jornada'
 
   const { profile } = useHealthProfile()
-  const { isPro } = useUserPlan()
-
   const [generating, setGenerating] = useState(false)
   const [plan, setPlan] = useState<DayPlan[] | null>(null)
   const [selectedDay, setSelectedDay] = useState(0)
@@ -150,17 +127,6 @@ export default function CardapioPage() {
   }
 
   async function handleGenerate() {
-    // RN-CRP-22: limite FREE 3 gerações/semana
-    if (!isPro) {
-      const count = getRegenCount()
-      if (count >= 3) {
-        toast.error('Limite de 3 gerações/semana no plano FREE. Assine o PRO para ilimitado.', {
-          action: { label: 'Ver Planos', onClick: () => router.push('/configuracoes/plano') },
-        })
-        return
-      }
-      incrementRegenCount()
-    }
     setGenerating(true)
     setError(null)
     try {
@@ -174,7 +140,10 @@ export default function CardapioPage() {
           weekly_budget: budget ? Number(budget) : undefined,
         }),
       })
-      if (!res.ok) throw new Error(`Status ${res.status}`)
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => null)
+        throw new Error(errorBody?.error || `Erro ${res.status}`)
+      }
       const data = await res.json()
       if (data.week) {
         const newPlan = apiToUiPlan(data.week)
@@ -205,7 +174,8 @@ export default function CardapioPage() {
         throw new Error('Resposta inesperada da IA')
       }
     } catch (e) {
-      setError('Não foi possível gerar o cardápio. Verifique a conexão e tente novamente.')
+      const msg = e instanceof Error ? e.message : ''
+      setError(msg || 'Não foi possível gerar o cardápio. Verifique a conexão e tente novamente.')
     } finally {
       setGenerating(false)
     }

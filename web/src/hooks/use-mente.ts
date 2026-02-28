@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import {
+  syncLinkedTrackCompletionToFuturo,
+  syncLinkedTrackProgressToFuturo,
+  unlinkGoalsFromDeletedEntity,
+} from '@/lib/integrations/futuro'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -36,6 +41,7 @@ export interface StudyTrack {
   total_hours: number
   cost: number | null
   linked_skill_id: string | null
+  linked_objective_id: string | null
   notes: string | null
   steps?: StudyTrackStep[]
   created_at: string
@@ -286,6 +292,7 @@ export interface CreateTrackData {
   notes?: string | null
   steps: { title: string; sort_order: number }[]
   linked_skill_id?: string | null
+  linked_objective_id?: string | null
 }
 
 export function useCreateTrack() {
@@ -305,6 +312,7 @@ export function useCreateTrack() {
       cost: data.cost ?? null,
       notes: data.notes ?? null,
       linked_skill_id: data.linked_skill_id ?? null,
+      linked_objective_id: data.linked_objective_id ?? null,
       progress: 0,
       total_hours: 0,
     }).select().single()
@@ -321,6 +329,26 @@ export function useCreateTrack() {
       )
       if (stepsErr) throw stepsErr
     }
+
+    // RN-MNT-04: trilha vinculável a objetivo do Futuro.
+    if (data.linked_objective_id) {
+      await sb.from('objective_goals').insert({
+        objective_id: data.linked_objective_id,
+        user_id: user.id,
+        name: `Trilha: ${data.name}`,
+        indicator_type: 'percentage',
+        target_module: 'mente',
+        target_value: 100,
+        current_value: 0,
+        progress: 0,
+        weight: 1,
+        priority: 1,
+        auto_sync: true,
+        linked_entity_type: 'study_track',
+        linked_entity_id: track.id,
+        status: 'active',
+      })
+    }
     return track
   }, [])
 }
@@ -331,12 +359,20 @@ export function useUpdateTrack() {
   const supabase = createClient()
   const sb = supabase as any
 
-  return useCallback(async (id: string, updates: Partial<Pick<StudyTrack, 'name' | 'status' | 'target_date' | 'notes' | 'cost' | 'category'>>) => {
+  return useCallback(async (
+    id: string,
+    updates: Partial<Pick<StudyTrack, 'name' | 'status' | 'target_date' | 'notes' | 'cost' | 'category' | 'linked_objective_id'>>
+  ) => {
     const { error } = await sb.from('study_tracks').update({
       ...updates,
       updated_at: new Date().toISOString(),
     }).eq('id', id)
     if (error) throw error
+
+    // RN-FUT-42: conclusão manual de trilha sincroniza metas vinculadas no Futuro
+    if (updates.status === 'completed') {
+      await syncLinkedTrackCompletionToFuturo(id)
+    }
   }, [])
 }
 
@@ -347,8 +383,13 @@ export function useDeleteTrack() {
   const sb = supabase as any
 
   return useCallback(async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+
     const { error } = await sb.from('study_tracks').delete().eq('id', id)
     if (error) throw error
+
+    await unlinkGoalsFromDeletedEntity(user.id, 'study_track', [id])
   }, [])
 }
 
@@ -375,6 +416,13 @@ export function useToggleStep() {
       const updates: Record<string, unknown> = { progress, updated_at: new Date().toISOString() }
       if (progress >= 100) updates.status = 'completed'
       await sb.from('study_tracks').update(updates).eq('id', trackId)
+
+      // RN-FUT-40/42: trilha vinculada herda progresso e conclui metas no Futuro
+      if (progress >= 100) {
+        await syncLinkedTrackCompletionToFuturo(trackId)
+      } else {
+        await syncLinkedTrackProgressToFuturo(trackId, progress)
+      }
     }
   }, [])
 }

@@ -7,11 +7,12 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
 import {
-  useSkills, useSaveSkill, useDeleteSkill,
+  useSkills, useSaveSkill, useDeleteSkill, useSetSkillTracks,
   SKILL_CATEGORY_LABELS, SKILL_LEVEL_LABELS,
   type Skill, type SkillCategory, type SaveSkillData,
 } from '@/hooks/use-carreira'
 import { SkillCard } from '@/components/carreira/SkillCard'
+import { useStudyTracks } from '@/hooks/use-mente'
 
 const CATEGORIES: SkillCategory[] = ['hard_skill', 'soft_skill', 'language', 'certification']
 
@@ -44,6 +45,8 @@ export default function HabilidadesPage() {
   const { skills, loading, error, reload } = useSkills()
   const saveSkill = useSaveSkill()
   const deleteSkill = useDeleteSkill()
+  const setSkillTracks = useSetSkillTracks()
+  const { tracks } = useStudyTracks()
 
   const [showModal, setShowModal] = useState(false)
   const [editingSkill, setEditingSkill] = useState<Skill | null>(null)
@@ -51,10 +54,12 @@ export default function HabilidadesPage() {
   const [search, setSearch] = useState('')
   const [filterCat, setFilterCat] = useState<SkillCategory | 'all'>('all')
   const [form, setForm] = useState(EMPTY_FORM)
+  const [linkedTrackIds, setLinkedTrackIds] = useState<string[]>([])
 
   function openCreate() {
     setEditingSkill(null)
     setForm(EMPTY_FORM)
+    setLinkedTrackIds([])
     setShowModal(true)
   }
 
@@ -66,6 +71,7 @@ export default function HabilidadesPage() {
       proficiency_level: skill.proficiency_level,
       notes: skill.notes ?? '',
     })
+    setLinkedTrackIds(skill.linked_track_ids ?? [])
     setShowModal(true)
   }
 
@@ -74,7 +80,8 @@ export default function HabilidadesPage() {
     setIsSaving(true)
     try {
       const wasLevelChange = editingSkill && editingSkill.proficiency_level !== form.proficiency_level
-      await saveSkill({ ...form, notes: form.notes || null }, editingSkill?.id)
+      const saved = await saveSkill({ ...form, notes: form.notes || null }, editingSkill?.id)
+      await setSkillTracks(saved.id, linkedTrackIds)
       toast.success(editingSkill ? 'Habilidade atualizada!' : 'Habilidade adicionada!')
       // RN-CAR-16: quando nível de habilidade sobe, sugerir verificar roadmap
       if (wasLevelChange && form.proficiency_level > (editingSkill?.proficiency_level ?? 0)) {
@@ -345,6 +352,36 @@ export default function HabilidadesPage() {
                   className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b] resize-none"
                 />
               </div>
+
+              {tracks.length > 0 && (
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Trilhas vinculadas (Mente)</label>
+                  <div className="grid grid-cols-2 gap-1.5 max-h-28 overflow-y-auto">
+                    {tracks.map(track => {
+                      const checked = linkedTrackIds.includes(track.id)
+                      return (
+                        <button
+                          key={track.id}
+                          onClick={() => {
+                            setLinkedTrackIds(prev =>
+                              checked ? prev.filter(id => id !== track.id) : [...prev, track.id]
+                            )
+                          }}
+                          className={cn(
+                            'px-2 py-1.5 rounded-[8px] text-[11px] border text-left transition-all',
+                            checked
+                              ? 'border-[#a855f7] bg-[#a855f7]/10 text-[var(--sl-t1)]'
+                              : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
+                          )}
+                        >
+                          📚 {track.name}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <p className="text-[10px] text-[var(--sl-t3)] mt-1">Uma habilidade pode estar vinculada a múltiplas trilhas.</p>
+                </div>
+              )}
 
               <div className="flex gap-2 pt-1">
                 <button

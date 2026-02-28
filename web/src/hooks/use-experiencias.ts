@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { syncTripBudgetToFuturo, unlinkGoalsFromDeletedEntity } from '@/lib/integrations/futuro'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -357,6 +358,7 @@ export interface CreateTripData {
   total_budget?: number | null
   currency?: string
   notes?: string | null
+  objective_id?: string | null
 }
 
 export function useCreateTrip() {
@@ -379,6 +381,7 @@ export function useCreateTrip() {
       currency: data.currency ?? 'BRL',
       status: 'planning',
       notes: data.notes ?? null,
+      objective_id: data.objective_id ?? null,
     }).select().single()
 
     if (error) throw error
@@ -412,6 +415,26 @@ export function useCreateTrip() {
       }))
     )
 
+    // RN-EXP-04: viagem vinculada a objetivo do Futuro cria meta técnica sincronizada.
+    if (data.objective_id) {
+      await sb.from('objective_goals').insert({
+        objective_id: data.objective_id,
+        user_id: user.id,
+        name: `Viagem: ${data.name}`,
+        indicator_type: 'monetary',
+        target_module: 'experiencias',
+        target_value: Number(data.total_budget ?? 0),
+        current_value: 0,
+        progress: 0,
+        weight: 1,
+        priority: 1,
+        auto_sync: true,
+        linked_entity_type: 'trip_budget',
+        linked_entity_id: trip.id,
+        status: 'active',
+      })
+    }
+
     return trip as Trip
   }, [])
 }
@@ -434,8 +457,13 @@ export function useDeleteTrip() {
   const sb = supabase as any
 
   return useCallback(async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+
     const { error } = await sb.from('trips').delete().eq('id', id)
     if (error) throw error
+
+    await unlinkGoalsFromDeletedEntity(user.id, 'trip_budget', [id])
   }, [])
 }
 
@@ -505,6 +533,23 @@ export function useDeleteItineraryItem() {
   }, [])
 }
 
+export function useReorderItineraryDay() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (tripId: string, dayDate: string, orderedIds: string[]) => {
+    if (orderedIds.length === 0) return
+
+    for (let i = 0; i < orderedIds.length; i++) {
+      const id = orderedIds[i]
+      const { error } = await sb.from('trip_itinerary_items').update({
+        sort_order: i,
+      }).eq('id', id).eq('trip_id', tripId).eq('day_date', dayDate)
+      if (error) throw error
+    }
+  }, [])
+}
+
 // ─── Budget mutations ──────────────────────────────────────────────────────
 
 export function useUpdateBudgetItem() {
@@ -512,8 +557,21 @@ export function useUpdateBudgetItem() {
   const sb = supabase as any
 
   return useCallback(async (id: string, data: Partial<Pick<TripBudgetItem, 'estimated_amount' | 'actual_amount'>>) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+
+    const { data: budgetItem, error: budgetItemError } = await sb
+      .from('trip_budget_items')
+      .select('trip_id')
+      .eq('id', id)
+      .single()
+    if (budgetItemError) throw budgetItemError
+
     const { error } = await sb.from('trip_budget_items').update(data).eq('id', id)
     if (error) throw error
+
+    // RN-FUT-49: orçamento da viagem atualiza progresso de metas vinculadas no Futuro.
+    await syncTripBudgetToFuturo(user.id, budgetItem.trip_id)
   }, [])
 }
 

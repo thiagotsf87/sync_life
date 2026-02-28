@@ -27,6 +27,7 @@ interface StepItem {
 }
 
 interface SkillOption { id: string; name: string }
+interface ObjectiveOption { id: string; name: string }
 
 interface FormState {
   name: string
@@ -38,6 +39,7 @@ interface FormState {
   newStep: string
   syncToFinancas: boolean
   linked_skill_id: string | null
+  linked_objective_id: string | null
 }
 
 const INITIAL: FormState = {
@@ -50,12 +52,14 @@ const INITIAL: FormState = {
   newStep: '',
   syncToFinancas: false,
   linked_skill_id: null,
+  linked_objective_id: null,
 }
 
 export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackWizardProps) {
   const [step, setStep] = useState(0)
   const [form, setForm] = useState<FormState>(INITIAL)
   const [skills, setSkills] = useState<SkillOption[]>([])
+  const [objectives, setObjectives] = useState<ObjectiveOption[]>([])
 
   // RN-MNT-03: carregar habilidades de Carreira para vinculação
   useEffect(() => {
@@ -68,6 +72,13 @@ export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackW
         .eq('user_id', user.id)
         .order('name')
         .then(({ data }: any) => { if (data) setSkills(data) })
+      supabase.from('objectives')
+        .select('id, name')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .order('priority', { ascending: true })
+        .order('created_at', { ascending: false })
+        .then(({ data }: any) => { if (data) setObjectives(data) })
     })
   }, [open])
 
@@ -107,6 +118,7 @@ export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackW
       notes: form.notes.trim() || null,
       steps: form.steps.map((s, i) => ({ title: s.title, sort_order: i })),
       linked_skill_id: form.linked_skill_id || null,
+      linked_objective_id: form.linked_objective_id || null,
     })
     // RN-MNT-09: registrar custo em Finanças se opt-in
     if (form.syncToFinancas && cost && cost > 0) {
@@ -299,6 +311,28 @@ export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackW
                     ))}
                   </select>
                   <p className="text-[10px] text-[var(--sl-t3)] mt-1">Ao concluir a trilha, você será lembrado de atualizar o nível.</p>
+                </div>
+              )}
+
+              {/* RN-MNT-04: Vincular trilha a objetivo do Futuro */}
+              {objectives.length > 0 && (
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">
+                    Objetivo vinculado (Futuro)
+                  </label>
+                  <select
+                    value={form.linked_objective_id ?? ''}
+                    onChange={e => setForm(f => ({ ...f, linked_objective_id: e.target.value || null }))}
+                    className="w-full px-3 py-2 rounded-[10px] text-[13px]
+                               bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
+                               outline-none focus:border-[#a855f7] transition-colors"
+                  >
+                    <option value="">Nenhum</option>
+                    {objectives.map(o => (
+                      <option key={o.id} value={o.id}>{o.name}</option>
+                    ))}
+                  </select>
+                  <p className="text-[10px] text-[var(--sl-t3)] mt-1">Ao marcar etapas, o progresso da meta no Futuro será sincronizado.</p>
                 </div>
               )}
 

@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
 import {
   usePortfolioAssets, usePortfolioDividends,
-  useAddDividend, useDeleteDividend,
+  useAddDividend, useDeleteDividend, useUpdateDividendStatus,
   DIVIDEND_TYPE_LABELS, ASSET_CLASS_LABELS,
   type DividendType, type DividendStatus,
 } from '@/hooks/use-patrimonio'
@@ -54,6 +54,7 @@ export default function ProventosPage() {
   const { assets } = usePortfolioAssets()
   const addDividend = useAddDividend()
   const deleteDividend = useDeleteDividend()
+  const updateDividendStatus = useUpdateDividendStatus()
 
   const [showModal, setShowModal] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -165,6 +166,16 @@ export default function ProventosPage() {
       await reload()
     } catch {
       toast.error('Erro ao remover')
+    }
+  }
+
+  async function handleMarkAsReceived(id: string) {
+    try {
+      await updateDividendStatus(id, 'received')
+      toast.success('Provento marcado como recebido')
+      await reload()
+    } catch {
+      toast.error('Erro ao atualizar status do provento')
     }
   }
 
@@ -350,6 +361,14 @@ export default function ProventosPage() {
                           +{d.total_amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                         </p>
                       </div>
+                      {d.status === 'announced' && (
+                        <button
+                          onClick={() => handleMarkAsReceived(d.id)}
+                          className="px-2 py-1 rounded-[8px] text-[10px] font-bold border border-[#10b981]/40 text-[#10b981] hover:bg-[#10b981]/10 transition-colors shrink-0"
+                        >
+                          Marcar recebido
+                        </button>
+                      )}
                       <button onClick={() => handleDelete(d.id)}
                         className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors shrink-0"
                       >

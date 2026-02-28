@@ -35,6 +35,22 @@ const EMPTY_FORM: ActivityForm = {
   syncToAgenda: false,
 }
 
+function calcActivityStreakDays(recordedAtList: string[]): number {
+  const daySet = new Set(
+    recordedAtList.map((d) => new Date(d).toISOString().slice(0, 10))
+  )
+  let streak = 0
+  const cursor = new Date()
+  cursor.setHours(0, 0, 0, 0)
+  while (true) {
+    const key = cursor.toISOString().slice(0, 10)
+    if (!daySet.has(key)) break
+    streak++
+    cursor.setDate(cursor.getDate() - 1)
+  }
+  return streak
+}
+
 export default function AtividadesPage() {
   const router = useRouter()
   const mode = useShellStore((s) => s.mode)
@@ -69,6 +85,19 @@ export default function AtividadesPage() {
         notes: form.notes || null,
       }
       await saveActivity(data)
+
+      // RN-CRP-35: streak de atividade gera conquistas
+      const projectedStreak = calcActivityStreakDays([
+        ...activities.map(a => a.recorded_at),
+        data.recorded_at,
+      ])
+      const currentStreak = calcActivityStreakDays(activities.map(a => a.recorded_at))
+      const milestones = [3, 7, 14, 30]
+      const reachedMilestone = milestones.find(m => projectedStreak >= m && currentStreak < m)
+      if (reachedMilestone) {
+        toast.success(`🏆 Conquista desbloqueada: ${reachedMilestone} dias seguidos de atividade!`)
+      }
+
       // RN-CRP-33: registrar na Agenda se opt-in
       if (form.syncToAgenda) {
         const actMeta = ACTIVITY_TYPES.find(a => a.type === form.type)
@@ -105,6 +134,7 @@ export default function AtividadesPage() {
   const weekActivities = activities.filter(a => new Date(a.recorded_at) >= weekAgo)
   const weekMinutes = weekActivities.reduce((s, a) => s + a.duration_minutes, 0)
   const weekCalories = weekActivities.reduce((s, a) => s + (a.calories_burned ?? 0), 0)
+  const currentStreak = calcActivityStreakDays(activities.map(a => a.recorded_at))
 
   // Preview calories
   const selectedMeta = ACTIVITY_TYPES.find(a => a.type === form.type)
@@ -153,6 +183,14 @@ export default function AtividadesPage() {
           </div>
         ))}
       </div>
+
+      {currentStreak > 0 && (
+        <div className="mb-5 bg-gradient-to-br from-[#f97316]/10 to-[#f59e0b]/10 border border-[#f97316]/30 rounded-2xl p-4">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Conquista de consistência</p>
+          <p className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)]">🔥 {currentStreak} dias seguidos</p>
+          <p className="text-[12px] text-[var(--sl-t2)] mt-1">Continue para desbloquear marcos de 7, 14 e 30 dias.</p>
+        </div>
+      )}
 
       {/* Activities list */}
       {loading ? (

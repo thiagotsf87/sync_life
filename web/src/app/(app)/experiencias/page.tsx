@@ -207,9 +207,9 @@ export default function ExperienciasPage() {
         {[
           { label: '🗺️ Minhas Viagens', href: '/experiencias/viagens', color: '#06b6d4' },
           { label: '✈️ Nova Viagem', href: '/experiencias/nova', color: '#10b981' },
-          { label: '✅ Checklists', href: '/experiencias/viagens', color: '#f59e0b' },
+          { label: '✅ Checklists', href: '/experiencias/viagens?tab=checklists', color: '#f59e0b' },
         ].map(({ label, href, color }) => (
-          <button key={href} onClick={() => router.push(href)}
+          <button key={label} onClick={() => router.push(href)}
             className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 text-left hover:border-[var(--sl-border-h)] transition-colors sl-fade-up"
           >
             <div className="h-0.5 w-8 rounded-full mb-2" style={{ background: color }} />

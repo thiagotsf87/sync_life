@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { GoalModule, GoalIndicatorType, AddGoalData } from '@/hooks/use-futuro'
 import { MODULE_LABELS, INDICATOR_LABELS } from '@/hooks/use-futuro'
+import { createClient } from '@/lib/supabase/client'
 
 interface AddGoalModalProps {
   open: boolean
@@ -35,6 +36,7 @@ interface FormState {
   initial_value: string
   target_unit: string
   weight: string
+  linked_entity_id: string
 }
 
 const INITIAL: FormState = {
@@ -46,10 +48,18 @@ const INITIAL: FormState = {
   initial_value: '',
   target_unit: '',
   weight: '1',
+  linked_entity_id: '',
+}
+
+interface LinkOption {
+  id: string
+  label: string
+  linkedType: string
 }
 
 export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGoalModalProps) {
   const [form, setForm] = useState<FormState>(INITIAL)
+  const [linkOptions, setLinkOptions] = useState<LinkOption[]>([])
 
   if (!open) return null
 
@@ -58,17 +68,87 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
   const isWeight = form.indicator_type === 'weight'
   const showInitialValue = !isTask && !isFrequency
   const suggestions = UNIT_SUGGESTIONS[form.indicator_type] ?? []
+  const isLinkedGoal = form.linked_entity_id.length > 0
+
+  useEffect(() => {
+    if (!open) return
+    const supabase = createClient() as any
+    supabase.auth.getUser().then(({ data: { user } }: any) => {
+      if (!user) return
+      if (form.target_module === 'mente') {
+        supabase.from('study_tracks')
+          .select('id, name')
+          .eq('user_id', user.id)
+          .order('updated_at', { ascending: false })
+          .then(({ data }: any) => {
+            setLinkOptions((data ?? []).map((d: { id: string; name: string }) => ({
+              id: d.id,
+              label: `📚 ${d.name}`,
+              linkedType: 'study_track',
+            })))
+          })
+        return
+      }
+      if (form.target_module === 'carreira') {
+        supabase.from('roadmap_steps')
+          .select('id, title, roadmap:career_roadmaps(name, user_id)')
+          .order('created_at', { ascending: false })
+          .then(({ data }: any) => {
+            const filtered = (data ?? []).filter((s: any) => s.roadmap?.user_id === user.id)
+            setLinkOptions(filtered.map((d: any) => ({
+              id: d.id,
+              label: `🗺 ${d.roadmap?.name ?? 'Roadmap'} • ${d.title}`,
+              linkedType: 'roadmap_step',
+            })))
+          })
+        return
+      }
+      if (form.target_module === 'experiencias') {
+        supabase.from('trips')
+          .select('id, name')
+          .eq('user_id', user.id)
+          .order('start_date', { ascending: false })
+          .then(({ data }: any) => {
+            setLinkOptions((data ?? []).map((d: { id: string; name: string }) => ({
+              id: d.id,
+              label: `✈️ ${d.name}`,
+              linkedType: 'trip_budget',
+            })))
+          })
+        return
+      }
+      if (form.target_module === 'financas') {
+        supabase.from('categories')
+          .select('id, name, icon')
+          .eq('user_id', user.id)
+          .order('name')
+          .then(({ data }: any) => {
+            setLinkOptions((data ?? []).map((d: { id: string; name: string; icon: string | null }) => ({
+              id: d.id,
+              label: `${d.icon ?? '💰'} ${d.name}`,
+              linkedType: 'finance_category',
+            })))
+          })
+        return
+      }
+      setLinkOptions([])
+    })
+  }, [open, form.target_module])
 
   async function handleSave() {
+    const selectedLink = linkOptions.find(o => o.id === form.linked_entity_id)
     await onSave({
       name: form.name.trim(),
       target_module: form.target_module,
-      indicator_type: form.indicator_type,
-      target_value: form.target_value ? parseFloat(form.target_value) : null,
-      current_value: parseFloat(form.current_value) || 0,
-      initial_value: form.initial_value ? parseFloat(form.initial_value) : null,
+      indicator_type: isLinkedGoal ? 'linked' : form.indicator_type,
+      target_value: isLinkedGoal ? 100 : form.target_value ? parseFloat(form.target_value) : null,
+      current_value: isLinkedGoal ? 0 : parseFloat(form.current_value) || 0,
+      initial_value: isLinkedGoal ? 0 : form.initial_value ? parseFloat(form.initial_value) : null,
       target_unit: form.target_unit.trim() || undefined,
       weight: parseFloat(form.weight) || 1,
+      auto_sync: !!selectedLink,
+      linked_entity_type: selectedLink?.linkedType ?? null,
+      linked_entity_id: selectedLink?.id ?? null,
     })
     setForm(INITIAL)
   }
@@ -121,7 +201,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
               {MODULES.map(m => (
                 <button
                   key={m}
-                  onClick={() => setForm(f => ({ ...f, target_module: m }))}
+                  onClick={() => setForm(f => ({ ...f, target_module: m, linked_entity_id: '' }))}
                   className={cn(
                     'flex items-center gap-1.5 px-2.5 py-2 rounded-[8px] text-[12px] transition-all border',
                     form.target_module === m
@@ -134,6 +214,29 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
               ))}
             </div>
           </div>
+
+          {linkOptions.length > 0 && (
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">
+                Vincular a item existente (opcional)
+              </label>
+              <select
+                value={form.linked_entity_id}
+                onChange={e => setForm(f => ({ ...f, linked_entity_id: e.target.value }))}
+                className="w-full px-3 py-2.5 rounded-[10px] text-[13px]
+                           bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
+                           outline-none focus:border-[#10b981] transition-colors"
+              >
+                <option value="">Nenhum</option>
+                {linkOptions.map(opt => (
+                  <option key={opt.id} value={opt.id}>{opt.label}</option>
+                ))}
+              </select>
+              <p className="text-[10px] text-[var(--sl-t3)] mt-1">
+                Metas vinculadas sincronizam progresso automaticamente com o item selecionado.
+              </p>
+            </div>
+          )}
 
           {/* Indicator type */}
           <div>

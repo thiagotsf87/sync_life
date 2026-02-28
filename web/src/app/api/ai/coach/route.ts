@@ -24,17 +24,26 @@ export async function POST(req: NextRequest) {
     return new Response('Unauthorized', { status: 401 })
   }
 
-  const { messages, healthProfile } = await req.json()
+  if (!process.env.GROQ_API_KEY) {
+    return new Response('Serviço de IA indisponível. Configure a GROQ_API_KEY.', { status: 503 })
+  }
 
-  const systemWithProfile = healthProfile
-    ? `${SYSTEM_PROMPT}\n\nPerfil de saúde do usuário:\n${JSON.stringify(healthProfile, null, 2)}`
-    : SYSTEM_PROMPT
+  try {
+    const { messages, healthProfile } = await req.json()
 
-  const result = streamText({
-    model,
-    system: systemWithProfile,
-    messages,
-  })
+    const systemWithProfile = healthProfile
+      ? `${SYSTEM_PROMPT}\n\nPerfil de saúde do usuário:\n${JSON.stringify(healthProfile, null, 2)}`
+      : SYSTEM_PROMPT
 
-  return result.toTextStreamResponse()
+    const result = streamText({
+      model,
+      system: systemWithProfile,
+      messages,
+    })
+
+    return result.toTextStreamResponse()
+  } catch (error) {
+    console.error('[AI Coach] Error:', error)
+    return new Response('Erro ao consultar a IA. Tente novamente.', { status: 500 })
+  }
 }

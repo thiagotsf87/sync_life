@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import {
+  syncExerciseFrequencyGoalsFromCorpo,
+  syncWeightGoalTargetFromCorpo,
+  syncWeightGoalsFromCorpo,
+} from '@/lib/integrations/futuro'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,6 +48,7 @@ export interface WeightEntry {
   chest_cm: number | null
   recorded_at: string
   notes: string | null
+  progress_photo_url: string | null
   created_at: string
 }
 
@@ -55,6 +61,7 @@ export interface MedicalAppointment {
   appointment_date: string
   cost: number | null
   notes: string | null
+  attachment_url: string | null
   status: AppointmentStatus
   follow_up_months: number | null
   follow_up_status: FollowUpStatus | null
@@ -372,6 +379,13 @@ export function useSaveHealthProfile() {
       const { error } = await sb.from('health_profiles').insert({ user_id: user.id, ...enriched })
       if (error) throw error
     }
+
+    if (typeof data.current_weight === 'number' && Number.isFinite(data.current_weight)) {
+      await syncWeightGoalsFromCorpo(user.id, data.current_weight)
+    }
+    if (typeof data.weight_goal_kg === 'number' && Number.isFinite(data.weight_goal_kg)) {
+      await syncWeightGoalTargetFromCorpo(user.id, data.weight_goal_kg, data.current_weight ?? null)
+    }
   }, [])
 }
 
@@ -384,6 +398,7 @@ export function useAddWeightEntry() {
     if (!user) throw new Error('Não autenticado')
     const { error } = await sb.from('weight_entries').insert({ user_id: user.id, ...data })
     if (error) throw error
+    await syncWeightGoalsFromCorpo(user.id, data.weight)
   }, [])
 }
 
@@ -403,6 +418,7 @@ export interface SaveAppointmentData {
   appointment_date: string
   cost?: number | null
   notes?: string | null
+  attachment_url?: string | null
   status?: AppointmentStatus
   follow_up_months?: number | null
   follow_up_status?: FollowUpStatus | null
@@ -459,6 +475,7 @@ export function useSaveActivity() {
     if (!user) throw new Error('Não autenticado')
     const { error } = await sb.from('activities').insert({ user_id: user.id, ...data })
     if (error) throw error
+    await syncExerciseFrequencyGoalsFromCorpo(user.id)
   }, [])
 }
 
@@ -466,7 +483,10 @@ export function useDeleteActivity() {
   const supabase = createClient()
   const sb = supabase as any
   return useCallback(async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
     const { error } = await sb.from('activities').delete().eq('id', id)
     if (error) throw error
+    await syncExerciseFrequencyGoalsFromCorpo(user.id)
   }, [])
 }

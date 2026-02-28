@@ -61,6 +61,9 @@ function getTotalForPhase(phase: TimerPhase, config: TimerConfig): number {
 
 interface PomodoroTimerProps {
   tracks: Array<{ id: string; name: string }>
+  enableAmbient?: boolean
+  isJornada?: boolean
+  onXpEarned?: (payload: { gained: number; total: number }) => void
   onSessionComplete?: (data: {
     track_id: string | null
     duration_minutes: number
@@ -70,7 +73,15 @@ interface PomodoroTimerProps {
   }) => Promise<void>
 }
 
-export function PomodoroTimer({ tracks, onSessionComplete }: PomodoroTimerProps) {
+type AmbientMode = 'off' | 'rain' | 'lofi'
+
+export function PomodoroTimer({
+  tracks,
+  onSessionComplete,
+  enableAmbient = false,
+  isJornada = false,
+  onXpEarned,
+}: PomodoroTimerProps) {
   const [config, setConfig] = useState<TimerConfig>(DEFAULT_CONFIG)
   const [phase, setPhase] = useState<TimerPhase>('idle')
   const [remainingSeconds, setRemainingSeconds] = useState(DEFAULT_CONFIG.focusMinutes * 60)
@@ -80,8 +91,11 @@ export function PomodoroTimer({ tracks, onSessionComplete }: PomodoroTimerProps)
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null)
   const [sessionStarted, setSessionStarted] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [ambientMode, setAmbientMode] = useState<AmbientMode>('off')
   const [hydrated, setHydrated] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const ambientCleanupRef = useRef<(() => void) | null>(null)
 
   // Restore from localStorage (after hydration)
   useEffect(() => {
@@ -146,11 +160,26 @@ export function PomodoroTimer({ tracks, onSessionComplete }: PomodoroTimerProps)
       setPhase('focusing')
       setRemainingSeconds(config.focusMinutes * 60)
     }
-    // Play a soft notification sound (browser beep)
+    // Play a soft notification sound + background notification when available.
     try { new Audio('/sounds/bell.mp3').play().catch(() => {}) } catch { /* no sound if unavailable */ }
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      const nextLabel = phase === 'focusing' ? 'Hora da pausa' : 'Hora de focar'
+      try {
+        new Notification(`Pomodoro • ${nextLabel}`, {
+          body: phase === 'focusing'
+            ? 'Ciclo concluído. Faça uma pausa e depois retome.'
+            : 'Pausa concluída. Volte para o foco.',
+        })
+      } catch {
+        // ignore if browser blocks notifications
+      }
+    }
   }, [remainingSeconds]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleStart = useCallback(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {})
+    }
     if (phase === 'idle') {
       setPhase('focusing')
       setRemainingSeconds(config.focusMinutes * 60)
@@ -195,6 +224,17 @@ export function PomodoroTimer({ tracks, onSessionComplete }: PomodoroTimerProps)
         cycles_completed: cyclesCompleted,
       })
     }
+
+    // RN-MNT-18: pontos de foco em Jornada
+    if (isJornada && totalFocusSeconds > 0) {
+      const focusMinutes = Math.max(1, Math.round(totalFocusSeconds / 60))
+      const gained = (focusMinutes * 2) + (cyclesCompleted * 3)
+      const current = Number(localStorage.getItem('sl_jornada_xp') ?? '0')
+      const total = current + gained
+      localStorage.setItem('sl_jornada_xp', String(total))
+      onXpEarned?.({ gained, total })
+    }
+
     setPhase('idle')
     setRemainingSeconds(config.focusMinutes * 60)
     setCyclesCompleted(0)
@@ -202,7 +242,90 @@ export function PomodoroTimer({ tracks, onSessionComplete }: PomodoroTimerProps)
     setTotalBreakSeconds(0)
     setSessionStarted(false)
     localStorage.removeItem(STORAGE_KEY)
-  }, [sessionStarted, totalFocusSeconds, totalBreakSeconds, cyclesCompleted, selectedTrackId, config, onSessionComplete])
+  }, [sessionStarted, totalFocusSeconds, totalBreakSeconds, cyclesCompleted, selectedTrackId, config, onSessionComplete, isJornada, onXpEarned])
+
+  function stopAmbient() {
+    if (ambientCleanupRef.current) {
+      ambientCleanupRef.current()
+      ambientCleanupRef.current = null
+    }
+  }
+
+  async function startAmbient(mode: Exclude<AmbientMode, 'off'>) {
+    stopAmbient()
+    const AudioCtx = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!AudioCtx) return
+    if (!audioContextRef.current) audioContextRef.current = new AudioCtx()
+    const ctx = audioContextRef.current
+    if (ctx.state === 'suspended') await ctx.resume()
+
+    if (mode === 'rain') {
+      const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.4
+      const noise = ctx.createBufferSource()
+      noise.buffer = buffer
+      noise.loop = true
+      const filter = ctx.createBiquadFilter()
+      filter.type = 'lowpass'
+      filter.frequency.value = 900
+      const gain = ctx.createGain()
+      gain.gain.value = 0.03
+      noise.connect(filter)
+      filter.connect(gain)
+      gain.connect(ctx.destination)
+      noise.start()
+      ambientCleanupRef.current = () => {
+        noise.stop()
+        noise.disconnect()
+        filter.disconnect()
+        gain.disconnect()
+      }
+      return
+    }
+
+    const oscillator = ctx.createOscillator()
+    oscillator.type = 'triangle'
+    oscillator.frequency.value = 180
+    const filter = ctx.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.value = 1200
+    const gain = ctx.createGain()
+    gain.gain.value = 0.02
+    oscillator.connect(filter)
+    filter.connect(gain)
+    gain.connect(ctx.destination)
+    oscillator.start()
+    ambientCleanupRef.current = () => {
+      oscillator.stop()
+      oscillator.disconnect()
+      filter.disconnect()
+      gain.disconnect()
+    }
+  }
+
+  useEffect(() => {
+    if (!enableAmbient) {
+      setAmbientMode('off')
+      stopAmbient()
+      return
+    }
+    if (ambientMode === 'off') {
+      stopAmbient()
+      return
+    }
+    startAmbient(ambientMode).catch(() => {})
+    return () => {
+      stopAmbient()
+    }
+  }, [ambientMode, enableAmbient])
+
+  useEffect(() => {
+    return () => {
+      stopAmbient()
+      audioContextRef.current?.close().catch(() => {})
+    }
+  }, [])
 
   // SVG ring
   const r = 90
@@ -213,6 +336,15 @@ export function PomodoroTimer({ tracks, onSessionComplete }: PomodoroTimerProps)
   const color = PHASE_COLORS[phase]
   const minutes = Math.floor(remainingSeconds / 60).toString().padStart(2, '0')
   const seconds = (remainingSeconds % 60).toString().padStart(2, '0')
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (isRunning) {
+      document.title = `${minutes}:${seconds} • ${PHASE_LABELS[phase]} • SyncLife`
+    } else {
+      document.title = 'SyncLife'
+    }
+  }, [isRunning, minutes, seconds, phase])
 
   const settingsConfig = [
     { label: 'Foco (min)', key: 'focusMinutes' as keyof TimerConfig, min: 15, max: 90 },
@@ -350,6 +482,39 @@ export function PomodoroTimer({ tracks, onSessionComplete }: PomodoroTimerProps)
           ))}
         </div>
       )}
+
+      {/* RN-MNT-14: sons ambiente (Jornada + PRO) */}
+      <div className="w-full">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1.5">
+          Sons ambiente
+        </p>
+        {enableAmbient ? (
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { id: 'off', label: 'Off' },
+              { id: 'rain', label: 'Chuva' },
+              { id: 'lofi', label: 'Lo-fi' },
+            ].map(opt => (
+              <button
+                key={opt.id}
+                onClick={() => setAmbientMode(opt.id as AmbientMode)}
+                className={cn(
+                  'py-2 rounded-[10px] border text-[11px] transition-all',
+                  ambientMode === opt.id
+                    ? 'border-[#a855f7] bg-[#a855f7]/10 text-[var(--sl-t1)]'
+                    : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]'
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-[11px] text-[var(--sl-t3)]">
+            Disponível no modo Jornada + plano PRO.
+          </p>
+        )}
+      </div>
 
       {/* Settings toggle */}
       <button

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Category } from './use-categories'
+import { syncFinanceCategoryToFuturo } from '@/lib/integrations/futuro'
 
 export interface Transaction {
   id: string
@@ -173,6 +174,7 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
       .single()
 
     if (err) throw new Error(err.message)
+    await syncFinanceCategoryToFuturo(user.id, data.category_id)
     refresh()
     return created as unknown as Transaction
   }, [refresh])
@@ -205,6 +207,11 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
       .single()
 
     if (err) throw new Error(err.message)
+    const affectedCategory = (updated as unknown as { category?: { id: string } | null })?.category?.id
+      ?? data.category_id
+    if (affectedCategory) {
+      await syncFinanceCategoryToFuturo(user.id, affectedCategory)
+    }
     refresh()
     return updated as unknown as Transaction
   }, [refresh])
@@ -214,6 +221,13 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Não autenticado')
 
+    const { data: existing } = await (supabase as any)
+      .from('transactions')
+      .select('category_id')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .single()
+
     const { error: err } = await supabase
       .from('transactions')
       .delete()
@@ -221,6 +235,9 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
       .eq('user_id', user.id)
 
     if (err) throw new Error(err.message)
+    if (existing?.category_id) {
+      await syncFinanceCategoryToFuturo(user.id, existing.category_id)
+    }
     refresh()
   }, [refresh])
 

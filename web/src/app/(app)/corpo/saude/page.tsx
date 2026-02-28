@@ -16,6 +16,7 @@ import { createTransactionFromConsulta } from '@/lib/integrations/financas'
 import { createEventFromConsulta } from '@/lib/integrations/agenda'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
+import { uploadCorpoFile } from '@/lib/storage/corpo'
 
 type FilterTab = 'upcoming' | 'all' | 'completed'
 
@@ -54,6 +55,7 @@ export default function SaudePage() {
   const [showModal, setShowModal] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
+  const [attachmentFile, setAttachmentFile] = useState<File | null>(null)
 
   async function handleSave() {
     if (!form.specialty || !form.appointment_date) {
@@ -80,6 +82,7 @@ export default function SaudePage() {
         appointment_date: new Date(form.appointment_date).toISOString(),
         cost: form.cost ? parseFloat(form.cost) : null,
         notes: form.notes || null,
+        attachment_url: attachmentFile ? await uploadCorpoFile(attachmentFile, 'appointments') : null,
         status: 'scheduled',
         follow_up_months: form.follow_up_months,
       }
@@ -104,6 +107,7 @@ export default function SaudePage() {
       toast.success('Consulta agendada!')
       setShowModal(false)
       setForm(EMPTY_FORM)
+      setAttachmentFile(null)
       await reload()
     } catch {
       toast.error('Erro ao agendar consulta')
@@ -358,6 +362,19 @@ export default function SaudePage() {
                   rows={2}
                   className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4] resize-none"
                 />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Anexo (opcional)</label>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={e => setAttachmentFile(e.target.files?.[0] ?? null)}
+                  className="w-full text-[12px] text-[var(--sl-t2)]"
+                />
+                {attachmentFile && (
+                  <p className="text-[10px] text-[var(--sl-t3)] mt-1">{attachmentFile.name}</p>
+                )}
               </div>
 
               <div className="flex items-center justify-between p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">

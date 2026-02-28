@@ -5,9 +5,8 @@ import { Send, Bot, Sparkles, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
-import { checkPlanLimit } from '@/lib/plan-limits'
-import { useUserPlan } from '@/hooks/use-user-plan'
-import type { Trip } from '@/hooks/use-experiencias'
+import { formatMoneyWithBrl } from '@/lib/currency'
+import { calcTripDays, type ItineraryCategory, type Trip, type TripItineraryItem } from '@/hooks/use-experiencias'
 
 interface Message {
   id: string
@@ -19,18 +18,83 @@ interface Message {
 interface TripAIChatProps {
   tripId: string
   trip: Trip
+  itinerary: TripItineraryItem[]
+  onItineraryAdded?: () => Promise<void> | void
 }
 
 const QUICK_PROMPTS = [
   'Quais são os melhores restaurantes locais?',
   'Sugira atividades para o primeiro dia',
+  'Faça uma estimativa de custo por dia no destino',
   'Como me locomover neste destino?',
   'Dicas de segurança para esta região',
-  'Quais documentos preciso levar?',
+  'Quais documentos preciso levar e qual validade ideal do passaporte?',
 ]
 
-export function TripAIChat({ tripId, trip }: TripAIChatProps) {
-  const { isPro } = useUserPlan()
+interface AISuggestedItineraryItem {
+  day_offset?: number
+  title?: string
+  category?: string
+  address?: string
+  estimated_time?: string
+  estimated_cost?: number
+  notes?: string
+}
+
+interface AIBudgetEstimate {
+  daily_estimate?: number
+  total_estimate?: number
+  assumptions?: string[]
+}
+
+function stripSyncBlocks(content: string): string {
+  return content
+    .replace(/<sync_suggestions>[\s\S]*?<\/sync_suggestions>/g, '')
+    .replace(/<sync_budget_estimate>[\s\S]*?<\/sync_budget_estimate>/g, '')
+    .trim()
+}
+
+function parseSyncSuggestions(content: string): AISuggestedItineraryItem[] {
+  const match = content.match(/<sync_suggestions>([\s\S]*?)<\/sync_suggestions>/)
+  if (!match?.[1]) return []
+  try {
+    const parsed = JSON.parse(match[1])
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function parseBudgetEstimate(content: string): AIBudgetEstimate | null {
+  const match = content.match(/<sync_budget_estimate>([\s\S]*?)<\/sync_budget_estimate>/)
+  if (!match?.[1]) return null
+  try {
+    const parsed = JSON.parse(match[1])
+    return parsed && typeof parsed === 'object' ? parsed as AIBudgetEstimate : null
+  } catch {
+    return null
+  }
+}
+
+const VALID_ITINERARY_CATEGORIES: ItineraryCategory[] = [
+  'sightseeing',
+  'restaurant',
+  'museum',
+  'beach',
+  'shopping',
+  'transport',
+  'rest',
+  'other',
+]
+
+function normalizeCategory(category?: string): ItineraryCategory {
+  if (category && VALID_ITINERARY_CATEGORIES.includes(category as ItineraryCategory)) {
+    return category as ItineraryCategory
+  }
+  return 'other'
+}
+
+export function TripAIChat({ tripId, trip, itinerary, onItineraryAdded }: TripAIChatProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -38,7 +102,10 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const userMessagesCount = messages.filter(m => m.role === 'user').length
+  const latestBudget = [...messages]
+    .reverse()
+    .find(m => m.role === 'assistant' && parseBudgetEstimate(m.content))
+  const parsedBudget = latestBudget ? parseBudgetEstimate(latestBudget.content) : null
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -92,13 +159,6 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
     const userText = (text ?? input).trim()
     if (!userText || isLoading) return
 
-    // RN-EXP-24: FREE limit
-    const limitCheck = checkPlanLimit(isPro, 'ai_interactions_per_trip', userMessagesCount)
-    if (!limitCheck.allowed) {
-      toast.error(limitCheck.upsellMessage)
-      return
-    }
-
     const userMsg: Message = {
       id: Date.now() + '_user',
       role: 'user',
@@ -147,7 +207,8 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
       })
 
       if (!res.ok) {
-        throw new Error('Erro na resposta da IA')
+        const errorText = await res.text().catch(() => '')
+        throw new Error(errorText || 'Erro na resposta da IA')
       }
 
       const reader = res.body?.getReader()
@@ -167,6 +228,10 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
         }
       }
 
+      if (!fullResponse.trim()) {
+        throw new Error('A IA não retornou uma resposta. Tente novamente.')
+      }
+
       // Persist to DB
       const supabase = createClient()
       await (supabase as any)
@@ -177,13 +242,59 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
           ai_response: fullResponse,
         })
 
-    } catch {
-      toast.error('Erro ao consultar a IA. Tente novamente.')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erro ao consultar a IA. Tente novamente.'
+      toast.error(msg)
       // Remove placeholder if failed
       setMessages(prev => prev.filter(m => m.id !== assistantMsgId))
     } finally {
       setIsLoading(false)
     }
+  }
+
+  async function handleAddSuggestion(item: AISuggestedItineraryItem) {
+    if (!item.title) {
+      toast.error('Sugestão sem título válido')
+      return
+    }
+    const dayOffset = Math.max(0, Math.floor(item.day_offset ?? 0))
+    const tripDays = calcTripDays(trip.start_date, trip.end_date)
+    const clampedOffset = Math.min(dayOffset, Math.max(0, tripDays - 1))
+    const targetDate = new Date(trip.start_date + 'T12:00:00')
+    targetDate.setDate(targetDate.getDate() + clampedOffset)
+    const dayDate = targetDate.toISOString().split('T')[0]
+
+    const alreadyExists = itinerary.some(
+      it => it.day_date === dayDate && it.title.trim().toLowerCase() === item.title!.trim().toLowerCase()
+    )
+    if (alreadyExists) {
+      toast.info('Essa atividade já existe no roteiro deste dia.')
+      return
+    }
+
+    const sortOrder = itinerary.filter(it => it.day_date === dayDate).length
+    const supabase = createClient()
+    const { error } = await (supabase as any)
+      .from('trip_itinerary_items')
+      .insert({
+        trip_id: tripId,
+        day_date: dayDate,
+        sort_order: sortOrder,
+        title: item.title.trim(),
+        category: normalizeCategory(item.category),
+        address: item.address?.trim() || null,
+        estimated_time: item.estimated_time?.trim() || null,
+        estimated_cost: typeof item.estimated_cost === 'number' ? item.estimated_cost : null,
+        currency: trip.currency,
+        notes: item.notes?.trim() || null,
+      })
+
+    if (error) {
+      toast.error('Erro ao adicionar sugestão ao roteiro')
+      return
+    }
+    await onItineraryAdded?.()
+    toast.success('Sugestão adicionada ao roteiro!')
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -192,9 +303,6 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
       handleSend()
     }
   }
-
-  const limitCheck = checkPlanLimit(isPro, 'ai_interactions_per_trip', userMessagesCount)
-  const remaining = limitCheck.limit != null ? limitCheck.limit - userMessagesCount : null
 
   return (
     <div className="flex flex-col gap-4">
@@ -211,19 +319,9 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
               🤖 Assistente de Viagem — SyncLife Travel
             </p>
             <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">
-              Roteiros, dicas locais, hospedagem, transporte e orçamento em BRL
+              Roteiros, dicas locais, hospedagem, transporte e orçamento na moeda da viagem
             </p>
           </div>
-          {!isPro && (
-            <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full border"
-              style={{
-                borderColor: remaining === 0 ? '#f43f5e' : '#f59e0b',
-                color: remaining === 0 ? '#f43f5e' : '#f59e0b',
-                background: remaining === 0 ? 'rgba(244,63,94,0.08)' : 'rgba(245,158,11,0.08)',
-              }}>
-              {remaining === 0 ? 'Limite atingido' : `${remaining} restantes`}
-            </span>
-          )}
         </div>
 
         {/* Disclaimer */}
@@ -234,6 +332,31 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
             Confirme informações em fontes oficiais antes de tomar decisões de viagem.
           </p>
         </div>
+
+        {parsedBudget && (parsedBudget.daily_estimate || parsedBudget.total_estimate) && (
+          <div className="mt-3 p-3 rounded-xl border border-[#10b981]/30 bg-[#10b981]/10">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">
+              Estimativa IA de custo (beta)
+            </p>
+            <div className="flex items-center gap-3 flex-wrap">
+              {typeof parsedBudget.daily_estimate === 'number' && (
+                <p className="text-[11px] text-[var(--sl-t2)]">
+                  Por dia: <span className="font-[DM_Mono] text-[var(--sl-t1)]">{formatMoneyWithBrl(parsedBudget.daily_estimate, trip.currency)}</span>
+                </p>
+              )}
+              {typeof parsedBudget.total_estimate === 'number' && (
+                <p className="text-[11px] text-[var(--sl-t2)]">
+                  Total: <span className="font-[DM_Mono] text-[var(--sl-t1)]">{formatMoneyWithBrl(parsedBudget.total_estimate, trip.currency)}</span>
+                </p>
+              )}
+            </div>
+            {parsedBudget.assumptions && parsedBudget.assumptions.length > 0 && (
+              <p className="text-[10px] text-[var(--sl-t3)] mt-1.5">
+                {parsedBudget.assumptions.join(' • ')}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Chat area */}
@@ -265,7 +388,7 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
                   <button
                     key={prompt}
                     onClick={() => handleSend(prompt)}
-                    disabled={isLoading || !limitCheck.allowed}
+                    disabled={isLoading}
                     className="px-3 py-1.5 rounded-full text-[11px] border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[#10b981] hover:text-[#10b981] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {prompt}
@@ -302,7 +425,27 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
                         <div className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
                     ) : (
-                      <p className="whitespace-pre-wrap">{msg.content}</p>
+                      <p className="whitespace-pre-wrap">{stripSyncBlocks(msg.content)}</p>
+                    )}
+                    {msg.role === 'assistant' && parseSyncSuggestions(msg.content).length > 0 && (
+                      <div className="mt-2 flex flex-col gap-1.5">
+                        {parseSyncSuggestions(msg.content).map((suggestion, idx) => (
+                          <button
+                            key={`${msg.id}-s-${idx}`}
+                            onClick={() => handleAddSuggestion(suggestion)}
+                            className="text-left px-2.5 py-1.5 rounded-lg border border-[#10b981]/40 bg-[#10b981]/10 hover:bg-[#10b981]/15 transition-colors"
+                          >
+                            <p className="text-[10px] font-semibold text-[var(--sl-t1)]">
+                              + Adicionar ao roteiro: {suggestion.title ?? 'Atividade sugerida'}
+                            </p>
+                            <p className="text-[10px] text-[var(--sl-t3)]">
+                              Dia +{Math.max(0, Math.floor(suggestion.day_offset ?? 0))}
+                              {suggestion.estimated_time ? ` · ${suggestion.estimated_time}` : ''}
+                              {typeof suggestion.estimated_cost === 'number' ? ` · ${formatMoneyWithBrl(suggestion.estimated_cost, trip.currency)}` : ''}
+                            </p>
+                          </button>
+                        ))}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -314,12 +457,6 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
 
         {/* Input area */}
         <div className="border-t border-[var(--sl-border)] p-3">
-          {!limitCheck.allowed ? (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-[rgba(244,63,94,0.08)] border border-[rgba(244,63,94,0.2)]">
-              <AlertCircle size={14} className="text-[#f43f5e] shrink-0" />
-              <p className="text-[11px] text-[#f43f5e] flex-1">{limitCheck.upsellMessage}</p>
-            </div>
-          ) : (
             <div className="flex items-end gap-2">
               <textarea
                 ref={textareaRef}
@@ -341,12 +478,11 @@ export function TripAIChat({ tripId, trip }: TripAIChatProps) {
                 <Send size={15} className="text-white" />
               </button>
             </div>
-          )}
         </div>
       </div>
 
       {/* Quick prompts when there are messages */}
-      {messages.length > 0 && limitCheck.allowed && (
+      {messages.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {QUICK_PROMPTS.slice(0, 3).map(prompt => (
             <button

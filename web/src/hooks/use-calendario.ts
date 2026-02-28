@@ -34,8 +34,9 @@ function buildCalendarDays(args: {
   currentDate: Date
   transactions: Record<string, unknown>[]
   planningEvents: Record<string, unknown>[]
+  projectedDividends: Record<string, unknown>[]
 }): CalendarDayData[] {
-  const { currentDate, transactions, planningEvents } = args
+  const { currentDate, transactions, planningEvents, projectedDividends } = args
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
   const today = new Date()
@@ -90,9 +91,24 @@ function buildCalendarDays(args: {
         recurring_transaction_id: null,
       }))
 
+    // RN-PTR-13: proventos futuros (announced) aparecem como receita prevista.
+    const dayProjectedDividends: CalendarTransaction[] = (projectedDividends as any[])
+      .filter(d => d.payment_date === dateString)
+      .map(d => ({
+        id: `dividend-${d.id}`,
+        description: `Provento previsto: ${d.portfolio_assets?.ticker ?? 'Ativo'}`,
+        amount: d.total_amount,
+        type: 'income' as const,
+        categoryName: 'Provento (Patrimônio)',
+        icon: '📈',
+        dotType: 'planned' as const,
+        is_future: true,
+        recurring_transaction_id: null,
+      }))
+
     // Sort: recorrente first, then income, expense, planned
     const DOT_ORDER = { recorrente: 0, income: 1, expense: 2, planned: 3 }
-    const allTxs = [...dayTxs, ...dayPlanEvents]
+    const allTxs = [...dayTxs, ...dayPlanEvents, ...dayProjectedDividends]
       .sort((a, b) => DOT_ORDER[a.dotType] - DOT_ORDER[b.dotType])
 
     const balance = allTxs
@@ -136,6 +152,7 @@ export function useCalendario(): UseCalendarioReturn {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [transactions, setTransactions] = useState<Record<string, unknown>[]>([])
   const [planningEvents, setPlanningEvents] = useState<Record<string, unknown>[]>([])
+  const [projectedDividends, setProjectedDividends] = useState<Record<string, unknown>[]>([])
   const [currentBalance, setCurrentBalance] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -161,7 +178,7 @@ export function useCalendario(): UseCalendarioReturn {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user || cancelled) { if (!cancelled) setLoading(false); return }
 
-      const [txRes, planRes, profileRes] = await Promise.all([
+      const [txRes, planRes, profileRes, dividendsRes] = await Promise.all([
         supabase
           .from('transactions')
           .select('id, description, amount, type, date, is_future, recurring_transaction_id, categories(id, name, icon, color)')
@@ -180,6 +197,13 @@ export function useCalendario(): UseCalendarioReturn {
           .select('current_balance')
           .eq('id', user.id)
           .single(),
+        supabase
+          .from('portfolio_dividends')
+          .select('id, total_amount, payment_date, status, portfolio_assets(ticker)')
+          .eq('user_id', user.id)
+          .eq('status', 'announced')
+          .gte('payment_date', monthStart)
+          .lte('payment_date', monthEnd),
       ])
 
       if (cancelled) return
@@ -189,6 +213,7 @@ export function useCalendario(): UseCalendarioReturn {
 
       if (planRes.data) setPlanningEvents(planRes.data ?? [])
       if (profileRes.data) setCurrentBalance(profileRes.data.current_balance ?? 0)
+      if (dividendsRes.data) setProjectedDividends(dividendsRes.data ?? [])
       setLoading(false)
     }
 
@@ -200,7 +225,8 @@ export function useCalendario(): UseCalendarioReturn {
     currentDate,
     transactions,
     planningEvents,
-  }), [currentDate, transactions, planningEvents])
+    projectedDividends,
+  }), [currentDate, transactions, planningEvents, projectedDividends])
 
   const weekBalances = useMemo(() => {
     const weeks: number[] = []
@@ -227,9 +253,10 @@ export function useCalendario(): UseCalendarioReturn {
       ),
       pendingCount:
         transactions.filter((t: any) => t.is_future).length +
-        planningEvents.filter((e: any) => !e.is_confirmed).length,
+        planningEvents.filter((e: any) => !e.is_confirmed).length +
+        projectedDividends.length,
     }
-  }, [calendarDays, transactions, planningEvents])
+  }, [calendarDays, transactions, planningEvents, projectedDividends])
 
   const prevMonth = useCallback(() => setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1)), [])
   const nextMonth = useCallback(() => setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)), [])

@@ -1,10 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Plus } from 'lucide-react'
+import { Crown, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useShellStore } from '@/stores/shell-store'
 import { usePatrimonioDashboard, ASSET_CLASS_LABELS, ASSET_CLASS_COLORS } from '@/hooks/use-patrimonio'
+import { useUserPlan } from '@/hooks/use-user-plan'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { AssetCard } from '@/components/patrimonio/AssetCard'
@@ -13,6 +14,7 @@ export default function PatrimonioPage() {
   const router = useRouter()
   const mode = useShellStore((s) => s.mode)
   const isJornada = mode === 'jornada'
+  const { isPro } = useUserPlan()
 
   const { assets, dividends, loading, error } = usePatrimonioDashboard()
 
@@ -29,6 +31,12 @@ export default function PatrimonioPage() {
   const dividends12m = dividends
     .filter(d => new Date(d.payment_date) >= year12Ago)
     .reduce((s, d) => s + d.total_amount, 0)
+  const portfolioReturn12m = totalInvested > 0
+    ? ((totalCurrent + dividends12m - totalInvested) / totalInvested) * 100
+    : 0
+
+  // RN-PTR-06: comparativo PRO vs benchmarks (referência anual simplificada).
+  const benchmarkPct = { cdi: 10.5, ibov: 12.0, ifix: 9.0 }
 
   // Class distribution
   const classTotals = assets.reduce<Record<string, number>>((acc, a) => {
@@ -176,6 +184,58 @@ export default function PatrimonioPage() {
                   )
                 })}
             </div>
+          </div>
+
+          {/* RN-PTR-06: Comparativo vs benchmarks (PRO) */}
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 h-fit">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📊 Benchmark 12m</h2>
+              <span className="text-[10px] text-[var(--sl-t3)]">CDI · IBOV · IFIX</span>
+            </div>
+
+            {isPro ? (
+              <div className="flex flex-col gap-2">
+                {[
+                  { key: 'cdi', label: 'CDI', color: '#10b981' },
+                  { key: 'ibov', label: 'IBOVESPA', color: '#0055ff' },
+                  { key: 'ifix', label: 'IFIX', color: '#f59e0b' },
+                ].map((b) => {
+                  const ref = benchmarkPct[b.key as keyof typeof benchmarkPct]
+                  const diff = portfolioReturn12m - ref
+                  return (
+                    <div key={b.key} className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl p-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] text-[var(--sl-t2)]">{b.label}</span>
+                        <span className="font-[DM_Mono] text-[11px]" style={{ color: diff >= 0 ? '#10b981' : '#f43f5e' }}>
+                          {diff >= 0 ? '+' : ''}{diff.toFixed(2)} p.p.
+                        </span>
+                      </div>
+                      <div className="mt-1 text-[10px] text-[var(--sl-t3)]">
+                        Carteira {portfolioReturn12m.toFixed(2)}% vs {b.label} {ref.toFixed(2)}%
+                      </div>
+                    </div>
+                  )
+                })}
+                <p className="text-[10px] text-[var(--sl-t3)]">
+                  Referência anual para comparação rápida de performance.
+                </p>
+              </div>
+            ) : (
+              <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl p-3 text-center">
+                <Crown size={16} className="mx-auto mb-1.5 text-[#f59e0b]" />
+                <p className="text-[11px] text-[var(--sl-t2)] mb-2">
+                  Comparativo com benchmarks é exclusivo do plano PRO.
+                </p>
+                <button
+                  onClick={() => router.push('/configuracoes/plano')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[11px] font-semibold
+                             bg-gradient-to-r from-[#10b981] to-[#0055ff] text-white hover:opacity-90"
+                >
+                  <Crown size={12} />
+                  Ver plano PRO
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Plus, X, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -15,6 +15,8 @@ import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 import { createTransactionFromViagem } from '@/lib/integrations/financas'
 import { createEventsFromViagem } from '@/lib/integrations/agenda'
+import { convertToBrl, formatMoneyWithBrl } from '@/lib/currency'
+import { createClient } from '@/lib/supabase/client'
 
 interface WizardData {
   // Step 1 — Destino e Datas
@@ -32,6 +34,7 @@ interface WizardData {
   syncToAgenda: boolean
   // Step 3 — Resumo/notas
   notes: string
+  objective_id: string
 }
 
 const EMPTY_DATA: WizardData = {
@@ -47,6 +50,7 @@ const EMPTY_DATA: WizardData = {
   syncToFinancas: false,
   syncToAgenda: false,
   notes: '',
+  objective_id: '',
 }
 
 const CURRENCIES = ['BRL', 'USD', 'EUR', 'GBP', 'ARS']
@@ -97,6 +101,7 @@ export default function NovaViagemPage() {
 
   const { trips } = useTrips()
   const { isPro } = useUserPlan()
+  const [objectiveOptions, setObjectiveOptions] = useState<Array<{ id: string; name: string }>>([])
   // RN-EXP-07: Viagens ativas = status não completed/cancelled
   const activeTrips = trips.filter(t => !['completed', 'cancelled'].includes(t.status))
 
@@ -104,6 +109,22 @@ export default function NovaViagemPage() {
   const [data, setData] = useState<WizardData>(EMPTY_DATA)
   const [isSaving, setIsSaving] = useState(false)
   const createTrip = useCreateTrip()
+
+  useEffect(() => {
+    const supabase = createClient() as any
+    supabase.auth.getUser().then(({ data: { user } }: any) => {
+      if (!user) return
+      supabase.from('objectives')
+        .select('id, name')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .order('priority', { ascending: true })
+        .order('created_at', { ascending: false })
+        .then(({ data }: any) => {
+          setObjectiveOptions(data ?? [])
+        })
+    })
+  }, [])
 
   function addDestination() {
     const dest = data.destinationInput.trim()
@@ -144,6 +165,7 @@ export default function NovaViagemPage() {
         total_budget: data.total_budget ? parseFloat(data.total_budget) : null,
         currency: data.currency,
         notes: data.notes.trim() || null,
+        objective_id: data.objective_id || null,
       }, autoChecklist)
       // RN-EXP-02: criar eventos de partida e retorno na Agenda
       if (data.syncToAgenda) {
@@ -155,9 +177,10 @@ export default function NovaViagemPage() {
       }
       // RN-EXP-03: sincronizar orçamento com Finanças
       if (data.syncToFinancas && data.total_budget && parseFloat(data.total_budget) > 0) {
+        const totalBudgetInBrl = convertToBrl(parseFloat(data.total_budget), data.currency)
         await createTransactionFromViagem({
           tripName: data.name.trim(),
-          totalBudget: parseFloat(data.total_budget),
+          totalBudget: totalBudgetInBrl,
           startDate: data.start_date,
         })
       }
@@ -384,9 +407,11 @@ export default function NovaViagemPage() {
               <div className="p-4 bg-[var(--sl-s2)] rounded-xl">
                 <p className="text-[11px] text-[var(--sl-t3)] mb-1">Estimativa por dia</p>
                 <p className="font-[DM_Mono] font-bold text-lg text-[#06b6d4]">
-                  {(parseFloat(data.total_budget) / stepDays).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  {formatMoneyWithBrl(parseFloat(data.total_budget) / stepDays, data.currency)}
                 </p>
-                <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">por viajante: {(parseFloat(data.total_budget) / stepDays / data.travelers_count).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/dia</p>
+                <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
+                  por viajante: {formatMoneyWithBrl(parseFloat(data.total_budget) / stepDays / data.travelers_count, data.currency)}/dia
+                </p>
               </div>
             )}
 
@@ -395,6 +420,21 @@ export default function NovaViagemPage() {
                 💡 Você pode definir o orçamento por categoria (hospedagem, passagens, alimentação, etc.) no detalhe da viagem.
               </p>
             </div>
+
+            {objectiveOptions.length > 0 && (
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Objetivo no Futuro (opcional)</label>
+                <select
+                  value={data.objective_id}
+                  onChange={e => setData(d => ({ ...d, objective_id: e.target.value }))}
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                >
+                  <option value="">Nenhum</option>
+                  {objectiveOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                </select>
+                <p className="text-[10px] text-[var(--sl-t3)] mt-1">Cria meta técnica vinculada à viagem para sincronizar progresso no Futuro.</p>
+              </div>
+            )}
 
             <div className="flex items-center justify-between p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
               <div>
@@ -463,7 +503,7 @@ export default function NovaViagemPage() {
                   <div>
                     <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Orçamento</p>
                     <p className="font-[DM_Mono] text-[11px] text-[#06b6d4]">
-                      {parseFloat(data.total_budget).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      {formatMoneyWithBrl(parseFloat(data.total_budget), data.currency)}
                     </p>
                   </div>
                 )}

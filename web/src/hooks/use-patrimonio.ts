@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { syncPassiveIncomeToFuturo, syncPortfolioTotalToFuturo } from '@/lib/integrations/futuro'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -347,6 +348,9 @@ export function useAddTransaction() {
       notes: data.notes ?? null,
     })
     if (txErr) throw txErr
+
+    // RN-FUT-43: operação de carteira atualiza metas de patrimônio no Futuro
+    await syncPortfolioTotalToFuturo(user.id)
   }, [])
 }
 
@@ -354,12 +358,16 @@ export function useUpdateAssetPrice() {
   const supabase = createClient()
   const sb = supabase as any
   return useCallback(async (assetId: string, price: number) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
     const { error } = await sb.from('portfolio_assets').update({
       current_price: price,
       last_price_update: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }).eq('id', assetId)
     if (error) throw error
+    // RN-FUT-43: cotação atualizada reflete no patrimônio total das metas vinculadas
+    await syncPortfolioTotalToFuturo(user.id)
   }, [])
 }
 
@@ -367,8 +375,11 @@ export function useDeleteAsset() {
   const supabase = createClient()
   const sb = supabase as any
   return useCallback(async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
     const { error } = await sb.from('portfolio_assets').delete().eq('id', id)
     if (error) throw error
+    await syncPortfolioTotalToFuturo(user.id)
   }, [])
 }
 
@@ -391,6 +402,8 @@ export function useAddDividend() {
     if (!user) throw new Error('Não autenticado')
     const { error } = await sb.from('portfolio_dividends').insert({ user_id: user.id, ...data })
     if (error) throw error
+    // RN-FUT-44: proventos recebidos atualizam metas de renda passiva vinculadas
+    await syncPassiveIncomeToFuturo(user.id)
   }, [])
 }
 
@@ -398,8 +411,24 @@ export function useDeleteDividend() {
   const supabase = createClient()
   const sb = supabase as any
   return useCallback(async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
     const { error } = await sb.from('portfolio_dividends').delete().eq('id', id)
     if (error) throw error
+    await syncPassiveIncomeToFuturo(user.id)
+  }, [])
+}
+
+export function useUpdateDividendStatus() {
+  const supabase = createClient()
+  const sb = supabase as any
+  return useCallback(async (id: string, status: DividendStatus) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+    const { error } = await sb.from('portfolio_dividends').update({ status }).eq('id', id)
+    if (error) throw error
+    // RN-PTR-16 / RN-FUT-44: mudança de status pode alterar média de proventos recebidos.
+    await syncPassiveIncomeToFuturo(user.id)
   }, [])
 }
 
@@ -480,6 +509,11 @@ export function useBulkUpdatePrices() {
         } else {
           failed.push(asset.ticker)
         }
+      }
+
+      if (updated > 0) {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) await syncPortfolioTotalToFuturo(user.id)
       }
 
       return { updated, failed }

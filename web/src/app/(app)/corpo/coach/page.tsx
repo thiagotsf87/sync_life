@@ -2,11 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Send, Bot, User, Crown, Sparkles } from 'lucide-react'
+import { ArrowLeft, Send, Bot, User, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useShellStore } from '@/stores/shell-store'
 import { useHealthProfile } from '@/hooks/use-corpo'
-import { useUserPlan } from '@/hooks/use-user-plan'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -26,7 +25,6 @@ export default function CoachPage() {
   const router = useRouter()
   const mode = useShellStore((s) => s.mode)
   const isJornada = mode === 'jornada'
-  const { isPro } = useUserPlan()
   const { profile } = useHealthProfile()
 
   const [messages, setMessages] = useState<Message[]>([])
@@ -71,7 +69,10 @@ export default function CoachPage() {
         }),
       })
 
-      if (!res.ok) throw new Error('Erro na requisição')
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => '')
+        throw new Error(errorText || 'Erro na requisição')
+      }
       if (!res.body) throw new Error('Stream não disponível')
 
       // Streaming
@@ -93,10 +94,19 @@ export default function CoachPage() {
           return updated
         })
       }
-    } catch {
+
+      if (!assistantContent.trim()) {
+        setMessages((prev) => {
+          const updated = [...prev]
+          updated[updated.length - 1] = { role: 'assistant', content: 'A IA não retornou uma resposta. Tente novamente.' }
+          return updated
+        })
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Desculpe, ocorreu um erro. Tente novamente.'
       setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: 'Desculpe, ocorreu um erro. Tente novamente.' },
+        ...prev.filter(m => m.content !== ''),
+        { role: 'assistant', content: msg },
       ])
     } finally {
       setIsLoading(false)
@@ -109,43 +119,6 @@ export default function CoachPage() {
       e.preventDefault()
       sendMessage(input)
     }
-  }
-
-  // PRO gate
-  if (!isPro) {
-    return (
-      <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
-        <div className="flex items-center gap-3 mb-6">
-          <button onClick={() => router.push('/corpo')}
-            className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors">
-            <ArrowLeft size={16} />
-            Corpo
-          </button>
-          <h1 className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)] flex-1">
-            🤖 Coach IA
-          </h1>
-        </div>
-
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-12 text-center max-w-[480px] mx-auto">
-          <Crown size={40} className="mx-auto mb-4 text-[#f59e0b]" />
-          <h2 className="font-[Syne] font-bold text-lg text-[var(--sl-t1)] mb-2">
-            Coach IA — Recurso PRO
-          </h2>
-          <p className="text-[13px] text-[var(--sl-t2)] mb-6 leading-relaxed">
-            Converse com seu coach nutricional e de bem-estar personalizado.
-            Disponível no plano PRO com suporte a contexto de saúde, histórico de conversas e respostas em tempo real.
-          </p>
-          <button
-            onClick={() => router.push('/configuracoes/plano')}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] font-semibold text-[13px]
-                       bg-gradient-to-r from-[#10b981] to-[#0055ff] text-white hover:opacity-90 transition-opacity"
-          >
-            <Crown size={14} />
-            Assinar PRO
-          </button>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -164,9 +137,9 @@ export default function CoachPage() {
         )}>
           🤖 Coach IA
         </h1>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/20">
-          <Crown size={11} className="text-[#f59e0b]" />
-          <span className="text-[10px] font-bold text-[#f59e0b]">PRO</span>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#10b981]/10 border border-[#10b981]/20">
+          <Sparkles size={11} className="text-[#10b981]" />
+          <span className="text-[10px] font-bold text-[#10b981]">IA</span>
         </div>
       </div>
 

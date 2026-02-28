@@ -216,6 +216,26 @@ export const INDICATOR_LABELS: Record<GoalIndicatorType, string> = {
   linked: 'Vinculado a entidade',
 }
 
+const MODULE_KEYS: GoalModule[] = [
+  'financas',
+  'tempo',
+  'corpo',
+  'mente',
+  'patrimonio',
+  'carreira',
+  'experiencias',
+]
+
+const LEGACY_MODULE_ALIASES: Record<GoalModule, string[]> = {
+  financas: ['financas'],
+  tempo: ['tempo', 'agenda'],
+  corpo: ['corpo', 'saude'],
+  mente: ['mente', 'estudos'],
+  patrimonio: ['patrimonio'],
+  carreira: ['carreira'],
+  experiencias: ['experiencias'],
+}
+
 // ─── Main Hook ────────────────────────────────────────────────────────────────
 
 export function useObjectives() {
@@ -230,6 +250,49 @@ export function useObjectives() {
     setError(null)
     try {
       const sb = supabase as any
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Não autenticado')
+
+      // RN-FUT-55: metas de módulos inativos devem ser suspensas, não excluídas.
+      const { data: profile } = await sb
+        .from('profiles')
+        .select('active_modules')
+        .eq('id', user.id)
+        .single()
+
+      const activeModules = Array.isArray(profile?.active_modules)
+        ? profile.active_modules.map((m: unknown) => String(m).toLowerCase())
+        : []
+
+      if (activeModules.length > 0) {
+        const activeSet = new Set(activeModules)
+        const isEnabled = (module: GoalModule): boolean =>
+          LEGACY_MODULE_ALIASES[module].some(alias => activeSet.has(alias))
+
+        const enabledTargets = MODULE_KEYS.filter(isEnabled)
+        const disabledTargets = MODULE_KEYS.filter(module => !isEnabled(module))
+        const nowIso = new Date().toISOString()
+
+        if (disabledTargets.length > 0) {
+          await sb
+            .from('objective_goals')
+            .update({ status: 'paused', updated_at: nowIso })
+            .eq('user_id', user.id)
+            .in('target_module', disabledTargets)
+            .eq('status', 'active')
+            .is('completed_at', null)
+        }
+
+        if (enabledTargets.length > 0) {
+          await sb
+            .from('objective_goals')
+            .update({ status: 'active', updated_at: nowIso })
+            .eq('user_id', user.id)
+            .in('target_module', enabledTargets)
+            .eq('status', 'paused')
+            .is('completed_at', null)
+        }
+      }
 
       // Load objectives + goals in parallel
       const [objRes, goalsRes] = await Promise.all([
@@ -408,6 +471,19 @@ export function useUpdateObjective() {
         event_type: 'objective_paused',
         description: 'Objetivo pausado',
       })
+    } else if (data.status === 'active') {
+      await sb.from('objective_milestones').insert({
+        objective_id: id,
+        event_type: 'objective_resumed',
+        description: 'Objetivo retomado',
+      })
+    } else if (data.name || data.description || data.icon || data.category || data.priority || data.target_date) {
+      // RN-FUT-23: edições relevantes entram na timeline de marcos.
+      await sb.from('objective_milestones').insert({
+        objective_id: id,
+        event_type: 'objective_edited',
+        description: 'Objetivo atualizado',
+      })
     }
   }
 }
@@ -421,6 +497,9 @@ export interface AddGoalData {
   initial_value?: number | null
   target_unit?: string
   weight?: number
+  auto_sync?: boolean
+  linked_entity_type?: string | null
+  linked_entity_id?: string | null
 }
 
 export function useAddGoal() {
@@ -437,6 +516,9 @@ export function useAddGoal() {
       user_id: user.id,
       weight: data.weight ?? 1.0,
       current_value: data.current_value ?? 0,
+      auto_sync: data.auto_sync ?? false,
+      linked_entity_type: data.linked_entity_type ?? null,
+      linked_entity_id: data.linked_entity_id ?? null,
       progress: 0,
       status: 'active',
     }).select().single()

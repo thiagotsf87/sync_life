@@ -266,13 +266,32 @@ export function useAgenda({ mode, referenceDate }: UseAgendaOptions): UseAgendaR
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Não autenticado')
 
-    const { error: err } = await supabase
+    const { data: updatedEvent, error: err } = await supabase
       .from('agenda_events')
       .update({ status })
       .eq('id', id)
       .eq('user_id', user.id)
+      .select('goal_id')
+      .single()
 
     if (err) throw new Error(err.message)
+
+    // RN-FUT-36: tarefa concluída na Agenda conclui meta vinculada no Futuro.
+    if (status === 'concluido' && updatedEvent?.goal_id) {
+      await supabase
+        .from('objective_goals')
+        .update({
+          current_value: 1,
+          progress: 100,
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          last_progress_update: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', updatedEvent.goal_id)
+        .eq('user_id', user.id)
+        .eq('indicator_type', 'task')
+    }
     refresh()
   }, [refresh])
 

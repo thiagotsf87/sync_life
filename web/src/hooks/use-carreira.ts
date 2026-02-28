@@ -2,6 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import {
+  syncLinkedRoadmapStepProgressToFuturo,
+  syncRoadmapCompletionToFuturo,
+  syncSalaryIncreaseToFuturo,
+  unlinkGoalsFromDeletedEntity,
+} from '@/lib/integrations/futuro'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -70,6 +76,7 @@ export interface CareerRoadmap {
   target_date: string | null
   status: RoadmapStatus
   progress: number
+  linked_objective_id: string | null
   steps?: RoadmapStep[]
   created_at: string
   updated_at: string
@@ -82,6 +89,7 @@ export interface Skill {
   category: SkillCategory
   proficiency_level: number
   notes: string | null
+  linked_track_ids?: string[]
   created_at: string
   updated_at: string
 }
@@ -244,7 +252,18 @@ export function useSkills() {
         .select('*').eq('user_id', user.id)
         .order('category', { ascending: true })
       if (error) throw error
-      setSkills(data ?? [])
+      const skillIds = (data ?? []).map((s: { id: string }) => s.id)
+      const { data: links } = skillIds.length > 0
+        ? await sb.from('skill_study_tracks')
+            .select('skill_id, track_id')
+            .in('skill_id', skillIds)
+        : { data: [] }
+      const linkedBySkill = new Map<string, string[]>()
+      for (const link of ((links ?? []) as { skill_id: string; track_id: string }[])) {
+        if (!linkedBySkill.has(link.skill_id)) linkedBySkill.set(link.skill_id, [])
+        linkedBySkill.get(link.skill_id)!.push(link.track_id)
+      }
+      setSkills((data ?? []).map((s: Skill) => ({ ...s, linked_track_ids: linkedBySkill.get(s.id) ?? [] })))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar habilidades')
     } finally {
@@ -332,6 +351,11 @@ export function useSaveProfile() {
       })
       if (error) throw error
     }
+
+    // RN-FUT-48: salário atual alimenta metas de aumento salarial no Futuro
+    if (typeof data.gross_salary === 'number' && Number.isFinite(data.gross_salary)) {
+      await syncSalaryIncreaseToFuturo(user.id, data.gross_salary)
+    }
   }, [])
 }
 
@@ -359,6 +383,7 @@ export interface CreateRoadmapData {
   target_title: string
   target_salary?: number | null
   target_date?: string | null
+  linked_objective_id?: string | null
   steps: { title: string; description?: string; sort_order: number; target_date?: string | null }[]
 }
 
@@ -377,13 +402,14 @@ export function useCreateRoadmap() {
       target_title: data.target_title,
       target_salary: data.target_salary ?? null,
       target_date: data.target_date ?? null,
+      linked_objective_id: data.linked_objective_id ?? null,
       status: 'active',
       progress: 0,
     }).select().single()
     if (error) throw error
 
     if (data.steps.length > 0) {
-      const { error: stepsErr } = await sb.from('roadmap_steps').insert(
+      const { data: insertedSteps, error: stepsErr } = await sb.from('roadmap_steps').insert(
         data.steps.map(s => ({
           roadmap_id: roadmap.id,
           title: s.title,
@@ -393,10 +419,48 @@ export function useCreateRoadmap() {
           status: 'pending',
           progress: 0,
         }))
-      )
+      ).select('id, title')
       if (stepsErr) throw stepsErr
+
+      // RN-CAR-12: roadmap vinculável a objetivo no Futuro.
+      if (data.linked_objective_id && insertedSteps && insertedSteps.length > 0) {
+        await sb.from('objective_goals').insert(
+          insertedSteps.map((step: { id: string; title: string }) => ({
+            objective_id: data.linked_objective_id,
+            user_id: user.id,
+            name: `Roadmap: ${step.title}`,
+            indicator_type: 'percentage',
+            target_module: 'carreira',
+            target_value: 100,
+            current_value: 0,
+            progress: 0,
+            weight: 1,
+            priority: 1,
+            auto_sync: true,
+            linked_entity_type: 'roadmap_step',
+            linked_entity_id: step.id,
+            status: 'active',
+          }))
+        )
+      }
     }
     return roadmap
+  }, [])
+}
+
+// RN-CAR-07/13: habilidade vinculável a múltiplas trilhas (N:N)
+export function useSetSkillTracks() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (skillId: string, trackIds: string[]) => {
+    await sb.from('skill_study_tracks').delete().eq('skill_id', skillId)
+    if (trackIds.length > 0) {
+      const { error } = await sb.from('skill_study_tracks').insert(
+        trackIds.map(trackId => ({ skill_id: skillId, track_id: trackId }))
+      )
+      if (error) throw error
+    }
   }, [])
 }
 
@@ -407,12 +471,16 @@ export function useUpdateRoadmapStep() {
   const sb = supabase as any
 
   return useCallback(async (stepId: string, roadmapId: string, status: StepStatus) => {
+    const stepProgress = status === 'completed' ? 100 : status === 'in_progress' ? 50 : 0
     const { error: stepErr } = await sb.from('roadmap_steps').update({
       status,
-      progress: status === 'completed' ? 100 : status === 'in_progress' ? 50 : 0,
+      progress: stepProgress,
       completed_at: status === 'completed' ? new Date().toISOString() : null,
     }).eq('id', stepId)
     if (stepErr) throw stepErr
+
+    // RN-FUT-46: step do roadmap alimenta progresso de metas vinculadas no Futuro.
+    await syncLinkedRoadmapStepProgressToFuturo(stepId, stepProgress)
 
     // Recalculate roadmap progress
     const { data: allSteps } = await sb.from('roadmap_steps')
@@ -423,6 +491,11 @@ export function useUpdateRoadmapStep() {
       const updates: Record<string, unknown> = { progress, updated_at: new Date().toISOString() }
       if (progress >= 100) updates.status = 'completed'
       await sb.from('career_roadmaps').update(updates).eq('id', roadmapId)
+
+      // RN-FUT-47: roadmap concluído marca metas vinculadas aos seus steps como 100%.
+      if (progress >= 100) {
+        await syncRoadmapCompletionToFuturo(roadmapId)
+      }
     }
   }, [])
 }
@@ -433,8 +506,21 @@ export function useDeleteRoadmap() {
   const supabase = createClient()
   const sb = supabase as any
   return useCallback(async (id: string) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+
+    const { data: steps } = await sb
+      .from('roadmap_steps')
+      .select('id')
+      .eq('roadmap_id', id)
+
+    const stepIds = (steps ?? []).map((step: { id: string }) => step.id)
     const { error } = await sb.from('career_roadmaps').delete().eq('id', id)
     if (error) throw error
+
+    if (stepIds.length > 0) {
+      await unlinkGoalsFromDeletedEntity(user.id, 'roadmap_step', stepIds)
+    }
   }, [])
 }
 
@@ -451,22 +537,24 @@ export function useSaveSkill() {
   const supabase = createClient()
   const sb = supabase as any
 
-  return useCallback(async (data: SaveSkillData, existingId?: string) => {
+  return useCallback(async (data: SaveSkillData, existingId?: string): Promise<Skill> => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Não autenticado')
 
     if (existingId) {
-      const { error } = await sb.from('skills').update({
+      const { data: updated, error } = await sb.from('skills').update({
         ...data,
         updated_at: new Date().toISOString(),
-      }).eq('id', existingId)
+      }).eq('id', existingId).select('*').single()
       if (error) throw error
+      return updated as Skill
     } else {
-      const { error } = await sb.from('skills').insert({
+      const { data: created, error } = await sb.from('skills').insert({
         user_id: user.id,
         ...data,
-      })
+      }).select('*').single()
       if (error) throw error
+      return created as Skill
     }
   }, [])
 }
