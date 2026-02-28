@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { WizardStepper } from '@/components/shared/WizardStepper'
-import { SyncLifeLogo } from '@/components/shell/icons'
+import { SyncLifeBrand } from '@/components/shell/icons'
 
 // ── Types ────────────────────────────────────────────────
 interface OnboardingState {
@@ -224,8 +224,7 @@ export default function OnboardingPage() {
       {/* Topbar */}
       <div className="ob-topbar">
         <Link href="/" className="ob-logo">
-          <SyncLifeLogo size={32} />
-          <span className="ob-logo-text">SyncLife</span>
+          <SyncLifeBrand size="md" />
         </Link>
         {step < 5 && (
           <button className="ob-skip" onClick={handleSkip}>

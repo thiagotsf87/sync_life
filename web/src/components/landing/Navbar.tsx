@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
-import { SyncLifeLogo } from '@/components/shell/icons'
+import { SyncLifeBrand } from '@/components/shell/icons'
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -26,8 +26,7 @@ export function Navbar() {
       <nav className={`lp-navbar${scrolled ? ' scrolled' : ''}`}>
         {/* Logo */}
         <a href="#" className="nav-logo">
-          <SyncLifeLogo size={32} />
-          <span className="nav-logo-text">SyncLife</span>
+          <SyncLifeBrand size="md" />
         </a>
 
         {/* Nav links */}

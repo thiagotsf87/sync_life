@@ -6,7 +6,7 @@ import { Navbar } from '@/components/landing/Navbar'
 import { SocialStrip } from '@/components/landing/SocialStrip'
 import { ScrollReveal } from '@/components/landing/ScrollReveal'
 import { LifeScoreSection } from '@/components/landing/LifeScoreSection'
-import { SyncLifeLogo } from '@/components/shell/icons'
+import { SyncLifeIcon, SyncLifeBrand } from '@/components/shell/icons'
 
 export const metadata: Metadata = {
   title: 'SyncLife — O sistema operacional da sua vida',
@@ -89,7 +89,7 @@ export default function LandingPage() {
             </div>
             <div className="preview-body">
               <div className="preview-sidebar">
-                <div className="preview-icon"><SyncLifeLogo size={28} /></div>
+                <div className="preview-icon"><SyncLifeIcon size={28} /></div>
                 <div className="preview-icon active" style={{ fontSize: 18 }}>💰</div>
                 <div className="preview-icon" style={{ fontSize: 18, opacity: 0.4 }}>🎯</div>
                 <div className="preview-icon" style={{ fontSize: 18, opacity: 0.4 }}>📅</div>
@@ -511,8 +511,7 @@ export default function LandingPage() {
           <div className="footer-inner">
             <div>
               <div className="footer-logo">
-                <SyncLifeLogo size={28} />
-                <span className="footer-logo-text">SyncLife</span>
+                <SyncLifeBrand size="sm" animated={false} />
               </div>
               <p className="footer-tagline">O sistema operacional da sua vida. Finanças, metas e agenda num único lugar.</p>
             </div>

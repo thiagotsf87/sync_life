@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { SyncLifeLogo } from '@/components/shell/icons'
+import { SyncLifeBrand } from '@/components/shell/icons'
 
 export function AuthLeftPanel() {
   return (
@@ -11,8 +11,7 @@ export function AuthLeftPanel() {
 
       {/* Logo */}
       <Link href="/" className="auth-logo">
-        <SyncLifeLogo size={36} />
-        <span className="auth-logo-text">SyncLife</span>
+        <SyncLifeBrand size="lg" />
       </Link>
 
       {/* Hero content */}

@@ -1,21 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#051c14"/>
+      <stop offset="100%" stop-color="#03091f"/>
+    </linearGradient>
+    <linearGradient id="curve" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="50%" stop-color="#06b6d4"/>
       <stop offset="100%" stop-color="#0055ff"/>
     </linearGradient>
   </defs>
-  <!-- Background fill (full bleed for maskable) -->
-  <rect width="512" height="512" fill="url(#grad)"/>
-  <!-- White "S" letter centered -->
-  <text
-    x="256"
-    y="348"
-    text-anchor="middle"
-    font-family="Georgia, serif"
-    font-weight="900"
-    font-size="300"
-    fill="white"
-    letter-spacing="-8"
-  >S</text>
+  <rect width="512" height="512" rx="112" ry="112" fill="url(#bg)"/>
+  <path
+    d="M256 120 C178 120, 100 170, 100 256 C100 342, 178 392, 256 308 C334 224, 412 174, 412 256 C412 342, 334 392, 256 392"
+    fill="none"
+    stroke="url(#curve)"
+    stroke-width="24"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
 </svg>
