@@ -1,41 +1,41 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Landing', () => {
-  test('exibe logo e links Entrar / Criar conta', async ({ page }) => {
+  test('exibe logo e links Entrar / Começar grátis', async ({ page }) => {
     await page.goto('/')
-    await expect(page.getByRole('link', { name: 'Entrar' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Criar conta' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: /Sua vida em sincronia/i })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Entrar', exact: true }).first()).toBeVisible()
+    await expect(page.getByRole('link', { name: /Começar grátis/ }).first()).toBeVisible()
+    await expect(page.getByRole('heading', { name: /sistema operacional/i })).toBeVisible()
   })
 })
 
 test.describe('Login', () => {
   test('redireciona para /login ao clicar em Entrar', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('link', { name: 'Entrar' }).click()
+    await page.getByRole('link', { name: 'Entrar', exact: true }).first().click()
     await expect(page).toHaveURL('/login')
-    await expect(page.getByRole('heading', { name: 'Bem-vindo de volta' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Bem-vindo de volta/i })).toBeVisible()
   })
 
   test('exibe erro com credenciais inválidas', async ({ page }) => {
     await page.goto('/login')
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('invalido@teste.com')
-    await page.getByRole('textbox', { name: 'Senha' }).fill('senhaerrada')
-    await page.getByRole('button', { name: 'Entrar' }).click()
-    await expect(page.getByText('E-mail ou senha incorretos')).toBeVisible({ timeout: 5000 })
+    await page.getByLabel('E-mail').fill('invalido@teste.com')
+    await page.locator('#password').fill('senhaerrada')
+    await page.getByRole('button', { name: /Entrar/ }).click()
+    // Toast de erro: "Credenciais incorretas"
+    await expect(page.getByText(/Credenciais incorretas/i)).toBeVisible({ timeout: 8000 })
   })
 
-  test('exibe link Esqueceu a senha e Criar conta grátis', async ({ page }) => {
+  test('exibe link Esqueci minha senha e Criar conta grátis', async ({ page }) => {
     await page.goto('/login')
-    await expect(page.getByRole('link', { name: 'Esqueceu a senha?' })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Esqueci minha senha/i })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Criar conta grátis' })).toBeVisible()
   })
 
   test('permanece em /login ao submeter com campos vazios', async ({ page }) => {
     await page.goto('/login')
-    await page.getByRole('button', { name: 'Entrar' }).click()
+    await page.getByRole('button', { name: /Entrar/ }).click()
     await expect(page).toHaveURL('/login')
-    await expect(page.getByText('E-mail ou senha incorretos')).not.toBeVisible()
   })
 
   test('navegação Login → Cadastro', async ({ page }) => {
@@ -49,14 +49,14 @@ test.describe('Login', () => {
 test.describe('Cadastro', () => {
   test('formulário de cadastro carrega e botão fica habilitado após termos', async ({ page }) => {
     await page.goto('/cadastro')
-    await expect(page.getByRole('heading', { name: 'Criar conta grátis' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Criar minha conta' })).toBeDisabled()
-    await page.getByRole('textbox', { name: 'Nome completo' }).fill('Teste')
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('teste@example.com')
-    await page.getByRole('textbox', { name: 'Senha', exact: true }).fill('SenhaForte123!')
-    await page.getByRole('textbox', { name: 'Confirmar senha' }).fill('SenhaForte123!')
-    await page.getByRole('checkbox', { name: /Termos de Uso/ }).click()
-    await expect(page.getByRole('button', { name: 'Criar minha conta' })).toBeEnabled()
+    await expect(page.getByRole('heading', { name: /Criar conta grátis/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /Criar minha conta/ })).toBeDisabled()
+    await page.getByLabel('Nome completo').fill('Teste')
+    await page.getByLabel('E-mail').fill('teste@example.com')
+    await page.getByLabel('Senha', { exact: true }).fill('SenhaForte123!')
+    await page.getByLabel('Confirmar senha').fill('SenhaForte123!')
+    await page.getByLabel(/Termos de Uso/).click()
+    await expect(page.getByRole('button', { name: /Criar minha conta/ })).toBeEnabled()
   })
 
   test('link Fazer login leva para /login', async ({ page }) => {
@@ -65,57 +65,57 @@ test.describe('Cadastro', () => {
     await expect(page).toHaveURL('/login')
   })
 
-  test('exibe erro ao cadastrar com senha com menos de 6 caracteres', async ({ page }) => {
+  test('exibe erro ao cadastrar com senha com menos de 8 caracteres', async ({ page }) => {
     await page.goto('/cadastro')
-    await page.getByRole('textbox', { name: 'Nome completo' }).fill('Teste Silva')
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('teste@example.com')
-    await page.getByRole('textbox', { name: 'Senha', exact: true }).fill('12345')
-    await page.getByRole('textbox', { name: 'Confirmar senha' }).fill('12345')
-    await page.getByRole('checkbox', { name: /Termos de Uso/ }).click()
+    await page.getByLabel('Nome completo').fill('Teste Silva')
+    await page.getByLabel('E-mail').fill('teste@example.com')
+    await page.getByLabel('Senha', { exact: true }).fill('1234567')
+    await page.getByLabel('Confirmar senha').fill('1234567')
+    await page.getByLabel(/Termos de Uso/).click()
     await page.evaluate(() => {
       const form = document.querySelector('form')
       if (form) (form as HTMLFormElement).noValidate = true
     })
-    await page.getByRole('button', { name: 'Criar minha conta' }).click()
-    await expect(page.getByText('A senha deve ter pelo menos 6 caracteres')).toBeVisible({ timeout: 5000 })
+    await page.getByRole('button', { name: /Criar minha conta/ }).click()
+    // Toast: "A senha deve ter pelo menos 8 caracteres"
+    await expect(page.getByText(/senha deve ter pelo menos 8 caracteres/i)).toBeVisible({ timeout: 8000 })
     await expect(page).toHaveURL('/cadastro')
   })
 
   test('exibe erro quando senhas não coincidem', async ({ page }) => {
     await page.goto('/cadastro')
-    await page.getByRole('textbox', { name: 'Nome completo' }).fill('Teste Silva')
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('teste@example.com')
-    await page.getByRole('textbox', { name: 'Senha', exact: true }).fill('SenhaForte123!')
-    await page.getByRole('textbox', { name: 'Confirmar senha' }).fill('OutraSenha123!')
-    await page.getByRole('checkbox', { name: /Termos de Uso/ }).click()
-    await page.getByRole('button', { name: 'Criar minha conta' }).click()
+    await page.getByLabel('Nome completo').fill('Teste Silva')
+    await page.getByLabel('E-mail').fill('teste@example.com')
+    await page.getByLabel('Senha', { exact: true }).fill('SenhaForte123!')
+    await page.getByLabel('Confirmar senha').fill('OutraSenha123!')
+    // Mensagem inline: "As senhas não coincidem"
     await expect(page.getByText('As senhas não coincidem')).toBeVisible({ timeout: 5000 })
     await expect(page).toHaveURL('/cadastro')
   })
 
   test('botão Criar minha conta permanece desabilitado sem aceitar termos', async ({ page }) => {
     await page.goto('/cadastro')
-    await page.getByRole('textbox', { name: 'Nome completo' }).fill('Teste')
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('teste@example.com')
-    await page.getByRole('textbox', { name: 'Senha', exact: true }).fill('SenhaForte123!')
-    await page.getByRole('textbox', { name: 'Confirmar senha' }).fill('SenhaForte123!')
-    await expect(page.getByRole('button', { name: 'Criar minha conta' })).toBeDisabled()
+    await page.getByLabel('Nome completo').fill('Teste')
+    await page.getByLabel('E-mail').fill('teste@example.com')
+    await page.getByLabel('Senha', { exact: true }).fill('SenhaForte123!')
+    await page.getByLabel('Confirmar senha').fill('SenhaForte123!')
+    await expect(page.getByRole('button', { name: /Criar minha conta/ })).toBeDisabled()
   })
 })
 
 test.describe('Esqueceu senha', () => {
   test('formulário e envio exibem sucesso', async ({ page }) => {
     await page.goto('/esqueceu-senha')
-    await expect(page.getByRole('heading', { name: 'Esqueceu a senha?' })).toBeVisible()
-    await page.getByRole('textbox', { name: 'E-mail' }).fill('teste@example.com')
-    await page.getByRole('button', { name: 'Enviar link de recuperação' }).click()
-    await expect(page.getByRole('heading', { name: 'E-mail enviado!' })).toBeVisible({ timeout: 8000 })
-    await expect(page.getByRole('link', { name: 'Voltar para o login' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Esqueceu a senha/i })).toBeVisible()
+    await page.getByLabel('E-mail').fill('teste@example.com')
+    await page.getByRole('button', { name: /Enviar link de recuperação/i }).click()
+    await expect(page.getByText('E-mail enviado!')).toBeVisible({ timeout: 8000 })
+    await expect(page.getByRole('button', { name: /Voltar para o login/i })).toBeVisible()
   })
 
   test('Voltar para login leva para /login', async ({ page }) => {
     await page.goto('/esqueceu-senha')
-    await page.getByRole('link', { name: 'Voltar para login' }).click()
+    await page.getByRole('link', { name: /Voltar para login/i }).click()
     await expect(page).toHaveURL('/login')
   })
 })

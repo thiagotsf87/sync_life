@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useShellStore } from '@/stores/shell-store'
 import { createClient } from '@/lib/supabase/client'
-import { Check, RotateCcw } from 'lucide-react'
+import { Check, RotateCcw, Crosshair, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type ModeType = 'foco' | 'jornada'
@@ -45,7 +45,7 @@ export default function ModoDeUsoPage() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabase as any)
           .from('profiles')
-          .update({ mode: mode === 'jornada' ? 'journey' : 'focus' })
+          .update({ mode })
           .eq('id', user.id)
       }
     } catch {
@@ -56,8 +56,8 @@ export default function ModoDeUsoPage() {
     if (toastTimer.current) clearTimeout(toastTimer.current)
     setToastMsg(
       mode === 'foco'
-        ? '🎯 Modo Foco ativado. Interface atualizada para você.'
-        : '🌱 Modo Jornada ativado. Vamos juntos nessa jornada!',
+        ? 'Modo Foco ativado. Interface atualizada para você.'
+        : 'Modo Jornada ativado. Vamos juntos nessa jornada!',
     )
     setShowToast(true)
     toastTimer.current = setTimeout(() => setShowToast(false), 3500)
@@ -100,8 +100,8 @@ export default function ModoDeUsoPage() {
             </div>
 
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-[rgba(16,185,129,0.12)] flex items-center justify-center text-xl">
-                🎯
+              <div className="w-10 h-10 rounded-xl bg-[rgba(16,185,129,0.12)] flex items-center justify-center">
+                <Crosshair size={22} className="text-[#10b981]" />
               </div>
             </div>
             <p className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)] mb-1.5">
@@ -145,8 +145,8 @@ export default function ModoDeUsoPage() {
             </div>
 
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-[rgba(0,85,255,0.12)] flex items-center justify-center text-xl">
-                🌱
+              <div className="w-10 h-10 rounded-xl bg-[rgba(0,85,255,0.12)] flex items-center justify-center">
+                <Sparkles size={22} className="text-[#6e9fff]" />
               </div>
             </div>
             <p className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)] mb-1.5">
@@ -191,8 +191,8 @@ export default function ModoDeUsoPage() {
           <thead>
             <tr className="border-b border-[var(--sl-border)]">
               <th className="text-left py-2 text-[var(--sl-t3)] font-semibold pr-4">Elemento</th>
-              <th className="text-center py-2 text-[#10b981] font-semibold w-1/3">🎯 Foco</th>
-              <th className="text-center py-2 text-[#6e9fff] font-semibold w-1/3">🌱 Jornada</th>
+              <th className="text-center py-2 text-[#10b981] font-semibold w-1/3">Foco</th>
+              <th className="text-center py-2 text-[#6e9fff] font-semibold w-1/3">Jornada</th>
             </tr>
           </thead>
           <tbody>

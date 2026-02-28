@@ -13,13 +13,14 @@ import { MobileBottomBar } from './MobileBottomBar'
 import { MobileSubNav } from './MobileSubNav'
 import { MODULE_BAR_W, SB_OPEN, SB_COLLAPSED } from '@/lib/constants'
 import { createClient } from '@/lib/supabase/client'
-import type { AppMode, AppTheme } from '@/types/shell'
+import { resolveSystemTheme, isDarkTheme } from '@/types/shell'
+import type { AppMode, ThemeId, ResolvedThemeId } from '@/types/shell'
 
 interface AppShellProps {
   children: React.ReactNode
   userName: string
   initialMode?: AppMode
-  initialTheme?: AppTheme
+  initialTheme?: ThemeId
   initialSidebarOpen?: boolean
 }
 
@@ -53,6 +54,22 @@ export function NewAppShell({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Listen for OS color-scheme changes when theme is "system"
+  useEffect(() => {
+    if (theme !== 'system') return
+
+    const mql = window.matchMedia('(prefers-color-scheme: dark)')
+    const handler = (e: MediaQueryListEvent) => {
+      const resolved: ResolvedThemeId = e.matches ? 'navy-dark' : 'clean-light'
+      document.documentElement.setAttribute('data-theme', resolved)
+      document.documentElement.setAttribute('data-scheme', isDarkTheme(resolved) ? 'dark' : 'light')
+      useShellStore.setState({ resolvedTheme: resolved })
+    }
+
+    mql.addEventListener('change', handler)
+    return () => mql.removeEventListener('change', handler)
+  }, [theme])
+
   // Track last successfully persisted values for rollback
   const lastPersistedRef = useRef({ mode, theme, sidebarOpen })
 
@@ -70,7 +87,7 @@ export function NewAppShell({
       if (!user) return
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any).from('profiles').update({
-        mode: snapshot.mode === 'jornada' ? 'journey' : 'focus',
+        mode: snapshot.mode,
         theme: snapshot.theme,
         sidebar_state: snapshot.sidebarOpen ? 'open' : 'collapsed',
       }).eq('id', user.id)

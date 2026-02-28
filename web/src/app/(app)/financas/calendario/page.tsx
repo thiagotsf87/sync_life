@@ -332,7 +332,7 @@ export default function CalendarioFinanceiroPage() {
       </div>
 
       {/* ② Jornada Projection Card */}
-      <div className="hidden [.jornada_&]:flex items-center gap-3 p-[11px] px-[14px] rounded-[11px] border border-[rgba(16,185,129,0.2)] bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] mb-4">
+      <div className="jornada-only flex items-center gap-3 p-[11px] px-[14px] rounded-[11px] border border-[rgba(16,185,129,0.2)] bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] mb-4">
         <span className="text-[22px] shrink-0">📊</span>
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold text-[var(--sl-t1)] mb-0.5">Projeção do mês</p>

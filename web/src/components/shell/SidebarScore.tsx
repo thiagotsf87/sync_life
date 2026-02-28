@@ -6,7 +6,7 @@ export function SidebarScore() {
   const delta = '+3 semana'
 
   return (
-    <div className="sl-sb-score hidden [.jornada_&]:block mx-3 mb-3 p-3 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)]">
+    <div className="sl-sb-score jornada-only mx-3 mb-3 p-3 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)]">
       <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">
         Life Sync Score
       </p>

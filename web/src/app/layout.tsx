@@ -71,9 +71,10 @@ export default function RootLayout({
       className={`${outfit.variable} ${syne.variable} ${dmMono.variable} ${dmSans.variable}`}
     >
       <body className={`${outfit.className} antialiased`}>
+        {/* Anti-FOUC: apply theme/mode before first paint */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('synclife-theme');var m=localStorage.getItem('synclife-mode');if(t==='light')document.documentElement.classList.add('light');if(m==='jornada')document.documentElement.classList.add('jornada');}catch(e){}})()`,
+            __html: `(function(){try{var DARK=['navy-dark','obsidian','rosewood','graphite','twilight'];var t=localStorage.getItem('synclife-theme')||'system';var m=localStorage.getItem('synclife-mode')||'foco';if(t==='system'){t=window.matchMedia('(prefers-color-scheme:dark)').matches?'navy-dark':'clean-light';}var valid=['navy-dark','clean-light','mint-garden','obsidian','rosewood','arctic','graphite','twilight','sahara'];if(valid.indexOf(t)===-1)t='navy-dark';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m==='jornada'?'jornada':'foco');document.documentElement.setAttribute('data-scheme',DARK.indexOf(t)!==-1?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme','navy-dark');document.documentElement.setAttribute('data-mode','foco');document.documentElement.setAttribute('data-scheme','dark');}})()`,
           }}
         />
         {children}

@@ -1,13 +1,15 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "../styles/themes.css" layer(base);
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is([data-scheme="dark"] *));
+@custom-variant jornada (&:is([data-mode="jornada"] *));
+@custom-variant foco (&:is([data-mode="foco"] *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-outfit), system-ui, sans-serif;
-  /* ✅ CORRIGIDO: era var(--font-geist-mono), agora aponta para DM Mono */
   --font-mono: var(--font-dm-mono), monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -63,7 +65,7 @@
   --color-em: #10b981;
   --color-el: #0055ff;
 
-  /* Superfície — Foco (default dark) */
+  /* Superfície defaults (navy-dark) — real values come from [data-theme] */
   --color-sl-bg: #03071a;
   --color-sl-s1: #07112b;
   --color-sl-s2: #0c1a3a;
@@ -87,7 +89,7 @@
   --color-exp: #ec4899;
   --color-cfg: #64748b;
 
-  /* Fontes SyncLife — ✅ CORRIGIDO: referencia as vars do next/font */
+  /* Fontes SyncLife */
   --font-syne:    var(--font-syne), sans-serif;
   --font-dm-sans: var(--font-dm-sans), sans-serif;
   --font-dm-mono: var(--font-dm-mono), monospace;
@@ -95,157 +97,6 @@
   /* Slate custom */
   --color-slate-850: #1a2332;
   --color-slate-950: #0d1117;
-}
-
-/* ── SyncLife Dark Foco (default) ── */
-:root {
-  --radius: 0.75rem;
-  --background: #0d1117;
-  --foreground: #f8fafc;
-  --card: #0f172a;
-  --card-foreground: #f8fafc;
-  --popover: #1e293b;
-  --popover-foreground: #f8fafc;
-  --primary: #22c55e;
-  --primary-foreground: #ffffff;
-  --secondary: #1e293b;
-  --secondary-foreground: #f8fafc;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --accent: rgba(34, 197, 94, 0.15);
-  --accent-foreground: #4ade80;
-  --destructive: #f43f5e;
-  --border: #334155;
-  --input: #1e293b;
-  --ring: #22c55e;
-
-  /* Charts */
-  --chart-1: #22c55e;
-  --chart-2: #f97316;
-  --chart-3: #8b5cf6;
-  --chart-4: #06b6d4;
-  --chart-5: #f43f5e;
-
-  /* Sidebar */
-  --sidebar: #0f172a;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #22c55e;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(34, 197, 94, 0.15);
-  --sidebar-accent-foreground: #4ade80;
-  --sidebar-border: #1e293b;
-  --sidebar-ring: #22c55e;
-
-  /* SyncLife brand */
-  --sl-em:    #10b981;
-  --sl-el:    #0055ff;
-  --sl-em-g:  rgba(16,185,129,0.14);
-  --sl-el-g:  rgba(0,85,255,0.14);
-  --sl-grad:  linear-gradient(135deg, #10b981, #0055ff);
-
-  /* Shell layout dimensions */
-  --module-bar-w: 72px;
-  --sb-open: 228px;
-  --sb-collapsed: 56px;
-  --header-h: 54px;
-  --bottom-bar-h: 64px;
-
-  /* Module glow colors (dark: 15%) */
-  --home-glow:  rgba(16,185,129,0.15);
-  --fin-glow:   rgba(16,185,129,0.15);
-  --tmp-glow:   rgba(6,182,212,0.15);
-  --fut-glow:   rgba(139,92,246,0.15);
-  --crp-glow:   rgba(249,115,22,0.15);
-  --mnt-glow:   rgba(234,179,8,0.15);
-  --ptr-glow:   rgba(59,130,246,0.15);
-  --car-glow:   rgba(244,63,94,0.15);
-  --exp-glow:   rgba(236,72,153,0.15);
-  --conq-glow:  rgba(245,158,11,0.15);
-  --cfg-glow:   rgba(100,116,139,0.12);
-
-  /* Superfície — Dark Foco */
-  --sl-bg:       #03071a;
-  --sl-s1:       #07112b;
-  --sl-s2:       #0c1a3a;
-  --sl-s3:       #132248;
-  --sl-border:   rgba(255,255,255,0.06);
-  --sl-border-h: rgba(255,255,255,0.13);
-  --sl-t1:       #dff0ff;
-  --sl-t2:       #6e90b8;
-  --sl-t3:       #2e4a6e;
-}
-
-/* ── Light Foco ── */
-.light {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #16a34a;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #f0fdf4;
-  --accent-foreground: #16a34a;
-  --destructive: #dc2626;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #16a34a;
-
-  --sl-bg:       #e6edf5;
-  --sl-s1:       #ffffff;
-  --sl-s2:       #f0f6fa;
-  --sl-s3:       #e0eaf3;
-  --sl-border:   rgba(0,0,0,0.06);
-  --sl-border-h: rgba(0,0,0,0.13);
-  --sl-t1:       #03071a;
-  --sl-t2:       #1e3a5c;
-  --sl-t3:       #5a7a9e;
-  --sl-em-g:     rgba(16,185,129,0.10);
-  --sl-el-g:     rgba(0,85,255,0.10);
-
-  /* Module glow colors (light: 10%) */
-  --home-glow:  rgba(16,185,129,0.10);
-  --fin-glow:   rgba(16,185,129,0.10);
-  --tmp-glow:   rgba(6,182,212,0.10);
-  --fut-glow:   rgba(139,92,246,0.10);
-  --crp-glow:   rgba(249,115,22,0.10);
-  --mnt-glow:   rgba(234,179,8,0.10);
-  --ptr-glow:   rgba(59,130,246,0.10);
-  --car-glow:   rgba(244,63,94,0.10);
-  --exp-glow:   rgba(236,72,153,0.10);
-  --conq-glow:  rgba(245,158,11,0.10);
-  --cfg-glow:   rgba(100,116,139,0.08);
-}
-
-/* ── Dark Jornada ── ✅ CORRIGIDO: .jornada antes de .light.jornada */
-.jornada {
-  --sl-bg:       #020d08;
-  --sl-s1:       #061410;
-  --sl-s2:       #0b1e18;
-  --sl-s3:       #112b22;
-  --sl-border:   rgba(16,185,129,0.08);
-  --sl-border-h: rgba(16,185,129,0.18);
-  --sl-t1:       #d6faf0;
-  --sl-t2:       #4da888;
-  --sl-t3:       #235c48;
-}
-
-/* ── Light Jornada ── (2 classes = maior especificidade, vem depois) */
-.light.jornada {
-  --sl-bg:       #c8f0e4;
-  --sl-s1:       #ffffff;
-  --sl-s2:       #e0f7ef;
-  --sl-s3:       #c4eede;
-  --sl-border:   rgba(16,185,129,0.10);
-  --sl-border-h: rgba(16,185,129,0.20);
-  --sl-t1:       #022016;
-  --sl-t2:       #0d5c3e;
-  --sl-t3:       #4da888;
 }
 
 @layer base {
@@ -258,11 +109,7 @@
     max-width: 100vw;
     margin: 0;
     padding: 0;
-    background: #0d1117;
-    transition: background-color 0.4s;
-  }
-  html.light {
-    background: #ffffff;
+    transition: var(--transition-theme);
   }
   body {
     @apply bg-background text-foreground antialiased;
@@ -273,11 +120,12 @@
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    transition: background-color 0.4s, color 0.3s;
+    transition: var(--transition-theme);
   }
 }
 
 /* ── Utilitários SyncLife ── */
+@layer base {
 
 .text-sl-grad {
   background: var(--sl-grad);
@@ -298,6 +146,11 @@
   transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Remove native number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+
 @keyframes sl-fade-up {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -309,15 +162,18 @@
 .sl-delay-4  { animation-delay: 0.20s; }
 .sl-delay-5  { animation-delay: 0.25s; }
 
-/* sl-fade: opacity-only (no transform) — usado no ContentArea para não criar stacking context
-   que quebraria position:fixed dos modais */
+/* sl-fade: opacity-only (no transform) — usado no ContentArea */
 @keyframes sl-fade {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 .sl-fade { animation: sl-fade 0.3s ease both; }
 
-/* Dark (default) — ícones inativos da ModuleBar sem tint do jornada */
+/* ── Shell: Module Bar (dark bg em todos os temas) ── */
+.sl-module-bar {
+  background: var(--sl-module-bar-bg);
+}
+
 .sl-module-bar .sl-mod-btn:not(.sl-mod-btn-active) {
   color: var(--sl-t3);
 }
@@ -330,111 +186,28 @@
   color: var(--module-color, var(--sl-t1));
 }
 
-/* Date inputs: esquema de cores correto por tema */
-input[type="date"] { color-scheme: dark; }
-html.light input[type="date"] { color-scheme: light; }
-
-/* ── Shell: Light Foco — ModuleBar escuro (âncora visual) ── */
-html.light:not(.jornada) .sl-module-bar {
-  background: linear-gradient(180deg, #083d2c 0%, #052b1e 100%);
-  border-right-color: transparent;
-  box-shadow: 2px 0 24px rgba(8,61,44,0.28);
-}
-html.light:not(.jornada) .sl-module-bar .sl-mod-btn {
+/* Module Bar light scheme: icons need to be light on dark bg */
+[data-scheme="light"] .sl-module-bar .sl-mod-btn:not(.sl-mod-btn-active) {
   color: rgba(255,255,255,0.45);
 }
-html.light:not(.jornada) .sl-module-bar .sl-mod-btn:hover {
+[data-scheme="light"] .sl-module-bar .sl-mod-btn:hover {
   background: rgba(255,255,255,0.09);
   color: color-mix(in srgb, var(--module-color, #ffffff) 60%, #ffffff 40%);
 }
-html.light:not(.jornada) .sl-module-bar .sl-mod-btn-active {
+[data-scheme="light"] .sl-module-bar .sl-mod-btn-active {
   color: var(--module-color, #ffffff);
   background: var(--module-glow, rgba(255,255,255,0.16));
 }
 
-/* ── Shell: Light Jornada — ModuleBar gradiente esmeralda→azul ── */
-html.light.jornada .sl-module-bar {
-  background: linear-gradient(180deg, #0c9e6e 0%, #0844cc 100%);
-  border-right-color: transparent;
-  box-shadow: 2px 0 24px rgba(5,80,56,0.20);
-}
-html.light.jornada .sl-module-bar .sl-mod-btn {
-  color: rgba(255,255,255,0.65);
-}
-html.light.jornada .sl-module-bar .sl-mod-btn:hover {
-  background: rgba(255,255,255,0.15);
-  color: color-mix(in srgb, var(--module-color, #ffffff) 60%, #ffffff 40%);
-}
-html.light.jornada .sl-module-bar .sl-mod-btn-active {
-  color: var(--module-color, #ffffff);
-  background: var(--module-glow, rgba(255,255,255,0.18));
+/* ── Shell: Sidebar ── */
+.sl-sidebar {
+  background: var(--sl-sidebar-bg);
 }
 
-/* ── Shell: Light Jornada — Sidebar gradiente esmeralda→azul ── */
-html.light.jornada .sl-sidebar {
-  background: linear-gradient(180deg, #0fbe82 0%, #0a56d6 100%) !important;
-  border-right-color: transparent;
-}
-html.light.jornada .sl-sidebar .sl-nav-item {
-  color: rgba(255,255,255,0.75);
-}
-html.light.jornada .sl-sidebar .sl-nav-item:hover {
-  background: rgba(255,255,255,0.15) !important;
-  color: #ffffff;
-}
-html.light.jornada .sl-sidebar .sl-nav-item-active {
-  background: rgba(255,255,255,0.22) !important;
-  color: #ffffff !important;
-}
-html.light.jornada .sl-sidebar .sl-sb-label {
-  color: rgba(255,255,255,0.45);
-}
-html.light.jornada .sl-sidebar .sl-sb-title {
-  color: #ffffff;
-}
-html.light.jornada .sl-sidebar .sl-sb-toggle {
-  color: rgba(255,255,255,0.5);
-}
-html.light.jornada .sl-sidebar .sl-sb-toggle:hover {
-  background: rgba(255,255,255,0.15);
-  color: #ffffff;
-}
-html.light.jornada .sl-sidebar .sl-sb-score {
-  background: rgba(255,255,255,0.18);
-  border-color: rgba(255,255,255,0.30);
-}
-
-/* ── Shell: Light Jornada — Header gradiente esmeralda→azul ── */
-html.light.jornada .sl-header {
-  background: linear-gradient(90deg, #0fbe82 0%, #0a56d6 100%) !important;
-  border-bottom-color: transparent;
-}
-html.light.jornada .sl-header .sl-breadcrumb {
-  color: rgba(255,255,255,0.85);
-}
-html.light.jornada .sl-header .sl-pill {
-  background: rgba(255,255,255,0.18);
-  border-color: rgba(255,255,255,0.30);
-  color: rgba(255,255,255,0.9);
-}
-html.light.jornada .sl-header .sl-pill:hover {
-  background: rgba(255,255,255,0.28);
-}
-html.light.jornada .sl-header .sl-notif-btn {
-  color: rgba(255,255,255,0.7);
-  background: rgba(255,255,255,0.10);
-  border-color: rgba(255,255,255,0.25);
-}
-html.light.jornada .sl-header .sl-notif-btn:hover {
-  background: rgba(255,255,255,0.20);
-  color: #ffffff;
-}
-html.light.jornada .sl-header .text-sl-grad {
-  -webkit-text-fill-color: #ffffff !important;
-  background: none !important;
-}
-html.light.jornada .sl-sidebar .sl-sb-icon {
-  color: #ffffff !important;
+/* ── Shell: Header ── */
+.sl-header {
+  background: var(--sl-header-bg);
+  backdrop-filter: blur(12px);
 }
 
 /* ── Scrollbar ── */
@@ -442,9 +215,10 @@ html.light.jornada .sl-sidebar .sl-sb-icon {
 ::-webkit-scrollbar-track  { background: #1e293b; }
 ::-webkit-scrollbar-thumb  { background: #475569; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-.light ::-webkit-scrollbar-track  { background: #e2e8f0; }
-.light ::-webkit-scrollbar-thumb  { background: #94a3b8; }
-.light ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+[data-scheme="light"] ::-webkit-scrollbar-track  { background: #e2e8f0; }
+[data-scheme="light"] ::-webkit-scrollbar-thumb  { background: #94a3b8; }
+[data-scheme="light"] ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
 /* ── Auth pages ── */
 .bg-animated {
@@ -508,3 +282,5 @@ html.light.jornada .sl-sidebar .sl-sb-icon {
   50%       { opacity: 1; }
 }
 .badge-shimmer { animation: shimmer 2.5s ease-in-out infinite; }
+
+} /* end @layer base — SyncLife utilities */

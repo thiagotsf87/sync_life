@@ -653,7 +653,7 @@ export default function RankingPage() {
       </div>
 
       {/* ⑤ JORNADA — frase motivacional ─────────────────────────────────────── */}
-      <div className="hidden [.jornada_&]:flex items-center gap-3 p-[14px_18px] rounded-[14px] mt-5
+      <div className="jornada-only flex items-center gap-3 p-[14px_18px] rounded-[14px] mt-5
                       bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7
                       border border-[#10b981]/18 sl-fade-up">
         <span className="text-[22px] shrink-0">🤖</span>

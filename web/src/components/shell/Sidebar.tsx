@@ -13,6 +13,7 @@ import {
   CalendarPlus, Timer, Trophy, Medal, User, Palette, Bell, Tags, Crown,
   Dumbbell, Scale, Utensils, HeartPulse, Bot, Library, Calculator,
   UserCheck, Map, Star, History, BookOpen, Clock, Briefcase, DollarSign, Plane,
+  Sparkles,
 } from 'lucide-react'
 
 const LUCIDE_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -21,6 +22,7 @@ const LUCIDE_MAP: Record<string, React.ComponentType<{ size?: number; className?
   CalendarPlus, Timer, Trophy, Medal, User, Palette, Bell, Tags, Crown,
   Dumbbell, Scale, Utensils, HeartPulse, Bot, Library, Calculator,
   UserCheck, Map, Star, History, BookOpen, Clock, Briefcase, DollarSign, Plane,
+  Sparkles,
 }
 
 export function Sidebar() {
@@ -43,7 +45,7 @@ export function Sidebar() {
     <aside
       className={cn(
         'sl-sidebar fixed top-0 z-50 hidden h-screen flex-col border-r border-[var(--sl-border)]',
-        'bg-[var(--sl-s1)]',
+        '',
         'transition-[width,background,border-color] duration-[240ms] ease-[cubic-bezier(.4,0,.2,1)]',
         'lg:flex',
       )}

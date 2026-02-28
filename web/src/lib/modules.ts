@@ -177,7 +177,8 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
     defaultNavId: 'cfg-perfil',
     navItems: [
       { id: 'cfg-perfil', label: 'Perfil', icon: 'User', href: '/configuracoes' },
-      { id: 'cfg-modo', label: 'Modo de Uso', icon: 'Palette', href: '/configuracoes/modo' },
+      { id: 'cfg-aparencia', label: 'Aparência', icon: 'Palette', href: '/configuracoes/aparencia' },
+      { id: 'cfg-modo', label: 'Modo de Uso', icon: 'Sparkles', href: '/configuracoes/modo' },
       { id: 'cfg-notif', label: 'Notificações', icon: 'Bell', href: '/configuracoes/notificacoes' },
       { id: 'cfg-categorias', label: 'Categorias', icon: 'Tags', href: '/configuracoes/categorias' },
       { id: 'cfg-plano', label: 'Plano', icon: 'Crown', href: '/configuracoes/plano' },

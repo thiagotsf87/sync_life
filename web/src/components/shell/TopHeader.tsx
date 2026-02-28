@@ -36,7 +36,7 @@ export function TopHeader({ userName }: TopHeaderProps) {
   useEffect(() => { setGreeting(getGreeting(userName)) }, [userName])
 
   return (
-    <header className="sl-header flex h-[54px] items-center gap-3 px-5 border-b border-[var(--sl-border)] bg-[var(--sl-s1)]/80 backdrop-blur-sm shrink-0 transition-[background,border-color] duration-400">
+    <header className="sl-header flex h-[54px] items-center gap-3 px-5 border-b border-[var(--sl-border)] shrink-0 transition-[background,border-color] duration-400">
       {/* Expand sidebar button (visible when collapsed, desktop only) */}
       {!sidebarOpen && (
         <button
@@ -50,7 +50,7 @@ export function TopHeader({ userName }: TopHeaderProps) {
       )}
 
       {/* Foco: Breadcrumb */}
-      <div className="sl-breadcrumb [.jornada_&]:hidden flex items-center gap-1.5 text-sm">
+      <div className="sl-breadcrumb foco-only flex items-center gap-1.5 text-sm">
         <ActiveModuleIcon size={14} className="text-[var(--sl-t3)]" />
         <span className="text-[var(--sl-t2)] font-medium">{mod.label}</span>
         {activeNav && activeNav.label !== mod.label && (
@@ -62,7 +62,7 @@ export function TopHeader({ userName }: TopHeaderProps) {
       </div>
 
       {/* Jornada: Greeting */}
-      <div className="hidden [.jornada_&]:flex items-center gap-2">
+      <div className="jornada-only flex items-center gap-2">
         <span className="text-lg">{greeting.emoji}</span>
         <h1 className="font-[Syne] font-bold text-base text-sl-grad">
           {greeting.text}

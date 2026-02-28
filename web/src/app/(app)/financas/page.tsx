@@ -12,7 +12,7 @@ import {
 } from 'recharts'
 import { cn } from '@/lib/utils'
 import {
-  CalendarDays, Plus, ChevronDown, ExternalLink,
+  CalendarDays, Plus, ChevronDown, ChevronLeft, ChevronRight, ExternalLink,
   TrendingUp, AlertTriangle, Loader2
 } from 'lucide-react'
 
@@ -275,8 +275,18 @@ export default function FinancasDashboardPage() {
   const [aiLoading, setAiLoading] = useState(false)
   const fabRef = useRef<HTMLDivElement>(null)
 
-  const [month] = useState(() => new Date().getMonth() + 1)
-  const [year] = useState(() => new Date().getFullYear())
+  const now = useMemo(() => new Date(), [])
+  const [month, setMonth] = useState(() => new Date().getMonth() + 1)
+  const [year, setYear] = useState(() => new Date().getFullYear())
+
+  function prevMonth() {
+    if (month === 1) { setMonth(12); setYear(y => y - 1) }
+    else setMonth(m => m - 1)
+  }
+  function nextMonth() {
+    if (month === 12) { setMonth(1); setYear(y => y + 1) }
+    else setMonth(m => m + 1)
+  }
   const todayD = useMemo(() => new Date().getDate(), [])
   const daysInMonth = useMemo(() => new Date(year, month, 0).getDate(), [month, year])
 
@@ -515,11 +525,28 @@ export default function FinancasDashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button className="flex items-center gap-1.5 px-3 py-2 rounded-[9px] border border-[var(--sl-border)] bg-[var(--sl-s1)] text-[var(--sl-t2)] text-[12px] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
-            <CalendarDays size={12} />
-            {mesAno}
-            <ChevronDown size={10} />
-          </button>
+          <div className="flex items-center gap-1">
+            <button onClick={prevMonth} aria-label="Mês anterior"
+              className="w-7 h-7 rounded-[8px] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
+              <ChevronLeft size={14} />
+            </button>
+            <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)] px-2.5 py-1.5 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] whitespace-nowrap min-w-[130px] text-center flex items-center justify-center gap-1.5">
+              <CalendarDays size={12} className="text-[var(--sl-t3)]" />
+              {mesAno}
+            </span>
+            <button onClick={nextMonth} aria-label="Próximo mês"
+              className="w-7 h-7 rounded-[8px] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
+              <ChevronRight size={14} />
+            </button>
+            {(month !== now.getMonth() + 1 || year !== now.getFullYear()) && (
+              <button
+                onClick={() => { setMonth(now.getMonth() + 1); setYear(now.getFullYear()) }}
+                className="ml-1 text-[11px] text-[#10b981] hover:underline"
+              >
+                Hoje
+              </button>
+            )}
+          </div>
           <button
             onClick={() => router.push('/financas/transacoes')}
             className="flex items-center gap-1.5 px-3 py-2 rounded-[9px] border-none text-white text-[12px] font-bold transition-all hover:brightness-110"
@@ -590,7 +617,7 @@ export default function FinancasDashboardPage() {
       </div>
 
       {/* ③ SAÚDE / FOCO BAND — CSS-based switch to avoid hydration mismatch */}
-      <div className="[.jornada_&]:hidden flex bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] mb-3 overflow-hidden">
+      <div className="foco-only flex bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] mb-3 overflow-hidden">
         {[
           { lbl: 'Orçamentos OK', val: loadingBudgets ? '—' : `${qtdOk} / ${budgets.length}`, color: '#10b981' },
           { lbl: 'Maior categoria', val: loadingBudgets ? '—' : (topCat?.category?.name ?? '—'), color: '#0055ff' },
@@ -604,7 +631,7 @@ export default function FinancasDashboardPage() {
         ))}
       </div>
       <div
-        className="hidden [.jornada_&]:flex items-center gap-4 rounded-[14px] px-4 py-3 mb-3"
+        className="jornada-only flex items-center gap-4 rounded-[14px] px-4 py-3 mb-3"
         style={{ background: 'linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.07))', border: '1px solid rgba(16,185,129,.18)' }}
       >
         <div className="shrink-0 text-center">

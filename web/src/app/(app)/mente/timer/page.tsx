@@ -258,7 +258,7 @@ export default function TimerPage() {
 
           {/* Streak motivacional (Jornada) */}
           {streak.current_streak >= 3 && (
-            <div className="hidden [.jornada_&]:block bg-gradient-to-br from-[#f97316]/10 to-[#a855f7]/10
+            <div className="jornada-only bg-gradient-to-br from-[#f97316]/10 to-[#a855f7]/10
                             border border-[#f97316]/20 rounded-2xl p-4 text-center">
               <p className="text-2xl mb-1">🔥</p>
               <p className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">

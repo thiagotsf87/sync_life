@@ -14,9 +14,9 @@ export interface Database {
           id: string
           full_name: string | null
           avatar_url: string | null
-          mode: 'focus' | 'journey'
+          mode: 'foco' | 'jornada'
           currency: string
-          theme: 'light' | 'dark' | 'system'
+          theme: 'navy-dark' | 'clean-light' | 'mint-garden' | 'obsidian' | 'rosewood' | 'arctic' | 'system'
           onboarding_completed: boolean
           last_active_at: string | null
           created_at: string
@@ -26,9 +26,9 @@ export interface Database {
           id: string
           full_name?: string | null
           avatar_url?: string | null
-          mode?: 'focus' | 'journey'
+          mode?: 'foco' | 'jornada'
           currency?: string
-          theme?: 'light' | 'dark' | 'system'
+          theme?: 'navy-dark' | 'clean-light' | 'mint-garden' | 'obsidian' | 'rosewood' | 'arctic' | 'system'
           onboarding_completed?: boolean
           last_active_at?: string | null
           created_at?: string
@@ -38,9 +38,9 @@ export interface Database {
           id?: string
           full_name?: string | null
           avatar_url?: string | null
-          mode?: 'focus' | 'journey'
+          mode?: 'foco' | 'jornada'
           currency?: string
-          theme?: 'light' | 'dark' | 'system'
+          theme?: 'navy-dark' | 'clean-light' | 'mint-garden' | 'obsidian' | 'rosewood' | 'arctic' | 'system'
           onboarding_completed?: boolean
           last_active_at?: string | null
           created_at?: string

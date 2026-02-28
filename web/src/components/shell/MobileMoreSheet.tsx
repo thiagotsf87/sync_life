@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useShellStore } from '@/stores/shell-store'
 import { MODULES } from '@/lib/modules'
+import { isDarkTheme } from '@/types/shell'
 import { IconCorpo, IconMente, IconPatrimonio, IconCarreira, IconExperiencias, IconConquistas, IconConfig } from './icons'
 import {
   Sheet,
@@ -20,9 +21,7 @@ interface MobileMoreSheetProps {
 export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
   const router = useRouter()
   const mode = useShellStore((s) => s.mode)
-  const theme = useShellStore((s) => s.theme)
   const setMode = useShellStore((s) => s.setMode)
-  const setTheme = useShellStore((s) => s.setTheme)
 
   const navigate = (href: string) => {
     router.push(href)
@@ -132,33 +131,15 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
             </div>
           </div>
 
-          {/* Theme toggle */}
+          {/* Theme shortcut */}
           <div className="flex items-center justify-between px-3">
             <span className="text-sm text-[var(--sl-t2)]">Tema</span>
-            <div className="flex gap-1 bg-[var(--sl-s2)] rounded-full p-0.5">
-              <button
-                onClick={() => setTheme('dark')}
-                className={cn(
-                  'px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors',
-                  theme === 'dark'
-                    ? 'bg-[var(--sl-s1)] text-[var(--sl-t1)] shadow-sm'
-                    : 'text-[var(--sl-t3)]',
-                )}
-              >
-                🌙 Dark
-              </button>
-              <button
-                onClick={() => setTheme('light')}
-                className={cn(
-                  'px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors',
-                  theme === 'light'
-                    ? 'bg-[var(--sl-s1)] text-[var(--sl-t1)] shadow-sm'
-                    : 'text-[var(--sl-t3)]',
-                )}
-              >
-                ☀️ Light
-              </button>
-            </div>
+            <button
+              onClick={() => navigate('/configuracoes/aparencia')}
+              className="px-3 py-1.5 rounded-full text-[11px] font-medium bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
+            >
+              {isDarkTheme(useShellStore.getState().resolvedTheme) ? '🌙' : '☀️'} Personalizar
+            </button>
           </div>
         </div>
       </SheetContent>

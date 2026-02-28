@@ -193,7 +193,7 @@ export default function FuturoPage() {
       />
 
       {/* ④ Mapa da Vida — Jornada only (RN-FUT-26) */}
-      <div className="hidden [.jornada_&]:block mb-5">
+      <div className="jornada-only mb-5">
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up
                         hover:border-[var(--sl-border-h)] transition-colors">
           <LifeMapRadar

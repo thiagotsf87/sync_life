@@ -173,7 +173,7 @@ export default function OnboardingPage() {
         .upsert({
           id: user.id,
           full_name: state.nome || null,
-          mode: state.modo === 'jornada' ? 'journey' : 'focus',
+          mode: state.modo === 'jornada' ? 'jornada' : 'foco',
           onboarding_completed: true,
         })
 

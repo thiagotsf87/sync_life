@@ -144,7 +144,7 @@ export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
       {/* Tip Jornada */}
       {tip && (
         <div
-          className="hidden [.jornada_&]:flex items-start gap-2 p-2.5 rounded-[10px] text-[12px] mb-3"
+          className="jornada-only flex items-start gap-2 p-2.5 rounded-[10px] text-[12px] mb-3"
           style={{ background: tip.bg, border: `1px solid ${tip.color}30` }}
         >
           <p style={{ color: tip.color }} className="leading-snug">{tip.text}</p>

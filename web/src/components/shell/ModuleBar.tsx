@@ -67,7 +67,7 @@ export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
     <>
       <nav
         className="sl-module-bar fixed left-0 top-0 z-[60] hidden h-screen w-[72px] flex-col items-center
-                   border-r border-[var(--sl-border)] bg-[var(--sl-s1)] py-3 lg:flex
+                   border-r border-[var(--sl-border)] py-3 lg:flex
                    transition-[background,border-color] duration-400"
       >
         {/* Logo */}
@@ -86,8 +86,8 @@ export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
               return (
                 <div
                   key={`sep-${idx}`}
-                  className="h-px w-7 my-1"
-                  style={{ background: 'var(--sl-border)' }}
+                  className="h-px w-8 my-1.5 rounded-full"
+                  style={{ background: 'var(--sl-t3)', opacity: 0.45 }}
                 />
               )
             }

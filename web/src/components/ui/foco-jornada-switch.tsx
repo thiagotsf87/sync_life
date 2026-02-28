@@ -7,8 +7,8 @@ export function FocoJornadaSwitch({
 }) {
   return (
     <>
-      <div className="[.jornada_&]:hidden">{foco}</div>
-      <div className="hidden [.jornada_&]:block">{jornada}</div>
+      <div className="foco-only">{foco}</div>
+      <div className="jornada-only">{jornada}</div>
     </>
   )
 }

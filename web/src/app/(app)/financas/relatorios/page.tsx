@@ -327,7 +327,7 @@ export default function RelatoriosPage() {
       )}
 
       {/* ── Narrative Band (Jornada only) ───────────────────────── */}
-      <div className="hidden [.jornada_&]:flex items-start gap-3.5 bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] border border-[rgba(16,185,129,0.18)] rounded-2xl px-5 py-4 mb-3">
+      <div className="jornada-only flex items-start gap-3.5 bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] border border-[rgba(16,185,129,0.18)] rounded-2xl px-5 py-4 mb-3">
         <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-[rgba(16,185,129,0.2)] to-[rgba(0,85,255,0.2)] flex items-center justify-center text-[18px] shrink-0 mt-0.5">
           🤖
         </div>

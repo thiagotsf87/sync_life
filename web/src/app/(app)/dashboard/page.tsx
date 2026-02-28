@@ -328,11 +328,11 @@ export default function DashboardPage() {
       {/* ① HEADER */}
       <div className="flex items-start justify-between gap-4 mb-5 flex-wrap">
         <div className="flex flex-col gap-0.5">
-          <div className="[.jornada_&]:hidden">
+          <div className="foco-only">
             <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)]">Dashboard</h1>
             <p className="text-[13px] text-[var(--sl-t3)] mt-0.5">{weekInfo}</p>
           </div>
-          <div className="hidden [.jornada_&]:block">
+          <div className="jornada-only">
             <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad leading-tight">
               {greeting}, {userName}! ✨
             </h1>
@@ -341,7 +341,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-2.5 flex-shrink-0">
-          <div className="hidden [.jornada_&]:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-[12px] font-semibold"
+          <div className="jornada-only flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-[12px] font-semibold"
             style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.25)', color: '#f97316' }}>
             🔥 7 dias
           </div>
@@ -354,7 +354,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ② LIFE SYNC SCORE — Jornada only */}
-      <div className="hidden [.jornada_&]:flex items-center gap-7 p-[24px_28px] rounded-[20px] mb-5 sl-fade-up relative overflow-hidden"
+      <div className="jornada-only flex items-center gap-7 p-[24px_28px] rounded-[20px] mb-5 sl-fade-up relative overflow-hidden"
         style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(0,85,255,0.10))', border: '1px solid rgba(16,185,129,0.20)' }}>
         <div className="absolute -left-14 -top-14 w-56 h-56 rounded-full pointer-events-none"
           style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.12), transparent 70%)' }} />
@@ -435,7 +435,7 @@ export default function DashboardPage() {
 
       {/* ④ INSIGHT CARD */}
       {/* Foco: compact stats */}
-      <div className="[.jornada_&]:hidden bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-5 mb-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none">
+      <div className="foco-only bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-5 mb-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-[10px] font-bold uppercase tracking-[0.09em] text-[var(--sl-t3)]">Resumo do mês</span>
           <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-[6px]" style={{ background: 'rgba(16,185,129,0.12)', color: '#10b981' }}>AUTO</span>
@@ -456,7 +456,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Jornada: narrative + ask AI */}
-      <div className="hidden [.jornada_&]:block rounded-[16px] p-5 mb-5 sl-fade-up sl-delay-2"
+      <div className="jornada-only rounded-[16px] p-5 mb-5 sl-fade-up sl-delay-2"
         style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.06), rgba(0,85,255,0.06))', border: '1px solid rgba(16,185,129,0.18)' }}>
         <div className="flex items-center gap-2 mb-3">
           <span className="text-[10px] font-bold uppercase tracking-[0.09em]" style={{ color: '#10b981' }}>💡 Consultor Financeiro IA</span>
@@ -631,7 +631,7 @@ export default function DashboardPage() {
                             <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
                           </div>
                           {isDelayed && (
-                            <div className="hidden [.jornada_&]:block text-[11px] px-2 py-1.5 rounded-[6px]"
+                            <div className="jornada-only text-[11px] px-2 py-1.5 rounded-[6px]"
                               style={{ color: '#f59e0b', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)' }}>
                               ⚠ Meta abaixo do ritmo necessário
                             </div>
@@ -791,7 +791,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Foco: Resumo Financeiro */}
-        <div className="[.jornada_&]:hidden bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
+        <div className="foco-only bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
           <div className="flex items-center justify-between mb-[18px]">
             <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📋 Resumo Financeiro</span>
           </div>
@@ -811,7 +811,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Jornada: Conquistas Recentes */}
-        <div className="hidden [.jornada_&]:block bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
+        <div className="jornada-only bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
           <div className="flex items-center justify-between mb-[18px]">
             <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🏆 Conquistas Recentes</span>
             <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
@@ -973,7 +973,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ⑧ Mapa da Vida — Jornada only (RN-FUT-30) */}
-      <div className="hidden [.jornada_&]:block mt-4">
+      <div className="jornada-only mt-4">
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up
                         hover:border-[var(--sl-border-h)] transition-colors">
           <div className="flex items-center justify-between mb-4">

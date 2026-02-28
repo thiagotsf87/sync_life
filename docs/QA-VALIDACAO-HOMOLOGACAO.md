@@ -1,7 +1,7 @@
 # QA — Validação de Homologação
-> SyncLife MVP V3 · Fases 1–13
+> SyncLife MVP V3 · Fases 1–13 + Sistema de Temas V3
 > Ambiente: `homologacao` branch → Vercel preview
-> Última atualização: Fev 2026
+> Última atualização: 28 Fev 2026
 
 ---
 
@@ -10,7 +10,7 @@
 1. Abra o app no ambiente de homologação
 2. Execute cada item marcando ✅ (passou), ❌ (falhou) ou ⚠️ (parcial)
 3. Para falhas, anote o comportamento esperado vs. observado na coluna "Observação"
-4. Repita os testes nos **4 modos**: Dark Foco · Dark Jornada · Light Foco · Light Jornada
+4. Repita os testes visuais nos **9 temas × 2 modos** (18 combinações). Prioridade: Navy Dark + Clean Light + Obsidian + Sahara em ambos os modos
 
 ---
 
@@ -31,6 +31,8 @@
 | `007_futuro_migracao.sql` — Goals V2 → Objectives V3 | | |
 | `008_link_objectives.sql` — Links objectives/tracks/roadmaps | | |
 | `009_corpo_storage.sql` — Storage corpo-files | | |
+| `010_temas_modos_v3.sql` — Temas V3 + modo foco/jornada constraints | ✅ | ✅ |
+| `011_add_3_new_themes.sql` — Adiciona graphite, twilight, sahara | ✅ | ✅ |
 
 ### Seed — Homolog (`001_seed_homolog.sql`)
 
@@ -53,16 +55,19 @@
 
 | # | Item | Esperado | ✅❌⚠️ | Obs |
 |---|------|----------|--------|-----|
-| 0.1 | ModuleBar visível (58px) | 11 ícones: panorama, finanças, futuro, tempo, corpo, mente, patrimônio, carreira, experiências, conquistas, configs | | |
-| 0.2 | Sidebar aparece ao clicar módulo | 220px, navItems do módulo ativo | | |
-| 0.3 | Trocar modo Foco → Jornada | Pill alterna, classe `jornada` aplicada no `<html>` | | |
-| 0.4 | Trocar tema Dark → Light | Classe `light` aplicada, tokens de cor mudam | | |
-| 0.5 | 4 combinações visuais funcionam | Dark Foco / Dark Jornada / Light Foco / Light Jornada | | |
-| 0.6 | Modo persistido após reload | Zustand persiste no localStorage | | |
-| 0.7 | Sidebar fecha em mobile | Overlay cobre conteúdo, X fecha | | |
-| 0.8 | TopHeader breadcrumb (Foco) | Mostra caminho atual Ex.: Finanças › Transações | | |
-| 0.9 | TopHeader saudação (Jornada) | "Boa tarde, [nome]! ✨" | | |
-| 0.10 | Life Sync Score visível na Sidebar (Jornada) | Score numérico com gradiente | | |
+| 0.1 | ModuleBar visível (72px) | 11 ícones: panorama, finanças, futuro, tempo, corpo, mente, patrimônio, carreira, experiências, conquistas, configs | | |
+| 0.2 | ModuleBar divisórias visíveis | 4 separadores horizontais entre grupos de módulos, visíveis em todos os 9 temas | | |
+| 0.3 | Sidebar aparece ao clicar módulo | 228px, navItems do módulo ativo | | |
+| 0.4 | Trocar modo Foco → Jornada (ModePill) | `data-mode` alterna no `<html>`, componentes `.jornada-only` aparecem | | |
+| 0.5 | Trocar tema (ThemePill → Aparência) | `data-theme` e `data-scheme` atualizam, tokens CSS mudam | | |
+| 0.6 | 9 temas renderizam corretamente | Navy Dark, Clean Light, Mint Garden, Obsidian, Rosewood, Arctic, Graphite, Twilight, Sahara | | |
+| 0.7 | Tema `system` segue OS | Dark OS → Navy Dark, Light OS → Clean Light | | |
+| 0.8 | Anti-FOUC funciona | Sem flash de tema errado no reload (script inline aplica antes do paint) | | |
+| 0.9 | Tema e modo persistidos após reload | localStorage + Supabase sync | | |
+| 0.10 | Sidebar fecha em mobile | Overlay cobre conteúdo, X fecha | | |
+| 0.11 | TopHeader breadcrumb (Foco) | Mostra caminho atual Ex.: Finanças › Transações | | |
+| 0.12 | TopHeader saudação (Jornada) | "Boa tarde, [nome]!" | | |
+| 0.13 | Life Sync Score visível na Sidebar (Jornada) | Score numérico com gradiente | | |
 
 ---
 
@@ -85,12 +90,18 @@
 | # | Item | Esperado | ✅❌⚠️ | Obs |
 |---|------|----------|--------|-----|
 | 2.1 | Perfil: editar nome e foto | Salva e reflete no TopHeader | | |
-| 2.2 | Modo Foco/Jornada na config | Alterna globalmente | | |
-| 2.3 | Tema Dark/Light na config | Alterna globalmente | | |
-| 2.4 | Notificações: toggles salvam | Preferências persistidas | | |
-| 2.5 | Categorias: criar categoria | Aparece nas transações | | |
-| 2.6 | Categorias: editar/excluir | Funciona sem quebrar transações existentes | | |
-| 2.7 | Plano: exibe plano atual | Free exibido com CTA para upgrade | | |
+| 2.2 | Aparência: grid de 3 temas FREE | Navy Dark, Clean Light, Mint Garden — selecionáveis | | |
+| 2.3 | Aparência: grid de 6 temas PRO | Obsidian, Rosewood, Arctic, Graphite, Twilight, Sahara — lock para FREE | | |
+| 2.4 | Aparência: tema System/Auto | Segue preferência do OS | | |
+| 2.5 | Aparência: PRO gate para temas | Clique em tema PRO (user FREE) abre UpgradeModal | | |
+| 2.6 | Aparência: modo Foco/Jornada cards | Dois cards, Jornada com badge PRO | | |
+| 2.7 | Aparência: PRO gate para Jornada | Clique em Jornada (user FREE) abre UpgradeModal | | |
+| 2.8 | Aparência: toast de confirmação | "Tema X aplicado" / "Modo X ativado" com animação | | |
+| 2.9 | Aparência: tema persiste no Supabase | Reload mantém tema escolhido | | |
+| 2.10 | Notificações: toggles salvam | Preferências persistidas | | |
+| 2.11 | Categorias: criar categoria | Aparece nas transações | | |
+| 2.12 | Categorias: editar/excluir | Funciona sem quebrar transações existentes | | |
+| 2.13 | Plano: exibe plano atual | Free exibido com CTA para upgrade | | |
 
 ---
 
@@ -336,18 +347,28 @@
 
 ---
 
-## BLOCO 14 — Design System
+## BLOCO 14 — Design System e Temas
 
 | # | Item | Esperado | ✅❌⚠️ | Obs |
 |---|------|----------|--------|-----|
 | 14.1 | Fontes carregadas | Syne (títulos), DM Mono (valores), Outfit (body) | | |
-| 14.2 | Tokens de cor no Dark Foco | `--sl-bg: #03071a`, `--sl-s1: #07112b` | | |
-| 14.3 | Tokens de cor no Light Jornada | `--sl-bg: #c8f0e4`, `--sl-s1: #ffffff` | | |
-| 14.4 | Gradiente `text-sl-grad` visível | Verde → Azul nos títulos Jornada | | |
-| 14.5 | Animação `sl-fade-up` nos cards | Cards aparecem com slide-up suave | | |
-| 14.6 | Hover nos cards | `border-[var(--sl-border-h)]` ao passar mouse | | |
-| 14.7 | Valores monetários em DM Mono | Todas as telas respeitam a fonte | | |
-| 14.8 | Barras de orçamento com cor correta | ≤70% verde · 70–85% amarelo · >85% vermelho | | |
+| 14.2 | Tokens Navy Dark | `--sl-bg: #03071a`, `--sl-accent: #10b981` | | |
+| 14.3 | Tokens Obsidian | `--sl-bg: #0a0a0f`, `--sl-accent: #d4a853` (dourado) | | |
+| 14.4 | Tokens Graphite | `--sl-bg: #111114`, `--sl-accent: #a0a0b8` (silver) | | |
+| 14.5 | Tokens Twilight | `--sl-bg: #0c0a14`, `--sl-accent: #8b5cf6` (violeta) | | |
+| 14.6 | Tokens Sahara | `--sl-bg: #f5f0e8`, `--sl-accent: #c2703e` (terracota) | | |
+| 14.7 | Tokens Arctic | `--sl-bg: #f0f4f8`, `--sl-accent: #0891b2` (cyan) | | |
+| 14.8 | Tokens Rosewood | `--sl-bg: #0f0a0d`, `--sl-accent: #c17d6a` (rose gold) | | |
+| 14.9 | `--sl-accent` aplica em botões, links, toggles | Cor de acento do tema ativo se reflete nos CTAs | | |
+| 14.10 | Cores de módulo fixas em todos os temas | `--color-fin`, `--color-tmp` etc. não mudam por tema | | |
+| 14.11 | Cores funcionais fixas | `--green`, `--red`, `--yellow` iguais em todos os temas | | |
+| 14.12 | Gradiente `text-sl-grad` visível | Verde → Azul nos títulos Jornada | | |
+| 14.13 | Animação `sl-fade-up` (Jornada) | Cards aparecem com slide-up suave; desabilitado no Foco | | |
+| 14.14 | `.jornada-only` / `.foco-only` | Componentes respeitam visibilidade por modo | | |
+| 14.15 | Hover nos cards | `border-[var(--sl-border-h)]` visível em todos os temas | | |
+| 14.16 | Valores monetários em DM Mono | Todas as telas respeitam a fonte | | |
+| 14.17 | Barras de orçamento com cor correta | ≤70% verde · 70–85% amarelo · >85% vermelho | | |
+| 14.18 | Transição de tema suave | `transition: background 0.4s, color 0.4s, border-color 0.4s` | | |
 
 ---
 
@@ -368,9 +389,9 @@
 
 | Bloco | Total | ✅ | ❌ | ⚠️ |
 |-------|-------|----|----|-----|
-| 0 — Shell | 10 | | | |
+| 0 — Shell e Navegação | 13 | | | |
 | 1 — Auth | 7 | | | |
-| 2 — Configs | 7 | | | |
+| 2 — Configurações | 13 | | | |
 | 3 — Dashboard Financeiro | 7 | | | |
 | 4 — Transações | 10 | | | |
 | 5 — Orçamentos | 7 | | | |
@@ -388,9 +409,9 @@
 | 12E — Experiências | 4 | | | |
 | 12F — Tempo | 4 | | | |
 | 13 — Responsividade | 6 | | | |
-| 14 — Design System | 8 | | | |
+| 14 — Design System e Temas | 18 | | | |
 | 15 — Integridade | 6 | | | |
-| **TOTAL** | **161** | | | |
+| **TOTAL** | **185** | | | |
 
 ---
 

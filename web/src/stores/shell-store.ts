@@ -1,22 +1,22 @@
 import { create } from 'zustand'
-import type { ShellState, ModuleId, AppMode, AppTheme } from '@/types/shell'
+import type { ShellState, ModuleId, AppMode, ThemeId, ResolvedThemeId } from '@/types/shell'
+import { isDarkTheme, resolveSystemTheme } from '@/types/shell'
 
-function applyThemeClass(theme: AppTheme) {
+function applyTheme(theme: ThemeId) {
   if (typeof document === 'undefined') return
-  if (theme === 'light') {
-    document.documentElement.classList.add('light')
-  } else {
-    document.documentElement.classList.remove('light')
-  }
+
+  const resolved: ResolvedThemeId = theme === 'system' ? resolveSystemTheme() : theme
+  const scheme = isDarkTheme(resolved) ? 'dark' : 'light'
+
+  document.documentElement.setAttribute('data-theme', resolved)
+  document.documentElement.setAttribute('data-scheme', scheme)
+
+  return resolved
 }
 
-function applyModeClass(mode: AppMode) {
+function applyMode(mode: AppMode) {
   if (typeof document === 'undefined') return
-  if (mode === 'jornada') {
-    document.documentElement.classList.add('jornada')
-  } else {
-    document.documentElement.classList.remove('jornada')
-  }
+  document.documentElement.setAttribute('data-mode', mode)
 }
 
 function writeLocal(key: string, value: string) {
@@ -28,11 +28,14 @@ function writeLocal(key: string, value: string) {
   }
 }
 
-export const useShellStore = create<ShellState>((set) => ({
+const initialResolved = resolveSystemTheme()
+
+export const useShellStore = create<ShellState>((set, get) => ({
   activeModule: 'panorama' as ModuleId,
   sidebarOpen: true,
   mode: 'foco' as AppMode,
-  theme: 'dark' as AppTheme,
+  theme: 'system' as ThemeId,
+  resolvedTheme: initialResolved,
 
   setActiveModule: (module: ModuleId) => set({ activeModule: module }),
 
@@ -49,14 +52,14 @@ export const useShellStore = create<ShellState>((set) => ({
   },
 
   setMode: (mode: AppMode) => {
-    applyModeClass(mode)
+    applyMode(mode)
     writeLocal('synclife-mode', mode)
     set({ mode })
   },
 
-  setTheme: (theme: AppTheme) => {
-    applyThemeClass(theme)
+  setTheme: (theme: ThemeId) => {
+    const resolved = applyTheme(theme)
     writeLocal('synclife-theme', theme)
-    set({ theme })
+    set({ theme, resolvedTheme: resolved || (theme === 'system' ? resolveSystemTheme() : theme as ResolvedThemeId) })
   },
 }))

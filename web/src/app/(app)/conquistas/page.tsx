@@ -177,7 +177,7 @@ function BadgeCard({ badge: b, delay, onClick }: { badge: Badge; delay: number; 
       <div
         className={`w-[54px] h-[54px] rounded-[16px] flex items-center justify-center text-[28px] mx-auto mb-3 transition-transform
           ${b.unlocked ? 'hover:scale-[1.08]' : 'grayscale opacity-40'}
-          ${isLegendaryUnlocked ? 'badge-shimmer [.jornada_&]:badge-shimmer' : ''}`}
+          ${isLegendaryUnlocked ? 'badge-shimmer jornada:badge-shimmer' : ''}`}
         style={{ background: b.unlocked ? `${col}22` : `${col}11` }}
       >
         {b.icon}
@@ -459,7 +459,7 @@ export default function ConquistasPage() {
       </div>
 
       {/* ② Jornada Motivational Phrase */}
-      <div className="hidden [.jornada_&]:flex items-center gap-3 p-[14px_18px] rounded-[14px] mb-5 bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7 border border-[rgba(16,185,129,0.18)] sl-fade-up">
+      <div className="jornada-only flex items-center gap-3 p-[14px_18px] rounded-[14px] mb-5 bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7 border border-[rgba(16,185,129,0.18)] sl-fade-up">
         <span className="text-[22px] shrink-0">🤖</span>
         <span className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">
           Você tem{' '}
@@ -505,7 +505,7 @@ export default function ConquistasPage() {
       </div>
 
       {/* ④-A Grid View (Jornada) */}
-      <div className="hidden [.jornada_&]:block">
+      <div className="jornada-only">
         {visUnlocked.length > 0 && (
           <>
             <SectionLabel>✅ Desbloqueadas ({visUnlocked.length})</SectionLabel>
@@ -534,7 +534,7 @@ export default function ConquistasPage() {
       </div>
 
       {/* ④-B List View (Foco) */}
-      <div className="[.jornada_&]:hidden">
+      <div className="foco-only">
         {visUnlocked.length > 0 && (
           <>
             <SectionLabel>✅ Desbloqueadas ({visUnlocked.length})</SectionLabel>
