@@ -37,10 +37,14 @@ function incrementRegenCount(): void {
   } catch { /* ignore */ }
 }
 
+// RN-CRP-21: macronutrientes por refeição
 interface MealItem {
   name: string
   calories: number
   prep_minutes?: number
+  protein_g?: number
+  carbs_g?: number
+  fat_g?: number
 }
 
 interface DayPlan {
@@ -49,11 +53,15 @@ interface DayPlan {
 }
 
 // Schema retornado pela API /api/ai/cardapio
+interface ApiMeal {
+  name: string; calories: number; prep_minutes: number
+  protein_g?: number; carbs_g?: number; fat_g?: number
+}
 interface ApiDayPlan {
   day: 'seg' | 'ter' | 'qua' | 'qui' | 'sex' | 'sab' | 'dom'
-  breakfast: { name: string; calories: number; prep_minutes: number }
-  lunch: { name: string; calories: number; prep_minutes: number }
-  dinner: { name: string; calories: number; prep_minutes: number }
+  breakfast: ApiMeal
+  lunch: ApiMeal
+  dinner: ApiMeal
   snacks?: { name: string; calories: number }[]
 }
 
@@ -70,10 +78,18 @@ const MEAL_LABELS: Record<string, string> = {
 
 function apiToUiPlan(apiDays: ApiDayPlan[]): DayPlan[] {
   return apiDays.map(d => {
+    const toMeal = (label: string, m: ApiMeal): MealItem => ({
+      name: `${label} — ${m.name}`,
+      calories: m.calories,
+      prep_minutes: m.prep_minutes,
+      protein_g: m.protein_g,
+      carbs_g: m.carbs_g,
+      fat_g: m.fat_g,
+    })
     const meals: MealItem[] = [
-      { name: `${MEAL_LABELS.breakfast} — ${d.breakfast.name}`, calories: d.breakfast.calories, prep_minutes: d.breakfast.prep_minutes },
-      { name: `${MEAL_LABELS.lunch} — ${d.lunch.name}`, calories: d.lunch.calories, prep_minutes: d.lunch.prep_minutes },
-      { name: `${MEAL_LABELS.dinner} — ${d.dinner.name}`, calories: d.dinner.calories, prep_minutes: d.dinner.prep_minutes },
+      toMeal(MEAL_LABELS.breakfast, d.breakfast),
+      toMeal(MEAL_LABELS.lunch, d.lunch),
+      toMeal(MEAL_LABELS.dinner, d.dinner),
       ...(d.snacks ?? []).map((s, i) => ({ name: `${i === 0 ? '🍎' : '🥛'} Lanche — ${s.name}`, calories: s.calories })),
     ]
     return { day: DAY_MAP[d.day] ?? d.day, meals }
@@ -349,7 +365,7 @@ export default function CardapioPage() {
                   </div>
                   {dayPlan.meals.map((meal, idx) => (
                     <div key={idx} className="p-3 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl">
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center justify-between gap-2 mb-1">
                         <p className="text-[12px] font-semibold text-[var(--sl-t1)] leading-snug">{meal.name}</p>
                         <div className="flex items-center gap-2 shrink-0">
                           {meal.prep_minutes != null && (
@@ -358,6 +374,20 @@ export default function CardapioPage() {
                           <span className="font-[DM_Mono] text-[11px] text-[#f97316]">{meal.calories} kcal</span>
                         </div>
                       </div>
+                      {/* RN-CRP-21: macros */}
+                      {(meal.protein_g != null || meal.carbs_g != null || meal.fat_g != null) && (
+                        <div className="flex gap-3 mt-1">
+                          {meal.protein_g != null && (
+                            <span className="text-[10px] text-[#10b981]">P: <strong className="font-[DM_Mono]">{meal.protein_g}g</strong></span>
+                          )}
+                          {meal.carbs_g != null && (
+                            <span className="text-[10px] text-[#f59e0b]">C: <strong className="font-[DM_Mono]">{meal.carbs_g}g</strong></span>
+                          )}
+                          {meal.fat_g != null && (
+                            <span className="text-[10px] text-[#f97316]">G: <strong className="font-[DM_Mono]">{meal.fat_g}g</strong></span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

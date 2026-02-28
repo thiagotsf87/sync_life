@@ -17,6 +17,7 @@ import {
   calcProgressVelocity,
   isProgressAtRisk,
   CATEGORY_LABELS,
+  type GoalIndicatorType,
 } from '@/hooks/use-futuro'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
@@ -112,7 +113,8 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
     const goal = objective.goals?.find(g => g.id === goalId)
     if (!goal) return
     try {
-      await updateGoalProgress(goalId, id, currentValue, goal.target_value, goal.indicator_type as never)
+      // RN-FUT-17: passa initial_value para cálculo correto por tipo
+      await updateGoalProgress(goalId, id, currentValue, goal.target_value, goal.indicator_type as GoalIndicatorType, goal.initial_value)
       toast.success('Progresso atualizado!')
       await reload()
     } catch {
@@ -121,6 +123,12 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
   }, [objective, updateGoalProgress, id, reload])
 
   const handleDeleteGoal = useCallback(async (goalId: string) => {
+    // RN-FUT-07/22: mínimo 1 meta por objetivo
+    const currentCount = objective?.goals?.length ?? 0
+    if (currentCount <= 1) {
+      toast.warning('Um objetivo precisa ter pelo menos 1 meta. Adicione outra antes de remover esta.')
+      return
+    }
     try {
       await deleteGoal(goalId, id)
       toast.success('Meta removida')
@@ -128,7 +136,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
     } catch {
       toast.error('Erro ao remover meta')
     }
-  }, [deleteGoal, id, reload])
+  }, [deleteGoal, id, reload, objective?.goals?.length])
 
   const handleTogglePause = useCallback(async () => {
     if (!objective) return

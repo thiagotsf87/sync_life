@@ -13,6 +13,7 @@ import {
   type ActivityLevelType, type WeightGoalType, type BiologicalSex,
 } from '@/hooks/use-corpo'
 import { WeightChart } from '@/components/corpo/WeightChart'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
 const ACTIVITY_LEVELS: ActivityLevelType[] = ['sedentary', 'light', 'moderate', 'very_active', 'extreme']
 const WEIGHT_GOALS: WeightGoalType[] = ['lose', 'maintain', 'gain']
@@ -328,6 +329,33 @@ export default function PesoPage() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* RN-CRP-16: Gráfico de evolução de medidas (cintura/quadril) */}
+      {entries.some(e => e.waist_cm || e.hip_cm) && (
+        <div className="mt-5 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
+          <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] mb-4">📏 Evolução de Medidas</h2>
+          <ResponsiveContainer width="100%" height={180}>
+            <LineChart
+              data={[...entries].reverse().slice(-30).map(e => ({
+                date: new Date(e.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
+                cintura: e.waist_cm ?? undefined,
+                quadril: e.hip_cm ?? undefined,
+              }))}
+              margin={{ top: 4, right: 8, left: -20, bottom: 0 }}
+            >
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--sl-t3)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--sl-t3)' }} axisLine={false} tickLine={false} unit="cm" />
+              <Tooltip
+                contentStyle={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', borderRadius: 10, fontSize: 11 }}
+                labelStyle={{ color: 'var(--sl-t2)' }}
+              />
+              <Legend wrapperStyle={{ fontSize: 11, color: 'var(--sl-t3)' }} />
+              <Line type="monotone" dataKey="cintura" name="Cintura (cm)" stroke="#f59e0b" dot={false} strokeWidth={2} connectNulls />
+              <Line type="monotone" dataKey="quadril" name="Quadril (cm)" stroke="#a855f7" dot={false} strokeWidth={2} connectNulls />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       )}
 

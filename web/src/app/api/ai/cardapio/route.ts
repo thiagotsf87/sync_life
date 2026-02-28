@@ -9,12 +9,22 @@ import { createClient } from '@/lib/supabase/server'
 const model = google('gemini-1.5-flash')
 // const model = anthropic('claude-sonnet-4-5')
 
+// RN-CRP-21: incluir macronutrientes (proteína, carboidrato, gordura) em cada refeição
+const MealSchema = z.object({
+  name: z.string(),
+  calories: z.number(),
+  prep_minutes: z.number(),
+  protein_g: z.number(),
+  carbs_g: z.number(),
+  fat_g: z.number(),
+})
+
 const MealPlanSchema = z.object({
   week: z.array(z.object({
     day: z.enum(['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom']),
-    breakfast: z.object({ name: z.string(), calories: z.number(), prep_minutes: z.number() }),
-    lunch: z.object({ name: z.string(), calories: z.number(), prep_minutes: z.number() }),
-    dinner: z.object({ name: z.string(), calories: z.number(), prep_minutes: z.number() }),
+    breakfast: MealSchema,
+    lunch: MealSchema,
+    dinner: MealSchema,
     snacks: z.array(z.object({ name: z.string(), calories: z.number() })).optional(),
   })).length(7),
   weekly_calories: z.number(),
@@ -39,7 +49,7 @@ export async function POST(req: NextRequest) {
 ${weekly_budget ? `- Orçamento semanal: R$ ${weekly_budget}` : ''}
 
 Priorize refeições simples, práticas e típicas da culinária brasileira.
-Cada refeição deve ter nome, estimativa de calorias e tempo de preparo em minutos.`
+Cada refeição principal (café, almoço, jantar) deve ter: nome, estimativa de calorias, tempo de preparo em minutos e macronutrientes (proteína em g, carboidrato em g, gordura em g).`
 
   try {
     const { object } = await generateObject({

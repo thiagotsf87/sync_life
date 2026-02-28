@@ -460,6 +460,44 @@ export default function TripDetailPage() {
                 <p className="text-[13px] text-[var(--sl-t2)] whitespace-pre-wrap">{trip.notes}</p>
               </div>
             )}
+
+            {/* RN-EXP-19: Resumo pós-viagem quando concluída */}
+            {trip.status === 'completed' && (
+              <div className="bg-gradient-to-br from-[#06b6d4]/10 to-[#10b981]/10 border border-[#06b6d4]/30 rounded-2xl p-5">
+                <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">🏆 Resumo da Viagem</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-[var(--sl-s1)] rounded-xl p-3">
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Duração</p>
+                    <p className="font-[DM_Mono] text-[15px] font-bold text-[#06b6d4]">{days} dias</p>
+                  </div>
+                  <div className="bg-[var(--sl-s1)] rounded-xl p-3">
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Gasto Total</p>
+                    <p className="font-[DM_Mono] text-[15px] font-bold text-[var(--sl-t1)]">
+                      {totalActual > 0
+                        ? totalActual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                        : '—'}
+                    </p>
+                  </div>
+                  <div className="bg-[var(--sl-s1)] rounded-xl p-3">
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Atividades</p>
+                    <p className="font-[DM_Mono] text-[15px] font-bold text-[var(--sl-t1)]">{itinerary.length}</p>
+                  </div>
+                  <div className="bg-[var(--sl-s1)] rounded-xl p-3">
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Checklist</p>
+                    <p className="font-[DM_Mono] text-[15px] font-bold text-[#10b981]">{Math.round(checklistPct)}%</p>
+                  </div>
+                </div>
+                {totalEstimated > 0 && totalActual > 0 && (
+                  <div className="mt-3 p-3 bg-[var(--sl-s1)] rounded-xl">
+                    <p className="text-[11px] text-[var(--sl-t2)]">
+                      {totalActual <= totalEstimated
+                        ? `✅ Ficou ${(totalEstimated - totalActual).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} abaixo do orçamento!`
+                        : `⚠️ Excedeu o orçamento em ${(totalActual - totalEstimated).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}.`}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Side */}

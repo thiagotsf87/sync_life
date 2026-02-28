@@ -119,6 +119,59 @@ export function calcProgressVelocity(
 }
 
 /**
+ * RN-FUT-17: Cálculo de progresso por tipo de indicador.
+ * Cada tipo tem uma fórmula específica.
+ */
+export function calcGoalProgress(
+  indicatorType: GoalIndicatorType,
+  currentValue: number,
+  targetValue: number | null,
+  initialValue: number | null,
+): number {
+  switch (indicatorType) {
+    case 'task':
+      // Binário: 0 = pendente, >0 = concluído
+      return currentValue > 0 ? 100 : 0
+
+    case 'weight': {
+      // Pode ser perda OU ganho — direção definida por initialValue vs targetValue
+      if (initialValue != null && targetValue != null && initialValue !== targetValue) {
+        const isLosing = initialValue > targetValue
+        const progress = isLosing
+          ? ((initialValue - currentValue) / (initialValue - targetValue)) * 100
+          : ((currentValue - initialValue) / (targetValue - initialValue)) * 100
+        return Math.min(Math.max(Math.round(progress), 0), 100)
+      }
+      // Fallback sem initial_value
+      if (!targetValue || targetValue <= 0) return 0
+      return Math.min(Math.round((currentValue / targetValue) * 100), 100)
+    }
+
+    case 'frequency':
+      // Frequência: X ocorrências no período / Y alvo
+      if (!targetValue || targetValue <= 0) return 0
+      return Math.min(Math.round((currentValue / targetValue) * 100), 100)
+
+    case 'monetary':
+    case 'quantity':
+    case 'percentage': {
+      // Suporta ponto de partida para metas "de X até Y"
+      if (initialValue != null && targetValue != null && targetValue !== initialValue) {
+        const totalChange = targetValue - initialValue
+        const actualChange = currentValue - initialValue
+        return Math.min(Math.max(Math.round((actualChange / totalChange) * 100), 0), 100)
+      }
+      if (!targetValue || targetValue <= 0) return Math.min(Math.round(currentValue), 100)
+      return Math.min(Math.round((currentValue / targetValue) * 100), 100)
+    }
+
+    default:
+      if (!targetValue || targetValue <= 0) return Math.min(Math.round(currentValue), 100)
+      return Math.min(Math.round((currentValue / targetValue) * 100), 100)
+  }
+}
+
+/**
  * RN-FUT-25: Retorna true se o ritmo atual é insuficiente para atingir 100% antes do prazo.
  */
 export function isProgressAtRisk(
@@ -410,19 +463,13 @@ export function useUpdateGoalProgress() {
     objectiveId: string,
     currentValue: number,
     targetValue: number | null,
-    indicatorType: GoalIndicatorType
+    indicatorType: GoalIndicatorType,
+    initialValue?: number | null,  // RN-FUT-17
   ): Promise<void> => {
     const sb = supabase as any
 
-    // Calculate progress based on indicator type
-    let progress = 0
-    if (indicatorType === 'task') {
-      progress = currentValue > 0 ? 100 : 0
-    } else if (targetValue && targetValue > 0) {
-      progress = Math.min(Math.round((currentValue / targetValue) * 100), 100)
-    } else {
-      progress = Math.min(currentValue, 100)
-    }
+    // RN-FUT-17: cálculo por tipo de indicador
+    const progress = calcGoalProgress(indicatorType, currentValue, targetValue, initialValue ?? null)
 
     const isCompleted = progress >= 100
     const { error } = await sb.from('objective_goals').update({

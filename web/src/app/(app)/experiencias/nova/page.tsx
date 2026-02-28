@@ -162,6 +162,13 @@ export default function NovaViagemPage() {
         })
       }
       toast.success('Viagem criada com sucesso!')
+      // RN-EXP-08/FUT-50: sugerir criação de objetivo no Futuro para a viagem
+      setTimeout(() => {
+        toast.info('💡 Dica: crie um Objetivo no módulo Futuro para acompanhar o progresso desta viagem!', {
+          action: { label: 'Criar Objetivo', onClick: () => router.push('/futuro') },
+          duration: 8000,
+        })
+      }, 1500)
       router.push(`/experiencias/viagens/${trip.id}`)
     } catch {
       toast.error('Erro ao criar viagem')

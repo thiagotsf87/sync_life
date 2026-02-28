@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Plus, Trash2, GripVertical } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { TrackCategory, CreateTrackData } from '@/hooks/use-mente'
 import { CATEGORY_LABELS } from '@/hooks/use-mente'
 import { createTransactionFromCurso } from '@/lib/integrations/financas'
+import { createClient } from '@/lib/supabase/client'
 
 interface TrackWizardProps {
   open: boolean
@@ -25,6 +26,8 @@ interface StepItem {
   title: string
 }
 
+interface SkillOption { id: string; name: string }
+
 interface FormState {
   name: string
   category: TrackCategory
@@ -34,6 +37,7 @@ interface FormState {
   steps: StepItem[]
   newStep: string
   syncToFinancas: boolean
+  linked_skill_id: string | null
 }
 
 const INITIAL: FormState = {
@@ -45,11 +49,27 @@ const INITIAL: FormState = {
   steps: [],
   newStep: '',
   syncToFinancas: false,
+  linked_skill_id: null,
 }
 
 export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackWizardProps) {
   const [step, setStep] = useState(0)
   const [form, setForm] = useState<FormState>(INITIAL)
+  const [skills, setSkills] = useState<SkillOption[]>([])
+
+  // RN-MNT-03: carregar habilidades de Carreira para vinculação
+  useEffect(() => {
+    if (!open) return
+    const supabase = createClient() as any
+    supabase.auth.getUser().then(({ data: { user } }: any) => {
+      if (!user) return
+      supabase.from('skills')
+        .select('id, name')
+        .eq('user_id', user.id)
+        .order('name')
+        .then(({ data }: any) => { if (data) setSkills(data) })
+    })
+  }, [open])
 
   if (!open) return null
 
@@ -86,6 +106,7 @@ export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackW
       cost,
       notes: form.notes.trim() || null,
       steps: form.steps.map((s, i) => ({ title: s.title, sort_order: i })),
+      linked_skill_id: form.linked_skill_id || null,
     })
     // RN-MNT-09: registrar custo em Finanças se opt-in
     if (form.syncToFinancas && cost && cost > 0) {
@@ -258,6 +279,28 @@ export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackW
                   />
                 </div>
               </div>
+
+              {/* RN-MNT-03: Vincular habilidade de Carreira */}
+              {skills.length > 0 && (
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">
+                    Habilidade vinculada (Carreira)
+                  </label>
+                  <select
+                    value={form.linked_skill_id ?? ''}
+                    onChange={e => setForm(f => ({ ...f, linked_skill_id: e.target.value || null }))}
+                    className="w-full px-3 py-2 rounded-[10px] text-[13px]
+                               bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
+                               outline-none focus:border-[#a855f7] transition-colors"
+                  >
+                    <option value="">Nenhuma</option>
+                    {skills.map(s => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                  <p className="text-[10px] text-[var(--sl-t3)] mt-1">Ao concluir a trilha, você será lembrado de atualizar o nível.</p>
+                </div>
+              )}
 
               {/* RN-MNT-09: Sync to Finanças */}
               {form.cost && parseFloat(form.cost) > 0 && (

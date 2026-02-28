@@ -285,6 +285,7 @@ export interface CreateTrackData {
   cost?: number | null
   notes?: string | null
   steps: { title: string; sort_order: number }[]
+  linked_skill_id?: string | null
 }
 
 export function useCreateTrack() {
@@ -303,6 +304,7 @@ export function useCreateTrack() {
       target_date: data.target_date ?? null,
       cost: data.cost ?? null,
       notes: data.notes ?? null,
+      linked_skill_id: data.linked_skill_id ?? null,
       progress: 0,
       total_hours: 0,
     }).select().single()

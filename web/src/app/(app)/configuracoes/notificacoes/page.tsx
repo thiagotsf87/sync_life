@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ToggleSwitch } from '@/components/settings/toggle-switch'
 import { useShellStore } from '@/stores/shell-store'
+
+const NOTIF_KEY = 'sl_notif_settings'
 
 interface NotifState {
   push: boolean
@@ -85,25 +87,41 @@ function NotifRow({
   )
 }
 
+const DEFAULT_NOTIF: NotifState = {
+  push: false,
+  email: false,
+  budget75: true,
+  budgetExceeded: true,
+  financialTomorrow: true,
+  negativeProjection: true,
+  goalAtRisk: true,
+  goalComplete: true,
+  dailyReminder: true,
+  dailyReminderTime: '21:00',
+  weeklyReview: true,
+  achievements: true,
+  inactivity: false,
+}
+
 export default function NotificacoesPage() {
   const mode = useShellStore((s) => s.mode)
   const isJornada = mode === 'jornada'
 
-  const [notif, setNotif] = useState<NotifState>({
-    push: false,
-    email: false,
-    budget75: true,
-    budgetExceeded: true,
-    financialTomorrow: true,
-    negativeProjection: true,
-    goalAtRisk: true,
-    goalComplete: true,
-    dailyReminder: true,
-    dailyReminderTime: '21:00',
-    weeklyReview: true,
-    achievements: true,
-    inactivity: false,
-  })
+  const [notif, setNotif] = useState<NotifState>(DEFAULT_NOTIF)
+
+  // RN-FUT-51: persistir configurações de notificação no localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(NOTIF_KEY)
+      if (saved) setNotif({ ...DEFAULT_NOTIF, ...JSON.parse(saved) })
+    } catch { /* ignore */ }
+  }, [])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(NOTIF_KEY, JSON.stringify(notif))
+    } catch { /* ignore */ }
+  }, [notif])
 
   const toggle = (key: NotifKey) => {
     if (key === 'dailyReminderTime') return

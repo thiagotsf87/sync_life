@@ -73,8 +73,19 @@ export default function HabilidadesPage() {
     if (!form.name.trim()) { toast.error('Informe o nome da habilidade'); return }
     setIsSaving(true)
     try {
+      const wasLevelChange = editingSkill && editingSkill.proficiency_level !== form.proficiency_level
       await saveSkill({ ...form, notes: form.notes || null }, editingSkill?.id)
       toast.success(editingSkill ? 'Habilidade atualizada!' : 'Habilidade adicionada!')
+      // RN-CAR-16: quando nível de habilidade sobe, sugerir verificar roadmap
+      if (wasLevelChange && form.proficiency_level > (editingSkill?.proficiency_level ?? 0)) {
+        setTimeout(() => {
+          toast.info('🗺 Nível de habilidade aumentado!', {
+            description: 'Verifique se algum passo do seu Roadmap foi desbloqueado.',
+            action: { label: 'Ver Roadmap', onClick: () => router.push('/carreira/roadmap') },
+            duration: 8000,
+          })
+        }, 1000)
+      }
       setShowModal(false)
       await reload()
     } catch {

@@ -54,6 +54,9 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
   if (!open) return null
 
   const isTask = form.indicator_type === 'task'
+  const isFrequency = form.indicator_type === 'frequency'
+  const isWeight = form.indicator_type === 'weight'
+  const showInitialValue = !isTask && !isFrequency
   const suggestions = UNIT_SUGGESTIONS[form.indicator_type] ?? []
 
   async function handleSave() {
@@ -155,31 +158,63 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">
-                  Valor Atual
+                  {isWeight ? 'Peso Atual (kg)' : 'Valor Atual'}
                 </label>
                 <input
                   type="number"
                   value={form.current_value}
                   onChange={e => setForm(f => ({ ...f, current_value: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-[10px] text-[13px]
-                             bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                             outline-none focus:border-[#10b981] transition-colors"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">
-                  Meta (alvo)
-                </label>
-                <input
-                  type="number"
-                  value={form.target_value}
-                  onChange={e => setForm(f => ({ ...f, target_value: e.target.value }))}
-                  placeholder="0"
+                  placeholder={isWeight ? 'Ex: 85' : '0'}
                   className="w-full px-3 py-2 rounded-[10px] text-[13px]
                              bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
                              placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
                 />
               </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">
+                  {isWeight ? 'Peso Alvo (kg)' : 'Meta (alvo)'}
+                </label>
+                <input
+                  type="number"
+                  value={form.target_value}
+                  onChange={e => setForm(f => ({ ...f, target_value: e.target.value }))}
+                  placeholder={isWeight ? 'Ex: 75' : '0'}
+                  className="w-full px-3 py-2 rounded-[10px] text-[13px]
+                             bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
+                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* RN-FUT-17: Valor de partida — necessário para peso, opcional para monetário/quantidade */}
+          {showInitialValue && (
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">
+                {isWeight
+                  ? 'Peso de Partida (kg) — obrigatório para calcular % de progresso'
+                  : 'Valor de Partida (opcional) — se a meta começa acima de zero'}
+              </label>
+              <input
+                type="number"
+                value={form.initial_value}
+                onChange={e => setForm(f => ({ ...f, initial_value: e.target.value }))}
+                placeholder={
+                  isWeight ? 'Ex: 90 (peso antes de começar)' :
+                  form.indicator_type === 'monetary' ? 'Ex: 5000 (quanto já tem hoje)' :
+                  'Ponto de partida'
+                }
+                className="w-full px-3 py-2 rounded-[10px] text-[13px]
+                           bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
+                           placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+              />
+              {isWeight && form.initial_value && form.target_value && (
+                <p className="text-[10px] text-[var(--sl-t3)] mt-1">
+                  {parseFloat(form.initial_value) > parseFloat(form.target_value)
+                    ? `📉 Meta de perda: ${(parseFloat(form.initial_value) - parseFloat(form.target_value)).toFixed(1)} kg`
+                    : `📈 Meta de ganho: ${(parseFloat(form.target_value) - parseFloat(form.initial_value)).toFixed(1)} kg`}
+                </p>
+              )}
             </div>
           )}
 
@@ -219,6 +254,30 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
               )}
             </div>
           )}
+
+          {/* RN-FUT-03/16: Peso da meta para cálculo ponderado */}
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">
+              Peso (importância)
+            </label>
+            <div className="flex items-center gap-2">
+              {[1, 2, 3].map(w => (
+                <button
+                  key={w}
+                  onClick={() => setForm(f => ({ ...f, weight: String(w) }))}
+                  className={cn(
+                    'flex-1 py-1.5 rounded-[8px] text-[11px] font-medium border transition-all',
+                    parseInt(form.weight) === w
+                      ? 'border-[#10b981] bg-[#10b981]/10 text-[var(--sl-t1)]'
+                      : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
+                  )}
+                >
+                  {w === 1 ? '1 — Normal' : w === 2 ? '2 — Importante' : '3 — Crítica'}
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] text-[var(--sl-t3)] mt-1">Metas com peso maior influenciam mais o progresso geral.</p>
+          </div>
         </div>
 
         {/* Footer */}

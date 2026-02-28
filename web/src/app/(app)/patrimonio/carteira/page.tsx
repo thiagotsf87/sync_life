@@ -13,6 +13,7 @@ import {
   type AssetClass, type AddTransactionData,
 } from '@/hooks/use-patrimonio'
 import { AssetCard } from '@/components/patrimonio/AssetCard'
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 
@@ -152,6 +153,22 @@ export default function CarteiraPage() {
 
   const totalInvested = assets.reduce((s, a) => s + a.quantity * a.avg_price, 0)
 
+  // RN-PTR-04: distribuição por setor
+  const sectorData = (() => {
+    const map: Record<string, number> = {}
+    for (const a of assets) {
+      const key = a.sector?.trim() || 'Sem setor'
+      map[key] = (map[key] ?? 0) + a.quantity * a.avg_price
+    }
+    return Object.entries(map)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, value], i) => ({
+        name,
+        value,
+        color: ['#10b981','#0055ff','#f59e0b','#a855f7','#06b6d4','#f97316','#f43f5e'][i % 7],
+      }))
+  })()
+
   return (
     <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
@@ -215,6 +232,39 @@ export default function CarteiraPage() {
               <p className="font-[DM_Mono] font-medium text-xl text-[var(--sl-t1)]">{s.value}</p>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* RN-PTR-04: Distribuição por setor */}
+      {sectorData.length > 1 && (
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-5">
+          <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">🏭 Distribuição por Setor</h3>
+          <div className="flex items-center gap-4 flex-wrap">
+            <ResponsiveContainer width={140} height={140}>
+              <PieChart>
+                <Pie data={sectorData} dataKey="value" cx="50%" cy="50%" innerRadius={40} outerRadius={65}>
+                  {sectorData.map((entry, i) => (
+                    <Cell key={i} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', borderRadius: 10, fontSize: 11 }}
+                  formatter={(v: unknown) => typeof v === 'number' ? v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : String(v)}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex flex-col gap-1.5 flex-1 min-w-[140px]">
+              {sectorData.slice(0, 7).map((s) => (
+                <div key={s.name} className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: s.color }} />
+                  <span className="text-[11px] text-[var(--sl-t2)] flex-1 truncate">{s.name}</span>
+                  <span className="font-[DM_Mono] text-[10px] text-[var(--sl-t3)]">
+                    {totalInvested > 0 ? Math.round((s.value / totalInvested) * 100) : 0}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 

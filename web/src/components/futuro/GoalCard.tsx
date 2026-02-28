@@ -127,32 +127,83 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
         </div>
       </div>
 
-      {/* Update progress inline */}
+      {/* Update progress inline — RN-FUT-17: UI por tipo de indicador */}
       {editing && !isCompleted && (
-        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[var(--sl-border)]">
-          <input
-            type="number"
-            value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
-            className="flex-1 px-2.5 py-1.5 rounded-[8px] text-[12px] font-medium
-                       bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                       outline-none focus:border-[#10b981] transition-colors"
-            placeholder="Novo valor"
-          />
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold
-                       bg-[#10b981] text-[#03071a] hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
-            {saving ? '...' : 'Salvar'}
-          </button>
-          <button
-            onClick={() => setEditing(false)}
-            className="px-2.5 py-1.5 rounded-[8px] text-[12px] text-[var(--sl-t2)] hover:bg-[var(--sl-s3)]"
-          >
-            ✕
-          </button>
+        <div className="mt-2 pt-2 border-t border-[var(--sl-border)]">
+          {goal.indicator_type === 'task' ? (
+            // Task: toggle simples
+            <button
+              onClick={async () => {
+                setSaving(true)
+                try {
+                  await onUpdateProgress(goal.id, goal.current_value > 0 ? 0 : 1)
+                  setEditing(false)
+                } finally { setSaving(false) }
+              }}
+              disabled={saving}
+              className={cn(
+                'w-full py-2 rounded-[8px] text-[12px] font-semibold transition-colors border',
+                goal.current_value > 0
+                  ? 'bg-[var(--sl-s3)] text-[var(--sl-t2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
+                  : 'bg-[#10b981]/10 text-[#10b981] border-[#10b981]/30 hover:bg-[#10b981]/20',
+              )}
+            >
+              {saving ? '...' : goal.current_value > 0 ? '↩ Marcar como pendente' : '✓ Marcar como concluída'}
+            </button>
+          ) : (
+            <div className="flex flex-col gap-1.5">
+              {/* Contexto para peso */}
+              {goal.indicator_type === 'weight' && goal.initial_value != null && goal.target_value != null && (
+                <p className="text-[10px] text-[var(--sl-t3)]">
+                  Partida: <strong className="font-[DM_Mono]">{goal.initial_value} kg</strong>
+                  {' → '}
+                  Alvo: <strong className="font-[DM_Mono]">{goal.target_value} kg</strong>
+                  {' '}
+                  <span>({goal.initial_value > goal.target_value ? '📉 perda' : '📈 ganho'})</span>
+                </p>
+              )}
+              {/* Contexto para frequência */}
+              {goal.indicator_type === 'frequency' && goal.target_value != null && (
+                <p className="text-[10px] text-[var(--sl-t3)]">
+                  Meta: <strong className="font-[DM_Mono]">{goal.target_value}</strong>
+                  {goal.target_unit ? ` ${goal.target_unit}` : ' vezes no período'}
+                </p>
+              )}
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={inputValue}
+                  onChange={e => setInputValue(e.target.value)}
+                  className="flex-1 px-2.5 py-1.5 rounded-[8px] text-[12px] font-medium
+                             bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t1)]
+                             outline-none focus:border-[#10b981] transition-colors"
+                  placeholder={
+                    goal.indicator_type === 'weight' ? 'Peso atual (kg)' :
+                    goal.indicator_type === 'frequency' ? 'Qtd neste período' :
+                    goal.indicator_type === 'monetary' ? 'Valor atual (R$)' :
+                    'Novo valor'
+                  }
+                />
+                {goal.target_unit && goal.indicator_type !== 'monetary' && (
+                  <span className="text-[11px] text-[var(--sl-t3)] shrink-0">{goal.target_unit}</span>
+                )}
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold
+                             bg-[#10b981] text-[#03071a] hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {saving ? '...' : 'Salvar'}
+                </button>
+                <button
+                  onClick={() => setEditing(false)}
+                  className="px-2.5 py-1.5 rounded-[8px] text-[12px] text-[var(--sl-t2)] hover:bg-[var(--sl-s3)]"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
