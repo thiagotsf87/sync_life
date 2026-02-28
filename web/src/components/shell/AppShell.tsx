@@ -41,21 +41,15 @@ export function NewAppShell({
   const setTheme = useShellStore((s) => s.setTheme)
   const setSidebarOpen = useShellStore((s) => s.setSidebarOpen)
 
-  // Initialize from server values (Supabase overrides localStorage on first load)
+  // Hydrate store from server-provided values (runs once after mount)
   const initialized = useRef(false)
   useEffect(() => {
     if (initialized.current) return
     initialized.current = true
 
-    if (initialMode && initialMode !== mode) {
-      setMode(initialMode)
-    }
-    if (initialTheme && initialTheme !== theme) {
-      setTheme(initialTheme)
-    }
-    if (initialSidebarOpen !== undefined && initialSidebarOpen !== sidebarOpen) {
-      setSidebarOpen(initialSidebarOpen)
-    }
+    if (initialMode) setMode(initialMode)
+    if (initialTheme) setTheme(initialTheme)
+    if (initialSidebarOpen !== undefined) setSidebarOpen(initialSidebarOpen)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -65,7 +59,8 @@ export function NewAppShell({
   // Sync store changes → Supabase (debounced, with rollback on error)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
-    if (!initialized.current) return
+    // Guard against Turbopack HMR destroying ref bindings
+    try { if (!initialized.current) return } catch { return }
     if (debounceRef.current) clearTimeout(debounceRef.current)
 
     const snapshot = { mode, theme, sidebarOpen }

@@ -45,7 +45,7 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
             className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
                        hover:bg-[var(--sl-s2)] transition-colors"
           >
-            <IconCorpo size={20} className="text-[#f97316]" />
+            <IconCorpo size={20} style={{ color: MODULES.corpo.color }} />
             <span className="text-sm font-medium">Corpo</span>
           </button>
           <button
@@ -53,7 +53,7 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
             className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
                        hover:bg-[var(--sl-s2)] transition-colors"
           >
-            <IconMente size={20} className="text-[#a855f7]" />
+            <IconMente size={20} style={{ color: MODULES.mente.color }} />
             <span className="text-sm font-medium">Mente</span>
           </button>
           <button
@@ -61,7 +61,7 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
             className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
                        hover:bg-[var(--sl-s2)] transition-colors"
           >
-            <IconPatrimonio size={20} className="text-[#10b981]" />
+            <IconPatrimonio size={20} style={{ color: MODULES.patrimonio.color }} />
             <span className="text-sm font-medium">Patrimônio</span>
           </button>
           <button
@@ -69,7 +69,7 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
             className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
                        hover:bg-[var(--sl-s2)] transition-colors"
           >
-            <IconCarreira size={20} className="text-[#f59e0b]" />
+            <IconCarreira size={20} style={{ color: MODULES.carreira.color }} />
             <span className="text-sm font-medium">Carreira</span>
           </button>
           <button
@@ -77,7 +77,7 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
             className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
                        hover:bg-[var(--sl-s2)] transition-colors"
           >
-            <IconExperiencias size={20} className="text-[#06b6d4]" />
+            <IconExperiencias size={20} style={{ color: MODULES.experiencias.color }} />
             <span className="text-sm font-medium">Experiências</span>
           </button>
           <button
@@ -85,7 +85,7 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
             className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
                        hover:bg-[var(--sl-s2)] transition-colors"
           >
-            <IconConquistas size={20} className="text-[#f59e0b]" />
+            <IconConquistas size={20} style={{ color: MODULES.conquistas.color }} />
             <span className="text-sm font-medium">Conquistas</span>
           </button>
           <button
@@ -93,7 +93,7 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
             className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
                        hover:bg-[var(--sl-s2)] transition-colors"
           >
-            <IconConfig size={20} className="text-[var(--sl-t2)]" />
+            <IconConfig size={20} style={{ color: MODULES.configuracoes.color }} />
             <span className="text-sm font-medium">Configurações</span>
           </button>
         </div>

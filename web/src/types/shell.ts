@@ -1,4 +1,4 @@
-export type ModuleId = 'home' | 'financas' | 'futuro' | 'tempo' | 'corpo' | 'mente' | 'patrimonio' | 'carreira' | 'experiencias' | 'conquistas' | 'configuracoes'
+export type ModuleId = 'panorama' | 'financas' | 'futuro' | 'tempo' | 'corpo' | 'mente' | 'patrimonio' | 'carreira' | 'experiencias' | 'conquistas' | 'configuracoes'
 
 export type ModuleColor = 'home' | 'fin' | 'meta' | 'agenda' | 'conq' | 'cfg'
 

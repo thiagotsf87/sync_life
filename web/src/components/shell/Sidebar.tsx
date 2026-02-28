@@ -11,12 +11,16 @@ import {
   LayoutDashboard, ArrowLeftRight, Repeat, PieChart, CalendarDays,
   TrendingUp, BarChart3, Target, Plus, Calendar, CalendarRange,
   CalendarPlus, Timer, Trophy, Medal, User, Palette, Bell, Tags, Crown,
+  Dumbbell, Scale, Utensils, HeartPulse, Bot, Library, Calculator,
+  UserCheck, Map, Star, History, BookOpen, Clock, Briefcase, DollarSign, Plane,
 } from 'lucide-react'
 
 const LUCIDE_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   LayoutDashboard, ArrowLeftRight, Repeat, PieChart, CalendarDays,
   TrendingUp, BarChart3, Target, Plus, Calendar, CalendarRange,
   CalendarPlus, Timer, Trophy, Medal, User, Palette, Bell, Tags, Crown,
+  Dumbbell, Scale, Utensils, HeartPulse, Bot, Library, Calculator,
+  UserCheck, Map, Star, History, BookOpen, Clock, Briefcase, DollarSign, Plane,
 }
 
 export function Sidebar() {
@@ -44,14 +48,14 @@ export function Sidebar() {
         'lg:flex',
       )}
       style={{
-        left: 58,
+        left: 72,
         width: sidebarOpen ? 228 : 56,
       }}
     >
       {/* Header */}
       <div className="flex h-[54px] items-center gap-2 px-3 border-b border-[var(--sl-border)]">
         <div
-          className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-lg"
+          className="sl-sb-icon flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-lg"
           style={{ color: mod.color }}
         >
           <ModuleIcon size={18} />

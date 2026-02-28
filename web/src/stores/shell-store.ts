@@ -19,15 +19,6 @@ function applyModeClass(mode: AppMode) {
   }
 }
 
-function readLocal(key: string, fallback: string): string {
-  if (typeof window === 'undefined') return fallback
-  try {
-    return localStorage.getItem(key) || fallback
-  } catch {
-    return fallback
-  }
-}
-
 function writeLocal(key: string, value: string) {
   if (typeof window === 'undefined') return
   try {
@@ -38,10 +29,10 @@ function writeLocal(key: string, value: string) {
 }
 
 export const useShellStore = create<ShellState>((set) => ({
-  activeModule: 'home' as ModuleId,
-  sidebarOpen: readLocal('synclife-sidebar', 'true') === 'true',
-  mode: (readLocal('synclife-mode', 'foco') as AppMode),
-  theme: (readLocal('synclife-theme', 'dark') as AppTheme),
+  activeModule: 'panorama' as ModuleId,
+  sidebarOpen: true,
+  mode: 'foco' as AppMode,
+  theme: 'dark' as AppTheme,
 
   setActiveModule: (module: ModuleId) => set({ activeModule: module }),
 

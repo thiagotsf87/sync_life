@@ -167,6 +167,36 @@ export async function createEventFromObjective(opts: {
   })
 }
 
+// ─── Futuro → Agenda (meta tarefa) (RN-FUT-12/34) ────────────────────────────
+export async function createEventFromGoalTask(opts: {
+  objectiveName: string
+  goalName: string
+  goalId: string
+  date: string
+}): Promise<void> {
+  const supabase = createClient() as any
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
+
+  await supabase.from('agenda_events').insert({
+    user_id: user.id,
+    title: `🔮 ${opts.goalName}`,
+    description: `Auto — 🔮 Futuro | Meta tarefa do objetivo "${opts.objectiveName}"`,
+    type: 'pessoal',
+    date: opts.date,
+    all_day: true,
+    start_time: null,
+    end_time: null,
+    priority: 'normal',
+    status: 'pending',
+    reminder: null,
+    recurrence: 'none',
+    goal_id: opts.goalId,
+    location: null,
+    checklist: [],
+  })
+}
+
 // ─── Experiências → Agenda (RN-EXP-02) ───────────────────────────────────────
 
 /**

@@ -1,5 +1,5 @@
 // Shell layout dimensions (px)
-export const MODULE_BAR_W = 58
+export const MODULE_BAR_W = 72
 export const SB_OPEN = 228
 export const SB_COLLAPSED = 56
 export const SB_CLOSED = 0

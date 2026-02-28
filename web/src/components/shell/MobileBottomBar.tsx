@@ -4,14 +4,14 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useShellStore } from '@/stores/shell-store'
 import { MODULES } from '@/lib/modules'
-import { IconHome, IconFinancas, IconFuturo, IconTempo } from './icons'
+import { IconPanorama, IconFinancas, IconFuturo, IconTempo } from './icons'
 import { MobileMoreSheet } from './MobileMoreSheet'
 import { MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { ModuleId } from '@/types/shell'
 
-const BOTTOM_TABS: { id: ModuleId | 'mais'; label: string; icon: 'home' | 'financas' | 'futuro' | 'tempo' | 'mais' }[] = [
-  { id: 'home', label: 'Home', icon: 'home' },
+const BOTTOM_TABS: { id: ModuleId | 'mais'; label: string; icon: 'panorama' | 'financas' | 'futuro' | 'tempo' | 'mais' }[] = [
+  { id: 'panorama', label: 'Início', icon: 'panorama' },
   { id: 'financas', label: 'Finanças', icon: 'financas' },
   { id: 'futuro', label: 'Futuro', icon: 'futuro' },
   { id: 'tempo', label: 'Tempo', icon: 'tempo' },
@@ -19,7 +19,7 @@ const BOTTOM_TABS: { id: ModuleId | 'mais'; label: string; icon: 'home' | 'finan
 ]
 
 const ICON_MAP = {
-  home: IconHome,
+  panorama: IconPanorama,
   financas: IconFinancas,
   futuro: IconFuturo,
   tempo: IconTempo,

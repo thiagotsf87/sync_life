@@ -1,11 +1,15 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useShellStore } from '@/stores/shell-store'
 import { cn } from '@/lib/utils'
 
 export function ThemePill() {
   const theme = useShellStore((s) => s.theme)
   const setTheme = useShellStore((s) => s.setTheme)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   const isDark = theme === 'dark'
 
@@ -19,8 +23,9 @@ export function ThemePill() {
         'hover:border-[var(--sl-border-h)]',
       )}
     >
-      <span>{isDark ? '🌙' : '☀️'}</span>
-      <span>{isDark ? 'Dark' : 'Light'}</span>
+      {/* Suppress client/server mismatch: render neutral until mounted */}
+      <span>{mounted ? (isDark ? '🌙' : '☀️') : '🌙'}</span>
+      <span>{mounted ? (isDark ? 'Dark' : 'Light') : 'Dark'}</span>
     </button>
   )
 }

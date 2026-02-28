@@ -5,27 +5,37 @@ import { useRouter } from 'next/navigation'
 import { useShellStore } from '@/stores/shell-store'
 import { MODULES } from '@/lib/modules'
 import { MODULE_ICONS, SyncLifeLogo } from './icons'
-import { ModuleTooltip } from './ModuleTooltip'
 import { createClient } from '@/lib/supabase/client'
 import { LogOut, Settings } from 'lucide-react'
 import type { ModuleId } from '@/types/shell'
 
-const MODULE_ORDER: ModuleId[] = [
-  'home', 'financas', 'futuro', 'tempo',
-  'corpo', 'mente', 'patrimonio', 'carreira', 'experiencias',
-  'conquistas', 'configuracoes',
+const MODULE_LAYOUT: Array<ModuleId | 'sep'> = [
+  'panorama',
+  'sep',
+  'financas', 'tempo', 'corpo',
+  'sep',
+  'futuro', 'patrimonio',
+  'sep',
+  'mente', 'carreira', 'experiencias',
+  'sep',
+  'configuracoes',
 ]
 
 interface ModuleBarProps {
   userName?: string
 }
 
+const MODULE_BAR_LABELS: Partial<Record<ModuleId, string>> = {
+  panorama: 'Panorama',
+  configuracoes: 'Config',
+}
+
+const GRAD_BRAND = 'linear-gradient(135deg, #10b981, #0055ff)'
+
 export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
   const router = useRouter()
   const activeModule = useShellStore((s) => s.activeModule)
-  const [tooltip, setTooltip] = useState<{ text: string; top: number } | null>(null)
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
-  const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({})
   const avatarRef = useRef<HTMLDivElement>(null)
 
   const avatarLetter = userName.charAt(0).toUpperCase()
@@ -49,14 +59,6 @@ export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
     router.refresh()
   }, [router])
 
-  const handleHover = useCallback((moduleId: ModuleId) => {
-    const el = btnRefs.current[moduleId]
-    if (el) {
-      const rect = el.getBoundingClientRect()
-      setTooltip({ text: MODULES[moduleId].label, top: rect.top + rect.height / 2 - 12 })
-    }
-  }, [])
-
   const handleClick = useCallback((moduleId: ModuleId) => {
     router.push(MODULES[moduleId].basePath)
   }, [router])
@@ -64,7 +66,7 @@ export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
   return (
     <>
       <nav
-        className="sl-module-bar fixed left-0 top-0 z-[60] hidden h-screen w-[58px] flex-col items-center
+        className="sl-module-bar fixed left-0 top-0 z-[60] hidden h-screen w-[72px] flex-col items-center
                    border-r border-[var(--sl-border)] bg-[var(--sl-s1)] py-3 lg:flex
                    transition-[background,border-color] duration-400"
       >
@@ -78,35 +80,62 @@ export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
         </button>
 
         {/* Module Buttons */}
-        <div className="flex flex-1 flex-col items-center gap-1">
-          {MODULE_ORDER.map((moduleId) => {
+        <div className="flex flex-1 flex-col items-center gap-1.5 w-full px-1.5">
+          {MODULE_LAYOUT.map((entry, idx) => {
+            if (entry === 'sep') {
+              return (
+                <div
+                  key={`sep-${idx}`}
+                  className="h-px w-7 my-1"
+                  style={{ background: 'var(--sl-border)' }}
+                />
+              )
+            }
+
+            const moduleId = entry
             const mod = MODULES[moduleId]
             const Icon = MODULE_ICONS[moduleId]
             const isActive = activeModule === moduleId
+            const label = MODULE_BAR_LABELS[moduleId] ?? mod.label
 
             return (
               <button
                 key={moduleId}
-                ref={(el) => { btnRefs.current[moduleId] = el }}
                 onClick={() => handleClick(moduleId)}
-                onMouseEnter={() => handleHover(moduleId)}
-                onMouseLeave={() => setTooltip(null)}
-                className={`sl-mod-btn relative flex h-[42px] w-[42px] items-center justify-center rounded-xl
-                           transition-all duration-200 hover:scale-105
+                className={`sl-mod-btn module-item relative flex w-full flex-col items-center justify-center gap-0.5 rounded-[10px] px-1 py-1.5
+                           transition-colors duration-200
                            ${isActive ? 'sl-mod-btn-active' : ''}`}
                 style={{
-                  background: isActive ? mod.glowColor : 'transparent',
-                  color: isActive ? mod.color : undefined,
+                  ['--module-color' as string]: mod.color,
+                  ['--module-glow' as string]: mod.glowColor,
                 }}
               >
                 {/* Active pill indicator */}
                 {isActive && (
                   <span
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[22px] rounded-r-full"
-                    style={{ background: mod.color }}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[20px] rounded-r-full"
+                    style={{ background: moduleId === 'panorama' ? GRAD_BRAND : mod.color }}
                   />
                 )}
-                <Icon size={22} />
+                {/* Panorama ativo: gradiente brand; demais: cor sólida via CSS */}
+                {moduleId === 'panorama' && isActive ? (
+                  <>
+                    <span style={{ background: GRAD_BRAND, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'flex' }}>
+                      <Icon size={20} />
+                    </span>
+                    <span className="module-label text-[10px] font-medium leading-[1.15] text-center"
+                      style={{ background: GRAD_BRAND, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                      {label}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Icon size={20} />
+                    <span className="module-label text-[10px] font-medium leading-[1.15] text-center">
+                      {label}
+                    </span>
+                  </>
+                )}
               </button>
             )
           })}
@@ -162,11 +191,6 @@ export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
           )}
         </div>
       </nav>
-
-      {/* Tooltip */}
-      {tooltip && (
-        <ModuleTooltip text={tooltip.text} visible={true} position={{ top: tooltip.top }} />
-      )}
     </>
   )
 }

@@ -1,23 +1,25 @@
 import type { ModuleId, ModuleConfig } from '@/types/shell'
 
 export const MODULES: Record<ModuleId, ModuleConfig> = {
-  home: {
-    id: 'home',
-    label: 'Home',
+  panorama: {
+    id: 'panorama',
+    label: 'Panorama',
     color: '#10b981',
-    glowColor: 'rgba(16,185,129,0.16)',
-    icon: 'home',
+    glowColor: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(0,85,255,0.15))',
+    icon: 'panorama',
     basePath: '/dashboard',
-    defaultNavId: 'dashboard',
+    defaultNavId: 'pan-dashboard',
     navItems: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', href: '/dashboard' },
+      { id: 'pan-dashboard', label: 'Dashboard', icon: 'LayoutDashboard', href: '/dashboard' },
+      { id: 'pan-conquistas', label: 'Conquistas', icon: 'Trophy', href: '/conquistas' },
+      { id: 'pan-ranking', label: 'Ranking', icon: 'Medal', href: '/conquistas/ranking' },
     ],
   },
   financas: {
     id: 'financas',
     label: 'Finanças',
     color: '#10b981',
-    glowColor: 'rgba(16,185,129,0.16)',
+    glowColor: 'var(--fin-glow)',
     icon: 'financas',
     basePath: '/financas',
     defaultNavId: 'fin-dashboard',
@@ -41,8 +43,8 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
   futuro: {
     id: 'futuro',
     label: 'Futuro',
-    color: '#0055ff',
-    glowColor: 'rgba(0,85,255,0.16)',
+    color: '#8b5cf6',
+    glowColor: 'var(--fut-glow)',
     icon: 'futuro',
     basePath: '/futuro',
     defaultNavId: 'futuro-objetivos',
@@ -55,7 +57,7 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
     id: 'tempo',
     label: 'Tempo',
     color: '#06b6d4',
-    glowColor: 'rgba(6,182,212,0.16)',
+    glowColor: 'var(--tmp-glow)',
     icon: 'tempo',
     basePath: '/tempo',
     defaultNavId: 'tempo-semanal',
@@ -70,7 +72,7 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
     id: 'corpo',
     label: 'Corpo',
     color: '#f97316',
-    glowColor: 'rgba(249,115,22,0.16)',
+    glowColor: 'var(--crp-glow)',
     icon: 'corpo',
     basePath: '/corpo',
     defaultNavId: 'corpo-dashboard',
@@ -80,21 +82,14 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
       { id: 'corpo-peso', label: 'Peso & Medidas', icon: 'Scale', href: '/corpo/peso' },
       { id: 'corpo-cardapio', label: 'Cardápio', icon: 'Utensils', href: '/corpo/cardapio' },
       { id: 'corpo-saude', label: 'Saúde Preventiva', icon: 'HeartPulse', href: '/corpo/saude' },
-      {
-        id: 'corpo-coach',
-        label: 'Coach IA',
-        icon: 'Bot',
-        href: '/corpo/coach',
-        badge: { text: 'PRO', variant: 'pro' as const },
-        isProOnly: true,
-      },
+      { id: 'corpo-coach', label: 'Coach IA', icon: 'Bot', href: '/corpo/coach' },
     ],
   },
   mente: {
     id: 'mente',
     label: 'Mente',
-    color: '#a855f7',
-    glowColor: 'rgba(168,85,247,0.16)',
+    color: '#eab308',
+    glowColor: 'var(--mnt-glow)',
     icon: 'mente',
     basePath: '/mente',
     defaultNavId: 'mente-dashboard',
@@ -109,8 +104,8 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
   patrimonio: {
     id: 'patrimonio',
     label: 'Patrimônio',
-    color: '#10b981',
-    glowColor: 'rgba(16,185,129,0.16)',
+    color: '#3b82f6',
+    glowColor: 'var(--ptr-glow)',
     icon: 'patrimonio',
     basePath: '/patrimonio',
     defaultNavId: 'ptr-dashboard',
@@ -132,8 +127,8 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
   carreira: {
     id: 'carreira',
     label: 'Carreira',
-    color: '#f59e0b',
-    glowColor: 'rgba(245,158,11,0.16)',
+    color: '#f43f5e',
+    glowColor: 'var(--car-glow)',
     icon: 'carreira',
     basePath: '/carreira',
     defaultNavId: 'car-dashboard',
@@ -148,8 +143,8 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
   experiencias: {
     id: 'experiencias',
     label: 'Experiências',
-    color: '#06b6d4',
-    glowColor: 'rgba(6,182,212,0.16)',
+    color: '#ec4899',
+    glowColor: 'var(--exp-glow)',
     icon: 'experiencias',
     basePath: '/experiencias',
     defaultNavId: 'exp-dashboard',
@@ -163,7 +158,7 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
     id: 'conquistas',
     label: 'Conquistas',
     color: '#f59e0b',
-    glowColor: 'rgba(245,158,11,0.16)',
+    glowColor: 'var(--conq-glow)',
     icon: 'conquistas',
     basePath: '/conquistas',
     defaultNavId: 'conq-todas',
@@ -175,8 +170,8 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
   configuracoes: {
     id: 'configuracoes',
     label: 'Configurações',
-    color: '#6e90b8',
-    glowColor: 'rgba(110,144,184,0.16)',
+    color: '#64748b',
+    glowColor: 'var(--cfg-glow)',
     icon: 'configuracoes',
     basePath: '/configuracoes',
     defaultNavId: 'cfg-perfil',
@@ -201,9 +196,10 @@ export function getModuleByPath(pathname: string): ModuleId {
   if (pathname.startsWith('/patrimonio')) return 'patrimonio'
   if (pathname.startsWith('/carreira')) return 'carreira'
   if (pathname.startsWith('/experiencias')) return 'experiencias'
-  if (pathname.startsWith('/conquistas')) return 'conquistas'
+  if (pathname.startsWith('/conquistas')) return 'panorama'
+  if (pathname.startsWith('/dashboard')) return 'panorama'
   if (pathname.startsWith('/configuracoes')) return 'configuracoes'
-  return 'home'
+  return 'panorama'
 }
 
 export function getActiveNavItem(pathname: string, moduleId: ModuleId): string | null {

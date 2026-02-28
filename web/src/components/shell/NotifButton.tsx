@@ -7,12 +7,12 @@ import { useNotifications, type AppNotification } from '@/hooks/use-notification
 import { cn } from '@/lib/utils'
 
 const MODULE_COLORS: Record<string, string> = {
-  futuro:       '#0055ff',
+  futuro:       '#8b5cf6',
   corpo:        '#f97316',
-  experiencias: '#10b981',
-  mente:        '#a855f7',
-  patrimonio:   '#f59e0b',
-  carreira:     '#06b6d4',
+  experiencias: '#ec4899',
+  mente:        '#eab308',
+  patrimonio:   '#3b82f6',
+  carreira:     '#f43f5e',
   financas:     '#10b981',
 }
 

@@ -59,6 +59,35 @@ export async function createTransactionFromProvento(opts: {
   })
 }
 
+/**
+ * Aporte em patrimônio (compra de ativo) -> despesa em Finanças.
+ * Categoria: "investimentos" | Badge: "Auto — 📈 Patrimônio"
+ */
+export async function createTransactionFromAporte(opts: {
+  ticker: string
+  amount: number
+  operationDate: string
+}): Promise<void> {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
+
+  const description = `Auto — 📈 Patrimônio | Aporte ${opts.ticker}`
+
+  await (supabase as any).from('transactions').insert({
+    user_id: user.id,
+    category_id: 'investimentos',
+    type: 'expense',
+    amount: opts.amount,
+    description,
+    date: opts.operationDate,
+    payment_method: 'transfer',
+    is_future: isDateInFuture(opts.operationDate),
+    notes: `Gerado automaticamente a partir de aporte em ${opts.ticker}`,
+    recurring_transaction_id: null,
+  })
+}
+
 // ─── Carreira → Finanças (RN-CAR-01) ─────────────────────────────────────────
 
 /**
@@ -241,6 +270,31 @@ export async function createTransactionFromCardapio(opts: {
     payment_method: 'debit',
     is_future: isDateInFuture(opts.weekStart),
     notes: `Orçamento semanal alimentar gerado via Cardápio IA`,
+    recurring_transaction_id: null,
+  })
+}
+
+// ─── Futuro → Finanças (RN-FUT-31) ────────────────────────────────────────────
+export async function createTransactionFromFuturoGoal(opts: {
+  goalName: string
+  objectiveName: string
+  amount: number
+  date: string
+}): Promise<void> {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
+
+  await (supabase as any).from('transactions').insert({
+    user_id: user.id,
+    category_id: 'investimentos',
+    type: 'expense',
+    amount: opts.amount,
+    description: `Auto — 🔮 Futuro | Meta financeira: ${opts.goalName}`,
+    date: opts.date,
+    payment_method: 'transfer',
+    is_future: isDateInFuture(opts.date),
+    notes: `Planejamento gerado automaticamente para o objetivo "${opts.objectiveName}"`,
     recurring_transaction_id: null,
   })
 }

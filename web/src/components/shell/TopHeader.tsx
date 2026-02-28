@@ -7,7 +7,7 @@ import { MODULES, getActiveNavItem } from '@/lib/modules'
 import { ModePill } from './ModePill'
 import { ThemePill } from './ThemePill'
 import { NotifButton } from './NotifButton'
-import { IconChevronRight } from './icons'
+import { IconChevronRight, MODULE_ICONS } from './icons'
 
 function getGreeting(name: string): { text: string; emoji: string } {
   const hour = new Date().getHours()
@@ -27,6 +27,7 @@ export function TopHeader({ userName }: TopHeaderProps) {
   const toggleSidebar = useShellStore((s) => s.toggleSidebar)
 
   const mod = MODULES[activeModule]
+  const ActiveModuleIcon = MODULE_ICONS[activeModule]
   const activeNavId = getActiveNavItem(pathname, activeModule)
   const activeNav = mod.navItems.find((item) => item.id === activeNavId)
 
@@ -50,6 +51,7 @@ export function TopHeader({ userName }: TopHeaderProps) {
 
       {/* Foco: Breadcrumb */}
       <div className="sl-breadcrumb [.jornada_&]:hidden flex items-center gap-1.5 text-sm">
+        <ActiveModuleIcon size={14} className="text-[var(--sl-t3)]" />
         <span className="text-[var(--sl-t2)] font-medium">{mod.label}</span>
         {activeNav && activeNav.label !== mod.label && (
           <>
