@@ -1,4 +1,4 @@
-# Spec — Dashboard Home (Fase 5.1)
+# Spec — Dashboard Home (Fase 5.1 + Fase 13)
 
 > Protótipo de referência: `prototipos/proto-dashboard-revisado.html`
 > Rota: `/dashboard` (app/(app)/dashboard/page.tsx)
@@ -11,7 +11,7 @@
 ```
 max-w-[1140px] mx-auto px-6 py-7 pb-16
 ├── ① Header Row
-├── ② Life Sync Score Hero (Jornada only)
+├── ② Life Sync Score Hero (Jornada only) — 8 dimensões
 ├── ③ 4 KPI Cards
 ├── ④ Insight / Resumo Card
 ├── ⑤ Main Grid (1fr 340px)
@@ -19,8 +19,12 @@ max-w-[1140px] mx-auto px-6 py-7 pb-16
 │   │   ├── Orçamentos do Mês
 │   │   └── Gastos por Categoria (BarChart)
 │   └── Coluna Direita
-│       ├── Metas em Destaque
+│       ├── Futuro em Destaque (ex-Metas)
 │       └── Agenda da Semana
+├── ⑤.5 V3 Widgets Row (3 colunas) — Fase 13
+│   ├── 🏋️ Corpo (peso + atividades)
+│   ├── 📈 Patrimônio (carteira + proventos)
+│   └── ✈️ Experiências (próxima viagem)
 └── ⑥ Bottom Grid (3 colunas)
     ├── Próximas Recorrentes
     ├── Projeção de Saldo (Sparkline)
@@ -64,7 +68,7 @@ max-w-[1140px] mx-auto px-6 py-7 pb-16
 - Título: `font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]`
 - Frase: `text-[13px] text-[var(--sl-t3)] italic mb-3`
 - Barra: h-1.5, `bg rgba(255,255,255,0.07)`, fill `linear-gradient(90deg, #10b981, #0055ff)`, `transition width 1.2s`
-- 4 Dimensões (flex row gap-5): Financeiro, Metas, Consistência, Agenda — label 10px uppercase + valor DM Mono 16px (verde se ≥70, amarelo se 50–69)
+- 8 Dimensões (flex row gap-3 flex-wrap): Financeiro, Futuro, Tempo, Corpo, Mente, Patrimônio, Carreira, Experiências — label 10px uppercase + valor DM Mono 14px (verde se ≥70, amarelo se 50–69)
 
 ### Bloco Ações
 - Botão "Ver análise completa": bg `linear-gradient(135deg, #10b981, #0055ff)` text-white px-4 py-2 rounded-[10px] text-[12px] font-semibold
@@ -130,9 +134,9 @@ Grid: `grid grid-cols-[1fr_340px] gap-4 mb-4 max-lg:grid-cols-1`
 - Cores por categoria: Moradia `#10b981`, Alimentação `#f97316`, Transporte `#0055ff`, Lazer `#f59e0b`, Saúde `#06b6d4`, Outros `var(--sl-t2)`
 - Link "Relatório →"
 
-### 6.3 Metas em Destaque (coluna direita)
-- SLCard com "🎯 Metas em Destaque" + "Ver todas →"
-- Top 3 metas ativas, ordenadas por proximidade do prazo
+### 6.3 Futuro em Destaque (coluna direita)
+- SLCard com "🎯 Futuro em Destaque" + "Ver todas →"
+- Top 3 objetivos ativos, ordenadas por proximidade do prazo
 - Por meta:
   - Emoji + nome (truncado) + sub "R$ X de R$ Y · Dez/26"
   - % (DM Mono 14px) com cor: <50% amarelo, ≥50% verde
@@ -198,20 +202,29 @@ Grid: `grid grid-cols-3 gap-4 max-lg:grid-cols-1`
 | KPIs + AI Stats | `useTransactions({ month, year })` | soma receitas, despesas, contagem |
 | Orçamentos | `useBudgets()` | orçamentos do mês atual + gasto real |
 | Gastos por Categoria | `useTransactions` | group by category |
-| Metas | `useMetas()` | top 3 ativas por prazo |
-| Agenda | `useAgenda()` → `useEvents()` | eventos da semana atual |
+| Futuro | `useFuturo()` | top 3 objetivos ativos por prazo |
+| Agenda | `useAgenda()` | eventos da semana atual |
 | Recorrentes | `useRecorrentes()` | próximas 4 por vencimento |
 | Projeção | `usePlanejamento()` | projeção 30 dias |
-| Conquistas (Jornada) | dados estáticos mock para MVP | badges desbloqueados |
-| Life Sync Score | calculado client-side | média das 4 dimensões |
+| Corpo (V3) | `useCorpo()` | último peso, atividades recentes |
+| Patrimônio (V3) | `usePatrimonio()` | valor total carteira, proventos |
+| Experiências (V3) | `useExperiencias()` | próxima viagem planejada |
+| Conquistas (Jornada) | dados estáticos mock | badges desbloqueados |
+| Life Sync Score | calculado client-side | média das 8 dimensões |
 
 ### Cálculo Life Sync Score (mock MVP)
 ```ts
-// Financeiro: baseado em % de orçamentos no verde
-// Metas: baseado em metas no ritmo / total
-// Consistência: streak de dias (mock)
-// Agenda: % eventos concluídos na semana
-const lifeScore = Math.round((fin + metas + cons + agenda) / 4)
+// 8 dimensões — cada uma 0–100:
+// Financeiro: % de orçamentos no verde
+// Futuro: % de metas no ritmo / total
+// Tempo: % eventos concluídos na semana
+// Corpo: baseado em atividades + peso registrado
+// Mente: streak de estudo + sessões Pomodoro
+// Patrimônio: aportes no mês + diversificação
+// Carreira: progresso nos roadmaps
+// Experiências: viagens planejadas/realizadas
+const dims = [fin, futuro, tempo, corpo, mente, patrimonio, carreira, experiencias]
+const lifeScore = Math.round(dims.reduce((a, b) => a + b, 0) / dims.length)
 ```
 
 ### Cálculo Streak (mock MVP)

@@ -84,12 +84,14 @@ Ambas as personas compartilham:
 
 ### 4.3 Nossos Diferenciais
 
-1. **Centralização Real**: Finanças + Metas + Agenda em um só lugar
+1. **Centralização Real**: Finanças, Futuro, Tempo, Corpo, Mente, Patrimônio, Carreira e Experiências — 8 módulos integrados em um só lugar
 2. **Dois Modos de Uso**: Foco (prático) e Jornada (transformação)
 3. **UX Adaptativa**: Interface muda conforme o perfil
 4. **Tom Humanizado**: Comunicação empática, não robótica
 5. **Life Sync Score**: Métrica proprietária de equilíbrio de vida
 6. **Abraça Recomeços**: Não pune abandono, celebra volta
+7. **IA Contextual**: Cardápio personalizado, sugestões de viagem e coach nutricional via IA
+8. **4 Combinações Visuais**: Foco × Jornada × Dark × Light — interface que se adapta ao seu estilo
 
 ---
 
@@ -118,13 +120,13 @@ Ambas as personas compartilham:
 
 | Métrica | Meta MVP | Meta 6 meses |
 |---------|----------|--------------|
-| Usuários cadastrados | 500 | 5.000 |
-| Usuários ativos semanais | 100 | 1.500 |
+| Usuários cadastrados | 1.000 | 10.000 |
+| Usuários ativos semanais | 200 | 3.000 |
 | Retenção D7 | 30% | 50% |
 | Retenção D30 | 15% | 35% |
 | NPS | > 40 | > 50 |
 
 ---
 
-*Documento criado em: Fevereiro 2026*
-*Versão: 1.0*
+*Documento criado em: Fevereiro 2026 (updated)*
+*Versão: 2.0*

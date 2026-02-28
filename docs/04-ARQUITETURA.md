@@ -13,7 +13,7 @@
 │                      VERCEL                                 │
 │                   (Hosting CDN)                             │
 │  ┌───────────────────────────────────────────────────────┐ │
-│  │                   NEXT.JS 14+                         │ │
+│  │                   NEXT.JS 16                          │ │
 │  │              (App Router + SSR)                       │ │
 │  │  ┌─────────────┐  ┌─────────────┐  ┌──────────────┐  │ │
 │  │  │    Pages    │  │    API      │  │   Static     │  │ │
@@ -44,16 +44,17 @@
 
 | Tecnologia | Versão | Uso |
 |------------|--------|-----|
-| Next.js | 14+ | Framework React com SSR |
-| React | 18+ | Biblioteca UI |
+| Next.js | 16 | Framework React com SSR |
+| React | 19 | Biblioteca UI |
 | TypeScript | 5+ | Tipagem estática |
-| TailwindCSS | 3+ | Estilização utility-first |
+| TailwindCSS | v4 | Estilização utility-first |
 | shadcn/ui | latest | Componentes base |
 | Recharts | 2+ | Gráficos |
 | React Hook Form | 7+ | Formulários |
 | Zod | 3+ | Validação de schemas |
 | Lucide React | latest | Ícones |
-| Framer Motion | 10+ | Animações (MVP v2) |
+| Zustand | 5+ | Estado global (shell, mode, theme) |
+| Vercel AI SDK | 5+ | Integração com LLMs (Gemini, Groq) |
 
 ### 2.2 Backend / Infraestrutura
 
@@ -67,7 +68,7 @@
 
 | Ferramenta | Uso |
 |------------|-----|
-| pnpm | Gerenciador de pacotes |
+| npm | Gerenciador de pacotes |
 | ESLint | Linting |
 | Prettier | Formatação |
 | Git | Controle de versão |
@@ -77,206 +78,106 @@
 
 ## 3. Estrutura de Pastas
 
-> Estrutura real do repositório em 21/02/2026. Itens marcados com `(v2)` ainda não implementados.
+> Estrutura real do repositório em Fev/2026 (MVP V3 completo).
 
 ```
 web/src/
 ├── 📁 app/                          # Next.js App Router
 │   ├── 📄 layout.tsx                # Layout raiz
 │   ├── 📄 page.tsx                  # Landing page (/)
-│   ├── 📄 globals.css               # Estilos globais
+│   ├── 📄 globals.css               # Tokens de cor + Design System
 │   │
 │   ├── 📁 (auth)/                   # Grupo de rotas de auth
 │   │   ├── 📁 login/page.tsx
 │   │   ├── 📁 cadastro/page.tsx
 │   │   └── 📁 recuperar-senha/page.tsx
 │   │
-│   └── 📁 (app)/                    # Grupo de rotas protegidas
-│       ├── 📄 layout.tsx            # Layout com sidebar + app-shell
-│       ├── 📁 dashboard/page.tsx    # Dashboard com dados reais do Supabase
-│       ├── 📁 transacoes/page.tsx   # Lista, CRUD, filtros, paginação
-│       └── 📁 configuracoes/page.tsx # Perfil + gerenciador de categorias
+│   ├── 📁 (app)/                    # Grupo de rotas protegidas
+│   │   ├── 📄 layout.tsx            # AppShell wrapper (Server Component)
+│   │   ├── 📁 dashboard/            # Dashboard Home
+│   │   ├── 📁 financas/             # Dashboard, Transações, Orçamentos, Recorrentes, Planejamento, Calendário, Relatórios
+│   │   ├── 📁 futuro/               # Objetivos e Metas (ex-Metas)
+│   │   ├── 📁 tempo/                # Agenda semanal/mensal (ex-Agenda)
+│   │   ├── 📁 corpo/                # Peso, Atividades, Saúde, Cardápio IA
+│   │   ├── 📁 mente/                # Trilhas, Timer Pomodoro, Biblioteca
+│   │   ├── 📁 patrimonio/           # Dashboard, Carteira, Proventos, Simulador IF
+│   │   ├── 📁 carreira/             # Habilidades, Roadmap, Promoções
+│   │   ├── 📁 experiencias/         # Viagens, Nova viagem, Detalhe
+│   │   ├── 📁 conquistas/           # Badges e Ranking
+│   │   └── 📁 configuracoes/        # Perfil, Modo, Notificações, Integrações, Plano
+│   │
+│   └── 📁 api/                      # Route Handlers
+│       └── 📁 ai/                   # IA endpoints
+│           ├── 📁 cardapio/route.ts  # Gemini — cardápio personalizado
+│           ├── 📁 viagem/route.ts    # Gemini — sugestões de viagem
+│           └── 📁 coach/route.ts     # Groq — coach nutricional
 │
 ├── 📁 components/
-│   ├── 📁 ui/                       # shadcn/ui (button, input, label, dialog,
-│   │                                #   checkbox, sheet, sonner)
-│   ├── 📁 layout/
-│   │   ├── 📄 app-shell.tsx         # Wrapper com sidebar + conteúdo
-│   │   ├── 📄 sidebar.tsx           # Sidebar fixa, expansível
-│   │   ├── 📄 header.tsx            # Header com seletor de mês e ações
-│   │   └── 📄 mobile-nav.tsx        # Navegação inferior mobile
-│   ├── 📁 dashboard/
-│   │   ├── 📄 summary-cards.tsx     # Cards Receitas / Despesas / Saldo
-│   │   ├── 📄 expense-chart.tsx     # Gráfico Receitas vs Despesas (12 meses)
-│   │   ├── 📄 category-chart.tsx    # Gráfico donut por categoria
-│   │   ├── 📄 projection-chart.tsx  # Projeção de despesas (estático)
-│   │   └── 📄 recent-transactions.tsx # Últimas 6 transações
-│   ├── 📁 transactions/
-│   │   └── 📄 transaction-form.tsx  # Form create/edit com modal de confirmação
-│   ├── 📁 settings/
-│   │   └── 📄 category-manager.tsx  # CRUD de categorias custom
-│   └── 📁 shared/
-│       └── 📄 logo.tsx
+│   ├── 📁 ui/                       # shadcn/ui (button, input, dialog, etc.)
+│   ├── 📁 shell/                    # ModuleBar, Sidebar, TopHeader, AppShell
+│   ├── 📁 settings/                 # Componentes de configurações
+│   ├── 📁 financas/                 # Componentes de finanças
+│   ├── 📁 futuro/                   # MetaCard, AddGoalModal, etc.
+│   ├── 📁 corpo/                    # AppointmentCard, WeightChart, etc.
+│   ├── 📁 mente/                    # PomodoroTimer, TrackWizard, etc.
+│   ├── 📁 patrimonio/               # AssetCard, IFSimulator, etc.
+│   ├── 📁 carreira/                 # SkillCard, RoadmapTimeline, etc.
+│   ├── 📁 experiencias/             # TripCard, TripAIChat, etc.
+│   └── 📁 pwa/                      # Service Worker registration
 │
-├── 📁 hooks/
-│   └── 📄 use-user-categories.ts    # Busca categorias custom do Supabase
+├── 📁 hooks/                        # Custom hooks por módulo
+│   ├── 📄 use-transactions.ts       # Finanças: transações
+│   ├── 📄 use-orcamentos.ts         # Finanças: orçamentos
+│   ├── 📄 use-recorrentes.ts        # Finanças: recorrentes
+│   ├── 📄 use-futuro.ts             # Futuro: objetivos e metas
+│   ├── 📄 use-agenda.ts             # Tempo: eventos
+│   ├── 📄 use-corpo.ts              # Corpo: peso, atividades, saúde
+│   ├── 📄 use-mente.ts              # Mente: trilhas, timer
+│   ├── 📄 use-patrimonio.ts         # Patrimônio: ativos, proventos
+│   ├── 📄 use-carreira.ts           # Carreira: skills, roadmap
+│   ├── 📄 use-experiencias.ts       # Experiências: viagens
+│   └── 📄 use-notifications.ts      # Notificações globais
 │
 ├── 📁 lib/
 │   ├── 📁 supabase/
 │   │   ├── 📄 client.ts             # Cliente browser (createClient)
-│   │   └── 📄 middleware.ts         # Auth middleware (proteção de rotas)
-│   └── 📄 format.ts                 # formatCurrency, formatDate, formatMonthYear
+│   │   ├── 📄 server.ts             # Cliente server async (createClient)
+│   │   └── 📄 middleware.ts         # Auth middleware
+│   ├── 📁 integrations/             # Bridges cross-module
+│   ├── 📄 modules.ts                # MODULES config (11 módulos)
+│   ├── 📄 constants.ts              # Constantes globais
+│   └── 📄 utils.ts                  # cn() e utilitários
 │
-└── 📁 constants/
-    └── 📄 categories.ts             # DefaultCategory[], CustomCategory,
-                                     # EXPENSE_CATEGORIES, INCOME_CATEGORIES,
-                                     # ALL_CATEGORIES, getCategoryById,
-                                     # isUUID, resolveCategory
+├── 📁 stores/
+│   └── 📄 shell-store.ts            # Zustand: mode, theme, sidebarOpen
+│
+└── 📁 types/
+    └── 📄 shell.ts                  # AppMode, AppTheme, ModuleId
 ```
 
 ---
 
 ## 4. Modelo de Dados
 
-### 4.1 Diagrama ER
+### 4.1 Resumo do Schema (V3)
 
-```
-┌──────────────┐     ┌──────────────┐     ┌───────────────────┐
-│   profiles   │     │  categories  │     │   transactions    │
-├──────────────┤     ├──────────────┤     ├───────────────────┤
-│ id (PK, FK)  │◄────│ user_id (FK) │     │ id (PK)           │
-│ full_name    │     │ id (PK)      │◄────│ category_id (FK?) │ nullable
-│ avatar_url   │     │ name         │     │ category_key TEXT │ slug ou UUID
-│ currency     │     │ icon         │     │ user_id (FK)      │────►┐
-│ theme        │     │ color        │     │ amount            │     │
-│ created_at   │     │ type         │     │ type              │     │
-│ updated_at   │     │ is_default   │     │ description       │     │
-└──────────────┘     │ sort_order   │     │ date              │     │
-       ▲             │ created_at   │     │ created_at        │     │
-       │             └──────────────┘     │ updated_at        │     │
-       │                                  └───────────────────┘     │
-       └──────────────────────────────────────────────────────────┘
+O banco de dados possui ~35 tabelas distribuídas em 9 migrations:
 
-┌──────────────┐
-│   budgets    │  (MVP v2)
-├──────────────┤
-│ id (PK)      │
-│ user_id (FK) │
-│ category_id  │
-│ amount       │
-│ month / year │
-│ created_at   │
-└──────────────┘
-```
+| Migration | Scope | Tabelas principais |
+|-----------|-------|--------------------|
+| `schema.sql` | Base | profiles, categories, transactions, budgets |
+| `001_mvp_v2.sql` | Fase 1 | +monthly_income, life_moments, active_modules em profiles |
+| `002_fase2_financas.sql` | Fase 2 | recurring_transactions, planning_events |
+| `003_fase3_metas.sql` | Fase 3 | goals, goal_contributions, goal_milestones |
+| `004_fase4_agenda.sql` | Fase 4 | calendar_events |
+| `005_fase6_infra_v3.sql` | Fase 6 | objectives, objective_goals, study_tracks, track_sessions, library_items, mental_journal, skills, skill_study_tracks, roadmaps, roadmap_steps, roadmap_step_skills, career_promotions, weight_entries, body_measurements, activities, medical_appointments, assets, asset_transactions, dividends, trips, trip_days, trip_items, trip_checklist, trip_accommodations, trip_transports |
+| `007_futuro_migracao.sql` | Futuro | Migração goals V2 → objectives V3 |
+| `008_link_objectives.sql` | Links | Vínculos objectives ↔ tracks/roadmaps |
+| `009_corpo_storage.sql` | Storage | Bucket corpo-files, attachment columns |
 
-**Nota sobre `category_key`:** campo TEXT adicionado em fevereiro/2026 (Opção A). Armazena o slug para categorias default (ex: `'alimentacao'`) ou o UUID para categorias custom criadas pelo usuário. `category_id` permanece nullable para compatibilidade futura.
+### 4.2 RLS e Segurança
 
-### 4.2 SQL Completo
-
-> Schema real em produção. Arquivo fonte: `web/supabase/schema.sql`.
-
-```sql
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Profiles
-CREATE TABLE IF NOT EXISTS profiles (
-    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    full_name TEXT,
-    avatar_url TEXT,
-    mode TEXT DEFAULT 'focus' CHECK (mode IN ('focus', 'journey')),
-    currency TEXT DEFAULT 'BRL',
-    theme TEXT DEFAULT 'dark' CHECK (theme IN ('light', 'dark', 'system')),
-    onboarding_completed BOOLEAN DEFAULT FALSE,
-    last_active_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Categorias (defaults readonly + custom por usuário)
-CREATE TABLE IF NOT EXISTS categories (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-    name TEXT NOT NULL,
-    icon TEXT DEFAULT '📦',
-    color TEXT DEFAULT '#6B7280',
-    type TEXT NOT NULL CHECK (type IN ('income', 'expense')),
-    is_default BOOLEAN DEFAULT FALSE,   -- FALSE = categoria custom do usuário
-    sort_order INTEGER DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Transações
-CREATE TABLE IF NOT EXISTS transactions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-    category_id UUID REFERENCES categories(id) ON DELETE SET NULL,  -- nullable (legado)
-    category_key TEXT,  -- slug (ex: 'alimentacao') ou UUID de categoria custom
-    amount DECIMAL(12,2) NOT NULL CHECK (amount > 0),
-    type TEXT NOT NULL CHECK (type IN ('income', 'expense')),
-    description TEXT,
-    date DATE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Orçamentos (MVP v2)
-CREATE TABLE IF NOT EXISTS budgets (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-    category_id UUID REFERENCES categories(id) ON DELETE CASCADE,
-    amount DECIMAL(12,2) NOT NULL CHECK (amount > 0),
-    month INTEGER NOT NULL CHECK (month BETWEEN 1 AND 12),
-    year INTEGER NOT NULL CHECK (year >= 2020),
-    alert_threshold INTEGER DEFAULT 80 CHECK (alert_threshold BETWEEN 0 AND 100),
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(user_id, category_id, month, year)
-);
-
--- Índices
-CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON transactions(user_id, date DESC);
-CREATE INDEX IF NOT EXISTS idx_transactions_user_category ON transactions(user_id, category_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_user_type ON transactions(user_id, type);
-CREATE INDEX IF NOT EXISTS idx_categories_user ON categories(user_id);
-CREATE INDEX IF NOT EXISTS idx_budgets_user_period ON budgets(user_id, year, month);
-
--- RLS
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE budgets ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view own profile"   ON profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT
-    WITH CHECK (auth.uid() = id OR EXISTS (SELECT 1 FROM auth.users u WHERE u.id = profiles.id));
-CREATE POLICY "Users can manage own categories"   ON categories   FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY "Users can manage own transactions" ON transactions FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY "Users can manage own budgets"      ON budgets      FOR ALL USING (auth.uid() = user_id);
-
--- Trigger: updated_at automático
-CREATE OR REPLACE FUNCTION update_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER profiles_updated_at     BEFORE UPDATE ON profiles     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-CREATE TRIGGER transactions_updated_at BEFORE UPDATE ON transactions FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
--- Trigger: criar profile após signup
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO public.profiles (id, full_name)
-    VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'full_name', ''));
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
-
-CREATE TRIGGER on_auth_user_created
-    AFTER INSERT ON auth.users
-    FOR EACH ROW EXECUTE FUNCTION handle_new_user();
-```
+Todas as tabelas têm Row Level Security (RLS) habilitado com políticas `auth.uid() = user_id`. Triggers automáticos para `updated_at` e criação de profile no signup.
 
 ---
 
@@ -295,6 +196,10 @@ NEXT_PUBLIC_APP_NAME=SyncLife
 
 # Analytics (opcional)
 NEXT_PUBLIC_VERCEL_ANALYTICS_ID=
+
+# IA (MVP — free tiers)
+GOOGLE_GENERATIVE_AI_API_KEY=...
+GROQ_API_KEY=...
 ```
 
 ---
@@ -378,4 +283,4 @@ NEXT_PUBLIC_VERCEL_ANALYTICS_ID=
 ---
 
 *Documento criado em: Fevereiro 2026*
-*Versão: 1.0*
+*Versão: 2.0 (atualizado Fev 2026 — MVP V3 completo)*

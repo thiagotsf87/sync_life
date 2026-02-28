@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Brand System: Infinity Flow em Todas as Telas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;overflow-x:hidden}
+
+/* ─── REUSABLE ─── */
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+.section{margin-bottom:80px}
+.sec-label{font-family:'DM Mono',monospace;font-size:12px;color:var(--em);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(22px,3.5vw,34px);font-weight:700;margin-bottom:6px}
+.sec-desc{color:var(--t2);font-size:14px;max-width:600px;margin-bottom:28px;line-height:1.7}
+.grad{background:linear-gradient(135deg,var(--em),var(--el));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);padding:6px 16px;border-radius:100px;font-size:12px;color:var(--em);font-weight:500;letter-spacing:0.5px;text-transform:uppercase}
+
+/* ─── HERO ─── */
+.hero{text-align:center;padding:60px 24px 50px;position:relative}
+.hero::before{content:'';position:absolute;top:-150px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(16,185,129,0.07)0%,transparent 70%);pointer-events:none}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(30px,5vw,52px);font-weight:800;margin:20px 0 14px}
+.hero p{color:var(--t2);font-size:15px;max-width:600px;margin:0 auto 32px}
+.hero-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.hero-nav a{padding:8px 16px;border-radius:10px;background:var(--s1);border:1px solid var(--border);color:var(--t2);text-decoration:none;font-size:12px;font-weight:500;transition:all .3s}
+.hero-nav a:hover{border-color:var(--em);color:var(--t1)}
+.hero-nav a .n{color:var(--em);font-family:'DM Mono',monospace;margin-right:4px}
+
+/* ─── SCREEN FRAME ─── */
+.screen-frame{background:var(--s1);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:24px}
+.screen-frame:hover{border-color:var(--border-h)}
+.screen-bar{height:32px;background:var(--s2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:6px}
+.screen-dot{width:8px;height:8px;border-radius:50%;background:var(--s3)}
+.screen-body{position:relative;overflow:hidden}
+
+/* ─── WORDMARK ─── */
+.wm{display:inline-flex;align-items:baseline;gap:0;font-family:'Syne',sans-serif;font-weight:800}
+.wm .s{color:var(--t1)}
+.wm .l{background:linear-gradient(135deg,var(--em),var(--el));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ─── INLINE LOGO ─── */
+.if-logo{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ─── BRAND LOCKUP (icon + wordmark) ─── */
+.brand-lockup{display:inline-flex;align-items:center;gap:10px;text-decoration:none}
+
+/* ─── SPEC TABLE ─── */
+.spec-table{width:100%;border-collapse:collapse;background:var(--s1);border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-top:16px}
+.spec-table th,.spec-table td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}
+.spec-table th{background:var(--s2);font-weight:600;color:var(--t3);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.spec-table td{color:var(--t2)}
+.spec-table td:first-child{color:var(--t1);font-weight:500;white-space:nowrap}
+
+/* ─── VERDICT ─── */
+.verdict{background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(0,85,255,0.06));border:1px solid rgba(16,185,129,0.2);border-radius:16px;padding:32px;margin-top:40px}
+.verdict h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:16px}
+.verdict p{color:var(--t2);font-size:14px;line-height:1.7;margin-bottom:8px}
+code{background:var(--s2);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:12px;color:var(--em)}
+</style>
+</head>
+<body>
+
+<!-- ══════ HERO ══════ -->
+<section class="hero">
+  <div class="badge">◆ Brand System — Infinity Flow</div>
+  <h1>Logo + Marca em<br><span class="grad">Todas as Telas</span></h1>
+  <p>7 contextos reais onde o Infinity Flow + wordmark "SyncLife" aparecem: landing page, login, onboarding, module bar, splash e footer.</p>
+  <nav class="hero-nav">
+    <a href="#s1"><span class="n">01</span> Landing Navbar</a>
+    <a href="#s2"><span class="n">02</span> Landing Hero</a>
+    <a href="#s3"><span class="n">03</span> Login / Auth</a>
+    <a href="#s4"><span class="n">04</span> Onboarding</a>
+    <a href="#s5"><span class="n">05</span> Module Bar</a>
+    <a href="#s6"><span class="n">06</span> Splash Screen</a>
+    <a href="#s7"><span class="n">07</span> Footer</a>
+  </nav>
+</section>
+
+<div class="container">
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 01. LANDING PAGE — NAVBAR -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s1">
+  <div class="sec-label">Contexto 01</div>
+  <div class="sec-title">Landing Page — Navbar</div>
+  <p class="sec-desc">Icon 32px + wordmark "SyncLife" em Syne 18px. O logo Infinity Flow com fundo próprio escuro e partícula animada sutil. Ao lado, o texto com "Sync" branco e "Life" em gradiente.</p>
+
+  <div class="screen-frame">
+    <div class="screen-bar"><div class="screen-dot"></div><div class="screen-dot"></div><div class="screen-dot"></div></div>
+    <div class="screen-body" style="background:var(--bg);padding:0;">
+      <!-- Simulated navbar -->
+      <nav style="display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);backdrop-filter:blur(12px);">
+        <div class="brand-lockup">
+          <svg viewBox="0 0 512 512" width="32" height="32" style="border-radius:9px;">
+            <defs>
+              <linearGradient id="n1g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="50%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#0055ff"/></linearGradient>
+              <linearGradient id="n1bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/></linearGradient>
+            </defs>
+            <rect width="512" height="512" rx="112" fill="url(#n1bg)"/>
+            <path d="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392" fill="none" stroke="url(#n1g)" stroke-width="28" stroke-linecap="round"/>
+            <circle r="16" fill="#10b981" opacity="0.85"><animateMotion dur="3.5s" repeatCount="indefinite" path="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392"/></circle>
+          </svg>
+          <span class="wm" style="font-size:18px;"><span class="s">Sync</span><span class="l">Life</span></span>
+        </div>
+        <div style="display:flex;gap:20px;align-items:center;">
+          <span style="font-size:14px;color:var(--t2);">Funcionalidades</span>
+          <span style="font-size:14px;color:var(--t2);">Preços</span>
+          <span style="font-size:14px;color:var(--t2);">Blog</span>
+          <span style="padding:7px 18px;border-radius:100px;background:linear-gradient(135deg,var(--em),var(--el));color:white;font-size:13px;font-weight:600;">Começar grátis</span>
+        </div>
+      </nav>
+      <!-- Simulated hero area -->
+      <div style="padding:60px 28px 50px;text-align:center;position:relative;">
+        <div style="position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:400px;height:400px;background:radial-gradient(circle,rgba(16,185,129,0.06)0%,transparent 70%);pointer-events:none;"></div>
+        <div style="font-size:13px;color:var(--em);margin-bottom:12px;font-weight:500;">O sistema operacional da sua vida</div>
+        <div style="font-family:'Syne',sans-serif;font-size:38px;font-weight:800;line-height:1.15;margin-bottom:14px;">Gerencie finanças, metas,<br>saúde e carreira em <span class="grad">um só lugar</span></div>
+        <div style="color:var(--t2);font-size:15px;max-width:480px;margin:0 auto;">8 módulos sincronizados para quem quer evoluir em todas as dimensões da vida.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 02. LANDING PAGE — HERO (logo grande centralizado) -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s2">
+  <div class="sec-label">Contexto 02</div>
+  <div class="sec-title">Landing Page — Hero com Logo Grande</div>
+  <p class="sec-desc">Logo 80px centralizado com wordmark abaixo — o "momento de marca" principal. Animação completa com 2 partículas e glow. A hero section que vende o app.</p>
+
+  <div class="screen-frame">
+    <div class="screen-bar"><div class="screen-dot"></div><div class="screen-dot"></div><div class="screen-dot"></div></div>
+    <div class="screen-body" style="background:var(--bg);padding:60px 28px 50px;text-align:center;position:relative;">
+      <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(16,185,129,0.08)0%,rgba(0,85,255,0.04)50%,transparent 70%);pointer-events:none;"></div>
+      <!-- Large centered logo -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:32px;">
+        <svg viewBox="0 0 512 512" width="88" height="88" style="border-radius:20px;filter:drop-shadow(0 0 30px rgba(16,185,129,0.15)) drop-shadow(0 0 60px rgba(0,85,255,0.08));">
+          <defs>
+            <linearGradient id="h1g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="50%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#0055ff"/></linearGradient>
+            <linearGradient id="h1bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/></linearGradient>
+            <filter id="h1f"><feGaussianBlur stdDeviation="5"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect width="512" height="512" rx="112" fill="url(#h1bg)"/>
+          <path d="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392" fill="none" stroke="url(#h1g)" stroke-width="18" stroke-linecap="round" filter="url(#h1f)"/>
+          <circle r="12" fill="#10b981" filter="url(#h1f)" opacity="0.9"><animateMotion dur="3s" repeatCount="indefinite" path="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392"/></circle>
+          <circle r="8" fill="#0055ff" filter="url(#h1f)" opacity="0.55"><animateMotion dur="3s" repeatCount="indefinite" begin="1.5s" path="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392"/></circle>
+        </svg>
+        <span class="wm" style="font-size:28px;"><span class="s">Sync</span><span class="l">Life</span></span>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-size:42px;font-weight:800;line-height:1.12;margin-bottom:14px;">Sua vida inteira em<br><span class="grad">evolução contínua</span></div>
+      <div style="color:var(--t2);font-size:15px;max-width:440px;margin:0 auto 24px;">Finanças, metas, saúde, carreira — 8 dimensões sincronizadas em uma jornada sem fim.</div>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <span style="padding:10px 24px;border-radius:100px;background:linear-gradient(135deg,var(--em),var(--el));color:white;font-size:14px;font-weight:600;">Começar grátis</span>
+        <span style="padding:10px 24px;border-radius:100px;border:1px solid var(--border);color:var(--t2);font-size:14px;font-weight:500;">Ver demo</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 03. LOGIN / AUTH -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s3">
+  <div class="sec-label">Contexto 03</div>
+  <div class="sec-title">Login / Autenticação</div>
+  <p class="sec-desc">Split layout: painel esquerdo com branding (logo 38px + wordmark) e painel direito com formulário. O logo aparece no topo do painel esquerdo como âncora visual.</p>
+
+  <div class="screen-frame">
+    <div class="screen-bar"><div class="screen-dot"></div><div class="screen-dot"></div><div class="screen-dot"></div></div>
+    <div class="screen-body" style="display:grid;grid-template-columns:1fr 1fr;min-height:420px;">
+      <!-- Left panel — branding -->
+      <div style="background:linear-gradient(160deg,#030d1a 0%,#051c14 50%,#03091f 100%);padding:28px 32px;display:flex;flex-direction:column;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;height:400px;background:radial-gradient(circle,rgba(16,185,129,0.06)0%,transparent 60%);pointer-events:none;"></div>
+        <!-- Top logo -->
+        <div class="brand-lockup" style="position:relative;z-index:1;margin-bottom:auto;">
+          <svg viewBox="0 0 512 512" width="38" height="38" style="border-radius:10px;">
+            <defs>
+              <linearGradient id="a1g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="50%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#0055ff"/></linearGradient>
+              <linearGradient id="a1bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/></linearGradient>
+              <filter id="a1f"><feGaussianBlur stdDeviation="5"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <rect width="512" height="512" rx="112" fill="url(#a1bg)"/>
+            <path d="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392" fill="none" stroke="url(#a1g)" stroke-width="24" stroke-linecap="round" filter="url(#a1f)"/>
+            <circle r="14" fill="#10b981" filter="url(#a1f)" opacity="0.9"><animateMotion dur="3s" repeatCount="indefinite" path="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392"/></circle>
+            <circle r="9" fill="#0055ff" filter="url(#a1f)" opacity="0.55"><animateMotion dur="3s" repeatCount="indefinite" begin="1.5s" path="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392"/></circle>
+          </svg>
+          <span class="wm" style="font-size:18px;"><span class="s">Sync</span><span class="l">Life</span></span>
+        </div>
+        <!-- Center content -->
+        <div style="text-align:center;position:relative;z-index:1;margin:auto 0;">
+          <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:700;margin-bottom:8px;">Evolução começa aqui</div>
+          <div style="color:var(--t3);font-size:13px;">8 dimensões da vida. Uma plataforma.</div>
+        </div>
+        <!-- Bottom tagline -->
+        <div style="position:relative;z-index:1;text-align:center;">
+          <div style="font-size:11px;color:var(--t3);opacity:0.6;">© 2026 SyncLife</div>
+        </div>
+      </div>
+      <!-- Right panel — form -->
+      <div style="background:var(--s1);padding:40px 36px;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px;">Bem-vindo de volta</div>
+        <div style="color:var(--t3);font-size:13px;margin-bottom:24px;">Entre na sua conta para continuar</div>
+        <div style="margin-bottom:14px;">
+          <div style="font-size:12px;color:var(--t3);margin-bottom:5px;font-weight:500;">Email</div>
+          <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--t3);">thiago@email.com</div>
+        </div>
+        <div style="margin-bottom:20px;">
+          <div style="font-size:12px;color:var(--t3);margin-bottom:5px;font-weight:500;">Senha</div>
+          <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--t3);">••••••••</div>
+        </div>
+        <div style="padding:11px 20px;border-radius:10px;background:linear-gradient(135deg,var(--em),var(--el));color:white;font-size:14px;font-weight:600;text-align:center;">Entrar</div>
+        <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--t3);">
+          Ou continue com
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;">
+            <div style="width:40px;height:36px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;">G</div>
+            <div style="width:40px;height:36px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 04. ONBOARDING -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s4">
+  <div class="sec-label">Contexto 04</div>
+  <div class="sec-title">Onboarding Wizard</div>
+  <p class="sec-desc">Logo 32px + wordmark no canto superior esquerdo como âncora de confiança durante o wizard de configuração inicial. Sutil mas sempre presente.</p>
+
+  <div class="screen-frame">
+    <div class="screen-bar"><div class="screen-dot"></div><div class="screen-dot"></div><div class="screen-dot"></div></div>
+    <div class="screen-body" style="background:var(--bg);padding:0;min-height:380px;">
+      <!-- Top bar with logo -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border);">
+        <div class="brand-lockup">
+          <svg viewBox="0 0 512 512" width="30" height="30" style="border-radius:8px;">
+            <defs>
+              <linearGradient id="ob1g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="50%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#0055ff"/></linearGradient>
+              <linearGradient id="ob1bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/></linearGradient>
+            </defs>
+            <rect width="512" height="512" rx="112" fill="url(#ob1bg)"/>
+            <path d="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392" fill="none" stroke="url(#ob1g)" stroke-width="28" stroke-linecap="round"/>
+            <circle r="16" fill="#10b981" opacity="0.85"><animateMotion dur="3.5s" repeatCount="indefinite" path="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392"/></circle>
+          </svg>
+          <span class="wm" style="font-size:17px;"><span class="s">Sync</span><span class="l">Life</span></span>
+        </div>
+        <!-- Steps indicator -->
+        <div style="display:flex;gap:6px;">
+          <div style="width:32px;height:4px;border-radius:3px;background:var(--em);"></div>
+          <div style="width:32px;height:4px;border-radius:3px;background:var(--em);"></div>
+          <div style="width:32px;height:4px;border-radius:3px;background:var(--em);opacity:0.3;"></div>
+          <div style="width:32px;height:4px;border-radius:3px;background:var(--s3);"></div>
+          <div style="width:32px;height:4px;border-radius:3px;background:var(--s3);"></div>
+        </div>
+      </div>
+      <!-- Wizard content -->
+      <div style="padding:40px 60px;max-width:520px;margin:0 auto;">
+        <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:700;margin-bottom:6px;">Escolha seu modo</div>
+        <div style="color:var(--t3);font-size:13px;margin-bottom:24px;">Vamos personalizar o SyncLife do seu jeito.</div>
+        <!-- Mode cards -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="background:var(--s1);border:2px solid var(--em);border-radius:14px;padding:20px;cursor:pointer;">
+            <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;color:var(--em);">⚡ Foco</div>
+            <div style="font-size:12px;color:var(--t3);line-height:1.6;">Essencial e direto ao ponto. Finanças + Metas + Agenda.</div>
+          </div>
+          <div style="background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;">
+            <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;"><span class="grad">∞ Jornada</span></div>
+            <div style="font-size:12px;color:var(--t3);line-height:1.6;">Vida completa. 8 módulos + AI + analytics avançados.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 05. MODULE BAR (in-app) -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s5">
+  <div class="sec-label">Contexto 05</div>
+  <div class="sec-title">Module Bar — In-App (34px)</div>
+  <p class="sec-desc">Apenas o ícone, sem wordmark — espaço compacto de 58px da barra lateral. Logo a 34×34px com 1 partícula sutil. O "SyncLife" aparece como tooltip no hover.</p>
+
+  <div class="screen-frame">
+    <div class="screen-bar"><div class="screen-dot"></div><div class="screen-dot"></div><div class="screen-dot"></div></div>
+    <div class="screen-body" style="display:flex;min-height:380px;background:var(--bg);">
+      <!-- Module Bar -->
+      <div style="width:58px;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0;">
+        <!-- Logo -->
+        <div style="margin-bottom:12px;">
+          <svg viewBox="0 0 512 512" width="34" height="34" style="border-radius:9px;">
+            <defs>
+              <linearGradient id="mb1g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="50%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#0055ff"/></linearGradient>
+              <linearGradient id="mb1bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/></linearGradient>
+            </defs>
+            <rect width="512" height="512" rx="112" fill="url(#mb1bg)"/>
+            <path d="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392" fill="none" stroke="url(#mb1g)" stroke-width="28" stroke-linecap="round"/>
+            <circle r="16" fill="#10b981" opacity="0.85"><animateMotion dur="3.5s" repeatCount="indefinite" path="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392"/></circle>
+          </svg>
+        </div>
+        <!-- Module buttons -->
+        <div style="width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;background:rgba(238,242,255,.1);">
+          <div style="position:absolute;left:-8px;top:50%;transform:translateY(-50%);width:3px;height:22px;border-radius:0 3px 3px 0;background:var(--t1);"></div>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--t1)" stroke-width="1.8"><path d="M3 12L12 3l9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+        </div>
+        <div style="width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(16,185,129,0.16);">
+          <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:22px;border-radius:0 3px 3px 0;background:var(--em);"></div>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--em)" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <div style="width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--t3)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--em),var(--el));opacity:0.5;"></div>
+      </div>
+      <!-- Sidebar -->
+      <div style="width:228px;background:var(--s1);border-right:1px solid var(--border);padding:14px 16px;">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--em)" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Finanças
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <div style="padding:8px 12px;border-radius:8px;background:rgba(16,185,129,0.08);font-size:13px;color:var(--em);font-weight:500;">Visão Geral</div>
+          <div style="padding:8px 12px;border-radius:8px;font-size:13px;color:var(--t3);">Transações</div>
+          <div style="padding:8px 12px;border-radius:8px;font-size:13px;color:var(--t3);">Orçamentos</div>
+          <div style="padding:8px 12px;border-radius:8px;font-size:13px;color:var(--t3);">Recorrentes</div>
+        </div>
+      </div>
+      <!-- Content area -->
+      <div style="flex:1;padding:20px;display:flex;align-items:center;justify-content:center;">
+        <div style="color:var(--t3);font-size:13px;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--t2);margin-bottom:4px;">Área de conteúdo</div>
+          Dashboard, transações, etc.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 06. SPLASH SCREEN -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s6">
+  <div class="sec-label">Contexto 06</div>
+  <div class="sec-title">Splash Screen / Loading</div>
+  <p class="sec-desc">O momento mais dramático da marca. Logo 120px centralizado com animação completa (2 partículas + glow + pulso central) e wordmark abaixo. Aparece ao abrir o app.</p>
+
+  <div class="screen-frame">
+    <div class="screen-bar"><div class="screen-dot"></div><div class="screen-dot"></div><div class="screen-dot"></div></div>
+    <div class="screen-body" style="background:linear-gradient(160deg,#03071a 0%,#051c14 40%,#03091f 100%);min-height:440px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;">
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;background:radial-gradient(circle,rgba(16,185,129,0.08)0%,rgba(0,85,255,0.04)30%,transparent 65%);pointer-events:none;"></div>
+      <!-- Large logo -->
+      <svg viewBox="0 0 512 512" width="120" height="120" style="border-radius:26px;filter:drop-shadow(0 0 40px rgba(16,185,129,0.2)) drop-shadow(0 0 80px rgba(0,85,255,0.1));margin-bottom:20px;">
+        <defs>
+          <linearGradient id="sp1g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="50%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#0055ff"/></linearGradient>
+          <linearGradient id="sp1bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/></linearGradient>
+          <filter id="sp1f"><feGaussianBlur stdDeviation="5"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="512" height="512" rx="112" fill="url(#sp1bg)"/>
+        <path d="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392" fill="none" stroke="url(#sp1g)" stroke-width="16" stroke-linecap="round" filter="url(#sp1f)"/>
+        <circle r="11" fill="#10b981" filter="url(#sp1f)" opacity="0.9"><animateMotion dur="3s" repeatCount="indefinite" path="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392"/></circle>
+        <circle r="7" fill="#0055ff" filter="url(#sp1f)" opacity="0.55"><animateMotion dur="3s" repeatCount="indefinite" begin="1.5s" path="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392"/></circle>
+        <circle cx="256" cy="256" r="12" fill="rgba(16,185,129,0.06)"><animate attributeName="r" values="8;20;8" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.06;0.15;0.06" dur="3s" repeatCount="indefinite"/></circle>
+      </svg>
+      <span class="wm" style="font-size:32px;position:relative;z-index:1;"><span class="s">Sync</span><span class="l">Life</span></span>
+      <div style="color:var(--t3);font-size:12px;margin-top:6px;letter-spacing:2px;text-transform:uppercase;position:relative;z-index:1;">Evolução sem fim</div>
+      <!-- Loading bar -->
+      <div style="width:100px;height:3px;background:var(--s3);border-radius:2px;margin-top:28px;overflow:hidden;position:relative;z-index:1;">
+        <div style="width:60%;height:100%;background:linear-gradient(90deg,var(--em),var(--el));border-radius:2px;animation:loadbar 2s ease-in-out infinite;"></div>
+      </div>
+    </div>
+  </div>
+  <style>@keyframes loadbar{0%{width:10%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:10%;margin-left:90%}}</style>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 07. FOOTER -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="s7">
+  <div class="sec-label">Contexto 07</div>
+  <div class="sec-title">Footer da Landing Page</div>
+  <p class="sec-desc">Logo 28px + wordmark 16px no canto esquerdo do footer. Versão mais compacta e sutil da marca, junto com tagline e links de navegação.</p>
+
+  <div class="screen-frame">
+    <div class="screen-bar"><div class="screen-dot"></div><div class="screen-dot"></div><div class="screen-dot"></div></div>
+    <div class="screen-body" style="background:var(--s1);padding:36px 32px 24px;">
+      <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:32px;margin-bottom:28px;">
+        <!-- Brand column -->
+        <div>
+          <div class="brand-lockup" style="margin-bottom:12px;">
+            <svg viewBox="0 0 512 512" width="28" height="28" style="border-radius:7px;">
+              <defs>
+                <linearGradient id="ft1g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="50%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#0055ff"/></linearGradient>
+                <linearGradient id="ft1bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#051c14"/><stop offset="100%" stop-color="#03091f"/></linearGradient>
+              </defs>
+              <rect width="512" height="512" rx="112" fill="url(#ft1bg)"/>
+              <path d="M256 120 C178 120,100 170,100 256 C100 342,178 392,256 308 C334 224,412 174,412 256 C412 342,334 392,256 392" fill="none" stroke="url(#ft1g)" stroke-width="30" stroke-linecap="round"/>
+            </svg>
+            <span class="wm" style="font-size:16px;"><span class="s">Sync</span><span class="l">Life</span></span>
+          </div>
+          <div style="font-size:13px;color:var(--t3);line-height:1.7;max-width:220px;">O sistema operacional da sua vida. 8 dimensões sincronizadas em evolução contínua.</div>
+        </div>
+        <!-- Links columns -->
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--t3);margin-bottom:14px;">Produto</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--t2);">
+            <span>Funcionalidades</span><span>Preços</span><span>Roadmap</span><span>Changelog</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--t3);margin-bottom:14px;">Recursos</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--t2);">
+            <span>Blog</span><span>Guias</span><span>API Docs</span><span>Suporte</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--t3);margin-bottom:14px;">Legal</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--t2);">
+            <span>Termos de uso</span><span>Privacidade</span><span>Cookies</span>
+          </div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:16px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;color:var(--t3);">© 2026 SyncLife. Todos os direitos reservados.</div>
+        <div style="display:flex;gap:16px;font-size:12px;color:var(--t3);">
+          <span>Twitter</span><span>GitHub</span><span>Discord</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SPEC TABLE -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section" id="spec">
+  <div class="sec-label">Especificação Técnica</div>
+  <div class="sec-title">Tabela de Referência por Contexto</div>
+  <p class="sec-desc">Tamanho exato do ícone, wordmark, animações e detalhes de implementação para cada tela.</p>
+
+  <table class="spec-table">
+    <thead>
+      <tr>
+        <th>Contexto</th>
+        <th>Ícone</th>
+        <th>Wordmark</th>
+        <th>Layout</th>
+        <th>Animação</th>
+        <th>Glow Filter</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Landing Navbar</td>
+        <td>32px</td>
+        <td>Syne 18px 700</td>
+        <td>Horizontal (icon + text)</td>
+        <td>1 partícula</td>
+        <td>Não</td>
+      </tr>
+      <tr>
+        <td>Landing Hero</td>
+        <td>80-88px</td>
+        <td>Syne 28px 800</td>
+        <td>Vertical (icon sobre text)</td>
+        <td>2 partículas</td>
+        <td style="color:var(--em);">Sim</td>
+      </tr>
+      <tr>
+        <td>Login (painel esq.)</td>
+        <td>38px</td>
+        <td>Syne 18px 700</td>
+        <td>Horizontal (icon + text)</td>
+        <td>2 partículas</td>
+        <td style="color:var(--em);">Sim</td>
+      </tr>
+      <tr>
+        <td>Onboarding</td>
+        <td>30px</td>
+        <td>Syne 17px 700</td>
+        <td>Horizontal (icon + text)</td>
+        <td>1 partícula</td>
+        <td>Não</td>
+      </tr>
+      <tr>
+        <td>Module Bar</td>
+        <td>34px</td>
+        <td>—</td>
+        <td>Só ícone</td>
+        <td>1 partícula</td>
+        <td>Não</td>
+      </tr>
+      <tr>
+        <td>Splash Screen</td>
+        <td>120px</td>
+        <td>Syne 32px 800</td>
+        <td>Vertical (icon sobre text)</td>
+        <td>2 partículas + pulso</td>
+        <td style="color:var(--em);">Sim + drop-shadow</td>
+      </tr>
+      <tr>
+        <td>Footer</td>
+        <td>28px</td>
+        <td>Syne 16px 700</td>
+        <td>Horizontal (icon + text)</td>
+        <td>Nenhuma (estático)</td>
+        <td>Não</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- WORDMARK RULE -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="sec-label">Regra da Wordmark</div>
+  <div class="sec-title">Como o nome "SyncLife" se comporta</div>
+
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:28px 32px;display:flex;flex-direction:column;gap:20px;">
+    <!-- Rule 1: Dark bg -->
+    <div style="display:flex;align-items:center;gap:24px;">
+      <div style="background:var(--bg);padding:16px 24px;border-radius:12px;border:1px solid var(--border);">
+        <span class="wm" style="font-size:22px;"><span class="s">Sync</span><span class="l">Life</span></span>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:2px;">Fundo escuro (Dark Foco / Dark Jornada)</div>
+        <div style="font-size:12px;color:var(--t3);">"Sync" = branco (#dff0ff) · "Life" = gradiente (emerald → blue)</div>
+      </div>
+    </div>
+    <!-- Rule 2: Light bg -->
+    <div style="display:flex;align-items:center;gap:24px;">
+      <div style="background:#f0f4f8;padding:16px 24px;border-radius:12px;">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;">
+          <span style="color:#0f172a;">Sync</span><span style="background:linear-gradient(135deg,#059669,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Life</span>
+        </span>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:2px;">Fundo claro (Light Foco / Light Jornada)</div>
+        <div style="font-size:12px;color:var(--t3);">"Sync" = navy escuro (#0f172a) · "Life" = gradiente darker (emerald-600 → blue-600)</div>
+      </div>
+    </div>
+    <!-- Rule 3: Only diff -->
+    <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:10px;padding:14px 18px;">
+      <div style="font-size:13px;color:var(--t1);line-height:1.7;">
+        <strong>Resumo:</strong> O ícone (logo Infinity Flow) é <strong>sempre idêntico</strong> — nunca muda. A única adaptação por tema é a cor do texto "Sync" na wordmark: branco em fundos escuros, navy em fundos claros. O "Life" sempre usa gradiente emerald→blue (ajustando apenas a saturação para contraste).
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- VERDICT -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="verdict">
+    <h3>⚡ Componentes React Necessários</h3>
+    <p>Para implementar tudo isso, precisamos de apenas <strong>2 componentes</strong>:</p>
+    <p style="margin-top:12px;">
+      <code>&lt;SyncLifeIcon size={34} animated /&gt;</code> — O ícone SVG isolado. Props: <code>size</code> (ajusta stroke-width e partículas automaticamente), <code>animated</code> (default: true, false para footer/favicon). Mesmo SVG sempre, independente do tema.
+    </p>
+    <p style="margin-top:8px;">
+      <code>&lt;SyncLifeBrand size="md" /&gt;</code> — Ícone + wordmark juntos. Tamanhos pré-definidos: <code>sm</code> (28+16px, footer), <code>md</code> (32+18px, navbar/onboarding), <code>lg</code> (38+18px, auth), <code>xl</code> (88+28px, hero), <code>splash</code> (120+32px). A cor do "Sync" adapta ao tema (claro/escuro) via CSS variable.
+    </p>
+    <p style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;font-size:13px;color:var(--t3);">
+      Esses 2 componentes cobrem 100% dos 7 contextos de uso. Nenhum SVG duplicado, nenhuma lógica condicional de cor para o ícone — apenas tamanho e animação se adaptam.
+    </p>
+  </div>
+</section>
+
+</div>
+</body>
+</html>

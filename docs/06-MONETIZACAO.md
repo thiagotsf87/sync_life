@@ -45,22 +45,23 @@
 │                          R$ 0                                   │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  ✅ Módulo Finanças completo                                   │
+│  ✅ Módulo Finanças (dashboard, transações, orçamentos)        │
+│  ✅ Módulo Futuro (até 3 objetivos)                            │
+│  ✅ Módulo Tempo (agenda básica)                               │
 │  ✅ Dashboard com gráficos                                     │
 │  ✅ Até 200 transações/mês                                     │
-│  ✅ 1 ano de histórico                                         │
 │  ✅ Categorias padrão + 5 personalizadas                       │
-│  ✅ Orçamentos por categoria                                   │
-│  ✅ Relatório mensal básico                                    │
 │  ✅ PWA (instalar no celular)                                  │
-│  ✅ Modo Foco                                                  │
+│  ✅ Modo Foco + Modo Jornada                                   │
+│  ✅ Tema Dark + Light                                          │
 │                                                                 │
-│  ❌ Modo Jornada / Life Sync Score                             │
-│  ❌ Exportar PDF/Excel                                         │
+│  ❌ Módulos Corpo, Mente, Patrimônio, Carreira, Experiências   │
+│  ❌ IA (cardápio, coach, sugestões de viagem)                  │
+│  ❌ Exportar PDF/Excel/CSV                                     │
 │  ❌ Transações recorrentes automáticas                         │
 │  ❌ Histórico ilimitado                                        │
-│  ❌ Módulos adicionais (Metas, Agenda)                         │
-│  ❌ Integrações externas                                       │
+│  ❌ Integrações cross-module                                   │
+│  ❌ Planejamento financeiro (12 meses + cenários)              │
 │                                                                 │
 │  Ideal para: Quem quer organização básica                      │
 │                                                                 │
@@ -78,18 +79,17 @@
 │                                                                 │
 │  Tudo do FREE +                                                │
 │                                                                 │
+│  ✅ Todos os 8 módulos desbloqueados                           │
+│  ✅ IA: cardápio, coach nutricional, sugestões de viagem       │
 │  ✅ Transações ilimitadas                                      │
 │  ✅ Histórico ilimitado                                        │
 │  ✅ Categorias ilimitadas                                      │
 │  ✅ Transações recorrentes automáticas                         │
-│  ✅ Modo Jornada completo                                      │
-│  ✅ Life Sync Score + histórico                                │
-│  ✅ Relatórios avançados                                       │
-│  ✅ Exportar PDF / Excel / CSV                                 │
-│  ✅ Módulo de Metas (quando disponível)                        │
-│  ✅ Módulo de Agenda (quando disponível)                       │
-│  ✅ Integrações (Google Calendar, etc)                         │
-│  ✅ Dark mode                                                  │
+│  ✅ Planejamento financeiro (12 meses + 3 cenários)            │
+│  ✅ Life Sync Score 8 dimensões + histórico                    │
+│  ✅ Relatórios avançados + exportar CSV                        │
+│  ✅ Integrações cross-module (12 toggles)                      │
+│  ✅ Objetivos ilimitados                                       │
 │  ✅ Suporte prioritário                                        │
 │  ✅ Acesso antecipado a novas features                         │
 │                                                                 │
@@ -127,20 +127,27 @@
 | Feature | FREE | PRO |
 |---------|------|-----|
 | **Preço** | R$ 0 | R$ 19,90/mês |
+| Módulos disponíveis | 3 (Finanças, Futuro, Tempo) | Todos os 8 |
 | Transações/mês | 200 | Ilimitadas |
+| Objetivos/Metas | 3 | Ilimitados |
 | Histórico | 1 ano | Ilimitado |
 | Categorias custom | 5 | Ilimitadas |
+| Recorrentes | 5 | Ilimitadas |
 | Orçamentos | ✅ | ✅ |
-| Gráfico pizza | ✅ | ✅ |
-| Múltiplos gráficos | ❌ | ✅ |
-| Transações recorrentes | ❌ | ✅ |
-| Modo Jornada | ❌ | ✅ |
-| Life Sync Score | ❌ | ✅ |
-| Exportar PDF/Excel | ❌ | ✅ |
-| Módulo Metas | ❌ | ✅ |
-| Módulo Agenda | ❌ | ✅ |
-| Integrações | ❌ | ✅ |
-| Dark mode | ❌ | ✅ |
+| Dashboard + Gráficos | ✅ | ✅ |
+| Modo Foco + Jornada | ✅ | ✅ |
+| Tema Dark + Light | ✅ | ✅ |
+| PWA | ✅ | ✅ |
+| Planejamento (cenários) | ❌ | ✅ |
+| IA (cardápio, coach, viagem) | ❌ | ✅ |
+| Módulo Corpo | ❌ | ✅ |
+| Módulo Mente | ❌ | ✅ |
+| Módulo Patrimônio | ❌ | ✅ |
+| Módulo Carreira | ❌ | ✅ |
+| Módulo Experiências | ❌ | ✅ |
+| Integrações cross-module | ❌ | ✅ |
+| Exportar CSV | ❌ | ✅ |
+| Life Sync Score 8 dim. | ❌ | ✅ |
 | Suporte | Comunidade | Prioritário |
 
 ---
@@ -180,10 +187,11 @@ Se o modelo de assinatura única não funcionar, considerar:
 | Gatilho | Mensagem |
 |---------|----------|
 | Atinge 180 transações (90%) | "Você está quase no limite. Upgrade para ilimitado?" |
-| Tenta exportar PDF | "Exportação disponível no plano PRO" |
-| Histórico > 1 ano | "Para ver dados antigos, faça upgrade" |
-| Cria 6ª categoria | "Limite de categorias. Upgrade para ilimitadas" |
-| Tenta ativar Modo Jornada | "Modo Jornada disponível no PRO" |
+| Tenta acessar módulo Corpo/Mente/etc | "Módulo disponível no plano PRO" |
+| Tenta usar IA (cardápio, coach) | "Funcionalidade IA disponível no PRO" |
+| Cria 4º objetivo | "Limite de objetivos. Upgrade para ilimitados" |
+| Tenta exportar CSV | "Exportação disponível no plano PRO" |
+| Cria 6ª recorrente | "Limite de recorrentes. Upgrade para ilimitadas" |
 
 ### 5.2 UI de Upgrade
 
@@ -265,6 +273,8 @@ Se o modelo de assinatura única não funcionar, considerar:
 
 **Conclusão**: Break-even com ~15-20 usuários PRO.
 
+**Nota V3**: Custos de IA (Gemini/Groq) são gratuitos nos free tiers dos providers. Migração para Claude (~$3/1M tokens) quando MRR ≥ R$ 2.000.
+
 ---
 
 ## 8. Quando Começar a Cobrar
@@ -329,4 +339,4 @@ R: Grandfather clause - quem paga mantém o preço antigo.
 ---
 
 *Documento criado em: Fevereiro 2026*
-*Versão: 1.0*
+*Versão: 2.0 (atualizado Fev 2026 — MVP V3)*

@@ -1,5 +1,5 @@
 # QA — Validação de Homologação
-> SyncLife MVP V2 · Fases 1, 2 e 3
+> SyncLife MVP V3 · Fases 1–13
 > Ambiente: `homologacao` branch → Vercel preview
 > Última atualização: Fev 2026
 
@@ -22,10 +22,15 @@
 
 | Arquivo | Homolog | Prod |
 |---------|---------|------|
-| `web/supabase/schema.sql` — schema base | ✅ aplicado | ✅ aplicado |
-| `web/supabase/migrations/001_mvp_v2.sql` — Fase 1 | ✅ aplicado | ✅ aplicado |
-| `web/supabase/migrations/002_fase2_financas.sql` — Fase 2 | ✅ aplicado | ✅ aplicado |
-| `web/supabase/migrations/003_fase3_metas.sql` — Fase 3 | ✅ aplicado em 25/02/2026 | ✅ aplicado em 25/02/2026 |
+| `web/supabase/schema.sql` — schema base | ✅ | ✅ |
+| `001_mvp_v2.sql` — Fase 1 | ✅ | ✅ |
+| `002_fase2_financas.sql` — Fase 2 | ✅ | ✅ |
+| `003_fase3_metas.sql` — Fase 3 | ✅ | ✅ |
+| `004_fase4_agenda.sql` — Fase 4 | | |
+| `005_fase6_infra_v3.sql` — Fase 6 (31 tabelas V3) | | |
+| `007_futuro_migracao.sql` — Goals V2 → Objectives V3 | | |
+| `008_link_objectives.sql` — Links objectives/tracks/roadmaps | | |
+| `009_corpo_storage.sql` — Storage corpo-files | | |
 
 ### Seed — Homolog (`001_seed_homolog.sql`)
 
@@ -48,7 +53,7 @@
 
 | # | Item | Esperado | ✅❌⚠️ | Obs |
 |---|------|----------|--------|-----|
-| 0.1 | ModuleBar visível (58px) | 6 ícones: home, finanças, metas, agenda, conquistas, configs | | |
+| 0.1 | ModuleBar visível (58px) | 11 ícones: panorama, finanças, futuro, tempo, corpo, mente, patrimônio, carreira, experiências, conquistas, configs | | |
 | 0.2 | Sidebar aparece ao clicar módulo | 220px, navItems do módulo ativo | | |
 | 0.3 | Trocar modo Foco → Jornada | Pill alterna, classe `jornada` aplicada no `<html>` | | |
 | 0.4 | Trocar tema Dark → Light | Classe `light` aplicada, tokens de cor mudam | | |
@@ -184,7 +189,7 @@
 
 ---
 
-## BLOCO 10 — Metas: Lista `/metas`
+## BLOCO 10 — Futuro: Lista `/futuro`
 
 | # | Item | Esperado | ✅❌⚠️ | Obs |
 |---|------|----------|--------|-----|
@@ -206,7 +211,7 @@
 
 ---
 
-## BLOCO 11 — Metas: Wizard `/metas/nova`
+## BLOCO 11 — Futuro: Wizard `/futuro/nova`
 
 | # | Item | Esperado | ✅❌⚠️ | Obs |
 |---|------|----------|--------|-----|
@@ -225,7 +230,7 @@
 
 ---
 
-## BLOCO 12 — Metas: Detalhe `/metas/[id]`
+## BLOCO 12 — Futuro: Detalhe `/futuro/[id]`
 
 | # | Item | Esperado | ✅❌⚠️ | Obs |
 |---|------|----------|--------|-----|
@@ -246,6 +251,75 @@
 | 12.15 | Excluir meta | Confirmação → redireciona para `/metas` | | |
 | 12.16 | Botão "← Voltar" | Retorna para `/metas` | | |
 | 12.17 | JornadaInsight contextual | Texto muda conforme % de progresso | | |
+
+---
+
+## BLOCO 12A — Módulo Corpo `/corpo`
+
+| # | Item | Esperado | ✅❌⚠️ | Obs |
+|---|------|----------|--------|-----|
+| 12A.1 | Dashboard Corpo | KPIs de peso, atividades, saúde | | |
+| 12A.2 | Peso: registrar pesagem | Salva no banco, gráfico atualiza | | |
+| 12A.3 | Peso: gráfico de evolução | LineChart com medidas ao longo do tempo | | |
+| 12A.4 | Atividades: registrar treino | MET × duração calcula calorias | | |
+| 12A.5 | Saúde: registrar consulta | Dados salvos, lista atualiza | | |
+| 12A.6 | Cardápio IA (Jornada) | Gemini gera cardápio personalizado | | |
+
+---
+
+## BLOCO 12B — Módulo Mente `/mente`
+
+| # | Item | Esperado | ✅❌⚠️ | Obs |
+|---|------|----------|--------|-----|
+| 12B.1 | Trilhas de estudo | Lista de tracks com progresso | | |
+| 12B.2 | Timer Pomodoro | 25min trabalho, 5min pausa, ciclos | | |
+| 12B.3 | Biblioteca | Lista de itens (livros, cursos, artigos) | | |
+| 12B.4 | Sessão registrada | Track session salva com duração | | |
+
+---
+
+## BLOCO 12C — Módulo Patrimônio `/patrimonio`
+
+| # | Item | Esperado | ✅❌⚠️ | Obs |
+|---|------|----------|--------|-----|
+| 12C.1 | Dashboard Patrimônio | KPIs de patrimônio total, proventos | | |
+| 12C.2 | Carteira: adicionar ativo | Salva, recalcula totais | | |
+| 12C.3 | Carteira: PieChart por setor | Agrupamento correto | | |
+| 12C.4 | Proventos: registrar dividendo | Salva com data e valor | | |
+| 12C.5 | Simulador IF | Campos de aporte/rentabilidade/prazo funcionam | | |
+
+---
+
+## BLOCO 12D — Módulo Carreira `/carreira`
+
+| # | Item | Esperado | ✅❌⚠️ | Obs |
+|---|------|----------|--------|-----|
+| 12D.1 | Habilidades: lista de skills | Grid com cards de skill | | |
+| 12D.2 | Habilidades: adicionar/editar | Modal funciona, salva no banco | | |
+| 12D.3 | Roadmap: timeline de steps | Steps ordenados com progresso | | |
+| 12D.4 | Promoções: registrar promoção | Salva com salário e data | | |
+
+---
+
+## BLOCO 12E — Módulo Experiências `/experiencias`
+
+| # | Item | Esperado | ✅❌⚠️ | Obs |
+|---|------|----------|--------|-----|
+| 12E.1 | Lista de viagens | TripCards com status e datas | | |
+| 12E.2 | Nova viagem | Wizard de criação funciona | | |
+| 12E.3 | Detalhe: 6 abas | Overview, itinerário, orçamento, checklist, hospedagem, transporte | | |
+| 12E.4 | IA viagem (Jornada) | Gemini sugere roteiros | | |
+
+---
+
+## BLOCO 12F — Módulo Tempo `/tempo`
+
+| # | Item | Esperado | ✅❌⚠️ | Obs |
+|---|------|----------|--------|-----|
+| 12F.1 | Vista semanal | 7 dias com eventos posicionados | | |
+| 12F.2 | Vista mensal | Grid do mês com indicadores | | |
+| 12F.3 | Criar evento | Modal funciona, salva, aparece na agenda | | |
+| 12F.4 | Editar/excluir evento | Funciona sem erro | | |
 
 ---
 
@@ -304,13 +378,19 @@
 | 7 — Planejamento | 6 | | | |
 | 8 — Calendário | 5 | | | |
 | 9 — Relatórios | 5 | | | |
-| 10 — Metas Lista | 15 | | | |
-| 11 — Metas Wizard | 12 | | | |
-| 12 — Metas Detalhe | 17 | | | |
+| 10 — Futuro Lista | 15 | | | |
+| 11 — Futuro Wizard | 12 | | | |
+| 12 — Futuro Detalhe | 17 | | | |
+| 12A — Corpo | 6 | | | |
+| 12B — Mente | 4 | | | |
+| 12C — Patrimônio | 5 | | | |
+| 12D — Carreira | 4 | | | |
+| 12E — Experiências | 4 | | | |
+| 12F — Tempo | 4 | | | |
 | 13 — Responsividade | 6 | | | |
 | 14 — Design System | 8 | | | |
 | 15 — Integridade | 6 | | | |
-| **TOTAL** | **134** | | | |
+| **TOTAL** | **161** | | | |
 
 ---
 

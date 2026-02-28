@@ -1,9 +1,9 @@
 # Plano de Implementação — MVP V3 (Fases 6–13)
 
-> **Branch de trabalho:** `mvp-v3`
+> **Status:** ✅ **TODAS AS FASES CONCLUÍDAS** (Fev 2026)
+> **Branch final:** `mvp-v3` (mergeado em `homologacao` e `main`)
 > **Base:** `main` (MVP V2 completo — Fases 1–5)
-> **Data:** Fevereiro 2026
-> **Estimativa:** 16–20 semanas
+> **Data de conclusão:** Fevereiro 2026
 
 ---
 
@@ -42,12 +42,22 @@ web/src/app/globals.css                   ← tokens de cor + animações
 web/supabase/migrations/                  ← migrations existentes (001 a 004)
 ```
 
+### Diretriz operacional (Free Tier: Supabase + Vercel)
+
+Para manter custo baixo durante validação com poucos testers, adotar **eventos pontuais** como padrão:
+
+- **Preferir gatilho por ação de usuário** (`onCreate`, `onUpdate`, `onComplete`) em vez de `setInterval`.
+- **Evitar polling constante** em telas abertas; só usar polling quando não houver gatilho confiável.
+- **Quando polling for inevitável**, usar intervalo conservador (60s a 300s) e pausar com aba inativa.
+- **Integrar módulos via bridges** (`lib/integrations/*`) para atualizar dados no momento do evento de negócio.
+- **Realtime apenas onde agrega valor real de UX** (ex.: feed/sino), com escopo mínimo por usuário.
+
 ---
 
-## FASE 6 — Infraestrutura V3 (2 semanas)
+## FASE 6 — Infraestrutura V3 ✅
 
+> **Status:** Concluída
 > **Objetivo:** Preparar banco, navegação e stack de IA para os 6 novos módulos.
-> Pode iniciar imediatamente — não precisa aguardar métricas de validação do V2.
 
 ### 6.1 — Migration SQL (arquivo: `005_fase6_infra_v3.sql`)
 
@@ -692,7 +702,7 @@ Se módulo inativo: redistribuir peso proporcionalmente entre os ativos.
 
 ---
 
-## FASE 7 — Módulo Futuro (2–3 semanas)
+## FASE 7 — Módulo Futuro ✅
 
 > **Prioridade máxima** — é o módulo conector. Sem ele os demais são silos.
 > **Spec completa:** `docs/SPEC-FUTURO.md` (58 regras de negócio)
@@ -747,7 +757,7 @@ const progress = goals.reduce((acc, g) => acc + g.progress * g.weight, 0)
 
 ---
 
-## FASE 8 — Módulo Mente (3 semanas)
+## FASE 8 — Módulo Mente ✅
 
 > **Spec completa:** `docs/SPEC-MENTE.md` (26 regras de negócio)
 > **Por que antes do Corpo:** Timer Pomodoro = engajamento diário imediato, sem API externa.
@@ -791,7 +801,7 @@ type TimerState = 'idle' | 'focusing' | 'short_break' | 'long_break' | 'paused'
 
 ---
 
-## FASE 9 — Módulo Carreira (3 semanas)
+## FASE 9 — Módulo Carreira ✅
 
 > **Spec completa:** `docs/SPEC-CARREIRA.md` (20 regras de negócio)
 > **Dependência:** Mente concluída (habilidades ← trilhas).
@@ -827,7 +837,7 @@ web/src/components/carreira/
 
 ---
 
-## FASE 10 — Módulo Corpo (4 semanas)
+## FASE 10 — Módulo Corpo ✅
 
 > **Spec completa:** `docs/SPEC-CORPO.md` (39 regras de negócio)
 > **Dividir em 2 entregas:** v1 (sem IA) e v2 (com IA).
@@ -887,7 +897,7 @@ const MET: Record<string, number> = {
 
 ---
 
-## FASE 11 — Módulo Patrimônio (3–4 semanas)
+## FASE 11 — Módulo Patrimônio ✅
 
 > **Spec completa:** `docs/SPEC-PATRIMONIO.md` (24 regras de negócio)
 > **Dependência técnica:** API de cotações configurada na Fase 6.
@@ -932,7 +942,7 @@ const newAvgPrice = (currentQty * currentAvgPrice + newQty * newPrice) / (curren
 
 ---
 
-## FASE 12 — Módulo Experiências (3–4 semanas)
+## FASE 12 — Módulo Experiências ✅
 
 > **Spec completa:** `docs/SPEC-EXPERIENCIAS.md` (32 regras de negócio)
 > **Mais independente** — menor interdependência com outros módulos.
@@ -972,7 +982,7 @@ npm install @hello-pangea/dnd   # fork do react-beautiful-dnd para React 18+
 
 ---
 
-## FASE 13 — Integrações + Jornada Polish (2–3 semanas)
+## FASE 13 — Integrações + Jornada Polish ✅
 
 ### 13.1 — Validar matriz de integrações
 
@@ -1024,6 +1034,16 @@ Flows críticos:
 - Trilha Mente → habilidade Carreira → roadmap step
 - Registro de peso Corpo → meta de peso no Futuro atualiza
 
+### 13.7 — Hardening de custo e tráfego (beta com poucos usuários)
+
+Aplicar checklist técnico antes do release final:
+
+- [ ] Não existe polling < 60s em páginas principais
+- [ ] Requests periódicos pausam quando `document.hidden === true`
+- [ ] Integrações cross-module usam bridges event-driven
+- [ ] Notificações respeitam preferências do usuário antes de gerar eventos
+- [ ] Métricas semanais monitoradas (requests, queries, invocações, erro)
+
 ---
 
 ## BRANCH E DEPLOY
@@ -1031,10 +1051,21 @@ Flows críticos:
 ### Branch de trabalho
 
 ```
-mvp-v3   ← branch principal do V3 (já criada, base: main)
+chore/plano-eventos-pontuais-free-tier   ← atualização do plano (base: main)
 ```
 
-Para cada fase, trabalhar diretamente na `mvp-v3`. Commits por fase:
+Para execução por fase, criar branch específica a partir de `main` (ou da branch V3 ativa) e manter uma branch por tema:
+
+- `feat/v3-fase6-infra`
+- `feat/v3-fase7-futuro`
+- `feat/v3-fase8-mente`
+- `feat/v3-fase9-carreira`
+- `feat/v3-fase10-corpo`
+- `feat/v3-fase11-patrimonio`
+- `feat/v3-fase12-experiencias`
+- `feat/v3-fase13-integracoes-polish`
+
+Commits por fase:
 ```bash
 git commit -m "feat(infra-v3): fase 6 — migration, shell v3, stack IA"
 git commit -m "feat(futuro): fase 7 — dashboard, wizard, detalhe, mapa da vida"
@@ -1089,6 +1120,8 @@ SUPABASE_SERVICE_ROLE_KEY=
 - [ ] Nenhum `console.log` em produção
 - [ ] Migration SQL testada no Supabase (se houver)
 - [ ] Integrações da fase implementadas e testadas
+- [ ] Fluxos priorizam evento pontual e evitam polling constante
+- [ ] Sem loop de consultas desnecessárias em background
 
 ---
 

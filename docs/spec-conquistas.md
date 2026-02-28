@@ -1,4 +1,4 @@
-# Spec — Conquistas (Fase 5.2)
+# Spec — Conquistas (Fase 5.2 + Fase 13)
 
 > Protótipo de referência: `prototipos/proto-conquistas.html`
 > Rota: `/conquistas` (app/(app)/conquistas/page.tsx)
@@ -88,7 +88,7 @@ Texto varia por contexto: cita a próxima conquista mais próxima de ser desbloq
 
 Layout: `flex items-center gap-2 mb-[22px] flex-wrap`
 
-Categorias: `all | fin | meta | cons | agenda`
+Categorias: `all | fin | meta | cons | agenda | corpo | patrimonio | experiencias`
 
 Labels:
 - `all` → "Todas"
@@ -96,6 +96,9 @@ Labels:
 - `meta` → "🎯 Metas"
 - `cons` → "📅 Consistência"
 - `agenda` → "📆 Agenda"
+- `corpo` → "🏋️ Corpo"
+- `patrimonio` → "📈 Patrimônio"
+- `experiencias` → "✈️ Experiências"
 
 Tab ativa: `border-[#0055ff] bg-[rgba(0,85,255,0.15)] text-[#0055ff]`
 Tab inativa: `border-[var(--sl-border)] text-[var(--sl-t3)]`
@@ -218,7 +221,7 @@ Badges são dados estáticos definidos no componente. Estrutura:
 ```ts
 interface Badge {
   id: number
-  cat: 'fin' | 'meta' | 'cons' | 'agenda'
+  cat: 'fin' | 'meta' | 'cons' | 'agenda' | 'corpo' | 'patrimonio' | 'experiencias'
   icon: string
   name: string
   desc: string
@@ -232,7 +235,7 @@ interface Badge {
 }
 ```
 
-### Badges Definidos (21 total — do protótipo aprovado)
+### Badges Definidos (33 total — V2 protótipo + V3 expansão Fase 13)
 
 **Financeiras (7):**
 1. 💰 Primeiro Passo — common — unlocked (15 Jan 2026)
@@ -263,7 +266,25 @@ interface Badge {
 20. 🔗 Integrador — uncommon — locked
 21. 🗓️ Planner Master — rare — locked (progress 12/50)
 
-**Total desbloqueadas: 12 / 21 (57%)**
+**Corpo (4):** *(adicionados na Fase 13)*
+22. 🏋️ Primeiro Treino — common — unlocked
+23. ⚖️ Balança em Dia — common — unlocked
+24. 🥗 Cardápio IA — uncommon — locked
+25. 💪 30 Dias de Treino — rare — locked (progress 0/30)
+
+**Patrimônio (4):** *(adicionados na Fase 13)*
+26. 📈 Primeiro Aporte — common — unlocked
+27. 💰 Dividendo Recebido — common — locked
+28. 🏦 Carteira Diversificada — uncommon — locked (progress 0/5)
+29. 🎯 Independência Financeira — legendary — locked (progress 0/100)
+
+**Experiências (4):** *(adicionados na Fase 13)*
+30. ✈️ Primeira Viagem — common — unlocked
+31. 📋 Planejador Detalhista — uncommon — locked
+32. 🌍 Viajante Frequente — rare — locked (progress 0/5)
+33. 🗺️ Explorador do Mundo — legendary — locked (progress 0/10)
+
+**Total desbloqueadas: 16 / 33 (48%)**
 
 ---
 
@@ -271,10 +292,13 @@ interface Badge {
 
 ```ts
 const CAT_COLORS = {
-  fin:    '#10b981',
-  meta:   '#0055ff',
-  cons:   '#f59e0b',
-  agenda: '#06b6d4',
+  fin:           '#10b981',
+  meta:          '#0055ff',
+  cons:          '#f59e0b',
+  agenda:        '#06b6d4',
+  corpo:         '#f97316',
+  patrimonio:    '#10b981',
+  experiencias:  '#8b5cf6',
 }
 ```
 
