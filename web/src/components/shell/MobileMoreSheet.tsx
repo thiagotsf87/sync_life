@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useShellStore } from '@/stores/shell-store'
 import { MODULES } from '@/lib/modules'
-import { IconConquistas, IconConfig } from './icons'
+import { IconCorpo, IconMente, IconPatrimonio, IconCarreira, IconExperiencias, IconConquistas, IconConfig } from './icons'
 import {
   Sheet,
   SheetContent,
@@ -40,6 +40,46 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
 
         {/* Navigation items */}
         <div className="flex flex-col gap-1 mb-4">
+          <button
+            onClick={() => navigate(MODULES.corpo.basePath)}
+            className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
+                       hover:bg-[var(--sl-s2)] transition-colors"
+          >
+            <IconCorpo size={20} className="text-[#f97316]" />
+            <span className="text-sm font-medium">Corpo</span>
+          </button>
+          <button
+            onClick={() => navigate(MODULES.mente.basePath)}
+            className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
+                       hover:bg-[var(--sl-s2)] transition-colors"
+          >
+            <IconMente size={20} className="text-[#a855f7]" />
+            <span className="text-sm font-medium">Mente</span>
+          </button>
+          <button
+            onClick={() => navigate(MODULES.patrimonio.basePath)}
+            className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
+                       hover:bg-[var(--sl-s2)] transition-colors"
+          >
+            <IconPatrimonio size={20} className="text-[#10b981]" />
+            <span className="text-sm font-medium">Patrimônio</span>
+          </button>
+          <button
+            onClick={() => navigate(MODULES.carreira.basePath)}
+            className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
+                       hover:bg-[var(--sl-s2)] transition-colors"
+          >
+            <IconCarreira size={20} className="text-[#f59e0b]" />
+            <span className="text-sm font-medium">Carreira</span>
+          </button>
+          <button
+            onClick={() => navigate(MODULES.experiencias.basePath)}
+            className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]
+                       hover:bg-[var(--sl-s2)] transition-colors"
+          >
+            <IconExperiencias size={20} className="text-[#06b6d4]" />
+            <span className="text-sm font-medium">Experiências</span>
+          </button>
           <button
             onClick={() => navigate(MODULES.conquistas.basePath)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--sl-t2)]

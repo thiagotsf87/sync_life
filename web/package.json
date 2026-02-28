@@ -11,9 +11,12 @@
     "test:e2e:auth": "playwright test e2e/auth.spec.ts"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.33",
+    "@ai-sdk/groq": "^3.0.25",
     "@hookform/resolvers": "^5.2.2",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.94.1",
+    "ai": "^6.0.104",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",

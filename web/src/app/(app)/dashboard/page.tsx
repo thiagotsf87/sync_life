@@ -8,7 +8,12 @@ import { useTransactions } from '@/hooks/use-transactions'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useMetas, calcProgress } from '@/hooks/use-metas'
 import { useAgenda, getWeekRange, EVENT_TYPES } from '@/hooks/use-agenda'
+import { useLifeMap } from '@/hooks/use-life-map'
+import { LifeMapRadar } from '@/components/futuro/LifeMapRadar'
 import { useRecorrentes } from '@/hooks/use-recorrentes'
+import { useCorpoDashboard } from '@/hooks/use-corpo'
+import { usePatrimonioDashboard } from '@/hooks/use-patrimonio'
+import { useExperienciasDashboard } from '@/hooks/use-experiencias'
 import { useShellStore } from '@/stores/shell-store'
 import { cn } from '@/lib/utils'
 
@@ -138,11 +143,15 @@ export default function DashboardPage() {
   const { weekStart } = useMemo(() => getWeekRange(now), [now])
   const { events } = useAgenda({ mode: 'week', referenceDate: now })
   const { upcomingOccurrences } = useRecorrentes()
+  const { nextAppointment, weekActivities } = useCorpoDashboard()
+  const { assets: patrimonioAssets } = usePatrimonioDashboard()
+  const { trips: experienciaTrips } = useExperienciasDashboard()
+  const { dimensions: lifeDimensions, overallScore: lifeScore, loading: lifeLoading } = useLifeMap()
 
   useEffect(() => {
-    const t = setTimeout(() => setScoreBarWidth(74), 450)
+    const t = setTimeout(() => setScoreBarWidth(lifeScore || 74), 450)
     return () => clearTimeout(t)
-  }, [])
+  }, [lifeScore])
 
   // ── financial KPIs ──
   const totalIncome = useMemo(() => transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0), [transactions])
@@ -216,6 +225,31 @@ export default function DashboardPage() {
 
   const projectedBalance = sparklineData[sparklineData.length - 1]?.saldo ?? 0
 
+  // ── V3 module KPIs ──
+  const totalPatrimonio = useMemo(() =>
+    patrimonioAssets.reduce((s, a) => s + a.quantity * (a.current_price ?? a.avg_price), 0),
+    [patrimonioAssets])
+  const totalInvested = useMemo(() =>
+    patrimonioAssets.reduce((s, a) => s + a.quantity * a.avg_price, 0),
+    [patrimonioAssets])
+  const patrimonioGainPct = totalInvested > 0
+    ? Math.round(((totalPatrimonio - totalInvested) / totalInvested) * 100)
+    : 0
+
+  const nextTrip = useMemo(() =>
+    experienciaTrips
+      .filter(t => ['planning', 'reserved', 'ongoing'].includes(t.status))
+      .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())[0] ?? null,
+    [experienciaTrips])
+  const daysUntilNextTrip = nextTrip
+    ? Math.ceil((new Date(nextTrip.start_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    : null
+
+  const weekActivityCount = weekActivities.length
+  const weekActivityMinutes = useMemo(() =>
+    weekActivities.reduce((s, a) => s + a.duration_minutes, 0),
+    [weekActivities])
+
   return (
     <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
@@ -254,29 +288,47 @@ export default function DashboardPage() {
           style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.12), transparent 70%)' }} />
 
         <div className="flex-shrink-0 relative z-10">
-          <div className="font-[Syne] font-extrabold text-[80px] leading-none text-sl-grad">74</div>
+          <div className="font-[Syne] font-extrabold text-[80px] leading-none text-sl-grad">
+            {lifeScore > 0 ? lifeScore : '—'}
+          </div>
           <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mt-0.5">Life Sync Score</div>
         </div>
 
         <div className="flex-1 min-w-0 relative z-10">
-          <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1">Evolução consistente</p>
-          <p className="text-[13px] text-[var(--sl-t3)] italic mb-3">"Você está em um bom ritmo. Financeiro excelente, metas precisam de atenção."</p>
+          <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1">
+            {lifeScore >= 75 ? 'Excelente equilíbrio!' : lifeScore >= 50 ? 'Evolução consistente' : lifeScore > 0 ? 'Há espaço para crescer' : 'Registre dados para calcular'}
+          </p>
+          <p className="text-[13px] text-[var(--sl-t3)] italic mb-3">
+            {lifeDimensions.length > 0
+              ? (() => {
+                  const weakest = [...lifeDimensions].sort((a, b) => a.value - b.value)[0]
+                  const strongest = [...lifeDimensions].sort((a, b) => b.value - a.value)[0]
+                  return `${strongest?.icon} ${strongest?.fullLabel} em alta. Fortaleça ${weakest?.icon} ${weakest?.fullLabel} para subir o score.`
+                })()
+              : 'Use os módulos diariamente para calcular seu score real.'}
+          </p>
           <div className="h-1.5 rounded-full overflow-hidden mb-3" style={{ background: 'rgba(255,255,255,0.07)' }}>
             <div className="h-full rounded-full transition-[width] duration-[1200ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
               style={{ width: `${scoreBarWidth}%`, background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
           </div>
-          <div className="flex gap-5 flex-wrap">
-            {[
-              { label: 'Financeiro', val: 82, color: '#10b981' },
-              { label: 'Metas', val: 61, color: '#f59e0b' },
-              { label: 'Consistência', val: 78, color: '#10b981' },
-              { label: 'Agenda', val: 67, color: '#f59e0b' },
-            ].map(d => (
-              <div key={d.label} className="flex flex-col gap-0.5">
-                <div className="text-[10px] uppercase tracking-[0.07em] text-[var(--sl-t3)]">{d.label}</div>
-                <div className="font-[DM_Mono] text-[16px] font-medium" style={{ color: d.color }}>{d.val}</div>
-              </div>
-            ))}
+          <div className="grid grid-cols-4 gap-x-5 gap-y-2">
+            {lifeLoading
+              ? [...Array(8)].map((_, i) => (
+                  <div key={i} className="flex flex-col gap-0.5">
+                    <div className="h-2.5 w-16 rounded bg-[var(--sl-s3)] animate-pulse" />
+                    <div className="h-4 w-8 rounded bg-[var(--sl-s3)] animate-pulse mt-0.5" />
+                  </div>
+                ))
+              : lifeDimensions.map(d => {
+                  const c = d.value >= 75 ? '#10b981' : d.value >= 50 ? '#f59e0b' : '#f43f5e'
+                  return (
+                    <div key={d.key} className="flex flex-col gap-0.5">
+                      <div className="text-[10px] uppercase tracking-[0.07em] text-[var(--sl-t3)]">{d.icon} {d.label}</div>
+                      <div className="font-[DM_Mono] text-[16px] font-medium" style={{ color: c }}>{d.value}</div>
+                    </div>
+                  )
+                })
+            }
           </div>
         </div>
 
@@ -452,7 +504,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-[18px]">
               <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🎯 Metas em Destaque</span>
               <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
-                onClick={() => router.push('/metas')}>Ver todas →</button>
+                onClick={() => router.push('/futuro')}>Ver todas →</button>
             </div>
             {loadingGoals
               ? <div className="flex flex-col gap-3">{[...Array(3)].map((_, i) => <div key={i} className="h-14 rounded-lg bg-[var(--sl-s2)] animate-pulse" />)}</div>
@@ -468,7 +520,7 @@ export default function DashboardPage() {
                         ? new Date(goal.target_date).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })
                         : null
                       return (
-                        <div key={goal.id} className="flex flex-col gap-1.5 cursor-pointer" onClick={() => router.push(`/metas/${goal.id}`)}>
+                        <div key={goal.id} className="flex flex-col gap-1.5 cursor-pointer" onClick={() => router.push(`/futuro/${goal.id}`)}>
                           <div className="flex items-center gap-2.5">
                             <span className="text-[20px] flex-shrink-0">{goal.icon}</span>
                             <div className="flex-1 min-w-0">
@@ -503,7 +555,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-[14px]">
               <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📅 Agenda da Semana</span>
               <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
-                onClick={() => router.push('/agenda')}>Ver agenda →</button>
+                onClick={() => router.push('/tempo')}>Ver agenda →</button>
             </div>
             {/* week strip */}
             <div className="flex gap-1 mb-3.5">
@@ -703,6 +755,154 @@ export default function DashboardPage() {
         </div>
 
       </div>
+
+      {/* ⑦ V3 MODULES ROW */}
+      <div className="grid grid-cols-3 gap-4 mt-4 max-lg:grid-cols-1">
+
+        {/* Corpo */}
+        <div
+          className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors cursor-pointer"
+          onClick={() => router.push('/corpo')}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🏥 Corpo</span>
+            <div className="h-0.5 w-6 rounded-full" style={{ background: '#f97316' }} />
+          </div>
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[12px] text-[var(--sl-t2)]">Atividades esta semana</span>
+              <span className="font-[DM_Mono] text-[14px] font-medium" style={{ color: weekActivityCount >= 3 ? '#10b981' : '#f59e0b' }}>
+                {weekActivityCount} sessões
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[12px] text-[var(--sl-t2)]">Minutos ativos</span>
+              <span className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
+                {weekActivityMinutes} min
+              </span>
+            </div>
+            {nextAppointment ? (
+              <div className="flex items-center justify-between pt-1 mt-0.5 border-t border-[var(--sl-border)]">
+                <span className="text-[12px] text-[var(--sl-t2)] truncate max-w-[60%]">
+                  📅 {nextAppointment.specialty}
+                </span>
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-[6px]"
+                  style={{ background: 'rgba(249,115,22,0.1)', color: '#f97316' }}>
+                  {new Date(nextAppointment.appointment_date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
+                </span>
+              </div>
+            ) : (
+              <div className="pt-1 mt-0.5 border-t border-[var(--sl-border)]">
+                <span className="text-[11px] text-[var(--sl-t3)]">Nenhuma consulta agendada</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Patrimônio */}
+        <div
+          className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-1 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors cursor-pointer"
+          onClick={() => router.push('/patrimonio')}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📈 Patrimônio</span>
+            <div className="h-0.5 w-6 rounded-full" style={{ background: '#10b981' }} />
+          </div>
+          <div className="flex flex-col gap-2.5">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Carteira total</p>
+              <p className="font-[DM_Mono] font-medium text-[22px] text-[var(--sl-t1)] leading-none">
+                {totalPatrimonio > 0
+                  ? totalPatrimonio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                  : '—'}
+              </p>
+            </div>
+            <div className="flex items-center justify-between pt-1 mt-0.5 border-t border-[var(--sl-border)]">
+              <span className="text-[12px] text-[var(--sl-t2)]">Rentabilidade</span>
+              <span className="font-[DM_Mono] text-[14px] font-medium"
+                style={{ color: patrimonioGainPct >= 0 ? '#10b981' : '#f43f5e' }}>
+                {patrimonioGainPct >= 0 ? '+' : ''}{patrimonioGainPct}%
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[12px] text-[var(--sl-t2)]">Ativos</span>
+              <span className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
+                {patrimonioAssets.length}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Experiências */}
+        <div
+          className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors cursor-pointer"
+          onClick={() => router.push('/experiencias')}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">✈️ Experiências</span>
+            <div className="h-0.5 w-6 rounded-full" style={{ background: '#06b6d4' }} />
+          </div>
+          <div className="flex flex-col gap-2.5">
+            {nextTrip ? (
+              <>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Próxima viagem</p>
+                  <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] truncate">{nextTrip.name}</p>
+                  <p className="text-[11px] text-[var(--sl-t3)]">{nextTrip.destinations[0]}</p>
+                </div>
+                <div className="flex items-center justify-between pt-1 mt-0.5 border-t border-[var(--sl-border)]">
+                  <span className="text-[12px] text-[var(--sl-t2)]">
+                    {new Date(nextTrip.start_date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
+                  </span>
+                  {daysUntilNextTrip != null && (
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-[6px]"
+                      style={{ background: 'rgba(6,182,212,0.10)', color: '#06b6d4' }}>
+                      {daysUntilNextTrip === 0 ? 'Hoje!' : `em ${daysUntilNextTrip}d`}
+                    </span>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">Viagens</p>
+                  <p className="font-[DM_Mono] font-medium text-[22px] text-[var(--sl-t1)]">{experienciaTrips.length}</p>
+                </div>
+                <div className="pt-1 mt-0.5 border-t border-[var(--sl-border)]">
+                  <span className="text-[11px] text-[var(--sl-t3)]">Nenhuma viagem planejada</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+      </div>
+
+      {/* ⑧ Mapa da Vida — Jornada only (RN-FUT-30) */}
+      <div className="hidden [.jornada_&]:block mt-4">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up
+                        hover:border-[var(--sl-border-h)] transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🗺️ Mapa da Vida</h3>
+              <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Equilíbrio entre todas as dimensões da sua vida</p>
+            </div>
+            <button
+              onClick={() => router.push('/futuro')}
+              className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
+            >
+              Ver detalhes →
+            </button>
+          </div>
+          <LifeMapRadar
+            dimensions={lifeDimensions}
+            overallScore={lifeScore}
+            loading={lifeLoading}
+            compact
+          />
+        </div>
+      </div>
+
     </div>
   )
 }
