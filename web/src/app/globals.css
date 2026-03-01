@@ -284,3 +284,35 @@ input[type="number"] { -moz-appearance: textfield; }
 .badge-shimmer { animation: shimmer 2.5s ease-in-out infinite; }
 
 } /* end @layer base — SyncLife utilities */
+
+/* ═══════════════════════════════════════════════════════════
+   TOKENS MOBILE — SyncLife Design System v2.0
+   REGRA: Estes tokens são usados APENAS em contexto mobile.
+   Nunca remover ou alterar tokens desktop existentes.
+═══════════════════════════════════════════════════════════ */
+:root {
+  /* ── Dimensões da navegação mobile ── */
+  --mob-bottom-nav-height: 68px;
+  --mob-header-height-foco: 52px;
+  --mob-header-height-jornada: 88px;
+  --mob-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --mob-safe-top: env(safe-area-inset-top, 0px);
+
+  /* ── Espaçamento mobile ── */
+  --mob-page-x: 16px;
+  --mob-card-p: 14px;
+  --mob-section-gap: 12px;
+  --mob-item-h: 52px;
+  --mob-tap-min: 44px;
+
+  /* ── Tipografia mobile ── */
+  --mob-kpi-value: 18px;
+  --mob-kpi-label: 10px;
+  --mob-card-title: 13px;
+  --mob-body: 13px;
+  --mob-caption: 11px;
+
+  /* ── Sub-tabs ── */
+  --mob-tabs-h: 40px;
+  --mob-tab-fade-width: 40px;
+}

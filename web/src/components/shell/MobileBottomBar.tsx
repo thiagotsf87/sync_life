@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useShellStore } from '@/stores/shell-store'
 import { MODULES } from '@/lib/modules'
 import { IconPanorama, IconFinancas, IconFuturo, IconTempo } from './icons'
-import { MobileMoreSheet } from './MobileMoreSheet'
 import { MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { ModuleId } from '@/types/shell'
@@ -28,25 +27,30 @@ const ICON_MAP = {
 export function MobileBottomBar() {
   const router = useRouter()
   const activeModule = useShellStore((s) => s.activeModule)
-  const [moreOpen, setMoreOpen] = useState(false)
+  const setModulePickerOpen = useShellStore((s) => s.setModulePickerOpen)
 
   const handleClick = useCallback((id: ModuleId | 'mais') => {
     if (id === 'mais') {
-      setMoreOpen(true)
+      setModulePickerOpen(true)
       return
     }
     router.push(MODULES[id].basePath)
-  }, [router])
+  }, [router, setModulePickerOpen])
 
   return (
-    <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-[64px] items-center justify-around
-                       border-t border-[var(--sl-border)] bg-[var(--sl-s1)]
-                       lg:hidden">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--sl-border)] bg-[var(--sl-s1)] lg:hidden"
+      style={{ paddingBottom: 'var(--mob-safe-bottom)' }}
+    >
+      <div className="flex h-[var(--mob-bottom-nav-height)] items-center justify-around">
         {BOTTOM_TABS.map((tab) => {
           const isActive = tab.id !== 'mais' && activeModule === tab.id
           const isMais = tab.id === 'mais'
-          const color = !isMais ? MODULES[tab.id as ModuleId].color : 'var(--sl-t2)'
+          // Quando o módulo ativo está no "Mais", o ícone Mais assume a cor do módulo
+          const maisColor = (['corpo', 'mente', 'patrimonio', 'carreira', 'experiencias'] as ModuleId[]).includes(activeModule)
+            ? MODULES[activeModule].color
+            : 'var(--sl-t2)'
+          const color = isMais ? maisColor : MODULES[tab.id as ModuleId].color
 
           return (
             <button
@@ -54,9 +58,9 @@ export function MobileBottomBar() {
               onClick={() => handleClick(tab.id)}
               className={cn(
                 'flex flex-col items-center justify-center gap-0.5 px-3 py-1.5',
-                'transition-colors duration-150',
+                'transition-colors duration-150 min-w-[var(--mob-tap-min)]',
               )}
-              style={{ color: isActive ? color : 'var(--sl-t3)' }}
+              style={{ color: isActive || (isMais && maisColor !== 'var(--sl-t2)') ? color : 'var(--sl-t3)' }}
             >
               {isMais ? (
                 <MoreHorizontal size={22} />
@@ -70,9 +74,7 @@ export function MobileBottomBar() {
             </button>
           )
         })}
-      </nav>
-
-      <MobileMoreSheet open={moreOpen} onOpenChange={setMoreOpen} />
-    </>
+      </div>
+    </nav>
   )
 }
