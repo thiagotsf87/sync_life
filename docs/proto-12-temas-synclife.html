@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="navy-dark" data-mode="jornada">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — 12 Temas × Modos (Protótipo Final)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); --radius: 12px; --radius-sm: 8px; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t1); transition: background var(--transition), color var(--transition); overflow-x: hidden; min-height: 100vh; }
+
+/* ═══════════════════════════════════════════════════════
+   12 THEME DEFINITIONS
+   ═══════════════════════════════════════════════════════ */
+
+/* ── FREE ───────────────────────────────────────────── */
+[data-theme="navy-dark"] {
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --border:rgba(110,144,184,.12);--border-h:rgba(110,144,184,.22);
+  --accent:#10b981;--accent-rgb:16,185,129;--accent2:#3b82f6;
+  --danger:#ef4444;--warning:#f59e0b;
+  --mb-bg:#020510;--sb-bg:#050e20;--hd-bg:rgba(3,7,26,.85);
+  --chart-up:#10b981;--chart-dn:#ef4444;
+  --shadow:0 2px 12px rgba(0,0,0,.3);--glass:rgba(7,17,43,.7);
+  color-scheme:dark;
+}
+[data-theme="clean-light"] {
+  --bg:#e6eef5;--s1:#ffffff;--s2:#f0f6fa;--s3:#e0eaf3;
+  --t1:#03071a;--t2:#1e3a5c;--t3:#5a7a9e;
+  --border:rgba(3,7,26,.08);--border-h:rgba(3,7,26,.15);
+  --accent:#10b981;--accent-rgb:16,185,129;--accent2:#3b82f6;
+  --danger:#dc2626;--warning:#d97706;
+  --mb-bg:#064e3b;--sb-bg:#f8fafc;--hd-bg:rgba(230,238,245,.85);
+  --chart-up:#059669;--chart-dn:#dc2626;
+  --shadow:0 2px 12px rgba(0,0,0,.06);--glass:rgba(255,255,255,.7);
+  color-scheme:light;
+}
+[data-theme="mint-garden"] {
+  --bg:#c8f0e4;--s1:#ffffff;--s2:#e0f7ef;--s3:#c4eede;
+  --t1:#022016;--t2:#0d5c3e;--t3:#4da888;
+  --border:rgba(2,32,22,.08);--border-h:rgba(2,32,22,.15);
+  --accent:#10b981;--accent-rgb:16,185,129;--accent2:#3b82f6;
+  --danger:#dc2626;--warning:#d97706;
+  --mb-bg:#064e3b;--sb-bg:#e8f8f0;--hd-bg:rgba(200,240,228,.85);
+  --chart-up:#059669;--chart-dn:#dc2626;
+  --shadow:0 2px 12px rgba(0,80,50,.06);--glass:rgba(255,255,255,.65);
+  color-scheme:light;
+}
+
+/* ── PRO DARKS ──────────────────────────────────────── */
+[data-theme="obsidian"] {
+  --bg:#0a0a0f;--s1:#12121a;--s2:#1a1a24;--s3:#22222e;
+  --t1:#e8e8f0;--t2:#7a7a8e;--t3:#4a4a58;
+  --border:rgba(212,168,83,.10);--border-h:rgba(212,168,83,.20);
+  --accent:#d4a853;--accent-rgb:212,168,83;--accent2:#e8c87a;
+  --danger:#ef4444;--warning:#f59e0b;
+  --mb-bg:#06060a;--sb-bg:#0e0e14;--hd-bg:rgba(10,10,15,.88);
+  --chart-up:#d4a853;--chart-dn:#ef4444;
+  --shadow:0 2px 16px rgba(0,0,0,.5);--glass:rgba(18,18,26,.75);
+  color-scheme:dark;
+}
+[data-theme="rosewood"] {
+  --bg:#0f0a0d;--s1:#1a1216;--s2:#241a1f;--s3:#2e2228;
+  --t1:#f0e4e8;--t2:#9e7a84;--t3:#5e4a52;
+  --border:rgba(193,125,106,.10);--border-h:rgba(193,125,106,.20);
+  --accent:#c17d6a;--accent-rgb:193,125,106;--accent2:#d4a090;
+  --danger:#e85d5d;--warning:#e8a84d;
+  --mb-bg:#0a0608;--sb-bg:#120c10;--hd-bg:rgba(15,10,13,.88);
+  --chart-up:#c17d6a;--chart-dn:#e85d5d;
+  --shadow:0 2px 16px rgba(0,0,0,.45);--glass:rgba(26,18,22,.75);
+  color-scheme:dark;
+}
+[data-theme="graphite"] {
+  --bg:#111114;--s1:#1a1a1e;--s2:#222228;--s3:#2c2c34;
+  --t1:#e4e4ea;--t2:#8e8e9a;--t3:#58585e;
+  --border:rgba(180,180,200,.08);--border-h:rgba(180,180,200,.16);
+  --accent:#a0a0b8;--accent-rgb:160,160,184;--accent2:#c0c0d0;
+  --danger:#ef4444;--warning:#f59e0b;
+  --mb-bg:#0c0c0f;--sb-bg:#141418;--hd-bg:rgba(17,17,20,.9);
+  --chart-up:#a0a0b8;--chart-dn:#ef4444;
+  --shadow:0 2px 16px rgba(0,0,0,.45);--glass:rgba(26,26,30,.8);
+  color-scheme:dark;
+}
+[data-theme="twilight"] {
+  --bg:#0c0a14;--s1:#14111f;--s2:#1c182a;--s3:#252036;
+  --t1:#e8e4f4;--t2:#8a80aa;--t3:#524a6e;
+  --border:rgba(138,92,246,.08);--border-h:rgba(138,92,246,.18);
+  --accent:#8b5cf6;--accent-rgb:139,92,246;--accent2:#a78bfa;
+  --danger:#f87171;--warning:#fbbf24;
+  --mb-bg:#08060e;--sb-bg:#100d1a;--hd-bg:rgba(12,10,20,.88);
+  --chart-up:#8b5cf6;--chart-dn:#f87171;
+  --shadow:0 2px 16px rgba(0,0,0,.5);--glass:rgba(20,17,31,.75);
+  color-scheme:dark;
+}
+[data-theme="carbon"] {
+  --bg:#050505;--s1:#0e0e0e;--s2:#161616;--s3:#1e1e1e;
+  --t1:#e8eeee;--t2:#7a8a8a;--t3:#4a5555;
+  --border:rgba(20,184,166,.08);--border-h:rgba(20,184,166,.16);
+  --accent:#14b8a6;--accent-rgb:20,184,166;--accent2:#2dd4bf;
+  --danger:#ef4444;--warning:#f59e0b;
+  --mb-bg:#000000;--sb-bg:#0a0a0a;--hd-bg:rgba(5,5,5,.92);
+  --chart-up:#14b8a6;--chart-dn:#ef4444;
+  --shadow:0 2px 16px rgba(0,0,0,.6);--glass:rgba(14,14,14,.85);
+  color-scheme:dark;
+}
+
+/* ── PRO LIGHTS ─────────────────────────────────────── */
+[data-theme="arctic"] {
+  --bg:#f0f4f8;--s1:#ffffff;--s2:#e8eef4;--s3:#dce4ee;
+  --t1:#1a2332;--t2:#4a5c72;--t3:#8a9bb0;
+  --border:rgba(26,35,50,.07);--border-h:rgba(26,35,50,.13);
+  --accent:#0891b2;--accent-rgb:8,145,178;--accent2:#06b6d4;
+  --danger:#dc2626;--warning:#d97706;
+  --mb-bg:#152030;--sb-bg:#f6f8fb;--hd-bg:rgba(240,244,248,.88);
+  --chart-up:#0891b2;--chart-dn:#dc2626;
+  --shadow:0 2px 12px rgba(0,20,40,.05);--glass:rgba(255,255,255,.7);
+  color-scheme:light;
+}
+[data-theme="sahara"] {
+  --bg:#f5f0e8;--s1:#fffcf6;--s2:#f0e8da;--s3:#e6dccc;
+  --t1:#2a2018;--t2:#6e5c48;--t3:#a08a72;
+  --border:rgba(42,32,24,.07);--border-h:rgba(42,32,24,.13);
+  --accent:#c2703e;--accent-rgb:194,112,62;--accent2:#d4946a;
+  --danger:#c53030;--warning:#b7791f;
+  --mb-bg:#3d2b1f;--sb-bg:#faf6f0;--hd-bg:rgba(245,240,232,.88);
+  --chart-up:#c2703e;--chart-dn:#c53030;
+  --shadow:0 2px 12px rgba(60,40,20,.06);--glass:rgba(255,252,246,.7);
+  color-scheme:light;
+}
+[data-theme="blossom"] {
+  --bg:#faf0f3;--s1:#ffffff;--s2:#f8e8ee;--s3:#f0dce4;
+  --t1:#2e1520;--t2:#7a4a5c;--t3:#b08898;
+  --border:rgba(224,99,139,.08);--border-h:rgba(224,99,139,.15);
+  --accent:#e0638b;--accent-rgb:224,99,139;--accent2:#f08aaa;
+  --danger:#dc2626;--warning:#d97706;
+  --mb-bg:#5c2040;--sb-bg:#fdf6f8;--hd-bg:rgba(250,240,243,.88);
+  --chart-up:#e0638b;--chart-dn:#dc2626;
+  --shadow:0 2px 12px rgba(100,20,50,.05);--glass:rgba(255,255,255,.7);
+  color-scheme:light;
+}
+[data-theme="serenity"] {
+  --bg:#edf2ff;--s1:#ffffff;--s2:#e4ecfd;--s3:#d8e2f8;
+  --t1:#1a2040;--t2:#4a5580;--t3:#8a92b8;
+  --border:rgba(79,109,245,.07);--border-h:rgba(79,109,245,.14);
+  --accent:#4f6df5;--accent-rgb:79,109,245;--accent2:#7b93f8;
+  --danger:#dc2626;--warning:#d97706;
+  --mb-bg:#1e2a52;--sb-bg:#f5f7ff;--hd-bg:rgba(237,242,255,.88);
+  --chart-up:#4f6df5;--chart-dn:#dc2626;
+  --shadow:0 2px 12px rgba(20,30,80,.05);--glass:rgba(255,255,255,.7);
+  color-scheme:light;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODE SYSTEM
+   ═══════════════════════════════════════════════════════ */
+.jornada-only { display:block; }
+[data-mode="foco"] .jornada-only { display:none !important; }
+.foco-only { display:none; }
+[data-mode="foco"] .foco-only { display:block; }
+.jo-flex { display:flex; }
+[data-mode="foco"] .jo-flex { display:none !important; }
+.fo-flex { display:none; }
+[data-mode="foco"] .fo-flex { display:flex; }
+
+/* ═══════════════════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════════════════ */
+.app-wrapper { display:flex; flex-direction:column; min-height:100vh; }
+
+/* Control Bar */
+.ctrl { position:sticky;top:0;z-index:100;background:var(--hd-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 16px;transition:background var(--transition),border var(--transition); }
+.ctrl-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:10px; }
+.ctrl-title { font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--t1); }
+.ctrl-sub { font-size:11px;color:var(--t3); }
+
+/* Mode Toggle */
+.mode-tog { display:flex;gap:4px;background:var(--s2);border-radius:20px;padding:3px;border:1px solid var(--border);transition:all var(--transition); }
+.mode-btn { font-size:11px;font-weight:600;padding:6px 14px;border-radius:17px;cursor:pointer;color:var(--t3);border:none;background:transparent;font-family:'DM Sans',sans-serif;transition:all .25s; }
+.mode-btn:hover { color:var(--t1); }
+.mode-btn.active { background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(var(--accent-rgb),.3); }
+
+/* Theme Scroll */
+.ts { display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:var(--s3) transparent; }
+.ts::-webkit-scrollbar { height:3px; }
+.ts::-webkit-scrollbar-thumb { background:var(--s3);border-radius:3px; }
+
+.tc { flex-shrink:0;width:104px;cursor:pointer;border-radius:8px;border:2px solid var(--border);overflow:hidden;transition:all .25s;position:relative; }
+.tc:hover { border-color:var(--border-h);transform:translateY(-1px); }
+.tc.active { border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 4px 12px rgba(var(--accent-rgb),.15); }
+
+.tp { height:46px;position:relative;overflow:hidden; }
+.ti { padding:5px 7px;background:var(--s1);transition:background var(--transition); }
+.tn { font-family:'Syne',sans-serif;font-size:9.5px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.tt { font-size:8px;color:var(--t3);margin-top:1px; }
+.pro-lock { position:absolute;top:3px;right:3px;background:rgba(0,0,0,.55);color:#fff;font-size:7px;font-weight:700;padding:1px 4px;border-radius:6px;backdrop-filter:blur(4px); }
+
+.divlbl { flex-shrink:0;display:flex;align-items:center;writing-mode:vertical-lr;text-orientation:mixed;transform:rotate(180deg);font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);padding:0 2px; }
+
+/* ═══ DASHBOARD ═══ */
+.dash { display:flex;flex:1; }
+
+/* Module Bar */
+.mbar { width:56px;background:var(--mb-bg);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:1px;flex-shrink:0;transition:background var(--transition); }
+.mi { width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:14px;color:rgba(255,255,255,.3);cursor:pointer;transition:all .2s; }
+.mi:hover { background:rgba(255,255,255,.08);color:rgba(255,255,255,.65); }
+.mi.active { background:rgba(var(--accent-rgb),.15);color:var(--accent); }
+.ml { font-size:7px;color:rgba(255,255,255,.22);text-align:center;margin-bottom:1px; }
+.mi.active+.ml { color:var(--accent); }
+
+/* Sidebar */
+.sbar { width:200px;background:var(--sb-bg);border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:3px;flex-shrink:0;transition:all var(--transition); }
+.stitle { font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--t1);padding:0 8px;margin-bottom:5px; }
+.si { display:flex;align-items:center;gap:8px;padding:8px;border-radius:7px;color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s; }
+.si:hover { background:var(--s2);color:var(--t1); }
+.si.active { background:rgba(var(--accent-rgb),.1);color:var(--accent); }
+.si svg { width:14px;height:14px;flex-shrink:0; }
+
+.sscore { margin-top:auto;padding:10px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(var(--accent-rgb),.12),rgba(var(--accent-rgb),.04));border:1px solid rgba(var(--accent-rgb),.15);text-align:center;transition:all var(--transition); }
+.slbl { font-size:8px;font-weight:600;color:var(--accent);letter-spacing:1px;text-transform:uppercase; }
+.sval { font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--accent);line-height:1.1; }
+.ssub { font-size:9px;color:var(--t3);margin-top:2px; }
+
+/* Content */
+.content { flex:1;padding:20px;overflow-y:auto; }
+.ch { display:flex;align-items:center;justify-content:space-between;margin-bottom:18px; }
+.greet { font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1); }
+.greet .an { background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+.dtxt { font-size:11px;color:var(--t3);margin-top:2px; }
+
+/* Insight */
+.ins { background:linear-gradient(135deg,rgba(var(--accent-rgb),.08),rgba(var(--accent-rgb),.02));border:1px solid rgba(var(--accent-rgb),.12);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;position:relative;transition:all var(--transition); }
+.ins-i { font-size:16px;flex-shrink:0;margin-top:1px; }
+.ins-t { font-size:11.5px;color:var(--t1);line-height:1.5; }
+.ins-t strong { color:var(--accent); }
+
+/* Stats */
+.srow { display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px; }
+.sc { background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);transition:all var(--transition); }
+.scl { font-size:9px;font-weight:500;color:var(--t3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px; }
+.scv { font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--t1); }
+.scc { font-size:9px;font-weight:600;margin-top:2px; }
+.scc.up { color:var(--chart-up); }
+.scc.dn { color:var(--chart-dn); }
+.jo-t { display:inline; }
+.fo-t { display:none; }
+[data-mode="foco"] .jo-t { display:none; }
+[data-mode="foco"] .fo-t { display:inline; }
+
+/* Cards */
+.mgrid { display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-bottom:12px; }
+.card { background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);transition:all var(--transition); }
+.ctit { font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--t1);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between; }
+.ctit .sa { font-family:'DM Sans';font-size:10px;font-weight:500;color:var(--accent);cursor:pointer; }
+
+/* Chart */
+.chrt { height:120px;display:flex;align-items:flex-end;gap:4px;padding-top:6px; }
+.cbg { flex:1;display:flex;flex-direction:column;align-items:center;gap:4px; }
+.cb { width:100%;border-radius:3px 3px 0 0;transition:background var(--transition); }
+.cb.inc { background:var(--accent);opacity:.65; }
+.cb.exp { background:var(--danger);opacity:.45; }
+.clbl { font-size:8px;color:var(--t3);font-family:'DM Mono',monospace; }
+
+/* Transactions */
+.txl { display:flex;flex-direction:column;gap:7px; }
+.txi { display:flex;align-items:center;gap:9px;padding:8px;border-radius:7px;background:var(--s2);transition:all var(--transition); }
+.txic { width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--s3); }
+.txif { flex:1; }
+.txn { font-size:11px;font-weight:500;color:var(--t1); }
+.txc { font-size:9px;color:var(--t3); }
+.txa { font-family:'DM Mono',monospace;font-size:11px;font-weight:500; }
+.txa.neg { color:var(--danger); }
+.txa.pos { color:var(--chart-up); }
+
+/* Budgets */
+.bgrid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+.bi { background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:10px;box-shadow:var(--shadow);transition:all var(--transition); }
+.bh { display:flex;align-items:center;justify-content:space-between;margin-bottom:7px; }
+.bn { font-size:10px;font-weight:600;color:var(--t1); }
+.bp { font-family:'DM Mono';font-size:9px;font-weight:600;color:var(--accent); }
+.bb { height:4px;border-radius:2px;background:var(--s3);overflow:hidden;margin-bottom:4px; }
+.bf { height:100%;border-radius:2px;background:var(--accent);transition:background var(--transition); }
+.bf.w { background:var(--warning); }
+.bf.d { background:var(--danger); }
+.bv { display:flex;justify-content:space-between;font-size:8px;color:var(--t3);font-family:'DM Mono'; }
+.ba { font-size:9px;margin-top:3px;font-weight:500; }
+.ba.bw { color:var(--warning); }
+.ba.bd { color:var(--danger); }
+.ba.bg { color:var(--chart-up); }
+
+/* Streaks */
+.skrow { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px; }
+.skc { background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;transition:all var(--transition); }
+.ske { font-size:24px; }
+.skt { font-size:10px;font-weight:600;color:var(--t1); }
+.skv { font-family:'Syne';font-size:16px;font-weight:800;color:var(--accent); }
+.sks { font-size:9px;color:var(--t3); }
+
+/* Banner */
+.banner { position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:50px;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border-h);box-shadow:0 8px 32px rgba(0,0,0,.2);transition:all var(--transition);pointer-events:none; }
+.bd { width:9px;height:9px;border-radius:50%;background:var(--accent);flex-shrink:0; }
+.bt { font-family:'Syne';font-size:12px;font-weight:700;color:var(--t1);white-space:nowrap; }
+.bs { color:var(--t3);font-size:10px; }
+.bm { font-size:10px;font-weight:600;color:var(--t2); }
+.bpl { font-size:9px;font-weight:600;color:var(--accent);padding:2px 7px;border-radius:9px;background:rgba(var(--accent-rgb),.12); }
+
+/* Responsive */
+@media(max-width:1100px){.sbar{display:none}.srow{grid-template-columns:repeat(2,1fr)}.mgrid{grid-template-columns:1fr}.bgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.mbar{width:42px}.mi{width:30px;height:30px;font-size:12px}.content{padding:12px}.srow{gap:7px}.scv{font-size:15px}.bgrid{grid-template-columns:1fr}.tc{width:88px}.skrow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <!-- ═══ CONTROL BAR ═══ -->
+  <div class="ctrl">
+    <div class="ctrl-top">
+      <div>
+        <div class="ctrl-title">🎨 SyncLife — 12 Temas × 2 Modos</div>
+        <div class="ctrl-sub">Clique num tema + alterne Foco/Jornada. 3 FREE + 9 PRO.</div>
+      </div>
+      <div class="mode-tog">
+        <button class="mode-btn" onclick="setMode('foco')">⊕ Foco</button>
+        <button class="mode-btn active" onclick="setMode('jornada')">✦ Jornada</button>
+      </div>
+    </div>
+
+    <div class="ts">
+      <div class="divlbl">FREE</div>
+
+      <!-- FREE themes -->
+      <div class="tc active" data-tid="navy-dark" onclick="setTheme('navy-dark')">
+        <div class="tp" style="background:#03071a">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#020510"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#07112b;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#10b981,#3b82f6);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#07112b"><div class="tn" style="color:#dff0ff">🌙 Navy Dark</div><div class="tt" style="color:#2e4a6e">Esmeralda</div></div>
+      </div>
+
+      <div class="tc" data-tid="clean-light" onclick="setTheme('clean-light')">
+        <div class="tp" style="background:#e6eef5">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#064e3b"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#fff;border-radius:3px;border:1px solid rgba(0,0,0,.05)"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#10b981,#3b82f6);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#fff"><div class="tn" style="color:#03071a">☀️ Clean Light</div><div class="tt" style="color:#5a7a9e">Esmeralda</div></div>
+      </div>
+
+      <div class="tc" data-tid="mint-garden" onclick="setTheme('mint-garden')">
+        <div class="tp" style="background:#c8f0e4">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#064e3b"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#fff;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#10b981,#3b82f6);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#fff"><div class="tn" style="color:#022016">🌿 Mint Garden</div><div class="tt" style="color:#4da888">Tropical</div></div>
+      </div>
+
+      <div class="divlbl">PRO</div>
+
+      <!-- PRO Dark themes -->
+      <div class="tc" data-tid="obsidian" onclick="setTheme('obsidian')">
+        <div class="tp" style="background:#0a0a0f"><span class="pro-lock">PRO</span>
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#06060a"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#12121a;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#d4a853,#e8c87a);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#12121a"><div class="tn" style="color:#e8e8f0">✨ Obsidian</div><div class="tt" style="color:#4a4a58">Dourado</div></div>
+      </div>
+
+      <div class="tc" data-tid="rosewood" onclick="setTheme('rosewood')">
+        <div class="tp" style="background:#0f0a0d"><span class="pro-lock">PRO</span>
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#0a0608"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#1a1216;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#c17d6a,#d4a090);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#1a1216"><div class="tn" style="color:#f0e4e8">🌸 Rosewood</div><div class="tt" style="color:#5e4a52">Rose Gold</div></div>
+      </div>
+
+      <div class="tc" data-tid="graphite" onclick="setTheme('graphite')">
+        <div class="tp" style="background:#111114"><span class="pro-lock">PRO</span>
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#0c0c0f"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#1a1a1e;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#a0a0b8,#c0c0d0);border-radius:2px;opacity:.5"></div>
+        </div>
+        <div class="ti" style="background:#1a1a1e"><div class="tn" style="color:#e4e4ea">🩶 Graphite</div><div class="tt" style="color:#58585e">Silver</div></div>
+      </div>
+
+      <div class="tc" data-tid="twilight" onclick="setTheme('twilight')">
+        <div class="tp" style="background:#0c0a14"><span class="pro-lock">PRO</span>
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#08060e"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#14111f;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#8b5cf6,#a78bfa);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#14111f"><div class="tn" style="color:#e8e4f4">🔮 Twilight</div><div class="tt" style="color:#524a6e">Violeta</div></div>
+      </div>
+
+      <div class="tc" data-tid="carbon" onclick="setTheme('carbon')">
+        <div class="tp" style="background:#050505"><span class="pro-lock">PRO</span>
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#000"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#0e0e0e;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#14b8a6,#2dd4bf);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#0e0e0e"><div class="tn" style="color:#e8eeee">⚫ Carbon</div><div class="tt" style="color:#4a5555">Teal OLED</div></div>
+      </div>
+
+      <!-- PRO Light themes -->
+      <div class="tc" data-tid="arctic" onclick="setTheme('arctic')">
+        <div class="tp" style="background:#f0f4f8"><span class="pro-lock">PRO</span>
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#152030"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#fff;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#0891b2,#06b6d4);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#fff"><div class="tn" style="color:#1a2332">🔷 Arctic</div><div class="tt" style="color:#8a9bb0">Cyan</div></div>
+      </div>
+
+      <div class="tc" data-tid="sahara" onclick="setTheme('sahara')">
+        <div class="tp" style="background:#f5f0e8"><span class="pro-lock">PRO</span>
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#3d2b1f"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#fffcf6;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#c2703e,#d4946a);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#fffcf6"><div class="tn" style="color:#2a2018">🏜️ Sahara</div><div class="tt" style="color:#a08a72">Terracota</div></div>
+      </div>
+
+      <div class="tc" data-tid="blossom" onclick="setTheme('blossom')">
+        <div class="tp" style="background:#faf0f3"><span class="pro-lock">PRO</span>
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#5c2040"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#fff;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#e0638b,#f08aaa);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#fff"><div class="tn" style="color:#2e1520">🌸 Blossom</div><div class="tt" style="color:#b08898">Rose Pink</div></div>
+      </div>
+
+      <div class="tc" data-tid="serenity" onclick="setTheme('serenity')">
+        <div class="tp" style="background:#edf2ff"><span class="pro-lock">PRO</span>
+          <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:#1e2a52"></div>
+          <div style="position:absolute;left:12px;top:28px;right:6px;height:12px;background:#fff;border-radius:3px"></div>
+          <div style="position:absolute;left:15px;top:31px;width:55%;height:6px;background:linear-gradient(90deg,#4f6df5,#7b93f8);border-radius:2px;opacity:.7"></div>
+        </div>
+        <div class="ti" style="background:#fff"><div class="tn" style="color:#1a2040">💙 Serenity</div><div class="tt" style="color:#8a92b8">Índigo</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <div class="dash">
+
+    <!-- Module Bar -->
+    <div class="mbar">
+      <div class="mi active">💰</div><div class="ml" style="color:var(--accent)">Finanças</div>
+      <div class="mi">⏳</div><div class="ml">Tempo</div>
+      <div class="mi">🔮</div><div class="ml">Futuro</div>
+      <div class="mi">🏃</div><div class="ml">Corpo</div>
+      <div class="mi">🧠</div><div class="ml">Mente</div>
+      <div class="mi">📈</div><div class="ml">Patrim.</div>
+      <div class="mi">💼</div><div class="ml">Carreira</div>
+      <div class="mi">✈️</div><div class="ml">Exper.</div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sbar">
+      <div class="stitle">Finanças</div>
+      <div class="si active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Visão Geral</div>
+      <div class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Transações</div>
+      <div class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M9 12l2 2 4-4"/></svg>Orçamentos</div>
+      <div class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Relatórios</div>
+
+      <div class="sscore jornada-only">
+        <div class="slbl">Life Sync Score</div>
+        <div class="sval">73</div>
+        <div class="ssub">+5 pontos este mês</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <div class="ch">
+        <div>
+          <div class="greet">
+            <span class="jornada-only" style="display:inline">Boa tarde, <span class="an">Thiago</span> 👋</span>
+            <span class="foco-only" style="display:none">Visão Geral</span>
+          </div>
+          <div class="dtxt">
+            <span class="jornada-only" style="display:inline">Sexta-feira, 28 de fevereiro de 2026</span>
+            <span class="foco-only" style="display:none">Fevereiro 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insight IA -->
+      <div class="ins jornada-only">
+        <div class="ins-i">🤖</div>
+        <div class="ins-t"><strong>Insight IA:</strong> Nas últimas 4 semanas, você poupou em média 23% da renda — acima dos 20% recomendados. Sua reserva estará completa em abril!</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="srow">
+        <div class="sc">
+          <div class="scl">Saldo</div>
+          <div class="scv">R$ 8.420</div>
+          <div class="scc up"><span class="jo-t">↑ 12% — melhor mês! 🎉</span><span class="fo-t">↑ 12%</span></div>
+        </div>
+        <div class="sc">
+          <div class="scl">Receitas</div>
+          <div class="scv">R$ 7.500</div>
+          <div class="scc up"><span class="jo-t">↑ Salário + freelance ✨</span><span class="fo-t">R$ 7.500</span></div>
+        </div>
+        <div class="sc">
+          <div class="scl">Despesas</div>
+          <div class="scv">R$ 4.230</div>
+          <div class="scc dn"><span class="jo-t">↑ 8% — lazer acima do plano</span><span class="fo-t">↑ 8%</span></div>
+        </div>
+        <div class="sc">
+          <div class="scl">Investido</div>
+          <div class="scv">R$ 2.000</div>
+          <div class="scc up"><span class="jo-t">✓ Meta atingida! 🎯</span><span class="fo-t">R$ 2.000</span></div>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="mgrid">
+        <div class="card">
+          <div class="ctit">Receitas vs Despesas <span class="sa">Ver relatório →</span></div>
+          <div class="chrt">
+            <div class="cbg"><div class="cb inc" style="height:60px"></div><div class="cb exp" style="height:38px"></div><div class="clbl">Set</div></div>
+            <div class="cbg"><div class="cb inc" style="height:56px"></div><div class="cb exp" style="height:42px"></div><div class="clbl">Out</div></div>
+            <div class="cbg"><div class="cb inc" style="height:68px"></div><div class="cb exp" style="height:34px"></div><div class="clbl">Nov</div></div>
+            <div class="cbg"><div class="cb inc" style="height:64px"></div><div class="cb exp" style="height:46px"></div><div class="clbl">Dez</div></div>
+            <div class="cbg"><div class="cb inc" style="height:76px"></div><div class="cb exp" style="height:36px"></div><div class="clbl">Jan</div></div>
+            <div class="cbg"><div class="cb inc" style="height:72px"></div><div class="cb exp" style="height:42px"></div><div class="clbl">Fev</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ctit">Últimas transações <span class="sa">Ver todas →</span></div>
+          <div class="txl">
+            <div class="txi"><div class="txic">🛒</div><div class="txif"><div class="txn">Supermercado Zaffari</div><div class="txc">Alimentação</div></div><div class="txa neg">-R$ 342</div></div>
+            <div class="txi"><div class="txic">💼</div><div class="txif"><div class="txn">Salário</div><div class="txc">Receita</div></div><div class="txa pos">+R$ 7.500</div></div>
+            <div class="txi"><div class="txic">🏠</div><div class="txif"><div class="txn">Aluguel</div><div class="txc">Moradia</div></div><div class="txa neg">-R$ 1.800</div></div>
+            <div class="txi"><div class="txic">📈</div><div class="txif"><div class="txn">Aporte Tesouro</div><div class="txc">Patrimônio</div></div><div class="txa neg">-R$ 1.000</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Budgets -->
+      <div class="bgrid">
+        <div class="bi">
+          <div class="bh"><div class="bn">🍔 Alimentação</div><div class="bp">68%</div></div>
+          <div class="bb"><div class="bf" style="width:68%"></div></div>
+          <div class="bv"><span>R$ 680</span><span>R$ 1.000</span></div>
+          <div class="ba bg jornada-only">Dentro do plano — bom ritmo! ✅</div>
+        </div>
+        <div class="bi">
+          <div class="bh"><div class="bn">🚗 Transporte</div><div class="bp">85%</div></div>
+          <div class="bb"><div class="bf w" style="width:85%"></div></div>
+          <div class="bv"><span>R$ 425</span><span>R$ 500</span></div>
+          <div class="ba bw jornada-only">⚠️ Quase no limite — faltam R$ 75</div>
+        </div>
+        <div class="bi">
+          <div class="bh"><div class="bn">🎮 Lazer</div><div class="bp">92%</div></div>
+          <div class="bb"><div class="bf d" style="width:92%"></div></div>
+          <div class="bv"><span>R$ 460</span><span>R$ 500</span></div>
+          <div class="ba bd jornada-only">🚨 Restam apenas R$ 40 para o mês!</div>
+        </div>
+      </div>
+
+      <!-- Streaks -->
+      <div class="skrow jornada-only">
+        <div class="skc">
+          <div class="ske">🔥</div>
+          <div><div class="skt">Streak de Registro</div><div class="skv">14 dias</div><div class="sks">Recorde pessoal!</div></div>
+        </div>
+        <div class="skc">
+          <div class="ske">🏅</div>
+          <div><div class="skt">Última Conquista</div><div class="skv">Mão de Ferro</div><div class="sks">Orçamento 100% respeitado</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Banner -->
+<div class="banner" id="ban">
+  <div class="bd"></div>
+  <div class="bt" id="bName">🌙 Navy Dark</div>
+  <div class="bs">•</div>
+  <div class="bm" id="bMode">✦ Jornada</div>
+  <div class="bpl" id="bPlan">FREE</div>
+</div>
+
+<script>
+const T={
+  'navy-dark':{n:'🌙 Navy Dark',p:'FREE'},
+  'clean-light':{n:'☀️ Clean Light',p:'FREE'},
+  'mint-garden':{n:'🌿 Mint Garden',p:'FREE'},
+  'obsidian':{n:'✨ Obsidian',p:'PRO'},
+  'rosewood':{n:'🌸 Rosewood',p:'PRO'},
+  'graphite':{n:'🩶 Graphite',p:'PRO'},
+  'twilight':{n:'🔮 Twilight',p:'PRO'},
+  'carbon':{n:'⚫ Carbon',p:'PRO'},
+  'arctic':{n:'🔷 Arctic',p:'PRO'},
+  'sahara':{n:'🏜️ Sahara',p:'PRO'},
+  'blossom':{n:'🌸 Blossom',p:'PRO'},
+  'serenity':{n:'💙 Serenity',p:'PRO'},
+};
+let mode='jornada';
+function setTheme(id){
+  document.documentElement.setAttribute('data-theme',id);
+  document.querySelectorAll('.tc').forEach(c=>c.classList.remove('active'));
+  document.querySelector(`[data-tid="${id}"]`).classList.add('active');
+  upBan(id);
+}
+function setMode(m){
+  mode=m;
+  document.documentElement.setAttribute('data-mode',m);
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mode-btn').forEach(b=>{
+    if((m==='foco'&&b.textContent.includes('Foco'))||(m==='jornada'&&b.textContent.includes('Jornada')))b.classList.add('active');
+  });
+  upBan();
+}
+function upBan(tid){
+  const id=tid||document.documentElement.getAttribute('data-theme');
+  const i=T[id];
+  document.getElementById('bName').textContent=i.n;
+  document.getElementById('bPlan').textContent=i.p;
+  document.getElementById('bMode').textContent=mode==='jornada'?'✦ Jornada':'⊕ Foco';
+  const b=document.getElementById('ban');
+  b.style.transform='translateX(-50%) scale(1.04)';
+  setTimeout(()=>b.style.transform='translateX(-50%) scale(1)',200);
+}
+</script>
+
+</body>
+</html>

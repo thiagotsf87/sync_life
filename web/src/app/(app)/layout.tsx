@@ -45,7 +45,7 @@ export default async function AppLayout({
     return undefined
   }
 
-  const VALID_THEMES = ['navy-dark', 'clean-light', 'mint-garden', 'obsidian', 'rosewood', 'arctic', 'graphite', 'twilight', 'sahara', 'system']
+  const VALID_THEMES = ['navy-dark', 'clean-light', 'mint-garden', 'obsidian', 'rosewood', 'arctic', 'graphite', 'twilight', 'sahara', 'carbon', 'blossom', 'serenity', 'system']
   const mapTheme = (dbTheme: string | null): ThemeId | undefined => {
     if (!dbTheme) return undefined
     // Migrate old values

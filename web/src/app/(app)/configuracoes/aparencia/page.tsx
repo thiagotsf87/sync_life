@@ -32,6 +32,9 @@ const THEME_META: ThemeMeta[] = [
   { id: 'graphite', name: 'Graphite', bg: '#111114', s1: '#1a1a1e', accent: '#a0a0b8', type: 'dark', plan: 'pro' },
   { id: 'twilight', name: 'Twilight', bg: '#0c0a14', s1: '#14111f', accent: '#8b5cf6', type: 'dark', plan: 'pro' },
   { id: 'sahara', name: 'Sahara', bg: '#f5f0e8', s1: '#fffcf6', accent: '#c2703e', type: 'light', plan: 'pro' },
+  { id: 'carbon', name: 'Carbon', bg: '#050505', s1: '#0e0e0e', accent: '#14b8a6', type: 'dark', plan: 'pro' },
+  { id: 'blossom', name: 'Blossom', bg: '#faf0f3', s1: '#ffffff', accent: '#e0638b', type: 'light', plan: 'pro' },
+  { id: 'serenity', name: 'Serenity', bg: '#edf2ff', s1: '#ffffff', accent: '#4f6df5', type: 'light', plan: 'pro' },
 ]
 
 const FREE_META = THEME_META.filter((t) => t.plan === 'free')
