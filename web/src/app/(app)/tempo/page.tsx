@@ -398,11 +398,11 @@ export default function AgendaSemanalPage() {
         )}
         <button
           onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
-          className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110"
+          className="max-lg:hidden flex items-center gap-2 px-4 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110"
           style={{ background: '#06b6d4' }}
         >
           <Plus size={15} />
-          <span className="max-sm:hidden">Novo Evento</span>
+          Novo Evento
         </button>
       </div>
 
@@ -591,7 +591,7 @@ export default function AgendaSemanalPage() {
           mode: 'create',
           defaultDate: weekDays[selectedDay] ? dateStr(weekDays[selectedDay]) : today,
         })}
-        className="fixed bottom-6 right-6 md:hidden w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-white z-30 transition-all hover:brightness-110"
+        className="fixed bottom-6 right-6 lg:hidden w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-white z-30 transition-all hover:brightness-110"
         style={{ background: '#06b6d4' }}
       >
         <Plus size={22} />
