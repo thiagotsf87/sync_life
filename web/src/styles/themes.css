@@ -494,6 +494,144 @@
 }
 
 /* ══════════════════════════════════════════
+   TEMA 10: Carbon (PRO)
+   ══════════════════════════════════════════ */
+[data-theme="carbon"] {
+  --sl-bg: #050505;
+  --sl-s1: #0e0e0e;
+  --sl-s2: #161616;
+  --sl-s3: #1e1e1e;
+
+  --sl-t1: #e8eeee;
+  --sl-t2: #7a8a8a;
+  --sl-t3: #4a5555;
+
+  --sl-border: rgba(20, 184, 166, 0.08);
+  --sl-border-h: rgba(20, 184, 166, 0.16);
+
+  /* Acento: Teal */
+  --sl-accent: #14b8a6;
+  --sl-accent-rgb: 20, 184, 166;
+  --sl-accent2: #2dd4bf;
+
+  --sl-em-g: rgba(20,184,166,0.12);
+  --sl-el-g: rgba(45,212,191,0.12);
+
+  --sl-module-bar-bg: #000000;
+  --sl-sidebar-bg: #0a0a0a;
+  --sl-header-bg: rgba(5, 5, 5, 0.92);
+
+  --sl-card-shadow: 0 2px 16px rgba(0, 0, 0, 0.60);
+  --sl-glass: rgba(14, 14, 14, 0.85);
+
+  --home-glow: rgba(20,184,166,0.12);
+  --fin-glow: rgba(16,185,129,0.15);
+  --tmp-glow: rgba(6,182,212,0.15);
+  --fut-glow: rgba(139,92,246,0.15);
+  --crp-glow: rgba(249,115,22,0.15);
+  --mnt-glow: rgba(234,179,8,0.15);
+  --ptr-glow: rgba(59,130,246,0.15);
+  --car-glow: rgba(244,63,94,0.15);
+  --exp-glow: rgba(236,72,153,0.15);
+  --conq-glow: rgba(245,158,11,0.15);
+  --cfg-glow: rgba(100,116,139,0.12);
+
+  color-scheme: dark;
+}
+
+/* ══════════════════════════════════════════
+   TEMA 11: Blossom (PRO)
+   ══════════════════════════════════════════ */
+[data-theme="blossom"] {
+  --sl-bg: #faf0f3;
+  --sl-s1: #ffffff;
+  --sl-s2: #f8e8ee;
+  --sl-s3: #f0dce4;
+
+  --sl-t1: #2e1520;
+  --sl-t2: #7a4a5c;
+  --sl-t3: #b08898;
+
+  --sl-border: rgba(224, 99, 139, 0.08);
+  --sl-border-h: rgba(224, 99, 139, 0.15);
+
+  /* Acento: Pink */
+  --sl-accent: #e0638b;
+  --sl-accent-rgb: 224, 99, 139;
+  --sl-accent2: #f08aaa;
+
+  --sl-em-g: rgba(224,99,139,0.10);
+  --sl-el-g: rgba(240,138,170,0.10);
+
+  --sl-module-bar-bg: #5c2040;
+  --sl-sidebar-bg: #fdf6f8;
+  --sl-header-bg: rgba(250, 240, 243, 0.88);
+
+  --sl-card-shadow: 0 2px 12px rgba(100, 20, 50, 0.05);
+  --sl-glass: rgba(255, 255, 255, 0.70);
+
+  --home-glow: rgba(224,99,139,0.10);
+  --fin-glow: rgba(16,185,129,0.10);
+  --tmp-glow: rgba(6,182,212,0.10);
+  --fut-glow: rgba(139,92,246,0.10);
+  --crp-glow: rgba(249,115,22,0.10);
+  --mnt-glow: rgba(234,179,8,0.10);
+  --ptr-glow: rgba(59,130,246,0.10);
+  --car-glow: rgba(244,63,94,0.10);
+  --exp-glow: rgba(236,72,153,0.10);
+  --conq-glow: rgba(245,158,11,0.10);
+  --cfg-glow: rgba(100,116,139,0.08);
+
+  color-scheme: light;
+}
+
+/* ══════════════════════════════════════════
+   TEMA 12: Serenity (PRO)
+   ══════════════════════════════════════════ */
+[data-theme="serenity"] {
+  --sl-bg: #edf2ff;
+  --sl-s1: #ffffff;
+  --sl-s2: #e4ecfd;
+  --sl-s3: #d8e2f8;
+
+  --sl-t1: #1a2040;
+  --sl-t2: #4a5580;
+  --sl-t3: #8a92b8;
+
+  --sl-border: rgba(79, 109, 245, 0.07);
+  --sl-border-h: rgba(79, 109, 245, 0.14);
+
+  /* Acento: Índigo */
+  --sl-accent: #4f6df5;
+  --sl-accent-rgb: 79, 109, 245;
+  --sl-accent2: #7b93f8;
+
+  --sl-em-g: rgba(79,109,245,0.10);
+  --sl-el-g: rgba(123,147,248,0.10);
+
+  --sl-module-bar-bg: linear-gradient(180deg, #1e2a52, #2a3a6e);
+  --sl-sidebar-bg: #f5f7ff;
+  --sl-header-bg: rgba(237, 242, 255, 0.88);
+
+  --sl-card-shadow: 0 2px 12px rgba(20, 30, 80, 0.05);
+  --sl-glass: rgba(255, 255, 255, 0.70);
+
+  --home-glow: rgba(79,109,245,0.10);
+  --fin-glow: rgba(16,185,129,0.10);
+  --tmp-glow: rgba(6,182,212,0.10);
+  --fut-glow: rgba(139,92,246,0.10);
+  --crp-glow: rgba(249,115,22,0.10);
+  --mnt-glow: rgba(234,179,8,0.10);
+  --ptr-glow: rgba(59,130,246,0.10);
+  --car-glow: rgba(244,63,94,0.10);
+  --exp-glow: rgba(236,72,153,0.10);
+  --conq-glow: rgba(245,158,11,0.10);
+  --cfg-glow: rgba(100,116,139,0.08);
+
+  color-scheme: light;
+}
+
+/* ══════════════════════════════════════════
    MODO: Visibilidade Foco / Jornada
    ══════════════════════════════════════════ */
 
