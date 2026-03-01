@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import {
   Plus, Search, ChevronLeft, ChevronRight, AlertTriangle,
-  Pencil, Trash2, X,
+  Pencil, Trash2, X, SlidersHorizontal, ChevronDown, ChevronUp,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useShellStore } from '@/stores/shell-store'
@@ -326,6 +326,7 @@ export default function TransacoesPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editingTx, setEditingTx] = useState<Transaction | undefined>(undefined)
   const [deleteTx, setDeleteTx] = useState<Transaction | null>(null)
+  const [filtersExpanded, setFiltersExpanded] = useState(false)
 
   const { categories } = useCategories()
   const { transactions, total, totalPages, isLoading, error, refresh, create, update, remove } =
@@ -441,10 +442,10 @@ export default function TransacoesPage() {
 
       {/* ③ Filtros */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-4">
-        {/* Linha 1: busca + seletor de mês */}
+        {/* Linha 1: busca + seletor de mês + toggle mobile */}
         <div className="flex items-center gap-3 mb-3 flex-wrap">
           {/* Busca */}
-          <div className="flex items-center gap-2 flex-1 min-w-[180px] px-3 py-2 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] focus-within:border-[#10b981] transition-colors">
+          <div className="flex items-center gap-2 flex-1 min-w-[140px] px-3 py-2 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] focus-within:border-[#10b981] transition-colors">
             <Search size={14} className="text-[var(--sl-t3)] shrink-0" />
             <input
               type="text"
@@ -467,7 +468,7 @@ export default function TransacoesPage() {
               className="w-7 h-7 rounded-[8px] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
               <ChevronLeft size={14} />
             </button>
-            <span className="font-[DM_Mono] text-[13px] text-[var(--sl-t1)] px-3 py-1.5 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] whitespace-nowrap min-w-[140px] text-center">
+            <span className="font-[DM_Mono] text-[13px] text-[var(--sl-t1)] px-3 py-1.5 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] whitespace-nowrap min-w-[130px] text-center max-sm:min-w-[110px] max-sm:text-[12px]">
               {MONTH_NAMES[month - 1]} {year}
             </span>
             <button onClick={nextMonth}
@@ -477,16 +478,34 @@ export default function TransacoesPage() {
             {(month !== now.getMonth() + 1 || year !== now.getFullYear()) && (
               <button
                 onClick={() => { setMonth(now.getMonth() + 1); setYear(now.getFullYear()); setPage(1) }}
-                className="ml-1 text-[11px] text-[#10b981] hover:underline"
+                className="ml-1 text-[11px] text-[#10b981] hover:underline max-sm:hidden"
               >
                 Hoje
               </button>
             )}
           </div>
+
+          {/* Botão toggle de filtros — apenas mobile */}
+          <button
+            onClick={() => setFiltersExpanded(v => !v)}
+            className={cn(
+              'lg:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] border text-[12px] font-semibold transition-all shrink-0',
+              filtersExpanded
+                ? 'bg-[rgba(16,185,129,.10)] text-[#10b981] border-[rgba(16,185,129,.30)]'
+                : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
+            )}
+          >
+            <SlidersHorizontal size={13} />
+            Filtros
+            {filtersExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
         </div>
 
-        {/* Linha 2: chips de tipo + categoria + ordenação */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Linha 2: chips de tipo + categoria + ordenação — sempre visível no desktop, colapsável no mobile */}
+        <div className={cn(
+          'items-center gap-2 flex-wrap',
+          filtersExpanded ? 'flex' : 'hidden lg:flex'
+        )}>
           {/* Chips de tipo */}
           {([
             { value: 'all', label: 'Todos' },
@@ -511,7 +530,7 @@ export default function TransacoesPage() {
             </button>
           ))}
 
-          <div className="w-px h-5 bg-[var(--sl-border)] mx-1" />
+          <div className="w-px h-5 bg-[var(--sl-border)] mx-1 max-sm:hidden" />
 
           {/* Categoria */}
           <select
@@ -529,7 +548,7 @@ export default function TransacoesPage() {
           <select
             value={sort}
             onChange={e => setFilter(() => setSort(e.target.value as SortOption))}
-            className="px-3 py-1.5 rounded-full border border-[var(--sl-border)] bg-[var(--sl-s2)] text-[12px] text-[var(--sl-t2)] outline-none cursor-pointer hover:border-[var(--sl-border-h)] transition-colors ml-auto"
+            className="px-3 py-1.5 rounded-full border border-[var(--sl-border)] bg-[var(--sl-s2)] text-[12px] text-[var(--sl-t2)] outline-none cursor-pointer hover:border-[var(--sl-border-h)] transition-colors lg:ml-auto"
           >
             <option value="newest">Mais recente</option>
             <option value="oldest">Mais antigo</option>

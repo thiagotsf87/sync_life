@@ -63,7 +63,8 @@ function EnvelopeCard({
 
   return (
     <div className={cn(
-      'bg-[var(--sl-s1)] border rounded-[14px] px-5 py-4 transition-all relative overflow-hidden group',
+      'bg-[var(--sl-s1)] border rounded-[14px] transition-all relative overflow-hidden group',
+      'px-5 py-4 max-sm:px-4 max-sm:py-3',
       envelope.pct >= 100
         ? 'border-l-[3px] border-l-[#f43f5e] border-[var(--sl-border)]'
         : envelope.pct >= 75
@@ -71,71 +72,76 @@ function EnvelopeCard({
         : 'border-[var(--sl-border)]',
       'hover:border-[var(--sl-border-h)] hover:shadow-[0_2px_12px_rgba(0,0,0,.08)]'
     )}>
-      {/* Linha principal */}
-      <div className="flex items-center gap-3 mb-2.5">
+      {/* Linha principal — desktop: 2 linhas; mobile: 1 linha compacta */}
+      <div className="flex items-center gap-3 max-sm:gap-2 mb-2.5 max-sm:mb-2">
         <div
-          className="w-9 h-9 rounded-[10px] flex items-center justify-center text-[18px] shrink-0"
+          className="w-9 h-9 max-sm:w-8 max-sm:h-8 rounded-[10px] flex items-center justify-center text-[18px] max-sm:text-[15px] shrink-0"
           style={{ background: `${color}20` }}
         >
           {envelope.category?.icon ?? '💼'}
         </div>
+
+        {/* Nome + badges (desktop) / Nome truncado (mobile) */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-            <span className="text-[14px] font-semibold text-[var(--sl-t1)] truncate">
+          <div className="flex items-center gap-2 mb-0.5 max-sm:mb-0">
+            <span className="text-[14px] max-sm:text-[13px] font-semibold text-[var(--sl-t1)] truncate">
               {envelope.category?.name ?? 'Categoria'}
             </span>
+            {/* Badges — hidden on mobile para ganhar espaço */}
             {badge === 'over' && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(244,63,94,.12)] text-[#f43f5e] border border-[rgba(244,63,94,.20)]">
+              <span className="hidden sm:inline text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(244,63,94,.12)] text-[#f43f5e] border border-[rgba(244,63,94,.20)]">
                 Estourado
               </span>
             )}
             {badge === 'alert' && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(245,158,11,.12)] text-[#f59e0b] border border-[rgba(245,158,11,.20)]">
+              <span className="hidden sm:inline text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(245,158,11,.12)] text-[#f59e0b] border border-[rgba(245,158,11,.20)]">
                 Atenção
               </span>
             )}
             {badge === 'ok' && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(16,185,129,.10)] text-[#10b981] border border-[rgba(16,185,129,.18)]">
+              <span className="hidden sm:inline text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(16,185,129,.10)] text-[#10b981] border border-[rgba(16,185,129,.18)]">
                 OK
               </span>
             )}
-            {envelope.rollover && (
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--sl-s2)] text-[var(--sl-t3)] border border-[var(--sl-border)]">
-                Rollover
-              </span>
-            )}
           </div>
-          <p className="font-[DM_Mono] text-[12px] text-[var(--sl-t3)]">
+          {/* Valores — hidden on mobile (mostrados inline à direita) */}
+          <p className="hidden sm:block font-[DM_Mono] text-[12px] text-[var(--sl-t3)]">
             <span className="text-[var(--sl-t1)] text-[13px] font-medium">R$ {fmtR$(envelope.gasto)}</span>
             {' '}/ R$ {fmtR$(envelope.amount)}
           </p>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
+
+        {/* Direita: valor mobile + % + ações */}
+        <div className="flex items-center gap-2 max-sm:gap-1.5 shrink-0">
+          {/* Valor compacto — apenas mobile */}
+          <p className="sm:hidden font-[DM_Mono] text-[12px] text-[var(--sl-t2)] whitespace-nowrap">
+            <span className="text-[var(--sl-t1)] font-medium">R$ {fmtR$(envelope.gasto)}</span>
+          </p>
           <span
-            className="font-[DM_Mono] text-[14px] font-bold min-w-[40px] text-right"
+            className="font-[DM_Mono] text-[14px] max-sm:text-[13px] font-bold min-w-[40px] max-sm:min-w-[32px] text-right"
             style={{ color }}
           >
             {envelope.pct}%
           </span>
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={() => onEdit(envelope)}
-                className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#10b981] hover:bg-[rgba(16,185,129,.08)] transition-colors"
-              >
-                <Pencil size={13} />
-              </button>
-              <button
-                onClick={() => onDelete(envelope.id)}
-                className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,.08)] transition-colors"
-              >
-                <Trash2 size={13} />
-              </button>
-            </div>
+            <button
+              onClick={() => onEdit(envelope)}
+              className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#10b981] hover:bg-[rgba(16,185,129,.08)] transition-colors"
+            >
+              <Pencil size={13} />
+            </button>
+            <button
+              onClick={() => onDelete(envelope.id)}
+              className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,.08)] transition-colors"
+            >
+              <Trash2 size={13} />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Barra de progresso */}
-      <div className="mb-2">
+      <div className="mb-2 max-sm:mb-1.5">
         <div className="h-[6px] bg-[var(--sl-s3)] rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-[width] duration-700 ease-[cubic-bezier(.4,0,.2,1)]"
@@ -144,16 +150,16 @@ function EnvelopeCard({
         </div>
       </div>
 
-      {/* Linha de detalhe */}
+      {/* Linha de detalhe — desktop: completo; mobile: compacto */}
       <div className="flex items-center justify-between">
-        <span className="text-[12px] text-[var(--sl-t2)]">
+        <span className="text-[12px] max-sm:text-[11px] text-[var(--sl-t2)]">
           {envelope.pct >= 100
             ? <span className="text-[#f43f5e]">Estourou em R$ {fmtR$(envelope.gasto - envelope.amount)}</span>
             : <>Restam <strong className="text-[var(--sl-t1)]">R$ {fmtR$(remaining)}</strong></>
           }
         </span>
-        <span className="text-[11px] text-[var(--sl-t3)]">
-          {daysLeft} dias restantes
+        <span className="text-[11px] max-sm:text-[10px] text-[var(--sl-t3)]">
+          {daysLeft}d restantes
         </span>
       </div>
     </div>
