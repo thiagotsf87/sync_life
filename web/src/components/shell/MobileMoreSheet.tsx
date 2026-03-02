@@ -18,10 +18,27 @@ interface MobileMoreSheetProps {
   onOpenChange: (open: boolean) => void
 }
 
+const THEME_NAMES: Record<string, string> = {
+  'navy-dark':   'Navy Dark',
+  'clean-light': 'Clean Light',
+  'mint-garden': 'Mint Garden',
+  'obsidian':    'Obsidian',
+  'rosewood':    'Rosewood',
+  'arctic':      'Arctic',
+  'graphite':    'Graphite',
+  'twilight':    'Twilight',
+  'sahara':      'Sahara',
+  'carbon':      'Carbon',
+  'blossom':     'Blossom',
+  'serenity':    'Serenity',
+  'system':      'Sistema',
+}
+
 export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
   const router = useRouter()
   const mode = useShellStore((s) => s.mode)
   const setMode = useShellStore((s) => s.setMode)
+  const resolvedTheme = useShellStore((s) => s.resolvedTheme)
 
   const navigate = (href: string) => {
     router.push(href)
@@ -136,9 +153,10 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
             <span className="text-sm text-[var(--sl-t2)]">Tema</span>
             <button
               onClick={() => navigate('/configuracoes/aparencia')}
-              className="px-3 py-1.5 rounded-full text-[11px] font-medium bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
             >
-              {isDarkTheme(useShellStore.getState().resolvedTheme) ? '🌙' : '☀️'} Personalizar
+              <span>{isDarkTheme(resolvedTheme) ? '🌙' : '☀️'}</span>
+              <span>{THEME_NAMES[resolvedTheme] ?? 'Personalizar'}</span>
             </button>
           </div>
         </div>

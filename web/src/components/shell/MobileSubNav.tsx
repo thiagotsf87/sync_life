@@ -45,12 +45,11 @@ export function MobileSubNav() {
               data-active={isActive}
               onClick={() => router.push(item.href)}
               className={cn(
-                'shrink-0 px-3 py-1.5 text-[12px] font-medium whitespace-nowrap rounded-full transition-all duration-150',
+                'shrink-0 px-3 py-1.5 text-[12px] whitespace-nowrap rounded-full transition-all duration-150',
                 isActive
-                  ? 'text-white'
-                  : 'border border-[var(--sl-border)] text-[var(--sl-t3)] hover:text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]',
+                  ? 'bg-[rgba(16,185,129,0.12)] text-[#10b981] font-semibold'
+                  : 'font-medium text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)]',
               )}
-              style={isActive ? { background: mod.color, color: '#ffffff' } : undefined}
             >
               {item.label}
             </button>

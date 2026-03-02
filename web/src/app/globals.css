@@ -220,6 +220,10 @@ input[type="number"] { -moz-appearance: textfield; }
 [data-scheme="light"] ::-webkit-scrollbar-thumb  { background: #94a3b8; }
 [data-scheme="light"] ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
+/* ── Utility: hide scrollbar ── */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { scrollbar-width: none; }
+
 /* ── Auth pages ── */
 .bg-animated {
   background: linear-gradient(-45deg, #0d1117, #1a2332, #14532d, #166534);

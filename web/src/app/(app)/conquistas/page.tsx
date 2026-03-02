@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { useShellStore } from '@/stores/shell-store'
 
@@ -358,6 +358,7 @@ export default function ConquistasPage() {
   const [modalBadge, setModalBadge] = useState<Badge | null>(null)
   const [heroCount,  setHeroCount]  = useState(0)
   const [heroBarW,   setHeroBarW]   = useState(0)
+  const catTabsRef = useRef<HTMLDivElement>(null)
 
   // Animated counter + bar after mount
   useEffect(() => {
@@ -379,6 +380,17 @@ export default function ConquistasPage() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
+
+  // Auto-scroll active category tab into view
+  useEffect(() => {
+    if (!catTabsRef.current) return
+    const container = catTabsRef.current
+    const activeBtn = container.querySelector('[data-active="true"]') as HTMLElement
+    if (activeBtn) {
+      const btnCenter = activeBtn.offsetLeft + activeBtn.offsetWidth / 2
+      container.scrollLeft = btnCenter - container.clientWidth / 2
+    }
+  }, [curCat])
 
   // Filtered badge lists
   const filtered    = BADGES.filter(b => curCat === 'all' || b.cat === curCat)
@@ -434,13 +446,13 @@ export default function ConquistasPage() {
 
         {/* Recent Strip — vertical desktop, horizontal scroll mobile */}
         <div
-          className="flex max-sm:flex-row max-sm:overflow-x-auto max-sm:pb-1 lg:flex-col gap-[10px] min-w-0 lg:min-w-[280px] lg:flex-shrink-0"
+          className="flex max-sm:flex-row max-sm:overflow-x-auto max-sm:pb-1 max-sm:snap-x max-sm:snap-mandatory lg:flex-col gap-[10px] min-w-0 lg:min-w-[280px] lg:flex-shrink-0"
           style={{ scrollbarWidth: 'none' } as React.CSSProperties}
         >
           {RECENT_UNLOCKED.map((b, i) => (
             <div
               key={b.id}
-              className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[14px_18px] flex items-center gap-[14px] cursor-pointer transition-all hover:border-[var(--sl-border-h)] hover:translate-x-0.5 relative overflow-hidden sl-fade-up max-sm:flex-shrink-0 max-sm:w-[240px]"
+              className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[14px_18px] flex items-center gap-[14px] cursor-pointer transition-all hover:border-[var(--sl-border-h)] hover:translate-x-0.5 relative overflow-hidden sl-fade-up max-sm:flex-shrink-0 max-sm:w-[240px] max-sm:snap-start"
               style={{ animationDelay: `${i * 0.07}s` }}
               onClick={() => setModalBadge(b)}
             >
@@ -477,31 +489,56 @@ export default function ConquistasPage() {
       </div>
 
       {/* ③ Category Tabs */}
-      <div className="flex items-center gap-2 mb-[22px] flex-wrap sl-fade-up">
-        {(['all', 'fin', 'meta', 'cons', 'agenda', 'corpo', 'patrimonio', 'experiencias'] as const).map(cat => {
-          const cnt      = catCount(cat)
-          const isActive = curCat === cat
-          return (
-            <button
-              key={cat}
-              onClick={() => setCurCat(cat)}
-              className={`inline-flex items-center gap-[6px] px-[14px] py-[7px] rounded-[20px] border text-[12px] font-medium transition-all ${
-                isActive
-                  ? 'border-[#0055ff] bg-[rgba(0,85,255,0.15)] text-[#0055ff]'
-                  : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t2)]'
-              }`}
-            >
-              {CAT_LABELS[cat]}
-              <span className="font-[DM_Mono] text-[10px] opacity-70">{cnt.done}/{cnt.total}</span>
-            </button>
-          )
-        })}
-        <label className="ml-auto flex items-center gap-[7px] text-[12px] text-[var(--sl-t3)] cursor-pointer select-none">
+      <div className="mb-[22px] sl-fade-up">
+        <div className="relative">
+          <div
+            ref={catTabsRef}
+            className="flex items-center gap-2 overflow-x-auto pb-1"
+            style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
+          >
+            {(['all', 'fin', 'meta', 'cons', 'agenda', 'corpo', 'patrimonio', 'experiencias'] as const).map(cat => {
+              const cnt      = catCount(cat)
+              const isActive = curCat === cat
+              return (
+                <button
+                  key={cat}
+                  data-active={isActive}
+                  onClick={() => setCurCat(cat)}
+                  className={`inline-flex items-center gap-[6px] px-[14px] py-[7px] rounded-[20px] border text-[12px] font-medium transition-all shrink-0 whitespace-nowrap ${
+                    isActive
+                      ? 'border-[rgba(16,185,129,0.25)] bg-[rgba(16,185,129,0.12)] text-[#10b981]'
+                      : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t2)]'
+                  }`}
+                >
+                  {CAT_LABELS[cat]}
+                  <span className="font-[DM_Mono] text-[10px] opacity-70">{cnt.done}/{cnt.total}</span>
+                </button>
+              )
+            })}
+            {/* Checkbox inline on desktop, hidden on mobile */}
+            <label className="ml-auto shrink-0 hidden lg:flex items-center gap-[7px] text-[12px] text-[var(--sl-t3)] cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={showLocked}
+                onChange={e => setShowLocked(e.target.checked)}
+                className="accent-[#10b981] cursor-pointer"
+              />
+              Mostrar bloqueadas
+            </label>
+          </div>
+          {/* Right fade mask — mobile only */}
+          <div
+            className="absolute right-0 top-0 bottom-1 w-8 pointer-events-none lg:hidden"
+            style={{ background: 'linear-gradient(to right, transparent, var(--sl-bg))' }}
+          />
+        </div>
+        {/* Checkbox on mobile — separate row */}
+        <label className="lg:hidden flex items-center gap-[7px] text-[12px] text-[var(--sl-t3)] cursor-pointer select-none mt-2">
           <input
             type="checkbox"
             checked={showLocked}
             onChange={e => setShowLocked(e.target.checked)}
-            className="accent-[#0055ff] cursor-pointer"
+            className="accent-[#10b981] cursor-pointer"
           />
           Mostrar bloqueadas
         </label>

@@ -330,9 +330,30 @@ export default function DashboardPage() {
   return (
     <div className="max-w-[1140px] mx-auto px-4 lg:px-6 py-4 lg:py-7 pb-4 lg:pb-16">
 
-      {/* ① HEADER */}
+      {/* Mobile Jornada greeting — first content element, mobile only */}
+      {isJornada && (
+        <div className="lg:hidden flex items-start justify-between mb-4 sl-fade-up">
+          <div>
+            <h1 className="font-[Syne] font-extrabold text-[20px] text-sl-grad leading-tight">
+              {greeting}, {userName}! ✨
+            </h1>
+            <p className="text-[13px] text-[var(--sl-t3)] mt-0.5">
+              Registros em dia — continue assim.
+            </p>
+          </div>
+          <div
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold shrink-0 ml-3"
+            style={{ background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.20)', color: '#10b981' }}
+          >
+            🔥 7 dias
+          </div>
+        </div>
+      )}
+
+      {/* ① HEADER — desktop title + month selector */}
       <div className="flex items-start justify-between gap-4 mb-5 flex-wrap">
-        <div className="flex flex-col gap-0.5">
+        {/* Desktop: greeting or title (hidden on mobile) */}
+        <div className="flex flex-col gap-0.5 max-lg:hidden">
           {isJornada ? (
             <div>
               <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad leading-tight">
@@ -348,9 +369,10 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="flex items-center gap-2.5 flex-shrink-0">
+        <div className="flex items-center gap-2.5 flex-shrink-0 max-lg:w-full">
+          {/* Streak badge — desktop only (shown in mobile greeting block) */}
           {isJornada && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-[12px] font-semibold"
+            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-[12px] font-semibold"
               style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.25)', color: '#f97316' }}>
               🔥 7 dias
             </div>

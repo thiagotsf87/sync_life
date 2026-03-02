@@ -373,8 +373,8 @@ export default function RankingPage() {
             <div
               className="h-[64px] w-[64px] shrink-0 rounded-full flex items-center justify-center
                          text-white text-[22px] font-extrabold font-[Syne]
-                         shadow-[0_0_24px_rgba(16,185,129,0.25)]"
-              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+                         shadow-[0_0_24px_rgba(16,185,129,0.30)]"
+              style={{ background: '#10b981' }}
             >
               EU
             </div>
