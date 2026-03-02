@@ -30,10 +30,10 @@ export function MobileSubNav() {
   if (mod.navItems.length <= 1) return null
 
   return (
-    <div className="lg:hidden relative border-b border-[var(--sl-border)] bg-[var(--sl-s1)]">
+    <div className="lg:hidden bg-[var(--sl-s1)] border-b border-[var(--sl-border)]">
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto px-4 gap-1"
+        className="flex overflow-x-auto px-3 gap-1.5 py-2"
         style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
       >
         {mod.navItems.map((item) => {
@@ -45,13 +45,12 @@ export function MobileSubNav() {
               data-active={isActive}
               onClick={() => router.push(item.href)}
               className={cn(
-                'shrink-0 px-3 py-2.5 text-[12px] font-medium whitespace-nowrap',
-                'border-b-2 transition-colors duration-150',
+                'shrink-0 px-3 py-1.5 text-[12px] font-medium whitespace-nowrap rounded-full transition-all duration-150',
                 isActive
-                  ? 'text-[var(--sl-t1)]'
-                  : 'border-transparent text-[var(--sl-t3)] hover:text-[var(--sl-t2)]',
+                  ? 'text-white'
+                  : 'text-[var(--sl-t3)] hover:text-[var(--sl-t2)] hover:bg-[var(--sl-s2)]',
               )}
-              style={isActive ? { borderBottomColor: mod.color, color: mod.color } : undefined}
+              style={isActive ? { background: mod.color, color: '#ffffff' } : undefined}
             >
               {item.label}
             </button>
