@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>SyncLife — Mobile v4 · Conteúdo</title>
+<style>
+:root {
+  --sl-bg: #03071a; --sl-s1: #07112b; --sl-s2: #0c1a3a; --sl-s3: #132248;
+  --sl-border: rgba(255,255,255,0.08); --sl-border-h: rgba(255,255,255,0.18);
+  --sl-t1: #dff0ff; --sl-t2: #6e90b8; --sl-t3: #2e4a6e;
+  --sl-em: #10b981; --sl-el: #0055ff;
+  --sl-grad: linear-gradient(135deg, #10b981, #0055ff);
+  --nav-h: 64px; --header-h: 52px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--sl-bg); color: var(--sl-t1);
+  font-family: 'Outfit', system-ui, sans-serif; font-size: 14px;
+  width: 390px; max-width: 100%; overflow-x: hidden; }
+.syne { font-family: 'Syne', sans-serif; }
+.mono { font-family: 'DM Mono', monospace; }
+
+/* Layout helpers */
+.px { padding-left: 16px; padding-right: 16px; }
+.py { padding-top: 16px; padding-bottom: 16px; }
+.gap8 { display: flex; flex-direction: column; gap: 8px; }
+.row { display: flex; align-items: center; gap: 8px; }
+.between { justify-content: space-between; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+/* Card base */
+.card {
+  background: var(--sl-s1); border: 1px solid var(--sl-border);
+  border-radius: 16px; padding: 14px;
+  transition: border-color 0.15s;
+}
+.card:hover { border-color: var(--sl-border-h); }
+
+/* Section labels */
+.page-title { font-size: 22px; font-weight: 800; color: #fff; padding: 20px 16px 12px; font-family: 'Syne', sans-serif; }
+.section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--sl-t3); padding: 16px 16px 8px; }
+.comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--sl-border); margin-bottom: 4px; }
+.comp-side { background: var(--sl-bg); padding: 8px; }
+.comp-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 0 6px; }
+.comp-label.before { color: #f43f5e; }
+.comp-label.after { color: #10b981; }
+.annotation { background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.3);
+  border-radius: 8px; padding: 7px 10px; margin: 6px 0; font-size: 10px; color: #f43f5e; line-height: 1.4; }
+.annotation.good { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: #10b981; }
+
+/* ══ KPI CARD ══ */
+.kpi {
+  position: relative; background: var(--sl-s1); border: 1px solid var(--sl-border);
+  border-radius: 14px; padding: 12px; overflow: hidden;
+  transition: border-color 0.15s;
+}
+.kpi-bar { position: absolute; top: 0; left: 10px; right: 10px; height: 2px; border-radius: 0 0 2px 2px; }
+.kpi-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sl-t3); margin-bottom: 4px; }
+.kpi-value { font-family: 'DM Mono', monospace; font-size: 17px; font-weight: 500; color: var(--sl-t1); line-height: 1.1; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi-delta { font-size: 10px; }
+.kpi-delta.up { color: #10b981; }
+.kpi-delta.down { color: #f43f5e; }
+.kpi-delta.warn { color: #f59e0b; }
+.kpi-delta.neutral { color: var(--sl-t3); }
+
+/* Old KPI (before) */
+.kpi-old { position: relative; background: var(--sl-s1); border: 1px solid var(--sl-border);
+  border-radius: 14px; padding: 16px; overflow: hidden; }
+.kpi-old-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--sl-t3); margin-bottom: 6px; }
+.kpi-old-value { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 500; color: var(--sl-t1); line-height: 1; }
+
+/* ══ LIFE SYNC SCORE ══ */
+.score-card { background: var(--sl-s1); border: 1px solid var(--sl-border); border-radius: 16px; overflow: hidden; }
+.score-header { padding: 16px 16px 12px; }
+.score-number { font-family: 'Syne', sans-serif; font-size: 56px; font-weight: 800; line-height: 1;
+  background: var(--sl-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.score-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sl-t3); margin-top: 2px; }
+.score-subtitle { font-size: 12px; color: var(--sl-t2); margin-top: 6px; }
+.score-dims { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px 16px; }
+.score-dim { display: flex; flex-direction: column; gap: 4px; }
+.score-dim-label { display: flex; align-items: center; justify-content: space-between; }
+.score-dim-name { font-size: 11px; color: var(--sl-t2); }
+.score-dim-val { font-size: 11px; font-family: 'DM Mono', monospace; font-weight: 500; }
+.score-dim-bar { height: 4px; background: var(--sl-s3); border-radius: 2px; overflow: hidden; }
+.score-dim-fill { height: 100%; border-radius: 2px; }
+.score-footer { padding: 12px 16px; border-top: 1px solid var(--sl-border); display: flex; align-items: center; justify-content: space-between; }
+.score-btn { padding: 8px 14px; border-radius: 10px; background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.3); font-size: 12px; font-weight: 600;
+  color: var(--sl-em); cursor: pointer; }
+.score-trend { font-size: 11px; color: var(--sl-t2); }
+
+/* Old Score Card (before) */
+.score-old { background: var(--sl-s1); border: 1px solid var(--sl-border); border-radius: 16px;
+  display: flex; overflow: hidden; height: 200px; }
+.score-old-left { width: 110px; flex-shrink: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 16px; }
+.score-old-right { flex: 1; padding: 16px; overflow: hidden; }
+.score-old-right-content { font-size: 12px; color: var(--sl-t2); white-space: nowrap; }
+
+/* ══ BUDGET ROW ══ */
+.budget-row { display: flex; flex-direction: column; gap: 5px; padding: 10px 0; }
+.budget-row + .budget-row { border-top: 1px solid var(--sl-border); }
+.budget-row-top { display: flex; align-items: center; gap: 8px; }
+.budget-emoji { font-size: 15px; flex-shrink: 0; }
+.budget-name { font-size: 13px; font-weight: 600; color: var(--sl-t1); flex: 1; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.budget-amount { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--sl-t2); white-space: nowrap; flex-shrink: 0; }
+.budget-pct { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600; flex-shrink: 0; min-width: 30px; text-align: right; }
+.budget-bar-bg { height: 4px; background: var(--sl-s3); border-radius: 2px; overflow: hidden; }
+.budget-bar-fill { height: 100%; border-radius: 2px; }
+
+/* Old budget row */
+.budget-old-row { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; }
+.budget-old-info { flex: 1; min-width: 0; }
+.budget-old-name { font-size: 13px; color: var(--sl-t1); }
+.budget-old-amount { font-size: 11px; color: var(--sl-t2); margin-top: 1px; white-space: nowrap; }
+
+/* ══ AGENDA MOBILE ══ */
+.agenda-day-strip { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 12px 16px; }
+.agenda-day-strip::-webkit-scrollbar { display: none; }
+.day-chip { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  width: 44px; }
+.day-chip-dow { font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--sl-t3); }
+.day-chip-num { width: 38px; height: 38px; border-radius: 12px; background: var(--sl-s2);
+  border: 1px solid var(--sl-border); display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; color: var(--sl-t2); cursor: pointer; }
+.day-chip.today .day-chip-num { background: var(--sl-em); color: #fff; border-color: var(--sl-em); }
+.day-chip.selected .day-chip-num { background: var(--sl-s3); color: var(--sl-t1); border-color: var(--sl-border-h); }
+.day-chip-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sl-el); }
+.event-list { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+.event-item { display: flex; align-items: center; gap: 12px; background: var(--sl-s1);
+  border: 1px solid var(--sl-border); border-radius: 12px; padding: 12px; }
+.event-time { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--sl-t3);
+  text-align: center; flex-shrink: 0; width: 40px; }
+.event-color { width: 3px; height: 36px; border-radius: 2px; flex-shrink: 0; }
+.event-content { flex: 1; min-width: 0; }
+.event-title { font-size: 13px; font-weight: 600; color: var(--sl-t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.event-meta { font-size: 11px; color: var(--sl-t2); margin-top: 1px; }
+.event-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; }
+
+/* Old agenda */
+.agenda-old { display: grid; grid-template-columns: repeat(7, 1fr); font-size: 9px; overflow: hidden; }
+.agenda-old-col { border-right: 1px solid var(--sl-border); text-align: center; }
+.agenda-old-head { padding: 4px 2px; background: var(--sl-s2); font-weight: 700; color: var(--sl-t2); border-bottom: 1px solid var(--sl-border); }
+.agenda-old-slot { height: 28px; border-bottom: 1px solid var(--sl-border); font-size: 8px; color: var(--sl-t3); }
+
+/* ══ FILTROS TRANSAÇÕES ══ */
+.filter-bar-compact { padding: 10px 16px; }
+.filter-row1 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.month-nav { display: flex; align-items: center; gap: 6px; background: var(--sl-s2);
+  border: 1px solid var(--sl-border); border-radius: 10px; padding: 6px 10px;
+  font-size: 13px; font-weight: 600; color: var(--sl-t1); }
+.month-nav-btn { color: var(--sl-t2); cursor: pointer; font-size: 14px; }
+.search-input { flex: 1; background: var(--sl-s2); border: 1px solid var(--sl-border);
+  border-radius: 10px; padding: 8px 12px; font-size: 13px; color: var(--sl-t2);
+  font-family: inherit; }
+.filter-expand-btn { background: var(--sl-s2); border: 1px solid var(--sl-border);
+  border-radius: 10px; padding: 8px 12px; font-size: 12px; font-weight: 600;
+  color: var(--sl-t2); cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+.filter-expanded { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px; }
+.filter-pill { padding: 6px 12px; border-radius: 20px; background: var(--sl-s2);
+  border: 1px solid var(--sl-border); font-size: 12px; font-weight: 600; color: var(--sl-t2);
+  cursor: pointer; white-space: nowrap; }
+.filter-pill.active { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.4); color: var(--sl-em); }
+
+/* Old filtros */
+.old-filters { padding: 12px; }
+.old-filter-line { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.old-pill { background: var(--sl-s2); border: 1px solid var(--sl-border); border-radius: 20px;
+  padding: 6px 12px; font-size: 11px; color: var(--sl-t2); white-space: nowrap; }
+.old-pill.active { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.4); color: var(--sl-em); }
+.old-select { background: var(--sl-s2); border: 1px solid var(--sl-border); border-radius: 20px;
+  padding: 6px 10px; font-size: 11px; color: var(--sl-t2); font-family: inherit; }
+
+/* Progress bar */
+.progress { height: 4px; background: var(--sl-s3); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 2px; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 1: KPI CARDS — ANTES vs DEPOIS                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="page-title">① KPI Cards</div>
+
+<div class="comparison">
+  <div class="comp-side">
+    <div class="comp-label before">✗ Antes — valores cortados</div>
+    <div class="grid2">
+      <div class="kpi-old">
+        <div class="kpi-old-label">Receitas</div>
+        <div class="kpi-old-value" style="color:#10b981">R$ 7.78█</div>
+      </div>
+      <div class="kpi-old">
+        <div class="kpi-old-label">Despesas</div>
+        <div class="kpi-old-value" style="color:#f43f5e">R$ 4.39█</div>
+      </div>
+    </div>
+    <div class="annotation">padding grande + font xl → valores cortados à direita</div>
+  </div>
+  <div class="comp-side">
+    <div class="comp-label after">✓ Depois — completos</div>
+    <div class="grid2">
+      <div class="kpi">
+        <div class="kpi-bar" style="background:#10b981"></div>
+        <div class="kpi-label">Receitas</div>
+        <div class="kpi-value" style="color:#10b981">R$ 7.780</div>
+        <div class="kpi-delta up">↑ este mês</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-bar" style="background:#f43f5e"></div>
+        <div class="kpi-label">Despesas</div>
+        <div class="kpi-value" style="color:#f43f5e">R$ 4.397</div>
+        <div class="kpi-delta warn">57% da receita</div>
+      </div>
+    </div>
+    <div class="annotation good">padding reduzido + font-size menor → valores completos</div>
+  </div>
+</div>
+
+<!-- Exemplo completo dos 4 KPIs -->
+<div class="section-label">Dashboard — 4 KPIs completos</div>
+<div class="grid2 px" style="margin-bottom:16px">
+  <div class="kpi">
+    <div class="kpi-bar" style="background:#10b981"></div>
+    <div class="kpi-label">Receitas</div>
+    <div class="kpi-value" style="color:#10b981">R$ 7.780</div>
+    <div class="kpi-delta up">↑ receitas do mês</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-bar" style="background:#f43f5e"></div>
+    <div class="kpi-label">Despesas</div>
+    <div class="kpi-value" style="color:#f43f5e">R$ 4.397</div>
+    <div class="kpi-delta warn">57% da receita</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-bar" style="background:#0055ff"></div>
+    <div class="kpi-label">Saldo do Mês</div>
+    <div class="kpi-value" style="color:#0055ff">R$ 3.383</div>
+    <div class="kpi-delta up">↑ saldo positivo</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-bar" style="background:#f59e0b"></div>
+    <div class="kpi-label">Metas Ativas</div>
+    <div class="kpi-value" style="color:var(--sl-t1)">3</div>
+    <div class="kpi-delta warn">⚠ 1 em risco</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 2: LIFE SYNC SCORE — ANTES vs DEPOIS             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="page-title">② Life Sync Score Card</div>
+
+<div class="comparison">
+  <div class="comp-side">
+    <div class="comp-label before">✗ Antes — overflow</div>
+    <div class="score-old">
+      <div class="score-old-left">
+        <div style="font-family:'Syne',sans-serif;font-size:40px;font-weight:800;background:var(--sl-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">33</div>
+        <div style="font-size:8px;color:var(--sl-t3);text-align:center;margin-top:2px">LIFE SYNC SCORE</div>
+      </div>
+      <div class="score-old-right">
+        <div class="score-old-right-content">
+          <div style="font-size:11px;font-weight:700;color:var(--sl-t1);margin-bottom:4px">Há espaço para crescer</div>
+          <div style="font-size:10px;color:#10b981">💰 Finanças em alta.</div>
+          <div style="font-size:10px;color:#f59e0b;margin-top:2px">🏃 Fortaleça Saúde/C...</div>
+          <div style="font-size:10px;color:var(--sl-t2);margin-top:2px">🌿 ...</div>
+          <!-- Botão cortado -->
+          <div style="margin-top:8px;background:var(--sl-em);color:#fff;border-radius:8px;padding:6px 10px;font-size:10px;display:inline-block">Ver →</div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation">Coluna direita estoura — texto e botão cortados</div>
+  </div>
+  <div class="comp-side">
+    <div class="comp-label after">✓ Depois — vertical</div>
+    <div style="background:var(--sl-s1);border:1px solid var(--sl-border);border-radius:14px;overflow:hidden">
+      <!-- Header com score centrado -->
+      <div style="padding:14px;text-align:center;border-bottom:1px solid var(--sl-border)">
+        <div style="font-family:'Syne',sans-serif;font-size:48px;font-weight:800;line-height:1;background:var(--sl-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">33</div>
+        <div style="font-size:9px;color:var(--sl-t3);text-transform:uppercase;letter-spacing:0.1em;margin-top:2px">Life Sync Score</div>
+        <div style="font-size:11px;color:var(--sl-t2);margin-top:4px">Há espaço para crescer</div>
+      </div>
+      <!-- Grid de dimensões -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px">
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:10px;color:var(--sl-t2)">💰 Finanças</span><span style="font-size:10px;font-family:'DM Mono',monospace;color:#10b981">100</span></div><div class="progress"><div class="progress-fill" style="width:100%;background:#10b981"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:10px;color:var(--sl-t2)">🎯 Futuro</span><span style="font-size:10px;font-family:'DM Mono',monospace;color:#f59e0b">43</span></div><div class="progress"><div class="progress-fill" style="width:43%;background:#f59e0b"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:10px;color:var(--sl-t2)">🏃 Corpo</span><span style="font-size:10px;font-family:'DM Mono',monospace;color:#f43f5e">5</span></div><div class="progress"><div class="progress-fill" style="width:5%;background:#f43f5e"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:10px;color:var(--sl-t2)">💼 Carreira</span><span style="font-size:10px;font-family:'DM Mono',monospace;color:#f43f5e">20</span></div><div class="progress"><div class="progress-fill" style="width:20%;background:#f43f5e"></div></div></div>
+      </div>
+    </div>
+    <div class="annotation good">Stack vertical → tudo visível, sem overflow</div>
+  </div>
+</div>
+
+<!-- Versão completa -->
+<div class="section-label">Life Sync Score — versão completa (Jornada)</div>
+<div class="score-card px" style="margin-bottom:16px">
+  <div class="score-header">
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <div>
+        <div class="score-number">33</div>
+        <div class="score-label">Life Sync Score</div>
+        <div class="score-subtitle">Há espaço para crescer — foque em Corpo e Mente</div>
+      </div>
+      <div style="margin-left:auto;flex-shrink:0;text-align:right">
+        <div style="font-size:9px;color:var(--sl-t3);text-transform:uppercase;letter-spacing:0.08em">Semana</div>
+        <div style="font-size:18px;font-weight:700;color:#10b981">↑ +3</div>
+      </div>
+    </div>
+  </div>
+  <div class="score-dims">
+    <div class="score-dim"><div class="score-dim-label"><span class="score-dim-name">💰 Finanças</span><span class="score-dim-val" style="color:#10b981">100</span></div><div class="score-dim-bar"><div class="score-dim-fill" style="width:100%;background:#10b981"></div></div></div>
+    <div class="score-dim"><div class="score-dim-label"><span class="score-dim-name">🎯 Futuro</span><span class="score-dim-val" style="color:#f59e0b">43</span></div><div class="score-dim-bar"><div class="score-dim-fill" style="width:43%;background:#f59e0b"></div></div></div>
+    <div class="score-dim"><div class="score-dim-label"><span class="score-dim-name">🏃 Corpo</span><span class="score-dim-val" style="color:#f43f5e">5</span></div><div class="score-dim-bar"><div class="score-dim-fill" style="width:5%;background:#f43f5e"></div></div></div>
+    <div class="score-dim"><div class="score-dim-label"><span class="score-dim-name">🧠 Mente</span><span class="score-dim-val" style="color:#f43f5e">5</span></div><div class="score-dim-bar"><div class="score-dim-fill" style="width:5%;background:#f43f5e"></div></div></div>
+    <div class="score-dim"><div class="score-dim-label"><span class="score-dim-name">💼 Carreira</span><span class="score-dim-val" style="color:#f43f5e">20</span></div><div class="score-dim-bar"><div class="score-dim-fill" style="width:20%;background:#f43f5e"></div></div></div>
+    <div class="score-dim"><div class="score-dim-label"><span class="score-dim-name">📈 Patrimônio</span><span class="score-dim-val" style="color:#f59e0b">35</span></div><div class="score-dim-bar"><div class="score-dim-fill" style="width:35%;background:#f59e0b"></div></div></div>
+  </div>
+  <div class="score-footer">
+    <button class="score-btn">Ver análise completa →</button>
+    <span class="score-trend">↑ +3 vs semana passada</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 3: ORÇAMENTOS — ANTES vs DEPOIS                  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="page-title">③ Linhas de Orçamento</div>
+
+<div class="comparison">
+  <div class="comp-side">
+    <div class="comp-label before">✗ Antes — nome em 2 linhas</div>
+    <div style="background:var(--sl-s1);border:1px solid var(--sl-border);border-radius:12px;padding:10px">
+      <div class="budget-old-row">
+        <div style="font-size:15px">💡</div>
+        <div class="budget-old-info">
+          <div class="budget-old-name">Contas e Serviços</div>
+          <div class="budget-old-amount">R$ 619 / R$ 800</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:#f59e0b">77%</div>
+      </div>
+      <div style="height:4px;background:var(--sl-s3);border-radius:2px;overflow:hidden"><div style="height:100%;width:77%;background:#f59e0b;border-radius:2px"></div></div>
+    </div>
+    <div class="annotation">Nome + valor ficam em linhas separadas → layout quebrado</div>
+  </div>
+  <div class="comp-side">
+    <div class="comp-label after">✓ Depois — compacto</div>
+    <div style="background:var(--sl-s1);border:1px solid var(--sl-border);border-radius:12px;padding:10px">
+      <div class="budget-row" style="padding:0">
+        <div class="budget-row-top">
+          <span class="budget-emoji">💡</span>
+          <span class="budget-name">Contas e Serviços</span>
+          <span class="budget-pct" style="color:#f59e0b">77%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="budget-bar-bg" style="flex:1"><div class="budget-bar-fill" style="width:77%;background:#f59e0b"></div></div>
+          <span class="budget-amount">R$619/R$800</span>
+        </div>
+      </div>
+    </div>
+    <div class="annotation good">Nome truncado, barra + valor na mesma linha</div>
+  </div>
+</div>
+
+<!-- Lista completa de orçamentos -->
+<div class="section-label">Widget de Orçamentos — formato compacto</div>
+<div class="card px" style="margin-bottom:16px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <span style="font-size:13px;font-weight:700;color:var(--sl-t1)">💼 Orçamentos do Mês</span>
+    <a style="font-size:11px;color:var(--sl-em);font-weight:600">Ver todos →</a>
+  </div>
+  <div class="budget-row">
+    <div class="budget-row-top"><span class="budget-emoji">💡</span><span class="budget-name">Contas e Serviços</span><span class="budget-pct" style="color:#f59e0b">77%</span></div>
+    <div style="display:flex;align-items:center;gap:6px"><div class="budget-bar-bg" style="flex:1"><div class="budget-bar-fill" style="width:77%;background:#f59e0b"></div></div><span class="budget-amount">R$619/R$800</span></div>
+  </div>
+  <div class="budget-row">
+    <div class="budget-row-top"><span class="budget-emoji">🍔</span><span class="budget-name">Alimentação</span><span class="budget-pct" style="color:#10b981">56%</span></div>
+    <div style="display:flex;align-items:center;gap:6px"><div class="budget-bar-bg" style="flex:1"><div class="budget-bar-fill" style="width:56%;background:#10b981"></div></div><span class="budget-amount">R$445/R$800</span></div>
+  </div>
+  <div class="budget-row">
+    <div class="budget-row-top"><span class="budget-emoji">🎮</span><span class="budget-name">Lazer</span><span class="budget-pct" style="color:#f43f5e">82%</span></div>
+    <div style="display:flex;align-items:center;gap:6px"><div class="budget-bar-bg" style="flex:1"><div class="budget-bar-fill" style="width:82%;background:#f43f5e"></div></div><span class="budget-amount">R$318/R$600</span></div>
+  </div>
+  <div class="budget-row">
+    <div class="budget-row-top"><span class="budget-emoji">🛒</span><span class="budget-name">Supermercado</span><span class="budget-pct" style="color:#10b981">45%</span></div>
+    <div style="display:flex;align-items:center;gap:6px"><div class="budget-bar-bg" style="flex:1"><div class="budget-bar-fill" style="width:45%;background:#10b981"></div></div><span class="budget-amount">R$540/R$1.200</span></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 4: AGENDA SEMANAL — ANTES vs DEPOIS              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="page-title">④ Agenda Semanal</div>
+
+<div class="comparison">
+  <div class="comp-side">
+    <div class="comp-label before">✗ Antes — 7 colunas apertadas</div>
+    <div class="agenda-old">
+      <div class="agenda-old-col"><div class="agenda-old-head">DOM</div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div></div>
+      <div class="agenda-old-col"><div class="agenda-old-head">SEG</div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div></div>
+      <div class="agenda-old-col"><div class="agenda-old-head">TER</div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div></div>
+      <div class="agenda-old-col"><div class="agenda-old-head">QUA</div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div></div>
+      <div class="agenda-old-col"><div class="agenda-old-head">QUI</div><div class="agenda-old-slot" style="background:rgba(165,85,247,0.2)"><span style="color:#a855f7;font-size:7px">Reunião</span></div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div></div>
+      <div class="agenda-old-col"><div class="agenda-old-head">SEX</div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div></div>
+      <div class="agenda-old-col"><div class="agenda-old-head">SÁB</div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div><div class="agenda-old-slot"></div></div>
+    </div>
+    <div class="annotation">7 colunas em 390px — ~48px cada → eventos ilegíveis</div>
+  </div>
+  <div class="comp-side">
+    <div class="comp-label after">✓ Depois — dia + lista</div>
+    <!-- Day strip -->
+    <div style="display:flex;gap:5px;overflow:hidden;padding:8px;justify-content:center">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+        <div style="font-size:8px;color:var(--sl-t3);font-weight:600">DOM</div>
+        <div style="width:32px;height:32px;border-radius:10px;background:var(--sl-s2);border:1px solid var(--sl-border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--sl-t2)">22</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+        <div style="font-size:8px;color:var(--sl-t3);font-weight:600">SEG</div>
+        <div style="width:32px;height:32px;border-radius:10px;background:var(--sl-s2);border:1px solid var(--sl-border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--sl-t2)">23</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+        <div style="font-size:8px;color:var(--sl-t3);font-weight:600">QUI</div>
+        <div style="width:32px;height:32px;border-radius:10px;background:rgba(165,85,247,0.2);border:1px solid rgba(165,85,247,0.4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#a855f7">26</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+        <div style="font-size:8px;color:var(--sl-em);font-weight:700">SÁB</div>
+        <div style="width:32px;height:32px;border-radius:10px;background:var(--sl-em);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">28</div>
+      </div>
+    </div>
+    <!-- Event list for selected day -->
+    <div style="padding:0 6px">
+      <div style="display:flex;align-items:center;gap:8px;background:var(--sl-s2);border:1px solid rgba(165,85,247,0.3);border-radius:10px;padding:8px">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--sl-t3);flex-shrink:0">14:00</div>
+        <div style="width:2px;height:28px;background:#a855f7;border-radius:1px;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--sl-t1)">Reunião de Validação</div><div style="font-size:10px;color:var(--sl-t2)">Trabalho · 1h</div></div>
+      </div>
+    </div>
+    <div class="annotation good">Strip de dias + lista vertical → legível e navegável</div>
+  </div>
+</div>
+
+<!-- Versão completa da nova Agenda -->
+<div class="section-label">Tempo/Agenda — novo layout mobile (dia selecionado)</div>
+<div style="background:var(--sl-s1);border:1px solid var(--sl-border);border-radius:16px;overflow:hidden;margin:0 16px 16px">
+  <!-- Navegação semana -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--sl-border)">
+    <div style="font-size:20px;cursor:pointer;color:var(--sl-t2)">‹</div>
+    <div style="font-size:13px;font-weight:700;color:var(--sl-t1)">22 – 28 de Fev 2026</div>
+    <div style="font-size:20px;cursor:pointer;color:var(--sl-t2)">›</div>
+  </div>
+  <!-- Strip de dias (scroll horizontal) -->
+  <div class="agenda-day-strip">
+    <div class="day-chip"><div class="day-chip-dow">DOM</div><div class="day-chip-num">22</div></div>
+    <div class="day-chip"><div class="day-chip-dow">SEG</div><div class="day-chip-num">23</div></div>
+    <div class="day-chip"><div class="day-chip-dow">TER</div><div class="day-chip-num">24</div></div>
+    <div class="day-chip"><div class="day-chip-dow">QUA</div><div class="day-chip-num">25</div></div>
+    <div class="day-chip selected"><div class="day-chip-dow">QUI</div><div class="day-chip-num">26</div><div class="day-chip-dot"></div></div>
+    <div class="day-chip"><div class="day-chip-dow">SEX</div><div class="day-chip-num">27</div></div>
+    <div class="day-chip today"><div class="day-chip-dow">SÁB</div><div class="day-chip-num">28</div></div>
+    <div class="day-chip"><div class="day-chip-dow">DOM</div><div class="day-chip-num">1</div></div>
+  </div>
+  <!-- Header do dia -->
+  <div style="padding:8px 16px;font-size:12px;font-weight:700;color:var(--sl-t2);text-transform:uppercase;letter-spacing:0.08em">
+    Quinta-feira, 26 · 1 evento
+  </div>
+  <!-- Lista de eventos -->
+  <div class="event-list" style="padding-bottom:14px">
+    <div class="event-item">
+      <div class="event-time">14:00<br><span style="color:var(--sl-t3)">15:00</span></div>
+      <div class="event-color" style="background:#a855f7"></div>
+      <div class="event-content">
+        <div class="event-title">Reunião de Validação Sprint</div>
+        <div class="event-meta">📹 Video call · 1h</div>
+      </div>
+      <div class="event-tag" style="background:rgba(165,85,247,0.15);border:1px solid rgba(165,85,247,0.3);color:#a855f7">Trabalho</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;opacity:0.4">
+      <div style="flex:1;height:1px;background:var(--sl-border)"></div>
+      <div style="font-size:11px;color:var(--sl-t3)">Sem mais eventos</div>
+      <div style="flex:1;height:1px;background:var(--sl-border)"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SEÇÃO 5: FILTROS DE TRANSAÇÕES — ANTES vs DEPOIS        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+
+<div class="page-title">⑤ Filtros de Transações</div>
+
+<div class="comparison">
+  <div class="comp-side">
+    <div class="comp-label before">✗ Antes — 3 linhas fixas</div>
+    <div class="old-filters">
+      <div class="old-filter-line">
+        <span style="font-size:14px;cursor:pointer;color:var(--sl-t2)">‹</span>
+        <span class="old-pill" style="font-size:12px">Fevereiro 2026</span>
+        <span style="font-size:14px;cursor:pointer;color:var(--sl-t2)">›</span>
+      </div>
+      <div class="old-filter-line">
+        <span class="old-pill active">Todos</span>
+        <span class="old-pill">Receitas</span>
+        <span class="old-pill">Despesas</span>
+        <span class="old-pill">Recorrentes</span>
+        <select class="old-select"><option>Todas categorias</option></select>
+      </div>
+      <div class="old-filter-line">
+        <select class="old-select"><option>Mais recente</option></select>
+      </div>
+    </div>
+    <div class="annotation">~180px de filtros antes de ver qualquer transação</div>
+  </div>
+  <div class="comp-side">
+    <div class="comp-label after">✓ Depois — colapsável</div>
+    <div class="filter-bar-compact">
+      <div class="filter-row1">
+        <div class="month-nav">
+          <span class="month-nav-btn">‹</span>
+          <span style="font-size:12px">Fev 2026</span>
+          <span class="month-nav-btn">›</span>
+        </div>
+        <input class="search-input" placeholder="Buscar..." style="flex:1">
+        <div class="filter-expand-btn">⚙ <span>Filtros</span></div>
+      </div>
+      <div class="filter-expanded">
+        <div class="filter-pill active">Todos</div>
+        <div class="filter-pill">Receitas</div>
+        <div class="filter-pill">Despesas</div>
+        <div class="filter-pill">Recorrentes</div>
+      </div>
+    </div>
+    <div class="annotation good">1ª linha: mês + busca + toggle. 2ª linha colapsável</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- RODAPÉ                                                  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div style="padding:24px 16px 40px;font-size:11px;color:var(--sl-t3);text-align:center;line-height:1.8;border-top:1px solid var(--sl-border);margin-top:8px">
+  <strong style="color:var(--sl-t2)">SyncLife MVP v4 — Protótipo Conteúdo Mobile</strong><br>
+  Viewport: 390×844 (iPhone 14 Pro)<br>
+  Ver também: <strong>proto-mobile-v4-shell.html</strong> → Header, Tabs, Nav
+</div>
+
+</body>
+</html>

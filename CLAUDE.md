@@ -523,13 +523,22 @@ const supabase = createClient()
 
 ## Referências visuais
 
-Os protótipos HTML (na raiz do projeto) mostram exatamente como cada componente deve ficar visualmente. Consulte-os quando tiver dúvida sobre aparência:
+Os protótipos HTML estão organizados em duas pastas. Consulte-os quando tiver dúvida sobre aparência:
 
-- `proto-dashboard.html` — Dashboard completo (Foco e Jornada)
-- `proto-planejamento-v2.html` — Planejamento futuro com timeline
-- `proto-metas.html` — Tela de metas com anéis de progresso
-- `proto-navigation-v3.html` — Navegação + temas + estrutura geral
+### `prototipos/web/` — protótipos do layout desktop/web
+- `proto-dashboard-revisado.html` — Dashboard completo (Foco e Jornada)
+- `proto-planejamento-v2-revisado.html` — Planejamento futuro com timeline
+- `proto-metas-revisado.html` — Tela de metas com anéis de progresso
+- `proto-navigation-v3_3.html` — Navegação + temas + estrutura geral
 - `synclife-design-system.html` — Design System completo (abrir no browser)
+- `proto-financas-dashboard.html`, `proto-transacoes_6.html`, etc.
+
+### `prototipos/mobile/` — protótipos do layout mobile
+- `proto-mobile-synclife.html` — Shell mobile (bottom bar, headers)
+- `proto-mobile-financas-futuro-tempo.html` — Módulos Finanças, Futuro, Tempo
+- `proto-mobile-corpo.html`, `proto-mobile-mente.html`, etc. — demais módulos
+- `proto-mobile-v4-shell.html`, `proto-mobile-v4-content.html` — Sprint 4 mobile
+
 - `DESIGN-SYSTEM.md` — Documentação de tokens e regras
 
 ---
