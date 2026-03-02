@@ -37,6 +37,7 @@ export const useShellStore = create<ShellState>((set, get) => ({
   theme: 'system' as ThemeId,
   resolvedTheme: initialResolved,
   modulePickerOpen: false,
+  quickEntryOpen: false,
 
   setActiveModule: (module: ModuleId) => set({ activeModule: module }),
 
@@ -65,4 +66,5 @@ export const useShellStore = create<ShellState>((set, get) => ({
   },
 
   setModulePickerOpen: (open: boolean) => set({ modulePickerOpen: open }),
+  setQuickEntryOpen: (open: boolean) => set({ quickEntryOpen: open }),
 }))

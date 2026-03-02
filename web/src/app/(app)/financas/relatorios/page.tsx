@@ -262,60 +262,66 @@ export default function RelatoriosPage() {
       )}
 
       {/* ── Period Selector ─────────────────────────────────────── */}
-      <div className="flex items-center gap-2 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl px-3.5 py-2.5 mb-3.5 flex-wrap">
-        <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] whitespace-nowrap mr-0.5">
-          Período
-        </span>
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl px-3.5 py-2.5 mb-3.5">
+        {/* Row 1: label + pills (scrollable on mobile) */}
+        <div className="flex items-center gap-2 mb-2 overflow-x-auto scrollbar-none max-sm:pb-0.5">
+          <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] whitespace-nowrap mr-0.5 shrink-0">
+            Período
+          </span>
 
-        {PERIOD_OPTIONS.map(opt => (
+          {PERIOD_OPTIONS.map(opt => (
+            <button
+              key={opt.key}
+              onClick={() => setPeriod(opt.key as PeriodKey)}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-[5px] rounded-[8px] border text-[12px] cursor-pointer transition-all whitespace-nowrap shrink-0',
+                period === opt.key
+                  ? 'bg-[rgba(16,185,129,0.14)] text-[#10b981] border-[rgba(16,185,129,0.3)] font-semibold'
+                  : 'border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)]'
+              )}>
+              {opt.label}
+              {opt.proOnly && !isPro && (
+                <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded bg-gradient-to-br from-[rgba(16,185,129,0.15)] to-[rgba(0,85,255,0.15)] text-[#10b981] border border-[rgba(16,185,129,0.25)]">
+                  <Lock size={8} /> PRO
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Row 2: date inputs + gerar */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="w-px h-[18px] bg-[var(--sl-border)] flex-shrink-0 mx-0.5 max-sm:hidden" />
+
+          <input
+            type="date"
+            value={customStart}
+            onChange={e => setCustomStart(e.target.value)}
+            max={customEnd}
+            disabled={period !== 'custom'}
+            className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-2 py-[5px] text-[11px] text-[var(--sl-t2)] outline-none focus:border-[rgba(16,185,129,0.35)] disabled:opacity-40 cursor-pointer"
+          />
+          <span className="text-[12px] text-[var(--sl-t3)] px-0.5">→</span>
+          <input
+            type="date"
+            value={customEnd}
+            onChange={e => setCustomEnd(e.target.value)}
+            min={customStart}
+            max={new Date().toISOString().split('T')[0]}
+            disabled={period !== 'custom'}
+            className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-2 py-[5px] text-[11px] text-[var(--sl-t2)] outline-none focus:border-[rgba(16,185,129,0.35)] disabled:opacity-40 cursor-pointer"
+          />
+
+          <span className="flex-1" />
+
           <button
-            key={opt.key}
-            onClick={() => setPeriod(opt.key as PeriodKey)}
-            className={cn(
-              'flex items-center gap-1.5 px-3 py-[5px] rounded-[8px] border text-[12px] cursor-pointer transition-all whitespace-nowrap',
-              period === opt.key
-                ? 'bg-[rgba(16,185,129,0.14)] text-[#10b981] border-[rgba(16,185,129,0.3)] font-semibold'
-                : 'border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)]'
-            )}>
-            {opt.label}
-            {opt.proOnly && !isPro && (
-              <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded bg-gradient-to-br from-[rgba(16,185,129,0.15)] to-[rgba(0,85,255,0.15)] text-[#10b981] border border-[rgba(16,185,129,0.25)]">
-                <Lock size={8} /> PRO
-              </span>
-            )}
+            onClick={handleGenerate}
+            disabled={loading}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-[9px] border-none bg-[#10b981] text-white text-[12px] font-bold cursor-pointer shrink-0 disabled:opacity-60 hover:bg-[#0da876] transition-colors max-sm:w-full max-sm:justify-center">
+            <BarChart2 size={13} />
+            {loading ? 'Carregando...' : 'Gerar relatório'}
           </button>
-        ))}
-
-        <div className="w-px h-[18px] bg-[var(--sl-border)] flex-shrink-0 mx-0.5" />
-
-        <input
-          type="date"
-          value={customStart}
-          onChange={e => setCustomStart(e.target.value)}
-          max={customEnd}
-          disabled={period !== 'custom'}
-          className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-2 py-[5px] text-[11px] text-[var(--sl-t2)] outline-none focus:border-[rgba(16,185,129,0.35)] disabled:opacity-40 cursor-pointer"
-        />
-        <span className="text-[12px] text-[var(--sl-t3)] px-0.5">→</span>
-        <input
-          type="date"
-          value={customEnd}
-          onChange={e => setCustomEnd(e.target.value)}
-          min={customStart}
-          max={new Date().toISOString().split('T')[0]}
-          disabled={period !== 'custom'}
-          className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-2 py-[5px] text-[11px] text-[var(--sl-t2)] outline-none focus:border-[rgba(16,185,129,0.35)] disabled:opacity-40 cursor-pointer"
-        />
-
-        <span className="flex-1" />
-
-        <button
-          onClick={handleGenerate}
-          disabled={loading}
-          className="flex items-center gap-1.5 px-4 py-1.5 rounded-[9px] border-none bg-[#10b981] text-white text-[12px] font-bold cursor-pointer shrink-0 disabled:opacity-60 hover:bg-[#0da876] transition-colors">
-          <BarChart2 size={13} />
-          {loading ? 'Carregando...' : 'Gerar relatório'}
-        </button>
+        </div>
       </div>
 
       {/* ── Error ───────────────────────────────────────────────── */}

@@ -748,7 +748,7 @@ export default function FinancasDashboardPage() {
       </div>
 
       {/* ⑤ TOP GRID: Histórico + Gastos por Categoria */}
-      <div className="grid gap-3 mb-3" style={{ gridTemplateColumns: '1fr 400px' }}>
+      <div className="grid grid-cols-[1fr_400px] gap-3 mb-3 max-sm:grid-cols-1">
         {/* Histórico */}
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 hover:border-[var(--sl-border-h)] transition-colors">
           <div className="flex items-center justify-between mb-4">
@@ -827,7 +827,11 @@ export default function FinancasDashboardPage() {
             {' '}Colunas esmaecidas após {String(todayD).padStart(2, '0')}/{String(month).padStart(2, '0')} são previsões.
           </p>
         </div>
-        <FluxoCaixaChart days={cfDays} />
+        <div className="max-sm:overflow-x-auto max-sm:scrollbar-none">
+          <div className="max-sm:min-w-[600px]">
+            <FluxoCaixaChart days={cfDays} />
+          </div>
+        </div>
         {/* Summary cards */}
         <div className="grid grid-cols-4 gap-2 mt-3 max-sm:grid-cols-2">
           {[

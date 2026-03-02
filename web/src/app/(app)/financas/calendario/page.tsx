@@ -8,6 +8,7 @@ import { useShellStore } from '@/stores/shell-store'
 import { useCategories } from '@/hooks/use-categories'
 import { useCalendario, type CalendarDayData, type CalendarTransaction } from '@/hooks/use-calendario'
 import { SLCard } from '@/components/ui/sl-card'
+import { KpiCard } from '@/components/ui/kpi-card'
 import { TransacaoModal } from '@/components/financas/TransacaoModal'
 import { PlanningEventModal } from '@/components/financas/PlanningEventModal'
 import { usePlanejamento, type EventFormData } from '@/hooks/use-planejamento'
@@ -365,19 +366,39 @@ export default function CalendarioFinanceiroPage() {
 
       {/* ④ Week Summary */}
       <div className="grid grid-cols-4 gap-2.5 mb-4 max-sm:grid-cols-2">
-        {[
-          { label: 'Receitas semana',  value: fmtR(weekRecipes),  color: '#10b981' },
-          { label: 'Despesas semana',  value: fmtR(weekExpenses), color: '#f43f5e' },
-          { label: 'Saldo semana',     value: fmtR(weekBalance),  color: weekBalance >= 0 ? '#10b981' : '#f43f5e' },
-          { label: 'Pendentes',        value: String(weekPending), color: '#60a5fa', delta: `${weekPending} futuros` },
-        ].map(c => (
-          <div key={c.label} className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 overflow-hidden transition-colors hover:border-[var(--sl-border-h)] sl-fade-up">
-            <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: c.color }} />
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">{c.label}</p>
-            <p className="font-[DM_Mono] font-medium text-xl leading-none" style={{ color: c.color }}>{c.value}</p>
-            {c.delta && <p className="text-[11px] mt-1 text-[var(--sl-t3)]">{c.delta}</p>}
-          </div>
-        ))}
+        <KpiCard
+          label="Receitas semana"
+          value={fmtR(weekRecipes)}
+          accent="#10b981"
+          icon="💰"
+          iconBg="rgba(16,185,129,0.12)"
+          delay="sl-delay-1"
+        />
+        <KpiCard
+          label="Despesas semana"
+          value={fmtR(weekExpenses)}
+          accent="#f43f5e"
+          icon="📤"
+          iconBg="rgba(244,63,94,0.12)"
+          delay="sl-delay-2"
+        />
+        <KpiCard
+          label="Saldo semana"
+          value={fmtR(weekBalance)}
+          accent={weekBalance >= 0 ? '#10b981' : '#f43f5e'}
+          icon={weekBalance >= 0 ? '💚' : '📉'}
+          iconBg={weekBalance >= 0 ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.12)'}
+          delay="sl-delay-3"
+        />
+        <KpiCard
+          label="Pendentes"
+          value={String(weekPending)}
+          delta={`${weekPending} futuro${weekPending !== 1 ? 's' : ''}`}
+          accent="#06b6d4"
+          icon="📋"
+          iconBg="rgba(6,182,212,0.12)"
+          delay="sl-delay-4"
+        />
       </div>
 
       {/* Error */}

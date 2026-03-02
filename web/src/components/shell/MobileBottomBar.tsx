@@ -8,6 +8,7 @@ import { IconPanorama, IconFinancas, IconTempo } from './icons'
 import { MoreHorizontal, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { ModuleId } from '@/types/shell'
+import { QuickEntrySheet } from './QuickEntrySheet'
 
 type TabId = ModuleId | 'mais' | 'fab'
 
@@ -29,18 +30,21 @@ export function MobileBottomBar() {
   const router = useRouter()
   const activeModule = useShellStore((s) => s.activeModule)
   const setModulePickerOpen = useShellStore((s) => s.setModulePickerOpen)
+  const quickEntryOpen = useShellStore((s) => s.quickEntryOpen)
+  const setQuickEntryOpen = useShellStore((s) => s.setQuickEntryOpen)
 
   const handleClick = useCallback((id: TabId) => {
     if (id === 'mais') { setModulePickerOpen(true); return }
-    if (id === 'fab')  { router.push('/quick-entry'); return }
+    if (id === 'fab')  { setQuickEntryOpen(true); return }
     router.push(MODULES[id as ModuleId].basePath)
-  }, [router, setModulePickerOpen])
+  }, [router, setModulePickerOpen, setQuickEntryOpen])
 
   // "Mais" fica ativo quando módulo não está no bottom nav (corpo, mente, patrimônio, carreira, exp, futuro, conquistas)
   const maisActive = (['corpo', 'mente', 'patrimonio', 'carreira', 'experiencias', 'futuro', 'conquistas', 'configuracoes'] as ModuleId[]).includes(activeModule)
   const maisColor  = maisActive ? MODULES[activeModule].color : 'var(--sl-t2)'
 
   return (
+    <>
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--sl-border)] bg-[var(--sl-s1)] lg:hidden"
       style={{ paddingBottom: 'var(--mob-safe-bottom)' }}
@@ -90,5 +94,9 @@ export function MobileBottomBar() {
         })}
       </div>
     </nav>
+
+    {/* Quick Entry Sheet — rendered here to avoid z-index issues */}
+    <QuickEntrySheet open={quickEntryOpen} onClose={() => setQuickEntryOpen(false)} />
+  </>
   )
 }

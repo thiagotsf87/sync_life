@@ -58,6 +58,7 @@ export interface ShellState {
   theme: ThemeId
   resolvedTheme: ResolvedThemeId
   modulePickerOpen: boolean
+  quickEntryOpen: boolean
 
   setActiveModule: (module: ModuleId) => void
   toggleSidebar: () => void
@@ -65,4 +66,5 @@ export interface ShellState {
   setMode: (mode: AppMode) => void
   setTheme: (theme: ThemeId) => void
   setModulePickerOpen: (open: boolean) => void
+  setQuickEntryOpen: (open: boolean) => void
 }

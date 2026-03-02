@@ -166,7 +166,7 @@ function RecorrenteCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5 flex-wrap">
             <span className={cn(
-              'text-[14px] font-semibold text-[var(--sl-t1)] truncate',
+              'text-[14px] font-semibold text-[var(--sl-t1)] truncate flex-1 min-w-0',
               isPaused && 'line-through opacity-70'
             )}>
               {rec.name}
