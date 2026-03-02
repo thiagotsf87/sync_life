@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useShellStore } from '@/stores/shell-store'
 import { MODULES, getActiveNavItem } from '@/lib/modules'
 import { MODULE_ICONS } from './icons'
-import { Bell, Menu, ChevronRight } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 function getGreeting(name: string) {
@@ -15,25 +15,30 @@ function getGreeting(name: string) {
   return { text: `Boa noite, ${name}!`, emoji: '🌙' }
 }
 
+// Módulos que mostram pills Foco/Jornada no header
+const MODULES_WITH_PILLS = ['panorama', 'financas', 'futuro']
+
 interface MobileHeaderProps {
   userName: string
 }
 
 export function MobileHeader({ userName }: MobileHeaderProps) {
-  const router = useRouter()
+  const router   = useRouter()
   const pathname = usePathname()
-  const activeModule = useShellStore((s) => s.activeModule)
-  const mode = useShellStore((s) => s.mode)
-  const setMode = useShellStore((s) => s.setMode)
-  const setModulePickerOpen = useShellStore((s) => s.setModulePickerOpen)
-  const isJornada = mode === 'jornada'
+  const activeModule    = useShellStore((s) => s.activeModule)
+  const mode            = useShellStore((s) => s.mode)
+  const setMode         = useShellStore((s) => s.setMode)
+  const isJornada       = mode === 'jornada'
+  const showPills       = MODULES_WITH_PILLS.includes(activeModule)
 
-  const mod = MODULES[activeModule]
-  const ActiveModuleIcon = MODULE_ICONS[activeModule]
-  const activeNavId = getActiveNavItem(pathname, activeModule)
-  const activeNav = mod.navItems.find((item) => item.id === activeNavId)
+  const mod           = MODULES[activeModule]
+  const ActiveIcon    = MODULE_ICONS[activeModule]
+  const activeNavId   = getActiveNavItem(pathname, activeModule)
+  const activeNav     = mod.navItems.find((item) => item.id === activeNavId)
 
-  // SSR-safe greeting — computed client-side to avoid hydration mismatch
+  // Subtítulo: rótulo da subpágina ou descrição do módulo
+  const subtitle = activeNav?.label !== mod.label ? activeNav?.label : undefined
+
   const [greeting, setGreeting] = useState({ text: `Olá, ${userName}!`, emoji: '👋' })
   useEffect(() => { setGreeting(getGreeting(userName)) }, [userName])
 
@@ -50,34 +55,55 @@ export function MobileHeader({ userName }: MobileHeaderProps) {
       {/* ── Linha 1: sempre visível ── */}
       <div className="flex items-center gap-2 px-4 h-[52px]">
 
-        {/* Hamburger → abre MobileModulePicker */}
-        <button
-          onClick={() => setModulePickerOpen(true)}
-          className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0
-                     text-[var(--sl-t2)] hover:bg-[var(--sl-s2)] transition-colors"
-          aria-label="Abrir menu de módulos"
-        >
-          <Menu size={20} />
-        </button>
-
-        {/* Breadcrumb: ícone do módulo + nome + subpágina */}
+        {/* Breadcrumb: ícone + módulo / subpágina */}
         <div className="flex items-center gap-1.5 flex-1 min-w-0">
-          <ActiveModuleIcon size={14} style={{ color: mod.color }} />
-          <span className="text-[13px] font-medium text-[var(--sl-t2)] shrink-0">
+          <ActiveIcon size={15} style={{ color: mod.color }} className="shrink-0" />
+          <span
+            className="text-[13px] font-semibold shrink-0"
+            style={{ color: mod.color }}
+          >
             {mod.label}
           </span>
-          {activeNav && activeNav.label !== mod.label && (
+          {subtitle && (
             <>
-              <ChevronRight size={12} className="text-[var(--sl-t3)] shrink-0" />
+              <span className="text-[var(--sl-t3)] shrink-0 text-[12px]">/</span>
               <span className="text-[13px] font-semibold text-[var(--sl-t1)] truncate">
-                {activeNav.label}
+                {subtitle}
               </span>
             </>
           )}
         </div>
 
-        {/* Direita: sino + avatar */}
+        {/* Direita: pills (módulos com Foco/Jornada) OR sino + avatar */}
         <div className="flex items-center gap-1 shrink-0">
+          {showPills && (
+            <div className="flex gap-0.5 bg-[var(--sl-s2)] rounded-full p-0.5 mr-1">
+              <button
+                onClick={() => setMode('foco')}
+                className={cn(
+                  'px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors',
+                  !isJornada
+                    ? 'bg-[var(--sl-s1)] text-[var(--sl-t1)] shadow-sm'
+                    : 'text-[var(--sl-t3)]',
+                )}
+              >
+                🎯 Foco
+              </button>
+              <button
+                onClick={() => setMode('jornada')}
+                className={cn(
+                  'px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors',
+                  isJornada
+                    ? 'text-[var(--sl-accent)]'
+                    : 'text-[var(--sl-t3)]',
+                )}
+                style={isJornada ? { background: 'rgba(var(--sl-accent-rgb), 0.15)' } : undefined}
+              >
+                🌱 Jornada
+              </button>
+            </div>
+          )}
+
           <button
             onClick={() => router.push('/configuracoes/notificacoes')}
             className="flex items-center justify-center w-9 h-9 rounded-xl
@@ -99,33 +125,13 @@ export function MobileHeader({ userName }: MobileHeaderProps) {
         </div>
       </div>
 
-      {/* ── Linha 2: apenas no modo Jornada ── */}
-      {isJornada && (
-        <div className="flex items-center justify-between px-4 pb-2.5 gap-2">
-          {/* Saudação */}
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-base shrink-0">{greeting.emoji}</span>
-            <p className="text-[13px] font-semibold font-[Syne] text-sl-grad truncate">
-              {greeting.text}
-            </p>
-          </div>
-
-          {/* Pills Foco / Jornada */}
-          <div className="flex gap-0.5 bg-[var(--sl-s2)] rounded-full p-0.5 shrink-0">
-            <button
-              onClick={() => setMode('foco')}
-              className="px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors text-[var(--sl-t3)]"
-            >
-              🎯 Foco
-            </button>
-            <button
-              onClick={() => setMode('jornada')}
-              className="px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors text-[var(--sl-accent)]"
-              style={{ background: 'rgba(var(--sl-accent-rgb), 0.15)' }}
-            >
-              🌱 Jornada
-            </button>
-          </div>
+      {/* ── Linha 2: saudação no Jornada (módulos sem pills) ── */}
+      {isJornada && !showPills && (
+        <div className="flex items-center px-4 pb-2.5 gap-1.5">
+          <span className="text-base shrink-0">{greeting.emoji}</span>
+          <p className="text-[13px] font-semibold font-[Syne] text-sl-grad truncate">
+            {greeting.text}
+          </p>
         </div>
       )}
     </header>

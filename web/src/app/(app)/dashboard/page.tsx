@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { AreaChart, Area, ResponsiveContainer } from 'recharts'
-import { Calendar, ChevronDown, Loader2 } from 'lucide-react'
+import { Calendar, ChevronDown, Loader2, DollarSign, CalendarPlus, RotateCcw, Camera } from 'lucide-react'
 import { useTransactions } from '@/hooks/use-transactions'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useMetas, calcProgress } from '@/hooks/use-metas'
@@ -411,7 +411,9 @@ export default function DashboardPage() {
         </div>
         {/* Footer */}
         <div className="flex items-center justify-between px-3 py-2.5" style={{ borderTop: '1px solid var(--sl-border)' }}>
-          <button className="px-3 py-1.5 rounded-[8px] text-[11px] font-semibold cursor-pointer transition-opacity hover:opacity-80"
+          <button
+            onClick={() => router.push('/dashboard/score')}
+            className="px-3 py-1.5 rounded-[8px] text-[11px] font-semibold cursor-pointer transition-opacity hover:opacity-80"
             style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#10b981' }}>
             Ver análise completa →
           </button>
@@ -471,7 +473,9 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex-shrink-0 flex flex-col gap-2 items-end relative z-10">
-          <button className="px-4 py-2 rounded-[10px] text-[12px] font-semibold text-white cursor-pointer transition-opacity hover:opacity-85 whitespace-nowrap"
+          <button
+            onClick={() => router.push('/dashboard/score')}
+            className="px-4 py-2 rounded-[10px] text-[12px] font-semibold text-white cursor-pointer transition-opacity hover:opacity-85 whitespace-nowrap"
             style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)', border: 'none' }}>
             Ver análise completa
           </button>
@@ -575,7 +579,71 @@ export default function DashboardPage() {
         )}
       </div>}
 
-      {/* ⑤ MAIN GRID */}
+      {/* ⑤ AÇÕES RÁPIDAS — mobile only */}
+      <div className="lg:hidden mb-5 sl-fade-up sl-delay-2">
+        <p className="font-[Syne] font-semibold text-[13px] uppercase tracking-[0.05em] text-[var(--sl-t2)] mb-3">
+          Ações Rápidas
+        </p>
+        <div className="grid grid-cols-2 gap-2.5">
+          {[
+            {
+              icon: DollarSign,
+              label: 'Transação',
+              sub: 'Registrar gasto',
+              color: '#10b981',
+              bg: 'rgba(16,185,129,0.12)',
+              onClick: () => router.push('/quick-entry'),
+            },
+            {
+              icon: CalendarPlus,
+              label: 'Evento',
+              sub: 'Agendar compromisso',
+              color: '#06b6d4',
+              bg: 'rgba(6,182,212,0.12)',
+              onClick: () => router.push('/tempo'),
+            },
+            {
+              icon: RotateCcw,
+              label: 'Revisão',
+              sub: 'Review semanal',
+              color: '#0055ff',
+              bg: 'rgba(0,85,255,0.12)',
+              onClick: () => router.push('/dashboard/review'),
+            },
+            {
+              icon: Camera,
+              label: 'Foto Recibo',
+              sub: 'OCR automático',
+              color: '#8b5cf6',
+              bg: 'rgba(139,92,246,0.12)',
+              onClick: undefined,
+              disabled: true,
+            },
+          ].map((item) => (
+            <button
+              key={item.label}
+              onClick={item.onClick}
+              disabled={item.disabled}
+              className={cn(
+                'flex flex-col gap-2 p-3.5 rounded-2xl border text-left transition-all active:scale-[0.97]',
+                item.disabled
+                  ? 'border-[var(--sl-border)] bg-[var(--sl-s1)] opacity-50 cursor-not-allowed'
+                  : 'border-[var(--sl-border)] bg-[var(--sl-s1)] hover:border-[var(--sl-border-h)]',
+              )}
+            >
+              <div className="w-8 h-8 rounded-[9px] flex items-center justify-center" style={{ background: item.bg, color: item.color }}>
+                <item.icon size={16} />
+              </div>
+              <div>
+                <p className="text-[13px] font-medium text-[var(--sl-t1)]">{item.label}</p>
+                <p className="text-[11px] text-[var(--sl-t2)]">{item.sub}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ⑥ MAIN GRID */}
       <div className="grid grid-cols-[1fr_340px] gap-4 mb-4 max-lg:grid-cols-1">
 
         {/* LEFT */}
@@ -775,7 +843,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ⑥ BOTTOM GRID */}
+      {/* ⑦ BOTTOM GRID */}
       <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
 
         {/* Próximas Recorrentes */}
@@ -920,7 +988,7 @@ export default function DashboardPage() {
 
       </div>
 
-      {/* ⑦ V3 MODULES ROW */}
+      {/* ⑧ V3 MODULES ROW */}
       <div className="grid grid-cols-3 gap-4 mt-4 max-lg:grid-cols-1">
 
         {/* Corpo */}

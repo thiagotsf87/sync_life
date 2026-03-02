@@ -32,7 +32,7 @@ export function MobileBottomBar() {
 
   const handleClick = useCallback((id: TabId) => {
     if (id === 'mais') { setModulePickerOpen(true); return }
-    if (id === 'fab')  { router.push('/financas/transacoes'); return }
+    if (id === 'fab')  { router.push('/quick-entry'); return }
     router.push(MODULES[id as ModuleId].basePath)
   }, [router, setModulePickerOpen])
 
