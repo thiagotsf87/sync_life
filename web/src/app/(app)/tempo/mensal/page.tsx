@@ -385,7 +385,7 @@ export default function AgendaMensalPage() {
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)] jornada:text-sl-grad">
+        <h1 className="font-[Syne] font-extrabold text-2xl max-sm:hidden text-[var(--sl-t1)] jornada:text-sl-grad">
           📅 Agenda Mensal
         </h1>
         <div className="flex items-center gap-1">

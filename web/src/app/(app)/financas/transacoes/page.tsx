@@ -408,7 +408,7 @@ export default function TransacoesPage() {
       <div className="flex items-center gap-2.5 mb-5 flex-wrap">
         <div className="flex items-center gap-2.5">
           <h1 className={cn(
-            'font-[Syne] font-extrabold text-[22px] tracking-tight',
+            'font-[Syne] font-extrabold text-[22px] tracking-tight max-sm:hidden',
             isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
           )}>
             Transações

@@ -298,7 +298,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
           <span className="text-4xl">{objective.icon}</span>
           <div className="flex-1">
             <h1 className={cn(
-              'font-[Syne] font-extrabold text-xl mb-0.5',
+              'font-[Syne] font-extrabold text-xl mb-0.5 max-sm:hidden',
               isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
             )}>
               {objective.name}

@@ -203,7 +203,7 @@ export default function CardapioPage() {
           Corpo
         </button>
         <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
+          'font-[Syne] font-extrabold text-xl flex-1 max-sm:hidden',
           isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
         )}>
           🍽️ Cardápio com IA

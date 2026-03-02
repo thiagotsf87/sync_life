@@ -17,7 +17,7 @@ export function KpiCard({ label, value, delta, deltaType = 'neutral', accent = '
   }[deltaType]
 
   return (
-    <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 overflow-hidden
+    <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 max-sm:p-3 overflow-hidden
                     transition-colors hover:border-[var(--sl-border-h)] sl-fade-up">
       {/* Accent bar at top */}
       <div
@@ -27,9 +27,11 @@ export function KpiCard({ label, value, delta, deltaType = 'neutral', accent = '
       <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">
         {label}
       </p>
-      <p className="font-[DM_Mono] font-medium text-xl text-[var(--sl-t1)] leading-none">
-        {value}
-      </p>
+      <div className="min-w-0 overflow-hidden">
+        <p className="font-[DM_Mono] font-medium text-xl max-sm:text-base text-[var(--sl-t1)] leading-none truncate">
+          {value}
+        </p>
+      </div>
       {delta && (
         <p className={cn('text-[11px] mt-1', deltaColor)}>{delta}</p>
       )}

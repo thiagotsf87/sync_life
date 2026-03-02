@@ -32,7 +32,7 @@ export default function NovoObjetivoPage() {
         isLoading={isLoading}
       />
       <div className="max-w-[1140px] mx-auto px-6 py-7">
-        <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)]">
+        <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)] max-sm:hidden">
           🔮 Novo Objetivo
         </h1>
         <p className="text-[var(--sl-t2)] mt-2 text-sm">Preencha o wizard para criar seu objetivo.</p>

@@ -74,7 +74,7 @@ export default function TimerPage() {
           Mente
         </button>
         <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
+          'font-[Syne] font-extrabold text-xl flex-1 max-sm:hidden',
           isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
         )}>
           ⏱ Timer Pomodoro

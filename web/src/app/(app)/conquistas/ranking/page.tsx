@@ -322,7 +322,7 @@ export default function RankingPage() {
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <div>
           <h1 className={cn(
-            'font-[Syne] font-extrabold text-2xl leading-tight',
+            'font-[Syne] font-extrabold text-2xl leading-tight max-sm:hidden',
             isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]',
           )}>
             🏆 Ranking Global

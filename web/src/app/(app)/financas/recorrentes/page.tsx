@@ -341,7 +341,7 @@ export default function RecorrentesPage() {
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#10b981] mb-1">💰 Finanças</p>
           <h1 className={cn(
-            'font-[Syne] font-extrabold text-2xl tracking-tight',
+            'font-[Syne] font-extrabold text-2xl tracking-tight max-sm:hidden',
             isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
           )}>
             Transações Recorrentes

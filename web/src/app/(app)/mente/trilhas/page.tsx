@@ -141,7 +141,7 @@ export default function TrilhasPage() {
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
         <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl',
+          'font-[Syne] font-extrabold text-2xl max-sm:hidden',
           isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
         )}>
           📚 Trilhas de Aprendizado

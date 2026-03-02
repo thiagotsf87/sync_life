@@ -380,7 +380,7 @@ export default function OrcamentosPage() {
             💰 Finanças
           </p>
           <h1 className={cn(
-            'font-[Syne] font-extrabold text-[24px] tracking-tight',
+            'font-[Syne] font-extrabold text-[24px] tracking-tight max-sm:hidden',
             isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
           )}>
             Orçamentos

@@ -317,7 +317,7 @@ export default function PlanejamentoPage() {
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
         <h1 className={cn(
-          'font-[Syne] font-extrabold text-[22px] tracking-tight',
+          'font-[Syne] font-extrabold text-[22px] tracking-tight max-sm:hidden',
           isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
         )}>
           📈 Planejamento Futuro

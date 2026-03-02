@@ -296,7 +296,7 @@ export default function CalendarioFinanceiroPage() {
             Finanças
           </div>
           <h1 className={cn(
-            'font-[Syne] font-extrabold text-[22px] tracking-tight',
+            'font-[Syne] font-extrabold text-[22px] tracking-tight max-sm:hidden',
             isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
           )}>
             📅 Calendário Financeiro
