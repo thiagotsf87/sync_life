@@ -48,7 +48,7 @@ export function MobileSubNav() {
                 'shrink-0 px-3 py-1.5 text-[12px] font-medium whitespace-nowrap rounded-full transition-all duration-150',
                 isActive
                   ? 'text-white'
-                  : 'text-[var(--sl-t3)] hover:text-[var(--sl-t2)] hover:bg-[var(--sl-s2)]',
+                  : 'border border-[var(--sl-border)] text-[var(--sl-t3)] hover:text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]',
               )}
               style={isActive ? { background: mod.color, color: '#ffffff' } : undefined}
             >

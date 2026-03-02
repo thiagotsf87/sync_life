@@ -432,12 +432,15 @@ export default function ConquistasPage() {
           <div className="text-[11px] text-[var(--sl-t3)]">{heroBarW}% do total desbloqueado</div>
         </div>
 
-        {/* Recent Strip */}
-        <div className="flex flex-col gap-[10px] min-w-[280px] flex-shrink-0 max-sm:min-w-0">
+        {/* Recent Strip — vertical desktop, horizontal scroll mobile */}
+        <div
+          className="flex max-sm:flex-row max-sm:overflow-x-auto max-sm:pb-1 lg:flex-col gap-[10px] min-w-0 lg:min-w-[280px] lg:flex-shrink-0"
+          style={{ scrollbarWidth: 'none' } as React.CSSProperties}
+        >
           {RECENT_UNLOCKED.map((b, i) => (
             <div
               key={b.id}
-              className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[14px_18px] flex items-center gap-[14px] cursor-pointer transition-all hover:border-[var(--sl-border-h)] hover:translate-x-0.5 relative overflow-hidden sl-fade-up"
+              className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[14px_18px] flex items-center gap-[14px] cursor-pointer transition-all hover:border-[var(--sl-border-h)] hover:translate-x-0.5 relative overflow-hidden sl-fade-up max-sm:flex-shrink-0 max-sm:w-[240px]"
               style={{ animationDelay: `${i * 0.07}s` }}
               onClick={() => setModalBadge(b)}
             >
@@ -459,7 +462,7 @@ export default function ConquistasPage() {
       </div>
 
       {/* ② Jornada Motivational Phrase */}
-      <div className="jornada-only flex items-center gap-3 p-[14px_18px] rounded-[14px] mb-5 bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7 border border-[rgba(16,185,129,0.18)] sl-fade-up">
+      <div className="hidden jornada:flex items-center gap-3 p-[14px_18px] rounded-[14px] mb-5 bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7 border border-[rgba(16,185,129,0.18)] sl-fade-up">
         <span className="text-[22px] shrink-0">🤖</span>
         <span className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">
           Você tem{' '}
@@ -505,7 +508,7 @@ export default function ConquistasPage() {
       </div>
 
       {/* ④-A Grid View (Jornada) */}
-      <div className="jornada-only">
+      <div className="hidden jornada:block">
         {visUnlocked.length > 0 && (
           <>
             <SectionLabel>✅ Desbloqueadas ({visUnlocked.length})</SectionLabel>
@@ -534,7 +537,7 @@ export default function ConquistasPage() {
       </div>
 
       {/* ④-B List View (Foco) */}
-      <div className="foco-only">
+      <div className="block jornada:hidden">
         {visUnlocked.length > 0 && (
           <>
             <SectionLabel>✅ Desbloqueadas ({visUnlocked.length})</SectionLabel>

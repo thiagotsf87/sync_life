@@ -88,7 +88,7 @@ function KpiCard({ label, value, delta, deltaType = 'neutral', accent, icon, ico
       delay
     )}>
       <div className="absolute top-0 left-4 right-4 lg:left-5 lg:right-5 h-0.5 rounded-b" style={{ background: accent }} />
-      <div className="w-8 h-8 rounded-[9px] hidden lg:flex items-center justify-center mb-3.5 text-base" style={{ background: iconBg }}>
+      <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-[9px] flex items-center justify-center mb-2 lg:mb-3.5 text-sm lg:text-base" style={{ background: iconBg }}>
         {icon}
       </div>
       <p className="text-[9px] lg:text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1 lg:mb-1.5">{label}</p>

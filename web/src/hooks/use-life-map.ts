@@ -164,7 +164,7 @@ export function useLifeMap(): UseLifeMapReturn {
           fullLabel: 'Mente / Estudo',
           icon: '🧠',
           value: menteScore(weekMins),
-          color: '#a855f7',
+          color: '#8b5cf6',
         },
         {
           key: 'carreira',
@@ -172,7 +172,7 @@ export function useLifeMap(): UseLifeMapReturn {
           fullLabel: 'Carreira',
           icon: '💼',
           value: carreiraScore(roadmapSteps),
-          color: '#f59e0b',
+          color: '#ec4899',
         },
         {
           key: 'patrimonio',
@@ -180,7 +180,7 @@ export function useLifeMap(): UseLifeMapReturn {
           fullLabel: 'Patrimônio',
           icon: '📈',
           value: patrimonioScore(assetCount),
-          color: '#06b6d4',
+          color: '#f59e0b',
         },
         {
           key: 'experiencias',
@@ -188,7 +188,7 @@ export function useLifeMap(): UseLifeMapReturn {
           fullLabel: 'Experiências',
           icon: '✈️',
           value: experienciasScore(activeTrips.length),
-          color: '#f43f5e',
+          color: '#14b8a6',
         },
       ]
 
