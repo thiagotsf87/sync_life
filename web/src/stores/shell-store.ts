@@ -36,8 +36,6 @@ export const useShellStore = create<ShellState>((set, get) => ({
   mode: 'foco' as AppMode,
   theme: 'system' as ThemeId,
   resolvedTheme: initialResolved,
-  modulePickerOpen: false,
-  quickEntryOpen: false,
 
   setActiveModule: (module: ModuleId) => set({ activeModule: module }),
 
@@ -64,7 +62,4 @@ export const useShellStore = create<ShellState>((set, get) => ({
     writeLocal('synclife-theme', theme)
     set({ theme, resolvedTheme: resolved || (theme === 'system' ? resolveSystemTheme() : theme as ResolvedThemeId) })
   },
-
-  setModulePickerOpen: (open: boolean) => set({ modulePickerOpen: open }),
-  setQuickEntryOpen: (open: boolean) => set({ quickEntryOpen: open }),
 }))

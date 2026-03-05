@@ -166,7 +166,7 @@ function RecorrenteCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5 flex-wrap">
             <span className={cn(
-              'text-[14px] font-semibold text-[var(--sl-t1)] truncate flex-1 min-w-0',
+              'text-[14px] font-semibold text-[var(--sl-t1)] truncate',
               isPaused && 'line-through opacity-70'
             )}>
               {rec.name}
@@ -333,188 +333,313 @@ export default function RecorrentesPage() {
   const nextOcc = upcomingOccurrences[0]
   const expensePct = Math.round((totalExpenseMonthly / 3000) * 100) // placeholder — sem renda no hook ainda
 
+  // Mobile helpers
+  const incomeRecs = recorrentes.filter(r => r.type === 'income' && !r.is_paused)
+  const expenseRecs = recorrentes.filter(r => r.type === 'expense' && !r.is_paused)
+
   return (
-    <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-7 pb-16">
-
-      {/* ① Topbar */}
-      <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#10b981] mb-1">💰 Finanças</p>
-          <h1 className={cn(
-            'font-[Syne] font-extrabold text-2xl tracking-tight max-sm:hidden',
-            isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-          )}>
-            Transações Recorrentes
-          </h1>
-          <p className="text-[13px] text-[var(--sl-t2)] mt-1">
-            Despesas e receitas que acontecem automaticamente todo período.
-          </p>
-        </div>
-        <button
-          onClick={openCreate}
-          className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full border-none cursor-pointer shadow-[0_4px_16px_rgba(16,185,129,0.25)] hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(16,185,129,0.35)] transition-all shrink-0 text-[#03071a]"
-          style={{ background: '#10b981' }}
-        >
-          <Plus size={14} strokeWidth={2.5} />
-          Nova recorrente
-        </button>
-      </div>
-
-      {/* ② FREE Banner */}
-      {isFree && activeCount >= 4 && (
-        <div className="flex items-center gap-3 rounded-xl px-[18px] py-[14px] mb-5"
-          style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)' }}>
-          <span className="text-xl shrink-0">⭐</span>
-          <div className="flex-1">
-            <div className="text-[13px] font-semibold text-[var(--sl-t1)] mb-0.5">
-              Você está usando {activeCount} de {FREE_PLAN_LIMIT} recorrentes do plano Free
-            </div>
-            <div className="text-[12px] text-[var(--sl-t2)]">
-              Assine o PRO para criar recorrentes ilimitadas e nunca perder um lançamento.
-            </div>
+    <>
+      {/* ═══════════ MOBILE VIEW ═══════════ */}
+      <div className="lg:hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>Recorrentes</h1>
+            <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">Despesas e receitas fixas</p>
           </div>
-          <button className="text-[12px] font-bold px-[14px] py-[6px] rounded-full cursor-pointer hover:bg-[rgba(139,92,246,0.25)] transition-all whitespace-nowrap"
-            style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)', color: '#a78bfa' }}>
-            Ver PRO
+          <button
+            onClick={openCreate}
+            className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
+          >
+            <Plus size={16} />
           </button>
         </div>
-      )}
 
-      {/* ③ KPIs */}
-      <div className="grid grid-cols-4 gap-3 mb-6 max-sm:grid-cols-2">
-        <KpiCard label="Saída mensal"
-          value={`− R$ ${fmtR$(totalExpenseMonthly)}`}
-          delta={`${recorrentes.filter(r => r.type === 'expense' && !r.is_paused).length} despesas ativas`}
-          accent="#f43f5e" deltaType="down" />
-        <KpiCard label="Entrada mensal"
-          value={`+ R$ ${fmtR$(totalIncomeMonthly)}`}
-          delta={`${recorrentes.filter(r => r.type === 'income' && !r.is_paused).length} receitas ativas`}
-          accent="#10b981" deltaType="up" />
-        <KpiCard label="Impacto líquido"
-          value={`${netMonthly >= 0 ? '+ ' : '− '}R$ ${fmtR$(Math.abs(netMonthly))}`}
-          delta="por mês"
-          accent={netMonthly >= 0 ? '#10b981' : '#f43f5e'}
-          deltaType={netMonthly >= 0 ? 'up' : 'down'} />
-        <KpiCard label="Custo anual"
-          value={`R$ ${fmtR$(totalExpenseAnnual)}`}
-          delta="só em despesas fixas"
-          accent="#f59e0b" deltaType="warn" />
+        {/* Summary cards */}
+        <div className="flex gap-2 mb-3">
+          <div className="flex-1 rounded-[10px] p-3" style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
+            <div className="text-[11px] text-[var(--sl-t2)] mb-1">Receitas mensais</div>
+            <div className="font-[DM_Mono] text-[18px] font-semibold text-[#10b981]">+R$ {fmtR$(totalIncomeMonthly)}</div>
+            <div className="text-[11px] text-[var(--sl-t2)]">{incomeRecs.length} recorrências</div>
+          </div>
+          <div className="flex-1 rounded-[10px] p-3" style={{ background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>
+            <div className="text-[11px] text-[var(--sl-t2)] mb-1">Despesas mensais</div>
+            <div className="font-[DM_Mono] text-[18px] font-semibold text-[#f43f5e]">-R$ {fmtR$(totalExpenseMonthly)}</div>
+            <div className="text-[11px] text-[var(--sl-t2)]">{expenseRecs.length} recorrências</div>
+          </div>
+        </div>
+
+        {/* Content */}
+        {loading ? (
+          <RecorrenteSkeleton />
+        ) : error ? (
+          <div className="rounded-xl p-4 text-[13px] text-[#f43f5e]" style={{ background: 'rgba(244,63,94,0.06)', border: '1px solid rgba(244,63,94,0.2)' }}>
+            Erro ao carregar.{' '}<button onClick={refresh} className="underline">Tentar novamente</button>
+          </div>
+        ) : recorrentes.length === 0 ? (
+          <div className="text-center py-10 px-4 bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl">
+            <span className="text-[36px] block mb-2 opacity-70">🔄</span>
+            <h3 className="font-[Syne] text-[15px] font-bold text-[var(--sl-t1)] mb-1">Nenhuma recorrente</h3>
+            <p className="text-[12px] text-[var(--sl-t2)] mb-3">Cadastre despesas fixas e receitas regulares.</p>
+            <button onClick={openCreate} className="inline-flex items-center gap-1.5 font-bold text-[12px] px-4 py-2 rounded-full text-[#03071a]" style={{ background: '#10b981' }}>
+              <Plus size={13} /> Criar primeira
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Receitas section */}
+            {incomeRecs.length > 0 && (
+              <>
+                <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-3">Receitas</div>
+                <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
+                  {incomeRecs.map(rec => {
+                    const next = calcNextOccurrence(rec)
+                    return (
+                      <div key={rec.id} className="flex items-center gap-3 px-4 py-3 border-b border-[var(--sl-border)] last:border-b-0">
+                        <div className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center text-[18px] shrink-0" style={{ background: 'rgba(16,185,129,0.15)' }}>
+                          {rec.categories?.icon ?? '💼'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{rec.name}</div>
+                          <div className="text-[12px] text-[var(--sl-t2)]">{getDayOfMonthLabel(rec)} · {FREQ_LABELS[rec.frequency]}</div>
+                          {next && (
+                            <div className="mt-1">
+                              <span className="inline-flex items-center gap-1 text-[10px] px-[7px] py-[2px] rounded-[10px]" style={{ background: 'rgba(6,182,212,0.1)', color: '#06b6d4' }}>
+                                🔄 Próximo: {next.day} {next.monthShort}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="font-[DM_Mono] text-[14px] font-medium text-[#10b981]">+R$ {fmtR$(rec.amount)}</div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* Despesas section */}
+            {expenseRecs.length > 0 && (
+              <>
+                <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-4">Despesas Fixas</div>
+                <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
+                  {expenseRecs.map(rec => {
+                    const next = calcNextOccurrence(rec)
+                    return (
+                      <div key={rec.id} className="flex items-center gap-3 px-4 py-3 border-b border-[var(--sl-border)] last:border-b-0">
+                        <div className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center text-[18px] shrink-0" style={{ background: 'rgba(244,63,94,0.1)' }}>
+                          {rec.categories?.icon ?? '📤'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{rec.name}</div>
+                          <div className="text-[12px] text-[var(--sl-t2)]">{getDayOfMonthLabel(rec)} · {FREQ_LABELS[rec.frequency]}</div>
+                          {next && (
+                            <div className="mt-1">
+                              <span className="inline-flex items-center gap-1 text-[10px] px-[7px] py-[2px] rounded-[10px]" style={{ background: 'rgba(6,182,212,0.1)', color: '#06b6d4' }}>
+                                🔄 Próximo: {next.day} {next.monthShort}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="font-[DM_Mono] text-[14px] font-medium text-[#f43f5e]">-R$ {fmtR$(rec.amount)}</div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
+            )}
+          </>
+        )}
+        <div className="h-5" />
       </div>
 
-      {/* ④ Insight Jornada */}
-      <JornadaInsight text={
-        <>
-          Suas despesas recorrentes representam{' '}
-          <strong>{expensePct}% da sua renda mensal</strong>
-          {expensePct <= 20 ? ' — isso é saudável.' : expensePct <= 35 ? ' — atenção ao orçamento.' : ' — acima do recomendado.'}
-          {nextOcc && (
-            <> O próximo lançamento é <strong>{nextOcc.name} dia {nextOcc.day}</strong>, em {nextOcc.daysLeft} dia{nextOcc.daysLeft !== 1 ? 's' : ''}.</>
-          )}
-        </>
-      } />
+      {/* ═══════════ DESKTOP VIEW ═══════════ */}
+      <div className="hidden lg:block max-w-[1100px] mx-auto px-6 py-7 pb-16">
 
-      {/* ⑤ Próximas ocorrências */}
-      {upcomingOccurrences.length > 0 && (
-        <SLCard className="mb-7">
-          <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.06em] mb-4">
-            📅 Próximas ocorrências — 30 dias
-          </p>
-          <div className="flex flex-col divide-y divide-[var(--sl-border)]">
-            {upcomingOccurrences.map(occ => (
-              <div key={occ.id} className="flex items-center gap-3 py-[9px]">
-                <div className="w-11 shrink-0 text-center">
-                  <div className="font-[DM_Mono] text-[18px] font-bold text-[var(--sl-t1)] leading-none">
-                    {String(occ.day).padStart(2, '0')}
-                  </div>
-                  <div className="text-[10px] text-[var(--sl-t3)] uppercase tracking-[0.05em]">
-                    {occ.monthShort}
-                  </div>
-                </div>
-                <span className="text-[18px] shrink-0">{occ.icon}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{occ.name}</div>
-                  <div className="text-[11px] text-[var(--sl-t3)]">{FREQ_LABELS[occ.frequency]}</div>
-                </div>
-                <span className={cn(
-                  'font-[DM_Mono] text-[13px] font-medium whitespace-nowrap',
-                  occ.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]'
-                )}>
-                  {occ.type === 'income' ? '+ ' : '− '}R$ {fmtR$(occ.amount)}
-                </span>
-              </div>
-            ))}
+        {/* ① Topbar */}
+        <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#10b981] mb-1">💰 Finanças</p>
+            <h1 className={cn(
+              'font-[Syne] font-extrabold text-2xl tracking-tight',
+              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+            )}>
+              Transações Recorrentes
+            </h1>
+            <p className="text-[13px] text-[var(--sl-t2)] mt-1">
+              Despesas e receitas que acontecem automaticamente todo período.
+            </p>
           </div>
-        </SLCard>
-      )}
-
-      {/* ⑥ Conteúdo */}
-      {loading ? (
-        <RecorrenteSkeleton />
-      ) : error ? (
-        <div className="rounded-xl p-4 text-[13px] text-[#f43f5e]"
-          style={{ background: 'rgba(244,63,94,0.06)', border: '1px solid rgba(244,63,94,0.2)' }}>
-          Erro ao carregar recorrentes.{' '}
-          <button onClick={refresh} className="underline">Tentar novamente</button>
-        </div>
-      ) : recorrentes.length === 0 ? (
-        <div className="text-center py-12 px-6 bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl">
-          <span className="text-[40px] block mb-3 opacity-70">🔄</span>
-          <h3 className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-1.5">
-            Nenhuma recorrente cadastrada
-          </h3>
-          <p className="text-[13px] text-[var(--sl-t2)] mb-4">
-            Cadastre suas despesas fixas e receitas regulares para nunca perder um lançamento.
-          </p>
-          <button onClick={openCreate}
-            className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full text-[#03071a]"
-            style={{ background: '#10b981' }}>
-            <Plus size={14} />
-            Criar primeira recorrente
+          <button
+            onClick={openCreate}
+            className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full border-none cursor-pointer shadow-[0_4px_16px_rgba(16,185,129,0.25)] hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(16,185,129,0.35)] transition-all shrink-0 text-[#03071a]"
+            style={{ background: '#10b981' }}
+          >
+            <Plus size={14} strokeWidth={2.5} />
+            Nova recorrente
           </button>
         </div>
-      ) : (
-        FREQUENCY_GROUPS.map(freq => {
-          const items = grouped[freq]
-          if (!items || items.length === 0) return null
-          const totalMonthly = items
-            .filter(r => r.is_active && !r.is_paused)
-            .reduce((sum, r) => sum + normalizeToMonthly(r.amount, r.frequency), 0)
-          const ativasCount = items.filter(r => r.is_active && !r.is_paused).length
 
-          return (
-            <section key={freq} className="mb-7">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="font-[Syne] text-[13px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.06em]">
-                    {FREQ_SECTION_LABELS[freq]}
-                  </span>
-                  <span className="text-[11px] text-[var(--sl-t3)] bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-full px-2 py-0.5">
-                    {ativasCount} ativas
+        {/* ② FREE Banner */}
+        {isFree && activeCount >= 4 && (
+          <div className="flex items-center gap-3 rounded-xl px-[18px] py-[14px] mb-5"
+            style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)' }}>
+            <span className="text-xl shrink-0">⭐</span>
+            <div className="flex-1">
+              <div className="text-[13px] font-semibold text-[var(--sl-t1)] mb-0.5">
+                Você está usando {activeCount} de {FREE_PLAN_LIMIT} recorrentes do plano Free
+              </div>
+              <div className="text-[12px] text-[var(--sl-t2)]">
+                Assine o PRO para criar recorrentes ilimitadas e nunca perder um lançamento.
+              </div>
+            </div>
+            <button className="text-[12px] font-bold px-[14px] py-[6px] rounded-full cursor-pointer hover:bg-[rgba(139,92,246,0.25)] transition-all whitespace-nowrap"
+              style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)', color: '#a78bfa' }}>
+              Ver PRO
+            </button>
+          </div>
+        )}
+
+        {/* ③ KPIs */}
+        <div className="grid grid-cols-4 gap-3 mb-6">
+          <KpiCard label="Saída mensal"
+            value={`− R$ ${fmtR$(totalExpenseMonthly)}`}
+            delta={`${recorrentes.filter(r => r.type === 'expense' && !r.is_paused).length} despesas ativas`}
+            accent="#f43f5e" deltaType="down" />
+          <KpiCard label="Entrada mensal"
+            value={`+ R$ ${fmtR$(totalIncomeMonthly)}`}
+            delta={`${recorrentes.filter(r => r.type === 'income' && !r.is_paused).length} receitas ativas`}
+            accent="#10b981" deltaType="up" />
+          <KpiCard label="Impacto líquido"
+            value={`${netMonthly >= 0 ? '+ ' : '− '}R$ ${fmtR$(Math.abs(netMonthly))}`}
+            delta="por mês"
+            accent={netMonthly >= 0 ? '#10b981' : '#f43f5e'}
+            deltaType={netMonthly >= 0 ? 'up' : 'down'} />
+          <KpiCard label="Custo anual"
+            value={`R$ ${fmtR$(totalExpenseAnnual)}`}
+            delta="só em despesas fixas"
+            accent="#f59e0b" deltaType="warn" />
+        </div>
+
+        {/* ④ Insight Jornada */}
+        <JornadaInsight text={
+          <>
+            Suas despesas recorrentes representam{' '}
+            <strong>{expensePct}% da sua renda mensal</strong>
+            {expensePct <= 20 ? ' — isso é saudável.' : expensePct <= 35 ? ' — atenção ao orçamento.' : ' — acima do recomendado.'}
+            {nextOcc && (
+              <> O próximo lançamento é <strong>{nextOcc.name} dia {nextOcc.day}</strong>, em {nextOcc.daysLeft} dia{nextOcc.daysLeft !== 1 ? 's' : ''}.</>
+            )}
+          </>
+        } />
+
+        {/* ⑤ Próximas ocorrências */}
+        {upcomingOccurrences.length > 0 && (
+          <SLCard className="mb-7">
+            <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.06em] mb-4">
+              📅 Próximas ocorrências — 30 dias
+            </p>
+            <div className="flex flex-col divide-y divide-[var(--sl-border)]">
+              {upcomingOccurrences.map(occ => (
+                <div key={occ.id} className="flex items-center gap-3 py-[9px]">
+                  <div className="w-11 shrink-0 text-center">
+                    <div className="font-[DM_Mono] text-[18px] font-bold text-[var(--sl-t1)] leading-none">
+                      {String(occ.day).padStart(2, '0')}
+                    </div>
+                    <div className="text-[10px] text-[var(--sl-t3)] uppercase tracking-[0.05em]">
+                      {occ.monthShort}
+                    </div>
+                  </div>
+                  <span className="text-[18px] shrink-0">{occ.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{occ.name}</div>
+                    <div className="text-[11px] text-[var(--sl-t3)]">{FREQ_LABELS[occ.frequency]}</div>
+                  </div>
+                  <span className={cn(
+                    'font-[DM_Mono] text-[13px] font-medium whitespace-nowrap',
+                    occ.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                  )}>
+                    {occ.type === 'income' ? '+ ' : '− '}R$ {fmtR$(occ.amount)}
                   </span>
                 </div>
-                {totalMonthly > 0 && (
-                  <span className="font-[DM_Mono] text-[13px] text-[var(--sl-t2)]">
-                    − R$ {fmtR$(totalMonthly)} / mês
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col gap-2">
-                {items.map(rec => (
-                  <RecorrenteCard
-                    key={rec.id}
-                    rec={rec}
-                    onEdit={openEdit}
-                    onPause={handlePause}
-                    onDelete={r => setDeletingRec(r)}
-                  />
-                ))}
-              </div>
-            </section>
-          )
-        })
-      )}
+              ))}
+            </div>
+          </SLCard>
+        )}
 
-      {/* Modals */}
+        {/* ⑥ Conteúdo */}
+        {loading ? (
+          <RecorrenteSkeleton />
+        ) : error ? (
+          <div className="rounded-xl p-4 text-[13px] text-[#f43f5e]"
+            style={{ background: 'rgba(244,63,94,0.06)', border: '1px solid rgba(244,63,94,0.2)' }}>
+            Erro ao carregar recorrentes.{' '}
+            <button onClick={refresh} className="underline">Tentar novamente</button>
+          </div>
+        ) : recorrentes.length === 0 ? (
+          <div className="text-center py-12 px-6 bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl">
+            <span className="text-[40px] block mb-3 opacity-70">🔄</span>
+            <h3 className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-1.5">
+              Nenhuma recorrente cadastrada
+            </h3>
+            <p className="text-[13px] text-[var(--sl-t2)] mb-4">
+              Cadastre suas despesas fixas e receitas regulares para nunca perder um lançamento.
+            </p>
+            <button onClick={openCreate}
+              className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full text-[#03071a]"
+              style={{ background: '#10b981' }}>
+              <Plus size={14} />
+              Criar primeira recorrente
+            </button>
+          </div>
+        ) : (
+          FREQUENCY_GROUPS.map(freq => {
+            const items = grouped[freq]
+            if (!items || items.length === 0) return null
+            const totalMonthly = items
+              .filter(r => r.is_active && !r.is_paused)
+              .reduce((sum, r) => sum + normalizeToMonthly(r.amount, r.frequency), 0)
+            const ativasCount = items.filter(r => r.is_active && !r.is_paused).length
+
+            return (
+              <section key={freq} className="mb-7">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-[Syne] text-[13px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.06em]">
+                      {FREQ_SECTION_LABELS[freq]}
+                    </span>
+                    <span className="text-[11px] text-[var(--sl-t3)] bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-full px-2 py-0.5">
+                      {ativasCount} ativas
+                    </span>
+                  </div>
+                  {totalMonthly > 0 && (
+                    <span className="font-[DM_Mono] text-[13px] text-[var(--sl-t2)]">
+                      − R$ {fmtR$(totalMonthly)} / mês
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  {items.map(rec => (
+                    <RecorrenteCard
+                      key={rec.id}
+                      rec={rec}
+                      onEdit={openEdit}
+                      onPause={handlePause}
+                      onDelete={r => setDeletingRec(r)}
+                    />
+                  ))}
+                </div>
+              </section>
+            )
+          })
+        )}
+      </div>
+
+      {/* Modals (shared) */}
       <RecorrenteModal
         open={modalOpen}
         mode={editingRec ? 'edit' : 'create'}
@@ -529,7 +654,6 @@ export default function RecorrentesPage() {
         onClose={() => setDeletingRec(null)}
         onConfirm={handleDelete}
       />
-
-    </div>
+    </>
   )
 }

@@ -8,8 +8,6 @@ import { useBreakpoint } from '@/hooks/use-breakpoint'
 import { ModuleBar } from './ModuleBar'
 import { Sidebar } from './Sidebar'
 import { TopHeader } from './TopHeader'
-import { MobileHeader } from './MobileHeader'
-import { MobileModulePicker } from './MobileModulePicker'
 import { ContentArea } from './ContentArea'
 import { MobileBottomBar } from './MobileBottomBar'
 import { MobileSubNav } from './MobileSubNav'
@@ -127,25 +125,16 @@ export function NewAppShell({
           transition: 'margin-left 240ms cubic-bezier(.4,0,.2,1)',
         }}
       >
-        {/* Desktop header — visível apenas ≥ 1024px */}
+        {/* TopHeader: desktop only */}
         <div className="hidden lg:block">
           <TopHeader userName={userName} />
         </div>
-
-        {/* Mobile header — visível apenas < 1024px */}
-        <div className="lg:hidden">
-          <MobileHeader userName={userName} />
-        </div>
-
         <MobileSubNav />
         <ContentArea>{children}</ContentArea>
       </div>
 
       {/* Mobile bottom bar */}
-      <MobileBottomBar />
-
-      {/* Mobile module picker — drawer global, controlado pelo shell store */}
-      <MobileModulePicker />
+      <MobileBottomBar userName={userName} />
     </div>
   )
 }

@@ -486,7 +486,7 @@ export default function TripDetailPage() {
         </button>
         <div className="flex-1 min-w-0">
           <h1 className={cn(
-            'font-[Syne] font-extrabold text-xl truncate max-sm:hidden',
+            'font-[Syne] font-extrabold text-xl truncate',
             isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
           )}>
             {trip.name}

@@ -101,7 +101,7 @@ export default function BlocosFocoPage() {
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className="font-[Syne] font-extrabold text-2xl max-sm:hidden text-[var(--sl-t1)] jornada:text-sl-grad">
+        <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)] jornada:text-sl-grad">
           🎯 Blocos de Foco
         </h1>
         <div className="flex-1" />

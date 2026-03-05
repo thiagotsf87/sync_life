@@ -316,13 +316,235 @@ export default function RankingPage() {
     : 100
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    {/* ═══════ MOBILE ═══════ */}
+    <div className="lg:hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 pt-4 pb-3">
+        <div>
+          <h1 className={cn(
+            'font-[Syne] text-[20px] font-bold',
+            isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]',
+          )}>
+            🏆 Ranking
+          </h1>
+          <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">{cfg.total} participantes</p>
+        </div>
+      </div>
+
+      {/* Tab pills */}
+      <div className="flex gap-1 bg-[var(--sl-s2)] rounded-[12px] p-1 mx-4 mb-3">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={cn(
+              'flex-1 text-center py-2 rounded-[10px] text-[12px] font-semibold transition-all',
+              activeTab === tab.id
+                ? 'bg-[var(--sl-s1)] text-[var(--sl-t1)] shadow-sm'
+                : 'text-[var(--sl-t3)]',
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Hero — Sua posição */}
+      <div className="mx-4 mb-3 rounded-[16px] p-5 relative overflow-hidden bg-[var(--sl-s1)] border border-[var(--sl-border)]">
+        <div className="absolute top-0 left-0 right-0 h-[3px]"
+             style={{ background: 'linear-gradient(90deg, #f59e0b, #f97316, #ec4899, #8b5cf6)' }} />
+        <div className="flex items-center gap-3.5 mb-3">
+          <div
+            className="h-[56px] w-[56px] shrink-0 rounded-full flex items-center justify-center
+                       text-white text-[18px] font-extrabold font-[Syne]
+                       shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+            style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+          >
+            EU
+          </div>
+          <div>
+            <div className="flex items-baseline gap-1">
+              <span className="font-[DM_Mono] text-[32px] font-medium text-[var(--sl-t1)] leading-none">
+                #{cfg.userPos}
+              </span>
+              <span className="text-[13px] text-[var(--sl-t3)]">de {cfg.total}</span>
+            </div>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <span
+                className="text-[11px] font-bold px-2.5 py-1 rounded-full"
+                style={{
+                  background: 'linear-gradient(90deg, rgba(16,185,129,0.15), rgba(0,85,255,0.15))',
+                  color: '#10b981',
+                  border: '1px solid rgba(16,185,129,0.3)',
+                }}
+              >
+                {topLabel} dos usuários
+              </span>
+              <span className="text-[12px] text-[var(--sl-t3)]">🔥 7d streak</span>
+            </div>
+          </div>
+        </div>
+        {/* Progress to next milestone */}
+        {nextMilestone && (
+          <>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-[11px] text-[var(--sl-t3)]">
+                Próxima marca — <strong className="text-[var(--sl-t2)]">{nextMilestone.label}</strong>
+              </span>
+              <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t2)]">
+                {cfg.userScore}<span className="text-[var(--sl-t3)]">/{nextMilestone.pts}</span>
+              </span>
+            </div>
+            <div className="h-[5px] rounded-full bg-[var(--sl-s3)] overflow-hidden mb-1.5">
+              <div
+                className="h-full rounded-full transition-[width] duration-1000"
+                style={{
+                  width: `${Math.min(heroProgress, 100)}%`,
+                  background: nextMilestone.color,
+                }}
+              />
+            </div>
+            <p className="text-[10px] text-[var(--sl-t3)]">
+              Faltam <span className="font-[DM_Mono] text-[var(--sl-t2)]">{nextMilestone.needed} pts</span> para o {nextMilestone.label}
+            </p>
+          </>
+        )}
+      </div>
+
+      {/* Jornada motivational — below hero */}
+      {isJornada && (
+        <div className="mx-4 mb-3 flex items-center gap-3 p-[14px_16px] rounded-[14px]
+                        bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7
+                        border border-[rgba(16,185,129,0.18)]">
+          <span className="text-[22px] shrink-0">🤖</span>
+          <span className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">
+            Você está no <strong className="text-[var(--sl-t1)]">{topLabel}</strong> com{' '}
+            <strong className="text-[var(--sl-t1)]">{totalScore} pontos</strong>. Desbloqueie{' '}
+            <strong className="text-[var(--sl-t1)]">Reserva Construída</strong> (+100 pts) para subir!
+          </span>
+        </div>
+      )}
+
+      {/* Score breakdown */}
+      <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+        Pontos por categoria
+      </p>
+      <div className="grid grid-cols-2 gap-2 px-4 mb-3">
+        {SCORE_BREAKDOWN.map((cat) => {
+          const barPct = Math.round((cat.pts / cat.maxPts) * 100)
+          return (
+            <div
+              key={cat.cat}
+              className="relative overflow-hidden rounded-[10px] p-3 bg-[var(--sl-s1)] border border-[var(--sl-border)]"
+            >
+              <div className="absolute top-0 left-[10px] right-[10px] h-[2px] rounded-b" style={{ background: cat.color }} />
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[14px]">{cat.icon}</span>
+                <span className="text-[11px] font-bold uppercase tracking-[0.5px] text-[var(--sl-t3)]">{cat.label}</span>
+              </div>
+              <p className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)] leading-none mb-1">
+                {cat.pts}<span className="text-[10px] text-[var(--sl-t3)] font-normal">pts</span>
+              </p>
+              <p className="text-[10px] text-[var(--sl-t3)] mb-1.5">{cat.unlocked}/{cat.total} badges</p>
+              <div className="h-[3px] rounded-full bg-[var(--sl-s3)] overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: cat.color }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Leaderboard */}
+      <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+        🏅 Leaderboard
+      </p>
+      <div className="px-4 mb-3">
+        {displayList.map((user, idx) => {
+          const isTop3 = user.position <= 3
+          const medal = getMedalEmoji(user.position)
+          const showSeparator = !userIsInTop && user.isCurrentUser
+
+          return (
+            <div key={user.position}>
+              {showSeparator && (
+                <div className="flex items-center gap-2 px-3 py-2">
+                  <div className="flex-1 h-px bg-[var(--sl-border)]" />
+                  <span className="text-[11px] text-[var(--sl-t3)]">
+                    ··· posições {displayList[idx - 1]?.position + 1}–{user.position - 1} ···
+                  </span>
+                  <div className="flex-1 h-px bg-[var(--sl-border)]" />
+                </div>
+              )}
+              <div
+                className={cn(
+                  'flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] mb-1',
+                  user.isCurrentUser
+                    ? 'bg-[rgba(16,185,129,0.07)] border border-[rgba(16,185,129,0.25)]'
+                    : isTop3
+                      ? 'bg-[var(--sl-s2)]'
+                      : '',
+                )}
+              >
+                <div className="w-[28px] shrink-0 text-center">
+                  {medal ? (
+                    <span className="text-[17px] leading-none">{medal}</span>
+                  ) : (
+                    <span className={cn(
+                      'font-[DM_Mono] text-[12px]',
+                      user.isCurrentUser ? 'text-[#10b981] font-bold' : 'text-[var(--sl-t3)]',
+                    )}>
+                      #{user.position}
+                    </span>
+                  )}
+                </div>
+                <div
+                  className="h-[34px] w-[34px] shrink-0 rounded-full flex items-center justify-center text-white text-[12px] font-bold"
+                  style={{ background: user.avatarColor + (user.isCurrentUser ? '' : 'bb') }}
+                >
+                  {user.initials}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={cn(
+                    'text-[13px] font-semibold truncate',
+                    user.isCurrentUser ? 'text-[#10b981]' : 'text-[var(--sl-t1)]',
+                  )}>
+                    {user.name}
+                    {user.isCurrentUser && (
+                      <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[rgba(16,185,129,0.15)] text-[#10b981] uppercase tracking-wider">
+                        você
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">
+                    {user.badgeCount} badges · 🔥 {user.streak}d
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
+                    {user.score}<span className="text-[10px] text-[var(--sl-t3)] font-normal ml-0.5">pts</span>
+                  </p>
+                  <div className="flex justify-end mt-0.5">
+                    <TrendBadge trend={user.trend} value={user.trendValue} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="h-4" />
+    </div>
+
+    {/* ═══════ DESKTOP ═══════ */}
+    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16 hidden lg:block">
 
       {/* ① TOPBAR ──────────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <div>
           <h1 className={cn(
-            'font-[Syne] font-extrabold text-2xl leading-tight max-sm:hidden',
+            'font-[Syne] font-extrabold text-2xl leading-tight',
             isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]',
           )}>
             🏆 Ranking Global
@@ -373,8 +595,8 @@ export default function RankingPage() {
             <div
               className="h-[64px] w-[64px] shrink-0 rounded-full flex items-center justify-center
                          text-white text-[22px] font-extrabold font-[Syne]
-                         shadow-[0_0_24px_rgba(16,185,129,0.30)]"
-              style={{ background: '#10b981' }}
+                         shadow-[0_0_24px_rgba(16,185,129,0.25)]"
+              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
             >
               EU
             </div>
@@ -664,5 +886,6 @@ export default function RankingPage() {
         </span>
       </div>
     </div>
+    </>
   )
 }

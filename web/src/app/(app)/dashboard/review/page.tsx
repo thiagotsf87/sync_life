@@ -1,231 +1,213 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { X } from 'lucide-react'
 
-type RatingKey = 'otimo' | 'mais_ou_menos' | 'saiu_controle'
-
-interface Rating {
-  key: RatingKey
-  emoji: string
-  label: string
-  sub?: string
-  points?: string
+interface ReviewStep {
+  question: string
+  context: string
+  stats?: { label: string; value: string; color?: string }[]
+  answers: { emoji: string; text: string; bonus?: string }[]
 }
 
-const RATINGS: Rating[] = [
+const STEPS: ReviewStep[] = [
   {
-    key: 'otimo',
-    emoji: '😊',
-    label: 'Ótimo! Dentro do planejado',
-    sub: undefined,
-    points: '+6 pontos no Life Score',
+    question: 'Como foi sua semana no geral?',
+    context: 'Vamos começar com uma visão geral. Pense nos últimos 7 dias como um todo.',
+    answers: [
+      { emoji: '🚀', text: 'Incrível! Produtiva e equilibrada', bonus: '+8 pontos no Life Score' },
+      { emoji: '😊', text: 'Boa, sem grandes problemas', bonus: '+5 pontos no Life Score' },
+      { emoji: '😬', text: 'Difícil, preciso ajustar rotinas' },
+    ],
   },
   {
-    key: 'mais_ou_menos',
-    emoji: '😐',
-    label: 'Mais ou menos, teve um ou dois excessos',
+    question: 'Como foi a semana financeira?',
+    context: 'Semana de 24 Fev – 1 Mar 2026. Aqui está um resumo do que aconteceu:',
+    stats: [
+      { label: 'Total gasto', value: 'R$ 892,40', color: '#f43f5e' },
+      { label: 'vs. semana anterior', value: '-R$ 340 ↓ Menos', color: '#10b981' },
+      { label: 'Categoria principal', value: '🏠 Moradia (R$ 1.200)' },
+      { label: 'Orçamentos no limite', value: 'Lazer (80%)', color: '#f59e0b' },
+    ],
+    answers: [
+      { emoji: '😊', text: 'Ótimo! Dentro do planejado', bonus: '+6 pontos no Life Score' },
+      { emoji: '😐', text: 'Mais ou menos, teve um ou dois excessos' },
+      { emoji: '😬', text: 'Saiu do controle, quero ajustar' },
+    ],
   },
   {
-    key: 'saiu_controle',
-    emoji: '😬',
-    label: 'Saiu do controle, quero ajustar',
+    question: 'E os seus objetivos de longo prazo?',
+    context: 'Você tem 3 metas ativas. Veja como andaram esta semana:',
+    stats: [
+      { label: 'Reserva de emergência', value: '68% → 70%', color: '#10b981' },
+      { label: 'Viagem Europa', value: '42% (sem aporte)', color: '#f59e0b' },
+      { label: 'Curso Python', value: '15% → 22%', color: '#10b981' },
+    ],
+    answers: [
+      { emoji: '🎯', text: 'Avancei bem, estou motivado', bonus: '+6 pontos no Life Score' },
+      { emoji: '😐', text: 'Pouco progresso, mas ok' },
+      { emoji: '😴', text: 'Não pensei nisso essa semana' },
+    ],
   },
-]
-
-const TOTAL_STEPS = 4
-
-const STEP_LABELS = [
-  'Finanças',
-  'Tempo & Energia',
-  'Metas & Futuro',
-  'Reflexão Geral',
-]
-
-const STEP_QUESTIONS = [
-  'Como foi a semana financeira?',
-  'Como foi sua gestão de tempo?',
-  'Você avançou em seus objetivos?',
-  'Como você avalia a semana no geral?',
-]
-
-// Mock summary stats
-const FINANCIAL_SUMMARY = [
-  { label: 'Total gasto',       value: 'R$ 892,40' },
-  { label: 'vs. semana anterior', value: '-R$ 340 ↓ Menos', positive: true },
-  { label: 'Categoria principal', value: '🏠 Moradia (R$ 1.200)' },
-  { label: 'Orçamentos no limite', value: 'Lazer (80%)' },
+  {
+    question: 'Qual sua intenção para a próxima semana?',
+    context: 'Definir uma intenção simples ajuda a manter o foco.',
+    answers: [
+      { emoji: '💰', text: 'Focar em economizar', bonus: '+4 pontos no Life Score' },
+      { emoji: '📚', text: 'Dedicar tempo aos estudos', bonus: '+4 pontos no Life Score' },
+      { emoji: '🏃', text: 'Melhorar hábitos de saúde', bonus: '+4 pontos no Life Score' },
+    ],
+  },
 ]
 
 export default function WeeklyReviewPage() {
   const router = useRouter()
-  const [step, setStep]       = useState(1)
-  const [ratings, setRatings] = useState<Partial<Record<number, RatingKey>>>({})
+  const [step, setStep] = useState(1) // 1-indexed to match "Passo X de 4"
+  const [answers, setAnswers] = useState<Record<number, number>>({})
+  const currentStep = STEPS[step - 1]
+  const totalSteps = STEPS.length
 
-  const progress = ((step - 1) / TOTAL_STEPS) * 100
-  const remaining = TOTAL_STEPS - (step - 1)
-  const currentRating = ratings[step]
+  const minutesLeft = useMemo(() => {
+    const remaining = totalSteps - step + 1
+    return Math.max(1, remaining)
+  }, [step, totalSteps])
 
-  // Semana atual
-  const now   = new Date()
-  const start = new Date(now); start.setDate(now.getDate() - 6)
-  const weekLabel = `${start.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} – ${now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}`
-
-  function handleSelect(key: RatingKey) {
-    setRatings(prev => ({ ...prev, [step]: key }))
+  function handleSelect(answerIdx: number) {
+    setAnswers(prev => ({ ...prev, [step]: answerIdx }))
   }
 
   function handleNext() {
-    if (step < TOTAL_STEPS) {
+    if (step < totalSteps) {
       setStep(s => s + 1)
     } else {
-      // Concluiu — volta ao dashboard
+      // Review complete — go back to dashboard
       router.push('/dashboard')
     }
   }
 
   return (
-    <div className="max-w-[520px] mx-auto px-4 py-6 pb-32 flex flex-col min-h-[calc(100dvh-140px)]">
-
-      {/* Back + title */}
-      <div className="flex items-center gap-2 mb-5 shrink-0">
+    <div className="fixed inset-0 z-50 bg-[var(--sl-bg)] flex flex-col lg:relative lg:max-w-[600px] lg:mx-auto lg:min-h-0">
+      {/* Close button */}
+      <div className="flex items-center justify-end px-4 pt-4 pb-2">
         <button
-          onClick={() => router.back()}
-          className="flex items-center justify-center w-9 h-9 rounded-xl bg-[var(--sl-s2)] text-[var(--sl-t2)]"
+          onClick={() => router.push('/dashboard')}
+          className="flex h-9 w-9 items-center justify-center rounded-[10px]
+                     bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
         >
-          <ChevronLeft size={18} />
+          <X size={16} />
         </button>
-        <div className="flex-1">
-          <h1 className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)] leading-tight">
-            Revisão Semanal
-          </h1>
-          <p className="text-[11px] text-[var(--sl-t3)]">{weekLabel}</p>
-        </div>
-      </div>
-
-      {/* Progress bar */}
-      <div className="mb-6 shrink-0">
-        <div className="h-1.5 bg-[var(--sl-s3)] rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-[width] duration-500"
-            style={{ width: `${progress}%`, background: 'linear-gradient(90deg,#10b981,#0055ff)' }}
-          />
-        </div>
-        <div className="flex justify-between mt-1.5">
-          <span className="text-[10px] text-[var(--sl-t3)]">
-            Passo {step} de {TOTAL_STEPS}
-          </span>
-          <span className="text-[10px] text-[var(--sl-t3)]">
-            ~{remaining} {remaining === 1 ? 'minuto' : 'minutos'} restantes
-          </span>
-        </div>
-      </div>
-
-      {/* Step tabs */}
-      <div className="flex gap-1 mb-5 shrink-0 overflow-x-auto pb-1"
-           style={{ scrollbarWidth: 'none' }}>
-        {STEP_LABELS.map((label, i) => {
-          const s = i + 1
-          const done = ratings[s] !== undefined
-          const active = s === step
-          return (
-            <button
-              key={s}
-              onClick={() => setStep(s)}
-              className={cn(
-                'shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all',
-                active
-                  ? 'text-white'
-                  : done
-                  ? 'bg-[#10b981]/15 text-[#10b981]'
-                  : 'bg-[var(--sl-s2)] text-[var(--sl-t3)]',
-              )}
-              style={active ? { background: 'linear-gradient(135deg,#10b981,#0055ff)' } : undefined}
-            >
-              {done && !active ? '✓ ' : ''}{label}
-            </button>
-          )
-        })}
       </div>
 
       {/* Content */}
-      <div className="flex-1">
-        {/* Pergunta */}
-        <h2 className="font-[Syne] font-extrabold text-[22px] text-[var(--sl-t1)] leading-tight mb-2">
-          {STEP_QUESTIONS[step - 1]}
-        </h2>
+      <div className="flex-1 overflow-y-auto px-4 pb-6">
+        {/* Step indicator */}
+        <div className="flex gap-1.5 justify-center mb-6">
+          {Array.from({ length: totalSteps }).map((_, i) => (
+            <div
+              key={i}
+              className="h-1 rounded-[2px] transition-all duration-300"
+              style={{
+                width: 28,
+                background:
+                  i + 1 < step
+                    ? 'rgba(16,185,129,0.4)'
+                    : i + 1 === step
+                      ? '#10b981'
+                      : 'var(--sl-s3)',
+              }}
+            />
+          ))}
+        </div>
 
-        {/* Summary (só no passo 1) */}
-        {step === 1 && (
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-4 sl-fade-up">
-            <p className="text-[11px] text-[var(--sl-t3)] mb-3">
-              Semana de {weekLabel}. Aqui está um resumo do que aconteceu:
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {FINANCIAL_SUMMARY.map((item) => (
-                <div key={item.label} className="bg-[var(--sl-s2)] rounded-xl p-3">
-                  <p className="text-[10px] text-[var(--sl-t3)] uppercase tracking-wide mb-0.5">
-                    {item.label}
-                  </p>
-                  <p className={cn(
-                    'text-[13px] font-semibold font-[DM_Mono]',
-                    item.positive ? 'text-[#10b981]' : 'text-[var(--sl-t1)]',
-                  )}>
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
+        {/* Question */}
+        <h1 className="font-[Syne] text-[22px] font-bold text-[var(--sl-t1)] leading-[1.3] mb-2">
+          {currentStep.question}
+        </h1>
+        <p className="text-[13px] text-[var(--sl-t2)] leading-[1.5] mb-6">
+          {currentStep.context}
+        </p>
+
+        {/* Summary card (if stats exist) */}
+        {currentStep.stats && (
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-4 mb-5">
+            {currentStep.stats.map((stat, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between py-2"
+                style={{
+                  borderBottom:
+                    i < currentStep.stats!.length - 1
+                      ? '1px solid var(--sl-border)'
+                      : 'none',
+                }}
+              >
+                <span className="text-[13px] text-[var(--sl-t2)]">{stat.label}</span>
+                <span
+                  className="font-[DM_Mono] text-[14px] font-medium"
+                  style={{ color: stat.color ?? 'var(--sl-t1)' }}
+                >
+                  {stat.value}
+                </span>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Opções de rating */}
-        <div className="flex flex-col gap-2 mb-6">
-          {RATINGS.map((r) => {
-            const selected = currentRating === r.key
+        {/* Answer buttons */}
+        <div className="flex flex-col gap-2.5">
+          {currentStep.answers.map((ans, i) => {
+            const selected = answers[step] === i
             return (
               <button
-                key={r.key}
-                onClick={() => handleSelect(r.key)}
-                className={cn(
-                  'flex items-start gap-3 p-4 rounded-2xl border text-left transition-all',
-                  selected
-                    ? 'border-[#10b981] bg-[#10b981]/10'
-                    : 'border-[var(--sl-border)] bg-[var(--sl-s1)] hover:border-[var(--sl-border-h)]',
-                )}
+                key={i}
+                onClick={() => handleSelect(i)}
+                className="flex items-center gap-3 p-4 rounded-[10px] border text-left transition-all duration-150"
+                style={{
+                  background: selected ? 'rgba(16,185,129,0.15)' : 'var(--sl-s1)',
+                  borderColor: selected ? 'rgba(16,185,129,0.4)' : 'var(--sl-border)',
+                }}
               >
-                <span className="text-2xl shrink-0">{r.emoji}</span>
-                <div>
-                  <p className={cn(
-                    'text-[13px] font-medium',
-                    selected ? 'text-[var(--sl-t1)]' : 'text-[var(--sl-t2)]',
-                  )}>
-                    {r.label}
+                <span className="text-[22px] shrink-0">{ans.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <p
+                    className="text-[14px] font-medium"
+                    style={{ color: selected ? '#10b981' : 'var(--sl-t1)' }}
+                  >
+                    {ans.text}
                   </p>
-                  {r.points && selected && (
-                    <p className="text-[11px] text-[#10b981] mt-0.5">{r.points}</p>
+                  {ans.bonus && (
+                    <p className="text-[11px] text-[var(--sl-t2)] mt-0.5">{ans.bonus}</p>
                   )}
                 </div>
               </button>
             )
           })}
         </div>
-      </div>
 
-      {/* Botão próximo */}
-      <button
-        onClick={handleNext}
-        disabled={!currentRating}
-        className={cn(
-          'w-full h-[52px] rounded-2xl text-[14px] font-bold text-white transition-all active:scale-[0.98] shrink-0',
-          currentRating ? 'opacity-100' : 'opacity-40 cursor-not-allowed',
-        )}
-        style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
-      >
-        {step < TOTAL_STEPS ? 'Próxima pergunta →' : '✓ Concluir revisão'}
-      </button>
+        {/* Next button */}
+        <div className="mt-5">
+          <button
+            onClick={handleNext}
+            disabled={answers[step] === undefined}
+            className="w-full flex items-center justify-center h-[52px] rounded-[14px]
+                       text-[15px] font-semibold text-white transition-all duration-200
+                       disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{
+              background: answers[step] !== undefined
+                ? 'linear-gradient(135deg, #10b981, #0055ff)'
+                : 'var(--sl-s3)',
+            }}
+          >
+            {step < totalSteps ? 'Próxima pergunta →' : 'Concluir revisão ✓'}
+          </button>
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-[12px] text-[var(--sl-t3)] mt-2.5">
+          Passo {step} de {totalSteps} · ~{minutesLeft} {minutesLeft === 1 ? 'minuto restante' : 'minutos restantes'}
+        </p>
+      </div>
     </div>
   )
 }

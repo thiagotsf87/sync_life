@@ -211,18 +211,23 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar        { width: 6px; height: 6px; }
-::-webkit-scrollbar-track  { background: #1e293b; }
-::-webkit-scrollbar-thumb  { background: #475569; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #64748b; }
+/* Mobile: esconde scrollbars (scroll por toque é intuitivo) */
+@media (max-width: 1023px) {
+  * { scrollbar-width: none; }
+  *::-webkit-scrollbar { display: none; }
+}
 
-[data-scheme="light"] ::-webkit-scrollbar-track  { background: #e2e8f0; }
-[data-scheme="light"] ::-webkit-scrollbar-thumb  { background: #94a3b8; }
-[data-scheme="light"] ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+/* Desktop: scrollbar customizada fina */
+@media (min-width: 1024px) {
+  ::-webkit-scrollbar        { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track  { background: #1e293b; }
+  ::-webkit-scrollbar-thumb  { background: #475569; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
-/* ── Utility: hide scrollbar ── */
-.scrollbar-none::-webkit-scrollbar { display: none; }
-.scrollbar-none { scrollbar-width: none; }
+  [data-scheme="light"] ::-webkit-scrollbar-track  { background: #e2e8f0; }
+  [data-scheme="light"] ::-webkit-scrollbar-thumb  { background: #94a3b8; }
+  [data-scheme="light"] ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+}
 
 /* ── Auth pages ── */
 .bg-animated {
@@ -288,35 +293,3 @@ input[type="number"] { -moz-appearance: textfield; }
 .badge-shimmer { animation: shimmer 2.5s ease-in-out infinite; }
 
 } /* end @layer base — SyncLife utilities */
-
-/* ═══════════════════════════════════════════════════════════
-   TOKENS MOBILE — SyncLife Design System v2.0
-   REGRA: Estes tokens são usados APENAS em contexto mobile.
-   Nunca remover ou alterar tokens desktop existentes.
-═══════════════════════════════════════════════════════════ */
-:root {
-  /* ── Dimensões da navegação mobile ── */
-  --mob-bottom-nav-height: 68px;
-  --mob-header-height-foco: 52px;
-  --mob-header-height-jornada: 88px;
-  --mob-safe-bottom: env(safe-area-inset-bottom, 0px);
-  --mob-safe-top: env(safe-area-inset-top, 0px);
-
-  /* ── Espaçamento mobile ── */
-  --mob-page-x: 16px;
-  --mob-card-p: 14px;
-  --mob-section-gap: 12px;
-  --mob-item-h: 52px;
-  --mob-tap-min: 44px;
-
-  /* ── Tipografia mobile ── */
-  --mob-kpi-value: 18px;
-  --mob-kpi-label: 10px;
-  --mob-card-title: 13px;
-  --mob-body: 13px;
-  --mob-caption: 11px;
-
-  /* ── Sub-tabs ── */
-  --mob-tabs-h: 40px;
-  --mob-tab-fade-width: 40px;
-}

@@ -15,6 +15,7 @@ import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { ObjectiveCard } from '@/components/futuro/ObjectiveCard'
 import { ObjectiveWizard } from '@/components/futuro/ObjectiveWizard'
 import { LifeMapRadar } from '@/components/futuro/LifeMapRadar'
+import { FuturoMobile } from '@/components/futuro/FuturoMobile'
 
 // ─── Filter / Sort types ───────────────────────────────────────────────────────
 
@@ -126,13 +127,89 @@ export default function FuturoPage() {
     ? new Date(nextDeadline.target_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
     : 'Sem prazo'
 
+  // ─── Mobile data ──────────────────────────────────────────────────────────
+  const MODULE_META: Record<string, { emoji: string; label: string; color: string; bg: string }> = {
+    financas:     { emoji: '💰', label: 'Finanças',     color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+    tempo:        { emoji: '⏳', label: 'Tempo',        color: '#06b6d4', bg: 'rgba(6,182,212,0.15)' },
+    futuro:       { emoji: '🔮', label: 'Futuro',       color: '#0055ff', bg: 'rgba(0,85,255,0.15)' },
+    corpo:        { emoji: '🏃', label: 'Corpo',        color: '#f97316', bg: 'rgba(249,115,22,0.15)' },
+    mente:        { emoji: '🧠', label: 'Mente',        color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
+    patrimonio:   { emoji: '📈', label: 'Patrimônio',   color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+    carreira:     { emoji: '💼', label: 'Carreira',     color: '#ec4899', bg: 'rgba(236,72,153,0.15)' },
+    experiencias: { emoji: '✈️', label: 'Experiências', color: '#14b8a6', bg: 'rgba(20,184,166,0.15)' },
+  }
+
+  const CATEGORY_BG: Record<string, string> = {
+    financial: 'rgba(16,185,129,0.12)',
+    professional: 'rgba(245,158,11,0.12)',
+    health: 'rgba(249,115,22,0.12)',
+    educational: 'rgba(139,92,246,0.12)',
+    experience: 'rgba(20,184,166,0.12)',
+    personal: 'rgba(0,85,255,0.12)',
+    other: 'rgba(100,116,139,0.12)',
+  }
+
+  const CATEGORY_DISPLAY: Record<string, string> = {
+    financial: 'Financeiro',
+    professional: 'Profissional',
+    health: 'Saúde',
+    educational: 'Educação',
+    experience: 'Experiência',
+    personal: 'Pessoal',
+    other: 'Outros',
+  }
+
+  const mobileGoals = active.map(obj => {
+    // Extract linked modules from goals
+    const linkedModules = (obj.goals ?? [])
+      .map(g => g.target_module)
+      .filter((m, i, arr) => arr.indexOf(m) === i && MODULE_META[m])
+      .map(m => MODULE_META[m])
+
+    // Use first goal's values for progress label
+    const firstGoal = (obj.goals ?? [])[0]
+
+    return {
+      id: obj.id,
+      name: obj.name,
+      icon: obj.icon ?? '🎯',
+      iconBg: CATEGORY_BG[obj.category] ?? 'rgba(0,85,255,0.12)',
+      deadline: obj.target_date
+        ? `📅 ${new Date(obj.target_date + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}`
+        : 'Sem prazo',
+      category: CATEGORY_DISPLAY[obj.category] ?? 'Geral',
+      modules: linkedModules,
+      progressLabel: firstGoal?.target_value != null
+        ? `${firstGoal.current_value.toLocaleString('pt-BR')} / ${firstGoal.target_value.toLocaleString('pt-BR')}`
+        : `${obj.progress}% concluído`,
+      progressPct: obj.progress,
+      progressColor: obj.progress >= 60 ? '#10b981' : obj.progress >= 40 ? '#f59e0b' : '#f43f5e',
+    }
+  })
+
+  const mobileAlert = (() => {
+    const behindGoal = active.find(o => o.progress < 30 && o.target_date)
+    if (behindGoal) {
+      return `O objetivo "${behindGoal.name}" está com apenas <span style="color:#f59e0b;">${behindGoal.progress}% de progresso</span>. Ajuste a contribuição mensal.`
+    }
+    return undefined
+  })()
+
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    <FuturoMobile
+      avgProgress={avgProgress}
+      activeCount={active.length}
+      alertText={mobileAlert}
+      goals={mobileGoals}
+      onNewGoal={() => setWizardOpen(true)}
+    />
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
         <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl max-sm:hidden',
+          'font-[Syne] font-extrabold text-2xl',
           isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
         )}>
           🔮 Futuro
@@ -335,5 +412,6 @@ export default function FuturoPage() {
         isLoading={isCreating}
       />
     </div>
+    </>
   )
 }

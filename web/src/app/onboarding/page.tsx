@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { WizardStepper } from '@/components/shared/WizardStepper'
 import { SyncLifeBrand } from '@/components/shell/icons'
+import { OnboardingMobile } from '@/components/onboarding/OnboardingMobile'
 
 // ── Types ────────────────────────────────────────────────
 interface OnboardingState {
@@ -212,7 +213,9 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className={`onboarding-page${isJornada ? ' mode-jornada' : ''}`}>
+    <>
+    <OnboardingMobile userName={state.nome || undefined} />
+    <div className={`hidden lg:block onboarding-page${isJornada ? ' mode-jornada' : ''}`}>
       {/* Background */}
       <div className="ob-orbs" aria-hidden>
         <div className="ob-orb ob-orb-1" />
@@ -479,5 +482,6 @@ export default function OnboardingPage() {
         )}
       </div>
     </div>
+    </>
   )
 }

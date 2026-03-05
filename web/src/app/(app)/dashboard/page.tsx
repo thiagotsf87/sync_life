@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { AreaChart, Area, ResponsiveContainer } from 'recharts'
-import { Calendar, ChevronDown, Loader2, DollarSign, CalendarPlus, RotateCcw, Camera } from 'lucide-react'
+import { Calendar, ChevronDown, Loader2 } from 'lucide-react'
 import { useTransactions } from '@/hooks/use-transactions'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useMetas, calcProgress } from '@/hooks/use-metas'
@@ -15,6 +15,7 @@ import { useCorpoDashboard } from '@/hooks/use-corpo'
 import { usePatrimonioDashboard } from '@/hooks/use-patrimonio'
 import { useExperienciasDashboard } from '@/hooks/use-experiencias'
 import { useShellStore } from '@/stores/shell-store'
+import { DashboardMobile } from '@/components/dashboard/DashboardMobile'
 import { cn } from '@/lib/utils'
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -83,17 +84,17 @@ function KpiCard({ label, value, delta, deltaType = 'neutral', accent, icon, ico
 
   return (
     <div className={cn(
-      'relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-3 lg:p-5 overflow-hidden',
+      'relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 overflow-hidden',
       'transition-all hover:border-[var(--sl-border-h)] hover:-translate-y-px sl-fade-up shadow-sm dark:shadow-none',
       delay
     )}>
-      <div className="absolute top-0 left-4 right-4 lg:left-5 lg:right-5 h-0.5 rounded-b" style={{ background: accent }} />
-      <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-[9px] flex items-center justify-center mb-2 lg:mb-3.5 text-sm lg:text-base" style={{ background: iconBg }}>
+      <div className="absolute top-0 left-5 right-5 h-0.5 rounded-b" style={{ background: accent }} />
+      <div className="w-8 h-8 rounded-[9px] flex items-center justify-center mb-3.5 text-base" style={{ background: iconBg }}>
         {icon}
       </div>
-      <p className="text-[9px] lg:text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1 lg:mb-1.5">{label}</p>
-      <p className="font-[DM_Mono] font-medium text-[17px] lg:text-[26px] text-[var(--sl-t1)] leading-none mb-1 lg:mb-1.5">{value}</p>
-      {delta && <p className={cn('text-[10px] lg:text-[12px] flex items-center gap-1', deltaColor)}>{delta}</p>}
+      <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1.5">{label}</p>
+      <p className="font-[DM_Mono] font-medium text-[26px] text-[var(--sl-t1)] leading-none mb-1.5">{value}</p>
+      {delta && <p className={cn('text-[12px] flex items-center gap-1', deltaColor)}>{delta}</p>}
       {barPct !== undefined && (
         <div className="mt-2.5 h-1 bg-[var(--sl-s3)] rounded-full overflow-hidden">
           <div
@@ -111,10 +112,7 @@ function KpiCard({ label, value, delta, deltaType = 'neutral', accent, icon, ico
 export default function DashboardPage() {
   const router = useRouter()
   const mode = useShellStore((s) => s.mode)
-  // Prevent hydration mismatch: server always renders foco, client switches after mount
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isJornada = mounted && mode === 'jornada'
+  const isJornada = mode === 'jornada'
 
   const now = useMemo(() => new Date(), [])
   const month = now.getMonth() + 1
@@ -122,7 +120,6 @@ export default function DashboardPage() {
 
   const [greeting, setGreeting] = useState('')
   const [weekInfo, setWeekInfo] = useState('')
-  const [monthLabel, setMonthLabel] = useState('')
   const [scoreBarWidth, setScoreBarWidth] = useState(0)
   const [userName, setUserName] = useState('Usuário')
   const [aiQuery, setAiQuery] = useState('')
@@ -132,10 +129,6 @@ export default function DashboardPage() {
   useEffect(() => {
     setGreeting(getGreeting())
     setWeekInfo(getCurrentWeekInfo())
-    setMonthLabel(
-      now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
-        .replace(/^\w/, c => c.toUpperCase())
-    )
   }, [])
 
   useEffect(() => {
@@ -230,6 +223,9 @@ export default function DashboardPage() {
   const savingsRate = totalIncome > 0 ? Math.max(0, Math.round((balance / totalIncome) * 100)) : 0
   const topExpenseCat = categorySpend[0]
   const topExpensePct = totalIncome > 0 && topExpenseCat ? Math.round((topExpenseCat.total / totalIncome) * 100) : 0
+
+  const monthLabel = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    .replace(/^\w/, c => c.toUpperCase())
 
   const projectedBalance = sparklineData[sparklineData.length - 1]?.saldo ?? 0
 
@@ -327,56 +323,72 @@ export default function DashboardPage() {
     weekActivities.reduce((s, a) => s + a.duration_minutes, 0),
     [weekActivities])
 
-  return (
-    <div className="max-w-[1140px] mx-auto px-4 lg:px-6 py-4 lg:py-7 pb-4 lg:pb-16">
+  // ── mobile data ──
+  const mobileModuleScores = useMemo(() => {
+    const dims = lifeDimensions
+    return [
+      { id: 'financas', emoji: '💰', label: 'Finanças', pct: dims.find(d => d.key === 'financas')?.value ?? 0, color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+      { id: 'tempo', emoji: '⏳', label: 'Tempo', pct: dims.find(d => d.key === 'tempo')?.value ?? 0, color: '#06b6d4', bg: 'rgba(6,182,212,0.15)' },
+      { id: 'futuro', emoji: '🔮', label: 'Futuro', pct: dims.find(d => d.key === 'futuro')?.value ?? 0, color: '#0055ff', bg: 'rgba(0,85,255,0.15)' },
+    ]
+  }, [lifeDimensions])
 
-      {/* Mobile Jornada greeting — first content element, mobile only */}
-      {isJornada && (
-        <div className="lg:hidden flex items-start justify-between mb-4 sl-fade-up">
-          <div>
-            <h1 className="font-[Syne] font-extrabold text-[20px] text-sl-grad leading-tight">
+  const mobileAlerts = useMemo(() => {
+    const a: { color: string; title: string; text: string }[] = []
+    budgets.filter(b => b.pct > 70).forEach(b => {
+      a.push({
+        color: b.pct > 85 ? '#f43f5e' : '#f59e0b',
+        title: `Orçamento ${b.category?.name ?? 'Categoria'}`,
+        text: `atingiu ${b.pct}% — ${fmt(b.amount - b.gasto)} restantes`,
+      })
+    })
+    nextRecurrences.slice(0, 2).forEach(r => {
+      a.push({
+        color: '#10b981',
+        title: r.name,
+        text: `vence ${r.daysLeft === 0 ? 'hoje' : `em ${r.daysLeft} dias`} — ${fmt(r.amount)} agendado`,
+      })
+    })
+    return a.slice(0, 3)
+  }, [budgets, nextRecurrences])
+
+  return (
+    <>
+    {/* ═══ MOBILE LAYOUT ═══ */}
+    <DashboardMobile
+      userName={userName}
+      lifeScore={lifeScore}
+      moduleScores={mobileModuleScores}
+      alerts={mobileAlerts}
+      budgetsOver={budgetsOver}
+      goalsAtRisk={goalsAtRisk}
+      totalExpense={totalExpense}
+      projectedBalance={projectedBalance}
+    />
+
+    {/* ═══ DESKTOP LAYOUT ═══ */}
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+
+      {/* ① HEADER */}
+      <div className="flex items-start justify-between gap-4 mb-5 flex-wrap">
+        <div className="flex flex-col gap-0.5">
+          <div className="foco-only">
+            <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)]">Dashboard</h1>
+            <p className="text-[13px] text-[var(--sl-t3)] mt-0.5">{weekInfo}</p>
+          </div>
+          <div className="jornada-only">
+            <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad leading-tight">
               {greeting}, {userName}! ✨
             </h1>
-            <p className="text-[13px] text-[var(--sl-t3)] mt-0.5">
-              Registros em dia — continue assim.
-            </p>
+            <p className="text-[13px] text-[var(--sl-t3)] italic mt-0.5">Registros em dia — continue assim.</p>
           </div>
-          <div
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold shrink-0 ml-3"
-            style={{ background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.20)', color: '#10b981' }}
-          >
+        </div>
+
+        <div className="flex items-center gap-2.5 flex-shrink-0">
+          <div className="jornada-only flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-[12px] font-semibold"
+            style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.25)', color: '#f97316' }}>
             🔥 7 dias
           </div>
-        </div>
-      )}
-
-      {/* ① HEADER — desktop title + month selector */}
-      <div className="flex items-start justify-between gap-4 mb-5 flex-wrap">
-        {/* Desktop: greeting or title (hidden on mobile) */}
-        <div className="flex flex-col gap-0.5 max-lg:hidden">
-          {isJornada ? (
-            <div>
-              <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad leading-tight">
-                {greeting}, {userName}! ✨
-              </h1>
-              <p className="text-[13px] text-[var(--sl-t3)] italic mt-0.5">Registros em dia — continue assim.</p>
-            </div>
-          ) : (
-            <div>
-              <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)]">Dashboard</h1>
-              <p className="text-[13px] text-[var(--sl-t3)] mt-0.5">{weekInfo}</p>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2.5 flex-shrink-0 max-lg:w-full">
-          {/* Streak badge — desktop only (shown in mobile greeting block) */}
-          {isJornada && (
-            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-[12px] font-semibold"
-              style={{ background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.25)', color: '#f97316' }}>
-              🔥 7 dias
-            </div>
-          )}
           <button className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl border border-[var(--sl-border)] bg-[var(--sl-s2)] text-[12px] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-all">
             <Calendar size={13} />
             {monthLabel}
@@ -386,65 +398,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ② LIFE SYNC SCORE — Jornada only */}
-      {isJornada && <>
-
-      {/* Mobile: card vertical (< 1024px) */}
-      <div className="lg:hidden bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] overflow-hidden mb-5 sl-fade-up">
-        {/* Header: score + trend */}
-        <div className="flex items-start gap-3 p-4" style={{ borderBottom: '1px solid var(--sl-border)' }}>
-          <div>
-            <div className="font-[Syne] font-extrabold text-[56px] leading-none text-sl-grad">
-              {lifeScore > 0 ? lifeScore : '—'}
-            </div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mt-0.5">Life Sync Score</div>
-            <div className="text-[12px] text-[var(--sl-t2)] mt-1">
-              {lifeScore >= 75 ? 'Excelente equilíbrio!' : lifeScore >= 50 ? 'Evolução consistente' : lifeScore > 0 ? 'Há espaço para crescer' : 'Registre dados para calcular'}
-            </div>
-          </div>
-          <div className="ml-auto flex-shrink-0 text-right">
-            <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)]">Semana</div>
-            <div className="font-[Syne] font-bold text-[18px]" style={{ color: '#10b981' }}>↑ +3</div>
-          </div>
-        </div>
-        {/* Dimensions: grid 2 cols com barra */}
-        <div className="grid grid-cols-2 gap-2 p-3">
-          {lifeLoading
-            ? [...Array(6)].map((_, i) => (
-                <div key={i} className="flex flex-col gap-1">
-                  <div className="h-3 w-full rounded bg-[var(--sl-s3)] animate-pulse" />
-                  <div className="h-1 rounded bg-[var(--sl-s3)] animate-pulse mt-0.5" />
-                </div>
-              ))
-            : lifeDimensions.map(d => {
-                const c = d.value >= 75 ? '#10b981' : d.value >= 50 ? '#f59e0b' : '#f43f5e'
-                return (
-                  <div key={d.key}>
-                    <div className="flex items-center justify-between mb-[3px]">
-                      <span className="text-[10px] text-[var(--sl-t2)]">{d.icon} {d.label}</span>
-                      <span className="font-[DM_Mono] text-[10px] font-medium" style={{ color: c }}>{d.value}</span>
-                    </div>
-                    <div className="h-1 bg-[var(--sl-s3)] rounded-full overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${d.value}%`, background: c }} />
-                    </div>
-                  </div>
-                )
-              })
-          }
-        </div>
-        {/* Footer */}
-        <div className="flex items-center justify-between px-3 py-2.5" style={{ borderTop: '1px solid var(--sl-border)' }}>
-          <button
-            onClick={() => router.push('/dashboard/score')}
-            className="px-3 py-1.5 rounded-[8px] text-[11px] font-semibold cursor-pointer transition-opacity hover:opacity-80"
-            style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#10b981' }}>
-            Ver análise completa →
-          </button>
-          <span className="text-[11px] text-[var(--sl-t2)]">↑ +3 esta semana</span>
-        </div>
-      </div>
-
-      {/* Desktop: card horizontal (≥ 1024px) */}
-      <div className="hidden lg:flex items-center gap-7 p-[24px_28px] rounded-[20px] mb-5 sl-fade-up relative overflow-hidden"
+      <div className="jornada-only flex items-center gap-7 p-[24px_28px] rounded-[20px] mb-5 sl-fade-up relative overflow-hidden"
         style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(0,85,255,0.10))', border: '1px solid rgba(16,185,129,0.20)' }}>
         <div className="absolute -left-14 -top-14 w-56 h-56 rounded-full pointer-events-none"
           style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.12), transparent 70%)' }} />
@@ -495,16 +449,13 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex-shrink-0 flex flex-col gap-2 items-end relative z-10">
-          <button
-            onClick={() => router.push('/dashboard/score')}
-            className="px-4 py-2 rounded-[10px] text-[12px] font-semibold text-white cursor-pointer transition-opacity hover:opacity-85 whitespace-nowrap"
+          <button className="px-4 py-2 rounded-[10px] text-[12px] font-semibold text-white cursor-pointer transition-opacity hover:opacity-85 whitespace-nowrap"
             style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)', border: 'none' }}>
             Ver análise completa
           </button>
           <span className="text-[11px]" style={{ color: '#10b981' }}>↑ +3 vs. semana passada</span>
         </div>
       </div>
-      </>}
 
       {/* ③ KPI CARDS */}
       <div className="grid grid-cols-4 gap-3 mb-5 max-sm:grid-cols-2">
@@ -528,12 +479,12 @@ export default function DashboardPage() {
 
       {/* ④ INSIGHT CARD */}
       {/* Foco: compact stats */}
-      {!isJornada && <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-4 lg:p-5 mb-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none">
-        <div className="flex items-center gap-2 mb-3 lg:mb-4">
+      <div className="foco-only bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-5 mb-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none">
+        <div className="flex items-center gap-2 mb-4">
           <span className="text-[10px] font-bold uppercase tracking-[0.09em] text-[var(--sl-t3)]">Resumo do mês</span>
           <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-[6px]" style={{ background: 'rgba(16,185,129,0.12)', color: '#10b981' }}>AUTO</span>
         </div>
-        <div className="grid grid-cols-2 gap-3 lg:flex lg:gap-7">
+        <div className="flex gap-7 flex-wrap">
           {[
             { label: 'Orçamentos estourados', val: String(budgetsOver), color: budgetsOver > 0 ? '#f43f5e' : '#10b981' },
             { label: 'Metas no ritmo', val: `${goalsOnTrack}/${activeGoals.length}`, color: '#10b981' },
@@ -542,14 +493,14 @@ export default function DashboardPage() {
           ].map(stat => (
             <div key={stat.label} className="flex flex-col gap-0.5">
               <div className="text-[10px] uppercase tracking-[0.07em] text-[var(--sl-t3)]">{stat.label}</div>
-              <div className="font-[DM_Mono] text-[18px] lg:text-[22px] font-medium" style={{ color: stat.color }}>{stat.val}</div>
+              <div className="font-[DM_Mono] text-[22px] font-medium" style={{ color: stat.color }}>{stat.val}</div>
             </div>
           ))}
         </div>
-      </div>}
+      </div>
 
       {/* Jornada: narrative + ask AI */}
-      {isJornada && <div className="rounded-[16px] p-4 lg:p-5 mb-5 sl-fade-up sl-delay-2"
+      <div className="jornada-only rounded-[16px] p-5 mb-5 sl-fade-up sl-delay-2"
         style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.06), rgba(0,85,255,0.06))', border: '1px solid rgba(16,185,129,0.18)' }}>
         <div className="flex items-center gap-2 mb-3">
           <span className="text-[10px] font-bold uppercase tracking-[0.09em]" style={{ color: '#10b981' }}>💡 Consultor Financeiro IA</span>
@@ -599,73 +550,9 @@ export default function DashboardPage() {
             <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed whitespace-pre-wrap">{aiResponse}</p>
           </div>
         )}
-      </div>}
-
-      {/* ⑤ AÇÕES RÁPIDAS — mobile only */}
-      <div className="lg:hidden mb-5 sl-fade-up sl-delay-2">
-        <p className="font-[Syne] font-semibold text-[13px] uppercase tracking-[0.05em] text-[var(--sl-t2)] mb-3">
-          Ações Rápidas
-        </p>
-        <div className="grid grid-cols-2 gap-2.5">
-          {[
-            {
-              icon: DollarSign,
-              label: 'Transação',
-              sub: 'Registrar gasto',
-              color: '#10b981',
-              bg: 'rgba(16,185,129,0.12)',
-              onClick: () => router.push('/quick-entry'),
-            },
-            {
-              icon: CalendarPlus,
-              label: 'Evento',
-              sub: 'Agendar compromisso',
-              color: '#06b6d4',
-              bg: 'rgba(6,182,212,0.12)',
-              onClick: () => router.push('/tempo'),
-            },
-            {
-              icon: RotateCcw,
-              label: 'Revisão',
-              sub: 'Review semanal',
-              color: '#0055ff',
-              bg: 'rgba(0,85,255,0.12)',
-              onClick: () => router.push('/dashboard/review'),
-            },
-            {
-              icon: Camera,
-              label: 'Foto Recibo',
-              sub: 'OCR automático',
-              color: '#8b5cf6',
-              bg: 'rgba(139,92,246,0.12)',
-              onClick: undefined,
-              disabled: true,
-            },
-          ].map((item) => (
-            <button
-              key={item.label}
-              onClick={item.onClick}
-              disabled={item.disabled}
-              className={cn(
-                'flex flex-col gap-2 p-3.5 rounded-2xl border text-left transition-all active:scale-[0.97]',
-                item.disabled
-                  ? 'border-[var(--sl-border)] bg-[var(--sl-s1)] opacity-50 cursor-not-allowed'
-                  : 'border-[var(--sl-border)] bg-[var(--sl-s1)] hover:border-[var(--sl-border-h)]',
-              )}
-            >
-              <div className="w-8 h-8 rounded-[9px] flex items-center justify-center" style={{ background: item.bg, color: item.color }}>
-                <item.icon size={16} />
-              </div>
-              <div>
-                <p className="text-[13px] font-medium text-[var(--sl-t1)]">{item.label}</p>
-                <p className="text-[11px] text-[var(--sl-t2)]">{item.sub}</p>
-              </div>
-            </button>
-          ))}
-        </div>
       </div>
 
-      {/* ⑥ MAIN GRID */}
+      {/* ⑤ MAIN GRID */}
       <div className="grid grid-cols-[1fr_340px] gap-4 mb-4 max-lg:grid-cols-1">
 
         {/* LEFT */}
@@ -687,22 +574,19 @@ export default function DashboardPage() {
                     {budgets.slice(0, 5).map(b => {
                       const color = getBudgetColor(b.pct)
                       return (
-                        <div key={b.id} className="flex flex-col gap-1">
-                          {/* Row 1: emoji + name + pct */}
-                          <div className="flex items-center gap-2">
-                            <span className="text-[14px] flex-shrink-0">{b.category?.icon}</span>
-                            <span className="text-[13px] text-[var(--sl-t1)] font-medium flex-1 min-w-0 truncate">{b.category?.name ?? 'Categoria'}</span>
-                            <span className="font-[DM_Mono] text-[12px] font-semibold flex-shrink-0" style={{ color }}>{b.pct}%</span>
-                          </div>
-                          {/* Row 2: bar + compact amount */}
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1 h-1 rounded-full overflow-hidden bg-[var(--sl-s3)]">
-                              <div className="h-full rounded-full transition-[width] duration-700"
-                                style={{ width: `${Math.min(b.pct, 100)}%`, background: color }} />
+                        <div key={b.id} className="flex flex-col gap-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[13px] text-[var(--sl-t2)]">{b.category?.icon} {b.category?.name ?? 'Categoria'}</span>
+                            <div className="flex items-center gap-3">
+                              <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t3)]">
+                                <span className="text-[var(--sl-t2)]">{fmt(b.gasto)}</span> / {fmt(b.amount)}
+                              </span>
+                              <span className="text-[11px] font-semibold" style={{ color }}>{b.pct}%</span>
                             </div>
-                            <span className="font-[DM_Mono] text-[10px] text-[var(--sl-t3)] flex-shrink-0 whitespace-nowrap">
-                              {fmtShort(b.gasto)}/{fmtShort(b.amount)}
-                            </span>
+                          </div>
+                          <div className="h-1.5 rounded-full overflow-hidden bg-[var(--sl-s3)]">
+                            <div className="h-full rounded-full transition-[width] duration-700"
+                              style={{ width: `${Math.min(b.pct, 100)}%`, background: color }} />
                           </div>
                         </div>
                       )
@@ -790,8 +674,8 @@ export default function DashboardPage() {
                           <div className="h-1.5 rounded-full overflow-hidden bg-[var(--sl-s3)]">
                             <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
                           </div>
-                          {isDelayed && isJornada && (
-                            <div className="text-[11px] px-2 py-1.5 rounded-[6px]"
+                          {isDelayed && (
+                            <div className="jornada-only text-[11px] px-2 py-1.5 rounded-[6px]"
                               style={{ color: '#f59e0b', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)' }}>
                               ⚠ Meta abaixo do ritmo necessário
                             </div>
@@ -865,7 +749,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ⑦ BOTTOM GRID */}
+      {/* ⑥ BOTTOM GRID */}
       <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
 
         {/* Próximas Recorrentes */}
@@ -950,8 +834,8 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Foco: Resumo Financeiro / Jornada: Conquistas */}
-        {!isJornada && <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
+        {/* Foco: Resumo Financeiro */}
+        <div className="foco-only bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
           <div className="flex items-center justify-between mb-[18px]">
             <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📋 Resumo Financeiro</span>
           </div>
@@ -968,10 +852,10 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-        </div>}
+        </div>
 
         {/* Jornada: Conquistas Recentes */}
-        {isJornada && <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
+        <div className="jornada-only bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
           <div className="flex items-center justify-between mb-[18px]">
             <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🏆 Conquistas Recentes</span>
             <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
@@ -1006,11 +890,11 @@ export default function DashboardPage() {
               <div className="h-full rounded-full" style={{ width: '65%', background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
             </div>
           </div>
-        </div>}
+        </div>
 
       </div>
 
-      {/* ⑧ V3 MODULES ROW */}
+      {/* ⑦ V3 MODULES ROW */}
       <div className="grid grid-cols-3 gap-4 mt-4 max-lg:grid-cols-1">
 
         {/* Corpo */}
@@ -1133,7 +1017,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ⑧ Mapa da Vida — Jornada only (RN-FUT-30) */}
-      {isJornada && <div className="mt-4">
+      <div className="jornada-only mt-4">
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up
                         hover:border-[var(--sl-border-h)] transition-colors">
           <div className="flex items-center justify-between mb-4">
@@ -1155,8 +1039,9 @@ export default function DashboardPage() {
             compact
           />
         </div>
-      </div>}
+      </div>
 
     </div>
+    </>
   )
 }

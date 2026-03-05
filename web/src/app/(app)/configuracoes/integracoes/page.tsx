@@ -162,7 +162,7 @@ export default function IntegracoesPage() {
   return (
     <div className="max-w-[680px]">
       <h1 className={cn(
-        'font-[Syne] font-extrabold text-xl mb-1 max-sm:hidden',
+        'font-[Syne] font-extrabold text-xl mb-1',
         isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
       )}>
         Integrações

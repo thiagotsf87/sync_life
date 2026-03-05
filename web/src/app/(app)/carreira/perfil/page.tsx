@@ -137,7 +137,7 @@ export default function PerfilCarreiraPage() {
           Carreira
         </button>
         <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl max-sm:hidden',
+          'font-[Syne] font-extrabold text-xl',
           isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
         )}>
           👤 Perfil Profissional

@@ -207,26 +207,155 @@ export default function RelatoriosPage() {
     }
   }, [aiNarrativeLoading, periodLabel, periodStats, catCompData])
 
-  return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+  // Mobile: top categories
+  const mobileTopCats = catCompData.slice(0, 4)
+  const mobileTotalCat = mobileTopCats.reduce((s, c) => s + c.currentTotal, 0) || 1
 
-      {/* ── Page Header ─────────────────────────────────────────── */}
-      <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
-        <div>
-          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#10b981] mb-0.5">
-            <span className="w-[5px] h-[5px] rounded-full bg-[#10b981]" />
-            Módulo Finanças · Análise
+  return (
+    <>
+      {/* ═══════════ MOBILE VIEW ═══════════ */}
+      <div className="lg:hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>Relatórios</h1>
+            <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">Análise e comparativos</p>
           </div>
-          <h1 className={cn(
-            'font-[Syne] font-extrabold text-[22px] tracking-tight max-sm:hidden',
-            isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-          )}>
-            📊 Relatórios Históricos
-          </h1>
-          <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">
-            {periodLabel} · {periodStats.monthCount} {periodStats.monthCount === 1 ? 'mês' : 'meses'} · {periodStats.txCount} transações
-          </p>
+          <button onClick={exportCSV} className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]">
+            <Download size={16} />
+          </button>
         </div>
+
+        {/* Period tabs */}
+        <div className="relative mb-3">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{ scrollbarWidth: 'none' }}>
+            {PERIOD_OPTIONS.filter(o => !o.proOnly || isPro).map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => setPeriod(opt.key as PeriodKey)}
+                className={cn(
+                  'px-3 py-[6px] rounded-full text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors',
+                  period === opt.key
+                    ? 'bg-[#10b981] text-black'
+                    : 'bg-[var(--sl-s2)] text-[var(--sl-t2)] border border-[var(--sl-border)]'
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          {/* Right fade mask */}
+          <div className="absolute right-0 top-0 bottom-0 w-8 pointer-events-none" style={{ background: 'linear-gradient(to left, var(--sl-bg), transparent)' }} />
+        </div>
+
+        {/* Month summary card */}
+        <div className="rounded-2xl p-4 mb-3" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(0,85,255,0.06))', border: '1px solid var(--sl-border)' }}>
+          <div className="text-center mb-3">
+            <div className="text-[12px] text-[var(--sl-t2)] mb-1">Saldo do período</div>
+            <div className={cn(
+              'font-[DM_Mono] text-[30px] font-extrabold',
+              periodStats.totalBalance >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
+            )}>
+              {periodStats.totalBalance >= 0 ? '+' : ''}{fmtR(periodStats.totalBalance)}
+            </div>
+          </div>
+          <div className="flex justify-around border-t border-[var(--sl-border)] pt-3">
+            <div className="text-center">
+              <div className="text-[11px] text-[var(--sl-t2)] mb-1">Receitas</div>
+              <div className="font-[DM_Mono] text-[16px] text-[#10b981]">+{fmtR(periodStats.totalRecipes)}</div>
+            </div>
+            <div className="w-px bg-[var(--sl-border)]" />
+            <div className="text-center">
+              <div className="text-[11px] text-[var(--sl-t2)] mb-1">Despesas</div>
+              <div className="font-[DM_Mono] text-[16px] text-[#f43f5e]">-{fmtR(periodStats.totalExpenses)}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Category breakdown */}
+        {mobileTopCats.length > 0 && (
+          <>
+            <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-1">Gastos por categoria</div>
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-3">
+              <div className="flex flex-col gap-[10px]">
+                {mobileTopCats.map(cat => {
+                  const pct = Math.round((cat.currentTotal / mobileTotalCat) * 100)
+                  return (
+                    <div key={cat.name} className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full shrink-0" style={{ background: cat.color }} />
+                      <div className="flex-1">
+                        <div className="flex justify-between mb-[3px]">
+                          <span className="text-[12px] text-[var(--sl-t1)]">{cat.name}</span>
+                          <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">{fmtR(cat.currentTotal)}</span>
+                        </div>
+                        <div className="h-[6px] bg-[var(--sl-s3)] rounded-[3px] overflow-hidden">
+                          <div className="h-full rounded-[3px]" style={{ width: `${pct}%`, background: pct > 50 ? '#f43f5e' : pct > 30 ? '#f59e0b' : '#10b981' }} />
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Comparison card */}
+        {barChartData.length > 1 && (
+          <>
+            <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2">Comparativo</div>
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-3">
+              <div className="flex justify-between mb-3">
+                <span className="text-[13px] text-[var(--sl-t2)]">vs. período anterior</span>
+                {expenseDelta !== null && (
+                  <span className={cn('text-[11px] font-medium px-2 py-0.5 rounded-full', expenseDelta <= 0 ? 'bg-[rgba(16,185,129,0.12)] text-[#10b981]' : 'bg-[rgba(244,63,94,0.12)] text-[#f43f5e]')}>
+                    {expenseDelta > 0 ? '↑' : '↓'} {fmtR(Math.abs(periodStats.totalExpenses - periodStats.prevTotalExpenses))}
+                  </span>
+                )}
+              </div>
+              {/* Mini bar chart */}
+              <div className="flex items-end justify-around h-20 gap-1">
+                {barChartData.slice(-4).map((bar, i) => {
+                  const maxVal = Math.max(...barChartData.slice(-4).map(b => b.despesas || 1))
+                  const h = Math.round(((bar.despesas || 0) / maxVal) * 72)
+                  const isLast = i === barChartData.slice(-4).length - 1
+                  return (
+                    <div key={bar.month} className="flex flex-col items-center gap-1">
+                      <div className="w-8 rounded-t" style={{
+                        height: h,
+                        background: isLast ? '#10b981' : 'rgba(16,185,129,0.3)',
+                      }} />
+                      <span className={cn('text-[10px]', isLast ? 'text-[#10b981] font-semibold' : 'text-[var(--sl-t2)]')}>{bar.month}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </>
+        )}
+        <div className="h-5" />
+      </div>
+
+      {/* ═══════════ DESKTOP VIEW ═══════════ */}
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+
+        {/* ── Page Header ─────────────────────────────────────────── */}
+        <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
+          <div>
+            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#10b981] mb-0.5">
+              <span className="w-[5px] h-[5px] rounded-full bg-[#10b981]" />
+              Módulo Finanças · Análise
+            </div>
+            <h1 className={cn(
+              'font-[Syne] font-extrabold text-[22px] tracking-tight',
+              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+            )}>
+              📊 Relatórios Históricos
+            </h1>
+            <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">
+              {periodLabel} · {periodStats.monthCount} {periodStats.monthCount === 1 ? 'mês' : 'meses'} · {periodStats.txCount} transações
+            </p>
+          </div>
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={exportCSV}
@@ -262,66 +391,60 @@ export default function RelatoriosPage() {
       )}
 
       {/* ── Period Selector ─────────────────────────────────────── */}
-      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl px-3.5 py-2.5 mb-3.5">
-        {/* Row 1: label + pills (scrollable on mobile) */}
-        <div className="flex items-center gap-2 mb-2 overflow-x-auto scrollbar-none max-sm:pb-0.5">
-          <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] whitespace-nowrap mr-0.5 shrink-0">
-            Período
-          </span>
+      <div className="flex items-center gap-2 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl px-3.5 py-2.5 mb-3.5 flex-wrap">
+        <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] whitespace-nowrap mr-0.5">
+          Período
+        </span>
 
-          {PERIOD_OPTIONS.map(opt => (
-            <button
-              key={opt.key}
-              onClick={() => setPeriod(opt.key as PeriodKey)}
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-[5px] rounded-[8px] border text-[12px] cursor-pointer transition-all whitespace-nowrap shrink-0',
-                period === opt.key
-                  ? 'bg-[rgba(16,185,129,0.14)] text-[#10b981] border-[rgba(16,185,129,0.3)] font-semibold'
-                  : 'border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)]'
-              )}>
-              {opt.label}
-              {opt.proOnly && !isPro && (
-                <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded bg-gradient-to-br from-[rgba(16,185,129,0.15)] to-[rgba(0,85,255,0.15)] text-[#10b981] border border-[rgba(16,185,129,0.25)]">
-                  <Lock size={8} /> PRO
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Row 2: date inputs + gerar */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="w-px h-[18px] bg-[var(--sl-border)] flex-shrink-0 mx-0.5 max-sm:hidden" />
-
-          <input
-            type="date"
-            value={customStart}
-            onChange={e => setCustomStart(e.target.value)}
-            max={customEnd}
-            disabled={period !== 'custom'}
-            className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-2 py-[5px] text-[11px] text-[var(--sl-t2)] outline-none focus:border-[rgba(16,185,129,0.35)] disabled:opacity-40 cursor-pointer"
-          />
-          <span className="text-[12px] text-[var(--sl-t3)] px-0.5">→</span>
-          <input
-            type="date"
-            value={customEnd}
-            onChange={e => setCustomEnd(e.target.value)}
-            min={customStart}
-            max={new Date().toISOString().split('T')[0]}
-            disabled={period !== 'custom'}
-            className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-2 py-[5px] text-[11px] text-[var(--sl-t2)] outline-none focus:border-[rgba(16,185,129,0.35)] disabled:opacity-40 cursor-pointer"
-          />
-
-          <span className="flex-1" />
-
+        {PERIOD_OPTIONS.map(opt => (
           <button
-            onClick={handleGenerate}
-            disabled={loading}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-[9px] border-none bg-[#10b981] text-white text-[12px] font-bold cursor-pointer shrink-0 disabled:opacity-60 hover:bg-[#0da876] transition-colors max-sm:w-full max-sm:justify-center">
-            <BarChart2 size={13} />
-            {loading ? 'Carregando...' : 'Gerar relatório'}
+            key={opt.key}
+            onClick={() => setPeriod(opt.key as PeriodKey)}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-[5px] rounded-[8px] border text-[12px] cursor-pointer transition-all whitespace-nowrap',
+              period === opt.key
+                ? 'bg-[rgba(16,185,129,0.14)] text-[#10b981] border-[rgba(16,185,129,0.3)] font-semibold'
+                : 'border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)]'
+            )}>
+            {opt.label}
+            {opt.proOnly && !isPro && (
+              <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded bg-gradient-to-br from-[rgba(16,185,129,0.15)] to-[rgba(0,85,255,0.15)] text-[#10b981] border border-[rgba(16,185,129,0.25)]">
+                <Lock size={8} /> PRO
+              </span>
+            )}
           </button>
-        </div>
+        ))}
+
+        <div className="w-px h-[18px] bg-[var(--sl-border)] flex-shrink-0 mx-0.5" />
+
+        <input
+          type="date"
+          value={customStart}
+          onChange={e => setCustomStart(e.target.value)}
+          max={customEnd}
+          disabled={period !== 'custom'}
+          className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-2 py-[5px] text-[11px] text-[var(--sl-t2)] outline-none focus:border-[rgba(16,185,129,0.35)] disabled:opacity-40 cursor-pointer"
+        />
+        <span className="text-[12px] text-[var(--sl-t3)] px-0.5">→</span>
+        <input
+          type="date"
+          value={customEnd}
+          onChange={e => setCustomEnd(e.target.value)}
+          min={customStart}
+          max={new Date().toISOString().split('T')[0]}
+          disabled={period !== 'custom'}
+          className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-2 py-[5px] text-[11px] text-[var(--sl-t2)] outline-none focus:border-[rgba(16,185,129,0.35)] disabled:opacity-40 cursor-pointer"
+        />
+
+        <span className="flex-1" />
+
+        <button
+          onClick={handleGenerate}
+          disabled={loading}
+          className="flex items-center gap-1.5 px-4 py-1.5 rounded-[9px] border-none bg-[#10b981] text-white text-[12px] font-bold cursor-pointer shrink-0 disabled:opacity-60 hover:bg-[#0da876] transition-colors">
+          <BarChart2 size={13} />
+          {loading ? 'Carregando...' : 'Gerar relatório'}
+        </button>
       </div>
 
       {/* ── Error ───────────────────────────────────────────────── */}
@@ -960,6 +1083,7 @@ export default function RelatoriosPage() {
           </SLCard>
         </>
       )}
-    </div>
+      </div>
+    </>
   )
 }

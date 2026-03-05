@@ -44,7 +44,7 @@ export default function SessoesPage() {
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
         <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl max-sm:hidden',
+          'font-[Syne] font-extrabold text-2xl',
           isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
         )}>
           📊 Histórico de Sessões

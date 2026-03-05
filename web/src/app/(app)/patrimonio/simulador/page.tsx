@@ -145,7 +145,7 @@ export default function SimuladorPage() {
           Patrimônio
         </button>
         <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1 max-sm:hidden',
+          'font-[Syne] font-extrabold text-xl flex-1',
           isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
         )}>
           🧮 Simulador de Independência Financeira

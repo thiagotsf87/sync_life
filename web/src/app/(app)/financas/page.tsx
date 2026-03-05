@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { USE_MOCK } from '@/lib/mock-financas'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useTransactions } from '@/hooks/use-transactions'
 import { useRecorrentes } from '@/hooks/use-recorrentes'
@@ -11,6 +12,7 @@ import {
   ResponsiveContainer
 } from 'recharts'
 import { cn } from '@/lib/utils'
+import { FinancasMobile } from '@/components/financas/FinancasMobile'
 import {
   CalendarDays, Plus, ChevronDown, ChevronLeft, ChevronRight, ExternalLink,
   TrendingUp, AlertTriangle, Loader2
@@ -306,6 +308,19 @@ export default function FinancasDashboardPage() {
   const [histData, setHistData] = useState<MonthlyAgg[]>([])
 
   useEffect(() => {
+    if (USE_MOCK) {
+      const mockHist: MonthlyAgg[] = [
+        { mes: 'Out', rec: 9500, des: 5510 },
+        { mes: 'Nov', rec: 10200, des: 6350 },
+        { mes: 'Dez', rec: 12800, des: 8200 },
+        { mes: 'Jan', rec: 10500, des: 5100 },
+        { mes: 'Fev', rec: 10500, des: 6600 },
+        { mes: 'Mar', rec: 10500, des: 5380 },
+      ]
+      setHistData(mockHist)
+      return
+    }
+
     const supabase = createClient()
     let cancelled = false
 
@@ -508,7 +523,19 @@ export default function FinancasDashboardPage() {
   }, [])
 
   return (
-    <div className="max-w-[1140px] mx-auto">
+    <>
+    {/* ═══ MOBILE LAYOUT ═══ */}
+    <FinancasMobile
+      totalIncome={receitasMes}
+      totalExpense={totalGasto}
+      balance={saldoMes}
+      budgets={activeBudgets}
+      projectedBalance={saldoMes + (receitasMes - totalGasto) * 0.3}
+      mesLabel={mesAno}
+    />
+
+    {/* ═══ DESKTOP LAYOUT ═══ */}
+    <div className="hidden lg:block max-w-[1140px] mx-auto">
 
       {/* ① PAGE HEADER */}
       <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
@@ -748,7 +775,7 @@ export default function FinancasDashboardPage() {
       </div>
 
       {/* ⑤ TOP GRID: Histórico + Gastos por Categoria */}
-      <div className="grid grid-cols-[1fr_400px] gap-3 mb-3 max-sm:grid-cols-1">
+      <div className="grid gap-3 mb-3" style={{ gridTemplateColumns: '1fr 400px' }}>
         {/* Histórico */}
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 hover:border-[var(--sl-border-h)] transition-colors">
           <div className="flex items-center justify-between mb-4">
@@ -827,11 +854,7 @@ export default function FinancasDashboardPage() {
             {' '}Colunas esmaecidas após {String(todayD).padStart(2, '0')}/{String(month).padStart(2, '0')} são previsões.
           </p>
         </div>
-        <div className="max-sm:overflow-x-auto max-sm:scrollbar-none">
-          <div className="max-sm:min-w-[600px]">
-            <FluxoCaixaChart days={cfDays} />
-          </div>
-        </div>
+        <FluxoCaixaChart days={cfDays} />
         {/* Summary cards */}
         <div className="grid grid-cols-4 gap-2 mt-3 max-sm:grid-cols-2">
           {[
@@ -1133,5 +1156,6 @@ export default function FinancasDashboardPage() {
       </div>
 
     </div>
+    </>
   )
 }

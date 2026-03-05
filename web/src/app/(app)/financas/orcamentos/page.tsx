@@ -63,8 +63,7 @@ function EnvelopeCard({
 
   return (
     <div className={cn(
-      'bg-[var(--sl-s1)] border rounded-[14px] transition-all relative overflow-hidden group',
-      'px-5 py-4 max-sm:px-4 max-sm:py-3',
+      'bg-[var(--sl-s1)] border rounded-[14px] px-5 py-4 transition-all relative overflow-hidden group',
       envelope.pct >= 100
         ? 'border-l-[3px] border-l-[#f43f5e] border-[var(--sl-border)]'
         : envelope.pct >= 75
@@ -72,76 +71,71 @@ function EnvelopeCard({
         : 'border-[var(--sl-border)]',
       'hover:border-[var(--sl-border-h)] hover:shadow-[0_2px_12px_rgba(0,0,0,.08)]'
     )}>
-      {/* Linha principal — desktop: 2 linhas; mobile: 1 linha compacta */}
-      <div className="flex items-center gap-3 max-sm:gap-2 mb-2.5 max-sm:mb-2">
+      {/* Linha principal */}
+      <div className="flex items-center gap-3 mb-2.5">
         <div
-          className="w-9 h-9 max-sm:w-8 max-sm:h-8 rounded-[10px] flex items-center justify-center text-[18px] max-sm:text-[15px] shrink-0"
+          className="w-9 h-9 rounded-[10px] flex items-center justify-center text-[18px] shrink-0"
           style={{ background: `${color}20` }}
         >
           {envelope.category?.icon ?? '💼'}
         </div>
-
-        {/* Nome + badges (desktop) / Nome truncado (mobile) */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5 max-sm:mb-0">
-            <span className="text-[14px] max-sm:text-[13px] font-semibold text-[var(--sl-t1)] truncate">
+          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+            <span className="text-[14px] font-semibold text-[var(--sl-t1)] truncate">
               {envelope.category?.name ?? 'Categoria'}
             </span>
-            {/* Badges — hidden on mobile para ganhar espaço */}
             {badge === 'over' && (
-              <span className="hidden sm:inline text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(244,63,94,.12)] text-[#f43f5e] border border-[rgba(244,63,94,.20)]">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(244,63,94,.12)] text-[#f43f5e] border border-[rgba(244,63,94,.20)]">
                 Estourado
               </span>
             )}
             {badge === 'alert' && (
-              <span className="hidden sm:inline text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(245,158,11,.12)] text-[#f59e0b] border border-[rgba(245,158,11,.20)]">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(245,158,11,.12)] text-[#f59e0b] border border-[rgba(245,158,11,.20)]">
                 Atenção
               </span>
             )}
             {badge === 'ok' && (
-              <span className="hidden sm:inline text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(16,185,129,.10)] text-[#10b981] border border-[rgba(16,185,129,.18)]">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(16,185,129,.10)] text-[#10b981] border border-[rgba(16,185,129,.18)]">
                 OK
               </span>
             )}
+            {envelope.rollover && (
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--sl-s2)] text-[var(--sl-t3)] border border-[var(--sl-border)]">
+                Rollover
+              </span>
+            )}
           </div>
-          {/* Valores — hidden on mobile (mostrados inline à direita) */}
-          <p className="hidden sm:block font-[DM_Mono] text-[12px] text-[var(--sl-t3)]">
+          <p className="font-[DM_Mono] text-[12px] text-[var(--sl-t3)]">
             <span className="text-[var(--sl-t1)] text-[13px] font-medium">R$ {fmtR$(envelope.gasto)}</span>
             {' '}/ R$ {fmtR$(envelope.amount)}
           </p>
         </div>
-
-        {/* Direita: valor mobile + % + ações */}
-        <div className="flex items-center gap-2 max-sm:gap-1.5 shrink-0">
-          {/* Valor compacto — apenas mobile */}
-          <p className="sm:hidden font-[DM_Mono] text-[12px] text-[var(--sl-t2)] whitespace-nowrap">
-            <span className="text-[var(--sl-t1)] font-medium">R$ {fmtR$(envelope.gasto)}</span>
-          </p>
+        <div className="flex items-center gap-3 shrink-0">
           <span
-            className="font-[DM_Mono] text-[14px] max-sm:text-[13px] font-bold min-w-[40px] max-sm:min-w-[32px] text-right"
+            className="font-[DM_Mono] text-[14px] font-bold min-w-[40px] text-right"
             style={{ color }}
           >
             {envelope.pct}%
           </span>
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={() => onEdit(envelope)}
-              className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#10b981] hover:bg-[rgba(16,185,129,.08)] transition-colors"
-            >
-              <Pencil size={13} />
-            </button>
-            <button
-              onClick={() => onDelete(envelope.id)}
-              className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,.08)] transition-colors"
-            >
-              <Trash2 size={13} />
-            </button>
-          </div>
+              <button
+                onClick={() => onEdit(envelope)}
+                className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#10b981] hover:bg-[rgba(16,185,129,.08)] transition-colors"
+              >
+                <Pencil size={13} />
+              </button>
+              <button
+                onClick={() => onDelete(envelope.id)}
+                className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,.08)] transition-colors"
+              >
+                <Trash2 size={13} />
+              </button>
+            </div>
         </div>
       </div>
 
       {/* Barra de progresso */}
-      <div className="mb-2 max-sm:mb-1.5">
+      <div className="mb-2">
         <div className="h-[6px] bg-[var(--sl-s3)] rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-[width] duration-700 ease-[cubic-bezier(.4,0,.2,1)]"
@@ -150,16 +144,16 @@ function EnvelopeCard({
         </div>
       </div>
 
-      {/* Linha de detalhe — desktop: completo; mobile: compacto */}
+      {/* Linha de detalhe */}
       <div className="flex items-center justify-between">
-        <span className="text-[12px] max-sm:text-[11px] text-[var(--sl-t2)]">
+        <span className="text-[12px] text-[var(--sl-t2)]">
           {envelope.pct >= 100
             ? <span className="text-[#f43f5e]">Estourou em R$ {fmtR$(envelope.gasto - envelope.amount)}</span>
             : <>Restam <strong className="text-[var(--sl-t1)]">R$ {fmtR$(remaining)}</strong></>
           }
         </span>
-        <span className="text-[11px] max-sm:text-[10px] text-[var(--sl-t3)]">
-          {daysLeft}d restantes
+        <span className="text-[11px] text-[var(--sl-t3)]">
+          {daysLeft} dias restantes
         </span>
       </div>
     </div>
@@ -370,22 +364,129 @@ export default function OrcamentosPage() {
 
   const maiorCategoria = activeBudgets.length > 0 ? (activeBudgets[0].category?.name ?? '') : ''
 
-  return (
-    <div className="max-w-[1000px] mx-auto px-4 sm:px-6 py-8 pb-20">
+  const disponivel = Math.max(0, totalOrcado - totalGasto)
 
-      {/* ① Header */}
-      <div className="flex items-center justify-between mb-7 gap-4 flex-wrap">
-        <div>
-          <p className="text-[11px] text-[#10b981] font-bold uppercase tracking-[.07em] mb-1">
-            💰 Finanças
-          </p>
-          <h1 className={cn(
-            'font-[Syne] font-extrabold text-[24px] tracking-tight max-sm:hidden',
-            isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-          )}>
-            Orçamentos
-          </h1>
+  return (
+    <>
+      {/* ═══════════ MOBILE VIEW ═══════════ */}
+      <div className="lg:hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>Orçamentos</h1>
+            <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">Envelopes do mês</p>
+          </div>
+          <button onClick={openCreate} className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]">
+            <Plus size={16} />
+          </button>
         </div>
+
+        {/* Month selector */}
+        <div className="flex items-center justify-between mb-3">
+          <button onClick={prevMonthNav} className="text-[13px] text-[var(--sl-t2)] p-2"><ChevronLeft size={16} /></button>
+          <span className="font-[Syne] font-semibold text-[var(--sl-t1)]">{MONTH_NAMES[month - 1]} {year}</span>
+          <button onClick={nextMonthNav} className="text-[13px] text-[var(--sl-t2)] p-2"><ChevronRight size={16} /></button>
+        </div>
+
+        {/* Budget overview card */}
+        {!isLoading && budgets.length > 0 && (
+          <div className="rounded-2xl p-4 mb-3" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(0,85,255,0.08))', border: '1px solid var(--sl-border)' }}>
+            <div className="flex justify-between mb-3">
+              <div>
+                <div className="text-[12px] text-[var(--sl-t2)]">Gasto total</div>
+                <div className="font-[DM_Mono] text-[22px] font-bold text-[var(--sl-t1)]">R$ {fmtR$(totalGasto)}</div>
+              </div>
+              <div className="text-right">
+                <div className="text-[12px] text-[var(--sl-t2)]">Limite total</div>
+                <div className="font-[DM_Mono] text-[22px] font-bold text-[var(--sl-t1)]">R$ {fmtR$(totalOrcado)}</div>
+              </div>
+            </div>
+            <div className="h-[10px] bg-[var(--sl-s3)] rounded-[5px] overflow-hidden mb-2">
+              <div className="h-full rounded-[5px] transition-[width] duration-700" style={{ width: `${Math.min(pctGasto, 100)}%`, background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[12px] text-[var(--sl-t2)]">{pctGasto}% usado</span>
+              <span className="text-[12px] text-[#10b981]">R$ {fmtR$(disponivel)} disponível</span>
+            </div>
+          </div>
+        )}
+
+        {/* Envelopes section */}
+        {isLoading ? (
+          <EnvelopeSkeleton />
+        ) : error ? (
+          <div className="py-6 text-center text-[13px] text-[var(--sl-t2)]">
+            Erro ao carregar. <button onClick={refresh} className="text-[#10b981] underline">Tentar novamente</button>
+          </div>
+        ) : budgets.length === 0 ? (
+          <div className="text-center py-10 px-4 bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl">
+            <span className="text-[36px] block mb-2 opacity-70">💼</span>
+            <h3 className="font-[Syne] text-[15px] font-bold text-[var(--sl-t1)] mb-1">Nenhum orçamento</h3>
+            <p className="text-[12px] text-[var(--sl-t2)] mb-3">Crie envelopes para controlar seus gastos.</p>
+            <button onClick={openCreate} className="inline-flex items-center gap-1.5 font-bold text-[12px] px-4 py-2 rounded-full text-[#03071a]" style={{ background: '#10b981' }}>
+              <Plus size={13} /> Criar primeiro
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-1">Envelopes</div>
+            <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
+              {activeBudgets.map(env => {
+                const color = getEnvColor(env.pct)
+                return (
+                  <div key={env.id} className="flex items-center gap-[10px] px-5 py-[10px] border-b border-[var(--sl-border)] last:border-b-0">
+                    <div className="text-[20px] w-8 text-center shrink-0">{env.category?.icon ?? '💼'}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{env.category?.name ?? 'Categoria'}</div>
+                      <div className="mt-1 h-[4px] bg-[var(--sl-s3)] rounded-[3px] overflow-hidden">
+                        <div className="h-full rounded-[3px]" style={{ width: `${Math.min(env.pct, 100)}%`, background: color }} />
+                      </div>
+                      <div className="text-[11px] text-[var(--sl-t2)] mt-1">R$ {fmtR$(env.gasto)} / R$ {fmtR$(env.amount)}</div>
+                    </div>
+                    <div className="font-[DM_Mono] text-[13px] font-semibold shrink-0" style={{ color }}>{env.pct}%</div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        )}
+
+        {/* AI Insight card */}
+        {!isLoading && activeBudgets.length > 0 && (
+          <div className="rounded-2xl p-4 mt-3 flex gap-[10px] items-start" style={{ background: 'rgba(0,85,255,0.07)', border: '1px solid rgba(0,85,255,0.2)' }}>
+            <span className="text-[20px]">🤖</span>
+            <div>
+              <div className="text-[13px] font-semibold text-[var(--sl-t1)] mb-1">Alerta de orçamento</div>
+              <div className="text-[12px] text-[var(--sl-t2)] leading-[1.5]">
+                {qtdOver > 0
+                  ? <>{maiorCategoria} estourou o limite. Revise seus gastos para fechar o mês no azul.</>
+                  : pctGasto >= 70
+                  ? <>Orçamento em {pctGasto}% e faltam {daysLeft} dias. Cuidado com gastos extras.</>
+                  : <>Seus gastos estão controlados em {pctGasto}% do orçamento. Continue assim!</>
+                }
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="h-5" />
+      </div>
+
+      {/* ═══════════ DESKTOP VIEW ═══════════ */}
+      <div className="hidden lg:block max-w-[1000px] mx-auto px-6 py-8 pb-20">
+
+        {/* ① Header */}
+        <div className="flex items-center justify-between mb-7 gap-4 flex-wrap">
+          <div>
+            <p className="text-[11px] text-[#10b981] font-bold uppercase tracking-[.07em] mb-1">
+              💰 Finanças
+            </p>
+            <h1 className={cn(
+              'font-[Syne] font-extrabold text-[24px] tracking-tight',
+              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+            )}>
+              Orçamentos
+            </h1>
+          </div>
         <div className="flex items-center gap-2.5 flex-wrap">
           {budgets.length === 0 && prevMonthBudgets.length > 0 && (
             <button
@@ -567,7 +668,9 @@ export default function OrcamentosPage() {
         </>
       )}
 
-      {/* Modals */}
+      </div>
+
+      {/* Modals (shared) */}
       <EnvelopeModal
         open={modalOpen}
         mode={editingBudget ? 'edit' : 'create'}
@@ -587,6 +690,6 @@ export default function OrcamentosPage() {
         onClose={() => setCopyModalOpen(false)}
         onConfirm={handleCopy}
       />
-    </div>
+    </>
   )
 }

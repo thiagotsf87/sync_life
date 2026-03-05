@@ -8,7 +8,6 @@ import { useShellStore } from '@/stores/shell-store'
 import { useCategories } from '@/hooks/use-categories'
 import { useCalendario, type CalendarDayData, type CalendarTransaction } from '@/hooks/use-calendario'
 import { SLCard } from '@/components/ui/sl-card'
-import { KpiCard } from '@/components/ui/kpi-card'
 import { TransacaoModal } from '@/components/financas/TransacaoModal'
 import { PlanningEventModal } from '@/components/financas/PlanningEventModal'
 import { usePlanejamento, type EventFormData } from '@/hooks/use-planejamento'
@@ -286,24 +285,134 @@ export default function CalendarioFinanceiroPage() {
   const formatDayFull = (date: Date) =>
     date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })
 
-  return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+  // Mobile: find today data
+  const todayData = calendarDays.find(d => d.isToday) ?? null
+  const mobileSelectedDay = selectedDay ?? todayData
 
-      {/* ① Page Header */}
-      <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
-        <div>
-          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#10b981] mb-0.5">
-            <span className="w-[5px] h-[5px] rounded-full bg-[#10b981]" />
-            Finanças
+  return (
+    <>
+      {/* ═══════════ MOBILE VIEW ═══════════ */}
+      <div className="lg:hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>Calendário</h1>
+            <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">Visão mensal</p>
           </div>
-          <h1 className={cn(
-            'font-[Syne] font-extrabold text-[22px] tracking-tight max-sm:hidden',
-            isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-          )}>
-            📅 Calendário Financeiro
-          </h1>
-          <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Visualize e planeje suas finanças dia a dia.</p>
         </div>
+
+        {/* Month nav */}
+        <div className="flex items-center justify-between mb-2">
+          <button onClick={prevMonth} className="p-2 text-[var(--sl-t2)]"><ChevronLeft size={18} /></button>
+          <span className="font-[Syne] font-bold text-[var(--sl-t1)]">{MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
+          <button onClick={nextMonth} className="p-2 text-[var(--sl-t2)]"><ChevronRight size={18} /></button>
+        </div>
+
+        {/* Day headers */}
+        <div className="grid grid-cols-7 gap-[2px] px-4 mb-1">
+          {DAY_HEADERS.map(d => (
+            <div key={d} className="text-center text-[10px] font-medium text-[var(--sl-t3)] py-1">{d}</div>
+          ))}
+        </div>
+
+        {/* Calendar grid (mobile) */}
+        {loading ? (
+          <div className="px-4 py-8 text-center text-[12px] text-[var(--sl-t3)]">Carregando...</div>
+        ) : (
+          <div className="grid grid-cols-7 gap-[2px] px-4 mb-3">
+            {calendarDays.map(day => {
+              const isToday = day.isToday
+              const hasEvent = day.transactions.length > 0
+              const isSelected = mobileSelectedDay?.dateString === day.dateString
+
+              return (
+                <button
+                  key={day.dateString}
+                  onClick={() => { if (day.isCurrentMonth) setSelectedDay(day) }}
+                  className={cn(
+                    'h-[38px] rounded-lg flex flex-col items-center justify-center relative text-[13px]',
+                    !day.isCurrentMonth && 'opacity-20',
+                    isToday && 'font-bold',
+                    isSelected && !isToday && 'bg-[var(--sl-s2)]',
+                  )}
+                  style={isToday ? { background: '#06b6d4', color: '#fff' } : { color: 'var(--sl-t2)' }}
+                >
+                  {day.day}
+                  {hasEvent && !isToday && (
+                    <span className="absolute bottom-[3px] w-1 h-1 rounded-full bg-[#10b981]" />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Legend */}
+        <div className="flex items-center gap-3 px-4 mb-3">
+          <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+            <span className="w-2 h-2 rounded-full bg-[#10b981]" /> Receita
+          </span>
+          <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+            <span className="w-2 h-2 rounded-full bg-[#f43f5e]" /> Despesa
+          </span>
+          <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+            <span className="w-2 h-2 rounded-full bg-[#06b6d4]" /> Hoje
+          </span>
+        </div>
+
+        {/* Selected day events */}
+        {mobileSelectedDay && mobileSelectedDay.transactions.length > 0 && (
+          <>
+            <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-4 pb-2">
+              {mobileSelectedDay.isToday ? 'Hoje' : mobileSelectedDay.day} — {MONTH_NAMES[currentDate.getMonth()].slice(0, 3).toUpperCase()}
+            </div>
+            <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
+              {mobileSelectedDay.transactions.map(txn => (
+                <div key={txn.id} className="flex items-center gap-3 px-4 py-3 border-b border-[var(--sl-border)] last:border-b-0">
+                  <div
+                    className="w-[4px] h-[40px] rounded-sm shrink-0"
+                    style={{ background: txn.type === 'income' ? '#10b981' : '#f43f5e' }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{txn.description}</div>
+                    <div className="text-[12px] text-[var(--sl-t2)]">{txn.categoryName ?? '—'}</div>
+                  </div>
+                  <div className={cn(
+                    'font-[DM_Mono] text-[14px] font-medium shrink-0',
+                    txn.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                  )}>
+                    {txn.type === 'income' ? '+' : '-'}{fmtR(txn.amount)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {mobileSelectedDay && mobileSelectedDay.transactions.length === 0 && (
+          <div className="text-center py-6 text-[12px] text-[var(--sl-t3)]">Nenhuma transação neste dia.</div>
+        )}
+        <div className="h-5" />
+      </div>
+
+      {/* ═══════════ DESKTOP VIEW ═══════════ */}
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+
+        {/* ① Page Header */}
+        <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
+          <div>
+            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#10b981] mb-0.5">
+              <span className="w-[5px] h-[5px] rounded-full bg-[#10b981]" />
+              Finanças
+            </div>
+            <h1 className={cn(
+              'font-[Syne] font-extrabold text-[22px] tracking-tight',
+              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+            )}>
+              📅 Calendário Financeiro
+            </h1>
+            <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Visualize e planeje suas finanças dia a dia.</p>
+          </div>
 
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
           {/* Month navigation */}
@@ -366,39 +475,19 @@ export default function CalendarioFinanceiroPage() {
 
       {/* ④ Week Summary */}
       <div className="grid grid-cols-4 gap-2.5 mb-4 max-sm:grid-cols-2">
-        <KpiCard
-          label="Receitas semana"
-          value={fmtR(weekRecipes)}
-          accent="#10b981"
-          icon="💰"
-          iconBg="rgba(16,185,129,0.12)"
-          delay="sl-delay-1"
-        />
-        <KpiCard
-          label="Despesas semana"
-          value={fmtR(weekExpenses)}
-          accent="#f43f5e"
-          icon="📤"
-          iconBg="rgba(244,63,94,0.12)"
-          delay="sl-delay-2"
-        />
-        <KpiCard
-          label="Saldo semana"
-          value={fmtR(weekBalance)}
-          accent={weekBalance >= 0 ? '#10b981' : '#f43f5e'}
-          icon={weekBalance >= 0 ? '💚' : '📉'}
-          iconBg={weekBalance >= 0 ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.12)'}
-          delay="sl-delay-3"
-        />
-        <KpiCard
-          label="Pendentes"
-          value={String(weekPending)}
-          delta={`${weekPending} futuro${weekPending !== 1 ? 's' : ''}`}
-          accent="#06b6d4"
-          icon="📋"
-          iconBg="rgba(6,182,212,0.12)"
-          delay="sl-delay-4"
-        />
+        {[
+          { label: 'Receitas semana',  value: fmtR(weekRecipes),  color: '#10b981' },
+          { label: 'Despesas semana',  value: fmtR(weekExpenses), color: '#f43f5e' },
+          { label: 'Saldo semana',     value: fmtR(weekBalance),  color: weekBalance >= 0 ? '#10b981' : '#f43f5e' },
+          { label: 'Pendentes',        value: String(weekPending), color: '#60a5fa', delta: `${weekPending} futuros` },
+        ].map(c => (
+          <div key={c.label} className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 overflow-hidden transition-colors hover:border-[var(--sl-border-h)] sl-fade-up">
+            <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: c.color }} />
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">{c.label}</p>
+            <p className="font-[DM_Mono] font-medium text-xl leading-none" style={{ color: c.color }}>{c.value}</p>
+            {c.delta && <p className="text-[11px] mt-1 text-[var(--sl-t3)]">{c.delta}</p>}
+          </div>
+        ))}
       </div>
 
       {/* Error */}
@@ -598,7 +687,9 @@ export default function CalendarioFinanceiroPage() {
         </button>
       </div>
 
-      {/* ─── Modals ─── */}
+      </div>
+
+      {/* ─── Modals (shared) ─── */}
       <TransacaoModal
         open={addModalOpen}
         mode="create"
@@ -615,6 +706,6 @@ export default function CalendarioFinanceiroPage() {
         onClose={() => setPlanModalOpen(false)}
         onSave={handleAddEvent}
       />
-    </div>
+    </>
   )
 }

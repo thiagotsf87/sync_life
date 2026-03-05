@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X, Search, ChevronDown, ChevronUp } from 'lucide-react'
+import { AIInsightCard } from '@/components/ui/ai-insight-card'
 import { useShellStore } from '@/stores/shell-store'
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
@@ -358,7 +359,8 @@ export default function ConquistasPage() {
   const [modalBadge, setModalBadge] = useState<Badge | null>(null)
   const [heroCount,  setHeroCount]  = useState(0)
   const [heroBarW,   setHeroBarW]   = useState(0)
-  const catTabsRef = useRef<HTMLDivElement>(null)
+  const [mobileExpandUnlocked, setMobileExpandUnlocked] = useState(false)
+  const [mobileExpandLocked,   setMobileExpandLocked]   = useState(false)
 
   // Animated counter + bar after mount
   useEffect(() => {
@@ -381,21 +383,11 @@ export default function ConquistasPage() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
-  // Auto-scroll active category tab into view
-  useEffect(() => {
-    if (!catTabsRef.current) return
-    const container = catTabsRef.current
-    const activeBtn = container.querySelector('[data-active="true"]') as HTMLElement
-    if (activeBtn) {
-      const btnCenter = activeBtn.offsetLeft + activeBtn.offsetWidth / 2
-      container.scrollLeft = btnCenter - container.clientWidth / 2
-    }
-  }, [curCat])
-
   // Filtered badge lists
   const filtered    = BADGES.filter(b => curCat === 'all' || b.cat === curCat)
   const visUnlocked = filtered.filter(b => b.unlocked)
   const visLocked   = showLocked ? filtered.filter(b => !b.unlocked) : []
+  const allLocked   = filtered.filter(b => !b.unlocked) // mobile: always visible
 
   function catCount(cat: string) {
     const pool = cat === 'all' ? BADGES : BADGES.filter(b => b.cat === cat)
@@ -405,7 +397,205 @@ export default function ConquistasPage() {
   const nextLocked = BADGES.find(b => !b.unlocked)
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    {/* ═══════ MOBILE ═══════ */}
+    <div className="lg:hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 pt-4 pb-3">
+        <div>
+          <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>
+            Conquistas
+          </h1>
+          <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">
+            {TOTAL_UNLOCKED} de {TOTAL_ALL} desbloqueadas
+          </p>
+        </div>
+        <button className="flex h-9 w-9 items-center justify-center rounded-[10px]
+                           bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]">
+          <Search size={16} />
+        </button>
+      </div>
+
+      {/* Hero card */}
+      <div className="mx-4 mb-3 rounded-[16px] p-5 relative overflow-hidden bg-[var(--sl-s1)] border border-[var(--sl-border)]">
+        <div className="absolute top-0 left-0 right-0 h-[3px]"
+             style={{ background: 'linear-gradient(90deg, #f59e0b, #f97316, #ec4899, #8b5cf6)' }} />
+        <div className="flex items-end gap-1.5 mb-1.5">
+          <span className="font-[Syne] text-[42px] font-extrabold leading-none"
+                style={{ background: 'linear-gradient(135deg, #f59e0b, #f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            {heroCount}
+          </span>
+          <span className="font-[DM_Mono] text-[16px] text-[var(--sl-t3)] mb-1">/ {TOTAL_ALL}</span>
+        </div>
+        <p className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] mb-1">Conquistas desbloqueadas</p>
+        <p className="text-[12px] text-[var(--sl-t3)] mb-3">
+          Você está no <strong className="text-[var(--sl-t1)]">Top 15%</strong> dos usuários
+        </p>
+        <div className="h-1.5 rounded-full overflow-hidden bg-[var(--sl-s3)] mb-1.5">
+          <div className="h-full rounded-full"
+               style={{
+                 width: `${heroBarW}%`,
+                 background: 'linear-gradient(90deg, #f59e0b, #f97316, #ec4899)',
+                 transition: 'width 1.4s cubic-bezier(0.4,0,0.2,1)',
+               }} />
+        </div>
+        <p className="text-[10px] text-[var(--sl-t3)]">{heroBarW}% do total desbloqueado</p>
+      </div>
+
+      {/* Jornada motivational insight */}
+      {isJornada && nextLocked && (
+        <div className="px-4 mb-3">
+          <AIInsightCard icon="🤖" label="Motivação">
+            Você tem <strong>{TOTAL_UNLOCKED} conquistas</strong> e contando.
+            Seu próximo marco é <strong>{nextLocked.name}</strong> — continue assim!
+          </AIInsightCard>
+        </div>
+      )}
+
+      {/* Recent unlocked */}
+      <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+        Recentes
+      </p>
+      <div className="flex flex-col gap-2 px-4 mb-3">
+        {RECENT_UNLOCKED.slice(0, 2).map((b, i) => (
+          <div
+            key={b.id}
+            onClick={() => setModalBadge(b)}
+            className="flex items-center gap-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[12px] px-3.5 py-3 relative overflow-hidden cursor-pointer active:bg-[var(--sl-s2)]"
+          >
+            <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-r" style={{ background: CAT_COLORS[b.cat] }} />
+            <span className="text-[24px] ml-1">{b.icon}</span>
+            <div className="flex-1">
+              <p className="text-[9px] font-bold uppercase tracking-[0.5px] text-[var(--sl-t3)] mb-0.5">
+                {i === 0 ? 'Última conquista' : 'Recente'}
+              </p>
+              <p className="text-[13px] font-bold text-[var(--sl-t1)]">{b.name}</p>
+              <p className="text-[11px] text-[var(--sl-t3)]">{b.date}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter chips */}
+      <div className="flex gap-2 px-4 pb-3 overflow-x-auto [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
+        {(['all', 'fin', 'meta', 'cons', 'agenda', 'corpo', 'patrimonio', 'experiencias'] as const).map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCurCat(cat)}
+            className={`whitespace-nowrap px-3.5 py-[7px] rounded-[20px] text-[12px] font-medium border shrink-0 transition-colors ${
+              curCat === cat
+                ? 'bg-[rgba(16,185,129,0.15)] border-[rgba(16,185,129,0.35)] text-[#10b981]'
+                : 'bg-[var(--sl-s1)] border-[var(--sl-border)] text-[var(--sl-t2)]'
+            }`}
+          >
+            {CAT_LABELS[cat]}
+          </button>
+        ))}
+      </div>
+
+      {/* Desbloqueadas */}
+      {visUnlocked.length > 0 && (
+        <>
+          <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+            ✅ Desbloqueadas ({visUnlocked.length})
+          </p>
+          <div className="grid grid-cols-2 gap-2.5 px-4 mb-2">
+            {(mobileExpandUnlocked ? visUnlocked : visUnlocked.slice(0, 4)).map(b => {
+              const col = CAT_COLORS[b.cat]
+              return (
+                <div
+                  key={b.id}
+                  onClick={() => setModalBadge(b)}
+                  className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5 text-center relative overflow-hidden cursor-pointer active:bg-[var(--sl-s2)]"
+                >
+                  <div className={`inline-flex text-[9px] font-bold uppercase tracking-[0.5px] px-[7px] py-[2px] rounded-[8px] mb-1.5 ${getRarityPill(b.rarity)}`}>
+                    {RARITY_LABELS[b.rarity]}
+                  </div>
+                  <div
+                    className="w-[48px] h-[48px] rounded-[14px] flex items-center justify-center text-[24px] mx-auto mb-2"
+                    style={{ background: `${col}22` }}
+                  >
+                    {b.icon}
+                  </div>
+                  <p className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-1 leading-[1.3]">{b.name}</p>
+                  <p className="text-[11px] text-[var(--sl-t2)] leading-[1.4] mb-1.5">{b.desc}</p>
+                  <p className="text-[10px] text-[var(--sl-t3)]">🗓 {b.date}</p>
+                  <div className="absolute bottom-0 left-0 right-0 h-[3px] rounded-b-[14px]" style={{ background: col }} />
+                </div>
+              )
+            })}
+          </div>
+          {visUnlocked.length > 4 && (
+            <button
+              onClick={() => setMobileExpandUnlocked(!mobileExpandUnlocked)}
+              className="flex items-center justify-center gap-1.5 mx-4 mb-3 w-[calc(100%-32px)] py-2.5 rounded-[12px]
+                         bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] font-semibold text-[var(--sl-t2)]
+                         active:bg-[var(--sl-s3)] transition-colors"
+            >
+              {mobileExpandUnlocked ? 'Mostrar menos' : `Ver todas (${visUnlocked.length})`}
+              {mobileExpandUnlocked ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+          )}
+        </>
+      )}
+
+      {/* Bloqueadas */}
+      {allLocked.length > 0 && (
+        <>
+          <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+            🔒 Bloqueadas ({allLocked.length})
+          </p>
+          <div className="grid grid-cols-2 gap-2.5 px-4 mb-2">
+            {(mobileExpandLocked ? allLocked : allLocked.slice(0, 4)).map(b => {
+              const col = CAT_COLORS[b.cat]
+              const progressPct = Math.round(b.progress / b.progressMax * 100)
+              return (
+                <div
+                  key={b.id}
+                  onClick={() => setModalBadge(b)}
+                  className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5 text-center relative overflow-hidden opacity-50 cursor-pointer active:bg-[var(--sl-s2)]"
+                >
+                  <div className="absolute top-2 right-2 w-[18px] h-[18px] rounded-[6px] bg-[var(--sl-s3)] border border-[var(--sl-border)] flex items-center justify-center text-[10px]">
+                    🔒
+                  </div>
+                  <div className={`inline-flex text-[9px] font-bold uppercase tracking-[0.5px] px-[7px] py-[2px] rounded-[8px] mb-1.5 ${getRarityPill(b.rarity)}`}>
+                    {RARITY_LABELS[b.rarity]}
+                  </div>
+                  <div
+                    className="w-[48px] h-[48px] rounded-[14px] flex items-center justify-center text-[24px] mx-auto mb-2 grayscale opacity-40"
+                    style={{ background: `${col}11` }}
+                  >
+                    {b.icon}
+                  </div>
+                  <p className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-1 leading-[1.3]">{b.name}</p>
+                  <p className="text-[11px] text-[var(--sl-t2)] leading-[1.4] mb-1.5">{b.desc}</p>
+                  <div className="h-[3px] rounded-full overflow-hidden bg-[var(--sl-s3)] mx-2 mb-1">
+                    <div className="h-full rounded-full" style={{ width: `${progressPct}%`, background: col }} />
+                  </div>
+                  <p className="text-[10px] text-[var(--sl-t3)]">{b.progress}/{b.progressMax}</p>
+                </div>
+              )
+            })}
+          </div>
+          {allLocked.length > 4 && (
+            <button
+              onClick={() => setMobileExpandLocked(!mobileExpandLocked)}
+              className="flex items-center justify-center gap-1.5 mx-4 mb-3 w-[calc(100%-32px)] py-2.5 rounded-[12px]
+                         bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] font-semibold text-[var(--sl-t2)]
+                         active:bg-[var(--sl-s3)] transition-colors"
+            >
+              {mobileExpandLocked ? 'Mostrar menos' : `Ver todas (${allLocked.length})`}
+              {mobileExpandLocked ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+          )}
+        </>
+      )}
+
+      <div className="h-4" />
+    </div>
+
+    {/* ═══════ DESKTOP ═══════ */}
+    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16 hidden lg:block">
 
       {/* ① Hero Summary */}
       <div className="flex gap-5 items-stretch mb-[22px] max-sm:flex-col sl-fade-up">
@@ -444,15 +634,12 @@ export default function ConquistasPage() {
           <div className="text-[11px] text-[var(--sl-t3)]">{heroBarW}% do total desbloqueado</div>
         </div>
 
-        {/* Recent Strip — vertical desktop, horizontal scroll mobile */}
-        <div
-          className="flex max-sm:flex-row max-sm:overflow-x-auto max-sm:pb-1 max-sm:snap-x max-sm:snap-mandatory lg:flex-col gap-[10px] min-w-0 lg:min-w-[280px] lg:flex-shrink-0"
-          style={{ scrollbarWidth: 'none' } as React.CSSProperties}
-        >
+        {/* Recent Strip */}
+        <div className="flex flex-col gap-[10px] min-w-[280px] flex-shrink-0 max-sm:min-w-0">
           {RECENT_UNLOCKED.map((b, i) => (
             <div
               key={b.id}
-              className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[14px_18px] flex items-center gap-[14px] cursor-pointer transition-all hover:border-[var(--sl-border-h)] hover:translate-x-0.5 relative overflow-hidden sl-fade-up max-sm:flex-shrink-0 max-sm:w-[240px] max-sm:snap-start"
+              className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[14px_18px] flex items-center gap-[14px] cursor-pointer transition-all hover:border-[var(--sl-border-h)] hover:translate-x-0.5 relative overflow-hidden sl-fade-up"
               style={{ animationDelay: `${i * 0.07}s` }}
               onClick={() => setModalBadge(b)}
             >
@@ -474,7 +661,7 @@ export default function ConquistasPage() {
       </div>
 
       {/* ② Jornada Motivational Phrase */}
-      <div className="hidden jornada:flex items-center gap-3 p-[14px_18px] rounded-[14px] mb-5 bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7 border border-[rgba(16,185,129,0.18)] sl-fade-up">
+      <div className="jornada-only flex items-center gap-3 p-[14px_18px] rounded-[14px] mb-5 bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7 border border-[rgba(16,185,129,0.18)] sl-fade-up">
         <span className="text-[22px] shrink-0">🤖</span>
         <span className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">
           Você tem{' '}
@@ -489,63 +676,38 @@ export default function ConquistasPage() {
       </div>
 
       {/* ③ Category Tabs */}
-      <div className="mb-[22px] sl-fade-up">
-        <div className="relative">
-          <div
-            ref={catTabsRef}
-            className="flex items-center gap-2 overflow-x-auto pb-1"
-            style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
-          >
-            {(['all', 'fin', 'meta', 'cons', 'agenda', 'corpo', 'patrimonio', 'experiencias'] as const).map(cat => {
-              const cnt      = catCount(cat)
-              const isActive = curCat === cat
-              return (
-                <button
-                  key={cat}
-                  data-active={isActive}
-                  onClick={() => setCurCat(cat)}
-                  className={`inline-flex items-center gap-[6px] px-[14px] py-[7px] rounded-[20px] border text-[12px] font-medium transition-all shrink-0 whitespace-nowrap ${
-                    isActive
-                      ? 'border-[rgba(16,185,129,0.25)] bg-[rgba(16,185,129,0.12)] text-[#10b981]'
-                      : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t2)]'
-                  }`}
-                >
-                  {CAT_LABELS[cat]}
-                  <span className="font-[DM_Mono] text-[10px] opacity-70">{cnt.done}/{cnt.total}</span>
-                </button>
-              )
-            })}
-            {/* Checkbox inline on desktop, hidden on mobile */}
-            <label className="ml-auto shrink-0 hidden lg:flex items-center gap-[7px] text-[12px] text-[var(--sl-t3)] cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={showLocked}
-                onChange={e => setShowLocked(e.target.checked)}
-                className="accent-[#10b981] cursor-pointer"
-              />
-              Mostrar bloqueadas
-            </label>
-          </div>
-          {/* Right fade mask — mobile only */}
-          <div
-            className="absolute right-0 top-0 bottom-1 w-8 pointer-events-none lg:hidden"
-            style={{ background: 'linear-gradient(to right, transparent, var(--sl-bg))' }}
-          />
-        </div>
-        {/* Checkbox on mobile — separate row */}
-        <label className="lg:hidden flex items-center gap-[7px] text-[12px] text-[var(--sl-t3)] cursor-pointer select-none mt-2">
+      <div className="flex items-center gap-2 mb-[22px] flex-wrap sl-fade-up">
+        {(['all', 'fin', 'meta', 'cons', 'agenda', 'corpo', 'patrimonio', 'experiencias'] as const).map(cat => {
+          const cnt      = catCount(cat)
+          const isActive = curCat === cat
+          return (
+            <button
+              key={cat}
+              onClick={() => setCurCat(cat)}
+              className={`inline-flex items-center gap-[6px] px-[14px] py-[7px] rounded-[20px] border text-[12px] font-medium transition-all ${
+                isActive
+                  ? 'border-[#0055ff] bg-[rgba(0,85,255,0.15)] text-[#0055ff]'
+                  : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t2)]'
+              }`}
+            >
+              {CAT_LABELS[cat]}
+              <span className="font-[DM_Mono] text-[10px] opacity-70">{cnt.done}/{cnt.total}</span>
+            </button>
+          )
+        })}
+        <label className="ml-auto flex items-center gap-[7px] text-[12px] text-[var(--sl-t3)] cursor-pointer select-none">
           <input
             type="checkbox"
             checked={showLocked}
             onChange={e => setShowLocked(e.target.checked)}
-            className="accent-[#10b981] cursor-pointer"
+            className="accent-[#0055ff] cursor-pointer"
           />
           Mostrar bloqueadas
         </label>
       </div>
 
       {/* ④-A Grid View (Jornada) */}
-      <div className="hidden jornada:block">
+      <div className="jornada-only">
         {visUnlocked.length > 0 && (
           <>
             <SectionLabel>✅ Desbloqueadas ({visUnlocked.length})</SectionLabel>
@@ -574,7 +736,7 @@ export default function ConquistasPage() {
       </div>
 
       {/* ④-B List View (Foco) */}
-      <div className="block jornada:hidden">
+      <div className="foco-only">
         {visUnlocked.length > 0 && (
           <>
             <SectionLabel>✅ Desbloqueadas ({visUnlocked.length})</SectionLabel>
@@ -597,14 +759,16 @@ export default function ConquistasPage() {
         )}
       </div>
 
-      {/* Modal */}
-      {modalBadge && (
-        <BadgeModal
-          badge={modalBadge}
-          isJornada={isJornada}
-          onClose={() => setModalBadge(null)}
-        />
-      )}
     </div>
+
+    {/* Modal — shared mobile/desktop */}
+    {modalBadge && (
+      <BadgeModal
+        badge={modalBadge}
+        isJornada={isJornada}
+        onClose={() => setModalBadge(null)}
+      />
+    )}
+    </>
   )
 }

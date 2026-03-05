@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Category } from './use-categories'
 import { syncFinanceCategoryToFuturo } from '@/lib/integrations/futuro'
+import { USE_MOCK, MOCK_TRANSACTIONS } from '@/lib/mock-financas'
 
 export interface Transaction {
   id: string
@@ -91,6 +92,19 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
     cancelled.current = false
     setIsLoading(true)
     setError(null)
+
+    if (USE_MOCK) {
+      let filtered = MOCK_TRANSACTIONS as unknown as Transaction[]
+      if (options.type === 'income') filtered = filtered.filter(t => t.type === 'income')
+      if (options.type === 'expense') filtered = filtered.filter(t => t.type === 'expense')
+      if (options.type === 'recurring') filtered = filtered.filter(t => t.recurring_transaction_id !== null)
+      if (debouncedSearch) filtered = filtered.filter(t => t.description.toLowerCase().includes(debouncedSearch.toLowerCase()))
+      if (options.categoryId) filtered = filtered.filter(t => t.category?.id === options.categoryId)
+      setTransactions(filtered.slice(0, PAGE_SIZE))
+      setTotal(filtered.length)
+      setIsLoading(false)
+      return
+    }
 
     const supabase = createClient()
 

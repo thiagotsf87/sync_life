@@ -198,7 +198,7 @@ export default function PesoPage() {
           Corpo
         </button>
         <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1 max-sm:hidden',
+          'font-[Syne] font-extrabold text-xl flex-1',
           isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
         )}>
           ⚖️ Peso & Medidas

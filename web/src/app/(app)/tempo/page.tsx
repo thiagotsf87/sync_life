@@ -11,6 +11,7 @@ import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { EventModal } from '@/components/agenda/EventModal'
 import { DeleteEventModal } from '@/components/agenda/DeleteEventModal'
+import { TempoMobile } from '@/components/tempo/TempoMobile'
 
 // ─── CONSTANTES ───────────────────────────────────────────────────────────────
 
@@ -362,8 +363,59 @@ export default function AgendaSemanalPage() {
   const isCurrentWeek = weekDays.some(d => dateStr(d) === today)
   const hasAllDay = events.some(e => e.all_day)
 
+  // ── Mobile event data ──────────────────────────────────────────────────
+  const mobileEvents = events.map(ev => {
+    const cfg = EVENT_TYPES[ev.type]
+    return {
+      id: ev.id,
+      title: ev.title,
+      date: ev.date,
+      startTime: ev.start_time ?? undefined,
+      endTime: ev.end_time ?? undefined,
+      location: ev.location ?? undefined,
+      duration: ev.start_time && ev.end_time
+        ? (() => {
+            const [sh, sm] = ev.start_time!.split(':').map(Number)
+            const [eh, em] = ev.end_time!.split(':').map(Number)
+            const mins = (eh * 60 + em) - (sh * 60 + sm)
+            return mins >= 60 ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? mins % 60 + 'min' : ''}` : `${mins}min`
+          })()
+        : undefined,
+      color: cfg?.color ?? '#06b6d4',
+      tags: cfg
+        ? [{ label: cfg.label, bg: `${cfg.color}15`, color: cfg.color }]
+        : [],
+    }
+  })
+
+  const mobileEventDotColors: Record<string, string> = {}
+  events.forEach(ev => {
+    if (!mobileEventDotColors[ev.date]) {
+      const cfg = EVENT_TYPES[ev.type]
+      mobileEventDotColors[ev.date] = cfg?.color ?? '#06b6d4'
+    }
+  })
+
   return (
-    <div className="max-w-[1140px] mx-auto px-4 py-7 pb-16">
+    <>
+    <TempoMobile
+      weekDays={weekDays}
+      selectedDay={selectedDay}
+      onSelectDay={setSelectedDay}
+      today={today}
+      events={mobileEvents}
+      onNewEvent={() => setEventModal({
+        open: true,
+        mode: 'create',
+        defaultDate: weekDays[selectedDay] ? dateStr(weekDays[selectedDay]) : today,
+      })}
+      onEventClick={(id) => {
+        const ev = events.find(e => e.id === id)
+        if (ev) setEventModal({ open: true, mode: 'edit', event: ev })
+      }}
+      eventDotColors={mobileEventDotColors}
+    />
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-4 py-7 pb-16">
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
@@ -398,11 +450,11 @@ export default function AgendaSemanalPage() {
         )}
         <button
           onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
-          className="max-lg:hidden flex items-center gap-2 px-4 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110"
+          className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110"
           style={{ background: '#06b6d4' }}
         >
           <Plus size={15} />
-          Novo Evento
+          <span className="max-sm:hidden">Novo Evento</span>
         </button>
       </div>
 
@@ -591,13 +643,15 @@ export default function AgendaSemanalPage() {
           mode: 'create',
           defaultDate: weekDays[selectedDay] ? dateStr(weekDays[selectedDay]) : today,
         })}
-        className="fixed bottom-6 right-6 lg:hidden w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-white z-30 transition-all hover:brightness-110"
+        className="fixed bottom-6 right-6 md:hidden w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-white z-30 transition-all hover:brightness-110"
         style={{ background: '#06b6d4' }}
       >
         <Plus size={22} />
       </button>
 
-      {/* Modais */}
+    </div>
+
+      {/* Modais — shared by mobile + desktop */}
       <EventModal
         open={eventModal.open}
         mode={eventModal.mode}
@@ -614,7 +668,6 @@ export default function AgendaSemanalPage() {
         onClose={() => setDeleteModal({ open: false, event: null })}
         onConfirm={handleDelete}
       />
-
-    </div>
+    </>
   )
 }

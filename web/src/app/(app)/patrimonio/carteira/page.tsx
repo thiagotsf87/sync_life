@@ -194,7 +194,7 @@ export default function CarteiraPage() {
           Patrimônio
         </button>
         <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1 max-sm:hidden',
+          'font-[Syne] font-extrabold text-xl flex-1',
           isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
         )}>
           💼 Carteira
@@ -234,7 +234,7 @@ export default function CarteiraPage() {
 
       {/* Stats */}
       {assets.length > 0 && (
-        <div className="grid grid-cols-3 gap-3 mb-5 max-sm:grid-cols-2">
+        <div className="grid grid-cols-3 gap-3 mb-5 max-sm:grid-cols-1">
           {[
             { label: 'Total de Ativos', value: String(assets.length), color: '#10b981' },
             { label: 'Total Investido', value: totalInvested.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), color: '#0055ff' },

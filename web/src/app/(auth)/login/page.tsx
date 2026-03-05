@@ -56,7 +56,7 @@ export default function LoginPage() {
       if (!profile?.onboarding_completed) {
         router.push('/onboarding')
       } else {
-        router.push('/financas')
+        router.push('/dashboard')
       }
       router.refresh()
     } catch {
@@ -100,8 +100,8 @@ export default function LoginPage() {
 
   return (
     <>
-      <h2 className="form-title">Bem-vindo de volta.</h2>
-      <p className="form-subtitle">Entre na sua conta para continuar evoluindo.</p>
+      <h2 className="form-title max-[900px]:text-center">Bem-vindo de volta.</h2>
+      <p className="form-subtitle max-[900px]:text-center">Entre na sua conta para continuar evoluindo.</p>
 
       {/* Google */}
       <button type="button" className="btn-google" onClick={handleGoogleLogin}>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife Mobile — Corpo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;
+  --fin:#10b981;--fin-g:rgba(16,185,129,0.15);
+  --tempo:#06b6d4;--futuro:#0055ff;
+  --corpo:#f97316;--corpo-g:rgba(249,115,22,0.15);
+  --mente:#8b5cf6;--patrimonio:#f59e0b;--carreira:#ec4899;--exp:#14b8a6;
+  --green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--orange:#f97316;
+  --bottom-h:68px;--radius:16px;--radius-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:#0a0e1a;font-family:'DM Sans',sans-serif;color:var(--t1);}
+.demo-page{padding:40px 20px 60px;max-width:1600px;margin:0 auto;}
+.demo-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#f97316,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.demo-subtitle{font-size:14px;color:var(--t2);margin-bottom:40px;}
+.screens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(375px,1fr));gap:40px 28px;}
+.screen-wrapper{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.screen-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:1px;text-align:center;}
+.screen-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;margin-top:2px;}
+.tag-new{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);}
+
+/* Phone */
+.phone{width:375px;height:812px;background:var(--bg);border-radius:48px;border:2px solid rgba(255,255,255,0.1);overflow:hidden;position:relative;box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);}
+.dynamic-island{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:100;}
+.status-bar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;z-index:50;background:linear-gradient(180deg,var(--bg) 60%,transparent);}
+.status-time{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:var(--t1);}
+.screen-scroll{position:absolute;top:54px;left:0;right:0;bottom:var(--bottom-h);overflow-y:auto;overflow-x:hidden;scrollbar-width:none;}
+.screen-scroll::-webkit-scrollbar{display:none;}
+
+/* Bottom nav */
+.bottom-bar{position:absolute;bottom:0;left:0;right:0;height:var(--bottom-h);background:rgba(7,17,43,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 8px 8px;z-index:50;}
+.bottom-tab{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 10px;border-radius:12px;min-width:52px;}
+.bottom-tab svg{width:22px;height:22px;}
+.bottom-tab span{font-size:10px;font-weight:500;color:var(--t3);}
+.bottom-tab.active svg{color:var(--em);}
+.bottom-tab.active span{color:var(--em);}
+.bottom-tab:not(.active) svg{color:var(--t3);}
+.fab-center{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#10b981,#0055ff);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(16,185,129,0.4);position:relative;top:-6px;border:3px solid var(--bg);}
+.fab-center svg{width:22px;height:22px;color:#fff;}
+
+/* Common */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-green{background:rgba(16,185,129,0.12);color:#10b981;}
+.badge-red{background:rgba(244,63,94,0.12);color:#f43f5e;}
+.badge-yellow{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.badge-orange{background:rgba(249,115,22,0.12);color:#f97316;}
+.badge-purple{background:rgba(139,92,246,0.12);color:#a78bfa;}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;padding:0 20px 8px;margin-top:4px;}
+.progress-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;}
+.list-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);}
+.list-item:last-child{border-bottom:none;}
+.list-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.list-info{flex:1;min-width:0;}
+.list-title{font-size:14px;font-weight:500;color:var(--t1);}
+.list-sub{font-size:12px;color:var(--t2);margin-top:1px;}
+.screen-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;}
+.header-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--t1);}
+.header-btn{width:36px;height:36px;border-radius:10px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--t2);}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;}
+.kpi-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
+.kpi-label{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.kpi-value{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--t1);}
+.kpi-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.module-tabs{display:flex;gap:6px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none;}
+.module-tabs::-webkit-scrollbar{display:none;}
+.module-tab{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;flex-shrink:0;}
+.module-tab.active{background:var(--corpo);color:#fff;}
+.module-tab:not(.active){background:var(--s1);color:var(--t2);border:1px solid var(--border);}
+
+/* Bottom nav SVGs shortcut */
+svg{display:inline-block;}
+</style>
+</head>
+<body>
+<div class="demo-page">
+  <div class="demo-title">🏃 Corpo — 5 telas mobile</div>
+  <div class="demo-subtitle">Dashboard · Evolução · Consultas · Atividades · Nutrição</div>
+
+  <div class="screens-grid">
+
+    <!-- ═══ 01: DASHBOARD ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">01 — Dashboard</div>
+      <div class="screen-tag tag-new">Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-scroll">
+          <div class="screen-header">
+            <div>
+              <div style="font-size:12px;color:var(--corpo);font-weight:500;margin-bottom:2px;">🏃 Corpo</div>
+              <div class="header-title">Sua saúde hoje</div>
+            </div>
+            <div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          </div>
+
+          <div class="module-tabs">
+            <div class="module-tab active">Dashboard</div>
+            <div class="module-tab">Evolução</div>
+            <div class="module-tab">Consultas</div>
+            <div class="module-tab">Atividades</div>
+            <div class="module-tab">Nutrição</div>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Peso atual</div>
+              <div class="kpi-value" style="color:var(--corpo);">78,4<span style="font-size:13px;">kg</span></div>
+              <div class="kpi-sub">↓ 0,6kg esta semana</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">IMC</div>
+              <div class="kpi-value" style="color:var(--yellow);">24,1</div>
+              <div class="kpi-sub">Normal · Estável</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Atividades/semana</div>
+              <div class="kpi-value">3<span style="font-size:13px;">/4</span></div>
+              <div class="kpi-sub">Meta: 4/semana</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Hidratação</div>
+              <div class="kpi-value" style="color:var(--tempo);">1,8<span style="font-size:13px;">L</span></div>
+              <div class="kpi-sub">Meta: 2,5L</div>
+            </div>
+          </div>
+
+          <!-- Weight sparkline -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span style="font-size:14px;font-weight:600;color:var(--t1);">Evolução do peso</span>
+              <span class="badge badge-green">↓ 1,8kg no mês</span>
+            </div>
+            <svg viewBox="0 0 320 70" style="width:100%;height:70px;">
+              <defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f97316" stop-opacity="0.3"/><stop offset="100%" stop-color="#f97316" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,60 C40,57 80,50 120,46 C160,42 200,45 240,38 C280,32 300,30 320,28" fill="none" stroke="var(--corpo)" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M0,60 C40,57 80,50 120,46 C160,42 200,45 240,38 C280,32 300,30 320,28 L320,70 L0,70Z" fill="url(#wg)"/>
+              <circle cx="320" cy="28" r="5" fill="var(--corpo)"/>
+              <line x1="0" y1="14" x2="320" y2="14" stroke="rgba(16,185,129,0.35)" stroke-width="1.5" stroke-dasharray="5,4"/>
+              <text x="4" y="11" fill="#10b981" font-size="9" font-family="DM Sans">Meta: 76kg</text>
+            </svg>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--t3);">
+              <span>1 Fev</span><span>Hoje · 78,4kg</span>
+            </div>
+          </div>
+
+          <!-- Next appointment -->
+          <div class="section-title">PRÓXIMA CONSULTA</div>
+          <div class="card" style="background:rgba(249,115,22,0.06);border-color:rgba(249,115,22,0.2);">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <div style="width:44px;height:44px;border-radius:12px;background:var(--corpo-g);display:flex;align-items:center;justify-content:center;font-size:22px;">🦷</div>
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:600;color:var(--t1);">Dentista — Dra. Silva</div>
+                <div style="font-size:12px;color:var(--t2);">Qua, 4 Mar · 14:00</div>
+                <div style="font-size:12px;color:var(--yellow);margin-top:2px;">💰 R$ 280 alocado em Saúde</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI insight -->
+          <div class="card" style="background:rgba(0,85,255,0.06);border-color:rgba(0,85,255,0.15);">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="font-size:18px;">🤖</span>
+              <div style="font-size:13px;color:var(--t2);line-height:1.5;">Você está no ritmo certo para perder 2kg até 30 Abr. <span style="color:var(--corpo);">Beba 700ml a mais hoje</span> para atingir a meta de hidratação.</div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+        <div class="bottom-bar">
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div>
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div>
+          <div class="fab-center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div>
+          <div class="bottom-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg><span>Mais</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 02: EVOLUÇÃO CORPORAL ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">02 — Evolução Corporal</div>
+      <div class="screen-tag tag-new">Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-scroll">
+          <div class="screen-header">
+            <div>
+              <div style="font-size:12px;color:var(--corpo);font-weight:500;margin-bottom:2px;">🏃 Corpo</div>
+              <div class="header-title">Evolução Corporal</div>
+            </div>
+            <div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          </div>
+
+          <!-- Period filter -->
+          <div style="display:flex;gap:4px;padding:0 16px 12px;">
+            <div style="padding:6px 14px;border-radius:20px;background:var(--corpo);color:#fff;font-size:13px;font-weight:500;">30 dias</div>
+            <div style="padding:6px 14px;border-radius:20px;background:var(--s1);color:var(--t2);font-size:13px;border:1px solid var(--border);">3 meses</div>
+            <div style="padding:6px 14px;border-radius:20px;background:var(--s1);color:var(--t2);font-size:13px;border:1px solid var(--border);">6 meses</div>
+          </div>
+
+          <!-- Weight chart -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="font-size:14px;font-weight:600;color:var(--t1);">Peso (kg)</span>
+              <div style="text-align:right;">
+                <div style="font-family:'DM Mono',monospace;font-size:18px;color:var(--corpo);">78,4</div>
+                <div style="font-size:11px;color:var(--em);">↓ 1,8kg no período</div>
+              </div>
+            </div>
+            <svg viewBox="0 0 320 90" style="width:100%;height:90px;">
+              <defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f97316" stop-opacity="0.25"/><stop offset="100%" stop-color="#f97316" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,70 C50,66 100,58 150,52 C200,46 250,49 300,40 L320,36" fill="none" stroke="var(--corpo)" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M0,70 C50,66 100,58 150,52 C200,46 250,49 300,40 L320,36 L320,90 L0,90Z" fill="url(#cg1)"/>
+              <circle cx="320" cy="36" r="5" fill="var(--corpo)"/>
+              <line x1="0" y1="18" x2="320" y2="18" stroke="rgba(16,185,129,0.4)" stroke-width="1.5" stroke-dasharray="6,4"/>
+              <text x="4" y="15" fill="#10b981" font-size="9" font-family="DM Sans">Meta: 76kg</text>
+            </svg>
+          </div>
+
+          <!-- Medidas grid -->
+          <div class="section-title">MEDIDAS</div>
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Cintura</div>
+              <div class="kpi-value" style="color:var(--corpo);">84<span style="font-size:13px;">cm</span></div>
+              <div class="kpi-sub">↓ 2cm no mês</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Quadril</div>
+              <div class="kpi-value">96<span style="font-size:13px;">cm</span></div>
+              <div class="kpi-sub">Estável</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Gordura corp.</div>
+              <div class="kpi-value" style="color:var(--yellow);">21,4<span style="font-size:13px;">%</span></div>
+              <div class="kpi-sub">↓ 0,8% no mês</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Massa muscular</div>
+              <div class="kpi-value" style="color:var(--em);">58,2<span style="font-size:13px;">kg</span></div>
+              <div class="kpi-sub">↑ 0,4kg no mês</div>
+            </div>
+          </div>
+
+          <!-- Register CTA -->
+          <div style="padding:0 16px 12px;">
+            <div style="background:linear-gradient(135deg,var(--corpo),rgba(249,115,22,0.6));border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:20px;">📏</span>
+                <div>
+                  <div style="font-size:14px;font-weight:600;color:#fff;">Registrar medição</div>
+                  <div style="font-size:12px;color:rgba(255,255,255,0.7);">Último: 28 Fev</div>
+                </div>
+              </div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="width:18px;height:18px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+          </div>
+
+          <!-- History -->
+          <div class="section-title">HISTÓRICO</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div style="width:42px;text-align:center;flex-shrink:0;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--corpo);">78,4</div>
+                <div style="font-size:10px;color:var(--t3);">kg</div>
+              </div>
+              <div class="list-info">
+                <div class="list-title">28 Fev 2026</div>
+                <div class="list-sub">IMC 24,1 · Gordura 21,4%</div>
+              </div>
+              <span style="font-size:12px;color:var(--em);">↓ 0,6</span>
+            </div>
+            <div class="list-item">
+              <div style="width:42px;text-align:center;flex-shrink:0;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--t2);">79,0</div>
+                <div style="font-size:10px;color:var(--t3);">kg</div>
+              </div>
+              <div class="list-info">
+                <div class="list-title">21 Fev 2026</div>
+                <div class="list-sub">IMC 24,3 · Gordura 21,8%</div>
+              </div>
+              <span style="font-size:12px;color:var(--em);">↓ 0,4</span>
+            </div>
+            <div class="list-item">
+              <div style="width:42px;text-align:center;flex-shrink:0;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--t2);">79,4</div>
+                <div style="font-size:10px;color:var(--t3);">kg</div>
+              </div>
+              <div class="list-info">
+                <div class="list-title">14 Fev 2026</div>
+                <div class="list-sub">IMC 24,5 · Gordura 22,2%</div>
+              </div>
+              <span style="font-size:12px;color:var(--em);">↓ 0,8</span>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+        <div class="bottom-bar">
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div>
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div>
+          <div class="fab-center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div>
+          <div class="bottom-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg><span>Mais</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 03: CONSULTAS MÉDICAS ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">03 — Consultas Médicas</div>
+      <div class="screen-tag tag-new">Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-scroll">
+          <div class="screen-header">
+            <div>
+              <div style="font-size:12px;color:var(--corpo);font-weight:500;margin-bottom:2px;">🏃 Corpo</div>
+              <div class="header-title">Consultas Médicas</div>
+            </div>
+            <div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          </div>
+
+          <div class="section-title">PRÓXIMAS</div>
+
+          <!-- Appointment card 1 -->
+          <div class="card" style="background:rgba(249,115,22,0.07);border-color:rgba(249,115,22,0.25);">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <div style="width:46px;height:46px;border-radius:13px;background:var(--corpo-g);display:flex;align-items:center;justify-content:center;font-size:22px;">🦷</div>
+              <div style="flex:1;">
+                <div style="font-size:15px;font-weight:600;color:var(--t1);">Dentista</div>
+                <div style="font-size:12px;color:var(--t2);">Dra. Silva — Clínica Oral Plus</div>
+              </div>
+              <span class="badge badge-orange">Em 3 dias</span>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;background:var(--s2);border-radius:10px;padding:8px;text-align:center;">
+                <div style="font-size:10px;color:var(--t2);">DATA</div>
+                <div style="font-size:13px;font-weight:600;color:var(--t1);">Qua, 4 Mar</div>
+              </div>
+              <div style="flex:1;background:var(--s2);border-radius:10px;padding:8px;text-align:center;">
+                <div style="font-size:10px;color:var(--t2);">HORÁRIO</div>
+                <div style="font-size:13px;font-weight:600;color:var(--t1);">14:00</div>
+              </div>
+              <div style="flex:1;background:var(--s2);border-radius:10px;padding:8px;text-align:center;">
+                <div style="font-size:10px;color:var(--t2);">CUSTO</div>
+                <div style="font-size:13px;font-weight:600;color:var(--yellow);">R$ 280</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Appointment card 2 -->
+          <div class="card" style="background:rgba(249,115,22,0.04);border-color:rgba(249,115,22,0.12);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:46px;height:46px;border-radius:13px;background:var(--corpo-g);display:flex;align-items:center;justify-content:center;font-size:22px;">❤️</div>
+              <div style="flex:1;">
+                <div style="font-size:15px;font-weight:600;color:var(--t1);">Cardiologista</div>
+                <div style="font-size:12px;color:var(--t2);">Dr. Fernandes · Check-up anual</div>
+                <div style="font-size:12px;color:var(--t2);margin-top:2px;">15 Mar · 10:00 · R$ 450</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add CTA -->
+          <div style="padding:0 16px 4px;">
+            <div style="background:rgba(249,115,22,0.06);border:1.5px dashed rgba(249,115,22,0.35);border-radius:var(--radius-sm);padding:16px;text-align:center;cursor:pointer;">
+              <div style="font-size:22px;margin-bottom:5px;">📅</div>
+              <div style="font-size:14px;font-weight:500;color:var(--corpo);">Agendar nova consulta</div>
+              <div style="font-size:12px;color:var(--t2);margin-top:3px;">Sincroniza com Tempo e Finanças</div>
+            </div>
+          </div>
+
+          <div class="section-title" style="margin-top:12px;">HISTÓRICO</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--corpo-g);">👁️</div>
+              <div class="list-info">
+                <div class="list-title">Oftalmologista</div>
+                <div class="list-sub">10 Jan 2026 · Dr. Lopes · R$ 200</div>
+                <div style="margin-top:4px;"><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(16,185,129,0.1);color:var(--em);">↩ Retorno em Jul 2026</span></div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--corpo-g);">🩺</div>
+              <div class="list-info">
+                <div class="list-title">Clínico Geral</div>
+                <div class="list-sub">28 Out 2025 · UPA</div>
+              </div>
+              <span style="font-size:13px;color:var(--em);">Grátis</span>
+            </div>
+          </div>
+
+          <!-- Alerts -->
+          <div class="section-title" style="margin-top:8px;">ALERTAS DE RETORNO</div>
+          <div class="card" style="background:rgba(245,158,11,0.07);border-color:rgba(245,158,11,0.2);">
+            <div style="display:flex;gap:10px;align-items:center;">
+              <span style="font-size:20px;">⚠️</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--t1);">Retorno Oftalmologista</div>
+                <div style="font-size:12px;color:var(--t2);">Vence em 10 Jul 2026 · Faltam 4 meses</div>
+              </div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+        <div class="bottom-bar">
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div>
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div>
+          <div class="fab-center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div>
+          <div class="bottom-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg><span>Mais</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 04: ATIVIDADES FÍSICAS ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">04 — Atividades Físicas</div>
+      <div class="screen-tag tag-new">Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-scroll">
+          <div class="screen-header">
+            <div>
+              <div style="font-size:12px;color:var(--corpo);font-weight:500;margin-bottom:2px;">🏃 Corpo</div>
+              <div class="header-title">Atividades Físicas</div>
+            </div>
+            <div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          </div>
+
+          <!-- Week bars -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <span style="font-size:14px;font-weight:600;color:var(--t1);">Esta semana</span>
+              <span class="badge badge-orange">3 de 4 metas</span>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-around;height:72px;gap:4px;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--corpo);border-radius:5px 5px 0 0;height:52px;"></div>
+                <span style="font-size:9px;color:var(--t2);">Seg</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--s3);border-radius:5px 5px 0 0;height:10px;"></div>
+                <span style="font-size:9px;color:var(--t3);">Ter</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--corpo);border-radius:5px 5px 0 0;height:40px;"></div>
+                <span style="font-size:9px;color:var(--t2);">Qua</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--s3);border-radius:5px 5px 0 0;height:10px;"></div>
+                <span style="font-size:9px;color:var(--t3);">Qui</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--corpo);border-radius:5px 5px 0 0;height:60px;"></div>
+                <span style="font-size:9px;color:var(--t2);">Sex</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--s2);border-radius:5px 5px 0 0;height:10px;border:1px dashed rgba(249,115,22,0.3);"></div>
+                <span style="font-size:9px;color:var(--t3);">Sáb</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--s2);border-radius:5px 5px 0 0;height:10px;border:1px dashed rgba(249,115,22,0.3);"></div>
+                <span style="font-size:9px;color:var(--t3);">Dom</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type filter -->
+          <div style="display:flex;gap:6px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none;">
+            <div style="padding:7px 14px;border-radius:20px;background:var(--corpo);color:#fff;font-size:13px;white-space:nowrap;">Todos</div>
+            <div style="padding:7px 14px;border-radius:20px;background:var(--s1);color:var(--t2);font-size:13px;border:1px solid var(--border);white-space:nowrap;">🏋️ Musculação</div>
+            <div style="padding:7px 14px;border-radius:20px;background:var(--s1);color:var(--t2);font-size:13px;border:1px solid var(--border);white-space:nowrap;">🏃 Cardio</div>
+            <div style="padding:7px 14px;border-radius:20px;background:var(--s1);color:var(--t2);font-size:13px;border:1px solid var(--border);white-space:nowrap;">🧘 Yoga</div>
+          </div>
+
+          <!-- Activity list -->
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--corpo-g);">🏋️</div>
+              <div class="list-info">
+                <div class="list-title">Musculação — Peito/Tríceps</div>
+                <div class="list-sub">Ontem · Academia · 55 min</div>
+                <div style="display:flex;gap:6px;margin-top:4px;">
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(249,115,22,0.1);color:var(--corpo);">💪 Força</span>
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(244,63,94,0.1);color:var(--red);">🔥 430 kcal</span>
+                </div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--corpo-g);">🏃</div>
+              <div class="list-info">
+                <div class="list-title">Corrida — Parque Ibirapuera</div>
+                <div class="list-sub">Qua · 40 min · 5,2km</div>
+                <div style="display:flex;gap:6px;margin-top:4px;">
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(249,115,22,0.1);color:var(--corpo);">❤️ Cardio</span>
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(244,63,94,0.1);color:var(--red);">🔥 320 kcal</span>
+                </div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--corpo-g);">🏋️</div>
+              <div class="list-info">
+                <div class="list-title">Musculação — Costas/Bíceps</div>
+                <div class="list-sub">Seg · Academia · 60 min</div>
+                <div style="display:flex;gap:6px;margin-top:4px;">
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(249,115,22,0.1);color:var(--corpo);">💪 Força</span>
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(244,63,94,0.1);color:var(--red);">🔥 480 kcal</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+        <div class="bottom-bar">
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div>
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div>
+          <div class="fab-center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div>
+          <div class="bottom-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg><span>Mais</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 05: NUTRIÇÃO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">05 — Nutrição</div>
+      <div class="screen-tag tag-new">Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-scroll">
+          <div class="screen-header">
+            <div>
+              <div style="font-size:12px;color:var(--corpo);font-weight:500;margin-bottom:2px;">🏃 Corpo</div>
+              <div class="header-title">Nutrição</div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <!-- Camera button - OCR feature -->
+              <div class="header-btn" style="background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.2);color:var(--corpo);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            </div>
+          </div>
+
+          <!-- Calorie ring -->
+          <div class="card" style="padding:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-around;margin-bottom:14px;">
+              <div style="text-align:center;">
+                <div style="font-size:11px;color:var(--t2);margin-bottom:3px;">META</div>
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--t1);">2.100</div>
+                <div style="font-size:10px;color:var(--t3);">kcal</div>
+              </div>
+              <!-- Ring -->
+              <div style="position:relative;width:110px;height:110px;">
+                <svg viewBox="0 0 110 110" style="width:100%;height:100%;transform:rotate(-90deg);">
+                  <circle cx="55" cy="55" r="46" fill="none" stroke="var(--s3)" stroke-width="10"/>
+                  <circle cx="55" cy="55" r="46" fill="none" stroke="var(--corpo)" stroke-width="10" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="72"/>
+                </svg>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+                  <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:800;color:var(--corpo);">1.740</div>
+                  <div style="font-size:10px;color:var(--t2);">kcal</div>
+                </div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:11px;color:var(--t2);margin-bottom:3px;">RESTANTE</div>
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--em);">360</div>
+                <div style="font-size:10px;color:var(--t3);">kcal</div>
+              </div>
+            </div>
+            <!-- Macros -->
+            <div style="font-size:11px;color:var(--t2);margin-bottom:5px;">Macronutrientes</div>
+            <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin-bottom:8px;">
+              <div style="width:50%;background:#0055ff;"></div>
+              <div style="width:28%;background:#10b981;"></div>
+              <div style="width:22%;background:#f59e0b;"></div>
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;gap:4px;"><div style="width:8px;height:8px;border-radius:50%;background:#0055ff;"></div><span style="font-size:11px;color:var(--t2);">Carbos 218g</span></div>
+              <div style="display:flex;align-items:center;gap:4px;"><div style="width:8px;height:8px;border-radius:50%;background:#10b981;"></div><span style="font-size:11px;color:var(--t2);">Proteína 120g</span></div>
+              <div style="display:flex;align-items:center;gap:4px;"><div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;"></div><span style="font-size:11px;color:var(--t2);">Gordura 42g</span></div>
+            </div>
+          </div>
+
+          <!-- AI suggestion -->
+          <div class="card" style="background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.2);">
+            <div style="display:flex;gap:10px;margin-bottom:10px;">
+              <span style="font-size:18px;">🤖</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--t1);">Sugestão para o jantar</div>
+                <div style="font-size:12px;color:var(--t2);margin-top:2px;">Você ainda tem 360 kcal e 30g proteína disponíveis</div>
+              </div>
+            </div>
+            <div style="background:var(--s2);border-radius:10px;padding:10px;display:flex;align-items:center;gap:10px;">
+              <span style="font-size:20px;">🥗</span>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Salada + Filé de frango grelhado</div>
+                <div style="font-size:12px;color:var(--t2);">~340 kcal · 35g proteína</div>
+              </div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--t3);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <!-- Meals today -->
+          <div class="section-title">REFEIÇÕES DE HOJE</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(245,158,11,0.12);">🌅</div>
+              <div class="list-info">
+                <div class="list-title">Café da manhã · 07:30</div>
+                <div class="list-sub">Pão integral, ovos, café</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t2);">420 kcal</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(16,185,129,0.12);">☀️</div>
+              <div class="list-info">
+                <div class="list-title">Almoço · 12:30</div>
+                <div class="list-sub">Arroz, feijão, carne, salada</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t2);">680 kcal</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(249,115,22,0.12);">🌇</div>
+              <div class="list-info">
+                <div class="list-title">Lanche · 16:00</div>
+                <div class="list-sub">Whey protein + banana</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t2);">280 kcal</div>
+            </div>
+            <div class="list-item" style="opacity:0.5;">
+              <div class="list-icon" style="background:var(--s2);">🌙</div>
+              <div class="list-info">
+                <div class="list-title" style="color:var(--t3);">Jantar — Não registrado</div>
+                <div class="list-sub">Toque para adicionar</div>
+              </div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--t3);"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+        <div class="bottom-bar">
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div>
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div>
+          <div class="fab-center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div class="bottom-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div>
+          <div class="bottom-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg><span>Mais</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

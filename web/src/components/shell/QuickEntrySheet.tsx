@@ -1,365 +1,202 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
-import { X, ChevronDown, Search } from 'lucide-react'
+import { useState, useCallback } from 'react'
+import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { createClient } from '@/lib/supabase/client'
-import { useCategories, type Category } from '@/hooks/use-categories'
-
-type EntryType = 'despesa' | 'receita' | 'transferencia'
-
-const FALLBACK_CATEGORIES: Category[] = [
-  { id: 'alimentacao', icon: '☕', name: 'Alimentação', color: '#f97316', type: 'expense', is_default: true, sort_order: 1 },
-  { id: 'transporte',  icon: '🚗', name: 'Transporte',  color: '#06b6d4', type: 'expense', is_default: true, sort_order: 2 },
-  { id: 'moradia',     icon: '🏠', name: 'Moradia',     color: '#3b82f6', type: 'expense', is_default: true, sort_order: 3 },
-  { id: 'lazer',       icon: '🎮', name: 'Lazer',       color: '#a855f7', type: 'expense', is_default: true, sort_order: 4 },
-  { id: 'mercado',     icon: '🛒', name: 'Mercado',     color: '#10b981', type: 'expense', is_default: true, sort_order: 5 },
-  { id: 'saude',       icon: '💊', name: 'Saúde',       color: '#f43f5e', type: 'expense', is_default: true, sort_order: 6 },
-  { id: 'educacao',    icon: '📚', name: 'Educação',    color: '#8b5cf6', type: 'expense', is_default: true, sort_order: 7 },
-  { id: 'salario',     icon: '💰', name: 'Salário',     color: '#10b981', type: 'income',  is_default: true, sort_order: 8 },
-  { id: 'outros',      icon: '📦', name: 'Outros',      color: '#64748b', type: 'expense', is_default: true, sort_order: 9 },
-]
-
-function formatAmount(raw: string): string {
-  const digits = raw.replace(/\D/g, '')
-  if (!digits) return '0,00'
-  const num = parseInt(digits, 10)
-  const reais = Math.floor(num / 100)
-  const cents = num % 100
-  return `${reais.toLocaleString('pt-BR')},${String(cents).padStart(2, '0')}`
-}
-
-// ─── CATEGORY PICKER ─────────────────────────────────────────────────────────
-
-function CategoryPicker({
-  open,
-  categories,
-  entryType,
-  onSelect,
-  onClose,
-}: {
-  open: boolean
-  categories: Category[]
-  entryType: EntryType
-  onSelect: (cat: Category) => void
-  onClose: () => void
-}) {
-  const [search, setSearch] = useState('')
-
-  const typeFilter = entryType === 'receita' ? 'income' : 'expense'
-  const filteredCats = categories
-    .filter(c => entryType === 'transferencia' || c.type === typeFilter)
-    .filter(c =>
-      !search.trim() || c.name.toLowerCase().includes(search.toLowerCase())
-    )
-
-  if (!open) return null
-
-  return (
-    <div className="fixed inset-0 z-[110] flex flex-col justify-end">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div
-        className="relative bg-[var(--sl-s1)] rounded-t-2xl max-h-[70vh] flex flex-col"
-        style={{ boxShadow: '0 -8px 32px rgba(0,0,0,0.3)' }}
-      >
-        {/* Handle */}
-        <div className="flex justify-center pt-3 pb-1 shrink-0">
-          <div className="w-10 h-1 rounded-full bg-[var(--sl-border)]" />
-        </div>
-
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--sl-border)] shrink-0">
-          <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">Escolher categoria</p>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--sl-s2)] text-[var(--sl-t2)]"
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        {/* Search */}
-        <div className="px-4 py-3 shrink-0">
-          <div className="flex items-center gap-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl px-3 py-2">
-            <Search size={14} className="text-[var(--sl-t3)] shrink-0" />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Buscar categoria..."
-              className="flex-1 bg-transparent border-none outline-none text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
-              autoFocus
-            />
-          </div>
-        </div>
-
-        {/* List */}
-        <div className="flex-1 overflow-y-auto px-4 pb-6">
-          {filteredCats.length === 0 ? (
-            <p className="text-center text-[13px] text-[var(--sl-t3)] py-8">Nenhuma categoria encontrada</p>
-          ) : (
-            <div className="grid grid-cols-2 gap-2">
-              {filteredCats.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => { onSelect(cat); onClose() }}
-                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] border border-[var(--sl-border)] bg-[var(--sl-s2)] text-left transition-all active:scale-[0.97] hover:border-[var(--sl-border-h)]"
-                >
-                  <span
-                    className="w-9 h-9 rounded-[10px] flex items-center justify-center text-[18px] shrink-0"
-                    style={{ background: `${cat.color}1a` }}
-                  >
-                    {cat.icon}
-                  </span>
-                  <span className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{cat.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── MAIN SHEET ───────────────────────────────────────────────────────────────
 
 interface QuickEntrySheetProps {
   open: boolean
-  onClose: () => void
+  onOpenChange: (open: boolean) => void
 }
 
-const KEYS = [
-  ['1', '2', '3'],
-  ['4', '5', '6'],
-  ['7', '8', '9'],
-  ['.,', '0', '⌫'],
+type EntryType = 'despesa' | 'receita' | 'transferencia'
+
+const TYPE_STYLES: Record<EntryType, { active: string; color: string }> = {
+  despesa: {
+    active: 'bg-[rgba(244,63,94,0.15)] border-[rgba(244,63,94,0.4)] text-[#f43f5e]',
+    color: '#f43f5e',
+  },
+  receita: {
+    active: 'bg-[rgba(16,185,129,0.15)] border-[rgba(16,185,129,0.4)] text-[#10b981]',
+    color: '#10b981',
+  },
+  transferencia: {
+    active: 'bg-[rgba(0,85,255,0.15)] border-[rgba(0,85,255,0.4)] text-[#0055ff]',
+    color: '#0055ff',
+  },
+}
+
+const CATEGORIES = [
+  { emoji: '☕', label: 'Alimentação' },
+  { emoji: '🚗', label: 'Transporte' },
+  { emoji: '🏠', label: 'Moradia' },
+  { emoji: '🎮', label: 'Lazer' },
+  { emoji: '💊', label: 'Saúde' },
+  { emoji: '📚', label: 'Educação' },
 ]
 
-export function QuickEntrySheet({ open, onClose }: QuickEntrySheetProps) {
-  const { categories: loadedCats, isLoading } = useCategories()
-  const supabase = createClient()
-
-  const categories = (!isLoading && loadedCats.length > 0) ? loadedCats : FALLBACK_CATEGORIES
-
-  const [type, setType]               = useState<EntryType>('despesa')
-  const [rawDigits, setRawDigits]     = useState('')
-  const [selectedCat, setSelectedCat] = useState<Category | null>(null)
-  const [catPickerOpen, setCatPickerOpen] = useState(false)
+export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
+  const [type, setType] = useState<EntryType>('despesa')
+  const [amount, setAmount] = useState('0')
+  const [category, setCategory] = useState(CATEGORIES[0])
   const [showDetails, setShowDetails] = useState(false)
-  const [description, setDescription] = useState('')
-  const [saving, setSaving]           = useState(false)
 
-  // Reset state when sheet opens
-  useEffect(() => {
-    if (open) {
-      setType('despesa')
-      setRawDigits('')
-      setSelectedCat(null)
-      setShowDetails(false)
-      setDescription('')
-      setSaving(false)
-    }
-  }, [open])
-
-  const displayAmount = formatAmount(rawDigits)
-  const numericValue  = parseInt(rawDigits || '0', 10) / 100
-
-  // Default category based on type
-  const defaultCat = categories.find(c =>
-    type === 'receita' ? c.type === 'income' : c.type === 'expense'
-  ) ?? categories[0]
-  const activeCat = selectedCat ?? defaultCat
-
-  const today = new Date().toLocaleDateString('pt-BR', {
-    weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric',
-  })
-
-  const handleKey = useCallback((key: string) => {
-    if (key === '⌫') {
-      setRawDigits(prev => prev.slice(0, -1))
-    } else if (key === '.,') {
-      // already in centavos, ignore
-    } else {
-      if (rawDigits.length >= 10) return
-      setRawDigits(prev => prev + key)
-    }
-  }, [rawDigits])
-
-  async function handleConfirm() {
-    if (!rawDigits || numericValue === 0) return
-    setSaving(true)
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { setSaving(false); return }
-
-      const isReceita = type === 'receita'
-      await (supabase as any).from('transactions').insert({
-        user_id:     user.id,
-        type:        isReceita ? 'income' : 'expense',
-        amount:      numericValue,
-        description: description || activeCat.name,
-        category:    activeCat.name,
-        category_id: activeCat.id !== 'alimentacao' && !activeCat.id.startsWith('_') ? activeCat.id : undefined,
-        date:        new Date().toISOString().slice(0, 10),
-      })
-      onClose()
-    } catch {
-      setSaving(false)
-    }
+  const formatAmount = (raw: string) => {
+    const num = parseInt(raw || '0', 10)
+    return (num / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   }
 
-  const valueColor =
-    type === 'receita'       ? '#10b981' :
-    type === 'despesa'       ? '#f43f5e' : '#0055ff'
+  const handleKey = useCallback((key: string) => {
+    if (key === 'del') {
+      setAmount((prev) => prev.length > 1 ? prev.slice(0, -1) : '0')
+    } else if (key === '.,') {
+      // Decimal is handled via integer division
+    } else if (key === 'confirm') {
+      // TODO: save transaction
+      onOpenChange(false)
+      setAmount('0')
+      setType('despesa')
+    } else {
+      setAmount((prev) => {
+        const next = prev === '0' ? key : prev + key
+        if (next.length > 10) return prev
+        return next
+      })
+    }
+  }, [onOpenChange])
+
+  const handleClose = useCallback(() => {
+    onOpenChange(false)
+    setAmount('0')
+    setType('despesa')
+    setShowDetails(false)
+  }, [onOpenChange])
 
   if (!open) return null
 
+  const today = new Date()
+  const dateStr = today.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-[100] bg-black/60 lg:hidden"
-        onClick={onClose}
-      />
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[var(--sl-bg)] lg:hidden">
+      {/* Top close bar */}
+      <div className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,14px)] pb-2">
+        <button
+          onClick={handleClose}
+          className="flex h-9 w-9 items-center justify-center rounded-[10px]
+                     bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
+        >
+          <X size={16} />
+        </button>
+        <span className="text-[13px] font-medium text-[var(--sl-t2)]">Quick Entry</span>
+        <div className="w-9" />
+      </div>
 
-      {/* Sheet */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-[101] lg:hidden bg-[var(--sl-bg)] rounded-t-2xl flex flex-col"
-        style={{
-          paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)',
-          boxShadow: '0 -8px 40px rgba(0,0,0,0.4)',
-          maxHeight: '95vh',
-        }}
-      >
-        {/* Handle */}
-        <div className="flex justify-center pt-3 pb-1 shrink-0">
-          <div className="w-10 h-1 rounded-full bg-[var(--sl-border)]" />
-        </div>
-
-        {/* Header: type toggle + close */}
-        <div className="flex items-center justify-between px-4 py-2 shrink-0">
-          <div className="flex gap-0.5 bg-[var(--sl-s2)] rounded-full p-0.5">
-            {(['despesa', 'receita', 'transferencia'] as EntryType[]).map(t => (
-              <button
-                key={t}
-                onClick={() => { setType(t); setSelectedCat(null) }}
-                className={cn(
-                  'px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all',
-                  type === t
-                    ? t === 'receita'
-                      ? 'bg-[#10b981] text-white'
-                      : t === 'despesa'
-                      ? 'bg-[#f43f5e] text-white'
-                      : 'bg-[#0055ff] text-white'
-                    : 'text-[var(--sl-t3)]',
-                )}
-              >
-                {t === 'transferencia' ? 'Transf.' : t.charAt(0).toUpperCase() + t.slice(1)}
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={onClose}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-[var(--sl-s2)] text-[var(--sl-t2)]"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Value display */}
-        <div className="flex flex-col items-center px-6 pt-2 pb-1 shrink-0">
-          <div className="text-center mb-3">
-            <span className="text-[var(--sl-t3)] text-[15px] font-medium">R$</span>
-            <span
-              className="font-[DM_Mono] font-bold text-[52px] leading-none ml-1"
-              style={{ color: valueColor }}
+      {/* Amount display area */}
+      <div className="flex flex-1 flex-col items-center justify-center px-5">
+        {/* Type toggle */}
+        <div className="flex gap-2 mb-6">
+          {(['despesa', 'receita', 'transferencia'] as EntryType[]).map((t) => (
+            <button
+              key={t}
+              onClick={() => setType(t)}
+              className={cn(
+                'px-5 py-2 rounded-[20px] text-[13px] font-medium border transition-all duration-150',
+                type === t
+                  ? TYPE_STYLES[t].active
+                  : 'border-[var(--sl-border)] text-[var(--sl-t2)] bg-[var(--sl-s1)]',
+              )}
             >
-              {displayAmount}
+              {t === 'despesa' ? 'Despesa' : t === 'receita' ? 'Receita' : 'Transferência'}
+            </button>
+          ))}
+        </div>
+
+        {/* Amount */}
+        <div className="font-[DM_Mono] text-[52px] font-medium text-[var(--sl-t1)] tracking-[-2px]">
+          <span className="text-[24px] text-[var(--sl-t2)] mr-1">R$</span>
+          {formatAmount(amount)}
+        </div>
+
+        {/* Category suggestion */}
+        <div className="mt-4 flex items-center gap-2">
+          <div className="flex items-center gap-1.5 bg-[var(--sl-s2)] border border-[var(--sl-border-h)] rounded-[20px] px-3 py-1.5">
+            <span className="text-[13px] text-[var(--sl-t1)]">
+              {category.emoji} {category.label}
+            </span>
+            <span className="text-[10px] bg-[rgba(16,185,129,0.15)] text-[#10b981] px-1.5 py-0.5 rounded-lg">
+              IA
             </span>
           </div>
-
-          {/* Category badge — tappable */}
-          <button
-            onClick={() => setCatPickerOpen(true)}
-            className="flex items-center gap-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl px-4 py-2.5 mb-2 transition-all active:scale-[0.97] hover:border-[var(--sl-border-h)]"
-          >
-            <span className="text-xl">{activeCat?.icon ?? '☕'}</span>
-            <div className="flex-1 text-left">
-              <p className="text-[13px] font-semibold text-[var(--sl-t1)]">{activeCat?.name ?? 'Categoria'}</p>
-              <p className="text-[10px] text-[var(--sl-t3)]">Toque para mudar</p>
-            </div>
-            <ChevronDown size={14} className="text-[var(--sl-t3)] shrink-0" />
-          </button>
-
-          {/* Date */}
-          <p className="text-[12px] text-[var(--sl-t3)] mb-1">📅 Hoje, {today}</p>
-
-          {/* Details toggle */}
-          <button
-            onClick={() => setShowDetails(s => !s)}
-            className="flex items-center gap-1.5 text-[12px] text-[var(--sl-t3)] mb-2"
-          >
-            <ChevronDown
-              size={14}
-              className={cn('transition-transform', showDetails && 'rotate-180')}
-            />
-            {showDetails ? 'Ocultar detalhes' : '▼ Adicionar descrição'}
-          </button>
-
-          {showDetails && (
-            <input
-              type="text"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Descrição... (ex: almoço no trabalho)"
-              className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl px-4 py-2.5 text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] mb-1"
-            />
-          )}
+          <span className="text-[11px] text-[var(--sl-t3)]">Toque para mudar</span>
         </div>
 
-        {/* Numpad */}
-        <div className="shrink-0 px-4 pb-2">
-          <div className="grid grid-cols-3 gap-2.5 mb-2.5">
-            {KEYS.flat().map((key) => (
+        {/* Date */}
+        <div className="mt-3 px-3.5 py-2 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] text-[13px] text-[var(--sl-t2)]">
+          📅 Hoje, {dateStr}
+        </div>
+
+        {/* Details toggle */}
+        <button
+          onClick={() => setShowDetails(!showDetails)}
+          className="mt-2 text-[12px] text-[var(--sl-t2)] py-2"
+        >
+          ▼ Adicionar detalhes (descrição, tags, conta)
+        </button>
+
+        {/* Category selector (shown when showDetails=true) */}
+        {showDetails && (
+          <div className="flex flex-wrap gap-2 mt-2 px-4">
+            {CATEGORIES.map((cat) => (
               <button
-                key={key}
-                onClick={() => handleKey(key)}
+                key={cat.label}
+                onClick={() => setCategory(cat)}
                 className={cn(
-                  'h-[52px] rounded-2xl text-[20px] font-semibold text-[var(--sl-t1)] transition-all active:scale-95',
-                  key === '⌫'
-                    ? 'bg-[var(--sl-s2)] text-[var(--sl-t2)]'
-                    : 'bg-[var(--sl-s2)] hover:bg-[var(--sl-s3)]',
+                  'px-3 py-1.5 rounded-[20px] text-[12px] border transition-colors',
+                  category.label === cat.label
+                    ? 'bg-[rgba(16,185,129,0.15)] border-[rgba(16,185,129,0.35)] text-[#10b981]'
+                    : 'bg-[var(--sl-s1)] border-[var(--sl-border)] text-[var(--sl-t2)]',
                 )}
               >
-                {key}
+                {cat.emoji} {cat.label}
               </button>
             ))}
           </div>
+        )}
+      </div>
 
-          {/* Confirm */}
+      {/* Numpad */}
+      <div className="bg-[var(--sl-s1)] border-t border-[var(--sl-border)] px-4 py-2 pb-[env(safe-area-inset-bottom,8px)]">
+        <div className="grid grid-cols-3 gap-1">
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9', '.,', '0', 'del'].map((key) => (
+            <button
+              key={key}
+              onClick={() => handleKey(key)}
+              className={cn(
+                'h-[58px] rounded-[12px] flex items-center justify-center',
+                'border transition-all duration-100 active:scale-95',
+                key === 'del'
+                  ? 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t1)] text-[16px]'
+                  : key === '.,'
+                    ? 'bg-[rgba(16,185,129,0.15)] border-[var(--sl-border)] text-[#10b981] text-[14px] font-semibold'
+                    : 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t1)] text-[22px] font-normal font-[DM_Mono]',
+              )}
+            >
+              {key === 'del' ? '⌫' : key}
+            </button>
+          ))}
+          {/* Confirm button — spans all 3 columns */}
           <button
-            onClick={handleConfirm}
-            disabled={!rawDigits || numericValue === 0 || saving}
-            className={cn(
-              'w-full h-[52px] rounded-2xl text-[15px] font-bold text-white transition-all active:scale-[0.98]',
-              rawDigits && numericValue > 0 ? 'opacity-100 shadow-lg' : 'opacity-40 cursor-not-allowed',
-            )}
+            onClick={() => handleKey('confirm')}
+            className="col-span-3 h-[52px] rounded-[16px] mt-1 flex items-center justify-center
+                        text-white text-[15px] font-semibold border-none
+                        active:scale-[0.98] transition-transform"
             style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
           >
-            {saving ? 'Salvando...' : `✓ Confirmar — R$ ${displayAmount}`}
+            ✓ Confirmar — R$ {formatAmount(amount)}
           </button>
         </div>
       </div>
-
-      {/* Category picker sub-sheet */}
-      <CategoryPicker
-        open={catPickerOpen}
-        categories={categories}
-        entryType={type}
-        onSelect={cat => setSelectedCat(cat)}
-        onClose={() => setCatPickerOpen(false)}
-      />
-    </>
+    </div>
   )
 }
