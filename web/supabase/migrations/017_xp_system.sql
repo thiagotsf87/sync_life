@@ -53,7 +53,7 @@ CREATE INDEX IF NOT EXISTS idx_library_resources_user ON library_resources(user_
 CREATE TABLE IF NOT EXISTS career_profiles (
   id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id           UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE UNIQUE,
-  current_role      TEXT,
+  current_position  TEXT,
   target_role       TEXT,
   industry          TEXT,
   years_experience  INTEGER,

@@ -385,11 +385,11 @@ const evaluators: Record<string, BadgeEvaluator> = {
   career_profile_complete: async ({ sb, userId }) => {
     const { data: profile } = await sb
       .from('career_profiles')
-      .select('current_role, years_experience')
+      .select('current_position, years_experience')
       .eq('user_id', userId)
       .single()
 
-    const complete = !!(profile?.current_role && profile?.years_experience != null)
+    const complete = !!(profile?.current_position && profile?.years_experience != null)
     return { met: complete, progress: complete ? 100 : 50, current: complete ? 1 : 0, target: 1 }
   },
 
