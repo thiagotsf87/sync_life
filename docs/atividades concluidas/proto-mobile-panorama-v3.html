@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife Mobile — Panorama (10 telas · v3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;
+  --pan:#6366f1;--pan-g:rgba(99,102,241,0.14);
+  --fin:#10b981;--tempo:#06b6d4;--futuro:#8b5cf6;--corpo:#f97316;
+  --mente:#eab308;--patrimonio:#3b82f6;--carreira:#f43f5e;--exp:#ec4899;
+  --green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--orange:#f97316;
+  --radius:16px;--radius-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0e1a;font-family:'DM Sans',sans-serif;color:var(--t1);}
+.demo-page{padding:40px 20px 80px;max-width:1600px;margin:0 auto;}
+.demo-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#6366f1,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.demo-subtitle{font-size:14px;color:var(--t2);margin-bottom:10px;}
+.demo-group{margin-top:48px;margin-bottom:14px;padding:14px 0 8px;border-top:1px solid var(--border);}
+.demo-group-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--pan);letter-spacing:0.5px;}
+.demo-group-sub{font-size:12px;color:var(--t3);margin-top:3px;}
+.screens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(375px,1fr));gap:48px 28px;margin-top:18px;}
+.screen-wrapper{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.screen-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:1px;text-align:center;}
+.screen-tag{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.tag-new{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);}
+.tag-improved{background:rgba(99,102,241,0.15);color:#6366f1;border:1px solid rgba(99,102,241,0.3);}
+.tag-priority{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);}
+.phone{width:375px;min-height:500px;background:var(--bg);border-radius:48px;border:2px solid rgba(255,255,255,0.1);overflow:hidden;position:relative;box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);padding-top:54px;padding-bottom:24px;}
+.dynamic-island{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:100;}
+.status-bar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;z-index:50;}
+.status-time{font-size:15px;font-weight:600;color:var(--t1);}
+.screen-content{padding-bottom:12px;}
+.mod-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px;}
+.mod-header-left{display:flex;align-items:center;gap:8px;}
+.mod-icon{font-size:20px;}
+.mod-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);}
+.sub-nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.sub-nav-tab{padding:8px 16px 10px;font-size:14px;color:var(--t3);position:relative;white-space:nowrap;cursor:pointer;}
+.sub-nav-tab.active{color:var(--t1);font-weight:600;}
+.sub-nav-tab.active::after{content:'';position:absolute;bottom:-1px;left:8px;right:8px;height:3px;border-radius:3px 3px 0 0;background:var(--pan);}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-green{background:rgba(16,185,129,0.12);color:#10b981;}
+.badge-indigo{background:rgba(99,102,241,0.12);color:#6366f1;}
+.badge-yellow{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.badge-red{background:rgba(244,63,94,0.12);color:#f43f5e;}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;padding:0 20px 8px;margin-top:4px;}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;}
+.kpi-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
+.kpi-label{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.kpi-value{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--t1);}
+.kpi-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.int-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 14px;}
+.int-header-back{font-size:14px;color:var(--pan);font-weight:500;}
+.int-header-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--t1);}
+.badge-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;position:relative;}
+.badge-card .rarity{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px;}
+.rarity-common{background:rgba(100,116,139,0.15);color:#94a3b8;border:1px solid rgba(100,116,139,0.3);}
+.rarity-uncommon{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);}
+.rarity-rare{background:rgba(139,92,246,0.15);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);}
+.rarity-legendary{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);}
+.rank-row{display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border);}
+.rank-row:last-child{border-bottom:none;}
+.rank-pos{width:28px;font-family:'DM Mono',monospace;font-size:12px;color:var(--t3);text-align:center;flex-shrink:0;}
+.rank-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.rank-info{flex:1;min-width:0;}
+.rank-name{font-size:13px;font-weight:500;color:var(--t1);}
+.rank-meta{font-size:11px;color:var(--t3);}
+.rank-score{font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:var(--t1);flex-shrink:0;}
+.rank-trend{font-size:10px;font-weight:500;margin-left:4px;}
+</style>
+</head>
+<body>
+<div class="demo-page">
+  <div class="demo-title">🌐 Panorama — 10 telas mobile (v3)</div>
+  <div class="demo-subtitle">Nova cor: Indigo #6366f1 · Dashboard · Conquistas · Ranking · Review · Estados</div>
+
+  <!-- GRUPO A — VISUALIZAÇÃO -->
+  <div class="demo-group">
+    <div class="demo-group-title">A — Visualização (Telas L1)</div>
+    <div class="demo-group-sub">Telas principais com sub-nav underline. Cor Indigo #6366f1.</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- 01: DASHBOARD -->
+    <div class="screen-wrapper">
+      <div class="screen-label">01 — Dashboard (Jornada)</div>
+      <div class="screen-tag tag-priority">⭐ Alta prioridade</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Conquistas</div>
+            <div class="sub-nav-tab">Ranking</div>
+          </div>
+
+          <!-- Greeting -->
+          <div style="padding:0 20px 12px;">
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--t1);">Boa tarde, Teste ✨</div>
+            <div style="font-size:13px;color:var(--t2);">Sábado, 7 de março</div>
+          </div>
+
+          <!-- Life Score Ring -->
+          <div style="display:flex;flex-direction:column;align-items:center;padding:8px 0 16px;">
+            <div style="position:relative;width:140px;height:140px;">
+              <svg viewBox="0 0 140 140" style="width:100%;height:100%;transform:rotate(-90deg);">
+                <circle cx="70" cy="70" r="58" fill="none" stroke="var(--s3)" stroke-width="12"/>
+                <circle cx="70" cy="70" r="58" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="364" stroke-dashoffset="299" style="stroke:url(#scoreGrad);"/>
+                <defs><linearGradient id="scoreGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#0055ff"/></linearGradient></defs>
+              </svg>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+                <div style="font-family:'DM Mono',monospace;font-size:42px;font-weight:800;color:var(--t1);">18</div>
+                <div style="font-size:11px;color:var(--t2);">Life Score</div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:inline-flex;padding:5px 14px;border-radius:20px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.25);">
+              <span style="font-size:13px;color:var(--pan);font-weight:600;">↗ +4 pts essa semana</span>
+            </div>
+          </div>
+
+          <!-- Module dimension -->
+          <div style="padding:0 20px 12px;">
+            <div style="display:inline-flex;padding:5px 12px;border-radius:14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);font-size:12px;color:#a78bfa;font-weight:600;">🔮 Futuro 43%</div>
+          </div>
+
+          <!-- Insight IA -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(99,102,241,0.07),rgba(0,85,255,0.07));border-color:rgba(99,102,241,0.2);">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:32px;height:32px;border-radius:10px;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span style="font-size:16px;">🤖</span>
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--pan);margin-bottom:4px;">INSIGHT IA</div>
+                <div style="font-size:13px;color:var(--t2);line-height:1.5;">Você gastou <strong style="color:var(--t1);">R$ 340 menos</strong> que a média este mês. Atenção: <strong style="color:var(--t1);">1 meta(s)</strong> abaixo do ritmo.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerts -->
+          <div class="section-title">HOJE</div>
+          <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+            <div style="padding:12px 14px;border-radius:var(--radius-sm);background:rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.15);display:flex;align-items:center;gap:8px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;"></div>
+              <div style="font-size:13px;color:var(--t1);"><strong>Orçamento Moradia</strong> atingiu 100% — R$ 0 restantes</div>
+            </div>
+            <div style="padding:12px 14px;border-radius:var(--radius-sm);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);display:flex;align-items:center;gap:8px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--yellow);flex-shrink:0;"></div>
+              <div style="font-size:13px;color:var(--t1);"><strong>Orçamento Transporte</strong> atingiu 78% — R$ 180 restantes</div>
+            </div>
+            <div style="padding:12px 14px;border-radius:var(--radius-sm);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);display:flex;align-items:center;gap:8px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--yellow);flex-shrink:0;"></div>
+              <div style="font-size:13px;color:var(--t1);"><strong>Orçamento Lazer</strong> atingiu 85% — R$ 90 restantes</div>
+            </div>
+          </div>
+
+          <!-- Heatmap -->
+          <div class="section-title">GASTOS — MARÇO</div>
+          <div style="padding:0 16px 4px;">
+            <div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:6px;">
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:rgba(16,185,129,0.4);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:rgba(16,185,129,0.3);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:rgba(245,158,11,0.5);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:rgba(249,115,22,0.5);border:1.5px solid var(--pan);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);opacity:0.3;"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);opacity:0.3;"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);opacity:0.3;"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);opacity:0.3;"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);opacity:0.3;"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:rgba(244,63,94,0.5);opacity:0.3;"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);opacity:0.3;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3);">
+              <span>Menor gasto</span><span>—</span><span>Maior gasto</span>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="section-title" style="margin-top:8px;">AÇÕES RÁPIDAS</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px;">
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 8px;">💰</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">Transação</div>
+              <div style="font-size:11px;color:var(--t3);">Registrar gasto</div>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(6,182,212,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 8px;">📅</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">Evento</div>
+              <div style="font-size:11px;color:var(--t3);">Agendar compromisso</div>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(99,102,241,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 8px;">📊</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">Revisão</div>
+              <div style="font-size:11px;color:var(--t3);">Review semanal</div>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(99,102,241,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 8px;">📷</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">Foto Recibo</div>
+              <div style="font-size:11px;color:var(--t3);">OCR automático</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02: CONQUISTAS -->
+    <div class="screen-wrapper">
+      <div class="screen-label">02 — Conquistas</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab active">Conquistas</div>
+            <div class="sub-nav-tab">Ranking</div>
+          </div>
+
+          <div style="padding:0 20px 8px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--t1);">Conquistas</div>
+              <div style="font-size:13px;color:var(--t2);">15 de 33 desbloqueadas</div>
+            </div>
+            <div style="width:36px;height:36px;border-radius:10px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;">🔍</div>
+          </div>
+
+          <!-- Summary card -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(0,85,255,0.08));border-color:rgba(99,102,241,0.25);">
+            <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px;">
+              <span style="font-family:'DM Mono',monospace;font-size:36px;font-weight:800;color:var(--t1);">15</span>
+              <span style="font-size:16px;color:var(--t3);">/ 33</span>
+            </div>
+            <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:2px;">Conquistas desbloqueadas</div>
+            <div style="font-size:12px;color:var(--t2);margin-bottom:10px;">Você está no <strong style="color:var(--t1);">Top 15%</strong> dos usuários</div>
+            <div style="height:6px;background:var(--s3);border-radius:3px;overflow:hidden;">
+              <div style="width:45%;height:100%;border-radius:3px;background:linear-gradient(90deg,#6366f1,#0055ff);"></div>
+            </div>
+            <div style="font-size:11px;color:var(--t3);margin-top:4px;">45% do total desbloqueado</div>
+          </div>
+
+          <!-- Motivation -->
+          <div class="card" style="background:rgba(99,102,241,0.05);border-color:rgba(99,102,241,0.15);">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:32px;height:32px;border-radius:10px;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">🤖</div>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:var(--pan);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">MOTIVAÇÃO</div>
+                <div style="font-size:13px;color:var(--t2);line-height:1.5;">Você tem <strong style="color:var(--t1);">15 conquistas</strong> e contando. Seu próximo marco é <strong style="color:var(--pan);">6 Meses no Verde</strong> — continue assim!</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div style="display:flex;gap:6px;padding:0 16px 12px;overflow-x:auto;">
+            <div style="padding:6px 14px;border-radius:20px;background:var(--pan);color:#fff;font-size:12px;font-weight:500;white-space:nowrap;">Todas</div>
+            <div style="padding:6px 14px;border-radius:20px;background:var(--s1);color:var(--t2);font-size:12px;border:1px solid var(--border);white-space:nowrap;">💰 Financeiras</div>
+            <div style="padding:6px 14px;border-radius:20px;background:var(--s1);color:var(--t2);font-size:12px;border:1px solid var(--border);white-space:nowrap;">🎯 Metas</div>
+            <div style="padding:6px 14px;border-radius:20px;background:var(--s1);color:var(--t2);font-size:12px;border:1px solid var(--border);white-space:nowrap;">📅 Consistência</div>
+          </div>
+
+          <!-- Unlocked badges grid -->
+          <div class="section-title">✅ DESBLOQUEADAS (15)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;">
+            <div class="badge-card">
+              <div class="rarity rarity-common">COMUM</div>
+              <div style="font-size:32px;margin-bottom:6px;">🎯</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">Primeiro Passo</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">Registrou a primeira transação</div>
+              <div style="font-size:10px;color:var(--t3);margin-top:4px;">📅 15 Jan 2026</div>
+            </div>
+            <div class="badge-card">
+              <div class="rarity rarity-uncommon">INCOMUM</div>
+              <div style="font-size:32px;margin-bottom:6px;">💚</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">3 Meses no Verde</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">Saldo positivo por 3 meses</div>
+              <div style="font-size:10px;color:var(--t3);margin-top:4px;">📅 01 Fev 2026</div>
+            </div>
+            <div class="badge-card">
+              <div class="rarity rarity-common">COMUM</div>
+              <div style="font-size:32px;margin-bottom:6px;">🎯</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">Orçamento Cumprido</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">Respeitou orçamento mensal</div>
+              <div style="font-size:10px;color:var(--t3);margin-top:4px;">📅 31 Jan 2026</div>
+            </div>
+            <div class="badge-card">
+              <div class="rarity rarity-common">COMUM</div>
+              <div style="font-size:32px;margin-bottom:6px;">📊</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">Analista</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">Gerou primeiro relatório</div>
+              <div style="font-size:10px;color:var(--t3);margin-top:4px;">📅 10 Fev 2026</div>
+            </div>
+          </div>
+
+          <!-- Locked badges -->
+          <div class="section-title">🔒 BLOQUEADAS (18)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px;">
+            <div class="badge-card" style="opacity:0.7;">
+              <div style="position:absolute;top:10px;right:10px;font-size:14px;">🔒</div>
+              <div class="rarity rarity-rare">RARA</div>
+              <div style="font-size:32px;margin-bottom:6px;filter:grayscale(0.5);">💚</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">6 Meses no Verde</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">Saldo positivo 6 meses</div>
+              <div style="height:4px;background:var(--s3);border-radius:2px;margin-top:6px;overflow:hidden;">
+                <div style="width:50%;height:100%;background:#8b5cf6;border-radius:2px;"></div>
+              </div>
+              <div style="font-size:10px;color:var(--t3);margin-top:2px;">3/6</div>
+            </div>
+            <div class="badge-card" style="opacity:0.7;">
+              <div style="position:absolute;top:10px;right:10px;font-size:14px;">🔒</div>
+              <div class="rarity rarity-uncommon">INCOMUM</div>
+              <div style="font-size:32px;margin-bottom:6px;filter:grayscale(0.5);">📈</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">Investidor Iniciante</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">Registrou primeiro investimento</div>
+              <div style="height:4px;background:var(--s3);border-radius:2px;margin-top:6px;overflow:hidden;">
+                <div style="width:0%;height:100%;background:#10b981;border-radius:2px;"></div>
+              </div>
+              <div style="font-size:10px;color:var(--t3);margin-top:2px;">0/1</div>
+            </div>
+            <div class="badge-card" style="opacity:0.7;">
+              <div style="position:absolute;top:10px;right:10px;font-size:14px;">🔒</div>
+              <div class="rarity rarity-legendary">LENDÁRIA</div>
+              <div style="font-size:32px;margin-bottom:6px;filter:grayscale(0.5);">🛡️</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">Reserva Construída</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">Atingiu meta de reserva</div>
+              <div style="height:4px;background:var(--s3);border-radius:2px;margin-top:6px;overflow:hidden;">
+                <div style="width:75%;height:100%;background:#f59e0b;border-radius:2px;"></div>
+              </div>
+              <div style="font-size:10px;color:var(--t3);margin-top:2px;">75/100</div>
+            </div>
+            <div class="badge-card" style="opacity:0.7;">
+              <div style="position:absolute;top:10px;right:10px;font-size:14px;">🔒</div>
+              <div class="rarity rarity-rare">RARA</div>
+              <div style="font-size:32px;margin-bottom:6px;filter:grayscale(0.5);">🏆</div>
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">Triatleta de Metas</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">3 metas ativas simultâneas</div>
+              <div style="height:4px;background:var(--s3);border-radius:2px;margin-top:6px;overflow:hidden;">
+                <div style="width:33%;height:100%;background:#8b5cf6;border-radius:2px;"></div>
+              </div>
+              <div style="font-size:10px;color:var(--t3);margin-top:2px;">1/3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03: RANKING -->
+    <div class="screen-wrapper">
+      <div class="screen-label">03 — Ranking</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Conquistas</div>
+            <div class="sub-nav-tab active">Ranking</div>
+          </div>
+
+          <!-- Leaderboard -->
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="rank-row">
+              <div class="rank-pos" style="font-size:16px;">🥇</div>
+              <div class="rank-avatar" style="background:#f43f5e;">GN</div>
+              <div class="rank-info">
+                <div class="rank-name">Gabriel Nunes</div>
+                <div class="rank-meta">13 badges · 🔥 14d</div>
+              </div>
+              <div><span class="rank-score">410</span><span style="font-size:11px;color:var(--t3);">pts</span></div>
+            </div>
+            <div class="rank-row">
+              <div class="rank-pos" style="font-size:16px;">🥈</div>
+              <div class="rank-avatar" style="background:#0055ff;">IC</div>
+              <div class="rank-info">
+                <div class="rank-name">Isabela Carvalho</div>
+                <div class="rank-meta">12 badges · 🔥 12d</div>
+              </div>
+              <div><span class="rank-score">385</span><span style="font-size:11px;color:var(--t3);">pts</span><span class="rank-trend" style="color:var(--em);">↑+2</span></div>
+            </div>
+            <div class="rank-row">
+              <div class="rank-pos" style="font-size:16px;">🥉</div>
+              <div class="rank-avatar" style="background:var(--em);">TP</div>
+              <div class="rank-info">
+                <div class="rank-name">Thiago Pereira</div>
+                <div class="rank-meta">12 badges · 🔥 11d</div>
+              </div>
+              <div><span class="rank-score">362</span><span style="font-size:11px;color:var(--t3);">pts</span></div>
+            </div>
+            <div class="rank-row">
+              <div class="rank-pos">#4</div>
+              <div class="rank-avatar" style="background:var(--yellow);">LM</div>
+              <div class="rank-info">
+                <div class="rank-name">Larissa Martins</div>
+                <div class="rank-meta">11 badges · 🔥 10d</div>
+              </div>
+              <div><span class="rank-score">340</span><span style="font-size:11px;color:var(--t3);">pts</span><span class="rank-trend" style="color:var(--em);">↑+1</span></div>
+            </div>
+            <div class="rank-row">
+              <div class="rank-pos">#5</div>
+              <div class="rank-avatar" style="background:#a855f7;">DB</div>
+              <div class="rank-info">
+                <div class="rank-name">Diego Barbosa</div>
+                <div class="rank-meta">11 badges · 🔥 9d</div>
+              </div>
+              <div><span class="rank-score">318</span><span style="font-size:11px;color:var(--t3);">pts</span><span class="rank-trend" style="color:var(--red);">↓-3</span></div>
+            </div>
+          </div>
+
+          <div style="text-align:center;padding:10px;font-size:11px;color:var(--t3);">— posições 6-37 —</div>
+
+          <!-- User highlight (fixed at bottom) -->
+          <div style="padding:0 16px;">
+            <div style="background:rgba(99,102,241,0.07);border:1.5px solid rgba(99,102,241,0.28);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--pan);font-weight:700;">#38</div>
+              <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#0055ff);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;">EU</div>
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:600;color:var(--pan);">Você</div>
+                <div style="font-size:11px;color:var(--t3);">12 badges · 🔥 7d</div>
+              </div>
+              <div>
+                <span style="font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--t1);">195</span>
+                <span style="font-size:11px;color:var(--t3);">pts</span>
+                <span class="rank-trend" style="color:var(--em);">↑+4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GRUPO B — ESPECÍFICO -->
+  <div class="demo-group">
+    <div class="demo-group-title">B — Específico (Telas L2 e Modais)</div>
+    <div class="demo-group-sub">Detalhe de badge, Review Semanal, Dashboard Modo Foco.</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- 04: DETALHE BADGE -->
+    <div class="screen-wrapper">
+      <div class="screen-label">04 — Detalhe da Badge</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <span class="int-header-back">← Conquistas</span>
+            <span class="int-header-title">Badge</span>
+            <span style="width:70px;"></span>
+          </div>
+
+          <div style="text-align:center;padding:20px 24px;">
+            <div class="rarity rarity-uncommon" style="margin-bottom:16px;">INCOMUM · 25 PTS</div>
+            <div style="font-size:64px;margin-bottom:12px;">💚</div>
+            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);margin-bottom:6px;">3 Meses no Verde</div>
+            <div style="font-size:14px;color:var(--t2);line-height:1.5;margin-bottom:20px;">Manteve saldo positivo em Finanças por 3 meses consecutivos. Demonstra disciplina financeira consistente.</div>
+
+            <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius);padding:14px;margin-bottom:16px;">
+              <div style="font-size:12px;color:var(--em);font-weight:600;">✓ Desbloqueada em 01 Fev 2026</div>
+            </div>
+
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:16px;">
+              <div style="font-size:11px;color:var(--t2);text-transform:uppercase;margin-bottom:8px;">CRITÉRIO</div>
+              <div style="font-size:13px;color:var(--t1);">Saldo final ≥ R$0 por 3 meses consecutivos</div>
+              <div style="display:flex;justify-content:center;gap:8px;margin-top:10px;">
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;">✓</div>
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;">✓</div>
+                <div style="width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;">✓</div>
+              </div>
+              <div style="font-size:11px;color:var(--t3);margin-top:4px;">Nov · Dez · Jan ✓</div>
+            </div>
+
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;padding:12px;border-radius:var(--radius-sm);background:var(--pan);color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;text-align:center;">Compartilhar 🔗</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05: REVIEW SEMANAL -->
+    <div class="screen-wrapper">
+      <div class="screen-label">05 — Review Semanal</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div style="padding:20px 20px 12px;text-align:center;">
+            <div style="font-size:12px;color:var(--pan);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">SUA SEMANA NO SYNCLIFE</div>
+            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);margin-bottom:4px;">24 Fev — 2 Mar 2026</div>
+            <div style="font-size:12px;color:var(--t3);">Slide 3 de 7</div>
+          </div>
+
+          <!-- Review card: Finanças -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(16,185,129,0.02));border-color:rgba(16,185,129,0.2);">
+            <div style="font-size:11px;color:var(--em);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">💰 FINANÇAS DA SEMANA</div>
+            <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:800;color:var(--t1);margin-bottom:4px;">R$ 1.240</div>
+            <div style="font-size:13px;color:var(--t2);margin-bottom:12px;">gastos esta semana · <span style="color:var(--em);">18% menos</span> que a média</div>
+            <div style="font-size:12px;color:var(--t2);">Top categorias:</div>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-top:6px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;">
+                <span style="color:var(--t1);">🍔 Alimentação</span>
+                <span style="font-family:'DM Mono',monospace;color:var(--t2);">R$ 480</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;">
+                <span style="color:var(--t1);">🏠 Moradia</span>
+                <span style="font-family:'DM Mono',monospace;color:var(--t2);">R$ 420</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;">
+                <span style="color:var(--t1);">🚗 Transporte</span>
+                <span style="font-family:'DM Mono',monospace;color:var(--t2);">R$ 180</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation dots -->
+          <div style="display:flex;justify-content:center;gap:6px;padding:8px 0;">
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(99,102,241,0.3);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(99,102,241,0.3);"></div>
+            <div style="width:20px;height:8px;border-radius:4px;background:var(--pan);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(99,102,241,0.3);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(99,102,241,0.3);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(99,102,241,0.3);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(99,102,241,0.3);"></div>
+          </div>
+
+          <!-- Nav buttons -->
+          <div style="display:flex;gap:8px;padding:0 16px;margin-top:8px;">
+            <div style="flex:1;padding:14px;border-radius:var(--radius-sm);background:var(--s1);border:1px solid var(--border);text-align:center;font-size:14px;color:var(--t2);">← Anterior</div>
+            <div style="flex:1;padding:14px;border-radius:var(--radius-sm);background:var(--pan);text-align:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;">Próximo →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 06: DASHBOARD MODO FOCO -->
+    <div class="screen-wrapper">
+      <div class="screen-label">06 — Dashboard (Modo Foco)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab" style="opacity:0.4;">Conquistas 🔒</div>
+            <div class="sub-nav-tab" style="opacity:0.4;">Ranking 🔒</div>
+          </div>
+
+          <!-- No greeting, no Life Score — clean data -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">💰 Receitas</div>
+              <div class="kpi-value" style="color:var(--em);">R$ 5.000</div>
+              <div class="kpi-sub">↑ receitas do mês</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">📤 Despesas</div>
+              <div class="kpi-value" style="color:var(--red);">R$ 3.200</div>
+              <div class="kpi-sub">64% da receita</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">💚 Saldo</div>
+              <div class="kpi-value" style="color:var(--em);">R$ 1.800</div>
+              <div class="kpi-sub">↑ vs mês anterior</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">📈 Projetado</div>
+              <div class="kpi-value" style="color:var(--pan);">R$ 2.200</div>
+              <div class="kpi-sub">Fim do mês</div>
+            </div>
+          </div>
+
+          <!-- Alerts (same as Jornada) -->
+          <div class="section-title">ALERTAS</div>
+          <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+            <div style="padding:12px 14px;border-radius:var(--radius-sm);background:rgba(244,63,94,0.06);border:1px solid rgba(244,63,94,0.15);display:flex;align-items:center;gap:8px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--red);"></div>
+              <div style="font-size:13px;color:var(--t1);"><strong>Moradia</strong> 100% — R$ 0</div>
+            </div>
+            <div style="padding:12px 14px;border-radius:var(--radius-sm);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);display:flex;align-items:center;gap:8px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--yellow);"></div>
+              <div style="font-size:13px;color:var(--t1);"><strong>Transporte</strong> 78% — R$ 180</div>
+            </div>
+          </div>
+
+          <!-- Heatmap -->
+          <div class="section-title">GASTOS — MARÇO</div>
+          <div style="padding:0 16px 4px;">
+            <div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:6px;">
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:rgba(16,185,129,0.4);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:rgba(16,185,129,0.3);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:rgba(245,158,11,0.5);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:var(--s3);"></div>
+              <div style="width:20px;height:20px;border-radius:4px;background:rgba(249,115,22,0.5);border:1.5px solid var(--pan);"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3);">
+              <span>Menor</span><span>Maior</span>
+            </div>
+          </div>
+
+          <!-- Quick actions (3 only, no Foto Recibo) -->
+          <div class="section-title" style="margin-top:8px;">AÇÕES RÁPIDAS</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 16px;">
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;">
+              <div style="font-size:20px;margin-bottom:6px;">💰</div>
+              <div style="font-size:12px;font-weight:600;color:var(--t1);">Transação</div>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;">
+              <div style="font-size:20px;margin-bottom:6px;">📅</div>
+              <div style="font-size:12px;font-weight:600;color:var(--t1);">Evento</div>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;">
+              <div style="font-size:20px;margin-bottom:6px;">📊</div>
+              <div style="font-size:12px;font-weight:600;color:var(--t1);">Revisão</div>
+            </div>
+          </div>
+
+          <div style="text-align:center;padding:16px 20px;font-size:11px;color:var(--t3);">Modo Foco — dados sem gamificação</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 07: EMPTY STATE -->
+    <div class="screen-wrapper">
+      <div class="screen-label">07 — Empty State (primeiro uso)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Conquistas</div>
+            <div class="sub-nav-tab">Ranking</div>
+          </div>
+
+          <div style="padding:0 20px 12px;">
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--t1);">Bem-vindo ao SyncLife! 🌟</div>
+            <div style="font-size:13px;color:var(--t2);margin-top:4px;">Vamos organizar sua vida juntos.</div>
+          </div>
+
+          <!-- Setup wizard -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(0,85,255,0.08));border-color:rgba(99,102,241,0.25);text-align:center;padding:24px;">
+            <div style="font-size:48px;margin-bottom:12px;">🌐</div>
+            <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);margin-bottom:6px;">Seu Panorama está vazio</div>
+            <div style="font-size:13px;color:var(--t2);line-height:1.5;margin-bottom:16px;">Comece registrando sua primeira transação ou configurando um orçamento para ver seus dados aqui.</div>
+            <div style="display:inline-flex;padding:12px 24px;border-radius:var(--radius-sm);background:var(--pan);color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;">Começar agora →</div>
+          </div>
+
+          <!-- Steps -->
+          <div class="section-title">PRIMEIROS PASSOS</div>
+          <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;">
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:28px;height:28px;border-radius:8px;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">1</div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Registrar primeira transação</div>
+                <div style="font-size:11px;color:var(--t3);">Desbloqueie: 🎯 Primeiro Passo (+10 pts)</div>
+              </div>
+              <span style="color:var(--pan);font-size:14px;">→</span>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:28px;height:28px;border-radius:8px;background:rgba(99,102,241,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">2</div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Configurar um orçamento</div>
+                <div style="font-size:11px;color:var(--t3);">Ative os alertas do Dashboard</div>
+              </div>
+              <span style="color:var(--pan);font-size:14px;">→</span>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,0.12);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">3</div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Criar primeiro objetivo</div>
+                <div style="font-size:11px;color:var(--t3);">Desbloqueie: 🎯 Primeiro Sonho (+10 pts)</div>
+              </div>
+              <span style="color:var(--pan);font-size:14px;">→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

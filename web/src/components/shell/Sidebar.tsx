@@ -13,7 +13,7 @@ import {
   CalendarPlus, Timer, Trophy, Medal, User, Palette, Bell, Tags, Crown,
   Dumbbell, Scale, Utensils, HeartPulse, Bot, Library, Calculator,
   UserCheck, Map, Star, History, BookOpen, Clock, Briefcase, DollarSign, Plane,
-  Sparkles,
+  Sparkles, ClipboardCheck, Globe, Link2,
 } from 'lucide-react'
 
 const LUCIDE_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -22,7 +22,7 @@ const LUCIDE_MAP: Record<string, React.ComponentType<{ size?: number; className?
   CalendarPlus, Timer, Trophy, Medal, User, Palette, Bell, Tags, Crown,
   Dumbbell, Scale, Utensils, HeartPulse, Bot, Library, Calculator,
   UserCheck, Map, Star, History, BookOpen, Clock, Briefcase, DollarSign, Plane,
-  Sparkles,
+  Sparkles, ClipboardCheck, Globe, Link2,
 }
 
 export function Sidebar() {
@@ -31,7 +31,6 @@ export function Sidebar() {
   const activeModule = useShellStore((s) => s.activeModule)
   const sidebarOpen = useShellStore((s) => s.sidebarOpen)
   const toggleSidebar = useShellStore((s) => s.toggleSidebar)
-  const mode = useShellStore((s) => s.mode)
 
   const mod = MODULES[activeModule]
   const activeNavId = getActiveNavItem(pathname, activeModule)

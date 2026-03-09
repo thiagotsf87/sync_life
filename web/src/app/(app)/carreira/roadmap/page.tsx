@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   useCareerRoadmaps, useCreateRoadmap, useUpdateRoadmapStep, useDeleteRoadmap,
+  useProfessionalProfile, useCareerHistory, useSkills, useSaveSkill, useAddHistoryEntry,
   type CreateRoadmapData, type StepStatus,
 } from '@/hooks/use-carreira'
 import { RoadmapTimeline } from '@/components/carreira/RoadmapTimeline'
+import { CarreiraMobile } from '@/components/carreira/CarreiraMobile'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 import { createClient } from '@/lib/supabase/client'
@@ -46,16 +46,20 @@ const EMPTY_FORM = {
 
 export default function RoadmapPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { roadmaps, loading, error, reload } = useCareerRoadmaps()
+  const { profile } = useProfessionalProfile()
+  const { history } = useCareerHistory()
+  const { skills } = useSkills()
+  const saveSkill = useSaveSkill()
+  const addHistory = useAddHistoryEntry()
   const createRoadmap = useCreateRoadmap()
   const updateStep = useUpdateRoadmapStep()
   const deleteRoadmap = useDeleteRoadmap()
   const { isPro } = useUserPlan()
 
   const activeRoadmaps = roadmaps.filter(r => r.status === 'active')
+  const activeRoadmap = activeRoadmaps[0] ?? null
 
   const [showModal, setShowModal] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -150,17 +154,43 @@ export default function RoadmapPage() {
     try {
       // RN-CAR-09: verificar antes de reload se este passo conclui o roadmap
       let willComplete = false
+      const roadmap = roadmaps.find(r => r.id === roadmapId)
       if (status === 'completed') {
-        const roadmap = roadmaps.find(r => r.id === roadmapId)
-        const steps = roadmap?.steps ?? []
-        if (steps.length > 0) {
-          const remaining = steps.filter(s => s.id !== stepId && s.status !== 'completed')
+        const rmSteps = roadmap?.steps ?? []
+        if (rmSteps.length > 0) {
+          const remaining = rmSteps.filter(s => s.id !== stepId && s.status !== 'completed')
           willComplete = remaining.length === 0
         }
       }
 
       await updateStep(stepId, roadmapId, status)
       await reload()
+
+      // RN-CAR-17: passo concluído → meta no Futuro (opt-in)
+      if (status === 'completed') {
+        try {
+          const settings = JSON.parse(localStorage.getItem('sl_integrations_settings') ?? '{}')
+          if (settings.car_roadmap_futuro) {
+            const step = roadmap?.steps?.find(s => s.id === stepId)
+            if (step && roadmap) {
+              const supabase = createClient() as any
+              const { data: { user } } = await supabase.auth.getUser()
+              if (user) {
+                await supabase.from('objectives').insert({
+                  user_id: user.id,
+                  name: step.title,
+                  type: 'task',
+                  status: 'completed',
+                  current_value: 1,
+                  target_value: 1,
+                  target_date: step.target_date ?? null,
+                  notes: `Auto — 💼 Carreira | Passo concluído do roadmap "${roadmap.name}"`,
+                })
+              }
+            }
+          }
+        } catch { /* ignore integration error */ }
+      }
 
       if (willComplete) {
         toast.success('🎉 Roadmap concluído! Atualize seu perfil de carreira.', {
@@ -174,7 +204,30 @@ export default function RoadmapPage() {
   }
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    <CarreiraMobile
+      profile={profile}
+      activeRoadmap={activeRoadmap}
+      skills={skills}
+      history={history}
+      loading={loading}
+      onSaveSkill={async (data) => { await saveSkill(data) }}
+      onAddPromotion={async (data) => {
+        await addHistory({
+          title: data.title,
+          company: data.company || null,
+          field: null,
+          level: null,
+          salary: data.salary,
+          start_date: data.startDate || new Date().toISOString().split('T')[0],
+          end_date: null,
+          change_type: 'promotion',
+          notes: null,
+        })
+      }}
+      onReload={async () => { await reload() }}
+    />
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
@@ -185,10 +238,7 @@ export default function RoadmapPage() {
           <ArrowLeft size={16} />
           Carreira
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           🗺 Roadmaps
         </h1>
         <button
@@ -439,5 +489,6 @@ export default function RoadmapPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

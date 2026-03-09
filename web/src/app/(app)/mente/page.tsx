@@ -3,20 +3,17 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Brain, Flame } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import { useMenteDashboard, useCreateTrack } from '@/hooks/use-mente'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { TrackCard } from '@/components/mente/TrackCard'
 import { TrackWizard } from '@/components/mente/TrackWizard'
 import { StudySessionCard } from '@/components/mente/StudySessionCard'
+import { MenteMobile } from '@/components/mente/MenteMobile'
 import { toast } from 'sonner'
 
 export default function MentePage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { activeTracks, weekHours, todaySessions, streak, recentSessions, loading, error, reload } = useMenteDashboard()
   const createTrack = useCreateTrack()
@@ -39,14 +36,16 @@ export default function MentePage() {
   }
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+      {/* Mobile layout */}
+      <MenteMobile />
+
+      {/* Desktop layout */}
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
           🧠 Mente
         </h1>
         <div className="flex-1" />
@@ -245,6 +244,7 @@ export default function MentePage() {
         onSave={handleCreate}
         isLoading={isCreating}
       />
-    </div>
+      </div>
+    </>
   )
 }

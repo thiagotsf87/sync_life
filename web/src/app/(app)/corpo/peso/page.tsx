@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   useHealthProfile, useWeightEntries, useSaveHealthProfile, useAddWeightEntry, useDeleteWeightEntry,
   calcBMR, calcTDEE, calcIMC, calcCaloriesTarget, IMC_LABEL,
@@ -21,8 +20,6 @@ const WEIGHT_GOALS: WeightGoalType[] = ['lose', 'maintain', 'gain']
 
 export default function PesoPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { profile, loading, reload: reloadProfile } = useHealthProfile()
   const { entries, reload: reloadEntries } = useWeightEntries(90)
@@ -197,10 +194,7 @@ export default function PesoPage() {
           <ArrowLeft size={16} />
           Corpo
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           ⚖️ Peso & Medidas
         </h1>
         <button

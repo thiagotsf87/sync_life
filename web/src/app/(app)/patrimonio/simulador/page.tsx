@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import {
   calcMonthsToIF, buildIFProjection,
   usePortfolioAssets, usePortfolioDividends,
@@ -39,8 +38,6 @@ const PRESET_INCOMES = [
 
 export default function SimuladorPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { isPro } = useUserPlan()
   const { assets } = usePortfolioAssets()
@@ -144,10 +141,7 @@ export default function SimuladorPage() {
           <ArrowLeft size={16} />
           Patrimônio
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           🧮 Simulador de Independência Financeira
         </h1>
       </div>

@@ -2,8 +2,6 @@
 
 import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import {
   useExperienciasDashboard,
   TRIP_STATUS_LABELS, TRIP_STATUS_COLORS,
@@ -13,11 +11,10 @@ import {
 import { KpiCard } from '@/components/ui/kpi-card'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { TripCard } from '@/components/experiencias/TripCard'
+import { ExperienciasMobile } from '@/components/experiencias/ExperienciasMobile'
 
 export default function ExperienciasPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { trips, checklistPct, loading, error } = useExperienciasDashboard()
 
@@ -49,14 +46,16 @@ export default function ExperienciasPage() {
   }
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    {/* Mobile */}
+    <ExperienciasMobile />
+
+    {/* Desktop */}
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
           ✈️ Experiências
         </h1>
         <div className="flex-1" />
@@ -68,7 +67,7 @@ export default function ExperienciasPage() {
         </button>
         <button
           onClick={() => router.push('/experiencias/nova')}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#06b6d4] text-[#03071a] hover:opacity-90 transition-opacity"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#ec4899] text-[#03071a] hover:opacity-90 transition-opacity"
         >
           <Plus size={16} />
           Nova Viagem
@@ -82,7 +81,7 @@ export default function ExperienciasPage() {
           value={nextTrip ? nextTrip.destinations[0] : '—'}
           delta={daysUntilNext != null ? (daysUntilNext === 0 ? 'Hoje!' : `em ${daysUntilNext} dias`) : 'Nenhuma planejada'}
           deltaType={daysUntilNext != null && daysUntilNext <= 7 ? 'up' : 'neutral'}
-          accent="#06b6d4"
+          accent="#ec4899"
         />
         <KpiCard
           label="Viagens ativas"
@@ -111,9 +110,9 @@ export default function ExperienciasPage() {
       <JornadaInsight
         text={
           nextTrip
-            ? <>Sua próxima aventura é <strong className="text-[#06b6d4]">{nextTrip.name}</strong>
+            ? <>Sua próxima aventura é <strong className="text-[#ec4899]">{nextTrip.name}</strong>
                 {daysUntilNext != null && daysUntilNext > 0 && <> em <strong className="text-[var(--sl-t1)]">{daysUntilNext} dias</strong></>}!
-                {calcTripDays(nextTrip.start_date, nextTrip.end_date) > 0 && <> São <strong className="text-[#06b6d4]">{calcTripDays(nextTrip.start_date, nextTrip.end_date)} dias</strong> de experiências inesquecíveis.</>}
+                {calcTripDays(nextTrip.start_date, nextTrip.end_date) > 0 && <> São <strong className="text-[#ec4899]">{calcTripDays(nextTrip.start_date, nextTrip.end_date)} dias</strong> de experiências inesquecíveis.</>}
               </>
             : <>Planeje sua próxima viagem e deixe o SyncLife ajudar com roteiro, orçamento e checklist completo.</>
         }
@@ -139,7 +138,7 @@ export default function ExperienciasPage() {
           </p>
           <button
             onClick={() => router.push('/experiencias/nova')}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#06b6d4] text-[#03071a] hover:opacity-90"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#ec4899] text-[#03071a] hover:opacity-90"
           >
             <Plus size={16} />
             Planejar minha primeira viagem
@@ -170,7 +169,7 @@ export default function ExperienciasPage() {
                   📅 Próximas viagens
                 </h2>
                 {upcoming.length > 4 && (
-                  <button onClick={() => router.push('/experiencias/viagens')} className="text-[12px] text-[#06b6d4] hover:opacity-80">
+                  <button onClick={() => router.push('/experiencias/viagens')} className="text-[12px] text-[#ec4899] hover:opacity-80">
                     Ver todas →
                   </button>
                 )}
@@ -205,7 +204,7 @@ export default function ExperienciasPage() {
       {/* Quick actions */}
       <div className="grid grid-cols-3 gap-3 mt-4 max-sm:grid-cols-1">
         {[
-          { label: '🗺️ Minhas Viagens', href: '/experiencias/viagens', color: '#06b6d4' },
+          { label: '🗺️ Minhas Viagens', href: '/experiencias/viagens', color: '#ec4899' },
           { label: '✈️ Nova Viagem', href: '/experiencias/nova', color: '#10b981' },
           { label: '✅ Checklists', href: '/experiencias/viagens?tab=checklists', color: '#f59e0b' },
         ].map(({ label, href, color }) => (
@@ -218,5 +217,6 @@ export default function ExperienciasPage() {
         ))}
       </div>
     </div>
+    </>
   )
 }

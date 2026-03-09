@@ -115,7 +115,8 @@ test.describe('Esqueceu senha', () => {
 
   test('Voltar para login leva para /login', async ({ page }) => {
     await page.goto('/esqueceu-senha')
-    await page.getByRole('link', { name: /Voltar para login/i }).click()
+    // Na tela inicial: "Fazer login"; após envio: "Voltar para o login"
+    await page.getByRole('link', { name: /Fazer login|Voltar para o? login/i }).click()
     await expect(page).toHaveURL('/login')
   })
 })

@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife Mobile — Configurações (12 telas · v3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══ DESIGN SYSTEM — SyncLife Dark Foco (Navy) ═══ */
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;
+  --cfg:#64748b;--cfg-g:rgba(100,116,139,0.14);
+  --green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--orange:#f97316;
+  --radius:16px;--radius-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0e1a;font-family:'DM Sans',sans-serif;color:var(--t1);}
+
+/* ═══ Demo shell ═══ */
+.demo-page{padding:40px 20px 80px;max-width:1600px;margin:0 auto;}
+.demo-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#64748b,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.demo-subtitle{font-size:14px;color:var(--t2);margin-bottom:10px;}
+.demo-group{margin-top:48px;margin-bottom:14px;padding:14px 0 8px;border-top:1px solid var(--border);}
+.demo-group-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--cfg);letter-spacing:0.5px;}
+.demo-group-sub{font-size:12px;color:var(--t3);margin-top:3px;}
+.screens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(375px,1fr));gap:48px 28px;margin-top:18px;}
+.screen-wrapper{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.screen-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:1px;text-align:center;}
+.screen-tag{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.tag-new{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);}
+.tag-improved{background:rgba(100,116,139,0.15);color:#94a3b8;border:1px solid rgba(100,116,139,0.3);}
+.tag-priority{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);}
+
+/* ═══ Phone frame — AUTO HEIGHT ═══ */
+.phone{
+  width:375px;min-height:500px;
+  background:var(--bg);border-radius:48px;
+  border:2px solid rgba(255,255,255,0.1);
+  overflow:hidden;position:relative;
+  box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);
+  padding-top:54px;padding-bottom:24px;
+}
+.dynamic-island{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:100;}
+.status-bar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;z-index:50;}
+.status-time{font-size:15px;font-weight:600;color:var(--t1);}
+.screen-content{padding-bottom:12px;}
+
+/* ═══ Module header ═══ */
+.mod-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px;}
+.mod-header-left{display:flex;align-items:center;gap:8px;}
+.mod-icon{font-size:20px;}
+.mod-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);}
+.mod-badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;background:var(--cfg-g);color:var(--cfg);}
+
+/* ═══ Sub-nav tabs (underline style) ═══ */
+.sub-nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto;}
+.sub-nav-tab{padding:8px 14px 10px;font-size:13px;color:var(--t3);position:relative;white-space:nowrap;cursor:pointer;flex-shrink:0;}
+.sub-nav-tab.active{color:var(--t1);font-weight:600;}
+.sub-nav-tab.active::after{content:'';position:absolute;bottom:-1px;left:8px;right:8px;height:3px;border-radius:3px 3px 0 0;background:var(--cfg);}
+
+/* ═══ Internal header (L2 screens) ═══ */
+.int-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 14px;}
+.int-header-back{font-size:14px;color:var(--t2);display:flex;align-items:center;gap:4px;}
+.int-header-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--t1);}
+.int-header-action{font-size:13px;color:var(--em);font-weight:600;}
+
+/* ═══ Shared components ═══ */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--t3);margin-bottom:14px;}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:12px;}
+.setting-row:last-child{border-bottom:none;padding-bottom:0;}
+.setting-row:first-child{padding-top:0;}
+.setting-info{flex:1;min-width:0;}
+.setting-label{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:1px;}
+.setting-desc{font-size:11px;color:var(--t3);line-height:1.4;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-green{background:rgba(16,185,129,0.12);color:#10b981;}
+.badge-cfg{background:var(--cfg-g);color:var(--cfg);}
+.badge-red{background:rgba(244,63,94,0.12);color:#f43f5e;}
+.badge-pro{background:linear-gradient(135deg,#10b981,#0055ff);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;padding:0 20px 8px;margin-top:4px;}
+
+/* ═══ Toggle switch ═══ */
+.sw{position:relative;width:42px;height:24px;flex-shrink:0;}
+.sw-track{width:42px;height:24px;border-radius:12px;background:var(--s3);border:1px solid var(--border-h);transition:background 0.2s;}
+.sw-track.on{background:linear-gradient(90deg,#10b981,#0055ff);border-color:transparent;}
+.sw-knob{position:absolute;top:4px;left:4px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform 0.2s;}
+.sw-knob.on{transform:translateX(18px);}
+
+/* ═══ Input / Select ═══ */
+.input{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--t1);width:100%;}
+.select{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--t1);min-width:auto;}
+
+/* ═══ Avatar ═══ */
+.avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#10b981);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;position:relative;flex-shrink:0;}
+.avatar-edit{position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;border-radius:50%;background:var(--s2);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;}
+
+/* ═══ Theme previews ═══ */
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.theme-card{border-radius:12px;overflow:hidden;border:2px solid var(--border);cursor:pointer;position:relative;}
+.theme-card.active{border-color:var(--em);}
+.theme-card .check{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--em);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;display:none;}
+.theme-card.active .check{display:flex;}
+.theme-preview{height:60px;display:flex;flex-direction:column;gap:4px;padding:8px 10px;}
+.theme-bar{height:6px;border-radius:3px;width:60%;}
+.theme-bar-sm{height:4px;border-radius:2px;width:40%;opacity:0.5;}
+.theme-name{text-align:center;font-size:11px;color:var(--t2);padding:6px 0;background:var(--s1);}
+.pro-lock{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:16px;background:rgba(0,0,0,0.5);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+/* ═══ Mode cards ═══ */
+.mode-card{background:var(--s1);border:2px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 10px;position:relative;}
+.mode-card.active{border-color:var(--em);background:rgba(16,185,129,0.04);}
+.mode-card .mode-check{position:absolute;top:14px;right:14px;width:22px;height:22px;border-radius:50%;border:2px solid var(--border-h);display:flex;align-items:center;justify-content:center;}
+.mode-card.active .mode-check{background:var(--em);border-color:var(--em);color:#fff;font-size:12px;}
+.mode-emoji{font-size:28px;margin-bottom:8px;}
+.mode-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.mode-desc{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:10px;}
+.mode-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.mode-tag{padding:4px 10px;border-radius:6px;font-size:11px;background:var(--s3);color:var(--t2);}
+
+/* ═══ Compare table ═══ */
+.compare-table{width:100%;border-collapse:collapse;}
+.compare-table th,.compare-table td{padding:8px 10px;font-size:12px;border-bottom:1px solid var(--border);text-align:left;}
+.compare-table th{color:var(--t3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;}
+.compare-table td:first-child{color:var(--t2);}
+.compare-table td{color:var(--t3);}
+
+/* ═══ Category grid ═══ */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px;}
+.cat-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px;}
+.cat-icon{font-size:18px;}
+.cat-name{font-size:13px;color:var(--t1);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cat-badge{font-size:9px;color:var(--t3);background:var(--s3);padding:2px 6px;border-radius:4px;}
+
+/* ═══ Filter pills ═══ */
+.filter-pills{display:flex;gap:6px;padding:0 16px 12px;}
+.filter-pill{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;border:1px solid var(--border);background:var(--s1);color:var(--t2);}
+.filter-pill.active{background:var(--cfg);color:#000;border-color:var(--cfg);}
+
+/* ═══ Integration toggles ═══ */
+.intg-group-title{font-size:12px;font-weight:600;color:var(--t2);padding:12px 16px 6px;display:flex;align-items:center;gap:6px;}
+.intg-row{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);}
+.intg-row:last-child{border-bottom:none;}
+.intg-arrow{font-size:14px;color:var(--t3);margin-top:2px;flex-shrink:0;}
+.intg-info{flex:1;}
+.intg-label{font-size:13px;font-weight:500;color:var(--t1);margin-bottom:2px;}
+.intg-desc{font-size:11px;color:var(--t3);line-height:1.4;}
+
+/* ═══ Plan cards ═══ */
+.plan-card{background:var(--s1);border:2px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 10px;}
+.plan-card.active{border-color:var(--em);}
+.plan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.plan-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);}
+.plan-price{font-family:'DM Mono',monospace;font-size:14px;color:var(--t2);}
+.plan-desc{font-size:12px;color:var(--t3);margin-bottom:12px;line-height:1.4;}
+.plan-btn{width:100%;padding:10px;border-radius:10px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;text-align:center;border:none;cursor:pointer;}
+.plan-btn-current{background:var(--s3);color:var(--t3);}
+.plan-btn-upgrade{background:linear-gradient(135deg,#10b981,#0055ff);color:#fff;}
+
+/* ═══ Progress bar ═══ */
+.usage-row{padding:10px 0;border-bottom:1px solid var(--border);}
+.usage-row:last-child{border-bottom:none;}
+.usage-header{display:flex;justify-content:space-between;margin-bottom:6px;}
+.usage-label{font-size:12px;font-weight:500;color:var(--t1);}
+.usage-count{font-family:'DM Mono',monospace;font-size:12px;color:var(--t2);}
+.usage-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.usage-fill{height:100%;border-radius:3px;}
+
+/* ═══ Danger zone ═══ */
+.danger-card{background:rgba(244,63,94,0.04);border:1px solid rgba(244,63,94,0.18);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.danger-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(244,63,94,0.1);}
+.danger-row:last-child{border-bottom:none;}
+.danger-icon{font-size:18px;flex-shrink:0;}
+.danger-info{flex:1;}
+.danger-label{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px;}
+.danger-desc{font-size:11px;color:var(--t3);line-height:1.4;}
+.danger-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--red);color:var(--red);background:transparent;white-space:nowrap;flex-shrink:0;}
+
+/* ═══ Modal overlay ═══ */
+.modal-overlay{background:rgba(3,7,26,0.85);padding:20px 16px;display:flex;flex-direction:column;justify-content:flex-end;min-height:200px;}
+.modal-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:24px 20px;max-width:100%;}
+.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--t1);margin-bottom:6px;}
+.modal-desc{font-size:13px;color:var(--t2);line-height:1.5;margin-bottom:16px;}
+.modal-input{width:100%;padding:12px;border-radius:10px;background:var(--s2);border:1px solid var(--border);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;margin-bottom:12px;}
+.modal-btns{display:flex;gap:10px;}
+.modal-btn{flex:1;padding:12px;border-radius:10px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;text-align:center;border:none;cursor:pointer;}
+.modal-btn-cancel{background:var(--s3);color:var(--t2);}
+.modal-btn-danger{background:var(--red);color:#fff;}
+.modal-btn-primary{background:var(--em);color:#000;}
+
+/* ═══ Emoji picker (simplified) ═══ */
+.emoji-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:10px 0;}
+.emoji-item{width:38px;height:38px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
+.emoji-item.selected{border-color:var(--em);background:rgba(16,185,129,0.1);}
+
+/* ═══ Color picker ═══ */
+.color-grid{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
+.color-dot.selected{border-color:#fff;box-shadow:0 0 0 2px var(--em);}
+
+/* ═══ Toast ═══ */
+.toast{background:var(--s2);border:1px solid var(--border-h);border-radius:12px;padding:10px 14px;margin:0 16px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);}
+.toast-icon{font-size:16px;}
+
+/* ═══ Section title in page ═══ */
+.page-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);padding:0 20px 2px;}
+.page-sub{font-size:13px;color:var(--t2);padding:0 20px 16px;}
+
+/* ═══ Automatic theme toggle ═══ */
+.auto-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:0 16px 12px;display:flex;align-items:center;gap:12px;}
+.auto-icon{font-size:24px;}
+.auto-info{flex:1;}
+.auto-label{font-size:14px;font-weight:600;color:var(--t1);}
+.auto-desc{font-size:11px;color:var(--t3);margin-top:2px;}
+</style>
+</head>
+<body>
+
+<div class="demo-page">
+  <div class="demo-title">⚙️ Configurações</div>
+  <div class="demo-subtitle">Módulo Configurações — 12 telas · Design System Navy Dark · #64748b</div>
+  <div style="font-size:12px;color:var(--t3);margin-top:4px;">
+    Cor do módulo: <span style="color:var(--cfg);font-weight:600">#64748b</span> · Ícone: Settings · Glow: rgba(100,116,139,0.14) · Underline tabs · Altura automática
+  </div>
+
+  <!-- ═══ GRUPO A: SEÇÕES PRINCIPAIS ═══ -->
+  <div class="demo-group">
+    <div class="demo-group-title">A · Seções Principais</div>
+    <div class="demo-group-sub">Telas de nível 1 acessíveis via underline tabs</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ─── A1: PERFIL ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A1 · Perfil <span class="screen-tag tag-improved">✦ Melhorado</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Perfil</div>
+            <div class="sub-nav-tab">Aparência</div>
+            <div class="sub-nav-tab">Modo de Uso</div>
+            <div class="sub-nav-tab">Notificações</div>
+            <div class="sub-nav-tab">Categorias</div>
+          </div>
+          <div class="page-title">Perfil</div>
+          <div class="page-sub">Gerencie suas informações pessoais e preferências de conta.</div>
+
+          <!-- Identidade -->
+          <div class="card">
+            <div class="card-title">Identidade</div>
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+              <div class="avatar">TQ<div class="avatar-edit">✏️</div></div>
+              <div>
+                <div style="font-size:15px;font-weight:600;color:var(--t1)">Teste QA</div>
+                <div style="font-size:11px;color:var(--t3)">sillimubusa-3429@yopmail.com</div>
+                <div style="font-size:11px;color:var(--t3)">Membro desde fevereiro de 2026</div>
+              </div>
+            </div>
+            <div style="margin-bottom:10px;">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--t3);margin-bottom:6px;">Nome completo</div>
+              <div class="input">Teste QA</div>
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--t3);margin-bottom:6px;">E-mail</div>
+              <div class="input" style="color:var(--t3)">sillimubusa-3429@yopmail.com</div>
+              <div style="font-size:10px;color:var(--t3);margin-top:4px;">O e-mail não pode ser alterado.</div>
+            </div>
+          </div>
+
+          <!-- Preferências Regionais -->
+          <div class="card">
+            <div class="card-title">Preferências Regionais</div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Moeda</div>
+                <div class="setting-desc">Formato dos valores monetários no app</div>
+              </div>
+              <div class="select">R$ Real (BRL) ▾</div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Fuso horário</div>
+                <div class="setting-desc">Usado para alertas e eventos agendados</div>
+              </div>
+              <div class="select" style="font-size:11px;">America/Sao_Paulo (UTC-3) ▾</div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Dia de início do mês</div>
+                <div class="setting-desc">Define quando reiniciam os orçamentos mensais</div>
+              </div>
+              <div class="select">Dia 1 ▾</div>
+            </div>
+          </div>
+
+          <!-- Segurança -->
+          <div class="card">
+            <div class="card-title">Segurança</div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Alterar senha</div>
+                <div class="setting-desc">Atualize sua senha de acesso</div>
+              </div>
+              <div style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;border:1px solid var(--border-h);color:var(--t2);background:transparent;">○ Alterar</div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Autenticação em 2 fatores</div>
+                <div class="setting-desc">Adiciona uma camada extra de segurança <span class="badge-pro" style="margin-left:4px;">PRO</span></div>
+              </div>
+              <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+            </div>
+          </div>
+
+          <!-- Zona de Perigo -->
+          <div class="danger-card">
+            <div class="card-title" style="color:var(--red)">Zona de Perigo</div>
+            <div class="danger-row">
+              <div class="danger-icon">📥</div>
+              <div class="danger-info">
+                <div class="danger-label">Exportar meus dados</div>
+                <div class="danger-desc">Baixe um arquivo JSON com todos os seus dados (LGPD)</div>
+              </div>
+              <div class="danger-btn">Exportar (JSON)</div>
+            </div>
+            <div class="danger-row">
+              <div class="danger-icon">🗑️</div>
+              <div class="danger-info">
+                <div class="danger-label">Excluir minha conta</div>
+                <div class="danger-desc">Ação permanente e irreversível — todos os dados serão removidos</div>
+              </div>
+              <div class="danger-btn">Excluir conta</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── A2: APARÊNCIA ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A2 · Aparência <span class="screen-tag tag-new">★ Novo</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Perfil</div>
+            <div class="sub-nav-tab active">Aparência</div>
+            <div class="sub-nav-tab">Modo de Uso</div>
+            <div class="sub-nav-tab">Notificações</div>
+            <div class="sub-nav-tab">Categorias</div>
+          </div>
+          <div class="page-title">Aparência</div>
+          <div class="page-sub">Personalize o visual do SyncLife do seu jeito.</div>
+
+          <!-- Automático -->
+          <div class="auto-card">
+            <div class="auto-icon">🖥️</div>
+            <div class="auto-info">
+              <div class="auto-label">Automático</div>
+              <div class="auto-desc">Segue o tema do sistema operacional</div>
+            </div>
+            <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+          </div>
+
+          <!-- Temas FREE -->
+          <div class="card">
+            <div class="card-title">Gratuitos</div>
+            <div class="theme-grid">
+              <div class="theme-card active">
+                <div class="check">✓</div>
+                <div class="theme-preview" style="background:#07112b;">
+                  <div class="theme-bar" style="background:#10b981;"></div>
+                  <div class="theme-bar-sm" style="background:#6e90b8;"></div>
+                </div>
+                <div class="theme-name">Navy Dark</div>
+              </div>
+              <div class="theme-card">
+                <div class="check">✓</div>
+                <div class="theme-preview" style="background:#f0f4f8;">
+                  <div class="theme-bar" style="background:#10b981;"></div>
+                  <div class="theme-bar-sm" style="background:#64748b;"></div>
+                </div>
+                <div class="theme-name">Clean Light</div>
+              </div>
+              <div class="theme-card">
+                <div class="check">✓</div>
+                <div class="theme-preview" style="background:#e8f5f0;">
+                  <div class="theme-bar" style="background:#10b981;"></div>
+                  <div class="theme-bar-sm" style="background:#0ea5e9;"></div>
+                </div>
+                <div class="theme-name">Mint Garden</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Temas PRO -->
+          <div class="card">
+            <div class="card-title">PRO ✨</div>
+            <div class="theme-grid">
+              <div class="theme-card" style="opacity:0.7;">
+                <div class="pro-lock">🔒</div>
+                <div class="theme-preview" style="background:#1a1a2e;">
+                  <div class="theme-bar" style="background:#e2a03f;"></div>
+                  <div class="theme-bar-sm" style="background:#4a4a6a;"></div>
+                </div>
+                <div class="theme-name">Obsidian <span class="badge-pro">PRO</span></div>
+              </div>
+              <div class="theme-card" style="opacity:0.7;">
+                <div class="pro-lock">🔒</div>
+                <div class="theme-preview" style="background:#2d1f2f;">
+                  <div class="theme-bar" style="background:#e88a8a;"></div>
+                  <div class="theme-bar-sm" style="background:#8a6a6a;"></div>
+                </div>
+                <div class="theme-name">Rosewood <span class="badge-pro">PRO</span></div>
+              </div>
+              <div class="theme-card" style="opacity:0.7;">
+                <div class="pro-lock">🔒</div>
+                <div class="theme-preview" style="background:#e8f0f8;">
+                  <div class="theme-bar" style="background:#3b82f6;"></div>
+                  <div class="theme-bar-sm" style="background:#94a3b8;"></div>
+                </div>
+                <div class="theme-name">Arctic <span class="badge-pro">PRO</span></div>
+              </div>
+              <div class="theme-card" style="opacity:0.7;">
+                <div class="pro-lock">🔒</div>
+                <div class="theme-preview" style="background:#1f1f1f;">
+                  <div class="theme-bar" style="background:#94a3b8;"></div>
+                  <div class="theme-bar-sm" style="background:#525252;"></div>
+                </div>
+                <div class="theme-name">Graphite <span class="badge-pro">PRO</span></div>
+              </div>
+              <div class="theme-card" style="opacity:0.7;">
+                <div class="pro-lock">🔒</div>
+                <div class="theme-preview" style="background:#0f1a2e;">
+                  <div class="theme-bar" style="background:#818cf8;"></div>
+                  <div class="theme-bar-sm" style="background:#475569;"></div>
+                </div>
+                <div class="theme-name">Twilight <span class="badge-pro">PRO</span></div>
+              </div>
+              <div class="theme-card" style="opacity:0.7;">
+                <div class="pro-lock">🔒</div>
+                <div class="theme-preview" style="background:#f5f0e8;">
+                  <div class="theme-bar" style="background:#d4a574;"></div>
+                  <div class="theme-bar-sm" style="background:#a08060;"></div>
+                </div>
+                <div class="theme-name">Sahara <span class="badge-pro">PRO</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── A3: MODO DE USO ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A3 · Modo de Uso <span class="screen-tag tag-improved">✦ Melhorado</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Perfil</div>
+            <div class="sub-nav-tab">Aparência</div>
+            <div class="sub-nav-tab active">Modo de Uso</div>
+            <div class="sub-nav-tab">Notificações</div>
+            <div class="sub-nav-tab">Categorias</div>
+          </div>
+          <div class="page-title">Modo de Uso</div>
+          <div class="page-sub">Escolha como o SyncLife se apresenta para você.</div>
+
+          <div style="font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em;padding:0 16px 10px;">Selecione seu modo</div>
+
+          <!-- Modo Foco -->
+          <div class="mode-card active">
+            <div class="mode-check">✓</div>
+            <div class="mode-emoji">🎯</div>
+            <div class="mode-name">Modo Foco</div>
+            <div class="mode-desc">Interface limpa e objetiva. Dados diretos, sem distrações.</div>
+            <div class="mode-tags">
+              <div class="mode-tag">Sem animações</div>
+              <div class="mode-tag">Dados em destaque</div>
+              <div class="mode-tag">Sidebar compacta</div>
+            </div>
+          </div>
+
+          <!-- Modo Jornada -->
+          <div class="mode-card">
+            <div class="mode-check"></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <div class="mode-emoji" style="margin-bottom:0;">🌱</div>
+              <span class="badge-pro">PRO</span>
+            </div>
+            <div class="mode-name">Modo Jornada</div>
+            <div class="mode-desc">Interface motivacional. Celebra progresso e te acompanha como um coach.</div>
+            <div class="mode-tags">
+              <div class="mode-tag">Life Sync Score</div>
+              <div class="mode-tag">Conquistas</div>
+              <div class="mode-tag">Frases motivacionais</div>
+            </div>
+          </div>
+
+          <!-- Comparativo -->
+          <div class="card">
+            <div class="card-title">Comparativo dos Modos</div>
+            <table class="compare-table">
+              <tr><th>Elemento</th><th>🎯 Foco</th><th>🌱 Jornada</th></tr>
+              <tr><td>Dashboard</td><td>Só números</td><td>Score + frases</td></tr>
+              <tr><td>Life Sync Score</td><td>Oculto</td><td>Em destaque</td></tr>
+              <tr><td>Notificações</td><td>Só críticas</td><td>Motivacionais</td></tr>
+              <tr><td>Review semanal</td><td>Desativado</td><td>Todo domingo</td></tr>
+              <tr><td>Animações</td><td>Nenhuma</td><td>Micro-anim.</td></tr>
+              <tr><td>Conquistas</td><td>Discreto</td><td>Celebrativa</td></tr>
+            </table>
+          </div>
+
+          <!-- Reconfigurar -->
+          <div class="card">
+            <div class="card-title">Reconfigurar SyncLife</div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="font-size:24px;">🔄</div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:var(--t1);">Refazer o onboarding</div>
+                <div style="font-size:11px;color:var(--t3);margin-top:2px;">Reconfigure renda e preferências mantendo seus dados</div>
+              </div>
+              <div style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;border:1px solid var(--border-h);color:var(--t2);background:transparent;">Reconfigurar</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── A4: NOTIFICAÇÕES ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A4 · Notificações <span class="screen-tag tag-improved">✦ Melhorado</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Perfil</div>
+            <div class="sub-nav-tab">Aparência</div>
+            <div class="sub-nav-tab">Modo de Uso</div>
+            <div class="sub-nav-tab active">Notificações</div>
+            <div class="sub-nav-tab">Categorias</div>
+          </div>
+          <div class="page-title">Notificações</div>
+          <div class="page-sub">Configure como e quando o SyncLife entra em contato com você.</div>
+
+          <!-- Canal -->
+          <div class="card">
+            <div class="card-title">Canal de Entrega</div>
+            <div class="setting-row">
+              <div style="font-size:18px;flex-shrink:0;">🔔</div>
+              <div class="setting-info">
+                <div class="setting-label">Notificações push</div>
+                <div class="setting-desc">Alertas direto no navegador (requer permissão)</div>
+              </div>
+              <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+            </div>
+            <div class="setting-row">
+              <div style="font-size:18px;flex-shrink:0;">✉️</div>
+              <div class="setting-info">
+                <div class="setting-label">E-mail</div>
+                <div class="setting-desc">Resumos semanais e alertas importantes por e-mail</div>
+              </div>
+              <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+            </div>
+          </div>
+
+          <!-- Alertas Financeiros -->
+          <div class="card">
+            <div class="card-title">Alertas Financeiros</div>
+            <div class="setting-row">
+              <div style="font-size:16px;flex-shrink:0;">📊</div>
+              <div class="setting-info">
+                <div class="setting-label">Orçamento atingindo 75% <span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(16,185,129,0.12);color:#10b981;margin-left:4px;">Foco</span> <span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(0,85,255,0.12);color:#60a5fa;margin-left:2px;">Jornada</span></div>
+                <div class="setting-desc">Avise quando um envelope estiver próximo do limite</div>
+              </div>
+              <div class="sw"><div class="sw-track on"></div><div class="sw-knob on"></div></div>
+            </div>
+            <div class="setting-row">
+              <div style="font-size:16px;flex-shrink:0;">🚨</div>
+              <div class="setting-info">
+                <div class="setting-label">Orçamento excedido <span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(16,185,129,0.12);color:#10b981;margin-left:4px;">Foco</span> <span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(0,85,255,0.12);color:#60a5fa;margin-left:2px;">Jornada</span></div>
+                <div class="setting-desc">Notifique quando ultrapassar o limite</div>
+              </div>
+              <div class="sw"><div class="sw-track on"></div><div class="sw-knob on"></div></div>
+            </div>
+            <div class="setting-row">
+              <div style="font-size:16px;flex-shrink:0;">📅</div>
+              <div class="setting-info">
+                <div class="setting-label">Evento financeiro amanhã <span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(16,185,129,0.12);color:#10b981;margin-left:4px;">Foco</span> <span style="font-size:9px;padding:1px 5px;border-radius:4px;background:rgba(0,85,255,0.12);color:#60a5fa;margin-left:2px;">Jornada</span></div>
+                <div class="setting-desc">Lembrete de vencimentos e recorrências</div>
+              </div>
+              <div class="sw"><div class="sw-track on"></div><div class="sw-knob on"></div></div>
+            </div>
+            <div class="setting-row">
+              <div style="font-size:16px;flex-shrink:0;">📉</div>
+              <div class="setting-info">
+                <div class="setting-label">Saldo projetado negativo</div>
+                <div class="setting-desc">Alerta quando a projeção mensal ficar no vermelho</div>
+              </div>
+              <div class="sw"><div class="sw-track on"></div><div class="sw-knob on"></div></div>
+            </div>
+          </div>
+
+          <!-- Metas -->
+          <div class="card">
+            <div class="card-title">Metas e Progresso</div>
+            <div class="setting-row">
+              <div style="font-size:16px;flex-shrink:0;">⚠️</div>
+              <div class="setting-info">
+                <div class="setting-label">Meta em risco</div>
+                <div class="setting-desc">Alerta quando progresso abaixo do esperado</div>
+              </div>
+              <div class="sw"><div class="sw-track on"></div><div class="sw-knob on"></div></div>
+            </div>
+            <div class="setting-row">
+              <div style="font-size:16px;flex-shrink:0;">🎉</div>
+              <div class="setting-info">
+                <div class="setting-label">Meta concluída</div>
+                <div class="setting-desc">Comemore ao atingir 100% de uma meta</div>
+              </div>
+              <div class="sw"><div class="sw-track on"></div><div class="sw-knob on"></div></div>
+            </div>
+          </div>
+
+          <!-- Exclusivos Jornada -->
+          <div class="card" style="border-color:rgba(0,85,255,0.15);">
+            <div class="card-title" style="display:flex;align-items:center;gap:6px;">Exclusivos Jornada <span class="badge-pro">PRO</span></div>
+            <div style="font-size:11px;color:var(--t3);margin-bottom:12px;padding:8px 10px;background:var(--s2);border-radius:8px;">ℹ️ Disponível apenas no Modo Jornada (PRO)</div>
+            <div class="setting-row" style="opacity:0.5;">
+              <div class="setting-info">
+                <div class="setting-label">Lembrete diário</div>
+                <div class="setting-desc">"Hora de registrar seu dia!" — 21:00</div>
+              </div>
+              <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+            </div>
+            <div class="setting-row" style="opacity:0.5;">
+              <div class="setting-info">
+                <div class="setting-label">Review semanal</div>
+                <div class="setting-desc">Resumo dominical do progresso da semana</div>
+              </div>
+              <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── A5: CATEGORIAS ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A5 · Categorias <span class="screen-tag tag-improved">✦ Melhorado</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Perfil</div>
+            <div class="sub-nav-tab">Aparência</div>
+            <div class="sub-nav-tab">Modo de Uso</div>
+            <div class="sub-nav-tab">Notificações</div>
+            <div class="sub-nav-tab active">Categorias</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 2px;">
+            <div class="page-title" style="padding:0;">Categorias</div>
+            <div style="padding:8px 14px;border-radius:10px;font-size:13px;font-weight:600;background:var(--cfg);color:#000;">+ Nova categoria</div>
+          </div>
+          <div class="page-sub">Crie e gerencie categorias personalizadas para suas transações.</div>
+
+          <div class="filter-pills">
+            <div class="filter-pill active">↓ Despesas</div>
+            <div class="filter-pill">↑ Receitas</div>
+          </div>
+
+          <div class="cat-grid">
+            <div class="cat-card"><span class="cat-icon">🍔</span><span class="cat-name">Alimentação</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card"><span class="cat-icon">🏠</span><span class="cat-name">Moradia</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card"><span class="cat-icon">🚗</span><span class="cat-name">Transporte</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card"><span class="cat-icon">💡</span><span class="cat-name">Contas</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card"><span class="cat-icon">🏥</span><span class="cat-name">Saúde</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card"><span class="cat-icon">📚</span><span class="cat-name">Educação</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card"><span class="cat-icon">🎮</span><span class="cat-name">Lazer</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card"><span class="cat-icon">👕</span><span class="cat-name">Vestuário</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card"><span class="cat-icon">🛒</span><span class="cat-name">Compras</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card"><span class="cat-icon">🔧</span><span class="cat-name">Serviços</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card"><span class="cat-icon">📦</span><span class="cat-name">Outros</span><span class="cat-badge">Padrão</span></div>
+            <div class="cat-card" style="border-style:dashed;border-color:var(--cfg);"><span class="cat-icon">🐾</span><span class="cat-name" style="color:var(--cfg);">Pets</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── A6: INTEGRAÇÕES ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A6 · Integrações <span class="screen-tag tag-new">★ Novo</span> <span class="screen-tag tag-priority">⭐ Alta prioridade</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Perfil</div>
+            <div class="sub-nav-tab">Aparência</div>
+            <div class="sub-nav-tab">Modo de Uso</div>
+            <div class="sub-nav-tab">Notificações</div>
+            <div class="sub-nav-tab">Categorias</div>
+            <div class="sub-nav-tab active">Integrações</div>
+          </div>
+          <div class="page-title">Integrações</div>
+          <div class="page-sub">Configure quais módulos se comunicam automaticamente.</div>
+
+          <div style="font-size:11px;color:var(--t3);padding:4px 16px 10px;line-height:1.5;">Todas as integrações são opt-in. Dados gerados carregam a tag <strong style="color:var(--t2);">Auto —</strong></div>
+
+          <!-- Corpo -->
+          <div class="intg-group-title">🏃 Corpo</div>
+          <div class="card" style="margin-top:0;">
+            <div class="intg-row" style="padding-top:0;">
+              <div class="intg-info">
+                <div class="intg-label">Custo de consulta → Despesa em Finanças</div>
+                <div class="intg-desc">Registra custos de consultas como despesa "Saúde"</div>
+              </div>
+              <div class="sw"><div class="sw-track on"></div><div class="sw-knob on"></div></div>
+            </div>
+            <div class="intg-row">
+              <div class="intg-info">
+                <div class="intg-label">Consulta agendada → Evento na Agenda</div>
+                <div class="intg-desc">Cria evento no calendário para consultas médicas</div>
+              </div>
+              <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+            </div>
+          </div>
+
+          <!-- Mente -->
+          <div class="intg-group-title">🧠 Mente</div>
+          <div class="card" style="margin-top:0;">
+            <div class="intg-row" style="padding-top:0;">
+              <div class="intg-info">
+                <div class="intg-label">Sessão Pomodoro → Bloco na Agenda</div>
+                <div class="intg-desc">Registra cada sessão Pomodoro como evento de estudo</div>
+              </div>
+              <div class="sw"><div class="sw-track on"></div><div class="sw-knob on"></div></div>
+            </div>
+            <div class="intg-row">
+              <div class="intg-info">
+                <div class="intg-label">Custo de trilha → Despesa em Finanças</div>
+                <div class="intg-desc">Custos de cursos/trilhas viram despesa "Educação"</div>
+              </div>
+              <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+            </div>
+          </div>
+
+          <!-- Patrimônio -->
+          <div class="intg-group-title">📈 Patrimônio</div>
+          <div class="card" style="margin-top:0;">
+            <div class="intg-row" style="padding-top:0;">
+              <div class="intg-info">
+                <div class="intg-label">Provento recebido → Receita em Finanças</div>
+                <div class="intg-desc">Dividendos e rendimentos viram receita</div>
+              </div>
+              <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+            </div>
+          </div>
+
+          <!-- Carreira -->
+          <div class="intg-group-title">💼 Carreira</div>
+          <div class="card" style="margin-top:0;">
+            <div class="intg-row" style="padding-top:0;">
+              <div class="intg-info">
+                <div class="intg-label">Salário atualizado → Receita em Finanças</div>
+                <div class="intg-desc">Sincroniza atualizações de salário com renda mensal</div>
+              </div>
+              <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+            </div>
+          </div>
+
+          <!-- Futuro -->
+          <div class="intg-group-title">🔮 Futuro</div>
+          <div class="card" style="margin-top:0;">
+            <div class="intg-row" style="padding-top:0;">
+              <div class="intg-info">
+                <div class="intg-label">Prazo de objetivo → Lembrete na Agenda</div>
+                <div class="intg-desc">Cria evento lembrete na data-prazo do objetivo</div>
+              </div>
+              <div class="sw"><div class="sw-track"></div><div class="sw-knob"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── A7: MEU PLANO ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A7 · Meu Plano <span class="screen-tag tag-new">★ Novo</span> <span class="screen-tag tag-priority">⭐ Alta prioridade</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Perfil</div>
+            <div class="sub-nav-tab">Aparência</div>
+            <div class="sub-nav-tab">Modo de Uso</div>
+            <div class="sub-nav-tab">Notificações</div>
+            <div class="sub-nav-tab">Categorias</div>
+            <div class="sub-nav-tab">Integrações</div>
+            <div class="sub-nav-tab active">Plano</div>
+          </div>
+          <div class="page-title">Meu Plano</div>
+          <div class="page-sub">Gerencie sua assinatura e veja seu uso atual.</div>
+
+          <!-- Plano FREE -->
+          <div class="plan-card active">
+            <div class="plan-header">
+              <div class="plan-name">📦 Plano FREE</div>
+              <span class="badge badge-green">Plano atual</span>
+            </div>
+            <div class="plan-desc">Funcionalidades essenciais para começar a organizar sua vida.</div>
+            <div class="plan-btn plan-btn-current">Plano atual</div>
+          </div>
+
+          <!-- Plano PRO -->
+          <div class="plan-card">
+            <div class="plan-header">
+              <div class="plan-name">👑 Plano PRO</div>
+              <div class="plan-price">R$ 29,90/mês</div>
+            </div>
+            <div class="plan-desc">Experiência completa com IA, 9 temas, Modo Jornada e integrações avançadas.</div>
+            <div class="plan-btn plan-btn-upgrade">Fazer upgrade →</div>
+          </div>
+
+          <!-- Uso atual -->
+          <div class="card">
+            <div class="card-title">Uso Atual</div>
+            <div class="usage-row">
+              <div class="usage-header">
+                <span class="usage-label">Contas conectadas</span>
+                <span class="usage-count">1 de 2</span>
+              </div>
+              <div class="usage-bar"><div class="usage-fill" style="width:50%;background:var(--green);"></div></div>
+            </div>
+            <div class="usage-row">
+              <div class="usage-header">
+                <span class="usage-label">Recorrentes ativas</span>
+                <span class="usage-count">4 de 5</span>
+              </div>
+              <div class="usage-bar"><div class="usage-fill" style="width:80%;background:var(--yellow);"></div></div>
+            </div>
+            <div class="usage-row">
+              <div class="usage-header">
+                <span class="usage-label">Metas ativas</span>
+                <span class="usage-count">3 de 3</span>
+              </div>
+              <div class="usage-bar"><div class="usage-fill" style="width:100%;background:var(--red);"></div></div>
+            </div>
+            <div class="usage-row">
+              <div class="usage-header">
+                <span class="usage-label">Objetivos ativos</span>
+                <span class="usage-count">1 de 2</span>
+              </div>
+              <div class="usage-bar"><div class="usage-fill" style="width:50%;background:var(--green);"></div></div>
+            </div>
+            <div class="usage-row">
+              <div class="usage-header">
+                <span class="usage-label">Trilhas ativas</span>
+                <span class="usage-count">2 de 2</span>
+              </div>
+              <div class="usage-bar"><div class="usage-fill" style="width:100%;background:var(--red);"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ GRUPO B: MODAIS E FLUXOS CRUD ═══ -->
+  <div class="demo-group">
+    <div class="demo-group-title">B · Modais e Fluxos CRUD</div>
+    <div class="demo-group-sub">Telas de nível 2 — modais e confirmações</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ─── B1: NOVA CATEGORIA (MODAL) ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">B1 · Nova Categoria <span class="screen-tag tag-new">★ Novo</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="modal-overlay">
+            <div class="modal-card">
+              <div class="modal-title">Nova Categoria</div>
+              <div class="modal-desc">Crie uma categoria personalizada para suas transações.</div>
+
+              <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Tipo</div>
+              <div class="filter-pills" style="padding:0 0 12px;">
+                <div class="filter-pill active" style="font-size:12px;">Despesa</div>
+                <div class="filter-pill" style="font-size:12px;">Receita</div>
+              </div>
+
+              <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Nome</div>
+              <div class="modal-input" style="margin-bottom:14px;">Pets</div>
+
+              <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Ícone</div>
+              <div class="emoji-grid">
+                <div class="emoji-item">🐶</div>
+                <div class="emoji-item selected">🐾</div>
+                <div class="emoji-item">🐱</div>
+                <div class="emoji-item">🐟</div>
+                <div class="emoji-item">🐦</div>
+                <div class="emoji-item">🐰</div>
+              </div>
+
+              <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Cor</div>
+              <div class="color-grid">
+                <div class="color-dot" style="background:#10b981;"></div>
+                <div class="color-dot" style="background:#0ea5e9;"></div>
+                <div class="color-dot selected" style="background:#f97316;"></div>
+                <div class="color-dot" style="background:#8b5cf6;"></div>
+                <div class="color-dot" style="background:#ec4899;"></div>
+                <div class="color-dot" style="background:#f43f5e;"></div>
+                <div class="color-dot" style="background:#eab308;"></div>
+                <div class="color-dot" style="background:#14b8a6;"></div>
+              </div>
+
+              <div class="modal-btns" style="margin-top:16px;">
+                <div class="modal-btn modal-btn-cancel">Cancelar</div>
+                <div class="modal-btn modal-btn-primary">Criar categoria</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── B2: EXCLUIR CONTA (CONFIRM) ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">B2 · Excluir Conta <span class="screen-tag tag-new">★ Novo</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="modal-overlay">
+            <div class="modal-card" style="border:1px solid rgba(244,63,94,0.2);">
+              <div style="text-align:center;font-size:32px;margin-bottom:12px;">⚠️</div>
+              <div class="modal-title" style="text-align:center;">Excluir sua conta?</div>
+              <div class="modal-desc" style="text-align:center;">Esta ação é <strong style="color:var(--red);">permanente e irreversível</strong>. Todos os seus dados serão apagados: transações, orçamentos, metas, eventos, categorias e configurações.</div>
+
+              <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Digite EXCLUIR para confirmar</div>
+              <div class="modal-input" style="border-color:rgba(244,63,94,0.3);">EXCLU</div>
+
+              <div class="modal-btns" style="margin-top:4px;">
+                <div class="modal-btn modal-btn-cancel">Cancelar</div>
+                <div class="modal-btn modal-btn-danger" style="opacity:0.4;cursor:not-allowed;">Excluir minha conta</div>
+              </div>
+              <div style="text-align:center;font-size:10px;color:var(--t3);margin-top:10px;">O botão ficará habilitado quando você digitar "EXCLUIR"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── B3: ALTERAR SENHA (MODAL) ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">B3 · Alterar Senha <span class="screen-tag tag-new">★ Novo</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="modal-overlay">
+            <div class="modal-card">
+              <div class="modal-title">Alterar Senha</div>
+              <div class="modal-desc">Atualize sua senha de acesso ao SyncLife.</div>
+
+              <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Senha atual</div>
+              <div class="modal-input" style="margin-bottom:14px;">••••••••</div>
+
+              <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Nova senha</div>
+              <div class="modal-input" style="margin-bottom:4px;">••••••••••</div>
+              <div style="font-size:10px;color:var(--green);margin-bottom:14px;">✓ Mínimo 8 caracteres</div>
+
+              <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Confirmar nova senha</div>
+              <div class="modal-input" style="margin-bottom:4px;">••••••••••</div>
+              <div style="font-size:10px;color:var(--green);margin-bottom:14px;">✓ Senhas coincidem</div>
+
+              <div class="modal-btns" style="margin-top:4px;">
+                <div class="modal-btn modal-btn-cancel">Cancelar</div>
+                <div class="modal-btn modal-btn-primary">Alterar senha</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ GRUPO C: UPGRADE ═══ -->
+  <div class="demo-group">
+    <div class="demo-group-title">C · Upgrade PRO</div>
+    <div class="demo-group-sub">Modais de conversão e upsell</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ─── C1: UPGRADE MODAL ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">C1 · UpgradeModal <span class="screen-tag tag-new">★ Novo</span> <span class="screen-tag tag-priority">⭐ Alta prioridade</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="modal-overlay">
+            <div class="modal-card" style="text-align:center;border:1px solid rgba(16,185,129,0.2);">
+              <div style="font-size:40px;margin-bottom:10px;">👑</div>
+              <div class="modal-title" style="text-align:center;">Desbloqueie o SyncLife PRO</div>
+              <div class="modal-desc" style="text-align:center;">Você atingiu o limite do plano gratuito. Com o PRO, você terá acesso completo a todas as funcionalidades.</div>
+
+              <div style="text-align:left;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;color:var(--t1);">✅ Modo Jornada com IA e gamificação</div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;color:var(--t1);">✅ 9 temas visuais exclusivos</div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;color:var(--t1);">✅ Metas, objetivos e trilhas ilimitados</div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;color:var(--t1);">✅ Integrações avançadas</div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;color:var(--t1);">✅ Autenticação 2FA</div>
+              </div>
+
+              <div style="display:flex;gap:10px;margin-bottom:12px;">
+                <div style="flex:1;padding:12px;border-radius:10px;border:2px solid var(--border);text-align:center;">
+                  <div style="font-size:11px;color:var(--t3);margin-bottom:2px;">Mensal</div>
+                  <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:var(--t1);">R$ 29,90</div>
+                  <div style="font-size:10px;color:var(--t3);">/mês</div>
+                </div>
+                <div style="flex:1;padding:12px;border-radius:10px;border:2px solid var(--em);background:rgba(16,185,129,0.06);text-align:center;position:relative;">
+                  <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--em);color:#000;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;">ECONOMIA</div>
+                  <div style="font-size:11px;color:var(--t3);margin-bottom:2px;">Anual</div>
+                  <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:var(--t1);">R$ 24,90</div>
+                  <div style="font-size:10px;color:var(--em);">/mês (R$ 298,80/ano)</div>
+                </div>
+              </div>
+
+              <div class="modal-btn modal-btn-primary" style="font-size:15px;padding:14px;margin-bottom:8px;">Começar 7 dias grátis →</div>
+              <div style="font-size:11px;color:var(--t3);">Cancele quando quiser. Sem compromisso.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── C2: TOAST DE CONFIRMAÇÃO ─── -->
+    <div class="screen-wrapper">
+      <div class="screen-label">C2 · Toast Modo Ativado <span class="screen-tag tag-new">★ Novo</span></div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span><span style="color:var(--t2);font-size:12px">●●●</span></div>
+        <div class="screen-content">
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Perfil</div>
+            <div class="sub-nav-tab">Aparência</div>
+            <div class="sub-nav-tab active">Modo de Uso</div>
+            <div class="sub-nav-tab">Notificações</div>
+            <div class="sub-nav-tab">Categorias</div>
+          </div>
+          <div class="page-title">Modo de Uso</div>
+          <div class="page-sub">Escolha como o SyncLife se apresenta para você.</div>
+
+          <div style="font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em;padding:0 16px 10px;">Selecione seu modo</div>
+
+          <div class="mode-card active">
+            <div class="mode-check">✓</div>
+            <div class="mode-emoji">🎯</div>
+            <div class="mode-name">Modo Foco</div>
+            <div class="mode-desc">Interface limpa e objetiva. Dados diretos, sem distrações.</div>
+            <div class="mode-tags">
+              <div class="mode-tag">Sem animações</div>
+              <div class="mode-tag">Dados em destaque</div>
+              <div class="mode-tag">Sidebar compacta</div>
+            </div>
+          </div>
+
+          <!-- Toast -->
+          <div class="toast" style="margin-top:4px;">
+            <div class="toast-icon">✅</div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:var(--t1);">🎯 Modo Foco ativado</div>
+              <div style="font-size:11px;color:var(--t3);">Interface atualizada para você.</div>
+            </div>
+            <div style="font-size:10px;color:var(--t3);">3s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { Plus, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   useStudyTracks, useCreateTrack, useUpdateTrack, useDeleteTrack, useToggleStep,
   type TrackStatus, type StudyTrackStep,
@@ -28,8 +27,6 @@ const STATUS_TABS: { value: FilterStatus; label: string }[] = [
 
 export default function TrilhasPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { tracks, loading, error, reload } = useStudyTracks()
   const createTrack = useCreateTrack()
@@ -140,10 +137,7 @@ export default function TrilhasPage() {
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
           📚 Trilhas de Aprendizado
         </h1>
         <div className="flex-1" />

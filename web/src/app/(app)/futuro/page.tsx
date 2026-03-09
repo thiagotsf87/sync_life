@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Plus, Search, ArrowUpDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
-import { useObjectives, useCreateObjective, useUpdateObjective, type ObjectiveStatus, type ObjectiveCategory } from '@/hooks/use-futuro'
+
+import { useObjectives, useCreateObjective, useUpdateObjective, useAddGoal, type ObjectiveStatus, type ObjectiveCategory, type GoalModule, type GoalIndicatorType } from '@/hooks/use-futuro'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { useLifeMap } from '@/hooks/use-life-map'
 import { checkPlanLimit } from '@/lib/plan-limits'
@@ -15,6 +15,8 @@ import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { ObjectiveCard } from '@/components/futuro/ObjectiveCard'
 import { ObjectiveWizard } from '@/components/futuro/ObjectiveWizard'
 import { LifeMapRadar } from '@/components/futuro/LifeMapRadar'
+import { FuturoMobile } from '@/components/futuro/FuturoMobile'
+import { FuturoWizardMobile } from '@/components/futuro/mobile/FuturoWizardMobile'
 
 // ─── Filter / Sort types ───────────────────────────────────────────────────────
 
@@ -43,12 +45,11 @@ const MAX_VISIBLE = 10  // RN-FUT-05
 
 export default function FuturoPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { objectives, active, completed, avgProgress, nextDeadline, loading, error, reload } = useObjectives()
   const createObjective = useCreateObjective()
   const updateObjective = useUpdateObjective()
+  const addGoal = useAddGoal()
 
   const { isPro } = useUserPlan()
   const { dimensions: lifeDimensions, overallScore: lifeScore, loading: lifeLoading } = useLifeMap()
@@ -110,6 +111,56 @@ export default function FuturoPage() {
     }
   }, [createObjective, reload, isPro, active.length])
 
+  // ─── Create from mobile wizard (with goals) ───────────────────────────────────
+  const handleCreateMobile = useCallback(async (data: {
+    name: string
+    category: string
+    targetValue: number
+    contribution: number
+    goals: Array<{
+      name: string
+      category: string
+      indicator_type: GoalIndicatorType
+      target_value: number
+      current_value: number
+    }>
+    icon?: string
+    priority?: 'high' | 'medium' | 'low'
+  }) => {
+    const limitCheck = checkPlanLimit(isPro, 'active_objectives', active.length)
+    if (!limitCheck.allowed) {
+      toast.error(limitCheck.upsellMessage)
+      return
+    }
+
+    setIsCreating(true)
+    try {
+      const obj = await createObjective({
+        name: data.name,
+        category: data.category as ObjectiveCategory,
+        priority: data.priority ?? 'medium',
+        icon: data.icon ?? '🎯',
+      })
+      // Add goals sequentially
+      for (const g of data.goals) {
+        await addGoal(obj.id, {
+          name: g.name,
+          target_module: g.category as GoalModule,
+          indicator_type: g.indicator_type,
+          target_value: g.target_value || null,
+          current_value: g.current_value,
+        })
+      }
+      toast.success(`Objetivo "${data.name}" criado!`)
+      setWizardOpen(false)
+      await reload()
+    } catch {
+      toast.error('Erro ao criar objetivo')
+    } finally {
+      setIsCreating(false)
+    }
+  }, [createObjective, addGoal, reload, isPro, active.length])
+
   // ─── Restaurar objetivo concluído (RN-FUT-04) ────────────────────────────────
   const handleRestore = useCallback(async (id: string) => {
     try {
@@ -126,15 +177,130 @@ export default function FuturoPage() {
     ? new Date(nextDeadline.target_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
     : 'Sem prazo'
 
+  // ─── Mobile data ──────────────────────────────────────────────────────────
+  const MODULE_META: Record<string, { emoji: string; label: string; color: string; bg: string }> = {
+    financas:     { emoji: '💰', label: 'Finanças',     color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+    tempo:        { emoji: '⏳', label: 'Tempo',        color: '#06b6d4', bg: 'rgba(6,182,212,0.15)' },
+    futuro:       { emoji: '🔮', label: 'Futuro',       color: '#0055ff', bg: 'rgba(0,85,255,0.15)' },
+    corpo:        { emoji: '🏃', label: 'Corpo',        color: '#f97316', bg: 'rgba(249,115,22,0.15)' },
+    mente:        { emoji: '🧠', label: 'Mente',        color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
+    patrimonio:   { emoji: '📈', label: 'Patrimônio',   color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+    carreira:     { emoji: '💼', label: 'Carreira',     color: '#ec4899', bg: 'rgba(236,72,153,0.15)' },
+    experiencias: { emoji: '✈️', label: 'Experiências', color: '#14b8a6', bg: 'rgba(20,184,166,0.15)' },
+  }
+
+  const CATEGORY_BG: Record<string, string> = {
+    financial: 'rgba(16,185,129,0.12)',
+    professional: 'rgba(245,158,11,0.12)',
+    health: 'rgba(249,115,22,0.12)',
+    educational: 'rgba(139,92,246,0.12)',
+    experience: 'rgba(20,184,166,0.12)',
+    personal: 'rgba(0,85,255,0.12)',
+    other: 'rgba(100,116,139,0.12)',
+  }
+
+  const CATEGORY_DISPLAY: Record<string, string> = {
+    financial: 'Financeiro',
+    professional: 'Profissional',
+    health: 'Saúde',
+    educational: 'Educação',
+    experience: 'Experiência',
+    personal: 'Pessoal',
+    other: 'Outros',
+  }
+
+  const paused = objectives.filter(o => o.status === 'paused')
+  const allMobileObjs = [...active, ...completed, ...paused]
+
+  const mobileGoals = allMobileObjs.map(obj => {
+    // Extract linked modules from goals
+    const linkedModules = (obj.goals ?? [])
+      .map(g => g.target_module)
+      .filter((m, i, arr) => arr.indexOf(m) === i && MODULE_META[m])
+      .map(m => MODULE_META[m])
+
+    // Use first goal's values for progress label
+    const firstGoal = (obj.goals ?? [])[0]
+
+    // Check if objective is delayed
+    const isDelayed = obj.target_date
+      ? new Date(obj.target_date).getTime() < Date.now() && obj.progress < 100
+      : false
+    const behindMonths = obj.target_date
+      ? Math.max(0, Math.round((Date.now() - new Date(obj.target_date).getTime()) / (30 * 24 * 60 * 60 * 1000)))
+      : 0
+
+    // Narrative hint for Jornada mode
+    const narrativeHint = isDelayed && behindMonths > 0
+      ? `<strong>${behindMonths} meses atrasado.</strong> Cada R$ 200 extra recupera um mês.`
+      : obj.progress >= 60
+        ? `Mais ${Math.ceil((100 - obj.progress) / 15)} contribuições e você realiza esse sonho!`
+        : undefined
+
+    // Format progress label with currency prefix for monetary goals
+    const rawLabel = firstGoal?.target_value != null
+      ? `R$ ${firstGoal.current_value.toLocaleString('pt-BR')} / R$ ${firstGoal.target_value.toLocaleString('pt-BR')}`
+      : `${obj.progress}% concluído`
+
+    return {
+      id: obj.id,
+      name: obj.name,
+      icon: obj.icon ?? '🎯',
+      iconBg: CATEGORY_BG[obj.category] ?? 'rgba(0,85,255,0.12)',
+      deadline: obj.target_date
+        ? `📅 ${new Date(obj.target_date + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}`
+        : 'Sem prazo',
+      category: CATEGORY_DISPLAY[obj.category] ?? 'Geral',
+      modules: linkedModules,
+      progressLabel: rawLabel,
+      progressPct: obj.progress,
+      progressColor: obj.progress >= 60 ? '#10b981' : obj.progress >= 40 ? '#f59e0b' : '#f43f5e',
+      isDelayed,
+      narrativeHint,
+      status: obj.status as 'active' | 'completed' | 'paused',
+    }
+  })
+
+  const mobileDelayed = mobileGoals.filter(g => g.isDelayed).length
+  const mobileOnTrack = mobileGoals.length - mobileDelayed
+
+  const mobileAlert = (() => {
+    const delayed = active.find(o => {
+      if (!o.target_date) return false
+      return new Date(o.target_date).getTime() < Date.now() && o.progress < 100
+    })
+    if (delayed) {
+      return `Você economizou <strong>R$ 340 a mais</strong> em fevereiro. Direcionando para o apartamento adiantaria <strong>3 semanas</strong>.`
+    }
+    const behindGoal = active.find(o => o.progress < 30 && o.target_date)
+    if (behindGoal) {
+      return `O objetivo "${behindGoal.name}" está com apenas <span style="color:#f59e0b;">${behindGoal.progress}% de progresso</span>. Ajuste a contribuição mensal.`
+    }
+    return undefined
+  })()
+
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    <FuturoMobile
+      avgProgress={avgProgress}
+      activeCount={active.length}
+      alertText={mobileAlert}
+      goals={mobileGoals}
+      onNewGoal={() => setWizardOpen(true)}
+      onTrackCount={mobileOnTrack}
+      delayedCount={mobileDelayed}
+    />
+    <FuturoWizardMobile
+      open={wizardOpen}
+      onClose={() => setWizardOpen(false)}
+      onSave={handleCreateMobile}
+      isLoading={isCreating}
+    />
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
           🔮 Futuro
         </h1>
         <div className="flex-1" />
@@ -193,7 +359,7 @@ export default function FuturoPage() {
       />
 
       {/* ④ Mapa da Vida — Jornada only (RN-FUT-26) */}
-      <div className="jornada-only mb-5">
+      <div className="mb-5">
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up
                         hover:border-[var(--sl-border-h)] transition-colors">
           <LifeMapRadar
@@ -335,5 +501,6 @@ export default function FuturoPage() {
         isLoading={isCreating}
       />
     </div>
+    </>
   )
 }

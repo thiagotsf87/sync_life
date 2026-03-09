@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useShellStore } from '@/stores/shell-store'
 import { cn } from '@/lib/utils'
 
 // RN-CRP-37 / RN-EXP-30 / RN-MNT-24 / RN-PTR-22 / RN-CAR-18:
@@ -29,6 +28,11 @@ interface IntegrationSettings {
 
   // Carreira
   car_salario_financas: boolean  // RN-CAR-01
+  car_roadmap_futuro: boolean    // RN-CAR-17
+
+  // Tempo
+  tmp_evento_financas: boolean   // RN-TMP-09
+  tmp_tarefa_futuro: boolean     // RN-TMP-12
 
   // Futuro
   fut_objetivo_agenda: boolean   // RN-FUT-35
@@ -46,6 +50,9 @@ const DEFAULT_SETTINGS: IntegrationSettings = {
   mnt_trilha_financas: true,
   ptr_provento_financas: true,
   car_salario_financas: true,
+  car_roadmap_futuro: false,
+  tmp_evento_financas: false,
+  tmp_tarefa_futuro: false,
   fut_objetivo_agenda: true,
   fut_viagem_futuro: true,
 }
@@ -92,9 +99,6 @@ function IntegrationRow({ from, to, label, description, checked, onChange }: Int
 }
 
 export default function IntegracoesPage() {
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
-
   const [settings, setSettings] = useState<IntegrationSettings>(DEFAULT_SETTINGS)
 
   useEffect(() => {
@@ -148,6 +152,14 @@ export default function IntegracoesPage() {
       label: '💼 Carreira',
       items: [
         { key: 'car_salario_financas' as const, from: 'Carreira', to: 'Finanças', label: 'Atualização de salário → Receita em Finanças', description: 'Sincroniza atualizações de salário no perfil de carreira com a renda mensal em Finanças.' },
+        { key: 'car_roadmap_futuro' as const, from: 'Carreira', to: 'Futuro', label: 'Passo de roadmap concluído → Meta no Futuro', description: 'Ao concluir um passo do roadmap, cria automaticamente uma meta concluída no módulo Futuro.' },
+      ],
+    },
+    {
+      label: '📅 Tempo',
+      items: [
+        { key: 'tmp_evento_financas' as const, from: 'Tempo', to: 'Finanças', label: 'Evento com custo → Transação em Finanças', description: 'Ao criar um evento com custo, registra automaticamente a despesa em Finanças.' },
+        { key: 'tmp_tarefa_futuro' as const, from: 'Tempo', to: 'Futuro', label: 'Tarefa concluída → Progresso em Meta', description: 'Ao marcar uma tarefa vinculada a uma meta como concluída, atualiza o progresso da meta no Futuro.' },
       ],
     },
     {
@@ -161,10 +173,7 @@ export default function IntegracoesPage() {
 
   return (
     <div className="max-w-[680px]">
-      <h1 className={cn(
-        'font-[Syne] font-extrabold text-xl mb-1',
-        isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-      )}>
+      <h1 className="font-[Syne] font-extrabold text-xl mb-1 text-sl-grad">
         Integrações
       </h1>
       <p className="text-[13px] text-[var(--sl-t3)] mb-6">
@@ -173,7 +182,7 @@ export default function IntegracoesPage() {
 
       <div className="flex flex-col gap-3">
         {groups.map(group => (
-          <div key={group.label} className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-5 hover:border-[var(--sl-border-h)] transition-colors">
+          <div key={group.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 hover:border-[var(--sl-border-h)] transition-colors">
             <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-3">
               {group.label}
             </p>
@@ -192,7 +201,7 @@ export default function IntegracoesPage() {
         ))}
       </div>
 
-      <div className="mt-4 p-4 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl">
+      <div className="mt-4 p-4 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-xl">
         <p className="text-[11px] text-[var(--sl-t3)] leading-relaxed">
           💡 <strong className="text-[var(--sl-t2)]">Como funciona:</strong> ao realizar ações nos módulos (registrar consulta, criar viagem, etc.), os itens marcados como ativos acima serão criados automaticamente. Os dados gerados ficam marcados com <strong className="text-[var(--sl-t2)]">Auto — [Módulo]</strong> para fácil identificação.
         </p>

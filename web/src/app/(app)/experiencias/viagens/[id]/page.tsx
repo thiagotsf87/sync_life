@@ -6,12 +6,12 @@ import { ArrowLeft, Plus, Trash2, Check, Crown } from 'lucide-react'
 import { TripAIChat } from '@/components/experiencias/TripAIChat'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import { createTransactionFromTripActual } from '@/lib/integrations/financas'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { formatMoney, formatMoneyWithBrl } from '@/lib/currency'
+import { ExpDetailMobile } from '@/components/experiencias/mobile/ExpDetailMobile'
 import {
   useTripDetail, useUpdateTrip, useDeleteTrip,
   useAddAccommodation, useDeleteAccommodation,
@@ -37,8 +37,6 @@ export default function TripDetailPage() {
   const router = useRouter()
   const params = useParams()
   const tripId = params.id as string
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
   const { isPro } = useUserPlan()
 
   const {
@@ -473,7 +471,12 @@ export default function TripDetailPage() {
   ]
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    {/* Mobile */}
+    <ExpDetailMobile trip={trip} checklistPct={Math.round(checklistPct)} />
+
+    {/* Desktop */}
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
@@ -485,10 +488,7 @@ export default function TripDetailPage() {
           Viagens
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className={cn(
-            'font-[Syne] font-extrabold text-xl truncate',
-            isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-          )}>
+          <h1 className="font-[Syne] font-extrabold text-xl truncate text-sl-grad">
             {trip.name}
           </h1>
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -533,13 +533,13 @@ export default function TripDetailPage() {
             className={cn(
               'flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-[12px] font-medium whitespace-nowrap transition-all',
               activeTab === tab.id
-                ? 'bg-[#06b6d4]/10 border border-[#06b6d4] text-[var(--sl-t1)]'
+                ? 'bg-[#ec4899]/10 border border-[#ec4899] text-[var(--sl-t1)]'
                 : 'border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
             )}
           >
             {tab.label}
             {tab.badge !== undefined && tab.badge > 0 && (
-              <span className="bg-[#06b6d4]/20 text-[#06b6d4] text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+              <span className="bg-[#ec4899]/20 text-[#ec4899] text-[9px] font-bold px-1.5 py-0.5 rounded-full">
                 {tab.badge}
               </span>
             )}
@@ -582,18 +582,18 @@ export default function TripDetailPage() {
               <div className="flex items-center gap-3">
                 <div className="text-center">
                   <p className="text-[10px] text-[var(--sl-t3)]">Ida</p>
-                  <p className="font-[DM_Mono] text-[12px] text-[#06b6d4] font-bold">
+                  <p className="font-[DM_Mono] text-[12px] text-[#ec4899] font-bold">
                     {new Date(trip.start_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </p>
                 </div>
-                <div className="flex-1 h-0.5 bg-[#06b6d4]/30 relative">
+                <div className="flex-1 h-0.5 bg-[#ec4899]/30 relative">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="bg-[var(--sl-s1)] px-2 text-[10px] text-[var(--sl-t3)]">{days} dias</span>
                   </div>
                 </div>
                 <div className="text-center">
                   <p className="text-[10px] text-[var(--sl-t3)]">Volta</p>
-                  <p className="font-[DM_Mono] text-[12px] text-[#06b6d4] font-bold">
+                  <p className="font-[DM_Mono] text-[12px] text-[#ec4899] font-bold">
                     {new Date(trip.end_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </p>
                 </div>
@@ -611,7 +611,7 @@ export default function TripDetailPage() {
                     type="date"
                     value={passportExpiry}
                     onChange={(e) => savePassportExpiry(e.target.value)}
-                    className="px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                    className="px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
                   />
                   {!passportExpiry && (
                     <span className="text-[11px] text-[#f59e0b]">Informe a data para validar risco.</span>
@@ -638,12 +638,12 @@ export default function TripDetailPage() {
 
             {/* RN-EXP-19: Resumo pós-viagem quando concluída */}
             {trip.status === 'completed' && (
-              <div className="bg-gradient-to-br from-[#06b6d4]/10 to-[#10b981]/10 border border-[#06b6d4]/30 rounded-2xl p-5">
+              <div className="bg-gradient-to-br from-[#ec4899]/10 to-[#10b981]/10 border border-[#ec4899]/30 rounded-2xl p-5">
                 <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">🏆 Resumo da Viagem</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-[var(--sl-s1)] rounded-xl p-3">
                     <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Duração</p>
-                    <p className="font-[DM_Mono] text-[15px] font-bold text-[#06b6d4]">{days} dias</p>
+                    <p className="font-[DM_Mono] text-[15px] font-bold text-[#ec4899]">{days} dias</p>
                   </div>
                   <div className="bg-[var(--sl-s1)] rounded-xl p-3">
                     <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Gasto Total</p>
@@ -697,7 +697,7 @@ export default function TripDetailPage() {
                           className="h-full rounded-full"
                           style={{
                             width: `${Math.min(pct, 100)}%`,
-                            background: pct > 100 ? '#f43f5e' : pct > 85 ? '#f59e0b' : '#06b6d4',
+                            background: pct > 100 ? '#f43f5e' : pct > 85 ? '#f59e0b' : '#ec4899',
                           }}
                         />
                       </div>
@@ -708,7 +708,7 @@ export default function TripDetailPage() {
               {budget.every(b => b.estimated_amount === 0) && (
                 <button
                   onClick={() => setActiveTab('budget')}
-                  className="text-[12px] text-[#06b6d4] hover:opacity-80"
+                  className="text-[12px] text-[#ec4899] hover:opacity-80"
                 >
                   Definir orçamento →
                 </button>
@@ -744,7 +744,7 @@ export default function TripDetailPage() {
                 ))}
               </div>
               {checklist.length > 5 && (
-                <button onClick={() => setActiveTab('checklist')} className="text-[11px] text-[#06b6d4] mt-2 hover:opacity-80">
+                <button onClick={() => setActiveTab('checklist')} className="text-[11px] text-[#ec4899] mt-2 hover:opacity-80">
                   Ver todos ({checklist.length}) →
                 </button>
               )}
@@ -773,7 +773,7 @@ export default function TripDetailPage() {
               </button>
               <button
                 onClick={() => { setItiForm(f => ({ ...f, day_date: trip.start_date })); setShowItineraryModal(true) }}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#06b6d4]/10 border border-[#06b6d4] text-[#06b6d4] hover:bg-[#06b6d4]/20"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20"
               >
                 <Plus size={13} />
                 Atividade
@@ -793,7 +793,7 @@ export default function TripDetailPage() {
                     href={routeLink}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[11px] font-semibold text-[#06b6d4] hover:opacity-80"
+                    className="text-[11px] font-semibold text-[#ec4899] hover:opacity-80"
                   >
                     Abrir rota sugerida →
                   </a>
@@ -814,7 +814,7 @@ export default function TripDetailPage() {
                     rel="noreferrer"
                     className="flex items-center gap-2 p-2 rounded-[10px] border border-[var(--sl-border)] bg-[var(--sl-s2)] hover:border-[var(--sl-border-h)] transition-colors"
                   >
-                    <span className="w-5 h-5 rounded-full bg-[#06b6d4]/15 border border-[#06b6d4]/30 flex items-center justify-center text-[10px] font-bold text-[#06b6d4] shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-[#ec4899]/15 border border-[#ec4899]/30 flex items-center justify-center text-[10px] font-bold text-[#ec4899] shrink-0">
                       {idx + 1}
                     </span>
                     <div className="min-w-0 flex-1">
@@ -849,7 +849,7 @@ export default function TripDetailPage() {
             return (
               <div key={day} className="mb-5">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="text-[11px] font-bold text-[#06b6d4] capitalize">{dayLabel}</div>
+                  <div className="text-[11px] font-bold text-[#ec4899] capitalize">{dayLabel}</div>
                   {dayCost > 0 && (
                     <span className="text-[10px] text-[var(--sl-t3)]">
                       · {formatTripAmountCompact(dayCost)}
@@ -857,7 +857,7 @@ export default function TripDetailPage() {
                   )}
                   <button
                     onClick={() => { setItiForm(f => ({ ...f, day_date: day })); setShowItineraryModal(true) }}
-                    className="ml-auto text-[10px] text-[#06b6d4] hover:opacity-80"
+                    className="ml-auto text-[10px] text-[#ec4899] hover:opacity-80"
                   >
                     + Adicionar
                   </button>
@@ -886,12 +886,12 @@ export default function TripDetailPage() {
                             'flex items-start gap-3 bg-[var(--sl-s1)] border rounded-xl p-3',
                             'transition-colors cursor-move',
                             draggingItineraryId === item.id
-                              ? 'border-[#06b6d4] opacity-70'
+                              ? 'border-[#ec4899] opacity-70'
                               : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                           )}
                         >
-                          <div className="w-6 h-6 rounded-full bg-[#06b6d4]/10 border border-[#06b6d4]/30 flex items-center justify-center shrink-0">
-                            <span className="text-[10px] text-[#06b6d4] font-bold">{idx + 1}</span>
+                          <div className="w-6 h-6 rounded-full bg-[#ec4899]/10 border border-[#ec4899]/30 flex items-center justify-center shrink-0">
+                            <span className="text-[10px] text-[#ec4899] font-bold">{idx + 1}</span>
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
@@ -951,7 +951,7 @@ export default function TripDetailPage() {
             </div>
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
               <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Saldo</p>
-              <p className="font-[DM_Mono] text-xl" style={{ color: totalEstimated - totalActual >= 0 ? '#06b6d4' : '#f43f5e' }}>
+              <p className="font-[DM_Mono] text-xl" style={{ color: totalEstimated - totalActual >= 0 ? '#ec4899' : '#f43f5e' }}>
                 {formatTripAmount(totalEstimated - totalActual)}
               </p>
             </div>
@@ -973,7 +973,7 @@ export default function TripDetailPage() {
                         step="50"
                         defaultValue={b.estimated_amount}
                         onBlur={e => handleUpdateBudget(b.id, 'estimated_amount', e.target.value)}
-                        className="w-full px-2.5 py-2 rounded-[8px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                        className="w-full px-2.5 py-2 rounded-[8px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
                       />
                     </div>
                     <div>
@@ -983,7 +983,7 @@ export default function TripDetailPage() {
                         step="10"
                         defaultValue={b.actual_amount}
                         onBlur={e => handleUpdateBudget(b.id, 'actual_amount', e.target.value)}
-                        className="w-full px-2.5 py-2 rounded-[8px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                        className="w-full px-2.5 py-2 rounded-[8px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
                       />
                     </div>
                   </div>
@@ -993,7 +993,7 @@ export default function TripDetailPage() {
                         className="h-full rounded-full"
                         style={{
                           width: `${Math.min((b.actual_amount / b.estimated_amount) * 100, 100)}%`,
-                          background: b.actual_amount > b.estimated_amount ? '#f43f5e' : '#06b6d4',
+                          background: b.actual_amount > b.estimated_amount ? '#f43f5e' : '#ec4899',
                         }}
                       />
                     </div>
@@ -1061,19 +1061,19 @@ export default function TripDetailPage() {
                 onChange={e => setNewChecklistTitle(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') handleAddChecklistItem() }}
                 placeholder="Novo item..."
-                className="flex-1 px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                className="flex-1 px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
               />
               <select
                 value={newChecklistCategory}
                 onChange={e => setNewChecklistCategory(e.target.value as ChecklistCategory)}
-                className="px-2 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                className="px-2 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
               >
                 {(Object.keys(CHECKLIST_CATEGORY_LABELS) as ChecklistCategory[]).map(c => (
                   <option key={c} value={c}>{CHECKLIST_CATEGORY_LABELS[c]}</option>
                 ))}
               </select>
               <button onClick={handleAddChecklistItem}
-                className="p-2 rounded-[10px] bg-[#06b6d4]/10 border border-[#06b6d4] text-[#06b6d4] hover:bg-[#06b6d4]/20">
+                className="p-2 rounded-[10px] bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20">
                 <Plus size={15} />
               </button>
             </div>
@@ -1087,7 +1087,7 @@ export default function TripDetailPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🏨 Hospedagens</h2>
             <button onClick={() => setShowAccomModal(true)}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#06b6d4]/10 border border-[#06b6d4] text-[#06b6d4] hover:bg-[#06b6d4]/20">
+              className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20">
               <Plus size={13} />
               Adicionar
             </button>
@@ -1123,7 +1123,7 @@ export default function TripDetailPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       {a.total_cost != null && (
-                        <span className="font-[DM_Mono] text-[12px] text-[#06b6d4]">
+                        <span className="font-[DM_Mono] text-[12px] text-[#ec4899]">
                           {formatTripAmountCompact(a.total_cost)}
                         </span>
                       )}
@@ -1149,7 +1149,7 @@ export default function TripDetailPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">✈️ Transportes</h2>
             <button onClick={() => setShowTransportModal(true)}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#06b6d4]/10 border border-[#06b6d4] text-[#06b6d4] hover:bg-[#06b6d4]/20">
+              className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20">
               <Plus size={13} />
               Adicionar
             </button>
@@ -1192,7 +1192,7 @@ export default function TripDetailPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       {t.cost != null && (
-                        <span className="font-[DM_Mono] text-[12px] text-[#06b6d4]">
+                        <span className="font-[DM_Mono] text-[12px] text-[#ec4899]">
                           {formatTripAmountCompact(t.cost)}
                         </span>
                       )}
@@ -1228,30 +1228,30 @@ export default function TripDetailPage() {
             <div className="p-5 flex flex-col gap-3">
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Nome*</label>
-                <input type="text" value={accomForm.name} onChange={e => setAccomForm(f => ({ ...f, name: e.target.value }))} placeholder="Hotel, Airbnb, Pousada..." className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                <input type="text" value={accomForm.name} onChange={e => setAccomForm(f => ({ ...f, name: e.target.value }))} placeholder="Hotel, Airbnb, Pousada..." className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
               </div>
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Endereço</label>
-                <input type="text" value={accomForm.address} onChange={e => setAccomForm(f => ({ ...f, address: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                <input type="text" value={accomForm.address} onChange={e => setAccomForm(f => ({ ...f, address: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Check-in*</label>
-                  <input type="date" value={accomForm.check_in} min={trip.start_date} max={trip.end_date} onChange={e => setAccomForm(f => ({ ...f, check_in: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                  <input type="date" value={accomForm.check_in} min={trip.start_date} max={trip.end_date} onChange={e => setAccomForm(f => ({ ...f, check_in: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Check-out*</label>
-                  <input type="date" value={accomForm.check_out} min={accomForm.check_in || trip.start_date} max={trip.end_date} onChange={e => setAccomForm(f => ({ ...f, check_out: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                  <input type="date" value={accomForm.check_out} min={accomForm.check_in || trip.start_date} max={trip.end_date} onChange={e => setAccomForm(f => ({ ...f, check_out: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Custo por noite</label>
-                  <input type="number" step="10" value={accomForm.cost_per_night} onChange={e => setAccomForm(f => ({ ...f, cost_per_night: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                  <input type="number" step="10" value={accomForm.cost_per_night} onChange={e => setAccomForm(f => ({ ...f, cost_per_night: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Status</label>
-                  <select value={accomForm.booking_status} onChange={e => setAccomForm(f => ({ ...f, booking_status: e.target.value as BookingStatus }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]">
+                  <select value={accomForm.booking_status} onChange={e => setAccomForm(f => ({ ...f, booking_status: e.target.value as BookingStatus }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]">
                     <option value="estimated">Estimado</option>
                     <option value="reserved">Reservado</option>
                     <option value="paid">Pago</option>
@@ -1260,11 +1260,11 @@ export default function TripDetailPage() {
               </div>
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Código de confirmação</label>
-                <input type="text" value={accomForm.confirmation_code} onChange={e => setAccomForm(f => ({ ...f, confirmation_code: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                <input type="text" value={accomForm.confirmation_code} onChange={e => setAccomForm(f => ({ ...f, confirmation_code: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
               </div>
               <div className="flex gap-2 pt-1">
                 <button onClick={() => setShowAccomModal(false)} className="flex-1 py-2.5 rounded-[10px] text-[12px] border border-[var(--sl-border)] text-[var(--sl-t2)]">Cancelar</button>
-                <button onClick={handleSaveAccommodation} disabled={isSaving} className="flex-1 py-2.5 rounded-[10px] text-[12px] font-semibold bg-[#06b6d4] text-[#03071a] hover:opacity-90 disabled:opacity-50">{isSaving ? 'Salvando...' : 'Adicionar'}</button>
+                <button onClick={handleSaveAccommodation} disabled={isSaving} className="flex-1 py-2.5 rounded-[10px] text-[12px] font-semibold bg-[#ec4899] text-[#03071a] hover:opacity-90 disabled:opacity-50">{isSaving ? 'Salvando...' : 'Adicionar'}</button>
               </div>
             </div>
           </div>
@@ -1286,7 +1286,7 @@ export default function TripDetailPage() {
                 <div className="grid grid-cols-4 gap-1.5">
                   {(Object.keys(TRANSPORT_TYPE_LABELS) as TransportType[]).map(t => (
                     <button key={t} onClick={() => setTransportForm(f => ({ ...f, type: t }))}
-                      className={cn('py-1.5 rounded-[8px] border text-[9px] text-center transition-all', transportForm.type === t ? 'border-[#06b6d4] bg-[#06b6d4]/10 text-[var(--sl-t1)]' : 'border-[var(--sl-border)] text-[var(--sl-t3)]')}>
+                      className={cn('py-1.5 rounded-[8px] border text-[9px] text-center transition-all', transportForm.type === t ? 'border-[#ec4899] bg-[#ec4899]/10 text-[var(--sl-t1)]' : 'border-[var(--sl-border)] text-[var(--sl-t3)]')}>
                       {TRANSPORT_TYPE_LABELS[t]}
                     </button>
                   ))}
@@ -1295,35 +1295,35 @@ export default function TripDetailPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Origem*</label>
-                  <input type="text" value={transportForm.origin} onChange={e => setTransportForm(f => ({ ...f, origin: e.target.value }))} placeholder="Ex: São Paulo (GRU)" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                  <input type="text" value={transportForm.origin} onChange={e => setTransportForm(f => ({ ...f, origin: e.target.value }))} placeholder="Ex: São Paulo (GRU)" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Destino*</label>
-                  <input type="text" value={transportForm.destination} onChange={e => setTransportForm(f => ({ ...f, destination: e.target.value }))} placeholder="Ex: Lisboa (LIS)" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                  <input type="text" value={transportForm.destination} onChange={e => setTransportForm(f => ({ ...f, destination: e.target.value }))} placeholder="Ex: Lisboa (LIS)" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Saída</label>
-                  <input type="datetime-local" value={transportForm.departure_datetime} onChange={e => setTransportForm(f => ({ ...f, departure_datetime: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                  <input type="datetime-local" value={transportForm.departure_datetime} onChange={e => setTransportForm(f => ({ ...f, departure_datetime: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Chegada</label>
-                  <input type="datetime-local" value={transportForm.arrival_datetime} onChange={e => setTransportForm(f => ({ ...f, arrival_datetime: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                  <input type="datetime-local" value={transportForm.arrival_datetime} onChange={e => setTransportForm(f => ({ ...f, arrival_datetime: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Empresa</label>
-                  <input type="text" value={transportForm.company} onChange={e => setTransportForm(f => ({ ...f, company: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                  <input type="text" value={transportForm.company} onChange={e => setTransportForm(f => ({ ...f, company: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Custo</label>
-                  <input type="number" step="10" value={transportForm.cost} onChange={e => setTransportForm(f => ({ ...f, cost: e.target.value }))} placeholder="0" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                  <input type="number" step="10" value={transportForm.cost} onChange={e => setTransportForm(f => ({ ...f, cost: e.target.value }))} placeholder="0" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Status</label>
-                  <select value={transportForm.booking_status} onChange={e => setTransportForm(f => ({ ...f, booking_status: e.target.value as BookingStatus }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]">
+                  <select value={transportForm.booking_status} onChange={e => setTransportForm(f => ({ ...f, booking_status: e.target.value as BookingStatus }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]">
                     <option value="estimated">Estimado</option>
                     <option value="reserved">Reservado</option>
                     <option value="paid">Pago</option>
@@ -1332,11 +1332,11 @@ export default function TripDetailPage() {
               </div>
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Confirmação</label>
-                <input type="text" value={transportForm.confirmation_code} onChange={e => setTransportForm(f => ({ ...f, confirmation_code: e.target.value }))} placeholder="Código de reserva" className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                <input type="text" value={transportForm.confirmation_code} onChange={e => setTransportForm(f => ({ ...f, confirmation_code: e.target.value }))} placeholder="Código de reserva" className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
               </div>
               <div className="flex gap-2 pt-1">
                 <button onClick={() => setShowTransportModal(false)} className="flex-1 py-2.5 rounded-[10px] text-[12px] border border-[var(--sl-border)] text-[var(--sl-t2)]">Cancelar</button>
-                <button onClick={handleSaveTransport} disabled={isSaving} className="flex-1 py-2.5 rounded-[10px] text-[12px] font-semibold bg-[#06b6d4] text-[#03071a] hover:opacity-90 disabled:opacity-50">{isSaving ? 'Salvando...' : 'Adicionar'}</button>
+                <button onClick={handleSaveTransport} disabled={isSaving} className="flex-1 py-2.5 rounded-[10px] text-[12px] font-semibold bg-[#ec4899] text-[#03071a] hover:opacity-90 disabled:opacity-50">{isSaving ? 'Salvando...' : 'Adicionar'}</button>
               </div>
             </div>
           </div>
@@ -1356,7 +1356,7 @@ export default function TripDetailPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Dia*</label>
-                  <select value={itiForm.day_date} onChange={e => setItiForm(f => ({ ...f, day_date: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]">
+                  <select value={itiForm.day_date} onChange={e => setItiForm(f => ({ ...f, day_date: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]">
                     {tripDays.map(d => (
                       <option key={d} value={d}>
                         {new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })}
@@ -1366,19 +1366,19 @@ export default function TripDetailPage() {
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Horário</label>
-                  <input type="time" value={itiForm.estimated_time} onChange={e => setItiForm(f => ({ ...f, estimated_time: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                  <input type="time" value={itiForm.estimated_time} onChange={e => setItiForm(f => ({ ...f, estimated_time: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
                 </div>
               </div>
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Título*</label>
-                <input type="text" value={itiForm.title} onChange={e => setItiForm(f => ({ ...f, title: e.target.value }))} placeholder="Ex: Torre Eiffel, Museu do Louvre..." className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                <input type="text" value={itiForm.title} onChange={e => setItiForm(f => ({ ...f, title: e.target.value }))} placeholder="Ex: Torre Eiffel, Museu do Louvre..." className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
               </div>
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1.5 block">Categoria</label>
                 <div className="grid grid-cols-4 gap-1.5">
                   {(Object.keys(ITINERARY_CATEGORY_LABELS) as ItineraryCategory[]).map(c => (
                     <button key={c} onClick={() => setItiForm(f => ({ ...f, category: c }))}
-                      className={cn('py-1.5 rounded-[8px] border text-[9px] text-center transition-all', itiForm.category === c ? 'border-[#06b6d4] bg-[#06b6d4]/10 text-[var(--sl-t1)]' : 'border-[var(--sl-border)] text-[var(--sl-t3)]')}>
+                      className={cn('py-1.5 rounded-[8px] border text-[9px] text-center transition-all', itiForm.category === c ? 'border-[#ec4899] bg-[#ec4899]/10 text-[var(--sl-t1)]' : 'border-[var(--sl-border)] text-[var(--sl-t3)]')}>
                       {ITINERARY_CATEGORY_LABELS[c]}
                     </button>
                   ))}
@@ -1386,24 +1386,25 @@ export default function TripDetailPage() {
               </div>
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Endereço</label>
-                <input type="text" value={itiForm.address} onChange={e => setItiForm(f => ({ ...f, address: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                <input type="text" value={itiForm.address} onChange={e => setItiForm(f => ({ ...f, address: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
               </div>
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Custo estimado</label>
-                <input type="number" step="10" value={itiForm.estimated_cost} onChange={e => setItiForm(f => ({ ...f, estimated_cost: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                <input type="number" step="10" value={itiForm.estimated_cost} onChange={e => setItiForm(f => ({ ...f, estimated_cost: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
               </div>
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Notas</label>
-                <input type="text" value={itiForm.notes} onChange={e => setItiForm(f => ({ ...f, notes: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]" />
+                <input type="text" value={itiForm.notes} onChange={e => setItiForm(f => ({ ...f, notes: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
               </div>
               <div className="flex gap-2 pt-1">
                 <button onClick={() => setShowItineraryModal(false)} className="flex-1 py-2.5 rounded-[10px] text-[12px] border border-[var(--sl-border)] text-[var(--sl-t2)]">Cancelar</button>
-                <button onClick={handleSaveItinerary} disabled={isSaving} className="flex-1 py-2.5 rounded-[10px] text-[12px] font-semibold bg-[#06b6d4] text-[#03071a] hover:opacity-90 disabled:opacity-50">{isSaving ? 'Salvando...' : 'Adicionar'}</button>
+                <button onClick={handleSaveItinerary} disabled={isSaving} className="flex-1 py-2.5 rounded-[10px] text-[12px] font-semibold bg-[#ec4899] text-[#03071a] hover:opacity-90 disabled:opacity-50">{isSaving ? 'Salvando...' : 'Adicionar'}</button>
               </div>
             </div>
           </div>
         </div>
       )}
     </div>
+    </>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { USE_MOCK, MOCK_CALENDAR_TRANSACTIONS, MOCK_CALENDAR_PLANNING_EVENTS, MOCK_PROFILE } from '@/lib/mock-financas'
 
 // ─── INTERFACES ───────────────────────────────────────────────────────────────
 
@@ -171,6 +172,15 @@ export function useCalendario(): UseCalendarioReturn {
     let cancelled = false
     setLoading(true)
     setError(null)
+
+    if (USE_MOCK) {
+      setTransactions(MOCK_CALENDAR_TRANSACTIONS)
+      setPlanningEvents(MOCK_CALENDAR_PLANNING_EVENTS)
+      setCurrentBalance(MOCK_PROFILE.current_balance)
+      setProjectedDividends([])
+      setLoading(false)
+      return
+    }
 
     const supabase = createClient() as any
 

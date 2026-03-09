@@ -5,8 +5,8 @@ import { TrendingUp, TrendingDown, Minus, ChevronRight } from 'lucide-react'
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts'
-import { useShellStore } from '@/stores/shell-store'
 import { cn } from '@/lib/utils'
+import { PanoramaMobileShell } from '@/components/dashboard/PanoramaMobileShell'
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
 
@@ -50,7 +50,7 @@ const GLOBAL_TOP: RankUser[] = [
   { position: 19, name: 'Priscila Torres',   initials: 'PT', score: 215, badgeCount: 8,  streak: 5,  avatarColor: '#84cc16', trend: 'same', trendValue: 0 },
   { position: 20, name: 'Vítor Nascimento',  initials: 'VN', score: 208, badgeCount: 8,  streak: 5,  avatarColor: '#f43f5e', trend: 'up',   trendValue: 1 },
   // Usuário fora do top 20 — exibido com separador
-  { position: 38, name: 'Você',              initials: 'EU', score: 195, badgeCount: 12, streak: 7,  avatarColor: '#10b981', trend: 'up',   trendValue: 4, isCurrentUser: true },
+  { position: 38, name: 'Você',              initials: 'EU', score: 195, badgeCount: 12, streak: 7,  avatarColor: '#6366f1', trend: 'up',   trendValue: 4, isCurrentUser: true },
 ]
 
 // Top 20 — este mês (usuário aparece na lista em #15)
@@ -69,7 +69,7 @@ const MONTHLY_TOP: RankUser[] = [
   { position: 12, name: 'Lucas Rocha',       initials: 'LR', score: 50,  badgeCount: 1, streak: 18, avatarColor: '#14b8a6', trend: 'down', trendValue: 3 },
   { position: 13, name: 'Camila Rodrigues',  initials: 'CR', score: 45,  badgeCount: 1, streak: 8,  avatarColor: '#f97316', trend: 'up',   trendValue: 2 },
   { position: 14, name: 'Fernanda Souza',    initials: 'FS', score: 40,  badgeCount: 1, streak: 15, avatarColor: '#84cc16', trend: 'same', trendValue: 0 },
-  { position: 15, name: 'Você',             initials: 'EU', score: 40,  badgeCount: 1, streak: 7,  avatarColor: '#10b981', trend: 'up',   trendValue: 2, isCurrentUser: true },
+  { position: 15, name: 'Você',             initials: 'EU', score: 40,  badgeCount: 1, streak: 7,  avatarColor: '#6366f1', trend: 'up',   trendValue: 2, isCurrentUser: true },
   { position: 16, name: 'Henrique Gomes',   initials: 'HG', score: 35,  badgeCount: 1, streak: 7,  avatarColor: '#06b6d4', trend: 'same', trendValue: 0 },
   { position: 17, name: 'Thiago Pereira',   initials: 'TP', score: 30,  badgeCount: 0, streak: 11, avatarColor: '#10b981', trend: 'down', trendValue: 5 },
   { position: 18, name: 'Larissa Martins',  initials: 'LM', score: 25,  badgeCount: 0, streak: 10, avatarColor: '#f59e0b', trend: 'up',   trendValue: 1 },
@@ -85,7 +85,7 @@ const WEEKLY_TOP: RankUser[] = [
   { position: 4,  name: 'Natália Silva',    initials: 'NS', score: 30, badgeCount: 1, streak: 7,  avatarColor: '#ec4899', trend: 'up',   trendValue: 13 },
   { position: 5,  name: 'Larissa Martins',  initials: 'LM', score: 30, badgeCount: 1, streak: 10, avatarColor: '#f59e0b', trend: 'up',   trendValue: 8 },
   { position: 6,  name: 'Carlos Mendes',    initials: 'CM', score: 25, badgeCount: 1, streak: 25, avatarColor: '#06b6d4', trend: 'down', trendValue: 3 },
-  { position: 7,  name: 'Você',             initials: 'EU', score: 25, badgeCount: 1, streak: 7,  avatarColor: '#10b981', trend: 'up',   trendValue: 31, isCurrentUser: true },
+  { position: 7,  name: 'Você',             initials: 'EU', score: 25, badgeCount: 1, streak: 7,  avatarColor: '#6366f1', trend: 'up',   trendValue: 31, isCurrentUser: true },
   { position: 8,  name: 'Ana Ferreira',     initials: 'AF', score: 20, badgeCount: 1, streak: 30, avatarColor: '#f97316', trend: 'down', trendValue: 3 },
   { position: 9,  name: 'Lucas Rocha',      initials: 'LR', score: 20, badgeCount: 1, streak: 18, avatarColor: '#14b8a6', trend: 'down', trendValue: 1 },
   { position: 10, name: 'Henrique Gomes',   initials: 'HG', score: 15, badgeCount: 0, streak: 7,  avatarColor: '#06b6d4', trend: 'up',   trendValue: 6 },
@@ -226,7 +226,7 @@ function LeaderboardRow({ user }: { user: RankUser }) {
       className={cn(
         'flex items-center gap-3 px-4 py-[10px] rounded-xl transition-colors duration-150',
         user.isCurrentUser
-          ? 'bg-[rgba(16,185,129,0.07)] border border-[rgba(16,185,129,0.28)]'
+          ? 'bg-[rgba(99,102,241,0.07)] border border-[rgba(99,102,241,0.28)]'
           : isTop3
             ? 'bg-[var(--sl-s2)]'
             : 'hover:bg-[var(--sl-s2)]',
@@ -239,7 +239,7 @@ function LeaderboardRow({ user }: { user: RankUser }) {
         ) : (
           <span className={cn(
             'font-[DM_Mono] text-[12px]',
-            user.isCurrentUser ? 'text-[#10b981] font-bold' : 'text-[var(--sl-t3)]',
+            user.isCurrentUser ? 'text-[#6366f1] font-bold' : 'text-[var(--sl-t3)]',
           )}>
             #{user.position}
           </span>
@@ -259,12 +259,12 @@ function LeaderboardRow({ user }: { user: RankUser }) {
       <div className="flex-1 min-w-0">
         <p className={cn(
           'text-[13px] font-semibold leading-tight truncate',
-          user.isCurrentUser ? 'text-[#10b981]' : 'text-[var(--sl-t1)]',
+          user.isCurrentUser ? 'text-[#6366f1]' : 'text-[var(--sl-t1)]',
         )}>
           {user.name}
           {user.isCurrentUser && (
             <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-md
-                             bg-[rgba(16,185,129,0.15)] text-[#10b981] uppercase tracking-wider">
+                             bg-[rgba(99,102,241,0.15)] text-[#6366f1] uppercase tracking-wider">
               você
             </span>
           )}
@@ -291,9 +291,6 @@ function LeaderboardRow({ user }: { user: RankUser }) {
 // ─── PÁGINA PRINCIPAL ─────────────────────────────────────────────────────────
 
 export default function RankingPage() {
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
-
   const [activeTab, setActiveTab] = useState<RankTab>('global')
 
   const cfg           = TAB_CONFIG[activeTab]
@@ -316,15 +313,222 @@ export default function RankingPage() {
     : 100
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    {/* ═══════ MOBILE ═══════ */}
+    <PanoramaMobileShell
+      title="Ranking"
+      subtitle={`${cfg.total} participantes`}
+    >
+      {/* Tab pills */}
+      <div className="flex gap-1 bg-[var(--sl-s2)] rounded-[12px] p-1 mx-4 mb-3">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={cn(
+              'flex-1 text-center py-2 rounded-[10px] text-[12px] font-semibold transition-all',
+              activeTab === tab.id
+                ? 'bg-[var(--sl-s1)] text-[var(--sl-t1)] shadow-sm'
+                : 'text-[var(--sl-t3)]',
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Hero — Sua posição */}
+      <div className="mx-4 mb-3 rounded-[16px] p-5 relative overflow-hidden bg-[var(--sl-s1)] border border-[var(--sl-border)]">
+        <div className="absolute top-0 left-0 right-0 h-[3px]"
+             style={{ background: 'linear-gradient(90deg, #6366f1, #0055ff)' }} />
+        <div className="flex items-center gap-3.5 mb-3">
+          <div
+            className="h-[56px] w-[56px] shrink-0 rounded-full flex items-center justify-center
+                       text-white text-[18px] font-extrabold font-[Syne]
+                       shadow-[0_0_20px_rgba(99,102,241,0.3)]"
+            style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)' }}
+          >
+            EU
+          </div>
+          <div>
+            <div className="flex items-baseline gap-1">
+              <span className="font-[DM_Mono] text-[32px] font-medium text-[var(--sl-t1)] leading-none">
+                #{cfg.userPos}
+              </span>
+              <span className="text-[13px] text-[var(--sl-t3)]">de {cfg.total}</span>
+            </div>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <span
+                className="text-[11px] font-bold px-2.5 py-1 rounded-full"
+                style={{
+                  background: 'linear-gradient(90deg, rgba(99,102,241,0.15), rgba(0,85,255,0.15))',
+                  color: '#6366f1',
+                  border: '1px solid rgba(99,102,241,0.3)',
+                }}
+              >
+                {topLabel} dos usuários
+              </span>
+              <span className="text-[12px] text-[var(--sl-t3)]">🔥 7d streak</span>
+            </div>
+          </div>
+        </div>
+        {/* Progress to next milestone */}
+        {nextMilestone && (
+          <>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-[11px] text-[var(--sl-t3)]">
+                Próxima marca — <strong className="text-[var(--sl-t2)]">{nextMilestone.label}</strong>
+              </span>
+              <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t2)]">
+                {cfg.userScore}<span className="text-[var(--sl-t3)]">/{nextMilestone.pts}</span>
+              </span>
+            </div>
+            <div className="h-[5px] rounded-full bg-[var(--sl-s3)] overflow-hidden mb-1.5">
+              <div
+                className="h-full rounded-full transition-[width] duration-1000"
+                style={{
+                  width: `${Math.min(heroProgress, 100)}%`,
+                  background: nextMilestone.color,
+                }}
+              />
+            </div>
+            <p className="text-[10px] text-[var(--sl-t3)]">
+              Faltam <span className="font-[DM_Mono] text-[var(--sl-t2)]">{nextMilestone.needed} pts</span> para o {nextMilestone.label}
+            </p>
+          </>
+        )}
+      </div>
+
+      {/* Motivational — below hero */}
+      <div className="mx-4 mb-3 flex items-center gap-3 p-[14px_16px] rounded-[14px]
+                      bg-gradient-to-br from-[#6366f1]/7 to-[#0055ff]/7
+                      border border-[rgba(99,102,241,0.18)]">
+        <span className="text-[22px] shrink-0">🤖</span>
+        <span className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">
+          Você está no <strong className="text-[var(--sl-t1)]">{topLabel}</strong> com{' '}
+          <strong className="text-[var(--sl-t1)]">{totalScore} pontos</strong>. Desbloqueie{' '}
+          <strong className="text-[var(--sl-t1)]">Reserva Construída</strong> (+100 pts) para subir!
+        </span>
+      </div>
+
+      {/* Score breakdown */}
+      <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+        Pontos por categoria
+      </p>
+      <div className="grid grid-cols-2 gap-2 px-4 mb-3">
+        {SCORE_BREAKDOWN.map((cat) => {
+          const barPct = Math.round((cat.pts / cat.maxPts) * 100)
+          return (
+            <div
+              key={cat.cat}
+              className="relative overflow-hidden rounded-[10px] p-3 bg-[var(--sl-s1)] border border-[var(--sl-border)]"
+            >
+              <div className="absolute top-0 left-[10px] right-[10px] h-[2px] rounded-b" style={{ background: cat.color }} />
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[14px]">{cat.icon}</span>
+                <span className="text-[11px] font-bold uppercase tracking-[0.5px] text-[var(--sl-t3)]">{cat.label}</span>
+              </div>
+              <p className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)] leading-none mb-1">
+                {cat.pts}<span className="text-[10px] text-[var(--sl-t3)] font-normal">pts</span>
+              </p>
+              <p className="text-[10px] text-[var(--sl-t3)] mb-1.5">{cat.unlocked}/{cat.total} badges</p>
+              <div className="h-[3px] rounded-full bg-[var(--sl-s3)] overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: cat.color }} />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Leaderboard */}
+      <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+        🏅 Leaderboard
+      </p>
+      <div className="px-4 mb-3">
+        {displayList.map((user, idx) => {
+          const isTop3 = user.position <= 3
+          const medal = getMedalEmoji(user.position)
+          const showSeparator = !userIsInTop && user.isCurrentUser
+
+          return (
+            <div key={user.position}>
+              {showSeparator && (
+                <div className="flex items-center gap-2 px-3 py-2">
+                  <div className="flex-1 h-px bg-[var(--sl-border)]" />
+                  <span className="text-[11px] text-[var(--sl-t3)]">
+                    ··· posições {displayList[idx - 1]?.position + 1}–{user.position - 1} ···
+                  </span>
+                  <div className="flex-1 h-px bg-[var(--sl-border)]" />
+                </div>
+              )}
+              <div
+                className={cn(
+                  'flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] mb-1',
+                  user.isCurrentUser
+                    ? 'bg-[rgba(99,102,241,0.07)] border border-[rgba(99,102,241,0.25)]'
+                    : isTop3
+                      ? 'bg-[var(--sl-s2)]'
+                      : '',
+                )}
+              >
+                <div className="w-[28px] shrink-0 text-center">
+                  {medal ? (
+                    <span className="text-[17px] leading-none">{medal}</span>
+                  ) : (
+                    <span className={cn(
+                      'font-[DM_Mono] text-[12px]',
+                      user.isCurrentUser ? 'text-[#6366f1] font-bold' : 'text-[var(--sl-t3)]',
+                    )}>
+                      #{user.position}
+                    </span>
+                  )}
+                </div>
+                <div
+                  className="h-[34px] w-[34px] shrink-0 rounded-full flex items-center justify-center text-white text-[12px] font-bold"
+                  style={{ background: user.avatarColor + (user.isCurrentUser ? '' : 'bb') }}
+                >
+                  {user.initials}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={cn(
+                    'text-[13px] font-semibold truncate',
+                    user.isCurrentUser ? 'text-[#6366f1]' : 'text-[var(--sl-t1)]',
+                  )}>
+                    {user.name}
+                    {user.isCurrentUser && (
+                      <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[rgba(99,102,241,0.15)] text-[#6366f1] uppercase tracking-wider">
+                        você
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">
+                    {user.badgeCount} badges · 🔥 {user.streak}d
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
+                    {user.score}<span className="text-[10px] text-[var(--sl-t3)] font-normal ml-0.5">pts</span>
+                  </p>
+                  <div className="flex justify-end mt-0.5">
+                    <TrendBadge trend={user.trend} value={user.trendValue} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="h-4" />
+    </PanoramaMobileShell>
+
+    {/* ═══════ DESKTOP ═══════ */}
+    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16 hidden lg:block">
 
       {/* ① TOPBAR ──────────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <div>
-          <h1 className={cn(
-            'font-[Syne] font-extrabold text-2xl leading-tight',
-            isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]',
-          )}>
+          <h1 className="font-[Syne] font-extrabold text-2xl leading-tight text-sl-grad">
             🏆 Ranking Global
           </h1>
           <p className="text-[13px] text-[var(--sl-t3)] mt-0.5">
@@ -355,14 +559,13 @@ export default function RankingPage() {
       <div
         className={cn(
           'relative overflow-hidden rounded-[20px] p-6 mb-5 sl-fade-up',
-          'bg-[var(--sl-s1)] border border-[var(--sl-border)]',
-          isJornada && 'border-[rgba(16,185,129,0.25)] shadow-[0_0_40px_rgba(16,185,129,0.07)]',
+          'bg-[var(--sl-s1)] border border-[rgba(99,102,241,0.25)] shadow-[0_0_40px_rgba(99,102,241,0.07)]',
         )}
       >
         {/* Barra de acento topo */}
         <div
           className="absolute top-0 left-0 right-0 h-[3px]"
-          style={{ background: 'linear-gradient(90deg, #f59e0b, #f97316, #ec4899, #8b5cf6)' }}
+          style={{ background: 'linear-gradient(90deg, #6366f1, #0055ff)' }}
         />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
@@ -373,8 +576,8 @@ export default function RankingPage() {
             <div
               className="h-[64px] w-[64px] shrink-0 rounded-full flex items-center justify-center
                          text-white text-[22px] font-extrabold font-[Syne]
-                         shadow-[0_0_24px_rgba(16,185,129,0.25)]"
-              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+                         shadow-[0_0_24px_rgba(99,102,241,0.25)]"
+              style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)' }}
             >
               EU
             </div>
@@ -390,9 +593,9 @@ export default function RankingPage() {
                 <span
                   className="text-[11px] font-bold px-2.5 py-1 rounded-full"
                   style={{
-                    background: 'linear-gradient(90deg, rgba(16,185,129,0.15), rgba(0,85,255,0.15))',
-                    color: '#10b981',
-                    border: '1px solid rgba(16,185,129,0.3)',
+                    background: 'linear-gradient(90deg, rgba(99,102,241,0.15), rgba(0,85,255,0.15))',
+                    color: '#6366f1',
+                    border: '1px solid rgba(99,102,241,0.3)',
                   }}
                 >
                   {topLabel} dos usuários
@@ -537,8 +740,8 @@ export default function RankingPage() {
                 <AreaChart data={cfg.evolutionData} margin={{ top: 4, right: 4, bottom: 0, left: -28 }}>
                   <defs>
                     <linearGradient id="rankGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%"   stopColor="#10b981" stopOpacity={0.25} />
-                      <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                      <stop offset="0%"   stopColor="#6366f1" stopOpacity={0.25} />
+                      <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
@@ -566,11 +769,11 @@ export default function RankingPage() {
                   <Area
                     type="monotone"
                     dataKey="pts"
-                    stroke="#10b981"
+                    stroke="#6366f1"
                     strokeWidth={2}
                     fill="url(#rankGrad)"
                     dot={false}
-                    activeDot={{ r: 4, fill: '#10b981', strokeWidth: 0 }}
+                    activeDot={{ r: 4, fill: '#6366f1', strokeWidth: 0 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -618,7 +821,7 @@ export default function RankingPage() {
               </p>
               <a
                 href="/conquistas"
-                className="flex items-center gap-1 mt-2 text-[12px] font-semibold text-[#10b981]
+                className="flex items-center gap-1 mt-2 text-[12px] font-semibold text-[#6366f1]
                            hover:opacity-80 transition-opacity"
               >
                 Ver badges <ChevronRight size={13} />
@@ -653,9 +856,9 @@ export default function RankingPage() {
       </div>
 
       {/* ⑤ JORNADA — frase motivacional ─────────────────────────────────────── */}
-      <div className="jornada-only flex items-center gap-3 p-[14px_18px] rounded-[14px] mt-5
-                      bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7
-                      border border-[#10b981]/18 sl-fade-up">
+      <div className="flex items-center gap-3 p-[14px_18px] rounded-[14px] mt-5
+                      bg-gradient-to-br from-[#6366f1]/7 to-[#0055ff]/7
+                      border border-[#6366f1]/18 sl-fade-up">
         <span className="text-[22px] shrink-0">🤖</span>
         <span className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">
           Você está no <strong>{topLabel}</strong> do SyncLife com{' '}
@@ -664,5 +867,6 @@ export default function RankingPage() {
         </span>
       </div>
     </div>
+    </>
   )
 }

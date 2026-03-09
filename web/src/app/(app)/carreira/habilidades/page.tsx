@@ -5,14 +5,18 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Plus, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   useSkills, useSaveSkill, useDeleteSkill, useSetSkillTracks,
+  useProfessionalProfile, useCareerHistory, useCareerRoadmaps, useAddHistoryEntry,
   SKILL_CATEGORY_LABELS, SKILL_LEVEL_LABELS,
   type Skill, type SkillCategory, type SaveSkillData,
 } from '@/hooks/use-carreira'
 import { SkillCard } from '@/components/carreira/SkillCard'
+import { CarreiraMobile } from '@/components/carreira/CarreiraMobile'
 import { useStudyTracks } from '@/hooks/use-mente'
+import {
+  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
+} from 'recharts'
 
 const CATEGORIES: SkillCategory[] = ['hard_skill', 'soft_skill', 'language', 'certification']
 
@@ -39,11 +43,14 @@ const EMPTY_FORM: SaveSkillData & { notes: string } = {
 
 export default function HabilidadesPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { skills, loading, error, reload } = useSkills()
+  const { profile } = useProfessionalProfile()
+  const { history } = useCareerHistory()
+  const { roadmaps } = useCareerRoadmaps()
+  const activeRoadmap = roadmaps.find(r => r.status === 'active') ?? null
   const saveSkill = useSaveSkill()
+  const addHistory = useAddHistoryEntry()
   const deleteSkill = useDeleteSkill()
   const setSkillTracks = useSetSkillTracks()
   const { tracks } = useStudyTracks()
@@ -128,7 +135,30 @@ export default function HabilidadesPage() {
   const totalByLevel = (level: number) => skills.filter(s => s.proficiency_level >= level).length
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    <CarreiraMobile
+      profile={profile}
+      activeRoadmap={activeRoadmap}
+      skills={skills}
+      history={history}
+      loading={loading}
+      onSaveSkill={async (data) => { await saveSkill(data) }}
+      onAddPromotion={async (data) => {
+        await addHistory({
+          title: data.title,
+          company: data.company || null,
+          field: null,
+          level: null,
+          salary: data.salary,
+          start_date: data.startDate || new Date().toISOString().split('T')[0],
+          end_date: null,
+          change_type: 'promotion',
+          notes: null,
+        })
+      }}
+      onReload={async () => { await reload() }}
+    />
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
@@ -139,10 +169,7 @@ export default function HabilidadesPage() {
           <ArrowLeft size={16} />
           Carreira
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           ⭐ Habilidades
         </h1>
         <button
@@ -170,6 +197,33 @@ export default function HabilidadesPage() {
               <p className="font-[DM_Mono] font-medium text-xl text-[var(--sl-t1)]">{stat.value}</p>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* RadarChart — Jornada only */}
+      {skills.length >= 3 && (
+        <div className="mb-5">
+          <div className="bg-[var(--sl-s1)] border rounded-2xl p-5"
+            style={{ borderColor: 'rgba(139,92,246,0.2)' }}>
+            <h2 className="font-[Syne] font-bold text-[13px] mb-3" style={{ color: '#c4b5fd' }}>🎯 Arsenal do Herói — Radar de Habilidades</h2>
+            <div className="h-[260px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={[
+                  { axis: 'Hard Skills', value: Math.round(skills.filter(s => s.category === 'hard_skill').reduce((a, s) => a + s.proficiency_level, 0) / Math.max(1, skills.filter(s => s.category === 'hard_skill').length) * 20) },
+                  { axis: 'Soft Skills', value: Math.round(skills.filter(s => s.category === 'soft_skill').reduce((a, s) => a + s.proficiency_level, 0) / Math.max(1, skills.filter(s => s.category === 'soft_skill').length) * 20) },
+                  { axis: 'Idiomas', value: Math.round(skills.filter(s => s.category === 'language').reduce((a, s) => a + s.proficiency_level, 0) / Math.max(1, skills.filter(s => s.category === 'language').length) * 20) },
+                  { axis: 'Certificações', value: skills.filter(s => s.category === 'certification').length * 20 },
+                  { axis: 'Liderança', value: Math.round(skills.filter(s => s.name.toLowerCase().includes('liderança') || s.name.toLowerCase().includes('gestão')).reduce((a, s) => a + s.proficiency_level, 0) / Math.max(1, skills.filter(s => s.name.toLowerCase().includes('liderança') || s.name.toLowerCase().includes('gestão')).length) * 20) || 20 },
+                  { axis: 'Total', value: Math.round((skills.reduce((a, s) => a + s.proficiency_level, 0) / Math.max(1, skills.length) / 5) * 100) },
+                ]}>
+                  <PolarGrid stroke="var(--sl-s3)" />
+                  <PolarAngleAxis dataKey="axis" tick={{ fontSize: 10, fill: 'var(--sl-t3)' }} />
+                  <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
+                  <Radar name="Habilidades" dataKey="value" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.25} />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
       )}
 
@@ -403,5 +457,6 @@ export default function HabilidadesPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

@@ -71,7 +71,7 @@ export async function updateSession(request: NextRequest) {
   // Redirect authenticated users: landing page and auth pages → app
   if (user && isPublicRoute) {
     const url = request.nextUrl.clone()
-    url.pathname = '/financas'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 

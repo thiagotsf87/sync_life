@@ -12,7 +12,10 @@ test.describe('Conquistas', () => {
 
   test('Página carrega com badges', async ({ page }) => {
     const main = page.locator('main')
-    await expect(main.getByText(/conquistas/i).first()).toBeVisible({ timeout: 8000 })
+    await expect(main).toBeVisible({ timeout: 8000 })
+    // Tab "Conquistas" ou filtro "Todas" ou badges — um deles visível
+    const tabOrFilter = page.getByRole('button', { name: /Conquistas|Todas|Financeiras/i }).first()
+    await expect(tabOrFilter).toBeVisible({ timeout: 5000 })
   })
 
   test('Filtros de categoria funcionam', async ({ page }) => {

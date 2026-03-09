@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Futuro v2 · Parte 4 (Wizard 2+4, Modal Meta)</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;--border:rgba(255,255,255,.06);--bh:rgba(255,255,255,.13);--t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;--fut:#8b5cf6;--fg:rgba(139,92,246,.15);--fgr:linear-gradient(135deg,#8b5cf6,#0055ff);--J:#8b5cf6;--Jg:rgba(139,92,246,.15);--Jgr:linear-gradient(135deg,#8b5cf6,#ec4899);--grn:#10b981;--yel:#f59e0b;--red:#f43f5e;--fin:#10b981;--fng:rgba(16,185,129,.15);--pat:#3b82f6;--pag:rgba(59,130,246,.15);--car:#f43f5e;--cag:rgba(244,63,94,.15);--mnt:#eab308;--mng:rgba(234,179,8,.15);--exp:#06b6d4;--exg:rgba(6,182,212,.15);--crp:#f97316;--crg:rgba(249,115,22,.15)}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:#0a0e1a;color:var(--t1);padding:40px 20px}
+.pt{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;text-align:center;margin-bottom:8px;background:var(--fgr);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.ps{text-align:center;color:var(--t2);font-size:14px;margin-bottom:36px}
+.rl{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1);text-align:center;margin:48px 0 20px}.rl span{color:var(--t3);font-weight:400;font-size:13px;margin-left:8px}
+.pr{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
+.phone{width:375px;background:var(--bg);border-radius:48px;border:2px solid rgba(255,255,255,.1);overflow:hidden;padding-bottom:20px;flex-shrink:0}.phone.j{border-color:rgba(139,92,246,.25)}
+.di{width:120px;height:34px;background:#000;border-radius:20px;margin:12px auto 0}.sb{display:flex;justify-content:space-between;padding:8px 28px 0;font-family:'DM Mono',monospace;font-size:12px;color:var(--t2)}
+.ct{padding:16px 20px}
+.wz-s{display:flex;gap:6px;padding:14px 20px 0}.ws{flex:1;height:3px;border-radius:2px;background:var(--s3)}
+.wbd{padding:20px 20px 16px}.wsl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}.wt{font-family:'Syne',sans-serif;font-size:21px;font-weight:800;color:var(--t1);line-height:1.25;margin-bottom:8px}.wd{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:18px}.wd strong{color:var(--t1)}
+/* Form fields */
+.fg{margin-bottom:16px}.fl{font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;display:block}
+.fi{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:12px 15px;font-size:14px;color:var(--t1);font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:space-between}
+.fi.focused{border-color:var(--fut)}.j .fi.focused{border-color:var(--J)}
+.fi-placeholder{color:var(--t3)}
+.fi-icon{color:var(--t3);font-size:16px}
+/* Emoji Picker */
+.emoji-row{display:flex;gap:8px;margin-bottom:16px}.emoji-opt{width:42px;height:42px;border-radius:12px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px}.emoji-opt.sel{border-color:var(--fut);background:var(--fg)}.j .emoji-opt.sel{border-color:var(--J);background:var(--Jg)}
+/* Priority */
+.pri-row{display:flex;gap:8px;margin-bottom:16px}.pri{flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;font-weight:600;color:var(--t2)}.pri.sel{border-color:var(--fut);color:var(--fut);background:var(--fg)}.j .pri.sel{border-color:var(--J);color:#c4b5fd;background:var(--Jg)}
+/* Slider */
+.slw{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:13px 15px;margin-bottom:13px}
+.slh{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}.sll{font-size:12px;color:var(--t2)}.slv{font-family:'DM Mono',monospace;font-size:18px;font-weight:500}
+.slt{height:4px;background:var(--s3);border-radius:2px;position:relative;margin-bottom:8px}.slf{height:100%;border-radius:2px;width:68%}.f .slf{background:var(--fut)}.j .slf{background:var(--J)}.sth{width:18px;height:18px;border-radius:50%;position:absolute;top:-7px;left:68%;transform:translateX(-50%)}.f .sth{background:var(--fut)}.j .sth{background:var(--J);box-shadow:0 2px 8px rgba(139,92,246,.5)}
+/* Projection */
+.pjc{border-radius:10px;padding:13px;margin-bottom:12px}.f .pjc{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15)}.j .pjc{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15)}.pjt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px}.f .pjt{color:var(--fut)}.j .pjt{color:var(--J)}.pjr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)}.pjr:last-child{border-bottom:none}.pjl{font-size:12px;color:var(--t2)}.pjv{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--t1)}
+/* Module linker */
+.ml{display:flex;align-items:center;gap:11px;padding:10px 13px;background:var(--s1);border:1px solid var(--border);border-radius:10px;margin-bottom:8px}.mlf{border-color:rgba(139,92,246,.3)}.mli{width:33px;height:33px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}.mln{font-size:13px;font-weight:600;color:var(--t1)}.mls{font-size:11px;color:var(--t2);margin-top:1px}.tog{width:28px;height:16px;border-radius:8px;position:relative;flex-shrink:0;margin-left:auto}.tog.on{background:var(--fut)}.j .tog.on{background:var(--J)}.tog.off{background:var(--s3)}.tk{width:12px;height:12px;border-radius:50%;background:#fff;position:absolute;top:2px}.tog.on .tk{left:14px}.tog.off .tk{left:2px}
+/* XP hint */
+.xph{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:8px 13px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:20px;font-size:12px;color:#c4b5fd;font-weight:600}.xph strong{color:var(--t1)}
+/* CTA */
+.cta{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px;border-radius:14px;font-size:14px;font-weight:600;border:none;width:100%}.cp{color:#fff}.f .cp{background:var(--fgr)}.j .cp{background:var(--Jgr)}
+/* Modal overlay representation */
+.modal-wrap{margin-top:12px;padding:14px;background:var(--s1);border:1px solid rgba(139,92,246,.2);border-radius:16px}.modal-hint{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;text-align:center;padding:6px;background:var(--s2);border-radius:8px}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1)}.modal-close{font-size:18px;color:var(--t3);cursor:pointer}
+/* Meta form in modal */
+.mod-select{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}.mod-opt{padding:8px 4px;border-radius:10px;background:var(--s2);border:1px solid var(--border);text-align:center;font-size:9px;color:var(--t2)}.mod-opt .mo-i{font-size:18px;margin-bottom:2px}.mod-opt.sel{border-color:var(--fin);background:var(--fng)}.mod-opt.sel .mo-n{color:var(--fin);font-weight:600}
+/* Preview */
+.prev{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--s2);border-radius:10px;margin-bottom:14px;font-size:11px;color:var(--t2)}.prev-icon{font-size:16px}
+/* Bottom */
+.bb{height:68px;background:var(--s1);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 8px;margin-top:8px}.bt{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--t3)}.bt svg{width:22px;height:22px}.bt.ac{color:var(--fut)}.j .bt.ac{color:var(--J)}.fab{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-20px;border:3px solid var(--bg)}.f .fab{background:var(--fgr)}.j .fab{background:var(--Jgr)}.fab svg{width:22px;height:22px;color:#fff}
+.plb{text-align:center;font-size:11px;font-weight:600;color:var(--t3);margin-top:12px;font-family:'DM Mono',monospace}
+</style>
+</head>
+<body>
+<h1 class="pt">Futuro v2 — Parte 4</h1>
+<p class="ps">Wizard Step 2 · Wizard Step 4 · Modal Adicionar Meta</p>
+
+<!-- ══════ TELA 10: WIZARD STEP 2 ══════ -->
+<div class="rl">10. Wizard Step 2 <span>definir nome, prazo, descrição e prioridade</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div><div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="wz-s"><div class="ws" style="background:rgba(139,92,246,.4)"></div><div class="ws" style="background:var(--fut)"></div><div class="ws"></div><div class="ws"></div></div>
+<div class="wbd">
+<div class="wsl" style="color:var(--fut)">Passo 2 de 4</div>
+<div class="wt">Defina seu objetivo</div>
+<div class="wd">Dê um nome claro e escolha quando quer atingir.</div>
+<div class="fg"><label class="fl">Ícone</label><div class="emoji-row"><div class="emoji-opt sel">🏠</div><div class="emoji-opt">🚗</div><div class="emoji-opt">🏍️</div><div class="emoji-opt">💍</div><div class="emoji-opt">🖥️</div><div class="emoji-opt">🎁</div></div></div>
+<div class="fg"><label class="fl">Nome do objetivo</label><div class="fi focused"><span>Comprar meu apartamento</span></div></div>
+<div class="fg"><label class="fl">Descrição (opcional)</label><div class="fi"><span class="fi-placeholder">Por que esse objetivo é importante?</span></div></div>
+<div class="fg"><label class="fl">Prazo desejado</label><div class="fi"><span>Dezembro 2028</span><span class="fi-icon">📅</span></div></div>
+<div style="font-size:10px;color:var(--t3);margin:-10px 0 14px;padding-left:2px">⏱️ Mínimo 30 dias · IA sugere: "24 meses é realista para este tipo"</div>
+<div class="fg"><label class="fl">Prioridade</label><div class="pri-row"><div class="pri" style="color:var(--red)">🔴 Alta</div><div class="pri sel">🟡 Média</div><div class="pri">🟢 Baixa</div></div></div>
+<div class="cta cp">Continuar →</div>
+</div></div><div class="plb">Wizard Step 2 — Foco</div></div>
+<!-- JORNADA -->
+<div><div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="wz-s"><div class="ws" style="background:rgba(139,92,246,.4)"></div><div class="ws" style="background:var(--J)"></div><div class="ws"></div><div class="ws"></div></div>
+<div class="wbd">
+<div class="wsl" style="color:var(--J)">Passo 2 de 4</div>
+<div class="wt">Dê um nome ao seu sonho</div>
+<div class="wd">Quanto mais claro o sonho, mais fácil o caminho.</div>
+<div class="fg"><label class="fl">Ícone da missão</label><div class="emoji-row"><div class="emoji-opt sel">🏠</div><div class="emoji-opt">🚗</div><div class="emoji-opt">🏍️</div><div class="emoji-opt">💍</div><div class="emoji-opt">🖥️</div><div class="emoji-opt">🎁</div></div></div>
+<div class="fg"><label class="fl">Nome da missão</label><div class="fi focused"><span>Comprar meu apartamento</span></div></div>
+<div class="fg"><label class="fl">Motivação (opcional)</label><div class="fi"><span class="fi-placeholder">O que muda na sua vida ao conquistar?</span></div></div>
+<div class="fg"><label class="fl">Quando quer chegar lá?</label><div class="fi"><span>Dezembro 2028</span><span class="fi-icon">📅</span></div></div>
+<div style="font-size:10px;color:#c4b5fd;margin:-10px 0 14px;padding-left:2px">🧭 Coach: "24 meses é realista para aquisições"</div>
+<div class="fg"><label class="fl">Prioridade da missão</label><div class="pri-row"><div class="pri" style="color:var(--red)">🔥 Alta</div><div class="pri sel">⚡ Média</div><div class="pri">💎 Baixa</div></div></div>
+<div class="cta cp">Continuar →</div>
+</div></div><div class="plb">Wizard Step 2 — Jornada</div></div>
+</div>
+
+<!-- ══════ TELA 11: WIZARD STEP 4 ══════ -->
+<div class="rl">11. Wizard Step 4 <span>contribuição mensal, projeção e módulos aliados</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div><div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="wz-s"><div class="ws" style="background:rgba(139,92,246,.4)"></div><div class="ws" style="background:rgba(139,92,246,.4)"></div><div class="ws" style="background:rgba(139,92,246,.4)"></div><div class="ws" style="background:var(--fut)"></div></div>
+<div class="wbd">
+<div class="wsl" style="color:var(--fut)">Passo 4 de 4</div>
+<div class="wt">Configure sua contribuição</div>
+<div class="wd">Quanto você vai reservar por mês? A IA projeta o resultado.</div>
+<div class="slw"><div class="slh"><div class="sll">Contribuição mensal</div><div class="slv" style="color:var(--fut)">R$ 800</div></div><div class="slt"><div class="slf"></div><div class="sth"></div></div><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3)"><span>R$ 200</span><span>R$ 2.000</span></div></div>
+<div class="pjc"><div class="pjt">Projeção automática</div><div class="pjr"><div class="pjl">Prazo projetado</div><div class="pjv" style="color:var(--grn)">Dez 2028 ✓</div></div><div class="pjr"><div class="pjl">Total c/ rendimento</div><div class="pjv" style="color:var(--fut)">R$ 83.200</div></div><div class="pjr"><div class="pjl">% da renda</div><div class="pjv">13,8% <span style="color:var(--grn);font-size:10px">Saudável</span></div></div></div>
+<div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:10px">Vincular módulos</div>
+<div class="ml mlf"><div class="mli" style="background:var(--fng)">💰</div><div style="flex:1"><div class="mln">Finanças</div><div class="mls">Cria envelope R$ 800/mês</div></div><div class="tog on"><div class="tk"></div></div></div>
+<div class="ml mlf"><div class="mli" style="background:var(--pag)">📈</div><div style="flex:1"><div class="mln">Patrimônio</div><div class="mls">Vincula acompanhamento</div></div><div class="tog on"><div class="tk"></div></div></div>
+<div class="ml"><div class="mli" style="background:var(--cag)">💼</div><div style="flex:1"><div class="mln">Carreira</div><div class="mls">Metas de aumento salarial</div></div><div class="tog off"><div class="tk"></div></div></div>
+<div class="cta cp" style="margin-top:14px">🚀 Criar objetivo</div>
+</div></div><div class="plb">Wizard Step 4 — Foco</div></div>
+<!-- JORNADA -->
+<div><div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="wz-s"><div class="ws" style="background:rgba(139,92,246,.4)"></div><div class="ws" style="background:rgba(139,92,246,.4)"></div><div class="ws" style="background:rgba(139,92,246,.4)"></div><div class="ws" style="background:var(--J)"></div></div>
+<div class="wbd">
+<div class="wsl" style="color:var(--J)">Último passo!</div>
+<div class="wt">Quanto você investe neste sonho?</div>
+<div class="wd">A IA projeta o caminho mais rápido. Seus aliados já estão recrutados.</div>
+<div class="slw" style="border-color:rgba(139,92,246,.2)"><div class="slh"><div class="sll">Contribuição mensal</div><div class="slv" style="color:var(--J)">R$ 800</div></div><div class="slt"><div class="slf"></div><div class="sth"></div></div><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3)"><span>R$ 200</span><span>R$ 2.000</span></div></div>
+<div class="pjc"><div class="pjt">Impacto na sua jornada</div><div class="pjr"><div class="pjl">Prazo projetado</div><div class="pjv" style="color:var(--grn)">Dez 2028 ✓</div></div><div class="pjr"><div class="pjl">Total c/ rendimento</div><div class="pjv" style="color:var(--J)">R$ 83.200</div></div><div class="pjr"><div class="pjl">XP mensal desta missão</div><div class="pjv" style="color:#c4b5fd">+80 XP/mês ⚡</div></div><div class="pjr"><div class="pjl">Impacto no Life Score</div><div class="pjv" style="color:var(--grn)">+8 pts Futuro ↑</div></div></div>
+<div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:3px">Aliados desta missão</div>
+<div style="font-size:11px;color:var(--t3);margin-bottom:10px">Módulos que vão trabalhar com você</div>
+<div class="ml" style="border-color:rgba(139,92,246,.3)"><div class="mli" style="background:var(--fng)">💰</div><div style="flex:1"><div class="mln">Finanças</div><div class="mls">Cria envelope automático</div></div><div class="tog on"><div class="tk"></div></div></div>
+<div class="ml" style="border-color:rgba(139,92,246,.3)"><div class="mli" style="background:var(--pag)">📈</div><div style="flex:1"><div class="mln">Patrimônio</div><div class="mls">Monitora crescimento</div></div><div class="tog on"><div class="tk"></div></div></div>
+<div class="ml"><div class="mli" style="background:var(--cag)">💼</div><div style="flex:1"><div class="mln">Carreira</div><div class="mls">Metas de renda para acelerar</div></div><div class="tog off"><div class="tk"></div></div></div>
+<div class="cta cp" style="margin-top:14px">🚀 Iniciar missão → <span style="font-size:11px;opacity:.8">+50 XP</span></div>
+</div></div><div class="plb">Wizard Step 4 — Jornada</div></div>
+</div>
+
+<!-- ══════ TELA 12: MODAL ADICIONAR META ══════ -->
+<div class="rl">12. Modal: Adicionar Meta <span>escolher módulo + tipo + valor + preview</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div><div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="ct">
+<div class="modal-wrap">
+<div class="modal-header"><div class="modal-title">Adicionar Meta</div><div class="modal-close">✕</div></div>
+<div class="fg"><label class="fl">Nome da meta</label><div class="fi focused"><span>Juntar R$ 80.000</span></div></div>
+<div class="fg"><label class="fl">Módulo destino</label>
+<div class="mod-select">
+<div class="mod-opt sel"><div class="mo-i">💰</div><div class="mo-n">Finanças</div></div>
+<div class="mod-opt"><div class="mo-i">📈</div><div class="mo-n">Patrimônio</div></div>
+<div class="mod-opt"><div class="mo-i">🏃</div><div class="mo-n">Corpo</div></div>
+<div class="mod-opt"><div class="mo-i">🧠</div><div class="mo-n">Mente</div></div>
+<div class="mod-opt"><div class="mo-i">💼</div><div class="mo-n">Carreira</div></div>
+<div class="mod-opt"><div class="mo-i">✈️</div><div class="mo-n">Experiências</div></div>
+<div class="mod-opt"><div class="mo-i">⏳</div><div class="mo-n">Tempo</div></div>
+</div></div>
+<div class="fg"><label class="fl">Tipo de medição</label><div class="fi"><span>Monetário (R$)</span><span class="fi-icon">▾</span></div><div style="font-size:10px;color:var(--t3);margin-top:4px">Filtrado por módulo: Finanças → Monetário</div></div>
+<div class="fg"><label class="fl">Valor alvo</label><div class="fi focused"><span style="font-family:'DM Mono',monospace">R$ 80.000</span></div></div>
+<div class="fg"><label class="fl">Valor inicial (opcional)</label><div class="fi"><span style="font-family:'DM Mono',monospace;color:var(--t2)">R$ 34.800</span></div><div style="font-size:10px;color:var(--t3);margin-top:4px">Já tenho este valor guardado</div></div>
+<div class="fg"><label class="fl">Peso / Importância</label><div class="fi"><span>Alto (2.0×)</span><span class="fi-icon">▾</span></div><div style="font-size:10px;color:var(--t3);margin-top:4px">Meta com peso 2.0 conta o dobro no progresso geral</div></div>
+<div class="prev"><span class="prev-icon">✨</span> Será criado: Envelope "Apartamento" no Finanças automaticamente</div>
+<div class="cta cp">Adicionar meta</div>
+</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Modal Adicionar Meta — Foco</div></div>
+<!-- JORNADA -->
+<div><div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="ct">
+<div class="modal-wrap" style="border-color:rgba(139,92,246,.3)">
+<div class="modal-header"><div class="modal-title">Recrutar Aliado</div><div class="modal-close">✕</div></div>
+<div class="xph"><span style="font-size:14px">⚡</span> Cada meta adicionada vale <strong>+20 XP</strong></div>
+<div class="fg"><label class="fl">Nome da meta</label><div class="fi focused"><span>Juntar R$ 80.000</span></div></div>
+<div class="fg"><label class="fl">Módulo aliado</label>
+<div class="mod-select">
+<div class="mod-opt sel"><div class="mo-i">💰</div><div class="mo-n">Finanças</div></div>
+<div class="mod-opt"><div class="mo-i">📈</div><div class="mo-n">Patrimônio</div></div>
+<div class="mod-opt"><div class="mo-i">🏃</div><div class="mo-n">Corpo</div></div>
+<div class="mod-opt"><div class="mo-i">🧠</div><div class="mo-n">Mente</div></div>
+<div class="mod-opt"><div class="mo-i">💼</div><div class="mo-n">Carreira</div></div>
+<div class="mod-opt"><div class="mo-i">✈️</div><div class="mo-n">Experiências</div></div>
+<div class="mod-opt"><div class="mo-i">⏳</div><div class="mo-n">Tempo</div></div>
+</div></div>
+<div class="fg"><label class="fl">Tipo de medição</label><div class="fi"><span>Monetário (R$)</span><span class="fi-icon">▾</span></div></div>
+<div class="fg"><label class="fl">Valor alvo</label><div class="fi focused"><span style="font-family:'DM Mono',monospace">R$ 80.000</span></div></div>
+<div class="fg"><label class="fl">Valor inicial</label><div class="fi"><span style="font-family:'DM Mono',monospace;color:var(--t2)">R$ 34.800</span></div></div>
+<div class="fg"><label class="fl">Peso</label><div class="fi"><span>Alto (2.0×) — conta o dobro</span><span class="fi-icon">▾</span></div></div>
+<div class="prev" style="border:1px solid rgba(139,92,246,.2)"><span class="prev-icon">✨</span> Cria envelope automático no Finanças · <span style="color:#c4b5fd">+80 XP/marco</span></div>
+<div class="cta cp">Recrutar aliado → +20 XP</div>
+</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Modal Adicionar Meta — Jornada</div></div>
+</div>
+
+<p style="text-align:center;color:var(--t3);font-size:12px;margin-top:48px;padding-bottom:20px">SyncLife · Futuro v2 · Parte 4 · 07/03/2026<br>✅ Wizard Step 2 · ✅ Wizard Step 4 · ✅ Modal Adicionar Meta</p>
+</body>
+</html>

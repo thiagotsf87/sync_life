@@ -49,7 +49,7 @@ web/
 3. **Nunca CSS inline em estilo arbitrário** — usar Tailwind classes ou CSS variables do `globals.css`.
 4. **Imports absolutos** com `@/` — nunca `../../`.
 5. **shadcn/ui primeiro** — antes de criar um componente do zero, verificar se existe em `@/components/ui/`.
-6. **Fontes**: Syne (títulos/display), DM Mono (valores monetários e %). Outfit é a fonte base do body (já configurada). Adicionar `font-[Syne]` e `font-[DM_Mono]` via Tailwind quando necessário.
+6. **Fontes**: Syne (títulos/display), DM Mono (valores monetários e %). Outfit é a fonte base do body desktop. **DM Sans** é a fonte base do body mobile (< 1024px, aplicada via media query no globals.css). Adicionar `font-[Syne]` e `font-[DM_Mono]` via Tailwind quando necessário.
 
 ---
 
@@ -75,6 +75,9 @@ O SyncLife tem **duas personalidades** e **dois temas** — formando 4 combinaç
 --sl-em:   #10b981   /* Esmeralda — cor primária */
 --sl-el:   #0055ff   /* Azul Elétrico — acento */
 --sl-grad: linear-gradient(135deg, #10b981, #0055ff)
+
+/* Cores de módulo (usadas em bordas, ícones, badges, tabs mobile) */
+--color-pan: #6366f1   /* Panorama / Home — Indigo */
 ```
 
 No Tailwind, usar as classes geradas pelos tokens do `globals.css`:

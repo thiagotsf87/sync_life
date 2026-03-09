@@ -1,15 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { ALL_CATEGORIES, CustomCategory } from '@/constants/categories'
 import { useUserCategories } from '@/hooks/use-user-categories'
-import { toast } from 'sonner'
-import { Plus, Pencil, Trash2, AlertTriangle, ArrowDown, ArrowUp } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, AlertTriangle } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const PRESET_ICONS = [
   '💼', '💰', '💳', '🏦', '📊', '📈',
@@ -54,6 +50,12 @@ export function CategoryManager() {
   const [deleteConfirm, setDeleteConfirm] = useState<DeleteConfirmState | null>(null)
   const [isCheckingUsage, setIsCheckingUsage] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null)
+
+  const showToast = (msg: string, type: 'ok' | 'err' = 'ok') => {
+    setToast({ msg, type })
+    setTimeout(() => setToast(null), 3000)
+  }
 
   const defaultsForTab = ALL_CATEGORIES.filter(c => c.type === activeTab)
   const customForTab = customCategories.filter(c => c.type === activeTab)
@@ -71,16 +73,13 @@ export function CategoryManager() {
   }
 
   const handleSave = async () => {
-    if (!form.name.trim()) {
-      toast.error('Por favor, preencha o nome da categoria')
-      return
-    }
+    if (!form.name.trim()) { showToast('Preencha o nome da categoria', 'err'); return }
     setIsSaving(true)
     try {
       const supabase = createClient()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: { user } } = await (supabase as any).auth.getUser()
-      if (!user) { toast.error('Usuário não autenticado'); return }
+      if (!user) { showToast('Usuário não autenticado', 'err'); return }
 
       if (editingCategory) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -89,21 +88,21 @@ export function CategoryManager() {
           .update({ name: form.name.trim(), icon: form.icon, color: form.color, type: form.type })
           .eq('id', editingCategory.id)
         if (error) throw error
-        toast.success('Categoria atualizada!')
+        showToast('Categoria atualizada!')
       } else {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error } = await (supabase as any)
           .from('categories')
           .insert({ user_id: user.id, name: form.name.trim(), icon: form.icon, color: form.color, type: form.type, is_default: false })
         if (error) throw error
-        toast.success('Categoria criada!')
+        showToast('Categoria criada!')
       }
 
       setIsFormOpen(false)
       refetch()
     } catch (err) {
       console.error(err)
-      toast.error('Erro ao salvar categoria')
+      showToast('Erro ao salvar categoria', 'err')
     } finally {
       setIsSaving(false)
     }
@@ -138,297 +137,310 @@ export function CategoryManager() {
         .delete()
         .eq('id', deleteConfirm.category.id)
       if (error) throw error
-      toast.success('Categoria excluída!')
+      showToast('Categoria excluída!')
       setDeleteConfirm(null)
       refetch()
     } catch {
-      toast.error('Erro ao excluir categoria')
+      showToast('Erro ao excluir categoria', 'err')
     } finally {
       setIsDeleting(false)
     }
   }
 
   return (
-    <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-white">Categorias</h2>
-        <Button
-          onClick={openNewForm}
-          className="bg-[var(--color-sync-500)] hover:bg-[var(--color-sync-600)] text-white"
-          size="sm"
-        >
-          <Plus className="w-4 h-4 mr-1.5" />
-          Nova categoria
-        </Button>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6">
+    <>
+      {/* Filter pills */}
+      <div className="flex gap-2 mb-4">
         <button
           onClick={() => setActiveTab('expense')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={cn(
+            'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[12px] font-semibold border transition-all',
             activeTab === 'expense'
-              ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-              : 'bg-slate-800 text-slate-400 border border-slate-700 hover:text-rose-400'
-          }`}
+              ? 'bg-[rgba(244,63,94,0.12)] text-[#f43f5e] border-[rgba(244,63,94,0.3)]'
+              : 'bg-transparent text-[var(--sl-t2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+          )}
         >
-          <ArrowDown className="w-3.5 h-3.5" />
-          Despesas
+          📤 Despesas
         </button>
         <button
           onClick={() => setActiveTab('income')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={cn(
+            'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[12px] font-semibold border transition-all',
             activeTab === 'income'
-              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-              : 'bg-slate-800 text-slate-400 border border-slate-700 hover:text-emerald-400'
-          }`}
+              ? 'bg-[rgba(16,185,129,0.12)] text-[#10b981] border-[rgba(16,185,129,0.3)]'
+              : 'bg-transparent text-[var(--sl-t2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+          )}
         >
-          <ArrowUp className="w-3.5 h-3.5" />
-          Receitas
+          💰 Receitas
         </button>
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {/* Default categories */}
-        {defaultsForTab.map(cat => (
-          <div
-            key={cat.id}
-            className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50"
-          >
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 transition-colors hover:border-[var(--sl-border-h)]">
+        <div className="grid grid-cols-2 gap-2.5">
+          {/* Default categories */}
+          {defaultsForTab.map(cat => (
             <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-lg"
-              style={{ backgroundColor: cat.color + '20' }}
+              key={cat.id}
+              className="flex items-center gap-2.5 p-2.5 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]"
             >
-              {cat.icon}
+              <div
+                className="w-8 h-8 rounded-[9px] flex items-center justify-center text-base shrink-0"
+                style={{ background: cat.color + '22' }}
+              >
+                {cat.icon}
+              </div>
+              <span className="text-[12px] font-medium text-[var(--sl-t1)] flex-1 min-w-0 truncate">{cat.name}</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[var(--sl-s3)] text-[var(--sl-t3)] shrink-0">
+                Padrão
+              </span>
             </div>
-            <span className="text-sm text-white font-medium flex-1 min-w-0 truncate">{cat.name}</span>
-            <span className="text-[10px] font-medium px-1.5 py-0.5 bg-slate-700 text-slate-400 rounded-md flex-shrink-0">
-              Padrão
-            </span>
-          </div>
-        ))}
+          ))}
 
-        {/* Custom categories */}
-        {customForTab.map(cat => (
-          <div
-            key={cat.id}
-            className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700 group"
-          >
+          {/* Custom categories */}
+          {customForTab.map(cat => (
             <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-lg"
-              style={{ backgroundColor: cat.color + '20' }}
+              key={cat.id}
+              className="group flex items-center gap-2.5 p-2.5 bg-[var(--sl-s2)] rounded-xl border border-dashed border-[var(--sl-border-h)]"
             >
-              {cat.icon}
-            </div>
-            <span className="text-sm text-white font-medium flex-1 min-w-0 truncate">{cat.name}</span>
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-              <button
-                onClick={() => openEditForm(cat)}
-                className="p-1 text-slate-500 hover:text-white hover:bg-slate-700 rounded-md transition-colors"
+              <div
+                className="w-8 h-8 rounded-[9px] flex items-center justify-center text-base shrink-0"
+                style={{ background: cat.color + '22' }}
               >
-                <Pencil className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={() => handleDeleteClick(cat)}
-                disabled={isCheckingUsage}
-                className="p-1 text-slate-500 hover:text-rose-400 hover:bg-slate-700 rounded-md transition-colors disabled:opacity-50"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
+                {cat.icon}
+              </div>
+              <span className="text-[12px] font-medium text-[var(--sl-t1)] flex-1 min-w-0 truncate">{cat.name}</span>
+              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                <button
+                  onClick={() => openEditForm(cat)}
+                  className="p-1 rounded-md text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s3)] transition-colors"
+                >
+                  <Pencil size={12} />
+                </button>
+                <button
+                  onClick={() => handleDeleteClick(cat)}
+                  disabled={isCheckingUsage}
+                  className="p-1 rounded-md text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[var(--sl-s3)] transition-colors disabled:opacity-40"
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
 
-        {customForTab.length === 0 && defaultsForTab.length === 0 && (
-          <div className="col-span-full py-6 text-center text-slate-500 text-sm">
-            Nenhuma categoria encontrada
-          </div>
-        )}
+          {/* Add new button */}
+          <button
+            onClick={openNewForm}
+            className="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-dashed border-[var(--sl-border-h)] text-[var(--sl-t3)] hover:text-[#10b981] hover:border-[rgba(16,185,129,0.4)] hover:bg-[rgba(16,185,129,0.04)] transition-all text-[12px] font-medium min-h-[52px]"
+          >
+            <Plus size={14} />
+            Nova categoria
+          </button>
+        </div>
       </div>
 
-      {/* Form Dialog */}
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="bg-slate-900 border-slate-800 max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-white">
-              {editingCategory ? 'Editar categoria' : 'Nova categoria'}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-5 py-2">
-            {/* Name */}
-            <div>
-              <Label className="text-slate-400 mb-2 block">Nome</Label>
-              <Input
-                value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                placeholder="Nome da categoria"
-                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
-              />
+      {/* Form Modal */}
+      {isFormOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-[Syne] font-bold text-base text-[var(--sl-t1)]">
+                {editingCategory ? 'Editar categoria' : 'Nova categoria'}
+              </h3>
+              <button
+                onClick={() => setIsFormOpen(false)}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s3)] transition-colors"
+              >
+                <X size={14} />
+              </button>
             </div>
 
-            {/* Type */}
-            <div>
-              <Label className="text-slate-400 mb-2 block">Tipo</Label>
+            <div className="space-y-4">
+              {/* Type */}
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setForm(f => ({ ...f, type: 'expense' }))}
-                  className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-sm font-medium transition-all ${
+                  className={cn(
+                    'py-1.5 px-3 rounded-[9px] text-[12px] font-semibold border transition-all',
                     form.type === 'expense'
-                      ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white ring-2 ring-rose-500/50'
-                      : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-rose-500/50 hover:text-rose-400'
-                  }`}
+                      ? 'bg-[rgba(244,63,94,0.12)] text-[#f43f5e] border-[rgba(244,63,94,0.3)]'
+                      : 'bg-transparent text-[var(--sl-t2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                  )}
                 >
-                  <ArrowDown className="w-4 h-4" />
-                  Despesa
+                  📤 Despesa
                 </button>
                 <button
                   type="button"
                   onClick={() => setForm(f => ({ ...f, type: 'income' }))}
-                  className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-sm font-medium transition-all ${
+                  className={cn(
+                    'py-1.5 px-3 rounded-[9px] text-[12px] font-semibold border transition-all',
                     form.type === 'income'
-                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white ring-2 ring-emerald-500/50'
-                      : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-emerald-500/50 hover:text-emerald-400'
-                  }`}
+                      ? 'bg-[rgba(16,185,129,0.12)] text-[#10b981] border-[rgba(16,185,129,0.3)]'
+                      : 'bg-transparent text-[var(--sl-t2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                  )}
                 >
-                  <ArrowUp className="w-4 h-4" />
-                  Receita
+                  💰 Receita
                 </button>
               </div>
-            </div>
 
-            {/* Icon */}
-            <div>
-              <Label className="text-slate-400 mb-2 block">Ícone</Label>
-              <div className="grid grid-cols-6 gap-1.5">
-                {PRESET_ICONS.map(icon => (
-                  <button
-                    key={icon}
-                    type="button"
-                    onClick={() => setForm(f => ({ ...f, icon }))}
-                    className={`h-9 flex items-center justify-center rounded-lg text-lg transition-all ${
-                      form.icon === icon
-                        ? 'bg-[var(--color-sync-500)]/20 ring-2 ring-[var(--color-sync-500)]/60'
-                        : 'bg-slate-800 hover:bg-slate-700'
-                    }`}
-                  >
-                    {icon}
-                  </button>
-                ))}
+              {/* Name */}
+              <div>
+                <p className="text-[11px] font-semibold text-[var(--sl-t3)] mb-1.5">Nome</p>
+                <input
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Nome da categoria"
+                  className="w-full bg-[var(--sl-s3)] border border-[var(--sl-border)] rounded-[9px] px-3 py-2 text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+                />
               </div>
-            </div>
 
-            {/* Color */}
-            <div>
-              <Label className="text-slate-400 mb-2 block">Cor</Label>
-              <div className="grid grid-cols-6 gap-1.5">
-                {PRESET_COLORS.map(color => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => setForm(f => ({ ...f, color }))}
-                    className={`h-8 rounded-lg transition-all ${
-                      form.color === color ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-900' : 'hover:scale-110'
-                    }`}
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Preview */}
-            <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700">
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-lg"
-                style={{ backgroundColor: form.color + '20' }}
-              >
-                {form.icon}
-              </div>
-              <span className="text-sm text-white font-medium">{form.name || 'Pré-visualização'}</span>
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setIsFormOpen(false)}
-              className="flex-1 bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="flex-1 bg-[var(--color-sync-500)] hover:bg-[var(--color-sync-600)] text-white"
-            >
-              {isSaving ? 'Salvando...' : 'Salvar'}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirm Dialog */}
-      <Dialog open={!!deleteConfirm} onOpenChange={open => { if (!open) setDeleteConfirm(null) }}>
-        <DialogContent className="bg-slate-900 border-slate-800 max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-rose-400" />
-              Excluir categoria
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="py-2 space-y-3">
-            {deleteConfirm && (
-              <>
-                <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700">
-                  <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center text-lg"
-                    style={{ backgroundColor: deleteConfirm.category.color + '20' }}
-                  >
-                    {deleteConfirm.category.icon}
-                  </div>
-                  <span className="text-sm text-white font-medium">{deleteConfirm.category.name}</span>
+              {/* Icon */}
+              <div>
+                <p className="text-[11px] font-semibold text-[var(--sl-t3)] mb-1.5">Ícone</p>
+                <div className="grid grid-cols-6 gap-1.5">
+                  {PRESET_ICONS.map(icon => (
+                    <button
+                      key={icon}
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, icon }))}
+                      className={cn(
+                        'h-9 flex items-center justify-center rounded-[9px] text-base transition-all',
+                        form.icon === icon
+                          ? 'bg-[rgba(16,185,129,0.15)] ring-2 ring-[rgba(16,185,129,0.5)]'
+                          : 'bg-[var(--sl-s3)] hover:bg-[var(--sl-s3)] hover:ring-1 hover:ring-[var(--sl-border-h)]',
+                      )}
+                    >
+                      {icon}
+                    </button>
+                  ))}
                 </div>
+              </div>
 
-                {deleteConfirm.usageCount !== null && deleteConfirm.usageCount > 0 ? (
-                  <div className="flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
-                    <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-amber-300">
-                      Esta categoria está em uso em{' '}
-                      <span className="font-semibold">{deleteConfirm.usageCount}</span>{' '}
-                      {deleteConfirm.usageCount === 1 ? 'transação' : 'transações'}.
-                      Ao excluir, elas ficarão sem categoria.
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-slate-400">Esta ação não pode ser desfeita.</p>
-                )}
-              </>
+              {/* Color */}
+              <div>
+                <p className="text-[11px] font-semibold text-[var(--sl-t3)] mb-1.5">Cor</p>
+                <div className="grid grid-cols-6 gap-1.5">
+                  {PRESET_COLORS.map(color => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, color }))}
+                      className={cn(
+                        'h-8 rounded-[9px] transition-all',
+                        form.color === color ? 'ring-2 ring-white ring-offset-2 ring-offset-[var(--sl-s2)] scale-110' : 'hover:scale-110',
+                      )}
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Preview */}
+              <div className="flex items-center gap-2.5 p-2.5 bg-[var(--sl-s3)] rounded-xl border border-[var(--sl-border)]">
+                <div
+                  className="w-8 h-8 rounded-[9px] flex items-center justify-center text-base shrink-0"
+                  style={{ background: form.color + '22' }}
+                >
+                  {form.icon}
+                </div>
+                <span className="text-[12px] font-medium text-[var(--sl-t1)]">
+                  {form.name || 'Pré-visualização'}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-5">
+              <button
+                onClick={() => setIsFormOpen(false)}
+                className="flex-1 px-4 py-2 rounded-[9px] border border-[var(--sl-border)] bg-transparent text-[13px] font-semibold text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="flex-1 px-4 py-2 rounded-[9px] text-white text-[13px] font-bold transition-all hover:brightness-110 disabled:opacity-60"
+                style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+              >
+                {isSaving ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirm Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle size={18} className="text-[#f43f5e]" />
+              <h3 className="font-[Syne] font-bold text-base text-[var(--sl-t1)]">Excluir categoria?</h3>
+            </div>
+
+            <div className="flex items-center gap-2.5 p-2.5 bg-[var(--sl-s3)] rounded-xl border border-[var(--sl-border)] mb-4">
+              <div
+                className="w-8 h-8 rounded-[9px] flex items-center justify-center text-base shrink-0"
+                style={{ background: deleteConfirm.category.color + '22' }}
+              >
+                {deleteConfirm.category.icon}
+              </div>
+              <span className="text-[12px] font-medium text-[var(--sl-t1)]">{deleteConfirm.category.name}</span>
+            </div>
+
+            {deleteConfirm.usageCount !== null && deleteConfirm.usageCount > 0 ? (
+              <div className="flex items-start gap-2 p-3 rounded-xl border mb-4"
+                style={{ background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.25)' }}>
+                <AlertTriangle size={14} className="text-[#f59e0b] mt-0.5 shrink-0" />
+                <p className="text-[12px] text-[var(--sl-t2)] leading-snug">
+                  Esta categoria está em uso em{' '}
+                  <span className="font-bold text-[#f59e0b]">{deleteConfirm.usageCount}</span>{' '}
+                  {deleteConfirm.usageCount === 1 ? 'transação' : 'transações'}.
+                  Ao excluir, elas ficarão sem categoria.
+                </p>
+              </div>
+            ) : (
+              <p className="text-[12px] text-[var(--sl-t3)] mb-4">Esta ação não pode ser desfeita.</p>
             )}
-          </div>
 
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setDeleteConfirm(null)}
-              disabled={isDeleting}
-              className="flex-1 bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleDeleteConfirm}
-              disabled={isDeleting}
-              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white"
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              {isDeleting ? 'Excluindo...' : deleteConfirm?.usageCount && deleteConfirm.usageCount > 0 ? 'Excluir mesmo assim' : 'Excluir'}
-            </Button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-2 rounded-[9px] border border-[var(--sl-border)] bg-transparent text-[13px] font-semibold text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] transition-colors disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-2 rounded-[9px] text-white text-[13px] font-bold transition-all hover:brightness-110 disabled:opacity-60"
+                style={{ background: '#f43f5e' }}
+              >
+                <span className="flex items-center justify-center gap-1.5">
+                  <Trash2 size={13} />
+                  {isDeleting ? 'Excluindo...' : deleteConfirm.usageCount && deleteConfirm.usageCount > 0 ? 'Excluir mesmo assim' : 'Excluir'}
+                </span>
+              </button>
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-2.5 px-4 py-2.5 rounded-xl border shadow-lg text-[13px] font-medium transition-all"
+          style={{
+            background: toast.type === 'ok' ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.1)',
+            borderColor: toast.type === 'ok' ? 'rgba(16,185,129,0.25)' : 'rgba(244,63,94,0.25)',
+            color: toast.type === 'ok' ? '#10b981' : '#f43f5e',
+          }}
+        >
+          {toast.msg}
+        </div>
+      )}
+    </>
   )
 }

@@ -4,7 +4,38 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Mail, ArrowLeft, CheckCircle, ArrowRight } from 'lucide-react'
+import { Mail, CheckCircle, ArrowRight } from 'lucide-react'
+
+function StepDots({ active }: { active: number }) {
+  return (
+    <div className="flex items-center justify-center gap-2 mb-6 lg:hidden">
+      {[1, 2].map((step) => (
+        <div
+          key={step}
+          className="h-[6px] rounded-full transition-all duration-300"
+          style={{
+            width: step === active ? 20 : 6,
+            background: step === active ? 'var(--em)' : 'var(--s3)',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+function StepIcon({ emoji }: { emoji: string }) {
+  return (
+    <div
+      className="mx-auto mb-4 flex h-[56px] w-[56px] items-center justify-center rounded-full lg:hidden"
+      style={{
+        background: 'rgba(16,185,129,0.1)',
+        border: '1px solid rgba(16,185,129,0.2)',
+      }}
+    >
+      <span className="text-2xl">{emoji}</span>
+    </div>
+  )
+}
 
 export default function EsqueceuSenhaPage() {
   const [email, setEmail] = useState('')
@@ -31,6 +62,7 @@ export default function EsqueceuSenhaPage() {
   if (isEmailSent) {
     return (
       <>
+        <StepDots active={2} />
         <div className="auth-success-icon">
           <CheckCircle size={28} />
         </div>
@@ -51,13 +83,11 @@ export default function EsqueceuSenhaPage() {
 
   return (
     <>
-      <Link href="/login" className="auth-back-link">
-        <ArrowLeft size={16} />
-        Voltar para login
-      </Link>
+      <StepDots active={1} />
+      <StepIcon emoji="📧" />
 
-      <h2 className="form-title">Esqueceu a senha?</h2>
-      <p className="form-subtitle">
+      <h2 className="form-title max-[900px]:text-center">Esqueceu a senha?</h2>
+      <p className="form-subtitle max-[900px]:text-center">
         Digite seu e-mail e enviaremos um link para redefinir sua senha.
       </p>
 

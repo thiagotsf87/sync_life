@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   useActivities, useHealthProfile, useSaveActivity, useDeleteActivity,
   ACTIVITY_TYPES, calcCaloriesBurned,
@@ -53,8 +52,6 @@ function calcActivityStreakDays(recordedAtList: string[]): number {
 
 export default function AtividadesPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { activities, loading, error, reload } = useActivities(50)
   const { profile } = useHealthProfile()
@@ -154,10 +151,7 @@ export default function AtividadesPage() {
           <ArrowLeft size={16} />
           Corpo
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           🏋️ Atividades Físicas
         </h1>
         <button

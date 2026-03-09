@@ -23,14 +23,7 @@ test.describe('Shell e Navegação', () => {
     await expect(main).toBeVisible({ timeout: 5000 })
   })
 
-  // 0.3 — Trocar modo Foco → Jornada
-  test('0.3 Trocar modo Foco ↔ Jornada via pill', async ({ page }) => {
-    const modePill = page.getByRole('button', { name: /Foco|Jornada/i }).first()
-    await expect(modePill).toBeVisible({ timeout: 5000 })
-    await modePill.click()
-    await page.waitForTimeout(500)
-    await expect(page.locator('body')).toBeVisible()
-  })
+  // 0.3 — Removed: Mode pill no longer exists (unified experience)
 
   // 0.4 — Trocar tema Dark → Light
   test('0.4 Trocar tema Dark ↔ Light via pill', async ({ page }) => {
@@ -41,36 +34,19 @@ test.describe('Shell e Navegação', () => {
     await expect(page.locator('body')).toBeVisible()
   })
 
-  // 0.5 — 4 combinações visuais (smoke test)
-  test('0.5 Quatro combinações de modo/tema funcionam sem erro', async ({ page }) => {
-    const modePill = page.getByRole('button', { name: /Foco|Jornada/i }).first()
+  // 0.5 — Theme toggle cycles without error
+  test('0.5 Theme toggle funciona sem erro', async ({ page }) => {
     const themePill = page.getByRole('button', { name: /Dark|Light/i }).first()
+    await expect(themePill).toBeVisible({ timeout: 5000 })
 
     for (let i = 0; i < 4; i++) {
-      if (i % 2 === 0) await modePill.click()
-      else await themePill.click()
+      await themePill.click()
       await page.waitForTimeout(300)
       await expect(page.locator('body')).toBeVisible()
     }
   })
 
-  // 0.6 — Modo persistido após reload
-  test('0.6 Modo persiste após reload', async ({ page }) => {
-    const modePill = page.getByRole('button', { name: /Foco|Jornada/i }).first()
-    await modePill.click()
-    await page.waitForTimeout(1500)
-
-    const htmlClassAfterClick = await page.locator('html').getAttribute('class') ?? ''
-    const isJornadaAfterClick = htmlClassAfterClick.includes('jornada')
-
-    await page.reload()
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(2000)
-
-    const htmlClassAfterReload = await page.locator('html').getAttribute('class') ?? ''
-    const isJornadaAfterReload = htmlClassAfterReload.includes('jornada')
-    expect(isJornadaAfterReload).toBe(isJornadaAfterClick)
-  })
+  // 0.6 — Removed: Mode persistence no longer relevant (unified experience)
 
   // 0.7 — Sidebar fecha em mobile
   test('0.7 Sidebar fecha em mobile', async ({ page }) => {
@@ -80,42 +56,22 @@ test.describe('Shell e Navegação', () => {
     await expect(page.locator('body')).toBeVisible()
   })
 
-  // 0.8 — TopHeader breadcrumb (Foco)
-  test('0.8 TopHeader mostra breadcrumb no modo Foco', async ({ page }) => {
+  // 0.8 — TopHeader breadcrumb always visible
+  test('0.8 TopHeader mostra breadcrumb', async ({ page }) => {
     await page.goto('/financas')
     await page.waitForLoadState('networkidle')
-
-    const htmlClasses = await page.locator('html').getAttribute('class') ?? ''
-    if (htmlClasses.includes('jornada')) {
-      await page.getByRole('button', { name: /Jornada/i }).first().click()
-      await page.waitForTimeout(500)
-    }
 
     const banner = page.getByRole('banner')
     await expect(banner.getByText(/Finanças|Visão Geral/i).first()).toBeVisible({ timeout: 5000 })
   })
 
-  // 0.9 — TopHeader saudação (Jornada)
-  test('0.9 TopHeader mostra saudação no modo Jornada', async ({ page }) => {
-    const modePill = page.getByRole('button', { name: /Foco|Jornada/i }).first()
-    const pillText = await modePill.textContent()
-    if (pillText?.match(/Foco/i)) {
-      await modePill.click()
-      await page.waitForTimeout(500)
-    }
-
+  // 0.9 — TopHeader saudação always visible
+  test('0.9 TopHeader mostra saudação', async ({ page }) => {
     await expect(page.getByText(/Bom dia|Boa tarde|Boa noite/i).first()).toBeVisible({ timeout: 5000 })
   })
 
-  // 0.10 — Life Sync Score visível no Jornada (Dashboard)
-  test('0.10 Life Sync Score visível no Jornada', async ({ page }) => {
-    const modePill = page.getByRole('button', { name: /Foco|Jornada/i }).first()
-    const pillText = await modePill.textContent()
-    if (pillText?.match(/Foco/i)) {
-      await modePill.click()
-      await page.waitForTimeout(500)
-    }
-
+  // 0.10 — Life Sync Score always visible (unified experience)
+  test('0.10 Life Sync Score sempre visível', async ({ page }) => {
     await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
     const main = page.locator('main')
@@ -186,14 +142,8 @@ test.describe('Shell e Navegação', () => {
   })
 
   test('0.16 Breadcrumb path correto em sub-página', async ({ page }) => {
-    // Ensure Foco mode for breadcrumbs
     await page.goto('/financas/transacoes')
     await page.waitForLoadState('networkidle')
-    const htmlClass = await page.locator('html').getAttribute('class') ?? ''
-    if (htmlClass.includes('jornada')) {
-      await page.getByRole('button', { name: /Jornada/i }).first().click()
-      await page.waitForTimeout(500)
-    }
 
     const banner = page.getByRole('banner')
     const breadText = await banner.textContent()
@@ -211,14 +161,11 @@ test.describe('Shell e Navegação', () => {
     expect(bodyWidth).toBeLessThanOrEqual(400)
   })
 
-  test('0.18 Trocar módulo preserva modo/tema', async ({ page }) => {
-    // Set to Jornada + Light
-    const modePill = page.getByRole('button', { name: /Foco|Jornada/i }).first()
-    const pillText = await modePill.textContent()
-    if (pillText?.match(/Foco/i)) {
-      await modePill.click()
-      await page.waitForTimeout(500)
-    }
+  test('0.18 Trocar módulo preserva tema', async ({ page }) => {
+    // Toggle to Light theme
+    const themePill = page.getByRole('button', { name: /Dark|Light/i }).first()
+    await themePill.click()
+    await page.waitForTimeout(500)
 
     const htmlBefore = await page.locator('html').getAttribute('class') ?? ''
 
@@ -228,9 +175,65 @@ test.describe('Shell e Navegação', () => {
     await page.waitForTimeout(1000)
 
     const htmlAfter = await page.locator('html').getAttribute('class') ?? ''
-    // Jornada class should be preserved
-    if (htmlBefore.includes('jornada')) {
-      expect(htmlAfter).toContain('jornada')
+    // Theme class should be preserved
+    if (htmlBefore.includes('light')) {
+      expect(htmlAfter).toContain('light')
+    }
+  })
+})
+
+/**
+ * SHL-UNI — Experiência Unificada (pós MIGRATION-ELIMINAR-MODO-DUAL)
+ */
+test.describe('Experiência Unificada (SHL-UNI)', () => {
+  test.beforeEach(async ({ page, authenticatedPage }) => {
+    void authenticatedPage
+  })
+
+  // SHL-UNI-01
+  test('SHL-UNI-01: html não deve ter atributo data-mode', async ({ page }) => {
+    await page.goto('/dashboard')
+    await page.waitForLoadState('networkidle')
+    const dataMode = await page.locator('html').getAttribute('data-mode')
+    expect(dataMode).toBeNull()
+  })
+
+  // SHL-UNI-02
+  test('SHL-UNI-02: não deve existir .jornada-only ou .foco-only', async ({ page }) => {
+    await page.goto('/dashboard')
+    await page.waitForLoadState('networkidle')
+    const jornadaOnly = await page.locator('.jornada-only').count()
+    const focoOnly = await page.locator('.foco-only').count()
+    expect(jornadaOnly).toBe(0)
+    expect(focoOnly).toBe(0)
+  })
+
+  // SHL-UNI-03
+  test('SHL-UNI-03: saudação personalizada sempre visível no header', async ({ page }) => {
+    await page.goto('/dashboard')
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/Bom dia|Boa tarde|Boa noite/i).first()).toBeVisible({ timeout: 5000 })
+  })
+
+  // SHL-UNI-04
+  test('SHL-UNI-04: não deve existir ModePill no header', async ({ page }) => {
+    await page.goto('/dashboard')
+    await page.waitForLoadState('networkidle')
+    const modePill = page.getByRole('button', { name: /Foco|Jornada/i })
+    await expect(modePill).toHaveCount(0)
+  })
+
+  // SHL-UNI-05 e SHL-UNI-06: temas selecionáveis sem gate
+  test('SHL-UNI-05/06: temas selecionáveis sem UpgradeModal', async ({ page }) => {
+    await page.goto('/configuracoes/aparencia')
+    await page.waitForLoadState('networkidle')
+    // Clicar em um tema PRO (ex: Obsidian) não deve abrir modal de upgrade
+    const obsidianCard = page.locator('button').filter({ hasText: 'Obsidian' }).first()
+    if (await obsidianCard.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await obsidianCard.click()
+      await page.waitForTimeout(500)
+      const upgradeModal = page.locator('[role="dialog"]').filter({ hasText: /Upgrade|Assinar/i })
+      await expect(upgradeModal).not.toBeVisible({ timeout: 2000 })
     }
   })
 })

@@ -45,35 +45,8 @@ test.describe('Finanças: Dashboard', () => {
     await expect(main).toBeVisible()
   })
 
-  test('3.6 JornadaInsight oculto no Foco', async ({ page }) => {
-    // Ensure Foco mode
-    const htmlClass = await page.locator('html').getAttribute('class') ?? ''
-    if (htmlClass.includes('jornada')) {
-      await page.getByRole('button', { name: /Jornada/i }).first().click()
-      await page.waitForTimeout(500)
-    }
-    // Jornada insights should be hidden in Foco
-    const hidden = await page.evaluate(() => {
-      const els = document.querySelectorAll('[class*="jornada_&\\]:flex"]')
-      let visible = 0
-      els.forEach(el => {
-        if (window.getComputedStyle(el).display !== 'none') visible++
-      })
-      return visible
-    })
-    // In Foco, jornada elements should not be visible (or 0 jornada elements)
-    await expect(page.locator('body')).toBeVisible()
-  })
-
-  test('3.7 Bottom card alterna por modo', async ({ page }) => {
-    const modePill = page.getByRole('button', { name: /Foco|Jornada/i }).first()
-    await modePill.click()
-    await page.waitForTimeout(500)
-    await expect(page.locator('body')).toBeVisible()
-    await modePill.click()
-    await page.waitForTimeout(500)
-    await expect(page.locator('body')).toBeVisible()
-  })
+  // 3.6 — Removed: JornadaInsight is always visible (unified experience)
+  // 3.7 — Removed: Bottom card mode toggle no longer exists
 
   // ── Deep tests ──────────────────────────────────────────────────────────────
 
@@ -112,18 +85,18 @@ test.describe('Finanças: Dashboard', () => {
     }
   })
 
-  test('3.12 Dashboard funciona nas 4 combinações modo/tema', async ({ page }) => {
-    const modePill = page.getByRole('button', { name: /Foco|Jornada/i }).first()
+  test('3.12 Dashboard funciona com troca de tema', async ({ page }) => {
     const themePill = page.getByRole('button', { name: /Dark|Light/i }).first()
 
-    // Test all 4 combinations
-    for (let i = 0; i < 4; i++) {
-      if (i % 2 === 0) await modePill.click()
-      else await themePill.click()
-      await page.waitForTimeout(500)
-      const main = page.locator('main')
-      await expect(main.getByText('Receitas').first()).toBeVisible({ timeout: 5000 })
-    }
+    // Toggle theme and verify dashboard still works
+    await themePill.click()
+    await page.waitForTimeout(500)
+    const main = page.locator('main')
+    await expect(main.getByText('Receitas').first()).toBeVisible({ timeout: 5000 })
+
+    await themePill.click()
+    await page.waitForTimeout(500)
+    await expect(main.getByText('Receitas').first()).toBeVisible({ timeout: 5000 })
   })
 })
 

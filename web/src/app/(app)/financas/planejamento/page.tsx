@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Plus, Pencil, Trash2, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { useCategories } from '@/hooks/use-categories'
 import { SLCard } from '@/components/ui/sl-card'
@@ -23,6 +22,7 @@ import {
   type BalanceDataPoint,
   type MonthData,
 } from '@/hooks/use-planejamento'
+import { PlanejamentoMobile } from '@/components/financas/PlanejamentoMobile'
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -228,8 +228,6 @@ function EventRow({
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function PlanejamentoPage() {
-  const mode = useShellStore(s => s.mode)
-  const isJornada = mode === 'jornada'
   const { isPro } = useUserPlan()
   const { categories } = useCategories()
 
@@ -311,14 +309,49 @@ export default function PlanejamentoPage() {
     }
   }
 
+  // ── Mobile data ────────────────────────────────────────────────────────
+  const mobileMonths = months.slice(0, 6).map((m, i) => ({
+    label: m.label,
+    balance: (balanceData[i + 1]?.balance ?? 0) - (balanceData[i]?.balance ?? 0),
+    isNegative: ((balanceData[i + 1]?.balance ?? 0) - (balanceData[i]?.balance ?? 0)) < 0,
+  }))
+
+  const mobileEvents = planningEvents.slice(0, 5).map(ev => ({
+    id: ev.id,
+    name: ev.name,
+    date: fmtDate(ev.planned_date),
+    amount: ev.amount,
+    type: ev.type as 'income' | 'expense',
+    icon: ev.categories?.icon,
+  }))
+
+  const mobileInsight = (() => {
+    if (nextCritical) {
+      return `O ${nextCritical.name} vai deixar o saldo <strong>negativo em ${fmtR(Math.abs(nextCritical.balance))}</strong>. Quer criar um envelope de reserva para isso?`
+    }
+    return `Projeção de saldo para 6 meses: <strong>${fmtR(bal6m)}</strong>. Continue no ritmo!`
+  })()
+
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    <PlanejamentoMobile
+      projectedBalance={bal6m}
+      projectedLabel={months[6]?.label ?? ''}
+      months={mobileMonths}
+      events={mobileEvents}
+      insightText={mobileInsight}
+      insightIcon={nextCritical ? '⚠️' : '📊'}
+      insightLabel={nextCritical ? `Atenção em ${nextCritical.date}` : 'Projeção'}
+      balanceData={balanceData.slice(0, 7)}
+      onAddEvent={openCreate}
+    />
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
         <h1 className={cn(
           'font-[Syne] font-extrabold text-[22px] tracking-tight',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+          'text-sl-grad'
         )}>
           📈 Planejamento Futuro
         </h1>
@@ -541,5 +574,6 @@ export default function PlanejamentoPage() {
         onSave={handleSave}
       />
     </div>
+    </>
   )
 }

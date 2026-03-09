@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { X } from 'lucide-react'
-import { useShellStore } from '@/stores/shell-store'
+import { useState, useEffect, useMemo } from 'react'
+import { X, Search, ChevronDown, ChevronUp } from 'lucide-react'
+import { AIInsightCard } from '@/components/ui/ai-insight-card'
+import { PanoramaMobileShell } from '@/components/dashboard/PanoramaMobileShell'
+import { useBadgeEngine } from '@/hooks/use-badge-engine'
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
 
@@ -102,7 +104,7 @@ const TOTAL_UNLOCKED = BADGES.filter(b => b.unlocked).length    // 12
 const TOTAL_ALL      = BADGES.length                             // 21
 const PCT            = Math.round(TOTAL_UNLOCKED / TOTAL_ALL * 100) // 57
 
-const RECENT_UNLOCKED: Badge[] = (() => {
+const LIVE_RECENT_UNLOCKED: Badge[] = (() => {
   const MONTH_IDX: Record<string, number> = {
     Jan: 0, Fev: 1, Mar: 2, Abr: 3, Mai: 4, Jun: 5,
     Jul: 6, Ago: 7, Set: 8, Out: 9, Nov: 10, Dez: 11,
@@ -214,48 +216,7 @@ function BadgeCard({ badge: b, delay, onClick }: { badge: Badge; delay: number; 
   )
 }
 
-function BadgeListItem({ badge: b, onClick }: { badge: Badge; onClick: () => void }) {
-  const col = CAT_COLORS[b.cat]
-  const pct = Math.round(b.progress / b.progressMax * 100)
-
-  return (
-    <div
-      className={`flex items-center gap-[14px] p-[12px_16px] bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[12px] cursor-pointer hover:border-[var(--sl-border-h)] transition-all sl-fade-up ${!b.unlocked ? 'opacity-55' : ''}`}
-      onClick={onClick}
-    >
-      <span className={`text-[22px] w-9 text-center flex-shrink-0 ${!b.unlocked ? 'grayscale opacity-50' : ''}`}>
-        {b.icon}
-      </span>
-      <div
-        className="w-3 h-3 rounded-full flex-shrink-0"
-        style={{ background: b.unlocked ? col : `${col}44` }}
-      />
-      <div className="flex-1 min-w-0">
-        <div className="text-[13px] font-semibold text-[var(--sl-t1)]">{b.name}</div>
-        <div className="text-[12px] text-[var(--sl-t3)]">{b.desc}</div>
-      </div>
-      <div className="text-right flex-shrink-0">
-        {b.unlocked ? (
-          <>
-            <div className="text-[11px] text-[var(--sl-t3)]">{b.date}</div>
-            <div className="text-[11px] font-bold px-2 py-0.5 rounded-[8px] mt-0.5 bg-[rgba(16,185,129,0.12)] text-[#10b981]">
-              ✅ Obtida
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">{b.progress}/{b.progressMax}</div>
-            <div className="text-[11px] font-bold px-2 py-0.5 rounded-[8px] mt-0.5 bg-[rgba(100,116,139,0.12)] text-[#64748b]">
-              🔒 {pct}%
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function BadgeModal({ badge: b, isJornada, onClose }: { badge: Badge; isJornada: boolean; onClose: () => void }) {
+function BadgeModal({ badge: b, onClose }: { badge: Badge; onClose: () => void }) {
   const col = CAT_COLORS[b.cat]
   const pct = Math.round(b.progress / b.progressMax * 100)
   const [barWidth, setBarWidth] = useState(0)
@@ -336,11 +297,26 @@ function BadgeModal({ badge: b, isJornada, onClose }: { badge: Badge; isJornada:
           </div>
         )}
 
-        {/* Motivation (Jornada only) */}
-        {isJornada && b.motivation && (
-          <div className="p-[12px_16px] rounded-[12px] bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/6 border border-[rgba(16,185,129,0.18)] text-[13px] text-[var(--sl-t2)] italic">
+        {/* Motivation */}
+        {b.motivation && (
+          <div className="p-[12px_16px] rounded-[12px] bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/6 border border-[rgba(16,185,129,0.18)] text-[13px] text-[var(--sl-t2)] italic mb-4">
             ✨ {b.motivation}
           </div>
+        )}
+
+        {/* Share button (unlocked badges only) */}
+        {b.unlocked && (
+          <button
+            className="w-full py-[13px] rounded-[12px] font-[Syne] text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
+            style={{ background: '#6366f1' }}
+            onClick={() => {
+              if (typeof navigator !== 'undefined' && navigator.share) {
+                navigator.share({ title: `Conquista: ${b.name}`, text: `Desbloqueei a badge "${b.name}" no SyncLife! ${b.desc}` })
+              }
+            }}
+          >
+            Compartilhar 🔗
+          </button>
         )}
       </div>
     </div>
@@ -350,28 +326,82 @@ function BadgeModal({ badge: b, isJornada, onClose }: { badge: Badge; isJornada:
 // ─── PÁGINA PRINCIPAL ─────────────────────────────────────────────────────────
 
 export default function ConquistasPage() {
-  const mode     = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
+  // ─── Badge engine (real data from Supabase, fallback to static) ─────────
+  const { badges: engineBadges, unlockedCount: engineUnlocked, totalCount: engineTotal, loading: engineLoading } = useBadgeEngine()
+
+  // Map engine results onto the local Badge interface, merging with static fallback
+  const liveBadges: Badge[] = useMemo(() => {
+    if (engineLoading || engineBadges.length === 0) return BADGES
+
+    // Build a map of engine results by badge name (since static uses numeric id, engine uses uuid)
+    const engineMap = new Map<string, typeof engineBadges[0]>()
+    for (const eb of engineBadges) {
+      engineMap.set(eb.badge.name, eb)
+    }
+
+    return BADGES.map(staticBadge => {
+      const eng = engineMap.get(staticBadge.name)
+      if (!eng) return staticBadge
+      return {
+        ...staticBadge,
+        unlocked: eng.unlocked,
+        date: eng.unlocked
+          ? (eng.badge as any).unlocked_at
+            ? new Date((eng.badge as any).unlocked_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+            : staticBadge.date
+          : null,
+        progress: eng.currentValue,
+        progressMax: eng.targetValue,
+      }
+    })
+  }, [engineBadges, engineLoading])
+
+  const LIVE_TOTAL_UNLOCKED = engineLoading ? TOTAL_UNLOCKED : (engineTotal > 0 ? engineUnlocked : TOTAL_UNLOCKED)
+  const LIVE_TOTAL_ALL      = engineLoading ? TOTAL_ALL : (engineTotal > 0 ? engineTotal : TOTAL_ALL)
+  const LIVE_PCT            = LIVE_TOTAL_ALL > 0 ? Math.round(LIVE_TOTAL_UNLOCKED / LIVE_TOTAL_ALL * 100) : 0
+
+  const LIVE_LIVE_RECENT_UNLOCKED: Badge[] = useMemo(() => {
+    const MONTH_IDX: Record<string, number> = {
+      Jan: 0, Fev: 1, Mar: 2, Abr: 3, Mai: 4, Jun: 5,
+      Jul: 6, Ago: 7, Set: 8, Out: 9, Nov: 10, Dez: 11,
+      jan: 0, fev: 1, mar: 2, abr: 3, mai: 4, jun: 5,
+    }
+    const parseDate = (d: string) => {
+      const parts = d.split(' ')
+      if (parts.length === 3) {
+        const [day, mon, year] = parts
+        return new Date(parseInt(year), MONTH_IDX[mon] ?? 0, parseInt(day)).getTime()
+      }
+      // Try ISO date
+      return new Date(d).getTime()
+    }
+    return liveBadges
+      .filter(b => b.unlocked && b.date)
+      .sort((a, b) => parseDate(b.date!) - parseDate(a.date!))
+      .slice(0, 3)
+  }, [liveBadges])
 
   const [curCat,     setCurCat]     = useState<string>('all')
   const [showLocked, setShowLocked] = useState(true)
   const [modalBadge, setModalBadge] = useState<Badge | null>(null)
   const [heroCount,  setHeroCount]  = useState(0)
   const [heroBarW,   setHeroBarW]   = useState(0)
+  const [mobileExpandUnlocked, setMobileExpandUnlocked] = useState(false)
+  const [mobileExpandLocked,   setMobileExpandLocked]   = useState(false)
 
   // Animated counter + bar after mount
   useEffect(() => {
     let frame = 0
-    const target = TOTAL_UNLOCKED
+    const target = LIVE_TOTAL_UNLOCKED
     const tick = () => {
       frame++
       setHeroCount(frame)
       if (frame < target) requestAnimationFrame(tick)
     }
-    requestAnimationFrame(tick)
-    const t = setTimeout(() => setHeroBarW(PCT), 100)
+    if (target > 0) requestAnimationFrame(tick)
+    const t = setTimeout(() => setHeroBarW(LIVE_PCT), 100)
     return () => clearTimeout(t)
-  }, [])
+  }, [LIVE_TOTAL_UNLOCKED, LIVE_PCT])
 
   // ESC closes modal
   useEffect(() => {
@@ -381,19 +411,205 @@ export default function ConquistasPage() {
   }, [])
 
   // Filtered badge lists
-  const filtered    = BADGES.filter(b => curCat === 'all' || b.cat === curCat)
+  const filtered    = liveBadges.filter(b => curCat === 'all' || b.cat === curCat)
   const visUnlocked = filtered.filter(b => b.unlocked)
   const visLocked   = showLocked ? filtered.filter(b => !b.unlocked) : []
+  const allLocked   = filtered.filter(b => !b.unlocked) // mobile: always visible
 
   function catCount(cat: string) {
-    const pool = cat === 'all' ? BADGES : BADGES.filter(b => b.cat === cat)
+    const pool = cat === 'all' ? liveBadges : liveBadges.filter(b => b.cat === cat)
     return { done: pool.filter(b => b.unlocked).length, total: pool.length }
   }
 
-  const nextLocked = BADGES.find(b => !b.unlocked)
+  const nextLocked = liveBadges.find(b => !b.unlocked)
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    {/* ═══════ MOBILE ═══════ */}
+    <PanoramaMobileShell
+      title="Conquistas"
+      subtitle={`${LIVE_TOTAL_UNLOCKED} de ${LIVE_TOTAL_ALL} desbloqueadas`}
+    >
+      {/* Hero card */}
+      <div className="mx-4 mb-3 rounded-[16px] p-5 relative overflow-hidden bg-[var(--sl-s1)] border border-[var(--sl-border)]">
+        <div className="absolute top-0 left-0 right-0 h-[3px]"
+             style={{ background: 'linear-gradient(90deg, #6366f1, #0055ff)' }} />
+        <div className="flex items-end gap-1.5 mb-1.5">
+          <span className="font-[Syne] text-[42px] font-extrabold leading-none"
+                style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            {heroCount}
+          </span>
+          <span className="font-[DM_Mono] text-[16px] text-[var(--sl-t3)] mb-1">/ {LIVE_TOTAL_ALL}</span>
+        </div>
+        <p className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] mb-1">Conquistas desbloqueadas</p>
+        <p className="text-[12px] text-[var(--sl-t3)] mb-3">
+          Você está no <strong className="text-[var(--sl-t1)]">Top 15%</strong> dos usuários
+        </p>
+        <div className="h-1.5 rounded-full overflow-hidden bg-[var(--sl-s3)] mb-1.5">
+          <div className="h-full rounded-full"
+               style={{
+                 width: `${heroBarW}%`,
+                 background: 'linear-gradient(90deg, #6366f1, #0055ff)',
+                 transition: 'width 1.4s cubic-bezier(0.4,0,0.2,1)',
+               }} />
+        </div>
+        <p className="text-[10px] text-[var(--sl-t3)]">{heroBarW}% do total desbloqueado</p>
+      </div>
+
+      {/* Motivational insight */}
+      {nextLocked && (
+        <div className="px-4 mb-3">
+          <AIInsightCard icon="🤖" label="Motivação">
+            Você tem <strong>{LIVE_TOTAL_UNLOCKED} conquistas</strong> e contando.
+            Seu próximo marco é <strong>{nextLocked.name}</strong> — continue assim!
+          </AIInsightCard>
+        </div>
+      )}
+
+      {/* Recent unlocked */}
+      <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+        Recentes
+      </p>
+      <div className="flex flex-col gap-2 px-4 mb-3">
+        {LIVE_RECENT_UNLOCKED.slice(0, 2).map((b, i) => (
+          <div
+            key={b.id}
+            onClick={() => setModalBadge(b)}
+            className="flex items-center gap-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[12px] px-3.5 py-3 relative overflow-hidden cursor-pointer active:bg-[var(--sl-s2)]"
+          >
+            <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-r" style={{ background: CAT_COLORS[b.cat] }} />
+            <span className="text-[24px] ml-1">{b.icon}</span>
+            <div className="flex-1">
+              <p className="text-[9px] font-bold uppercase tracking-[0.5px] text-[var(--sl-t3)] mb-0.5">
+                {i === 0 ? 'Última conquista' : 'Recente'}
+              </p>
+              <p className="text-[13px] font-bold text-[var(--sl-t1)]">{b.name}</p>
+              <p className="text-[11px] text-[var(--sl-t3)]">{b.date}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter chips */}
+      <div className="flex gap-2 px-4 pb-3 overflow-x-auto [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
+        {(['all', 'fin', 'meta', 'cons', 'agenda', 'corpo', 'patrimonio', 'experiencias'] as const).map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCurCat(cat)}
+            className={`whitespace-nowrap px-3.5 py-[7px] rounded-[20px] text-[12px] font-medium border shrink-0 transition-colors ${
+              curCat === cat
+                ? 'bg-[rgba(99,102,241,0.15)] border-[rgba(99,102,241,0.35)] text-[#6366f1]'
+                : 'bg-[var(--sl-s1)] border-[var(--sl-border)] text-[var(--sl-t2)]'
+            }`}
+          >
+            {CAT_LABELS[cat]}
+          </button>
+        ))}
+      </div>
+
+      {/* Desbloqueadas */}
+      {visUnlocked.length > 0 && (
+        <>
+          <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+            ✅ Desbloqueadas ({visUnlocked.length})
+          </p>
+          <div className="grid grid-cols-2 gap-2.5 px-4 mb-2">
+            {(mobileExpandUnlocked ? visUnlocked : visUnlocked.slice(0, 4)).map(b => {
+              const col = CAT_COLORS[b.cat]
+              return (
+                <div
+                  key={b.id}
+                  onClick={() => setModalBadge(b)}
+                  className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5 text-center relative overflow-hidden cursor-pointer active:bg-[var(--sl-s2)]"
+                >
+                  <div className={`inline-flex text-[9px] font-bold uppercase tracking-[0.5px] px-[7px] py-[2px] rounded-[8px] mb-1.5 ${getRarityPill(b.rarity)}`}>
+                    {RARITY_LABELS[b.rarity]}
+                  </div>
+                  <div
+                    className="w-[48px] h-[48px] rounded-[14px] flex items-center justify-center text-[24px] mx-auto mb-2"
+                    style={{ background: `${col}22` }}
+                  >
+                    {b.icon}
+                  </div>
+                  <p className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-1 leading-[1.3]">{b.name}</p>
+                  <p className="text-[11px] text-[var(--sl-t2)] leading-[1.4] mb-1.5">{b.desc}</p>
+                  <p className="text-[10px] text-[var(--sl-t3)]">🗓 {b.date}</p>
+                  <div className="absolute bottom-0 left-0 right-0 h-[3px] rounded-b-[14px]" style={{ background: col }} />
+                </div>
+              )
+            })}
+          </div>
+          {visUnlocked.length > 4 && (
+            <button
+              onClick={() => setMobileExpandUnlocked(!mobileExpandUnlocked)}
+              className="flex items-center justify-center gap-1.5 mx-4 mb-3 w-[calc(100%-32px)] py-2.5 rounded-[12px]
+                         bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] font-semibold text-[var(--sl-t2)]
+                         active:bg-[var(--sl-s3)] transition-colors"
+            >
+              {mobileExpandUnlocked ? 'Mostrar menos' : `Ver todas (${visUnlocked.length})`}
+              {mobileExpandUnlocked ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+          )}
+        </>
+      )}
+
+      {/* Bloqueadas */}
+      {allLocked.length > 0 && (
+        <>
+          <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+            🔒 Bloqueadas ({allLocked.length})
+          </p>
+          <div className="grid grid-cols-2 gap-2.5 px-4 mb-2">
+            {(mobileExpandLocked ? allLocked : allLocked.slice(0, 4)).map(b => {
+              const col = CAT_COLORS[b.cat]
+              const progressPct = Math.round(b.progress / b.progressMax * 100)
+              return (
+                <div
+                  key={b.id}
+                  onClick={() => setModalBadge(b)}
+                  className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5 text-center relative overflow-hidden opacity-50 cursor-pointer active:bg-[var(--sl-s2)]"
+                >
+                  <div className="absolute top-2 right-2 w-[18px] h-[18px] rounded-[6px] bg-[var(--sl-s3)] border border-[var(--sl-border)] flex items-center justify-center text-[10px]">
+                    🔒
+                  </div>
+                  <div className={`inline-flex text-[9px] font-bold uppercase tracking-[0.5px] px-[7px] py-[2px] rounded-[8px] mb-1.5 ${getRarityPill(b.rarity)}`}>
+                    {RARITY_LABELS[b.rarity]}
+                  </div>
+                  <div
+                    className="w-[48px] h-[48px] rounded-[14px] flex items-center justify-center text-[24px] mx-auto mb-2 grayscale opacity-40"
+                    style={{ background: `${col}11` }}
+                  >
+                    {b.icon}
+                  </div>
+                  <p className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-1 leading-[1.3]">{b.name}</p>
+                  <p className="text-[11px] text-[var(--sl-t2)] leading-[1.4] mb-1.5">{b.desc}</p>
+                  <div className="h-[3px] rounded-full overflow-hidden bg-[var(--sl-s3)] mx-2 mb-1">
+                    <div className="h-full rounded-full" style={{ width: `${progressPct}%`, background: col }} />
+                  </div>
+                  <p className="text-[10px] text-[var(--sl-t3)]">{b.progress}/{b.progressMax}</p>
+                </div>
+              )
+            })}
+          </div>
+          {allLocked.length > 4 && (
+            <button
+              onClick={() => setMobileExpandLocked(!mobileExpandLocked)}
+              className="flex items-center justify-center gap-1.5 mx-4 mb-3 w-[calc(100%-32px)] py-2.5 rounded-[12px]
+                         bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] font-semibold text-[var(--sl-t2)]
+                         active:bg-[var(--sl-s3)] transition-colors"
+            >
+              {mobileExpandLocked ? 'Mostrar menos' : `Ver todas (${allLocked.length})`}
+              {mobileExpandLocked ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+          )}
+        </>
+      )}
+
+      <div className="h-4" />
+    </PanoramaMobileShell>
+
+    {/* ═══════ DESKTOP ═══════ */}
+    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16 hidden lg:block">
 
       {/* ① Hero Summary */}
       <div className="flex gap-5 items-stretch mb-[22px] max-sm:flex-col sl-fade-up">
@@ -403,14 +619,14 @@ export default function ConquistasPage() {
           {/* Rainbow top bar */}
           <div
             className="absolute top-0 left-0 right-0 h-[3px]"
-            style={{ background: 'linear-gradient(90deg,#f59e0b,#f97316,#ec4899,#8b5cf6)' }}
+            style={{ background: 'linear-gradient(90deg, #6366f1, #0055ff)' }}
           />
           {/* Counter */}
           <div className="flex items-end gap-[6px] mb-[6px]">
-            <span className="font-[Syne] font-extrabold text-[44px] leading-none bg-gradient-to-br from-[#f59e0b] to-[#f97316] text-transparent bg-clip-text">
+            <span className="font-[Syne] font-extrabold text-[44px] leading-none bg-gradient-to-br from-[#6366f1] to-[#0055ff] text-transparent bg-clip-text">
               {heroCount}
             </span>
-            <span className="font-[DM_Mono] text-[18px] text-[var(--sl-t3)] mb-1">/ {TOTAL_ALL}</span>
+            <span className="font-[DM_Mono] text-[18px] text-[var(--sl-t3)] mb-1">/ {LIVE_TOTAL_ALL}</span>
           </div>
           <div className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[3px]">
             Conquistas desbloqueadas
@@ -424,7 +640,7 @@ export default function ConquistasPage() {
               className="h-full rounded-full"
               style={{
                 width:      `${heroBarW}%`,
-                background: 'linear-gradient(90deg,#f59e0b,#f97316,#ec4899)',
+                background: 'linear-gradient(90deg, #6366f1, #0055ff)',
                 transition: 'width 1.4s cubic-bezier(0.4,0,0.2,1)',
               }}
             />
@@ -434,7 +650,7 @@ export default function ConquistasPage() {
 
         {/* Recent Strip */}
         <div className="flex flex-col gap-[10px] min-w-[280px] flex-shrink-0 max-sm:min-w-0">
-          {RECENT_UNLOCKED.map((b, i) => (
+          {LIVE_RECENT_UNLOCKED.map((b, i) => (
             <div
               key={b.id}
               className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[14px_18px] flex items-center gap-[14px] cursor-pointer transition-all hover:border-[var(--sl-border-h)] hover:translate-x-0.5 relative overflow-hidden sl-fade-up"
@@ -459,11 +675,11 @@ export default function ConquistasPage() {
       </div>
 
       {/* ② Jornada Motivational Phrase */}
-      <div className="jornada-only flex items-center gap-3 p-[14px_18px] rounded-[14px] mb-5 bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7 border border-[rgba(16,185,129,0.18)] sl-fade-up">
+      <div className="flex items-center gap-3 p-[14px_18px] rounded-[14px] mb-5 bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7 border border-[rgba(16,185,129,0.18)] sl-fade-up">
         <span className="text-[22px] shrink-0">🤖</span>
         <span className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">
           Você tem{' '}
-          <strong className="text-[var(--sl-t1)]">{TOTAL_UNLOCKED} conquistas desbloqueadas</strong>{' '}
+          <strong className="text-[var(--sl-t1)]">{LIVE_TOTAL_UNLOCKED} conquistas desbloqueadas</strong>{' '}
           e contando.
           {nextLocked && (
             <> Seu próximo marco é{' '}
@@ -484,7 +700,7 @@ export default function ConquistasPage() {
               onClick={() => setCurCat(cat)}
               className={`inline-flex items-center gap-[6px] px-[14px] py-[7px] rounded-[20px] border text-[12px] font-medium transition-all ${
                 isActive
-                  ? 'border-[#0055ff] bg-[rgba(0,85,255,0.15)] text-[#0055ff]'
+                  ? 'border-[#6366f1] bg-[rgba(99,102,241,0.15)] text-[#6366f1]'
                   : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t2)]'
               }`}
             >
@@ -505,7 +721,7 @@ export default function ConquistasPage() {
       </div>
 
       {/* ④-A Grid View (Jornada) */}
-      <div className="jornada-only">
+      <div>
         {visUnlocked.length > 0 && (
           <>
             <SectionLabel>✅ Desbloqueadas ({visUnlocked.length})</SectionLabel>
@@ -533,38 +749,16 @@ export default function ConquistasPage() {
         )}
       </div>
 
-      {/* ④-B List View (Foco) */}
-      <div className="foco-only">
-        {visUnlocked.length > 0 && (
-          <>
-            <SectionLabel>✅ Desbloqueadas ({visUnlocked.length})</SectionLabel>
-            <div className="flex flex-col gap-2 mb-7">
-              {visUnlocked.map(b => (
-                <BadgeListItem key={b.id} badge={b} onClick={() => setModalBadge(b)} />
-              ))}
-            </div>
-          </>
-        )}
-        {visLocked.length > 0 && (
-          <>
-            <SectionLabel>🔒 Bloqueadas ({visLocked.length})</SectionLabel>
-            <div className="flex flex-col gap-2 mb-7">
-              {visLocked.map(b => (
-                <BadgeListItem key={b.id} badge={b} onClick={() => setModalBadge(b)} />
-              ))}
-            </div>
-          </>
-        )}
-      </div>
 
-      {/* Modal */}
-      {modalBadge && (
-        <BadgeModal
-          badge={modalBadge}
-          isJornada={isJornada}
-          onClose={() => setModalBadge(null)}
-        />
-      )}
     </div>
+
+    {/* Modal — shared mobile/desktop */}
+    {modalBadge && (
+      <BadgeModal
+        badge={modalBadge}
+        onClose={() => setModalBadge(null)}
+      />
+    )}
+    </>
   )
 }

@@ -8,6 +8,7 @@ import {
   syncSalaryIncreaseToFuturo,
   unlinkGoalsFromDeletedEntity,
 } from '@/lib/integrations/futuro'
+import { onPromotionRecorded, onSkillLinkedToTrack } from '@/lib/cross-module'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -372,6 +373,20 @@ export function useAddHistoryEntry() {
     if (!user) throw new Error('Não autenticado')
     const { error } = await sb.from('career_history').insert({ user_id: user.id, ...data })
     if (error) throw error
+
+    // Cross-module: promoção/aumento → auto-receita em Finanças (delta salarial)
+    if (
+      (data.change_type === 'promotion' || data.change_type === 'salary_change') &&
+      data.salary && data.salary > 0
+    ) {
+      const { data: profile } = await sb.from('professional_profiles')
+        .select('gross_salary').eq('user_id', user.id).single()
+      const prevSalary = profile?.gross_salary ?? 0
+      const delta = data.salary - prevSalary
+      if (delta > 0) {
+        onPromotionRecorded(user.id, data.title, delta).catch(() => {})
+      }
+    }
   }, [])
 }
 
@@ -454,12 +469,20 @@ export function useSetSkillTracks() {
   const sb = supabase as any
 
   return useCallback(async (skillId: string, trackIds: string[]) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+
     await sb.from('skill_study_tracks').delete().eq('skill_id', skillId)
     if (trackIds.length > 0) {
       const { error } = await sb.from('skill_study_tracks').insert(
         trackIds.map(trackId => ({ skill_id: skillId, track_id: trackId }))
       )
       if (error) throw error
+
+      // Cross-module: skill vinculada a trilha → sincroniza Carreira↔Mente
+      for (const trackId of trackIds) {
+        onSkillLinkedToTrack(user.id, skillId, trackId).catch(() => {})
+      }
     }
   }, [])
 }

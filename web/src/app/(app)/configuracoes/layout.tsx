@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { User, Sun, Bell, Tags, Crown, Link2 } from 'lucide-react'
+import { User, Palette, Bell, Tags, Link2, Crown } from 'lucide-react'
 
 interface CfgNavItem {
   id: string
@@ -17,8 +17,8 @@ const CFG_GROUPS: { label: string; items: CfgNavItem[] }[] = [
   {
     label: 'Conta',
     items: [
-      { id: 'perfil', label: 'Perfil', Icon: User, href: '/configuracoes' },
-      { id: 'modo', label: 'Modo de Uso', Icon: Sun, href: '/configuracoes/modo' },
+      { id: 'perfil',    label: 'Perfil',      Icon: User,     href: '/configuracoes' },
+      { id: 'aparencia', label: 'Aparência',   Icon: Palette,  href: '/configuracoes/aparencia' },
     ],
   },
   {
@@ -61,7 +61,7 @@ export default function ConfiguracoesLayout({ children }: { children: React.Reac
                   className={cn(
                     'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-colors',
                     isActive
-                      ? 'bg-[var(--cfg-glow,rgba(110,144,184,0.14))] text-[var(--sl-t1)] font-semibold'
+                      ? 'bg-[rgba(100,116,139,0.14)] text-[var(--sl-t1)] font-semibold'
                       : 'text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)]',
                   )}
                 >

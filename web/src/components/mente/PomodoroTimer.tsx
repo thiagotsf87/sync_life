@@ -62,7 +62,6 @@ function getTotalForPhase(phase: TimerPhase, config: TimerConfig): number {
 interface PomodoroTimerProps {
   tracks: Array<{ id: string; name: string }>
   enableAmbient?: boolean
-  isJornada?: boolean
   onXpEarned?: (payload: { gained: number; total: number }) => void
   onSessionComplete?: (data: {
     track_id: string | null
@@ -79,7 +78,6 @@ export function PomodoroTimer({
   tracks,
   onSessionComplete,
   enableAmbient = false,
-  isJornada = false,
   onXpEarned,
 }: PomodoroTimerProps) {
   const [config, setConfig] = useState<TimerConfig>(DEFAULT_CONFIG)
@@ -225,8 +223,8 @@ export function PomodoroTimer({
       })
     }
 
-    // RN-MNT-18: pontos de foco em Jornada
-    if (isJornada && totalFocusSeconds > 0) {
+    // RN-MNT-18: pontos de foco
+    if (totalFocusSeconds > 0) {
       const focusMinutes = Math.max(1, Math.round(totalFocusSeconds / 60))
       const gained = (focusMinutes * 2) + (cyclesCompleted * 3)
       const current = Number(localStorage.getItem('sl_jornada_xp') ?? '0')
@@ -242,7 +240,7 @@ export function PomodoroTimer({
     setTotalBreakSeconds(0)
     setSessionStarted(false)
     localStorage.removeItem(STORAGE_KEY)
-  }, [sessionStarted, totalFocusSeconds, totalBreakSeconds, cyclesCompleted, selectedTrackId, config, onSessionComplete, isJornada, onXpEarned])
+  }, [sessionStarted, totalFocusSeconds, totalBreakSeconds, cyclesCompleted, selectedTrackId, config, onSessionComplete, onXpEarned])
 
   function stopAmbient() {
     if (ambientCleanupRef.current) {

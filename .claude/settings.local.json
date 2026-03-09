@@ -2,22 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(*)",
-      "Edit(*)",
       "Write(*)",
-      "Read(*)",
-      "WebFetch(*)",
-      "WebSearch(*)",
-      "Glob(*)",
-      "Grep(*)",
-      "Task(*)",
+      "Edit(*)",
+      "MultiEdit(*)",
       "mcp__playwright__*",
-      "mcp__claude_ai_Vercel__list_teams",
-      "mcp__claude_ai_Vercel__list_projects",
-      "mcp__claude_ai_Vercel__list_deployments",
-      "mcp__claude_ai_Vercel__get_project",
-      "mcp__claude_ai_Supabase__list_projects",
-      "mcp__claude_ai_Supabase__apply_migration",
-      "mcp__claude_ai_Vercel__deploy_to_vercel"
+      "mcp__ide__*",
+      "mcp__claude_ai_Supabase__*",
+      "mcp__claude_ai_Vercel__*",
+      "mcp__playwright-test__browser_navigate",
+      "mcp__playwright-test__browser_open"
     ]
   }
 }

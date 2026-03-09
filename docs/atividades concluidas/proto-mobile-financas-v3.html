@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife Mobile — Finanças (14 telas · v3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;
+  --fin:#10b981;--fin-g:rgba(16,185,129,0.14);
+  --tempo:#06b6d4;--futuro:#8b5cf6;--corpo:#f97316;
+  --mente:#eab308;--patrimonio:#3b82f6;--carreira:#f43f5e;--exp:#ec4899;
+  --green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--orange:#f97316;
+  --radius:16px;--radius-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0e1a;font-family:'DM Sans',sans-serif;color:var(--t1);}
+.demo-page{padding:40px 20px 80px;max-width:1600px;margin:0 auto;}
+.demo-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#10b981,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.demo-subtitle{font-size:14px;color:var(--t2);margin-bottom:10px;}
+.demo-group{margin-top:48px;margin-bottom:14px;padding:14px 0 8px;border-top:1px solid var(--border);}
+.demo-group-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--fin);letter-spacing:0.5px;}
+.demo-group-sub{font-size:12px;color:var(--t3);margin-top:3px;}
+.screens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(375px,1fr));gap:48px 28px;margin-top:18px;}
+.screen-wrapper{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.screen-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:1px;text-align:center;}
+.screen-tag{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.tag-new{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);}
+.tag-improved{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);}
+.tag-priority{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);}
+.phone{width:375px;min-height:500px;background:var(--bg);border-radius:48px;border:2px solid rgba(255,255,255,0.1);overflow:hidden;position:relative;box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);padding-top:54px;padding-bottom:24px;}
+.dynamic-island{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:100;}
+.status-bar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;z-index:50;}
+.status-time{font-size:15px;font-weight:600;color:var(--t1);}
+.screen-content{padding-bottom:12px;}
+.mod-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px;}
+.mod-header-left{display:flex;align-items:center;gap:8px;}
+.mod-icon{font-size:20px;}
+.mod-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);}
+.mod-badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;background:var(--fin-g);color:var(--fin);}
+.sub-nav{display:flex;gap:0;padding:0 16px;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto;}
+.sub-nav::-webkit-scrollbar{display:none;}
+.sub-nav-tab{padding:8px 10px 10px;font-size:12px;color:var(--t3);position:relative;white-space:nowrap;cursor:pointer;flex-shrink:0;}
+.sub-nav-tab.active{color:var(--t1);font-weight:600;}
+.sub-nav-tab.active::after{content:'';position:absolute;bottom:-1px;left:4px;right:4px;height:3px;border-radius:3px 3px 0 0;background:var(--fin);}
+.sub-nav-tab.pro::after{content:'PRO';font-size:8px;color:var(--yellow);margin-left:3px;}
+.int-header{position:relative;display:flex;align-items:center;justify-content:center;padding:16px 20px 14px;min-height:52px;}
+.int-header-back{position:absolute;left:20px;font-size:13px;color:var(--fin);font-weight:500;}
+.int-header-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--t1);text-align:center;}
+.int-header-action{position:absolute;right:20px;font-size:13px;color:var(--fin);font-weight:600;}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-green{background:rgba(16,185,129,0.12);color:#10b981;}
+.badge-yellow{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.badge-red{background:rgba(244,63,94,0.12);color:#f43f5e;}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;padding:0 20px 8px;margin-top:4px;}
+.progress-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;}
+.list-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);}
+.list-item:last-child{border-bottom:none;}
+.list-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.list-info{flex:1;min-width:0;}
+.list-title{font-size:14px;font-weight:500;color:var(--t1);}
+.list-sub{font-size:12px;color:var(--t2);margin-top:1px;}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;}
+.kpi-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
+.kpi-label{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.kpi-value{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--t1);}
+.kpi-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.header-btn{width:36px;height:36px;border-radius:10px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--t2);}
+.input-field{width:100%;padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+.input-label{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px;display:block;}
+.btn-primary{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--fin);color:#000;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;text-align:center;border:none;cursor:pointer;}
+.btn-secondary{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--s1);color:var(--t2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;text-align:center;border:1px solid var(--border);}
+.filter-pills{display:flex;gap:6px;padding:0 16px 12px;overflow-x:auto;flex-wrap:nowrap;}
+.filter-pills::-webkit-scrollbar{display:none;}
+.filter-pill{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;border:1px solid var(--border);background:var(--s1);color:var(--t2);flex-shrink:0;}
+.filter-pill.active{background:var(--fin-g);border-color:rgba(16,185,129,0.35);color:var(--fin);}
+.env-card{margin:0 16px 8px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;}
+.env-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.env-name{font-size:13px;font-weight:500;color:var(--t1);display:flex;align-items:center;gap:6px;}
+.env-values{font-family:'DM Mono',monospace;font-size:12px;color:var(--t2);}
+</style>
+</head>
+<body>
+<div class="demo-page">
+  <div class="demo-title">💰 Finanças — 14 telas mobile (v3)</div>
+  <div class="demo-subtitle">Dashboard · Transações · Recorrentes · Orçamentos · Calendário · Planejamento · Relatórios · CRUDs</div>
+
+  <!-- GRUPO A — VISUALIZAÇÃO (L1) -->
+  <div class="demo-group">
+    <div class="demo-group-title">A — Visualização (Telas L1)</div>
+    <div class="demo-group-sub">7 telas principais com sub-nav underline. Cor Emerald #10b981.</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- 01: DASHBOARD -->
+    <div class="screen-wrapper">
+      <div class="screen-label">01 — Dashboard Financeiro</div>
+      <div class="screen-tag tag-priority">⭐ Alta prioridade</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">💰</span>
+              <span class="mod-name">Finanças</span>
+            </div>
+            <div style="font-size:13px;color:var(--t2);">Março 2026</div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Transações</div>
+            <div class="sub-nav-tab">Recorrentes</div>
+            <div class="sub-nav-tab">Orçamentos</div>
+            <div class="sub-nav-tab">Calendário</div>
+            <div class="sub-nav-tab pro">Planejamento</div>
+            <div class="sub-nav-tab">Relatórios</div>
+          </div>
+
+          <!-- Balance hero -->
+          <div style="margin:0 16px 12px;background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(0,85,255,0.08));border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius);padding:20px;">
+            <div style="font-size:12px;color:var(--t2);margin-bottom:4px;">Saldo disponível</div>
+            <div style="font-family:'DM Mono',monospace;font-size:36px;font-weight:500;color:var(--t1);letter-spacing:-1px;">R$ 3.847</div>
+            <div style="display:flex;align-items:center;gap:5px;margin-top:8px;">
+              <span class="badge badge-green">↑ +R$ 340 vs mês passado</span>
+            </div>
+          </div>
+
+          <!-- Income / Expense grid -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Receitas</div>
+              <div class="kpi-value" style="color:var(--green);">R$ 6.200</div>
+              <div class="kpi-sub">↑ Salário + Freela</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Despesas</div>
+              <div class="kpi-value" style="color:var(--red);">R$ 2.352</div>
+              <div class="kpi-sub">→ 38% da renda</div>
+            </div>
+          </div>
+
+          <!-- AI Insight (Jornada) -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(16,185,129,0.07),rgba(0,85,255,0.07));border-color:rgba(16,185,129,0.2);">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="font-size:18px;">✨</span>
+              <div>
+                <div style="font-size:11px;font-weight:700;color:var(--fin);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">PROJEÇÃO</div>
+                <div style="font-size:13px;color:var(--t2);line-height:1.5;">Mantendo este ritmo, você termina março com <strong style="color:var(--t1);">R$ 4.200</strong> — R$ 600 acima do mês passado.</div>
+              </div>
+            </div>
+            <div style="font-size:10px;color:var(--t3);text-align:right;margin-top:6px;">Modo Jornada · PRO</div>
+          </div>
+
+          <!-- Budgets -->
+          <div class="section-title">ORÇAMENTOS DO MÊS</div>
+          <div class="env-card">
+            <div class="env-header">
+              <div class="env-name">🏠 Moradia</div>
+              <div class="env-values">R$ 1.200 / R$ 1.500</div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:80%;background:var(--yellow);"></div></div>
+          </div>
+          <div class="env-card">
+            <div class="env-header">
+              <div class="env-name">🍕 Alimentação</div>
+              <div class="env-values">R$ 480 / R$ 800</div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:60%;background:var(--green);"></div></div>
+          </div>
+          <div class="env-card">
+            <div class="env-header">
+              <div class="env-name">🎮 Lazer</div>
+              <div class="env-values">R$ 320 / R$ 400</div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:80%;background:var(--yellow);"></div></div>
+          </div>
+          <div class="env-card">
+            <div class="env-header">
+              <div class="env-name">💊 Saúde</div>
+              <div class="env-values">R$ 80 / R$ 300</div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:27%;background:var(--green);"></div></div>
+          </div>
+
+          <!-- Last transactions -->
+          <div class="section-title" style="margin-top:4px;">ÚLTIMAS TRANSAÇÕES</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(244,63,94,0.1);">☕</div>
+              <div class="list-info">
+                <div class="list-title">Starbucks</div>
+                <div class="list-sub">Hoje · PIX</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red);">- R$ 28</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(16,185,129,0.1);">💰</div>
+              <div class="list-info">
+                <div class="list-title">Salário</div>
+                <div class="list-sub">05 Mar · Transferência</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green);">+ R$ 5.000</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(244,63,94,0.1);">🏠</div>
+              <div class="list-info">
+                <div class="list-title">Aluguel</div>
+                <div class="list-sub">05 Mar · Boleto · 🔄</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red);">- R$ 1.200</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02: TRANSAÇÕES -->
+    <div class="screen-wrapper">
+      <div class="screen-label">02 — Transações</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">💰</span>
+              <span class="mod-name">Finanças</span>
+            </div>
+            <div class="header-btn" style="background:var(--fin);border-color:var(--fin);color:#000;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab active">Transações</div>
+            <div class="sub-nav-tab">Recorrentes</div>
+            <div class="sub-nav-tab">Orçamentos</div>
+            <div class="sub-nav-tab">Calendário</div>
+            <div class="sub-nav-tab pro">Planejamento</div>
+            <div class="sub-nav-tab">Relatórios</div>
+          </div>
+
+          <!-- Period selector -->
+          <div style="padding:0 16px 10px;display:flex;align-items:center;justify-content:center;gap:16px;">
+            <span style="font-size:14px;color:var(--t3);">←</span>
+            <span style="font-size:14px;font-weight:600;color:var(--t1);">Março 2026</span>
+            <span style="font-size:14px;color:var(--t3);">→</span>
+          </div>
+
+          <!-- Filters -->
+          <div class="filter-pills">
+            <div class="filter-pill active">Todos</div>
+            <div class="filter-pill">Receitas</div>
+            <div class="filter-pill">Despesas</div>
+            <div class="filter-pill">Recorrentes</div>
+            <div class="filter-pill">Categorias ▼</div>
+          </div>
+
+          <!-- Transactions list -->
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(244,63,94,0.1);">☕</div>
+              <div class="list-info">
+                <div class="list-title">Starbucks</div>
+                <div class="list-sub">Hoje · PIX · Alimentação</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red);">- R$ 28,00</div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(244,63,94,0.1);">🛒</div>
+              <div class="list-info">
+                <div class="list-title">Mercado Pão de Açúcar</div>
+                <div class="list-sub">Ontem · Cartão · Mercado</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red);">- R$ 247,30</div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(16,185,129,0.1);">💰</div>
+              <div class="list-info">
+                <div class="list-title">Salário</div>
+                <div class="list-sub">05 Mar · Transferência · 🔄</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green);">+ R$ 5.000</div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(244,63,94,0.1);">🏠</div>
+              <div class="list-info">
+                <div class="list-title">Aluguel</div>
+                <div class="list-sub">05 Mar · Boleto · Moradia · 🔄</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red);">- R$ 1.200</div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(244,63,94,0.1);">🚗</div>
+              <div class="list-info">
+                <div class="list-title">Uber</div>
+                <div class="list-sub">04 Mar · PIX · Transporte</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red);">- R$ 32,50</div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(244,63,94,0.1);">🍕</div>
+              <div class="list-info">
+                <div class="list-title">iFood</div>
+                <div class="list-sub">03 Mar · Cartão · Alimentação</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red);">- R$ 45,90</div>
+              </div>
+            </div>
+            <div class="list-item" style="opacity:0.6;">
+              <div class="list-icon" style="background:rgba(249,115,22,0.1);">🏥</div>
+              <div class="list-info">
+                <div class="list-title">Consulta Dentista</div>
+                <div class="list-sub">01 Mar · PIX · Saúde</div>
+                <div style="margin-top:3px;"><span style="font-size:10px;padding:2px 6px;border-radius:8px;background:rgba(249,115,22,0.1);color:var(--corpo);">Auto — 🏃 Corpo</span></div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red);">- R$ 280</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03: ORÇAMENTOS -->
+    <div class="screen-wrapper">
+      <div class="screen-label">03 — Orçamentos (Envelopes)</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">💰</span>
+              <span class="mod-name">Finanças</span>
+            </div>
+            <div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Transações</div>
+            <div class="sub-nav-tab">Recorrentes</div>
+            <div class="sub-nav-tab active">Orçamentos</div>
+            <div class="sub-nav-tab">Calendário</div>
+            <div class="sub-nav-tab pro">Planejamento</div>
+            <div class="sub-nav-tab">Relatórios</div>
+          </div>
+
+          <!-- Doughnut summary -->
+          <div class="card" style="text-align:center;">
+            <div style="position:relative;width:120px;height:120px;margin:0 auto 12px;">
+              <svg viewBox="0 0 120 120" style="width:100%;height:100%;transform:rotate(-90deg);">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--s3)" stroke-width="16"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#f43f5e" stroke-width="16" stroke-dasharray="100 214" stroke-dashoffset="0"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--yellow)" stroke-width="16" stroke-dasharray="75 239" stroke-dashoffset="-105"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--green)" stroke-width="16" stroke-dasharray="60 254" stroke-dashoffset="-185"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--fin)" stroke-width="16" stroke-dasharray="40 274" stroke-dashoffset="-250"/>
+              </svg>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+                <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:var(--t1);">R$ 2.080</div>
+                <div style="font-size:10px;color:var(--t2);">/ R$ 3.000</div>
+              </div>
+            </div>
+            <!-- Budget health dots -->
+            <div style="display:flex;justify-content:center;gap:6px;margin-bottom:8px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:var(--yellow);"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:var(--green);"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:var(--yellow);"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:var(--green);"></div>
+            </div>
+            <div style="font-size:11px;color:var(--t2);">2 ok · 2 atenção · 0 estourado</div>
+          </div>
+
+          <!-- Envelope list -->
+          <div class="section-title">ENVELOPES</div>
+          <div class="env-card">
+            <div class="env-header">
+              <div class="env-name">🏠 Moradia</div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div class="env-values">R$ 1.200 / R$ 1.500</div>
+                <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--yellow);">80%</span>
+              </div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:80%;background:var(--yellow);"></div></div>
+            <div style="font-size:11px;color:var(--t2);margin-top:4px;">R$ 300 restantes</div>
+          </div>
+          <div class="env-card">
+            <div class="env-header">
+              <div class="env-name">🍕 Alimentação</div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div class="env-values">R$ 480 / R$ 800</div>
+                <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);">60%</span>
+              </div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:60%;background:var(--green);"></div></div>
+            <div style="font-size:11px;color:var(--t2);margin-top:4px;">R$ 320 restantes</div>
+          </div>
+          <div class="env-card">
+            <div class="env-header">
+              <div class="env-name">🎮 Lazer</div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div class="env-values">R$ 320 / R$ 400</div>
+                <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--yellow);">80%</span>
+              </div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:80%;background:var(--yellow);"></div></div>
+            <div style="font-size:11px;color:var(--t2);margin-top:4px;">R$ 80 restantes</div>
+          </div>
+          <div class="env-card">
+            <div class="env-header">
+              <div class="env-name">💊 Saúde</div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div class="env-values">R$ 80 / R$ 300</div>
+                <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);">27%</span>
+              </div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:27%;background:var(--green);"></div></div>
+            <div style="font-size:11px;color:var(--t2);margin-top:4px;">R$ 220 restantes</div>
+          </div>
+
+          <!-- Not allocated -->
+          <div style="padding:0 16px;margin-top:4px;">
+            <div style="padding:10px 14px;border-radius:var(--radius-sm);background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:13px;color:var(--t2);">Não alocado</span>
+              <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green);font-weight:600;">R$ 3.200</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04: RECORRENTES -->
+    <div class="screen-wrapper">
+      <div class="screen-label">04 — Recorrentes</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">💰</span>
+              <span class="mod-name">Finanças</span>
+            </div>
+            <div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Transações</div>
+            <div class="sub-nav-tab active">Recorrentes</div>
+            <div class="sub-nav-tab">Orçamentos</div>
+            <div class="sub-nav-tab">Calendário</div>
+            <div class="sub-nav-tab pro">Planejamento</div>
+            <div class="sub-nav-tab">Relatórios</div>
+          </div>
+
+          <!-- KPIs -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 16px 12px;">
+            <div class="kpi-card" style="padding:10px;">
+              <div style="font-size:9px;color:var(--t2);text-transform:uppercase;">Rec. Receitas</div>
+              <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:var(--green);margin-top:2px;">R$ 6.200</div>
+            </div>
+            <div class="kpi-card" style="padding:10px;">
+              <div style="font-size:9px;color:var(--t2);text-transform:uppercase;">Rec. Despesas</div>
+              <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:var(--red);margin-top:2px;">R$ 2.847</div>
+            </div>
+            <div class="kpi-card" style="padding:10px;">
+              <div style="font-size:9px;color:var(--t2);text-transform:uppercase;">% Comprom.</div>
+              <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:var(--yellow);margin-top:2px;">46%</div>
+            </div>
+          </div>
+
+          <!-- AI Insight -->
+          <div class="card" style="background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.15);padding:12px 14px;">
+            <div style="display:flex;gap:8px;align-items:flex-start;">
+              <span style="font-size:16px;">✨</span>
+              <div style="font-size:12px;color:var(--t2);line-height:1.5;">46% da renda comprometida com recorrentes — isso é saudável. Próximo: <strong style="color:var(--t1);">Netflix dia 11</strong>, em 4 dias.</div>
+            </div>
+          </div>
+
+          <!-- Next occurrences -->
+          <div class="section-title">PRÓXIMAS — 30 DIAS</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div style="width:42px;text-align:center;flex-shrink:0;">
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--t1);">11</div>
+                <div style="font-size:10px;color:var(--t3);">MAR</div>
+              </div>
+              <span style="font-size:18px;">🎬</span>
+              <div class="list-info">
+                <div class="list-title">Netflix</div>
+                <div class="list-sub">Mensal · Assinatura</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--red);">- R$ 47,90</div>
+            </div>
+            <div class="list-item">
+              <div style="width:42px;text-align:center;flex-shrink:0;">
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--t1);">14</div>
+                <div style="font-size:10px;color:var(--t3);">MAR</div>
+              </div>
+              <span style="font-size:18px;">⚡</span>
+              <div class="list-info">
+                <div class="list-title">Energia</div>
+                <div class="list-sub">Mensal · Moradia</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--red);">- R$ 155</div>
+            </div>
+            <div class="list-item">
+              <div style="width:42px;text-align:center;flex-shrink:0;">
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--t1);">14</div>
+                <div style="font-size:10px;color:var(--t3);">MAR</div>
+              </div>
+              <span style="font-size:18px;">💧</span>
+              <div class="list-info">
+                <div class="list-title">Água</div>
+                <div class="list-sub">Mensal · Moradia</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--red);">- R$ 68</div>
+            </div>
+          </div>
+
+          <!-- Active recurrences -->
+          <div class="section-title" style="margin-top:8px;">RECORRENTES ATIVAS (13)</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(16,185,129,0.1);">💰</div>
+              <div class="list-info">
+                <div class="list-title">Salário</div>
+                <div class="list-sub">Mensal · dia 5 · Receita</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green);">+ R$ 5.000</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(244,63,94,0.1);">🏠</div>
+              <div class="list-info">
+                <div class="list-title">Aluguel</div>
+                <div class="list-sub">Mensal · dia 5 · Despesa</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--red);">- R$ 1.200</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(16,185,129,0.1);">💼</div>
+              <div class="list-info">
+                <div class="list-title">Freela Design</div>
+                <div class="list-sub">Mensal · dia 8 · Receita</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green);">+ R$ 1.200</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GRUPO B — CRUD -->
+  <div class="demo-group">
+    <div class="demo-group-title">B — CRUD (Telas L2)</div>
+    <div class="demo-group-sub">Quick Entry, formulários de criação. Header simplificado.</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- 05: QUICK ENTRY -->
+    <div class="screen-wrapper">
+      <div class="screen-label">05 — Quick Entry (3 toques)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <!-- Type toggle -->
+          <div style="display:flex;gap:8px;justify-content:center;padding:16px 20px 20px;">
+            <div style="padding:8px 20px;border-radius:20px;background:rgba(244,63,94,0.15);border:1px solid rgba(244,63,94,0.4);color:var(--red);font-size:13px;font-weight:500;">Despesa</div>
+            <div style="padding:8px 20px;border-radius:20px;background:var(--s1);border:1px solid var(--border);color:var(--t2);font-size:13px;">Receita</div>
+            <div style="padding:8px 20px;border-radius:20px;background:var(--s1);border:1px solid var(--border);color:var(--t2);font-size:13px;">Transf.</div>
+          </div>
+
+          <!-- Amount display -->
+          <div style="text-align:center;padding:0 20px 16px;">
+            <div style="font-family:'DM Mono',monospace;font-size:52px;font-weight:500;color:var(--t1);letter-spacing:-2px;">
+              <span style="font-size:24px;color:var(--t2);">R$</span>8,50
+            </div>
+          </div>
+
+          <!-- AI category -->
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:0 20px 8px;">
+            <div style="display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--border-h);border-radius:20px;padding:6px 12px;font-size:13px;color:var(--t1);">
+              ☕ Alimentação
+              <span style="font-size:10px;background:var(--fin-g);color:var(--fin);padding:2px 6px;border-radius:8px;">IA</span>
+            </div>
+            <span style="font-size:11px;color:var(--t3);">Toque para mudar</span>
+          </div>
+
+          <!-- Date -->
+          <div style="text-align:center;padding:8px 20px;">
+            <div style="display:inline-flex;padding:8px 14px;background:var(--s1);border:1px solid var(--border);border-radius:20px;font-size:13px;color:var(--t2);">📅 Hoje, 07/03/2026</div>
+          </div>
+
+          <div style="text-align:center;padding:8px;font-size:12px;color:var(--t3);">▼ Adicionar detalhes (descrição, tags, conta)</div>
+
+          <!-- Numpad -->
+          <div style="background:var(--s1);border-top:1px solid var(--border);padding:8px 16px 12px;margin-top:8px;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;color:var(--t1);">1</div>
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;color:var(--t1);">2</div>
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;color:var(--t1);">3</div>
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;color:var(--t1);">4</div>
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;color:var(--t1);">5</div>
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;color:var(--t1);">6</div>
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;color:var(--t1);">7</div>
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;color:var(--t1);">8</div>
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;color:var(--t1);">9</div>
+              <div style="height:54px;border-radius:12px;background:var(--fin-g);border:1px solid rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--fin);font-weight:600;">.,</div>
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:22px;color:var(--t1);">0</div>
+              <div style="height:54px;border-radius:12px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--t2);">⌫</div>
+            </div>
+            <div style="margin-top:4px;height:52px;border-radius:16px;background:linear-gradient(135deg,#10b981,#0055ff);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#fff;">✓ Confirmar — R$ 8,50</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 06: NOVA TRANSAÇÃO (form completo) -->
+    <div class="screen-wrapper">
+      <div class="screen-label">06 — Nova Transação (form)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <span class="int-header-back">← Transações</span>
+            <span class="int-header-title">Nova Transação</span>
+          </div>
+
+          <div style="padding:0 16px;">
+            <!-- Type selector -->
+            <div style="display:flex;gap:8px;margin-bottom:16px;">
+              <div style="flex:1;padding:10px;border-radius:var(--radius-sm);border:1.5px solid rgba(244,63,94,0.4);background:rgba(244,63,94,0.08);text-align:center;font-size:13px;color:var(--red);font-weight:600;">Despesa</div>
+              <div style="flex:1;padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--s1);text-align:center;font-size:13px;color:var(--t2);">Receita</div>
+              <div style="flex:1;padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--s1);text-align:center;font-size:13px;color:var(--t2);">Transf.</div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Valor *</div>
+              <input class="input-field" type="text" value="R$ 247,30" style="text-align:center;font-family:'DM Mono',monospace;font-size:20px;font-weight:700;">
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Categoria *</div>
+              <div style="padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:14px;color:var(--t1);">🛒 Mercado</span>
+                <span style="font-size:12px;color:var(--t3);">▼</span>
+              </div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Descrição</div>
+              <input class="input-field" type="text" placeholder="Ex: Mercado Pão de Açúcar" value="Pão de Açúcar">
+            </div>
+
+            <div style="display:flex;gap:10px;margin-bottom:14px;">
+              <div style="flex:1;">
+                <div class="input-label">Data *</div>
+                <input class="input-field" type="text" value="06/03/2026" style="text-align:center;">
+              </div>
+              <div style="flex:1;">
+                <div class="input-label">Pagamento</div>
+                <div style="padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);font-size:14px;color:var(--t1);text-align:center;">Cartão</div>
+              </div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Tags (opcional)</div>
+              <div style="display:flex;gap:6px;">
+                <span style="padding:4px 10px;border-radius:12px;background:var(--s2);border:1px solid var(--border);font-size:12px;color:var(--t2);">+ Adicionar tag</span>
+              </div>
+            </div>
+
+            <!-- Recurring toggle -->
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:16px;">
+              <span style="font-size:13px;color:var(--t1);">🔄 Transformar em recorrente?</span>
+              <div style="width:36px;height:20px;border-radius:10px;background:var(--s3);position:relative;"><div style="width:16px;height:16px;border-radius:50%;background:var(--t3);position:absolute;top:2px;left:2px;"></div></div>
+            </div>
+
+            <button class="btn-primary">Salvar Transação</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 07: CRIAR ORÇAMENTO -->
+    <div class="screen-wrapper">
+      <div class="screen-label">07 — Criar Orçamento</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <span class="int-header-back">← Orçamentos</span>
+            <span class="int-header-title">Novo Orçamento</span>
+          </div>
+
+          <div style="padding:0 16px;">
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Categoria *</div>
+              <div style="padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:14px;color:var(--t1);">🚗 Transporte</span>
+                <span style="font-size:12px;color:var(--t3);">▼</span>
+              </div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Limite mensal *</div>
+              <input class="input-field" type="text" value="R$ 500,00" style="text-align:center;font-family:'DM Mono',monospace;font-size:20px;">
+            </div>
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Alertar quando atingir</div>
+              <div style="display:flex;gap:8px;">
+                <div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--s1);border:1px solid var(--border);text-align:center;font-size:13px;color:var(--t2);">60%</div>
+                <div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--fin-g);border:1px solid rgba(16,185,129,0.3);text-align:center;font-size:13px;color:var(--fin);font-weight:600;">80%</div>
+                <div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--s1);border:1px solid var(--border);text-align:center;font-size:13px;color:var(--t2);">90%</div>
+              </div>
+            </div>
+
+            <!-- Preview -->
+            <div style="background:var(--fin-g);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;">
+              <div style="font-size:11px;color:var(--t2);margin-bottom:4px;">PREVIEW</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:18px;">🚗</span>
+                <div style="flex:1;">
+                  <div style="font-size:13px;font-weight:500;color:var(--t1);">Transporte · R$ 0 / R$ 500</div>
+                  <div class="progress-bar" style="margin-top:4px;"><div class="progress-fill" style="width:0%;background:var(--green);"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-primary">Criar Orçamento 📦</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GRUPO C — ESPECÍFICO -->
+  <div class="demo-group">
+    <div class="demo-group-title">C — Específico (Calendário, Planejamento, Relatórios)</div>
+    <div class="demo-group-sub">Telas avançadas e visualizações analíticas.</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- 08: CALENDÁRIO FINANCEIRO -->
+    <div class="screen-wrapper">
+      <div class="screen-label">08 — Calendário Financeiro</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">💰</span>
+              <span class="mod-name">Finanças</span>
+            </div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Transações</div>
+            <div class="sub-nav-tab">Recorrentes</div>
+            <div class="sub-nav-tab">Orçamentos</div>
+            <div class="sub-nav-tab active">Calendário</div>
+            <div class="sub-nav-tab pro">Planejamento</div>
+            <div class="sub-nav-tab">Relatórios</div>
+          </div>
+
+          <!-- Month header -->
+          <div style="display:flex;align-items:center;justify-content:center;gap:20px;padding:0 20px 14px;">
+            <span style="font-size:16px;color:var(--t3);">←</span>
+            <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);">Março 2026</span>
+            <span style="font-size:16px;color:var(--t3);">→</span>
+          </div>
+
+          <!-- Simplified calendar grid -->
+          <div class="card" style="padding:12px;">
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-bottom:4px;">
+              <span style="font-size:9px;color:var(--t3);">D</span>
+              <span style="font-size:9px;color:var(--t3);">S</span>
+              <span style="font-size:9px;color:var(--t3);">T</span>
+              <span style="font-size:9px;color:var(--t3);">Q</span>
+              <span style="font-size:9px;color:var(--t3);">Q</span>
+              <span style="font-size:9px;color:var(--t3);">S</span>
+              <span style="font-size:9px;color:var(--t3);">S</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;">
+              <!-- Week 1 -->
+              <div style="padding:6px 0;border-radius:6px;background:rgba(16,185,129,0.08);"><div style="font-size:11px;color:var(--t1);">1</div><div style="width:4px;height:4px;border-radius:50%;background:var(--green);margin:2px auto 0;"></div></div>
+              <div style="padding:6px 0;border-radius:6px;"><div style="font-size:11px;color:var(--t2);">2</div></div>
+              <div style="padding:6px 0;border-radius:6px;background:rgba(245,158,11,0.1);"><div style="font-size:11px;color:var(--t1);">3</div><div style="width:4px;height:4px;border-radius:50%;background:var(--yellow);margin:2px auto 0;"></div></div>
+              <div style="padding:6px 0;border-radius:6px;background:rgba(16,185,129,0.06);"><div style="font-size:11px;color:var(--t1);">4</div><div style="width:4px;height:4px;border-radius:50%;background:var(--green);margin:2px auto 0;"></div></div>
+              <div style="padding:6px 0;border-radius:6px;background:rgba(244,63,94,0.15);"><div style="font-size:11px;color:var(--t1);">5</div><div style="display:flex;gap:2px;justify-content:center;margin-top:2px;"><div style="width:4px;height:4px;border-radius:50%;background:var(--green);"></div><div style="width:4px;height:4px;border-radius:50%;background:var(--red);"></div></div></div>
+              <div style="padding:6px 0;border-radius:6px;"><div style="font-size:11px;color:var(--t2);">6</div></div>
+              <div style="padding:6px 0;border-radius:6px;border:1.5px solid var(--fin);background:rgba(16,185,129,0.1);"><div style="font-size:11px;color:var(--fin);font-weight:600;">7</div><div style="font-size:8px;color:var(--fin);">hoje</div></div>
+              <!-- Week 2 (simplified) -->
+              <div style="padding:6px 0;border-radius:6px;opacity:0.4;"><div style="font-size:11px;color:var(--t3);">8</div></div>
+              <div style="padding:6px 0;border-radius:6px;opacity:0.4;"><div style="font-size:11px;color:var(--t3);">9</div></div>
+              <div style="padding:6px 0;border-radius:6px;opacity:0.4;"><div style="font-size:11px;color:var(--t3);">10</div></div>
+              <div style="padding:6px 0;border-radius:6px;opacity:0.4;background:rgba(244,63,94,0.06);"><div style="font-size:11px;color:var(--t3);">11</div><div style="width:4px;height:4px;border-radius:50%;background:var(--red);margin:2px auto 0;opacity:0.5;"></div></div>
+              <div style="padding:6px 0;border-radius:6px;opacity:0.4;"><div style="font-size:11px;color:var(--t3);">12</div></div>
+              <div style="padding:6px 0;border-radius:6px;opacity:0.4;"><div style="font-size:11px;color:var(--t3);">13</div></div>
+              <div style="padding:6px 0;border-radius:6px;opacity:0.4;background:rgba(244,63,94,0.08);"><div style="font-size:11px;color:var(--t3);">14</div><div style="display:flex;gap:2px;justify-content:center;margin-top:2px;"><div style="width:4px;height:4px;border-radius:50%;background:var(--red);opacity:0.5;"></div></div></div>
+            </div>
+            <div style="display:flex;gap:12px;justify-content:center;margin-top:8px;font-size:10px;color:var(--t3);">
+              <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);"></div> Entrada</div>
+              <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--red);"></div> Saída</div>
+              <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border-radius:2px;border:1px dashed var(--t3);"></div> Previsto</div>
+            </div>
+          </div>
+
+          <!-- Summary cards -->
+          <div class="section-title">DESTAQUES DO MÊS</div>
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Maior entrada</div>
+              <div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--green);font-weight:600;">R$ 5.000</div>
+              <div class="kpi-sub">Dia 5 · Salário</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Maior saída/dia</div>
+              <div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--red);font-weight:600;">R$ 1.200</div>
+              <div class="kpi-sub">Dia 5 · Aluguel</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Saldo mais baixo</div>
+              <div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--red);font-weight:600;">R$ 847</div>
+              <div class="kpi-sub">Dia 5 · Pós-aluguel</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Saldo hoje</div>
+              <div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--el);font-weight:600;">R$ 3.847</div>
+              <div class="kpi-sub">7 Mar 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 09: EMPTY STATE -->
+    <div class="screen-wrapper">
+      <div class="screen-label">09 — Empty State</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">💰</span>
+              <span class="mod-name">Finanças</span>
+            </div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Transações</div>
+            <div class="sub-nav-tab">Recorrentes</div>
+            <div class="sub-nav-tab">Orçamentos</div>
+            <div class="sub-nav-tab">Calendário</div>
+            <div class="sub-nav-tab pro">Planejamento</div>
+            <div class="sub-nav-tab">Relatórios</div>
+          </div>
+
+          <div style="text-align:center;padding:32px 24px;">
+            <div style="font-size:56px;margin-bottom:16px;">💰</div>
+            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--t1);margin-bottom:8px;">Comece sua jornada financeira</div>
+            <div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:24px;">Registre sua primeira transação para ver o dashboard ganhar vida. Leva 10 segundos.</div>
+            <div style="display:inline-flex;padding:14px 28px;border-radius:var(--radius-sm);background:linear-gradient(135deg,#10b981,#0055ff);color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;">+ Primeira Transação</div>
+          </div>
+
+          <div class="section-title">TAMBÉM RECOMENDAMOS</div>
+          <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;">
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;">
+              <span style="font-size:20px;">📦</span>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Configurar orçamentos</div>
+                <div style="font-size:11px;color:var(--t3);">Defina limites por categoria</div>
+              </div>
+              <span style="color:var(--fin);font-size:14px;">→</span>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;">
+              <span style="font-size:20px;">🔄</span>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Cadastrar recorrentes</div>
+                <div style="font-size:11px;color:var(--t3);">Aluguel, salário, Netflix...</div>
+              </div>
+              <span style="color:var(--fin);font-size:14px;">→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

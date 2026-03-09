@@ -7,6 +7,7 @@ import {
   syncLinkedTrackProgressToFuturo,
   unlinkGoalsFromDeletedEntity,
 } from '@/lib/integrations/futuro'
+import { onStudySessionCompleted, onTrackCompleted } from '@/lib/cross-module'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -372,6 +373,10 @@ export function useUpdateTrack() {
     // RN-FUT-42: conclusão manual de trilha sincroniza metas vinculadas no Futuro
     if (updates.status === 'completed') {
       await syncLinkedTrackCompletionToFuturo(id)
+
+      // Cross-module: trilha concluída → incrementa nível da skill vinculada (Carreira↔Mente)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) onTrackCompleted(user.id, id).catch(() => {})
     }
   }, [])
 }
@@ -420,6 +425,10 @@ export function useToggleStep() {
       // RN-FUT-40/42: trilha vinculada herda progresso e conclui metas no Futuro
       if (progress >= 100) {
         await syncLinkedTrackCompletionToFuturo(trackId)
+
+        // Cross-module: trilha concluída → incrementa nível da skill vinculada (Carreira↔Mente)
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) onTrackCompleted(user.id, trackId).catch(() => {})
       } else {
         await syncLinkedTrackProgressToFuturo(trackId, progress)
       }
@@ -506,6 +515,15 @@ export function useSaveSession() {
         last_study_date: today,
       })
     }
+
+    // Cross-module: sessão de estudo → auto-evento em Tempo
+    let trackName = 'Sessão livre'
+    if (data.track_id) {
+      const { data: track } = await sb.from('study_tracks')
+        .select('name').eq('id', data.track_id).single()
+      if (track?.name) trackName = track.name
+    }
+    onStudySessionCompleted(user.id, trackName, data.focus_minutes, today).catch(() => {})
   }, [])
 }
 

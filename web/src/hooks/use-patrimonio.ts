@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { syncPassiveIncomeToFuturo, syncPortfolioTotalToFuturo } from '@/lib/integrations/futuro'
+import { onDividendReceived, onAssetPurchased } from '@/lib/cross-module'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -351,6 +352,12 @@ export function useAddTransaction() {
 
     // RN-FUT-43: operação de carteira atualiza metas de patrimônio no Futuro
     await syncPortfolioTotalToFuturo(user.id)
+
+    // Cross-module: compra de ativo → auto-despesa em Finanças
+    if (data.operation === 'buy') {
+      const totalCost = data.quantity * data.price + (data.fees ?? 0)
+      onAssetPurchased(user.id, data.ticker, totalCost).catch(() => {})
+    }
   }, [])
 }
 
@@ -404,6 +411,17 @@ export function useAddDividend() {
     if (error) throw error
     // RN-FUT-44: proventos recebidos atualizam metas de renda passiva vinculadas
     await syncPassiveIncomeToFuturo(user.id)
+
+    // Cross-module: provento recebido → auto-receita em Finanças
+    if ((data.status ?? 'announced') === 'received' && data.total_amount > 0) {
+      const { data: asset } = await sb.from('portfolio_assets')
+        .select('ticker').eq('id', data.asset_id).single()
+      if (asset?.ticker) {
+        onDividendReceived(
+          user.id, asset.ticker, data.total_amount, data.payment_date,
+        ).catch(() => {})
+      }
+    }
   }, [])
 }
 
@@ -429,6 +447,21 @@ export function useUpdateDividendStatus() {
     if (error) throw error
     // RN-PTR-16 / RN-FUT-44: mudança de status pode alterar média de proventos recebidos.
     await syncPassiveIncomeToFuturo(user.id)
+
+    // Cross-module: provento marcado como recebido → auto-receita em Finanças
+    if (status === 'received') {
+      const { data: div } = await sb.from('portfolio_dividends')
+        .select('total_amount, payment_date, asset_id').eq('id', id).single()
+      if (div && div.total_amount > 0) {
+        const { data: asset } = await sb.from('portfolio_assets')
+          .select('ticker').eq('id', div.asset_id).single()
+        if (asset?.ticker) {
+          onDividendReceived(
+            user.id, asset.ticker, div.total_amount, div.payment_date,
+          ).catch(() => {})
+        }
+      }
+    }
   }, [])
 }
 

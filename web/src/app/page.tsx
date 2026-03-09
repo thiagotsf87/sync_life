@@ -10,11 +10,11 @@ import { SyncLifeIcon, SyncLifeBrand } from '@/components/shell/icons'
 
 export const metadata: Metadata = {
   title: 'SyncLife — O sistema operacional da sua vida',
-  description: 'Finanças, metas e agenda num único app. Dois modos de uso — análise objetiva ou motivação diária — para quem quer evoluir, não só acompanhar.',
-  keywords: ['finanças pessoais', 'controle financeiro', 'metas pessoais', 'agenda', 'planejamento financeiro'],
+  description: 'Finanças, metas, agenda, corpo, mente e mais — 9 módulos num único app. Dois modos de uso para quem quer evoluir, não só acompanhar.',
+  keywords: ['finanças pessoais', 'controle financeiro', 'metas pessoais', 'agenda', 'planejamento financeiro', 'investimentos', 'carreira', 'saúde'],
   openGraph: {
     title: 'SyncLife — O sistema operacional da sua vida',
-    description: 'Finanças, metas e agenda num único app com Life Sync Score.',
+    description: '9 módulos — finanças, metas, agenda, corpo, mente e mais — com Life Sync Score.',
     url: 'https://synclife.com.br',
     siteName: 'SyncLife',
     locale: 'pt_BR',
@@ -62,7 +62,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="hero-sub">
-          Finanças, metas e agenda num único app. Dois modos de uso — análise objetiva ou motivação diária — para quem quer evoluir, não só acompanhar.
+          Finanças, metas, agenda, corpo, mente e mais — 9 módulos num único app. Dois modos de uso para quem quer evoluir, não só acompanhar.
         </p>
 
         <div className="hero-actions">
@@ -89,7 +89,7 @@ export default function LandingPage() {
             </div>
             <div className="preview-body">
               <div className="preview-sidebar">
-                <div className="preview-icon"><SyncLifeIcon size={28} /></div>
+                <div className="preview-icon"><SyncLifeIcon size={28} animated={false} /></div>
                 <div className="preview-icon active" style={{ fontSize: 18 }}>💰</div>
                 <div className="preview-icon" style={{ fontSize: 18, opacity: 0.4 }}>🎯</div>
                 <div className="preview-icon" style={{ fontSize: 18, opacity: 0.4 }}>📅</div>
@@ -146,41 +146,77 @@ export default function LandingPage() {
           <div className="features-header">
             <ScrollReveal>
               <div className="section-label centered">Funcionalidades</div>
-              <h2 className="section-title" style={{ textAlign: 'center' }}>Três módulos. Uma vida organizada.</h2>
+              <h2 className="section-title" style={{ textAlign: 'center' }}>9 módulos. Uma vida sincronizada.</h2>
               <p className="section-sub" style={{ textAlign: 'center', margin: '0 auto' }}>
-                Cada módulo foi pensado para se integrar com os outros. Finanças informam suas metas. Metas aparecem na agenda. Tudo conectado.
+                Cada módulo se integra com os outros. Finanças alimentam seu patrimônio. Metas aparecem na agenda. Corpo e mente evoluem juntos. Tudo conectado.
               </p>
             </ScrollReveal>
           </div>
-          <div className="modules-grid">
+          <div className="modules-grid modules-grid-v3">
             {[
               {
-                cls: 'fin', icon: '💰', label: 'Finanças',
+                cls: 'fin', icon: '💰', label: 'Finanças', color: '#10b981',
                 title: 'Controle total do seu dinheiro',
-                desc: 'Não apenas registrar gastos — mas entender o futuro do seu caixa e tomar decisões hoje que impactam amanhã.',
-                features: ['Planejamento futuro com projeção de fluxo de caixa', 'Sistema de orçamentos por envelopes (modelo 50/30/20)', 'Transações recorrentes com geração automática', 'Calendário financeiro visual', 'Relatórios e exportação PDF/Excel'],
+                desc: 'Entender o futuro do seu caixa e tomar decisões hoje que impactam amanhã.',
+                features: ['Planejamento futuro 12 meses', 'Orçamentos por envelopes', 'Calendário financeiro visual', 'Relatórios e exportação'],
               },
               {
-                cls: 'meta', icon: '🎯', label: 'Metas',
-                title: 'Metas que você realmente atinge',
-                desc: 'Crie metas com prazo, acompanhe o ritmo real e saiba exatamente o que precisa fazer hoje para chegar lá.',
-                features: ['Metas financeiras conectadas ao orçamento', 'Projeção automática de data de conclusão', 'Registro de progresso com histórico', 'Alertas quando o ritmo estiver abaixo do necessário', 'Vínculo com agenda para bloqueio de tempo'],
+                cls: 'fut', icon: '🔮', label: 'Futuro', color: '#8b5cf6',
+                title: 'Objetivos que você realmente atinge',
+                desc: 'Crie metas com prazo, acompanhe o ritmo real e saiba o que fazer hoje para chegar lá.',
+                features: ['Projeção automática de conclusão', 'Registro de progresso com histórico', 'Alertas de ritmo abaixo', 'Milestones por objetivo'],
               },
               {
-                cls: 'ag', icon: '📅', label: 'Agenda',
+                cls: 'tmp', icon: '⏳', label: 'Tempo', color: '#06b6d4',
                 title: 'Organize seu tempo com intenção',
-                desc: 'Uma agenda que sabe para onde você quer ir. Blocos de tempo conectados às suas metas e ao seu planejamento financeiro.',
-                features: ['Visão semanal e mensal integrada', 'Eventos vinculados às suas metas ativas', 'Compromissos financeiros no calendário', 'Lembretes inteligentes por contexto', 'Integração com Google Calendar (em breve)'],
+                desc: 'Agenda conectada às suas metas e ao seu planejamento financeiro.',
+                features: ['Visão semanal e mensal', 'Eventos vinculados a metas', 'Blocos de foco', 'Lembretes inteligentes'],
+              },
+              {
+                cls: 'crp', icon: '🏃', label: 'Corpo', color: '#f97316',
+                title: 'Sua saúde física em dados',
+                desc: 'Acompanhe atividades, peso, medidas e alimentação com suporte de IA.',
+                features: ['Registro de atividades', 'Peso e medidas com gráficos', 'Cardápio sugerido por IA', 'Saúde preventiva'],
+              },
+              {
+                cls: 'mnt', icon: '🧠', label: 'Mente', color: '#eab308',
+                title: 'Foco, meditação e leitura',
+                desc: 'Cultive seus hábitos mentais com trilhas de aprendizado e sessões de foco.',
+                features: ['Timer Pomodoro', 'Trilhas de aprendizado', 'Biblioteca pessoal', 'Sessões de meditação'],
+              },
+              {
+                cls: 'ptr', icon: '📈', label: 'Patrimônio', color: '#3b82f6',
+                title: 'Investimentos e patrimônio líquido',
+                desc: 'Acompanhe carteira, proventos e simule sua independência financeira.',
+                features: ['Carteira de investimentos', 'Proventos e dividendos', 'Evolução patrimonial', 'Simulador de IF'],
+              },
+              {
+                cls: 'car', icon: '💼', label: 'Carreira', color: '#f43f5e',
+                title: 'Evolução profissional contínua',
+                desc: 'Roadmap de carreira, habilidades e histórico de realizações.',
+                features: ['Perfil profissional', 'Roadmap de crescimento', 'Habilidades e certificações', 'Histórico de conquistas'],
+              },
+              {
+                cls: 'exp', icon: '✈️', label: 'Experiências', color: '#ec4899',
+                title: 'Viagens e experiências de vida',
+                desc: 'Planeje viagens com itinerário, orçamento e checklist integrados.',
+                features: ['Planejamento de viagens', 'Itinerário dia a dia', 'Orçamento de viagem', 'Sugestões com IA'],
+              },
+              {
+                cls: 'conq', icon: '🏆', label: 'Conquistas', color: '#f59e0b',
+                title: 'Gamificação da sua evolução',
+                desc: 'Badges, ranking e celebração de cada marco na sua jornada.',
+                features: ['33 badges desbloqueáveis', 'Ranking pessoal', 'Life Sync Score', 'Streaks e desafios'],
               },
             ].map((mod, i) => (
-              <ScrollReveal key={mod.cls} delay={(i + 1) as 1 | 2 | 3}>
+              <ScrollReveal key={mod.cls} delay={Math.min(i + 1, 3) as 1 | 2 | 3}>
                 <div className={`module-card ${mod.cls}`}>
-                  <div className={`module-icon ${mod.cls}`}>{mod.icon}</div>
-                  <span className={`module-color ${mod.cls}`}>{mod.label}</span>
+                  <div className="module-icon" style={{ background: `${mod.color}18` }}>{mod.icon}</div>
+                  <span className="module-color" style={{ color: mod.color }}>{mod.label}</span>
                   <h3 className="module-title">{mod.title}</h3>
                   <p className="module-desc">{mod.desc}</p>
                   <ul className="module-features">
-                    {mod.features.map((f, j) => <li key={j}>{f}</li>)}
+                    {mod.features.map((f, j) => <li key={j} style={{ '--mod-color': mod.color } as React.CSSProperties}>{f}</li>)}
                   </ul>
                 </div>
               </ScrollReveal>
@@ -440,8 +476,8 @@ export default function LandingPage() {
                   {[
                     { ok: true, t: 'Transações ilimitadas' },
                     { ok: true, t: 'Dashboard financeiro completo' },
-                    { ok: true, t: 'Módulo Metas (até 3 metas)' },
-                    { ok: true, t: 'Agenda básica' },
+                    { ok: true, t: 'Módulo Futuro (até 3 objetivos)' },
+                    { ok: true, t: 'Módulo Tempo (agenda básica)' },
                     { ok: true, t: '5 recorrentes ativas' },
                     { ok: true, t: 'Planejamento futuro (3 meses)' },
                     { ok: false, t: 'Life Sync Score' },
@@ -469,7 +505,7 @@ export default function LandingPage() {
                 <p className="pricing-desc">Para quem leva a sério a organização da vida. Desbloqueie tudo.</p>
                 <div className="pricing-divider" />
                 <ul className="pricing-features">
-                  {['Tudo do plano Grátis', 'Life Sync Score com histórico', 'Metas ilimitadas', 'Recorrentes ilimitadas', 'Planejamento futuro até 12 meses', 'Relatórios + Exportação PDF e Excel', 'Insights com IA', 'Suporte prioritário'].map((f, i) => (
+                  {['Tudo do plano Grátis', 'Life Sync Score com histórico', 'Todos os 9 módulos completos', 'Objetivos e recorrentes ilimitados', 'Planejamento futuro até 12 meses', 'Relatórios + Exportação PDF e Excel', 'Insights com IA', 'Suporte prioritário'].map((f, i) => (
                     <li key={i} className="pricing-feature">
                       <span style={{ flexShrink: 0 }}>✅</span>
                       <span className="pf-strong">{f}</span>
@@ -513,7 +549,7 @@ export default function LandingPage() {
               <div className="footer-logo">
                 <SyncLifeBrand size="sm" animated={false} />
               </div>
-              <p className="footer-tagline">O sistema operacional da sua vida. Finanças, metas e agenda num único lugar.</p>
+              <p className="footer-tagline">O sistema operacional da sua vida. 9 módulos integrados num único lugar.</p>
             </div>
             <div>
               <div className="footer-col-title">Produto</div>

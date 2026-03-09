@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Plus, X, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
+import { ExperienciasMobile } from '@/components/experiencias/ExperienciasMobile'
 import {
   useTrips, useCreateTrip,
   TRIP_TYPE_LABELS, DEFAULT_CHECKLIST_ITEMS,
@@ -96,8 +96,6 @@ const STEP_LABELS = [
 
 export default function NovaViagemPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { trips } = useTrips()
   const { isPro } = useUserPlan()
@@ -205,7 +203,12 @@ export default function NovaViagemPage() {
     : 0
 
   return (
-    <div className="max-w-[700px] mx-auto px-6 py-7 pb-16">
+    <>
+    {/* Mobile — wizard acessível via botão + em ExperienciasMobile */}
+    <ExperienciasMobile />
+
+    {/* Desktop */}
+    <div className="hidden lg:block max-w-[700px] mx-auto px-6 py-7 pb-16">
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-6">
@@ -216,10 +219,7 @@ export default function NovaViagemPage() {
           <ArrowLeft size={16} />
           {step > 0 ? 'Voltar' : 'Experiências'}
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           ✈️ Nova Viagem
         </h1>
       </div>
@@ -232,9 +232,9 @@ export default function NovaViagemPage() {
               className={cn(
                 'w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 transition-all',
                 i < step
-                  ? 'bg-[#06b6d4] text-[#03071a]'
+                  ? 'bg-[#ec4899] text-[#03071a]'
                   : i === step
-                    ? 'bg-[#06b6d4]/20 border-2 border-[#06b6d4] text-[#06b6d4]'
+                    ? 'bg-[#ec4899]/20 border-2 border-[#ec4899] text-[#ec4899]'
                     : 'bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t3)]'
               )}
             >
@@ -249,7 +249,7 @@ export default function NovaViagemPage() {
             {i < STEP_LABELS.length - 1 && (
               <div className={cn(
                 'flex-1 h-px min-w-[20px]',
-                i < step ? 'bg-[#06b6d4]' : 'bg-[var(--sl-border)]'
+                i < step ? 'bg-[#ec4899]' : 'bg-[var(--sl-border)]'
               )} />
             )}
           </div>
@@ -271,7 +271,7 @@ export default function NovaViagemPage() {
                 value={data.name}
                 onChange={e => setData(d => ({ ...d, name: e.target.value }))}
                 placeholder="Ex: Europa 2026, Praias do Nordeste..."
-                className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
               />
             </div>
 
@@ -284,11 +284,11 @@ export default function NovaViagemPage() {
                   onChange={e => setData(d => ({ ...d, destinationInput: e.target.value }))}
                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addDestination() } }}
                   placeholder="Adicione uma cidade ou país"
-                  className="flex-1 px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                  className="flex-1 px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
                 />
                 <button
                   onClick={addDestination}
-                  className="p-2.5 rounded-[10px] bg-[#06b6d4]/10 border border-[#06b6d4] text-[#06b6d4] hover:bg-[#06b6d4]/20"
+                  className="p-2.5 rounded-[10px] bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20"
                 >
                   <Plus size={16} />
                 </button>
@@ -296,7 +296,7 @@ export default function NovaViagemPage() {
               {data.destinations.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {data.destinations.map((dest, i) => (
-                    <div key={i} className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#06b6d4]/10 border border-[#06b6d4]/30 text-[12px] text-[var(--sl-t1)]">
+                    <div key={i} className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#ec4899]/10 border border-[#ec4899]/30 text-[12px] text-[var(--sl-t1)]">
                       <span>📍 {dest}</span>
                       <button onClick={() => removeDestination(i)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)]">
                         <X size={11} />
@@ -314,7 +314,7 @@ export default function NovaViagemPage() {
                   type="date"
                   value={data.start_date}
                   onChange={e => setData(d => ({ ...d, start_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
                 />
               </div>
               <div>
@@ -324,13 +324,13 @@ export default function NovaViagemPage() {
                   value={data.end_date}
                   min={data.start_date}
                   onChange={e => setData(d => ({ ...d, end_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
                 />
               </div>
             </div>
 
             {stepDays > 0 && (
-              <div className="flex items-center gap-2 p-3 bg-[#06b6d4]/10 border border-[#06b6d4]/30 rounded-xl">
+              <div className="flex items-center gap-2 p-3 bg-[#ec4899]/10 border border-[#ec4899]/30 rounded-xl">
                 <span>🗓️</span>
                 <p className="text-[12px] text-[var(--sl-t2)]">
                   Duração: <strong className="text-[var(--sl-t1)]">{stepDays} {stepDays === 1 ? 'dia' : 'dias'}</strong>
@@ -347,7 +347,7 @@ export default function NovaViagemPage() {
                       className={cn(
                         'py-2 rounded-[10px] border text-[11px] transition-all',
                         data.trip_type === t
-                          ? 'border-[#06b6d4] bg-[#06b6d4]/10 text-[var(--sl-t1)]'
+                          ? 'border-[#ec4899] bg-[#ec4899]/10 text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -364,7 +364,7 @@ export default function NovaViagemPage() {
                   max="20"
                   value={data.travelers_count}
                   onChange={e => setData(d => ({ ...d, travelers_count: parseInt(e.target.value) || 1 }))}
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
                 />
               </div>
             </div>
@@ -388,7 +388,7 @@ export default function NovaViagemPage() {
                   value={data.total_budget}
                   onChange={e => setData(d => ({ ...d, total_budget: e.target.value }))}
                   placeholder="Opcional — Ex: 5000"
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
                 />
               </div>
               <div>
@@ -396,7 +396,7 @@ export default function NovaViagemPage() {
                 <select
                   value={data.currency}
                   onChange={e => setData(d => ({ ...d, currency: e.target.value }))}
-                  className="px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                  className="px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
                 >
                   {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -406,7 +406,7 @@ export default function NovaViagemPage() {
             {data.total_budget && parseFloat(data.total_budget) > 0 && stepDays > 0 && (
               <div className="p-4 bg-[var(--sl-s2)] rounded-xl">
                 <p className="text-[11px] text-[var(--sl-t3)] mb-1">Estimativa por dia</p>
-                <p className="font-[DM_Mono] font-bold text-lg text-[#06b6d4]">
+                <p className="font-[DM_Mono] font-bold text-lg text-[#ec4899]">
                   {formatMoneyWithBrl(parseFloat(data.total_budget) / stepDays, data.currency)}
                 </p>
                 <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
@@ -427,7 +427,7 @@ export default function NovaViagemPage() {
                 <select
                   value={data.objective_id}
                   onChange={e => setData(d => ({ ...d, objective_id: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
                 >
                   <option value="">Nenhum</option>
                   {objectiveOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
@@ -443,7 +443,7 @@ export default function NovaViagemPage() {
               </div>
               <button
                 onClick={() => setData(d => ({ ...d, syncToAgenda: !d.syncToAgenda }))}
-                className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', data.syncToAgenda ? 'bg-[#06b6d4]' : 'bg-[var(--sl-s3)]')}
+                className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', data.syncToAgenda ? 'bg-[#ec4899]' : 'bg-[var(--sl-s3)]')}
               >
                 <div className={cn('w-4 h-4 rounded-full bg-white absolute top-1 transition-all', data.syncToAgenda ? 'left-5' : 'left-1')} />
               </button>
@@ -457,7 +457,7 @@ export default function NovaViagemPage() {
                 </div>
                 <button
                   onClick={() => setData(d => ({ ...d, syncToFinancas: !d.syncToFinancas }))}
-                  className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', data.syncToFinancas ? 'bg-[#06b6d4]' : 'bg-[var(--sl-s3)]')}
+                  className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', data.syncToFinancas ? 'bg-[#ec4899]' : 'bg-[var(--sl-s3)]')}
                 >
                   <div className={cn('w-4 h-4 rounded-full bg-white absolute top-1 transition-all', data.syncToFinancas ? 'left-5' : 'left-1')} />
                 </button>
@@ -478,7 +478,7 @@ export default function NovaViagemPage() {
                   <h3 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">{data.name}</h3>
                   <p className="text-[12px] text-[var(--sl-t3)]">{data.destinations.join(' → ')}</p>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#06b6d4]/20 text-[#06b6d4]">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#ec4899]/20 text-[#ec4899]">
                   {TRIP_TYPE_LABELS[data.trip_type]}
                 </span>
               </div>
@@ -502,7 +502,7 @@ export default function NovaViagemPage() {
                 {data.total_budget && (
                   <div>
                     <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Orçamento</p>
-                    <p className="font-[DM_Mono] text-[11px] text-[#06b6d4]">
+                    <p className="font-[DM_Mono] text-[11px] text-[#ec4899]">
                       {formatMoneyWithBrl(parseFloat(data.total_budget), data.currency)}
                     </p>
                   </div>
@@ -517,7 +517,7 @@ export default function NovaViagemPage() {
                 onChange={e => setData(d => ({ ...d, notes: e.target.value }))}
                 rows={3}
                 placeholder="Informações gerais, contatos de emergência, preferências..."
-                className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4] resize-none"
+                className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899] resize-none"
               />
             </div>
 
@@ -545,7 +545,7 @@ export default function NovaViagemPage() {
             <button
               onClick={() => setStep(s => s + 1)}
               disabled={!canNextStep()}
-              className="flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#06b6d4] text-[#03071a] hover:opacity-90 disabled:opacity-40"
+              className="flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#ec4899] text-[#03071a] hover:opacity-90 disabled:opacity-40"
             >
               Próximo
               <ArrowRight size={14} />
@@ -554,7 +554,7 @@ export default function NovaViagemPage() {
             <button
               onClick={handleFinish}
               disabled={isSaving || !canNextStep()}
-              className="flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#06b6d4] text-[#03071a] hover:opacity-90 disabled:opacity-40"
+              className="flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#ec4899] text-[#03071a] hover:opacity-90 disabled:opacity-40"
             >
               {isSaving ? 'Criando...' : '✈️ Criar viagem'}
             </button>
@@ -562,5 +562,6 @@ export default function NovaViagemPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }

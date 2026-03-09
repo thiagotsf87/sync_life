@@ -4,12 +4,13 @@ import { useState, useEffect, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import { Plus, ChevronLeft, ChevronRight, AlertTriangle, Pencil, Trash2, Copy, X } from 'lucide-react'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { useCategories } from '@/hooks/use-categories'
 import { useBudgets, type BudgetWithSpend, type Budget } from '@/hooks/use-budgets'
 import { EnvelopeModal } from '@/components/financas/EnvelopeModal'
+import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
+import { ProLimitGate } from '@/components/ui/pro-gate'
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -279,9 +280,6 @@ function CopyModal({
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function OrcamentosPage() {
-  const mode = useShellStore(s => s.mode)
-  const isJornada = mode === 'jornada'
-
   const now = new Date()
   const [month, setMonth] = useState(now.getMonth() + 1)
   const [year, setYear] = useState(now.getFullYear())
@@ -364,22 +362,183 @@ export default function OrcamentosPage() {
 
   const maiorCategoria = activeBudgets.length > 0 ? (activeBudgets[0].category?.name ?? '') : ''
 
-  return (
-    <div className="max-w-[1000px] mx-auto px-4 sm:px-6 py-8 pb-20">
+  const disponivel = Math.max(0, totalOrcado - totalGasto)
 
-      {/* ① Header */}
-      <div className="flex items-center justify-between mb-7 gap-4 flex-wrap">
-        <div>
-          <p className="text-[11px] text-[#10b981] font-bold uppercase tracking-[.07em] mb-1">
-            💰 Finanças
-          </p>
-          <h1 className={cn(
-            'font-[Syne] font-extrabold text-[24px] tracking-tight',
-            isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-          )}>
-            Orçamentos
-          </h1>
+  // Donut chart segments (por proporção do gasto no total)
+  const CIRC = 2 * Math.PI * 50
+  let donutOff = 0
+  const donutSegs = activeBudgets.slice(0, 8).map(env => {
+    const arc = totalOrcado > 0 ? Math.min(env.gasto / totalOrcado, 1) * CIRC : 0
+    const seg = { color: getEnvColor(env.pct), arc, offset: donutOff, env }
+    donutOff += arc
+    return seg
+  })
+
+  return (
+    <>
+      {/* ═══════════ MOBILE VIEW ═══════════ */}
+      <FinancasMobileShell
+        subtitle="Envelopes do mês"
+        rightAction={
+          <ProLimitGate module="financas" feature="maxBudgets" currentCount={budgets.length} label={`Limite: ${budgets.length}/5`}>
+            <button onClick={openCreate} className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]">
+              <Plus size={16} />
+            </button>
+          </ProLimitGate>
+        }
+      >
+        {/* Month selector */}
+        <div className="flex items-center justify-between mb-3">
+          <button onClick={prevMonthNav} className="text-[13px] text-[var(--sl-t2)] p-2"><ChevronLeft size={16} /></button>
+          <span className="font-[Syne] font-semibold text-[var(--sl-t1)]">{MONTH_NAMES[month - 1]} {year}</span>
+          <button onClick={nextMonthNav} className="text-[13px] text-[var(--sl-t2)] p-2"><ChevronRight size={16} /></button>
         </div>
+
+        {/* Donut chart + legenda por categoria */}
+        {!isLoading && budgets.length > 0 && (
+          <div className="rounded-2xl p-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)]">
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              {/* Donut */}
+              <div className="relative w-[140px] h-[140px] shrink-0">
+                <svg viewBox="0 0 120 120" className="w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--sl-s3)" strokeWidth="14" />
+                  {donutSegs.map((seg, i) => (
+                    <circle
+                      key={i} cx="60" cy="60" r="50" fill="none"
+                      stroke={seg.color} strokeWidth="14" strokeLinecap="round"
+                      strokeDasharray={`${seg.arc} ${CIRC}`}
+                      strokeDashoffset={-seg.offset}
+                    />
+                  ))}
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-0">
+                  <span className="font-[DM_Mono] text-[15px] font-bold text-[var(--sl-t1)]">R$ {fmtR$(totalGasto)}</span>
+                  <span className="text-[10px] text-[var(--sl-t2)]">de R$ {fmtR$(totalOrcado)}</span>
+                </div>
+              </div>
+              {/* Legenda: categoria + cor + valor */}
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-2">Por categoria</p>
+                <div className="flex flex-col gap-1.5 max-h-[120px] overflow-y-auto">
+                  {donutSegs.map((seg, i) => (
+                    <div key={i} className="flex items-center gap-2 text-[12px]">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: seg.color }} />
+                      <span className="text-[var(--sl-t1)] truncate flex-1 min-w-0">
+                        {seg.env.category?.name ?? 'Categoria'}
+                      </span>
+                      <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t2)] shrink-0">
+                        R$ {fmtR$(seg.env.gasto)} ({seg.env.pct}%)
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {/* Budget Health Score dots */}
+                <div className="mt-2 pt-2 border-t border-[var(--sl-border)]">
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1.5">Saúde dos Envelopes</p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {activeBudgets.map(env => (
+                      <div key={env.id} className="w-3 h-3 rounded-full" title={`${env.category?.name ?? ''}: ${env.pct}%`}
+                        style={{ background: getEnvColor(env.pct) }} />
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-3 mt-1.5 text-[10px] text-[var(--sl-t3)]">
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#10b981]" />{qtdOk} ok</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f59e0b]" />{qtdAlert} atenção</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f43f5e]" />{qtdOver} estourado{qtdOver !== 1 ? 's' : ''}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Envelopes section */}
+        {isLoading ? (
+          <EnvelopeSkeleton />
+        ) : error ? (
+          <div className="py-6 text-center text-[13px] text-[var(--sl-t2)]">
+            Erro ao carregar. <button onClick={refresh} className="text-[#10b981] underline">Tentar novamente</button>
+          </div>
+        ) : budgets.length === 0 ? (
+          <div className="text-center py-10 px-4 bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl">
+            <span className="text-[36px] block mb-2 opacity-70">💼</span>
+            <h3 className="font-[Syne] text-[15px] font-bold text-[var(--sl-t1)] mb-1">Nenhum orçamento</h3>
+            <p className="text-[12px] text-[var(--sl-t2)] mb-3">Crie envelopes para controlar seus gastos.</p>
+            <button onClick={openCreate} className="inline-flex items-center gap-1.5 font-bold text-[12px] px-4 py-2 rounded-full text-[#03071a]" style={{ background: '#10b981' }}>
+              <Plus size={13} /> Criar primeiro
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-1">Envelopes</div>
+            <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
+              {activeBudgets.map(env => {
+                const color = getEnvColor(env.pct)
+                return (
+                  <div key={env.id} className="flex items-center gap-[10px] px-5 py-[10px] border-b border-[var(--sl-border)] last:border-b-0">
+                    <div className="text-[20px] w-8 text-center shrink-0">{env.category?.icon ?? '💼'}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{env.category?.name ?? 'Categoria'}</div>
+                      <div className="mt-1 h-[4px] bg-[var(--sl-s3)] rounded-[3px] overflow-hidden">
+                        <div className="h-full rounded-[3px]" style={{ width: `${Math.min(env.pct, 100)}%`, background: color }} />
+                      </div>
+                      <div className="text-[11px] text-[var(--sl-t2)] mt-1">R$ {fmtR$(env.gasto)} / R$ {fmtR$(env.amount)}</div>
+                    </div>
+                    <div className="font-[DM_Mono] text-[13px] font-semibold shrink-0" style={{ color }}>{env.pct}%</div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        )}
+
+        {/* Não alocado card */}
+        {!isLoading && naoAlocado > 0 && (
+          <div className="mt-2 px-1">
+            <div className="px-4 py-3 rounded-[10px] flex justify-between items-center"
+              style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.15)' }}>
+              <span className="text-[13px] text-[var(--sl-t2)]">Não alocado</span>
+              <span className="font-[DM_Mono] text-[14px] font-semibold text-[#10b981]">R$ {fmtR$(naoAlocado)}</span>
+            </div>
+          </div>
+        )}
+
+        {/* AI Insight card */}
+        {!isLoading && activeBudgets.length > 0 && (
+          <div className="rounded-2xl p-4 mt-3 flex gap-[10px] items-start" style={{ background: 'rgba(0,85,255,0.07)', border: '1px solid rgba(0,85,255,0.2)' }}>
+            <span className="text-[20px]">🤖</span>
+            <div>
+              <div className="text-[13px] font-semibold text-[var(--sl-t1)] mb-1">Alerta de orçamento</div>
+              <div className="text-[12px] text-[var(--sl-t2)] leading-[1.5]">
+                {qtdOver > 0
+                  ? <>{maiorCategoria} estourou o limite. Revise seus gastos para fechar o mês no azul.</>
+                  : pctGasto >= 70
+                  ? <>Orçamento em {pctGasto}% e faltam {daysLeft} dias. Cuidado com gastos extras.</>
+                  : <>Seus gastos estão controlados em {pctGasto}% do orçamento. Continue assim!</>
+                }
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="h-5" />
+      </FinancasMobileShell>
+
+      {/* ═══════════ DESKTOP VIEW ═══════════ */}
+      <div className="hidden lg:block max-w-[1000px] mx-auto px-6 py-8 pb-20">
+
+        {/* ① Header */}
+        <div className="flex items-center justify-between mb-7 gap-4 flex-wrap">
+          <div>
+            <p className="text-[11px] text-[#10b981] font-bold uppercase tracking-[.07em] mb-1">
+              💰 Finanças
+            </p>
+            <h1 className={cn(
+              'font-[Syne] font-extrabold text-[24px] tracking-tight',
+              'text-sl-grad'
+            )}>
+              Orçamentos
+            </h1>
+          </div>
         <div className="flex items-center gap-2.5 flex-wrap">
           {budgets.length === 0 && prevMonthBudgets.length > 0 && (
             <button
@@ -403,14 +562,16 @@ export default function OrcamentosPage() {
               <ChevronRight size={14} />
             </button>
           </div>
-          <button
-            onClick={openCreate}
-            className="flex items-center gap-1.5 text-[#03071a] font-bold text-[13px] px-[18px] py-[9px] rounded-full border-none shadow-[0_4px_16px_rgba(16,185,129,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
-            style={{ background: '#10b981' }}
-          >
-            <Plus size={14} />
-            Novo Envelope
-          </button>
+          <ProLimitGate module="financas" feature="maxBudgets" currentCount={budgets.length} label={`Limite FREE: ${budgets.length}/5 envelopes`}>
+            <button
+              onClick={openCreate}
+              className="flex items-center gap-1.5 text-[#03071a] font-bold text-[13px] px-[18px] py-[9px] rounded-full border-none shadow-[0_4px_16px_rgba(16,185,129,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
+              style={{ background: '#10b981' }}
+            >
+              <Plus size={14} />
+              Novo Envelope
+            </button>
+          </ProLimitGate>
         </div>
       </div>
 
@@ -428,6 +589,25 @@ export default function OrcamentosPage() {
           delta={`${qtdAlert} em atenção · ${qtdOver} estourado${qtdOver !== 1 ? 's' : ''}`}
           deltaType={qtdOver > 0 ? 'down' : qtdAlert > 0 ? 'warn' : 'up'} />
       </div>
+
+      {/* Budget Health Score dots strip */}
+      {!isLoading && activeBudgets.length > 0 && (
+        <div className="flex items-center gap-4 mb-6 px-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] shrink-0">Saúde</span>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {activeBudgets.map(env => (
+              <div key={env.id} className="w-3.5 h-3.5 rounded-full transition-colors"
+                title={`${env.category?.name ?? ''}: ${env.pct}%`}
+                style={{ background: getEnvColor(env.pct) }} />
+            ))}
+          </div>
+          <div className="flex items-center gap-3 text-[10px] text-[var(--sl-t3)] ml-auto shrink-0">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#10b981]" />{qtdOk}</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f59e0b]" />{qtdAlert}</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f43f5e]" />{qtdOver}</span>
+          </div>
+        </div>
+      )}
 
       {/* ③ Banner 50-30-20 */}
       {monthlyIncome > 0 && showBanner && (
@@ -561,7 +741,9 @@ export default function OrcamentosPage() {
         </>
       )}
 
-      {/* Modals */}
+      </div>
+
+      {/* Modals (shared) */}
       <EnvelopeModal
         open={modalOpen}
         mode={editingBudget ? 'edit' : 'create'}
@@ -581,6 +763,6 @@ export default function OrcamentosPage() {
         onClose={() => setCopyModalOpen(false)}
         onConfirm={handleCopy}
       />
-    </div>
+    </>
   )
 }

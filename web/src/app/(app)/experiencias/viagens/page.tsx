@@ -5,20 +5,18 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   useTrips, useDeleteTrip,
   TRIP_STATUS_LABELS,
   type TripStatus,
 } from '@/hooks/use-experiencias'
 import { TripCard } from '@/components/experiencias/TripCard'
+import { ExperienciasMobile } from '@/components/experiencias/ExperienciasMobile'
 
 type FilterStatus = TripStatus | 'all'
 
 export default function ViagensPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
 
@@ -50,7 +48,12 @@ export default function ViagensPage() {
   ]
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    {/* Mobile — usa aba Viagens do ExperienciasMobile */}
+    <ExperienciasMobile />
+
+    {/* Desktop */}
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
@@ -61,15 +64,12 @@ export default function ViagensPage() {
           <ArrowLeft size={16} />
           Experiências
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           🗺️ Minhas Viagens
         </h1>
         <button
           onClick={() => router.push('/experiencias/nova')}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#06b6d4] text-[#03071a] hover:opacity-90 transition-opacity"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#ec4899] text-[#03071a] hover:opacity-90 transition-opacity"
         >
           <Plus size={16} />
           Nova Viagem
@@ -87,7 +87,7 @@ export default function ViagensPage() {
               className={cn(
                 'px-3 py-1.5 rounded-[10px] text-[12px] font-medium border transition-all',
                 filterStatus === f.value
-                  ? 'bg-[#06b6d4]/10 border-[#06b6d4] text-[var(--sl-t1)]'
+                  ? 'bg-[#ec4899]/10 border-[#ec4899] text-[var(--sl-t1)]'
                   : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
               )}
             >
@@ -123,7 +123,7 @@ export default function ViagensPage() {
           {filterStatus === 'all' && (
             <button
               onClick={() => router.push('/experiencias/nova')}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#06b6d4] text-[#03071a] hover:opacity-90"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#ec4899] text-[#03071a] hover:opacity-90"
             >
               <Plus size={15} />
               Planejar viagem
@@ -143,5 +143,6 @@ export default function ViagensPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

@@ -101,8 +101,8 @@ export default function CadastroPage() {
 
   return (
     <>
-      <h2 className="form-title">Criar conta grátis.</h2>
-      <p className="form-subtitle">Comece sua jornada de organização hoje.</p>
+      <h2 className="form-title max-[900px]:text-center">Criar conta grátis.</h2>
+      <p className="form-subtitle max-[900px]:text-center">Comece sua jornada de organização hoje.</p>
 
       {/* Google */}
       <button type="button" className="btn-google" onClick={handleGoogleSignUp}>

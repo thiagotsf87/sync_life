@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife Mobile — Tempo (12 telas · v3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══ DESIGN SYSTEM — SyncLife Dark Foco (Navy) ═══ */
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;
+  --fin:#10b981;--futuro:#0055ff;--corpo:#f97316;
+  --mente:#eab308;--patrimonio:#3b82f6;--carreira:#ec4899;--exp:#14b8a6;
+  --tempo:#06b6d4;--tempo-g:rgba(6,182,212,0.14);
+  --green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--orange:#f97316;
+  --radius:16px;--radius-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0e1a;font-family:'DM Sans',sans-serif;color:var(--t1);}
+
+/* ═══ Demo shell ═══ */
+.demo-page{padding:40px 20px 80px;max-width:1600px;margin:0 auto;}
+.demo-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#06b6d4,#0055ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.demo-subtitle{font-size:14px;color:var(--t2);margin-bottom:10px;}
+.demo-group{margin-top:48px;margin-bottom:14px;padding:14px 0 8px;border-top:1px solid var(--border);}
+.demo-group-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--tempo);letter-spacing:0.5px;}
+.demo-group-sub{font-size:12px;color:var(--t3);margin-top:3px;}
+.screens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(375px,1fr));gap:48px 28px;margin-top:18px;}
+.screen-wrapper{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.screen-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:1px;text-align:center;}
+.screen-tag{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.tag-new{background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3);}
+.tag-improved{background:rgba(6,182,212,0.15);color:#06b6d4;border:1px solid rgba(6,182,212,0.3);}
+.tag-priority{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);}
+
+/* ═══ Phone frame — AUTO HEIGHT (sem scroll) ═══ */
+.phone{
+  width:375px;min-height:500px;
+  background:var(--bg);border-radius:48px;
+  border:2px solid rgba(255,255,255,0.1);
+  overflow:hidden;position:relative;
+  box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);
+  padding-top:54px;padding-bottom:24px;
+}
+.dynamic-island{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:100;}
+.status-bar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;z-index:50;}
+.status-time{font-size:15px;font-weight:600;color:var(--t1);}
+.screen-content{padding-bottom:12px;}
+
+/* ═══ Module header ═══ */
+.mod-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px;}
+.mod-header-left{display:flex;align-items:center;gap:8px;}
+.mod-icon{font-size:20px;}
+.mod-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);}
+.mod-badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;background:var(--tempo-g);color:var(--tempo);}
+
+/* ═══ Sub-nav tabs (underline style — padrão Futuro) ═══ */
+.sub-nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.sub-nav-tab{padding:8px 12px 10px;font-size:13px;color:var(--t3);position:relative;white-space:nowrap;cursor:pointer;}
+.sub-nav-tab.active{color:var(--t1);font-weight:600;}
+.sub-nav-tab.active::after{content:'';position:absolute;bottom:-1px;left:6px;right:6px;height:3px;border-radius:3px 3px 0 0;background:var(--tempo);}
+
+/* ═══ Shared components ═══ */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-cyan{background:rgba(6,182,212,0.12);color:#06b6d4;}
+.badge-green{background:rgba(16,185,129,0.12);color:#10b981;}
+.badge-yellow{background:rgba(234,179,8,0.12);color:#eab308;}
+.badge-blue{background:rgba(0,85,255,0.12);color:#60a5fa;}
+.badge-red{background:rgba(244,63,94,0.12);color:#f43f5e;}
+.badge-orange{background:rgba(249,115,22,0.12);color:#f97316;}
+.badge-pink{background:rgba(236,72,153,0.12);color:#ec4899;}
+.badge-purple{background:rgba(139,92,246,0.12);color:#a78bfa;}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;padding:0 20px 8px;margin-top:4px;}
+.progress-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;}
+.kpi-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
+.kpi-label{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.kpi-value{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--t1);}
+.kpi-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.header-btn{width:36px;height:36px;border-radius:10px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--t2);}
+
+/* ═══ Event cards ═══ */
+.event-card{margin:0 16px 8px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:flex-start;gap:12px;}
+.event-time-col{text-align:right;flex-shrink:0;min-width:44px;}
+.event-time{font-family:'DM Mono',monospace;font-size:13px;color:var(--t2);font-weight:500;}
+.event-bar{width:3px;border-radius:2px;align-self:stretch;flex-shrink:0;min-height:40px;}
+.event-info{flex:1;}
+.event-title{font-size:14px;font-weight:500;color:var(--t1);}
+.event-sub{font-size:12px;color:var(--t2);margin-top:2px;}
+.event-tags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+
+/* ═══ Week strip ═══ */
+.week-strip{display:flex;gap:6px;padding:0 16px 12px;}
+.day-bubble{display:flex;flex-direction:column;align-items:center;padding:8px 0;border-radius:14px;flex:1;min-width:40px;background:var(--s1);border:1px solid var(--border);}
+.day-bubble.today{background:var(--tempo-g);border-color:rgba(6,182,212,0.4);}
+.day-name{font-size:10px;color:var(--t2);font-weight:500;margin-bottom:3px;}
+.day-num{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--t1);}
+.day-bubble.today .day-name{color:var(--tempo);}
+.day-bubble.today .day-num{color:var(--tempo);}
+.day-dots{display:flex;gap:3px;margin-top:4px;}
+.day-dot{width:5px;height:5px;border-radius:50%;}
+
+/* ═══ Inner page header ═══ */
+.inner-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;}
+.inner-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);}
+
+/* ═══ Wizard ═══ */
+.wizard-steps{display:flex;gap:4px;padding:0 20px 16px;}
+.wizard-dot{width:32px;height:5px;border-radius:3px;background:var(--s3);}
+.wizard-dot.active{background:var(--tempo);}
+.wizard-dot.done{background:rgba(6,182,212,0.4);}
+.input-field{width:100%;padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;}
+.input-label{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px;display:block;}
+.select-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.select-card{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 12px;text-align:center;cursor:pointer;}
+.select-card.selected{border-color:var(--tempo);background:var(--tempo-g);}
+.select-card .icon{font-size:24px;margin-bottom:6px;}
+.select-card .label{font-size:13px;font-weight:500;color:var(--t1);}
+.select-card .desc{font-size:11px;color:var(--t2);margin-top:2px;}
+.btn-primary{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--tempo);color:#000;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;text-align:center;border:none;}
+.btn-secondary{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--s1);color:var(--t2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;text-align:center;border:1px solid var(--border);}
+
+/* ═══ Week grid (semanal) ═══ */
+.week-grid{display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:1px;padding:0 16px 12px;}
+.wg-header{font-size:10px;color:var(--t2);text-align:center;padding:6px 0;font-weight:600;}
+.wg-header.today-col{color:var(--tempo);}
+.wg-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);padding:12px 4px 12px 0;text-align:right;}
+.wg-slot{background:var(--s1);border:1px solid var(--border);border-radius:6px;min-height:44px;position:relative;}
+.wg-event{position:absolute;left:2px;right:2px;border-radius:4px;padding:3px 5px;font-size:10px;font-weight:500;color:#000;overflow:hidden;}
+.wg-now{position:absolute;left:0;right:0;height:2px;background:var(--red);z-index:10;}
+
+/* ═══ Month grid ═══ */
+.month-header{display:flex;align-items:center;justify-content:space-between;padding:0 20px 12px;}
+.month-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);}
+.month-nav{display:flex;gap:8px;}
+.month-nav-btn{width:32px;height:32px;border-radius:8px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:14px;}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 16px 12px;}
+.mg-day-label{font-size:10px;color:var(--t3);text-align:center;padding:6px 0;font-weight:600;}
+.mg-day{display:flex;flex-direction:column;align-items:center;padding:8px 4px;border-radius:8px;min-height:44px;cursor:pointer;}
+.mg-day.today{background:var(--tempo-g);border:1px solid rgba(6,182,212,0.3);}
+.mg-day.other-month{opacity:0.3;}
+.mg-day-num{font-family:'DM Mono',monospace;font-size:13px;color:var(--t1);margin-bottom:3px;}
+.mg-day.today .mg-day-num{color:var(--tempo);font-weight:700;}
+.mg-dots{display:flex;gap:2px;}
+
+/* ═══ Review ═══ */
+.review-stat{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);}
+.review-stat:last-child{border-bottom:none;}
+.review-num{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--tempo);min-width:50px;}
+.review-label{font-size:13px;color:var(--t2);}
+.review-bar{height:20px;background:var(--s3);border-radius:4px;overflow:hidden;margin:0 16px 8px;}
+.review-bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:600;color:#000;}
+
+/* ═══ Timer ═══ */
+.timer-ring{width:200px;height:200px;margin:16px auto;position:relative;}
+.timer-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.timer-value{font-family:'DM Mono',monospace;font-size:48px;font-weight:700;color:var(--t1);}
+.timer-label{font-size:13px;color:var(--t2);margin-top:4px;}
+.timer-controls{display:flex;gap:12px;justify-content:center;padding:16px 20px;}
+.timer-btn{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-size:20px;}
+.timer-btn-primary{background:var(--tempo);color:#000;}
+.timer-btn-secondary{background:var(--s1);border:1px solid var(--border);color:var(--t2);}
+</style>
+</head>
+<body>
+<div class="demo-page">
+  <div class="demo-title">⏳ Tempo — 12 telas mobile (v3)</div>
+  <div class="demo-subtitle">Protótipo completo · Dark Foco · 375px · Cor: #06b6d4 · Navegação padrão Futuro · Telas estáticas full-height · Sem barras de rolagem</div>
+
+  <!-- ═════════════════════════════════════════════════
+       GRUPO A — VISUALIZAÇÃO
+       ═════════════════════════════════════════════════ -->
+  <div class="demo-group">
+    <div class="demo-group-title">📊 Grupo A — Visualização</div>
+    <div class="demo-group-sub">Dashboard, agenda diária, visão semanal e mensal</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ 01: DASHBOARD ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">01 — Dashboard</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left"><span class="mod-icon">⏳</span><span class="mod-name">Tempo</span></div>
+            <span class="mod-badge">5 hoje</span>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Agenda</div>
+            <div class="sub-nav-tab">Semanal</div>
+            <div class="sub-nav-tab">Mensal</div>
+            <div class="sub-nav-tab">Review</div>
+          </div>
+          <!-- KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-label">Eventos hoje</div><div class="kpi-value" style="color:var(--tempo);">5</div><div class="kpi-sub">3 concluídos</div></div>
+            <div class="kpi-card"><div class="kpi-label">Horas planejadas</div><div class="kpi-value">6,5<span style="font-size:13px;color:var(--t2);">h</span></div><div class="kpi-sub">de 8h disponíveis</div></div>
+            <div class="kpi-card"><div class="kpi-label">Conclusão semana</div><div class="kpi-value" style="color:var(--green);">78<span style="font-size:13px;">%</span></div><div class="kpi-sub">18 de 23 eventos</div></div>
+            <div class="kpi-card"><div class="kpi-label">Próximo</div><div class="kpi-value" style="font-size:15px;">Daily</div><div class="kpi-sub">09:00 — 30min</div></div>
+          </div>
+          <!-- Timeline hoje -->
+          <div class="section-title">Próximos</div>
+          <div class="event-card">
+            <div class="event-time-col"><div class="event-time">09:00</div></div>
+            <div class="event-bar" style="background:var(--carreira);"></div>
+            <div class="event-info">
+              <div class="event-title">Daily com time</div>
+              <div class="event-sub">📍 Google Meet · 30min</div>
+              <div class="event-tags"><div class="badge badge-pink">💼 Carreira</div></div>
+            </div>
+          </div>
+          <div class="event-card">
+            <div class="event-time-col"><div class="event-time">15:00</div></div>
+            <div class="event-bar" style="background:var(--corpo);"></div>
+            <div class="event-info">
+              <div class="event-title">Dentista — Dr. Silva</div>
+              <div class="event-sub">📍 Clínica Central · R$ 280</div>
+              <div class="event-tags"><div class="badge badge-orange">🏃 Corpo</div><div class="badge badge-green">💰 R$ 280</div></div>
+            </div>
+          </div>
+          <!-- Distribuição semanal -->
+          <div class="section-title">Tempo por área — Semana</div>
+          <div style="padding:0 16px 6px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="font-size:11px;color:var(--carreira);width:60px;">Carreira</span><div style="flex:1;height:12px;background:var(--s3);border-radius:3px;overflow:hidden;"><div style="height:100%;width:52%;background:var(--carreira);border-radius:3px;"></div></div><span style="font-family:'DM Mono';font-size:11px;color:var(--t2);min-width:30px;text-align:right;">12h</span></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="font-size:11px;color:var(--mente);width:60px;">Mente</span><div style="flex:1;height:12px;background:var(--s3);border-radius:3px;overflow:hidden;"><div style="height:100%;width:22%;background:var(--mente);border-radius:3px;"></div></div><span style="font-family:'DM Mono';font-size:11px;color:var(--t2);min-width:30px;text-align:right;">4,5h</span></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="font-size:11px;color:var(--corpo);width:60px;">Corpo</span><div style="flex:1;height:12px;background:var(--s3);border-radius:3px;overflow:hidden;"><div style="height:100%;width:13%;background:var(--corpo);border-radius:3px;"></div></div><span style="font-family:'DM Mono';font-size:11px;color:var(--t2);min-width:30px;text-align:right;">2h</span></div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--fin);width:60px;">Finanças</span><div style="flex:1;height:12px;background:var(--s3);border-radius:3px;overflow:hidden;"><div style="height:100%;width:9%;background:var(--fin);border-radius:3px;"></div></div><span style="font-family:'DM Mono';font-size:11px;color:var(--t2);min-width:30px;text-align:right;">1,5h</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 02: AGENDA (DIA) ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">02 — Agenda Diária ⭐</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left"><span class="mod-icon">⏳</span><span class="mod-name">Tempo</span></div>
+            <div class="header-btn" style="font-size:18px;">+</div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab active">Agenda</div>
+            <div class="sub-nav-tab">Semanal</div>
+            <div class="sub-nav-tab">Mensal</div>
+            <div class="sub-nav-tab">Review</div>
+          </div>
+          <!-- Week strip -->
+          <div class="week-strip">
+            <div class="day-bubble today"><div class="day-name">DOM</div><div class="day-num">1</div><div class="day-dots"><div class="day-dot" style="background:var(--carreira);"></div><div class="day-dot" style="background:var(--corpo);"></div><div class="day-dot" style="background:var(--mente);"></div></div></div>
+            <div class="day-bubble"><div class="day-name">SEG</div><div class="day-num">2</div><div class="day-dots"><div class="day-dot" style="background:var(--futuro);"></div></div></div>
+            <div class="day-bubble"><div class="day-name">TER</div><div class="day-num">3</div><div class="day-dots"></div></div>
+            <div class="day-bubble"><div class="day-name">QUA</div><div class="day-num">4</div><div class="day-dots"><div class="day-dot" style="background:var(--tempo);"></div></div></div>
+            <div class="day-bubble"><div class="day-name">QUI</div><div class="day-num">5</div><div class="day-dots"></div></div>
+            <div class="day-bubble"><div class="day-name">SEX</div><div class="day-num">6</div><div class="day-dots"><div class="day-dot" style="background:var(--mente);"></div></div></div>
+            <div class="day-bubble"><div class="day-name">SAB</div><div class="day-num">7</div><div class="day-dots"></div></div>
+          </div>
+          <div class="section-title">Domingo, 1 de Março</div>
+          <div class="event-card">
+            <div class="event-time-col"><div class="event-time">09:00</div><div class="event-time" style="font-size:11px;">10:00</div></div>
+            <div class="event-bar" style="background:var(--carreira);"></div>
+            <div class="event-info"><div class="event-title">Daily com time</div><div class="event-sub">📍 Google Meet · 1h</div><div class="event-tags"><div class="badge badge-pink">💼 Carreira</div></div></div>
+          </div>
+          <div class="event-card">
+            <div class="event-time-col"><div class="event-time">15:00</div><div class="event-time" style="font-size:11px;">16:30</div></div>
+            <div class="event-bar" style="background:var(--corpo);"></div>
+            <div class="event-info"><div class="event-title">Dentista — Dr. Silva</div><div class="event-sub">📍 Clínica Central · R$ 280</div><div class="event-tags"><div class="badge badge-orange">🏃 Corpo</div><div class="badge badge-green">💰 R$ 280</div></div></div>
+          </div>
+          <div class="event-card">
+            <div class="event-time-col"><div class="event-time">19:00</div><div class="event-time" style="font-size:11px;">20:00</div></div>
+            <div class="event-bar" style="background:var(--mente);"></div>
+            <div class="event-info"><div class="event-title">Aula de inglês</div><div class="event-sub">📍 Online · Duolingo + Prof.</div><div class="event-tags"><div class="badge badge-yellow">🧠 Mente</div></div></div>
+          </div>
+          <div class="section-title" style="margin-top:8px;">Amanhã — 2 eventos</div>
+          <div class="event-card" style="opacity:0.6;">
+            <div class="event-time-col"><div class="event-time">09:00</div></div>
+            <div class="event-bar" style="background:var(--futuro);"></div>
+            <div class="event-info"><div class="event-title">Weekly Review ✍️</div><div class="event-sub">SyncLife · 5min</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 03: VISÃO SEMANAL ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">03 — Visão Semanal</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left"><span class="mod-icon">⏳</span><span class="mod-name">Tempo</span></div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Agenda</div>
+            <div class="sub-nav-tab active">Semanal</div>
+            <div class="sub-nav-tab">Mensal</div>
+            <div class="sub-nav-tab">Review</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 10px;">
+            <span style="font-size:14px;color:var(--t2);">←</span>
+            <span style="font-family:'Syne';font-size:14px;font-weight:600;color:var(--t1);">1 – 7 Mar 2026</span>
+            <span style="font-size:14px;color:var(--t2);">→</span>
+          </div>
+          <div class="week-grid">
+            <div class="wg-header"></div><div class="wg-header today-col">DOM 1</div><div class="wg-header">SEG 2</div><div class="wg-header">TER 3</div>
+            <div class="wg-time">08:00</div><div class="wg-slot"></div><div class="wg-slot"></div><div class="wg-slot"></div>
+            <div class="wg-time">09:00</div><div class="wg-slot"><div class="wg-event" style="background:var(--carreira);top:2px;height:38px;">Daily</div></div><div class="wg-slot"><div class="wg-event" style="background:var(--futuro);top:2px;height:20px;">Review</div></div><div class="wg-slot"></div>
+            <div class="wg-time">10:00</div><div class="wg-slot"></div><div class="wg-slot"><div class="wg-event" style="background:var(--mente);top:2px;height:38px;">React</div></div><div class="wg-slot"><div class="wg-event" style="background:var(--mente);top:2px;height:38px;">Inglês</div></div>
+            <div class="wg-time">11:00</div><div class="wg-slot"></div><div class="wg-slot"></div><div class="wg-slot"></div>
+            <div class="wg-time">14:00</div><div class="wg-slot"></div><div class="wg-slot"><div class="wg-event" style="background:var(--carreira);top:2px;height:38px;">1:1 chefe</div></div><div class="wg-slot"></div>
+            <div class="wg-time">15:00</div><div class="wg-slot"><div class="wg-event" style="background:var(--corpo);top:2px;height:28px;">Dentista</div></div><div class="wg-slot"></div><div class="wg-slot"><div class="wg-event" style="background:var(--corpo);top:2px;height:20px;">🏋️ Acad.</div></div>
+            <div class="wg-time">19:00</div><div class="wg-slot"><div class="wg-event" style="background:var(--mente);top:2px;height:20px;">Inglês</div></div><div class="wg-slot"></div><div class="wg-slot"></div>
+          </div>
+          <div class="card" style="background:rgba(6,182,212,0.06);border-color:rgba(6,182,212,0.15);margin-top:4px;">
+            <div style="font-size:12px;color:var(--t2);line-height:1.5;">📊 Esta semana: <span style="color:var(--tempo);font-weight:600;">20h planejadas</span> em 5 módulos. Terça tem 2 slots livres à tarde.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 04: VISÃO MENSAL ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">04 — Visão Mensal</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left"><span class="mod-icon">⏳</span><span class="mod-name">Tempo</span></div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Agenda</div>
+            <div class="sub-nav-tab">Semanal</div>
+            <div class="sub-nav-tab active">Mensal</div>
+            <div class="sub-nav-tab">Review</div>
+          </div>
+          <div class="month-header">
+            <div class="month-nav-btn">←</div>
+            <div class="month-title">Março 2026</div>
+            <div class="month-nav-btn">→</div>
+          </div>
+          <div class="month-grid">
+            <div class="mg-day-label">D</div><div class="mg-day-label">S</div><div class="mg-day-label">T</div><div class="mg-day-label">Q</div><div class="mg-day-label">Q</div><div class="mg-day-label">S</div><div class="mg-day-label">S</div>
+            <!-- Semana 1 -->
+            <div class="mg-day today"><div class="mg-day-num">1</div><div class="mg-dots"><div class="day-dot" style="background:var(--carreira);"></div><div class="day-dot" style="background:var(--corpo);"></div><div class="day-dot" style="background:var(--mente);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">2</div><div class="mg-dots"><div class="day-dot" style="background:var(--futuro);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">3</div><div class="mg-dots"><div class="day-dot" style="background:var(--mente);"></div><div class="day-dot" style="background:var(--corpo);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">4</div><div class="mg-dots"><div class="day-dot" style="background:var(--tempo);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">5</div><div class="mg-dots"></div></div>
+            <div class="mg-day"><div class="mg-day-num">6</div><div class="mg-dots"><div class="day-dot" style="background:var(--mente);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">7</div><div class="mg-dots"></div></div>
+            <!-- Semana 2 -->
+            <div class="mg-day"><div class="mg-day-num">8</div><div class="mg-dots"><div class="day-dot" style="background:var(--carreira);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">9</div><div class="mg-dots"><div class="day-dot" style="background:var(--futuro);"></div><div class="day-dot" style="background:var(--mente);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">10</div><div class="mg-dots"><div class="day-dot" style="background:var(--corpo);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">11</div><div class="mg-dots"></div></div>
+            <div class="mg-day"><div class="mg-day-num">12</div><div class="mg-dots"><div class="day-dot" style="background:var(--carreira);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">13</div><div class="mg-dots"><div class="day-dot" style="background:var(--mente);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">14</div><div class="mg-dots"></div></div>
+            <!-- Semana 3 -->
+            <div class="mg-day"><div class="mg-day-num">15</div><div class="mg-dots"><div class="day-dot" style="background:var(--fin);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">16</div><div class="mg-dots"><div class="day-dot" style="background:var(--carreira);"></div><div class="day-dot" style="background:var(--mente);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">17</div><div class="mg-dots"><div class="day-dot" style="background:var(--corpo);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">18</div><div class="mg-dots"></div></div>
+            <div class="mg-day"><div class="mg-day-num">19</div><div class="mg-dots"><div class="day-dot" style="background:var(--patrimonio);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">20</div><div class="mg-dots"><div class="day-dot" style="background:var(--mente);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">21</div><div class="mg-dots"></div></div>
+            <!-- Semana 4 -->
+            <div class="mg-day"><div class="mg-day-num">22</div><div class="mg-dots"></div></div>
+            <div class="mg-day"><div class="mg-day-num">23</div><div class="mg-dots"><div class="day-dot" style="background:var(--carreira);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">24</div><div class="mg-dots"><div class="day-dot" style="background:var(--mente);"></div><div class="day-dot" style="background:var(--corpo);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">25</div><div class="mg-dots"></div></div>
+            <div class="mg-day"><div class="mg-day-num">26</div><div class="mg-dots"><div class="day-dot" style="background:var(--exp);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">27</div><div class="mg-dots"></div></div>
+            <div class="mg-day"><div class="mg-day-num">28</div><div class="mg-dots"></div></div>
+            <!-- Semana 5 -->
+            <div class="mg-day"><div class="mg-day-num">29</div><div class="mg-dots"><div class="day-dot" style="background:var(--fin);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">30</div><div class="mg-dots"><div class="day-dot" style="background:var(--futuro);"></div></div></div>
+            <div class="mg-day"><div class="mg-day-num">31</div><div class="mg-dots"></div></div>
+            <div class="mg-day other-month"><div class="mg-day-num">1</div></div>
+            <div class="mg-day other-month"><div class="mg-day-num">2</div></div>
+            <div class="mg-day other-month"><div class="mg-day-num">3</div></div>
+            <div class="mg-day other-month"><div class="mg-day-num">4</div></div>
+          </div>
+          <!-- Mini preview -->
+          <div class="card" style="margin-top:4px;">
+            <div style="font-size:12px;font-weight:600;color:var(--tempo);margin-bottom:6px;">Hoje, 1 de Março — 3 eventos</div>
+            <div style="font-size:12px;color:var(--t2);line-height:1.8;">09:00 Daily com time · 15:00 Dentista · 19:00 Inglês</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════
+       GRUPO B — CRUD
+       ═════════════════════════════════════════════════ -->
+  <div class="demo-group">
+    <div class="demo-group-title">➕ Grupo B — CRUD</div>
+    <div class="demo-group-sub">Criar evento (wizard 2 passos) e detalhe do evento</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ 05: CRIAR EVENTO — STEP 1 ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">05 — Criar Evento · Passo 1</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="inner-header">
+            <span style="font-size:18px;color:var(--t2);">←</span>
+            <span class="inner-title">Novo Evento</span>
+            <span style="font-size:13px;color:var(--t3);">1/2</span>
+          </div>
+          <div class="wizard-steps"><div class="wizard-dot active"></div><div class="wizard-dot"></div></div>
+          <div style="padding:0 20px;">
+            <div style="margin-bottom:16px;">
+              <div class="input-label">Título</div>
+              <div class="input-field" style="color:var(--t2);">Ex: Reunião com cliente</div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <div class="input-label">Tipo</div>
+              <div class="select-grid">
+                <div class="select-card selected"><div class="icon">📅</div><div class="label">Compromisso</div></div>
+                <div class="select-card"><div class="icon">✅</div><div class="label">Tarefa</div></div>
+                <div class="select-card"><div class="icon">🎯</div><div class="label">Foco</div></div>
+                <div class="select-card"><div class="icon">🔔</div><div class="label">Lembrete</div></div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+              <div><div class="input-label">Data</div><div class="input-field">01/03/2026</div></div>
+              <div><div class="input-label">Hora início</div><div class="input-field">09:00</div></div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <div class="input-label">Duração</div>
+              <div style="display:flex;gap:8px;">
+                <div style="padding:8px 16px;border-radius:20px;background:var(--tempo-g);border:1px solid rgba(6,182,212,0.3);color:var(--tempo);font-size:13px;font-weight:500;">30min</div>
+                <div style="padding:8px 16px;border-radius:20px;background:var(--s1);border:1px solid var(--border);color:var(--t2);font-size:13px;">1h</div>
+                <div style="padding:8px 16px;border-radius:20px;background:var(--s1);border:1px solid var(--border);color:var(--t2);font-size:13px;">2h</div>
+                <div style="padding:8px 16px;border-radius:20px;background:var(--s1);border:1px solid var(--border);color:var(--t2);font-size:13px;">Dia todo</div>
+              </div>
+            </div>
+            <div style="margin-top:20px;"><div class="btn-primary">Continuar →</div></div>
+            <div style="margin-top:8px;text-align:center;font-size:12px;color:var(--t3);cursor:pointer;">Criar rápido (pular detalhes)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 06: CRIAR EVENTO — STEP 2 ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">06 — Criar Evento · Passo 2</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="inner-header">
+            <span style="font-size:18px;color:var(--t2);">←</span>
+            <span class="inner-title">Detalhes</span>
+            <span style="font-size:13px;color:var(--t3);">2/2</span>
+          </div>
+          <div class="wizard-steps"><div class="wizard-dot done"></div><div class="wizard-dot active"></div></div>
+          <div style="padding:0 20px;">
+            <div style="margin-bottom:16px;">
+              <div class="input-label">Vincular a módulo</div>
+              <div class="input-field" style="display:flex;align-items:center;gap:8px;">🏃 <span>Corpo</span> <span style="margin-left:auto;color:var(--t3);">▼</span></div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <div class="input-label">Local</div>
+              <div class="input-field" style="color:var(--t2);">Clínica Central, Rua das Flores 123</div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <div class="input-label">Custo associado (R$)</div>
+              <div class="input-field">280,00</div>
+              <div style="font-size:11px;color:var(--tempo);margin-top:4px;">💰 Será criada transação de R$ 280 em Finanças</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+              <div><div class="input-label">Repetição</div><div class="input-field" style="font-size:13px;">Nunca <span style="float:right;color:var(--t3);">▼</span></div></div>
+              <div><div class="input-label">Lembrete</div><div class="input-field" style="font-size:13px;">1 hora <span style="float:right;color:var(--t3);">▼</span></div></div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <div class="input-label">Notas</div>
+              <div class="input-field" style="min-height:60px;color:var(--t2);">Levar exames anteriores</div>
+            </div>
+            <div style="margin-top:16px;"><div class="btn-primary">Criar evento</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 07: DETALHE DO EVENTO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">07 — Detalhe do Evento</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="inner-header">
+            <span style="font-size:18px;color:var(--t2);">←</span>
+            <span class="inner-title">Detalhe</span>
+            <span style="font-size:16px;color:var(--t2);">✏️</span>
+          </div>
+          <!-- Hero -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(6,182,212,0.12),rgba(249,115,22,0.08));border-color:rgba(6,182,212,0.2);">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <div style="width:44px;height:44px;border-radius:12px;background:rgba(249,115,22,0.15);display:flex;align-items:center;justify-content:center;font-size:22px;">🦷</div>
+              <div><div style="font-family:'Syne';font-size:17px;font-weight:700;color:var(--t1);">Dentista — Dr. Silva</div><div style="font-size:12px;color:var(--t2);margin-top:2px;">Compromisso</div></div>
+            </div>
+            <div style="display:flex;gap:6px;"><div class="badge badge-orange">🏃 Corpo</div><div class="badge badge-green">💰 R$ 280</div></div>
+          </div>
+          <!-- Detalhes -->
+          <div style="padding:0 20px;">
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);"><span style="font-size:16px;">📅</span><div><div style="font-size:13px;color:var(--t1);">Domingo, 1 de Março 2026</div><div style="font-size:12px;color:var(--t2);">15:00 — 16:30 (1h30)</div></div></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);"><span style="font-size:16px;">📍</span><div style="font-size:13px;color:var(--t1);">Clínica Central, Rua das Flores 123</div></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);"><span style="font-size:16px;">🔔</span><div style="font-size:13px;color:var(--t1);">Lembrete: 1 hora antes</div></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);"><span style="font-size:16px;">📝</span><div style="font-size:13px;color:var(--t2);">Levar exames anteriores</div></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 0;"><span style="font-size:16px;">🔗</span><div style="font-size:13px;color:var(--tempo);cursor:pointer;">→ Ver consulta no módulo Corpo</div></div>
+          </div>
+          <!-- Ações -->
+          <div style="display:flex;gap:8px;padding:16px 20px;">
+            <div style="flex:1;padding:12px;border-radius:var(--radius-sm);background:var(--tempo);color:#000;font-family:'Syne';font-size:14px;font-weight:700;text-align:center;">✓ Concluir</div>
+            <div style="padding:12px 16px;border-radius:var(--radius-sm);background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.2);color:var(--red);font-size:14px;text-align:center;">Excluir</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════
+       GRUPO C — ESPECÍFICO
+       ═════════════════════════════════════════════════ -->
+  <div class="demo-group">
+    <div class="demo-group-title">✦ Grupo C — Funcionalidades Específicas</div>
+    <div class="demo-group-sub">Review semanal e timer de foco (PRO)</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ 08: REVIEW SEMANAL ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">08 — Review Semanal (PRO)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left"><span class="mod-icon">⏳</span><span class="mod-name">Tempo</span></div>
+            <span class="mod-badge">Semana 9</span>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Agenda</div>
+            <div class="sub-nav-tab">Semanal</div>
+            <div class="sub-nav-tab">Mensal</div>
+            <div class="sub-nav-tab active">Review</div>
+          </div>
+          <div class="card" style="text-align:center;background:linear-gradient(135deg,rgba(6,182,212,0.1),rgba(0,85,255,0.06));border-color:rgba(6,182,212,0.2);">
+            <div style="font-family:'Syne';font-size:15px;font-weight:700;color:var(--t1);margin-bottom:4px;">📊 Review — 24 Fev a 1 Mar</div>
+            <div style="font-size:12px;color:var(--t2);">Como foi sua semana?</div>
+          </div>
+          <div class="review-stat"><div class="review-num">23</div><div><div style="font-size:13px;color:var(--t1);">Eventos totais</div><div class="review-label">+3 vs semana passada</div></div></div>
+          <div class="review-stat"><div class="review-num" style="color:var(--green);">78%</div><div><div style="font-size:13px;color:var(--t1);">Taxa de conclusão</div><div class="review-label">18 de 23 concluídos</div></div></div>
+          <div class="review-stat"><div class="review-num">20h</div><div><div style="font-size:13px;color:var(--t1);">Horas dedicadas</div><div class="review-label">Média 4h/dia útil</div></div></div>
+          <div class="section-title" style="margin-top:8px;">Distribuição</div>
+          <div style="padding:0 16px 4px;">
+            <div class="review-bar"><div class="review-bar-fill" style="width:55%;background:var(--carreira);">Carreira 55%</div></div>
+            <div class="review-bar"><div class="review-bar-fill" style="width:22%;background:var(--mente);">Mente 22%</div></div>
+            <div class="review-bar"><div class="review-bar-fill" style="width:13%;background:var(--corpo);">Corpo 13%</div></div>
+            <div class="review-bar"><div class="review-bar-fill" style="width:10%;background:var(--fin);">Fin 10%</div></div>
+          </div>
+          <div class="section-title">Pendências</div>
+          <div class="event-card" style="border-left:3px solid var(--yellow);">
+            <div class="event-info"><div class="event-title" style="font-size:13px;">⚠️ Relatório financeiro</div><div class="event-sub">Arrastar para próxima semana?</div></div>
+            <div style="display:flex;gap:4px;"><div style="padding:6px 10px;border-radius:8px;background:var(--tempo-g);color:var(--tempo);font-size:11px;font-weight:600;">Mover</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 09: TIMER FOCO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">09 — Timer Foco (PRO)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="inner-header">
+            <span style="font-size:18px;color:var(--t2);">←</span>
+            <span class="inner-title">Sessão de Foco</span>
+            <span></span>
+          </div>
+          <div style="text-align:center;padding:8px 20px;">
+            <div class="badge badge-yellow" style="margin-bottom:8px;">🧠 React Avançado — Módulo 5</div>
+          </div>
+          <div class="timer-ring">
+            <svg width="200" height="200" viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="88" fill="none" stroke="var(--s3)" stroke-width="8"/>
+              <circle cx="100" cy="100" r="88" fill="none" stroke="var(--tempo)" stroke-width="8" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="166" transform="rotate(-90 100 100)"/>
+            </svg>
+            <div class="timer-center">
+              <div class="timer-value">18:24</div>
+              <div class="timer-label">de 25:00</div>
+            </div>
+          </div>
+          <div class="timer-controls">
+            <div class="timer-btn timer-btn-secondary">⏸</div>
+            <div class="timer-btn timer-btn-primary" style="width:72px;height:72px;font-size:24px;">⏹</div>
+            <div class="timer-btn timer-btn-secondary">⏭</div>
+          </div>
+          <div class="card" style="margin-top:8px;text-align:center;">
+            <div style="font-size:12px;color:var(--t2);margin-bottom:4px;">Sessão 3 de 4 hoje</div>
+            <div class="progress-bar" style="height:8px;"><div class="progress-fill" style="width:75%;background:linear-gradient(90deg,var(--tempo),rgba(6,182,212,0.5));"></div></div>
+            <div style="font-size:11px;color:var(--tempo);margin-top:6px;">🔥 Streak: 5 dias consecutivos</div>
+          </div>
+          <div class="card" style="background:rgba(6,182,212,0.06);border-color:rgba(6,182,212,0.15);">
+            <div style="font-size:12px;color:var(--t2);line-height:1.5;">🎯 Ao concluir: <span style="color:var(--tempo);">+1,5h</span> registradas na meta "Aprender React" no Futuro. Progresso atual: 62%.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════
+       GRUPO D — ESTADOS
+       ═════════════════════════════════════════════════ -->
+  <div class="demo-group">
+    <div class="demo-group-title">⚙️ Grupo D — Estados e Configurações</div>
+    <div class="demo-group-sub">Configurações, empty state e celebração</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ 10: CONFIGURAÇÕES DO TEMPO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">10 — Configurações</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="inner-header">
+            <span style="font-size:18px;color:var(--t2);">←</span>
+            <span class="inner-title">Config. do Tempo</span>
+            <span></span>
+          </div>
+          <div style="padding:0 20px;">
+            <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Horário de trabalho</span><span style="font-family:'DM Mono';font-size:13px;color:var(--tempo);">08:00 — 18:00</span></div>
+              <div style="font-size:11px;color:var(--t3);margin-top:4px;">Eventos fora desse horário são marcados como "extra"</div>
+            </div>
+            <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Início da semana</span><span style="font-family:'DM Mono';font-size:13px;color:var(--tempo);">Segunda</span></div>
+            </div>
+            <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Duração padrão</span><span style="font-family:'DM Mono';font-size:13px;color:var(--tempo);">1 hora</span></div>
+            </div>
+            <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Lembrete padrão</span><span style="font-family:'DM Mono';font-size:13px;color:var(--tempo);">15 minutos</span></div>
+            </div>
+            <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Timer Foco padrão</span><span style="font-family:'DM Mono';font-size:13px;color:var(--tempo);">25 min</span></div>
+            </div>
+            <div style="padding:16px 0;border-bottom:1px solid var(--border);opacity:0.5;">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Google Calendar</span><span class="badge" style="background:rgba(6,182,212,0.1);color:var(--tempo);">Em breve</span></div>
+              <div style="font-size:11px;color:var(--t3);margin-top:4px;">Sincronizar eventos bidirecionalmente</div>
+            </div>
+            <div style="padding:16px 0;">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Notificações push</span><div style="width:44px;height:24px;border-radius:12px;background:var(--tempo);position:relative;"><div style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 11: EMPTY STATE ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">11 — Empty State</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left"><span class="mod-icon">⏳</span><span class="mod-name">Tempo</span></div>
+            <span class="mod-badge">0 hoje</span>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab active">Agenda</div>
+            <div class="sub-nav-tab">Semanal</div>
+            <div class="sub-nav-tab">Mensal</div>
+            <div class="sub-nav-tab">Review</div>
+          </div>
+          <div style="text-align:center;padding:60px 40px;">
+            <div style="font-size:64px;margin-bottom:16px;">📅</div>
+            <div style="font-family:'Syne';font-size:18px;font-weight:700;color:var(--t1);margin-bottom:8px;">Dia livre!</div>
+            <div style="font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:24px;">Sua agenda está vazia. Que tal organizar seu dia com eventos vinculados aos seus objetivos?</div>
+            <div class="btn-primary" style="max-width:200px;margin:0 auto;">+ Criar primeiro evento</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 12: CELEBRAÇÃO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">12 — Celebração · Review</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div style="text-align:center;padding:40px 30px;">
+            <div style="font-size:72px;margin-bottom:12px;">🎉</div>
+            <div style="font-family:'Syne';font-size:22px;font-weight:800;color:var(--t1);margin-bottom:6px;">Semana concluída!</div>
+            <div style="font-size:14px;color:var(--t2);margin-bottom:20px;">Você completou 78% dos seus compromissos</div>
+            <div class="card" style="text-align:left;">
+              <div style="font-size:12px;color:var(--t2);margin-bottom:8px;">Conquistas desta semana</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span>✅</span><span style="font-size:13px;color:var(--t1);">5 dias com eventos concluídos</span></div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span>🧠</span><span style="font-size:13px;color:var(--t1);">4,5h dedicadas a Mente</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span>🔥</span><span style="font-size:13px;color:var(--t1);">Streak: 3 semanas consecutivas</span></div>
+            </div>
+            <div class="card" style="background:linear-gradient(135deg,rgba(6,182,212,0.12),rgba(0,85,255,0.08));border-color:rgba(6,182,212,0.2);text-align:center;">
+              <div style="font-family:'Syne';font-size:15px;font-weight:700;color:var(--tempo);margin-bottom:4px;">Score Tempo: 72 pts</div>
+              <div style="font-size:12px;color:var(--t2);">+5 pts vs semana passada</div>
+            </div>
+            <div style="margin-top:16px;"><div class="btn-primary">Planejar próxima semana →</div></div>
+            <div style="margin-top:8px;font-size:12px;color:var(--t3);cursor:pointer;">Fechar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { USE_MOCK } from '@/lib/mock-financas'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useTransactions } from '@/hooks/use-transactions'
 import { useRecorrentes } from '@/hooks/use-recorrentes'
@@ -11,6 +12,7 @@ import {
   ResponsiveContainer
 } from 'recharts'
 import { cn } from '@/lib/utils'
+import { FinancasMobile } from '@/components/financas/FinancasMobile'
 import {
   CalendarDays, Plus, ChevronDown, ChevronLeft, ChevronRight, ExternalLink,
   TrendingUp, AlertTriangle, Loader2
@@ -306,6 +308,19 @@ export default function FinancasDashboardPage() {
   const [histData, setHistData] = useState<MonthlyAgg[]>([])
 
   useEffect(() => {
+    if (USE_MOCK) {
+      const mockHist: MonthlyAgg[] = [
+        { mes: 'Out', rec: 9500, des: 5510 },
+        { mes: 'Nov', rec: 10200, des: 6350 },
+        { mes: 'Dez', rec: 12800, des: 8200 },
+        { mes: 'Jan', rec: 10500, des: 5100 },
+        { mes: 'Fev', rec: 10500, des: 6600 },
+        { mes: 'Mar', rec: 10500, des: 5380 },
+      ]
+      setHistData(mockHist)
+      return
+    }
+
     const supabase = createClient()
     let cancelled = false
 
@@ -508,7 +523,20 @@ export default function FinancasDashboardPage() {
   }, [])
 
   return (
-    <div className="max-w-[1140px] mx-auto">
+    <>
+    {/* ═══ MOBILE LAYOUT ═══ */}
+    <FinancasMobile
+      totalIncome={receitasMes}
+      totalExpense={totalGasto}
+      balance={saldoMes}
+      budgets={activeBudgets}
+      projectedBalance={saldoMes + (receitasMes - totalGasto) * 0.3}
+      mesLabel={mesAno}
+      latestTransactions={latestTxns}
+    />
+
+    {/* ═══ DESKTOP LAYOUT ═══ */}
+    <div className="hidden lg:block max-w-[1140px] mx-auto">
 
       {/* ① PAGE HEADER */}
       <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
@@ -617,21 +645,8 @@ export default function FinancasDashboardPage() {
       </div>
 
       {/* ③ SAÚDE / FOCO BAND — CSS-based switch to avoid hydration mismatch */}
-      <div className="foco-only flex bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] mb-3 overflow-hidden">
-        {[
-          { lbl: 'Orçamentos OK', val: loadingBudgets ? '—' : `${qtdOk} / ${budgets.length}`, color: '#10b981' },
-          { lbl: 'Maior categoria', val: loadingBudgets ? '—' : (topCat?.category?.name ?? '—'), color: '#0055ff' },
-          { lbl: 'Recorrentes próximas', val: String(pendingRecCount), color: '#f59e0b' },
-          { lbl: 'Taxa de poupança', val: loadingBudgets ? '—' : `${taxaPoupanca}%`, color: '#10b981' },
-        ].map((m, i) => (
-          <div key={m.lbl} className={cn('flex-1 px-4 py-3', i < 3 && 'border-r border-[var(--sl-border)]')}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">{m.lbl}</p>
-            <p className="font-[DM_Mono] text-[18px] font-medium leading-none" style={{ color: m.color }}>{m.val}</p>
-          </div>
-        ))}
-      </div>
       <div
-        className="jornada-only flex items-center gap-4 rounded-[14px] px-4 py-3 mb-3"
+        className="flex items-center gap-4 rounded-[14px] px-4 py-3 mb-3"
         style={{ background: 'linear-gradient(135deg,rgba(16,185,129,.07),rgba(0,85,255,.07))', border: '1px solid rgba(16,185,129,.18)' }}
       >
         <div className="shrink-0 text-center">
@@ -1129,5 +1144,6 @@ export default function FinancasDashboardPage() {
       </div>
 
     </div>
+    </>
   )
 }

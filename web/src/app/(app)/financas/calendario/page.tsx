@@ -4,12 +4,12 @@ import { Fragment, useState } from 'react'
 import { ChevronLeft, ChevronRight, X, Plus, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import { useCategories } from '@/hooks/use-categories'
 import { useCalendario, type CalendarDayData, type CalendarTransaction } from '@/hooks/use-calendario'
 import { SLCard } from '@/components/ui/sl-card'
 import { TransacaoModal } from '@/components/financas/TransacaoModal'
 import { PlanningEventModal } from '@/components/financas/PlanningEventModal'
+import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
 import { usePlanejamento, type EventFormData } from '@/hooks/use-planejamento'
 import { useTransactions, type TransacaoFormData } from '@/hooks/use-transactions'
 
@@ -194,8 +194,6 @@ function CalendarSkeleton() {
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function CalendarioFinanceiroPage() {
-  const mode = useShellStore(s => s.mode)
-  const isJornada = mode === 'jornada'
   const { categories } = useCategories()
 
   const {
@@ -285,24 +283,194 @@ export default function CalendarioFinanceiroPage() {
   const formatDayFull = (date: Date) =>
     date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })
 
-  return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+  // Mobile: find today data
+  const todayData = calendarDays.find(d => d.isToday) ?? null
+  const mobileSelectedDay = selectedDay ?? todayData
 
-      {/* ① Page Header */}
-      <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
-        <div>
-          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#10b981] mb-0.5">
-            <span className="w-[5px] h-[5px] rounded-full bg-[#10b981]" />
-            Finanças
-          </div>
-          <h1 className={cn(
-            'font-[Syne] font-extrabold text-[22px] tracking-tight',
-            isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-          )}>
-            📅 Calendário Financeiro
-          </h1>
-          <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Visualize e planeje suas finanças dia a dia.</p>
+  // Mobile: compute summary destaques
+  const currentMonthPastDays = calendarDays.filter(d => d.isCurrentMonth && !d.isFuture)
+  let maiorEntradaInfo: { txn: CalendarTransaction; day: CalendarDayData } | null = null
+  let maiorSaidaInfo: { txn: CalendarTransaction; day: CalendarDayData } | null = null
+  for (const d of currentMonthPastDays) {
+    for (const t of d.transactions.filter(tx => !tx.is_future)) {
+      if (t.type === 'income' && (!maiorEntradaInfo || t.amount > maiorEntradaInfo.txn.amount)) {
+        maiorEntradaInfo = { txn: t, day: d }
+      }
+      if (t.type === 'expense' && (!maiorSaidaInfo || t.amount > maiorSaidaInfo.txn.amount)) {
+        maiorSaidaInfo = { txn: t, day: d }
+      }
+    }
+  }
+  const saldoBaixoDay = currentMonthPastDays
+    .reduce<CalendarDayData | null>((min, d) => !min || d.balance < min.balance ? d : min, null)
+  const saldoHoje = todayData?.balance ?? 0
+
+  return (
+    <>
+      {/* ═══════════ MOBILE VIEW ═══════════ */}
+      <FinancasMobileShell subtitle="Visão mensal">
+        {/* Month nav */}
+        <div className="flex items-center justify-between mb-2">
+          <button onClick={prevMonth} className="p-2 text-[var(--sl-t2)]"><ChevronLeft size={18} /></button>
+          <span className="font-[Syne] font-bold text-[var(--sl-t1)]">{MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
+          <button onClick={nextMonth} className="p-2 text-[var(--sl-t2)]"><ChevronRight size={18} /></button>
         </div>
+
+        {/* Day headers */}
+        <div className="grid grid-cols-7 gap-[2px] px-4 mb-1">
+          {DAY_HEADERS.map(d => (
+            <div key={d} className="text-center text-[10px] font-medium text-[var(--sl-t3)] py-1">{d}</div>
+          ))}
+        </div>
+
+        {/* Calendar grid (mobile) */}
+        {loading ? (
+          <div className="px-4 py-8 text-center text-[12px] text-[var(--sl-t3)]">Carregando...</div>
+        ) : (
+          <div className="grid grid-cols-7 gap-[2px] px-4 mb-3">
+            {calendarDays.map(day => {
+              const isToday = day.isToday
+              const hasEvent = day.transactions.length > 0
+              const isSelected = mobileSelectedDay?.dateString === day.dateString
+
+              return (
+                <button
+                  key={day.dateString}
+                  onClick={() => { if (day.isCurrentMonth) setSelectedDay(day) }}
+                  className={cn(
+                    'h-[38px] rounded-lg flex flex-col items-center justify-center relative text-[13px]',
+                    !day.isCurrentMonth && 'opacity-20',
+                    isToday && 'font-bold',
+                    isSelected && !isToday && 'bg-[var(--sl-s2)]',
+                  )}
+                  style={isToday ? { background: '#06b6d4', color: '#fff' } : { color: 'var(--sl-t2)' }}
+                >
+                  {day.day}
+                  {hasEvent && !isToday && (
+                    <span className="absolute bottom-[3px] w-1 h-1 rounded-full bg-[#10b981]" />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Legend */}
+        <div className="flex items-center gap-3 px-4 mb-3">
+          <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+            <span className="w-2 h-2 rounded-full bg-[#10b981]" /> Receita
+          </span>
+          <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+            <span className="w-2 h-2 rounded-full bg-[#f43f5e]" /> Despesa
+          </span>
+          <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
+            <span className="w-2 h-2 rounded-full bg-[#06b6d4]" /> Hoje
+          </span>
+        </div>
+
+        {/* Selected day events */}
+        {mobileSelectedDay && mobileSelectedDay.transactions.length > 0 && (
+          <>
+            <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-4 pb-2">
+              {mobileSelectedDay.isToday ? 'Hoje' : mobileSelectedDay.day} — {MONTH_NAMES[currentDate.getMonth()].slice(0, 3).toUpperCase()}
+            </div>
+            <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
+              {mobileSelectedDay.transactions.map(txn => (
+                <div key={txn.id} className="flex items-center gap-3 px-4 py-3 border-b border-[var(--sl-border)] last:border-b-0">
+                  <div
+                    className="w-[4px] h-[40px] rounded-sm shrink-0"
+                    style={{ background: txn.type === 'income' ? '#10b981' : '#f43f5e' }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{txn.description}</div>
+                    <div className="text-[12px] text-[var(--sl-t2)]">{txn.categoryName ?? '—'}</div>
+                  </div>
+                  <div className={cn(
+                    'font-[DM_Mono] text-[14px] font-medium shrink-0',
+                    txn.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                  )}>
+                    {txn.type === 'income' ? '+' : '-'}{fmtR(txn.amount)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {mobileSelectedDay && mobileSelectedDay.transactions.length === 0 && (
+          <div className="text-center py-6 text-[12px] text-[var(--sl-t3)]">Nenhuma transação neste dia.</div>
+        )}
+
+        {/* Destaques do mês */}
+        {!loading && currentMonthPastDays.length > 0 && (
+          <>
+            <p className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-4 pb-2 mt-3">
+              Destaques do Mês
+            </p>
+            <div className="grid grid-cols-2 gap-2 px-4 pb-1">
+              {[
+                {
+                  label: 'Maior entrada',
+                  value: maiorEntradaInfo ? fmtR(maiorEntradaInfo.txn.amount) : '—',
+                  sub: maiorEntradaInfo
+                    ? `Dia ${maiorEntradaInfo.day.day} · ${maiorEntradaInfo.txn.description.slice(0, 14)}`
+                    : 'Sem receitas',
+                  color: '#10b981',
+                },
+                {
+                  label: 'Maior saída/dia',
+                  value: maiorSaidaInfo ? fmtR(maiorSaidaInfo.txn.amount) : '—',
+                  sub: maiorSaidaInfo
+                    ? `Dia ${maiorSaidaInfo.day.day} · ${maiorSaidaInfo.txn.description.slice(0, 14)}`
+                    : 'Sem despesas',
+                  color: '#f43f5e',
+                },
+                {
+                  label: 'Saldo mais baixo',
+                  value: saldoBaixoDay ? fmtRShort(saldoBaixoDay.balance) : '—',
+                  sub: saldoBaixoDay ? `Dia ${saldoBaixoDay.day}` : '—',
+                  color: saldoBaixoDay && saldoBaixoDay.balance < 0 ? '#f43f5e' : '#f59e0b',
+                },
+                {
+                  label: 'Saldo hoje',
+                  value: fmtR(saldoHoje),
+                  sub: todayData
+                    ? `${todayData.day} ${MONTH_NAMES[currentDate.getMonth()].slice(0, 3)}`
+                    : '—',
+                  color: '#0055ff',
+                },
+              ].map(item => (
+                <div key={item.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] px-3 py-2.5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-1">{item.label}</p>
+                  <p className="font-[DM_Mono] text-[14px] font-medium leading-none" style={{ color: item.color }}>{item.value}</p>
+                  <p className="text-[10px] text-[var(--sl-t3)] mt-1 truncate">{item.sub}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        <div className="h-5" />
+      </FinancasMobileShell>
+
+      {/* ═══════════ DESKTOP VIEW ═══════════ */}
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+
+        {/* ① Page Header */}
+        <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
+          <div>
+            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#10b981] mb-0.5">
+              <span className="w-[5px] h-[5px] rounded-full bg-[#10b981]" />
+              Finanças
+            </div>
+            <h1 className={cn(
+              'font-[Syne] font-extrabold text-[22px] tracking-tight',
+              'text-sl-grad'
+            )}>
+              📅 Calendário Financeiro
+            </h1>
+            <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Visualize e planeje suas finanças dia a dia.</p>
+          </div>
 
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
           {/* Month navigation */}
@@ -332,7 +500,7 @@ export default function CalendarioFinanceiroPage() {
       </div>
 
       {/* ② Jornada Projection Card */}
-      <div className="jornada-only flex items-center gap-3 p-[11px] px-[14px] rounded-[11px] border border-[rgba(16,185,129,0.2)] bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] mb-4">
+      <div className="flex items-center gap-3 p-[11px] px-[14px] rounded-[11px] border border-[rgba(16,185,129,0.2)] bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] mb-4">
         <span className="text-[22px] shrink-0">📊</span>
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold text-[var(--sl-t1)] mb-0.5">Projeção do mês</p>
@@ -577,7 +745,9 @@ export default function CalendarioFinanceiroPage() {
         </button>
       </div>
 
-      {/* ─── Modals ─── */}
+      </div>
+
+      {/* ─── Modals (shared) ─── */}
       <TransacaoModal
         open={addModalOpen}
         mode="create"
@@ -594,6 +764,6 @@ export default function CalendarioFinanceiroPage() {
         onClose={() => setPlanModalOpen(false)}
         onSave={handleAddEvent}
       />
-    </div>
+    </>
   )
 }
