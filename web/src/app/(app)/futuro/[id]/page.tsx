@@ -4,8 +4,7 @@ import { use, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Plus, Pause, Play, CheckCircle, Trash2, Clock, TrendingDown } from 'lucide-react'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
+
 import {
   useObjectiveDetail,
   useUpdateObjective,
@@ -23,6 +22,7 @@ import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 import { GoalCard } from '@/components/futuro/GoalCard'
 import { AddGoalModal } from '@/components/futuro/AddGoalModal'
+import { FuturoDetailMobile } from '@/components/futuro/mobile/FuturoDetailMobile'
 import { createEventFromGoalTask } from '@/lib/integrations/agenda'
 import { createTransactionFromFuturoGoal } from '@/lib/integrations/financas'
 
@@ -72,8 +72,6 @@ function MilestoneTimeline({ milestones }: { milestones: { id: string; descripti
 export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { objective, loading, error, reload } = useObjectiveDetail(id)
   const updateObjective = useUpdateObjective()
@@ -251,7 +249,11 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
     : '—'
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    {/* Mobile detail */}
+    <FuturoDetailMobile objective={objective} />
+
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* Breadcrumb */}
       <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
@@ -297,10 +299,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
         <div className="flex items-start gap-4">
           <span className="text-4xl">{objective.icon}</span>
           <div className="flex-1">
-            <h1 className={cn(
-              'font-[Syne] font-extrabold text-xl mb-0.5',
-              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-            )}>
+            <h1 className="font-[Syne] font-extrabold text-xl mb-0.5 text-sl-grad">
               {objective.name}
             </h1>
             <p className="text-[12px] text-[var(--sl-t3)] mb-3">
@@ -430,5 +429,6 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
         isLoading={isAddingGoal}
       />
     </div>
+    </>
   )
 }

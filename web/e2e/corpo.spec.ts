@@ -14,7 +14,8 @@ test.describe('Corpo: Dashboard', () => {
   test('Dashboard carrega com KPIs', async ({ page }) => {
     const main = page.locator('main')
     await expect(main.getByRole('heading', { name: /Corpo/i })).toBeVisible({ timeout: 8000 })
-    await expect(main.getByText(/Peso Atual|TMB|Atividades/i).first()).toBeVisible({ timeout: 5000 })
+    // KPI labels ou chips (desktop: Peso Atual/TMB; mobile: atividades)
+    await expect(main).toContainText(/Peso|TMB|Atividades|atividades/i)
   })
 
   test('KPIs exibem valores formatados', async ({ page }) => {

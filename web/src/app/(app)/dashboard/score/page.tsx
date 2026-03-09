@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { Settings } from 'lucide-react'
 import { useLifeMap } from '@/hooks/use-life-map'
 import { AIInsightCard } from '@/components/ui/ai-insight-card'
-import { useShellStore } from '@/stores/shell-store'
 
 const MODULE_META: Record<string, { emoji: string; color: string; bg: string }> = {
   financas:   { emoji: '💰', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
@@ -24,8 +23,6 @@ function getProgressColor(pct: number): string {
 
 export default function LifeScorePage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
   const { dimensions, overallScore, loading } = useLifeMap()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -100,7 +97,7 @@ export default function LifeScorePage() {
     <div className="max-w-[600px] mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 lg:px-0">
-        <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>Life Score</h1>
+        <h1 className="font-[Syne] text-[20px] font-bold text-sl-grad">Life Score</h1>
         <button
           onClick={() => router.push('/configuracoes')}
           className="flex h-9 w-9 items-center justify-center rounded-[10px]
@@ -138,17 +135,15 @@ export default function LifeScorePage() {
         </div>
 
         {/* Evolution badge — Jornada only */}
-        {isJornada && (
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[20px]
-                          bg-[rgba(16,185,129,0.1)] border border-[rgba(16,185,129,0.3)]">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" width="14" height="14">
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-            </svg>
-            <span className="text-[13px] font-medium text-[#10b981]">
-              +4 pontos esta semana · Melhor semana do mês!
-            </span>
-          </div>
-        )}
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[20px]
+                        bg-[rgba(16,185,129,0.1)] border border-[rgba(16,185,129,0.3)]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" width="14" height="14">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+          </svg>
+          <span className="text-[13px] font-medium text-[#10b981]">
+            +4 pontos esta semana · Melhor semana do mês!
+          </span>
+        </div>
       </div>
 
       {/* Module grid */}
@@ -193,18 +188,15 @@ export default function LifeScorePage() {
       </div>
 
       {/* AI Insight — Jornada only */}
-      {isJornada && (
-        <div className="px-4 mt-3 pb-6 lg:px-0">
-          <AIInsightCard icon="🎯" label="Como melhorar">
-            {weakest
-              ? <>Seu módulo <strong>{weakest.label}</strong> está em {weakest.pct}%.
-                 Agendar a revisão semanal toda segunda pode adicionar <strong>+8 pontos</strong>.</>
-              : <>Ative módulos para receber sugestões personalizadas de como melhorar seu score.</>
-            }
-          </AIInsightCard>
-        </div>
-      )}
-      {!isJornada && <div className="h-6" />}
+      <div className="px-4 mt-3 pb-6 lg:px-0">
+        <AIInsightCard icon="🎯" label="Como melhorar">
+          {weakest
+            ? <>Seu módulo <strong>{weakest.label}</strong> está em {weakest.pct}%.
+               Agendar a revisão semanal toda segunda pode adicionar <strong>+8 pontos</strong>.</>
+            : <>Ative módulos para receber sugestões personalizadas de como melhorar seu score.</>
+          }
+        </AIInsightCard>
+      </div>
     </div>
   )
 }

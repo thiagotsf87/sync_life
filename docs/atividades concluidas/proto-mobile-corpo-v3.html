@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife Mobile — Corpo (14 telas · v3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══ DESIGN SYSTEM — SyncLife Dark Foco (Navy) ═══ */
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;
+  --fin:#10b981;--tempo:#06b6d4;--futuro:#0055ff;
+  --corpo:#f97316;--corpo-g:rgba(249,115,22,0.14);
+  --mente:#eab308;--patrimonio:#3b82f6;--carreira:#ec4899;--exp:#14b8a6;
+  --green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--orange:#f97316;
+  --radius:16px;--radius-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0e1a;font-family:'DM Sans',sans-serif;color:var(--t1);}
+
+/* ═══ Demo shell ═══ */
+.demo-page{padding:40px 20px 80px;max-width:1600px;margin:0 auto;}
+.demo-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#f97316,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.demo-subtitle{font-size:14px;color:var(--t2);margin-bottom:10px;}
+.demo-group{margin-top:48px;margin-bottom:14px;padding:14px 0 8px;border-top:1px solid var(--border);}
+.demo-group-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--corpo);letter-spacing:0.5px;}
+.demo-group-sub{font-size:12px;color:var(--t3);margin-top:3px;}
+.screens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(375px,1fr));gap:48px 28px;margin-top:18px;}
+.screen-wrapper{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.screen-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:1px;text-align:center;}
+.screen-tag{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.tag-new{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);}
+.tag-improved{background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.3);}
+.tag-priority{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);}
+
+/* ═══ Phone frame — AUTO HEIGHT ═══ */
+.phone{
+  width:375px;min-height:500px;
+  background:var(--bg);border-radius:48px;
+  border:2px solid rgba(255,255,255,0.1);
+  overflow:hidden;position:relative;
+  box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);
+  padding-top:54px;padding-bottom:24px;
+}
+.dynamic-island{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:100;}
+.status-bar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;z-index:50;}
+.status-time{font-size:15px;font-weight:600;color:var(--t1);}
+.screen-content{padding-bottom:12px;}
+
+/* ═══ Module header ═══ */
+.mod-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px;}
+.mod-header-left{display:flex;align-items:center;gap:8px;}
+.mod-icon{font-size:20px;}
+.mod-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);}
+.mod-badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;background:var(--corpo-g);color:var(--corpo);}
+
+/* ═══ Sub-nav tabs (UNDERLINE style — padrão Futuro) ═══ */
+.sub-nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto;}
+.sub-nav::-webkit-scrollbar{display:none;}
+.sub-nav-tab{padding:8px 12px 10px;font-size:13px;color:var(--t3);position:relative;white-space:nowrap;cursor:pointer;flex-shrink:0;}
+.sub-nav-tab.active{color:var(--t1);font-weight:600;}
+.sub-nav-tab.active::after{content:'';position:absolute;bottom:-1px;left:6px;right:6px;height:3px;border-radius:3px 3px 0 0;background:var(--corpo);}
+
+/* ═══ Internal header (L2 screens) ═══ */
+.int-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 14px;}
+.int-header-back{font-size:14px;color:var(--corpo);font-weight:500;display:flex;align-items:center;gap:4px;}
+.int-header-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--t1);}
+.int-header-action{font-size:13px;color:var(--corpo);font-weight:600;}
+
+/* ═══ Filter pills ═══ */
+.filter-pills{display:flex;gap:6px;padding:0 20px 14px;overflow-x:auto;flex-wrap:wrap;}
+.filter-pill{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;border:1px solid var(--border);background:var(--s1);color:var(--t2);}
+.filter-pill.active{background:var(--corpo);color:#000;border-color:var(--corpo);}
+
+/* ═══ Shared components ═══ */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-green{background:rgba(16,185,129,0.12);color:#10b981;}
+.badge-yellow{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.badge-orange{background:rgba(249,115,22,0.12);color:#f97316;}
+.badge-red{background:rgba(244,63,94,0.12);color:#f43f5e;}
+.badge-blue{background:rgba(0,85,255,0.12);color:#60a5fa;}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;padding:0 20px 8px;margin-top:4px;}
+.progress-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;}
+.list-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);}
+.list-item:last-child{border-bottom:none;}
+.list-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.list-info{flex:1;min-width:0;}
+.list-title{font-size:14px;font-weight:500;color:var(--t1);}
+.list-sub{font-size:12px;color:var(--t2);margin-top:1px;}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;}
+.kpi-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
+.kpi-label{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.kpi-value{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--t1);}
+.kpi-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.header-btn{width:36px;height:36px;border-radius:10px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--t2);}
+
+/* ═══ Wizard / Forms ═══ */
+.input-field{width:100%;padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+.input-label{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px;display:block;}
+.select-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.select-card{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;cursor:pointer;}
+.select-card.selected{border-color:var(--corpo);background:var(--corpo-g);}
+.select-card .icon{font-size:22px;margin-bottom:4px;}
+.select-card .label{font-size:11px;font-weight:500;color:var(--t1);}
+.btn-primary{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--corpo);color:#000;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;text-align:center;border:none;cursor:pointer;}
+.btn-secondary{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--s1);color:var(--t2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;text-align:center;border:1px solid var(--border);}
+</style>
+</head>
+<body>
+<div class="demo-page">
+  <div class="demo-title">🏃 Corpo — 14 telas mobile (v3)</div>
+  <div class="demo-subtitle">Dashboard · Atividades · Peso & Medidas · Nutrição · Saúde Preventiva · Coach IA · CRUDs · Estados</div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- GRUPO A — VISUALIZAÇÃO (Telas principais L1)          -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="demo-group">
+    <div class="demo-group-title">A — Visualização (Telas L1)</div>
+    <div class="demo-group-sub">Telas principais acessíveis via sub-nav. Underline tabs.</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ 01: DASHBOARD ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">01 — Dashboard</div>
+      <div class="screen-tag tag-priority">⭐ Alta prioridade</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">🏃</span>
+              <span class="mod-name">Corpo</span>
+            </div>
+            <div class="mod-badge">3/4 atividades</div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Atividades</div>
+            <div class="sub-nav-tab">Peso</div>
+            <div class="sub-nav-tab">Cardápio</div>
+            <div class="sub-nav-tab">Saúde</div>
+            <div class="sub-nav-tab">Coach</div>
+          </div>
+
+          <!-- KPI Grid -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Peso atual</div>
+              <div class="kpi-value" style="color:var(--corpo);">78,4<span style="font-size:13px;">kg</span></div>
+              <div class="kpi-sub">IMC 24,1 · Normal</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">TMB / TDEE</div>
+              <div class="kpi-value" style="color:var(--yellow);">1.680<span style="font-size:13px;">kcal</span></div>
+              <div class="kpi-sub">TDEE: 2.100 kcal</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Atividades (semana)</div>
+              <div class="kpi-value">3<span style="font-size:13px;">/4</span></div>
+              <div class="kpi-sub">Meta: 4/semana</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Próxima consulta</div>
+              <div class="kpi-value" style="color:var(--tempo);">4 Mar</div>
+              <div class="kpi-sub">Dentista · em 3 dias</div>
+            </div>
+          </div>
+
+          <!-- Weight sparkline -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span style="font-size:14px;font-weight:600;color:var(--t1);">Evolução do peso</span>
+              <span class="badge badge-green">↓ 1,8kg no mês</span>
+            </div>
+            <svg viewBox="0 0 320 70" style="width:100%;height:70px;">
+              <defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f97316" stop-opacity="0.3"/><stop offset="100%" stop-color="#f97316" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,60 C40,57 80,50 120,46 C160,42 200,45 240,38 C280,32 300,30 320,28" fill="none" stroke="var(--corpo)" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M0,60 C40,57 80,50 120,46 C160,42 200,45 240,38 C280,32 300,30 320,28 L320,70 L0,70Z" fill="url(#wg)"/>
+              <circle cx="320" cy="28" r="5" fill="var(--corpo)"/>
+              <line x1="0" y1="14" x2="320" y2="14" stroke="rgba(16,185,129,0.35)" stroke-width="1.5" stroke-dasharray="5,4"/>
+              <text x="4" y="11" fill="#10b981" font-size="9" font-family="DM Sans">Meta: 76kg</text>
+            </svg>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--t3);">
+              <span>1 Fev</span><span>Hoje · 78,4kg</span>
+            </div>
+          </div>
+
+          <!-- Hydration tracker -->
+          <div class="card" style="padding:14px 16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <span style="font-size:13px;font-weight:600;color:var(--t1);">💧 Hidratação</span>
+              <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--tempo);">1,8L <span style="color:var(--t3);font-size:12px;">/ 2,5L</span></span>
+            </div>
+            <div class="progress-bar" style="margin-bottom:8px;">
+              <div class="progress-fill" style="width:72%;background:var(--tempo);"></div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;padding:8px;border-radius:8px;background:var(--s2);text-align:center;font-size:12px;font-weight:500;color:var(--tempo);cursor:pointer;">+250ml</div>
+              <div style="flex:1;padding:8px;border-radius:8px;background:var(--s2);text-align:center;font-size:12px;font-weight:500;color:var(--tempo);cursor:pointer;">+500ml</div>
+              <div style="flex:1;padding:8px;border-radius:8px;background:var(--s2);text-align:center;font-size:12px;font-weight:500;color:var(--t3);cursor:pointer;">Custom</div>
+            </div>
+          </div>
+
+          <!-- Next appointment -->
+          <div class="card" style="background:rgba(249,115,22,0.06);border-color:rgba(249,115,22,0.2);">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <div style="width:44px;height:44px;border-radius:12px;background:var(--corpo-g);display:flex;align-items:center;justify-content:center;font-size:22px;">🦷</div>
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:600;color:var(--t1);">Dentista — Dra. Silva</div>
+                <div style="font-size:12px;color:var(--t2);">Qua, 4 Mar · 14:00</div>
+                <div style="font-size:12px;color:var(--yellow);margin-top:2px;">💰 R$ 280 em Saúde</div>
+              </div>
+              <span class="badge badge-orange">3 dias</span>
+            </div>
+          </div>
+
+          <!-- Jornada insight -->
+          <div class="card" style="background:rgba(0,85,255,0.06);border-color:rgba(0,85,255,0.15);">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="font-size:18px;">🤖</span>
+              <div style="font-size:13px;color:var(--t2);line-height:1.5;">Você está no ritmo certo para atingir <span style="color:var(--corpo);font-weight:600;">76kg</span> até 30 Abr. <span style="color:var(--tempo);">Beba 700ml a mais</span> para a meta de hidratação.</div>
+            </div>
+            <div style="font-size:10px;color:var(--t3);text-align:right;margin-top:6px;">Modo Jornada · PRO</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 02: ATIVIDADES FÍSICAS ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">02 — Atividades Físicas</div>
+      <div class="screen-tag tag-priority">⭐ Alta prioridade</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">🏃</span>
+              <span class="mod-name">Corpo</span>
+            </div>
+            <div class="header-btn" style="background:var(--corpo);border-color:var(--corpo);color:#000;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab active">Atividades</div>
+            <div class="sub-nav-tab">Peso</div>
+            <div class="sub-nav-tab">Cardápio</div>
+            <div class="sub-nav-tab">Saúde</div>
+            <div class="sub-nav-tab">Coach</div>
+          </div>
+
+          <!-- Week summary -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <span style="font-size:14px;font-weight:600;color:var(--t1);">Esta semana</span>
+              <span class="badge badge-orange">3 de 4 metas</span>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-around;height:72px;gap:4px;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--corpo);border-radius:5px 5px 0 0;height:52px;"></div>
+                <span style="font-size:9px;color:var(--t2);">Seg</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--s3);border-radius:5px 5px 0 0;height:10px;"></div>
+                <span style="font-size:9px;color:var(--t3);">Ter</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--corpo);border-radius:5px 5px 0 0;height:40px;"></div>
+                <span style="font-size:9px;color:var(--t2);">Qua</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--s3);border-radius:5px 5px 0 0;height:10px;"></div>
+                <span style="font-size:9px;color:var(--t3);">Qui</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--corpo);border-radius:5px 5px 0 0;height:60px;"></div>
+                <span style="font-size:9px;color:var(--t2);">Sex</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--s2);border-radius:5px 5px 0 0;height:10px;border:1px dashed rgba(249,115,22,0.3);"></div>
+                <span style="font-size:9px;color:var(--t3);">Sáb</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                <div style="width:28px;background:var(--s2);border-radius:5px 5px 0 0;height:10px;border:1px dashed rgba(249,115,22,0.3);"></div>
+                <span style="font-size:9px;color:var(--t3);">Dom</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type filter -->
+          <div class="filter-pills">
+            <div class="filter-pill active">Todos</div>
+            <div class="filter-pill">🏋️ Musculação</div>
+            <div class="filter-pill">🏃 Cardio</div>
+            <div class="filter-pill">🧘 Yoga</div>
+          </div>
+
+          <!-- Activity list -->
+          <div class="section-title">RECENTES</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--corpo-g);">🏋️</div>
+              <div class="list-info">
+                <div class="list-title">Musculação — Peito/Tríceps</div>
+                <div class="list-sub">Ontem · Academia · 55 min</div>
+                <div style="display:flex;gap:6px;margin-top:4px;">
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(249,115,22,0.1);color:var(--corpo);">💪 Força</span>
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(244,63,94,0.1);color:var(--red);">🔥 430 kcal</span>
+                </div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--corpo-g);">🏃</div>
+              <div class="list-info">
+                <div class="list-title">Corrida — Parque</div>
+                <div class="list-sub">Qua · 40 min · 5,2km</div>
+                <div style="display:flex;gap:6px;margin-top:4px;">
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(249,115,22,0.1);color:var(--corpo);">❤️ Cardio</span>
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(244,63,94,0.1);color:var(--red);">🔥 320 kcal</span>
+                </div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--corpo-g);">🏋️</div>
+              <div class="list-info">
+                <div class="list-title">Musculação — Costas/Bíceps</div>
+                <div class="list-sub">Seg · Academia · 60 min</div>
+                <div style="display:flex;gap:6px;margin-top:4px;">
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(249,115,22,0.1);color:var(--corpo);">💪 Força</span>
+                  <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(244,63,94,0.1);color:var(--red);">🔥 480 kcal</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 03: PESO & MEDIDAS ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">03 — Peso & Medidas</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">🏃</span>
+              <span class="mod-name">Corpo</span>
+            </div>
+            <div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Atividades</div>
+            <div class="sub-nav-tab active">Peso</div>
+            <div class="sub-nav-tab">Cardápio</div>
+            <div class="sub-nav-tab">Saúde</div>
+            <div class="sub-nav-tab">Coach</div>
+          </div>
+
+          <!-- Period filter -->
+          <div class="filter-pills">
+            <div class="filter-pill active">30 dias</div>
+            <div class="filter-pill">3 meses</div>
+            <div class="filter-pill">6 meses</div>
+            <div class="filter-pill">1 ano</div>
+          </div>
+
+          <!-- Weight chart -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="font-size:14px;font-weight:600;color:var(--t1);">Peso (kg)</span>
+              <div style="text-align:right;">
+                <div style="font-family:'DM Mono',monospace;font-size:18px;color:var(--corpo);">78,4</div>
+                <div style="font-size:11px;color:var(--em);">↓ 1,8kg no período</div>
+              </div>
+            </div>
+            <svg viewBox="0 0 320 90" style="width:100%;height:90px;">
+              <defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f97316" stop-opacity="0.25"/><stop offset="100%" stop-color="#f97316" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,70 C50,66 100,58 150,52 C200,46 250,49 300,40 L320,36" fill="none" stroke="var(--corpo)" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M0,70 C50,66 100,58 150,52 C200,46 250,49 300,40 L320,36 L320,90 L0,90Z" fill="url(#cg1)"/>
+              <circle cx="320" cy="36" r="5" fill="var(--corpo)"/>
+              <line x1="0" y1="18" x2="320" y2="18" stroke="rgba(16,185,129,0.4)" stroke-width="1.5" stroke-dasharray="6,4"/>
+              <text x="4" y="15" fill="#10b981" font-size="9" font-family="DM Sans">Meta: 76kg</text>
+            </svg>
+          </div>
+
+          <!-- Measures grid -->
+          <div class="section-title">COMPOSIÇÃO CORPORAL</div>
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Cintura</div>
+              <div class="kpi-value" style="color:var(--corpo);">84<span style="font-size:13px;">cm</span></div>
+              <div class="kpi-sub">↓ 2cm no mês</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Quadril</div>
+              <div class="kpi-value">96<span style="font-size:13px;">cm</span></div>
+              <div class="kpi-sub">Estável</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Gordura corp.</div>
+              <div class="kpi-value" style="color:var(--yellow);">21,4<span style="font-size:13px;">%</span></div>
+              <div class="kpi-sub">↓ 0,8% no mês</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Massa muscular</div>
+              <div class="kpi-value" style="color:var(--em);">58,2<span style="font-size:13px;">kg</span></div>
+              <div class="kpi-sub">↑ 0,4kg no mês</div>
+            </div>
+          </div>
+
+          <!-- CTA register -->
+          <div style="padding:0 16px 12px;">
+            <div style="background:linear-gradient(135deg,var(--corpo),rgba(249,115,22,0.6));border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:20px;">📏</span>
+                <div>
+                  <div style="font-size:14px;font-weight:600;color:#fff;">Registrar medição</div>
+                  <div style="font-size:12px;color:rgba(255,255,255,0.7);">Último: 28 Fev</div>
+                </div>
+              </div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="width:18px;height:18px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+          </div>
+
+          <!-- History -->
+          <div class="section-title">HISTÓRICO</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div style="width:42px;text-align:center;flex-shrink:0;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--corpo);">78,4</div>
+                <div style="font-size:10px;color:var(--t3);">kg</div>
+              </div>
+              <div class="list-info">
+                <div class="list-title">28 Fev 2026</div>
+                <div class="list-sub">IMC 24,1 · Gordura 21,4%</div>
+              </div>
+              <span style="font-size:12px;color:var(--em);">↓ 0,6</span>
+            </div>
+            <div class="list-item">
+              <div style="width:42px;text-align:center;flex-shrink:0;">
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--t2);">79,0</div>
+                <div style="font-size:10px;color:var(--t3);">kg</div>
+              </div>
+              <div class="list-info">
+                <div class="list-title">21 Fev 2026</div>
+                <div class="list-sub">IMC 24,3 · Gordura 21,8%</div>
+              </div>
+              <span style="font-size:12px;color:var(--em);">↓ 0,4</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 04: NUTRIÇÃO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">04 — Cardápio / Nutrição</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">🏃</span>
+              <span class="mod-name">Corpo</span>
+            </div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Atividades</div>
+            <div class="sub-nav-tab">Peso</div>
+            <div class="sub-nav-tab active">Cardápio</div>
+            <div class="sub-nav-tab">Saúde</div>
+            <div class="sub-nav-tab">Coach</div>
+          </div>
+
+          <!-- Calorie ring -->
+          <div class="card" style="padding:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-around;margin-bottom:14px;">
+              <div style="text-align:center;">
+                <div style="font-size:11px;color:var(--t2);margin-bottom:3px;">META</div>
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--t1);">2.100</div>
+                <div style="font-size:10px;color:var(--t3);">kcal</div>
+              </div>
+              <div style="position:relative;width:110px;height:110px;">
+                <svg viewBox="0 0 110 110" style="width:100%;height:100%;transform:rotate(-90deg);">
+                  <circle cx="55" cy="55" r="46" fill="none" stroke="var(--s3)" stroke-width="10"/>
+                  <circle cx="55" cy="55" r="46" fill="none" stroke="var(--corpo)" stroke-width="10" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="72"/>
+                </svg>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+                  <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:800;color:var(--corpo);">1.740</div>
+                  <div style="font-size:10px;color:var(--t2);">kcal</div>
+                </div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:11px;color:var(--t2);margin-bottom:3px;">RESTANTE</div>
+                <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--em);">360</div>
+                <div style="font-size:10px;color:var(--t3);">kcal</div>
+              </div>
+            </div>
+            <!-- Macros -->
+            <div style="font-size:11px;color:var(--t2);margin-bottom:5px;">Macronutrientes</div>
+            <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin-bottom:8px;">
+              <div style="width:50%;background:#0055ff;"></div>
+              <div style="width:28%;background:#10b981;"></div>
+              <div style="width:22%;background:#f59e0b;"></div>
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;gap:4px;"><div style="width:8px;height:8px;border-radius:50%;background:#0055ff;"></div><span style="font-size:11px;color:var(--t2);">Carbos 218g</span></div>
+              <div style="display:flex;align-items:center;gap:4px;"><div style="width:8px;height:8px;border-radius:50%;background:#10b981;"></div><span style="font-size:11px;color:var(--t2);">Proteína 120g</span></div>
+              <div style="display:flex;align-items:center;gap:4px;"><div style="width:8px;height:8px;border-radius:50%;background:#f59e0b;"></div><span style="font-size:11px;color:var(--t2);">Gordura 42g</span></div>
+            </div>
+          </div>
+
+          <!-- Meals today -->
+          <div class="section-title">REFEIÇÕES DE HOJE</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(245,158,11,0.12);">🌅</div>
+              <div class="list-info">
+                <div class="list-title">Café da manhã · 07:30</div>
+                <div class="list-sub">Pão integral, ovos, café</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t2);">420 kcal</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(16,185,129,0.12);">☀️</div>
+              <div class="list-info">
+                <div class="list-title">Almoço · 12:30</div>
+                <div class="list-sub">Arroz, feijão, carne, salada</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t2);">680 kcal</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(249,115,22,0.12);">🌇</div>
+              <div class="list-info">
+                <div class="list-title">Lanche · 16:00</div>
+                <div class="list-sub">Whey protein + banana</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t2);">280 kcal</div>
+            </div>
+            <div class="list-item" style="opacity:0.5;">
+              <div class="list-icon" style="background:var(--s2);">🌙</div>
+              <div class="list-info">
+                <div class="list-title" style="color:var(--t3);">Jantar — Não registrado</div>
+                <div class="list-sub">Toque para adicionar</div>
+              </div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--t3);"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+          </div>
+
+          <!-- AI suggestion -->
+          <div class="card" style="background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.2);margin-top:12px;">
+            <div style="display:flex;gap:10px;margin-bottom:10px;">
+              <span style="font-size:18px;">🤖</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--t1);">Sugestão para o jantar</div>
+                <div style="font-size:12px;color:var(--t2);margin-top:2px;">360 kcal e 30g proteína disponíveis</div>
+              </div>
+            </div>
+            <div style="background:var(--s2);border-radius:10px;padding:10px;display:flex;align-items:center;gap:10px;">
+              <span style="font-size:20px;">🥗</span>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Salada + Filé de frango</div>
+                <div style="font-size:12px;color:var(--t2);">~340 kcal · 35g proteína</div>
+              </div>
+            </div>
+            <div style="font-size:10px;color:var(--t3);text-align:right;margin-top:6px;">PRO · Coach IA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 05: SAÚDE PREVENTIVA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">05 — Saúde Preventiva</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">🏃</span>
+              <span class="mod-name">Corpo</span>
+            </div>
+            <div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Atividades</div>
+            <div class="sub-nav-tab">Peso</div>
+            <div class="sub-nav-tab">Cardápio</div>
+            <div class="sub-nav-tab active">Saúde</div>
+            <div class="sub-nav-tab">Coach</div>
+          </div>
+
+          <div class="section-title">PRÓXIMAS CONSULTAS</div>
+
+          <!-- Appointment 1 -->
+          <div class="card" style="background:rgba(249,115,22,0.07);border-color:rgba(249,115,22,0.25);">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <div style="width:46px;height:46px;border-radius:13px;background:var(--corpo-g);display:flex;align-items:center;justify-content:center;font-size:22px;">🦷</div>
+              <div style="flex:1;">
+                <div style="font-size:15px;font-weight:600;color:var(--t1);">Dentista</div>
+                <div style="font-size:12px;color:var(--t2);">Dra. Silva — Clínica Oral Plus</div>
+              </div>
+              <span class="badge badge-orange">Em 3 dias</span>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;background:var(--s2);border-radius:10px;padding:8px;text-align:center;">
+                <div style="font-size:10px;color:var(--t2);">DATA</div>
+                <div style="font-size:13px;font-weight:600;color:var(--t1);">Qua, 4 Mar</div>
+              </div>
+              <div style="flex:1;background:var(--s2);border-radius:10px;padding:8px;text-align:center;">
+                <div style="font-size:10px;color:var(--t2);">HORÁRIO</div>
+                <div style="font-size:13px;font-weight:600;color:var(--t1);">14:00</div>
+              </div>
+              <div style="flex:1;background:var(--s2);border-radius:10px;padding:8px;text-align:center;">
+                <div style="font-size:10px;color:var(--t2);">CUSTO</div>
+                <div style="font-size:13px;font-weight:600;color:var(--yellow);">R$ 280</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Appointment 2 -->
+          <div class="card" style="background:rgba(249,115,22,0.04);border-color:rgba(249,115,22,0.12);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:46px;height:46px;border-radius:13px;background:var(--corpo-g);display:flex;align-items:center;justify-content:center;font-size:22px;">❤️</div>
+              <div style="flex:1;">
+                <div style="font-size:15px;font-weight:600;color:var(--t1);">Cardiologista</div>
+                <div style="font-size:12px;color:var(--t2);">Dr. Fernandes · 15 Mar · 10:00 · R$ 450</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add CTA -->
+          <div style="padding:0 16px 4px;">
+            <div style="background:rgba(249,115,22,0.06);border:1.5px dashed rgba(249,115,22,0.35);border-radius:var(--radius-sm);padding:16px;text-align:center;">
+              <div style="font-size:22px;margin-bottom:5px;">📅</div>
+              <div style="font-size:14px;font-weight:500;color:var(--corpo);">Agendar nova consulta</div>
+              <div style="font-size:12px;color:var(--t2);margin-top:3px;">Sincroniza com Tempo e Finanças</div>
+            </div>
+          </div>
+
+          <!-- Alert -->
+          <div class="section-title" style="margin-top:8px;">ALERTAS DE RETORNO</div>
+          <div class="card" style="background:rgba(245,158,11,0.07);border-color:rgba(245,158,11,0.2);">
+            <div style="display:flex;gap:10px;align-items:center;">
+              <span style="font-size:20px;">⚠️</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--t1);">Retorno Oftalmologista</div>
+                <div style="font-size:12px;color:var(--t2);">Vence em 10 Jul 2026 · Faltam 4 meses</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- History -->
+          <div class="section-title">HISTÓRICO</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--corpo-g);">👁️</div>
+              <div class="list-info">
+                <div class="list-title">Oftalmologista</div>
+                <div class="list-sub">10 Jan 2026 · Dr. Lopes · R$ 200</div>
+                <div style="margin-top:4px;"><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(16,185,129,0.1);color:var(--em);">↩ Retorno Jul 2026</span></div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--corpo-g);">🩺</div>
+              <div class="list-info">
+                <div class="list-title">Clínico Geral</div>
+                <div class="list-sub">28 Out 2025 · UPA · Grátis</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 06: COACH IA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">06 — Coach IA (PRO)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">🏃</span>
+              <span class="mod-name">Corpo</span>
+            </div>
+            <span class="badge" style="background:rgba(139,92,246,0.15);color:#a78bfa;border:1px solid rgba(139,92,246,0.3);">💎 PRO</span>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Atividades</div>
+            <div class="sub-nav-tab">Peso</div>
+            <div class="sub-nav-tab">Cardápio</div>
+            <div class="sub-nav-tab">Saúde</div>
+            <div class="sub-nav-tab active">Coach</div>
+          </div>
+
+          <!-- Main insight -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(249,115,22,0.1),rgba(139,92,246,0.1));border-color:rgba(249,115,22,0.2);">
+            <div style="display:flex;gap:10px;margin-bottom:12px;">
+              <span style="font-size:28px;">🤖</span>
+              <div>
+                <div style="font-size:16px;font-weight:700;color:var(--t1);font-family:'Syne',sans-serif;">Análise da Semana</div>
+                <div style="font-size:12px;color:var(--t2);">Baseado nos seus dados reais</div>
+              </div>
+            </div>
+            <div style="font-size:13px;color:var(--t1);line-height:1.6;">
+              Você perdeu <strong style="color:var(--corpo);">1,8kg</strong> este mês treinando <strong>3x/semana</strong>. Se mantiver e adicionar <strong style="color:var(--em);">1 sessão de cardio</strong>, projeção: <strong style="color:var(--corpo);">76kg em 6 semanas</strong>.
+            </div>
+          </div>
+
+          <!-- Action plan -->
+          <div class="section-title">PLANO DE AÇÃO SEMANAL</div>
+          <div class="card" style="padding:14px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;">
+              <div style="width:24px;height:24px;border-radius:7px;background:var(--corpo-g);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">1</div>
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Adicionar cardio na quinta</div>
+                <div style="font-size:12px;color:var(--t2);">30min corrida · ~320 kcal · horário livre às 18h</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;">
+              <div style="width:24px;height:24px;border-radius:7px;background:var(--corpo-g);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">2</div>
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Aumentar hidratação para 2,5L</div>
+                <div style="font-size:12px;color:var(--t2);">Média atual: 1,8L · Gap: 700ml/dia</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;">
+              <div style="width:24px;height:24px;border-radius:7px;background:var(--corpo-g);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">3</div>
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Agendar retorno Oftalmo</div>
+                <div style="font-size:12px;color:var(--t2);">Vence em 4 meses · Custo ~R$200 (Saúde)</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:24px;height:24px;border-radius:7px;background:var(--corpo-g);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">4</div>
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--t1);">Reduzir carbos em 50g</div>
+                <div style="font-size:12px;color:var(--t2);">218g → 168g · Acelera perda de gordura</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly challenge (Jornada) -->
+          <div class="card" style="background:rgba(249,115,22,0.06);border-color:rgba(249,115,22,0.2);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <span style="font-size:14px;font-weight:600;color:var(--t1);">🏆 Desafio da Semana</span>
+              <span class="badge badge-orange">+100 XP</span>
+            </div>
+            <div style="font-size:13px;color:var(--t2);margin-bottom:8px;">4 treinos esta semana (3/4)</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:75%;background:var(--corpo);"></div>
+            </div>
+            <div style="font-size:10px;color:var(--t3);margin-top:4px;">Modo Jornada</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- GRUPO B — CRUD (Telas de criação/edição L2)           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="demo-group">
+    <div class="demo-group-title">B — CRUD (Telas L2)</div>
+    <div class="demo-group-sub">Formulários de registro. Header simplificado ← Título →, sem sub-nav.</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ 07: REGISTRAR ATIVIDADE ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">07 — Registrar Atividade</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <span class="int-header-back">← Atividades</span>
+            <span class="int-header-title">Nova Atividade</span>
+            <span style="width:70px;"></span>
+          </div>
+
+          <!-- Activity type selector -->
+          <div style="padding:0 16px 14px;">
+            <div class="input-label">Tipo de atividade</div>
+            <div class="select-grid">
+              <div class="select-card"><div class="icon">🚶</div><div class="label">Caminhada</div></div>
+              <div class="select-card"><div class="icon">🏃</div><div class="label">Corrida</div></div>
+              <div class="select-card selected"><div class="icon">🏋️</div><div class="label">Musculação</div></div>
+              <div class="select-card"><div class="icon">🚴</div><div class="label">Ciclismo</div></div>
+              <div class="select-card"><div class="icon">🏊</div><div class="label">Natação</div></div>
+              <div class="select-card"><div class="icon">🧘</div><div class="label">Yoga</div></div>
+              <div class="select-card"><div class="icon">⚽</div><div class="label">Futebol</div></div>
+              <div class="select-card"><div class="icon">🏀</div><div class="label">Basquete</div></div>
+              <div class="select-card"><div class="icon">💃</div><div class="label">Dança</div></div>
+              <div class="select-card"><div class="icon">🏅</div><div class="label">Outro</div></div>
+            </div>
+          </div>
+
+          <!-- Form fields -->
+          <div style="padding:0 16px;">
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Descrição (opcional)</div>
+              <input class="input-field" type="text" placeholder="Ex: Peito/Tríceps" value="Peito e Tríceps">
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:14px;">
+              <div style="flex:1;">
+                <div class="input-label">Duração (min)</div>
+                <input class="input-field" type="number" value="55" style="text-align:center;">
+              </div>
+              <div style="flex:1;">
+                <div class="input-label">Intensidade</div>
+                <div style="display:flex;gap:4px;padding-top:4px;">
+                  <div style="width:26px;height:26px;border-radius:6px;background:var(--corpo);display:flex;align-items:center;justify-content:center;font-size:12px;">⚡</div>
+                  <div style="width:26px;height:26px;border-radius:6px;background:var(--corpo);display:flex;align-items:center;justify-content:center;font-size:12px;">⚡</div>
+                  <div style="width:26px;height:26px;border-radius:6px;background:var(--corpo);display:flex;align-items:center;justify-content:center;font-size:12px;">⚡</div>
+                  <div style="width:26px;height:26px;border-radius:6px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:12px;">⚡</div>
+                  <div style="width:26px;height:26px;border-radius:6px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:12px;">⚡</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview -->
+            <div style="background:var(--corpo-g);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;text-align:center;">
+              <div style="font-size:11px;color:var(--t2);margin-bottom:2px;">CALORIAS ESTIMADAS</div>
+              <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:800;color:var(--corpo);">~430 kcal</div>
+              <div style="font-size:11px;color:var(--t3);">MET 6.0 × 78,4kg × 0,92h</div>
+            </div>
+
+            <button class="btn-primary">Registrar Atividade 🏋️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 08: REGISTRAR PESO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">08 — Registrar Peso/Medida</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <span class="int-header-back">← Peso</span>
+            <span class="int-header-title">Registrar Medição</span>
+            <span style="width:50px;"></span>
+          </div>
+
+          <div style="padding:0 16px;">
+            <!-- Weight (main) -->
+            <div style="background:var(--corpo-g);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:16px;">
+              <div style="font-size:12px;color:var(--t2);margin-bottom:8px;">PESO (kg)</div>
+              <div style="font-family:'DM Mono',monospace;font-size:48px;font-weight:800;color:var(--corpo);">78,4</div>
+              <div style="font-size:12px;color:var(--em);margin-top:4px;">IMC calculado: 24,1 — Normal</div>
+            </div>
+
+            <!-- Other measures -->
+            <div class="input-label" style="margin-bottom:10px;">COMPOSIÇÃO CORPORAL (opcional)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Gordura corporal %</div>
+                <input class="input-field" type="number" placeholder="Ex: 21,4" style="text-align:center;">
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Massa muscular kg</div>
+                <input class="input-field" type="number" placeholder="Ex: 58,2" style="text-align:center;">
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Cintura cm</div>
+                <input class="input-field" type="number" placeholder="Ex: 84" style="text-align:center;">
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Quadril cm</div>
+                <input class="input-field" type="number" placeholder="Ex: 96" style="text-align:center;">
+              </div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Notas (opcional)</div>
+              <input class="input-field" type="text" placeholder="Ex: Após jejum, manhã">
+            </div>
+
+            <button class="btn-primary">Registrar Pesagem ⚖️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 09: AGENDAR CONSULTA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">09 — Agendar Consulta</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <span class="int-header-back">← Saúde</span>
+            <span class="int-header-title">Nova Consulta</span>
+            <span style="width:50px;"></span>
+          </div>
+
+          <div style="padding:0 16px;">
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Especialidade *</div>
+              <div style="padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:14px;color:var(--t1);">🦷 Dentista</span>
+                <span style="font-size:12px;color:var(--t3);">▼</span>
+              </div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Nome do médico</div>
+              <input class="input-field" type="text" placeholder="Ex: Dra. Silva" value="Dra. Silva">
+            </div>
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Local</div>
+              <input class="input-field" type="text" placeholder="Clínica, hospital..." value="Clínica Oral Plus">
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:14px;">
+              <div style="flex:1;">
+                <div class="input-label">Data *</div>
+                <input class="input-field" type="text" value="04/03/2026" style="text-align:center;">
+              </div>
+              <div style="flex:1;">
+                <div class="input-label">Horário *</div>
+                <input class="input-field" type="text" value="14:00" style="text-align:center;">
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:14px;">
+              <div style="flex:1;">
+                <div class="input-label">Custo estimado (R$)</div>
+                <input class="input-field" type="number" placeholder="0,00" value="280" style="text-align:center;">
+              </div>
+              <div style="flex:1;">
+                <div class="input-label">Retorno (meses)</div>
+                <div style="padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:14px;color:var(--t1);">6 meses</span>
+                  <span style="font-size:12px;color:var(--t3);">▼</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Integration toggles -->
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;">
+              <div style="font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:8px;">INTEGRAÇÕES</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="font-size:13px;color:var(--t1);">📅 Criar evento na Agenda</span>
+                <div style="width:36px;height:20px;border-radius:10px;background:var(--corpo);position:relative;"><div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;"></div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;color:var(--t1);">💰 Registrar despesa em Finanças</span>
+                <div style="width:36px;height:20px;border-radius:10px;background:var(--corpo);position:relative;"><div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;"></div></div>
+              </div>
+            </div>
+
+            <button class="btn-primary">Agendar Consulta 📅</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 10: REGISTRAR REFEIÇÃO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">10 — Registrar Refeição</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <span class="int-header-back">← Cardápio</span>
+            <span class="int-header-title">🌙 Jantar</span>
+            <span style="width:50px;"></span>
+          </div>
+
+          <div style="padding:0 16px;">
+            <div style="margin-bottom:14px;">
+              <div class="input-label">O que você comeu?</div>
+              <input class="input-field" type="text" placeholder="Ex: Salada, frango grelhado, arroz" value="Salada + Filé de frango grelhado">
+            </div>
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Horário</div>
+              <input class="input-field" type="text" value="19:30" style="text-align:center;">
+            </div>
+            <div style="margin-bottom:14px;">
+              <div class="input-label">Calorias (kcal) *</div>
+              <input class="input-field" type="number" placeholder="Ex: 340" value="340" style="text-align:center;font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--corpo);">
+            </div>
+
+            <div class="input-label" style="margin-bottom:10px;">MACRONUTRIENTES (opcional)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;text-align:center;">Proteína (g)</div>
+                <input class="input-field" type="number" placeholder="35" value="35" style="text-align:center;">
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;text-align:center;">Carbos (g)</div>
+                <input class="input-field" type="number" placeholder="20" value="20" style="text-align:center;">
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;text-align:center;">Gordura (g)</div>
+                <input class="input-field" type="number" placeholder="12" value="12" style="text-align:center;">
+              </div>
+            </div>
+
+            <!-- Impact preview -->
+            <div style="background:var(--corpo-g);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;">
+              <div style="font-size:11px;color:var(--t2);margin-bottom:4px;">IMPACTO NO DIA</div>
+              <div style="display:flex;justify-content:space-between;">
+                <div><span style="font-size:12px;color:var(--t2);">Total:</span> <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--corpo);">2.080 kcal</span></div>
+                <div><span style="font-size:12px;color:var(--t2);">Restante:</span> <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--em);">20 kcal</span></div>
+              </div>
+            </div>
+
+            <button class="btn-primary">Registrar Refeição 🍽️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- GRUPO C — ESPECÍFICO (Configuração, Detalhe)          -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="demo-group">
+    <div class="demo-group-title">C — Específico (Configuração e Detalhe)</div>
+    <div class="demo-group-sub">Perfil de saúde e telas de detalhe de entidades.</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ 11: PERFIL DE SAÚDE ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">11 — Perfil de Saúde</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <span class="int-header-back">← Dashboard</span>
+            <span class="int-header-title">Perfil de Saúde</span>
+            <span class="int-header-action">Salvar</span>
+          </div>
+
+          <div style="padding:0 16px;">
+            <!-- Calculated values -->
+            <div style="display:flex;gap:10px;margin-bottom:16px;">
+              <div style="flex:1;background:var(--corpo-g);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+                <div style="font-size:10px;color:var(--t2);">TMB</div>
+                <div style="font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--corpo);">1.680</div>
+                <div style="font-size:10px;color:var(--t3);">kcal/dia</div>
+              </div>
+              <div style="flex:1;background:rgba(245,158,11,0.1);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+                <div style="font-size:10px;color:var(--t2);">TDEE</div>
+                <div style="font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--yellow);">2.100</div>
+                <div style="font-size:10px;color:var(--t3);">kcal/dia</div>
+              </div>
+            </div>
+
+            <div class="input-label">DADOS PESSOAIS</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Sexo biológico</div>
+                <div style="padding:12px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);font-size:14px;color:var(--t1);text-align:center;">Masculino</div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Idade</div>
+                <div style="padding:12px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);font-size:14px;color:var(--t1);text-align:center;">28 anos</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Altura (cm)</div>
+                <input class="input-field" type="number" value="180" style="text-align:center;">
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Peso meta (kg)</div>
+                <input class="input-field" type="number" value="76" style="text-align:center;">
+              </div>
+            </div>
+
+            <div class="input-label" style="margin-top:8px;">NÍVEL DE ATIVIDADE</div>
+            <div style="padding:12px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--corpo);font-size:14px;color:var(--t1);margin-bottom:4px;">🏃 Moderadamente ativo</div>
+            <div style="font-size:11px;color:var(--t3);margin-bottom:14px;">Exercício moderado 3-5 dias/semana (fator 1,55)</div>
+
+            <div class="input-label">OBJETIVO</div>
+            <div style="display:flex;gap:8px;margin-bottom:14px;">
+              <div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--s1);border:1px solid var(--border);text-align:center;font-size:13px;color:var(--t2);">Perder peso</div>
+              <div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--s1);border:1.5px solid var(--corpo);text-align:center;font-size:13px;color:var(--corpo);font-weight:600;">Manter peso</div>
+              <div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--s1);border:1px solid var(--border);text-align:center;font-size:13px;color:var(--t2);">Ganhar massa</div>
+            </div>
+
+            <div class="input-label">METAS</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Atividades/semana</div>
+                <input class="input-field" type="number" value="4" style="text-align:center;">
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Água diária (ml)</div>
+                <input class="input-field" type="number" value="2500" style="text-align:center;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 12: DETALHE CONSULTA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">12 — Detalhe da Consulta</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <span class="int-header-back">← Saúde</span>
+            <span class="int-header-title">Consulta</span>
+            <span class="int-header-action">Editar</span>
+          </div>
+
+          <!-- Header card -->
+          <div class="card" style="background:var(--corpo-g);border-color:rgba(249,115,22,0.2);">
+            <div style="display:flex;gap:14px;align-items:center;">
+              <div style="width:56px;height:56px;border-radius:16px;background:rgba(249,115,22,0.2);display:flex;align-items:center;justify-content:center;font-size:30px;">🦷</div>
+              <div>
+                <div style="font-size:18px;font-weight:700;color:#000;font-family:'Syne',sans-serif;">Dentista</div>
+                <div style="font-size:13px;color:rgba(0,0,0,0.6);">Dra. Silva</div>
+                <div style="font-size:12px;color:rgba(0,0,0,0.5);">Clínica Oral Plus</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Details grid -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 16px 12px;">
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+              <div style="font-size:10px;color:var(--t2);">DATA</div>
+              <div style="font-size:14px;font-weight:600;color:var(--t1);margin-top:4px;">Qua, 4 Mar</div>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+              <div style="font-size:10px;color:var(--t2);">HORÁRIO</div>
+              <div style="font-size:14px;font-weight:600;color:var(--t1);margin-top:4px;">14:00</div>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;">
+              <div style="font-size:10px;color:var(--t2);">CUSTO</div>
+              <div style="font-size:14px;font-weight:600;color:var(--yellow);margin-top:4px;">R$ 280</div>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div style="padding:0 16px 12px;">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span class="badge badge-orange" style="font-size:12px;padding:5px 12px;">📅 Agendada</span>
+              <span style="font-size:12px;color:var(--t2);">Em 3 dias</span>
+            </div>
+          </div>
+
+          <!-- Integrations -->
+          <div class="section-title">INTEGRAÇÕES ATIVAS</div>
+          <div class="card" style="padding:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <span style="font-size:14px;">📅</span>
+              <span style="font-size:13px;color:var(--t1);">Evento criado no Tempo</span>
+              <span class="badge badge-green">✓</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:14px;">💰</span>
+              <span style="font-size:13px;color:var(--t1);">Despesa R$280 em Finanças</span>
+              <span class="badge badge-green">✓</span>
+            </div>
+          </div>
+
+          <!-- Follow-up -->
+          <div class="section-title">RETORNO</div>
+          <div class="card" style="padding:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:13px;color:var(--t1);">Retorno em 6 meses</div>
+                <div style="font-size:12px;color:var(--t2);">Alerta em Set 2026</div>
+              </div>
+              <span class="badge badge-yellow">Pendente</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+            <button class="btn-primary" style="background:var(--em);">✓ Marcar como Realizada</button>
+            <button class="btn-secondary">Remarcar</button>
+            <button class="btn-secondary" style="color:var(--red);border-color:rgba(244,63,94,0.3);">Cancelar Consulta</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- GRUPO D — ESTADOS ESPECIAIS                           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="demo-group">
+    <div class="demo-group-title">D — Estados Especiais</div>
+    <div class="demo-group-sub">Empty states, celebrações, e estados edge case.</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ 13: EMPTY STATE — DASHBOARD ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">13 — Empty State (primeiro uso)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">🏃</span>
+              <span class="mod-name">Corpo</span>
+            </div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Atividades</div>
+            <div class="sub-nav-tab">Peso</div>
+            <div class="sub-nav-tab">Cardápio</div>
+            <div class="sub-nav-tab">Saúde</div>
+            <div class="sub-nav-tab">Coach</div>
+          </div>
+
+          <!-- Empty KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Peso atual</div>
+              <div class="kpi-value" style="color:var(--t3);">—</div>
+              <div class="kpi-sub" style="color:var(--corpo);">Registre seu peso →</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">TMB / TDEE</div>
+              <div class="kpi-value" style="color:var(--t3);">—</div>
+              <div class="kpi-sub" style="color:var(--corpo);">Configure perfil →</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Atividades</div>
+              <div class="kpi-value" style="color:var(--t3);">0<span style="font-size:13px;">/4</span></div>
+              <div class="kpi-sub">Nenhuma esta semana</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Próxima consulta</div>
+              <div class="kpi-value" style="color:var(--t3);">—</div>
+              <div class="kpi-sub">Sem consultas</div>
+            </div>
+          </div>
+
+          <!-- Setup CTA -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(249,115,22,0.1),rgba(249,115,22,0.05));border-color:rgba(249,115,22,0.2);text-align:center;padding:24px 16px;">
+            <div style="font-size:40px;margin-bottom:12px;">🏃</div>
+            <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);margin-bottom:8px;">Configure seu Corpo</div>
+            <div style="font-size:13px;color:var(--t2);line-height:1.5;margin-bottom:16px;">Para calcular seu TMB, TDEE e metas personalizadas, precisamos de alguns dados básicos.</div>
+            <div style="display:inline-flex;padding:12px 24px;border-radius:var(--radius-sm);background:var(--corpo);color:#000;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;">Configurar Perfil de Saúde →</div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="section-title" style="margin-top:4px;">COMEÇAR POR</div>
+          <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;">
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;">
+              <span style="font-size:20px;">⚖️</span>
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:500;color:var(--t1);">Registrar primeiro peso</div>
+                <div style="font-size:12px;color:var(--t2);">Ponto de partida da sua jornada</div>
+              </div>
+              <span style="font-size:14px;color:var(--corpo);">→</span>
+            </div>
+            <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;">
+              <span style="font-size:20px;">🏋️</span>
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:500;color:var(--t1);">Registrar primeira atividade</div>
+                <div style="font-size:12px;color:var(--t2);">Comece com qualquer exercício</div>
+              </div>
+              <span style="font-size:14px;color:var(--corpo);">→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 14: CELEBRAÇÃO — META ATINGIDA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">14 — Celebração (Jornada)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div style="padding:40px 24px;text-align:center;">
+            <!-- Confetti visual -->
+            <div style="font-size:64px;margin-bottom:16px;">🎉</div>
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--corpo);margin-bottom:8px;">Meta Atingida!</div>
+            <div style="font-size:15px;color:var(--t1);margin-bottom:4px;">Você atingiu seu peso meta de</div>
+            <div style="font-family:'DM Mono',monospace;font-size:48px;font-weight:800;color:var(--em);margin:12px 0;">76,0 kg</div>
+            <div style="font-size:13px;color:var(--t2);margin-bottom:24px;">Começou com 80,2 kg em 1 Jan 2026<br>Perdeu 4,2 kg em 9 semanas</div>
+
+            <!-- Stats -->
+            <div style="display:flex;gap:8px;margin-bottom:24px;">
+              <div style="flex:1;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;">
+                <div style="font-size:10px;color:var(--t2);">TREINOS</div>
+                <div style="font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--corpo);">36</div>
+              </div>
+              <div style="flex:1;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;">
+                <div style="font-size:10px;color:var(--t2);">CALORIAS</div>
+                <div style="font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--red);">28.400</div>
+              </div>
+              <div style="flex:1;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;">
+                <div style="font-size:10px;color:var(--t2);">XP GANHO</div>
+                <div style="font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--yellow);">+540</div>
+              </div>
+            </div>
+
+            <!-- XP badge -->
+            <div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2);border-radius:var(--radius);padding:14px;margin-bottom:20px;">
+              <div style="font-size:24px;margin-bottom:4px;">🏆</div>
+              <div style="font-size:14px;font-weight:600;color:var(--corpo);">Conquista desbloqueada!</div>
+              <div style="font-size:12px;color:var(--t2);">"Corpo em Transformação" — +200 XP bônus</div>
+            </div>
+
+            <button class="btn-primary">Incrível! Definir nova meta →</button>
+            <div style="margin-top:8px;">
+              <button class="btn-secondary">Voltar ao Dashboard</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

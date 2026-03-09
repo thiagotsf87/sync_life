@@ -3,8 +3,6 @@
 @import "../styles/themes.css" layer(base);
 
 @custom-variant dark (&:is([data-scheme="dark"] *));
-@custom-variant jornada (&:is([data-mode="jornada"] *));
-@custom-variant foco (&:is([data-mode="foco"] *));
 
 @theme inline {
   --color-background: var(--background);
@@ -79,6 +77,7 @@
   --color-sl-purple: #a855f7;
 
   /* Módulos (paleta v3 fixa) */
+  --color-pan: #6366f1;
   --color-fin: #10b981;
   --color-tmp: #06b6d4;
   --color-fut: #8b5cf6;
@@ -121,6 +120,13 @@
     margin: 0;
     padding: 0;
     transition: var(--transition-theme);
+  }
+
+  /* Mobile: DM Sans (consistente com protótipos mobile) */
+  @media (max-width: 1023px) {
+    body {
+      font-family: var(--font-dm-sans), system-ui, sans-serif;
+    }
   }
 }
 

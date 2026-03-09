@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Carreira v3 · Parte 2 · Cor #f43f5e</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;--border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);--t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;--em:#10b981;--el:#0055ff;--car:#f43f5e;--car-g:rgba(244,63,94,0.15);--car-dim:rgba(244,63,94,0.08);--mente:#8b5cf6;--tempo:#06b6d4;--green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--J:#8b5cf6;--J-g:rgba(139,92,246,0.15);--J-dim:rgba(139,92,246,0.08);--radius:16px;--radius-sm:10px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+*::-webkit-scrollbar{display:none!important;}*{-ms-overflow-style:none!important;scrollbar-width:none!important;}
+body{background:#010b1e;font-family:'DM Sans',sans-serif;color:var(--t1);padding:40px 20px 80px;}
+.pt{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#f43f5e,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.ps{font-size:13px;color:var(--t2);margin-bottom:48px;}
+.sl{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t2);margin:56px 0 6px;}
+.sd{font-size:12px;color:var(--t3);margin-bottom:28px;line-height:1.6;}
+.pair{display:flex;gap:0;align-items:flex-start;margin-bottom:64px;flex-wrap:wrap;}
+.pcol{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.pdiv{width:1px;background:var(--border-h);margin:0 18px;align-self:stretch;min-height:200px;}
+.ml{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;}
+.ml.f{background:rgba(244,63,94,0.1);color:#f472b6;border:1px solid rgba(244,63,94,0.3);}
+.ml.j{background:rgba(139,92,246,0.12);color:#c4b5fd;border:1px solid rgba(139,92,246,0.3);}
+.diff{font-size:11px;color:var(--t3);text-align:center;max-width:375px;line-height:1.55;padding:0 6px;}
+.phone{width:375px;background:var(--bg);border-radius:48px;border:2px solid rgba(255,255,255,0.1);box-shadow:0 40px 80px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.08);overflow:hidden;padding-bottom:20px;}
+.phone.j{border-color:rgba(139,92,246,0.25);box-shadow:0 40px 80px rgba(0,0,0,0.6),0 0 40px rgba(139,92,246,0.05),inset 0 1px 0 rgba(255,255,255,0.08);}
+.di{width:120px;height:34px;background:#000;border-radius:20px;margin:14px auto 0;}
+.sbar{display:flex;align-items:center;justify-content:space-between;padding:8px 28px 10px;}
+.stime{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--t1);}
+.bbar{background:rgba(7,17,43,0.97);border-top:1px solid var(--border);height:68px;display:flex;align-items:center;justify-content:space-around;padding:0 8px 8px;margin-top:8px;}
+.btab{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 10px;min-width:48px;}
+.btab svg{width:22px;height:22px;fill:none;stroke-width:2;stroke:var(--t3);}
+.btab span{font-size:10px;font-weight:500;color:var(--t3);}
+.btab.af svg{stroke:var(--car);}.btab.af span{color:var(--car);}
+.btab.aj svg{stroke:var(--J);}.btab.aj span{color:var(--J);}
+.fab-w{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;top:-6px;}
+.fab{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#10b981,#0055ff);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(16,185,129,0.4);border:3px solid var(--bg);}
+.fab svg{width:22px;height:22px;stroke:#fff;}.fab.j{background:linear-gradient(135deg,#8b5cf6,#10b981);box-shadow:0 4px 20px rgba(139,92,246,0.5);}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 12px;}
+.htl{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--t1);}
+.hbtn{width:36px;height:36px;border-radius:10px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
+.hbtn svg{width:16px;height:16px;fill:none;stroke:var(--t2);stroke-width:2;}
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;}
+.kcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
+.klbl{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.kval{font-family:'DM Mono',monospace;font-size:19px;font-weight:700;color:var(--t1);}
+.ksub{font-size:11px;color:var(--t2);margin-top:2px;}
+.sectt{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;padding:0 20px 8px;margin-top:4px;}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.bg{background:rgba(16,185,129,0.12);color:#10b981;}.bpk{background:rgba(244,63,94,0.12);color:#f472b6;}.by{background:rgba(245,158,11,0.12);color:#f59e0b;}.bbl{background:rgba(0,85,255,0.12);color:#60a5fa;}.bp{background:rgba(139,92,246,0.12);color:#c4b5fd;}
+.xptg{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:10px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.2);font-size:10px;font-weight:700;color:#c4b5fd;}
+.pb{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}.pf{height:100%;border-radius:3px;}
+.dtabs{display:flex;gap:0;padding:0 16px 12px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+.dtab{padding:8px 12px;font-size:12px;font-weight:500;white-space:nowrap;color:var(--t3);border-bottom:2px solid transparent;}
+.dtab.af{color:var(--car);border-bottom-color:var(--car);}.dtab.aj{color:#c4b5fd;border-bottom-color:var(--J);}
+.skr{display:flex;align-items:center;gap:10px;margin-bottom:10px;}.skr:last-child{margin-bottom:0;}
+.skl{font-size:12px;color:var(--t2);width:100px;flex-shrink:0;}
+.skt{flex:1;height:8px;background:var(--s3);border-radius:4px;overflow:hidden;}.skf{height:100%;border-radius:4px;}
+.skp{font-family:'DM Mono',monospace;font-size:11px;color:var(--t2);width:36px;text-align:right;flex-shrink:0;}
+.li{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);}.li:last-child{border-bottom:none;}
+.lic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.lin{flex:1;min-width:0;}.lit{font-size:14px;font-weight:500;color:var(--t1);}.lis{font-size:12px;color:var(--t2);margin-top:1px;}
+.coach{margin:0 16px 12px;background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(244,63,94,0.06));border:1px solid rgba(139,92,246,0.25);border-radius:var(--radius);padding:13px 14px;display:flex;gap:11px;}
+.cav{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f43f5e,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.clb{font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.ctx{font-size:12px;color:var(--t2);line-height:1.55;}.ctx strong{color:var(--t1);}
+.ccta{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-weight:700;color:#c4b5fd;}
+.finput{width:100%;padding:12px 14px;background:var(--s1);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;color:var(--t1);font-family:'DM Sans',sans-serif;}
+.flbl{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:600;border:none;}
+.pp{background:linear-gradient(135deg,#f43f5e,#8b5cf6);color:#fff;}.pj{background:linear-gradient(135deg,#8b5cf6,#f43f5e);color:#fff;}
+.tabs2{display:flex;gap:6px;padding:0 16px 12px;}.tab2{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;}
+.tab2.af{background:var(--car);color:#fff;}.tab2.aj{background:var(--J);color:#fff;}.tab2.in{background:var(--s1);color:var(--t2);border:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<div class="pt">💼 Carreira · Parte 2</div>
+<p class="ps">Telas 04–07 × 2 modos · Estático · Cor: <span style="color:#f43f5e;font-weight:700;">#f43f5e</span></p>
+
+<!-- ══════════════════════════════════════════
+     TELA 04 — MAPA DE HABILIDADES
+══════════════════════════════════════════ -->
+<div class="sl">⭐ Tela 04 — Mapa de Habilidades</div>
+<p class="sd">Skills por categoria (Técnicas, Soft Skills, Idiomas) com barras de proficiência. Jornada: XP por skill, radar chart, link Mente.</p>
+<div class="pair">
+<div class="pcol">
+<div class="ml f">◎ Foco</div>
+<div class="phone">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:var(--car);font-weight:500;margin-bottom:2px;">💼 Carreira</div><div class="htl">Habilidades</div></div><div class="hbtn" style="background:var(--car);border-color:var(--car);"><svg viewBox="0 0 24 24" style="stroke:#fff;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+<div class="dtabs"><div class="dtab">Dashboard</div><div class="dtab">Perfil</div><div class="dtab">Roadmap</div><div class="dtab af">Habilidades</div><div class="dtab">Histórico</div></div>
+
+<div class="tabs2"><div class="tab2 af">Todas</div><div class="tab2 in">Técnicas</div><div class="tab2 in">Soft Skills</div><div class="tab2 in">Idiomas</div></div>
+
+<div class="kgrid">
+  <div class="kcard"><div class="klbl">Total mapeadas</div><div class="kval" style="color:var(--car);">14</div><div class="ksub">6 dominadas</div></div>
+  <div class="kcard"><div class="klbl">Em desenvolvimento</div><div class="kval" style="color:var(--yellow);">8</div><div class="ksub">Vinculadas a trilhas</div></div>
+</div>
+
+<div class="sectt">TÉCNICAS</div>
+<div class="card">
+  <div class="skr"><div class="skl">React</div><div class="skt"><div class="skf" style="width:88%;background:var(--car);"></div></div><div class="skp" style="color:var(--em);">88%</div></div>
+  <div class="skr"><div class="skl">TypeScript</div><div class="skt"><div class="skf" style="width:76%;background:var(--car);"></div></div><div class="skp" style="color:var(--em);">76%</div></div>
+  <div class="skr"><div class="skl">Node.js</div><div class="skt"><div class="skf" style="width:58%;background:var(--yellow);"></div></div><div class="skp" style="color:var(--yellow);">58%</div></div>
+  <div class="skr"><div class="skl">PostgreSQL</div><div class="skt"><div class="skf" style="width:70%;background:var(--car);"></div></div><div class="skp" style="color:var(--em);">70%</div></div>
+  <div class="skr"><div class="skl">AWS</div><div class="skt"><div class="skf" style="width:60%;background:var(--yellow);"></div></div><div class="skp" style="color:var(--yellow);">60%</div></div>
+  <div class="skr"><div class="skl">Arquitetura</div><div class="skt"><div class="skf" style="width:32%;background:var(--red);"></div></div><div class="skp" style="color:var(--red);">32%</div></div>
+</div>
+
+<div class="sectt">SOFT SKILLS</div>
+<div class="card">
+  <div class="skr"><div class="skl">Comunicação</div><div class="skt"><div class="skf" style="width:80%;background:var(--car);"></div></div><div class="skp" style="color:var(--em);">80%</div></div>
+  <div class="skr"><div class="skl">Liderança</div><div class="skt"><div class="skf" style="width:55%;background:var(--yellow);"></div></div><div class="skp" style="color:var(--yellow);">55%</div></div>
+  <div class="skr"><div class="skl">Mentoria</div><div class="skt"><div class="skf" style="width:40%;background:var(--yellow);"></div></div><div class="skp" style="color:var(--yellow);">40%</div></div>
+</div>
+
+<div class="sectt">IDIOMAS</div>
+<div class="card">
+  <div class="skr"><div class="skl">Português</div><div class="skt"><div class="skf" style="width:100%;background:var(--em);"></div></div><div class="skp" style="color:var(--em);">Nativo</div></div>
+  <div class="skr"><div class="skl">Inglês</div><div class="skt"><div class="skf" style="width:64%;background:var(--yellow);"></div></div><div class="skp" style="color:var(--yellow);">B2+</div></div>
+</div>
+
+<!-- Link Mente -->
+<div class="card" style="background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.2);">
+  <div style="display:flex;gap:10px;align-items:center;"><span style="font-size:20px;">🧠</span><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--t1);">3 habilidades vinculadas a Mente</div><div style="font-size:12px;color:var(--t2);margin-top:2px;">React, Node.js e Inglês têm trilhas ativas</div></div><svg viewBox="0 0 24 24" fill="none" stroke="var(--mente)" stroke-width="2" style="width:14px;height:14px;flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg></div>
+</div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab af"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">Skills por categoria · Barras com cores por nível<br>Link Mente para trilhas vinculadas</div>
+</div>
+
+<div class="pdiv"></div>
+
+<div class="pcol">
+<div class="ml j">✦ Jornada</div>
+<div class="phone j">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:#c4b5fd;font-weight:600;margin-bottom:2px;">✦ Arsenal do Herói</div><div class="htl">Habilidades</div></div><div class="xptg">⚡ 14 skills</div></div>
+<div class="dtabs"><div class="dtab">Dashboard</div><div class="dtab">Perfil</div><div class="dtab">Roadmap</div><div class="dtab aj">Habilidades</div><div class="dtab">Histórico</div></div>
+
+<div class="tabs2"><div class="tab2 aj">Todas</div><div class="tab2 in">Técnicas</div><div class="tab2 in">Soft Skills</div><div class="tab2 in">Idiomas</div></div>
+
+<div class="kgrid">
+  <div class="kcard"><div class="klbl">Arsenal total</div><div class="kval" style="color:var(--car);">14</div><div class="ksub" style="color:#c4b5fd;">6 dominadas · +30 XP cada</div></div>
+  <div class="kcard"><div class="klbl">Em treinamento</div><div class="kval" style="color:var(--yellow);">8</div><div class="ksub" style="color:#c4b5fd;">⚡ +15 XP ao dominar cada</div></div>
+</div>
+
+<!-- Radar chart placeholder -->
+<div class="card" style="background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(244,63,94,0.04));border-color:rgba(139,92,246,0.2);text-align:center;">
+  <div style="font-size:11px;color:#c4b5fd;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">✦ RADAR DE HABILIDADES</div>
+  <!-- Simplified radar representation -->
+  <div style="width:180px;height:180px;margin:0 auto;border-radius:50%;border:1px solid rgba(139,92,246,0.2);position:relative;display:flex;align-items:center;justify-content:center;">
+    <div style="width:120px;height:120px;border-radius:50%;border:1px dashed rgba(139,92,246,0.15);position:absolute;"></div>
+    <div style="width:60px;height:60px;border-radius:50%;border:1px dashed rgba(139,92,246,0.1);position:absolute;"></div>
+    <!-- Labels around -->
+    <div style="position:absolute;top:-8px;font-size:9px;color:var(--car);font-weight:600;">React 88%</div>
+    <div style="position:absolute;right:-14px;top:40%;font-size:9px;color:var(--car);font-weight:600;">TS 76%</div>
+    <div style="position:absolute;bottom:-8px;font-size:9px;color:var(--yellow);font-weight:600;">Node 58%</div>
+    <div style="position:absolute;left:-14px;top:40%;font-size:9px;color:var(--yellow);font-weight:600;">Lead 55%</div>
+    <div style="position:absolute;top:20%;right:10px;font-size:9px;color:var(--em);font-weight:600;">SQL 70%</div>
+    <div style="position:absolute;bottom:20%;left:10px;font-size:9px;color:var(--red);font-weight:600;">Arq 32%</div>
+    <!-- Filled area -->
+    <div style="width:100px;height:100px;background:linear-gradient(135deg,rgba(244,63,94,0.2),rgba(139,92,246,0.15));border-radius:50%;opacity:0.7;"></div>
+  </div>
+  <div style="font-size:10px;color:var(--t2);margin-top:10px;">Área forte: Frontend · Gap: Arquitetura, Mentoria</div>
+</div>
+
+<div class="sectt">TÉCNICAS — <span style="color:#c4b5fd;">+45 XP disponíveis</span></div>
+<div class="card">
+  <div class="skr"><div class="skl">React</div><div class="skt"><div class="skf" style="width:88%;background:var(--car);"></div></div><div class="skp" style="color:var(--em);">88%</div></div>
+  <div class="skr"><div class="skl">TypeScript</div><div class="skt"><div class="skf" style="width:76%;background:var(--car);"></div></div><div class="skp" style="color:var(--em);">76%</div></div>
+  <div class="skr"><div class="skl">Node.js</div><div class="skt"><div class="skf" style="width:58%;background:var(--yellow);"></div></div><div class="skp" style="color:var(--yellow);">58%</div></div>
+  <div class="skr"><div class="skl">Arquitetura</div><div class="skt"><div class="skf" style="width:32%;background:var(--red);"></div></div><div class="skp" style="color:var(--red);">32%</div></div>
+  <div style="font-size:10px;color:#c4b5fd;font-weight:600;margin-top:6px;">⚡ Dominar Arquitetura = +15 XP + desbloqueia Sênior</div>
+</div>
+
+<div class="sectt">SOFT SKILLS</div>
+<div class="card">
+  <div class="skr"><div class="skl">Comunicação</div><div class="skt"><div class="skf" style="width:80%;background:var(--car);"></div></div><div class="skp" style="color:var(--em);">80%</div></div>
+  <div class="skr"><div class="skl">Liderança</div><div class="skt"><div class="skf" style="width:55%;background:var(--yellow);"></div></div><div class="skp" style="color:var(--yellow);">55%</div></div>
+  <div class="skr"><div class="skl">Mentoria</div><div class="skt"><div class="skf" style="width:40%;background:var(--yellow);"></div></div><div class="skp" style="color:var(--yellow);">40%</div></div>
+</div>
+
+<div class="coach"><div class="cav">🤖</div><div><div class="clb">Coach Skills</div><div class="ctx">Seu ponto forte é <strong>Frontend</strong> (88%). Para Sênior, invista em <strong>Arquitetura</strong> (32%) — trilha no Mente está disponível e vale <strong>+15 XP</strong>.</div><div class="ccta">Iniciar trilha Arquitetura →</div></div></div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab j"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab aj"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">"Arsenal do Herói" · Radar chart visual<br>XP por skill · Coach sugere gap<br>"Dominar Arquitetura desbloqueia Sênior"</div>
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     TELA 05 — HISTÓRICO SALARIAL (NOVA)
+══════════════════════════════════════════ -->
+<div class="sl">📜 Tela 05 — Histórico Salarial e Promoções</div>
+<p class="sd"><strong>NOVA — faltava no protótipo original.</strong> Timeline de promoções, evolução salarial, métricas de crescimento. Jornada: "Conquistas" com XP por promoção.</p>
+<div class="pair">
+<div class="pcol">
+<div class="ml f">◎ Foco</div>
+<div class="phone">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:var(--car);font-weight:500;margin-bottom:2px;">💼 Carreira</div><div class="htl">Histórico</div></div><div class="hbtn" style="background:var(--car);border-color:var(--car);"><svg viewBox="0 0 24 24" style="stroke:#fff;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+<div class="dtabs"><div class="dtab">Dashboard</div><div class="dtab">Perfil</div><div class="dtab">Roadmap</div><div class="dtab">Habilidades</div><div class="dtab af">Histórico</div></div>
+
+<!-- Salary evolution -->
+<div class="sectt">EVOLUÇÃO SALARIAL</div>
+<div class="card">
+  <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+    <div><div style="font-size:11px;color:var(--t2);">Salário atual</div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--car);margin-top:2px;">R$ 9.200</div></div>
+    <div style="text-align:right;"><div style="font-size:11px;color:var(--t2);">Crescimento total</div><div style="font-family:'DM Mono',monospace;font-size:18px;color:var(--green);margin-top:2px;">+156%</div></div>
+  </div>
+  <!-- Mini chart placeholder -->
+  <div style="display:flex;align-items:flex-end;gap:4px;height:60px;margin-bottom:8px;">
+    <div style="flex:1;background:var(--s3);border-radius:3px 3px 0 0;height:23%;"></div>
+    <div style="flex:1;background:var(--s3);border-radius:3px 3px 0 0;height:23%;"></div>
+    <div style="flex:1;background:rgba(244,63,94,0.3);border-radius:3px 3px 0 0;height:40%;"></div>
+    <div style="flex:1;background:rgba(244,63,94,0.3);border-radius:3px 3px 0 0;height:40%;"></div>
+    <div style="flex:1;background:rgba(244,63,94,0.3);border-radius:3px 3px 0 0;height:50%;"></div>
+    <div style="flex:1;background:var(--car);border-radius:3px 3px 0 0;height:64%;"></div>
+    <div style="flex:1;background:var(--car);border-radius:3px 3px 0 0;height:70%;"></div>
+    <div style="flex:1;background:var(--car);border-radius:3px 3px 0 0;height:82%;"></div>
+    <div style="flex:1;background:var(--car);border-radius:3px 3px 0 0;height:92%;"></div>
+    <div style="flex:1;background:var(--car);border-radius:3px 3px 0 0;height:100%;"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3);"><span>2020</span><span>2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span></div>
+</div>
+
+<!-- Promoções -->
+<div class="sectt">PROMOÇÕES</div>
+<div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="li"><div class="lic" style="background:var(--car-g);">📈</div><div class="lin"><div class="lit">Pleno → R$ 9.200</div><div class="lis">TechCorp · Mar 2022 · +53% aumento</div></div><span class="bdg bpk">Atual</span></div>
+  <div class="li"><div class="lic" style="background:rgba(100,100,100,0.1);">📈</div><div class="lin"><div class="lit">Junior → R$ 6.000</div><div class="lis">TechCorp · Jan 2021 · +50% aumento</div></div></div>
+  <div class="li"><div class="lic" style="background:rgba(100,100,100,0.1);">🎯</div><div class="lin"><div class="lit">Primeiro emprego → R$ 3.600</div><div class="lis">StartupXYZ · Jan 2020</div></div></div>
+</div>
+
+<!-- Métricas -->
+<div class="sectt" style="margin-top:8px;">MÉTRICAS</div>
+<div class="kgrid">
+  <div class="kcard"><div class="klbl">Tempo de carreira</div><div class="kval">5 anos</div><div class="ksub">Desde Jan 2020</div></div>
+  <div class="kcard"><div class="klbl">Promoções</div><div class="kval" style="color:var(--green);">2</div><div class="ksub">Média: 2.5 anos/promoção</div></div>
+  <div class="kcard"><div class="klbl">Crescimento médio</div><div class="kval" style="color:var(--car);">+51%</div><div class="ksub">Por promoção</div></div>
+  <div class="kcard"><div class="klbl">Projeção sênior</div><div class="kval" style="font-size:15px;color:var(--yellow);">R$ 14k</div><div class="ksub">+52% do atual</div></div>
+</div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab af"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">Gráfico evolução salarial · Lista de promoções<br>Métricas: tempo de carreira, crescimento médio</div>
+</div>
+
+<div class="pdiv"></div>
+
+<div class="pcol">
+<div class="ml j">✦ Jornada</div>
+<div class="phone j">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:#c4b5fd;font-weight:600;margin-bottom:2px;">✦ Jornada Profissional</div><div class="htl">Histórico</div></div><div class="xptg">⚡ 480 XP</div></div>
+<div class="dtabs"><div class="dtab">Dashboard</div><div class="dtab">Perfil</div><div class="dtab">Roadmap</div><div class="dtab">Habilidades</div><div class="dtab aj">Histórico</div></div>
+
+<!-- Hero evolução -->
+<div class="card" style="background:linear-gradient(135deg,rgba(139,92,246,0.14),rgba(244,63,94,0.08));border-color:rgba(139,92,246,0.28);text-align:center;">
+  <div style="font-size:11px;color:#c4b5fd;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">✦ SUA EVOLUÇÃO</div>
+  <div style="display:flex;justify-content:center;align-items:baseline;gap:8px;margin-bottom:4px;">
+    <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--t3);text-decoration:line-through;">R$ 3.600</span>
+    <span style="font-size:18px;color:var(--t3);">→</span>
+    <span style="font-family:'DM Mono',monospace;font-size:26px;font-weight:700;background:linear-gradient(135deg,#f43f5e,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">R$ 9.200</span>
+  </div>
+  <div style="font-size:12px;color:var(--green);font-weight:600;">+156% em 5 anos · 2 promoções conquistadas</div>
+  <div style="font-size:10px;color:#c4b5fd;margin-top:6px;">⚡ +480 XP totais de carreira · Próximo: +100 XP (Sênior)</div>
+</div>
+
+<!-- Chart -->
+<div class="card">
+  <div style="display:flex;align-items:flex-end;gap:4px;height:60px;margin-bottom:8px;">
+    <div style="flex:1;background:rgba(139,92,246,0.2);border-radius:3px 3px 0 0;height:23%;"></div>
+    <div style="flex:1;background:rgba(139,92,246,0.2);border-radius:3px 3px 0 0;height:23%;"></div>
+    <div style="flex:1;background:rgba(139,92,246,0.35);border-radius:3px 3px 0 0;height:40%;"></div>
+    <div style="flex:1;background:rgba(139,92,246,0.35);border-radius:3px 3px 0 0;height:40%;"></div>
+    <div style="flex:1;background:rgba(139,92,246,0.35);border-radius:3px 3px 0 0;height:50%;"></div>
+    <div style="flex:1;background:linear-gradient(180deg,#f43f5e,#8b5cf6);border-radius:3px 3px 0 0;height:64%;"></div>
+    <div style="flex:1;background:linear-gradient(180deg,#f43f5e,#8b5cf6);border-radius:3px 3px 0 0;height:70%;"></div>
+    <div style="flex:1;background:linear-gradient(180deg,#f43f5e,#8b5cf6);border-radius:3px 3px 0 0;height:82%;"></div>
+    <div style="flex:1;background:linear-gradient(180deg,#f43f5e,#8b5cf6);border-radius:3px 3px 0 0;height:92%;"></div>
+    <div style="flex:1;background:linear-gradient(180deg,#f43f5e,#8b5cf6);border-radius:3px 3px 0 0;height:100%;"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3);"><span>2020</span><span>2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span></div>
+</div>
+
+<!-- Conquistas do Herói -->
+<div class="sectt">CONQUISTAS DO HERÓI</div>
+<div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="li"><div class="lic" style="background:var(--J-dim);">🏆</div><div class="lin"><div class="lit">Promoção a Pleno</div><div class="lis">TechCorp · Mar 2022 · +53%</div><div style="font-size:10px;color:#c4b5fd;font-weight:700;margin-top:2px;">✅ +100 XP · Badge "Evolução"</div></div><span class="bdg bp">Conquistado</span></div>
+  <div class="li"><div class="lic" style="background:var(--J-dim);">🏆</div><div class="lin"><div class="lit">Promoção a Junior</div><div class="lis">TechCorp · Jan 2021 · +50%</div><div style="font-size:10px;color:var(--green);margin-top:2px;">✅ +80 XP · Badge "Primeira Promoção"</div></div><span class="bdg bg">Conquistado</span></div>
+  <div class="li"><div class="lic" style="background:rgba(100,100,100,0.1);">🎯</div><div class="lin"><div class="lit">Primeiro emprego</div><div class="lis">StartupXYZ · Jan 2020 · R$ 3.600</div><div style="font-size:10px;color:var(--green);margin-top:2px;">✅ +50 XP · Badge "Início da Jornada"</div></div></div>
+</div>
+
+<div class="coach"><div class="cav">🤖</div><div><div class="clb">Coach Carreira</div><div class="ctx">Sua média de crescimento é <strong>+51% por promoção</strong>. Se manter esse ritmo, pode chegar a <strong>R$ 14k como Sênior</strong> e <strong>R$ 21k como Tech Lead</strong>.</div><div class="ccta">Ver projeção completa →</div></div></div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab j"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab aj"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">"Sua Evolução" hero · "R$ 3.600 → R$ 9.200"<br>"Conquistas do Herói" com XP e badges<br>Coach com projeção de crescimento</div>
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     TELA 06 — ADICIONAR HABILIDADE (form)
+══════════════════════════════════════════ -->
+<div class="sl">➕ Tela 06 — Adicionar Habilidade</div>
+<p class="sd">Formulário para adicionar nova skill: nome, categoria, nível, vínculo com trilha do Mente.</p>
+<div class="pair">
+<div class="pcol">
+<div class="ml f">◎ Foco</div>
+<div class="phone">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;"><div class="hbtn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><div style="text-align:center;"><div style="font-size:12px;color:var(--car);font-weight:500;">💼 Carreira</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);">Nova Habilidade</div></div><div style="font-size:13px;color:var(--t3);">Cancelar</div></div>
+
+<div style="padding:0 16px;">
+  <label class="flbl">Nome da habilidade</label>
+  <input class="finput" value="Docker" readonly style="margin-bottom:14px;">
+
+  <label class="flbl">Categoria</label>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+    <span style="padding:8px 14px;border-radius:20px;font-size:12px;font-weight:500;background:var(--car);color:#fff;">Hard Skill</span>
+    <span style="padding:8px 14px;border-radius:20px;font-size:12px;font-weight:500;background:var(--s1);color:var(--t2);border:1px solid var(--border);">Soft Skill</span>
+    <span style="padding:8px 14px;border-radius:20px;font-size:12px;font-weight:500;background:var(--s1);color:var(--t2);border:1px solid var(--border);">Idioma</span>
+    <span style="padding:8px 14px;border-radius:20px;font-size:12px;font-weight:500;background:var(--s1);color:var(--t2);border:1px solid var(--border);">Certificação</span>
+  </div>
+
+  <label class="flbl">Nível de proficiência</label>
+  <div style="display:flex;gap:6px;margin-bottom:6px;">
+    <div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;color:var(--t2);">1<br><span style="font-size:10px;">Iniciante</span></div>
+    <div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;color:var(--t2);">2<br><span style="font-size:10px;">Básico</span></div>
+    <div style="flex:1;padding:10px;border-radius:10px;background:var(--car);border:1px solid var(--car);text-align:center;font-size:12px;color:#fff;font-weight:600;">3<br><span style="font-size:10px;">Intermed.</span></div>
+    <div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;color:var(--t2);">4<br><span style="font-size:10px;">Avançado</span></div>
+    <div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;color:var(--t2);">5<br><span style="font-size:10px;">Expert</span></div>
+  </div>
+  <div style="margin-bottom:16px;"></div>
+
+  <label class="flbl">Vincular a trilha (Mente)</label>
+  <div style="padding:14px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:16px;">🧠</span>
+    <div style="flex:1;"><div style="font-size:13px;color:var(--t1);">Nenhuma trilha vinculada</div><div style="font-size:11px;color:var(--t2);">Vincular habilidade a uma trilha do Mente</div></div>
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" style="width:14px;height:14px;"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
+  <label class="flbl">Notas (opcional)</label>
+  <div style="padding:12px 14px;background:var(--s1);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;color:var(--t3);min-height:60px;">Aprendendo Docker para deploy de microservices...</div>
+</div>
+
+<div style="padding:16px 16px;"><button class="pill pp" style="width:100%;height:50px;font-size:15px;border-radius:14px;">Salvar Habilidade</button></div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab af"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">Form: nome, categoria (chips), nível 1-5<br>Vincular trilha Mente · Notas opcionais</div>
+</div>
+
+<div class="pdiv"></div>
+
+<div class="pcol">
+<div class="ml j">✦ Jornada</div>
+<div class="phone j">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;"><div class="hbtn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><div style="text-align:center;"><div style="font-size:12px;color:#c4b5fd;font-weight:600;">✦ Novo Poder</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);">Nova Habilidade</div></div><div style="font-size:13px;color:var(--t3);">Cancelar</div></div>
+
+<div style="margin:0 16px 12px;display:flex;align-items:center;gap:8px;padding:8px 13px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:20px;"><span style="font-size:14px;">⚡</span><span style="font-size:12px;color:#c4b5fd;font-weight:600;">Adicionar habilidade vale <strong style="color:var(--t1);">+10 XP</strong></span></div>
+
+<div style="padding:0 16px;">
+  <label class="flbl" style="color:#c4b5fd;">Nome do poder</label>
+  <input class="finput" value="Docker" readonly style="margin-bottom:14px;border-color:rgba(139,92,246,0.3);">
+
+  <label class="flbl" style="color:#c4b5fd;">Tipo de habilidade</label>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+    <span style="padding:8px 14px;border-radius:20px;font-size:12px;font-weight:500;background:var(--J);color:#fff;">Hard Skill</span>
+    <span style="padding:8px 14px;border-radius:20px;font-size:12px;font-weight:500;background:var(--s1);color:var(--t2);border:1px solid var(--border);">Soft Skill</span>
+    <span style="padding:8px 14px;border-radius:20px;font-size:12px;font-weight:500;background:var(--s1);color:var(--t2);border:1px solid var(--border);">Idioma</span>
+    <span style="padding:8px 14px;border-radius:20px;font-size:12px;font-weight:500;background:var(--s1);color:var(--t2);border:1px solid var(--border);">Certificação</span>
+  </div>
+
+  <label class="flbl" style="color:#c4b5fd;">Nível de maestria</label>
+  <div style="display:flex;gap:6px;margin-bottom:6px;">
+    <div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;color:var(--t2);">1<br><span style="font-size:10px;">Noviço</span></div>
+    <div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;color:var(--t2);">2<br><span style="font-size:10px;">Aprendiz</span></div>
+    <div style="flex:1;padding:10px;border-radius:10px;background:var(--J);border:1px solid var(--J);text-align:center;font-size:12px;color:#fff;font-weight:600;">3<br><span style="font-size:10px;">Guerreiro</span></div>
+    <div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;color:var(--t2);">4<br><span style="font-size:10px;">Mestre</span></div>
+    <div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;color:var(--t2);">5<br><span style="font-size:10px;">Lenda</span></div>
+  </div>
+  <div style="font-size:10px;color:#c4b5fd;margin-bottom:14px;font-weight:600;">⚡ Evoluir para Mestre = +15 XP · Lenda = +30 XP</div>
+
+  <label class="flbl" style="color:#c4b5fd;">Vincular a trilha (Mente)</label>
+  <div style="padding:14px;background:linear-gradient(135deg,var(--s1),rgba(139,92,246,0.04));border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-sm);margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:16px;">🧠</span>
+    <div style="flex:1;"><div style="font-size:13px;color:var(--t1);">Vincular trilha</div><div style="font-size:11px;color:#c4b5fd;">Trilha ativa = +5 XP bônus ao evoluir</div></div>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" stroke-width="2" style="width:14px;height:14px;"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
+  <label class="flbl" style="color:#c4b5fd;">Notas</label>
+  <div style="padding:12px 14px;background:var(--s1);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;color:var(--t3);min-height:60px;">Aprendendo Docker para deploy...</div>
+</div>
+
+<div style="padding:16px 16px;"><button class="pill pj" style="width:100%;height:50px;font-size:15px;border-radius:14px;">Adicionar ao Arsenal · +10 XP</button></div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab j"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab aj"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">"Novo Poder" · Níveis como RPG (Noviço→Lenda)<br>"+10 XP" · "+5 XP bônus com trilha"<br>"Adicionar ao Arsenal"</div>
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     TELA 07 — REGISTRAR PROMOÇÃO (NOVA)
+══════════════════════════════════════════ -->
+<div class="sl">📈 Tela 07 — Registrar Promoção</div>
+<p class="sd"><strong>NOVA.</strong> Formulário para registrar uma promoção/mudança de cargo com novo salário. Jornada: celebração de conquista.</p>
+<div class="pair">
+<div class="pcol">
+<div class="ml f">◎ Foco</div>
+<div class="phone">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;"><div class="hbtn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><div style="text-align:center;"><div style="font-size:12px;color:var(--car);font-weight:500;">💼 Carreira</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);">Nova Promoção</div></div><div style="font-size:13px;color:var(--t3);">Cancelar</div></div>
+
+<div style="padding:0 16px;">
+  <label class="flbl">Novo cargo</label>
+  <input class="finput" value="Desenvolvedor Sênior" readonly style="margin-bottom:14px;">
+
+  <label class="flbl">Empresa</label>
+  <input class="finput" value="TechCorp" readonly style="margin-bottom:14px;">
+
+  <div style="display:flex;gap:8px;margin-bottom:14px;">
+    <div style="flex:1;"><label class="flbl">Novo salário bruto</label><input class="finput" value="14.000" readonly></div>
+    <div style="flex:1;"><label class="flbl">Data</label><input class="finput" value="Jun 2026" readonly></div>
+  </div>
+
+  <!-- Comparação -->
+  <div style="padding:14px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;">
+    <div style="font-size:11px;color:var(--t2);margin-bottom:8px;">COMPARAÇÃO</div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--t2);">Salário anterior</span><span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t1);">R$ 9.200</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--t2);">Novo salário</span><span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--car);font-weight:600;">R$ 14.000</span></div>
+    <div style="height:1px;background:var(--border);margin:8px 0;"></div>
+    <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:600;color:var(--t1);">Aumento</span><span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green);font-weight:700;">+52% · +R$ 4.800</span></div>
+  </div>
+
+  <!-- Toggle Finanças -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:16px;">💰</span><div><div style="font-size:13px;color:var(--t1);">Atualizar Finanças</div><div style="font-size:11px;color:var(--t2);">Ajustar receita recorrente</div></div></div>
+    <div style="width:40px;height:22px;border-radius:11px;background:var(--green);position:relative;"><div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:3px;left:21px;"></div></div>
+  </div>
+</div>
+
+<div style="padding:0 16px 16px;"><button class="pill pp" style="width:100%;height:50px;font-size:15px;border-radius:14px;">📈 Registrar Promoção</button></div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab af"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">Form: cargo, empresa, salário, data<br>Comparação +52% · Toggle Finanças</div>
+</div>
+
+<div class="pdiv"></div>
+
+<div class="pcol">
+<div class="ml j">✦ Jornada</div>
+<div class="phone j">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;"><div class="hbtn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><div style="text-align:center;"><div style="font-size:12px;color:#c4b5fd;font-weight:600;">✦ Conquista Desbloqueada!</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);">Nova Promoção</div></div><div style="font-size:13px;color:var(--t3);">Cancelar</div></div>
+
+<!-- Celebration banner -->
+<div style="margin:0 16px 14px;background:linear-gradient(135deg,rgba(139,92,246,0.14),rgba(244,63,94,0.08));border:1px solid rgba(139,92,246,0.28);border-radius:var(--radius);padding:16px;text-align:center;">
+  <div style="font-size:36px;margin-bottom:6px;">🎉</div>
+  <div style="font-size:11px;color:#c4b5fd;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">NOVO CAPÍTULO DESBLOQUEADO</div>
+  <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;background:linear-gradient(135deg,#f43f5e,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">+100 XP</div>
+  <div style="font-size:11px;color:var(--t2);margin-top:4px;">Badge "Evolução" + Atualização do Roadmap</div>
+</div>
+
+<div style="padding:0 16px;">
+  <label class="flbl" style="color:#c4b5fd;">Novo cargo</label>
+  <input class="finput" value="Desenvolvedor Sênior" readonly style="margin-bottom:14px;border-color:rgba(139,92,246,0.3);">
+
+  <label class="flbl" style="color:#c4b5fd;">Empresa</label>
+  <input class="finput" value="TechCorp" readonly style="margin-bottom:14px;border-color:rgba(139,92,246,0.3);">
+
+  <div style="display:flex;gap:8px;margin-bottom:14px;">
+    <div style="flex:1;"><label class="flbl" style="color:#c4b5fd;">Novo salário</label><input class="finput" value="14.000" readonly style="border-color:rgba(139,92,246,0.3);"></div>
+    <div style="flex:1;"><label class="flbl" style="color:#c4b5fd;">Data</label><input class="finput" value="Jun 2026" readonly style="border-color:rgba(139,92,246,0.3);"></div>
+  </div>
+
+  <div style="padding:14px;background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(244,63,94,0.06));border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius);margin-bottom:14px;">
+    <div style="font-size:11px;color:#c4b5fd;font-weight:700;margin-bottom:8px;">💰 IMPACTO DA CONQUISTA</div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--t2);">Salário anterior</span><span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t1);text-decoration:line-through;">R$ 9.200</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--t2);">Novo salário</span><span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--car);font-weight:600;">R$ 14.000</span></div>
+    <div style="height:1px;background:var(--border);margin:8px 0;"></div>
+    <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:600;color:var(--t1);">Aumento</span><span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green);font-weight:700;">+52% · +R$ 4.800/mês</span></div>
+    <div style="font-size:10px;color:#c4b5fd;margin-top:6px;font-weight:600;">⚡ Impacto anual: +R$ 57.600 · Patrimônio acelera</div>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:16px;">💰</span><div><div style="font-size:13px;color:var(--t1);">Aliado: Finanças</div><div style="font-size:11px;color:#c4b5fd;">Atualiza receita · +5 XP bônus</div></div></div>
+    <div style="width:40px;height:22px;border-radius:11px;background:var(--green);position:relative;"><div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:3px;left:21px;"></div></div>
+  </div>
+</div>
+
+<div style="padding:0 16px 16px;"><button class="pill pj" style="width:100%;height:54px;font-size:16px;border-radius:14px;font-weight:700;">✦ Registrar Conquista · +100 XP</button></div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab j"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab aj"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">"Conquista Desbloqueada!" · 🎉 Hero +100 XP<br>"Impacto da Conquista" · +R$ 57.600/ano<br>"Registrar Conquista" com XP</div>
+</div>
+</div>
+
+
+
+<!-- ══════════════════════════════════════════
+     TELA 08 — EDITAR PERFIL (★ NOVO)
+══════════════════════════════════════════ -->
+<div class="sl">★ Tela 08 — Editar Perfil</div>
+<p class="sd"><strong>NOVA.</strong> Formulário para editar bio, cargo, empresa, salário, avatar, data de revisão.</p>
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:64px;">
+<div class="ml f">◎ Foco</div>
+<div class="phone">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;"><div class="hbtn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><div style="text-align:center;"><div style="font-size:12px;color:var(--car);font-weight:500;">💼 Carreira</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);">Editar Perfil</div></div><div style="font-size:13px;color:var(--t3);">Cancelar</div></div>
+<div style="padding:0 16px;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;"><div style="width:64px;height:64px;border-radius:20px;background:var(--car-g);border:2px dashed rgba(244,63,94,0.3);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;">👨‍💻</div><div><div style="font-size:14px;font-weight:600;color:var(--car);">Trocar avatar</div><div style="font-size:12px;color:var(--t2);">Toque para selecionar emoji</div></div></div>
+  <label class="flbl">Bio profissional</label><div style="padding:12px 14px;background:var(--s1);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;color:var(--t1);min-height:60px;margin-bottom:14px;">Desenvolvedor full stack com foco em React e Node.js.</div>
+  <label class="flbl">Cargo atual</label><input class="finput" value="Desenvolvedor Pleno" readonly style="margin-bottom:14px;">
+  <div style="display:flex;gap:8px;margin-bottom:14px;"><div style="flex:1;"><label class="flbl">Empresa</label><input class="finput" value="TechCorp" readonly></div><div style="flex:1;"><label class="flbl">Localidade</label><input class="finput" value="São Paulo, SP" readonly></div></div>
+  <label class="flbl">Especialidade</label><input class="finput" value="Full Stack" readonly style="margin-bottom:14px;">
+  <label class="flbl">Próxima revisão salarial</label><input class="finput" value="Jun 2026" readonly style="margin-bottom:14px;">
+</div>
+<div style="padding:0 16px 16px;"><button class="pill pp" style="width:100%;height:50px;font-size:15px;border-radius:14px;">Salvar Alterações</button></div>
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab af"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">★ Novo · Avatar, bio, cargo, empresa<br>Localidade, especialidade, data revisão</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     TELA 09 — CELEBRAÇÃO PROMOÇÃO (★ NOVO · JORNADA ONLY)
+══════════════════════════════════════════ -->
+<div class="sl">★ Tela 09 — Celebração de Promoção (Jornada only)</div>
+<p class="sd"><strong>NOVA. Jornada only.</strong> Tela exibida após registrar promoção. Confetti, XP, badges, impacto financeiro.</p>
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:64px;">
+<div class="ml j">✦ Jornada</div>
+<div class="phone j">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;"><div class="hbtn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><div style="text-align:center;"><div style="font-size:12px;color:#c4b5fd;font-weight:600;">✦ Conquista Desbloqueada!</div><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);">Promoção Registrada</div></div><div style="width:36px;"></div></div>
+
+<!-- Celebration hero -->
+<div style="margin:0 16px 14px;background:linear-gradient(135deg,rgba(139,92,246,0.14),rgba(244,63,94,0.08));border:1px solid rgba(139,92,246,0.28);border-radius:var(--radius);padding:20px;text-align:center;">
+  <div style="font-size:48px;margin-bottom:8px;">🎉</div>
+  <div style="font-size:11px;color:#c4b5fd;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">NOVO CAPÍTULO DESBLOQUEADO</div>
+  <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--t1);margin-bottom:4px;">Desenvolvedor Sênior</div>
+  <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;background:linear-gradient(135deg,#f43f5e,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">+100 XP</div>
+  <div style="font-size:11px;color:var(--t2);margin-top:4px;">Badge "Evolução" desbloqueado</div>
+</div>
+
+<!-- Impacto financeiro -->
+<div style="margin:0 16px 14px;padding:14px;background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(244,63,94,0.06));border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius);">
+  <div style="font-size:11px;color:#c4b5fd;font-weight:700;margin-bottom:10px;">💰 IMPACTO DA CONQUISTA</div>
+  <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--t2);">Salário anterior</span><span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t1);text-decoration:line-through;">R$ 9.200</span></div>
+  <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;color:var(--t2);">Novo salário</span><span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--car);font-weight:600;">R$ 14.000</span></div>
+  <div style="height:1px;background:var(--border);margin:8px 0;"></div>
+  <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:600;color:var(--t1);">Aumento</span><span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green);font-weight:700;">+52% · +R$ 4.800/mês</span></div>
+  <div style="font-size:10px;color:#c4b5fd;margin-top:6px;font-weight:600;">⚡ Impacto anual: +R$ 57.600 · Patrimônio acelera</div>
+</div>
+
+<!-- Badges ganhos -->
+<div style="margin:0 16px 14px;display:flex;gap:8px;">
+  <div style="flex:1;padding:12px;background:var(--s1);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-sm);text-align:center;"><div style="font-size:24px;margin-bottom:4px;">🏆</div><div style="font-size:10px;color:#c4b5fd;font-weight:600;">Evolução</div></div>
+  <div style="flex:1;padding:12px;background:var(--s1);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-sm);text-align:center;"><div style="font-size:24px;margin-bottom:4px;">📈</div><div style="font-size:10px;color:#c4b5fd;font-weight:600;">+52% Salary</div></div>
+  <div style="flex:1;padding:12px;background:var(--s1);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-sm);text-align:center;"><div style="font-size:24px;margin-bottom:4px;">⭐</div><div style="font-size:10px;color:#c4b5fd;font-weight:600;">Nível 7</div></div>
+</div>
+
+<!-- Toggle integração -->
+<div style="margin:0 16px 14px;display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);">
+  <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:16px;">💰</span><div><div style="font-size:13px;color:var(--t1);">Aliado: Finanças</div><div style="font-size:11px;color:#c4b5fd;">Atualiza receita · +5 XP bônus</div></div></div>
+  <div style="width:40px;height:22px;border-radius:11px;background:var(--green);position:relative;"><div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:3px;left:21px;"></div></div>
+</div>
+
+<div style="padding:0 16px 16px;"><button class="pill pj" style="width:100%;height:54px;font-size:16px;border-radius:14px;font-weight:700;background:linear-gradient(135deg,#8b5cf6,#f43f5e);color:#fff;border:none;">✦ Ir para o Dashboard</button></div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab j"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab aj"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">★ Novo · Jornada only · 🎉 Celebração +100 XP<br>Badges desbloqueados · Impacto +R$ 57.600/ano<br>Toggle Finanças · CTA "Ir para Dashboard"</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     TELA 10 — EMPTY STATE (★ NOVO)
+══════════════════════════════════════════ -->
+<div class="sl">★ Tela 10 — Empty State / Onboarding</div>
+<p class="sd"><strong>NOVA.</strong> Primeira vez no módulo. Onboarding 3 passos: cargo, skills, roadmap.</p>
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:64px;">
+<div class="ml f">◎ Foco</div>
+<div class="phone">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:var(--car);font-weight:500;margin-bottom:2px;">💼 Carreira</div><div class="htl">Sua carreira</div></div></div>
+<div class="dtabs"><div class="dtab af">Dashboard</div><div class="dtab">Perfil</div><div class="dtab">Roadmap</div><div class="dtab">Habilidades</div><div class="dtab">Histórico</div></div>
+<div style="padding:40px 20px;text-align:center;">
+  <div style="font-size:64px;margin-bottom:16px;">💼</div>
+  <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1);margin-bottom:8px;">Mapeie sua carreira</div>
+  <div style="font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:24px;">Configure seu perfil profissional para acompanhar sua evolução, mapear habilidades e planejar próximos passos.</div>
+  <div style="text-align:left;padding:0 8px;">
+    <div style="display:flex;gap:12px;align-items:center;padding:14px;background:var(--s1);border:1px solid rgba(244,63,94,0.2);border-radius:var(--radius);margin-bottom:10px;"><div style="width:32px;height:32px;border-radius:50%;background:var(--car);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;">1</div><div><div style="font-size:14px;font-weight:600;color:var(--t1);">Cargo atual</div><div style="font-size:12px;color:var(--t2);">Empresa, salário, especialidade</div></div></div>
+    <div style="display:flex;gap:12px;align-items:center;padding:14px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;"><div style="width:32px;height:32px;border-radius:50%;background:var(--s3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--t2);flex-shrink:0;">2</div><div><div style="font-size:14px;font-weight:600;color:var(--t1);">Suas habilidades</div><div style="font-size:12px;color:var(--t2);">Skills técnicas, soft skills, idiomas</div></div></div>
+    <div style="display:flex;gap:12px;align-items:center;padding:14px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;"><div style="width:32px;height:32px;border-radius:50%;background:var(--s3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--t2);flex-shrink:0;">3</div><div><div style="font-size:14px;font-weight:600;color:var(--t1);">Roadmap</div><div style="font-size:12px;color:var(--t2);">De onde veio e para onde quer ir</div></div></div>
+  </div>
+  <div style="padding:16px 8px 0;"><button class="pill pp" style="width:100%;height:50px;font-size:15px;border-radius:14px;font-weight:700;">Começar configuração</button></div>
+  <div style="font-size:12px;color:var(--t3);margin-top:10px;">⏱ Leva menos de 3 minutos</div>
+</div>
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab af"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">★ Novo · Onboarding 3 passos · CTA "Começar"<br>"Leva menos de 3 minutos"</div>
+</div>
+
+
+<!-- RODAPÉ ATUALIZADO -->
+<div style="margin-top:72px;padding:28px;background:var(--s1);border:1px solid var(--border);border-radius:20px;">
+  <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--t1);margin-bottom:6px;">✅ Protótipo Carreira v3 — Parte 2 Atualizada</div>
+  <div style="font-size:12px;color:var(--t2);margin-bottom:16px;">
+    04. Habilidades (F+J) · 05. Histórico Salarial (F+J) · 06. Add Habilidade (F+J) · 07. Registrar Promoção (F+J)<br>
+    <span style="color:var(--car);">★ NOVAS: 08. Editar Perfil (F) · 09. Celebração Promoção (J) · 10. Empty State (F)</span>
+  </div>
+  <div style="background:var(--s2);border-radius:12px;padding:14px;font-size:12px;color:var(--t2);line-height:1.8;">
+    <strong style="color:var(--t1);">Cor atualizada:</strong> <span style="color:#f43f5e;font-weight:700;">#f43f5e</span> (Rose) — substituída de #ec4899. Sem scrollbars. Jornada adiciona — layouts idênticos.
+  </div>
+</div>
+
+</body>
+</html>

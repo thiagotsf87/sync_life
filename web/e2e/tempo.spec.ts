@@ -1,7 +1,7 @@
 import { test, expect, skipAuth } from './fixtures'
 
 /**
- * Módulo Tempo — Semanal, Mensal, Novo Evento, Foco.
+ * Módulo Tempo — Semanal, Mensal, Novo Evento, Sessões de Foco.
  */
 
 test.describe('Tempo: Vista Semanal', () => {

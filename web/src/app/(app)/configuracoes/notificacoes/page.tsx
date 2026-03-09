@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { ToggleSwitch } from '@/components/settings/toggle-switch'
-import { useShellStore } from '@/stores/shell-store'
 
 const NOTIF_KEY = 'sl_notif_settings'
 
@@ -104,9 +103,6 @@ const DEFAULT_NOTIF: NotifState = {
 }
 
 export default function NotificacoesPage() {
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
-
   const [notif, setNotif] = useState<NotifState>(DEFAULT_NOTIF)
 
   // RN-FUT-51: persistir configurações de notificação no localStorage
@@ -123,8 +119,17 @@ export default function NotificacoesPage() {
     } catch { /* ignore */ }
   }, [notif])
 
-  const toggle = (key: NotifKey) => {
+  const toggle = async (key: NotifKey) => {
     if (key === 'dailyReminderTime') return
+
+    if (key === 'push' && !notif.push) {
+      // Requesting push permission when enabling
+      if ('Notification' in window) {
+        const permission = await Notification.requestPermission()
+        if (permission !== 'granted') return // user denied — don't toggle on
+      }
+    }
+
     setNotif((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
@@ -136,7 +141,7 @@ export default function NotificacoesPage() {
       </p>
 
       {/* Canal de entrega */}
-      <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
         <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
           Canal de entrega
         </p>
@@ -158,7 +163,7 @@ export default function NotificacoesPage() {
       </div>
 
       {/* Alertas financeiros */}
-      <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
         <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
           Alertas financeiros
         </p>
@@ -198,7 +203,7 @@ export default function NotificacoesPage() {
       </div>
 
       {/* Metas e progresso */}
-      <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
         <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
           Metas e progresso
         </p>
@@ -220,7 +225,7 @@ export default function NotificacoesPage() {
       </div>
 
       {/* Jornada exclusivos */}
-      <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-5 transition-colors hover:border-[var(--sl-border-h)]">
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 transition-colors hover:border-[var(--sl-border-h)]">
         <div className="flex items-center gap-2 mb-4">
           <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)]">
             Exclusivos do Modo Jornada
@@ -230,25 +235,15 @@ export default function NotificacoesPage() {
           </span>
         </div>
 
-        {!isJornada && (
-          <div className="px-3 py-2.5 rounded-xl bg-[var(--sl-s3)] border border-[var(--sl-border)] mb-4">
-            <p className="text-[12px] text-[var(--sl-t3)]">
-              🌱 Estas notificações estão disponíveis apenas no{' '}
-              <span className="text-[#6e9fff] font-semibold">Modo Jornada</span>. Ative-o na aba
-              &ldquo;Modo de Uso&rdquo;.
-            </p>
-          </div>
-        )}
-
         <NotifRow
           icon="🔥"
           label="Lembrete diário de registro"
           description="Lembrete para registrar seus gastos no horário escolhido"
           checked={notif.dailyReminder}
           onChange={() => toggle('dailyReminder')}
-          disabled={!isJornada}
+          disabled={false}
           extra={
-            notif.dailyReminder && isJornada ? (
+            notif.dailyReminder ? (
               <div className="flex items-center gap-2 mt-1.5">
                 <span className="text-[11px] text-[var(--sl-t3)]">Horário:</span>
                 <input
@@ -267,7 +262,7 @@ export default function NotificacoesPage() {
           description="Resumo da semana com comparações e destaques todo domingo"
           checked={notif.weeklyReview}
           onChange={() => toggle('weeklyReview')}
-          disabled={!isJornada}
+          disabled={false}
         />
         <NotifRow
           icon="🏆"
@@ -275,7 +270,7 @@ export default function NotificacoesPage() {
           description="Notifique quando uma nova conquista for desbloqueada"
           checked={notif.achievements}
           onChange={() => toggle('achievements')}
-          disabled={!isJornada}
+          disabled={false}
         />
         <NotifRow
           icon="😴"
@@ -283,7 +278,7 @@ export default function NotificacoesPage() {
           description="Lembrete amigável quando você ficar 7 dias sem registrar"
           checked={notif.inactivity}
           onChange={() => toggle('inactivity')}
-          disabled={!isJornada}
+          disabled={false}
           noBorder
         />
       </div>

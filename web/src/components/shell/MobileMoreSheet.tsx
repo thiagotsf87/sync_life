@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { LogOut } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 import { MODULES } from '@/lib/modules'
 import { cn } from '@/lib/utils'
 
@@ -41,7 +43,7 @@ function setPinnedModules(modules: string[]) {
   } catch { /* ignore */ }
 }
 
-export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
+export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreSheetProps) {
   const router = useRouter()
   const [pinned, setPinned] = useState<string[]>(DEFAULT_PINNED)
 
@@ -59,6 +61,7 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
 
   const togglePin = useCallback((moduleId: string, e: React.MouseEvent) => {
     e.stopPropagation()
+    e.preventDefault()
     setPinned((prev) => {
       const next = prev.includes(moduleId)
         ? prev.filter((id) => id !== moduleId)
@@ -67,6 +70,14 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
       return next
     })
   }, [])
+
+  const handleLogout = useCallback(async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    onOpenChange(false)
+    router.push('/login')
+    router.refresh()
+  }, [router, onOpenChange])
 
   if (!open) return null
 
@@ -102,12 +113,12 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
           {MODULE_GRID.map((mod) => {
             const isPinned = pinned.includes(mod.id)
             return (
-              <button
+              <div
                 key={mod.id}
                 onClick={() => handleNavigate(mod.id)}
                 className={cn(
-                  'flex flex-col items-center gap-2 rounded-[14px] px-2 py-4',
-                  'border transition-all duration-150',
+                  'flex flex-col items-center gap-2 rounded-[14px] px-2 py-4 cursor-pointer',
+                  'border transition-all duration-150 active:scale-95',
                   isPinned
                     ? 'border-[rgba(16,185,129,0.3)]'
                     : 'border-[var(--sl-border)]',
@@ -125,18 +136,39 @@ export function MobileMoreSheet({ open, onOpenChange }: MobileMoreSheetProps) {
                 <span className="text-[12px] font-medium text-[var(--sl-t1)] text-center">
                   {mod.label}
                 </span>
-                <button
-                  onClick={(e) => togglePin(mod.id, e)}
-                  className={cn(
-                    'text-[10px] transition-colors',
-                    isPinned ? 'text-[#10b981]' : 'text-[var(--sl-t2)]',
-                  )}
-                >
-                  {isPinned ? 'Fixado ✓' : mod.id === 'configuracoes' ? '' : 'Fixar'}
-                </button>
-              </button>
+                {mod.id !== 'configuracoes' && (
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => togglePin(mod.id, e)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') togglePin(mod.id, e as unknown as React.MouseEvent) }}
+                    className={cn(
+                      'text-[10px] transition-colors',
+                      isPinned ? 'text-[#10b981]' : 'text-[var(--sl-t2)]',
+                    )}
+                  >
+                    {isPinned ? 'Fixado ✓' : 'Fixar'}
+                  </span>
+                )}
+              </div>
             )
           })}
+        </div>
+
+        {/* Logout */}
+        <div className="mt-5 pt-4 border-t border-[var(--sl-border)]">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-[12px]
+                       text-[14px] text-[var(--sl-t2)] transition-colors
+                       hover:bg-[var(--sl-s2)] active:bg-[var(--sl-s3)]"
+          >
+            <LogOut size={18} strokeWidth={1.8} />
+            <span>Sair da conta</span>
+            {userName && (
+              <span className="ml-auto text-[12px] text-[var(--sl-t3)]">{userName}</span>
+            )}
+          </button>
         </div>
       </div>
     </>

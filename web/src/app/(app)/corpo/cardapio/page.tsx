@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Sparkles, RefreshCw, Lock, Unlock, History } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import { useHealthProfile, WEIGHT_GOAL_LABELS } from '@/hooks/use-corpo'
 import { createTransactionFromCardapio } from '@/lib/integrations/financas'
 
@@ -84,8 +83,6 @@ const DAYS_PT = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'D
 
 export default function CardapioPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { profile } = useHealthProfile()
   const [generating, setGenerating] = useState(false)
@@ -202,10 +199,7 @@ export default function CardapioPage() {
           <ArrowLeft size={16} />
           Corpo
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           🍽️ Cardápio com IA
         </h1>
       </div>

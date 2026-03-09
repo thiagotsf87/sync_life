@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { updateStreak } from '@/hooks/use-panorama'
+import { addXP } from '@/hooks/use-xp'
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
 
@@ -206,6 +208,8 @@ export function useAgenda({ mode, referenceDate }: UseAgendaOptions): UseAgendaR
       .single()
 
     if (err) throw new Error(err.message)
+    updateStreak(user.id).catch(() => {})
+    addXP(user.id, 'event_created').catch(() => {})
     refresh()
     return created as AgendaEvent
   }, [refresh])

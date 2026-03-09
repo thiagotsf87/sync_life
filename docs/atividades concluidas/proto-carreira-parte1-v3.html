@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Carreira v3 · Parte 1 · Cor #f43f5e</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ════════ DESIGN SYSTEM TOKENS ════════
+   Módulo: Carreira · Cor: #f43f5e (Pink)
+   Alinhado com protótipo existente
+════════════════════════════════════════ */
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;
+  --car:#f43f5e;--car-g:rgba(244,63,94,0.15);--car-dim:rgba(244,63,94,0.08);
+  --fin:#10b981;--mente:#8b5cf6;--tempo:#06b6d4;
+  --green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--orange:#f97316;
+  --J:#8b5cf6;--J-g:rgba(139,92,246,0.15);--J-dim:rgba(139,92,246,0.08);
+  --radius:16px;--radius-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+*::-webkit-scrollbar{display:none!important;}*{-ms-overflow-style:none!important;scrollbar-width:none!important;}
+body{background:#010b1e;font-family:'DM Sans',sans-serif;color:var(--t1);padding:40px 20px 80px;}
+
+/* ════════ PAGE ════════ */
+.pt{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#f43f5e,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.ps{font-size:13px;color:var(--t2);margin-bottom:16px;}
+.leg{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:48px;padding:14px 20px;background:var(--s1);border:1px solid var(--border);border-radius:12px;font-size:12px;color:var(--t2);align-items:center;}
+.sl{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t2);margin:56px 0 6px;}
+.sd{font-size:12px;color:var(--t3);margin-bottom:28px;line-height:1.6;}
+
+/* ════════ PAIR ════════ */
+.pair{display:flex;gap:0;align-items:flex-start;margin-bottom:64px;flex-wrap:wrap;}
+.pcol{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.pdiv{width:1px;background:var(--border-h);margin:0 18px;align-self:stretch;min-height:200px;}
+.ml{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;}
+.ml.f{background:rgba(244,63,94,0.1);color:#f472b6;border:1px solid rgba(244,63,94,0.3);}
+.ml.j{background:rgba(139,92,246,0.12);color:#c4b5fd;border:1px solid rgba(139,92,246,0.3);}
+.diff{font-size:11px;color:var(--t3);text-align:center;max-width:375px;line-height:1.55;padding:0 6px;}
+
+/* ════════ PHONE (ESTÁTICO) ════════ */
+.phone{width:375px;background:var(--bg);border-radius:48px;border:2px solid rgba(255,255,255,0.1);box-shadow:0 40px 80px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.08);overflow:hidden;padding-bottom:20px;}
+.phone.j{border-color:rgba(139,92,246,0.25);box-shadow:0 40px 80px rgba(0,0,0,0.6),0 0 40px rgba(139,92,246,0.05),inset 0 1px 0 rgba(255,255,255,0.08);}
+.di{width:120px;height:34px;background:#000;border-radius:20px;margin:14px auto 0;}
+.sbar{display:flex;align-items:center;justify-content:space-between;padding:8px 28px 10px;}
+.stime{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--t1);}
+
+/* ════════ BOTTOM BAR ════════ */
+.bbar{background:rgba(7,17,43,0.97);border-top:1px solid var(--border);height:68px;display:flex;align-items:center;justify-content:space-around;padding:0 8px 8px;margin-top:8px;}
+.btab{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 10px;min-width:48px;}
+.btab svg{width:22px;height:22px;fill:none;stroke-width:2;stroke:var(--t3);}
+.btab span{font-size:10px;font-weight:500;color:var(--t3);}
+.btab.af svg{stroke:var(--car);}.btab.af span{color:var(--car);}
+.btab.aj svg{stroke:var(--J);}.btab.aj span{color:var(--J);}
+.fab-w{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;top:-6px;}
+.fab-l{font-size:9px;font-weight:700;color:var(--em);}.fab-l.j{color:#c4b5fd;}
+.fab{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#10b981,#0055ff);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(16,185,129,0.4);border:3px solid var(--bg);}
+.fab svg{width:22px;height:22px;stroke:#fff;}
+.fab.j{background:linear-gradient(135deg,#8b5cf6,#10b981);box-shadow:0 4px 20px rgba(139,92,246,0.5);}
+
+/* ════════ COMPONENTES ════════ */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 12px;}
+.htl{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--t1);}
+.hbtn{width:36px;height:36px;border-radius:10px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
+.hbtn svg{width:16px;height:16px;fill:none;stroke:var(--t2);stroke-width:2;}
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;}
+.kcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
+.klbl{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.kval{font-family:'DM Mono',monospace;font-size:19px;font-weight:700;color:var(--t1);}
+.ksub{font-size:11px;color:var(--t2);margin-top:2px;}
+.sectt{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;padding:0 20px 8px;margin-top:4px;}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.bg{background:rgba(16,185,129,0.12);color:#10b981;}
+.bpk{background:rgba(244,63,94,0.12);color:#f472b6;}
+.by{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.bbl{background:rgba(0,85,255,0.12);color:#60a5fa;}
+.bp{background:rgba(139,92,246,0.12);color:#c4b5fd;}
+.xptg{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:10px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.2);font-size:10px;font-weight:700;color:#c4b5fd;}
+.pb{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.pf{height:100%;border-radius:3px;}
+.aic{margin:0 16px 12px;background:rgba(0,85,255,0.06);border:1px solid rgba(0,85,255,0.15);border-radius:var(--radius);padding:13px 14px;display:flex;gap:11px;}
+.aii{font-size:18px;flex-shrink:0;}.ait{font-size:13px;color:var(--t2);line-height:1.5;}.ait span{color:var(--car);}
+
+/* Coach */
+.coach{margin:0 16px 12px;background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(244,63,94,0.06));border:1px solid rgba(139,92,246,0.25);border-radius:var(--radius);padding:13px 14px;display:flex;gap:11px;}
+.cav{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f43f5e,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.clb{font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.ctx{font-size:12px;color:var(--t2);line-height:1.55;}.ctx strong{color:var(--t1);}
+.ccta{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-weight:700;color:#c4b5fd;}
+
+/* XP bar */
+.xpb{margin:0 16px 12px;background:var(--s1);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius);padding:10px 14px;}
+.xpbg{background:linear-gradient(135deg,#f43f5e,#8b5cf6);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;}
+
+/* Tabs */
+.dtabs{display:flex;gap:0;padding:0 16px 12px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+.dtab{padding:8px 12px;font-size:12px;font-weight:500;white-space:nowrap;color:var(--t3);border-bottom:2px solid transparent;}
+.dtab.af{color:var(--car);border-bottom-color:var(--car);}.dtab.aj{color:#c4b5fd;border-bottom-color:var(--J);}
+
+/* Skill bars */
+.skr{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.skr:last-child{margin-bottom:0;}
+.skl{font-size:12px;color:var(--t2);width:100px;flex-shrink:0;}
+.skt{flex:1;height:8px;background:var(--s3);border-radius:4px;overflow:hidden;}
+.skf{height:100%;border-radius:4px;}
+.skp{font-family:'DM Mono',monospace;font-size:11px;color:var(--t2);width:36px;text-align:right;flex-shrink:0;}
+
+/* Timeline */
+.tli{display:flex;gap:16px;margin-bottom:0;}
+.tld{display:flex;flex-direction:column;align-items:center;}
+.tldot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tlline{width:2px;flex:1;min-height:50px;margin-top:4px;}
+.tlc{flex:1;padding-bottom:20px;}
+
+/* List items */
+.li{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);}
+.li:last-child{border-bottom:none;}
+.lic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.lin{flex:1;min-width:0;}.lit{font-size:14px;font-weight:500;color:var(--t1);}.lis{font-size:12px;color:var(--t2);margin-top:1px;}
+
+.ck{fill:none;stroke:#fff;stroke-width:3;width:14px;height:14px;}
+</style>
+</head>
+<body>
+
+<div class="pt">💼 SyncLife — Módulo Carreira</div>
+<p class="ps">7 telas × 2 modos = 14 phones · 375px · Dark · Estático · Cor: <span style="color:#f43f5e;font-weight:700;">#f43f5e</span> (Pink)</p>
+<div class="leg">
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--car);margin-right:6px;"></span><strong style="color:var(--t1);">Foco</strong> — Dados diretos, timeline simples, AI card discreto</span>
+  <span style="width:1px;height:20px;background:var(--border);display:inline-block;"></span>
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--J);margin-right:6px;"></span><strong style="color:var(--t1);">Jornada</strong> — "Jornada do Herói", simulador de promoção, radar chart, XP profissional</span>
+  <span style="color:var(--t3);font-size:11px;">Layouts idênticos. Jornada <em>adiciona</em> camadas — nada é removido.</span>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TELA 01 — DASHBOARD
+══════════════════════════════════════════ -->
+<div class="sl">📊 Tela 01 — Dashboard Carreira</div>
+<p class="sd">Visão geral: cargo atual, KPIs, próximo milestone, insight IA, ações rápidas. Jornada: XP profissional, coach, "2 habilidades para Tech Lead".</p>
+<div class="pair">
+<div class="pcol">
+<div class="ml f">◎ Foco</div>
+<div class="phone">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:var(--car);font-weight:500;margin-bottom:2px;">💼 Carreira</div><div class="htl">Sua carreira</div></div><div style="display:flex;gap:8px;"><div class="hbtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="hbtn" style="background:var(--car);border-color:var(--car);"><svg viewBox="0 0 24 24" style="stroke:#fff;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div>
+
+<div class="dtabs"><div class="dtab af">Dashboard</div><div class="dtab">Perfil</div><div class="dtab">Roadmap</div><div class="dtab">Habilidades</div><div class="dtab">Histórico</div></div>
+
+<!-- Cargo hero -->
+<div class="card" style="background:linear-gradient(135deg,rgba(244,63,94,0.12),rgba(244,63,94,0.04));border-color:rgba(244,63,94,0.2);">
+  <div style="display:flex;gap:14px;align-items:center;">
+    <div style="width:52px;height:52px;border-radius:16px;background:var(--car-g);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">👨‍💻</div>
+    <div style="flex:1;"><div style="font-size:16px;font-weight:700;color:var(--t1);">Desenvolvedor Pleno</div><div style="font-size:13px;color:var(--t2);">TechCorp · São Paulo</div><div style="margin-top:6px;display:flex;gap:6px;"><span class="bdg bg">3 anos nível</span><span class="bdg bpk">⭐ Sênior em vista</span></div></div>
+  </div>
+</div>
+
+<div class="kgrid">
+  <div class="kcard"><div class="klbl">Salário atual</div><div class="kval" style="color:var(--car);">R$ 9.200</div><div class="ksub">Meta sênior: R$ 14k</div></div>
+  <div class="kcard"><div class="klbl">Próxima revisão</div><div class="kval" style="font-size:16px;">Jun 2026</div><div class="ksub">3 meses · PDI criado</div></div>
+  <div class="kcard"><div class="klbl">Habilidades</div><div class="kval">14</div><div class="ksub">8 em desenvolvimento</div></div>
+  <div class="kcard"><div class="klbl">Roadmap</div><div class="kval" style="color:var(--yellow);">55%</div><div class="ksub">Promoção a Sênior</div></div>
+</div>
+
+<!-- Milestone -->
+<div class="sectt">PRÓXIMO MILESTONE</div>
+<div class="card" style="background:rgba(244,63,94,0.07);border-color:rgba(244,63,94,0.2);">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div><div style="font-size:14px;font-weight:600;color:var(--t1);">Promoção a Sênior</div><div style="font-size:12px;color:var(--t2);">Meta: Jun 2026 · Revisão anual</div></div><span class="bdg bpk">55%</span></div>
+  <div class="pb" style="height:8px;border-radius:4px;margin-bottom:8px;"><div class="pf" style="width:55%;background:var(--car);border-radius:4px;"></div></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+    <span style="font-size:11px;padding:3px 8px;border-radius:8px;background:rgba(16,185,129,0.1);color:var(--em);">✓ React avançado</span>
+    <span style="font-size:11px;padding:3px 8px;border-radius:8px;background:rgba(16,185,129,0.1);color:var(--em);">✓ Liderança técnica</span>
+    <span style="font-size:11px;padding:3px 8px;border-radius:8px;background:rgba(244,63,94,0.1);color:var(--car);">⟳ Node.js avançado</span>
+    <span style="font-size:11px;padding:3px 8px;border-radius:8px;background:rgba(100,100,100,0.1);color:var(--t3);">○ Arquitetura</span>
+  </div>
+</div>
+
+<!-- AI -->
+<div class="aic"><div class="aii">🤖</div><div class="ait">Sua trilha de React (Mente) está alinhada com o que o mercado exige para sênior. Complete em Março para chegar à revisão de Jun com a skill validada. <span>Chance +40%</span>.</div></div>
+
+<!-- Quick actions -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;">
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;"><div style="height:2px;width:24px;border-radius:1px;background:var(--car);margin-bottom:6px;"></div><div style="font-size:13px;font-weight:500;color:var(--t1);">👤 Perfil</div></div>
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;"><div style="height:2px;width:24px;border-radius:1px;background:var(--el);margin-bottom:6px;"></div><div style="font-size:13px;font-weight:500;color:var(--t1);">🗺 Roadmap</div></div>
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;"><div style="height:2px;width:24px;border-radius:1px;background:var(--mente);margin-bottom:6px;"></div><div style="font-size:13px;font-weight:500;color:var(--t1);">⭐ Habilidades</div></div>
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;"><div style="height:2px;width:24px;border-radius:1px;background:var(--green);margin-bottom:6px;"></div><div style="font-size:13px;font-weight:500;color:var(--t1);">📜 Histórico</div></div>
+</div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab af"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">Cargo hero · KPIs neutros · Milestone com skills<br>AI card discreto · Quick actions grid</div>
+</div>
+
+<div class="pdiv"></div>
+
+<!-- JORNADA -->
+<div class="pcol">
+<div class="ml j">✦ Jornada</div>
+<div class="phone j">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:#c4b5fd;font-weight:600;margin-bottom:2px;">✦ Carreira · Nível 6</div><div class="htl">Sua jornada</div></div><div style="display:flex;gap:8px;"><div class="hbtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="hbtn" style="background:var(--J);border-color:var(--J);"><svg viewBox="0 0 24 24" style="stroke:#fff;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div>
+
+<div class="dtabs"><div class="dtab aj">Dashboard</div><div class="dtab">Perfil</div><div class="dtab">Roadmap</div><div class="dtab">Habilidades</div><div class="dtab">Histórico</div></div>
+
+<!-- XP bar -->
+<div class="xpb">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:6px;"><div class="xpbg">Nível 6</div><span style="font-size:11px;color:var(--t2);">Profissional Estratégico</span></div><span style="font-size:12px;font-weight:700;color:#fb923c;">🔥 28 dias</span></div>
+  <div style="height:5px;background:var(--s3);border-radius:3px;overflow:hidden;"><div style="height:100%;width:72%;border-radius:3px;background:linear-gradient(90deg,#f43f5e,#8b5cf6);"></div></div>
+  <div style="font-size:10px;color:var(--t2);text-align:right;margin-top:3px;">720 / 1000 XP → Nível 7</div>
+</div>
+
+<!-- Coach -->
+<div class="coach"><div class="cav">🤖</div><div><div class="clb">Coach Carreira</div><div class="ctx">Você está a <strong>2 habilidades</strong> de Tech Lead. Complete <strong>Node.js Avançado</strong> e <strong>Arquitetura</strong> para desbloquear o próximo nível. Seu salário pode subir <strong>52%</strong>!</div><div class="ccta">Ver simulador de promoção →</div></div></div>
+
+<!-- Cargo hero Jornada -->
+<div class="card" style="background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(244,63,94,0.06));border-color:rgba(139,92,246,0.2);">
+  <div style="display:flex;gap:14px;align-items:center;">
+    <div style="width:52px;height:52px;border-radius:16px;background:var(--J-dim);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">👨‍💻</div>
+    <div style="flex:1;"><div style="font-size:10px;color:#c4b5fd;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">✦ CAPÍTULO ATUAL</div><div style="font-size:16px;font-weight:700;color:var(--t1);margin-top:2px;">Desenvolvedor Pleno</div><div style="font-size:13px;color:var(--t2);">TechCorp · São Paulo</div><div style="margin-top:6px;display:flex;gap:6px;"><span class="bdg bp">⚡ +480 XP acumulados</span><span class="bdg bpk">Sênior em vista</span></div></div>
+  </div>
+</div>
+
+<div class="kgrid">
+  <div class="kcard"><div class="klbl">Salário atual</div><div class="kval" style="color:var(--car);">R$ 9.200</div><div class="ksub" style="color:#c4b5fd;">Meta: R$ 14k · +52%</div></div>
+  <div class="kcard"><div class="klbl">Próxima revisão</div><div class="kval" style="font-size:16px;">Jun 2026</div><div class="ksub" style="color:#c4b5fd;">⚡ +100 XP se promovido</div></div>
+  <div class="kcard"><div class="klbl">Habilidades</div><div class="kval">14</div><div class="ksub" style="color:#c4b5fd;">6 dominadas · +XP cada</div></div>
+  <div class="kcard"><div class="klbl">Jornada do Herói</div><div class="kval" style="color:var(--J);">55%</div><div class="ksub" style="color:#c4b5fd;">Rumo ao Sênior</div></div>
+</div>
+
+<!-- Simulador de promoção (Jornada only) -->
+<div class="sectt">SIMULADOR DE PROMOÇÃO</div>
+<div class="card" style="background:linear-gradient(135deg,rgba(244,63,94,0.08),rgba(139,92,246,0.06));border-color:rgba(244,63,94,0.2);">
+  <div style="font-size:11px;color:#c4b5fd;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">💰 Impacto Financeiro — Sênior</div>
+  <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+    <div><div style="font-size:11px;color:var(--t2);">Salário atual</div><div style="font-family:'DM Mono',monospace;font-size:18px;color:var(--t1);margin-top:2px;">R$ 9.200</div></div>
+    <div style="font-size:20px;color:var(--t3);display:flex;align-items:center;">→</div>
+    <div style="text-align:right;"><div style="font-size:11px;color:#c4b5fd;">Projeção sênior</div><div style="font-family:'DM Mono',monospace;font-size:18px;color:var(--car);margin-top:2px;">R$ 14.000</div></div>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <div style="flex:1;padding:8px;background:var(--s2);border-radius:8px;text-align:center;"><div style="font-size:10px;color:var(--t3);">Ganho anual</div><div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green);margin-top:2px;">+R$ 57.600</div></div>
+    <div style="flex:1;padding:8px;background:var(--s2);border-radius:8px;text-align:center;"><div style="font-size:10px;color:var(--t3);">Impacto Patrimônio</div><div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--mente);margin-top:2px;">+R$ 4.800/mês</div></div>
+  </div>
+  <div style="font-size:10px;color:#c4b5fd;margin-top:8px;font-weight:600;">⚡ Promoção a Sênior vale +100 XP + badge "Evolução Salarial"</div>
+</div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab j"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab aj"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">"Capítulo Atual" · XP bar · Coach com meta<br>Simulador de promoção com impacto R$<br>"2 habilidades para Tech Lead"</div>
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     TELA 02 — PERFIL PROFISSIONAL
+══════════════════════════════════════════ -->
+<div class="sl">👤 Tela 02 — Perfil Profissional</div>
+<p class="sd">Avatar, bio, experiência profissional, formação, certificações, links. Jornada: "Jornada do Herói" na bio, XP acumulado.</p>
+<div class="pair">
+<div class="pcol">
+<div class="ml f">◎ Foco</div>
+<div class="phone">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:var(--car);font-weight:500;margin-bottom:2px;">💼 Carreira</div><div class="htl">Perfil</div></div><div class="hbtn"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div></div>
+<div class="dtabs"><div class="dtab">Dashboard</div><div class="dtab af">Perfil</div><div class="dtab">Roadmap</div><div class="dtab">Habilidades</div><div class="dtab">Histórico</div></div>
+
+<!-- Profile header -->
+<div class="card" style="background:linear-gradient(160deg,rgba(244,63,94,0.1),rgba(139,92,246,0.06));border-color:rgba(244,63,94,0.18);">
+  <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;">
+    <div style="width:64px;height:64px;border-radius:20px;background:var(--car-g);border:2px solid rgba(244,63,94,0.3);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;">👨‍💻</div>
+    <div style="flex:1;"><div style="font-size:17px;font-weight:700;color:var(--t1);">Thiago Mendes</div><div style="font-size:13px;color:var(--car);margin-top:2px;">Dev Pleno · Full Stack</div><div style="font-size:12px;color:var(--t2);margin-top:2px;">TechCorp · São Paulo, SP</div></div>
+  </div>
+  <div style="font-size:13px;color:var(--t2);line-height:1.6;padding-top:12px;border-top:1px solid var(--border);">Desenvolvedor full stack com foco em React e Node.js. Apaixonado por UX e arquitetura de sistemas escaláveis.</div>
+</div>
+
+<!-- Experiência -->
+<div class="sectt">EXPERIÊNCIA</div>
+<div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="li"><div class="lic" style="background:var(--car-g);">💼</div><div class="lin"><div class="lit">Desenvolvedor Pleno</div><div class="lis">TechCorp · Full Stack · Mar 2022 → atual</div></div><span class="bdg bpk">Atual</span></div>
+  <div class="li"><div class="lic" style="background:rgba(100,100,100,0.1);">💼</div><div class="lin"><div class="lit">Desenvolvedor Junior</div><div class="lis">StartupXYZ · Frontend · Jan 2020 → Fev 2022</div></div></div>
+</div>
+
+<!-- Formação -->
+<div class="sectt" style="margin-top:8px;">FORMAÇÃO</div>
+<div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="li"><div class="lic" style="background:var(--car-g);">🎓</div><div class="lin"><div class="lit">Ciência da Computação</div><div class="lis">USP · Bacharel · 2015–2019</div></div><span class="bdg bg">Concluído</span></div>
+  <div class="li"><div class="lic" style="background:var(--car-g);">📜</div><div class="lin"><div class="lit">AWS Solutions Architect</div><div class="lis">Amazon · Certificação 2023</div></div><span class="bdg bbl">Válida</span></div>
+</div>
+
+<!-- Links -->
+<div class="sectt" style="margin-top:8px;">LINKS PROFISSIONAIS</div>
+<div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="li"><div class="lic" style="background:rgba(0,119,181,0.15);">💼</div><div class="lin"><div class="lit">LinkedIn</div><div class="lis">linkedin.com/in/thiagomendes</div></div></div>
+  <div class="li"><div class="lic" style="background:rgba(100,100,100,0.15);">🐙</div><div class="lin"><div class="lit">GitHub</div><div class="lis">github.com/thiago-dev</div></div></div>
+  <div class="li"><div class="lic" style="background:rgba(100,100,100,0.15);">🌐</div><div class="lin"><div class="lit">Portfolio</div><div class="lis">thiago.dev</div></div></div>
+</div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab af"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">Perfil clean · Experiência, formação, links<br>Editar com ícone de caneta</div>
+</div>
+
+<div class="pdiv"></div>
+
+<div class="pcol">
+<div class="ml j">✦ Jornada</div>
+<div class="phone j">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:#c4b5fd;font-weight:600;margin-bottom:2px;">✦ Sua Jornada Profissional</div><div class="htl">Perfil</div></div><div class="xptg">⚡ Nível 6</div></div>
+<div class="dtabs"><div class="dtab">Dashboard</div><div class="dtab aj">Perfil</div><div class="dtab">Roadmap</div><div class="dtab">Habilidades</div><div class="dtab">Histórico</div></div>
+
+<div class="card" style="background:linear-gradient(160deg,rgba(139,92,246,0.12),rgba(244,63,94,0.06));border-color:rgba(139,92,246,0.2);">
+  <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;">
+    <div style="width:64px;height:64px;border-radius:20px;background:var(--J-dim);border:2px solid rgba(139,92,246,0.3);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;">👨‍💻</div>
+    <div style="flex:1;"><div style="font-size:10px;color:#c4b5fd;font-weight:700;text-transform:uppercase;">✦ HERÓI EM EVOLUÇÃO</div><div style="font-size:17px;font-weight:700;color:var(--t1);margin-top:2px;">Thiago Mendes</div><div style="font-size:13px;color:var(--car);margin-top:2px;">Dev Pleno · Full Stack</div><div style="font-size:12px;color:var(--t2);margin-top:2px;">TechCorp · São Paulo</div></div>
+  </div>
+  <div style="font-size:13px;color:var(--t2);line-height:1.6;padding-top:12px;border-top:1px solid rgba(139,92,246,0.15);">Desenvolvedor full stack em evolução constante. <strong style="color:var(--t1);">5 anos de jornada</strong>, 2 promoções conquistadas, rumo ao Sênior em 2026.</div>
+  <div style="margin-top:8px;display:flex;gap:6px;"><span class="bdg bp">⚡ 720 XP totais</span><span class="bdg bg">2 promoções</span><span class="bdg by">🔥 28 dias streak</span></div>
+</div>
+
+<!-- Jornada timeline -->
+<div class="sectt">CAPÍTULOS DA JORNADA</div>
+<div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="li"><div class="lic" style="background:rgba(16,185,129,0.1);">🏆</div><div class="lin"><div class="lit">Capítulo 2 — Pleno</div><div class="lis">TechCorp · Mar 2022 → atual · 3 anos</div><div style="font-size:10px;color:#c4b5fd;font-weight:700;margin-top:2px;">⚡ +280 XP ganhos neste capítulo</div></div><span class="bdg bpk">Atual</span></div>
+  <div class="li"><div class="lic" style="background:rgba(100,100,100,0.1);">📖</div><div class="lin"><div class="lit">Capítulo 1 — Junior</div><div class="lis">StartupXYZ · Jan 2020 → Fev 2022</div><div style="font-size:10px;color:var(--green);margin-top:2px;">✅ +200 XP · Badge "Primeiro Emprego"</div></div><span class="bdg bg">Concluído</span></div>
+</div>
+
+<div class="sectt" style="margin-top:8px;">CONQUISTAS ACADÊMICAS</div>
+<div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="li"><div class="lic" style="background:var(--J-dim);">🎓</div><div class="lin"><div class="lit">Ciência da Computação</div><div class="lis">USP · 2015–2019</div><div style="font-size:10px;color:var(--green);margin-top:2px;">✅ +50 XP · Badge "Formado"</div></div></div>
+  <div class="li"><div class="lic" style="background:var(--J-dim);">📜</div><div class="lin"><div class="lit">AWS Solutions Architect</div><div class="lis">Amazon · 2023</div><div style="font-size:10px;color:var(--green);margin-top:2px;">✅ +30 XP · Badge "Certificado AWS"</div></div></div>
+</div>
+
+<div class="sectt" style="margin-top:8px;">LINKS PROFISSIONAIS</div>
+<div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="li"><div class="lic" style="background:rgba(0,119,181,0.15);">💼</div><div class="lin"><div class="lit">LinkedIn</div><div class="lis">linkedin.com/in/thiagomendes</div></div></div>
+  <div class="li"><div class="lic" style="background:rgba(100,100,100,0.15);">🐙</div><div class="lin"><div class="lit">GitHub</div><div class="lis">github.com/thiago-dev</div></div></div>
+</div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab j"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab aj"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">"Herói em Evolução" · "Capítulos da Jornada"<br>XP por capítulo · Badges por conquista<br>"720 XP totais" · "28 dias streak"</div>
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     TELA 03 — ROADMAP DE CARREIRA
+══════════════════════════════════════════ -->
+<div class="sl">🗺️ Tela 03 — Roadmap de Carreira</div>
+<p class="sd">Timeline vertical: Junior → Pleno (atual) → Sênior → Tech Lead → CTO. Skills required por nível. Jornada: "Jornada do Herói" animada, XP por step.</p>
+<div class="pair">
+<div class="pcol">
+<div class="ml f">◎ Foco</div>
+<div class="phone">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:var(--car);font-weight:500;margin-bottom:2px;">💼 Carreira</div><div class="htl">Roadmap</div></div></div>
+<div class="dtabs"><div class="dtab">Dashboard</div><div class="dtab">Perfil</div><div class="dtab af">Roadmap</div><div class="dtab">Habilidades</div><div class="dtab">Histórico</div></div>
+
+<!-- Position indicator -->
+<div class="card" style="padding:12px 14px;background:rgba(244,63,94,0.08);border-color:rgba(244,63,94,0.2);">
+  <div style="display:flex;align-items:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:var(--car);box-shadow:0 0 8px rgba(244,63,94,0.6);flex-shrink:0;"></div><span style="font-size:13px;color:var(--t2);">Você está aqui:</span><span style="font-size:13px;font-weight:600;color:var(--car);">Desenvolvedor Pleno</span></div>
+</div>
+
+<!-- Timeline -->
+<div style="padding:8px 20px 0;">
+  <!-- Step 1 DONE -->
+  <div class="tli">
+    <div class="tld"><div class="tldot" style="background:var(--em);"><svg viewBox="0 0 24 24" class="ck"><polyline points="20 6 9 17 4 12"/></svg></div><div class="tlline" style="background:var(--em);"></div></div>
+    <div class="tlc"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:14px;font-weight:600;color:var(--em);">Desenvolvedor Junior</span><span class="bdg bg">Concluído</span></div><div style="font-size:12px;color:var(--t3);">Jan 2020 → Fev 2022</div></div>
+  </div>
+  <!-- Step 2 CURRENT -->
+  <div class="tli">
+    <div class="tld"><div class="tldot" style="background:var(--car);box-shadow:0 0 14px rgba(244,63,94,0.35);"><div style="width:10px;height:10px;border-radius:50%;background:#fff;"></div></div><div class="tlline" style="background:rgba(244,63,94,0.3);min-height:80px;"></div></div>
+    <div class="tlc">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:14px;font-weight:700;color:var(--car);">Desenvolvedor Pleno</span><span class="bdg bpk">Atual</span></div>
+      <div style="font-size:12px;color:var(--t3);">Mar 2022 → presente</div>
+      <div style="margin-top:6px;"><div class="pb"><div class="pf" style="width:55%;background:var(--car);"></div></div><div style="font-size:11px;color:var(--t2);margin-top:3px;">55% do critério para próximo nível</div></div>
+    </div>
+  </div>
+  <!-- Step 3 NEXT -->
+  <div class="tli">
+    <div class="tld"><div class="tldot" style="background:var(--s2);border:2px solid rgba(244,63,94,0.3);"><span style="font-size:14px;color:var(--car);">3</span></div><div class="tlline" style="background:var(--border);min-height:80px;"></div></div>
+    <div class="tlc">
+      <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:4px;">Desenvolvedor Sênior</div>
+      <div style="font-size:12px;color:var(--t3);">Meta: Jun 2026 · R$ 12–16k</div>
+      <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;">
+        <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(16,185,129,0.1);color:var(--em);">✓ React Avançado</span>
+        <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(244,63,94,0.1);color:var(--car);">⟳ Node.js Avançado</span>
+        <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(100,100,100,0.1);color:var(--t3);">○ Arquitetura</span>
+        <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(100,100,100,0.1);color:var(--t3);">○ Mentoria</span>
+      </div>
+    </div>
+  </div>
+  <!-- Step 4 FUTURE -->
+  <div class="tli">
+    <div class="tld"><div class="tldot" style="background:var(--s2);border:2px solid var(--border);"><span style="font-size:14px;color:var(--t3);">4</span></div><div class="tlline" style="background:var(--border);"></div></div>
+    <div class="tlc"><div style="font-size:14px;font-weight:600;color:var(--t3);">Tech Lead / Staff Engineer</div><div style="font-size:12px;color:var(--t3);">2028+ · R$ 20–30k</div></div>
+  </div>
+  <!-- Step 5 VISION -->
+  <div class="tli">
+    <div class="tld"><div class="tldot" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(244,63,94,0.1));border:1.5px dashed rgba(245,158,11,0.4);"><span style="font-size:16px;">🌟</span></div></div>
+    <div class="tlc" style="padding-bottom:8px;"><div style="font-size:14px;font-weight:600;color:var(--yellow);">CTO / Founder</div><div style="font-size:12px;color:var(--t3);">Visão de longo prazo · 2032+</div></div>
+  </div>
+</div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab af"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">Timeline vertical 5 steps · Atual com progress<br>Skills required por nível · Visão CTO/Founder</div>
+</div>
+
+<div class="pdiv"></div>
+
+<div class="pcol">
+<div class="ml j">✦ Jornada</div>
+<div class="phone j">
+<div class="di"></div><div class="sbar"><span class="stime">9:41</span></div>
+<div class="hdr"><div><div style="font-size:12px;color:#c4b5fd;font-weight:600;margin-bottom:2px;">✦ Jornada do Herói</div><div class="htl">Roadmap</div></div><div class="xptg">⚡ 55%</div></div>
+<div class="dtabs"><div class="dtab">Dashboard</div><div class="dtab">Perfil</div><div class="dtab aj">Roadmap</div><div class="dtab">Habilidades</div><div class="dtab">Histórico</div></div>
+
+<!-- Hero journey banner -->
+<div class="card" style="padding:14px;background:linear-gradient(135deg,rgba(139,92,246,0.14),rgba(244,63,94,0.08));border-color:rgba(139,92,246,0.28);text-align:center;">
+  <div style="font-size:11px;color:#c4b5fd;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">✦ JORNADA DO HERÓI — ATO 2</div>
+  <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--t1);margin-bottom:4px;">De Pleno a Sênior</div>
+  <div style="font-size:12px;color:var(--t2);">Você completou 55% do caminho · Faltam 2 skills</div>
+  <div style="margin-top:8px;"><div class="pb" style="height:10px;border-radius:5px;"><div class="pf" style="width:55%;background:linear-gradient(90deg,var(--car),#8b5cf6);border-radius:5px;"></div></div></div>
+</div>
+
+<!-- Timeline Jornada -->
+<div style="padding:8px 20px 0;">
+  <!-- Step 1 DONE -->
+  <div class="tli">
+    <div class="tld"><div class="tldot" style="background:var(--em);"><svg viewBox="0 0 24 24" class="ck"><polyline points="20 6 9 17 4 12"/></svg></div><div class="tlline" style="background:var(--em);"></div></div>
+    <div class="tlc"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:14px;font-weight:600;color:var(--em);">Ato 1 — Junior</span><span class="bdg bg">✓ Conquistado</span></div><div style="font-size:12px;color:var(--t3);">Jan 2020 → Fev 2022</div><div style="font-size:10px;color:var(--green);margin-top:3px;">✅ +200 XP · Badge "Primeira Promoção"</div></div>
+  </div>
+  <!-- Step 2 CURRENT -->
+  <div class="tli">
+    <div class="tld"><div class="tldot" style="background:var(--J);box-shadow:0 0 14px rgba(139,92,246,0.45);"><div style="width:10px;height:10px;border-radius:50%;background:#fff;"></div></div><div class="tlline" style="background:linear-gradient(180deg,rgba(139,92,246,0.4),var(--border));min-height:80px;"></div></div>
+    <div class="tlc">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="font-size:14px;font-weight:700;color:#c4b5fd;">Ato 2 — Pleno</span><span class="bdg bp">✦ Agora</span></div>
+      <div style="font-size:12px;color:var(--t3);">Mar 2022 → presente</div>
+      <div style="margin-top:6px;"><div class="pb"><div class="pf" style="width:55%;background:linear-gradient(90deg,var(--car),var(--J));"></div></div><div style="font-size:11px;color:#c4b5fd;margin-top:3px;font-weight:600;">55% · +280 XP · Faltam: Node.js, Arquitetura</div></div>
+    </div>
+  </div>
+  <!-- Step 3 NEXT -->
+  <div class="tli">
+    <div class="tld"><div class="tldot" style="background:var(--s2);border:2px solid rgba(139,92,246,0.3);"><span style="font-size:14px;color:#c4b5fd;">3</span></div><div class="tlline" style="background:var(--border);min-height:80px;"></div></div>
+    <div class="tlc">
+      <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:4px;">Ato 3 — Sênior</div>
+      <div style="font-size:12px;color:var(--t3);">Meta: Jun 2026 · R$ 12–16k</div>
+      <div style="font-size:10px;color:#c4b5fd;font-weight:700;margin-top:4px;">⚡ +100 XP ao completar · Badge "Evolução"</div>
+      <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;">
+        <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(16,185,129,0.1);color:var(--em);">✓ React</span>
+        <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(16,185,129,0.1);color:var(--em);">✓ Liderança</span>
+        <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(139,92,246,0.1);color:#c4b5fd;">⟳ Node.js</span>
+        <span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(100,100,100,0.1);color:var(--t3);">○ Arquitetura</span>
+      </div>
+    </div>
+  </div>
+  <!-- Step 4 -->
+  <div class="tli">
+    <div class="tld"><div class="tldot" style="background:var(--s2);border:2px solid var(--border);"><span style="font-size:14px;color:var(--t3);">4</span></div><div class="tlline" style="background:var(--border);"></div></div>
+    <div class="tlc"><div style="font-size:14px;font-weight:600;color:var(--t3);">Ato 4 — Tech Lead</div><div style="font-size:12px;color:var(--t3);">2028+ · R$ 20–30k</div><div style="font-size:10px;color:var(--t3);margin-top:3px;">⚡ +200 XP · Badge "Líder"</div></div>
+  </div>
+  <!-- Step 5 -->
+  <div class="tli">
+    <div class="tld"><div class="tldot" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(139,92,246,0.1));border:1.5px dashed rgba(245,158,11,0.4);"><span style="font-size:16px;">🌟</span></div></div>
+    <div class="tlc" style="padding-bottom:8px;"><div style="font-size:14px;font-weight:600;color:var(--yellow);">Ato Final — CTO / Founder</div><div style="font-size:12px;color:var(--t3);">Visão de longo prazo · 2032+</div><div style="font-size:10px;color:#c4b5fd;margin-top:3px;">⚡ +500 XP · Badge Lendário "Arquiteto do Futuro"</div></div>
+  </div>
+</div>
+
+<div class="bbar"><div class="btab"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Início</span></div><div class="btab"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="btab"><div class="fab-w"><div class="fab j"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div></div><div class="btab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Tempo</span></div><div class="btab aj"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div>
+<div class="diff">"Jornada do Herói — Ato 2" · Hero banner<br>"Atos" em vez de "Steps" · XP por step<br>Badges lendários · Progress gradiente</div>
+</div>
+</div>
+
+<!-- RODAPÉ PARTE 1 -->
+<div style="margin-top:56px;padding:24px;background:linear-gradient(135deg,rgba(244,63,94,0.08),rgba(139,92,246,0.05));border:1px solid rgba(244,63,94,0.2);border-radius:20px;text-align:center;">
+  <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--t1);margin-bottom:6px;">📋 Parte 1 — 3 telas × 2 modos = 6 phones</div>
+  <div style="font-size:12px;color:var(--t2);line-height:1.8;">
+    ✅ 01 — Dashboard Carreira (Foco + Jornada)<br>
+    ✅ 02 — Perfil Profissional (Foco + Jornada)<br>
+    ✅ 03 — Roadmap de Carreira (Foco + Jornada)<br>
+    <span style="color:var(--car);">→ Parte 2: Habilidades, Histórico Salarial, Adicionar Habilidade, Editar Perfil</span>
+  </div>
+</div>
+
+</body>
+</html>

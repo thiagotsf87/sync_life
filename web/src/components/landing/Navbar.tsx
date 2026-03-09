@@ -26,7 +26,7 @@ export function Navbar() {
       <nav className={`lp-navbar${scrolled ? ' scrolled' : ''}`}>
         {/* Logo */}
         <a href="#" className="nav-logo">
-          <SyncLifeBrand size="md" />
+          <SyncLifeBrand size="md" animated={false} />
         </a>
 
         {/* Nav links */}
@@ -39,8 +39,8 @@ export function Navbar() {
 
         {/* CTA */}
         <div className="nav-cta">
-          <Link href="/login" className="btn-ghost">Entrar</Link>
-          <Link href="/cadastro" className="btn-primary">Começar grátis</Link>
+          <Link href="/login" className="btn-ghost nav-desktop-cta">Entrar</Link>
+          <Link href="/cadastro" className="btn-primary nav-desktop-cta">Começar grátis</Link>
           <button
             className="nav-hamburger"
             onClick={() => setMobileOpen(!mobileOpen)}

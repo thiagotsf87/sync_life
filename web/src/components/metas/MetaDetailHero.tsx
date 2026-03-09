@@ -10,7 +10,6 @@ import {
 interface MetaDetailHeroProps {
   goal: Goal
   contributions: GoalContribution[]
-  isJornada: boolean
 }
 
 function formatCurrency(value: number): string {
@@ -31,7 +30,7 @@ function getDaysRemaining(targetDate: string | null): number | null {
   return Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 }
 
-export function MetaDetailHero({ goal, contributions, isJornada }: MetaDetailHeroProps) {
+export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
   const pct = calcProgress(goal.current_amount, goal.target_amount)
   const color = calcRingColor(goal)
   const useGrad = goal.status === 'active' && color === '#10b981'
@@ -59,7 +58,7 @@ export function MetaDetailHero({ goal, contributions, isJornada }: MetaDetailHer
         <div className="flex-1">
           <h2 className={cn(
             'font-[Syne] font-extrabold text-xl leading-tight',
-            isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]',
+            'text-sl-grad',
           )}>
             {goal.name}
           </h2>
@@ -133,12 +132,10 @@ export function MetaDetailHero({ goal, contributions, isJornada }: MetaDetailHer
         ) : null}
       </div>
 
-      {/* Jornada: frase motivacional */}
-      {isJornada && (
-        <div className="p-3.5 rounded-[12px] bg-gradient-to-br from-[#10b981]/8 to-[#0055ff]/8 border border-[#10b981]/20">
-          <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed">{getMotivationalText()}</p>
-        </div>
-      )}
+      {/* Motivational text */}
+      <div className="p-3.5 rounded-[12px] bg-gradient-to-br from-[#10b981]/8 to-[#0055ff]/8 border border-[#10b981]/20">
+        <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed">{getMotivationalText()}</p>
+      </div>
     </div>
   )
 }

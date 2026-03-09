@@ -87,7 +87,7 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
                   className="h-full rounded-full"
                   style={{
                     width: `${Math.min((trip.total_spent / trip.total_budget) * 100, 100)}%`,
-                    background: trip.total_spent > trip.total_budget ? '#f43f5e' : '#06b6d4',
+                    background: trip.total_spent > trip.total_budget ? '#f43f5e' : '#ec4899',
                   }}
                 />
               </div>
@@ -102,8 +102,8 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
       {/* Countdown */}
       {isUpcoming && (
         <div className="mt-2 flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#06b6d4] animate-pulse" />
-          <span className="text-[11px] text-[#06b6d4] font-medium">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#ec4899] animate-pulse" />
+          <span className="text-[11px] text-[#ec4899] font-medium">
             {daysUntil === 1 ? 'Amanhã!' : `em ${daysUntil} dias`}
           </span>
         </div>

@@ -134,29 +134,7 @@ export async function getCSSVariable(page: Page, varName: string): Promise<strin
   }, varName)
 }
 
-/** Verifica se o modo Jornada está ativo */
-export async function isJornadaMode(page: Page): Promise<boolean> {
-  const htmlClass = await page.locator('html').getAttribute('class') ?? ''
-  return htmlClass.includes('jornada')
-}
-
-/** Muda para modo Jornada se não está */
-export async function ensureJornadaMode(page: Page) {
-  if (!(await isJornadaMode(page))) {
-    const pill = page.getByRole('button', { name: /Foco|Jornada/i }).first()
-    await pill.click()
-    await page.waitForTimeout(500)
-  }
-}
-
-/** Muda para modo Foco se não está */
-export async function ensureFocoMode(page: Page) {
-  if (await isJornadaMode(page)) {
-    const pill = page.getByRole('button', { name: /Jornada|Foco/i }).first()
-    await pill.click()
-    await page.waitForTimeout(500)
-  }
-}
+// Mode helpers removed — dual mode system eliminated (single unified experience)
 
 /** Verifica se está no tema Light */
 export async function isLightTheme(page: Page): Promise<boolean> {

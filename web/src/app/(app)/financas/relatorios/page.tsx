@@ -9,8 +9,8 @@ import {
 import { Download, FileText, BarChart2, Lock, TrendingUp, Search, RefreshCw, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SLCard } from '@/components/ui/sl-card'
-import { useShellStore } from '@/stores/shell-store'
 import { useUserPlan } from '@/hooks/use-user-plan'
+import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
 import {
   useRelatorios,
   PERIOD_OPTIONS,
@@ -48,8 +48,6 @@ const PERIOD_LABELS: Record<string, string> = {
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function RelatoriosPage() {
-  const mode = useShellStore(s => s.mode)
-  const isJornada = mode === 'jornada'
   const { isPro } = useUserPlan()
 
   const {
@@ -214,18 +212,14 @@ export default function RelatoriosPage() {
   return (
     <>
       {/* ═══════════ MOBILE VIEW ═══════════ */}
-      <div className="lg:hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>Relatórios</h1>
-            <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">Análise e comparativos</p>
-          </div>
+      <FinancasMobileShell
+        subtitle="Análise e comparativos"
+        rightAction={
           <button onClick={exportCSV} className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]">
             <Download size={16} />
           </button>
-        </div>
-
+        }
+      >
         {/* Period tabs */}
         <div className="relative mb-3">
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{ scrollbarWidth: 'none' }}>
@@ -334,7 +328,7 @@ export default function RelatoriosPage() {
           </>
         )}
         <div className="h-5" />
-      </div>
+      </FinancasMobileShell>
 
       {/* ═══════════ DESKTOP VIEW ═══════════ */}
       <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
@@ -348,7 +342,7 @@ export default function RelatoriosPage() {
             </div>
             <h1 className={cn(
               'font-[Syne] font-extrabold text-[22px] tracking-tight',
-              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+              'text-sl-grad'
             )}>
               📊 Relatórios Históricos
             </h1>
@@ -456,7 +450,7 @@ export default function RelatoriosPage() {
       )}
 
       {/* ── Narrative Band (Jornada only) ───────────────────────── */}
-      <div className="jornada-only flex items-start gap-3.5 bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] border border-[rgba(16,185,129,0.18)] rounded-2xl px-5 py-4 mb-3">
+      <div className="flex items-start gap-3.5 bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] border border-[rgba(16,185,129,0.18)] rounded-2xl px-5 py-4 mb-3">
         <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-[rgba(16,185,129,0.2)] to-[rgba(0,85,255,0.2)] flex items-center justify-center text-[18px] shrink-0 mt-0.5">
           🤖
         </div>

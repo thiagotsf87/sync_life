@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Send, Bot, User, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import { useHealthProfile } from '@/hooks/use-corpo'
 
 interface Message {
@@ -23,8 +22,6 @@ const SUGGESTED_PROMPTS = [
 
 export default function CoachPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
   const { profile } = useHealthProfile()
 
   const [messages, setMessages] = useState<Message[]>([])
@@ -131,10 +128,7 @@ export default function CoachPage() {
           <ArrowLeft size={16} />
           Corpo
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           🤖 Coach IA
         </h1>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#10b981]/10 border border-[#10b981]/20">

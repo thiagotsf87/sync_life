@@ -14,12 +14,11 @@ import { MobileSubNav } from './MobileSubNav'
 import { MODULE_BAR_W, SB_OPEN, SB_COLLAPSED } from '@/lib/constants'
 import { createClient } from '@/lib/supabase/client'
 import { resolveSystemTheme, isDarkTheme } from '@/types/shell'
-import type { AppMode, ThemeId, ResolvedThemeId } from '@/types/shell'
+import type { ThemeId, ResolvedThemeId } from '@/types/shell'
 
 interface AppShellProps {
   children: React.ReactNode
   userName: string
-  initialMode?: AppMode
   initialTheme?: ThemeId
   initialSidebarOpen?: boolean
 }
@@ -27,7 +26,6 @@ interface AppShellProps {
 export function NewAppShell({
   children,
   userName,
-  initialMode,
   initialTheme,
   initialSidebarOpen,
 }: AppShellProps) {
@@ -36,9 +34,7 @@ export function NewAppShell({
 
   const { isDesktop } = useBreakpoint()
   const sidebarOpen = useShellStore((s) => s.sidebarOpen)
-  const mode = useShellStore((s) => s.mode)
   const theme = useShellStore((s) => s.theme)
-  const setMode = useShellStore((s) => s.setMode)
   const setTheme = useShellStore((s) => s.setTheme)
   const setSidebarOpen = useShellStore((s) => s.setSidebarOpen)
 
@@ -48,7 +44,6 @@ export function NewAppShell({
     if (initialized.current) return
     initialized.current = true
 
-    if (initialMode) setMode(initialMode)
     if (initialTheme) setTheme(initialTheme)
     if (initialSidebarOpen !== undefined) setSidebarOpen(initialSidebarOpen)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -71,7 +66,7 @@ export function NewAppShell({
   }, [theme])
 
   // Track last successfully persisted values for rollback
-  const lastPersistedRef = useRef({ mode, theme, sidebarOpen })
+  const lastPersistedRef = useRef({ theme, sidebarOpen })
 
   // Sync store changes → Supabase (debounced, with rollback on error)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -80,21 +75,19 @@ export function NewAppShell({
     try { if (!initialized.current) return } catch { return }
     if (debounceRef.current) clearTimeout(debounceRef.current)
 
-    const snapshot = { mode, theme, sidebarOpen }
+    const snapshot = { theme, sidebarOpen }
     debounceRef.current = setTimeout(async () => {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any).from('profiles').update({
-        mode: snapshot.mode,
         theme: snapshot.theme,
         sidebar_state: snapshot.sidebarOpen ? 'open' : 'collapsed',
       }).eq('id', user.id)
 
       if (error) {
         const prev = lastPersistedRef.current
-        setMode(prev.mode)
         setTheme(prev.theme)
         setSidebarOpen(prev.sidebarOpen)
         toast.error('Erro ao salvar preferência. Tente novamente.')
@@ -104,7 +97,7 @@ export function NewAppShell({
     }, 500)
 
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
-  }, [mode, theme, sidebarOpen])
+  }, [theme, sidebarOpen])
 
   const sidebarWidth = isDesktop ? (sidebarOpen ? SB_OPEN : SB_COLLAPSED) : 0
   const offsetLeft = isDesktop ? MODULE_BAR_W + sidebarWidth : 0

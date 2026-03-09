@@ -8,21 +8,16 @@ test.describe('Configurações', () => {
     void authenticatedPage
   })
 
-  // 2.1
+  // 2.1 — CFG-01: Perfil, Aparência, Notificações carregam
   test('2.1 Perfil: campos de nome visíveis', async ({ page }) => {
     await page.goto('/configuracoes')
     await page.waitForLoadState('networkidle')
     const main = page.locator('main')
-    await expect(main.locator('input').first()).toBeVisible({ timeout: 8000 })
+    // Primeiro input é file hidden (avatar); usar textbox de nome
+    await expect(main.getByRole('textbox', { name: /nome/i })).toBeVisible({ timeout: 8000 })
   })
 
-  // 2.2
-  test('2.2 Modo Foco/Jornada na config', async ({ page }) => {
-    await page.goto('/configuracoes/modo')
-    await page.waitForLoadState('networkidle')
-    const main = page.locator('main')
-    await expect(main.getByText(/Modo|Foco|Jornada/i).first()).toBeVisible({ timeout: 8000 })
-  })
+  // 2.2 — Removed: Modo page no longer exists (unified experience)
 
   // 2.4
   test('2.4 Notificações: toggles visíveis', async ({ page }) => {
@@ -70,30 +65,10 @@ test.describe('Configurações', () => {
 
   // ── Deep tests ──────────────────────────────────────────────────────────────
 
-  test('2.8 Mode toggle persiste após reload', async ({ page }) => {
-    await page.goto('/configuracoes/modo')
-    await page.waitForLoadState('networkidle')
-    const main = page.locator('main')
-
-    // Find mode toggle/button
-    const modeBtn = main.getByRole('button', { name: /Foco|Jornada/i }).first()
-    if (await modeBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      const textBefore = await modeBtn.textContent()
-      await modeBtn.click()
-      await page.waitForTimeout(1000)
-
-      await page.reload()
-      await page.waitForLoadState('networkidle')
-      await page.waitForTimeout(2000)
-
-      // Mode should be different from before click
-      const htmlClass = await page.locator('html').getAttribute('class') ?? ''
-      await expect(page.locator('body')).toBeVisible()
-    }
-  })
+  // 2.8 — Removed: Mode toggle no longer exists (unified experience)
 
   test('2.9 Theme toggle persiste após reload', async ({ page }) => {
-    await page.goto('/configuracoes/modo')
+    await page.goto('/configuracoes/aparencia')
     await page.waitForLoadState('networkidle')
 
     const themePill = page.getByRole('button', { name: /Dark|Light/i }).first()

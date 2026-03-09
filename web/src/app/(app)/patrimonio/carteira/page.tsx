@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Plus, Search, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   usePortfolioAssets, useAddTransaction, useUpdateAssetPrice, useDeleteAsset,
   useBulkUpdatePrices,
@@ -13,6 +12,7 @@ import {
   type AssetClass, type AddTransactionData,
 } from '@/hooks/use-patrimonio'
 import { AssetCard } from '@/components/patrimonio/AssetCard'
+import { PatrimonioMobile } from '@/components/patrimonio/PatrimonioMobile'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
@@ -53,8 +53,6 @@ const EMPTY_FORM: TransactionForm = {
 
 export default function CarteiraPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { assets, loading, error, reload } = usePortfolioAssets()
   const addTransaction = useAddTransaction()
@@ -184,7 +182,9 @@ export default function CarteiraPage() {
   })()
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+      <PatrimonioMobile initialTab="carteira" onAddAsset={() => setShowModal(true)} />
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
@@ -193,10 +193,7 @@ export default function CarteiraPage() {
           <ArrowLeft size={16} />
           Patrimônio
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           💼 Carteira
         </h1>
         {/* Botão atualizar cotações (RN-PTR-03) */}
@@ -541,5 +538,6 @@ export default function CarteiraPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

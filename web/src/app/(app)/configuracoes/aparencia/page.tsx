@@ -5,12 +5,10 @@ import { useShellStore } from '@/stores/shell-store'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { createClient } from '@/lib/supabase/client'
 import type { ThemeId, ResolvedThemeId } from '@/types/shell'
-import { PRO_THEMES } from '@/types/shell'
 import { UpgradeModal } from '@/components/modals/UpgradeModal'
-import { Check, Lock, Crosshair, Sparkles, Monitor } from 'lucide-react'
+import { Check, Lock, Monitor } from 'lucide-react'
+import { ToggleSwitch } from '@/components/settings/toggle-switch'
 import { cn } from '@/lib/utils'
-
-/* ── Theme metadata for preview cards ──────────────────────────── */
 
 interface ThemeMeta {
   id: ResolvedThemeId
@@ -18,394 +16,280 @@ interface ThemeMeta {
   bg: string
   s1: string
   accent: string
+  accentSm: string
   type: 'dark' | 'light'
   plan: 'free' | 'pro'
 }
 
 const THEME_META: ThemeMeta[] = [
-  { id: 'navy-dark', name: 'Navy Dark', bg: '#03071a', s1: '#07112b', accent: '#10b981', type: 'dark', plan: 'free' },
-  { id: 'clean-light', name: 'Clean Light', bg: '#e6eef5', s1: '#ffffff', accent: '#10b981', type: 'light', plan: 'free' },
-  { id: 'mint-garden', name: 'Mint Garden', bg: '#c8f0e4', s1: '#ffffff', accent: '#10b981', type: 'light', plan: 'free' },
-  { id: 'obsidian', name: 'Obsidian', bg: '#0a0a0f', s1: '#12121a', accent: '#d4a853', type: 'dark', plan: 'pro' },
-  { id: 'rosewood', name: 'Rosewood', bg: '#0f0a0d', s1: '#1a1216', accent: '#c17d6a', type: 'dark', plan: 'pro' },
-  { id: 'arctic', name: 'Arctic', bg: '#f0f4f8', s1: '#ffffff', accent: '#0891b2', type: 'light', plan: 'pro' },
-  { id: 'graphite', name: 'Graphite', bg: '#111114', s1: '#1a1a1e', accent: '#a0a0b8', type: 'dark', plan: 'pro' },
-  { id: 'twilight', name: 'Twilight', bg: '#0c0a14', s1: '#14111f', accent: '#8b5cf6', type: 'dark', plan: 'pro' },
-  { id: 'sahara', name: 'Sahara', bg: '#f5f0e8', s1: '#fffcf6', accent: '#c2703e', type: 'light', plan: 'pro' },
-  { id: 'carbon', name: 'Carbon', bg: '#050505', s1: '#0e0e0e', accent: '#14b8a6', type: 'dark', plan: 'pro' },
-  { id: 'blossom', name: 'Blossom', bg: '#faf0f3', s1: '#ffffff', accent: '#e0638b', type: 'light', plan: 'pro' },
-  { id: 'serenity', name: 'Serenity', bg: '#edf2ff', s1: '#ffffff', accent: '#4f6df5', type: 'light', plan: 'pro' },
+  { id: 'navy-dark',    name: 'Navy Dark',    bg: '#07112b', s1: '#0c1a3a', accent: '#10b981', accentSm: '#6e90b8', type: 'dark',  plan: 'free' },
+  { id: 'clean-light',  name: 'Clean Light',  bg: '#f0f4f8', s1: '#ffffff', accent: '#10b981', accentSm: '#64748b', type: 'light', plan: 'free' },
+  { id: 'mint-garden',  name: 'Mint Garden',  bg: '#e8f5f0', s1: '#ffffff', accent: '#10b981', accentSm: '#0ea5e9', type: 'light', plan: 'free' },
+  { id: 'obsidian',     name: 'Obsidian',     bg: '#1a1a2e', s1: '#12121a', accent: '#e2a03f', accentSm: '#4a4a6a', type: 'dark',  plan: 'pro' },
+  { id: 'rosewood',     name: 'Rosewood',     bg: '#2d1f2f', s1: '#1a1216', accent: '#e88a8a', accentSm: '#8a6a6a', type: 'dark',  plan: 'pro' },
+  { id: 'carbon',       name: 'Carbon',       bg: '#050505', s1: '#0e0e0e', accent: '#14b8a6', accentSm: '#2dd4bf', type: 'dark',  plan: 'pro' },
+  { id: 'arctic',       name: 'Arctic',       bg: '#e8f0f8', s1: '#ffffff', accent: '#3b82f6', accentSm: '#94a3b8', type: 'light', plan: 'pro' },
+  { id: 'graphite',     name: 'Graphite',     bg: '#1f1f1f', s1: '#0e0e0e', accent: '#94a3b8', accentSm: '#525252', type: 'dark',  plan: 'pro' },
+  { id: 'twilight',     name: 'Twilight',     bg: '#0f1a2e', s1: '#14111f', accent: '#818cf8', accentSm: '#475569', type: 'dark',  plan: 'pro' },
+  { id: 'sahara',       name: 'Sahara',       bg: '#f5f0e8', s1: '#fffcf6', accent: '#d4a574', accentSm: '#a08060', type: 'light', plan: 'pro' },
+  { id: 'blossom',      name: 'Blossom',      bg: '#faf0f3', s1: '#ffffff', accent: '#e0638b', accentSm: '#f08aaa', type: 'light', plan: 'pro' },
+  { id: 'serenity',     name: 'Serenity',     bg: '#edf2ff', s1: '#ffffff', accent: '#4f6df5', accentSm: '#7b93f8', type: 'light', plan: 'pro' },
 ]
 
 const FREE_META = THEME_META.filter((t) => t.plan === 'free')
-const PRO_META = THEME_META.filter((t) => t.plan === 'pro')
+const PRO_META  = THEME_META.filter((t) => t.plan === 'pro')
 
-/* ── Component ─────────────────────────────────────────────────── */
+interface InterfaceSettings {
+  sidebarExpanded: boolean
+  reducedMotion: boolean
+  compactNumbers: boolean
+}
 
 export default function AparenciaPage() {
-  const theme = useShellStore((s) => s.theme)
-  const setTheme = useShellStore((s) => s.setTheme)
-  const mode = useShellStore((s) => s.mode)
-  const setMode = useShellStore((s) => s.setMode)
+  const theme      = useShellStore((s) => s.theme)
+  const setTheme   = useShellStore((s) => s.setTheme)
   const { isFree } = useUserPlan()
 
   const [selectedTheme, setSelectedTheme] = useState<ThemeId>(theme)
-  const [selectedMode, setSelectedMode] = useState(mode)
-  const [toastMsg, setToastMsg] = useState('')
-  const [showToast, setShowToast] = useState(false)
-  const [upgradeModal, setUpgradeModal] = useState<{ open: boolean; feature: 'jornada' | 'theme'; themeName?: string }>({ open: false, feature: 'theme' })
+  const [autoMode, setAutoMode]           = useState(theme === 'system')
+  const [toastMsg, setToastMsg]           = useState('')
+  const [showToast, setShowToast]         = useState(false)
+  const [upgradeModal, setUpgradeModal]   = useState<{ open: boolean; themeName?: string }>({ open: false })
+  const [iface, setIface]                 = useState<InterfaceSettings>({
+    sidebarExpanded: true,
+    reducedMotion:   false,
+    compactNumbers:  false,
+  })
+  const [userId, setUserId]               = useState<string | null>(null)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  /* ── Load profile ─────────────────────────────────────────────── */
   useEffect(() => {
-    setSelectedTheme(theme)
+    const load = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      setUserId(user.id)
+
+      const { data } = (await (supabase as any)
+        .from('profiles')
+        .select('sidebar_expanded, reduced_motion, compact_numbers')
+        .eq('id', user.id)
+        .single()) as { data: { sidebar_expanded: boolean | null; reduced_motion: boolean | null; compact_numbers: boolean | null } | null }
+
+      if (data) {
+        setIface({
+          sidebarExpanded: data.sidebar_expanded ?? true,
+          reducedMotion:   data.reduced_motion   ?? false,
+          compactNumbers:  data.compact_numbers  ?? false,
+        })
+      }
+
+      // Detect system preference as default for auto mode
+      if (typeof window !== 'undefined' && theme === 'system') setAutoMode(true)
+    }
+    load()
   }, [theme])
 
-  useEffect(() => {
-    setSelectedMode(mode)
-  }, [mode])
+  useEffect(() => { setSelectedTheme(theme) }, [theme])
 
   /* ── Helpers ──────────────────────────────────────────────────── */
-
   function showNotification(msg: string) {
     if (toastTimer.current) clearTimeout(toastTimer.current)
     setToastMsg(msg)
     setShowToast(true)
-    toastTimer.current = setTimeout(() => setShowToast(false), 3500)
+    toastTimer.current = setTimeout(() => setShowToast(false), 3000)
   }
 
   async function persistTheme(themeId: ThemeId) {
+    if (!userId) return
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase as any)
-          .from('profiles')
-          .update({ theme: themeId })
-          .eq('id', user.id)
-      }
-    } catch {
-      // Silent fail — local state already updated
-    }
+      await (supabase as any).from('profiles').update({ theme: themeId }).eq('id', userId)
+    } catch { /* silent */ }
   }
 
-  async function persistMode(m: 'foco' | 'jornada') {
+  async function persistIface(updates: Partial<InterfaceSettings>) {
+    if (!userId) return
+    const map: Record<string, string> = {
+      sidebarExpanded: 'sidebar_expanded',
+      reducedMotion:   'reduced_motion',
+      compactNumbers:  'compact_numbers',
+    }
+    const dbUpdates: Record<string, boolean> = {}
+    for (const [k, v] of Object.entries(updates)) {
+      dbUpdates[map[k]] = v as boolean
+    }
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase as any)
-          .from('profiles')
-          .update({ mode: m })
-          .eq('id', user.id)
-      }
-    } catch {
-      // Silent fail
-    }
+      await (supabase as any).from('profiles').update(dbUpdates).eq('id', userId)
+    } catch { /* silent */ }
   }
 
   function handleThemeSelect(id: ThemeId) {
     if (id === selectedTheme) return
-
-    // Check PRO gate
-    if (id !== 'system' && isFree && PRO_THEMES.includes(id as ResolvedThemeId)) {
-      const meta = THEME_META.find((t) => t.id === id)
-      setUpgradeModal({ open: true, feature: 'theme', themeName: meta?.name })
-      return
-    }
-
+    setAutoMode(id === 'system')
     setSelectedTheme(id)
     setTheme(id)
     persistTheme(id)
-
-    const label = id === 'system' ? 'Automatico' : THEME_META.find((t) => t.id === id)?.name ?? id
+    const label = id === 'system' ? 'Automático' : (THEME_META.find((t) => t.id === id)?.name ?? id)
     showNotification(`Tema "${label}" aplicado`)
   }
 
-  function handleModeSelect(m: 'foco' | 'jornada') {
-    if (m === selectedMode) return
-
-    // PRO gate for Jornada
-    if (m === 'jornada' && isFree) {
-      setUpgradeModal({ open: true, feature: 'jornada' })
-      return
+  function handleAutoToggle(on: boolean) {
+    if (on) { handleThemeSelect('system') }
+    else {
+      // Revert to navy-dark as default when turning off auto
+      handleThemeSelect('navy-dark')
     }
-
-    setSelectedMode(m)
-    setMode(m)
-    persistMode(m)
-
-    showNotification(
-      m === 'foco'
-        ? 'Modo Foco ativado'
-        : 'Modo Jornada ativado',
-    )
   }
 
-  /* ── Theme preview card ──────────────────────────────────────── */
+  function handleIfaceToggle(key: keyof InterfaceSettings, value: boolean) {
+    const next = { ...iface, [key]: value }
+    setIface(next)
+    persistIface({ [key]: value })
+    if (key === 'reducedMotion') {
+      document.body.classList.toggle('reduced-motion', value)
+    }
+  }
 
+  /* ── Theme Card ───────────────────────────────────────────────── */
   function ThemeCard({ meta }: { meta: ThemeMeta }) {
     const isSelected = selectedTheme === meta.id
-    const isLocked = isFree && meta.plan === 'pro'
+    const isLocked   = isFree && meta.plan === 'pro'
 
     return (
       <button
         onClick={() => handleThemeSelect(meta.id)}
         className={cn(
-          'relative flex flex-col items-center gap-2 rounded-xl p-2.5 transition-all cursor-pointer',
-          'border-2',
+          'relative rounded-xl overflow-hidden border-2 transition-all cursor-pointer',
+          isLocked ? 'opacity-70' : '',
           isSelected
-            ? 'border-[var(--sl-accent,#10b981)] bg-[var(--sl-s2)]'
-            : 'border-[var(--sl-border)] bg-[var(--sl-s1)] hover:border-[var(--sl-border-h)]',
+            ? 'border-[#10b981]'
+            : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
         )}
       >
-        {/* Mini preview rectangle */}
-        <div
-          className="relative w-full rounded-lg overflow-hidden"
-          style={{ height: 72, background: meta.bg }}
-        >
-          {/* Simulated card inside */}
-          <div
-            className="absolute bottom-2 left-2 right-2 rounded-md"
-            style={{ height: 28, background: meta.s1, border: `1px solid ${meta.type === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}
-          />
-          {/* Accent bar */}
-          <div
-            className="absolute top-2 left-2 rounded-full"
-            style={{ width: 24, height: 4, background: meta.accent }}
-          />
-          {/* Accent dot */}
-          <div
-            className="absolute top-2 right-2 rounded-full"
-            style={{ width: 6, height: 6, background: meta.accent }}
-          />
-
-          {/* Lock overlay for PRO */}
-          {isLocked && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
-              <Lock size={16} className="text-white/70" />
-            </div>
-          )}
-
-          {/* Selected check */}
-          {isSelected && (
-            <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-[var(--sl-accent,#10b981)] flex items-center justify-center">
-              <Check size={10} className="text-white" />
-            </div>
-          )}
+        {/* Mini preview */}
+        <div className="h-[60px] flex flex-col gap-1 p-2" style={{ background: meta.bg }}>
+          <div className="h-[6px] rounded-full w-[60%]" style={{ background: meta.accent }} />
+          <div className="h-[4px] rounded-full w-[40%] opacity-50" style={{ background: meta.accentSm }} />
         </div>
 
-        {/* Label */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-[11px] font-semibold text-[var(--sl-t1)]">
-            {meta.name}
-          </span>
+        {/* Name */}
+        <div className="flex items-center justify-center gap-1 py-1.5 text-[11px] text-[var(--sl-t2)]"
+          style={{ background: 'var(--sl-s1)' }}>
+          {meta.name}
           {meta.plan === 'pro' && (
-            <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[rgba(168,85,247,0.15)] text-[#a855f7]">
+            <span className="text-[8px] font-bold px-1 py-0.5 rounded text-white"
+              style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)' }}>
               PRO
             </span>
           )}
         </div>
+
+        {/* Lock overlay */}
+        {isLocked && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+            <Lock size={16} className="text-white/70" />
+          </div>
+        )}
+
+        {/* Selected checkmark */}
+        {isSelected && (
+          <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#10b981] flex items-center justify-center">
+            <Check size={10} className="text-white" />
+          </div>
+        )}
       </button>
     )
   }
 
   /* ── Render ───────────────────────────────────────────────────── */
-
   return (
     <div className="max-w-[680px]">
-      {/* ── Header ─────────────────────────────────────────────── */}
-      <h1 className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)] mb-1">
-        Aparencia
-      </h1>
-      <p className="text-[13px] text-[var(--sl-t3)] mb-6">
-        Personalize o visual e o modo de uso do SyncLife.
-      </p>
+      <h1 className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)] mb-1">Aparência</h1>
+      <p className="text-[13px] text-[var(--sl-t3)] mb-5">Personalize o visual do SyncLife do seu jeito.</p>
 
-      {/* ══════════════════════════════════════════════════════════
-          SECTION 1 — Tema
-         ══════════════════════════════════════════════════════════ */}
-      <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
-          Tema
-        </p>
-
-        {/* System / Auto option */}
-        <button
-          onClick={() => handleThemeSelect('system')}
-          className={cn(
-            'w-full flex items-center gap-3 p-3.5 rounded-xl border-2 transition-all cursor-pointer mb-5',
-            selectedTheme === 'system'
-              ? 'border-[var(--sl-accent,#10b981)] bg-[rgba(16,185,129,0.05)]'
-              : 'border-[var(--sl-border)] bg-[var(--sl-s1)] hover:border-[var(--sl-border-h)]',
-          )}
-        >
-          <div className="w-9 h-9 rounded-lg bg-[var(--sl-s3)] flex items-center justify-center shrink-0">
-            <Monitor size={18} className="text-[var(--sl-t2)]" />
-          </div>
-          <div className="flex-1 text-left min-w-0">
-            <p className="text-[13px] font-semibold text-[var(--sl-t1)]">Automatico</p>
-            <p className="text-[11px] text-[var(--sl-t3)] leading-snug">
-              Segue o tema do sistema operacional
-            </p>
-          </div>
-          {selectedTheme === 'system' && (
-            <div className="w-5 h-5 rounded-full bg-[var(--sl-accent,#10b981)] flex items-center justify-center shrink-0">
-              <Check size={10} className="text-white" />
-            </div>
-          )}
-        </button>
-
-        {/* Free themes */}
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-2.5">
-          Gratuitos
-        </p>
-        <div className="grid grid-cols-3 gap-2.5 mb-5 max-sm:grid-cols-2">
-          {FREE_META.map((meta) => (
-            <ThemeCard key={meta.id} meta={meta} />
-          ))}
+      {/* ── Automático ── */}
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-3 flex items-center gap-3 transition-colors hover:border-[var(--sl-border-h)]">
+        <div className="text-[24px]">🖥️</div>
+        <div className="flex-1">
+          <p className="text-[14px] font-semibold text-[var(--sl-t1)]">Automático</p>
+          <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Segue o tema do sistema operacional</p>
         </div>
+        <ToggleSwitch checked={autoMode} onChange={handleAutoToggle} />
+      </div>
 
-        {/* PRO themes */}
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-2.5">
-          Pro
-        </p>
-        <div className="grid grid-cols-3 gap-2.5 max-sm:grid-cols-2">
-          {PRO_META.map((meta) => (
-            <ThemeCard key={meta.id} meta={meta} />
-          ))}
+      {/* ── Temas Gratuitos ── */}
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
+        <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-3">Gratuitos</p>
+        <div className="grid grid-cols-2 gap-2.5">
+          {FREE_META.map((meta) => <ThemeCard key={meta.id} meta={meta} />)}
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════
-          SECTION 2 — Modo
-         ══════════════════════════════════════════════════════════ */}
-      <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
-          Modo de Uso
-        </p>
-
-        <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
-          {/* ── Foco card ────────────────────────────────────────── */}
-          <button
-            onClick={() => handleModeSelect('foco')}
-            className={cn(
-              'relative text-left border-2 rounded-2xl p-5 transition-all cursor-pointer overflow-hidden',
-              selectedMode === 'foco'
-                ? 'border-[#10b981] bg-[rgba(16,185,129,0.05)]'
-                : 'border-[var(--sl-border)] bg-[var(--sl-s3)] hover:border-[var(--sl-border-h)]',
-            )}
-          >
-            {/* Check badge */}
-            <div
-              className={cn(
-                'absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
-                selectedMode === 'foco'
-                  ? 'border-[#10b981] bg-[#10b981]'
-                  : 'border-[var(--sl-border-h)]',
-              )}
-            >
-              {selectedMode === 'foco' && <Check size={10} className="text-white" />}
-            </div>
-
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-[rgba(16,185,129,0.12)] flex items-center justify-center">
-                <Crosshair size={20} className="text-[#10b981]" />
-              </div>
-            </div>
-
-            <p className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)] mb-1.5">
-              Modo Foco
-            </p>
-            <p className="text-[12px] text-[var(--sl-t3)] leading-snug mb-3">
-              Interface limpa e objetiva.
-            </p>
-
-            <div className="flex flex-wrap gap-1.5">
-              {['Dados diretos', 'Sem distracoes'].map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[rgba(16,185,129,0.10)] text-[#10b981]"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </button>
-
-          {/* ── Jornada card ─────────────────────────────────────── */}
-          <button
-            onClick={() => handleModeSelect('jornada')}
-            className={cn(
-              'relative text-left border-2 rounded-2xl p-5 transition-all cursor-pointer overflow-hidden',
-              selectedMode === 'jornada'
-                ? 'border-[#0055ff] bg-[rgba(0,85,255,0.05)]'
-                : 'border-[var(--sl-border)] bg-[var(--sl-s3)] hover:border-[var(--sl-border-h)]',
-            )}
-          >
-            {/* Check badge */}
-            <div
-              className={cn(
-                'absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
-                selectedMode === 'jornada'
-                  ? 'border-[#0055ff] bg-[#0055ff]'
-                  : 'border-[var(--sl-border-h)]',
-              )}
-            >
-              {selectedMode === 'jornada' && <Check size={10} className="text-white" />}
-            </div>
-
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-[rgba(0,85,255,0.12)] flex items-center justify-center">
-                <Sparkles size={20} className="text-[#6e9fff]" />
-              </div>
-              <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[rgba(168,85,247,0.15)] text-[#a855f7]">
-                PRO
-              </span>
-            </div>
-
-            <p className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)] mb-1.5">
-              Modo Jornada
-            </p>
-            <p className="text-[12px] text-[var(--sl-t3)] leading-snug mb-3">
-              Interface motivacional com IA.
-            </p>
-
-            <div className="flex flex-wrap gap-1.5">
-              {['Insights IA', 'Gamificacao', 'Reviews', 'Celebracoes'].map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[rgba(0,85,255,0.10)] text-[#6e9fff]"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </button>
+      {/* ── Temas PRO ── */}
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
+        <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-3">PRO ✨</p>
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+          {PRO_META.map((meta) => <ThemeCard key={meta.id} meta={meta} />)}
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════
-          Upgrade Modal
-         ══════════════════════════════════════════════════════════ */}
+      {/* ── Interface ── */}
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
+        <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-1">Interface</p>
+
+        {[
+          {
+            key:   'sidebarExpanded' as const,
+            label: 'Sidebar expandida por padrão',
+            desc:  'Mostra rótulos dos itens ao abrir o app',
+          },
+          {
+            key:   'reducedMotion' as const,
+            label: 'Animações reduzidas',
+            desc:  'Minimiza animações para maior conforto visual',
+          },
+          {
+            key:   'compactNumbers' as const,
+            label: 'Números compactos',
+            desc:  'Exibe R$ 1,2K em vez de R$ 1.234,56',
+          },
+        ].map(({ key, label, desc }, idx, arr) => (
+          <div
+            key={key}
+            className={cn(
+              'flex items-center justify-between gap-4 py-3',
+              idx < arr.length - 1 && 'border-b border-[var(--sl-border)]',
+            )}
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-semibold text-[var(--sl-t1)]">{label}</p>
+              <p className="text-[11px] text-[var(--sl-t3)] mt-0.5 leading-snug">{desc}</p>
+            </div>
+            <ToggleSwitch
+              checked={iface[key]}
+              onChange={(v) => handleIfaceToggle(key, v)}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* ── UpgradeModal ── */}
       <UpgradeModal
         open={upgradeModal.open}
-        onClose={() => setUpgradeModal((s) => ({ ...s, open: false }))}
-        feature={upgradeModal.feature}
+        onClose={() => setUpgradeModal({ open: false })}
+        feature="theme"
         themeName={upgradeModal.themeName}
       />
 
-      {/* ══════════════════════════════════════════════════════════
-          Toast notification
-         ══════════════════════════════════════════════════════════ */}
+      {/* ── Toast ── */}
       <div
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-[var(--sl-s1)] border border-[var(--sl-border)] shadow-lg text-[13px] font-medium text-[var(--sl-t1)] transition-all duration-300"
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[var(--sl-s1)] border border-[var(--sl-border)] shadow-lg text-[13px] font-medium text-[var(--sl-t1)] transition-all duration-300"
         style={{
           opacity: showToast ? 1 : 0,
-          transform: showToast
-            ? 'translateX(-50%) translateY(0)'
-            : 'translateX(-50%) translateY(12px)',
+          transform: showToast ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(10px)',
           pointerEvents: showToast ? 'auto' : 'none',
         }}
       >

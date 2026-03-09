@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   useAppointments, useSaveAppointment, useDeleteAppointment,
   SPECIALTIES,
@@ -43,8 +42,6 @@ const EMPTY_FORM = {
 
 export default function SaudePage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { appointments, loading, error, reload } = useAppointments()
   const saveAppointment = useSaveAppointment()
@@ -174,10 +171,7 @@ export default function SaudePage() {
           <ArrowLeft size={16} />
           Corpo
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           🏥 Saúde Preventiva
         </h1>
         <button

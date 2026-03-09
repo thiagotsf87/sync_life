@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { syncTripBudgetToFuturo, unlinkGoalsFromDeletedEntity } from '@/lib/integrations/futuro'
+import { addXP } from '@/hooks/use-xp'
+import { onTripCreated } from '@/lib/cross-module'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -435,6 +437,9 @@ export function useCreateTrip() {
       })
     }
 
+    addXP(user.id, 'trip_created').catch(() => {})
+    // Cross-module: viagem → eventos de partida/retorno em Tempo
+    onTripCreated(user.id, data.name, data.start_date, data.end_date).catch(() => {})
     return trip as Trip
   }, [])
 }
@@ -606,5 +611,600 @@ export function useDeleteChecklistItem() {
   return useCallback(async (id: string) => {
     const { error } = await sb.from('trip_checklist_items').delete().eq('id', id)
     if (error) throw error
+  }, [])
+}
+
+// ─── Trip Memories types ───────────────────────────────────────────────────────
+
+export interface TripMemory {
+  id: string
+  trip_id: string
+  user_id: string
+  rating: number
+  favorite_moment: string | null
+  best_food: string | null
+  most_beautiful: string | null
+  lesson_learned: string | null
+  emotion_tags: string[]
+  budget_planned: number | null
+  budget_actual: number | null
+  xp_awarded: number
+  created_at: string
+  updated_at: string
+  trip?: Trip
+}
+
+export interface CreateTripMemoryData {
+  rating: number
+  favorite_moment?: string | null
+  best_food?: string | null
+  most_beautiful?: string | null
+  lesson_learned?: string | null
+  emotion_tags?: string[]
+  budget_planned?: number | null
+  budget_actual?: number | null
+}
+
+// ─── Bucket List types ────────────────────────────────────────────────────────
+
+export type BucketPriority = 'high' | 'medium' | 'low'
+export type BucketTripType = 'solo' | 'couple' | 'family' | 'friends'
+export type BucketStatus = 'pending' | 'visited'
+
+export interface BucketListItem {
+  id: string
+  user_id: string
+  destination_country: string
+  destination_city: string | null
+  country_code: string | null
+  flag_emoji: string | null
+  continent: string | null
+  priority: BucketPriority
+  estimated_budget: number | null
+  target_year: number | null
+  trip_type: BucketTripType | null
+  motivation: string | null
+  status: BucketStatus
+  trip_id: string | null
+  visited_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateBucketItemData {
+  destination_country: string
+  destination_city?: string | null
+  country_code?: string | null
+  flag_emoji?: string | null
+  continent?: string | null
+  priority?: BucketPriority
+  estimated_budget?: number | null
+  target_year?: number | null
+  trip_type?: BucketTripType | null
+  motivation?: string | null
+}
+
+// ─── Passport types ───────────────────────────────────────────────────────────
+
+export interface PassportCountryEntry {
+  name: string
+  flag: string
+  continent: string
+  visits: number
+}
+
+export interface PassportContinentEntry {
+  name: string
+  emoji: string
+  visited: number
+  total: number
+  xp: number
+}
+
+export interface PassportBadgeEntry {
+  type: string
+  name: string
+  icon: string
+  desc: string
+  unlocked: boolean
+  xp: number
+}
+
+export interface PassportData {
+  countries: number
+  continents: number
+  worldPct: string
+  countriesList: PassportCountryEntry[]
+  continentProgress: PassportContinentEntry[]
+  badges: PassportBadgeEntry[]
+}
+
+// ─── Country / Continent lookup ───────────────────────────────────────────────
+
+const COUNTRY_MAP: Record<string, { continent: string; flag: string }> = {
+  'Brasil':         { continent: 'América do Sul', flag: '🇧🇷' },
+  'Brazil':         { continent: 'América do Sul', flag: '🇧🇷' },
+  'Argentina':      { continent: 'América do Sul', flag: '🇦🇷' },
+  'Chile':          { continent: 'América do Sul', flag: '🇨🇱' },
+  'Uruguai':        { continent: 'América do Sul', flag: '🇺🇾' },
+  'Uruguay':        { continent: 'América do Sul', flag: '🇺🇾' },
+  'Colômbia':       { continent: 'América do Sul', flag: '🇨🇴' },
+  'Colombia':       { continent: 'América do Sul', flag: '🇨🇴' },
+  'Peru':           { continent: 'América do Sul', flag: '🇵🇪' },
+  'Bolívia':        { continent: 'América do Sul', flag: '🇧🇴' },
+  'Paraguai':       { continent: 'América do Sul', flag: '🇵🇾' },
+  'Venezuela':      { continent: 'América do Sul', flag: '🇻🇪' },
+  'Equador':        { continent: 'América do Sul', flag: '🇪🇨' },
+  'Portugal':       { continent: 'Europa', flag: '🇵🇹' },
+  'Espanha':        { continent: 'Europa', flag: '🇪🇸' },
+  'Spain':          { continent: 'Europa', flag: '🇪🇸' },
+  'França':         { continent: 'Europa', flag: '🇫🇷' },
+  'France':         { continent: 'Europa', flag: '🇫🇷' },
+  'Itália':         { continent: 'Europa', flag: '🇮🇹' },
+  'Italy':          { continent: 'Europa', flag: '🇮🇹' },
+  'Alemanha':       { continent: 'Europa', flag: '🇩🇪' },
+  'Germany':        { continent: 'Europa', flag: '🇩🇪' },
+  'Grécia':         { continent: 'Europa', flag: '🇬🇷' },
+  'Reino Unido':    { continent: 'Europa', flag: '🇬🇧' },
+  'UK':             { continent: 'Europa', flag: '🇬🇧' },
+  'Holanda':        { continent: 'Europa', flag: '🇳🇱' },
+  'Suíça':          { continent: 'Europa', flag: '🇨🇭' },
+  'Japão':          { continent: 'Ásia', flag: '🇯🇵' },
+  'Japan':          { continent: 'Ásia', flag: '🇯🇵' },
+  'China':          { continent: 'Ásia', flag: '🇨🇳' },
+  'Tailândia':      { continent: 'Ásia', flag: '🇹🇭' },
+  'Thailand':       { continent: 'Ásia', flag: '🇹🇭' },
+  'Índia':          { continent: 'Ásia', flag: '🇮🇳' },
+  'India':          { continent: 'Ásia', flag: '🇮🇳' },
+  'Indonésia':      { continent: 'Ásia', flag: '🇮🇩' },
+  'Singapura':      { continent: 'Ásia', flag: '🇸🇬' },
+  'Vietnã':         { continent: 'Ásia', flag: '🇻🇳' },
+  'Coreia do Sul':  { continent: 'Ásia', flag: '🇰🇷' },
+  'EUA':            { continent: 'América do Norte', flag: '🇺🇸' },
+  'USA':            { continent: 'América do Norte', flag: '🇺🇸' },
+  'Estados Unidos': { continent: 'América do Norte', flag: '🇺🇸' },
+  'México':         { continent: 'América do Norte', flag: '🇲🇽' },
+  'Canadá':         { continent: 'América do Norte', flag: '🇨🇦' },
+  'Canada':         { continent: 'América do Norte', flag: '🇨🇦' },
+  'Cuba':           { continent: 'América do Norte', flag: '🇨🇺' },
+  'África do Sul':  { continent: 'África', flag: '🇿🇦' },
+  'Marrocos':       { continent: 'África', flag: '🇲🇦' },
+  'Egito':          { continent: 'África', flag: '🇪🇬' },
+  'Quênia':         { continent: 'África', flag: '🇰🇪' },
+  'Tanzânia':       { continent: 'África', flag: '🇹🇿' },
+  'Austrália':      { continent: 'Oceania', flag: '🇦🇺' },
+  'Australia':      { continent: 'Oceania', flag: '🇦🇺' },
+  'Nova Zelândia':  { continent: 'Oceania', flag: '🇳🇿' },
+}
+
+const CONTINENT_TOTALS: Record<string, number> = {
+  'América do Sul': 12,
+  'Europa': 44,
+  'Ásia': 48,
+  'África': 54,
+  'América do Norte': 23,
+  'Oceania': 14,
+}
+
+const CONTINENT_EMOJI: Record<string, string> = {
+  'América do Sul': '🌎',
+  'Europa': '🌍',
+  'Ásia': '🌏',
+  'África': '🌍',
+  'América do Norte': '🌎',
+  'Oceania': '🌏',
+}
+
+function extractCountriesFromTrips(trips: Trip[]): PassportCountryEntry[] {
+  const countMap = new Map<string, { flag: string; continent: string; visits: number }>()
+
+  for (const trip of trips) {
+    if (trip.status !== 'completed') continue
+    for (const dest of trip.destinations) {
+      // Try exact match first, then partial match
+      const entry = COUNTRY_MAP[dest]
+      if (entry) {
+        const existing = countMap.get(dest)
+        if (existing) {
+          existing.visits++
+        } else {
+          countMap.set(dest, { flag: entry.flag, continent: entry.continent, visits: 1 })
+        }
+        continue
+      }
+      // Partial match: check if any key is contained in the destination string
+      for (const [countryName, data] of Object.entries(COUNTRY_MAP)) {
+        if (dest.includes(countryName) || countryName.includes(dest)) {
+          const existing = countMap.get(countryName)
+          if (existing) {
+            existing.visits++
+          } else {
+            countMap.set(countryName, { flag: data.flag, continent: data.continent, visits: 1 })
+          }
+          break
+        }
+      }
+    }
+  }
+
+  return Array.from(countMap.entries()).map(([name, v]) => ({
+    name,
+    flag: v.flag,
+    continent: v.continent,
+    visits: v.visits,
+  }))
+}
+
+function buildPassportBadges(
+  countriesList: PassportCountryEntry[],
+  trips: Trip[]
+): PassportBadgeEntry[] {
+  const saCountries = countriesList.filter(c => c.continent === 'América do Sul').length
+  const euCountries = countriesList.filter(c => c.continent === 'Europa').length
+  const continentsVisited = new Set(countriesList.map(c => c.continent)).size
+  const totalDaysAbroad = trips
+    .filter(t => t.status === 'completed')
+    .reduce((sum, t) => {
+      const days = Math.round(
+        (new Date(t.end_date).getTime() - new Date(t.start_date).getTime()) / (1000 * 60 * 60 * 24)
+      )
+      return sum + Math.max(1, days)
+    }, 0)
+
+  return [
+    {
+      type: 'explorador_sa',
+      name: 'Explorador SA',
+      icon: '🌎',
+      desc: '5 países na Am. Sul',
+      unlocked: saCountries >= 5,
+      xp: 50,
+    },
+    {
+      type: 'eurotrip_iniciante',
+      name: 'Eurotrip Iniciante',
+      icon: '🇪🇺',
+      desc: '2+ países na Europa',
+      unlocked: euCountries >= 2,
+      xp: 30,
+    },
+    {
+      type: 'volta_ao_mundo',
+      name: 'Volta ao Mundo',
+      icon: '🔒',
+      desc: 'Todos os continentes',
+      unlocked: continentsVisited >= 6,
+      xp: 80,
+    },
+    {
+      type: 'nomade_digital',
+      name: 'Nômade Digital',
+      icon: '💻',
+      desc: '30+ dias no exterior',
+      unlocked: totalDaysAbroad >= 30,
+      xp: 50,
+    },
+  ]
+}
+
+// ─── useTripMemories ──────────────────────────────────────────────────────────
+
+export function useTripMemories() {
+  const [memories, setMemories] = useState<TripMemory[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const supabase = createClient()
+  const sb = supabase as any
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Não autenticado')
+      const { data, error: err } = await sb
+        .from('trip_memories')
+        .select('*, trip:trips(*)')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+      if (err) throw err
+      setMemories(data ?? [])
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao carregar memórias')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { load() }, [load])
+  return { memories, loading, error, reload: load }
+}
+
+// ─── useCreateTripMemory ──────────────────────────────────────────────────────
+
+export function useCreateTripMemory() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (tripId: string, data: CreateTripMemoryData) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+
+    // Validation: rating required, ≥1 text field, ≥1 emotion tag
+    if (!data.rating || data.rating < 1) throw new Error('Rating é obrigatório')
+    const hasText = data.favorite_moment || data.best_food || data.most_beautiful || data.lesson_learned
+    if (!hasText) throw new Error('Preencha ao menos um campo de texto')
+    if (!data.emotion_tags || data.emotion_tags.length === 0) throw new Error('Selecione ao menos uma tag de emoção')
+
+    const { data: memory, error } = await sb.from('trip_memories').insert({
+      trip_id: tripId,
+      user_id: user.id,
+      rating: data.rating,
+      favorite_moment: data.favorite_moment ?? null,
+      best_food: data.best_food ?? null,
+      most_beautiful: data.most_beautiful ?? null,
+      lesson_learned: data.lesson_learned ?? null,
+      emotion_tags: data.emotion_tags ?? [],
+      budget_planned: data.budget_planned ?? null,
+      budget_actual: data.budget_actual ?? null,
+      xp_awarded: 30,
+    }).select().single()
+
+    if (error) throw error
+    return memory as TripMemory
+  }, [])
+}
+
+// ─── useUpdateTripMemory ──────────────────────────────────────────────────────
+
+export function useUpdateTripMemory() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (memoryId: string, data: Partial<CreateTripMemoryData>) => {
+    const { error } = await sb.from('trip_memories').update({
+      ...data,
+      updated_at: new Date().toISOString(),
+    }).eq('id', memoryId)
+    if (error) throw error
+  }, [])
+}
+
+// ─── usePassportData ──────────────────────────────────────────────────────────
+
+export function usePassportData() {
+  const [passport, setPassport] = useState<PassportData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+  const sb = supabase as any
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLoading(false); return }
+
+      const { data: trips } = await sb
+        .from('trips')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'completed')
+
+      const completedTrips: Trip[] = trips ?? []
+      const countriesList = extractCountriesFromTrips(completedTrips)
+      const uniqueContinents = new Set(countriesList.map(c => c.continent))
+      const continentProgress: PassportContinentEntry[] = Object.entries(CONTINENT_TOTALS).map(([name, total]) => ({
+        name,
+        emoji: CONTINENT_EMOJI[name] ?? '🌐',
+        visited: countriesList.filter(c => c.continent === name).length,
+        total,
+        xp: countriesList.filter(c => c.continent === name).length * 30,
+      }))
+      const badges = buildPassportBadges(countriesList, completedTrips)
+      const worldPct = ((countriesList.length / 195) * 100).toFixed(1) + '%'
+
+      setPassport({
+        countries: countriesList.length,
+        continents: uniqueContinents.size,
+        worldPct,
+        countriesList,
+        continentProgress,
+        badges,
+      })
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { load() }, [load])
+  return { passport, loading, reload: load }
+}
+
+// ─── useBucketList ────────────────────────────────────────────────────────────
+
+export function useBucketList() {
+  const [items, setItems] = useState<BucketListItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const supabase = createClient()
+  const sb = supabase as any
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Não autenticado')
+      const { data, error: err } = await sb
+        .from('bucket_list_items')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+      if (err) throw err
+      setItems(data ?? [])
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao carregar bucket list')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { load() }, [load])
+  return { items, loading, error, reload: load }
+}
+
+// ─── useCreateBucketItem ──────────────────────────────────────────────────────
+
+export function useCreateBucketItem() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (data: CreateBucketItemData) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+
+    // FREE limit: max 10 items
+    const { count } = await sb
+      .from('bucket_list_items')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+
+    if ((count ?? 0) >= 10) {
+      const err = new Error('LIMIT_REACHED: Limite de 10 itens no plano gratuito') as Error & { code: string }
+      err.code = 'LIMIT_REACHED'
+      throw err
+    }
+
+    const { data: item, error } = await sb.from('bucket_list_items').insert({
+      user_id: user.id,
+      destination_country: data.destination_country,
+      destination_city: data.destination_city ?? null,
+      country_code: data.country_code ?? null,
+      flag_emoji: data.flag_emoji ?? null,
+      continent: data.continent ?? null,
+      priority: data.priority ?? 'medium',
+      estimated_budget: data.estimated_budget ?? null,
+      target_year: data.target_year ?? null,
+      trip_type: data.trip_type ?? null,
+      motivation: data.motivation ?? null,
+      status: 'pending',
+    }).select().single()
+
+    if (error) throw error
+    return item as BucketListItem
+  }, [])
+}
+
+// ─── useUpdateBucketItem ──────────────────────────────────────────────────────
+
+export function useUpdateBucketItem() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (id: string, data: Partial<Omit<BucketListItem, 'id' | 'user_id' | 'created_at'>>) => {
+    const { error } = await sb.from('bucket_list_items').update({
+      ...data,
+      updated_at: new Date().toISOString(),
+    }).eq('id', id)
+    if (error) throw error
+  }, [])
+}
+
+// ─── useDeleteBucketItem ──────────────────────────────────────────────────────
+
+export function useDeleteBucketItem() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (id: string) => {
+    const { error } = await sb.from('bucket_list_items').delete().eq('id', id)
+    if (error) throw error
+  }, [])
+}
+
+// ─── useTransformToTrip ───────────────────────────────────────────────────────
+
+export function useTransformToTrip() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (bucketItemId: string): Promise<Partial<CreateTripData>> => {
+    const { data: item, error } = await sb
+      .from('bucket_list_items')
+      .select('*')
+      .eq('id', bucketItemId)
+      .single()
+
+    if (error) throw error
+    const b = item as BucketListItem
+
+    return {
+      name: b.destination_city
+        ? `${b.destination_city}, ${b.destination_country}`
+        : b.destination_country,
+      destinations: b.destination_city
+        ? [b.destination_country, b.destination_city]
+        : [b.destination_country],
+      trip_type: 'leisure',
+      travelers_count: b.trip_type === 'couple' ? 2 : b.trip_type === 'family' ? 4 : 1,
+      total_budget: b.estimated_budget ?? null,
+      notes: b.motivation ?? null,
+    }
+  }, [])
+}
+
+// ─── useUpdateTripStatus ──────────────────────────────────────────────────────
+
+export function useUpdateTripStatus() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (tripId: string, newStatus: TripStatus) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+
+    // RN-EXP-23: only 1 active trip at a time
+    if (newStatus === 'ongoing') {
+      const { data: active } = await sb
+        .from('trips')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('status', 'ongoing')
+        .neq('id', tripId)
+
+      if (active && active.length > 0) {
+        const err = new Error('ACTIVE_LIMIT: Você já tem uma viagem em andamento') as Error & { code: string }
+        err.code = 'ACTIVE_LIMIT'
+        throw err
+      }
+    }
+
+    const { error } = await sb.from('trips').update({
+      status: newStatus,
+      updated_at: new Date().toISOString(),
+    }).eq('id', tripId)
+    if (error) throw error
+
+    // RN-EXP-02: when trip is completed, mark linked objective goal as 100% done
+    if (newStatus === 'completed') {
+      try {
+        const nowIso = new Date().toISOString()
+        await sb.from('objective_goals')
+          .update({
+            current_value: 1,
+            progress: 100,
+            status: 'completed',
+            completed_at: nowIso,
+            last_progress_update: nowIso,
+            updated_at: nowIso,
+          })
+          .eq('user_id', user.id)
+          .eq('target_module', 'experiencias')
+          .eq('linked_entity_id', tripId)
+          .eq('status', 'active')
+      } catch {
+        // Silently ignore — integration is best-effort
+      }
+    }
   }, [])
 }

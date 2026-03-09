@@ -1,21 +1,27 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
-import { useCarreiraDashboard, LEVEL_LABELS } from '@/hooks/use-carreira'
+import { useCarreiraDashboard, useCareerHistory, useSaveSkill, useAddHistoryEntry, LEVEL_LABELS } from '@/hooks/use-carreira'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { RoadmapTimeline } from '@/components/carreira/RoadmapTimeline'
 import { SkillCard } from '@/components/carreira/SkillCard'
+import { CarreiraMobile } from '@/components/carreira/CarreiraMobile'
+import { CarreiraSimuladorModal } from '@/components/carreira/mobile/CarreiraSimuladorModal'
+import { CARREIRA_XP } from '@/lib/carreira-xp-mock'
 
 export default function CarreiraPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { profile, activeRoadmap, skills, loading, error } = useCarreiraDashboard()
+  const { history } = useCareerHistory()
+  const saveSkill = useSaveSkill()
+  const addHistory = useAddHistoryEntry()
+
+  const [showSimulador, setShowSimulador] = useState(false)
 
   const expertSkills = skills.filter(s => s.proficiency_level >= 4).length
   const salaryLabel = profile?.gross_salary
@@ -25,14 +31,34 @@ export default function CarreiraPage() {
   const nextStep = activeRoadmap?.steps?.find(s => s.status !== 'completed')
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+    <CarreiraMobile
+      profile={profile}
+      activeRoadmap={activeRoadmap}
+      skills={skills}
+      history={history}
+      loading={loading}
+      onSaveSkill={async (data) => { await saveSkill(data) }}
+      onAddPromotion={async (data) => {
+        await addHistory({
+          title: data.title,
+          company: data.company || null,
+          field: null,
+          level: null,
+          salary: data.salary,
+          start_date: data.startDate || new Date().toISOString().split('T')[0],
+          end_date: null,
+          change_type: 'promotion',
+          notes: null,
+        })
+      }}
+      onReload={async () => { window.location.reload() }}
+    />
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
           💼 Carreira
         </h1>
         <div className="flex-1" />
@@ -44,6 +70,89 @@ export default function CarreiraPage() {
           <Plus size={16} />
           {profile ? 'Editar Perfil' : 'Configurar Perfil'}
         </button>
+      </div>
+
+      {/* Empty State — shown when no profile and not loading */}
+      {!loading && !profile && (
+        <div className="py-10 text-center">
+          <div className="text-6xl mb-4">💼</div>
+          <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] mb-2">Mapeie sua carreira</h2>
+          <p className="text-[14px] text-[var(--sl-t2)] leading-relaxed mb-6 max-w-sm mx-auto">
+            Configure seu perfil profissional para acompanhar sua evolução, mapear habilidades e planejar próximos passos.
+          </p>
+
+          {/* 3-step wizard */}
+          <div className="text-left max-w-sm mx-auto flex flex-col gap-2.5 mb-6">
+            {[
+              { n: 1, title: 'Cargo atual', desc: 'Empresa, salário, especialidade', active: true },
+              { n: 2, title: 'Suas habilidades', desc: 'Skills técnicas, soft skills, idiomas', active: false },
+              { n: 3, title: 'Roadmap', desc: 'De onde veio e para onde quer ir', active: false },
+            ].map(step => (
+              <div key={step.n} className={cn(
+                'flex items-center gap-3 p-3.5 bg-[var(--sl-s1)] border rounded-[14px]',
+                step.active ? 'border-[rgba(244,63,94,0.3)]' : 'border-[var(--sl-border)]'
+              )}>
+                <div className={cn(
+                  'w-8 h-8 rounded-full flex items-center justify-center font-[Syne] text-[14px] font-extrabold shrink-0',
+                  step.active ? 'bg-[#f43f5e] text-white' : 'bg-[var(--sl-s3)] text-[var(--sl-t2)]'
+                )}>
+                  {step.n}
+                </div>
+                <div>
+                  <p className="text-[14px] font-semibold text-[var(--sl-t1)]">{step.title}</p>
+                  <p className="text-[12px] text-[var(--sl-t2)]">{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => router.push('/carreira/perfil')}
+            className="px-6 py-3 rounded-[14px] font-[Syne] font-bold text-[15px] text-white"
+            style={{ background: 'linear-gradient(135deg, #f43f5e, #8b5cf6)' }}
+          >
+            Começar configuração
+          </button>
+          <p className="text-[12px] text-[var(--sl-t3)] mt-3">⏱ Leva menos de 3 minutos</p>
+        </div>
+      )}
+
+      {/* Main dashboard — shown when profile exists or while loading */}
+      {(loading || profile) && (<>
+
+      {/* Capítulo Atual */}
+      <div className="mb-5">
+        <div className="relative bg-[var(--sl-s1)] border rounded-2xl p-5 overflow-hidden"
+          style={{ borderColor: 'rgba(139,92,246,0.3)', background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(236,72,153,0.05))' }}>
+          <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t" style={{ background: 'linear-gradient(90deg, #8b5cf6, #ec4899)' }} />
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#c4b5fd' }}>✦ CAPÍTULO ATUAL</p>
+          <h2 className="font-[Syne] font-extrabold text-2xl" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            {profile?.current_title ?? 'Configure seu cargo'}
+          </h2>
+          {profile?.current_company && <p className="text-[13px] text-[var(--sl-t2)] mt-0.5">{profile.current_company}</p>}
+          {profile && <p className="text-[11px] mt-2 text-[var(--sl-t3)]">🔥 {CARREIRA_XP.streak} dias · Nível {CARREIRA_XP.level} · {CARREIRA_XP.levelTitle}</p>}
+        </div>
+      </div>
+
+      {/* XpBar */}
+      <div className="mb-5">
+        <div className="bg-[var(--sl-s1)] border rounded-2xl p-4 overflow-hidden"
+          style={{ borderColor: 'rgba(139,92,246,0.25)' }}>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="font-[Syne] text-[11px] font-extrabold text-white px-2 py-0.5 rounded-lg"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}>
+                Nível {CARREIRA_XP.level}
+              </span>
+              <span className="text-[12px] text-[var(--sl-t2)]">{CARREIRA_XP.levelTitle}</span>
+            </div>
+            <span className="text-[13px] font-bold text-[#fb923c]">🔥 {CARREIRA_XP.streak} dias</span>
+          </div>
+          <div className="w-full bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height: '6px' }}>
+            <div className="h-full rounded-full" style={{ width: `${Math.round(CARREIRA_XP.currentXp / CARREIRA_XP.nextLevelXp * 100)}%`, background: 'linear-gradient(90deg, #8b5cf6, #ec4899)' }} />
+          </div>
+          <p className="text-[11px] text-[var(--sl-t3)] text-right mt-1">{CARREIRA_XP.currentXp} / {CARREIRA_XP.nextLevelXp} XP → Nível {CARREIRA_XP.level + 1}</p>
+        </div>
       </div>
 
       {/* ② Summary Strip */}
@@ -160,6 +269,19 @@ export default function CarreiraPage() {
                 )}
               </div>
             )}
+            <div className="mt-3 pt-3 border-t border-[var(--sl-border)] flex gap-3 p-3 rounded-xl"
+              style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(236,72,153,0.05))', border: '1px solid rgba(139,92,246,0.2)' }}>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0"
+                style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)' }}>🤖</div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: '#c4b5fd' }}>Coach Carreira</p>
+                <p className="text-[11px] text-[var(--sl-t2)] leading-relaxed">
+                  {skills.length > 0
+                    ? <>{`Você tem `}<strong className="text-[var(--sl-t1)]">{skills.length} habilidades</strong>{`. `}{expertSkills > 0 ? `${expertSkills} avançada${expertSkills > 1 ? 's' : ''}. ` : ''}{`Foco nas hard skills para avançar.`}</>
+                    : 'Adicione habilidades para receber orientação personalizada de carreira.'}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -180,6 +302,27 @@ export default function CarreiraPage() {
           </button>
         ))}
       </div>
+
+      {/* Simulador de Promoção */}
+      <div className="mt-4">
+        <button onClick={() => setShowSimulador(true)}
+          className="w-full bg-[var(--sl-s1)] border rounded-2xl p-4 text-left hover:opacity-90 transition-opacity"
+          style={{ borderColor: 'rgba(139,92,246,0.25)', background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(236,72,153,0.04))' }}>
+          <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: '#c4b5fd' }}>✦ SIMULADOR DE PROMOÇÃO</p>
+          <p className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">Quanto valeria sua próxima promoção?</p>
+          <p className="text-[12px] text-[var(--sl-t2)] mt-1">Calcule impacto salarial e prazo →</p>
+        </button>
+        {showSimulador && (
+          <CarreiraSimuladorModal
+            currentTitle={profile?.current_title ?? undefined}
+            currentSalary={profile?.gross_salary ?? undefined}
+            onClose={() => setShowSimulador(false)}
+          />
+        )}
+      </div>
+
+      </>)}
     </div>
+    </>
   )
 }

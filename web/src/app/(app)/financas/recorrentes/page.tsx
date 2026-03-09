@@ -6,7 +6,6 @@ import {
   Plus, Calendar, Clock, Pencil, Pause, Play, Trash2, AlertTriangle, MoreVertical,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { KpiCard } from '@/components/ui/kpi-card'
@@ -17,6 +16,7 @@ import {
   type RecurrenteWithCategory, type Frequency,
 } from '@/hooks/use-recorrentes'
 import { RecorrenteModal } from '@/components/financas/RecorrenteModal'
+import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
@@ -270,8 +270,6 @@ function RecorrenteCard({
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function RecorrentesPage() {
-  const mode = useShellStore(s => s.mode)
-  const isJornada = mode === 'jornada'
   const { isFree } = useUserPlan()
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -340,34 +338,47 @@ export default function RecorrentesPage() {
   return (
     <>
       {/* ═══════════ MOBILE VIEW ═══════════ */}
-      <div className="lg:hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>Recorrentes</h1>
-            <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">Despesas e receitas fixas</p>
-          </div>
+      <FinancasMobileShell
+        subtitle="Despesas e receitas fixas"
+        rightAction={
           <button
             onClick={openCreate}
             className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
           >
             <Plus size={16} />
           </button>
+        }
+      >
+        {/* KPI cards — 3 columns */}
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="rounded-[10px] p-2.5" style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
+            <div className="text-[9px] text-[var(--sl-t2)] uppercase font-semibold mb-1">Rec. Receitas</div>
+            <div className="font-[DM_Mono] text-[15px] font-bold text-[#10b981] leading-none">R$ {fmtR$(totalIncomeMonthly)}</div>
+          </div>
+          <div className="rounded-[10px] p-2.5" style={{ background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>
+            <div className="text-[9px] text-[var(--sl-t2)] uppercase font-semibold mb-1">Rec. Despesas</div>
+            <div className="font-[DM_Mono] text-[15px] font-bold text-[#f43f5e] leading-none">R$ {fmtR$(totalExpenseMonthly)}</div>
+          </div>
+          <div className="rounded-[10px] p-2.5 bg-[var(--sl-s1)] border border-[var(--sl-border)]">
+            <div className="text-[9px] text-[var(--sl-t2)] uppercase font-semibold mb-1">% Comprom.</div>
+            <div className="font-[DM_Mono] text-[15px] font-bold leading-none" style={{ color: expensePct >= 60 ? '#f59e0b' : '#10b981' }}>{expensePct}%</div>
+          </div>
         </div>
 
-        {/* Summary cards */}
-        <div className="flex gap-2 mb-3">
-          <div className="flex-1 rounded-[10px] p-3" style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
-            <div className="text-[11px] text-[var(--sl-t2)] mb-1">Receitas mensais</div>
-            <div className="font-[DM_Mono] text-[18px] font-semibold text-[#10b981]">+R$ {fmtR$(totalIncomeMonthly)}</div>
-            <div className="text-[11px] text-[var(--sl-t2)]">{incomeRecs.length} recorrências</div>
+        {/* AI Insight — both modes */}
+        {!loading && recorrentes.length > 0 && (
+          <div className="rounded-2xl p-3 mb-3 flex gap-2.5 items-start"
+            style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)' }}>
+            <span className="text-[16px]">✨</span>
+            <div className="text-[12px] text-[var(--sl-t2)] leading-[1.5]">
+              {expensePct}% da renda comprometida com recorrentes
+              {expensePct < 50 ? ' — isso é saudável.' : expensePct < 70 ? ' — fique de olho.' : ' — considere reduzir despesas fixas.'}
+              {nextOcc && (
+                <> Próximo: <strong className="text-[var(--sl-t1)]">{nextOcc.name}</strong> dia {nextOcc.day}.</>
+              )}
+            </div>
           </div>
-          <div className="flex-1 rounded-[10px] p-3" style={{ background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>
-            <div className="text-[11px] text-[var(--sl-t2)] mb-1">Despesas mensais</div>
-            <div className="font-[DM_Mono] text-[18px] font-semibold text-[#f43f5e]">-R$ {fmtR$(totalExpenseMonthly)}</div>
-            <div className="text-[11px] text-[var(--sl-t2)]">{expenseRecs.length} recorrências</div>
-          </div>
-        </div>
+        )}
 
         {/* Content */}
         {loading ? (
@@ -451,11 +462,11 @@ export default function RecorrentesPage() {
                   })}
                 </div>
               </>
-            )}
-          </>
+        )}
+        </>
         )}
         <div className="h-5" />
-      </div>
+      </FinancasMobileShell>
 
       {/* ═══════════ DESKTOP VIEW ═══════════ */}
       <div className="hidden lg:block max-w-[1100px] mx-auto px-6 py-7 pb-16">
@@ -466,7 +477,7 @@ export default function RecorrentesPage() {
             <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#10b981] mb-1">💰 Finanças</p>
             <h1 className={cn(
               'font-[Syne] font-extrabold text-2xl tracking-tight',
-              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+              'text-sl-grad'
             )}>
               Transações Recorrentes
             </h1>

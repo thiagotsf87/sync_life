@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Plus, Pencil, Trash2, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { useCategories } from '@/hooks/use-categories'
 import { SLCard } from '@/components/ui/sl-card'
@@ -229,8 +228,6 @@ function EventRow({
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function PlanejamentoPage() {
-  const mode = useShellStore(s => s.mode)
-  const isJornada = mode === 'jornada'
   const { isPro } = useUserPlan()
   const { categories } = useCategories()
 
@@ -354,7 +351,7 @@ export default function PlanejamentoPage() {
       <div className="flex items-center gap-3 mb-5 flex-wrap">
         <h1 className={cn(
           'font-[Syne] font-extrabold text-[22px] tracking-tight',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+          'text-sl-grad'
         )}>
           📈 Planejamento Futuro
         </h1>

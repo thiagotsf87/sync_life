@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Check } from 'lucide-react'
+import { SyncLifeIcon } from '@/components/shell/icons'
 
 const MODULES = [
   { value: 'financas', icon: '💰', name: 'Finanças', desc: 'Despesas, orçamento, planejamento', bg: 'rgba(16,185,129,0.15)' },
@@ -21,12 +22,35 @@ interface OnboardingMobileProps {
   userName?: string
 }
 
-export function OnboardingMobile({ userName }: OnboardingMobileProps) {
+function ProgressDots({ current }: { current: number }) {
+  return (
+    <div className="flex gap-2 mb-5">
+      {[1, 2].map(i => (
+        <div
+          key={i}
+          className="h-[5px] rounded-full transition-all duration-300"
+          style={{
+            width: i <= current ? 28 : 16,
+            background: i < current
+              ? '#10b981'
+              : i === current
+                ? 'linear-gradient(90deg, #10b981, #0055ff)'
+                : 'var(--sl-s3)',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+export function OnboardingMobile({ userName: initialName }: OnboardingMobileProps) {
   const router = useRouter()
   const [step, setStep] = useState(1)
+  const [name, setName] = useState(initialName ?? '')
   const [selected, setSelected] = useState<string[]>(DEFAULT_SELECTED)
-  const [mode, setMode] = useState<'foco' | 'jornada'>('foco')
   const [isLoading, setIsLoading] = useState(false)
+
+  const displayName = name.trim().split(' ')[0] || ''
 
   const toggleModule = useCallback((value: string) => {
     setSelected(prev =>
@@ -47,7 +71,8 @@ export function OnboardingMobile({ userName }: OnboardingMobileProps) {
         .from('profiles')
         .upsert({
           id: user.id,
-          mode: mode,
+          full_name: name.trim() || null,
+          mode: 'jornada',
           active_modules: selected.length > 0 ? selected : ['financas'],
           onboarding_completed: true,
         })
@@ -66,30 +91,54 @@ export function OnboardingMobile({ userName }: OnboardingMobileProps) {
     <div className="lg:hidden fixed inset-0 z-50 bg-[var(--sl-bg)] overflow-y-auto">
       <div className="px-5 pt-8 pb-6">
         {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-8">
-          <div
-            className="flex h-[42px] w-[42px] items-center justify-center rounded-[12px]"
-            style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" width="22" height="22">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
-          </div>
-          <span className="font-[Syne] text-[22px] font-extrabold text-[var(--sl-t1)]">SyncLife</span>
+        <div className="flex items-center gap-2.5 mb-6">
+          <SyncLifeIcon size={42} animated={false} />
+          <span className="font-[Syne] text-[22px] font-extrabold">
+            <span className="text-[var(--sl-t1)]">Sync</span>
+            <span
+              style={{
+                background: 'linear-gradient(135deg, #10b981, #0055ff)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              Life
+            </span>
+          </span>
         </div>
 
-        {/* Step 1: Module selection */}
+        {/* Progress dots */}
+        <ProgressDots current={step} />
+
+        {/* Step 1: Name + Module selection */}
         {step === 1 && (
           <>
-            <p className="text-[12px] text-[var(--sl-t2)] mb-2">Passo 1 de 3</p>
+            <p className="text-[12px] text-[var(--sl-t2)] mb-2">Passo 1 de 2</p>
             <h1 className="font-[Syne] text-[26px] font-bold text-[var(--sl-t1)] leading-[1.25] mb-2">
               O que você quer sincronizar?
             </h1>
-            <p className="text-[14px] text-[var(--sl-t2)] leading-[1.6] mb-7">
+            <p className="text-[14px] text-[var(--sl-t2)] leading-[1.6] mb-6">
               Selecione o que é mais importante agora. Você pode ativar mais módulos a qualquer momento.
             </p>
+
+            {/* Name input */}
+            <div className="mb-6">
+              <label className="text-[12px] font-medium text-[var(--sl-t2)] mb-1.5 block">
+                Seu nome
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Como quer ser chamado?"
+                className="w-full h-[48px] px-4 rounded-[12px] bg-[var(--sl-s1)] border border-[var(--sl-border)]
+                           text-[15px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]
+                           focus:outline-none focus:border-[#10b981]/50 transition-colors"
+              />
+              <p className="text-[11px] text-[var(--sl-t3)] mt-1.5">
+                É assim que vamos te cumprimentar no app.
+              </p>
+            </div>
 
             <div className="flex flex-col gap-2.5 mb-7">
               {MODULES.map((mod) => {
@@ -144,83 +193,62 @@ export function OnboardingMobile({ userName }: OnboardingMobileProps) {
           </>
         )}
 
-        {/* Step 2: Mode selection */}
+        {/* Step 2: Summary + Life Score */}
         {step === 2 && (
           <>
-            <p className="text-[12px] text-[var(--sl-t2)] mb-2">Passo 2 de 3</p>
+            <p className="text-[12px] text-[var(--sl-t2)] mb-2">Passo 2 de 2</p>
             <h1 className="font-[Syne] text-[26px] font-bold text-[var(--sl-t1)] leading-[1.25] mb-2">
-              Como quer ver os dados?
+              Tudo pronto{displayName ? `, ${displayName}` : ''}!
             </h1>
-            <p className="text-[14px] text-[var(--sl-t2)] leading-[1.6] mb-7">
-              Escolha o estilo de interface. Pode mudar a qualquer hora.
+            <p className="text-[14px] text-[var(--sl-t2)] leading-[1.6] mb-6">
+              Vamos acompanhar sua evolução juntos. Cada passo conta!
             </p>
 
-            <div className="flex flex-col gap-3 mb-7">
-              <button
-                onClick={() => setMode('foco')}
-                className="p-4 rounded-[14px] border text-left transition-all"
-                style={{
-                  background: mode === 'foco' ? 'rgba(16,185,129,0.15)' : 'var(--sl-s1)',
-                  borderColor: mode === 'foco' ? 'rgba(16,185,129,0.5)' : 'var(--sl-border)',
-                }}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-[24px]">🎯</span>
-                  <span className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)]">Modo Foco</span>
-                </div>
-                <p className="text-[13px] text-[var(--sl-t2)] leading-[1.5]">
-                  Interface objetiva, dados densos, sem distrações. Direto ao ponto.
+            {/* Life Sync Score preview */}
+            <div
+              className="flex items-center gap-4 p-4 rounded-[14px] mb-5"
+              style={{
+                background: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(0,85,255,0.12))',
+                border: '1px solid rgba(16,185,129,0.25)',
+              }}
+            >
+              <div className="relative w-[52px] h-[52px] shrink-0">
+                <svg width={52} height={52} viewBox="0 0 52 52" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx={26} cy={26} r={22} fill="none" stroke="var(--sl-s3)" strokeWidth={5} />
+                  <circle
+                    cx={26} cy={26} r={22} fill="none"
+                    stroke="url(#ob-score-grad)" strokeWidth={5} strokeLinecap="round"
+                    strokeDasharray={138} strokeDashoffset={138}
+                  />
+                  <defs>
+                    <linearGradient id="ob-score-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#10b981" />
+                      <stop offset="100%" stopColor="#0055ff" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <span
+                  className="absolute inset-0 flex items-center justify-center font-[Syne] text-[16px] font-extrabold"
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981, #0055ff)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  0
+                </span>
+              </div>
+              <div>
+                <p className="text-[14px] font-semibold text-[var(--sl-t1)]">
+                  Seu Life Sync Score
                 </p>
-              </button>
-
-              <button
-                onClick={() => setMode('jornada')}
-                className="p-4 rounded-[14px] border text-left transition-all"
-                style={{
-                  background: mode === 'jornada' ? 'rgba(16,185,129,0.15)' : 'var(--sl-s1)',
-                  borderColor: mode === 'jornada' ? 'rgba(16,185,129,0.5)' : 'var(--sl-border)',
-                }}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-[24px]">🌱</span>
-                  <span className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)]">Modo Jornada</span>
-                </div>
-                <p className="text-[13px] text-[var(--sl-t2)] leading-[1.5]">
-                  Insights, conquistas e motivação. O app celebra com você cada vitória.
+                <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">
+                  Começa do zero e cresce com você
                 </p>
-              </button>
+              </div>
             </div>
 
-            <button
-              onClick={() => setStep(3)}
-              className="w-full flex items-center justify-center h-[52px] rounded-[14px]
-                         text-[15px] font-semibold text-white"
-              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
-            >
-              Continuar →
-            </button>
-            <button
-              onClick={() => setStep(1)}
-              className="w-full text-center text-[13px] text-[var(--sl-t2)] mt-3 py-2"
-            >
-              ← Voltar
-            </button>
-          </>
-        )}
-
-        {/* Step 3: Confirmation */}
-        {step === 3 && (
-          <>
-            <p className="text-[12px] text-[var(--sl-t2)] mb-2">Passo 3 de 3</p>
-            <h1 className="font-[Syne] text-[26px] font-bold text-[var(--sl-t1)] leading-[1.25] mb-2">
-              Tudo pronto{userName ? `, ${userName}` : ''}!
-            </h1>
-            <p className="text-[14px] text-[var(--sl-t2)] leading-[1.6] mb-7">
-              {mode === 'jornada'
-                ? 'Vamos acompanhar sua evolução juntos. Cada passo conta!'
-                : 'Seu painel está configurado. Vamos começar.'}
-            </p>
-
+            {/* Summary card */}
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 mb-5">
               <p className="text-[12px] text-[var(--sl-t2)] mb-3">Seus módulos</p>
               <div className="flex flex-wrap gap-2">
@@ -234,9 +262,25 @@ export function OnboardingMobile({ userName }: OnboardingMobileProps) {
                   )
                 })}
               </div>
-              <p className="text-[12px] text-[var(--sl-t2)] mt-3">
-                Modo: {mode === 'foco' ? '🎯 Foco' : '🌱 Jornada'}
+            </div>
+
+            {/* "O que acontece agora" */}
+            <div className="mb-6">
+              <p className="text-[13px] font-semibold text-[var(--sl-t1)] mb-3">
+                O que acontece agora:
               </p>
+              {[
+                'Dashboard personalizado com seus módulos',
+                'Dados de exemplo para você explorar',
+                'Tudo configurável depois em Ajustes',
+              ].map(item => (
+                <div key={item} className="flex items-start gap-2.5 mb-2">
+                  <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#10b981]/20 shrink-0 mt-0.5">
+                    <Check size={10} strokeWidth={3} color="#10b981" />
+                  </div>
+                  <p className="text-[13px] text-[var(--sl-t2)] leading-[1.5]">{item}</p>
+                </div>
+              ))}
             </div>
 
             <button
@@ -250,7 +294,7 @@ export function OnboardingMobile({ userName }: OnboardingMobileProps) {
               {isLoading ? 'Preparando...' : 'Começar minha jornada 🚀'}
             </button>
             <button
-              onClick={() => setStep(2)}
+              onClick={() => setStep(1)}
               className="w-full text-center text-[13px] text-[var(--sl-t2)] mt-3 py-2"
             >
               ← Voltar

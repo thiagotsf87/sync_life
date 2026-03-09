@@ -4,12 +4,12 @@ import { Fragment, useState } from 'react'
 import { ChevronLeft, ChevronRight, X, Plus, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import { useCategories } from '@/hooks/use-categories'
 import { useCalendario, type CalendarDayData, type CalendarTransaction } from '@/hooks/use-calendario'
 import { SLCard } from '@/components/ui/sl-card'
 import { TransacaoModal } from '@/components/financas/TransacaoModal'
 import { PlanningEventModal } from '@/components/financas/PlanningEventModal'
+import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
 import { usePlanejamento, type EventFormData } from '@/hooks/use-planejamento'
 import { useTransactions, type TransacaoFormData } from '@/hooks/use-transactions'
 
@@ -194,8 +194,6 @@ function CalendarSkeleton() {
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function CalendarioFinanceiroPage() {
-  const mode = useShellStore(s => s.mode)
-  const isJornada = mode === 'jornada'
   const { categories } = useCategories()
 
   const {
@@ -289,18 +287,28 @@ export default function CalendarioFinanceiroPage() {
   const todayData = calendarDays.find(d => d.isToday) ?? null
   const mobileSelectedDay = selectedDay ?? todayData
 
+  // Mobile: compute summary destaques
+  const currentMonthPastDays = calendarDays.filter(d => d.isCurrentMonth && !d.isFuture)
+  let maiorEntradaInfo: { txn: CalendarTransaction; day: CalendarDayData } | null = null
+  let maiorSaidaInfo: { txn: CalendarTransaction; day: CalendarDayData } | null = null
+  for (const d of currentMonthPastDays) {
+    for (const t of d.transactions.filter(tx => !tx.is_future)) {
+      if (t.type === 'income' && (!maiorEntradaInfo || t.amount > maiorEntradaInfo.txn.amount)) {
+        maiorEntradaInfo = { txn: t, day: d }
+      }
+      if (t.type === 'expense' && (!maiorSaidaInfo || t.amount > maiorSaidaInfo.txn.amount)) {
+        maiorSaidaInfo = { txn: t, day: d }
+      }
+    }
+  }
+  const saldoBaixoDay = currentMonthPastDays
+    .reduce<CalendarDayData | null>((min, d) => !min || d.balance < min.balance ? d : min, null)
+  const saldoHoje = todayData?.balance ?? 0
+
   return (
     <>
       {/* ═══════════ MOBILE VIEW ═══════════ */}
-      <div className="lg:hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>Calendário</h1>
-            <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">Visão mensal</p>
-          </div>
-        </div>
-
+      <FinancasMobileShell subtitle="Visão mensal">
         {/* Month nav */}
         <div className="flex items-center justify-between mb-2">
           <button onClick={prevMonth} className="p-2 text-[var(--sl-t2)]"><ChevronLeft size={18} /></button>
@@ -392,8 +400,58 @@ export default function CalendarioFinanceiroPage() {
         {mobileSelectedDay && mobileSelectedDay.transactions.length === 0 && (
           <div className="text-center py-6 text-[12px] text-[var(--sl-t3)]">Nenhuma transação neste dia.</div>
         )}
+
+        {/* Destaques do mês */}
+        {!loading && currentMonthPastDays.length > 0 && (
+          <>
+            <p className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-4 pb-2 mt-3">
+              Destaques do Mês
+            </p>
+            <div className="grid grid-cols-2 gap-2 px-4 pb-1">
+              {[
+                {
+                  label: 'Maior entrada',
+                  value: maiorEntradaInfo ? fmtR(maiorEntradaInfo.txn.amount) : '—',
+                  sub: maiorEntradaInfo
+                    ? `Dia ${maiorEntradaInfo.day.day} · ${maiorEntradaInfo.txn.description.slice(0, 14)}`
+                    : 'Sem receitas',
+                  color: '#10b981',
+                },
+                {
+                  label: 'Maior saída/dia',
+                  value: maiorSaidaInfo ? fmtR(maiorSaidaInfo.txn.amount) : '—',
+                  sub: maiorSaidaInfo
+                    ? `Dia ${maiorSaidaInfo.day.day} · ${maiorSaidaInfo.txn.description.slice(0, 14)}`
+                    : 'Sem despesas',
+                  color: '#f43f5e',
+                },
+                {
+                  label: 'Saldo mais baixo',
+                  value: saldoBaixoDay ? fmtRShort(saldoBaixoDay.balance) : '—',
+                  sub: saldoBaixoDay ? `Dia ${saldoBaixoDay.day}` : '—',
+                  color: saldoBaixoDay && saldoBaixoDay.balance < 0 ? '#f43f5e' : '#f59e0b',
+                },
+                {
+                  label: 'Saldo hoje',
+                  value: fmtR(saldoHoje),
+                  sub: todayData
+                    ? `${todayData.day} ${MONTH_NAMES[currentDate.getMonth()].slice(0, 3)}`
+                    : '—',
+                  color: '#0055ff',
+                },
+              ].map(item => (
+                <div key={item.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] px-3 py-2.5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-1">{item.label}</p>
+                  <p className="font-[DM_Mono] text-[14px] font-medium leading-none" style={{ color: item.color }}>{item.value}</p>
+                  <p className="text-[10px] text-[var(--sl-t3)] mt-1 truncate">{item.sub}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
         <div className="h-5" />
-      </div>
+      </FinancasMobileShell>
 
       {/* ═══════════ DESKTOP VIEW ═══════════ */}
       <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
@@ -407,7 +465,7 @@ export default function CalendarioFinanceiroPage() {
             </div>
             <h1 className={cn(
               'font-[Syne] font-extrabold text-[22px] tracking-tight',
-              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+              'text-sl-grad'
             )}>
               📅 Calendário Financeiro
             </h1>
@@ -442,7 +500,7 @@ export default function CalendarioFinanceiroPage() {
       </div>
 
       {/* ② Jornada Projection Card */}
-      <div className="jornada-only flex items-center gap-3 p-[11px] px-[14px] rounded-[11px] border border-[rgba(16,185,129,0.2)] bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] mb-4">
+      <div className="flex items-center gap-3 p-[11px] px-[14px] rounded-[11px] border border-[rgba(16,185,129,0.2)] bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] mb-4">
         <span className="text-[22px] shrink-0">📊</span>
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold text-[var(--sl-t1)] mb-0.5">Projeção do mês</p>

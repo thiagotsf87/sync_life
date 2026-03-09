@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import { useStudySessions } from '@/hooks/use-mente'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { StudySessionCard } from '@/components/mente/StudySessionCard'
@@ -10,9 +9,6 @@ import { useRouter } from 'next/navigation'
 
 export default function SessoesPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
-
   const { sessions, loading, error } = useStudySessions(100)
   const [trackFilter, setTrackFilter] = useState<string>('all')
 
@@ -43,10 +39,7 @@ export default function SessoesPage() {
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
           📊 Histórico de Sessões
         </h1>
         <div className="flex-1" />

@@ -1,21 +1,40 @@
 'use client'
 
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus } from 'lucide-react'
+import { Plus, Droplets } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
-import { useCorpoDashboard, calcIMC, IMC_LABEL } from '@/hooks/use-corpo'
+import { toast } from 'sonner'
+import { useCorpoDashboard, useWaterIntake, useUpdateWater, calcIMC, IMC_LABEL } from '@/hooks/use-corpo'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { ActivityCard } from '@/components/corpo/ActivityCard'
 import { AppointmentCard } from '@/components/corpo/AppointmentCard'
+import { CorpoMobile } from '@/components/corpo/CorpoMobile'
 
 export default function CorpoPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { profile, latestWeight, nextAppointment, weekActivities, loading, error } = useCorpoDashboard()
+
+  const todayStr = new Date().toISOString().split('T')[0]
+  const { water, reload: reloadWater } = useWaterIntake(todayStr)
+  const updateWater = useUpdateWater()
+
+  const waterIntake = water?.intake_ml ?? 0
+  const waterGoal = water?.goal_ml ?? 2500
+  const waterPct = waterGoal > 0 ? Math.min(100, Math.round((waterIntake / waterGoal) * 100)) : 0
+
+  const handleAddWater = useCallback(async (ml: number) => {
+    if (ml <= 0) return
+    try {
+      await updateWater(todayStr, waterIntake + ml, waterGoal)
+      await reloadWater()
+      toast.success(`+${ml}ml registrado!`)
+    } catch {
+      toast.error('Erro ao registrar hidratação')
+    }
+  }, [waterIntake, waterGoal, todayStr, updateWater, reloadWater])
 
   const imc = latestWeight && profile?.height_cm
     ? calcIMC(latestWeight.weight, profile.height_cm)
@@ -33,14 +52,16 @@ export default function CorpoPage() {
     : null
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+      {/* Mobile */}
+      <CorpoMobile />
+
+      {/* Desktop */}
+    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
           🏃 Corpo
         </h1>
         <div className="flex-1" />
@@ -164,6 +185,58 @@ export default function CorpoPage() {
         </div>
       )}
 
+      {/* ⑤ Hydration Tracker */}
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mt-4 sl-fade-up">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Droplets size={16} className="text-[#06b6d4]" />
+            <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">Hidratação</h2>
+          </div>
+          <span className="text-[11px] text-[var(--sl-t3)]">
+            Meta: {(waterGoal / 1000).toFixed(1)}L
+          </span>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {/* Progress bar */}
+          <div className="flex-1">
+            <div className="h-[8px] bg-[var(--sl-s3)] rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-[width] duration-500"
+                style={{
+                  width: `${waterPct}%`,
+                  background: waterPct >= 100 ? '#10b981' : '#06b6d4',
+                }}
+              />
+            </div>
+            <div className="flex justify-between mt-1.5">
+              <span className="font-[DM_Mono] text-[13px] font-semibold" style={{ color: waterPct >= 100 ? '#10b981' : '#06b6d4' }}>
+                {(waterIntake / 1000).toFixed(1)}L
+              </span>
+              <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t3)]">
+                {waterPct}%
+              </span>
+            </div>
+          </div>
+
+          {/* Quick-add buttons */}
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={() => handleAddWater(250)}
+              className="px-3 py-2 rounded-[10px] text-[12px] font-semibold border border-[#06b6d4]/30 text-[#06b6d4] hover:bg-[#06b6d4]/10 transition-colors"
+            >
+              +250ml
+            </button>
+            <button
+              onClick={() => handleAddWater(500)}
+              className="px-3 py-2 rounded-[10px] text-[12px] font-semibold bg-[#06b6d4] text-white hover:opacity-90 transition-opacity"
+            >
+              +500ml
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Quick actions */}
       <div className="grid grid-cols-4 gap-3 mt-4 max-sm:grid-cols-2">
         {[
@@ -181,5 +254,6 @@ export default function CorpoPage() {
         ))}
       </div>
     </div>
+    </>
   )
 }

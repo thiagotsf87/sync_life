@@ -14,7 +14,6 @@ import { OnboardingMobile } from '@/components/onboarding/OnboardingMobile'
 interface OnboardingState {
   nome: string
   momentos: string[]
-  modo: 'foco' | 'jornada'
   areas: string[]
 }
 
@@ -37,9 +36,7 @@ const AREAS = [
   { value: 'estudos', icon: '📚', title: 'Estudos', desc: 'Aprendizado contínuo', color: '#0055ff', bg: 'rgba(0,85,255,0.05)', glow: 'rgba(0,85,255,0.1)' },
 ]
 
-const PRO_MODULES = ['saude', 'carreira']
-
-const STEPS = ['Olá!', 'Momento', 'Estilo', 'Áreas', 'Pronto']
+const STEPS = ['Olá!', 'Momento', 'Áreas', 'Pronto']
 const ONBOARDING_STEPS = STEPS.map((label, i) => ({ id: i + 1, label }))
 
 const MODULE_LABELS: Record<string, string> = {
@@ -86,9 +83,8 @@ export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [state, setState] = useState<OnboardingState>({
-    nome: '', momentos: [], modo: 'foco', areas: [],
+    nome: '', momentos: [], areas: [],
   })
-  const [isJornada, setIsJornada] = useState(false)
   const [maxHint, setMaxHint] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
@@ -115,19 +111,14 @@ export default function OnboardingPage() {
     load()
   }, [router])
 
-  // Apply Jornada body class
+  // Show confetti when reaching final step
   useEffect(() => {
-    setIsJornada(state.modo === 'jornada')
-  }, [state.modo])
-
-  // Show confetti when reaching step 5 in Jornada
-  useEffect(() => {
-    if (step === 5 && state.modo === 'jornada') {
+    if (step === 4) {
       setShowConfetti(true)
       const t = setTimeout(() => setShowConfetti(false), 3500)
       return () => clearTimeout(t)
     }
-  }, [step, state.modo])
+  }, [step])
 
   const toggleMomento = useCallback((value: string) => {
     setState(s => {
@@ -154,7 +145,7 @@ export default function OnboardingPage() {
 
   const handleSkip = () => {
     if (confirm('Pular configuração? Você pode refazer isso nas configurações a qualquer momento.')) {
-      setStep(5)
+      setStep(4)
     }
   }
 
@@ -167,14 +158,12 @@ export default function OnboardingPage() {
 
       const areas = state.areas.length > 0 ? state.areas : ['financas']
 
-      // Passo 1 — campos obrigatórios (existem em qualquer versão do schema)
-      // Upsert garante que a linha existe mesmo sem o trigger handle_new_user
       const { error } = await (supabase as any)
         .from('profiles')
         .upsert({
           id: user.id,
           full_name: state.nome || null,
-          mode: state.modo === 'jornada' ? 'jornada' : 'foco',
+          mode: 'jornada',
           onboarding_completed: true,
         })
 
@@ -183,7 +172,6 @@ export default function OnboardingPage() {
         return
       }
 
-      // Passo 2 — campos da migration 001_mvp_v2.sql (non-blocking se não existirem)
       await (supabase as any)
         .from('profiles')
         .update({
@@ -202,8 +190,6 @@ export default function OnboardingPage() {
     }
   }
 
-  const hasPro = state.areas.some(a => PRO_MODULES.includes(a))
-
   const momentoHint = () => {
     if (maxHint) return <span className="ob-select-hint max">Máximo de 3 seleções atingido.</span>
     const n = state.momentos.length
@@ -215,7 +201,7 @@ export default function OnboardingPage() {
   return (
     <>
     <OnboardingMobile userName={state.nome || undefined} />
-    <div className={`hidden lg:block onboarding-page${isJornada ? ' mode-jornada' : ''}`}>
+    <div className="hidden lg:block onboarding-page">
       {/* Background */}
       <div className="ob-orbs" aria-hidden>
         <div className="ob-orb ob-orb-1" />
@@ -229,7 +215,7 @@ export default function OnboardingPage() {
         <Link href="/" className="ob-logo">
           <SyncLifeBrand size="md" />
         </Link>
-        {step < 5 && (
+        {step < 4 && (
           <button className="ob-skip" onClick={handleSkip}>
             Pular configuração <ArrowRight size={14} />
           </button>
@@ -244,7 +230,7 @@ export default function OnboardingPage() {
         {/* ── Step 1: Name ── */}
         {step === 1 && (
           <>
-            <p className="ob-eyebrow">Passo 1 de 5</p>
+            <p className="ob-eyebrow">Passo 1 de 4</p>
             <h2 className="ob-title">Olá! Qual é o seu nome?</h2>
             <p className="ob-sub">Vamos personalizar o SyncLife do seu jeito.</p>
             <input
@@ -268,7 +254,7 @@ export default function OnboardingPage() {
         {/* ── Step 2: Momento ── */}
         {step === 2 && (
           <>
-            <p className="ob-eyebrow">Passo 2 de 5</p>
+            <p className="ob-eyebrow">Passo 2 de 4</p>
             <h2 className="ob-title">O que te trouxe até aqui?</h2>
             <p className="ob-sub">Pode escolher até 3 opções. Isso nos ajuda a personalizar sua experiência.</p>
             <div className="ob-momento-grid">
@@ -300,62 +286,10 @@ export default function OnboardingPage() {
           </>
         )}
 
-        {/* ── Step 3: Mode ── */}
+        {/* ── Step 3: Areas ── */}
         {step === 3 && (
           <>
-            <p className="ob-eyebrow">Passo 3 de 5</p>
-            <h2 className="ob-title">Como você prefere ver as informações?</h2>
-            <p className="ob-sub">Dois estilos de interface, uma mesma plataforma. Pode mudar a qualquer hora.</p>
-            <div className="ob-mode-grid">
-              {/* Foco */}
-              <button
-                className={`ob-mode-card foco${state.modo === 'foco' ? ' selected' : ''}`}
-                onClick={() => setState(s => ({ ...s, modo: 'foco' }))}
-              >
-                {state.modo === 'foco' && <span className="ob-mode-check">✓</span>}
-                <span className="ob-mode-icon">🎯</span>
-                <div className="ob-mode-badge">MODO FOCO</div>
-                <div className="ob-mode-title">Direto ao ponto</div>
-                <div className="ob-mode-desc">Interface objetiva, dados densos, sem distrações. Você quer números, não frases.</div>
-                <div className="ob-mode-features">
-                  <span className="ob-mode-feature">· Métricas em destaque</span>
-                  <span className="ob-mode-feature">· Sem animações extras</span>
-                  <span className="ob-mode-feature">· Sidebar compacta</span>
-                </div>
-              </button>
-
-              {/* Jornada */}
-              <button
-                className={`ob-mode-card jornada${state.modo === 'jornada' ? ' selected' : ''}`}
-                onClick={() => setState(s => ({ ...s, modo: 'jornada' }))}
-              >
-                {state.modo === 'jornada' && <span className="ob-mode-check">✓</span>}
-                <span className="ob-mode-icon">🌱</span>
-                <div className="ob-mode-badge">MODO JORNADA</div>
-                <div className="ob-mode-title">Acompanhe sua evolução</div>
-                <div className="ob-mode-desc">Insights, conquistas e motivação. O app celebra com você cada pequena vitória.</div>
-                <div className="ob-mode-features">
-                  <span className="ob-mode-feature">· Life Sync Score</span>
-                  <span className="ob-mode-feature">· Conquistas &amp; badges</span>
-                  <span className="ob-mode-feature">· Insights com IA</span>
-                </div>
-              </button>
-            </div>
-            <div className="ob-nav">
-              <button className="ob-btn-back" onClick={() => setStep(2)}>
-                <ArrowLeft size={14} /> Voltar
-              </button>
-              <button className="ob-btn-next" onClick={() => setStep(4)}>
-                Continuar <ArrowRight size={16} />
-              </button>
-            </div>
-          </>
-        )}
-
-        {/* ── Step 4: Areas ── */}
-        {step === 4 && (
-          <>
-            <p className="ob-eyebrow">Passo 4 de 5</p>
+            <p className="ob-eyebrow">Passo 3 de 4</p>
             <h2 className="ob-title">Quais áreas da sua vida quer gerenciar?</h2>
             <p className="ob-sub">Ativamos só o que você precisa agora. Pode adicionar ou remover depois.</p>
             <div className="ob-area-grid">
@@ -384,30 +318,28 @@ export default function OnboardingPage() {
             </div>
             <p className="ob-hint">Selecione pelo menos uma área.</p>
             <div className="ob-nav">
-              <button className="ob-btn-back" onClick={() => setStep(3)}>
+              <button className="ob-btn-back" onClick={() => setStep(2)}>
                 <ArrowLeft size={14} /> Voltar
               </button>
-              <button className="ob-btn-next" onClick={() => setStep(5)}>
+              <button className="ob-btn-next" onClick={() => setStep(4)}>
                 Continuar <ArrowRight size={16} />
               </button>
             </div>
           </>
         )}
 
-        {/* ── Step 5: Summary ── */}
-        {step === 5 && (
+        {/* ── Step 4: Summary ── */}
+        {step === 4 && (
           <>
             <div className="ob-summary-hero">
-              <span className="ob-summary-emoji">{state.modo === 'jornada' ? '🎉' : '✅'}</span>
+              <span className="ob-summary-emoji">🎉</span>
               <h2 className="ob-summary-title">
                 Pronto{state.nome ? ', ' : ''}
                 {state.nome && <span className="grad-name">{state.nome}</span>}
                 {!state.nome && ', você'}!
               </h2>
               <p className="ob-summary-sub">
-                {state.modo === 'jornada'
-                  ? 'Vamos acompanhar sua evolução juntos. Cada passo conta!'
-                  : 'Tudo configurado. Seu painel está pronto.'}
+                Vamos acompanhar sua evolução juntos. Cada passo conta!
               </p>
             </div>
 
@@ -423,15 +355,6 @@ export default function OnboardingPage() {
                   </div>
                 </div>
               )}
-              <div className="ob-summary-row">
-                <span className="ob-summary-row-icon">🎯</span>
-                <div className="ob-summary-row-content">
-                  <div className="ob-summary-row-label">Modo de interface</div>
-                  <div className="ob-summary-row-value">
-                    {state.modo === 'foco' ? '🎯 Modo Foco — Interface objetiva' : '🌱 Modo Jornada — Acompanhe sua evolução'}
-                  </div>
-                </div>
-              </div>
               {(state.areas.length > 0) && (
                 <div className="ob-summary-row">
                   <span className="ob-summary-row-icon">🗂️</span>
@@ -456,18 +379,12 @@ export default function OnboardingPage() {
               )}
             </div>
 
-            {hasPro && (
-              <div className="ob-pro-warning">
-                ⭐ Saúde e Carreira fazem parte do plano PRO. Você pode usar gratuitamente por 14 dias e decidir depois.
-              </div>
-            )}
-
             <p className="ob-footer-note">
               Tudo pode ser ajustado nas configurações a qualquer momento.
             </p>
 
             <div className="ob-nav">
-              <button className="ob-btn-back" onClick={() => setStep(4)}>
+              <button className="ob-btn-back" onClick={() => setStep(3)}>
                 <ArrowLeft size={14} /> Voltar
               </button>
               <button

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Futuro v2 · Parte 2 (Wizard + Simulador)</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;--border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);--t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;--fut:#8b5cf6;--fut-g:rgba(139,92,246,0.15);--fut-grad:linear-gradient(135deg,#8b5cf6,#0055ff);--J:#8b5cf6;--J-g:rgba(139,92,246,0.15);--J-grad:linear-gradient(135deg,#8b5cf6,#ec4899);--green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--fin:#10b981;--fin-g:rgba(16,185,129,0.15);--pat:#3b82f6;--pat-g:rgba(59,130,246,0.15);--car:#f43f5e;--car-g:rgba(244,63,94,0.15);--mnt:#eab308;--mnt-g:rgba(234,179,8,0.15);--exp:#06b6d4;--exp-g:rgba(6,182,212,0.15);--crp:#f97316;--crp-g:rgba(249,115,22,0.15);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:#0a0e1a;color:var(--t1);padding:40px 20px;}
+h1.pt{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;text-align:center;margin-bottom:8px;background:var(--fut-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+p.ps{text-align:center;color:var(--t2);font-size:14px;margin-bottom:36px;}
+.rl{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1);text-align:center;margin:48px 0 20px;}.rl span{color:var(--t3);font-weight:400;font-size:13px;margin-left:8px;}
+.pr{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;}
+.phone{width:375px;background:var(--bg);border-radius:48px;border:2px solid rgba(255,255,255,0.1);overflow:hidden;padding-bottom:20px;flex-shrink:0;}
+.phone.j{border-color:rgba(139,92,246,0.25);}
+.di{width:120px;height:34px;background:#000;border-radius:20px;margin:12px auto 0;}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:8px 28px 0;font-family:'DM Mono',monospace;font-size:12px;color:var(--t2);}
+.ct{padding:16px 20px;}
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.bg{background:rgba(16,185,129,0.12);color:#10b981;}.by{background:rgba(245,158,11,0.12);color:#f59e0b;}.bp{background:rgba(139,92,246,0.12);color:#c4b5fd;}
+.sec{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1);margin-bottom:10px;}
+.bk{display:flex;align-items:center;gap:5px;padding:10px 20px;font-size:13px;font-weight:600;}.f .bk{color:var(--fut);}.j .bk{color:#c4b5fd;}
+.bk svg{width:15px;height:15px;}
+.pb{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}.pf{height:100%;border-radius:3px;}
+/* Wizard */
+.wz-steps{display:flex;gap:6px;padding:14px 20px 0;}
+.wz-s{flex:1;height:3px;border-radius:2px;background:var(--s3);}
+.wz-body{padding:20px 20px 16px;}
+.wz-sl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.wz-t{font-family:'Syne',sans-serif;font-size:21px;font-weight:800;color:var(--t1);line-height:1.25;margin-bottom:8px;}
+.wz-d{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:18px;}.wz-d strong{color:var(--t1);}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.tc{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:7px;}
+.tc.sf{border-color:rgba(139,92,246,0.5);background:rgba(139,92,246,0.08);}
+.tic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.tnm{font-size:12px;font-weight:600;color:var(--t1);}.tds{font-size:10px;color:var(--t2);}
+.tmtg{font-size:9px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.5px;}
+.tck{width:18px;height:18px;border-radius:50%;border:2px solid var(--border-h);display:flex;align-items:center;justify-content:center;align-self:flex-end;margin-top:auto;}
+.tc.sf .tck{background:var(--fut);border-color:var(--fut);}
+.xp-hint{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:8px 13px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:20px;font-size:12px;color:#c4b5fd;font-weight:600;}.xp-hint strong{color:var(--t1);}
+/* Meta Builder (NEW - Step 3) */
+.meta-builder{background:var(--s1);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+.meta-b-header{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);}
+.meta-b-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.meta-b-info{flex:1;}
+.meta-b-name{font-size:12px;font-weight:600;color:var(--t1);}
+.meta-b-module{font-size:10px;color:var(--t3);margin-top:1px;}
+.meta-b-value{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;flex-shrink:0;}
+.meta-b-detail{padding:10px 14px;background:var(--s2);}
+.meta-b-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:3px 0;}
+.meta-b-label{color:var(--t3);}.meta-b-val{color:var(--t2);font-family:'DM Mono',monospace;font-size:11px;}
+.meta-b-auto{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--fut);margin-top:4px;padding-top:6px;border-top:1px solid var(--border);}
+.j .meta-b-auto{color:#c4b5fd;}
+.meta-b-remove{font-size:10px;color:var(--red);font-weight:600;cursor:pointer;}
+.add-meta-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;border:1px dashed var(--border-h);background:transparent;color:var(--t2);font-size:12px;font-weight:500;margin-bottom:14px;width:100%;}
+.f .add-meta-btn:hover{border-color:var(--fut);color:var(--fut);}.j .add-meta-btn:hover{border-color:var(--J);color:#c4b5fd;}
+/* Weight indicator */
+.weight-dots{display:flex;gap:2px;margin-top:4px;}
+.w-dot{width:6px;height:6px;border-radius:50%;background:var(--s3);}
+.w-dot.on{background:var(--fut);}.j .w-dot.on{background:var(--J);}
+/* Slider */
+.slw{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:13px 15px;margin-bottom:13px;}
+.slh{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;}
+.sll{font-size:12px;color:var(--t2);}.slv{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;}
+.slt{height:4px;background:var(--s3);border-radius:2px;position:relative;margin-bottom:8px;}
+.slf{height:100%;border-radius:2px;width:68%;}
+.f .slf{background:var(--fut);}.j .slf{background:var(--J);}
+.sth{width:18px;height:18px;border-radius:50%;position:absolute;top:-7px;left:68%;transform:translateX(-50%);}
+.f .sth{background:var(--fut);}.j .sth{background:var(--J);box-shadow:0 2px 8px rgba(139,92,246,0.5);}
+/* Projection */
+.pjc{border-radius:10px;padding:13px;margin-bottom:12px;}
+.f .pjc{background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);}
+.j .pjc{background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);}
+.pjt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px;}.f .pjt{color:var(--fut);}.j .pjt{color:var(--J);}
+.pjr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}.pjr:last-child{border-bottom:none;}
+.pjl{font-size:12px;color:var(--t2);}.pjv{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--t1);}
+/* Scenario */
+.sc{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:13px 15px;margin-bottom:10px;}
+.sc.sel{border-color:rgba(139,92,246,0.45);background:rgba(139,92,246,0.06);}
+.sch{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.sci{width:33px;height:33px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.scn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1);}
+.sct{font-size:10px;font-weight:600;margin-top:1px;}
+.sck{width:22px;height:22px;border-radius:50%;border:2px solid var(--border-h);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto;}
+.sc.sel .sck{background:var(--fut);border-color:var(--fut);}
+.scd{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:9px;}.scd strong{color:var(--t1);}
+.scs{display:flex;gap:7px;}
+.sst{flex:1;background:var(--s2);border-radius:8px;padding:7px 8px;}
+.ssl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.ssv{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--t1);}
+.scls{margin-top:7px;display:flex;align-items:center;gap:5px;font-size:11px;color:#c4b5fd;font-weight:600;}
+/* Sim context */
+.sim-ctx{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:16px;padding:12px 14px;margin-bottom:14px;}
+.sim-lb{font-size:11px;font-weight:700;color:var(--yellow);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.sim-tt{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:3px;}
+.sim-tx{font-size:12px;color:var(--t2);}.sim-tx strong{color:var(--t1);}
+/* AI Card */
+.ai{border-radius:14px;padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(236,72,153,0.06));border:1px solid rgba(139,92,246,0.25);}
+.ai-i{width:36px;height:36px;border-radius:50%;background:rgba(139,92,246,0.2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.ai-lb{font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.ai-t{font-size:12px;color:var(--t2);line-height:1.5;}.ai-t strong{color:var(--t1);}
+/* CTA */
+.cta{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:14px;font-size:13px;font-weight:600;border:none;text-align:center;width:100%;}
+.cta-p{color:#fff;}.f .cta-p{background:var(--fut-grad);}.j .cta-p{background:var(--J-grad);}
+.ctas{display:flex;gap:10px;margin-top:8px;}.ctas .cta{flex:1;}
+.cta-s{background:var(--s2);border:1px solid var(--border-h);color:var(--t1);}
+/* Bottom Bar */
+.bb{height:68px;background:var(--s1);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 8px;margin-top:8px;}
+.bt{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--t3);}.bt svg{width:22px;height:22px;}.bt.ac{color:var(--fut);}.j .bt.ac{color:var(--J);}
+.fab{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-20px;border:3px solid var(--bg);}.f .fab{background:var(--fut-grad);}.j .fab{background:var(--J-grad);}.fab svg{width:22px;height:22px;color:#fff;}
+.plb{text-align:center;font-size:11px;font-weight:600;color:var(--t3);margin-top:12px;font-family:'DM Mono',monospace;}
+</style>
+</head>
+<body>
+<h1 class="pt">Futuro v2 — Parte 2</h1>
+<p class="ps">Wizard Step 1 · Wizard Step 3 (METAS POR MÓDULO) · Simulador IA</p>
+
+<!-- ══════════ TELA 4: WIZARD STEP 1 ══════════ -->
+<div class="rl">4. Wizard — Step 1 <span>escolher tipo de objetivo</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div>
+<div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="wz-steps"><div class="wz-s" style="background:var(--fut);"></div><div class="wz-s"></div><div class="wz-s"></div><div class="wz-s"></div></div>
+<div class="wz-body">
+  <div class="wz-sl" style="color:var(--fut);">Passo 1 de 4</div>
+  <div class="wz-t">Qual é o seu objetivo?</div>
+  <div class="wz-d">Cada objetivo agrupa metas de diferentes áreas da sua vida em um único lugar.</div>
+  <div class="tg">
+    <div class="tc sf"><div class="tic" style="background:var(--fut-g);">🏠</div><div><div class="tnm">Aquisição</div><div class="tds">Casa, carro, moto</div></div><div class="tck"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+    <div class="tc"><div class="tic" style="background:var(--exp-g);">✈️</div><div><div class="tnm">Experiência</div><div class="tds">Viagem, evento</div></div><div class="tck"></div></div>
+    <div class="tc"><div class="tic" style="background:var(--mnt-g);">🎓</div><div><div class="tnm">Desenvolvimento</div><div class="tds">MBA, certificação</div></div><div class="tck"></div></div>
+    <div class="tc"><div class="tic" style="background:rgba(16,185,129,0.12);">🛡️</div><div><div class="tnm">Segurança</div><div class="tds">Reserva, fundo</div></div><div class="tck"></div></div>
+    <div class="tc"><div class="tic" style="background:var(--crp-g);">🚀</div><div><div class="tnm">Liberdade</div><div class="tds">FIRE, independência</div></div><div class="tck"></div></div>
+    <div class="tc"><div class="tic" style="background:rgba(110,144,184,0.1);">✨</div><div><div class="tnm">Outro</div><div class="tds">Objetivo livre</div></div><div class="tck"></div></div>
+  </div>
+  <div class="cta cta-p">Continuar →</div>
+</div></div><div class="plb">Wizard Step 1 — Foco</div></div>
+
+<!-- JORNADA -->
+<div>
+<div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="wz-steps"><div class="wz-s" style="background:var(--J);"></div><div class="wz-s"></div><div class="wz-s"></div><div class="wz-s"></div></div>
+<div class="wz-body">
+  <div class="wz-sl" style="color:var(--J);">Passo 1 de 4</div>
+  <div class="wz-t">Qual é o seu sonho?</div>
+  <div class="wz-d">Cada objetivo vira uma <strong>missão</strong> ativa no seu Futuro. Qual será a próxima?</div>
+  <div class="xp-hint"><span style="font-size:14px;">⚡</span> Criar esta missão vale <strong>+50 XP</strong> imediatos</div>
+  <div class="tg">
+    <div class="tc sf"><div class="tic" style="background:var(--fut-g);">🏠</div><div><div class="tnm">Aquisição</div><div class="tds">Casa, carro</div></div><div class="tmtg">💫 Conquista</div><div class="tck"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+    <div class="tc"><div class="tic" style="background:var(--exp-g);">✈️</div><div><div class="tnm">Experiência</div><div class="tds">Viagem</div></div><div class="tmtg">🌍 Vivência</div><div class="tck"></div></div>
+    <div class="tc"><div class="tic" style="background:var(--mnt-g);">🎓</div><div><div class="tnm">Desenvolvimento</div><div class="tds">MBA</div></div><div class="tmtg">🧠 Evolução</div><div class="tck"></div></div>
+    <div class="tc"><div class="tic" style="background:rgba(16,185,129,0.12);">🛡️</div><div><div class="tnm">Segurança</div><div class="tds">Reserva</div></div><div class="tmtg">🏰 Proteção</div><div class="tck"></div></div>
+    <div class="tc"><div class="tic" style="background:var(--crp-g);">🚀</div><div><div class="tnm">Liberdade</div><div class="tds">FIRE</div></div><div class="tmtg">🔑 Missão máxima</div><div class="tck"></div></div>
+    <div class="tc"><div class="tic" style="background:rgba(110,144,184,0.1);">✨</div><div><div class="tnm">Outro</div><div class="tds">Livre</div></div><div class="tmtg">⚡ Missão livre</div><div class="tck"></div></div>
+  </div>
+  <div class="cta cta-p">Continuar → <span style="font-size:11px;opacity:0.8;">+50 XP</span></div>
+</div></div><div class="plb">Wizard Step 1 — Jornada</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TELA 5: WIZARD STEP 3 — ADICIONAR METAS POR MÓDULO
+     ★ TELA MAIS CRÍTICA — não existia antes ★
+     ═══════════════════════════════════════════════════ -->
+<div class="rl">5. Wizard — Step 3 ★ <span>CRÍTICO: adicionar metas distribuídas por módulo</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div>
+<div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="wz-steps"><div class="wz-s" style="background:rgba(139,92,246,0.4);"></div><div class="wz-s" style="background:rgba(139,92,246,0.4);"></div><div class="wz-s" style="background:var(--fut);"></div><div class="wz-s"></div></div>
+<div class="wz-body">
+  <div class="wz-sl" style="color:var(--fut);">Passo 3 de 4</div>
+  <div class="wz-t">Defina os caminhos</div>
+  <div class="wz-d">Quais ações concretas levam a esse objetivo? Cada meta vive no módulo certo e o progresso é automático.</div>
+
+  <!-- Meta 1: Finanças -->
+  <div class="meta-builder">
+    <div class="meta-b-header">
+      <div class="meta-b-icon" style="background:var(--fin-g);">💰</div>
+      <div class="meta-b-info"><div class="meta-b-name">Juntar R$ 80.000</div><div class="meta-b-module">Finanças · Monetário</div></div>
+      <div class="meta-b-value" style="color:var(--fin);">R$ 80.000</div>
+    </div>
+    <div class="meta-b-detail">
+      <div class="meta-b-row"><span class="meta-b-label">Valor inicial</span><span class="meta-b-val">R$ 34.800</span></div>
+      <div class="meta-b-row"><span class="meta-b-label">Peso</span><span class="meta-b-val">Alto (2.0)</span></div>
+      <div class="meta-b-auto">✨ Cria envelope "Apartamento" no Finanças automaticamente</div>
+    </div>
+  </div>
+
+  <!-- Meta 2: Patrimônio -->
+  <div class="meta-builder">
+    <div class="meta-b-header">
+      <div class="meta-b-icon" style="background:var(--pat-g);">📈</div>
+      <div class="meta-b-info"><div class="meta-b-name">Investir reserva em CDB</div><div class="meta-b-module">Patrimônio · Monetário</div></div>
+      <div class="meta-b-value" style="color:var(--pat);">R$ 80.000</div>
+    </div>
+    <div class="meta-b-detail">
+      <div class="meta-b-row"><span class="meta-b-label">Tipo</span><span class="meta-b-val">Acompanhar rendimentos</span></div>
+      <div class="meta-b-row"><span class="meta-b-label">Peso</span><span class="meta-b-val">Normal (1.0)</span></div>
+      <div class="meta-b-auto">✨ Vincula ao tracking de carteira no Patrimônio</div>
+    </div>
+  </div>
+
+  <!-- Meta 3: Carreira -->
+  <div class="meta-builder">
+    <div class="meta-b-header">
+      <div class="meta-b-icon" style="background:var(--car-g);">💼</div>
+      <div class="meta-b-info"><div class="meta-b-name">Aumento de 20%</div><div class="meta-b-module">Carreira · Percentual</div></div>
+      <div class="meta-b-value" style="color:var(--car);">20%</div>
+    </div>
+    <div class="meta-b-detail">
+      <div class="meta-b-row"><span class="meta-b-label">Atual</span><span class="meta-b-val">0%</span></div>
+      <div class="meta-b-row"><span class="meta-b-label">Peso</span><span class="meta-b-val">Normal (1.0)</span></div>
+      <div class="meta-b-auto">✨ Cria step "Negociar aumento" no roadmap de Carreira</div>
+    </div>
+  </div>
+
+  <!-- Meta 4: Tempo -->
+  <div class="meta-builder">
+    <div class="meta-b-header">
+      <div class="meta-b-icon" style="background:rgba(110,144,184,0.1);">⏳</div>
+      <div class="meta-b-info"><div class="meta-b-name">Pesquisar bairros</div><div class="meta-b-module">Tempo · Tarefa (sim/não)</div></div>
+      <div class="meta-b-value" style="color:var(--t3);">Tarefa</div>
+    </div>
+    <div class="meta-b-detail">
+      <div class="meta-b-row"><span class="meta-b-label">Deadline</span><span class="meta-b-val">Jun 2026</span></div>
+      <div class="meta-b-row"><span class="meta-b-label">Peso</span><span class="meta-b-val">Baixo (0.5)</span></div>
+      <div class="meta-b-auto">✨ Cria tarefa com deadline no módulo Tempo</div>
+    </div>
+  </div>
+
+  <!-- Adicionar mais -->
+  <div class="add-meta-btn">+ Adicionar outra meta</div>
+
+  <!-- Resumo -->
+  <div style="background:var(--s2);border-radius:10px;padding:10px 12px;margin-bottom:14px;">
+    <div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Resumo: 4 metas em 4 módulos</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <span style="font-size:10px;padding:3px 8px;border-radius:8px;background:var(--fin-g);color:var(--fin);">💰 Finanças</span>
+      <span style="font-size:10px;padding:3px 8px;border-radius:8px;background:var(--pat-g);color:var(--pat);">📈 Patrimônio</span>
+      <span style="font-size:10px;padding:3px 8px;border-radius:8px;background:var(--car-g);color:var(--car);">💼 Carreira</span>
+      <span style="font-size:10px;padding:3px 8px;border-radius:8px;background:rgba(110,144,184,0.1);color:var(--t3);">⏳ Tempo</span>
+    </div>
+  </div>
+
+  <div class="cta cta-p">Continuar →</div>
+</div></div><div class="plb">Wizard Step 3 — Foco ★</div></div>
+
+<!-- JORNADA -->
+<div>
+<div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="wz-steps"><div class="wz-s" style="background:rgba(139,92,246,0.4);"></div><div class="wz-s" style="background:rgba(139,92,246,0.4);"></div><div class="wz-s" style="background:var(--J);"></div><div class="wz-s"></div></div>
+<div class="wz-body">
+  <div class="wz-sl" style="color:var(--J);">Passo 3 de 4</div>
+  <div class="wz-t">Recrute seus aliados</div>
+  <div class="wz-d">Cada meta vive num módulo aliado. Quando você avança lá, a missão avança aqui. <strong>Tudo automático.</strong></div>
+
+  <!-- Meta 1 -->
+  <div class="meta-builder" style="border-color:rgba(139,92,246,0.15);">
+    <div class="meta-b-header">
+      <div class="meta-b-icon" style="background:var(--fin-g);">💰</div>
+      <div class="meta-b-info"><div class="meta-b-name">Juntar R$ 80.000</div><div class="meta-b-module">Finanças · Monetário · Peso alto</div></div>
+      <div class="meta-b-value" style="color:var(--fin);">R$ 80k</div>
+    </div>
+    <div class="meta-b-detail">
+      <div class="meta-b-auto">✨ Cria envelope automático no Finanças</div>
+      <div style="font-size:10px;color:#c4b5fd;margin-top:4px;">⚡ +80 XP/marco atingido</div>
+    </div>
+  </div>
+
+  <!-- Meta 2 -->
+  <div class="meta-builder" style="border-color:rgba(139,92,246,0.15);">
+    <div class="meta-b-header">
+      <div class="meta-b-icon" style="background:var(--pat-g);">📈</div>
+      <div class="meta-b-info"><div class="meta-b-name">Investir reserva em CDB</div><div class="meta-b-module">Patrimônio · Rendimentos</div></div>
+      <div class="meta-b-value" style="color:var(--pat);">R$ 80k</div>
+    </div>
+    <div class="meta-b-detail">
+      <div class="meta-b-auto">✨ Vincula tracking de carteira</div>
+      <div style="font-size:10px;color:#c4b5fd;margin-top:4px;">⚡ +50 XP/marco</div>
+    </div>
+  </div>
+
+  <!-- Meta 3 -->
+  <div class="meta-builder" style="border-color:rgba(139,92,246,0.15);">
+    <div class="meta-b-header">
+      <div class="meta-b-icon" style="background:var(--car-g);">💼</div>
+      <div class="meta-b-info"><div class="meta-b-name">Aumento de 20%</div><div class="meta-b-module">Carreira · Step no roadmap</div></div>
+      <div class="meta-b-value" style="color:var(--car);">20%</div>
+    </div>
+    <div class="meta-b-detail">
+      <div class="meta-b-auto">✨ Cria step no roadmap de Carreira</div>
+      <div style="font-size:10px;color:#c4b5fd;margin-top:4px;">⚡ +100 XP ao conquistar</div>
+    </div>
+  </div>
+
+  <!-- Meta 4 -->
+  <div class="meta-builder" style="border-color:rgba(139,92,246,0.15);">
+    <div class="meta-b-header">
+      <div class="meta-b-icon" style="background:rgba(110,144,184,0.1);">⏳</div>
+      <div class="meta-b-info"><div class="meta-b-name">Pesquisar bairros</div><div class="meta-b-module">Tempo · Tarefa com deadline</div></div>
+      <div class="meta-b-value" style="color:var(--t3);">Task</div>
+    </div>
+    <div class="meta-b-detail">
+      <div class="meta-b-auto">✨ Cria tarefa com deadline no Tempo</div>
+      <div style="font-size:10px;color:#c4b5fd;margin-top:4px;">⚡ +30 XP ao concluir</div>
+    </div>
+  </div>
+
+  <div class="add-meta-btn">+ Recrutar outro aliado</div>
+
+  <div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:10px 12px;margin-bottom:14px;">
+    <div style="font-size:11px;color:#c4b5fd;margin-bottom:4px;">4 aliados recrutados · 4 módulos</div>
+    <div style="font-size:10px;color:var(--t2);">XP estimado: <strong style="color:#c4b5fd;">+260 XP</strong> até a conclusão da missão</div>
+  </div>
+
+  <div class="cta cta-p">Continuar → <span style="font-size:11px;opacity:0.8;">+50 XP</span></div>
+</div></div><div class="plb">Wizard Step 3 — Jornada ★</div></div>
+</div>
+
+<!-- ══════════ TELA 6: SIMULADOR IA ══════════ -->
+<div class="rl">6. Simulador IA <span>3 cenários com dados cruzados de todos os módulos</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div>
+<div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="bk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Apartamento</div>
+<div class="ct" style="padding-top:8px;">
+  <div class="sim-ctx"><div class="sim-lb">Situação atual</div><div class="sim-tt">2 meses atrasado</div><div class="sim-tx">Com R$ 800/mês chega em <strong style="color:var(--red);">Fev 2029</strong> — fora do prazo.</div></div>
+  <div class="sec">IA encontrou 3 caminhos</div>
+  <div style="font-size:12px;color:var(--t2);margin:-6px 0 12px;">Escolha o que faz sentido:</div>
+  <div class="sc sel"><div class="sch"><div class="sci" style="background:rgba(16,185,129,0.12);">✂️</div><div style="flex:1;"><div class="scn">Cortar gastos</div><div class="sct" style="color:var(--green);">Mais fácil</div></div><div class="sck"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="scd">Reduzir Lazer R$ 120 + Assinaturas R$ 80 = <strong>R$ 200 extras</strong>/mês.</div><div class="scs"><div class="sst"><div class="ssl">Novo prazo</div><div class="ssv" style="color:var(--green);">Dez 2028 ✓</div></div><div class="sst"><div class="ssl">Esforço</div><div class="ssv">+R$ 200/mês</div></div><div class="sst"><div class="ssl">Impacto</div><div class="ssv" style="color:var(--green);">Baixo</div></div></div></div>
+  <div class="sc"><div class="sch"><div class="sci" style="background:var(--car-g);">📈</div><div style="flex:1;"><div class="scn">Aumentar renda</div><div class="sct" style="color:var(--car);">Requer esforço</div></div><div class="sck"></div></div><div class="scd">Renda extra de <strong>R$ 400/mês</strong> zera o atraso e acelera.</div><div class="scs"><div class="sst"><div class="ssl">Novo prazo</div><div class="ssv" style="color:var(--green);">Nov 2028 ✓</div></div><div class="sst"><div class="ssl">Renda extra</div><div class="ssv">+R$ 400/mês</div></div><div class="sst"><div class="ssl">Impacto</div><div class="ssv" style="color:var(--yellow);">Médio</div></div></div></div>
+  <div class="sc"><div class="sch"><div class="sci" style="background:rgba(110,144,184,0.1);">📅</div><div style="flex:1;"><div class="scn">Ajustar prazo</div><div class="sct" style="color:var(--t3);">Sem mudanças</div></div><div class="sck"></div></div><div class="scd">Continuar com R$ 800/mês e aceitar <strong>Fev 2029</strong>.</div><div class="scs"><div class="sst"><div class="ssl">Novo prazo</div><div class="ssv" style="color:var(--yellow);">Fev 2029</div></div><div class="sst"><div class="ssl">Mudança</div><div class="ssv">Nenhuma</div></div><div class="sst"><div class="ssl">Impacto</div><div class="ssv" style="color:var(--green);">Zero</div></div></div></div>
+  <div class="cta cta-p" style="margin-top:8px;">Aplicar: Cortar gastos →</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Simulador — Foco</div></div>
+
+<!-- JORNADA -->
+<div>
+<div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="bk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Apartamento</div>
+<div class="ct" style="padding-top:8px;">
+  <div class="ai"><div class="ai-i">🤖</div><div><div class="ai-lb">Coach Sync — Simulador</div><div class="ai-t">Analisei seus dados de <strong>Finanças, Patrimônio e Carreira</strong> e encontrei 3 caminhos. Cada um tem impacto diferente no seu Life Score.</div></div></div>
+  <div class="sec">3 caminhos para sua missão</div>
+  <div style="font-size:12px;color:var(--t2);margin:-6px 0 12px;">IA recomenda o Caminho A:</div>
+  <div class="sc sel"><div class="sch"><div class="sci" style="background:rgba(16,185,129,0.12);">✂️</div><div style="flex:1;"><div class="scn">Cortar gastos <span class="bdg bg" style="margin-left:4px;">⭐ Recomendado</span></div><div class="sct" style="color:var(--green);">Menor sacrifício</div></div><div class="sck"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="scd">Reduzir Lazer R$ 120 + Assinaturas R$ 80 = <strong>R$ 200 extras</strong>/mês.</div><div class="scs"><div class="sst"><div class="ssl">Novo prazo</div><div class="ssv" style="color:var(--green);">Dez 2028 ✓</div></div><div class="sst"><div class="ssl">Esforço</div><div class="ssv">+R$ 200/mês</div></div><div class="sst"><div class="ssl">Impacto</div><div class="ssv" style="color:var(--green);">Baixo</div></div></div><div class="scls"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Life Score: <strong style="color:var(--t1);">58 → 66 pts</strong> em 3 meses</div></div>
+  <div class="sc"><div class="sch"><div class="sci" style="background:var(--car-g);">📈</div><div style="flex:1;"><div class="scn">Aumentar renda</div><div class="sct" style="color:var(--car);">Requer esforço em Carreira</div></div><div class="sck"></div></div><div class="scd">Renda extra de <strong>R$ 400/mês</strong>. Mais esforço, aceleração maior.</div><div class="scs"><div class="sst"><div class="ssl">Novo prazo</div><div class="ssv" style="color:var(--green);">Nov 2028</div></div><div class="sst"><div class="ssl">Renda extra</div><div class="ssv">+R$ 400/mês</div></div><div class="sst"><div class="ssl">Impacto</div><div class="ssv" style="color:var(--yellow);">Médio</div></div></div><div class="scls"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Life Score: <strong style="color:var(--t1);">58 → 72 pts</strong></div></div>
+  <div class="sc"><div class="sch"><div class="sci" style="background:rgba(110,144,184,0.1);">📅</div><div style="flex:1;"><div class="scn">Ajustar prazo</div><div class="sct" style="color:var(--t3);">Sem mudanças</div></div><div class="sck"></div></div><div class="scd">Continuar com R$ 800/mês e aceitar <strong>Fev 2029</strong>.</div><div class="scs"><div class="sst"><div class="ssl">Novo prazo</div><div class="ssv" style="color:var(--yellow);">Fev 2029</div></div><div class="sst"><div class="ssl">Mudança</div><div class="ssv">Nenhuma</div></div><div class="sst"><div class="ssl">Impacto</div><div class="ssv" style="color:var(--green);">Zero</div></div></div><div class="scls"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Life Score: <strong style="color:var(--t1);">58 → 60 pts</strong></div></div>
+  <div class="cta cta-p" style="margin-top:8px;">Aplicar: Cortar gastos → +8 pts</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Simulador — Jornada</div></div>
+</div>
+
+<p style="text-align:center;color:var(--t3);font-size:12px;margin-top:48px;padding-bottom:20px;">SyncLife · Futuro v2 · Parte 2 · 06/03/2026<br>★ Wizard Step 3 (metas por módulo) — tela crítica que não existia</p>
+</body>
+</html>

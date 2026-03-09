@@ -7,7 +7,6 @@ import {
   Pencil, Trash2, X, SlidersHorizontal,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { useCategories } from '@/hooks/use-categories'
 import {
@@ -16,6 +15,7 @@ import {
 } from '@/hooks/use-transactions'
 import { TransacaoModal } from '@/components/financas/TransacaoModal'
 import { DeleteConfirmModal } from '@/components/financas/DeleteConfirmModal'
+import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
@@ -311,9 +311,6 @@ function TransactionRow({
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function TransacoesPage() {
-  const mode = useShellStore(s => s.mode)
-  const isJornada = mode === 'jornada'
-
   const now = new Date()
   const [month, setMonth] = useState(now.getMonth() + 1)
   const [year, setYear] = useState(now.getFullYear())
@@ -415,38 +412,27 @@ export default function TransacoesPage() {
 
       {/* ═══ MOBILE HEADER ═══ */}
       <div className="md:hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className={cn(
-              'font-[Syne] text-[20px] font-bold',
-              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-            )}>
-              Transações
-            </h1>
-            <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">
-              {MONTH_NAMES[month - 1]} {year}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setMobileSearch(v => !v)}
-              className="flex h-9 w-9 items-center justify-center rounded-[10px]
-                         bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
-            >
-              <Search size={16} />
-            </button>
-            <button
-              onClick={openCreate}
-              className="flex h-9 w-9 items-center justify-center rounded-[10px]
-                         text-white"
-              style={{ background: '#10b981' }}
-            >
-              <Plus size={16} />
-            </button>
-          </div>
-        </div>
-
+        <FinancasMobileShell
+          subtitle={`${MONTH_NAMES[month - 1]} ${year}`}
+          rightAction={
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMobileSearch(v => !v)}
+                className="flex h-9 w-9 items-center justify-center rounded-[10px]
+                           bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
+              >
+                <Search size={16} />
+              </button>
+              <button
+                onClick={openCreate}
+                className="flex h-9 w-9 items-center justify-center rounded-[10px] text-white"
+                style={{ background: '#10b981' }}
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+          }
+        >
         {/* Mobile search bar (toggle) */}
         {mobileSearch && (
           <div className="flex items-center gap-2 mb-2 px-3 py-2.5 rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] focus-within:border-[#10b981] transition-colors">
@@ -467,6 +453,25 @@ export default function TransacoesPage() {
             )}
           </div>
         )}
+
+        {/* Mobile period selector — ← Março 2026 → */}
+        <div className="flex items-center justify-center gap-3 mb-3 px-1">
+          <button
+            onClick={prevMonth}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)] active:bg-[var(--sl-s2)]"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <span className="font-[Syne] text-[14px] font-semibold text-[var(--sl-t1)] min-w-[120px] text-center">
+            {MONTH_NAMES[month - 1]} {year}
+          </span>
+          <button
+            onClick={nextMonth}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)] active:bg-[var(--sl-s2)]"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
 
         {/* Mobile filter chips */}
         <div className="flex gap-2 pb-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
@@ -513,6 +518,7 @@ export default function TransacoesPage() {
             <p className="font-[DM_Mono] text-[16px] font-medium text-[#f43f5e]">-R$ {fmtR$(totalDespesas)}</p>
           </div>
         </div>
+        </FinancasMobileShell>
       </div>
 
       {/* ═══ DESKTOP HEADER ═══ */}
@@ -522,7 +528,7 @@ export default function TransacoesPage() {
           <div className="flex items-center gap-2.5">
             <h1 className={cn(
               'font-[Syne] font-extrabold text-[22px] tracking-tight',
-              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+              'text-sl-grad'
             )}>
               Transações
             </h1>

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Info } from 'lucide-react'
 import { AIInsightCard } from '@/components/ui/ai-insight-card'
-import { useShellStore } from '@/stores/shell-store'
+import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
 
 const fmtR = (v: number) =>
   v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })
@@ -80,25 +80,17 @@ export function PlanejamentoMobile({
   onAddEvent,
 }: PlanejamentoMobileProps) {
   const [activeMonth, setActiveMonth] = useState(0)
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   return (
-    <div className="lg:hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>
-            Planejamento
-          </h1>
-          <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">Projeção 6 meses</p>
-        </div>
-        <button className="flex h-9 w-9 items-center justify-center rounded-[10px]
-                           bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]">
+    <FinancasMobileShell
+      title="Planejamento"
+      subtitle="Projeção 6 meses"
+      rightAction={
+        <button className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]">
           <Info size={16} />
         </button>
-      </div>
-
+      }
+    >
       {/* Chart card — both modes */}
       <div className="mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-4 overflow-hidden">
         <div className="flex items-start justify-between mb-3">
@@ -160,14 +152,12 @@ export function PlanejamentoMobile({
         })}
       </div>
 
-      {/* AI Insight — Jornada only */}
-      {isJornada && (
-        <div className="mb-3">
-          <AIInsightCard icon={insightIcon} label={insightLabel}>
-            <span dangerouslySetInnerHTML={{ __html: insightText }} />
-          </AIInsightCard>
-        </div>
-      )}
+      {/* AI Insight */}
+      <div className="mb-3">
+        <AIInsightCard icon={insightIcon} label={insightLabel}>
+          <span dangerouslySetInnerHTML={{ __html: insightText }} />
+        </AIInsightCard>
+      </div>
 
       {/* Events section — both modes */}
       <p className="px-1 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
@@ -216,6 +206,6 @@ export function PlanejamentoMobile({
           + Adicionar evento pontual
         </button>
       </div>
-    </div>
+    </FinancasMobileShell>
   )
 }

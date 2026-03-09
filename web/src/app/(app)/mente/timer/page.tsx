@@ -3,9 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Flame, Clock, BookOpen } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   useStudyTracks, useSaveSession, useMenteDashboard,
   type SaveSessionData,
@@ -17,8 +15,6 @@ import { useUserPlan } from '@/hooks/use-user-plan'
 
 export default function TimerPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
   const { isPro } = useUserPlan()
 
   const { tracks, loading: tracksLoading } = useStudyTracks()
@@ -73,10 +69,7 @@ export default function TimerPage() {
           <ArrowLeft size={16} />
           Mente
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           ⏱ Timer Pomodoro
         </h1>
       </div>
@@ -103,8 +96,7 @@ export default function TimerPage() {
               <PomodoroTimer
                 tracks={activeTracks}
                 onSessionComplete={handleSessionComplete}
-                isJornada={isJornada}
-                enableAmbient={isJornada && isPro}
+                enableAmbient={isPro}
                 onXpEarned={({ gained, total }) => {
                   setJornadaXp(total)
                   toast.success(`+${gained} XP de foco conquistados!`)
@@ -199,13 +191,11 @@ export default function TimerPage() {
             </div>
           </div>
 
-          {isJornada && (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">XP Jornada</p>
-              <p className="font-[Syne] font-extrabold text-2xl text-sl-grad">{jornadaXp}</p>
-              <p className="text-[11px] text-[var(--sl-t2)] mt-1">Ganhe XP ao concluir sessões de foco.</p>
-            </div>
-          )}
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
+            <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">XP Jornada</p>
+            <p className="font-[Syne] font-extrabold text-2xl text-sl-grad">{jornadaXp}</p>
+            <p className="text-[11px] text-[var(--sl-t2)] mt-1">Ganhe XP ao concluir sessões de foco.</p>
+          </div>
 
           {/* Sessões recentes */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
@@ -258,7 +248,7 @@ export default function TimerPage() {
 
           {/* Streak motivacional (Jornada) */}
           {streak.current_streak >= 3 && (
-            <div className="jornada-only bg-gradient-to-br from-[#f97316]/10 to-[#a855f7]/10
+            <div className="bg-gradient-to-br from-[#f97316]/10 to-[#a855f7]/10
                             border border-[#f97316]/20 rounded-2xl p-4 text-center">
               <p className="text-2xl mb-1">🔥</p>
               <p className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">

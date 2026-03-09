@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Futuro v2 · Parte 3 (Timeline, Check-in, Arquivo)</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;--border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);--t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;--fut:#8b5cf6;--fut-g:rgba(139,92,246,0.15);--fut-grad:linear-gradient(135deg,#8b5cf6,#0055ff);--J:#8b5cf6;--J-g:rgba(139,92,246,0.15);--J-grad:linear-gradient(135deg,#8b5cf6,#ec4899);--green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--fin:#10b981;--fin-g:rgba(16,185,129,0.15);--pat:#3b82f6;--pat-g:rgba(59,130,246,0.15);--car:#f43f5e;--car-g:rgba(244,63,94,0.15);--mnt:#eab308;--mnt-g:rgba(234,179,8,0.15);--exp:#06b6d4;--exp-g:rgba(6,182,212,0.15);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:#0a0e1a;color:var(--t1);padding:40px 20px;}
+h1.pt{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;text-align:center;margin-bottom:8px;background:var(--fut-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+p.ps{text-align:center;color:var(--t2);font-size:14px;margin-bottom:36px;}
+.rl{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1);text-align:center;margin:48px 0 20px;}.rl span{color:var(--t3);font-weight:400;font-size:13px;margin-left:8px;}
+.pr{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;}
+.phone{width:375px;background:var(--bg);border-radius:48px;border:2px solid rgba(255,255,255,0.1);overflow:hidden;padding-bottom:20px;flex-shrink:0;}
+.phone.j{border-color:rgba(139,92,246,0.25);}
+.di{width:120px;height:34px;background:#000;border-radius:20px;margin:12px auto 0;}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:8px 28px 0;font-family:'DM Mono',monospace;font-size:12px;color:var(--t2);}
+.mh{padding:14px 20px 0;}.mht{display:flex;align-items:center;justify-content:space-between;}
+.mt{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--t1);}.mt .ic{margin-right:6px;}
+.mb{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600;}
+.f .mb{background:var(--fut-g);color:var(--fut);}.j .mb{background:var(--J-g);color:#c4b5fd;}
+.j .mt{background:var(--J-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.tabs{display:flex;padding:12px 20px 0;border-bottom:1px solid var(--border);}
+.tab{flex:1;text-align:center;font-size:12px;font-weight:500;color:var(--t3);padding:8px 2px;position:relative;}
+.tab.a{color:var(--fut);font-weight:600;}.tab.a::after{content:'';position:absolute;bottom:-1px;left:10%;width:80%;height:2px;background:var(--fut);border-radius:2px;}
+.j .tab.a{color:#c4b5fd;}.j .tab.a::after{background:var(--J);}
+.ct{padding:16px 20px;}
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.bg{background:rgba(16,185,129,0.12);color:#10b981;}.by{background:rgba(245,158,11,0.12);color:#f59e0b;}.bp{background:rgba(139,92,246,0.12);color:#c4b5fd;}
+.sec{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1);margin-bottom:10px;}
+.pb{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}.pf{height:100%;border-radius:3px;}
+.fp{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.fl{font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;background:var(--s2);color:var(--t2);border:1px solid var(--border);}
+.fl.a{border-color:rgba(139,92,246,0.3);}.f .fl.a{background:var(--fut-g);color:var(--fut);}.j .fl.a{background:var(--J-g);color:#c4b5fd;}
+/* Timeline */
+.tl-grp{margin-bottom:20px;}
+.tl-gh{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.tl-gi{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.tl-gn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1);}
+.tl-gm{font-size:11px;color:var(--t2);margin-top:1px;}
+.tl-i{display:flex;gap:12px;padding-bottom:12px;position:relative;}
+.tl-i:last-child{padding-bottom:0;}
+.tl-ln{position:absolute;left:14px;top:28px;width:2px;bottom:0;background:var(--border);}.tl-i:last-child .tl-ln{display:none;}
+.tl-dot{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;position:relative;z-index:1;}
+.tl-dot.dn{background:rgba(16,185,129,0.15);border:2px solid rgba(16,185,129,0.4);}
+.tl-dot.cu{background:rgba(139,92,246,0.2);border:2px solid rgba(139,92,246,0.5);}
+.tl-dot.fu{background:var(--s2);border:2px solid var(--border);}
+.tl-bd{flex:1;padding-top:3px;}
+.tl-nm{font-size:12px;font-weight:600;color:var(--t1);}.tl-nm.dn{color:var(--t2);text-decoration:line-through;}
+.tl-dt{font-size:10px;color:var(--t3);margin-top:2px;}
+.tl-v{font-family:'DM Mono',monospace;font-size:11px;margin-top:2px;}
+.tl-xp{font-size:10px;font-weight:700;color:#c4b5fd;margin-top:2px;}
+.tl-today{display:flex;align-items:center;gap:8px;margin:8px 0 12px;padding-left:4px;}
+.tl-today-ln{flex:1;height:1px;background:var(--exp);opacity:0.4;}
+.tl-today-lb{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--exp);}
+/* Check-in */
+.ci-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px;}
+.ci-obj{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.ci-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ci-name{font-size:13px;font-weight:600;color:var(--t1);}
+.ci-delta{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;}
+.ci-activity{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:11px;color:var(--t2);}
+.ci-check{color:var(--green);}
+.ci-warn{color:var(--yellow);}
+.ci-q{background:var(--s2);border-radius:10px;padding:10px;margin-top:8px;}
+.ci-q-label{font-size:11px;color:var(--t3);margin-bottom:6px;}
+.ci-q-opts{display:flex;gap:6px;flex-wrap:wrap;}
+.ci-q-opt{font-size:10px;padding:5px 10px;border-radius:20px;background:var(--s3);color:var(--t2);border:1px solid var(--border);}
+.ci-q-opt.sel{border-color:rgba(139,92,246,0.3);}
+.f .ci-q-opt.sel{background:var(--fut-g);color:var(--fut);}
+.j .ci-q-opt.sel{background:var(--J-g);color:#c4b5fd;}
+.ci-summary{background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(0,85,255,0.06));border:1px solid rgba(139,92,246,0.2);border-radius:16px;padding:14px;margin-bottom:12px;text-align:center;}
+/* Arquivo */
+.ar-banner{border-radius:16px;padding:13px 15px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.f .ar-banner{background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(0,85,255,0.05));border:1px solid rgba(16,185,129,0.2);}
+.j .ar-banner{background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(16,185,129,0.08));border:1px solid rgba(139,92,246,0.25);}
+.dc{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:13px 15px;margin-bottom:10px;position:relative;overflow:hidden;}
+.dc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.dc.cmp::before{background:linear-gradient(90deg,var(--green),#10b981);}.dc.pau::before{background:var(--t3);}
+.dc-t{display:flex;align-items:center;gap:11px;margin-bottom:10px;}
+.dc-i{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.dc-n{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1);}
+.dc-p{font-size:11px;color:var(--t2);margin-top:1px;}
+.dc-s{font-size:10px;font-weight:700;}
+.dc-g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.dc-gl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.dc-gv{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--t2);}
+/* Celebração */
+.celeb{text-align:center;padding:22px 20px 14px;}
+.celeb-emoji{font-size:54px;margin-bottom:10px;}
+.celeb-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--t1);line-height:1.2;margin-bottom:7px;}
+.celeb-text{font-size:13px;color:var(--t2);line-height:1.6;}.celeb-text strong{color:var(--green);}
+.xp-exp{border-radius:16px;padding:14px 15px;margin-bottom:12px;display:flex;align-items:center;gap:14px;}
+.f .xp-exp{background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.18);}
+.j .xp-exp{background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(0,85,255,0.12));border:1px solid rgba(139,92,246,0.4);}
+.xp-n{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;}.f .xp-n{color:var(--fut);}.j .xp-n{color:var(--J);}
+.xp-l{font-size:9px;margin-top:2px;}.f .xp-l{color:var(--t2);}.j .xp-l{color:#c4b5fd;}
+.ach-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.ach{border-radius:10px;padding:10px;text-align:center;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);}
+.ach-i{font-size:20px;margin-bottom:4px;}.ach-n{font-size:10px;font-weight:700;color:#c4b5fd;}.ach-d{font-size:9px;color:var(--t3);margin-top:2px;}
+.ai{border-radius:14px;padding:12px 14px;margin-bottom:12px;display:flex;gap:10px;background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(236,72,153,0.06));border:1px solid rgba(139,92,246,0.25);}
+.ai-i{width:36px;height:36px;border-radius:50%;background:rgba(139,92,246,0.2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.ai-lb{font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.ai-t{font-size:12px;color:var(--t2);line-height:1.5;}.ai-t strong{color:var(--t1);}
+.ai-cta{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-weight:700;color:#c4b5fd;}
+.ctas{display:flex;gap:10px;}.cta{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:14px;font-size:13px;font-weight:600;border:none;text-align:center;}
+.cta-p{color:#fff;}.f .cta-p{background:var(--fut-grad);}.j .cta-p{background:var(--J-grad);}
+.cta-s{background:var(--s2);border:1px solid var(--border-h);color:var(--t1);}
+/* Bottom Bar */
+.bb{height:68px;background:var(--s1);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 8px;margin-top:8px;}
+.bt{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--t3);}.bt svg{width:22px;height:22px;}.bt.ac{color:var(--fut);}.j .bt.ac{color:var(--J);}
+.fab{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-20px;border:3px solid var(--bg);}.f .fab{background:var(--fut-grad);}.j .fab{background:var(--J-grad);}.fab svg{width:22px;height:22px;color:#fff;}
+.plb{text-align:center;font-size:11px;font-weight:600;color:var(--t3);margin-top:12px;font-family:'DM Mono',monospace;}
+.modal-hint{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center;padding:6px;background:var(--s2);border-radius:8px;}
+</style>
+</head>
+<body>
+<h1 class="pt">Futuro v2 — Parte 3</h1>
+<p class="ps">Timeline · Check-in Semanal · Arquivo + Celebração — Foco + Jornada</p>
+
+<!-- ══════════ TELA 7: TIMELINE ══════════ -->
+<div class="rl">7. Timeline <span>visão cronológica de marcos agrupados por objetivo</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div>
+<div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="mh"><div class="mht"><div class="mt"><span class="ic">🎯</span> Futuro</div><div class="mb">3 ativos</div></div></div>
+<div class="tabs"><div class="tab">Dashboard</div><div class="tab">Objetivos</div><div class="tab a">Timeline</div><div class="tab">Arquivo</div></div>
+<div class="ct">
+<div class="fp"><div class="fl a">Todos</div><div class="fl">🏠 Apartamento</div><div class="fl">✈️ Europa</div><div class="fl">🎓 MBA</div></div>
+<!-- Apartamento -->
+<div class="tl-grp">
+  <div class="tl-gh"><div class="tl-gi" style="background:var(--fut-g);">🏠</div><div><div class="tl-gn">Comprar apartamento</div><div class="tl-gm">43% · Dez 2028</div></div></div>
+  <div class="tl-i"><div class="tl-dot dn">✓</div><div class="tl-ln"></div><div class="tl-bd"><div class="tl-nm dn">R$ 10.000 — Primeira marca</div><div class="tl-dt">Mar 2024</div><div class="tl-v" style="color:var(--green);">R$ 10.000</div></div></div>
+  <div class="tl-i"><div class="tl-dot dn">✓</div><div class="tl-ln"></div><div class="tl-bd"><div class="tl-nm dn">R$ 25.000 — Primeiro quarto</div><div class="tl-dt">Nov 2024</div><div class="tl-v" style="color:var(--green);">R$ 25.000</div></div></div>
+  <div class="tl-today"><div class="tl-today-lb">Hoje — Mar 2026</div><div class="tl-today-ln"></div></div>
+  <div class="tl-i"><div class="tl-dot cu">📍</div><div class="tl-ln"></div><div class="tl-bd"><div class="tl-nm">R$ 40.000 — Metade</div><div class="tl-dt">Projetado: Jun 2026</div><div class="tl-v" style="color:var(--fut);">R$ 34.800 atual</div></div></div>
+  <div class="tl-i"><div class="tl-dot fu">🔒</div><div class="tl-bd"><div class="tl-nm" style="color:var(--t3);">R$ 80.000 — Meta final</div><div class="tl-dt" style="color:var(--t3);">Projetado: Fev 2029</div></div></div>
+</div>
+<!-- Europa -->
+<div class="tl-grp">
+  <div class="tl-gh"><div class="tl-gi" style="background:var(--exp-g);">✈️</div><div><div class="tl-gn">Viagem Europa</div><div class="tl-gm">65% · Jul 2026</div></div></div>
+  <div class="tl-i"><div class="tl-dot dn">✓</div><div class="tl-ln"></div><div class="tl-bd"><div class="tl-nm dn">R$ 3.000 — Passagens</div><div class="tl-dt">Set 2025</div></div></div>
+  <div class="tl-i"><div class="tl-dot cu">📍</div><div class="tl-ln"></div><div class="tl-bd"><div class="tl-nm">R$ 6.000 — Hospedagem</div><div class="tl-dt">Projetado: Abr 2026</div></div></div>
+  <div class="tl-i"><div class="tl-dot fu">🔒</div><div class="tl-bd"><div class="tl-nm" style="color:var(--t3);">R$ 8.000 — Pronto para voar</div><div class="tl-dt" style="color:var(--t3);">Projetado: Jun 2026</div></div></div>
+</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Timeline — Foco</div></div>
+
+<!-- JORNADA -->
+<div>
+<div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="mh"><div class="mht"><div class="mt"><span class="ic">✦</span> Arquiteto do Futuro</div><div class="mb">2.480 XP</div></div></div>
+<div class="tabs"><div class="tab">Dashboard</div><div class="tab">Missões</div><div class="tab a">Timeline</div><div class="tab">Arquivo</div></div>
+<div class="ct">
+<div class="fp"><div class="fl a">Todas missões</div><div class="fl">🏠 Apartamento</div><div class="fl">✈️ Europa</div></div>
+<div class="tl-grp">
+  <div class="tl-gh"><div class="tl-gi" style="background:var(--fut-g);">🏠</div><div><div class="tl-gn">Missão: Apartamento</div><div class="tl-gm">43% · +520 XP total</div></div></div>
+  <div class="tl-i"><div class="tl-dot dn">✓</div><div class="tl-ln"></div><div class="tl-bd"><div class="tl-nm dn">R$ 10.000 — Primeira marca</div><div class="tl-dt">Mar 2024</div><div class="tl-xp">+80 XP ganhos ✓</div></div></div>
+  <div class="tl-i"><div class="tl-dot dn">✓</div><div class="tl-ln"></div><div class="tl-bd"><div class="tl-nm dn">R$ 25.000 — Primeiro quarto</div><div class="tl-dt">Nov 2024</div><div class="tl-xp">+120 XP ganhos ✓</div></div></div>
+  <div class="tl-today"><div class="tl-today-lb">Hoje — Mar 2026</div><div class="tl-today-ln"></div></div>
+  <div class="tl-i"><div class="tl-dot cu">📍</div><div class="tl-ln"></div><div class="tl-bd"><div class="tl-nm">R$ 40.000 — Metade</div><div class="tl-dt">Projetado: Jun 2026</div><div class="tl-xp">⚡ +120 XP ao concluir</div></div></div>
+  <div class="tl-i"><div class="tl-dot fu">🔒</div><div class="tl-bd"><div class="tl-nm" style="color:var(--t3);">R$ 80.000 — Missão completa 🎉</div><div class="tl-xp" style="opacity:0.5;">+200 XP · Missão completa!</div></div></div>
+</div>
+<div class="tl-grp">
+  <div class="tl-gh"><div class="tl-gi" style="background:var(--exp-g);">✈️</div><div><div class="tl-gn">Missão: Europa</div><div class="tl-gm">65% · +200 XP total</div></div></div>
+  <div class="tl-i"><div class="tl-dot dn">✓</div><div class="tl-ln"></div><div class="tl-bd"><div class="tl-nm dn">R$ 3.000 — Passagens</div><div class="tl-dt">Set 2025</div><div class="tl-xp">+50 XP ✓</div></div></div>
+  <div class="tl-i"><div class="tl-dot cu">📍</div><div class="tl-ln"></div><div class="tl-bd"><div class="tl-nm">R$ 6.000 — Hospedagem</div><div class="tl-dt">Abr 2026</div><div class="tl-xp">⚡ +50 XP</div></div></div>
+  <div class="tl-i"><div class="tl-dot fu">🔒</div><div class="tl-bd"><div class="tl-nm" style="color:var(--t3);">R$ 8.000 — Pronto para voar</div><div class="tl-xp" style="opacity:0.5;">+100 XP · Missão completa!</div></div></div>
+</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Timeline — Jornada</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TELA 8: CHECK-IN SEMANAL ★ NOVA FUNCIONALIDADE ★
+     ═══════════════════════════════════════════ -->
+<div class="rl">8. Check-in Semanal ★ <span>NOVO: revisão periódica de 5 min</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div>
+<div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="ct">
+  <div style="text-align:center;margin-bottom:16px;">
+    <div style="font-size:28px;margin-bottom:8px;">📋</div>
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--t1);margin-bottom:4px;">Revisão Semanal</div>
+    <div style="font-size:12px;color:var(--t2);">Como foi sua semana nos seus objetivos?</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:4px;">~5 minutos · Domingo, 02 Mar 2026</div>
+  </div>
+
+  <!-- Objetivo 1: com atividade -->
+  <div class="ci-card">
+    <div class="ci-obj">
+      <div class="ci-icon" style="background:var(--fut-g);">🏠</div>
+      <div style="flex:1;"><div class="ci-name">Comprar apartamento</div><div style="font-size:11px;color:var(--t2);">43% (+1.2% esta semana)</div></div>
+      <div class="ci-delta" style="color:var(--green);">+1.2%</div>
+    </div>
+    <div class="ci-activity"><span class="ci-check">✓</span> Contribuiu R$ 200 via envelope Finanças</div>
+    <div class="ci-activity"><span class="ci-check">✓</span> Rendimento CDB +R$ 45 (Patrimônio)</div>
+  </div>
+
+  <!-- Objetivo 2: com atividade -->
+  <div class="ci-card">
+    <div class="ci-obj">
+      <div class="ci-icon" style="background:var(--exp-g);">✈️</div>
+      <div style="flex:1;"><div class="ci-name">Viagem Europa</div><div style="font-size:11px;color:var(--t2);">65% (+2.5% esta semana)</div></div>
+      <div class="ci-delta" style="color:var(--green);">+2.5%</div>
+    </div>
+    <div class="ci-activity"><span class="ci-check">✓</span> Contribuiu R$ 200 via envelope Finanças</div>
+  </div>
+
+  <!-- Objetivo 3: SEM atividade (mostra pergunta) -->
+  <div class="ci-card">
+    <div class="ci-obj">
+      <div class="ci-icon" style="background:var(--mnt-g);">🎓</div>
+      <div style="flex:1;"><div class="ci-name">MBA Internacional</div><div style="font-size:11px;color:var(--yellow);">40% (sem atividade)</div></div>
+      <div class="ci-delta" style="color:var(--t3);">0%</div>
+    </div>
+    <div class="ci-activity"><span class="ci-warn">⚠</span> Nenhuma atividade esta semana</div>
+    <div class="ci-q">
+      <div class="ci-q-label">O que impediu?</div>
+      <div class="ci-q-opts">
+        <div class="ci-q-opt sel">Sem tempo</div>
+        <div class="ci-q-opt">Esqueci</div>
+        <div class="ci-q-opt">Sem dinheiro</div>
+        <div class="ci-q-opt">Mudei prioridade</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resumo -->
+  <div class="ci-summary">
+    <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px;">Resumo da semana</div>
+    <div style="font-size:12px;color:var(--t2);line-height:1.6;">
+      Objetivos com progresso: <strong style="color:var(--t1);">2 de 3</strong><br>
+      Score Futuro: <strong style="color:var(--fut);">58 pts</strong> (↑ +1 vs semana passada)<br>
+      <span style="font-size:11px;color:var(--t3);">Sugestão: Dedicar 2h ao MBA esta semana</span>
+    </div>
+  </div>
+
+  <div class="ctas"><div class="cta cta-p" style="flex:1;">Concluir revisão</div></div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Check-in Semanal — Foco ★</div></div>
+
+<!-- JORNADA -->
+<div>
+<div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="ct">
+  <div style="text-align:center;margin-bottom:16px;">
+    <div style="font-size:28px;margin-bottom:8px;">🧭</div>
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--t1);margin-bottom:4px;">Revisão da Jornada</div>
+    <div style="font-size:12px;color:var(--t2);">Como suas missões avançaram esta semana?</div>
+    <div style="font-size:11px;color:#c4b5fd;margin-top:4px;">⚡ Completar vale +10 XP · ~5 minutos</div>
+  </div>
+
+  <div class="ci-card" style="border-color:rgba(139,92,246,0.15);">
+    <div class="ci-obj">
+      <div class="ci-icon" style="background:var(--fut-g);">🏠</div>
+      <div style="flex:1;"><div class="ci-name">Missão: Apartamento</div><div style="font-size:11px;color:var(--t2);">43% (+1.2% esta semana)</div></div>
+      <div class="ci-delta" style="color:var(--green);">+1.2%</div>
+    </div>
+    <div class="ci-activity"><span class="ci-check">✓</span> 💰 R$ 200 via Finanças · <span style="color:#c4b5fd;">+15 XP</span></div>
+    <div class="ci-activity"><span class="ci-check">✓</span> 📈 CDB +R$ 45 · <span style="color:#c4b5fd;">+5 XP</span></div>
+  </div>
+
+  <div class="ci-card" style="border-color:rgba(139,92,246,0.15);">
+    <div class="ci-obj">
+      <div class="ci-icon" style="background:var(--exp-g);">✈️</div>
+      <div style="flex:1;"><div class="ci-name">Missão: Europa</div><div style="font-size:11px;color:var(--t2);">65% (+2.5%)</div></div>
+      <div class="ci-delta" style="color:var(--green);">+2.5%</div>
+    </div>
+    <div class="ci-activity"><span class="ci-check">✓</span> 💰 R$ 200 via Finanças · <span style="color:#c4b5fd;">+15 XP</span></div>
+    <div style="font-size:10px;color:#c4b5fd;margin-top:4px;">🎯 Quase lá! Faltam R$ 2.800 para a Europa!</div>
+  </div>
+
+  <div class="ci-card" style="border-color:rgba(245,158,11,0.2);">
+    <div class="ci-obj">
+      <div class="ci-icon" style="background:var(--mnt-g);">🎓</div>
+      <div style="flex:1;"><div class="ci-name">Missão: MBA</div><div style="font-size:11px;color:var(--yellow);">40% (parado)</div></div>
+      <div class="ci-delta" style="color:var(--t3);">0%</div>
+    </div>
+    <div class="ci-activity"><span class="ci-warn">⚠</span> Missão sem progresso esta semana</div>
+    <div class="ci-q">
+      <div class="ci-q-label">O que aconteceu?</div>
+      <div class="ci-q-opts">
+        <div class="ci-q-opt sel">Sem tempo</div>
+        <div class="ci-q-opt">Esqueci</div>
+        <div class="ci-q-opt">Sem motivação</div>
+        <div class="ci-q-opt">Mudei foco</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ci-summary" style="border-color:rgba(139,92,246,0.3);">
+    <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px;">Sua semana</div>
+    <div style="font-size:12px;color:var(--t2);line-height:1.6;">
+      Missões com progresso: <strong style="color:var(--t1);">2 de 3</strong><br>
+      XP ganhos esta semana: <strong style="color:#c4b5fd;">+35 XP</strong><br>
+      Score Futuro: <strong style="color:var(--J);">58 pts</strong> (↑ +1)<br>
+      <span style="font-size:11px;color:#c4b5fd;">🧠 Foco sugerido: Dedicar 2h ao MBA para desbloquear +80 XP</span>
+    </div>
+  </div>
+
+  <div class="ctas"><div class="cta cta-p" style="flex:1;">Concluir revisão → +10 XP</div></div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Check-in — Jornada ★</div></div>
+</div>
+
+<!-- ══════════ TELA 9: ARQUIVO + CELEBRAÇÃO ══════════ -->
+<div class="rl">9. Arquivo + Celebração <span>histórico + modal de conclusão</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div>
+<div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="mh"><div class="mht"><div class="mt"><span class="ic">🎯</span> Futuro</div><div class="mb">Arquivo</div></div></div>
+<div class="tabs"><div class="tab">Dashboard</div><div class="tab">Objetivos</div><div class="tab">Timeline</div><div class="tab a">Arquivo</div></div>
+<div class="ct">
+  <div class="ar-banner"><div style="font-size:30px;">🏆</div><div><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1);">2 objetivos concluídos</div><div style="font-size:12px;color:var(--t2);margin-top:3px;">R$ 42.400 acumulados na jornada</div></div></div>
+  <div class="fp"><div class="fl a">Todos</div><div class="fl">Concluídos</div><div class="fl">Pausados</div></div>
+  <!-- Concluído -->
+  <div class="dc cmp">
+    <div class="dc-t"><div class="dc-i" style="background:rgba(16,185,129,0.12);">🛡️</div><div style="flex:1;"><div class="dc-n">Reserva de Emergência</div><div class="dc-p">Mar 2023 → Jan 2026 · 34 meses</div></div><div class="dc-s" style="color:var(--green);">✓ Concluído</div></div>
+    <div class="dc-g"><div><div class="dc-gl">Meta</div><div class="dc-gv" style="color:var(--green);">R$ 18.000</div></div><div><div class="dc-gl">Acumulado</div><div class="dc-gv">R$ 18.400</div></div><div><div class="dc-gl">Atingido</div><div class="dc-gv" style="color:var(--green);">102%</div></div></div>
+    <div style="margin-top:8px;"><div class="pb" style="height:5px;"><div class="pf" style="width:100%;background:linear-gradient(90deg,var(--green),#10b981);"></div></div></div>
+  </div>
+  <!-- Pausado -->
+  <div class="dc pau">
+    <div class="dc-t"><div class="dc-i" style="background:rgba(110,144,184,0.1);">🖥️</div><div style="flex:1;"><div class="dc-n">Home Office</div><div class="dc-p">Pausado Out 2024 · 40%</div></div><div class="dc-s" style="color:var(--t3);">⏸ Pausado</div></div>
+    <div style="display:flex;gap:8px;margin-top:8px;"><div class="cta cta-s" style="font-size:11px;padding:8px;">Retomar</div><div class="cta cta-s" style="font-size:11px;padding:8px;">Arquivar</div></div>
+  </div>
+  <!-- Modal Celebração representação -->
+  <div style="margin-top:12px;padding:14px;background:var(--s1);border:1px solid rgba(139,92,246,0.2);border-radius:16px;">
+    <div class="modal-hint">↓ Modal exibido ao concluir objetivo ↓</div>
+    <div class="celeb"><div class="celeb-emoji">🎯</div><div class="celeb-title">Objetivo Concluído!</div><div class="celeb-text"><strong>R$ 18.400</strong> em 34 meses.</div></div>
+    <div class="xp-exp"><div style="text-align:center;padding:0 8px;"><div class="xp-n">+12</div><div class="xp-l">pts</div></div><div><div style="font-size:13px;font-weight:700;color:var(--t1);">Life Score atualizado</div><div style="font-size:12px;color:var(--t2);">Futuro: <strong style="color:var(--t1);">58</strong> → <strong style="color:var(--fut);">70</strong> pts</div></div></div>
+    <div class="ctas"><div class="cta cta-p">Criar novo objetivo</div><div class="cta cta-s">Fechar</div></div>
+  </div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Arquivo + Celebração — Foco</div></div>
+
+<!-- JORNADA -->
+<div>
+<div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="mh"><div class="mht"><div class="mt"><span class="ic">✦</span> Arquivo de Missões</div><div class="mb">2.480 XP</div></div></div>
+<div class="tabs"><div class="tab">Dashboard</div><div class="tab">Missões</div><div class="tab">Timeline</div><div class="tab a">Arquivo</div></div>
+<div class="ct">
+  <div class="ar-banner"><div style="font-size:30px;">🏆</div><div><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1);">2 missões épicas concluídas</div><div style="font-size:12px;color:var(--t2);margin-top:3px;">R$ 42.400 · <span style="color:#c4b5fd;">+630 XP ganhos</span></div></div></div>
+  <div class="fp"><div class="fl a">Todos</div><div class="fl">Conquistados</div><div class="fl">Pausados</div></div>
+  <div class="dc cmp">
+    <div class="dc-t"><div class="dc-i" style="background:rgba(16,185,129,0.12);">🛡️</div><div style="flex:1;"><div class="dc-n">Missão: Reserva de Emergência</div><div class="dc-p">34 meses · 102%</div></div><div class="dc-s" style="color:var(--green);">✓ Épico</div></div>
+    <div class="dc-g"><div><div class="dc-gl">Meta</div><div class="dc-gv" style="color:var(--green);">R$ 18.000</div></div><div><div class="dc-gl">Real</div><div class="dc-gv">R$ 18.400</div></div><div><div class="dc-gl">XP</div><div class="dc-gv" style="color:#c4b5fd;">+350</div></div></div>
+    <div style="margin-top:8px;"><span class="bdg bp">✦ Desbloqueou Nível 5</span></div>
+  </div>
+  <!-- Modal Celebração Jornada -->
+  <div style="margin-top:12px;padding:14px;background:var(--s1);border:1px solid rgba(139,92,246,0.3);border-radius:16px;">
+    <div class="modal-hint">↓ Modal exibido ao concluir missão ↓</div>
+    <div class="celeb"><div class="celeb-emoji">🏆</div><div class="celeb-title">Missão Concluída!</div><div class="celeb-text">Thiago, você é incrível! <strong>R$ 18.400</strong> em 34 meses. 🚀</div></div>
+    <div class="xp-exp"><div style="text-align:center;padding:0 8px;"><div class="xp-n">+350</div><div class="xp-l">XP GANHOS</div></div><div><div style="font-size:13px;font-weight:700;color:var(--t1);">🎯 Nível 5 desbloqueado!</div><div style="margin:6px 0;"><div class="pb" style="height:5px;"><div class="pf" style="width:100%;background:var(--J-grad);"></div></div></div><div style="font-size:12px;color:var(--t2);">Life Score: <strong style="color:var(--green);">58 → 70 pts</strong> ↑</div></div></div>
+    <div class="sec" style="font-size:12px;">🏅 Conquistas desbloqueadas</div>
+    <div class="ach-g">
+      <div class="ach"><div class="ach-i">🛡️</div><div class="ach-n">Protetor</div><div class="ach-d">Reserva completa</div></div>
+      <div class="ach"><div class="ach-i">📅</div><div class="ach-n">Consistente</div><div class="ach-d">34 meses sem parar</div></div>
+      <div class="ach"><div class="ach-i">💯</div><div class="ach-n">Superador</div><div class="ach-d">102% atingido</div></div>
+      <div class="ach"><div class="ach-i">⚡</div><div class="ach-n">Nível 5</div><div class="ach-d">Arquiteto do Futuro</div></div>
+    </div>
+    <div class="ai"><div class="ai-i">🤖</div><div><div class="ai-lb">Coach — Parabéns!</div><div class="ai-t">Quer <strong>acelerar o apartamento</strong> com esses R$ 800/mês?</div><div class="ai-cta">Ver próxima missão →</div></div></div>
+    <div class="ctas"><div class="cta cta-p">🚀 Nova missão</div><div class="cta cta-s">Fechar</div></div>
+  </div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Arquivo + Celebração — Jornada</div></div>
+</div>
+
+<p style="text-align:center;color:var(--t3);font-size:12px;margin-top:48px;padding-bottom:20px;">SyncLife · Futuro v2 · Parte 3 · 06/03/2026<br>★ Check-in Semanal — funcionalidade nova</p>
+</body>
+</html>

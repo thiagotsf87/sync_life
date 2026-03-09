@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import type { Category } from './use-categories'
 import { syncFinanceCategoryToFuturo } from '@/lib/integrations/futuro'
 import { USE_MOCK, MOCK_TRANSACTIONS } from '@/lib/mock-financas'
+import { updateStreak } from '@/hooks/use-panorama'
+import { addXP } from '@/hooks/use-xp'
 
 export interface Transaction {
   id: string
@@ -94,14 +96,34 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
     setError(null)
 
     if (USE_MOCK) {
-      let filtered = MOCK_TRANSACTIONS as unknown as Transaction[]
+      const monthStr = String(options.month).padStart(2, '0')
+      const startDate = `${options.year}-${monthStr}-01`
+      const endDate = new Date(options.year, options.month, 0).toISOString().split('T')[0]
+
+      let filtered = (MOCK_TRANSACTIONS as unknown as Transaction[])
+        .filter(t => t.date >= startDate && t.date <= endDate)
       if (options.type === 'income') filtered = filtered.filter(t => t.type === 'income')
       if (options.type === 'expense') filtered = filtered.filter(t => t.type === 'expense')
       if (options.type === 'recurring') filtered = filtered.filter(t => t.recurring_transaction_id !== null)
       if (debouncedSearch) filtered = filtered.filter(t => t.description.toLowerCase().includes(debouncedSearch.toLowerCase()))
       if (options.categoryId) filtered = filtered.filter(t => t.category?.id === options.categoryId)
-      setTransactions(filtered.slice(0, PAGE_SIZE))
-      setTotal(filtered.length)
+
+      // Sort
+      const orderCol = sort === 'highest' || sort === 'lowest' ? 'amount' : 'date'
+      const ascending = sort === 'oldest' || sort === 'lowest'
+      filtered = [...filtered].sort((a, b) => {
+        if (orderCol === 'amount') {
+          return ascending ? a.amount - b.amount : b.amount - a.amount
+        }
+        return ascending
+          ? (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)
+          : (a.date > b.date ? -1 : a.date < b.date ? 1 : 0)
+      })
+
+      const totalCount = filtered.length
+      const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+      setTransactions(paginated)
+      setTotal(totalCount)
       setIsLoading(false)
       return
     }
@@ -189,6 +211,8 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
 
     if (err) throw new Error(err.message)
     await syncFinanceCategoryToFuturo(user.id, data.category_id)
+    updateStreak(user.id).catch(() => {})
+    addXP(user.id, 'transaction_created').catch(() => {})
     refresh()
     return created as unknown as Transaction
   }, [refresh])

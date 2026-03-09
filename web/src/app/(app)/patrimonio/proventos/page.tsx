@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   usePortfolioAssets, usePortfolioDividends,
   useAddDividend, useDeleteDividend, useUpdateDividendStatus,
@@ -13,6 +12,7 @@ import {
   type DividendType, type DividendStatus,
 } from '@/hooks/use-patrimonio'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
+import { PatrimonioMobile } from '@/components/patrimonio/PatrimonioMobile'
 import { createTransactionFromProvento } from '@/lib/integrations/financas'
 
 interface DividendForm {
@@ -47,8 +47,6 @@ const DIVIDEND_TYPE_ICONS: Record<DividendType, string> = {
 
 export default function ProventosPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const { dividends, loading, error, reload } = usePortfolioDividends()
   const { assets } = usePortfolioAssets()
@@ -187,7 +185,9 @@ export default function ProventosPage() {
   }
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+      <PatrimonioMobile initialTab="proventos" />
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
@@ -198,10 +198,7 @@ export default function ProventosPage() {
           <ArrowLeft size={16} />
           Patrimônio
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           💰 Proventos
         </h1>
         <button
@@ -621,5 +618,6 @@ export default function ProventosPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

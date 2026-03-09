@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { X, Loader2 } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { X, Loader2, ChevronDown, Calendar } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Category } from '@/hooks/use-categories'
 import type { Transaction, TransacaoFormData } from '@/hooks/use-transactions'
@@ -56,6 +56,14 @@ function todayStr(): string {
   return new Date().toISOString().split('T')[0]
 }
 
+function formatDateDisplay(d: string): string {
+  if (!d) return 'Selecione'
+  const [y, m, day] = d.split('-')
+  return new Date(+y, (+m || 1) - 1, +day || 1).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+}
+
+const MONTHS_PT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+
 export function TransacaoModal({
   open, mode, transaction, categories, defaultDate, onClose, onSave,
 }: TransacaoModalProps) {
@@ -68,6 +76,22 @@ export function TransacaoModal({
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [metodoOpen, setMetodoOpen] = useState(false)
+  const [datePickerOpen, setDatePickerOpen] = useState(false)
+  const [calView, setCalView] = useState<{ year: number; month: number }>(() => {
+    const t = new Date()
+    return { year: t.getFullYear(), month: t.getMonth() }
+  })
+  const metodoRef = useRef<HTMLDivElement>(null)
+  const datePickerRef = useRef<HTMLDivElement>(null)
+
+  // Sync calView when date picker opens
+  useEffect(() => {
+    if (datePickerOpen && date) {
+      const [y, m] = date.split('-').map(Number)
+      setCalView({ year: y, month: (m ?? 1) - 1 })
+    }
+  }, [datePickerOpen, date])
 
   // Populate form when editing
   useEffect(() => {
@@ -96,7 +120,46 @@ export function TransacaoModal({
     if (!transaction || mode === 'create') setCategoryId('')
   }, [type]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Click outside to close dropdowns
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (metodoRef.current && !metodoRef.current.contains(e.target as Node)) setMetodoOpen(false)
+      if (datePickerRef.current && !datePickerRef.current.contains(e.target as Node)) setDatePickerOpen(false)
+    }
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [])
+
   if (!open) return null
+
+  function setDateFromCalendar(y: number, m: number, d: number) {
+    setDate(`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`)
+    setDatePickerOpen(false)
+  }
+
+  function prevMonth() {
+    setCalView(v => {
+      const d = new Date(v.year, v.month - 1, 1)
+      return { year: d.getFullYear(), month: d.getMonth() }
+    })
+  }
+  function nextMonth() {
+    setCalView(v => {
+      const d = new Date(v.year, v.month + 1, 1)
+      return { year: d.getFullYear(), month: d.getMonth() }
+    })
+  }
+
+  const firstDay = new Date(calView.year, calView.month, 1).getDay()
+  const daysInMonth = new Date(calView.year, calView.month + 1, 0).getDate()
+  const calDays: (number | null)[] = []
+  for (let i = 0; i < firstDay; i++) calDays.push(null)
+  for (let d = 1; d <= daysInMonth; d++) calDays.push(d)
+
+  const selectedParts = date ? date.split('-').map(Number) : []
+  const selY = selectedParts[0]
+  const selM = selectedParts[1] ? selectedParts[1] - 1 : -1
+  const selD = selectedParts[2]
 
   const filteredCategories = categories.filter(c => c.type === type)
 
@@ -265,39 +328,103 @@ export function TransacaoModal({
 
           {/* Data + Método */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
+            {/* Data — custom date picker */}
+            <div className="flex flex-col gap-1.5 relative" ref={datePickerRef}>
               <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Data</label>
-              <input
-                type="date"
-                value={date}
-                onChange={e => setDate(e.target.value)}
+              <input type="hidden" value={date} readOnly />
+              <button
+                type="button"
+                onClick={() => setDatePickerOpen(o => !o)}
                 className={cn(
-                  'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono]',
-                  errors.date ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus:border-[#10b981]'
+                  'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono] flex items-center justify-between gap-2 text-left',
+                  errors.date ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                  datePickerOpen && 'border-[#10b981]'
                 )}
-              />
+              >
+                <span>{formatDateDisplay(date)}</span>
+                <Calendar size={14} className="text-[var(--sl-t3)] shrink-0" />
+              </button>
+              {datePickerOpen && (
+                <div
+                  className="absolute z-[70] mt-1 p-2 rounded-[12px] min-w-[260px]"
+                  style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <button type="button" onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
+                      ‹
+                    </button>
+                    <span className="text-[13px] font-semibold text-[var(--sl-t1)]">
+                      {MONTHS_PT[calView.month]} {calView.year}
+                    </span>
+                    <button type="button" onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
+                      ›
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-7 gap-0.5 text-[10px] text-[var(--sl-t3)] mb-1">
+                    {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map(d => <div key={d} className="text-center py-1">{d}</div>)}
+                  </div>
+                  <div className="grid grid-cols-7 gap-0.5">
+                    {calDays.map((d, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        disabled={!d}
+                        onClick={() => d && setDateFromCalendar(calView.year, calView.month + 1, d)}
+                        className={cn(
+                          'w-8 h-8 rounded-[8px] text-[12px] font-medium transition-colors',
+                          !d && 'invisible',
+                          d && selY === calView.year && selM === calView.month && selD === d
+                            ? 'bg-[#10b981] text-[#03071a]'
+                            : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
+                        )}
+                      >
+                        {d ?? ''}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               {errors.date && <p className="text-[11px] text-[#f43f5e]">{errors.date}</p>}
             </div>
-            <div className="flex flex-col gap-1.5">
+
+            {/* Método — custom dropdown */}
+            <div className="flex flex-col gap-1.5 relative" ref={metodoRef}>
               <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Método</label>
-              <div className="grid grid-cols-3 gap-1.5">
-                {PAYMENT_OPTIONS.map(p => (
-                  <button
-                    key={p.value}
-                    type="button"
-                    onClick={() => setPaymentMethod(p.value as TransacaoFormData['payment_method'])}
-                    className={cn(
-                      'py-2 px-1.5 rounded-[9px] border-[1.5px] text-[11px] font-semibold transition-all flex items-center justify-center gap-1',
-                      paymentMethod === p.value
-                        ? 'border-[#10b981] bg-[rgba(16,185,129,.08)] text-[#10b981]'
-                        : 'border-[var(--sl-border)] bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
-                    )}
-                  >
-                    <span>{p.icon}</span>
-                    <span className="truncate">{p.label}</span>
-                  </button>
-                ))}
-              </div>
+              <button
+                type="button"
+                onClick={() => setMetodoOpen(o => !o)}
+                className={cn(
+                  'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors flex items-center justify-between gap-2 text-left',
+                  'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                  metodoOpen && 'border-[#10b981]'
+                )}
+              >
+                <span>{PAYMENT_OPTIONS.find(p => p.value === paymentMethod)?.icon} {PAYMENT_OPTIONS.find(p => p.value === paymentMethod)?.label}</span>
+                <ChevronDown size={14} className={cn('text-[var(--sl-t3)] shrink-0 transition-transform', metodoOpen && 'rotate-180')} />
+              </button>
+              {metodoOpen && (
+                <div
+                  className="absolute z-[70] top-full left-0 right-0 mt-1 py-1 rounded-[10px] max-h-[200px] overflow-y-auto"
+                  style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                >
+                  {PAYMENT_OPTIONS.map(p => (
+                    <button
+                      key={p.value}
+                      type="button"
+                      onClick={() => { setPaymentMethod(p.value as TransacaoFormData['payment_method']); setMetodoOpen(false) }}
+                      className={cn(
+                        'w-full px-3.5 py-2.5 text-left text-[13px] flex items-center gap-2 transition-colors',
+                        paymentMethod === p.value
+                          ? 'bg-[rgba(16,185,129,.12)] text-[#10b981] font-semibold'
+                          : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
+                      )}
+                    >
+                      <span>{p.icon}</span>
+                      <span>{p.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

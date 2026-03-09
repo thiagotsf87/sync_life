@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react'
 import { Plus } from 'lucide-react'
-import { useShellStore } from '@/stores/shell-store'
 
 const WEEK_DAYS_SHORT = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB']
 const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
@@ -43,9 +42,6 @@ export function TempoMobile({
   onEventClick,
   eventDotColors,
 }: TempoMobileProps) {
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
-
   const selectedDate = weekDays[selectedDay]
   const dateLabel = selectedDate
     ? `${selectedDate.getDate()} de ${MONTH_NAMES[selectedDate.getMonth()]}, ${WEEK_DAYS_SHORT[selectedDate.getDay()].charAt(0) + WEEK_DAYS_SHORT[selectedDate.getDay()].slice(1).toLowerCase()}`
@@ -83,7 +79,7 @@ export function TempoMobile({
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3">
         <div>
-          <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>
+          <h1 className="font-[Syne] text-[20px] font-bold text-sl-grad">
             Tempo
           </h1>
           <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">{dateLabel}</p>
@@ -179,8 +175,8 @@ export function TempoMobile({
                       {ev.location}{ev.location && ev.duration ? ' · ' : ''}{ev.duration}
                     </p>
                   )}
-                  {/* Module tags — Jornada only */}
-                  {isJornada && ev.tags && ev.tags.length > 0 && (
+                  {/* Module tags */}
+                  {ev.tags && ev.tags.length > 0 && (
                     <div className="flex gap-[5px] mt-1.5">
                       {ev.tags.map((tag, ti) => (
                         <span

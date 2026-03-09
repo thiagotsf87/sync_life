@@ -33,7 +33,21 @@ export default defineConfig({
     actionTimeout: 15000,
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Smoke: testes críticos para PR (target < 5 min)
+    {
+      name: 'smoke',
+      testMatch: /(auth|shell-navigation)\.spec\.ts$/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Regression: todos os testes (target < 30 min)
+    {
+      name: 'regression',
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
   webServer: {
     command: 'npm run dev',

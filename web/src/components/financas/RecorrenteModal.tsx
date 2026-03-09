@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { DatePickerInput } from '@/components/financas/DatePickerInput'
 import type { Category } from '@/hooks/use-categories'
 import type { RecurrenteWithCategory, RecorrenteFormData, Frequency } from '@/hooks/use-recorrentes'
 
@@ -210,9 +211,11 @@ export function RecorrenteModal({
             )}
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Data de início</label>
-              <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
-                className={cn('w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono]',
-                  errors.startDate ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus:border-[#10b981]')} />
+              <DatePickerInput
+                value={startDate}
+                onChange={setStartDate}
+                error={!!errors.startDate}
+              />
               {errors.startDate && <p className="text-[11px] text-[#f43f5e]">{errors.startDate}</p>}
             </div>
           </div>
@@ -220,9 +223,12 @@ export function RecorrenteModal({
           {/* Encerramento */}
           <div className="flex flex-col gap-1.5">
             <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Encerramento (opcional)</label>
-            <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)}
-              className={cn('w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono]',
-                errors.endDate ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus:border-[#10b981]')} />
+            <DatePickerInput
+              value={endDate}
+              onChange={setEndDate}
+              placeholder="Selecione (opcional)"
+              error={!!errors.endDate}
+            />
             {errors.endDate && <p className="text-[11px] text-[#f43f5e]">{errors.endDate}</p>}
           </div>
 

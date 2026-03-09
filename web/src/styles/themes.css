@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    SyncLife Theme System v3
-   9 Temas (3 FREE + 6 PRO) + Modo Foco/Jornada
+   12 Temas — Experiência única (sem modo dual)
    Spec: docs/21-TEMAS-E-MODOS-DEV-SPEC.md
    ═══════════════════════════════════════════════════════════════ */
 
@@ -20,6 +20,8 @@
   --red: #f43f5e;
 
   /* Module colors (fixos por módulo) */
+  --color-pan: #6366f1;           /* Panorama / Home */
+  --color-pan-g: rgba(99,102,241,0.14);
   --color-fin: #10b981;
   --color-tmp: #06b6d4;
   --color-fut: #8b5cf6;
@@ -632,33 +634,15 @@
 }
 
 /* ══════════════════════════════════════════
-   MODO: Visibilidade Foco / Jornada
+   ANIMAÇÕES GLOBAIS
    ══════════════════════════════════════════ */
 
-/* Padrão: foco (oculta elementos jornada-only) */
-[data-mode="foco"] .jornada-only,
-:root:not([data-mode]) .jornada-only {
-  display: none !important;
-}
-
-[data-mode="jornada"] .foco-only {
-  display: none !important;
-}
-
-/* Animações condicionais por modo */
-[data-mode="jornada"] .sl-fade-up {
+.sl-fade-up {
   animation: sl-fade-up 0.4s ease-out both;
 }
-[data-mode="foco"] .sl-fade-up {
-  animation: none;
-}
 
-/* Spec-compatible class names */
-[data-mode="jornada"] .animate-fadeup {
+.animate-fadeup {
   animation: fadeUp 0.4s ease-out both;
-}
-[data-mode="foco"] .animate-fadeup {
-  animation: none;
 }
 
 @keyframes fadeUp {

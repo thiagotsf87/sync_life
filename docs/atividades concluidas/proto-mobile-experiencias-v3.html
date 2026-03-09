@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — ✈️ Experiências v3 · Protótipo Completo (14 telas)</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════
+   SYNCLIFE — EXPERIÊNCIAS V3 · PROTÓTIPO COMPLETO
+   COR CORRIGIDA: #ec4899 (Pink)
+   14 telas · Foco + Jornada indicado por labels
+   ══════════════════════════════════════════════════════ */
+
+:root {
+  /* Superfícies — Navy Dark */
+  --bg: #03071a;
+  --s1: #07112b;
+  --s2: #0c1a3a;
+  --s3: #132248;
+  /* Bordas */
+  --border: rgba(255,255,255,0.06);
+  --border-h: rgba(255,255,255,0.13);
+  /* Texto */
+  --t1: #dff0ff;
+  --t2: #6e90b8;
+  --t3: #2e4a6e;
+  /* Módulo Experiências — COR CORRIGIDA */
+  --exp: #ec4899;
+  --exp-g: rgba(236,72,153,0.14);
+  --exp-grad: linear-gradient(135deg, #ec4899, #f472b6);
+  /* Jornada */
+  --J: #8b5cf6;
+  --J-g: rgba(139,92,246,0.15);
+  --J-grad: linear-gradient(135deg, #8b5cf6, #ec4899);
+  /* Funcionais */
+  --green: #10b981;
+  --yellow: #f59e0b;
+  --red: #f43f5e;
+  --orange: #f97316;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #0a0e1a;
+  color: var(--t1);
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+h1.page-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 8px;
+  background: var(--exp-grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+p.page-sub {
+  text-align: center;
+  color: var(--t2);
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+p.page-note {
+  text-align: center;
+  color: var(--t3);
+  font-size: 11px;
+  margin-bottom: 36px;
+}
+p.page-note strong { color: var(--exp); }
+
+/* ── GROUP LABELS ── */
+.group-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--t1);
+  text-align: center;
+  margin: 60px 0 8px;
+  background: var(--exp-grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.group-sub {
+  text-align: center;
+  color: var(--t3);
+  font-size: 12px;
+  margin-bottom: 24px;
+}
+
+.row-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--t1);
+  text-align: center;
+  margin: 40px 0 6px;
+}
+.row-label span { color: var(--t3); font-weight: 400; font-size: 12px; margin-left: 6px; }
+.row-tags {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.tag-new { font-size: 10px; background: rgba(236,72,153,0.15); color: var(--exp); padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+.tag-improved { font-size: 10px; background: rgba(139,92,246,0.15); color: #c4b5fd; padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+.tag-priority { font-size: 10px; background: rgba(245,158,11,0.15); color: var(--yellow); padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+
+/* ── PHONE ── */
+.phone-row {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.phone {
+  width: 375px;
+  background: var(--bg);
+  border-radius: 48px;
+  border: 2px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  padding-bottom: 20px;
+  flex-shrink: 0;
+}
+.phone.jornada { border-color: rgba(139,92,246,0.25); }
+.dynamic-island {
+  width: 120px;
+  height: 34px;
+  background: #000;
+  border-radius: 20px;
+  margin: 12px auto 0;
+}
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 28px 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--t2);
+}
+
+/* ── MODULE HEADER ── */
+.mod-header { padding: 14px 20px 0; }
+.mod-header-top { display: flex; align-items: center; justify-content: space-between; }
+.mod-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--t1);
+}
+.mod-title .icon { margin-right: 6px; }
+.mod-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+.foco .mod-badge { background: var(--exp-g); color: var(--exp); }
+.jornada .mod-badge { background: var(--J-g); color: #c4b5fd; }
+.jornada .mod-title { background: var(--J-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* ── L2 HEADER (internal screens) ── */
+.l2-header {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px 10px;
+  gap: 12px;
+}
+.l2-back {
+  font-size: 18px;
+  color: var(--t2);
+  cursor: pointer;
+  width: 24px;
+}
+.l2-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--t1);
+  flex: 1;
+}
+.l2-action {
+  font-size: 14px;
+  color: var(--exp);
+  cursor: pointer;
+}
+.jornada .l2-title { background: var(--J-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.jornada .l2-action { color: #c4b5fd; }
+
+/* ── TABS ── */
+.mod-tabs {
+  display: flex;
+  padding: 12px 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.mod-tab {
+  flex: 1;
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--t3);
+  padding: 8px 2px;
+  position: relative;
+  white-space: nowrap;
+}
+.mod-tab.active { color: var(--exp); font-weight: 600; }
+.mod-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background: var(--exp);
+  border-radius: 2px;
+}
+.jornada .mod-tab.active { color: #c4b5fd; }
+.jornada .mod-tab.active::after { background: var(--J); }
+
+/* ── CONTENT ── */
+.content { padding: 16px 20px; }
+
+/* ── CARDS ── */
+.card { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 12px; }
+.card-sm { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+
+/* ── KPI STRIP ── */
+.kpi-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.kpi { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+.kpi-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; color: var(--t1); line-height: 1; }
+.kpi-value.pink { color: var(--exp); }
+.kpi-value.green { color: var(--green); }
+.kpi-value.yellow { color: var(--yellow); }
+.kpi-value.purple { color: var(--J); }
+.kpi-label { font-size: 11px; color: var(--t3); margin-top: 4px; }
+
+/* ── AI CARD ── */
+.ai-card { background: var(--s2); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; display: flex; gap: 10px; align-items: flex-start; }
+.ai-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.foco .ai-icon { background: var(--exp-g); }
+.jornada .ai-icon { background: var(--J-g); }
+.ai-text { font-size: 12px; color: var(--t2); line-height: 1.5; }
+.ai-text strong { color: var(--t1); font-weight: 600; }
+.jornada .ai-text strong { color: #c4b5fd; }
+
+/* ── SECTION TITLES ── */
+.sec-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--t1); margin-bottom: 10px; }
+.sec-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.sec-link { font-size: 11px; color: var(--exp); text-decoration: none; font-weight: 500; }
+.jornada .sec-link { color: #c4b5fd; }
+
+/* ── TRIP FEATURED ── */
+.trip-featured { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 14px; }
+.trip-hero { height: 100px; position: relative; display: flex; align-items: flex-end; padding: 10px 14px; }
+.foco .trip-hero { background: linear-gradient(135deg, #1a0a2e 0%, #2d0a20 50%, #ec4899 150%); }
+.jornada .trip-hero { background: linear-gradient(135deg, #1a0a2e 0%, #2d1b69 50%, #ec4899 150%); }
+.trip-hero-flag { font-size: 28px; margin-right: 10px; }
+.trip-hero-info { flex: 1; }
+.trip-hero-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #fff; }
+.trip-hero-meta { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+.trip-hero-badge { position: absolute; top: 10px; right: 10px; font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; backdrop-filter: blur(8px); }
+.foco .trip-hero-badge { background: rgba(236,72,153,0.25); color: var(--exp); }
+.jornada .trip-hero-badge { background: rgba(139,92,246,0.3); color: #c4b5fd; }
+.trip-body { padding: 12px 14px; }
+.trip-progress-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
+.trip-progress-label span:first-child { color: var(--t2); }
+.trip-progress-label span:last-child { font-family: 'DM Mono', monospace; font-weight: 500; }
+.foco .trip-progress-label span:last-child { color: var(--exp); }
+.jornada .trip-progress-label span:last-child { color: #c4b5fd; }
+.trip-progress-bar { height: 6px; background: var(--s3); border-radius: 4px; overflow: hidden; }
+.trip-progress-fill { height: 100%; border-radius: 4px; }
+.foco .trip-progress-fill { background: var(--exp-grad); }
+.jornada .trip-progress-fill { background: var(--J-grad); }
+
+/* ── MINI TRIP LIST ── */
+.trip-mini { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.trip-mini:last-child { border-bottom: none; }
+.trip-mini-flag { font-size: 22px; width: 36px; height: 36px; background: var(--s2); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.trip-mini-info { flex: 1; }
+.trip-mini-name { font-size: 13px; font-weight: 600; color: var(--t1); }
+.trip-mini-meta { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.trip-mini-status { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
+.status-active { background: rgba(236,72,153,0.15); color: var(--exp); }
+.status-done { background: rgba(16,185,129,0.15); color: var(--green); }
+.status-planning { background: rgba(245,158,11,0.15); color: var(--yellow); }
+
+/* ── QUICK ACTIONS ── */
+.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.quick-btn { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+.quick-icon { font-size: 20px; margin-bottom: 4px; }
+.quick-label { font-size: 11px; color: var(--t2); font-weight: 500; }
+
+/* ── FILTERS ── */
+.filter-row { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.filter-pill { font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 20px; background: var(--s2); color: var(--t2); border: 1px solid var(--border); }
+.filter-pill.active { background: var(--exp-g); color: var(--exp); border-color: rgba(236,72,153,0.3); }
+.jornada .filter-pill.active { background: var(--J-g); color: #c4b5fd; border-color: rgba(139,92,246,0.3); }
+
+/* ── TRIP CARD (list) ── */
+.trip-card { background: var(--s1); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; border-left: 3px solid transparent; }
+.trip-card.bl-active { border-left-color: var(--exp); }
+.trip-card.bl-done { border-left-color: var(--green); }
+.trip-card.bl-plan { border-left-color: var(--yellow); }
+.trip-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.trip-card-flag { font-size: 24px; }
+.trip-card-info { flex: 1; }
+.trip-card-name { font-size: 14px; font-weight: 600; color: var(--t1); }
+.trip-card-dates { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.trip-card-badge { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+.trip-card-bottom { display: flex; gap: 12px; flex-wrap: wrap; }
+.trip-card-tag { font-size: 10px; color: var(--t3); display: flex; align-items: center; gap: 4px; }
+.memory-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: rgba(245,158,11,0.12); color: var(--yellow); }
+
+/* ── STATS ROW ── */
+.stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.stat-box { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 10px 8px; text-align: center; }
+.stat-val { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 500; color: var(--exp); line-height: 1; }
+.jornada .stat-val { color: #c4b5fd; }
+.stat-lbl { font-size: 10px; color: var(--t3); margin-top: 3px; }
+
+/* ── MAP ── */
+.map-container { background: var(--s1); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 14px; overflow: hidden; }
+.map-svg-wrap { width: 100%; border-radius: 10px; overflow: hidden; background: var(--s2); }
+.map-svg-wrap svg { width: 100%; height: auto; display: block; }
+.map-legend { display: flex; gap: 14px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--t3); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.legend-dot.visited { background: var(--exp); }
+.legend-dot.planned { background: var(--yellow); border: 1px dashed var(--yellow); }
+.legend-dot.not-visited { background: var(--s3); }
+.jornada .legend-dot.visited { background: var(--J); }
+.cnt { fill: var(--s3); opacity: 0.6; }
+.cnt-visited { fill: var(--exp); opacity: 0.35; }
+.jornada .cnt-visited { fill: var(--J); opacity: 0.35; }
+.cnt-partial { fill: var(--exp); opacity: 0.18; }
+.jornada .cnt-partial { fill: var(--J); opacity: 0.18; }
+.cnt-planned { fill: none; stroke: var(--yellow); stroke-width: 0.8; stroke-dasharray: 3 2; opacity: 0.7; }
+.pin-visited { fill: var(--exp); }
+.jornada .pin-visited { fill: var(--J); }
+.pin-planned { fill: var(--yellow); }
+.pin-bucket { fill: var(--orange); }
+
+/* ── CONTINENT PROGRESS ── */
+.continent-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.continent-item:last-child { border-bottom: none; }
+.continent-emoji { font-size: 18px; width: 28px; text-align: center; }
+.continent-info { flex: 1; }
+.continent-name { font-size: 12px; font-weight: 600; color: var(--t1); }
+.continent-count { font-size: 10px; color: var(--t3); margin-top: 2px; }
+.continent-bar { width: 50px; height: 4px; background: var(--s3); border-radius: 3px; overflow: hidden; }
+.continent-fill { height: 100%; border-radius: 3px; }
+.foco .continent-fill { background: var(--exp); }
+.jornada .continent-fill { background: var(--J); }
+
+/* ── BADGES ── */
+.badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.badge-item { background: var(--s2); border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; }
+.badge-icon { font-size: 22px; margin-bottom: 4px; }
+.badge-name { font-size: 10px; font-weight: 600; color: var(--t1); }
+.badge-desc { font-size: 9px; color: var(--t3); margin-top: 2px; }
+.badge-locked { opacity: 0.4; }
+.badge-xp { font-size: 9px; font-weight: 600; color: var(--J); margin-top: 3px; }
+
+/* ── COUNTRY LIST ── */
+.country-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.country-item:last-child { border-bottom: none; }
+.country-flag { font-size: 20px; }
+.country-name { font-size: 12px; font-weight: 500; color: var(--t1); flex: 1; }
+.country-visits { font-size: 10px; color: var(--t3); }
+
+/* ── HIGHLIGHTS ── */
+.highlights-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.highlight-card { background: var(--s2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 8px; text-align: center; }
+.highlight-emoji { font-size: 24px; margin-bottom: 4px; }
+.highlight-val { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: var(--t1); line-height: 1; }
+.highlight-lbl { font-size: 9px; color: var(--t3); margin-top: 3px; line-height: 1.2; }
+
+/* ── MEMORY TRIP ITEMS ── */
+.mem-trip { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.mem-trip:last-child { border-bottom: none; }
+.mem-flag { font-size: 22px; width: 40px; height: 40px; background: var(--s2); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.mem-info { flex: 1; }
+.mem-name { font-size: 13px; font-weight: 600; color: var(--t1); }
+.mem-meta { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.mem-rating { font-size: 12px; color: var(--yellow); }
+.mem-tags { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+.mem-tag { font-size: 9px; padding: 2px 6px; border-radius: 8px; background: var(--s3); color: var(--t2); }
+.mem-action { font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 10px; white-space: nowrap; }
+.foco .mem-action.register { background: var(--exp-g); color: var(--exp); }
+.jornada .mem-action.register { background: var(--J-g); color: #c4b5fd; }
+
+/* ── DETAIL HERO ── */
+.detail-hero { border-radius: 16px; overflow: hidden; margin-bottom: 14px; }
+.detail-hero-bg { height: 90px; display: flex; align-items: flex-end; padding: 10px 14px; }
+.foco .detail-hero-bg { background: linear-gradient(135deg, #1a0a2e 0%, #2d0a20 50%, #ec4899 150%); }
+.jornada .detail-hero-bg { background: linear-gradient(135deg, #1a0a2e 0%, #2d1b69 50%, #ec4899 150%); }
+.detail-flag { font-size: 30px; margin-right: 10px; }
+.detail-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #fff; }
+.detail-dates { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+
+/* ── RATING ── */
+.rating-section { text-align: center; margin-bottom: 14px; }
+.rating-stars { display: flex; justify-content: center; gap: 6px; margin-bottom: 4px; }
+.star { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--s2); border: 1px solid var(--border); }
+.star.filled { background: rgba(245,158,11,0.2); border-color: rgba(245,158,11,0.3); }
+.rating-label { font-size: 11px; color: var(--t3); }
+
+/* ── TEXT FIELDS ── */
+.text-field { margin-bottom: 12px; }
+.text-field-label { font-size: 11px; font-weight: 600; color: var(--t2); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+.text-field-value { background: var(--s2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--t1); line-height: 1.5; }
+
+/* ── TAGS ── */
+.tags-section { margin-bottom: 14px; }
+.tags-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-pill { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: var(--s2); border: 1px solid var(--border); color: var(--t2); }
+.tag-pill.selected { background: var(--exp-g); border-color: rgba(236,72,153,0.3); color: var(--exp); }
+.jornada .tag-pill.selected { background: var(--J-g); border-color: rgba(139,92,246,0.3); color: #c4b5fd; }
+
+/* ── BUDGET COMPARISON ── */
+.budget-card { background: var(--s1); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+.budget-title { font-size: 12px; font-weight: 600; color: var(--t1); margin-bottom: 10px; }
+.budget-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+.budget-label { font-size: 11px; color: var(--t2); }
+.budget-val { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; }
+.budget-val.green { color: var(--green); }
+.budget-val.red { color: var(--red); }
+.budget-val.neutral { color: var(--t1); }
+.budget-divider { height: 1px; background: var(--border); margin: 6px 0; }
+
+/* ── BUCKET CARDS ── */
+.bucket-card { background: var(--s1); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+.bucket-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bucket-flag { font-size: 24px; }
+.bucket-info { flex: 1; }
+.bucket-dest { font-size: 14px; font-weight: 600; color: var(--t1); }
+.bucket-country { font-size: 11px; color: var(--t3); margin-top: 1px; }
+.bucket-priority { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 8px; }
+.priority-high { background: rgba(244,63,94,0.15); color: var(--red); }
+.priority-mid { background: rgba(245,158,11,0.15); color: var(--yellow); }
+.priority-low { background: rgba(236,72,153,0.15); color: var(--exp); }
+.bucket-meta { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+.bucket-meta-item { font-size: 10px; color: var(--t3); }
+.bucket-motivation { font-size: 11px; color: var(--t2); font-style: italic; padding: 6px 0; border-top: 1px solid var(--border); margin-top: 4px; }
+.bucket-cta { display: block; text-align: center; font-size: 12px; font-weight: 600; padding: 8px; border-radius: 10px; margin-top: 8px; text-decoration: none; }
+.foco .bucket-cta { background: var(--exp-g); color: var(--exp); }
+.jornada .bucket-cta { background: var(--J-g); color: #c4b5fd; }
+.ai-estimate { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--t3); margin-top: 4px; }
+.ai-estimate .pro { font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 6px; background: var(--J-g); color: var(--J); }
+
+/* ── MAP MINI ── */
+.map-mini { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 14px; overflow: hidden; }
+.map-mini svg { width: 100%; height: auto; display: block; }
+
+/* ── FORM ELEMENTS ── */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 11px; font-weight: 600; color: var(--t2); margin-bottom: 6px; display: block; }
+.form-input { width: 100%; background: var(--s2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--t1); font-family: 'DM Sans', sans-serif; outline: none; }
+.form-input:focus { border-color: rgba(236,72,153,0.4); }
+.form-select { width: 100%; background: var(--s2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--t1); font-family: 'DM Sans', sans-serif; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-toggle { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.form-toggle-label { font-size: 12px; color: var(--t1); }
+.form-toggle-sub { font-size: 10px; color: var(--t3); margin-top: 2px; }
+.toggle-track { width: 40px; height: 22px; border-radius: 11px; background: var(--exp); position: relative; flex-shrink: 0; }
+.toggle-thumb { width: 18px; height: 18px; border-radius: 50%; background: white; position: absolute; top: 2px; right: 2px; }
+.toggle-off .toggle-track { background: var(--s3); }
+.toggle-off .toggle-thumb { right: auto; left: 2px; }
+
+/* ── BUTTONS ── */
+.btn-primary { width: 100%; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; color: #000; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.foco .btn-primary { background: var(--exp-grad); }
+.jornada .btn-primary { background: var(--J-grad); color: #fff; }
+.btn-secondary { width: 100%; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 600; border: 1px solid var(--border); cursor: pointer; font-family: 'DM Sans', sans-serif; background: transparent; }
+.foco .btn-secondary { color: var(--exp); border-color: rgba(236,72,153,0.3); }
+.jornada .btn-secondary { color: #c4b5fd; border-color: rgba(139,92,246,0.3); }
+
+/* ── CHECKLIST ── */
+.checklist-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.checklist-item:last-child { border-bottom: none; }
+.check-box { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+.check-box.done { background: var(--exp-g); border-color: var(--exp); color: var(--exp); }
+.check-label { font-size: 12px; color: var(--t1); flex: 1; }
+.check-label.done { text-decoration: line-through; color: var(--t3); }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 40px 20px; }
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--t1); margin-bottom: 8px; }
+.empty-desc { font-size: 12px; color: var(--t3); line-height: 1.5; margin-bottom: 16px; }
+.empty-btn { display: inline-block; padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; }
+.foco .empty-btn { background: var(--exp-g); color: var(--exp); }
+.jornada .empty-btn { background: var(--J-g); color: #c4b5fd; }
+
+/* ── CELEBRATION ── */
+.celebration { text-align: center; padding: 30px 20px; }
+.celebration-emoji { font-size: 64px; margin-bottom: 12px; }
+.celebration-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.foco .celebration-title { color: var(--exp); }
+.jornada .celebration-title { background: var(--J-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.celebration-sub { font-size: 13px; color: var(--t2); margin-bottom: 16px; line-height: 1.5; }
+.celebration-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.celebration-stat { background: var(--s1); border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; }
+.celebration-stat-val { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; }
+.foco .celebration-stat-val { color: var(--exp); }
+.jornada .celebration-stat-val { color: #c4b5fd; }
+.celebration-stat-lbl { font-size: 9px; color: var(--t3); margin-top: 2px; }
+.xp-earned { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 700; color: #c4b5fd; margin-bottom: 4px; }
+.xp-label { font-size: 11px; color: var(--t3); margin-bottom: 16px; }
+.badge-unlock { background: var(--s1); border: 1px solid rgba(139,92,246,0.3); border-radius: 14px; padding: 14px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+.badge-unlock-icon { font-size: 32px; }
+.badge-unlock-info {}
+.badge-unlock-name { font-size: 13px; font-weight: 700; color: #c4b5fd; }
+.badge-unlock-desc { font-size: 10px; color: var(--t3); margin-top: 2px; }
+
+/* ── PHONE LABEL ── */
+.phone-label {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--t3);
+  margin-top: 12px;
+  font-family: 'DM Mono', monospace;
+}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">✈️ Experiências v3</h1>
+<p class="page-sub">Protótipo Completo — 14 telas · Foco + Jornada</p>
+<p class="page-note">Cor corrigida: <strong>#ec4899</strong> · Ícone: Plane · Design System SyncLife Navy Dark</p>
+
+<!-- ═══════════════════════════════════════════════════
+     GRUPO A: TELAS PRINCIPAIS (L1)
+     ═══════════════════════════════════════════════════ -->
+<div class="group-label">Grupo A — Visualização</div>
+<div class="group-sub">Telas principais (L1) acessíveis via sub-nav</div>
+
+<!-- ─── TELA 01: DASHBOARD FOCO ─── -->
+<div class="row-label">01. Dashboard <span>visão geral do módulo</span></div>
+<div class="row-tags"><span class="tag-priority">⭐ Alta prioridade</span> <span class="tag-improved">✦ Melhorado</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="mod-header"><div class="mod-header-top"><div class="mod-title"><span class="icon">✈️</span> Experiências</div><div class="mod-badge">12 viagens</div></div></div>
+  <div class="mod-tabs"><div class="mod-tab active">Dashboard</div><div class="mod-tab">Viagens</div><div class="mod-tab">Passaporte</div><div class="mod-tab">Memórias</div><div class="mod-tab">Bucket List</div></div>
+  <div class="content">
+    <div class="kpi-strip">
+      <div class="kpi"><div class="kpi-value pink">12</div><div class="kpi-label">Viagens</div></div>
+      <div class="kpi"><div class="kpi-value green">8</div><div class="kpi-label">Países</div></div>
+      <div class="kpi"><div class="kpi-value yellow">3</div><div class="kpi-label">Continentes</div></div>
+      <div class="kpi"><div class="kpi-value" style="font-size:18px;">⭐ 4.3</div><div class="kpi-label">Média memórias</div></div>
+    </div>
+    <div class="ai-card"><div class="ai-icon">🤖</div><div class="ai-text"><strong>Dica:</strong> Você já guardou 56% do orçamento para o Japão. Ao ritmo atual, atinge a meta em Maio.</div></div>
+    <div class="sec-title">Próxima Viagem</div>
+    <div class="trip-featured">
+      <div class="trip-hero"><span class="trip-hero-flag">🇯🇵</span><div class="trip-hero-info"><div class="trip-hero-name">Japão</div><div class="trip-hero-meta">10–22 Jul 2026 · 12 dias · Solo</div></div><div class="trip-hero-badge">Planejando</div></div>
+      <div class="trip-body"><div class="trip-progress-label"><span>Orçamento guardado</span><span>56% · R$ 8.400</span></div><div class="trip-progress-bar"><div class="trip-progress-fill" style="width:56%"></div></div></div>
+    </div>
+    <div class="sec-title-row"><div class="sec-title" style="margin-bottom:0">Recentes</div><a class="sec-link">Ver todas →</a></div>
+    <div class="card-sm">
+      <div class="trip-mini"><div class="trip-mini-flag">🇵🇹</div><div class="trip-mini-info"><div class="trip-mini-name">Portugal</div><div class="trip-mini-meta">Jan 2026 · 14 dias</div></div><span class="trip-mini-status status-done">Concluída</span></div>
+      <div class="trip-mini"><div class="trip-mini-flag">🇨🇱</div><div class="trip-mini-info"><div class="trip-mini-name">Chile</div><div class="trip-mini-meta">Nov 2025 · 8 dias</div></div><span class="trip-mini-status status-done">Concluída</span></div>
+    </div>
+    <div class="sec-title" style="margin-top:4px;">Ações rápidas</div>
+    <div class="quick-grid">
+      <div class="quick-btn"><div class="quick-icon">✈️</div><div class="quick-label">Nova viagem</div></div>
+      <div class="quick-btn"><div class="quick-icon">📸</div><div class="quick-label">Registrar memória</div></div>
+      <div class="quick-btn"><div class="quick-icon">🗺️</div><div class="quick-label">Bucket List</div></div>
+      <div class="quick-btn"><div class="quick-icon">📊</div><div class="quick-label">Relatório</div></div>
+    </div>
+  </div>
+</div>
+<div class="phone-label">01 · Dashboard — Foco</div>
+</div>
+
+<!-- ─── TELA 01J: DASHBOARD JORNADA ─── -->
+<div>
+<div class="phone jornada">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="mod-header"><div class="mod-header-top"><div class="mod-title"><span class="icon">✦</span> Explorador Nível 4</div><div class="mod-badge">1.240 XP</div></div></div>
+  <div class="mod-tabs"><div class="mod-tab active">Dashboard</div><div class="mod-tab">Missões</div><div class="mod-tab">Passaporte</div><div class="mod-tab">Diário</div><div class="mod-tab">Aventuras</div></div>
+  <div class="content">
+    <div class="kpi-strip">
+      <div class="kpi"><div class="kpi-value purple">12</div><div class="kpi-label">Missões</div></div>
+      <div class="kpi"><div class="kpi-value purple">8</div><div class="kpi-label">Países</div></div>
+      <div class="kpi"><div class="kpi-value purple">3</div><div class="kpi-label">Continentes</div></div>
+      <div class="kpi"><div class="kpi-value" style="font-size:18px;">⭐ 4.3</div><div class="kpi-label">Média aventuras</div></div>
+    </div>
+    <div class="ai-card"><div class="ai-icon">🧭</div><div class="ai-text"><strong>Coach Explorador:</strong> Faltam 3 países para o badge "Sul-Americano Raiz"! Que tal Equador ou Peru na próxima aventura? 🌎</div></div>
+    <div class="sec-title">Próxima Missão</div>
+    <div class="trip-featured">
+      <div class="trip-hero"><span class="trip-hero-flag">🇯🇵</span><div class="trip-hero-info"><div class="trip-hero-name">Missão: Japão</div><div class="trip-hero-meta">10–22 Jul 2026 · 12 dias · Solo</div></div><div class="trip-hero-badge">+80 XP</div></div>
+      <div class="trip-body"><div class="trip-progress-label"><span>Orçamento guardado</span><span>56% · R$ 8.400</span></div><div class="trip-progress-bar"><div class="trip-progress-fill" style="width:56%"></div></div></div>
+    </div>
+    <div class="sec-title-row"><div class="sec-title" style="margin-bottom:0">Conquistadas</div><a class="sec-link">Ver todas →</a></div>
+    <div class="card-sm">
+      <div class="trip-mini"><div class="trip-mini-flag">🇵🇹</div><div class="trip-mini-info"><div class="trip-mini-name">Portugal</div><div class="trip-mini-meta">Jan 2026 · 14 dias · +50 XP</div></div><span class="trip-mini-status status-done">✅</span></div>
+      <div class="trip-mini"><div class="trip-mini-flag">🇨🇱</div><div class="trip-mini-info"><div class="trip-mini-name">Chile</div><div class="trip-mini-meta">Nov 2025 · 8 dias · +30 XP</div></div><span class="trip-mini-status status-done">✅</span></div>
+    </div>
+    <div class="sec-title" style="margin-top:4px;">Ações rápidas</div>
+    <div class="quick-grid">
+      <div class="quick-btn"><div class="quick-icon">✈️</div><div class="quick-label">Nova missão</div></div>
+      <div class="quick-btn"><div class="quick-icon">📸</div><div class="quick-label">Registrar diário</div></div>
+      <div class="quick-btn"><div class="quick-icon">🗺️</div><div class="quick-label">Aventuras</div></div>
+      <div class="quick-btn"><div class="quick-icon">📊</div><div class="quick-label">Relatório</div></div>
+    </div>
+  </div>
+</div>
+<div class="phone-label">01J · Dashboard — Jornada</div>
+</div>
+</div>
+
+<!-- ─── TELA 02: VIAGENS ─── -->
+<div class="row-label">02. Viagens <span>lista com filtros e status</span></div>
+<div class="row-tags"><span class="tag-priority">⭐ Alta prioridade</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="mod-header"><div class="mod-header-top"><div class="mod-title"><span class="icon">✈️</span> Experiências</div><div class="mod-badge">Viagens</div></div></div>
+  <div class="mod-tabs"><div class="mod-tab">Dashboard</div><div class="mod-tab active">Viagens</div><div class="mod-tab">Passaporte</div><div class="mod-tab">Memórias</div><div class="mod-tab">Bucket List</div></div>
+  <div class="content">
+    <div class="filter-row">
+      <div class="filter-pill active">Todas (12)</div>
+      <div class="filter-pill">Planejando (1)</div>
+      <div class="filter-pill">Concluídas (10)</div>
+    </div>
+    <div class="trip-card bl-plan"><div class="trip-card-top"><span class="trip-card-flag">🇯🇵</span><div class="trip-card-info"><div class="trip-card-name">Japão — Tóquio & Quioto</div><div class="trip-card-dates">10–22 Jul 2026 · 12 dias</div></div><span class="trip-card-badge status-planning">Planejando</span></div><div class="trip-card-bottom"><span class="trip-card-tag">💰 R$ 15.000</span><span class="trip-card-tag">👤 Solo</span><span class="trip-card-tag">56% guardado</span></div></div>
+    <div class="trip-card bl-done"><div class="trip-card-top"><span class="trip-card-flag">🇵🇹</span><div class="trip-card-info"><div class="trip-card-name">Portugal — Lisboa & Porto</div><div class="trip-card-dates">05–19 Jan 2026 · 14 dias</div></div><span class="trip-card-badge status-done">Concluída</span></div><div class="trip-card-bottom"><span class="trip-card-tag">💰 R$ 12.300</span><span class="trip-card-tag">👤 Solo</span><span class="trip-card-tag">⭐ 4.8</span></div></div>
+    <div class="trip-card bl-done"><div class="trip-card-top"><span class="trip-card-flag">🇨🇱</span><div class="trip-card-info"><div class="trip-card-name">Chile — Santiago</div><div class="trip-card-dates">Nov 2025 · 8 dias</div></div><span class="trip-card-badge status-done">Concluída</span></div><div class="trip-card-bottom"><span class="trip-card-tag">💰 R$ 6.200</span><span class="trip-card-tag">👫 Casal</span><span class="memory-badge">📸 Memória pendente</span></div></div>
+    <div class="trip-card bl-done"><div class="trip-card-top"><span class="trip-card-flag">🇨🇴</span><div class="trip-card-info"><div class="trip-card-name">Colômbia — Bogotá</div><div class="trip-card-dates">Set 2025 · 10 dias</div></div><span class="trip-card-badge status-done">Concluída</span></div><div class="trip-card-bottom"><span class="trip-card-tag">💰 R$ 5.800</span><span class="trip-card-tag">👫 Amigos</span><span class="memory-badge">📸 Memória pendente</span></div></div>
+  </div>
+</div>
+<div class="phone-label">02 · Viagens — Foco</div>
+</div>
+</div>
+
+<!-- ─── TELA 03: PASSAPORTE ─── -->
+<div class="row-label">03. Passaporte <span>mapa-múndi + badges + países</span></div>
+<div class="row-tags"><span class="tag-improved">✦ Melhorado</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="mod-header"><div class="mod-header-top"><div class="mod-title"><span class="icon">✈️</span> Experiências</div><div class="mod-badge">Passaporte</div></div></div>
+  <div class="mod-tabs"><div class="mod-tab">Dashboard</div><div class="mod-tab">Viagens</div><div class="mod-tab active">Passaporte</div><div class="mod-tab">Memórias</div><div class="mod-tab">Bucket List</div></div>
+  <div class="content">
+    <div class="stats-row"><div class="stat-box"><div class="stat-val">8</div><div class="stat-lbl">Países</div></div><div class="stat-box"><div class="stat-val">3</div><div class="stat-lbl">Continentes</div></div><div class="stat-box"><div class="stat-val">4.1%</div><div class="stat-lbl">do Mundo</div></div></div>
+    <div class="map-container"><div class="map-svg-wrap"><svg viewBox="0 0 360 180" xmlns="http://www.w3.org/2000/svg"><path class="cnt" d="M30,25 L55,20 L75,22 L95,18 L105,25 L110,35 L105,42 L100,48 L90,52 L85,58 L80,65 L75,68 L68,72 L60,74 L55,70 L48,62 L42,55 L35,52 L30,48 L28,40 L25,32 Z"/><path class="cnt" d="M60,74 L65,76 L68,80 L66,84 L62,88 L58,86 L56,82 L57,78 Z"/><path class="cnt-visited" d="M62,88 L72,86 L80,90 L86,96 L90,105 L92,115 L90,125 L85,135 L78,142 L70,148 L64,150 L60,146 L56,138 L54,128 L52,118 L50,108 L52,98 L55,92 Z"/><path class="cnt-partial" d="M160,18 L170,15 L178,16 L175,22 L180,26 L186,22 L190,18 L195,22 L192,28 L188,30 L185,34 L180,38 L176,42 L170,45 L164,44 L158,40 L155,35 L154,28 L156,23 Z"/><path class="cnt-visited" d="M155,35 L158,40 L164,44 L160,48 L154,50 L148,48 L146,43 L148,38 L152,36 Z"/><path class="cnt" d="M160,52 L170,48 L180,50 L190,52 L196,56 L200,62 L204,70 L206,80 L204,90 L200,100 L194,108 L186,115 L178,118 L170,116 L164,110 L160,102 L156,92 L154,82 L152,72 L154,62 L156,56 Z"/><path class="cnt" d="M195,15 L220,10 L245,12 L265,16 L280,20 L295,18 L310,22 L318,28 L320,38 L315,48 L308,55 L298,58 L288,62 L278,58 L268,55 L258,52 L248,48 L238,50 L228,48 L218,45 L208,42 L200,38 L195,32 L192,25 Z"/><path class="cnt-planned" d="M310,30 L315,28 L318,32 L316,38 L312,42 L308,40 L306,36 L308,32 Z"/><path class="cnt" d="M290,110 L305,105 L318,108 L328,115 L332,125 L328,134 L318,140 L305,142 L294,138 L288,130 L286,120 L288,114 Z"/><circle class="pin-visited" cx="72" cy="110" r="3"/><circle class="pin-visited" cx="68" cy="138" r="3"/><circle class="pin-visited" cx="148" cy="44" r="3"/><circle class="pin-visited" cx="156" cy="42" r="3"/><circle class="pin-planned" cx="312" cy="35" r="3"/></svg></div><div class="map-legend"><div class="legend-item"><div class="legend-dot visited"></div>Visitado</div><div class="legend-item"><div class="legend-dot planned"></div>Planejado</div><div class="legend-item"><div class="legend-dot not-visited"></div>Não visitado</div></div></div>
+    <div class="sec-title">Progresso por Continente</div>
+    <div class="card-sm"><div class="continent-item"><div class="continent-emoji">🌎</div><div class="continent-info"><div class="continent-name">América do Sul</div><div class="continent-count">5 de 12</div></div><div class="continent-bar"><div class="continent-fill" style="width:42%"></div></div></div><div class="continent-item"><div class="continent-emoji">🌍</div><div class="continent-info"><div class="continent-name">Europa</div><div class="continent-count">2 de 44</div></div><div class="continent-bar"><div class="continent-fill" style="width:5%"></div></div></div><div class="continent-item"><div class="continent-emoji">🌏</div><div class="continent-info"><div class="continent-name">Ásia</div><div class="continent-count">🇯🇵 planejado</div></div><div class="continent-bar"><div class="continent-fill" style="width:0%"></div></div></div></div>
+    <div class="sec-title">Badges</div>
+    <div class="badge-grid"><div class="badge-item"><div class="badge-icon">🌎</div><div class="badge-name">Explorador SA</div><div class="badge-desc">5 países Am. Sul</div></div><div class="badge-item"><div class="badge-icon">🇪🇺</div><div class="badge-name">Eurotrip</div><div class="badge-desc">2+ países Europa</div></div><div class="badge-item badge-locked"><div class="badge-icon">🔒</div><div class="badge-name">Volta ao Mundo</div><div class="badge-desc">Todos continentes</div></div><div class="badge-item badge-locked"><div class="badge-icon">🔒</div><div class="badge-name">Nômade Digital</div><div class="badge-desc">30+ dias exterior</div></div></div>
+    <div class="sec-title" style="margin-top:4px;">Países Visitados</div>
+    <div class="card-sm"><div class="country-item"><span class="country-flag">🇧🇷</span><span class="country-name">Brasil</span><span class="country-visits">Doméstico</span></div><div class="country-item"><span class="country-flag">🇦🇷</span><span class="country-name">Argentina</span><span class="country-visits">2 viagens</span></div><div class="country-item"><span class="country-flag">🇵🇹</span><span class="country-name">Portugal</span><span class="country-visits">1 viagem</span></div><div class="country-item"><span class="country-flag">🇪🇸</span><span class="country-name">Espanha</span><span class="country-visits">1 viagem</span></div></div>
+  </div>
+</div>
+<div class="phone-label">03 · Passaporte — Foco</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     GRUPO B: CRUD
+     ═══════════════════════════════════════════════════ -->
+<div class="group-label">Grupo B — CRUD</div>
+<div class="group-sub">Telas de criação, detalhe e edição (L2)</div>
+
+<!-- ─── TELA 07: CRIAR VIAGEM ─── -->
+<div class="row-label">07. Criar Viagem <span>wizard com vinculações</span></div>
+<div class="row-tags"><span class="tag-new">★ Novo</span> <span class="tag-priority">⭐ Alta prioridade</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="l2-header"><span class="l2-back">←</span><span class="l2-title">Nova Viagem</span></div>
+  <div class="content">
+    <div class="form-group"><div class="form-label">🌍 Destino</div><div class="form-input" style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">🇯🇵</span><span>Japão — Tóquio & Quioto</span></div></div>
+    <div class="form-row">
+      <div class="form-group"><div class="form-label">📅 Início</div><div class="form-input">10/07/2026</div></div>
+      <div class="form-group"><div class="form-label">📅 Fim</div><div class="form-input">22/07/2026</div></div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--t3);margin:-8px 0 12px;">12 dias de viagem</div>
+    <div class="form-group"><div class="form-label">👥 Tipo</div><div class="form-select">👤 Solo</div></div>
+    <div class="form-group"><div class="form-label">💰 Orçamento estimado</div><div class="form-input">R$ 15.000,00</div></div>
+    <div class="form-group"><div class="form-label">📝 Notas (opcional)</div><div class="form-input" style="min-height:48px;color:var(--t3);">Ramen em Tóquio, templos em Quioto...</div></div>
+    <div class="sec-title" style="margin-top:4px;">Integrações</div>
+    <div class="card-sm">
+      <div class="form-toggle"><div><div class="form-toggle-label">💰 Criar envelope no Finanças</div><div class="form-toggle-sub">Meta de R$ 15.000 com contribuição mensal</div></div><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+      <div class="form-toggle"><div><div class="form-toggle-label">📅 Bloquear datas na agenda</div><div class="form-toggle-sub">10-22 Jul bloqueados no módulo Tempo</div></div><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+      <div class="form-toggle toggle-off" style="border-bottom:none;"><div><div class="form-toggle-label">🔮 Vincular a Objetivo</div><div class="form-toggle-sub">Conectar com meta no módulo Futuro</div></div><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+    </div>
+    <div style="margin-top:14px;"><button class="btn-primary">Criar Viagem ✈️</button></div>
+  </div>
+</div>
+<div class="phone-label">07 · Criar Viagem — Foco ★</div>
+</div>
+</div>
+
+<!-- ─── TELA 06: DETALHE VIAGEM ─── -->
+<div class="row-label">06. Detalhe da Viagem <span>status, orçamento, checklist</span></div>
+<div class="row-tags"><span class="tag-new">★ Novo</span> <span class="tag-priority">⭐ Alta prioridade</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="l2-header"><span class="l2-back">←</span><span class="l2-title">Japão</span><span class="l2-action">✏️</span></div>
+  <div class="content">
+    <div class="detail-hero"><div class="detail-hero-bg"><span class="detail-flag">🇯🇵</span><div><div class="detail-name">Japão — Tóquio & Quioto</div><div class="detail-dates">10–22 Jul 2026 · 12 dias · Solo</div></div></div></div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <span class="trip-card-badge status-planning" style="font-size:11px;padding:4px 12px;">⏳ Planejando</span>
+      <span class="trip-card-badge" style="font-size:11px;padding:4px 12px;background:var(--exp-g);color:var(--exp);">56% guardado</span>
+    </div>
+    <div class="sec-title">💰 Orçamento</div>
+    <div class="budget-card" style="margin-bottom:14px;">
+      <div class="budget-row"><span class="budget-label">Meta total</span><span class="budget-val neutral">R$ 15.000</span></div>
+      <div class="budget-row"><span class="budget-label">Guardado</span><span class="budget-val green">R$ 8.400</span></div>
+      <div class="budget-divider"></div>
+      <div class="budget-row"><span class="budget-label">Faltam</span><span class="budget-val" style="color:var(--exp);">R$ 6.600</span></div>
+    </div>
+    <div class="sec-title">✅ Checklist</div>
+    <div class="card-sm">
+      <div class="checklist-item"><div class="check-box done">✓</div><span class="check-label done">Passaporte válido</span></div>
+      <div class="checklist-item"><div class="check-box done">✓</div><span class="check-label done">Seguro viagem contratado</span></div>
+      <div class="checklist-item"><div class="check-box"></div><span class="check-label">Passagem aérea</span></div>
+      <div class="checklist-item"><div class="check-box"></div><span class="check-label">Reserva de hotel</span></div>
+      <div class="checklist-item"><div class="check-box"></div><span class="check-label">Japan Rail Pass</span></div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px;">
+      <button class="btn-secondary" style="flex:1;">Cancelar viagem</button>
+      <button class="btn-primary" style="flex:1;">Iniciar viagem ✈️</button>
+    </div>
+  </div>
+</div>
+<div class="phone-label">06 · Detalhe Viagem — Foco ★</div>
+</div>
+</div>
+
+<!-- ─── TELA 10: ADICIONAR DESTINO BUCKET LIST ─── -->
+<div class="row-label">10. Adicionar Destino <span>modal bucket list</span></div>
+<div class="row-tags"><span class="tag-new">★ Novo</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="l2-header"><span class="l2-back">←</span><span class="l2-title">Novo Destino</span></div>
+  <div class="content">
+    <div class="form-group"><div class="form-label">🌍 Destino</div><div class="form-input" style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">🇮🇹</span><span>Itália — Roma & Toscana</span></div></div>
+    <div class="form-group"><div class="form-label">🎯 Prioridade</div>
+      <div style="display:flex;gap:8px;">
+        <div class="filter-pill active" style="flex:1;text-align:center;">Alta</div>
+        <div class="filter-pill" style="flex:1;text-align:center;">Média</div>
+        <div class="filter-pill" style="flex:1;text-align:center;">Baixa</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><div class="form-label">💰 Orçamento estimado</div><div class="form-input">R$ 14.000</div></div>
+      <div class="form-group"><div class="form-label">📅 Ano alvo</div><div class="form-input">2027</div></div>
+    </div>
+    <div class="form-group"><div class="form-label">👥 Tipo</div><div class="form-select">👫 Casal</div></div>
+    <div class="form-group"><div class="form-label">💬 Motivação (o que te inspira?)</div><div class="form-input" style="min-height:56px;">"Pizza napolitana e o Coliseu — obrigatório."</div></div>
+    <div style="margin-top:16px;"><button class="btn-primary">Adicionar à Bucket List 🗺️</button></div>
+  </div>
+</div>
+<div class="phone-label">10 · Adicionar Destino — Foco ★</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     GRUPO C: TELAS ESPECÍFICAS
+     ═══════════════════════════════════════════════════ -->
+<div class="group-label">Grupo C — Específico</div>
+<div class="group-sub">Memórias, Bucket List, Memória Detalhe</div>
+
+<!-- ─── TELA 04: MEMÓRIAS LISTA ─── -->
+<div class="row-label">04. Memórias <span>highlights + viagens concluídas</span></div>
+<div class="row-tags"><span class="tag-improved">✦ Melhorado</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="mod-header"><div class="mod-header-top"><div class="mod-title"><span class="icon">✈️</span> Experiências</div><div class="mod-badge">Memórias</div></div></div>
+  <div class="mod-tabs"><div class="mod-tab">Dashboard</div><div class="mod-tab">Viagens</div><div class="mod-tab">Passaporte</div><div class="mod-tab active">Memórias</div><div class="mod-tab">Bucket List</div></div>
+  <div class="content">
+    <div class="stats-row"><div class="stat-box"><div class="stat-val">5</div><div class="stat-lbl">Registradas</div></div><div class="stat-box"><div class="stat-val" style="color:var(--yellow);">2</div><div class="stat-lbl">Pendentes</div></div><div class="stat-box"><div class="stat-val">⭐ 4.3</div><div class="stat-lbl">Média</div></div></div>
+    <div class="sec-title">Highlights</div>
+    <div class="highlights-grid"><div class="highlight-card"><div class="highlight-emoji">🍝</div><div class="highlight-val">Portugal</div><div class="highlight-lbl">Melhor comida</div></div><div class="highlight-card"><div class="highlight-emoji">📸</div><div class="highlight-val">Espanha</div><div class="highlight-lbl">Mais bonito</div></div><div class="highlight-card"><div class="highlight-emoji">💡</div><div class="highlight-val">Argentina</div><div class="highlight-lbl">Aprendizado</div></div></div>
+    <div class="sec-title">Viagens Concluídas</div>
+    <div class="card-sm">
+      <div class="mem-trip"><div class="mem-flag">🇵🇹</div><div class="mem-info"><div class="mem-name">Portugal — Lisboa & Porto</div><div class="mem-meta">Jan 2026 · 14 dias</div><div class="mem-tags"><span class="mem-tag">🤩 Incrível</span><span class="mem-tag">🍝 Gastro</span></div></div><div class="mem-rating">⭐ 4.8</div></div>
+      <div class="mem-trip"><div class="mem-flag">🇪🇸</div><div class="mem-info"><div class="mem-name">Espanha — Barcelona</div><div class="mem-meta">Ago 2025 · 10 dias</div><div class="mem-tags"><span class="mem-tag">😍 Apaixonante</span></div></div><div class="mem-rating">⭐ 4.5</div></div>
+      <div class="mem-trip"><div class="mem-flag">🇨🇱</div><div class="mem-info"><div class="mem-name">Chile — Santiago</div><div class="mem-meta">Nov 2025 · 8 dias</div></div><span class="mem-action register">Registrar</span></div>
+      <div class="mem-trip"><div class="mem-flag">🇨🇴</div><div class="mem-info"><div class="mem-name">Colômbia — Bogotá</div><div class="mem-meta">Set 2025 · 10 dias</div></div><span class="mem-action register">Registrar</span></div>
+    </div>
+  </div>
+</div>
+<div class="phone-label">04 · Memórias — Foco</div>
+</div>
+</div>
+
+<!-- ─── TELA 09: MEMÓRIA DETALHE ─── -->
+<div class="row-label">09. Memória Detalhe <span>rating, campos, tags, orçado vs real</span></div>
+<div class="row-tags"><span class="tag-improved">✦ Melhorado</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="l2-header"><span class="l2-back">←</span><span class="l2-title">Memória</span><span class="l2-action">✏️</span></div>
+  <div class="content">
+    <div class="detail-hero"><div class="detail-hero-bg"><span class="detail-flag">🇵🇹</span><div><div class="detail-name">Portugal — Lisboa & Porto</div><div class="detail-dates">05–19 Jan 2026 · 14 dias · Solo</div></div></div></div>
+    <div class="rating-section"><div class="rating-stars"><div class="star filled">⭐</div><div class="star filled">⭐</div><div class="star filled">⭐</div><div class="star filled">⭐</div><div class="star">☆</div></div><div class="rating-label">Nota: 4.8 / 5</div></div>
+    <div class="text-field"><div class="text-field-label">⭐ Momento favorito</div><div class="text-field-value">Assistir ao pôr do sol no Miradouro da Graça em Lisboa, com o Tejo brilhando.</div></div>
+    <div class="text-field"><div class="text-field-label">🍽️ Melhor comida</div><div class="text-field-value">Bacalhau à Brás no restaurante Ramiro em Lisboa.</div></div>
+    <div class="text-field"><div class="text-field-label">📸 Lugar mais bonito</div><div class="text-field-value">A Livraria Lello no Porto.</div></div>
+    <div class="text-field"><div class="text-field-label">💡 Aprendizado</div><div class="text-field-value">Viajar sozinho me ensinou a ser mais paciente.</div></div>
+    <div class="tags-section"><div class="sec-title">Emoções</div><div class="tags-grid"><span class="tag-pill selected">🤩 Incrível</span><span class="tag-pill selected">🍝 Gastronômico</span><span class="tag-pill selected">📚 Cultural</span><span class="tag-pill">😌 Relaxante</span><span class="tag-pill">🏖️ Praia</span><span class="tag-pill">🏔️ Aventura</span><span class="tag-pill selected">🎶 Musical</span><span class="tag-pill">💑 Romântico</span></div></div>
+    <div class="budget-card"><div class="budget-title">💰 Orçado vs Real</div><div class="budget-row"><span class="budget-label">Orçado</span><span class="budget-val neutral">R$ 13.000</span></div><div class="budget-row"><span class="budget-label">Real gasto</span><span class="budget-val neutral">R$ 12.300</span></div><div class="budget-divider"></div><div class="budget-row"><span class="budget-label">Economia</span><span class="budget-val green">R$ 700 (5.4%)</span></div></div>
+  </div>
+</div>
+<div class="phone-label">09 · Memória Detalhe — Foco</div>
+</div>
+</div>
+
+<!-- ─── TELA 05: BUCKET LIST ─── -->
+<div class="row-label">05. Bucket List <span>mapa mini + cards com prioridade</span></div>
+<div class="row-tags"><span class="tag-improved">✦ Melhorado</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="mod-header"><div class="mod-header-top"><div class="mod-title"><span class="icon">✈️</span> Experiências</div><div class="mod-badge">Bucket List</div></div></div>
+  <div class="mod-tabs"><div class="mod-tab">Dashboard</div><div class="mod-tab">Viagens</div><div class="mod-tab">Passaporte</div><div class="mod-tab">Memórias</div><div class="mod-tab active">Bucket List</div></div>
+  <div class="content">
+    <div class="filter-row"><div class="filter-pill active">Todos (14)</div><div class="filter-pill">Visitados (4)</div><div class="filter-pill">Pendentes (10)</div></div>
+    <div class="bucket-card"><div class="bucket-top"><span class="bucket-flag">🇯🇵</span><div class="bucket-info"><div class="bucket-dest">Tóquio & Quioto</div><div class="bucket-country">Japão · Ásia</div></div><span class="bucket-priority priority-high">Alta</span></div><div class="bucket-meta"><span class="bucket-meta-item">💰 R$ 15.000</span><span class="bucket-meta-item">📅 Jul 2026</span><span class="bucket-meta-item">👤 Solo</span></div><div class="bucket-motivation">"Sempre sonhei em ver o Monte Fuji."</div><a class="bucket-cta">Transformar em Viagem →</a></div>
+    <div class="bucket-card"><div class="bucket-top"><span class="bucket-flag">🇮🇹</span><div class="bucket-info"><div class="bucket-dest">Roma & Toscana</div><div class="bucket-country">Itália · Europa</div></div><span class="bucket-priority priority-high">Alta</span></div><div class="bucket-meta"><span class="bucket-meta-item">💰 R$ 14.000</span><span class="bucket-meta-item">📅 2027</span></div><div class="bucket-motivation">"Pizza napolitana e o Coliseu."</div><div class="ai-estimate">🤖 Estimativa IA: R$ 13.500–16.000 <span class="pro">PRO</span></div></div>
+    <div class="bucket-card"><div class="bucket-top"><span class="bucket-flag">🇬🇷</span><div class="bucket-info"><div class="bucket-dest">Santorini & Atenas</div><div class="bucket-country">Grécia · Europa</div></div><span class="bucket-priority priority-mid">Média</span></div><div class="bucket-meta"><span class="bucket-meta-item">💰 R$ 12.000</span><span class="bucket-meta-item">📅 2027</span></div><div class="bucket-motivation">"Pôr do sol azul e branco."</div></div>
+    <div class="card-sm" style="text-align:center;margin-top:4px;"><div style="font-size:11px;color:var(--t3);margin-bottom:4px;">Custo total estimado</div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--exp);">R$ 85.000</div><div style="font-size:10px;color:var(--t3);margin-top:2px;">14 destinos · 4 visitados · 10 pendentes</div></div>
+  </div>
+</div>
+<div class="phone-label">05 · Bucket List — Foco</div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     GRUPO D: ESTADOS
+     ═══════════════════════════════════════════════════ -->
+<div class="group-label">Grupo D — Estados</div>
+<div class="group-sub">Empty states, celebração, erros</div>
+
+<!-- ─── TELA 11: EMPTY STATE ─── -->
+<div class="row-label">11. Empty State — Dashboard <span>primeira vez sem dados</span></div>
+<div class="row-tags"><span class="tag-new">★ Novo</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="mod-header"><div class="mod-header-top"><div class="mod-title"><span class="icon">✈️</span> Experiências</div><div class="mod-badge">0 viagens</div></div></div>
+  <div class="mod-tabs"><div class="mod-tab active">Dashboard</div><div class="mod-tab">Viagens</div><div class="mod-tab">Passaporte</div><div class="mod-tab">Memórias</div><div class="mod-tab">Bucket List</div></div>
+  <div class="content">
+    <div class="empty-state">
+      <div class="empty-icon">🌍</div>
+      <div class="empty-title">O mundo espera por você!</div>
+      <div class="empty-desc">Comece registrando sua primeira viagem ou adicione destinos dos seus sonhos à Bucket List.</div>
+      <a class="empty-btn">✈️ Criar primeira viagem</a>
+    </div>
+  </div>
+</div>
+<div class="phone-label">11 · Empty State — Foco ★</div>
+</div>
+
+<div>
+<div class="phone jornada">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="mod-header"><div class="mod-header-top"><div class="mod-title"><span class="icon">✦</span> Explorador Nível 1</div><div class="mod-badge">0 XP</div></div></div>
+  <div class="mod-tabs"><div class="mod-tab active">Dashboard</div><div class="mod-tab">Missões</div><div class="mod-tab">Passaporte</div><div class="mod-tab">Diário</div><div class="mod-tab">Aventuras</div></div>
+  <div class="content">
+    <div class="empty-state">
+      <div class="empty-icon">🧭</div>
+      <div class="empty-title">Sua jornada começa aqui!</div>
+      <div class="empty-desc">Todo explorador precisa de sua primeira missão. Crie uma viagem e comece a ganhar XP!</div>
+      <a class="empty-btn">⚡ Criar primeira missão</a>
+    </div>
+  </div>
+</div>
+<div class="phone-label">11J · Empty State — Jornada ★</div>
+</div>
+</div>
+
+<!-- ─── TELA 12: CELEBRAÇÃO ─── -->
+<div class="row-label">12. Celebração — Viagem Concluída <span>dopamina + XP</span></div>
+<div class="row-tags"><span class="tag-new">★ Novo</span></div>
+<div class="phone-row">
+<div>
+<div class="phone foco">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="content">
+    <div class="celebration">
+      <div class="celebration-emoji">🎉✈️🇵🇹</div>
+      <div class="celebration-title">Portugal Concluído!</div>
+      <div class="celebration-sub">14 dias incríveis em Lisboa & Porto.<br>Você economizou R$ 700 em relação ao orçado!</div>
+      <div class="celebration-stats">
+        <div class="celebration-stat"><div class="celebration-stat-val">14</div><div class="celebration-stat-lbl">Dias</div></div>
+        <div class="celebration-stat"><div class="celebration-stat-val">R$ 12.3k</div><div class="celebration-stat-lbl">Total gasto</div></div>
+        <div class="celebration-stat"><div class="celebration-stat-val">8</div><div class="celebration-stat-lbl">Países total</div></div>
+      </div>
+      <button class="btn-primary" style="margin-bottom:10px;">📸 Registrar memória</button>
+      <button class="btn-secondary">Agora não</button>
+    </div>
+  </div>
+</div>
+<div class="phone-label">12 · Celebração — Foco ★</div>
+</div>
+
+<div>
+<div class="phone jornada">
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+  <div class="content">
+    <div class="celebration">
+      <div class="celebration-emoji">🏆✈️🇵🇹</div>
+      <div class="celebration-title">Missão Concluída!</div>
+      <div class="celebration-sub">Portugal conquistado! 14 dias épicos em Lisboa & Porto.</div>
+      <div class="xp-earned">+50 XP</div>
+      <div class="xp-label">Explorador Nível 4 · 1.240 / 1.500 XP</div>
+      <div class="celebration-stats">
+        <div class="celebration-stat"><div class="celebration-stat-val">14</div><div class="celebration-stat-lbl">Dias</div></div>
+        <div class="celebration-stat"><div class="celebration-stat-val">R$ 12.3k</div><div class="celebration-stat-lbl">Total gasto</div></div>
+        <div class="celebration-stat"><div class="celebration-stat-val">8</div><div class="celebration-stat-lbl">Países</div></div>
+      </div>
+      <div class="badge-unlock"><div class="badge-unlock-icon">🇪🇺</div><div class="badge-unlock-info"><div class="badge-unlock-name">Badge Desbloqueado: Eurotrip!</div><div class="badge-unlock-desc">2+ países na Europa · +30 XP</div></div></div>
+      <button class="btn-primary" style="margin-bottom:10px;">📸 Registrar no diário</button>
+      <button class="btn-secondary">Agora não</button>
+    </div>
+  </div>
+</div>
+<div class="phone-label">12J · Celebração — Jornada ★</div>
+</div>
+</div>
+
+<p style="text-align:center;color:var(--t3);font-size:12px;margin-top:60px;padding-bottom:20px;">
+  SyncLife · ✈️ Experiências v3 · 14 telas · 07/03/2026<br>
+  Cor: <span style="color:#ec4899;">#ec4899</span> · Ícone: Plane · Design System Navy Dark<br>
+  Grupos: A (Visualização) · B (CRUD) · C (Específico) · D (Estados)
+</p>
+
+</body>
+</html>

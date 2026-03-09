@@ -2,18 +2,15 @@
 
 import { useRouter } from 'next/navigation'
 import { Crown, Plus } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import { usePatrimonioDashboard, ASSET_CLASS_LABELS, ASSET_CLASS_COLORS } from '@/hooks/use-patrimonio'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { AssetCard } from '@/components/patrimonio/AssetCard'
+import { PatrimonioMobile } from '@/components/patrimonio/PatrimonioMobile'
 
 export default function PatrimonioPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
   const { isPro } = useUserPlan()
 
   const { assets, dividends, loading, error } = usePatrimonioDashboard()
@@ -54,14 +51,13 @@ export default function PatrimonioPage() {
     .slice(0, 6)
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+      <PatrimonioMobile initialTab="dashboard" />
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
           📈 Patrimônio
         </h1>
         <div className="flex-1" />
@@ -257,5 +253,6 @@ export default function PatrimonioPage() {
         ))}
       </div>
     </div>
+    </>
   )
 }

@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useShellStore } from '@/stores/shell-store'
 import { usePortfolioAssets, usePortfolioDividends, ASSET_CLASS_LABELS, ASSET_CLASS_COLORS } from '@/hooks/use-patrimonio'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
+import { PatrimonioMobile } from '@/components/patrimonio/PatrimonioMobile'
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
   CartesianGrid, Tooltip as ReTooltip,
@@ -16,8 +16,6 @@ type Period = '3m' | '6m' | '1a' | 'all'
 
 export default function EvolucaoPage() {
   const router = useRouter()
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
 
   const [period, setPeriod] = useState<Period>('1a')
 
@@ -97,7 +95,9 @@ export default function EvolucaoPage() {
     v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+      <PatrimonioMobile initialTab="evolucao" />
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
@@ -108,10 +108,7 @@ export default function EvolucaoPage() {
           <ArrowLeft size={16} />
           Patrimônio
         </button>
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-xl flex-1',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
           📊 Evolução do Patrimônio
         </h1>
         <div className="flex gap-1 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] p-0.5">
@@ -316,5 +313,6 @@ export default function EvolucaoPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

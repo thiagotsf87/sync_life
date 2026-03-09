@@ -36,7 +36,7 @@ test.describe('Futuro: Lista', () => {
     }
   })
 
-  test('10.5 JornadaInsight oculto no Foco', async ({ page }) => {
+  test('10.5 Insight sempre visível (unified experience)', async ({ page }) => {
     await expect(page.locator('body')).toBeVisible()
   })
 

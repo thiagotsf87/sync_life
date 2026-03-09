@@ -51,16 +51,12 @@ function readNotifSettings(): NotifSettings {
   }
 }
 
-async function loadUserPlanAndMode(sb: any, userId: string): Promise<{ isPro: boolean; isJornada: boolean }> {
+async function loadUserPlan(sb: any, userId: string): Promise<{ isPro: boolean }> {
   const [{ data: profile }] = await Promise.all([
     sb.from('profiles').select('plan').eq('id', userId).single(),
   ])
-  const mode = typeof window !== 'undefined'
-    ? (localStorage.getItem('synclife-mode') ?? 'foco')
-    : 'foco'
   return {
     isPro: profile?.plan === 'pro',
-    isJornada: mode === 'jornada',
   }
 }
 
@@ -94,7 +90,7 @@ export function useNotifications() {
 
     const sb = supabase as any
     const settings = readNotifSettings()
-    const { isPro, isJornada } = await loadUserPlanAndMode(sb, user.id)
+    const { isPro } = await loadUserPlan(sb, user.id)
 
     // ── 1. Objetivos com ritmo insuficiente (RN-FUT-25/52) ─────────────────
     const { data: objectives } = await sb
@@ -307,7 +303,7 @@ export function useNotifications() {
     }
 
     // ── 7. Resumo semanal (RN-FUT-53) ────────────────────────────────────
-    if (settings.weeklyReview && isJornada && isPro) {
+    if (settings.weeklyReview && isPro) {
       const weeklyDate = new Date(Date.now() - 7 * 86400000).toISOString()
       const { data: recentSummary } = await sb
         .from('notifications')

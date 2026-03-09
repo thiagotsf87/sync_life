@@ -4,12 +4,13 @@ import { useState, useEffect, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import { Plus, ChevronLeft, ChevronRight, AlertTriangle, Pencil, Trash2, Copy, X } from 'lucide-react'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { useCategories } from '@/hooks/use-categories'
 import { useBudgets, type BudgetWithSpend, type Budget } from '@/hooks/use-budgets'
 import { EnvelopeModal } from '@/components/financas/EnvelopeModal'
+import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
+import { ProLimitGate } from '@/components/ui/pro-gate'
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -279,9 +280,6 @@ function CopyModal({
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function OrcamentosPage() {
-  const mode = useShellStore(s => s.mode)
-  const isJornada = mode === 'jornada'
-
   const now = new Date()
   const [month, setMonth] = useState(now.getMonth() + 1)
   const [year, setYear] = useState(now.getFullYear())
@@ -366,21 +364,29 @@ export default function OrcamentosPage() {
 
   const disponivel = Math.max(0, totalOrcado - totalGasto)
 
+  // Donut chart segments (por proporção do gasto no total)
+  const CIRC = 2 * Math.PI * 50
+  let donutOff = 0
+  const donutSegs = activeBudgets.slice(0, 8).map(env => {
+    const arc = totalOrcado > 0 ? Math.min(env.gasto / totalOrcado, 1) * CIRC : 0
+    const seg = { color: getEnvColor(env.pct), arc, offset: donutOff, env }
+    donutOff += arc
+    return seg
+  })
+
   return (
     <>
       {/* ═══════════ MOBILE VIEW ═══════════ */}
-      <div className="lg:hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className={`font-[Syne] text-[20px] font-bold ${isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'}`}>Orçamentos</h1>
-            <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">Envelopes do mês</p>
-          </div>
-          <button onClick={openCreate} className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]">
-            <Plus size={16} />
-          </button>
-        </div>
-
+      <FinancasMobileShell
+        subtitle="Envelopes do mês"
+        rightAction={
+          <ProLimitGate module="financas" feature="maxBudgets" currentCount={budgets.length} label={`Limite: ${budgets.length}/5`}>
+            <button onClick={openCreate} className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]">
+              <Plus size={16} />
+            </button>
+          </ProLimitGate>
+        }
+      >
         {/* Month selector */}
         <div className="flex items-center justify-between mb-3">
           <button onClick={prevMonthNav} className="text-[13px] text-[var(--sl-t2)] p-2"><ChevronLeft size={16} /></button>
@@ -388,25 +394,60 @@ export default function OrcamentosPage() {
           <button onClick={nextMonthNav} className="text-[13px] text-[var(--sl-t2)] p-2"><ChevronRight size={16} /></button>
         </div>
 
-        {/* Budget overview card */}
+        {/* Donut chart + legenda por categoria */}
         {!isLoading && budgets.length > 0 && (
-          <div className="rounded-2xl p-4 mb-3" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(0,85,255,0.08))', border: '1px solid var(--sl-border)' }}>
-            <div className="flex justify-between mb-3">
-              <div>
-                <div className="text-[12px] text-[var(--sl-t2)]">Gasto total</div>
-                <div className="font-[DM_Mono] text-[22px] font-bold text-[var(--sl-t1)]">R$ {fmtR$(totalGasto)}</div>
+          <div className="rounded-2xl p-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)]">
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              {/* Donut */}
+              <div className="relative w-[140px] h-[140px] shrink-0">
+                <svg viewBox="0 0 120 120" className="w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--sl-s3)" strokeWidth="14" />
+                  {donutSegs.map((seg, i) => (
+                    <circle
+                      key={i} cx="60" cy="60" r="50" fill="none"
+                      stroke={seg.color} strokeWidth="14" strokeLinecap="round"
+                      strokeDasharray={`${seg.arc} ${CIRC}`}
+                      strokeDashoffset={-seg.offset}
+                    />
+                  ))}
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-0">
+                  <span className="font-[DM_Mono] text-[15px] font-bold text-[var(--sl-t1)]">R$ {fmtR$(totalGasto)}</span>
+                  <span className="text-[10px] text-[var(--sl-t2)]">de R$ {fmtR$(totalOrcado)}</span>
+                </div>
               </div>
-              <div className="text-right">
-                <div className="text-[12px] text-[var(--sl-t2)]">Limite total</div>
-                <div className="font-[DM_Mono] text-[22px] font-bold text-[var(--sl-t1)]">R$ {fmtR$(totalOrcado)}</div>
+              {/* Legenda: categoria + cor + valor */}
+              <div className="flex-1 min-w-0 w-full">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-2">Por categoria</p>
+                <div className="flex flex-col gap-1.5 max-h-[120px] overflow-y-auto">
+                  {donutSegs.map((seg, i) => (
+                    <div key={i} className="flex items-center gap-2 text-[12px]">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: seg.color }} />
+                      <span className="text-[var(--sl-t1)] truncate flex-1 min-w-0">
+                        {seg.env.category?.name ?? 'Categoria'}
+                      </span>
+                      <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t2)] shrink-0">
+                        R$ {fmtR$(seg.env.gasto)} ({seg.env.pct}%)
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {/* Budget Health Score dots */}
+                <div className="mt-2 pt-2 border-t border-[var(--sl-border)]">
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1.5">Saúde dos Envelopes</p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {activeBudgets.map(env => (
+                      <div key={env.id} className="w-3 h-3 rounded-full" title={`${env.category?.name ?? ''}: ${env.pct}%`}
+                        style={{ background: getEnvColor(env.pct) }} />
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-3 mt-1.5 text-[10px] text-[var(--sl-t3)]">
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#10b981]" />{qtdOk} ok</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f59e0b]" />{qtdAlert} atenção</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f43f5e]" />{qtdOver} estourado{qtdOver !== 1 ? 's' : ''}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="h-[10px] bg-[var(--sl-s3)] rounded-[5px] overflow-hidden mb-2">
-              <div className="h-full rounded-[5px] transition-[width] duration-700" style={{ width: `${Math.min(pctGasto, 100)}%`, background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[12px] text-[var(--sl-t2)]">{pctGasto}% usado</span>
-              <span className="text-[12px] text-[#10b981]">R$ {fmtR$(disponivel)} disponível</span>
             </div>
           </div>
         )}
@@ -451,6 +492,17 @@ export default function OrcamentosPage() {
           </>
         )}
 
+        {/* Não alocado card */}
+        {!isLoading && naoAlocado > 0 && (
+          <div className="mt-2 px-1">
+            <div className="px-4 py-3 rounded-[10px] flex justify-between items-center"
+              style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.15)' }}>
+              <span className="text-[13px] text-[var(--sl-t2)]">Não alocado</span>
+              <span className="font-[DM_Mono] text-[14px] font-semibold text-[#10b981]">R$ {fmtR$(naoAlocado)}</span>
+            </div>
+          </div>
+        )}
+
         {/* AI Insight card */}
         {!isLoading && activeBudgets.length > 0 && (
           <div className="rounded-2xl p-4 mt-3 flex gap-[10px] items-start" style={{ background: 'rgba(0,85,255,0.07)', border: '1px solid rgba(0,85,255,0.2)' }}>
@@ -469,7 +521,7 @@ export default function OrcamentosPage() {
           </div>
         )}
         <div className="h-5" />
-      </div>
+      </FinancasMobileShell>
 
       {/* ═══════════ DESKTOP VIEW ═══════════ */}
       <div className="hidden lg:block max-w-[1000px] mx-auto px-6 py-8 pb-20">
@@ -482,7 +534,7 @@ export default function OrcamentosPage() {
             </p>
             <h1 className={cn(
               'font-[Syne] font-extrabold text-[24px] tracking-tight',
-              isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
+              'text-sl-grad'
             )}>
               Orçamentos
             </h1>
@@ -510,14 +562,16 @@ export default function OrcamentosPage() {
               <ChevronRight size={14} />
             </button>
           </div>
-          <button
-            onClick={openCreate}
-            className="flex items-center gap-1.5 text-[#03071a] font-bold text-[13px] px-[18px] py-[9px] rounded-full border-none shadow-[0_4px_16px_rgba(16,185,129,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
-            style={{ background: '#10b981' }}
-          >
-            <Plus size={14} />
-            Novo Envelope
-          </button>
+          <ProLimitGate module="financas" feature="maxBudgets" currentCount={budgets.length} label={`Limite FREE: ${budgets.length}/5 envelopes`}>
+            <button
+              onClick={openCreate}
+              className="flex items-center gap-1.5 text-[#03071a] font-bold text-[13px] px-[18px] py-[9px] rounded-full border-none shadow-[0_4px_16px_rgba(16,185,129,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
+              style={{ background: '#10b981' }}
+            >
+              <Plus size={14} />
+              Novo Envelope
+            </button>
+          </ProLimitGate>
         </div>
       </div>
 
@@ -535,6 +589,25 @@ export default function OrcamentosPage() {
           delta={`${qtdAlert} em atenção · ${qtdOver} estourado${qtdOver !== 1 ? 's' : ''}`}
           deltaType={qtdOver > 0 ? 'down' : qtdAlert > 0 ? 'warn' : 'up'} />
       </div>
+
+      {/* Budget Health Score dots strip */}
+      {!isLoading && activeBudgets.length > 0 && (
+        <div className="flex items-center gap-4 mb-6 px-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] shrink-0">Saúde</span>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {activeBudgets.map(env => (
+              <div key={env.id} className="w-3.5 h-3.5 rounded-full transition-colors"
+                title={`${env.category?.name ?? ''}: ${env.pct}%`}
+                style={{ background: getEnvColor(env.pct) }} />
+            ))}
+          </div>
+          <div className="flex items-center gap-3 text-[10px] text-[var(--sl-t3)] ml-auto shrink-0">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#10b981]" />{qtdOk}</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f59e0b]" />{qtdAlert}</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f43f5e]" />{qtdOver}</span>
+          </div>
+        </div>
+      )}
 
       {/* ③ Banner 50-30-20 */}
       {monthlyIncome > 0 && showBanner && (

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife — Futuro v2 · Parte 5 (Editar, Check-in Mensal, Modal Editar Meta)</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;--border:rgba(255,255,255,.06);--bh:rgba(255,255,255,.13);--t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;--fut:#8b5cf6;--fg:rgba(139,92,246,.15);--fgr:linear-gradient(135deg,#8b5cf6,#0055ff);--J:#8b5cf6;--Jg:rgba(139,92,246,.15);--Jgr:linear-gradient(135deg,#8b5cf6,#ec4899);--grn:#10b981;--yel:#f59e0b;--red:#f43f5e;--fin:#10b981;--fng:rgba(16,185,129,.15);--pat:#3b82f6;--pag:rgba(59,130,246,.15);--car:#f43f5e;--cag:rgba(244,63,94,.15);--mnt:#eab308;--mng:rgba(234,179,8,.15);--exp:#06b6d4;--exg:rgba(6,182,212,.15)}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:#0a0e1a;color:var(--t1);padding:40px 20px}
+.pt{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;text-align:center;margin-bottom:8px;background:var(--fgr);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.ps{text-align:center;color:var(--t2);font-size:14px;margin-bottom:36px}
+.rl{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1);text-align:center;margin:48px 0 20px}.rl span{color:var(--t3);font-weight:400;font-size:13px;margin-left:8px}
+.pr{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
+.phone{width:375px;background:var(--bg);border-radius:48px;border:2px solid rgba(255,255,255,.1);overflow:hidden;padding-bottom:20px;flex-shrink:0}.phone.j{border-color:rgba(139,92,246,.25)}
+.di{width:120px;height:34px;background:#000;border-radius:20px;margin:12px auto 0}.sb{display:flex;justify-content:space-between;padding:8px 28px 0;font-family:'DM Mono',monospace;font-size:12px;color:var(--t2)}
+.ct{padding:16px 20px}
+.bk{display:flex;align-items:center;gap:5px;padding:10px 20px;font-size:13px;font-weight:600}.f .bk{color:var(--fut)}.j .bk{color:#c4b5fd}.bk svg{width:15px;height:15px}
+.sec{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1);margin-bottom:10px}
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:600}.bg{background:rgba(16,185,129,.12);color:#10b981}.by{background:rgba(245,158,11,.12);color:#f59e0b}
+.pb{height:6px;background:var(--s3);border-radius:3px;overflow:hidden}.pf{height:100%;border-radius:3px}
+.ctas{display:flex;gap:10px;margin-top:4px}.cta{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:14px;font-size:13px;font-weight:600;border:none}.cp{color:#fff}.f .cp{background:var(--fgr)}.j .cp{background:var(--Jgr)}.cs{background:var(--s2);border:1px solid var(--bh);color:var(--t1)}
+/* Form */
+.fg{margin-bottom:14px}.fl{font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;display:block}
+.fi{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:12px 15px;font-size:14px;color:var(--t1);display:flex;align-items:center;justify-content:space-between}.fi.fo{border-color:var(--fut)}.j .fi.fo{border-color:var(--J)}.fi-ph{color:var(--t3)}.fi-ic{color:var(--t3);font-size:16px}
+/* Slider */
+.slw{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:13px 15px;margin-bottom:13px}.slh{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}.sll{font-size:12px;color:var(--t2)}.slv{font-family:'DM Mono',monospace;font-size:18px;font-weight:500}.slt{height:4px;background:var(--s3);border-radius:2px;position:relative;margin-bottom:8px}.slf{height:100%;border-radius:2px;width:68%}.f .slf{background:var(--fut)}.j .slf{background:var(--J)}.sth{width:18px;height:18px;border-radius:50%;position:absolute;top:-7px;left:68%;transform:translateX(-50%)}.f .sth{background:var(--fut)}.j .sth{background:var(--J)}
+/* Meta edit item */
+.mei{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}.mei:last-child{border-bottom:none}.meic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}.meif{flex:1;min-width:0}.mein{font-size:12px;font-weight:600;color:var(--t1)}.meim{font-size:10px;color:var(--t3);margin-top:1px}.meip{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;flex-shrink:0}.meia{display:flex;gap:6px;flex-shrink:0}.meib{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--s2);border:1px solid var(--border)}
+/* Danger zone */
+.dz{margin-top:16px;padding:12px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:10px;text-align:center;font-size:13px;font-weight:700;color:var(--red)}
+/* Check-in */
+.ci{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px}
+.cio{display:flex;align-items:center;gap:10px;margin-bottom:10px}.ciic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}.cin{font-size:13px;font-weight:600;color:var(--t1)}.cid{font-family:'DM Mono',monospace;font-size:12px;font-weight:500}
+.cia{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:11px;color:var(--t2)}.cick{color:var(--grn)}.ciwn{color:var(--yel)}
+.ciq{background:var(--s2);border-radius:10px;padding:10px;margin-top:8px}.ciql{font-size:11px;color:var(--t3);margin-bottom:6px}.ciqo{display:flex;gap:6px;flex-wrap:wrap}.ciqp{font-size:10px;padding:5px 10px;border-radius:20px;background:var(--s3);color:var(--t2);border:1px solid var(--border)}.ciqp.sel{border-color:rgba(139,92,246,.3)}.f .ciqp.sel{background:var(--fg);color:var(--fut)}.j .ciqp.sel{background:var(--Jg);color:#c4b5fd}
+.cis{background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(0,85,255,.06));border:1px solid rgba(139,92,246,.2);border-radius:16px;padding:14px;margin-bottom:12px;text-align:center}
+/* Mini chart placeholder */
+.mchart{height:60px;background:var(--s2);border-radius:10px;margin-bottom:10px;display:flex;align-items:flex-end;justify-content:center;gap:6px;padding:8px 12px}.mbar{width:20px;border-radius:4px 4px 0 0}.mbar-lb{font-size:8px;color:var(--t3);text-align:center;margin-top:2px}
+/* Strategic questions */
+.sq{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.sql{font-size:12px;color:var(--t1);font-weight:600;margin-bottom:8px}.sqo{display:flex;gap:8px}.sqb{flex:1;padding:8px;border-radius:10px;text-align:center;font-size:11px;font-weight:600}.sqp{background:var(--fg);color:var(--fut);border:1px solid rgba(139,92,246,.3)}.j .sqp{background:var(--Jg);color:#c4b5fd}.sqs{background:var(--s2);color:var(--t2);border:1px solid var(--border)}
+/* Action plan */
+.ap{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}.ap:last-child{border-bottom:none}.api{width:24px;height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}.apn{font-size:12px;font-weight:600;color:var(--t1)}.apd{font-size:10px;color:var(--t2);margin-top:2px}.apt{width:28px;height:16px;border-radius:8px;position:relative;flex-shrink:0;margin-left:auto}.apt.on{background:var(--fut)}.j .apt.on{background:var(--J)}.apt.off{background:var(--s3)}.aptk{width:12px;height:12px;border-radius:50%;background:#fff;position:absolute;top:2px}.apt.on .aptk{left:14px}.apt.off .aptk{left:2px}
+/* Modal */
+.mw{margin-top:12px;padding:14px;background:var(--s1);border:1px solid rgba(139,92,246,.2);border-radius:16px}.mhint{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;text-align:center;padding:6px;background:var(--s2);border-radius:8px}.mhd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.mht{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1)}.mhc{font-size:18px;color:var(--t3)}
+/* Bottom */
+.bb{height:68px;background:var(--s1);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 8px;margin-top:8px}.bt{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--t3)}.bt svg{width:22px;height:22px}.bt.ac{color:var(--fut)}.j .bt.ac{color:var(--J)}.fab{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-20px;border:3px solid var(--bg)}.f .fab{background:var(--fgr)}.j .fab{background:var(--Jgr)}.fab svg{width:22px;height:22px;color:#fff}
+.plb{text-align:center;font-size:11px;font-weight:600;color:var(--t3);margin-top:12px;font-family:'DM Mono',monospace}
+</style>
+</head>
+<body>
+<h1 class="pt">Futuro v2 — Parte 5</h1>
+<p class="ps">Editar Objetivo · Check-in Mensal · Modal Editar Meta</p>
+
+<!-- ══════ TELA 13: EDITAR OBJETIVO ══════ -->
+<div class="rl">13. Editar Objetivo <span>campos editáveis + metas + danger zone</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div><div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="bk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Detalhe</div>
+<div class="ct" style="padding-top:8px">
+<div class="sec">Editar Objetivo</div>
+<div class="fg"><label class="fl">Nome</label><div class="fi fo"><span>Comprar meu apartamento</span></div></div>
+<div class="fg"><label class="fl">Descrição</label><div class="fi"><span style="color:var(--t2)">Meu primeiro imóvel próprio na região metropolitana</span></div></div>
+<div class="fg"><label class="fl">Prazo</label><div class="fi"><span>Dezembro 2028</span><span class="fi-ic">📅</span></div></div>
+<div class="fg"><label class="fl">Prioridade</label><div style="display:flex;gap:8px"><div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid rgba(244,63,94,.3);text-align:center;font-size:12px;font-weight:600;color:var(--red)">🔴 Alta</div><div style="flex:1;padding:10px;border-radius:10px;background:var(--fg);border:1px solid rgba(139,92,246,.3);text-align:center;font-size:12px;font-weight:600;color:var(--fut)">🟡 Média ✓</div><div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;font-weight:600;color:var(--t2)">🟢 Baixa</div></div></div>
+<div class="slw"><div class="slh"><div class="sll">Contribuição mensal</div><div class="slv" style="color:var(--fut)">R$ 800</div></div><div class="slt"><div class="slf"></div><div class="sth"></div></div><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3)"><span>R$ 200</span><span>R$ 2.000</span></div></div>
+<!-- Metas editáveis -->
+<div class="sec" style="margin-top:4px">Metas (4)</div>
+<div style="background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-bottom:12px">
+<div class="mei"><div class="meic" style="background:var(--fng)">💰</div><div class="meif"><div class="mein">Juntar R$ 80.000</div><div class="meim">Finanças · Peso 2.0</div></div><div class="meia"><div class="meib">✏️</div><div class="meib" style="color:var(--red)">🗑</div></div></div>
+<div class="mei"><div class="meic" style="background:var(--pag)">📈</div><div class="meif"><div class="mein">Investir reserva em CDB</div><div class="meim">Patrimônio · Peso 1.0</div></div><div class="meia"><div class="meib">✏️</div><div class="meib" style="color:var(--red)">🗑</div></div></div>
+<div class="mei"><div class="meic" style="background:var(--cag)">💼</div><div class="meif"><div class="mein">Aumento de 20%</div><div class="meim">Carreira · Peso 1.0</div></div><div class="meia"><div class="meib">✏️</div><div class="meib" style="color:var(--red)">🗑</div></div></div>
+<div class="mei"><div class="meic" style="background:rgba(110,144,184,.1)">⏳</div><div class="meif"><div class="mein">Pesquisar bairros</div><div class="meim">Tempo · Peso 0.5</div></div><div class="meia"><div class="meib">✏️</div><div class="meib" style="color:var(--red)">🗑</div></div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:1px dashed var(--bh);border-radius:12px;color:var(--t2);font-size:12px;margin-bottom:14px">+ Adicionar meta</div>
+<div class="cta cp" style="margin-bottom:10px">Salvar alterações</div>
+<div class="dz">⚠️ Excluir objetivo</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Editar Objetivo — Foco</div></div>
+<!-- JORNADA -->
+<div><div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="bk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Missão</div>
+<div class="ct" style="padding-top:8px">
+<div class="sec">Editar Missão</div>
+<div class="fg"><label class="fl">Nome da missão</label><div class="fi fo"><span>Comprar meu apartamento</span></div></div>
+<div class="fg"><label class="fl">Motivação</label><div class="fi"><span style="color:var(--t2)">Meu primeiro imóvel próprio</span></div></div>
+<div class="fg"><label class="fl">Quando quer chegar lá?</label><div class="fi"><span>Dezembro 2028</span><span class="fi-ic">📅</span></div></div>
+<div class="fg"><label class="fl">Prioridade</label><div style="display:flex;gap:8px"><div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;font-weight:600;color:var(--red)">🔥 Alta</div><div style="flex:1;padding:10px;border-radius:10px;background:var(--Jg);border:1px solid rgba(139,92,246,.3);text-align:center;font-size:12px;font-weight:600;color:#c4b5fd">⚡ Média ✓</div><div style="flex:1;padding:10px;border-radius:10px;background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;font-weight:600;color:var(--t2)">💎 Baixa</div></div></div>
+<div class="slw" style="border-color:rgba(139,92,246,.2)"><div class="slh"><div class="sll">Contribuição mensal</div><div class="slv" style="color:var(--J)">R$ 800</div></div><div class="slt"><div class="slf"></div><div class="sth"></div></div><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3)"><span>R$ 200</span><span>R$ 2.000</span></div></div>
+<div class="sec" style="margin-top:4px">Aliados (4)</div>
+<div style="background:var(--s1);border:1px solid rgba(139,92,246,.15);border-radius:14px;padding:10px 12px;margin-bottom:12px">
+<div class="mei"><div class="meic" style="background:var(--fng)">💰</div><div class="meif"><div class="mein">Juntar R$ 80.000</div><div class="meim">Finanças · Peso 2.0 · +80 XP/marco</div></div><div class="meia"><div class="meib">✏️</div><div class="meib" style="color:var(--red)">🗑</div></div></div>
+<div class="mei"><div class="meic" style="background:var(--pag)">📈</div><div class="meif"><div class="mein">Investir reserva</div><div class="meim">Patrimônio · Peso 1.0 · +50 XP/marco</div></div><div class="meia"><div class="meib">✏️</div><div class="meib" style="color:var(--red)">🗑</div></div></div>
+<div class="mei"><div class="meic" style="background:var(--cag)">💼</div><div class="meif"><div class="mein">Aumento 20%</div><div class="meim">Carreira · Peso 1.0 · +100 XP</div></div><div class="meia"><div class="meib">✏️</div><div class="meib" style="color:var(--red)">🗑</div></div></div>
+<div class="mei"><div class="meic" style="background:rgba(110,144,184,.1)">⏳</div><div class="meif"><div class="mein">Pesquisar bairros</div><div class="meim">Tempo · Peso 0.5 · +30 XP</div></div><div class="meia"><div class="meib">✏️</div><div class="meib" style="color:var(--red)">🗑</div></div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:1px dashed rgba(139,92,246,.3);border-radius:12px;color:#c4b5fd;font-size:12px;margin-bottom:14px">+ Recrutar aliado</div>
+<div class="cta cp" style="margin-bottom:10px">Salvar missão</div>
+<div class="dz">⚠️ Excluir missão permanentemente</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Editar Missão — Jornada</div></div>
+</div>
+
+<!-- ══════ TELA 14: CHECK-IN MENSAL ══════ -->
+<div class="rl">14. Check-in Mensal <span>retrospectiva + perguntas estratégicas + plano do mês</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div><div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="ct">
+<div style="text-align:center;margin-bottom:16px"><div style="font-size:28px;margin-bottom:8px">📊</div><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--t1);margin-bottom:4px">Revisão Mensal</div><div style="font-size:12px;color:var(--t2)">Retrospectiva de fevereiro e plano para março</div><div style="font-size:11px;color:var(--t3);margin-top:4px">~10 minutos · 01 Mar 2026</div></div>
+<!-- Retrospectiva -->
+<div class="cis"><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px">Seu mês em números</div>
+<div style="display:flex;gap:12px;justify-content:center;margin-bottom:8px"><div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--fut)">58</div><div style="font-size:10px;color:var(--t3)">Score</div></div><div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--grn)">↑ +4</div><div style="font-size:10px;color:var(--t3)">vs Jan</div></div><div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--t1)">70</div><div style="font-size:10px;color:var(--t3)">Recorde</div></div></div>
+<div class="mchart"><div class="mbar" style="height:30px;background:var(--s3)"><div class="mbar-lb">Set</div></div><div class="mbar" style="height:35px;background:var(--s3)"><div class="mbar-lb">Out</div></div><div class="mbar" style="height:32px;background:var(--s3)"><div class="mbar-lb">Nov</div></div><div class="mbar" style="height:38px;background:var(--s3)"><div class="mbar-lb">Dez</div></div><div class="mbar" style="height:40px;background:rgba(139,92,246,.3)"><div class="mbar-lb">Jan</div></div><div class="mbar" style="height:44px;background:var(--fut)"><div class="mbar-lb">Fev</div></div></div>
+<div style="font-size:11px;color:var(--t2)">Melhor avanço: <strong style="color:var(--t1)">Europa (+8%)</strong> · Atenção: <strong style="color:var(--yel)">MBA (parado)</strong></div></div>
+<!-- Objetivos resumo -->
+<div class="ci"><div class="cio"><div class="ciic" style="background:var(--fg)">🏠</div><div style="flex:1"><div class="cin">Apartamento</div><div style="font-size:11px;color:var(--t2)">41% → 43% (+2%)</div></div><div class="cid" style="color:var(--grn)">+2%</div></div><div class="cia"><span class="cick">✓</span> 2 contribuições de R$ 800 · Rendimentos +R$ 90</div></div>
+<div class="ci"><div class="cio"><div class="ciic" style="background:var(--exg)">✈️</div><div style="flex:1"><div class="cin">Europa</div><div style="font-size:11px;color:var(--t2)">57% → 65% (+8%)</div></div><div class="cid" style="color:var(--grn)">+8%</div></div><div class="cia"><span class="cick">✓</span> R$ 600 contribuídos · No ritmo para Jul 2026</div></div>
+<div class="ci" style="border-color:rgba(245,158,11,.2)"><div class="cio"><div class="ciic" style="background:var(--mng)">🎓</div><div style="flex:1"><div class="cin">MBA</div><div style="font-size:11px;color:var(--yel)">40% → 40% (0%)</div></div><div class="cid" style="color:var(--t3)">0%</div></div><div class="cia"><span class="ciwn">⚠</span> Sem progresso em fevereiro</div><div class="ciq"><div class="ciql">O que aconteceu?</div><div class="ciqo"><div class="ciqp sel">Sem tempo</div><div class="ciqp">Sem motivação</div><div class="ciqp">Mudei foco</div></div></div></div>
+<!-- Perguntas estratégicas -->
+<div class="sec">Perguntas estratégicas</div>
+<div class="sq"><div class="sql">Seus prazos ainda fazem sentido?</div><div class="sqo"><div class="sqb sqp">Sim, manter</div><div class="sqb sqs">Quero ajustar</div></div></div>
+<div class="sq"><div class="sql">Quer criar um novo objetivo?</div><div class="sqo"><div class="sqb sqs">Sim</div><div class="sqb sqp">Não agora</div></div></div>
+<!-- Plano do mês -->
+<div class="sec">Plano para março</div>
+<div style="background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:14px">
+<div class="ap"><div class="api" style="background:var(--fg)">🏠</div><div style="flex:1"><div class="apn">Contribuir R$ 1.000 para Apartamento</div><div class="apd">R$ 200 a mais que o normal — recupera atraso</div></div><div class="apt on"><div class="aptk"></div></div></div>
+<div class="ap"><div class="api" style="background:var(--mng)">🎓</div><div style="flex:1"><div class="apn">Concluir módulo 3 do MBA</div><div class="apd">Dedicar 2h/semana — 4 aulas restantes</div></div><div class="apt on"><div class="aptk"></div></div></div>
+<div class="ap"><div class="api" style="background:rgba(110,144,184,.1)">⏳</div><div style="flex:1"><div class="apn">Pesquisar bairros</div><div class="apd">Tarefa pendente há 45 dias</div></div><div class="apt off"><div class="aptk"></div></div></div>
+</div>
+<div class="cta cp">Concluir revisão mensal</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Check-in Mensal — Foco</div></div>
+<!-- JORNADA -->
+<div><div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="ct">
+<div style="text-align:center;margin-bottom:16px"><div style="font-size:28px;margin-bottom:8px">🧭</div><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--t1);margin-bottom:4px">Revisão da Jornada</div><div style="font-size:12px;color:var(--t2)">Retrospectiva de fevereiro</div><div style="font-size:11px;color:#c4b5fd;margin-top:4px">⚡ Completar vale +50 XP · ~10 min</div></div>
+<div class="cis" style="border-color:rgba(139,92,246,.3)"><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px">Sua jornada em fevereiro</div>
+<div style="display:flex;gap:12px;justify-content:center;margin-bottom:8px"><div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--J)">58</div><div style="font-size:10px;color:#c4b5fd">Score</div></div><div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--grn)">↑ +4</div><div style="font-size:10px;color:var(--t3)">vs Jan</div></div><div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:#c4b5fd">+185</div><div style="font-size:10px;color:var(--t3)">XP no mês</div></div></div>
+<div class="mchart"><div class="mbar" style="height:30px;background:var(--s3)"><div class="mbar-lb">Set</div></div><div class="mbar" style="height:35px;background:var(--s3)"><div class="mbar-lb">Out</div></div><div class="mbar" style="height:32px;background:var(--s3)"><div class="mbar-lb">Nov</div></div><div class="mbar" style="height:38px;background:var(--s3)"><div class="mbar-lb">Dez</div></div><div class="mbar" style="height:40px;background:rgba(139,92,246,.3)"><div class="mbar-lb">Jan</div></div><div class="mbar" style="height:44px;background:var(--J)"><div class="mbar-lb">Fev</div></div></div>
+<div style="font-size:11px;color:var(--t2)">Melhor: <strong style="color:var(--t1)">Europa (+8% · +60 XP)</strong> · Atenção: <strong style="color:var(--yel)">MBA (0 XP)</strong></div></div>
+<div class="ci" style="border-color:rgba(139,92,246,.15)"><div class="cio"><div class="ciic" style="background:var(--fg)">🏠</div><div style="flex:1"><div class="cin">Missão: Apartamento</div><div style="font-size:11px;color:var(--t2)">+2% · <span style="color:#c4b5fd">+75 XP ganhos</span></div></div><div class="cid" style="color:var(--grn)">+2%</div></div></div>
+<div class="ci" style="border-color:rgba(139,92,246,.15)"><div class="cio"><div class="ciic" style="background:var(--exg)">✈️</div><div style="flex:1"><div class="cin">Missão: Europa</div><div style="font-size:11px;color:var(--t2)">+8% · <span style="color:#c4b5fd">+60 XP</span></div></div><div class="cid" style="color:var(--grn)">+8%</div></div></div>
+<div class="ci" style="border-color:rgba(245,158,11,.2)"><div class="cio"><div class="ciic" style="background:var(--mng)">🎓</div><div style="flex:1"><div class="cin">Missão: MBA</div><div style="font-size:11px;color:var(--yel)">0% · 0 XP</div></div><div class="cid" style="color:var(--t3)">0%</div></div><div class="ciq"><div class="ciql">O que aconteceu?</div><div class="ciqo"><div class="ciqp sel">Sem tempo</div><div class="ciqp">Sem motivação</div><div class="ciqp">Mudei foco</div></div></div></div>
+<div class="sec">Plano para março</div>
+<div style="background:var(--s1);border:1px solid rgba(139,92,246,.15);border-radius:14px;padding:12px;margin-bottom:14px">
+<div class="ap"><div class="api" style="background:var(--fg)">🏠</div><div style="flex:1"><div class="apn">Contribuir R$ 1.000</div><div class="apd">Recupera 1 mês de atraso · +80 XP</div></div><div class="apt on"><div class="aptk"></div></div></div>
+<div class="ap"><div class="api" style="background:var(--mng)">🎓</div><div style="flex:1"><div class="apn">Concluir módulo 3</div><div class="apd">2h/semana · Desbloqueia +80 XP</div></div><div class="apt on"><div class="aptk"></div></div></div>
+<div class="ap"><div class="api" style="background:rgba(110,144,184,.1)">⏳</div><div style="flex:1"><div class="apn">Pesquisar bairros</div><div class="apd">Pendente 45 dias · +30 XP</div></div><div class="apt off"><div class="aptk"></div></div></div>
+</div>
+<div class="cta cp">Concluir revisão → +50 XP</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Check-in Mensal — Jornada</div></div>
+</div>
+
+<!-- ══════ TELA 15: MODAL EDITAR META ══════ -->
+<div class="rl">15. Modal: Editar Meta <span>campos preenchidos + opção remover</span></div>
+<div class="pr">
+<!-- FOCO -->
+<div><div class="phone f"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="ct">
+<div class="mw"><div class="mhd"><div class="mht">Editar Meta</div><div class="mhc">✕</div></div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--s2);border-radius:10px;margin-bottom:14px"><div style="width:34px;height:34px;border-radius:10px;background:var(--fng);display:flex;align-items:center;justify-content:center;font-size:15px">💰</div><div><div style="font-size:12px;font-weight:600;color:var(--t1)">Módulo: Finanças</div><div style="font-size:10px;color:var(--t3)">Não pode ser alterado. Para mudar, remova e recrie.</div></div></div>
+<div class="fg"><label class="fl">Nome</label><div class="fi fo"><span>Juntar R$ 80.000</span></div></div>
+<div class="fg"><label class="fl">Tipo de medição</label><div class="fi"><span>Monetário (R$)</span></div></div>
+<div class="fg"><label class="fl">Valor alvo</label><div class="fi fo"><span style="font-family:'DM Mono',monospace">R$ 80.000</span></div></div>
+<div class="fg"><label class="fl">Valor atual</label><div class="fi"><span style="font-family:'DM Mono',monospace;color:var(--t2)">R$ 35.200</span><span style="font-size:10px;color:var(--grn)">44%</span></div></div>
+<div class="fg"><label class="fl">Peso</label><div class="fi"><span>Alto (2.0×)</span><span class="fi-ic">▾</span></div></div>
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;font-size:11px;color:var(--t2)"><span>✨</span> Vinculado a: Envelope "Apartamento" no Finanças</div>
+<div class="cta cp" style="margin-bottom:10px">Salvar alterações</div>
+<div style="padding:10px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:10px;text-align:center;font-size:12px;font-weight:600;color:var(--red)">Remover meta deste objetivo</div>
+<div style="font-size:10px;color:var(--t3);text-align:center;margin-top:6px">O envelope no Finanças será mantido</div>
+</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Modal Editar Meta — Foco</div></div>
+<!-- JORNADA -->
+<div><div class="phone j"><div class="di"></div><div class="sb"><span>9:41</span></div>
+<div class="ct">
+<div class="mw" style="border-color:rgba(139,92,246,.3)"><div class="mhd"><div class="mht">Editar Aliado</div><div class="mhc">✕</div></div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--s2);border-radius:10px;margin-bottom:14px"><div style="width:34px;height:34px;border-radius:10px;background:var(--fng);display:flex;align-items:center;justify-content:center;font-size:15px">💰</div><div><div style="font-size:12px;font-weight:600;color:var(--t1)">Aliado: Finanças</div><div style="font-size:10px;color:var(--t3)">Módulo não pode ser alterado</div></div></div>
+<div class="fg"><label class="fl">Nome</label><div class="fi fo"><span>Juntar R$ 80.000</span></div></div>
+<div class="fg"><label class="fl">Tipo</label><div class="fi"><span>Monetário (R$)</span></div></div>
+<div class="fg"><label class="fl">Valor alvo</label><div class="fi fo"><span style="font-family:'DM Mono',monospace">R$ 80.000</span></div></div>
+<div class="fg"><label class="fl">Valor atual</label><div class="fi"><span style="font-family:'DM Mono',monospace;color:var(--t2)">R$ 35.200</span><span style="font-size:10px;color:var(--grn)">44%</span></div></div>
+<div class="fg"><label class="fl">Peso</label><div class="fi"><span>Alto (2.0×) — conta o dobro</span><span class="fi-ic">▾</span></div></div>
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;font-size:11px;color:#c4b5fd"><span>✨</span> Vinculado: Envelope "Apartamento" · +80 XP/marco</div>
+<div class="cta cp" style="margin-bottom:10px">Salvar aliado</div>
+<div style="padding:10px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:10px;text-align:center;font-size:12px;font-weight:600;color:var(--red)">Remover aliado desta missão</div>
+<div style="font-size:10px;color:var(--t3);text-align:center;margin-top:6px">O envelope no Finanças será mantido</div>
+</div>
+</div>
+<div class="bb"><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg><span>Início</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Finanças</span></div><div class="bt"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="bt ac"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Futuro</span></div><div class="bt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Mais</span></div></div>
+</div><div class="plb">Modal Editar Aliado — Jornada</div></div>
+</div>
+
+<p style="text-align:center;color:var(--t3);font-size:12px;margin-top:48px;padding-bottom:20px">SyncLife · Futuro v2 · Parte 5 · 07/03/2026<br>✅ Editar Objetivo · ✅ Check-in Mensal · ✅ Modal Editar Meta<br><strong style="color:var(--fut)">100% DE COBERTURA ATINGIDA — 15 telas × 2 modos = 30 phones</strong></p>
+</body>
+</html>

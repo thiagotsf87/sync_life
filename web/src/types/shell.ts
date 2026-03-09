@@ -27,19 +27,12 @@ export interface ModuleConfig {
   defaultNavId: string
 }
 
-export type AppMode = 'foco' | 'jornada'
-
 export type ThemeId = 'navy-dark' | 'clean-light' | 'mint-garden' | 'obsidian' | 'rosewood' | 'arctic' | 'graphite' | 'twilight' | 'sahara' | 'carbon' | 'blossom' | 'serenity' | 'system'
 
 export type ResolvedThemeId = Exclude<ThemeId, 'system'>
 
-/** @deprecated Use ThemeId instead */
-export type AppTheme = ThemeId
-
 export const DARK_THEMES: ResolvedThemeId[] = ['navy-dark', 'obsidian', 'rosewood', 'graphite', 'twilight', 'carbon']
 export const LIGHT_THEMES: ResolvedThemeId[] = ['clean-light', 'mint-garden', 'arctic', 'sahara', 'blossom', 'serenity']
-export const PRO_THEMES: ResolvedThemeId[] = ['obsidian', 'rosewood', 'arctic', 'graphite', 'twilight', 'sahara', 'carbon', 'blossom', 'serenity']
-export const FREE_THEMES: ResolvedThemeId[] = ['navy-dark', 'clean-light', 'mint-garden']
 
 export function isDarkTheme(theme: ResolvedThemeId): boolean {
   return DARK_THEMES.includes(theme)
@@ -54,13 +47,11 @@ export function resolveSystemTheme(): 'navy-dark' | 'clean-light' {
 export interface ShellState {
   activeModule: ModuleId
   sidebarOpen: boolean
-  mode: AppMode
   theme: ThemeId
   resolvedTheme: ResolvedThemeId
 
   setActiveModule: (module: ModuleId) => void
   toggleSidebar: () => void
   setSidebarOpen: (open: boolean) => void
-  setMode: (mode: AppMode) => void
   setTheme: (theme: ThemeId) => void
 }

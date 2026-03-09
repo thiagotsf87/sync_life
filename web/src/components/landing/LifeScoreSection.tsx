@@ -24,14 +24,14 @@ export function LifeScoreSection() {
                   <div className="pillar-lbl">Finanças</div>
                 </div>
                 <div className="score-pillar-dot meta">
-                  <span className="pillar-icon">🎯</span>
+                  <span className="pillar-icon">🔮</span>
                   <div className="pillar-pct">72%</div>
-                  <div className="pillar-lbl">Metas</div>
+                  <div className="pillar-lbl">Futuro</div>
                 </div>
                 <div className="score-pillar-dot con">
-                  <span className="pillar-icon">🔥</span>
+                  <span className="pillar-icon">⏳</span>
                   <div className="pillar-pct">60%</div>
-                  <div className="pillar-lbl">Consist.</div>
+                  <div className="pillar-lbl">Tempo</div>
                 </div>
               </div>
             </div>
@@ -43,7 +43,7 @@ export function LifeScoreSection() {
               <div className="section-label">Life Sync Score</div>
               <h2 className="section-title">Um número que resume sua evolução.</h2>
               <p className="section-sub">
-                O Life Sync Score calcula, em tempo real, como você está indo nas três dimensões da vida organizada.
+                O Life Sync Score calcula, em tempo real, como você está indo em 8 dimensões da vida organizada — finanças, futuro, tempo, corpo, mente, patrimônio, carreira e experiências.
               </p>
 
               <div className="score-pillars-list">
@@ -52,36 +52,36 @@ export function LifeScoreSection() {
                     <div className="pillar-item-name">
                       <span>💰</span> Saúde Financeira
                     </div>
-                    <span className="pillar-item-weight">40% do score</span>
+                    <span className="pillar-item-weight">Finanças + Patrimônio</span>
                   </div>
                   <div className="pillar-item-bar">
                     <div className="pillar-item-fill fin-fill" />
                   </div>
-                  <p className="pillar-item-desc">Saldo positivo, orçamentos respeitados, nenhum alerta ativo.</p>
+                  <p className="pillar-item-desc">Saldo positivo, orçamentos respeitados, patrimônio crescendo.</p>
                 </div>
                 <div className="pillar-item">
                   <div className="pillar-item-top">
                     <div className="pillar-item-name">
-                      <span>🎯</span> Progresso em Metas
+                      <span>🔮</span> Progresso Futuro
                     </div>
-                    <span className="pillar-item-weight">35% do score</span>
+                    <span className="pillar-item-weight">Futuro + Carreira</span>
                   </div>
                   <div className="pillar-item-bar">
                     <div className="pillar-item-fill meta-fill" />
                   </div>
-                  <p className="pillar-item-desc">Metas no caminho, aportes em dia, nenhuma meta em risco.</p>
+                  <p className="pillar-item-desc">Objetivos no caminho, aportes em dia, carreira evoluindo.</p>
                 </div>
                 <div className="pillar-item">
                   <div className="pillar-item-top">
                     <div className="pillar-item-name">
-                      <span>🔥</span> Consistência de Uso
+                      <span>🏃</span> Bem-estar
                     </div>
-                    <span className="pillar-item-weight">25% do score</span>
+                    <span className="pillar-item-weight">Corpo + Mente + Tempo</span>
                   </div>
                   <div className="pillar-item-bar">
                     <div className="pillar-item-fill con-fill" />
                   </div>
-                  <p className="pillar-item-desc">Dias ativos no app, eventos da agenda concluídos, streak mantido.</p>
+                  <p className="pillar-item-desc">Atividades em dia, agenda organizada, foco e leitura consistentes.</p>
                 </div>
               </div>
             </div>

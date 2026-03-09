@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { ShellState, ModuleId, AppMode, ThemeId, ResolvedThemeId } from '@/types/shell'
+import type { ShellState, ModuleId, ThemeId, ResolvedThemeId } from '@/types/shell'
 import { isDarkTheme, resolveSystemTheme } from '@/types/shell'
 
 function applyTheme(theme: ThemeId) {
@@ -14,11 +14,6 @@ function applyTheme(theme: ThemeId) {
   return resolved
 }
 
-function applyMode(mode: AppMode) {
-  if (typeof document === 'undefined') return
-  document.documentElement.setAttribute('data-mode', mode)
-}
-
 function writeLocal(key: string, value: string) {
   if (typeof window === 'undefined') return
   try {
@@ -30,10 +25,9 @@ function writeLocal(key: string, value: string) {
 
 const initialResolved = resolveSystemTheme()
 
-export const useShellStore = create<ShellState>((set, get) => ({
+export const useShellStore = create<ShellState>((set) => ({
   activeModule: 'panorama' as ModuleId,
   sidebarOpen: true,
-  mode: 'foco' as AppMode,
   theme: 'system' as ThemeId,
   resolvedTheme: initialResolved,
 
@@ -49,12 +43,6 @@ export const useShellStore = create<ShellState>((set, get) => ({
   setSidebarOpen: (open: boolean) => {
     writeLocal('synclife-sidebar', String(open))
     set({ sidebarOpen: open })
-  },
-
-  setMode: (mode: AppMode) => {
-    applyMode(mode)
-    writeLocal('synclife-mode', mode)
-    set({ mode })
   },
 
   setTheme: (theme: ThemeId) => {

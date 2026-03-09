@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife Mobile — Patrimônio (12 telas · v3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══ DESIGN SYSTEM — SyncLife Dark Foco (Navy) ═══ */
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;
+  --fin:#10b981;--tempo:#06b6d4;--futuro:#0055ff;--corpo:#f97316;
+  --mente:#eab308;
+  --patrimonio:#3b82f6;--patrimonio-g:rgba(59,130,246,0.14);
+  --carreira:#ec4899;--exp:#14b8a6;
+  --green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--orange:#f97316;
+  --radius:16px;--radius-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0e1a;font-family:'DM Sans',sans-serif;color:var(--t1);}
+
+/* ═══ Demo shell ═══ */
+.demo-page{padding:40px 20px 80px;max-width:1600px;margin:0 auto;}
+.demo-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.demo-subtitle{font-size:14px;color:var(--t2);margin-bottom:10px;}
+.demo-group{margin-top:48px;margin-bottom:14px;padding:14px 0 8px;border-top:1px solid var(--border);}
+.demo-group-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--patrimonio);letter-spacing:0.5px;}
+.demo-group-sub{font-size:12px;color:var(--t3);margin-top:3px;}
+.screens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(375px,1fr));gap:48px 28px;margin-top:18px;}
+.screen-wrapper{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.screen-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:1px;text-align:center;}
+.screen-tag{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.tag-new{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);}
+.tag-improved{background:rgba(59,130,246,0.15);color:#3b82f6;border:1px solid rgba(59,130,246,0.3);}
+.tag-priority{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);}
+
+/* ═══ Phone frame — AUTO HEIGHT ═══ */
+.phone{
+  width:375px;min-height:500px;
+  background:var(--bg);border-radius:48px;
+  border:2px solid rgba(255,255,255,0.1);
+  overflow:hidden;position:relative;
+  box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);
+  padding-top:54px;padding-bottom:24px;
+}
+.dynamic-island{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:100;}
+.status-bar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;z-index:50;}
+.status-time{font-size:15px;font-weight:600;color:var(--t1);}
+.screen-content{padding-bottom:12px;}
+
+/* ═══ Module header (padrão Futuro/Mente) ═══ */
+.mod-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px;}
+.mod-header-left{display:flex;align-items:center;gap:8px;}
+.mod-icon{font-size:20px;}
+.mod-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);}
+.mod-badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;background:var(--patrimonio-g);color:var(--patrimonio);}
+
+/* ═══ Sub-nav tabs (underline style — padrão aprovado) ═══ */
+.sub-nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.sub-nav-tab{padding:8px 14px 10px;font-size:14px;color:var(--t3);position:relative;white-space:nowrap;cursor:pointer;}
+.sub-nav-tab.active{color:var(--t1);font-weight:600;}
+.sub-nav-tab.active::after{content:'';position:absolute;bottom:-1px;left:8px;right:8px;height:3px;border-radius:3px 3px 0 0;background:var(--patrimonio);}
+
+/* ═══ Internal page header (L2) ═══ */
+.int-header{display:flex;align-items:center;gap:10px;padding:16px 20px 14px;}
+.int-back{font-size:13px;color:var(--t2);display:flex;align-items:center;gap:4px;}
+.int-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1);flex:1;}
+
+/* ═══ Filter pills ═══ */
+.filter-pills{display:flex;gap:6px;padding:0 20px 14px;overflow-x:auto;flex-wrap:wrap;}
+.filter-pill{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;border:1px solid var(--border);background:var(--s1);color:var(--t2);}
+.filter-pill.active{background:var(--patrimonio);color:#000;border-color:var(--patrimonio);}
+
+/* ═══ Shared components ═══ */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-green{background:rgba(16,185,129,0.12);color:#10b981;}
+.badge-red{background:rgba(244,63,94,0.12);color:#f43f5e;}
+.badge-blue{background:rgba(59,130,246,0.12);color:#3b82f6;}
+.badge-yellow{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;padding:0 20px 8px;margin-top:4px;}
+.progress-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;}
+.list-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);}
+.list-item:last-child{border-bottom:none;}
+.list-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.list-info{flex:1;min-width:0;}
+.list-title{font-size:14px;font-weight:500;color:var(--t1);}
+.list-sub{font-size:12px;color:var(--t2);margin-top:1px;}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;}
+.kpi-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;position:relative;overflow:hidden;}
+.kpi-card .accent{position:absolute;top:0;left:12px;right:12px;height:2px;border-radius:0 0 2px 2px;}
+.kpi-label{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.kpi-value{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--t1);}
+.kpi-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.header-btn{width:36px;height:36px;border-radius:10px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--t2);}
+
+/* ═══ Donut ═══ */
+.donut-wrap{position:relative;width:140px;height:140px;margin:0 auto 16px;}
+.donut-svg{width:100%;height:100%;transform:rotate(-90deg);}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+
+/* ═══ Asset row ═══ */
+.asset-row{display:flex;align-items:center;gap:10px;padding:11px 20px;border-bottom:1px solid var(--border);}
+.asset-row:last-child{border-bottom:none;}
+.asset-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.asset-info{flex:1;min-width:0;}
+.asset-name{font-size:13px;font-weight:500;color:var(--t1);}
+.asset-ticker{font-size:11px;color:var(--t2);margin-top:1px;}
+.asset-value{text-align:right;}
+.asset-price{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--t1);}
+.asset-change{font-size:11px;margin-top:1px;}
+
+/* ═══ Modal ═══ */
+.modal-overlay{background:rgba(3,7,26,0.85);backdrop-filter:blur(10px);padding:16px 20px 20px;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);}
+.modal-close{font-size:20px;color:var(--t3);cursor:pointer;}
+.input-group{margin-bottom:12px;}
+.input-label{font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:5px;display:block;}
+.input-field{width:100%;padding:11px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+.input-field:focus{border-color:var(--patrimonio);}
+.toggle-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.toggle-track{width:44px;height:24px;border-radius:12px;position:relative;flex-shrink:0;}
+.toggle-track.on{background:var(--patrimonio);}
+.toggle-track.off{background:var(--s3);}
+.toggle-thumb{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;transition:left 0.2s;}
+.toggle-track.on .toggle-thumb{left:23px;}
+.toggle-track.off .toggle-thumb{left:3px;}
+.btn-primary{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--patrimonio);color:#000;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;text-align:center;border:none;cursor:pointer;}
+.btn-secondary{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--s1);color:var(--t2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;text-align:center;border:1px solid var(--border);}
+.toggle-tabs{display:flex;background:var(--s2);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px;}
+.toggle-tab{flex:1;padding:10px;border-radius:8px;text-align:center;font-size:14px;font-weight:500;color:var(--t2);cursor:pointer;}
+.toggle-tab.active{background:var(--patrimonio);color:#000;font-weight:600;}
+
+/* ═══ Simulator ═══ */
+.sim-field{background:var(--s1);border:1.5px solid var(--border-h);border-radius:12px;padding:13px 16px;margin-bottom:10px;}
+.sim-label{font-size:11px;color:var(--t2);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:0.3px;}
+.sim-value{font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:var(--t1);}
+.sim-btn{width:30px;height:30px;border-radius:8px;background:var(--s2);display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:18px;cursor:pointer;border:none;}
+
+/* ═══ Empty state ═══ */
+.empty-state{text-align:center;padding:40px 24px;}
+.empty-icon{font-size:48px;margin-bottom:16px;}
+.empty-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1);margin-bottom:8px;}
+.empty-desc{font-size:14px;color:var(--t2);line-height:1.5;margin-bottom:20px;}
+</style>
+</head>
+<body>
+<div class="demo-page">
+  <div class="demo-title">📈 Patrimônio — 12 telas mobile (v3)</div>
+  <div class="demo-subtitle">Cor: #3b82f6 · Ícone: TrendingUp · Nav: underline tabs · Auto-height frames</div>
+
+  <!-- ═══ GRUPO A: VISUALIZAÇÃO ═══ -->
+  <div class="demo-group">
+    <div class="demo-group-title">A — Telas de Visualização</div>
+    <div class="demo-group-sub">Dashboard, Carteira, Proventos, Evolução, Simulador IF</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ A1: DASHBOARD ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A1 — Dashboard</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <!-- Module header -->
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">📈</span>
+              <span class="mod-name">Patrimônio</span>
+            </div>
+            <div class="mod-badge">12 ativos</div>
+          </div>
+          <!-- Sub-nav underline -->
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Carteira</div>
+            <div class="sub-nav-tab">Proventos</div>
+            <div class="sub-nav-tab">Evolução</div>
+          </div>
+
+          <!-- Hero card -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(59,130,246,0.04));border-color:rgba(59,130,246,0.2);text-align:center;">
+            <div style="font-size:12px;color:var(--t2);margin-bottom:6px;">Patrimônio líquido total</div>
+            <div style="font-family:'DM Mono',monospace;font-size:34px;font-weight:800;color:var(--t1);margin-bottom:4px;">R$ 187.340</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+              <span class="badge badge-green">↑ R$ 2.840 este mês</span>
+              <span style="font-size:12px;color:var(--t2);">+1,54%</span>
+            </div>
+          </div>
+
+          <!-- KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="accent" style="background:#10b981;"></div>
+              <div class="kpi-label">Renda Fixa</div>
+              <div class="kpi-value" style="color:#10b981;">R$ 84k</div>
+              <div class="kpi-sub">44,9% da carteira</div>
+            </div>
+            <div class="kpi-card">
+              <div class="accent" style="background:#f59e0b;"></div>
+              <div class="kpi-label">Renda Variável</div>
+              <div class="kpi-value" style="color:#f59e0b;">R$ 68k</div>
+              <div class="kpi-sub">36,3% da carteira</div>
+            </div>
+            <div class="kpi-card">
+              <div class="accent" style="background:#06b6d4;"></div>
+              <div class="kpi-label">FIIs</div>
+              <div class="kpi-value" style="color:#06b6d4;">R$ 24k</div>
+              <div class="kpi-sub">12,8% da carteira</div>
+            </div>
+            <div class="kpi-card">
+              <div class="accent" style="background:#f97316;"></div>
+              <div class="kpi-label">Cripto</div>
+              <div class="kpi-value" style="color:#f97316;">R$ 11k</div>
+              <div class="kpi-sub">5,9% da carteira</div>
+            </div>
+          </div>
+
+          <!-- Donut -->
+          <div class="card">
+            <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:14px;">Alocação por classe</div>
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 140 140">
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#10b981" stroke-width="18" stroke-dasharray="152 288" stroke-dashoffset="0"/>
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#f59e0b" stroke-width="18" stroke-dasharray="123 317" stroke-dashoffset="-152"/>
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#06b6d4" stroke-width="18" stroke-dasharray="43 397" stroke-dashoffset="-275"/>
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#f97316" stroke-width="18" stroke-dasharray="20 420" stroke-dashoffset="-318"/>
+              </svg>
+              <div class="donut-center"><div style="font-size:11px;color:var(--t2);">4 classes</div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#10b981;"></div><span style="font-size:12px;color:var(--t2);">Renda Fixa 45%</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#f59e0b;"></div><span style="font-size:12px;color:var(--t2);">R. Variável 36%</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#06b6d4;"></div><span style="font-size:12px;color:var(--t2);">FIIs 13%</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#f97316;"></div><span style="font-size:12px;color:var(--t2);">Cripto 6%</span></div>
+            </div>
+          </div>
+
+          <!-- IF progress -->
+          <div class="section-title">META — INDEPENDÊNCIA FINANCEIRA</div>
+          <div class="card" style="background:rgba(59,130,246,0.07);border-color:rgba(59,130,246,0.2);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span style="font-size:14px;font-weight:600;color:var(--t1);">Regra dos 4% — R$ 2,5M</span>
+              <span class="badge badge-blue">7,5%</span>
+            </div>
+            <div class="progress-bar" style="height:8px;border-radius:4px;margin-bottom:6px;">
+              <div class="progress-fill" style="width:7.5%;background:linear-gradient(90deg,#3b82f6,#10b981);border-radius:4px;"></div>
+            </div>
+            <div style="font-size:12px;color:var(--t2);">R$ 187k de R$ 2,5M · Projeção: 2044 (18 anos)</div>
+          </div>
+
+          <!-- Top 5 -->
+          <div class="section-title">TOP 5 ATIVOS</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="asset-row">
+              <div class="asset-dot" style="background:#10b981;"></div>
+              <div class="asset-info"><div class="asset-name">Tesouro IPCA+ 2035</div><div class="asset-ticker">RENDA FIXA</div></div>
+              <div class="asset-value"><div class="asset-price">R$ 52.400</div><div class="asset-change" style="color:#10b981;">+IPCA+5,4%</div></div>
+            </div>
+            <div class="asset-row">
+              <div class="asset-dot" style="background:#10b981;"></div>
+              <div class="asset-info"><div class="asset-name">CDB Inter 120% CDI</div><div class="asset-ticker">RENDA FIXA</div></div>
+              <div class="asset-value"><div class="asset-price">R$ 31.600</div><div class="asset-change" style="color:#10b981;">+14,1% a.a.</div></div>
+            </div>
+            <div class="asset-row">
+              <div class="asset-dot" style="background:#06b6d4;"></div>
+              <div class="asset-info"><div class="asset-name">KNRI11 — Híbrido</div><div class="asset-ticker">FII · 80 cotas</div></div>
+              <div class="asset-value"><div class="asset-price">R$ 11.856</div><div class="asset-change" style="color:var(--t2);">→ 0,0%</div></div>
+            </div>
+            <div class="asset-row">
+              <div class="asset-dot" style="background:#f59e0b;"></div>
+              <div class="asset-info"><div class="asset-name">Itaú Unibanco</div><div class="asset-ticker">ITUB4 · 320 ações</div></div>
+              <div class="asset-value"><div class="asset-price">R$ 11.040</div><div class="asset-change" style="color:#10b981;">+0,5%</div></div>
+            </div>
+            <div class="asset-row">
+              <div class="asset-dot" style="background:#f59e0b;"></div>
+              <div class="asset-info"><div class="asset-name">Vale</div><div class="asset-ticker">VALE3 · 150 ações</div></div>
+              <div class="asset-value"><div class="asset-price">R$ 9.420</div><div class="asset-change" style="color:#f43f5e;">-0,8%</div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ A2: CARTEIRA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A2 — Carteira de Ativos</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">📈</span>
+              <span class="mod-name">Patrimônio</span>
+            </div>
+            <div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab active">Carteira</div>
+            <div class="sub-nav-tab">Proventos</div>
+            <div class="sub-nav-tab">Evolução</div>
+          </div>
+
+          <!-- Filters -->
+          <div class="filter-pills">
+            <div class="filter-pill active">Todos</div>
+            <div class="filter-pill">Renda Fixa</div>
+            <div class="filter-pill">Ações</div>
+            <div class="filter-pill">FIIs</div>
+            <div class="filter-pill">Cripto</div>
+          </div>
+
+          <!-- Summary -->
+          <div class="card" style="padding:12px 16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="font-size:12px;color:var(--t2);">Total investido</span>
+              <span class="badge badge-green">↑ +1,54% hoje</span>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:var(--t1);">R$ 187.340</div>
+            <div style="font-size:12px;color:#10b981;margin-top:3px;">+R$ 12.340 de rendimento total</div>
+          </div>
+
+          <!-- Ações -->
+          <div class="section-title">AÇÕES</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="asset-row">
+              <div class="asset-dot" style="background:#f59e0b;"></div>
+              <div class="asset-info"><div class="asset-name">Petrobras</div><div class="asset-ticker">PETR4 · 200 ações · R$ 38,20</div></div>
+              <div class="asset-value"><div class="asset-price">R$ 7.640</div><div class="asset-change" style="color:#10b981;">↑ +2,1%</div></div>
+            </div>
+            <div class="asset-row">
+              <div class="asset-dot" style="background:#f59e0b;"></div>
+              <div class="asset-info"><div class="asset-name">Vale</div><div class="asset-ticker">VALE3 · 150 ações · R$ 62,80</div></div>
+              <div class="asset-value"><div class="asset-price">R$ 9.420</div><div class="asset-change" style="color:#f43f5e;">↓ -0,8%</div></div>
+            </div>
+            <div class="asset-row">
+              <div class="asset-dot" style="background:#f59e0b;"></div>
+              <div class="asset-info"><div class="asset-name">Itaú Unibanco</div><div class="asset-ticker">ITUB4 · 320 ações · R$ 34,50</div></div>
+              <div class="asset-value"><div class="asset-price">R$ 11.040</div><div class="asset-change" style="color:#10b981;">↑ +0,5%</div></div>
+            </div>
+          </div>
+
+          <!-- FIIs -->
+          <div class="section-title" style="margin-top:8px;">FUNDOS IMOBILIÁRIOS</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="asset-row">
+              <div class="asset-dot" style="background:#06b6d4;"></div>
+              <div class="asset-info"><div class="asset-name">HGLG11 — Logística</div><div class="asset-ticker">50 cotas · R$ 162,40</div></div>
+              <div class="asset-value"><div class="asset-price">R$ 8.120</div><div class="asset-change" style="color:#10b981;">↑ +0,3%</div></div>
+            </div>
+            <div class="asset-row">
+              <div class="asset-dot" style="background:#06b6d4;"></div>
+              <div class="asset-info"><div class="asset-name">KNRI11 — Híbrido</div><div class="asset-ticker">80 cotas · R$ 148,20</div></div>
+              <div class="asset-value"><div class="asset-price">R$ 11.856</div><div class="asset-change" style="color:var(--t2);">→ 0,0%</div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ A3: PROVENTOS ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A3 — Proventos</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">📈</span>
+              <span class="mod-name">Patrimônio</span>
+            </div>
+            <div style="padding:7px 12px;border-radius:20px;background:var(--s1);font-size:13px;color:var(--t2);border:1px solid var(--border);">2026</div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Carteira</div>
+            <div class="sub-nav-tab active">Proventos</div>
+            <div class="sub-nav-tab">Evolução</div>
+          </div>
+
+          <!-- Hero -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(16,185,129,0.06));border-color:rgba(59,130,246,0.2);">
+            <div style="text-align:center;margin-bottom:14px;">
+              <div style="font-size:12px;color:var(--t2);margin-bottom:4px;">Proventos acumulados 2026</div>
+              <div style="font-family:'DM Mono',monospace;font-size:30px;font-weight:800;color:var(--patrimonio);">R$ 1.847</div>
+              <div style="font-size:12px;color:var(--t2);margin-top:3px;">Média mensal: R$ 924/mês</div>
+            </div>
+            <div style="display:flex;justify-content:space-around;border-top:1px solid var(--border);padding-top:12px;">
+              <div style="text-align:center;"><div style="font-size:11px;color:var(--t2);margin-bottom:3px;">Dividendos</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:#f59e0b;">R$ 892</div></div>
+              <div style="width:1px;background:var(--border);"></div>
+              <div style="text-align:center;"><div style="font-size:11px;color:var(--t2);margin-bottom:3px;">JCP</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:#10b981;">R$ 340</div></div>
+              <div style="width:1px;background:var(--border);"></div>
+              <div style="text-align:center;"><div style="font-size:11px;color:var(--t2);margin-bottom:3px;">FII Rendimento</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:#06b6d4;">R$ 615</div></div>
+            </div>
+          </div>
+
+          <!-- Bars -->
+          <div class="card">
+            <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:12px;">Por mês</div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-around;height:80px;gap:4px;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--t2);">R$820</div>
+                <div style="width:32px;background:rgba(59,130,246,0.5);border-radius:5px 5px 0 0;height:52px;"></div>
+                <span style="font-size:9px;color:var(--t2);">Jan</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--patrimonio);">R$1027</div>
+                <div style="width:32px;background:var(--patrimonio);border-radius:5px 5px 0 0;height:66px;"></div>
+                <span style="font-size:9px;color:var(--patrimonio);font-weight:600;">Fev</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);">prev.</div>
+                <div style="width:32px;background:rgba(59,130,246,0.2);border-radius:5px 5px 0 0;height:58px;border:1px dashed rgba(59,130,246,0.4);"></div>
+                <span style="font-size:9px;color:var(--t3);">Mar</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Próximos -->
+          <div class="section-title">PRÓXIMOS PAGAMENTOS</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--patrimonio-g);font-size:16px;">🏢</div>
+              <div class="list-info"><div class="list-title">HGLG11 — Rendimento</div><div class="list-sub">Pagamento: 15 Mar · 50 cotas</div></div>
+              <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:14px;color:#10b981;">+R$ 62</div><div style="font-size:11px;color:var(--t2);">R$ 1,24/cota</div></div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--patrimonio-g);font-size:16px;">💰</div>
+              <div class="list-info"><div class="list-title">PETR4 — Dividendo</div><div class="list-sub">Pagamento: 20 Mar · 200 ações</div></div>
+              <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:14px;color:#10b981;">+R$ 184</div><div style="font-size:11px;color:var(--t2);">R$ 0,92/ação</div></div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--patrimonio-g);font-size:16px;">🏢</div>
+              <div class="list-info"><div class="list-title">KNRI11 — Rendimento</div><div class="list-sub">Pagamento: 15 Mar · 80 cotas</div></div>
+              <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:14px;color:#10b981;">+R$ 94</div><div style="font-size:11px;color:var(--t2);">R$ 1,17/cota</div></div>
+            </div>
+          </div>
+
+          <!-- Toggle -->
+          <div class="card" style="margin-top:12px;background:rgba(16,185,129,0.07);border-color:rgba(16,185,129,0.2);">
+            <div style="display:flex;gap:10px;align-items:center;">
+              <span style="font-size:18px;">🔄</span>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--t1);">Auto-registro em Finanças</div><div style="font-size:12px;color:var(--t2);margin-top:2px;">Proventos recebidos → Receita automática em Finanças</div></div>
+              <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ A4: EVOLUÇÃO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A4 — Evolução Patrimonial</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">📈</span>
+              <span class="mod-name">Patrimônio</span>
+            </div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Carteira</div>
+            <div class="sub-nav-tab">Proventos</div>
+            <div class="sub-nav-tab active">Evolução</div>
+          </div>
+
+          <!-- Period -->
+          <div class="filter-pills">
+            <div class="filter-pill">6M</div>
+            <div class="filter-pill active">1A</div>
+            <div class="filter-pill">3A</div>
+            <div class="filter-pill">5A</div>
+            <div class="filter-pill">Tudo</div>
+          </div>
+
+          <!-- Chart -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+              <div><div style="font-size:12px;color:var(--t2);">Patrimônio hoje</div><div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:700;color:var(--t1);">R$ 187.340</div></div>
+              <div style="text-align:right;"><div style="font-size:12px;color:var(--t2);">Variação 12 meses</div><div style="font-family:'DM Mono',monospace;font-size:18px;color:#10b981;">+R$ 42.840</div><div style="font-size:11px;color:#10b981;">+29,6%</div></div>
+            </div>
+            <svg viewBox="0 0 320 100" style="width:100%;height:100px;margin-top:8px;">
+              <defs><linearGradient id="pg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,90 C30,88 60,82 90,76 C120,70 140,72 170,64 C200,56 230,50 260,40 C290,30 305,26 320,22" fill="none" stroke="var(--patrimonio)" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M0,90 C30,88 60,82 90,76 C120,70 140,72 170,64 C200,56 230,50 260,40 C290,30 305,26 320,22 L320,100 L0,100Z" fill="url(#pg2)"/>
+              <circle cx="320" cy="22" r="5" fill="var(--patrimonio)"/>
+              <line x1="0" y1="8" x2="320" y2="8" stroke="rgba(16,185,129,0.3)" stroke-width="1.5" stroke-dasharray="6,4"/>
+              <text x="4" y="6" fill="rgba(16,185,129,0.7)" font-size="8" font-family="DM Sans">Meta IF: R$ 2,5M</text>
+            </svg>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--t3);"><span>Mar 2025</span><span>Mar 2026</span></div>
+          </div>
+
+          <!-- By class -->
+          <div class="section-title">CRESCIMENTO POR CLASSE</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div style="width:10px;height:10px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></div>
+              <div class="list-info"><div class="list-title">Renda Variável</div><div class="list-sub">R$ 68.100</div></div>
+              <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:13px;color:#10b981;">+R$ 18.100</div><div style="font-size:11px;color:#10b981;">+36,2%</div></div>
+            </div>
+            <div class="list-item">
+              <div style="width:10px;height:10px;border-radius:50%;background:#10b981;flex-shrink:0;"></div>
+              <div class="list-info"><div class="list-title">Renda Fixa</div><div class="list-sub">R$ 84.000</div></div>
+              <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:13px;color:#10b981;">+R$ 14.200</div><div style="font-size:11px;color:#10b981;">+20,3%</div></div>
+            </div>
+            <div class="list-item">
+              <div style="width:10px;height:10px;border-radius:50%;background:#06b6d4;flex-shrink:0;"></div>
+              <div class="list-info"><div class="list-title">FIIs</div><div class="list-sub">R$ 24.000</div></div>
+              <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:13px;color:#10b981;">+R$ 6.200</div><div style="font-size:11px;color:#10b981;">+34,8%</div></div>
+            </div>
+            <div class="list-item">
+              <div style="width:10px;height:10px;border-radius:50%;background:#f97316;flex-shrink:0;"></div>
+              <div class="list-info"><div class="list-title">Cripto</div><div class="list-sub">R$ 11.240</div></div>
+              <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:13px;color:#f59e0b;">+R$ 4.340</div><div style="font-size:11px;color:#f59e0b;">+62,8%</div></div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ A5: SIMULADOR IF ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">A5 — Simulador IF (PRO)</div>
+      <div class="screen-tag tag-priority">⭐ Alta prioridade</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <div class="int-back">← Patrimônio</div>
+            <div class="int-title">Simulador IF</div>
+            <div style="font-size:12px;color:var(--patrimonio);font-weight:500;">Resetar</div>
+          </div>
+
+          <!-- Inputs -->
+          <div style="padding:0 16px 4px;">
+            <div class="sim-field">
+              <div class="sim-label">Patrimônio atual</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="sim-value">R$ 187.340</div>
+                <div style="display:flex;gap:8px;"><button class="sim-btn">−</button><button class="sim-btn">+</button></div>
+              </div>
+            </div>
+            <div class="sim-field">
+              <div class="sim-label">Aporte mensal</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="sim-value">R$ 2.000</div>
+                <div style="display:flex;gap:8px;"><button class="sim-btn">−</button><button class="sim-btn">+</button></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:10px;">
+              <div class="sim-field" style="flex:1;margin-bottom:0;">
+                <div class="sim-label">Rentabilidade a.a.</div>
+                <div class="sim-value" style="font-size:20px;">10,5%</div>
+              </div>
+              <div class="sim-field" style="flex:1;margin-bottom:0;">
+                <div class="sim-label">Renda desejada/mês</div>
+                <div class="sim-value" style="font-size:20px;">R$ 10k</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(16,185,129,0.08));border-color:rgba(59,130,246,0.3);">
+            <div style="text-align:center;margin-bottom:16px;">
+              <div style="font-size:13px;color:var(--t2);margin-bottom:6px;">Você atinge a IF em</div>
+              <div style="font-family:'Syne',sans-serif;font-size:42px;font-weight:800;color:var(--patrimonio);line-height:1;">18 anos</div>
+              <div style="font-size:14px;color:var(--t2);margin-top:4px;">Em 2044 · com R$ 2.500.000</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;background:var(--s2);border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:10px;color:var(--t2);margin-bottom:3px;">PATRIMÔNIO ALVO</div>
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--patrimonio);">R$ 2.500.000</div>
+              </div>
+              <div style="flex:1;background:var(--s2);border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:10px;color:var(--t2);margin-bottom:3px;">RENDA PASSIVA</div>
+                <div style="font-family:'DM Mono',monospace;font-size:14px;color:#10b981;">R$ 10.416/mês</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cenários -->
+          <div class="section-title">CENÁRIOS COMPARATIVOS</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div style="width:10px;height:10px;border-radius:50%;background:#f43f5e;flex-shrink:0;"></div>
+              <div class="list-info"><div class="list-title">Aporte R$ 1.000/mês</div><div class="list-sub">Mesmo retorno</div></div>
+              <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:13px;color:#f43f5e;">26 anos</div></div>
+            </div>
+            <div class="list-item" style="background:rgba(59,130,246,0.04);">
+              <div style="width:10px;height:10px;border-radius:50%;background:var(--patrimonio);flex-shrink:0;"></div>
+              <div class="list-info"><div class="list-title">Aporte R$ 2.000/mês ✓ Atual</div><div class="list-sub">Cenário base</div></div>
+              <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--patrimonio);">18 anos</div></div>
+            </div>
+            <div class="list-item">
+              <div style="width:10px;height:10px;border-radius:50%;background:#10b981;flex-shrink:0;"></div>
+              <div class="list-info"><div class="list-title">Aporte R$ 3.500/mês</div><div class="list-sub">Após promoção sênior</div></div>
+              <div style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:13px;color:#10b981;">13 anos</div></div>
+            </div>
+          </div>
+
+          <!-- AI tip -->
+          <div class="card" style="margin-top:12px;background:rgba(59,130,246,0.06);border-color:rgba(59,130,246,0.15);">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="font-size:18px;">🤖</span>
+              <div style="font-size:13px;color:var(--t2);line-height:1.5;">Atingir o cargo sênior (meta em Carreira) aumentaria seu aporte para R$ 3.500 e reduziria sua IF em <span style="color:var(--patrimonio);font-weight:600;">5 anos</span>. Seu plano está interconectado.</div>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ GRUPO B: CRUD ═══ -->
+  <div class="demo-group">
+    <div class="demo-group-title">B — Telas CRUD</div>
+    <div class="demo-group-sub">Modais de registro de operação, provento e detalhe do ativo</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ B1: MODAL REGISTRAR OPERAÇÃO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">B1 — Modal Registrar Operação</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="modal-overlay">
+            <div class="modal-header">
+              <div class="modal-title">📈 Registrar Operação</div>
+              <div class="modal-close">×</div>
+            </div>
+
+            <!-- Toggle compra/venda -->
+            <div class="toggle-tabs">
+              <div class="toggle-tab active">Compra</div>
+              <div class="toggle-tab">Venda</div>
+            </div>
+
+            <div class="input-group"><label class="input-label">Ticker</label><input class="input-field" value="VALE3" /></div>
+            <div class="input-group"><label class="input-label">Nome do ativo</label><input class="input-field" value="Vale S.A." /></div>
+            <div class="input-group"><label class="input-label">Classe</label>
+              <div class="input-field" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">Ações BR<span style="color:var(--t3);">▼</span></div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div class="input-group" style="flex:1;"><label class="input-label">Quantidade</label><input class="input-field" value="100" /></div>
+              <div class="input-group" style="flex:1;"><label class="input-label">Preço (R$)</label><input class="input-field" value="62,80" /></div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div class="input-group" style="flex:1;"><label class="input-label">Taxas (R$)</label><input class="input-field" value="4,90" /></div>
+              <div class="input-group" style="flex:1;"><label class="input-label">Data</label><input class="input-field" value="07/03/2026" /></div>
+            </div>
+
+            <!-- Toggle finanças -->
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--border);margin-top:4px;">
+              <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--t1);">Registrar aporte em Finanças</div><div style="font-size:11px;color:var(--t2);">Cria despesa de R$ 6.284,90 em Finanças</div></div>
+            </div>
+
+            <div style="margin-top:14px;">
+              <button class="btn-primary">Registrar Compra</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ B2: MODAL REGISTRAR PROVENTO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">B2 — Modal Registrar Provento</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="modal-overlay">
+            <div class="modal-header">
+              <div class="modal-title">💰 Registrar Provento</div>
+              <div class="modal-close">×</div>
+            </div>
+
+            <div class="input-group"><label class="input-label">Ativo</label>
+              <div class="input-field" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;">PETR4 — Petrobras<span style="color:var(--t3);">▼</span></div>
+            </div>
+
+            <!-- Tipo select cards -->
+            <div class="input-group">
+              <label class="input-label">Tipo</label>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+                <div style="padding:10px 6px;border-radius:10px;border:1.5px solid var(--patrimonio);background:var(--patrimonio-g);text-align:center;font-size:11px;color:var(--t1);font-weight:500;">💰 Dividendo</div>
+                <div style="padding:10px 6px;border-radius:10px;border:1px solid var(--border);background:var(--s1);text-align:center;font-size:11px;color:var(--t2);">📊 JCP</div>
+                <div style="padding:10px 6px;border-radius:10px;border:1px solid var(--border);background:var(--s1);text-align:center;font-size:11px;color:var(--t2);">🏢 FII</div>
+              </div>
+            </div>
+
+            <div class="input-group"><label class="input-label">Valor total (R$)</label><input class="input-field" value="184,00" /></div>
+            <div style="display:flex;gap:8px;">
+              <div class="input-group" style="flex:1;"><label class="input-label">Data pagamento</label><input class="input-field" value="20/03/2026" /></div>
+              <div class="input-group" style="flex:1;"><label class="input-label">Data ex</label><input class="input-field" value="10/03/2026" /></div>
+            </div>
+
+            <!-- Status -->
+            <div class="toggle-tabs" style="margin-top:4px;">
+              <div class="toggle-tab" style="background:var(--patrimonio);color:#000;">Recebido</div>
+              <div class="toggle-tab">Anunciado</div>
+            </div>
+
+            <!-- Auto finanças -->
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border);">
+              <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+              <div style="flex:1;font-size:12px;color:var(--t2);">Registrar como receita em Finanças</div>
+            </div>
+
+            <div style="margin-top:14px;">
+              <button class="btn-primary">Registrar Provento</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ B3: DETALHE DO ATIVO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">B3 — Detalhe do Ativo</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <div class="int-back">← Carteira</div>
+            <div class="int-title">PETR4</div>
+          </div>
+
+          <!-- Hero -->
+          <div class="card" style="text-align:center;background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(59,130,246,0.02));border-color:rgba(59,130,246,0.15);">
+            <div style="font-size:12px;color:var(--t2);margin-bottom:4px;">Petrobras S.A.</div>
+            <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:800;color:var(--t1);">R$ 38,20</div>
+            <span class="badge badge-green" style="margin-top:6px;">↑ +2,1% hoje</span>
+            <div style="display:flex;justify-content:center;gap:16px;margin-top:12px;">
+              <div><div style="font-size:10px;color:var(--t3);">CLASSE</div><div style="font-size:12px;color:var(--t1);font-weight:500;">Ações BR</div></div>
+              <div style="width:1px;background:var(--border);"></div>
+              <div><div style="font-size:10px;color:var(--t3);">SETOR</div><div style="font-size:12px;color:var(--t1);font-weight:500;">Petróleo</div></div>
+            </div>
+          </div>
+
+          <!-- KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-label">Quantidade</div><div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--t1);">200</div></div>
+            <div class="kpi-card"><div class="kpi-label">Preço Médio</div><div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--t1);">R$ 35,40</div></div>
+            <div class="kpi-card"><div class="kpi-label">Valor Investido</div><div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:var(--t1);">R$ 7.080</div></div>
+            <div class="kpi-card"><div class="kpi-label">Valor Atual</div><div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:#10b981;">R$ 7.640</div></div>
+          </div>
+
+          <!-- P/L -->
+          <div class="card" style="display:flex;justify-content:space-between;align-items:center;">
+            <div><div style="font-size:12px;color:var(--t2);">Resultado (P/L)</div><div style="font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:#10b981;margin-top:2px;">+R$ 560</div></div>
+            <span class="badge badge-green" style="font-size:13px;">+7,9%</span>
+          </div>
+
+          <!-- Operações recentes -->
+          <div class="section-title">OPERAÇÕES RECENTES</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(16,185,129,0.12);font-size:14px;">🟢</div>
+              <div class="list-info"><div class="list-title">Compra — 100 ações</div><div class="list-sub">15 Jan 2026 · R$ 34,20/ação</div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t1);">R$ 3.420</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(16,185,129,0.12);font-size:14px;">🟢</div>
+              <div class="list-info"><div class="list-title">Compra — 100 ações</div><div class="list-sub">02 Nov 2025 · R$ 36,60/ação</div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--t1);">R$ 3.660</div>
+            </div>
+          </div>
+
+          <!-- Proventos do ativo -->
+          <div class="section-title" style="margin-top:8px;">PROVENTOS RECEBIDOS</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item">
+              <div class="list-icon" style="background:var(--patrimonio-g);font-size:14px;">💰</div>
+              <div class="list-info"><div class="list-title">Dividendo</div><div class="list-sub">20 Fev 2026 · R$ 0,92/ação</div></div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:#10b981;">+R$ 184</div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div style="padding:16px;display:flex;gap:8px;">
+            <button class="btn-primary" style="flex:1;font-size:13px;padding:12px;">+ Operação</button>
+            <button class="btn-secondary" style="flex:1;font-size:13px;padding:12px;color:#f43f5e;border-color:rgba(244,63,94,0.3);">Excluir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ GRUPO C: JORNADA ═══ -->
+  <div class="demo-group">
+    <div class="demo-group-title">C — Telas Jornada (PRO)</div>
+    <div class="demo-group-sub">Dashboard com AI insight + benchmark; Proventos com YoC e projeção</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ C1: DASHBOARD JORNADA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">C1 — Dashboard (Modo Jornada)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">📈</span>
+              <span class="mod-name" style="background:linear-gradient(90deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Patrimônio</span>
+            </div>
+            <div class="mod-badge">12 ativos</div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Carteira</div>
+            <div class="sub-nav-tab">Proventos</div>
+            <div class="sub-nav-tab">Evolução</div>
+          </div>
+
+          <!-- AI Insight -->
+          <div class="card" style="background:rgba(59,130,246,0.06);border-color:rgba(59,130,246,0.15);">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="font-size:18px;">🤖</span>
+              <div style="font-size:13px;color:var(--t2);line-height:1.5;">Seu patrimônio cresceu <span style="color:#10b981;font-weight:600;">3,2% este mês</span> — acima do CDI (1,1%). Seus dividendos mensais já cobrem <span style="color:var(--patrimonio);font-weight:600;">15% das contas fixas</span>. Continue assim!</div>
+            </div>
+          </div>
+
+          <!-- Benchmark mini chart -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div style="font-size:14px;font-weight:600;color:var(--t1);">Benchmark vs CDI</div>
+              <span class="badge badge-green">Acima do CDI</span>
+            </div>
+            <svg viewBox="0 0 300 60" style="width:100%;height:60px;">
+              <!-- Carteira -->
+              <path d="M0,50 C50,48 100,40 150,35 C200,28 250,22 300,18" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+              <!-- CDI -->
+              <path d="M0,50 C50,49 100,46 150,43 C200,40 250,37 300,34" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,3" stroke-linecap="round"/>
+              <circle cx="300" cy="18" r="3" fill="#3b82f6"/>
+              <circle cx="300" cy="34" r="3" fill="#10b981"/>
+            </svg>
+            <div style="display:flex;gap:16px;margin-top:8px;">
+              <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:3px;background:#3b82f6;border-radius:2px;"></div><span style="font-size:11px;color:var(--t2);">Carteira +29,6%</span></div>
+              <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:3px;background:#10b981;border-radius:2px;"></div><span style="font-size:11px;color:var(--t2);">CDI +13,2%</span></div>
+            </div>
+          </div>
+
+          <!-- Gamification -->
+          <div class="card" style="background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(245,158,11,0.05));border-color:rgba(59,130,246,0.15);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:44px;height:44px;border-radius:12px;background:var(--patrimonio-g);display:flex;align-items:center;justify-content:center;font-size:22px;">🌐</div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:var(--t1);">Diversificado</div>
+                <div style="font-size:11px;color:var(--t2);">Carteira com 3+ classes de ativos</div>
+                <div class="progress-bar" style="margin-top:6px;"><div class="progress-fill" style="width:100%;background:var(--patrimonio);"></div></div>
+              </div>
+              <span class="badge badge-blue" style="font-size:10px;">+50 XP</span>
+            </div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ C2: PROVENTOS JORNADA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">C2 — Proventos (Modo Jornada)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">📈</span>
+              <span class="mod-name" style="background:linear-gradient(90deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Patrimônio</span>
+            </div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab">Dashboard</div>
+            <div class="sub-nav-tab">Carteira</div>
+            <div class="sub-nav-tab active">Proventos</div>
+            <div class="sub-nav-tab">Evolução</div>
+          </div>
+
+          <!-- Projeção 12m -->
+          <div class="card" style="background:rgba(59,130,246,0.06);border-color:rgba(59,130,246,0.15);">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="font-size:18px;">🔮</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px;">Projeção de proventos (12 meses)</div>
+                <div style="display:flex;gap:16px;">
+                  <div><div style="font-size:10px;color:var(--t3);">MENSAL</div><div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--patrimonio);">R$ 924</div></div>
+                  <div><div style="font-size:10px;color:var(--t3);">ANUAL</div><div style="font-family:'DM Mono',monospace;font-size:16px;color:#10b981;">R$ 11.088</div></div>
+                </div>
+                <div style="font-size:10px;color:var(--t3);margin-top:6px;">Baseado na média dos últimos 12 meses. Proventos não são garantidos.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Yield on Cost -->
+          <div class="section-title">YIELD ON COST</div>
+          <div class="card">
+            <div style="font-size:12px;color:var(--t2);margin-bottom:10px;">Rendimento de proventos sobre preço de aquisição</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                  <span style="font-size:13px;color:var(--t1);">HGLG11</span>
+                  <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--patrimonio);">9,2%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:92%;background:#3b82f6;"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                  <span style="font-size:13px;color:var(--t1);">KNRI11</span>
+                  <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--patrimonio);">8,4%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:84%;background:#3b82f6;"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                  <span style="font-size:13px;color:var(--t1);">PETR4</span>
+                  <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--patrimonio);">7,1%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:71%;background:#3b82f6;"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                  <span style="font-size:13px;color:var(--t1);">ITUB4</span>
+                  <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--patrimonio);">5,8%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:58%;background:#3b82f6;"></div></div>
+              </div>
+            </div>
+            <div style="font-size:10px;color:var(--t3);margin-top:10px;">YoC = proventos 12m ÷ valor investido</div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ GRUPO D: ESTADOS ═══ -->
+  <div class="demo-group">
+    <div class="demo-group-title">D — Estados Especiais</div>
+    <div class="demo-group-sub">Carteira vazia, paywall do simulador</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ D1: ESTADO VAZIO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">D1 — Estado Vazio (Carteira)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header">
+            <div class="mod-header-left">
+              <span class="mod-icon">📈</span>
+              <span class="mod-name">Patrimônio</span>
+            </div>
+          </div>
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Carteira</div>
+            <div class="sub-nav-tab">Proventos</div>
+            <div class="sub-nav-tab">Evolução</div>
+          </div>
+
+          <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div class="empty-title">Sua carteira está vazia</div>
+            <div class="empty-desc">Adicione seus investimentos para acompanhar patrimônio, proventos e o progresso rumo à independência financeira.</div>
+            <button class="btn-primary" style="max-width:240px;margin:0 auto;">+ Adicionar Primeiro Ativo</button>
+            <div style="margin-top:16px;">
+              <button class="btn-secondary" style="max-width:240px;margin:0 auto;font-size:13px;">Como funciona?</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ D2: SIMULADOR FREE (PAYWALL) ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">D2 — Simulador IF (FREE Paywall)</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="int-header">
+            <div class="int-back">← Patrimônio</div>
+            <div class="int-title">Simulador IF</div>
+          </div>
+
+          <div style="text-align:center;padding:32px 24px;">
+            <div style="font-size:40px;margin-bottom:16px;">👑</div>
+            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1);margin-bottom:8px;">Simulador IF — Recurso PRO</div>
+            <div style="font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:24px;">Projete quanto tempo falta para a independência financeira com 3 cenários, gráfico de evolução e integração com sua carteira real.</div>
+
+            <!-- Blurred preview -->
+            <div style="position:relative;border-radius:16px;overflow:hidden;margin-bottom:24px;">
+              <div style="filter:blur(6px);opacity:0.5;pointer-events:none;">
+                <div class="card" style="margin:0;background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(16,185,129,0.06));border-color:rgba(59,130,246,0.2);">
+                  <div style="text-align:center;">
+                    <div style="font-size:12px;color:var(--t2);">Você atinge a IF em</div>
+                    <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--patrimonio);">18 anos</div>
+                    <div style="font-size:13px;color:var(--t2);">Em 2044 · com R$ 2.500.000</div>
+                  </div>
+                </div>
+              </div>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:28px;">🔒</div>
+            </div>
+
+            <button class="btn-primary" style="background:linear-gradient(90deg,#3b82f6,#10b981);max-width:240px;margin:0 auto;">
+              👑 Assinar PRO — R$ 29,90/mês
+            </button>
+            <div style="font-size:11px;color:var(--t3);margin-top:8px;">Cancele quando quiser</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

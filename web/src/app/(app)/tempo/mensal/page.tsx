@@ -2,15 +2,27 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Plus, X, Check, Trash2, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 import { useAgenda, getMonthRange, EVENT_TYPES, PRIORITY_COLORS, type AgendaEvent, type AgendaEventFormData } from '@/hooks/use-agenda'
 import { useMetas } from '@/hooks/use-metas'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { KpiCard } from '@/components/ui/kpi-card'
 import { EventModal } from '@/components/agenda/EventModal'
 import { DeleteEventModal } from '@/components/agenda/DeleteEventModal'
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+
+const TEMPO_TABS = [
+  { label: 'Dashboard', href: '/tempo' },
+  { label: 'Agenda', href: '/tempo/agenda' },
+  { label: 'Semanal', href: '/tempo/semanal' },
+  { label: 'Mensal', href: '/tempo/mensal' },
+  { label: 'Review', href: '/tempo/review', pro: true },
+]
 
 // ─── CONSTANTES ───────────────────────────────────────────────────────────────
 
@@ -270,6 +282,7 @@ function DayDrawer({
 
 export default function AgendaMensalPage() {
   const router = useRouter()
+  const pathname = usePathname()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
 
@@ -382,6 +395,25 @@ export default function AgendaMensalPage() {
 
   return (
     <div className="max-w-[1140px] mx-auto px-4 py-7 pb-16">
+
+      {/* Sub-nav underline tabs (desktop) */}
+      <div className="hidden lg:flex border-b border-[var(--sl-border)] mb-5">
+        {TEMPO_TABS.map(tab => (
+          <Link key={tab.href} href={tab.href}
+            className={cn(
+              'relative px-4 py-2.5 text-[13px] transition-colors',
+              pathname === tab.href
+                ? 'text-[#06b6d4] font-semibold'
+                : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
+            )}>
+            {tab.label}
+            {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#f59e0b] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
+            {pathname === tab.href && (
+              <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#06b6d4]" />
+            )}
+          </Link>
+        ))}
+      </div>
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
@@ -539,7 +571,7 @@ export default function AgendaMensalPage() {
 
           {/* Link para semana */}
           <button
-            onClick={() => router.push('/tempo')}
+            onClick={() => router.push('/tempo/semanal')}
             className="w-full py-2.5 rounded-[10px] border border-[var(--sl-border)] text-[12px] font-semibold text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors"
           >
             Ver vista semanal →

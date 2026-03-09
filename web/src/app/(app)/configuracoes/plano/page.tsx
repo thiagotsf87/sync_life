@@ -56,7 +56,7 @@ export default function PlanoPage() {
       {/* Plan grid */}
       <div className="grid grid-cols-2 gap-3 mb-4 max-sm:grid-cols-1">
         {/* FREE card */}
-        <div className="bg-[var(--sl-s2)] border-2 border-[var(--sl-border)] rounded-[18px] p-5">
+        <div className="bg-[var(--sl-s1)] border-2 border-[var(--sl-border)] rounded-[18px] p-5">
           <span className="inline-block text-[10px] font-bold uppercase tracking-[0.06em] px-2 py-0.5 rounded-md bg-[var(--sl-s3)] text-[var(--sl-t3)] mb-3">
             Free
           </span>
@@ -93,7 +93,7 @@ export default function PlanoPage() {
 
         {/* PRO card */}
         <div
-          className="bg-[var(--sl-s2)] border-2 rounded-[18px] p-5 relative"
+          className="bg-[var(--sl-s1)] border-2 rounded-[18px] p-5 relative"
           style={{
             borderColor: '#10b981',
             boxShadow: '0 0 0 1px rgba(16,185,129,0.2), 0 8px 32px rgba(16,185,129,0.12)',
@@ -140,7 +140,7 @@ export default function PlanoPage() {
       </div>
 
       {/* Usage card (FREE users) */}
-      <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-5 transition-colors hover:border-[var(--sl-border-h)]">
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 transition-colors hover:border-[var(--sl-border-h)]">
         <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
           Uso atual do plano Free
         </p>

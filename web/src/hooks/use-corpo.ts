@@ -7,6 +7,9 @@ import {
   syncWeightGoalTargetFromCorpo,
   syncWeightGoalsFromCorpo,
 } from '@/lib/integrations/futuro'
+import { updateStreak } from '@/hooks/use-panorama'
+import { addXP } from '@/hooks/use-xp'
+import { onAppointmentCreated } from '@/lib/cross-module'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -93,6 +96,33 @@ export interface DailySteps {
   created_at: string
 }
 
+export type MealSlot = 'breakfast' | 'lunch' | 'snack' | 'dinner'
+
+export interface Meal {
+  id: string
+  user_id: string
+  meal_slot: MealSlot
+  description: string
+  calories_kcal: number
+  protein_g: number | null
+  carbs_g: number | null
+  fat_g: number | null
+  meal_time: string | null
+  recorded_at: string
+  notes: string | null
+  created_at: string
+}
+
+export interface DailyWaterIntake {
+  id: string
+  user_id: string
+  recorded_date: string
+  intake_ml: number
+  goal_ml: number
+  created_at: string
+  updated_at: string
+}
+
 // ─── Labels ───────────────────────────────────────────────────────────────────
 
 export const ACTIVITY_LEVEL_LABELS: Record<ActivityLevelType, string> = {
@@ -122,6 +152,15 @@ export const SPECIALTIES = [
   'Ginecologista', 'Nutricionista', 'Oftalmologista', 'Ortopedista',
   'Otorrino', 'Psicólogo', 'Psiquiatra', 'Urologista', 'Dentista', 'Outro',
 ] as const
+
+export const MEAL_SLOT_CONFIG: Record<MealSlot, {
+  label: string; icon: string; defaultTime: string; color: string; bg: string
+}> = {
+  breakfast: { label: 'Café da manhã', icon: '🌅', defaultTime: '07:30', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+  lunch:     { label: 'Almoço',        icon: '☀️',  defaultTime: '12:30', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+  snack:     { label: 'Lanche',        icon: '🌇',  defaultTime: '16:00', color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
+  dinner:    { label: 'Jantar',        icon: '🌙',  defaultTime: '19:30', color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
+}
 
 export const ACTIVITY_TYPES: { type: string; label: string; met: number; icon: string }[] = [
   { type: 'walking', label: 'Caminhada', met: 3.5, icon: '🚶' },
@@ -399,6 +438,8 @@ export function useAddWeightEntry() {
     const { error } = await sb.from('weight_entries').insert({ user_id: user.id, ...data })
     if (error) throw error
     await syncWeightGoalsFromCorpo(user.id, data.weight)
+    updateStreak(user.id).catch(() => {})
+    addXP(user.id, 'weight_logged').catch(() => {})
   }, [])
 }
 
@@ -441,6 +482,15 @@ export function useSaveAppointment() {
     } else {
       const { error } = await sb.from('medical_appointments').insert({ user_id: user.id, ...data })
       if (error) throw error
+      addXP(user.id, 'appointment_created').catch(() => {})
+      // Cross-module: consulta → despesa em Finanças + evento em Tempo
+      onAppointmentCreated(
+        user.id,
+        data.specialty,
+        data.doctor_name ?? '',
+        data.cost ?? null,
+        data.appointment_date,
+      ).catch(() => {})
     }
   }, [])
 }
@@ -476,6 +526,8 @@ export function useSaveActivity() {
     const { error } = await sb.from('activities').insert({ user_id: user.id, ...data })
     if (error) throw error
     await syncExerciseFrequencyGoalsFromCorpo(user.id)
+    updateStreak(user.id).catch(() => {})
+    addXP(user.id, 'activity_logged').catch(() => {})
   }, [])
 }
 
@@ -488,5 +540,111 @@ export function useDeleteActivity() {
     const { error } = await sb.from('activities').delete().eq('id', id)
     if (error) throw error
     await syncExerciseFrequencyGoalsFromCorpo(user.id)
+  }, [])
+}
+
+// ─── Meals hooks ──────────────────────────────────────────────────────────────
+
+export function useMeals(date: string) {
+  const [meals, setMeals] = useState<Meal[]>([])
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+  const sb = supabase as any
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await sb.from('meals')
+        .select('*').eq('user_id', user.id).eq('recorded_at', date)
+        .order('created_at', { ascending: true })
+      setMeals(data ?? [])
+    } finally {
+      setLoading(false)
+    }
+  }, [date])
+
+  useEffect(() => { load() }, [load])
+  return { meals, loading, reload: load }
+}
+
+export interface SaveMealData {
+  meal_slot: MealSlot
+  description: string
+  calories_kcal: number
+  protein_g?: number | null
+  carbs_g?: number | null
+  fat_g?: number | null
+  meal_time?: string | null
+  recorded_at: string
+  notes?: string | null
+}
+
+export function useSaveMeal() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (data: SaveMealData, existingId?: string) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+
+    if (existingId) {
+      const { error } = await sb.from('meals').update(data).eq('id', existingId)
+      if (error) throw error
+    } else {
+      const { error } = await sb.from('meals').insert({ user_id: user.id, ...data })
+      if (error) throw error
+    }
+  }, [])
+}
+
+export function useDeleteMeal() {
+  const supabase = createClient()
+  const sb = supabase as any
+  return useCallback(async (id: string) => {
+    const { error } = await sb.from('meals').delete().eq('id', id)
+    if (error) throw error
+  }, [])
+}
+
+// ─── Water intake hooks ───────────────────────────────────────────────────────
+
+export function useWaterIntake(date: string) {
+  const [water, setWater] = useState<DailyWaterIntake | null>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+  const sb = supabase as any
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await sb.from('daily_water_intake')
+        .select('*').eq('user_id', user.id).eq('recorded_date', date).single()
+      setWater(data ?? null)
+    } finally {
+      setLoading(false)
+    }
+  }, [date])
+
+  useEffect(() => { load() }, [load])
+  return { water, loading, reload: load }
+}
+
+export function useUpdateWater() {
+  const supabase = createClient()
+  const sb = supabase as any
+
+  return useCallback(async (date: string, intake_ml: number, goal_ml = 2500) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Não autenticado')
+
+    const { error } = await sb.from('daily_water_intake').upsert(
+      { user_id: user.id, recorded_date: date, intake_ml, goal_ml, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id,recorded_date' }
+    )
+    if (error) throw error
   }, [])
 }

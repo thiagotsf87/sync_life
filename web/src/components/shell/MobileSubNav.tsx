@@ -13,6 +13,19 @@ export function MobileSubNav() {
   const mod = MODULES[activeModule]
   const activeNavId = getActiveNavItem(pathname, activeModule)
 
+  // Keep modules that already render in-page tabs aligned with prototypes.
+  if (
+    activeModule === 'experiencias' ||
+    activeModule === 'carreira' ||
+    activeModule === 'financas' ||
+    activeModule === 'panorama' ||
+    activeModule === 'futuro' ||
+    activeModule === 'corpo' ||
+    activeModule === 'mente' ||
+    activeModule === 'patrimonio' ||
+    activeModule === 'tempo'
+  ) return null
+
   // Only show if module has more than 1 nav item
   if (mod.navItems.length <= 1) return null
 

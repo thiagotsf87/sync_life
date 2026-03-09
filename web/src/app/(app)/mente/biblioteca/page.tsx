@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react'
 import { Plus, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useShellStore } from '@/stores/shell-store'
 import {
   useStudyTracks, useStudyResources,
   useAddResource, useDeleteResource, useUpdateResourceStatus,
@@ -19,9 +18,6 @@ const RESOURCE_TYPES: ResourceType[] = ['link', 'book', 'video', 'pdf', 'note', 
 const RESOURCE_STATUSES: ResourceStatus[] = ['to_study', 'studying', 'completed']
 
 export default function BibliotecaPage() {
-  const mode = useShellStore((s) => s.mode)
-  const isJornada = mode === 'jornada'
-
   const { tracks } = useStudyTracks()
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<ResourceStatus | 'all'>('all')
@@ -101,10 +97,7 @@ export default function BibliotecaPage() {
 
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-2xl',
-          isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-        )}>
+        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
           📚 Biblioteca de Recursos
         </h1>
         <div className="flex-1" />

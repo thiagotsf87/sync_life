@@ -67,19 +67,11 @@ test.describe('Design System', () => {
   })
 
   // 14.4
-  test('14.4 Gradiente text-sl-grad visível no Jornada', async ({ page }) => {
+  test('14.4 Gradiente text-sl-grad sempre visível', async ({ page }) => {
     await page.goto('/dashboard')
     await page.waitForLoadState('networkidle')
 
-    // Garantir modo Jornada
-    const modePill = page.getByRole('button', { name: /Foco|Jornada/i }).first()
-    const mText = await modePill.textContent()
-    if (mText?.includes('Foco')) {
-      await modePill.click()
-      await page.waitForTimeout(500)
-    }
-
-    // Títulos no Jornada devem usar gradiente
+    // Títulos devem usar gradiente (unified experience)
     const hasGrad = await page.evaluate(() => {
       const els = document.querySelectorAll('.text-sl-grad, [class*="text-sl-grad"]')
       return els.length > 0

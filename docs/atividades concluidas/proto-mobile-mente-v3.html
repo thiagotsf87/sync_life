@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife Mobile — Mente (12 telas · v3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══ DESIGN SYSTEM — SyncLife Dark Foco (Navy) ═══ */
+:root{
+  --bg:#03071a;--s1:#07112b;--s2:#0c1a3a;--s3:#132248;
+  --border:rgba(255,255,255,0.06);--border-h:rgba(255,255,255,0.13);
+  --t1:#dff0ff;--t2:#6e90b8;--t3:#2e4a6e;
+  --em:#10b981;--el:#0055ff;
+  --fin:#10b981;--tempo:#06b6d4;--futuro:#0055ff;--corpo:#f97316;
+  --mente:#eab308;--mente-g:rgba(234,179,8,0.14);
+  --patrimonio:#3b82f6;--carreira:#ec4899;--exp:#14b8a6;
+  --green:#10b981;--yellow:#f59e0b;--red:#f43f5e;--orange:#f97316;
+  --radius:16px;--radius-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0e1a;font-family:'DM Sans',sans-serif;color:var(--t1);}
+
+/* ═══ Demo shell ═══ */
+.demo-page{padding:40px 20px 80px;max-width:1600px;margin:0 auto;}
+.demo-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:linear-gradient(135deg,#eab308,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.demo-subtitle{font-size:14px;color:var(--t2);margin-bottom:10px;}
+.demo-group{margin-top:48px;margin-bottom:14px;padding:14px 0 8px;border-top:1px solid var(--border);}
+.demo-group-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--mente);letter-spacing:0.5px;}
+.demo-group-sub{font-size:12px;color:var(--t3);margin-top:3px;}
+.screens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(375px,1fr));gap:48px 28px;margin-top:18px;}
+.screen-wrapper{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.screen-label{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:1px;text-align:center;}
+.screen-tag{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.tag-new{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);}
+.tag-improved{background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.3);}
+.tag-priority{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);}
+
+/* ═══ Phone frame — AUTO HEIGHT ═══ */
+.phone{
+  width:375px;min-height:500px;
+  background:var(--bg);border-radius:48px;
+  border:2px solid rgba(255,255,255,0.1);
+  overflow:hidden;position:relative;
+  box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);
+  padding-top:54px;padding-bottom:24px;
+}
+.dynamic-island{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:120px;height:34px;background:#000;border-radius:20px;z-index:100;}
+.status-bar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;z-index:50;}
+.status-time{font-size:15px;font-weight:600;color:var(--t1);}
+.screen-content{padding-bottom:12px;}
+
+/* ═══ Module header (padrão Futuro) ═══ */
+.mod-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px;}
+.mod-header-left{display:flex;align-items:center;gap:8px;}
+.mod-icon{font-size:20px;}
+.mod-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--t1);}
+.mod-badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;background:var(--mente-g);color:var(--mente);}
+
+/* ═══ Sub-nav tabs (underline style) ═══ */
+.sub-nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.sub-nav-tab{padding:8px 14px 10px;font-size:14px;color:var(--t3);position:relative;white-space:nowrap;cursor:pointer;}
+.sub-nav-tab.active{color:var(--t1);font-weight:600;}
+.sub-nav-tab.active::after{content:'';position:absolute;bottom:-1px;left:8px;right:8px;height:3px;border-radius:3px 3px 0 0;background:var(--mente);}
+
+/* ═══ Filter pills ═══ */
+.filter-pills{display:flex;gap:6px;padding:0 20px 14px;overflow-x:auto;flex-wrap:wrap;}
+.filter-pill{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;border:1px solid var(--border);background:var(--s1);color:var(--t2);}
+.filter-pill.active{background:var(--mente);color:#000;border-color:var(--mente);}
+
+/* ═══ Shared components ═══ */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-green{background:rgba(16,185,129,0.12);color:#10b981;}
+.badge-yellow{background:rgba(234,179,8,0.12);color:#eab308;}
+.badge-blue{background:rgba(0,85,255,0.12);color:#60a5fa;}
+.badge-amber{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.badge-red{background:rgba(244,63,94,0.12);color:#f43f5e;}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;padding:0 20px 8px;margin-top:4px;}
+.progress-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;}
+.list-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);}
+.list-item:last-child{border-bottom:none;}
+.list-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;}
+.list-info{flex:1;min-width:0;}
+.list-title{font-size:14px;font-weight:500;color:var(--t1);}
+.list-sub{font-size:12px;color:var(--t2);margin-top:1px;}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px;}
+.kpi-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
+.kpi-label{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.kpi-value{font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--t1);}
+.kpi-sub{font-size:11px;color:var(--t2);margin-top:2px;}
+.heatmap-cell{aspect-ratio:1;border-radius:5px;}
+.header-btn{width:36px;height:36px;border-radius:10px;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--t2);}
+
+/* ═══ Wizard ═══ */
+.wizard-steps{display:flex;gap:4px;padding:0 20px 16px;}
+.wizard-dot{width:32px;height:5px;border-radius:3px;background:var(--s3);}
+.wizard-dot.active{background:var(--mente);}
+.wizard-dot.done{background:rgba(234,179,8,0.4);}
+.input-field{width:100%;padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;}
+.input-label{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px;display:block;}
+.select-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.select-card{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 12px;text-align:center;cursor:pointer;}
+.select-card.selected{border-color:var(--mente);background:var(--mente-g);}
+.select-card .icon{font-size:24px;margin-bottom:6px;}
+.select-card .label{font-size:13px;font-weight:500;color:var(--t1);}
+.select-card .desc{font-size:11px;color:var(--t2);margin-top:2px;}
+.btn-primary{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--mente);color:#000;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;text-align:center;border:none;cursor:pointer;}
+.btn-secondary{width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--s1);color:var(--t2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;text-align:center;border:1px solid var(--border);}
+.check-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.check-row:last-child{border-bottom:none;}
+.check-box{width:22px;height:22px;border-radius:6px;border:2px solid var(--t3);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.check-box.done{background:var(--mente);border-color:var(--mente);}
+.check-box.done::after{content:'✓';color:#000;font-size:13px;font-weight:700;}
+.check-text{font-size:13px;color:var(--t1);flex:1;}
+.check-text.done{text-decoration:line-through;color:var(--t3);}
+.check-date{font-size:11px;color:var(--t3);}
+
+/* ═══ Inner page header (detalhe, wizard) ═══ */
+.inner-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;}
+.inner-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--t1);}
+</style>
+</head>
+<body>
+<div class="demo-page">
+  <div class="demo-title">🧠 Mente — 12 telas mobile (v3)</div>
+  <div class="demo-subtitle">Protótipo completo · Dark Foco · 375px · Cor: #eab308 · Navegação padrão Futuro · Telas estáticas full-height</div>
+
+  <!-- ═════════════════════════════════════════════════
+       GRUPO A — VISUALIZAÇÃO
+       ═════════════════════════════════════════════════ -->
+  <div class="demo-group">
+    <div class="demo-group-title">📊 Grupo A — Visualização</div>
+    <div class="demo-group-sub">Dashboard e histórico de sessões — telas de leitura e análise</div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- ═══ 01: DASHBOARD ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">01 — Dashboard</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <!-- Module header -->
+          <div class="mod-header">
+            <div class="mod-header-left"><span class="mod-icon">🧠</span><span class="mod-name">Mente</span></div>
+            <span class="mod-badge">3 trilhas</span>
+          </div>
+          <!-- Sub-nav tabs -->
+          <div class="sub-nav">
+            <div class="sub-nav-tab active">Dashboard</div>
+            <div class="sub-nav-tab">Trilhas</div>
+            <div class="sub-nav-tab">Timer</div>
+            <div class="sub-nav-tab">Sessões</div>
+            <div class="sub-nav-tab">Biblioteca</div>
+          </div>
+          <!-- KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-label">Horas esta semana</div><div class="kpi-value" style="color:var(--mente);">8,5<span style="font-size:13px;">h</span></div><div class="kpi-sub">Meta: 10h/semana</div></div>
+            <div class="kpi-card"><div class="kpi-label">Streak de estudo</div><div class="kpi-value" style="color:var(--orange);">14<span style="font-size:13px;">dias</span></div><div class="kpi-sub">🔥 Recorde pessoal!</div></div>
+            <div class="kpi-card"><div class="kpi-label">Trilhas ativas</div><div class="kpi-value">3</div><div class="kpi-sub">Limite FREE: 3</div></div>
+            <div class="kpi-card"><div class="kpi-label">Pomodoros hoje</div><div class="kpi-value" style="color:var(--em);">6</div><div class="kpi-sub">2,5h de foco puro</div></div>
+          </div>
+          <!-- Heatmap -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span style="font-size:14px;font-weight:600;color:var(--t1);">🔥 Streak — Março</span>
+              <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--orange);">14 dias</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">
+              <div style="text-align:center;font-size:9px;color:var(--t3);padding-bottom:3px;">S</div><div style="text-align:center;font-size:9px;color:var(--t3);padding-bottom:3px;">T</div><div style="text-align:center;font-size:9px;color:var(--t3);padding-bottom:3px;">Q</div><div style="text-align:center;font-size:9px;color:var(--t3);padding-bottom:3px;">Q</div><div style="text-align:center;font-size:9px;color:var(--t3);padding-bottom:3px;">S</div><div style="text-align:center;font-size:9px;color:var(--t3);padding-bottom:3px;">S</div><div style="text-align:center;font-size:9px;color:var(--t3);padding-bottom:3px;">D</div>
+              <div class="heatmap-cell" style="background:var(--s3);"></div><div class="heatmap-cell" style="background:var(--s3);"></div><div class="heatmap-cell" style="background:var(--s3);"></div><div class="heatmap-cell" style="background:var(--s3);"></div><div class="heatmap-cell" style="background:var(--s3);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.35);"></div>
+              <div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.5);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:var(--s3);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div>
+              <div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.5);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div>
+              <div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:rgba(234,179,8,0.8);"></div><div class="heatmap-cell" style="background:var(--mente);border:2px solid rgba(255,255,255,0.3);"></div>
+            </div>
+          </div>
+          <!-- Trilhas resumo -->
+          <div class="section-title">TRILHAS ATIVAS</div>
+          <div class="card" style="padding:14px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><div style="width:36px;height:36px;border-radius:10px;background:var(--mente-g);display:flex;align-items:center;justify-content:center;font-size:18px;">⚛️</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--t1);">React Avançado</div><div style="font-size:12px;color:var(--t2);">Tecnologia · 12/24 etapas</div></div><span class="badge badge-yellow">50%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:50%;background:var(--mente);"></div></div>
+          </div>
+          <div class="card" style="padding:14px;margin-top:-4px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><div style="width:36px;height:36px;border-radius:10px;background:var(--mente-g);display:flex;align-items:center;justify-content:center;font-size:18px;">🇺🇸</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--t1);">Inglês Avançado</div><div style="font-size:12px;color:var(--t2);">Idiomas · 8/20 etapas</div></div><span class="badge badge-amber">40%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:40%;background:var(--yellow);"></div></div>
+          </div>
+          <!-- Quick start -->
+          <div style="padding:0 16px 12px;">
+            <div style="background:linear-gradient(135deg,rgba(234,179,8,0.18),rgba(234,179,8,0.04));border:1.5px solid rgba(234,179,8,0.3);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">⏱️</span><div><div style="font-size:14px;font-weight:600;color:var(--t1);">Iniciar sessão de foco</div><div style="font-size:12px;color:var(--t2);">Pomodoro 25 min · React Avançado</div></div></div>
+              <div style="width:40px;height:40px;border-radius:50%;background:var(--mente);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="#000" style="width:18px;height:18px;"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+            </div>
+          </div>
+          <!-- Jornada insight -->
+          <div class="card" style="background:rgba(0,85,255,0.06);border-color:rgba(0,85,255,0.15);">
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:18px;">🤖</span><div style="font-size:13px;color:var(--t2);line-height:1.5;">Você estuda melhor entre <span style="color:var(--mente);">19h–22h</span>. Suas sessões matutinas têm 30% menos foco. Tente agendar React para o período noturno.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 02: SESSÕES DE ESTUDO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">02 — Sessões de Estudo</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header"><div class="mod-header-left"><span class="mod-icon">🧠</span><span class="mod-name">Mente</span></div></div>
+          <div class="sub-nav"><div class="sub-nav-tab">Dashboard</div><div class="sub-nav-tab">Trilhas</div><div class="sub-nav-tab">Timer</div><div class="sub-nav-tab active">Sessões</div><div class="sub-nav-tab">Biblioteca</div></div>
+          <!-- Filtros -->
+          <div class="filter-pills">
+            <div class="filter-pill active">Todas</div>
+            <div class="filter-pill">⚛️ React Avançado</div>
+            <div class="filter-pill">🇺🇸 Inglês</div>
+            <div class="filter-pill">Estudo livre</div>
+          </div>
+          <!-- Week summary -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-size:14px;font-weight:600;color:var(--t1);">Esta semana</span><span class="badge badge-yellow">8,5h / 10h</span></div>
+            <div class="progress-bar" style="height:10px;border-radius:5px;margin-bottom:10px;"><div class="progress-fill" style="width:85%;background:linear-gradient(90deg,var(--mente),rgba(234,179,8,0.5));border-radius:5px;"></div></div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-around;height:56px;gap:4px;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:26px;background:var(--mente);border-radius:4px 4px 0 0;height:40px;opacity:0.85;"></div><span style="font-size:9px;color:var(--t2);">Seg</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:26px;background:var(--mente);border-radius:4px 4px 0 0;height:24px;opacity:0.7;"></div><span style="font-size:9px;color:var(--t2);">Ter</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:26px;background:var(--mente);border-radius:4px 4px 0 0;height:44px;opacity:0.85;"></div><span style="font-size:9px;color:var(--t2);">Qua</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:26px;background:var(--s3);border-radius:4px 4px 0 0;height:10px;"></div><span style="font-size:9px;color:var(--t3);">Qui</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:26px;background:var(--mente);border-radius:4px 4px 0 0;height:36px;opacity:0.85;"></div><span style="font-size:9px;color:var(--t2);">Sex</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:26px;background:var(--s2);border-radius:4px 4px 0 0;height:10px;border:1px dashed rgba(234,179,8,0.3);"></div><span style="font-size:9px;color:var(--t3);">Sáb</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:26px;background:var(--s2);border-radius:4px 4px 0 0;height:10px;border:1px dashed rgba(234,179,8,0.3);"></div><span style="font-size:9px;color:var(--t3);">Dom</span></div>
+            </div>
+          </div>
+          <!-- Histórico -->
+          <div class="section-title">HISTÓRICO</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item"><div style="width:4px;height:44px;background:var(--mente);border-radius:2px;flex-shrink:0;"></div><div class="list-info"><div class="list-title">React Avançado — Hooks</div><div class="list-sub">Hoje · 9:00–11:30 · 4 pomodoros</div><div style="display:flex;gap:5px;margin-top:4px;"><span style="font-size:11px;padding:2px 7px;border-radius:8px;background:var(--mente-g);color:var(--mente);">⏱️ 1h 40min</span><span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(16,185,129,0.1);color:var(--em);">✓ Concluída</span></div></div></div>
+            <div class="list-item"><div style="width:4px;height:44px;background:var(--yellow);border-radius:2px;flex-shrink:0;"></div><div class="list-info"><div class="list-title">Inglês — Business English</div><div class="list-sub">Ontem · 20:00–21:00 · 2 pomodoros</div><div style="display:flex;gap:5px;margin-top:4px;"><span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(245,158,11,0.12);color:var(--yellow);">⏱️ 50min</span><span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(16,185,129,0.1);color:var(--em);">✓ Concluída</span></div></div></div>
+            <div class="list-item"><div style="width:4px;height:44px;background:var(--mente);border-radius:2px;flex-shrink:0;"></div><div class="list-info"><div class="list-title">React Avançado — Context API</div><div class="list-sub">Qua · 19:30–22:00 · 5 pomodoros</div><div style="display:flex;gap:5px;margin-top:4px;"><span style="font-size:11px;padding:2px 7px;border-radius:8px;background:var(--mente-g);color:var(--mente);">⏱️ 2h 5min</span><span style="font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(16,185,129,0.1);color:var(--em);">✓ Concluída</span></div></div></div>
+          </div>
+          <div class="card" style="margin-top:12px;background:rgba(0,85,255,0.06);border-color:rgba(0,85,255,0.15);"><div style="display:flex;gap:10px;align-items:flex-start;"><span style="font-size:18px;">🤖</span><div style="font-size:13px;color:var(--t2);line-height:1.5;">Semanas com <span style="color:var(--mente);">4+ dias de estudo</span> correlacionam com 23% mais produtividade no seu caso.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═════════════════════════════════════════════════
+       GRUPO B — TRILHAS
+       ═════════════════════════════════════════════════ -->
+  <div class="demo-group"><div class="demo-group-title">📚 Grupo B — Trilhas de Aprendizado</div><div class="demo-group-sub">Lista, detalhe e wizard de criação</div></div>
+  <div class="screens-grid">
+
+    <!-- ═══ 03: TRILHAS LISTA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">03 — Trilhas (Lista)</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header"><div class="mod-header-left"><span class="mod-icon">🧠</span><span class="mod-name">Mente</span></div><span class="mod-badge">3 trilhas</span></div>
+          <div class="sub-nav"><div class="sub-nav-tab">Dashboard</div><div class="sub-nav-tab active">Trilhas</div><div class="sub-nav-tab">Timer</div><div class="sub-nav-tab">Sessões</div><div class="sub-nav-tab">Biblioteca</div></div>
+          <div class="filter-pills"><div class="filter-pill active">Ativas</div><div class="filter-pill">Concluídas</div><div class="filter-pill">Explorar</div></div>
+          <div class="section-title">MINHAS TRILHAS (3/3 FREE)</div>
+          <div class="card" style="cursor:pointer;"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><div style="width:44px;height:44px;border-radius:13px;background:var(--mente-g);display:flex;align-items:center;justify-content:center;font-size:22px;">⚛️</div><div style="flex:1;"><div style="font-size:15px;font-weight:600;color:var(--t1);">React Avançado</div><div style="font-size:12px;color:var(--t2);">Tecnologia · Iniciado há 3 semanas</div></div><span class="badge badge-yellow">50%</span></div><div class="progress-bar" style="margin-bottom:8px;"><div class="progress-fill" style="width:50%;background:var(--mente);"></div></div><div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--t2);">12 de 24 etapas</span><span style="color:var(--mente);">Próximo: Hooks avançados →</span></div></div>
+          <div class="card" style="cursor:pointer;"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><div style="width:44px;height:44px;border-radius:13px;background:var(--mente-g);display:flex;align-items:center;justify-content:center;font-size:22px;">🇺🇸</div><div style="flex:1;"><div style="font-size:15px;font-weight:600;color:var(--t1);">Inglês Avançado</div><div style="font-size:12px;color:var(--t2);">Idiomas · Iniciado há 5 semanas</div></div><span class="badge badge-amber">40%</span></div><div class="progress-bar" style="margin-bottom:8px;"><div class="progress-fill" style="width:40%;background:var(--yellow);"></div></div><div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--t2);">8 de 20 etapas</span><span style="color:var(--yellow);">Próximo: Business English →</span></div></div>
+          <div class="card" style="cursor:pointer;"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><div style="width:44px;height:44px;border-radius:13px;background:var(--mente-g);display:flex;align-items:center;justify-content:center;font-size:22px;">📊</div><div style="flex:1;"><div style="font-size:15px;font-weight:600;color:var(--t1);">Análise de Dados</div><div style="font-size:12px;color:var(--t2);">Tecnologia · Iniciado há 1 semana</div></div><span class="badge badge-blue">15%</span></div><div class="progress-bar" style="margin-bottom:8px;"><div class="progress-fill" style="width:15%;background:var(--el);"></div></div><div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--t2);">2 de 18 etapas</span><span style="color:var(--el);">Próximo: Python básico →</span></div></div>
+          <div style="padding:0 16px 12px;"><div style="background:linear-gradient(135deg,rgba(234,179,8,0.15),rgba(245,158,11,0.1));border:1.5px solid rgba(234,179,8,0.3);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;"><span style="font-size:24px;">💎</span><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--mente);">Quer mais trilhas?</div><div style="font-size:12px;color:var(--t2);margin-top:2px;">PRO: trilhas ilimitadas + IA personalizada</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--mente);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 04: DETALHE DA TRILHA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">04 — Detalhe da Trilha</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="inner-header"><div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><polyline points="15 18 9 12 15 6"/></svg></div><div class="inner-title">React Avançado</div><div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></div></div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:40px;margin-bottom:8px;">⚛️</div>
+            <div style="display:flex;justify-content:center;gap:6px;margin-bottom:12px;"><span class="badge badge-yellow">Em progresso</span><span class="badge" style="background:rgba(6,182,212,0.12);color:#06b6d4;">Tecnologia</span></div>
+            <div style="display:flex;justify-content:space-around;margin-top:12px;">
+              <div><div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--mente);">50%</div><div style="font-size:10px;color:var(--t2);margin-top:2px;">Progresso</div></div>
+              <div style="width:1px;background:var(--border);"></div>
+              <div><div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--t1);">42h</div><div style="font-size:10px;color:var(--t2);margin-top:2px;">Estudadas</div></div>
+              <div style="width:1px;background:var(--border);"></div>
+              <div><div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--t1);">R$199</div><div style="font-size:10px;color:var(--t2);margin-top:2px;">Investido</div></div>
+            </div>
+            <div class="progress-bar" style="margin-top:14px;height:8px;border-radius:4px;"><div class="progress-fill" style="width:50%;background:var(--mente);border-radius:4px;"></div></div>
+            <div style="font-size:11px;color:var(--t2);margin-top:6px;">12 de 24 etapas · Meta: 15 Abr 2026 (40 dias)</div>
+          </div>
+          <div class="section-title">ETAPAS</div>
+          <div class="card" style="padding:12px 16px;">
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">1. Introdução ao React</div><div class="check-date">12/02</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">2. JSX e Componentes</div><div class="check-date">14/02</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">3. Props e State</div><div class="check-date">16/02</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">4. Lifecycle e useEffect</div><div class="check-date">18/02</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">5. Custom Hooks</div><div class="check-date">20/02</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">6. Context API</div><div class="check-date">22/02</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">7. useReducer</div><div class="check-date">24/02</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">8. useMemo / useCallback</div><div class="check-date">26/02</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">9. useRef</div><div class="check-date">28/02</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">10. Context Avançado</div><div class="check-date">01/03</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">11. React Router</div><div class="check-date">03/03</div></div>
+            <div class="check-row"><div class="check-box done"></div><div class="check-text done">12. React Router Avançado</div><div class="check-date">05/03</div></div>
+            <div class="check-row" style="background:rgba(234,179,8,0.06);margin:0 -16px;padding:10px 16px;border-radius:8px;"><div class="check-box" style="border-color:var(--mente);"></div><div class="check-text" style="color:var(--mente);font-weight:600;">13. Hooks Avançados ← próximo</div></div>
+            <div class="check-row"><div class="check-box"></div><div class="check-text">14. Performance e React.memo</div></div>
+            <div class="check-row"><div class="check-box"></div><div class="check-text">15. Suspense e Lazy Loading</div></div>
+          </div>
+          <div style="display:flex;gap:8px;padding:0 16px 12px;">
+            <div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;color:var(--t2);">⏸ Pausar</div>
+            <div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--s1);border:1px solid var(--border);text-align:center;font-size:12px;color:var(--t2);">✏️ Editar</div>
+            <div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2);text-align:center;font-size:12px;color:var(--red);">🗑 Excluir</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 05: CRIAR TRILHA — PASSO 1 ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">05 — Criar Trilha · Passo 1</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="inner-header"><div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div class="inner-title">Nova Trilha</div><div style="width:36px;"></div></div>
+          <div class="wizard-steps"><div class="wizard-dot active"></div><div class="wizard-dot"></div><div class="wizard-dot"></div></div>
+          <div style="padding:0 20px 16px;"><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1);margin-bottom:4px;">Qual a categoria?</div><div style="font-size:13px;color:var(--t2);">Escolha a área de aprendizado desta trilha.</div></div>
+          <div style="padding:0 16px;"><div class="select-grid">
+            <div class="select-card selected"><div class="icon">💻</div><div class="label">Tecnologia</div><div class="desc">Dev, dados, IA</div></div>
+            <div class="select-card"><div class="icon">🌍</div><div class="label">Idiomas</div><div class="desc">Inglês, espanhol...</div></div>
+            <div class="select-card"><div class="icon">📊</div><div class="label">Gestão</div><div class="desc">Liderança, PM</div></div>
+            <div class="select-card"><div class="icon">📈</div><div class="label">Marketing</div><div class="desc">Growth, SEO</div></div>
+            <div class="select-card"><div class="icon">🎨</div><div class="label">Design</div><div class="desc">UI, UX, produto</div></div>
+            <div class="select-card"><div class="icon">💰</div><div class="label">Finanças</div><div class="desc">Investimentos, FP</div></div>
+            <div class="select-card"><div class="icon">🏥</div><div class="label">Saúde</div><div class="desc">Nutrição, fitness</div></div>
+            <div class="select-card"><div class="icon">📝</div><div class="label">Concurso</div><div class="desc">Provas, editais</div></div>
+            <div class="select-card"><div class="icon">🎓</div><div class="label">Graduação</div><div class="desc">Universitário</div></div>
+            <div class="select-card"><div class="icon">🔬</div><div class="label">Pós-grad</div><div class="desc">MBA, mestrado</div></div>
+            <div class="select-card"><div class="icon">📜</div><div class="label">Certificação</div><div class="desc">AWS, PMP, CPA</div></div>
+            <div class="select-card"><div class="icon">✨</div><div class="label">Outro</div><div class="desc">Qualquer assunto</div></div>
+          </div></div>
+          <div style="padding:20px 16px 8px;"><div class="btn-primary">Continuar →</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 06: CRIAR TRILHA — PASSO 2 ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">06 — Criar Trilha · Passo 2</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="inner-header"><div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><polyline points="15 18 9 12 15 6"/></svg></div><div class="inner-title">Nova Trilha</div><div style="width:36px;"></div></div>
+          <div class="wizard-steps"><div class="wizard-dot done"></div><div class="wizard-dot active"></div><div class="wizard-dot"></div></div>
+          <div style="padding:0 20px 16px;"><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t1);margin-bottom:4px;">Detalhes da trilha</div><div style="font-size:13px;color:var(--t2);">Dê um nome e configure sua trilha.</div></div>
+          <div style="padding:0 20px;display:flex;flex-direction:column;gap:16px;">
+            <div><label class="input-label">Nome da trilha</label><input class="input-field" value="React Avançado" readonly></div>
+            <div><label class="input-label">Emoji / Ícone</label><div style="display:flex;gap:8px;flex-wrap:wrap;"><div style="width:42px;height:42px;border-radius:10px;background:var(--mente-g);border:2px solid var(--mente);display:flex;align-items:center;justify-content:center;font-size:20px;">⚛️</div><div style="width:42px;height:42px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;">📚</div><div style="width:42px;height:42px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;">🚀</div><div style="width:42px;height:42px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;">💡</div><div style="width:42px;height:42px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;">🎯</div><div style="width:42px;height:42px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--t3);">+</div></div></div>
+            <div><label class="input-label">Data-alvo (opcional)</label><input class="input-field" value="15/04/2026" readonly></div>
+            <div><label class="input-label">Custo total (opcional)</label><div style="position:relative;"><input class="input-field" style="padding-left:36px;" value="199,90" readonly><span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--t3);">R$</span></div></div>
+            <div><label class="input-label">Vincular habilidade (Carreira)</label><div style="padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">React</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--t3);"><polyline points="6 9 12 15 18 9"/></svg></div></div>
+          </div>
+          <div style="padding:20px 16px 8px;"><div class="btn-primary">Continuar →</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═════════════════════════════════════════════════
+       GRUPO C — TIMER POMODORO
+       ═════════════════════════════════════════════════ -->
+  <div class="demo-group"><div class="demo-group-title">⏱️ Grupo C — Timer Pomodoro</div><div class="demo-group-sub">Timer ativo, estado de pausa e configurações</div></div>
+  <div class="screens-grid">
+
+    <!-- ═══ 07: TIMER FOCO ATIVO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">07 — Timer · Foco Ativo ⭐</div>
+      <div class="screen-tag tag-priority">Alta prioridade · Uso diário</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header"><div class="mod-header-left"><span class="mod-icon">🧠</span><span class="mod-name">Mente</span></div></div>
+          <div class="sub-nav"><div class="sub-nav-tab">Dashboard</div><div class="sub-nav-tab">Trilhas</div><div class="sub-nav-tab active">Timer</div><div class="sub-nav-tab">Sessões</div><div class="sub-nav-tab">Biblioteca</div></div>
+          <!-- Context -->
+          <div style="text-align:center;padding:4px 24px 18px;"><div style="display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:20px;background:var(--mente-g);border:1px solid rgba(234,179,8,0.3);"><span style="font-size:16px;">⚛️</span><span style="font-size:13px;font-weight:500;color:var(--mente);">React Avançado · Hooks avançados</span></div></div>
+          <!-- Ring -->
+          <div style="position:relative;width:220px;height:220px;margin:0 auto;">
+            <svg viewBox="0 0 220 220" style="width:100%;height:100%;transform:rotate(-90deg);"><circle cx="110" cy="110" r="96" fill="none" stroke="var(--s3)" stroke-width="14"/><circle cx="110" cy="110" r="96" fill="none" stroke="var(--mente)" stroke-width="14" stroke-linecap="round" stroke-dasharray="603" stroke-dashoffset="150"/></svg>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;"><div style="font-family:'DM Mono',monospace;font-size:48px;font-weight:700;color:var(--t1);line-height:1;">18:47</div><div style="font-size:14px;color:var(--mente);margin-top:6px;font-weight:500;">🧠 Foco profundo</div><div style="font-size:12px;color:var(--t2);margin-top:3px;">Sessão 3 de 4</div></div>
+          </div>
+          <!-- Controls -->
+          <div style="display:flex;align-items:center;justify-content:center;gap:28px;padding:28px 0 20px;">
+            <div style="width:52px;height:52px;border-radius:50%;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--t2);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-3.36L1 10"/></svg></div>
+            <div style="width:76px;height:76px;border-radius:50%;background:var(--mente);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(234,179,8,0.35);"><svg viewBox="0 0 24 24" fill="#000" style="width:30px;height:30px;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></div>
+            <div style="width:52px;height:52px;border-radius:50%;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--t2);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></div>
+          </div>
+          <!-- Cycle dots -->
+          <div style="display:flex;justify-content:center;gap:8px;margin-bottom:20px;"><div style="width:36px;height:8px;border-radius:4px;background:var(--mente);"></div><div style="width:36px;height:8px;border-radius:4px;background:var(--mente);"></div><div style="width:36px;height:8px;border-radius:4px;background:var(--mente);"></div><div style="width:36px;height:8px;border-radius:4px;background:rgba(234,179,8,0.25);"></div></div>
+          <!-- Stats -->
+          <div style="display:flex;gap:8px;padding:0 16px 12px;">
+            <div style="flex:1;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;"><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--mente);">6</div><div style="font-size:11px;color:var(--t2);margin-top:2px;">Pomodoros</div></div>
+            <div style="flex:1;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;"><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--em);">2,5h</div><div style="font-size:11px;color:var(--t2);margin-top:2px;">Foco total</div></div>
+            <div style="flex:1;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;"><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--orange);">14🔥</div><div style="font-size:11px;color:var(--t2);margin-top:2px;">Streak</div></div>
+          </div>
+          <div class="card" style="background:rgba(234,179,8,0.07);border-color:rgba(234,179,8,0.2);"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">☕</span><div><div style="font-size:13px;font-weight:600;color:var(--t1);">Próxima: Pausa de 5 min</div><div style="font-size:12px;color:var(--t2);">Depois da sessão 4 → Pausa longa 15 min</div></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 08: TIMER PAUSA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">08 — Timer · Pausa</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header"><div class="mod-header-left"><span class="mod-icon">☕</span><span class="mod-name" style="color:var(--em);">Pausa</span></div><span style="font-size:13px;color:var(--t2);">Sessão 3 concluída</span></div>
+          <div style="position:relative;width:220px;height:220px;margin:20px auto 0;">
+            <svg viewBox="0 0 220 220" style="width:100%;height:100%;transform:rotate(-90deg);"><circle cx="110" cy="110" r="96" fill="none" stroke="var(--s3)" stroke-width="14"/><circle cx="110" cy="110" r="96" fill="none" stroke="var(--em)" stroke-width="14" stroke-linecap="round" stroke-dasharray="603" stroke-dashoffset="300" opacity="0.6"/></svg>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;"><div style="font-family:'DM Mono',monospace;font-size:48px;font-weight:700;color:var(--em);line-height:1;">03:12</div><div style="font-size:14px;color:var(--em);margin-top:6px;font-weight:500;">☕ Pausa curta</div><div style="font-size:12px;color:var(--t2);margin-top:3px;">Próximo: Sessão 4 de 4</div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:28px;padding:28px 0 20px;">
+            <div style="width:52px;height:52px;border-radius:50%;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--t2);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></div>
+            <div style="width:76px;height:76px;border-radius:50%;background:var(--em);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(16,185,129,0.35);"><svg viewBox="0 0 24 24" fill="#000" style="width:30px;height:30px;"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+            <div style="width:52px;"></div>
+          </div>
+          <div class="card" style="background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.15);">
+            <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:8px;">💡 Sugestões para a pausa</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="font-size:12px;color:var(--t2);">🧘 Alongue-se por 2 minutos</div>
+              <div style="font-size:12px;color:var(--t2);">💧 Beba água</div>
+              <div style="font-size:12px;color:var(--t2);">👀 Olhe para longe da tela (regra 20/20/20)</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:8px;padding:12px 0;"><div style="width:36px;height:8px;border-radius:4px;background:var(--mente);"></div><div style="width:36px;height:8px;border-radius:4px;background:var(--mente);"></div><div style="width:36px;height:8px;border-radius:4px;background:var(--mente);"></div><div style="width:36px;height:8px;border-radius:4px;background:rgba(234,179,8,0.25);"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 09: TIMER CONFIGURAÇÕES ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">09 — Timer · Configurações</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="inner-header"><div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><polyline points="15 18 9 12 15 6"/></svg></div><div class="inner-title">Configurações do Timer</div><div style="width:36px;"></div></div>
+          <div class="section-title">TEMPOS</div>
+          <div class="card" style="display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Duração do foco</span><div style="display:flex;gap:6px;"><div style="padding:5px 12px;border-radius:8px;background:var(--s2);color:var(--t2);font-size:13px;border:1px solid var(--border);">15</div><div style="padding:5px 12px;border-radius:8px;background:var(--mente);color:#000;font-size:13px;font-weight:600;">25</div><div style="padding:5px 12px;border-radius:8px;background:var(--s2);color:var(--t2);font-size:13px;border:1px solid var(--border);">45</div><div style="padding:5px 12px;border-radius:8px;background:var(--s2);color:var(--t2);font-size:13px;border:1px solid var(--border);">60</div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Pausa curta</span><div style="display:flex;gap:6px;"><div style="padding:5px 12px;border-radius:8px;background:var(--s2);color:var(--t2);font-size:13px;border:1px solid var(--border);">3</div><div style="padding:5px 12px;border-radius:8px;background:var(--em);color:#000;font-size:13px;font-weight:600;">5</div><div style="padding:5px 12px;border-radius:8px;background:var(--s2);color:var(--t2);font-size:13px;border:1px solid var(--border);">10</div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Pausa longa</span><div style="display:flex;gap:6px;"><div style="padding:5px 12px;border-radius:8px;background:var(--s2);color:var(--t2);font-size:13px;border:1px solid var(--border);">10</div><div style="padding:5px 12px;border-radius:8px;background:var(--em);color:#000;font-size:13px;font-weight:600;">15</div><div style="padding:5px 12px;border-radius:8px;background:var(--s2);color:var(--t2);font-size:13px;border:1px solid var(--border);">20</div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Ciclos</span><div style="display:flex;gap:6px;"><div style="padding:5px 12px;border-radius:8px;background:var(--s2);color:var(--t2);font-size:13px;border:1px solid var(--border);">3</div><div style="padding:5px 12px;border-radius:8px;background:var(--mente);color:#000;font-size:13px;font-weight:600;">4</div><div style="padding:5px 12px;border-radius:8px;background:var(--s2);color:var(--t2);font-size:13px;border:1px solid var(--border);">5</div></div></div>
+          </div>
+          <div class="section-title">COMPORTAMENTO</div>
+          <div class="card" style="display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Auto-iniciar pausa</span><div style="width:44px;height:24px;border-radius:12px;background:var(--mente);position:relative;"><div style="width:20px;height:20px;border-radius:50%;background:#000;position:absolute;top:2px;right:2px;"></div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Auto-iniciar foco</span><div style="width:44px;height:24px;border-radius:12px;background:var(--s3);position:relative;"><div style="width:20px;height:20px;border-radius:50%;background:var(--t2);position:absolute;top:2px;left:2px;"></div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Notificação sonora</span><div style="width:44px;height:24px;border-radius:12px;background:var(--mente);position:relative;"><div style="width:20px;height:20px;border-radius:50%;background:#000;position:absolute;top:2px;right:2px;"></div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t1);">Registrar na Agenda</span><div style="width:44px;height:24px;border-radius:12px;background:var(--s3);position:relative;"><div style="width:20px;height:20px;border-radius:50%;background:var(--t2);position:absolute;top:2px;left:2px;"></div></div></div>
+          </div>
+          <div class="section-title">SONS AMBIENTE <span style="font-size:10px;padding:2px 6px;border-radius:8px;background:var(--mente-g);color:var(--mente);margin-left:6px;">PRO</span></div>
+          <div class="card" style="opacity:0.5;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;"><div style="padding:8px 16px;border-radius:20px;background:var(--s2);border:1px solid var(--border);font-size:13px;color:var(--t2);">🌧️ Chuva</div><div style="padding:8px 16px;border-radius:20px;background:var(--s2);border:1px solid var(--border);font-size:13px;color:var(--t2);">☕ Café</div><div style="padding:8px 16px;border-radius:20px;background:var(--s2);border:1px solid var(--border);font-size:13px;color:var(--t2);">📚 Biblioteca</div><div style="padding:8px 16px;border-radius:20px;background:var(--s2);border:1px solid var(--border);font-size:13px;color:var(--t2);">🔥 Fogueira</div></div>
+            <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--mente);">🔒 Disponível no plano PRO</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═════════════════════════════════════════════════
+       GRUPO D — BIBLIOTECA + ESTADOS
+       ═════════════════════════════════════════════════ -->
+  <div class="demo-group"><div class="demo-group-title">📖 Grupo D — Biblioteca + Estados Especiais</div><div class="demo-group-sub">Catálogo de recursos, adicionar recurso, celebração</div></div>
+  <div class="screens-grid">
+
+    <!-- ═══ 10: BIBLIOTECA ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">10 — Biblioteca de Recursos</div>
+      <div class="screen-tag tag-improved">✦ Melhorado</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="mod-header"><div class="mod-header-left"><span class="mod-icon">🧠</span><span class="mod-name">Mente</span></div><div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div></div>
+          <div class="sub-nav"><div class="sub-nav-tab">Dashboard</div><div class="sub-nav-tab">Trilhas</div><div class="sub-nav-tab">Timer</div><div class="sub-nav-tab">Sessões</div><div class="sub-nav-tab active">Biblioteca</div></div>
+          <div class="filter-pills"><div class="filter-pill active">Todos</div><div class="filter-pill">📚 Livros</div><div class="filter-pill">🎥 Cursos</div><div class="filter-pill">🎧 Podcasts</div><div class="filter-pill">🔗 Artigos</div></div>
+          <div class="section-title">EM ANDAMENTO</div>
+          <div class="card" style="padding:12px;"><div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:42px;height:42px;border-radius:10px;background:var(--mente-g);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🎥</div><div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:600;color:var(--t1);">The Complete React Developer</div><div style="font-size:12px;color:var(--t2);margin-top:1px;">Udemy · 42h de conteúdo</div><div style="margin-top:8px;"><div class="progress-bar"><div class="progress-fill" style="width:52%;background:var(--mente);"></div></div><div style="font-size:11px;color:var(--t2);margin-top:3px;">52% · Seção 8: React Hooks</div></div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--t3);flex-shrink:0;margin-top:4px;"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+          <div class="card" style="padding:12px;margin-top:-4px;"><div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:42px;height:42px;border-radius:10px;background:var(--mente-g);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📚</div><div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:600;color:var(--t1);">Clean Code</div><div style="font-size:12px;color:var(--t2);margin-top:1px;">Robert C. Martin · 431 páginas</div><div style="margin-top:8px;"><div class="progress-bar"><div class="progress-fill" style="width:30%;background:var(--yellow);"></div></div><div style="font-size:11px;color:var(--t2);margin-top:3px;">30% · Cap. 4: Comentários</div></div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--t3);flex-shrink:0;margin-top:4px;"><polyline points="9 18 15 12 9 6"/></svg></div></div>
+          <div class="section-title" style="margin-top:4px;">SALVOS PARA DEPOIS</div>
+          <div style="background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div class="list-item"><div class="list-icon" style="background:var(--mente-g);">🎧</div><div class="list-info"><div class="list-title">Lex Fridman #389</div><div class="list-sub">Podcast · 3h 12min</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--t3);flex-shrink:0;"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+            <div class="list-item"><div class="list-icon" style="background:var(--mente-g);">🔗</div><div class="list-info"><div class="list-title">React Server Components</div><div class="list-sub">Artigo · Vercel Blog · 12 min</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--t3);flex-shrink:0;"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+          </div>
+          <div style="padding:12px 16px;"><div style="background:rgba(234,179,8,0.06);border:1.5px dashed rgba(234,179,8,0.3);border-radius:var(--radius-sm);padding:14px;text-align:center;"><div style="font-size:14px;font-weight:500;color:var(--mente);">+ Adicionar recurso</div><div style="font-size:12px;color:var(--t2);margin-top:3px;">Cole um link ou adicione manualmente</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 11: ADICIONAR RECURSO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">11 — Adicionar Recurso</div>
+      <div class="screen-tag tag-new">★ Novo</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content">
+          <div class="inner-header"><div class="header-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div class="inner-title">Novo Recurso</div><div style="width:36px;"></div></div>
+          <div style="padding:0 20px 14px;"><div style="font-size:13px;color:var(--t2);">Que tipo de recurso?</div></div>
+          <div style="padding:0 16px;"><div class="select-grid"><div class="select-card selected"><div class="icon">📚</div><div class="label">Livro</div></div><div class="select-card"><div class="icon">🎥</div><div class="label">Curso</div></div><div class="select-card"><div class="icon">🎧</div><div class="label">Podcast</div></div><div class="select-card"><div class="icon">🔗</div><div class="label">Artigo</div></div></div></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px;">
+            <div><label class="input-label">Título</label><input class="input-field" value="Designing Data-Intensive Apps" readonly></div>
+            <div><label class="input-label">Autor</label><input class="input-field" value="Martin Kleppmann" readonly></div>
+            <div style="display:flex;gap:10px;"><div style="flex:1;"><label class="input-label">Total páginas</label><input class="input-field" value="611" readonly></div><div style="flex:1;"><label class="input-label">Página atual</label><input class="input-field" value="0" readonly></div></div>
+            <div><label class="input-label">Vincular a trilha</label><div style="padding:12px 14px;border-radius:var(--radius-sm);background:var(--s2);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:var(--t3);">Nenhuma trilha</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--t3);"><polyline points="6 9 12 15 18 9"/></svg></div></div>
+            <div><label class="input-label">Status</label><div style="display:flex;gap:8px;"><div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--mente);color:#000;font-size:13px;text-align:center;font-weight:600;">Salvo p/ depois</div><div style="flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--s1);border:1px solid var(--border);color:var(--t2);font-size:13px;text-align:center;">Em andamento</div></div></div>
+          </div>
+          <div style="padding:8px 16px;"><div class="btn-primary">Salvar recurso</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 12: CELEBRAÇÃO ═══ -->
+    <div class="screen-wrapper">
+      <div class="screen-label">12 — Celebração · Trilha Concluída</div>
+      <div class="screen-tag tag-new">★ Novo · Modo Jornada</div>
+      <div class="phone">
+        <div class="dynamic-island"></div>
+        <div class="status-bar"><span class="status-time">9:41</span></div>
+        <div class="screen-content" style="display:flex;flex-direction:column;align-items:center;padding:40px 24px;text-align:center;">
+          <div style="font-size:56px;margin-bottom:16px;">🎉</div>
+          <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--t1);margin-bottom:6px;">Trilha Concluída!</div>
+          <div style="font-size:14px;color:var(--t2);margin-bottom:24px;">Você completou React Avançado em 45 dias</div>
+          <div style="background:var(--s1);border:1px solid rgba(234,179,8,0.3);border-radius:var(--radius);padding:20px;width:100%;margin-bottom:20px;">
+            <div style="font-size:36px;margin-bottom:8px;">⚛️</div>
+            <div style="font-size:16px;font-weight:700;color:var(--t1);margin-bottom:4px;">React Avançado</div>
+            <div style="font-size:13px;color:var(--t2);margin-bottom:16px;">24 etapas · 84h de estudo · R$199 investido</div>
+            <div style="display:flex;justify-content:center;gap:16px;">
+              <div><div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--mente);">+50</div><div style="font-size:10px;color:var(--t2);">XP</div></div>
+              <div style="width:1px;background:var(--border);"></div>
+              <div><div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:var(--em);">+4</div><div style="font-size:10px;color:var(--t2);">Life Score</div></div>
+              <div style="width:1px;background:var(--border);"></div>
+              <div><div style="font-size:18px;">🏆</div><div style="font-size:10px;color:var(--t2);">Badge</div></div>
+            </div>
+          </div>
+          <div style="background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:var(--radius-sm);padding:14px;width:100%;margin-bottom:20px;text-align:left;">
+            <div style="font-size:12px;color:var(--mente);font-weight:600;margin-bottom:6px;">💼 IMPACTO NA CARREIRA</div>
+            <div style="font-size:13px;color:var(--t1);">Habilidade <strong>React</strong> avançou para nível <strong>Avançado</strong></div>
+            <div style="font-size:12px;color:var(--t2);margin-top:4px;">Objetivo "Ser promovido a Tech Lead" avançou +12%</div>
+          </div>
+          <div style="width:100%;display:flex;flex-direction:column;gap:8px;"><div class="btn-primary">Ver próximas trilhas</div><div class="btn-secondary">Voltar ao Dashboard</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

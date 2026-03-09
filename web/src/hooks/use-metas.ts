@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { updateStreak } from '@/hooks/use-panorama'
+import { addXP } from '@/hooks/use-xp'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -220,8 +222,9 @@ export function useMetas(options: UseMetasOptions = {}): UseMetasReturn {
 
     if (err) throw new Error(err.message)
 
-    // Criar milestones automáticos
+    // XP + milestones automáticos
     const goal = created as Goal
+    addXP(user.id, 'goal_created').catch(() => {})
     await sb.from('goal_milestones').insert([
       { goal_id: goal.id, user_id: user.id, name: 'Primeiro quarto', target_pct: 25 },
       { goal_id: goal.id, user_id: user.id, name: 'Metade do caminho', target_pct: 50 },
@@ -323,12 +326,15 @@ export function useMetas(options: UseMetasOptions = {}): UseMetasReturn {
       })
 
     if (cErr) throw new Error(cErr.message)
+    updateStreak(user.id).catch(() => {})
+    addXP(user.id, 'goal_progress').catch(() => {})
 
     // Atualiza current_amount na goal
     const updatePayload: Record<string, unknown> = { current_amount: newAmount }
     if (newAmount >= goal.target_amount && goal.status === 'active') {
       updatePayload.status = 'completed'
       updatePayload.completed_at = new Date().toISOString()
+      addXP(user.id, 'goal_completed').catch(() => {})
     }
 
     const { error: uErr } = await sb

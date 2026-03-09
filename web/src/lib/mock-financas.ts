@@ -36,6 +36,12 @@ export const MOCK_MONTHLY_INCOME = 8000
 // ─── MOCK: useTransactions ───────────────────────────────────────────────────
 
 export const MOCK_TRANSACTIONS = [
+  // Fevereiro 2026
+  { id: 'tx-feb-01', amount: 8000, type: 'income' as const, description: 'Salário fevereiro',    date: '2026-02-05', payment_method: 'transfer', notes: null, is_future: false, recurring_transaction_id: 'rec-1', created_at: '2026-02-05T08:00:00Z', category: CAT.salario },
+  { id: 'tx-feb-02', amount: 2500, type: 'expense' as const, description: 'Aluguel fevereiro',   date: '2026-02-01', payment_method: 'boleto',   notes: null, is_future: false, recurring_transaction_id: 'rec-2', created_at: '2026-02-01T07:00:00Z', category: CAT.moradia },
+  { id: 'tx-feb-03', amount: 520,  type: 'expense' as const, description: 'Supermercado fev',    date: '2026-02-10', payment_method: 'credit',   notes: null, is_future: false, recurring_transaction_id: null,    created_at: '2026-02-10T11:00:00Z', category: CAT.alimentacao },
+  { id: 'tx-feb-04', amount: 280,  type: 'expense' as const, description: 'Posto fevereiro',     date: '2026-02-15', payment_method: 'debit',    notes: null, is_future: false, recurring_transaction_id: null,    created_at: '2026-02-15T14:00:00Z', category: CAT.transporte },
+  // Março 2026
   { id: 'tx-01', amount: 8000, type: 'income' as const, description: 'Salário março',           date: '2026-03-05', payment_method: 'transfer', notes: null, is_future: false, recurring_transaction_id: 'rec-1', created_at: '2026-03-05T08:00:00Z', category: CAT.salario },
   { id: 'tx-02', amount: 2500, type: 'income' as const, description: 'Projeto freelance XYZ',   date: '2026-03-03', payment_method: 'pix',      notes: null, is_future: false, recurring_transaction_id: null,    created_at: '2026-03-03T10:00:00Z', category: CAT.freelance },
   { id: 'tx-03', amount: 2500, type: 'expense' as const, description: 'Aluguel apartamento',    date: '2026-03-01', payment_method: 'boleto',   notes: null, is_future: false, recurring_transaction_id: 'rec-2', created_at: '2026-03-01T07:00:00Z', category: CAT.moradia },
@@ -55,6 +61,9 @@ export const MOCK_TRANSACTIONS = [
   { id: 'tx-16', amount: 180,  type: 'expense' as const, description: 'Dentista — limpeza',     date: '2026-03-15', payment_method: 'pix',      notes: null, is_future: true,  recurring_transaction_id: null,    created_at: '2026-03-01T00:00:00Z', category: CAT.saude },
   { id: 'tx-17', amount: 299,  type: 'expense' as const, description: 'Tênis Nike',             date: '2026-03-20', payment_method: 'credit',   notes: null, is_future: true,  recurring_transaction_id: null,    created_at: '2026-03-01T00:00:00Z', category: CAT.vestuario },
   { id: 'tx-18', amount: 89,   type: 'expense' as const, description: 'Presente aniversário',   date: '2026-03-12', payment_method: 'pix',      notes: null, is_future: true,  recurring_transaction_id: null,    created_at: '2026-03-01T00:00:00Z', category: CAT.lazer },
+  // Abril 2026
+  { id: 'tx-abr-01', amount: 8000, type: 'income' as const, description: 'Salário abril',       date: '2026-04-05', payment_method: 'transfer', notes: null, is_future: true,  recurring_transaction_id: 'rec-1', created_at: '2026-03-01T00:00:00Z', category: CAT.salario },
+  { id: 'tx-abr-02', amount: 2500, type: 'expense' as const, description: 'Aluguel abril',        date: '2026-04-01', payment_method: 'boleto',   notes: null, is_future: true,  recurring_transaction_id: 'rec-2', created_at: '2026-03-01T00:00:00Z', category: CAT.moradia },
 ]
 
 // ─── MOCK: useRecorrentes ────────────────────────────────────────────────────
