@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { ShellState, ModuleId, ThemeId, ResolvedThemeId } from '@/types/shell'
 import { isDarkTheme, resolveSystemTheme } from '@/types/shell'
+import { getPinnedModules, setPinnedModules as persistPinned, DEFAULT_PINNED } from '@/lib/pinned-modules'
 
 function applyTheme(theme: ThemeId) {
   if (typeof document === 'undefined') return
@@ -30,8 +31,16 @@ export const useShellStore = create<ShellState>((set) => ({
   sidebarOpen: true,
   theme: 'system' as ThemeId,
   resolvedTheme: initialResolved,
+  pinnedModules: DEFAULT_PINNED,
 
   setActiveModule: (module: ModuleId) => set({ activeModule: module }),
+
+  setPinnedModules: (modules: string[]) => {
+    const next = persistPinned(modules)
+    set({ pinnedModules: next })
+  },
+
+  refreshPinnedModules: () => set({ pinnedModules: getPinnedModules() }),
 
   toggleSidebar: () =>
     set((state) => {

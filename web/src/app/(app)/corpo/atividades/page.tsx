@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import {
@@ -140,28 +141,22 @@ export default function AtividadesPage() {
     : 0
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="max-w-[1140px] mx-auto px-4 lg:px-6 lg:py-7 lg:pb-16">
 
-      {/* Topbar */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <button
-          onClick={() => router.push('/corpo')}
-          className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Corpo
-        </button>
-        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
-          🏋️ Atividades Físicas
-        </h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#10b981] text-[#03071a] hover:opacity-90 transition-opacity"
-        >
-          <Plus size={16} />
-          Registrar
-        </button>
-      </div>
+      <MobileFormHeader
+        moduleId="corpo"
+        title="🏋️ Atividades Físicas"
+        onBack={() => router.push('/corpo')}
+        rightAction={
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#10b981] text-[#03071a] hover:opacity-90 transition-opacity"
+          >
+            <Plus size={16} />
+            Registrar
+          </button>
+        }
+      />
 
       {/* Week stats */}
       <div className="grid grid-cols-3 gap-3 mb-5 max-sm:grid-cols-1">
@@ -222,9 +217,12 @@ export default function AtividadesPage() {
           onClick={e => { if (e.target === e.currentTarget) setShowModal(false) }}
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl w-full max-w-[500px] max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-5 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">🏋️ Registrar Atividade</h2>
-              <button onClick={() => setShowModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">×</button>
+            <div className="border-b border-[var(--sl-border)]">
+              <MobileFormHeader
+                moduleId="corpo"
+                title="Registrar Atividade"
+                onBack={() => setShowModal(false)}
+              />
             </div>
             <div className="p-5 flex flex-col gap-4">
 

@@ -171,10 +171,10 @@ export function useNotifications() {
     const followupDate = new Date(Date.now() - 30 * 86400000).toISOString()
     const { data: pendingFollowups } = await sb
       .from('medical_appointments')
-      .select('id, specialty, return_date, return_status, follow_up_reminder_count')
+      .select('id, specialty, follow_up_reminder_date, follow_up_status, follow_up_reminder_count')
       .eq('user_id', user.id)
-      .eq('return_status', 'pending')
-      .lt('return_date', followupDate)
+      .eq('follow_up_status', 'pending')
+      .lt('follow_up_reminder_date', followupDate)
 
     if (pendingFollowups) {
       for (const appt of pendingFollowups) {
@@ -336,10 +336,10 @@ export function useNotifications() {
     const todayStr = new Date().toISOString().split('T')[0]
     const { data: todayFollowups } = await sb
       .from('medical_appointments')
-      .select('id, specialty, return_date, follow_up_reminder_count')
+      .select('id, specialty, follow_up_reminder_date, follow_up_reminder_count')
       .eq('user_id', user.id)
-      .eq('return_status', 'pending')
-      .eq('return_date', todayStr)
+      .eq('follow_up_status', 'pending')
+      .eq('follow_up_reminder_date', todayStr)
 
     if (todayFollowups) {
       for (const appt of todayFollowups) {

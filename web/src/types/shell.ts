@@ -49,8 +49,11 @@ export interface ShellState {
   sidebarOpen: boolean
   theme: ThemeId
   resolvedTheme: ResolvedThemeId
+  pinnedModules: string[]
 
   setActiveModule: (module: ModuleId) => void
+  setPinnedModules: (modules: string[]) => void
+  refreshPinnedModules: () => void
   toggleSidebar: () => void
   setSidebarOpen: (open: boolean) => void
   setTheme: (theme: ThemeId) => void

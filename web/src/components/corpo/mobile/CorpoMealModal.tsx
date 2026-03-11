@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { MEAL_SLOT_CONFIG, type MealSlot, type SaveMealData, type HealthProfile } from '@/hooks/use-corpo'
+import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 
 const CORPO_COLOR = '#f97316'
 
@@ -50,16 +51,12 @@ export function CorpoMealModal({ slot, profile, totalConsumedKcal, onClose, onSa
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'var(--sl-bg)' }}>
-      {/* Int-header */}
-      <div className="flex items-center justify-between px-5 py-4 pt-14">
-        <button onClick={onClose} className="text-[14px] font-medium" style={{ color: CORPO_COLOR }}>
-          ← Cardápio
-        </button>
-        <span className="font-[Syne] text-[17px] font-bold text-[var(--sl-t1)]">
-          {cfg.icon} {cfg.label}
-        </span>
-        <div style={{ width: 50 }} />
-      </div>
+      <MobileFormHeader
+        moduleId="corpo"
+        title={`${cfg.icon} ${cfg.label}`}
+        onBack={onClose}
+        inModal
+      />
 
       <div className="flex-1 overflow-y-auto pb-8 px-4 space-y-4">
         {/* Descrição */}

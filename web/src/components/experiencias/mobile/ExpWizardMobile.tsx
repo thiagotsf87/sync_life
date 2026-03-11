@@ -135,14 +135,15 @@ export function ExpWizardMobile({ open, onClose, onSubmit, onTripCreated }: ExpW
             const { data: { user } } = await sb.auth.getUser()
             if (user) {
               const toIsoDate = (d: Date) => d.toISOString().slice(0, 10)
-              await sb.from('calendar_events').insert({
+              await sb.from('agenda_events').insert({
                 user_id: user.id,
                 title: `✈️ ${tripName || (destinations[0] ?? 'Viagem')}`,
-                start_date: toIsoDate(startDate),
-                end_date: toIsoDate(endDate),
-                category: 'travel',
-                notes: `Viagem criada automaticamente (trip_id: ${trip.id})`,
+                date: toIsoDate(startDate),
+                type: 'pessoal',
+                description: `Viagem até ${toIsoDate(endDate)} (trip_id: ${trip.id})`,
                 all_day: true,
+                status: 'pendente',
+                priority: 'normal',
               })
             }
           } catch {

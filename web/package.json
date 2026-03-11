@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test:e2e": "playwright test",
-    "test:e2e:auth": "playwright test e2e/auth.spec.ts"
+    "test:e2e:auth": "playwright test e2e/auth.spec.ts",
+    "test:e2e:hml": "cross-env BASE_URL=https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app playwright test"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.33",
@@ -40,6 +41,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",

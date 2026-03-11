@@ -77,7 +77,7 @@ async function createAutoEvent(
 ): Promise<void> {
   const sb = createClient() as any
 
-  await sb.from('calendar_events').insert({
+  await sb.from('agenda_events').insert({
     user_id: userId,
     title,
     date,
@@ -85,8 +85,8 @@ async function createAutoEvent(
     start_time: startTime ?? null,
     end_time: endTime ?? null,
     all_day: !startTime,
-    status: 'pending',
-    priority: 'medium',
+    status: 'pendente',
+    priority: 'normal',
     description: `Auto-criado pelo módulo ${sourceModule}`,
   })
 }

@@ -38,14 +38,15 @@ const evaluators: Record<string, BadgeEvaluator> = {
 
   budget_respected: async ({ sb, userId }, criteria) => {
     const months = (criteria?.months as number) ?? 1
-    const { data: budgets } = await sb
+    const now = new Date()
+    const { count } = await sb
       .from('budgets')
-      .select('budget_amount, spent_amount')
+      .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .eq('is_active', true)
-    if (!budgets || budgets.length === 0) return { met: false, progress: 0, current: 0, target: months }
-    const allRespected = budgets.every((b: any) => (b.spent_amount ?? 0) <= b.budget_amount)
-    return { met: allRespected, progress: allRespected ? 100 : 50, current: allRespected ? 1 : 0, target: months }
+      .eq('month', now.getMonth() + 1)
+      .eq('year', now.getFullYear())
+    const hasBudgets = (count ?? 0) >= months
+    return { met: hasBudgets, progress: hasBudgets ? 100 : Math.min(99, ((count ?? 0) / months) * 100), current: count ?? 0, target: months }
   },
 
   first_report: async ({ sb, userId }) => {
@@ -112,7 +113,7 @@ const evaluators: Record<string, BadgeEvaluator> = {
 
   first_investment: async ({ sb, userId }) => {
     const { count } = await sb
-      .from('assets')
+      .from('portfolio_assets')
       .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
     const c = count ?? 0
@@ -185,7 +186,7 @@ const evaluators: Record<string, BadgeEvaluator> = {
       .from('health_profiles')
       .select('weekly_activity_goal')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     const weeklyGoal = profile?.weekly_activity_goal ?? 3
     const weekStart = new Date()
@@ -195,7 +196,7 @@ const evaluators: Record<string, BadgeEvaluator> = {
       .from('activities')
       .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .gte('date', weekStart.toISOString().slice(0, 10))
+      .gte('recorded_at', weekStart.toISOString())
 
     const weeksMet = (count ?? 0) >= weeklyGoal ? 1 : 0
     return { met: weeksMet >= targetWeeks, progress: Math.min(100, (weeksMet / targetWeeks) * 100), current: weeksMet, target: targetWeeks }
@@ -215,7 +216,7 @@ const evaluators: Record<string, BadgeEvaluator> = {
       .from('health_profiles')
       .select('weight_goal_kg')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     if (!profile?.weight_goal_kg) return { met: false, progress: 0, current: 0, target: 1 }
 
@@ -249,8 +250,8 @@ const evaluators: Record<string, BadgeEvaluator> = {
         .from('daily_water_intake')
         .select('intake_ml, goal_ml')
         .eq('user_id', userId)
-        .eq('date', dateStr)
-        .single()
+        .eq('recorded_date', dateStr)
+        .maybeSingle()
 
       if (water && water.goal_ml > 0 && water.intake_ml >= water.goal_ml) {
         consecutive++
@@ -321,7 +322,7 @@ const evaluators: Record<string, BadgeEvaluator> = {
       .from('user_streaks')
       .select('current_streak, longest_streak')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     const best = Math.max(streak?.current_streak ?? 0, streak?.longest_streak ?? 0)
     return { met: best >= targetDays, progress: Math.min(100, (best / targetDays) * 100), current: best, target: targetDays }
@@ -347,9 +348,9 @@ const evaluators: Record<string, BadgeEvaluator> = {
     // Check which modules have data this week
     const checks = await Promise.all([
       sb.from('transactions').select('id', { count: 'exact', head: true }).eq('user_id', userId).gte('date', wStart),
-      sb.from('activities').select('id', { count: 'exact', head: true }).eq('user_id', userId).gte('date', wStart),
-      sb.from('focus_sessions').select('id', { count: 'exact', head: true }).eq('user_id', userId).gte('started_at', wStart),
-      sb.from('calendar_events').select('id', { count: 'exact', head: true }).eq('user_id', userId).gte('date', wStart),
+      sb.from('activities').select('id', { count: 'exact', head: true }).eq('user_id', userId).gte('recorded_at', wStart),
+      sb.from('focus_sessions').select('id', { count: 'exact', head: true }).eq('user_id', userId).gte('date', wStart),
+      sb.from('agenda_events').select('id', { count: 'exact', head: true }).eq('user_id', userId).gte('date', wStart),
     ]) as { count: number | null }[]
 
     const modulesUsed = checks.filter(c => (c.count ?? 0) > 0).length
@@ -387,7 +388,7 @@ const evaluators: Record<string, BadgeEvaluator> = {
       .from('career_profiles')
       .select('current_position, years_experience')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     const complete = !!(profile?.current_position && profile?.years_experience != null)
     return { met: complete, progress: complete ? 100 : 50, current: complete ? 1 : 0, target: 1 }

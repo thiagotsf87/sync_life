@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { calcIMC, IMC_LABEL, type HealthProfile } from '@/hooks/use-corpo'
+import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 
 const CORPO_COLOR = '#f97316'
 const CORPO_BG = 'rgba(249,115,22,0.12)'
@@ -63,14 +64,12 @@ export function CorpoWeightModal({ profile, onClose, onSave }: CorpoWeightModalP
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'var(--sl-bg)' }}>
-      {/* Int-header */}
-      <div className="flex items-center justify-between px-5 py-4 pt-14">
-        <button onClick={onClose} className="text-[14px] font-medium" style={{ color: CORPO_COLOR }}>
-          ← Peso
-        </button>
-        <span className="font-[Syne] text-[17px] font-bold text-[var(--sl-t1)]">Registrar Medição</span>
-        <div style={{ width: 50 }} />
-      </div>
+      <MobileFormHeader
+        moduleId="corpo"
+        title="Registrar Medição"
+        onBack={onClose}
+        inModal
+      />
 
       <div className="flex-1 overflow-y-auto pb-8 px-4">
         {/* Peso principal */}

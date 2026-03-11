@@ -2,7 +2,8 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Flame, Clock, BookOpen } from 'lucide-react'
+import { Flame, Clock, BookOpen } from 'lucide-react'
+import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 import { toast } from 'sonner'
 import {
   useStudyTracks, useSaveSession, useMenteDashboard,
@@ -58,21 +59,13 @@ export default function TimerPage() {
     : null
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="max-w-[1140px] mx-auto px-4 lg:px-6 lg:py-7 lg:pb-16">
 
-      {/* Topbar */}
-      <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={() => router.push('/mente')}
-          className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Mente
-        </button>
-        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
-          ⏱ Timer Pomodoro
-        </h1>
-      </div>
+      <MobileFormHeader
+        moduleId="mente"
+        title="⏱ Timer Pomodoro"
+        onBack={() => router.push('/mente')}
+      />
 
       {/* Jornada insight */}
       <JornadaInsight
