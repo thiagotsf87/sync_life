@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Plus } from 'lucide-react'
-import { EXP_PRIMARY } from '@/lib/exp-colors'
+import { EXP_PRIMARY, EXP_PRIMARY_BG } from '@/lib/exp-colors'
 import { jornadaLabel } from '@/lib/jornada-labels'
 import { useXP } from '@/hooks/use-xp'
 import { ExpXpBar } from '@/components/experiencias/mobile/ExpXpBar'
@@ -165,44 +165,41 @@ export function ExperienciasMobile() {
   return (
     <div className="lg:hidden pb-[calc(68px+16px)]">
       {/* Header */}
-      <div className="px-5 pt-[14px] pb-0">
-        <div className="flex items-center justify-between">
-          <div className="font-[Syne] text-[17px] font-bold">
-            <span style={{
-              background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
-              ✦ Explorador Nível {level}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span
-              className="text-[10px] px-2 py-[3px] rounded-[20px] font-semibold"
-              style={{
-                background: 'rgba(139,92,246,0.15)',
-                color: '#c4b5fd',
-              }}
+      <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
+        <div>
+          <p className="text-[12px] font-semibold mb-[2px]" style={{ color: EXP_PRIMARY }}>
+            ✦ {jornadaLabel('experiencias', 'module', 'Experiências')}
+          </p>
+          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+            Explorador Nível {level}
+          </h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <span
+            className="text-[10px] px-2 py-[3px] rounded-[20px] font-semibold"
+            style={{
+              background: EXP_PRIMARY_BG,
+              color: EXP_PRIMARY,
+            }}
+          >
+            {badge}
+          </span>
+          {(activeTab === 'dashboard' || activeTab === 'viagens') && (
+            <button
+              onClick={handleNewTrip}
+              className="w-9 h-9 rounded-[10px] flex items-center justify-center"
+              style={{ background: accent }}
             >
-              {badge}
-            </span>
-            {(activeTab === 'dashboard' || activeTab === 'viagens') && (
-              <button
-                onClick={handleNewTrip}
-                className="w-9 h-9 rounded-[10px] flex items-center justify-center"
-                style={{ background: accent }}
-              >
-                <Plus size={16} className="text-white" />
-              </button>
-            )}
-          </div>
+              <Plus size={16} className="text-white" />
+            </button>
+          )}
         </div>
       </div>
 
       {/* Tabs */}
       <div
         ref={tabsRef}
-        className="flex gap-0 px-5 pt-3 border-b border-[var(--sl-border)] mb-3 overflow-x-auto scrollbar-hide"
+        className="flex gap-0 px-4 border-b border-[var(--sl-border)] mb-3 overflow-x-auto scrollbar-hide"
       >
         {TAB_KEYS.map(key => {
           const active = activeTab === key
@@ -211,19 +208,13 @@ export function ExperienciasMobile() {
               key={key}
               data-active={active}
               onClick={() => setActiveTab(key)}
-              className="flex-1 text-center py-2 text-[10.5px] font-medium whitespace-nowrap relative"
+              className="px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors"
               style={{
-                color: active ? '#c4b5fd' : 'var(--sl-t3)',
-                fontWeight: active ? 600 : 500,
+                color: active ? EXP_PRIMARY : 'var(--sl-t3)',
+                borderBottomColor: active ? EXP_PRIMARY : 'transparent',
               }}
             >
               {getTabLabel(key)}
-              {active && (
-                <span
-                  className="absolute bottom-[-1px] left-[10%] w-[80%] h-0.5 rounded-sm"
-                  style={{ background: '#8b5cf6' }}
-                />
-              )}
             </button>
           )
         })}

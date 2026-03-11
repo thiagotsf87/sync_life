@@ -12,6 +12,7 @@ import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { EventModal } from '@/components/agenda/EventModal'
 import { DeleteEventModal } from '@/components/agenda/DeleteEventModal'
 import { TempoMobile } from '@/components/tempo/TempoMobile'
+import { TempoMobileShell } from '@/components/tempo/TempoMobileShell'
 
 // ─── CONSTANTES ───────────────────────────────────────────────────────────────
 
@@ -274,20 +275,35 @@ export default function AgendaDiariaPage() {
 
   return (
     <>
-      <TempoMobile
-        weekDays={weekDays}
-        selectedDay={selectedDay}
-        onSelectDay={setSelectedDay}
-        today={today}
-        events={mobileEvents}
-        onNewEvent={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
-        onEventClick={(id) => {
-          const ev = events.find(e => e.id === id)
-          if (ev) setEventModal({ open: true, mode: 'edit', event: ev })
-        }}
-        eventDotColors={mobileEventDotColors}
-      />
+      {/* ─── Mobile ─────────────────────────────────────────────── */}
+      <TempoMobileShell
+        rightAction={
+          <button
+            onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
+            className="flex h-9 w-9 items-center justify-center rounded-[10px] text-white"
+            style={{ background: '#06b6d4' }}
+            aria-label="Novo evento"
+          >
+            <Plus size={16} />
+          </button>
+        }
+      >
+        <TempoMobile
+          weekDays={weekDays}
+          selectedDay={selectedDay}
+          onSelectDay={setSelectedDay}
+          today={today}
+          events={mobileEvents}
+          onNewEvent={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
+          onEventClick={(id) => {
+            const ev = events.find(e => e.id === id)
+            if (ev) setEventModal({ open: true, mode: 'edit', event: ev })
+          }}
+          eventDotColors={mobileEventDotColors}
+        />
+      </TempoMobileShell>
 
+      {/* ─── Desktop ─────────────────────────────────────────────── */}
       <div className="hidden lg:block max-w-[1140px] mx-auto px-4 py-7 pb-16">
 
         {/* Sub-nav underline tabs */}

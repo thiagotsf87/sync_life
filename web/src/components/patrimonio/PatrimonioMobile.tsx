@@ -76,12 +76,12 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
     <div className="lg:hidden min-h-screen bg-[var(--sl-bg)]">
 
       {/* Module Header */}
-      <div className="flex items-center justify-between px-5 pt-5 pb-3">
+      <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
-          <p className="text-[12px] font-medium text-[#3b82f6]">
+          <p className="text-[12px] font-semibold text-[#3b82f6] mb-[2px]">
             ✦ {jornadaLabel('patrimonio', 'module', 'Patrimônio')}
           </p>
-          <h1 className="font-[Syne] font-extrabold text-[20px] text-[var(--sl-t1)]">
+          <h1 className="font-[Syne] font-bold text-[20px] text-[var(--sl-t1)]">
             {(() => {
               const tab = TABS.find(t => t.id === activeTab)
               return tab ? jornadaLabel('patrimonio', tab.key, tab.label) : 'Dashboard'
@@ -90,29 +90,27 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
         </div>
         <button
           onClick={onAddAsset ?? (() => router.push('/patrimonio/carteira'))}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-[12px] font-semibold text-white"
+          className="w-9 h-9 rounded-[10px] flex items-center justify-center text-white"
           style={{ background: '#3b82f6' }}
+          aria-label="Adicionar ativo"
         >
-          <Plus size={14} />
-          Ativo
+          <Plus size={16} />
         </button>
       </div>
 
       {/* Sub-nav tabs (underline) */}
-      <div className="flex border-b border-[var(--sl-border)] px-2 mb-3">
+      <div className="flex gap-0 px-4 border-b border-[var(--sl-border)] mb-3 overflow-x-auto scrollbar-hide">
         {TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              'relative flex-1 py-2.5 text-[12px] transition-colors text-center',
-              activeTab === tab.id ? 'text-[#3b82f6] font-semibold' : 'text-[var(--sl-t2)]'
-            )}
+            className="px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors"
+            style={{
+              color: activeTab === tab.id ? '#3b82f6' : 'var(--sl-t3)',
+              borderBottomColor: activeTab === tab.id ? '#3b82f6' : 'transparent',
+            }}
           >
             {jornadaLabel('patrimonio', tab.key, tab.label)}
-            {activeTab === tab.id && (
-              <span className="absolute bottom-[-1px] left-1 right-1 h-[3px] rounded-t bg-[#3b82f6]" />
-            )}
           </button>
         ))}
       </div>

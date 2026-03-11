@@ -10,6 +10,7 @@ import { KpiCard } from '@/components/ui/kpi-card'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { EventModal } from '@/components/agenda/EventModal'
 import { TempoMobile } from '@/components/tempo/TempoMobile'
+import { TempoMobileShell } from '@/components/tempo/TempoMobileShell'
 import { useMetas } from '@/hooks/use-metas'
 
 // ─── CONSTANTES ───────────────────────────────────────────────────────────────
@@ -241,20 +242,67 @@ export default function TempoDashboardPage() {
 
   return (
     <>
-      <TempoMobile
-        weekDays={weekDays}
-        selectedDay={selectedDay}
-        onSelectDay={setSelectedDay}
-        today={today}
-        events={mobileEvents}
-        onNewEvent={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
-        onEventClick={(id) => {
-          const ev = events.find(e => e.id === id)
-          if (ev) setEventModal({ open: true, mode: 'edit', event: ev })
-        }}
-        eventDotColors={mobileEventDotColors}
-      />
+      {/* ─── Mobile ─────────────────────────────────────────────── */}
+      <TempoMobileShell
+        rightAction={
+          <button
+            onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
+            className="flex h-9 w-9 items-center justify-center rounded-[10px] text-white"
+            style={{ background: '#06b6d4' }}
+            aria-label="Novo evento"
+          >
+            <Plus size={16} />
+          </button>
+        }
+      >
+        <div className="px-4 pb-[calc(68px+16px)]">
+          {/* KPI grid 2×2 */}
+          <div className="grid grid-cols-2 gap-2.5 mb-4">
+            {[
+              { label: 'Hoje', value: String(todayCount), sub: `evento${todayCount !== 1 ? 's' : ''}`, accent: '#06b6d4' },
+              { label: 'Semana', value: `${weekHoras.toFixed(1)}h`, sub: 'planejadas', accent: '#8b5cf6' },
+              { label: 'Conclusão', value: `${weekConclusaoPct}%`, sub: `${weekDone}/${weekEvents.length} eventos`, accent: '#10b981' },
+              { label: 'Próximo', value: proxEvento ? (proxEvento.start_time ?? 'Dia todo') : '—', sub: proxEvento?.title ?? 'sem eventos', accent: '#f59e0b' },
+            ].map(kpi => (
+              <div key={kpi.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5 relative overflow-hidden">
+                <div className="absolute top-0 left-3 right-3 h-[2px] rounded-b" style={{ background: kpi.accent }} />
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">{kpi.label}</p>
+                <p className="font-[DM_Mono] font-semibold text-[20px] leading-none text-[var(--sl-t1)] truncate">{kpi.value}</p>
+                <p className="text-[11px] text-[var(--sl-t3)] mt-1 truncate">{kpi.sub}</p>
+              </div>
+            ))}
+          </div>
 
+          {/* Próximos eventos */}
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 mb-3">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📋 Próximos</h2>
+              <Link href="/tempo/agenda" className="text-[11px] text-[#06b6d4]">Agenda →</Link>
+            </div>
+            {upcomingEvents.length === 0 ? (
+              <p className="text-[12px] text-[var(--sl-t3)] text-center py-4">Nenhum evento próximo</p>
+            ) : (
+              <div className="flex flex-col">
+                {upcomingEvents.slice(0, 4).map(ev => <DayTimelineItem key={ev.id} event={ev} />)}
+              </div>
+            )}
+          </div>
+
+          {/* Tempo por área */}
+          {typeHoursSorted.length > 0 && (
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4">
+              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">🕐 Tempo por área</h2>
+              <div className="flex flex-col gap-2.5">
+                {typeHoursSorted.map(([label, { hours, color }]) => (
+                  <ModuleDistributionBar key={label} label={label} hours={hours} maxHours={maxTypeHours} color={color} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </TempoMobileShell>
+
+      {/* ─── Desktop ─────────────────────────────────────────────── */}
       <div className="hidden lg:block max-w-[1140px] mx-auto px-4 py-7 pb-16">
 
         {/* Sub-nav underline tabs */}

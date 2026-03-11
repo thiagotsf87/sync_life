@@ -53,7 +53,7 @@ export function TempoMobileShell({
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
-          <p className="text-[12px] font-semibold text-[#67e8f9] mb-[2px]">✦ Ritmo</p>
+          <p className="text-[12px] font-semibold text-[#06b6d4] mb-[2px]">✦ {jornadaLabel('tempo', 'module', 'Tempo')}</p>
           <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
             {pageTitle}
           </h1>

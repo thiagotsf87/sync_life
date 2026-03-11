@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo } from 'react'
-import { Plus } from 'lucide-react'
 
 const WEEK_DAYS_SHORT = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB']
 const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
@@ -43,9 +42,6 @@ export function TempoMobile({
   eventDotColors,
 }: TempoMobileProps) {
   const selectedDate = weekDays[selectedDay]
-  const dateLabel = selectedDate
-    ? `${selectedDate.getDate()} de ${MONTH_NAMES[selectedDate.getMonth()]}, ${WEEK_DAYS_SHORT[selectedDate.getDay()].charAt(0) + WEEK_DAYS_SHORT[selectedDate.getDay()].slice(1).toLowerCase()}`
-    : ''
 
   // Group events by day
   const groupedEvents = useMemo(() => {
@@ -75,24 +71,7 @@ export function TempoMobile({
   }, [events, weekDays, selectedDay, today])
 
   return (
-    <div className="lg:hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-3">
-        <div>
-          <h1 className="font-[Syne] text-[20px] font-bold text-sl-grad">
-            Tempo
-          </h1>
-          <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">{dateLabel}</p>
-        </div>
-        <button
-          onClick={onNewEvent}
-          className="flex h-9 w-9 items-center justify-center rounded-[10px]
-                     bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
-        >
-          <Plus size={16} />
-        </button>
-      </div>
-
+    <div className="lg:hidden pb-[calc(68px+16px)]">
       {/* Week strip */}
       <div className="flex gap-1.5 px-4 pb-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         {weekDays.map((day, i) => {
@@ -196,8 +175,6 @@ export function TempoMobile({
         </div>
       ))}
 
-      {/* Scroll padding for bottom bar */}
-      <div className="h-6" />
     </div>
   )
 }

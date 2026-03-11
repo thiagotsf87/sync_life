@@ -100,12 +100,13 @@ export function FuturoMobile({
   return (
     <div className="lg:hidden pb-[calc(68px+16px)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-[14px] pb-1">
-        <div className="flex items-center gap-2">
-          <h1 className="font-[Syne] text-[17px] font-bold text-[var(--sl-t1)]">
-            <span style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              <span className="mr-1.5">✦</span>Arquiteto do Futuro
-            </span>
+      <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
+        <div>
+          <p className="text-[12px] font-semibold mb-[2px]" style={{ color: FUTURO_PRIMARY_LIGHT }}>
+            ✦ {jornadaLabel('futuro', 'module', 'Futuro')}
+          </p>
+          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+            Arquiteto do Futuro
           </h1>
         </div>
         <span
@@ -120,26 +121,20 @@ export function FuturoMobile({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0 px-5 pt-3 border-b border-[var(--sl-border)]">
+      <div className="flex gap-0 px-4 border-b border-[var(--sl-border)] mb-3 overflow-x-auto scrollbar-hide">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="flex-1 text-center text-[12px] font-medium pb-2 relative transition-colors"
+              className="px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors"
               style={{
                 color: isActive ? FUTURO_PRIMARY_LIGHT : 'var(--sl-t3)',
-                fontWeight: isActive ? 600 : 500,
+                borderBottomColor: isActive ? FUTURO_PRIMARY : 'transparent',
               }}
             >
               {jornadaLabel('futuro', tab.key, tab.label)}
-              {isActive && (
-                <span
-                  className="absolute bottom-[-1px] left-[10%] w-[80%] h-[2px] rounded-[2px]"
-                  style={{ background: FUTURO_PRIMARY }}
-                />
-              )}
             </button>
           )
         })}
