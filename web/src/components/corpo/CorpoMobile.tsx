@@ -196,12 +196,14 @@ export function CorpoMobile() {
       )}
 
       {/* Module header */}
-      <div className="flex items-center justify-between px-5 pt-14 pb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-[20px]">🏃</span>
-          <span className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
-            {jornadaLabel('corpo', 'module', 'Corpo')}
-          </span>
+      <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
+        <div>
+          <p className="text-[12px] font-semibold mb-[2px]" style={{ color: CORPO_COLOR }}>
+            ✦ {jornadaLabel('corpo', 'module', 'Corpo')}
+          </p>
+          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+            Seu corpo hoje
+          </h1>
         </div>
         {activeTab === 'atividades' && (
           <button
@@ -254,30 +256,20 @@ export function CorpoMobile() {
       {/* Sub-nav underline tabs */}
       <div
         ref={tabsRef}
-        className="flex gap-0 px-5 border-b border-[var(--sl-border)] mb-3 overflow-x-auto scrollbar-hide"
+        className="flex gap-0 px-4 border-b border-[var(--sl-border)] mb-3 overflow-x-auto scrollbar-hide"
       >
         {TABS.map((tab) => (
           <button
             key={tab.id}
             data-tab={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className="relative px-3 py-2 text-[13px] whitespace-nowrap flex-shrink-0 transition-colors"
+            className="px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors"
             style={{
-              color: activeTab === tab.id ? 'var(--sl-t1)' : 'var(--sl-t3)',
-              fontWeight: activeTab === tab.id ? 600 : 400,
-              paddingBottom: 10,
+              color: activeTab === tab.id ? CORPO_COLOR : 'var(--sl-t3)',
+              borderBottomColor: activeTab === tab.id ? CORPO_COLOR : 'transparent',
             }}
           >
             {jornadaLabel('corpo', tab.key, tab.label)}
-            {activeTab === tab.id && (
-              <span
-                className="absolute bottom-[-1px] rounded-t-[3px]"
-                style={{
-                  left: 6, right: 6, height: 3,
-                  background: CORPO_COLOR,
-                }}
-              />
-            )}
           </button>
         ))}
       </div>

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { Search, Plus } from 'lucide-react'
-import { CARREIRA_PRIMARY } from '@/lib/carreira-colors'
+import { CARREIRA_PRIMARY, CARREIRA_PRIMARY_LIGHT } from '@/lib/carreira-colors'
 import { jornadaLabel } from '@/lib/jornada-labels'
 import { CarreiraXpBar } from '@/components/carreira/mobile/CarreiraXpBar'
 import { CarreiraCoachCard } from '@/components/carreira/mobile/CarreiraCoachCard'
@@ -86,8 +86,8 @@ export function CarreiraMobile({
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
-          <p className="text-[12px] font-semibold text-[#c4b5fd] mb-[2px]">
-            ✦ {jornadaLabel('carreira', 'module', 'Carreira')} · Nível 6
+          <p className="text-[12px] font-semibold mb-[2px]" style={{ color: CARREIRA_PRIMARY_LIGHT }}>
+            ✦ {jornadaLabel('carreira', 'module', 'Carreira')}
           </p>
           <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
             Sua jornada
@@ -154,8 +154,8 @@ export function CarreiraMobile({
               onClick={() => setActiveTab(tab.key)}
               className="px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors"
               style={{
-                color: active ? '#c4b5fd' : 'var(--sl-t3)',
-                borderBottomColor: active ? '#8b5cf6' : 'transparent',
+                color: active ? CARREIRA_PRIMARY_LIGHT : 'var(--sl-t3)',
+                borderBottomColor: active ? CARREIRA_PRIMARY : 'transparent',
               }}
             >
               {jornadaLabel('carreira', tab.key, tab.label)}

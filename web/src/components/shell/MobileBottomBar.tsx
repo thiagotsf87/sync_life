@@ -1,33 +1,18 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useShellStore } from '@/stores/shell-store'
 import { MODULES } from '@/lib/modules'
-import { IconPanorama, IconFinancas, IconTempo } from './icons'
+import { IconPanorama, MODULE_ICONS } from './icons'
 import { MobileMoreSheet } from './MobileMoreSheet'
+import { QuickActionSheet } from './QuickActionSheet'
 import { QuickEntrySheet } from './QuickEntrySheet'
 import { MoreHorizontal, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { ModuleId } from '@/types/shell'
 
-type TabId = ModuleId | 'fab' | 'mais'
-
-const LEFT_TABS: { id: TabId; label: string; icon: 'panorama' | 'financas' }[] = [
-  { id: 'panorama', label: 'Home', icon: 'panorama' },
-  { id: 'financas', label: 'Finanças', icon: 'financas' },
-]
-
-const RIGHT_TABS: { id: TabId; label: string; icon: 'tempo' | 'mais' }[] = [
-  { id: 'tempo', label: 'Tempo', icon: 'tempo' },
-  { id: 'mais', label: 'Mais', icon: 'mais' },
-]
-
-const ICON_MAP = {
-  panorama: IconPanorama,
-  financas: IconFinancas,
-  tempo: IconTempo,
-} as const
+type TabId = ModuleId | 'mais'
 
 interface MobileBottomBarProps {
   userName?: string
@@ -36,56 +21,70 @@ interface MobileBottomBarProps {
 export function MobileBottomBar({ userName }: MobileBottomBarProps) {
   const router = useRouter()
   const activeModule = useShellStore((s) => s.activeModule)
+  const pinnedModules = useShellStore((s) => s.pinnedModules)
+  const refreshPinned = useShellStore((s) => s.refreshPinnedModules)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [quickActionOpen, setQuickActionOpen] = useState(false)
   const [quickEntryOpen, setQuickEntryOpen] = useState(false)
+
+  useEffect(() => {
+    refreshPinned()
+  }, [refreshPinned])
 
   const handleClick = useCallback((id: TabId) => {
     if (id === 'mais') {
       setMoreOpen(true)
       return
     }
-    if (id === 'fab') return
-    router.push(MODULES[id as ModuleId].basePath)
+    const mod = MODULES[id as ModuleId]
+    if (mod) router.push(mod.basePath)
   }, [router])
 
-  const renderTab = (tab: { id: TabId; label: string; icon: string }) => {
-    const isActive = tab.id !== 'mais' && tab.id !== 'fab' && activeModule === tab.id
-    const isMais = tab.id === 'mais'
-    const color = !isMais ? MODULES[tab.id as ModuleId]?.color : 'var(--sl-t2)'
-
+  const renderModuleTab = (moduleId: string) => {
+    const mod = MODULES[moduleId as ModuleId]
+    if (!mod) return null
+    const isActive = activeModule === moduleId
+    const Icon = MODULE_ICONS[moduleId as keyof typeof MODULE_ICONS]
     return (
       <button
-        key={tab.id}
-        onClick={() => handleClick(tab.id)}
+        key={moduleId}
+        onClick={() => handleClick(moduleId as TabId)}
         className={cn(
           'flex flex-1 flex-col items-center justify-center gap-1 py-1.5',
-          'transition-colors duration-150',
-          'min-w-[52px]',
+          'transition-colors duration-150 min-w-[52px]',
         )}
-        style={{ color: isActive ? color : 'var(--sl-t3)' }}
+        style={{ color: isActive ? mod.color : 'var(--sl-t3)' }}
       >
-        {isMais ? (
-          <MoreHorizontal size={22} />
-        ) : (
-          (() => {
-            const Icon = ICON_MAP[tab.icon as keyof typeof ICON_MAP]
-            return Icon ? <Icon size={22} /> : null
-          })()
-        )}
-        <span className={cn(
-          'text-[10px] font-medium',
-          isActive && 'text-[#10b981]',
-        )}>
-          {tab.label}
+        {Icon ? <Icon size={22} /> : null}
+        <span className={cn('text-[10px] font-medium', isActive && 'text-[#10b981]')}>
+          {mod.label}
         </span>
       </button>
     )
   }
 
+  const renderMaisTab = () => (
+    <button
+      key="mais"
+      onClick={() => handleClick('mais')}
+      className={cn(
+        'flex flex-1 flex-col items-center justify-center gap-1 py-1.5',
+        'transition-colors duration-150 min-w-[52px]',
+      )}
+      style={{ color: 'var(--sl-t3)' }}
+    >
+      <MoreHorizontal size={22} />
+      <span className="text-[10px] font-medium">Mais</span>
+    </button>
+  )
+
+  const pinnedSlots = pinnedModules.slice(0, 3)
+
   return (
     <>
+      {/* Barra inferior — apenas módulos (Home + fixados + Mais) */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 flex h-[68px] items-center
+        className="fixed bottom-0 left-0 right-0 z-40 flex h-[68px] items-center
                     border-t border-[var(--sl-border)]
                     lg:hidden"
         style={{
@@ -95,31 +94,52 @@ export function MobileBottomBar({ userName }: MobileBottomBarProps) {
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
       >
-        {/* Left tabs */}
-        {LEFT_TABS.map(renderTab)}
+        {/* Home (sempre primeiro) */}
+        <button
+          onClick={() => handleClick('panorama')}
+          className={cn(
+            'flex flex-1 flex-col items-center justify-center gap-1 py-1.5',
+            'transition-colors duration-150 min-w-[52px]',
+          )}
+          style={{ color: activeModule === 'panorama' ? '#6366f1' : 'var(--sl-t3)' }}
+        >
+          <IconPanorama size={22} />
+          <span className={cn('text-[10px] font-medium', activeModule === 'panorama' && 'text-[#10b981]')}>
+            Home
+          </span>
+        </button>
 
-        {/* FAB center */}
-        <div className="flex flex-col items-center justify-center px-2">
-          <button
-            onClick={() => setQuickEntryOpen(true)}
-            className="flex h-[52px] w-[52px] items-center justify-center rounded-full
-                        shadow-[0_4px_20px_rgba(16,185,129,0.4)]
-                        transition-transform active:scale-95"
-            style={{
-              background: 'linear-gradient(135deg, #10b981, #0055ff)',
-              marginTop: '-12px',
-              border: '3px solid var(--sl-bg)',
-            }}
-          >
-            <Plus size={22} className="text-white" strokeWidth={2.5} />
-          </button>
-        </div>
+        {/* Módulos fixados (até 3) */}
+        {pinnedSlots.map(renderModuleTab)}
 
-        {/* Right tabs */}
-        {RIGHT_TABS.map(renderTab)}
+        {/* Mais (sempre último) */}
+        {renderMaisTab()}
       </nav>
 
+      {/* FAB flutuante — canto inferior direito, acima da barra */}
+      <button
+        onClick={() => setQuickActionOpen(true)}
+        className="fixed z-50 lg:hidden flex h-[56px] w-[56px] items-center justify-center rounded-full
+                   shadow-[0_4px_24px_rgba(16,185,129,0.45)]
+                   transition-transform active:scale-95"
+        style={{
+          background: 'linear-gradient(135deg, #10b981, #0055ff)',
+          bottom: 'calc(68px + env(safe-area-inset-bottom, 0px) + 16px)',
+          right: 20,
+          border: '3px solid var(--sl-bg)',
+        }}
+        aria-label="Ação rápida"
+      >
+        <Plus size={24} className="text-white" strokeWidth={2.5} />
+      </button>
+
       <MobileMoreSheet open={moreOpen} onOpenChange={setMoreOpen} userName={userName} />
+      <QuickActionSheet
+        open={quickActionOpen}
+        onOpenChange={setQuickActionOpen}
+        activeModule={activeModule}
+        onOpenQuickEntry={() => setQuickEntryOpen(true)}
+      />
       <QuickEntrySheet open={quickEntryOpen} onOpenChange={setQuickEntryOpen} />
     </>
   )

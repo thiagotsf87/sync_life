@@ -88,17 +88,16 @@ async function calcFinancasScore(sb: any, userId: string): Promise<ModuleScoreDe
   const end = monthEnd()
 
   // 1. Budget compliance (40%)
-  const { data: budgets } = await sb
+  const now = new Date()
+  const { count: budgetCount } = await sb
     .from('budgets')
-    .select('budget_amount, spent_amount')
+    .select('id', { count: 'exact', head: true })
     .eq('user_id', userId)
-    .eq('is_active', true)
+    .eq('month', now.getMonth() + 1)
+    .eq('year', now.getFullYear())
 
-  let budgetScore = 50 // default if no budgets
-  if (budgets && budgets.length > 0) {
-    const respected = budgets.filter((b: any) => (b.spent_amount ?? 0) <= b.budget_amount).length
-    budgetScore = (respected / budgets.length) * 100
-  }
+  // Budget compliance: score based on having budgets set up (50 base) + transaction count (50 bonus)
+  const budgetScore = (budgetCount ?? 0) > 0 ? 75 : 30
 
   // 2. Registration consistency (30%) — transactions this month
   const { count: txCount } = await sb
@@ -222,14 +221,14 @@ async function calcCorpoScore(sb: any, userId: string): Promise<ModuleScoreDetai
     .from('health_profiles')
     .select('weekly_activity_goal')
     .eq('user_id', userId)
-    .single()
+    .maybeSingle()
 
   const weeklyGoal = profile?.weekly_activity_goal ?? 3
   const { count: weekActivities } = await sb
     .from('activities')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', userId)
-    .gte('date', wStart)
+    .gte('recorded_at', wStart)
 
   const activityScore = Math.min(100, ((weekActivities ?? 0) / weeklyGoal) * 100)
 
@@ -239,7 +238,7 @@ async function calcCorpoScore(sb: any, userId: string): Promise<ModuleScoreDetai
     .select('id', { count: 'exact', head: true })
     .eq('user_id', userId)
     .in('status', ['scheduled', 'completed'])
-    .gte('date', mStart)
+    .gte('appointment_date', mStart)
 
   const appointmentScore = (scheduledAppts ?? 0) > 0 ? 80 : 30
 
@@ -258,8 +257,8 @@ async function calcCorpoScore(sb: any, userId: string): Promise<ModuleScoreDetai
     .from('daily_water_intake')
     .select('intake_ml, goal_ml')
     .eq('user_id', userId)
-    .eq('date', today)
-    .single()
+    .eq('recorded_date', today)
+    .maybeSingle()
 
   let hydrationScore = 0
   if (water && water.goal_ml > 0) {
@@ -284,7 +283,7 @@ async function calcMenteScore(sb: any, userId: string): Promise<ModuleScoreDetai
     .from('focus_sessions')
     .select('duration_minutes')
     .eq('user_id', userId)
-    .gte('started_at', wStart)
+    .gte('date', wStart)
 
   const totalMinutes = (sessions ?? []).reduce((s: number, r: any) => s + (r.duration_minutes ?? 0), 0)
   const hoursScore = Math.min(100, (totalMinutes / 300) * 100) // 5h = 300min
@@ -294,7 +293,7 @@ async function calcMenteScore(sb: any, userId: string): Promise<ModuleScoreDetai
     .from('user_streaks')
     .select('current_streak')
     .eq('user_id', userId)
-    .single()
+    .maybeSingle()
 
   const streakScore = Math.min(100, ((streak?.current_streak ?? 0) / 30) * 100) // 30-day streak = 100%
 
@@ -334,11 +333,11 @@ async function calcPatrimonioScore(sb: any, userId: string): Promise<ModuleScore
 
   // 2. Diversification (50%)
   const { data: assets } = await sb
-    .from('assets')
-    .select('asset_type')
+    .from('portfolio_assets')
+    .select('asset_class')
     .eq('user_id', userId)
 
-  const types = new Set((assets ?? []).map((a: any) => a.asset_type))
+  const types = new Set((assets ?? []).map((a: any) => a.asset_class))
   const diversScore = Math.min(100, (types.size / 4) * 100) // 4+ types = 100%
 
   const score = clamp(contribScore * 0.5 + diversScore * 0.5)
@@ -352,27 +351,28 @@ async function calcPatrimonioScore(sb: any, userId: string): Promise<ModuleScore
 }
 
 async function calcCarreiraScore(sb: any, userId: string): Promise<ModuleScoreDetail> {
-  // 1. Roadmap steps in progress (50%)
-  const { data: steps } = await sb
-    .from('roadmap_steps')
-    .select('status')
+  // 1. Roadmap steps in progress (50%) — via career_roadmaps JOIN
+  const { data: roadmaps } = await sb
+    .from('career_roadmaps')
+    .select('steps:roadmap_steps(status)')
     .eq('user_id', userId)
 
+  const allSteps = (roadmaps ?? []).flatMap((r: any) => r.steps ?? [])
   let roadmapScore = 0
-  if (steps && steps.length > 0) {
-    const inProgress = steps.filter((s: any) => s.status === 'in_progress' || s.status === 'completed').length
-    roadmapScore = (inProgress / steps.length) * 100
+  if (allSteps.length > 0) {
+    const inProgress = allSteps.filter((s: any) => s.status === 'in_progress' || s.status === 'completed').length
+    roadmapScore = (inProgress / allSteps.length) * 100
   }
 
   // 2. Skills evolving (50%)
   const { data: skills } = await sb
     .from('skills')
-    .select('current_level, target_level')
+    .select('proficiency_level')
     .eq('user_id', userId)
 
   let skillsScore = 0
   if (skills && skills.length > 0) {
-    const evolving = skills.filter((s: any) => (s.current_level ?? 0) > 0).length
+    const evolving = skills.filter((s: any) => (s.proficiency_level ?? 0) > 0).length
     skillsScore = (evolving / skills.length) * 100
   }
 
@@ -392,20 +392,20 @@ async function calcTempoScore(sb: any, userId: string): Promise<ModuleScoreDetai
 
   // 1. Events completed % (50%)
   const { data: events } = await sb
-    .from('calendar_events')
+    .from('agenda_events')
     .select('status')
     .eq('user_id', userId)
     .gte('date', wStart)
 
   let completionScore = 50
   if (events && events.length > 0) {
-    const done = events.filter((e: any) => e.status === 'done' || e.status === 'completed').length
+    const done = events.filter((e: any) => e.status === 'concluido' || e.status === 'completed').length
     completionScore = (done / events.length) * 100
   }
 
   // 2. Usage consistency (50%) — events created this month
   const { count: monthEvents } = await sb
-    .from('calendar_events')
+    .from('agenda_events')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', userId)
     .gte('date', mStart)
@@ -471,7 +471,9 @@ const MODULE_CALCULATORS: Record<ModuleKey, (sb: any, userId: string) => Promise
 
 export async function calculateAllScores(userId: string, activeModules?: ModuleKey[]): Promise<LifeScoreResult> {
   const sb = createClient() as any
-  const modules = activeModules ?? (Object.keys(WEIGHTS) as ModuleKey[])
+  const allModules = activeModules ?? (Object.keys(WEIGHTS) as ModuleKey[])
+  // Filter to only known modules (guards against stale DB values like 'agenda' → now 'tempo')
+  const modules = allModules.filter(m => m in MODULE_CALCULATORS)
 
   const results: ModuleScoreDetail[] = []
 
@@ -508,6 +510,12 @@ export async function persistLifeScore(userId: string, result: LifeScoreResult):
   const sb = createClient() as any
   const today = new Date().toISOString().slice(0, 10)
 
+  // Only columns that exist in life_sync_scores
+  const VALID_SCORE_COLS = new Set([
+    'financas_score', 'futuro_score', 'corpo_score', 'mente_score',
+    'patrimonio_score', 'carreira_score', 'tempo_score', 'experiencias_score',
+  ])
+
   const scoreByModule: Record<string, number | null> = {
     financas_score: null,
     futuro_score: null,
@@ -520,7 +528,10 @@ export async function persistLifeScore(userId: string, result: LifeScoreResult):
   }
 
   for (const m of result.modules) {
-    scoreByModule[`${m.module}_score`] = m.score
+    const col = `${m.module}_score`
+    if (VALID_SCORE_COLS.has(col)) {
+      scoreByModule[col] = m.score
+    }
   }
 
   await sb.from('life_sync_scores').upsert({

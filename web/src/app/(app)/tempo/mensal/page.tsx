@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Plus, X, Check, Trash2, Pencil } from 'lucide-react'
+import { TempoMobileShell } from '@/components/tempo/TempoMobileShell'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
@@ -394,7 +395,124 @@ export default function AgendaMensalPage() {
   }
 
   return (
-    <div className="max-w-[1140px] mx-auto px-4 py-7 pb-16">
+    <>
+      {/* ─── Mobile ─────────────────────────────────────────────── */}
+      <TempoMobileShell
+        subtitle={`${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`}
+        rightAction={
+          <div className="flex items-center gap-1">
+            <button
+              onClick={prevMonth}
+              className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
+              aria-label="Mês anterior"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              onClick={nextMonth}
+              className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
+              aria-label="Próximo mês"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        }
+      >
+        <div className="px-3 pb-[calc(68px+16px)]">
+          {/* Compact month calendar */}
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] overflow-hidden mb-3">
+            <div className="grid grid-cols-7 border-b border-[var(--sl-border)]">
+              {DAY_HEADERS.map(d => (
+                <div key={d} className="py-2 text-center text-[10px] font-bold uppercase text-[var(--sl-t3)]">{d}</div>
+              ))}
+            </div>
+            <div className="grid grid-cols-7 border-l border-[var(--sl-border)]">
+              {calendarDays.map((day, i) => {
+                const dayEvents = events.filter(e => e.date === day.dateString)
+                const isSelected = selectedDate === day.dateString
+                const isToday = day.dateString === today
+                return (
+                  <div
+                    key={i}
+                    onClick={() => day.isCurrentMonth && handleDayClick(day.dateString, day.isCurrentMonth)}
+                    className={cn(
+                      'border-r border-b border-[var(--sl-border)] p-1 min-h-[46px] flex flex-col items-center gap-[3px] cursor-pointer transition-colors',
+                      !day.isCurrentMonth && 'opacity-30 cursor-default',
+                      isSelected && 'bg-[rgba(6,182,212,0.12)]',
+                      isToday && !isSelected && 'bg-[rgba(6,182,212,0.05)]',
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'text-[11px] font-semibold leading-none mt-1',
+                        isToday ? 'w-5 h-5 flex items-center justify-center rounded-full text-white text-[10px]' : 'text-[var(--sl-t2)]',
+                      )}
+                      style={isToday ? { background: '#06b6d4' } : {}}
+                    >
+                      {day.date.getDate()}
+                    </span>
+                    {dayEvents.length > 0 && (
+                      <div className="flex gap-[2px]">
+                        {dayEvents.slice(0, 2).map(ev => (
+                          <div key={ev.id} className="w-1 h-1 rounded-full" style={{ background: EVENT_TYPES[ev.type].color }} />
+                        ))}
+                        {dayEvents.length > 2 && <div className="w-1 h-1 rounded-full bg-[var(--sl-t3)]" />}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Selected day events */}
+          {selectedDate && (
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[12px] font-semibold text-[var(--sl-t2)]">
+                  {selectedDate.split('-')[2]}/{selectedDate.split('-')[1]} · {selectedEvents.length} evento{selectedEvents.length !== 1 ? 's' : ''}
+                </p>
+                <button
+                  onClick={() => handleNewForDate(selectedDate)}
+                  className="flex h-7 w-7 items-center justify-center rounded-[8px] text-white"
+                  style={{ background: '#06b6d4' }}
+                >
+                  <Plus size={13} />
+                </button>
+              </div>
+              {selectedEvents.length === 0 ? (
+                <p className="text-[12px] text-[var(--sl-t3)] text-center py-3">Nenhum evento neste dia</p>
+              ) : (
+                <div className="flex flex-col">
+                  {selectedEvents.map(ev => {
+                    const cfg = EVENT_TYPES[ev.type]
+                    return (
+                      <div key={ev.id} className="flex items-center gap-2.5 py-2.5 border-b border-[var(--sl-border)] last:border-0">
+                        <div className="w-[3px] self-stretch rounded-full shrink-0" style={{ background: cfg.color }} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{ev.title}</p>
+                          <p className="text-[11px] text-[var(--sl-t3)]">{ev.all_day ? 'Dia todo' : (ev.start_time ?? '—')}</p>
+                        </div>
+                        <span className="text-base shrink-0">{cfg.icon}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {!selectedDate && (
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 flex flex-col items-center gap-2 text-center">
+              <span className="text-2xl">📅</span>
+              <p className="text-[12px] text-[var(--sl-t2)]">Toque em um dia para ver os eventos</p>
+            </div>
+          )}
+        </div>
+      </TempoMobileShell>
+
+      {/* ─── Desktop ─────────────────────────────────────────────── */}
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-4 py-7 pb-16">
 
       {/* Sub-nav underline tabs (desktop) */}
       <div className="hidden lg:flex border-b border-[var(--sl-border)] mb-5">
@@ -580,14 +698,7 @@ export default function AgendaMensalPage() {
 
       </div>
 
-      {/* FAB mobile */}
-      <button
-        onClick={() => handleNewForDate(selectedDate ?? today)}
-        className="fixed bottom-6 right-6 md:hidden w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-white z-30 transition-all hover:brightness-110"
-        style={{ background: '#06b6d4' }}
-      >
-        <Plus size={22} />
-      </button>
+      </div>
 
       {/* Modais */}
       <EventModal
@@ -605,7 +716,6 @@ export default function AgendaMensalPage() {
         onClose={() => setDeleteModal({ open: false, event: null })}
         onConfirm={handleDelete}
       />
-
-    </div>
+    </>
   )
 }

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 
 interface QuickEntrySheetProps {
   open: boolean
@@ -79,18 +79,12 @@ export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-[var(--sl-bg)] lg:hidden">
-      {/* Top close bar */}
-      <div className="flex items-center justify-between px-5 pt-[env(safe-area-inset-top,14px)] pb-2">
-        <button
-          onClick={handleClose}
-          className="flex h-9 w-9 items-center justify-center rounded-[10px]
-                     bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
-        >
-          <X size={16} />
-        </button>
-        <span className="text-[13px] font-medium text-[var(--sl-t2)]">Quick Entry</span>
-        <div className="w-9" />
-      </div>
+      <MobileFormHeader
+        moduleId="financas"
+        title="Transação rápida"
+        onBack={handleClose}
+        inModal
+      />
 
       {/* Amount display area */}
       <div className="flex flex-1 flex-col items-center justify-center px-5">

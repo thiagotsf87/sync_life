@@ -10,6 +10,7 @@ import { useAgenda } from '@/hooks/use-agenda'
 import { useFocusSessions } from '@/hooks/use-focus-sessions'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { useUserPlan } from '@/hooks/use-user-plan'
+import { TempoMobileShell } from '@/components/tempo/TempoMobileShell'
 
 // ─── TABS ─────────────────────────────────────────────────────────────────────
 
@@ -118,58 +119,178 @@ export default function WeeklyReviewPage() {
   // ── PRO Gate ──────────────────────────────────────────────────────────────
   if (!isPro) {
     return (
-      <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
-        {/* Sub-nav underline tabs (desktop) */}
-        <div className="hidden lg:flex border-b border-[var(--sl-border)] mb-5">
-          {TEMPO_TABS.map(tab => (
-            <Link key={tab.href} href={tab.href}
-              className={cn(
-                'relative px-4 py-2.5 text-[13px] transition-colors',
-                pathname === tab.href
-                  ? 'text-[#06b6d4] font-semibold'
-                  : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
-              )}>
-              {tab.label}
-              {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#f59e0b] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
-              {pathname === tab.href && (
-                <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#06b6d4]" />
-              )}
-            </Link>
-          ))}
+      <>
+        {/* Mobile PRO gate */}
+        <TempoMobileShell>
+          <div className="px-4 pb-[calc(68px+16px)]">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-8 text-center mt-2">
+              <Crown size={32} className="mx-auto mb-3 text-[#f59e0b]" />
+              <h2 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Recurso PRO</h2>
+              <p className="text-[12px] text-[var(--sl-t2)] mb-4 leading-relaxed">
+                Analise sua semana com métricas de foco e distribuição. Disponível no plano PRO.
+              </p>
+              <button
+                onClick={() => router.push('/configuracoes/plano')}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] font-semibold text-[13px] text-white"
+                style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+              >
+                <Crown size={14} /> Assinar PRO
+              </button>
+            </div>
+          </div>
+        </TempoMobileShell>
+
+        {/* Desktop PRO gate */}
+        <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+          <div className="hidden lg:flex border-b border-[var(--sl-border)] mb-5">
+            {TEMPO_TABS.map(tab => (
+              <Link key={tab.href} href={tab.href}
+                className={cn(
+                  'relative px-4 py-2.5 text-[13px] transition-colors',
+                  pathname === tab.href
+                    ? 'text-[#06b6d4] font-semibold'
+                    : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
+                )}>
+                {tab.label}
+                {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#f59e0b] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
+                {pathname === tab.href && (
+                  <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#06b6d4]" />
+                )}
+              </Link>
+            ))}
+          </div>
+          <div className="flex items-center gap-3 mb-6">
+            <button
+              onClick={() => router.push('/tempo')}
+              className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
+            >
+              <ArrowLeft size={16} /> Tempo
+            </button>
+            <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-[var(--sl-t1)]">
+              📋 Review Semanal
+            </h1>
+          </div>
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-12 text-center max-w-[480px] mx-auto">
+            <Crown size={40} className="mx-auto mb-4 text-[#f59e0b]" />
+            <h2 className="font-[Syne] font-bold text-lg text-[var(--sl-t1)] mb-2">
+              Review Semanal — Recurso PRO
+            </h2>
+            <p className="text-[13px] text-[var(--sl-t2)] mb-6 leading-relaxed">
+              Analise sua semana com distribuição por módulo, tarefas pendentes e métricas de foco. Disponível no plano PRO.
+            </p>
+            <button
+              onClick={() => router.push('/configuracoes/plano')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] font-semibold text-[13px] text-white hover:opacity-90 transition-opacity"
+              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+            >
+              <Crown size={14} /> Assinar PRO
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-3 mb-6">
-          <button
-            onClick={() => router.push('/tempo')}
-            className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
-          >
-            <ArrowLeft size={16} /> Tempo
-          </button>
-          <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-[var(--sl-t1)]">
-            📋 Review Semanal
-          </h1>
-        </div>
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-12 text-center max-w-[480px] mx-auto">
-          <Crown size={40} className="mx-auto mb-4 text-[#f59e0b]" />
-          <h2 className="font-[Syne] font-bold text-lg text-[var(--sl-t1)] mb-2">
-            Review Semanal — Recurso PRO
-          </h2>
-          <p className="text-[13px] text-[var(--sl-t2)] mb-6 leading-relaxed">
-            Analise sua semana com distribuição por módulo, tarefas pendentes e métricas de foco. Disponível no plano PRO.
-          </p>
-          <button
-            onClick={() => router.push('/configuracoes/plano')}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] font-semibold text-[13px] text-white hover:opacity-90 transition-opacity"
-            style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
-          >
-            <Crown size={14} /> Assinar PRO
-          </button>
-        </div>
-      </div>
+      </>
     )
   }
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <>
+      {/* ─── Mobile Review ────────────────────────────────────────── */}
+      <TempoMobileShell
+        rightAction={
+          !completed ? (
+            <button
+              onClick={handleCompleteReview}
+              className="flex items-center gap-1.5 h-9 px-3 rounded-[10px] text-[12px] font-semibold text-[#03071a]"
+              style={{ background: '#06b6d4' }}
+            >
+              <CheckSquare size={13} /> +10 XP
+            </button>
+          ) : undefined
+        }
+      >
+        <div className="px-4 pb-[calc(68px+16px)]">
+          {/* Completion hero */}
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 mb-4 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: '#06b6d4' }} />
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-2">
+              Semana {weekOfYear} · {formatWeekLabel(weekStart)}
+            </p>
+            <div className="flex items-center gap-4">
+              <div>
+                <p
+                  className="font-[Syne] font-extrabold text-[36px] leading-none"
+                  style={{ color: completionPct >= 75 ? '#10b981' : completionPct >= 50 ? '#f59e0b' : '#f43f5e' }}
+                >
+                  {completionPct}%
+                </p>
+                <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">de conclusão</p>
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between text-[11px] mb-1.5">
+                  <span className="text-[var(--sl-t3)]">Concluídos</span>
+                  <span className="font-[DM_Mono] font-bold text-[#10b981]">{completedEvents}/{totalEvents}</span>
+                </div>
+                <div className="bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height: 6 }}>
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${completionPct}%`,
+                      background: completionPct >= 75 ? '#10b981' : completionPct >= 50 ? '#f59e0b' : '#f43f5e',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            {completed && (
+              <div className="mt-3 flex items-center gap-2 p-2.5 rounded-xl bg-[#10b981]/10 border border-[#10b981]/20">
+                <span>✅</span>
+                <p className="text-[12px] text-[#10b981] font-semibold">Review concluído! +10 XP adicionados.</p>
+              </div>
+            )}
+          </div>
+
+          {/* KPI grid 2×2 */}
+          <div className="grid grid-cols-2 gap-2.5 mb-4">
+            {[
+              { label: 'Total', value: String(totalEvents), accent: '#06b6d4' },
+              { label: 'Concluídos', value: String(completedEvents), accent: '#10b981' },
+              { label: 'Horas Foco', value: `${focusHours}h`, accent: '#f59e0b' },
+              { label: 'Pendentes', value: String(pendingEvents.length), accent: pendingEvents.length > 0 ? '#f43f5e' : '#10b981' },
+            ].map(kpi => (
+              <div key={kpi.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5 relative overflow-hidden">
+                <div className="absolute top-0 left-3 right-3 h-[2px] rounded-b" style={{ background: kpi.accent }} />
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">{kpi.label}</p>
+                <p className="font-[DM_Mono] font-semibold text-[20px] leading-none text-[var(--sl-t1)]">{kpi.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Pending events */}
+          {pendingEvents.length > 0 && (
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4">
+              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">
+                📌 Pendentes ({pendingEvents.length})
+              </h2>
+              <div className="flex flex-col gap-2">
+                {pendingEvents.slice(0, 5).map(ev => (
+                  <div key={ev.id} className="flex items-center gap-3 p-2.5 bg-[var(--sl-s2)] rounded-[10px]">
+                    <div
+                      className="w-1 self-stretch rounded-full shrink-0"
+                      style={{ background: ev.priority === 'urgente' ? '#f43f5e' : ev.priority === 'alta' ? '#f59e0b' : '#06b6d4' }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] text-[var(--sl-t1)] font-medium truncate">{ev.title}</p>
+                      <p className="text-[10px] text-[var(--sl-t3)]">{ev.date}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </TempoMobileShell>
+
+      {/* ─── Desktop ─────────────────────────────────────────────── */}
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
       {/* Sub-nav underline tabs (desktop) */}
       <div className="hidden lg:flex border-b border-[var(--sl-border)] mb-5">
@@ -447,6 +568,7 @@ export default function WeeklyReviewPage() {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

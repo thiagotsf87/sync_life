@@ -168,7 +168,7 @@ export function useStreak() {
       sb.from('user_streaks')
         .select('*')
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle()
         .then(({ data }: { data: UserStreak | null }) => {
           if (data) setStreak(data)
           setLoading(false)

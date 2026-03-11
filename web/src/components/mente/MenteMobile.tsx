@@ -186,7 +186,7 @@ export function MenteMobile() {
       <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
             <p className="text-[12px] font-semibold mb-[2px]" style={{ color: MENTE_COLOR }}>
-            🧠 {jornadaLabel('mente', 'module', 'Mente')} · {streak.current_streak > 0 ? `🔥 ${streak.current_streak}d streak` : 'Comece hoje!'}
+            ✦ {jornadaLabel('mente', 'module', 'Mente')} · {streak.current_streak > 0 ? `🔥 ${streak.current_streak}d streak` : 'Comece hoje!'}
           </p>
           <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
             Sua mente hoje

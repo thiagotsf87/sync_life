@@ -13,6 +13,7 @@ import { KpiCard } from '@/components/ui/kpi-card'
 import { EventModal } from '@/components/agenda/EventModal'
 import { DeleteEventModal } from '@/components/agenda/DeleteEventModal'
 import { TempoMobile } from '@/components/tempo/TempoMobile'
+import { TempoMobileShell } from '@/components/tempo/TempoMobileShell'
 
 // ─── CONSTANTES ───────────────────────────────────────────────────────────────
 
@@ -410,24 +411,45 @@ export default function AgendaSemanalPage() {
 
   return (
     <>
-    <TempoMobile
-      weekDays={weekDays}
-      selectedDay={selectedDay}
-      onSelectDay={setSelectedDay}
-      today={today}
-      events={mobileEvents}
-      onNewEvent={() => setEventModal({
-        open: true,
-        mode: 'create',
-        defaultDate: weekDays[selectedDay] ? dateStr(weekDays[selectedDay]) : today,
-      })}
-      onEventClick={(id) => {
-        const ev = events.find(e => e.id === id)
-        if (ev) setEventModal({ open: true, mode: 'edit', event: ev })
-      }}
-      eventDotColors={mobileEventDotColors}
-    />
-    <div className="hidden lg:block max-w-[1140px] mx-auto px-4 py-7 pb-16">
+      {/* ─── Mobile ─────────────────────────────────────────────── */}
+      <TempoMobileShell
+        subtitle={formatDateRange(weekDays)}
+        rightAction={
+          <button
+            onClick={() => setEventModal({
+              open: true,
+              mode: 'create',
+              defaultDate: weekDays[selectedDay] ? dateStr(weekDays[selectedDay]) : today,
+            })}
+            className="flex h-9 w-9 items-center justify-center rounded-[10px] text-white"
+            style={{ background: '#06b6d4' }}
+            aria-label="Novo evento"
+          >
+            <Plus size={16} />
+          </button>
+        }
+      >
+        <TempoMobile
+          weekDays={weekDays}
+          selectedDay={selectedDay}
+          onSelectDay={setSelectedDay}
+          today={today}
+          events={mobileEvents}
+          onNewEvent={() => setEventModal({
+            open: true,
+            mode: 'create',
+            defaultDate: weekDays[selectedDay] ? dateStr(weekDays[selectedDay]) : today,
+          })}
+          onEventClick={(id) => {
+            const ev = events.find(e => e.id === id)
+            if (ev) setEventModal({ open: true, mode: 'edit', event: ev })
+          }}
+          eventDotColors={mobileEventDotColors}
+        />
+      </TempoMobileShell>
+
+      {/* ─── Desktop ─────────────────────────────────────────────── */}
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-4 py-7 pb-16">
 
       {/* Sub-nav underline tabs */}
       <div className="flex border-b border-[var(--sl-border)] mb-5">

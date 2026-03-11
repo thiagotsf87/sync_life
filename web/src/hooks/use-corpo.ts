@@ -358,7 +358,7 @@ export function useCorpoDashboard() {
       weekAgo.setDate(weekAgo.getDate() - 7)
 
       const [profileRes, weightRes, appointmentRes, activitiesRes] = await Promise.all([
-        sb.from('health_profiles').select('*').eq('user_id', user.id).single(),
+        sb.from('health_profiles').select('*').eq('user_id', user.id).maybeSingle(),
         sb.from('weight_entries').select('*').eq('user_id', user.id)
           .order('recorded_at', { ascending: false }).limit(1),
         sb.from('medical_appointments').select('*').eq('user_id', user.id)

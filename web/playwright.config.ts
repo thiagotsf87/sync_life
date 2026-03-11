@@ -18,6 +18,10 @@ try {
 process.env.PLAYWRIGHT_TEST_EMAIL = process.env.PLAYWRIGHT_TEST_EMAIL ?? 'thiago@teste.com'
 process.env.PLAYWRIGHT_TEST_PASSWORD = process.env.PLAYWRIGHT_TEST_PASSWORD ?? 'JVmljosi@1'
 
+// BASE_URL: use para rodar contra homolog (ex: BASE_URL=https://sync-life-git-homologacao-xxx.vercel.app)
+const baseURL = process.env.BASE_URL ?? 'http://localhost:3000'
+const isExternalEnv = baseURL.startsWith('https://') || baseURL.includes('vercel.app')
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -26,7 +30,7 @@ export default defineConfig({
   workers: 1,
   reporter: 'list',
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL,
     trace: 'on-first-retry',
     // Dashboard e rotas autenticadas fazem muitas requisições; evita timeout prematuro
     navigationTimeout: 90000,
@@ -49,10 +53,15 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  // Só inicia servidor local quando não está rodando contra ambiente externo (homolog/prod)
+  ...(isExternalEnv
+    ? {}
+    : {
+        webServer: {
+          command: 'npm run dev',
+          url: 'http://localhost:3000',
+          reuseExistingServer: !process.env.CI,
+          timeout: 120000,
+        },
+      }),
 })

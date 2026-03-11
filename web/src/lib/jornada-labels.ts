@@ -3,105 +3,117 @@
 
 export const LABELS = {
   // ── Finanças ─────────────────────────────────────────────────────────────
+  // Nomes alinhados com a versão web (sidebar)
   financas: {
-    module:       'Cofre',
-    transacoes:   'Movimentos',
-    receitas:     'Entradas',
-    despesas:     'Saídas',
-    orcamentos:   'Envelopes',
-    recorrentes:  'Compromissos',
-    planejamento: 'Visão do Futuro',
-    relatorios:   'Análise',
-    calendario:   'Mapa de Gastos',
-    saldo:        'Reserva',
+    module:       'Finanças',
+    transacoes:   'Transações',
+    receitas:     'Receitas',
+    despesas:     'Despesas',
+    orcamentos:   'Orçamentos',
+    recorrentes:  'Recorrentes',
+    planejamento: 'Planejamento',
+    relatorios:   'Relatórios',
+    calendario:   'Calendário',
+    saldo:        'Saldo',
   },
 
   // ── Futuro ───────────────────────────────────────────────────────────────
+  // Nomes alinhados com a versão web (sidebar)
   futuro: {
-    module:       'Missões',
-    objetivos:    'Missões',
-    metas:        'Conquistas',
-    checkin:      'Ponto de Controle',
+    module:       'Futuro',
+    objetivos:    'Objetivos',
+    metas:        'Metas',
+    checkin:      'Check-in',
     lifeMap:      'Mapa da Vida',
-    aporte:       'Investimento no Sonho',
+    aporte:       'Aporte',
     milestone:    'Marco',
+    timeline:     'Timeline',
+    arquivo:      'Arquivo',
   },
 
   // ── Corpo ────────────────────────────────────────────────────────────────
+  // Nomes alinhados com a versão web (sidebar)
   corpo: {
-    module:       'Vitalidade',
-    atividades:   'Treinos',
-    peso:         'Evolução',
-    consultas:    'Check-ups',
-    cardapio:     'Nutrição',
-    coach:        'Coach',
+    module:       'Corpo',
+    atividades:   'Atividades',
+    peso:         'Peso & Medidas',
+    consultas:    'Saúde Preventiva',
+    cardapio:     'Cardápio',
+    coach:        'Coach IA',
     hidratacao:   'Hidratação',
   },
 
   // ── Mente ────────────────────────────────────────────────────────────────
+  // Nomes alinhados com a versão web (sidebar)
   mente: {
-    module:       'Sabedoria',
-    trilhas:      'Jornadas',
-    sessoes:      'Sessões de Foco',
-    biblioteca:   'Acervo',
-    timer:        'Zona de Foco',
+    module:       'Mente',
+    trilhas:      'Trilhas',
+    sessoes:      'Sessões',
+    biblioteca:   'Biblioteca',
+    timer:        'Timer Foco',
   },
 
   // ── Experiências ─────────────────────────────────────────────────────────
+  // Nomes alinhados com a versão web (sidebar)
   experiencias: {
-    module:       'Aventuras',
-    viagens:      'Missões',
-    bucketList:   'Lista de Desejos',
-    memorias:     'Diário',
+    module:       'Experiências',
+    viagens:      'Viagens',
+    bucketList:   'Bucket List',
+    memorias:     'Memórias',
     passaporte:   'Passaporte',
   },
 
   // ── Carreira ─────────────────────────────────────────────────────────────
+  // Nomes alinhados com a versão web (sidebar)
   carreira: {
-    module:       'Evolução',
-    perfil:       'Identidade',
-    roadmap:      'Trilha',
-    habilidades:  'Poderes',
-    historico:    'Trajetória',
+    module:       'Carreira',
+    perfil:       'Perfil Profissional',
+    roadmap:      'Roadmap',
+    habilidades:  'Habilidades',
+    historico:    'Histórico',
   },
 
   // ── Tempo ────────────────────────────────────────────────────────────────
+  // Nomes alinhados com a versão web (sidebar)
   tempo: {
-    module:       'Ritmo',
-    agenda:       'Compromissos',
-    semanal:      'Minha Semana',
-    mensal:       'Visão do Mês',
-    review:       'Retrospectiva',
-    foco:         'Zona de Foco',
+    module:       'Tempo',
+    agenda:       'Agenda',
+    semanal:      'Semanal',
+    mensal:       'Mensal',
+    review:       'Review Semanal',
+    foco:         'Blocos de Foco',
   },
 
   // ── Patrimônio ───────────────────────────────────────────────────────────
+  // Nomes alinhados com a versão web (sidebar)
   patrimonio: {
-    module:       'Tesouro',
-    carteira:     'Portfólio',
-    proventos:    'Colheita',
-    evolucao:     'Crescimento',
+    module:       'Patrimônio',
+    carteira:     'Carteira',
+    proventos:    'Proventos',
+    evolucao:     'Evolução',
     simulador:    'Simulador IF',
   },
 
   // ── Panorama ─────────────────────────────────────────────────────────────
+  // Nomes alinhados com a versão web (sidebar)
   panorama: {
-    module:       'Cockpit',
-    dashboard:    'Meu Painel',
+    module:       'Panorama',
+    dashboard:    'Dashboard',
     conquistas:   'Conquistas',
-    ranking:      'Arena',
-    review:       'Retrospectiva',
+    ranking:      'Ranking',
+    review:       'Review',
   },
 
   // ── Configurações ────────────────────────────────────────────────────────
+  // Nomes alinhados com a versão web (sidebar)
   configuracoes: {
-    module:       'Preferências',
-    perfil:       'Meu Perfil',
-    aparencia:    'Visual',
-    notificacoes: 'Alertas',
+    module:       'Configurações',
+    perfil:       'Perfil',
+    aparencia:    'Aparência',
+    notificacoes: 'Notificações',
     categorias:   'Categorias',
-    integracoes:  'Conexões',
-    plano:        'Meu Plano',
+    integracoes:  'Integrações',
+    plano:        'Plano',
   },
 } as const
 

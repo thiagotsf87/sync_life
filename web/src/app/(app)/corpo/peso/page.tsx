@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
+import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import {
@@ -183,34 +184,30 @@ export default function PesoPage() {
   }
 
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="max-w-[1140px] mx-auto px-4 lg:px-6 lg:py-7 lg:pb-16">
 
-      {/* Topbar */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <button
-          onClick={() => router.push('/corpo')}
-          className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Corpo
-        </button>
-        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
-          ⚖️ Peso & Medidas
-        </h1>
-        <button
-          onClick={openProfileModal}
-          className="px-3 py-1.5 rounded-[10px] text-[12px] border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] transition-colors"
-        >
-          ⚙️ Perfil
-        </button>
-        <button
-          onClick={() => setShowWeightModal(true)}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f97316] text-white hover:opacity-90 transition-opacity"
-        >
-          <Plus size={16} />
-          Registrar
-        </button>
-      </div>
+      <MobileFormHeader
+        moduleId="corpo"
+        title="⚖️ Peso & Medidas"
+        onBack={() => router.push('/corpo')}
+        rightAction={
+          <div className="flex items-center gap-2">
+            <button
+              onClick={openProfileModal}
+              className="px-3 py-1.5 rounded-[10px] text-[12px] border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] transition-colors"
+            >
+              ⚙️ Perfil
+            </button>
+            <button
+              onClick={() => setShowWeightModal(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f97316] text-white hover:opacity-90 transition-opacity"
+            >
+              <Plus size={16} />
+              Registrar
+            </button>
+          </div>
+        }
+      />
 
       {loading ? (
         <div className="h-64 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
@@ -393,9 +390,12 @@ export default function PesoPage() {
           onClick={e => { if (e.target === e.currentTarget) setShowWeightModal(false) }}
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl w-full max-w-[420px]">
-            <div className="flex items-center justify-between p-5 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">⚖️ Registrar Peso</h2>
-              <button onClick={() => setShowWeightModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">×</button>
+            <div className="border-b border-[var(--sl-border)]">
+              <MobileFormHeader
+                moduleId="corpo"
+                title="Registrar Peso"
+                onBack={() => setShowWeightModal(false)}
+              />
             </div>
             <div className="p-5 flex flex-col gap-3">
               <div className="grid grid-cols-2 gap-3">
@@ -474,9 +474,12 @@ export default function PesoPage() {
           onClick={e => { if (e.target === e.currentTarget) setShowProfileModal(false) }}
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl w-full max-w-[500px] max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-5 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">⚙️ Perfil de Saúde</h2>
-              <button onClick={() => setShowProfileModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">×</button>
+            <div className="border-b border-[var(--sl-border)]">
+              <MobileFormHeader
+                moduleId="corpo"
+                title="Perfil de Saúde"
+                onBack={() => setShowProfileModal(false)}
+              />
             </div>
             <div className="p-5 flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-3">

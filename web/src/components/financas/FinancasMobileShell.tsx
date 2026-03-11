@@ -53,10 +53,10 @@ export function FinancasMobileShell({
 
   return (
     <div className="lg:hidden">
-      {/* Header — padrão Carreira */}
+      {/* Header */}
       <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
-          <p className="text-[12px] font-semibold text-[#a7f3d0] mb-[2px]">✦ {jornadaLabel('financas', 'module', 'Finanças')}</p>
+          <p className="text-[12px] font-semibold text-[#10b981] mb-[2px]">✦ {jornadaLabel('financas', 'module', 'Finanças')}</p>
           <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
             {pageTitle}
           </h1>
