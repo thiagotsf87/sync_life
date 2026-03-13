@@ -47,4 +47,9 @@ export const queryKeys = {
     all: ['experiencias'] as const,
     trips: (userId: string) => ['experiencias', 'trips', userId] as const,
   },
+
+  billing: {
+    all: ['billing'] as const,
+    plan: (userId: string) => ['billing', 'plan', userId] as const,
+  },
 } as const

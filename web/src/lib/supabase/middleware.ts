@@ -44,7 +44,8 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/login') ||
     pathname.startsWith('/cadastro') ||
     pathname.startsWith('/forgot-password') ||
-    pathname.startsWith('/auth')
+    pathname.startsWith('/auth') ||
+    pathname.startsWith('/pricing')
 
   // Protected routes — require authentication
   const isProtectedRoute =

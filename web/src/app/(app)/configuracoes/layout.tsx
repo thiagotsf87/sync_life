@@ -4,13 +4,14 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { User, Palette, Bell, Tags, Link2, Crown } from 'lucide-react'
+import { useUserPlan } from '@/hooks/use-user-plan'
 
 interface CfgNavItem {
   id: string
   label: string
   Icon: React.ComponentType<{ size?: number; className?: string }>
   href: string
-  badge?: string
+  badgeKey?: 'plan'
 }
 
 const CFG_GROUPS: { label: string; items: CfgNavItem[] }[] = [
@@ -32,13 +33,16 @@ const CFG_GROUPS: { label: string; items: CfgNavItem[] }[] = [
   {
     label: 'Plano',
     items: [
-      { id: 'plano', label: 'Meu Plano', Icon: Crown, href: '/configuracoes/plano', badge: 'Free' },
+      { id: 'plano', label: 'Meu Plano', Icon: Crown, href: '/configuracoes/plano', badgeKey: 'plan' },
     ],
   },
 ]
 
 export default function ConfiguracoesLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const { isPro } = useUserPlan()
+
+  const planBadge = isPro ? 'Pro' : 'Free'
 
   return (
     <div className="flex gap-7">
@@ -49,11 +53,12 @@ export default function ConfiguracoesLayout({ children }: { children: React.Reac
             <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] px-3 pt-3 pb-1.5 first:pt-0">
               {group.label}
             </p>
-            {group.items.map(({ id, label, Icon, href, badge }) => {
+            {group.items.map(({ id, label, Icon, href, badgeKey }) => {
               const isActive =
                 href === '/configuracoes'
                   ? pathname === '/configuracoes'
                   : pathname.startsWith(href)
+              const badge = badgeKey === 'plan' ? planBadge : undefined
               return (
                 <Link
                   key={id}
@@ -68,7 +73,14 @@ export default function ConfiguracoesLayout({ children }: { children: React.Reac
                   <Icon size={15} className="shrink-0 opacity-80" />
                   <span className="flex-1">{label}</span>
                   {badge && (
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[var(--sl-s3)] text-[var(--sl-t3)]">
+                    <span
+                      className={cn(
+                        'text-[9px] font-bold px-1.5 py-0.5 rounded-md',
+                        badge === 'Pro'
+                          ? 'bg-[rgba(16,185,129,0.15)] text-[#10b981]'
+                          : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]',
+                      )}
+                    >
                       {badge}
                     </span>
                   )}
