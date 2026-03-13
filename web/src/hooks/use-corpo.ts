@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import { queryKeys } from '@/lib/query-keys'
 import {
   syncExerciseFrequencyGoalsFromCorpo,
   syncWeightGoalTargetFromCorpo,
@@ -335,58 +337,64 @@ export function useActivities(limit = 30) {
   return { activities, loading, error, reload: load }
 }
 
-// ─── Dashboard hook ───────────────────────────────────────────────────────────
+// ─── Dashboard hook (TanStack Query) ─────────────────────────────────────────
 
-export function useCorpoDashboard() {
-  const [profile, setProfile] = useState<HealthProfile | null>(null)
-  const [latestWeight, setLatestWeight] = useState<WeightEntry | null>(null)
-  const [nextAppointment, setNextAppointment] = useState<MedicalAppointment | null>(null)
-  const [weekActivities, setWeekActivities] = useState<Activity[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+interface CorpoDashboardData {
+  profile: HealthProfile | null
+  latestWeight: WeightEntry | null
+  nextAppointment: MedicalAppointment | null
+  weekActivities: Activity[]
+}
+
+async function fetchCorpoDashboard(): Promise<CorpoDashboardData> {
   const supabase = createClient()
   const sb = supabase as any
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Não autenticado')
+  const weekAgo = new Date()
+  weekAgo.setDate(weekAgo.getDate() - 7)
 
-      const weekAgo = new Date()
-      weekAgo.setDate(weekAgo.getDate() - 7)
+  const [profileRes, weightRes, appointmentRes, activitiesRes] = await Promise.all([
+    sb.from('health_profiles').select('*').eq('user_id', user.id).maybeSingle(),
+    sb.from('weight_entries').select('*').eq('user_id', user.id)
+      .order('recorded_at', { ascending: false }).limit(1),
+    sb.from('medical_appointments').select('*').eq('user_id', user.id)
+      .eq('status', 'scheduled').gte('appointment_date', new Date().toISOString())
+      .order('appointment_date', { ascending: true }).limit(1),
+    sb.from('activities').select('*').eq('user_id', user.id)
+      .gte('recorded_at', weekAgo.toISOString())
+      .order('recorded_at', { ascending: false }),
+  ]) as [
+    { data: HealthProfile | null; error: unknown },
+    { data: WeightEntry[] | null; error: unknown },
+    { data: MedicalAppointment[] | null; error: unknown },
+    { data: Activity[] | null; error: unknown },
+  ]
 
-      const [profileRes, weightRes, appointmentRes, activitiesRes] = await Promise.all([
-        sb.from('health_profiles').select('*').eq('user_id', user.id).maybeSingle(),
-        sb.from('weight_entries').select('*').eq('user_id', user.id)
-          .order('recorded_at', { ascending: false }).limit(1),
-        sb.from('medical_appointments').select('*').eq('user_id', user.id)
-          .eq('status', 'scheduled').gte('appointment_date', new Date().toISOString())
-          .order('appointment_date', { ascending: true }).limit(1),
-        sb.from('activities').select('*').eq('user_id', user.id)
-          .gte('recorded_at', weekAgo.toISOString())
-          .order('recorded_at', { ascending: false }),
-      ]) as [
-        { data: HealthProfile | null; error: unknown },
-        { data: WeightEntry[] | null; error: unknown },
-        { data: MedicalAppointment[] | null; error: unknown },
-        { data: Activity[] | null; error: unknown },
-      ]
+  return {
+    profile: profileRes.data ?? null,
+    latestWeight: weightRes.data?.[0] ?? null,
+    nextAppointment: appointmentRes.data?.[0] ?? null,
+    weekActivities: activitiesRes.data ?? [],
+  }
+}
 
-      setProfile(profileRes.data ?? null)
-      setLatestWeight(weightRes.data?.[0] ?? null)
-      setNextAppointment(appointmentRes.data?.[0] ?? null)
-      setWeekActivities(activitiesRes.data ?? [])
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar dados')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+export function useCorpoDashboard() {
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: queryKeys.corpo.dashboard('current'),
+    queryFn: fetchCorpoDashboard,
+  })
 
-  useEffect(() => { load() }, [load])
-  return { profile, latestWeight, nextAppointment, weekActivities, loading, error, reload: load }
+  return {
+    profile: data?.profile ?? null,
+    latestWeight: data?.latestWeight ?? null,
+    nextAppointment: data?.nextAppointment ?? null,
+    weekActivities: data?.weekActivities ?? [],
+    loading: isLoading,
+    error: error ? (error instanceof Error ? error.message : 'Erro ao carregar dados') : null,
+    reload: refetch,
+  }
 }
 
 // ─── Mutations ────────────────────────────────────────────────────────────────

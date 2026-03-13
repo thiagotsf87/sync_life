@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import { queryKeys } from '@/lib/query-keys'
 import type { Category } from './use-categories'
 import { syncFinanceCategoryToFuturo } from '@/lib/integrations/futuro'
 import { USE_MOCK, MOCK_TRANSACTIONS } from '@/lib/mock-financas'
@@ -70,16 +72,97 @@ function isDateInFuture(dateStr: string): boolean {
   return txDate > today
 }
 
-export function useTransactions(options: UseTransactionsOptions): UseTransactionsReturn {
+// ─── Standalone fetch function (used by useQuery) ──────────────────────────────
+
+interface FetchResult {
+  transactions: Transaction[]
+  total: number
+}
+
+async function fetchTransactions(
+  options: UseTransactionsOptions,
+  debouncedSearch: string,
+): Promise<FetchResult> {
   const PAGE_SIZE = options.pageSize ?? 30
   const page = options.page ?? 1
   const sort = options.sort ?? 'newest'
 
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [total, setTotal] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-  const [refreshKey, setRefreshKey] = useState(0)
+  if (USE_MOCK) {
+    const monthStr = String(options.month).padStart(2, '0')
+    const startDate = `${options.year}-${monthStr}-01`
+    const endDate = new Date(options.year, options.month, 0).toISOString().split('T')[0]
+
+    let filtered = (MOCK_TRANSACTIONS as unknown as Transaction[])
+      .filter(t => t.date >= startDate && t.date <= endDate)
+    if (options.type === 'income') filtered = filtered.filter(t => t.type === 'income')
+    if (options.type === 'expense') filtered = filtered.filter(t => t.type === 'expense')
+    if (options.type === 'recurring') filtered = filtered.filter(t => t.recurring_transaction_id !== null)
+    if (debouncedSearch) filtered = filtered.filter(t => t.description.toLowerCase().includes(debouncedSearch.toLowerCase()))
+    if (options.categoryId) filtered = filtered.filter(t => t.category?.id === options.categoryId)
+
+    const orderCol = sort === 'highest' || sort === 'lowest' ? 'amount' : 'date'
+    const ascending = sort === 'oldest' || sort === 'lowest'
+    filtered = [...filtered].sort((a, b) => {
+      if (orderCol === 'amount') {
+        return ascending ? a.amount - b.amount : b.amount - a.amount
+      }
+      return ascending
+        ? (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)
+        : (a.date > b.date ? -1 : a.date < b.date ? 1 : 0)
+    })
+
+    const totalCount = filtered.length
+    const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    return { transactions: paginated, total: totalCount }
+  }
+
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { transactions: [], total: 0 }
+
+  const monthStr = String(options.month).padStart(2, '0')
+  const startDate = `${options.year}-${monthStr}-01`
+  const endDate = new Date(options.year, options.month, 0).toISOString().split('T')[0]
+
+  let query = supabase
+    .from('transactions')
+    .select(`
+      id, amount, type, description, date,
+      payment_method, notes, is_future, recurring_transaction_id, created_at,
+      category:categories(id, name, icon, color)
+    `, { count: 'exact' })
+    .eq('user_id', user.id)
+    .gte('date', startDate)
+    .lte('date', endDate)
+
+  if (options.type === 'income')    query = query.eq('type', 'income')
+  if (options.type === 'expense')   query = query.eq('type', 'expense')
+  if (options.type === 'recurring') query = query.not('recurring_transaction_id', 'is', null)
+
+  if (debouncedSearch) query = query.ilike('description', `%${debouncedSearch}%`)
+  if (options.categoryId) query = query.eq('category_id', options.categoryId)
+
+  const orderCol = sort === 'highest' || sort === 'lowest' ? 'amount' : 'date'
+  const ascending = sort === 'oldest' || sort === 'lowest'
+  query = query
+    .order(orderCol, { ascending })
+    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1)
+
+  const { data, error: err, count } = await query
+
+  if (err) throw new Error(err.message)
+
+  return {
+    transactions: (data ?? []) as unknown as Transaction[],
+    total: count ?? 0,
+  }
+}
+
+// ─── Hook ──────────────────────────────────────────────────────────────────────
+
+export function useTransactions(options: UseTransactionsOptions): UseTransactionsReturn {
+  const PAGE_SIZE = options.pageSize ?? 30
+  const queryClient = useQueryClient()
 
   // Debounce search
   const [debouncedSearch, setDebouncedSearch] = useState(options.search ?? '')
@@ -88,200 +171,149 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
     return () => clearTimeout(timer)
   }, [options.search])
 
-  const cancelled = useRef(false)
+  const queryKey = queryKeys.transactions.list({
+    month: options.month,
+    year: options.year,
+    type: options.type,
+    search: debouncedSearch,
+    categoryId: options.categoryId,
+    sort: options.sort,
+    page: options.page,
+  })
 
-  useEffect(() => {
-    cancelled.current = false
-    setIsLoading(true)
-    setError(null)
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey,
+    queryFn: () => fetchTransactions(options, debouncedSearch),
+  })
 
-    if (USE_MOCK) {
-      const monthStr = String(options.month).padStart(2, '0')
-      const startDate = `${options.year}-${monthStr}-01`
-      const endDate = new Date(options.year, options.month, 0).toISOString().split('T')[0]
+  const transactions = data?.transactions ?? []
+  const total = data?.total ?? 0
 
-      let filtered = (MOCK_TRANSACTIONS as unknown as Transaction[])
-        .filter(t => t.date >= startDate && t.date <= endDate)
-      if (options.type === 'income') filtered = filtered.filter(t => t.type === 'income')
-      if (options.type === 'expense') filtered = filtered.filter(t => t.type === 'expense')
-      if (options.type === 'recurring') filtered = filtered.filter(t => t.recurring_transaction_id !== null)
-      if (debouncedSearch) filtered = filtered.filter(t => t.description.toLowerCase().includes(debouncedSearch.toLowerCase()))
-      if (options.categoryId) filtered = filtered.filter(t => t.category?.id === options.categoryId)
+  const refresh = useCallback(() => { refetch() }, [refetch])
 
-      // Sort
-      const orderCol = sort === 'highest' || sort === 'lowest' ? 'amount' : 'date'
-      const ascending = sort === 'oldest' || sort === 'lowest'
-      filtered = [...filtered].sort((a, b) => {
-        if (orderCol === 'amount') {
-          return ascending ? a.amount - b.amount : b.amount - a.amount
-        }
-        return ascending
-          ? (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)
-          : (a.date > b.date ? -1 : a.date < b.date ? 1 : 0)
-      })
+  // ─── Mutations ─────────────────────────────────────────────────────────────
 
-      const totalCount = filtered.length
-      const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
-      setTransactions(paginated)
-      setTotal(totalCount)
-      setIsLoading(false)
-      return
-    }
-
-    const supabase = createClient()
-
-    async function load() {
+  const createMutation = useMutation({
+    mutationFn: async (formData: TransacaoFormData): Promise<Transaction> => {
+      const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user || cancelled.current) return
+      if (!user) throw new Error('Não autenticado')
 
-      const monthStr = String(options.month).padStart(2, '0')
-      const startDate = `${options.year}-${monthStr}-01`
-      // new Date(year, month, 0) with month 1-indexed gives the last day of that month
-      const endDate = new Date(options.year, options.month, 0).toISOString().split('T')[0]
-
-      let query = supabase
+      const { data: created, error: err } = await supabase
         .from('transactions')
-        .select(`
-          id, amount, type, description, date,
-          payment_method, notes, is_future, recurring_transaction_id, created_at,
-          category:categories(id, name, icon, color)
-        `, { count: 'exact' })
-        .eq('user_id', user.id)
-        .gte('date', startDate)
-        .lte('date', endDate)
+        .insert({
+          user_id: user.id,
+          category_id: formData.category_id,
+          amount: formData.amount,
+          type: formData.type,
+          description: formData.description,
+          date: formData.date,
+          payment_method: formData.payment_method,
+          notes: formData.notes ?? null,
+          is_future: isDateInFuture(formData.date),
+          recurring_transaction_id: null,
+        } as any)
+        .select('id, amount, type, description, date, payment_method, notes, is_future, recurring_transaction_id, created_at, category:categories(id, name, icon, color)')
+        .single()
 
-      if (options.type === 'income')    query = query.eq('type', 'income')
-      if (options.type === 'expense')   query = query.eq('type', 'expense')
-      if (options.type === 'recurring') query = query.not('recurring_transaction_id', 'is', null)
+      if (err) throw new Error(err.message)
+      await syncFinanceCategoryToFuturo(user.id, formData.category_id)
+      updateStreak(user.id).catch(() => {})
+      addXP(user.id, 'transaction_created').catch(() => {})
+      return created as unknown as Transaction
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+    },
+  })
 
-      if (debouncedSearch) query = query.ilike('description', `%${debouncedSearch}%`)
-      if (options.categoryId) query = query.eq('category_id', options.categoryId)
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data: formData }: { id: string; data: Partial<TransacaoFormData> }): Promise<Transaction> => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Não autenticado')
 
-      const orderCol = sort === 'highest' || sort === 'lowest' ? 'amount' : 'date'
-      const ascending = sort === 'oldest' || sort === 'lowest'
-      query = query
-        .order(orderCol, { ascending })
-        .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1)
-
-      const { data, error: err, count } = await query
-
-      if (cancelled.current) return
-
-      if (err) {
-        setError(new Error(err.message))
-        setIsLoading(false)
-        return
+      const updatePayload: Record<string, unknown> = { updated_at: new Date().toISOString() }
+      if (formData.category_id !== undefined) updatePayload.category_id = formData.category_id
+      if (formData.amount !== undefined) updatePayload.amount = formData.amount
+      if (formData.type !== undefined) updatePayload.type = formData.type
+      if (formData.description !== undefined) updatePayload.description = formData.description
+      if (formData.date !== undefined) {
+        updatePayload.date = formData.date
+        updatePayload.is_future = isDateInFuture(formData.date)
       }
+      if (formData.payment_method !== undefined) updatePayload.payment_method = formData.payment_method
+      if ('notes' in formData) updatePayload.notes = formData.notes ?? null
 
-      setTransactions((data ?? []) as unknown as Transaction[])
-      setTotal(count ?? 0)
-      setIsLoading(false)
-    }
+      const sb = supabase as any
+      const { data: updated, error: err } = await sb
+        .from('transactions')
+        .update(updatePayload)
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .select('id, amount, type, description, date, payment_method, notes, is_future, recurring_transaction_id, created_at, category:categories(id, name, icon, color)')
+        .single()
 
-    load()
-    return () => { cancelled.current = true }
-  }, [
-    options.month, options.year, options.type, options.categoryId,
-    sort, page, PAGE_SIZE, debouncedSearch, refreshKey,
-  ])
+      if (err) throw new Error(err.message)
+      const affectedCategory = (updated as unknown as { category?: { id: string } | null })?.category?.id
+        ?? formData.category_id
+      if (affectedCategory) {
+        await syncFinanceCategoryToFuturo(user.id, affectedCategory)
+      }
+      return updated as unknown as Transaction
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+    },
+  })
 
-  const refresh = useCallback(() => setRefreshKey(k => k + 1), [])
+  const removeMutation = useMutation({
+    mutationFn: async (id: string): Promise<void> => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Não autenticado')
 
-  const create = useCallback(async (data: TransacaoFormData): Promise<Transaction> => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Não autenticado')
+      const { data: existing } = await (supabase as any)
+        .from('transactions')
+        .select('category_id')
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .single()
 
-    const { data: created, error: err } = await supabase
-      .from('transactions')
-      .insert({
-        user_id: user.id,
-        category_id: data.category_id,
-        amount: data.amount,
-        type: data.type,
-        description: data.description,
-        date: data.date,
-        payment_method: data.payment_method,
-        notes: data.notes ?? null,
-        is_future: isDateInFuture(data.date),
-        recurring_transaction_id: null,
-      } as any)
-      .select('id, amount, type, description, date, payment_method, notes, is_future, recurring_transaction_id, created_at, category:categories(id, name, icon, color)')
-      .single()
+      const { error: err } = await supabase
+        .from('transactions')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id)
 
-    if (err) throw new Error(err.message)
-    await syncFinanceCategoryToFuturo(user.id, data.category_id)
-    updateStreak(user.id).catch(() => {})
-    addXP(user.id, 'transaction_created').catch(() => {})
-    refresh()
-    return created as unknown as Transaction
-  }, [refresh])
+      if (err) throw new Error(err.message)
+      if (existing?.category_id) {
+        await syncFinanceCategoryToFuturo(user.id, existing.category_id)
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+    },
+  })
 
-  const update = useCallback(async (id: string, data: Partial<TransacaoFormData>): Promise<Transaction> => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Não autenticado')
+  const create = useCallback(
+    (data: TransacaoFormData) => createMutation.mutateAsync(data),
+    [createMutation],
+  )
 
-    const updatePayload: Record<string, unknown> = { updated_at: new Date().toISOString() }
-    if (data.category_id !== undefined) updatePayload.category_id = data.category_id
-    if (data.amount !== undefined) updatePayload.amount = data.amount
-    if (data.type !== undefined) updatePayload.type = data.type
-    if (data.description !== undefined) updatePayload.description = data.description
-    if (data.date !== undefined) {
-      updatePayload.date = data.date
-      updatePayload.is_future = isDateInFuture(data.date)
-    }
-    if (data.payment_method !== undefined) updatePayload.payment_method = data.payment_method
-    if ('notes' in data) updatePayload.notes = data.notes ?? null
+  const update = useCallback(
+    (id: string, data: Partial<TransacaoFormData>) => updateMutation.mutateAsync({ id, data }),
+    [updateMutation],
+  )
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sb = supabase as any
-    const { data: updated, error: err } = await sb
-      .from('transactions')
-      .update(updatePayload)
-      .eq('id', id)
-      .eq('user_id', user.id)
-      .select('id, amount, type, description, date, payment_method, notes, is_future, recurring_transaction_id, created_at, category:categories(id, name, icon, color)')
-      .single()
-
-    if (err) throw new Error(err.message)
-    const affectedCategory = (updated as unknown as { category?: { id: string } | null })?.category?.id
-      ?? data.category_id
-    if (affectedCategory) {
-      await syncFinanceCategoryToFuturo(user.id, affectedCategory)
-    }
-    refresh()
-    return updated as unknown as Transaction
-  }, [refresh])
-
-  const remove = useCallback(async (id: string): Promise<void> => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Não autenticado')
-
-    const { data: existing } = await (supabase as any)
-      .from('transactions')
-      .select('category_id')
-      .eq('id', id)
-      .eq('user_id', user.id)
-      .single()
-
-    const { error: err } = await supabase
-      .from('transactions')
-      .delete()
-      .eq('id', id)
-      .eq('user_id', user.id)
-
-    if (err) throw new Error(err.message)
-    if (existing?.category_id) {
-      await syncFinanceCategoryToFuturo(user.id, existing.category_id)
-    }
-    refresh()
-  }, [refresh])
+  const remove = useCallback(
+    (id: string) => removeMutation.mutateAsync(id),
+    [removeMutation],
+  )
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
-  return { transactions, total, totalPages, isLoading, error, refresh, create, update, remove }
+  return { transactions, total, totalPages, isLoading, error: error as Error | null, refresh, create, update, remove }
 }
 
 // Helper — group by date for sorted-by-date views
