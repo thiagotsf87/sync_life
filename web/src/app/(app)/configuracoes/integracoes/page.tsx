@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
+import { saveUserPreferences, setCachedIntegrationSettings } from '@/lib/user-preferences'
 
 // RN-CRP-37 / RN-EXP-30 / RN-MNT-24 / RN-PTR-22 / RN-CAR-18:
 // Página central de integrações opt-in entre módulos
@@ -100,18 +102,40 @@ function IntegrationRow({ from, to, label, description, checked, onChange }: Int
 
 export default function IntegracoesPage() {
   const [settings, setSettings] = useState<IntegrationSettings>(DEFAULT_SETTINGS)
+  const isInitialLoad = useRef(true)
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(INTEGRATIONS_KEY)
       if (saved) setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) })
     } catch (err) { console.warn('[Settings] Falha ao ler integrações do localStorage:', err) }
+    isInitialLoad.current = false
   }, [])
 
+  // Dual-write: localStorage (retrocompat/FOUC) + Supabase (multi-device)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
+    // Skip on initial load (just read, don't write back)
+    if (isInitialLoad.current) return
+
     try {
       localStorage.setItem(INTEGRATIONS_KEY, JSON.stringify(settings))
     } catch (err) { console.warn('[Settings] Falha ao salvar integrações no localStorage:', err) }
+
+    // Update in-memory cache immediately
+    setCachedIntegrationSettings(settings as unknown as Record<string, boolean>)
+
+    // Debounced write to Supabase
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        saveUserPreferences(user.id, { integration_settings: settings as unknown as Record<string, boolean> }).catch(() => {})
+      }
+    }, 500)
+
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [settings])
 
   function set(key: keyof IntegrationSettings, val: boolean) {

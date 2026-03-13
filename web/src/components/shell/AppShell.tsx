@@ -14,6 +14,9 @@ import { MobileSubNav } from './MobileSubNav'
 import { MODULE_BAR_W, SB_OPEN, SB_COLLAPSED } from '@/lib/constants'
 import { createClient } from '@/lib/supabase/client'
 import { resolveSystemTheme, isDarkTheme } from '@/types/shell'
+import { setSentryUser } from '@/lib/sentry-helpers'
+import { hydratePreferences } from '@/lib/user-preferences'
+import { QueryProvider } from '@/components/providers/query-provider'
 import type { ThemeId, ResolvedThemeId } from '@/types/shell'
 
 interface AppShellProps {
@@ -46,6 +49,14 @@ export function NewAppShell({
 
     if (initialTheme) setTheme(initialTheme)
     if (initialSidebarOpen !== undefined) setSidebarOpen(initialSidebarOpen)
+
+    // Identify user in Sentry + hydrate preferences from Supabase
+    createClient().auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setSentryUser(user.id, user.email ?? undefined)
+        hydratePreferences(user.id).catch(() => {})
+      }
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -103,31 +114,33 @@ export function NewAppShell({
   const offsetLeft = isDesktop ? MODULE_BAR_W + sidebarWidth : 0
 
   return (
-    <div className="flex h-screen bg-[var(--sl-bg)] overflow-hidden">
-      {/* Module Bar (desktop only — hidden via CSS) */}
-      <ModuleBar userName={userName} />
+    <QueryProvider>
+      <div className="flex h-screen bg-[var(--sl-bg)] overflow-hidden">
+        {/* Module Bar (desktop only — hidden via CSS) */}
+        <ModuleBar userName={userName} />
 
-      {/* Sidebar (desktop only — hidden via CSS) */}
-      <Sidebar />
+        {/* Sidebar (desktop only — hidden via CSS) */}
+        <Sidebar />
 
-      {/* Main column */}
-      <div
-        className="flex flex-1 flex-col min-w-0"
-        style={{
-          marginLeft: offsetLeft,
-          transition: 'margin-left 240ms cubic-bezier(.4,0,.2,1)',
-        }}
-      >
-        {/* TopHeader: desktop only */}
-        <div className="hidden lg:block">
-          <TopHeader userName={userName} />
+        {/* Main column */}
+        <div
+          className="flex flex-1 flex-col min-w-0"
+          style={{
+            marginLeft: offsetLeft,
+            transition: 'margin-left 240ms cubic-bezier(.4,0,.2,1)',
+          }}
+        >
+          {/* TopHeader: desktop only */}
+          <div className="hidden lg:block">
+            <TopHeader userName={userName} />
+          </div>
+          <MobileSubNav />
+          <ContentArea>{children}</ContentArea>
         </div>
-        <MobileSubNav />
-        <ContentArea>{children}</ContentArea>
-      </div>
 
-      {/* Mobile bottom bar */}
-      <MobileBottomBar userName={userName} />
-    </div>
+        {/* Mobile bottom bar */}
+        <MobileBottomBar userName={userName} />
+      </div>
+    </QueryProvider>
   )
 }

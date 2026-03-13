@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ToggleSwitch } from '@/components/settings/toggle-switch'
+import { createClient } from '@/lib/supabase/client'
+import { saveUserPreferences, setCachedNotifSettings } from '@/lib/user-preferences'
 
 const NOTIF_KEY = 'sl_notif_settings'
 
@@ -104,19 +106,40 @@ const DEFAULT_NOTIF: NotifState = {
 
 export default function NotificacoesPage() {
   const [notif, setNotif] = useState<NotifState>(DEFAULT_NOTIF)
+  const isInitialLoad = useRef(true)
 
-  // RN-FUT-51: persistir configurações de notificação no localStorage
+  // RN-FUT-51: persistir configurações de notificação
   useEffect(() => {
     try {
       const saved = localStorage.getItem(NOTIF_KEY)
       if (saved) setNotif({ ...DEFAULT_NOTIF, ...JSON.parse(saved) })
     } catch (err) { console.warn('[Settings] Falha ao ler notificações do localStorage:', err) }
+    isInitialLoad.current = false
   }, [])
 
+  // Dual-write: localStorage (retrocompat) + Supabase (multi-device)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
+    if (isInitialLoad.current) return
+
     try {
       localStorage.setItem(NOTIF_KEY, JSON.stringify(notif))
     } catch (err) { console.warn('[Settings] Falha ao salvar notificações no localStorage:', err) }
+
+    // Update in-memory cache immediately
+    setCachedNotifSettings(notif as unknown as Record<string, unknown>)
+
+    // Debounced write to Supabase
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        saveUserPreferences(user.id, { notification_settings: notif as unknown as Record<string, unknown> }).catch(() => {})
+      }
+    }, 500)
+
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [notif])
 
   const toggle = async (key: NotifKey) => {

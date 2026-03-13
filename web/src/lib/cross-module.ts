@@ -1,18 +1,24 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
+import { getCachedIntegrationSettings } from '@/lib/user-preferences'
 
 // ─── CROSS-MODULE INTEGRATION ENGINE ───────────────────────────────────────────
 //
 // Implements auto-transactions and auto-events between modules.
 // Each integration function checks the user's integration settings
-// (stored in localStorage key `sl_integrations_settings`) before executing.
+// (stored in Supabase + cached in memory, fallback to localStorage).
 
 const SETTINGS_KEY = 'sl_integrations_settings'
 
 // ─── HELPERS ───────────────────────────────────────────────────────────────────
 
 function getIntegrationSettings(): Record<string, boolean> {
+  // 1. Try in-memory cache (populated by AppShell via hydratePreferences)
+  const cached = getCachedIntegrationSettings()
+  if (cached) return cached
+
+  // 2. Fallback to localStorage (backwards compat)
   if (typeof window === 'undefined') return {}
   try {
     const raw = localStorage.getItem(SETTINGS_KEY)

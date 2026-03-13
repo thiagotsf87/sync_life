@@ -3,6 +3,8 @@
  * Compartilhado entre MobileBottomBar e MobileMoreSheet.
  */
 
+import { saveUserPreferences } from '@/lib/user-preferences'
+
 export const PINNED_STORAGE_KEY = 'sl_pinned_modules'
 export const DEFAULT_PINNED = ['financas', 'tempo']
 const MAX_PINNED = 3
@@ -21,5 +23,12 @@ export function setPinnedModules(modules: string[]): string[] {
   try {
     localStorage.setItem(PINNED_STORAGE_KEY, JSON.stringify(next))
   } catch (err) { console.warn('[PinnedModules] Falha ao salvar localStorage:', err) }
+  return next
+}
+
+/** Async dual-write: localStorage + Supabase */
+export async function setPinnedModulesAsync(userId: string, modules: string[]): Promise<string[]> {
+  const next = setPinnedModules(modules)
+  await saveUserPreferences(userId, { pinned_modules: next })
   return next
 }
