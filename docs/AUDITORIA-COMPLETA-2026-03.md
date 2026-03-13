@@ -590,6 +590,24 @@ O SyncLife nao tem um servidor Express, NestJS ou similar. O "backend" e compost
 
 **Hooks migrados para TanStack Query:** use-transactions, useCorpoDashboard, useNotifications (mesmas interfaces, sem breaking changes)
 
+**Arquivos modificados (15):**
+- `package.json` — vitest, @sentry/nextjs, @tanstack/react-query + devtools, scripts test/test:unit
+- `next.config.ts` — wrap com `withSentryConfig()`
+- `use-score-engine.ts`, `use-xp.ts` — imports de score-utils/xp-utils (funcoes puras extraidas)
+- `use-transactions.ts` — reescrito com useQuery/useMutation
+- `use-corpo.ts` — useCorpoDashboard reescrito com useQuery
+- `use-notifications.ts` — reescrito com useQuery/useMutation + cache otimista
+- `AppShell.tsx` — Sentry user, hydratePreferences, QueryProvider wrapper
+- `error.tsx` — Sentry.captureException
+- 5 API routes (`cardapio`, `coach`, `financas`, `viagem`, `cotacoes`) — captureApiError nos catch blocks
+- `cross-module.ts` — in-memory cache fallback para integration settings
+- `pinned-modules.ts` — setPinnedModulesAsync (dual-write)
+- `configuracoes/integracoes/page.tsx`, `configuracoes/notificacoes/page.tsx` — dual-write localStorage + Supabase
+
+**Novas dependencias:** vitest ^4.1.0, @sentry/nextjs ^10.43.0, @tanstack/react-query ^5.90.21, @tanstack/react-query-devtools ^5.91.3
+
+**Branch:** `auditoria-fase0-cleanup` | **Commits:** `d21bca0`, `23b8df5`, `000fc8b`, `517cde0` | **31 arquivos** criados/modificados | **Scorecard: 6.9 → 7.4/10**
+
 ### FASE 3 — Monetizacao (2-3 semanas)
 
 | # | Tarefa | Impacto |
