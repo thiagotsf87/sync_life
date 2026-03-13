@@ -475,15 +475,15 @@ O SyncLife nao tem um servidor Express, NestJS ou similar. O "backend" e compost
 | 1.4 | Substituir catches silenciados | **FREE** | Codigo |
 | 1.5 | Auditar dangerouslySetInnerHTML | **FREE** | Code review |
 
-### FASE 2 — Resiliencia
+### FASE 2 — Resiliencia (CONCLUIDA - 13/Mar/2026)
 
-| # | Tarefa | Custo | Detalhe |
-|---|--------|-------|---------|
+| # | Tarefa | Custo | Status |
+|---|--------|-------|--------|
 | ~~2.1~~ | ~~Rate limiting (Upstash)~~ | ~~**FREEMIUM**~~ | **Feito na Fase 0** |
-| 2.2 | Sentry | **FREEMIUM** | Free: 5k events/mes. Pago: $26/mes (50k events) |
-| 2.3 | Testes unitarios | **FREE** | Vitest/Jest, sem custo |
-| 2.4 | Migrar localStorage -> Supabase | **FREE** | Codigo + tabela existente |
-| 2.5 | Retry/refetch (TanStack Query) | **FREE** | npm package gratuito |
+| 2.2 | Sentry (client+server+edge) | **FREEMIUM** | **Feito** (free: 5k events/mes) |
+| 2.3 | Testes unitarios (Vitest, 69 testes) | **FREE** | **Feito** |
+| 2.4 | Migrar localStorage -> Supabase | **FREE** | **Feito** (dual-write + cache) |
+| 2.5 | TanStack Query (3 hooks piloto) | **FREE** | **Feito** |
 
 ### FASE 3 — Monetizacao
 
