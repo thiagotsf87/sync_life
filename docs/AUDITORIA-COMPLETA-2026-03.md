@@ -1,7 +1,8 @@
 # Auditoria Completa do SyncLife
 
 **Data:** 12 de Março de 2026
-**Branch:** main (clean)
+**Ultima atualizacao:** 12 de Março de 2026
+**Branch:** auditoria-fase0-cleanup (commit 41ecef2)
 **Auditor:** Claude Code (leitura completa do codebase)
 
 ---
@@ -69,19 +70,19 @@
 | Arquitetura | **9/10** | App Router bem estruturado, 11 modulos independentes, shell maduro com 12 temas |
 | Feature Completeness | **9/10** | 69 paginas, 11 modulos com CRUD, 3 engines de gamificacao, 4 IAs |
 | Design System | **9/10** | 12 temas em CSS variables, tokens consistentes, componentes base definidos |
-| Seguranca | **8/10** | Auth/RLS OK, Zod em todas APIs, sem secrets hardcoded, sem eval/SQL injection |
+| Seguranca | **8.5/10** | Auth/RLS OK, Zod em todas APIs, rate limiting Upstash, sem secrets hardcoded |
 | Mobile | **8/10** | Shells mobile por modulo, bottom bar, breakpoints, fonte DM Sans |
 | Acessibilidade | **7/10** | 38 aria-attributes em 23 arquivos, bom para mobile/nav |
-| Documentacao | **7/10** | 10 specs funcionais (620KB), CLAUDE.md, DESIGN-SYSTEM.md. Docs deprecados presentes |
+| Documentacao | **8/10** | 10 specs funcionais (620KB), CLAUDE.md v2.0, DESIGN-SYSTEM.md, README atualizado, docs deprecados removidos |
 | Data Layer | **6/10** | 19 migrations, 31+ tabelas, RLS. Porem 235 `as any` sem tipos gerados |
 | Performance | **6/10** | loading.tsx OK, SW com cache hibrido. Sem code splitting, sem dynamic imports |
-| Error Handling | **5/10** | error.tsx criados, mas 14 catches silenciados sem logging |
+| Error Handling | **6/10** | error.tsx + loading.tsx em (app) e (auth), rate limiting com 429. Pendente: 14 catches silenciados |
 | Qualidade Codigo | **5/10** | 0 console.log, mas 21 paginas >500 linhas, 11 hooks >400 linhas |
 | Testes | **3/10** | 0 testes unitarios, 0 testes de integracao. Apenas specs E2E |
-| DevOps | **3/10** | Deploy Vercel OK, mas sem CI/CD, staging, monitoring, rate limiting |
+| DevOps | **4/10** | Deploy Vercel OK, rate limiting OK. Pendente: CI/CD, staging, monitoring |
 | Monetizacao | **2/10** | Interfaces existem (ProGate, usePlanLimits) mas tudo retorna `true` |
 
-**Media geral: 6.2/10**
+**Media geral: 6.5/10** (era 6.2 antes da Fase 0)
 
 ---
 
@@ -137,11 +138,11 @@ Nenhum teste unitario ou de integracao. Apenas specs E2E documentadas em `docs/s
 
 **Fix:** Priorizar testes para engines (score, badge, xp) e hooks de calculo (planejamento, relatorios).
 
-### CRIT-05: Sem rate limiting nas APIs de IA
+### ~~CRIT-05: Sem rate limiting nas APIs de IA~~ RESOLVIDO
 
-Todas as 4 rotas de IA aceitam requests ilimitados. Risco de custos descontrolados.
+~~Todas as 4 rotas de IA aceitam requests ilimitados. Risco de custos descontrolados.~~
 
-**Fix:** Upstash Redis rate limiting (10 req/10s por usuario).
+**Status:** RESOLVIDO na Fase 0. Upstash Redis rate limiting implementado em todas as 4 rotas de IA (sliding window 10 req/60s por usuario). Helper em `web/src/lib/rate-limit.ts`. Graceful degradation: sem env vars Upstash, rate limiting e desabilitado (dev/beta).
 
 ### CRIT-06: Freemium totalmente desabilitado
 
@@ -158,14 +159,14 @@ Landing page anuncia FREE/PRO mas o app ignora.
 
 | Item | Localizacao | Acao |
 |------|-------------|------|
-| Pagina legada `/transacoes` | `app/(app)/transacoes/page.tsx` | Excluir (substituida por `/financas/transacoes`) |
-| Diretorio vazio `panorama/` | `app/(app)/panorama/` | Excluir (dashboard esta em `/dashboard`) |
-| Diretorio vazio `quick-entry/` | `app/(app)/quick-entry/` | Excluir ou implementar |
-| Route group vazio `(landing)` | `app/(landing)/` | Excluir (landing esta em `app/page.tsx`) |
-| Hook legado `use-metas.ts` | `hooks/use-metas.ts` (434 linhas) | Avaliar se ainda e usado ou se `use-futuro.ts` o substituiu |
-| Componentes legados `metas/` | `components/metas/` (6 arquivos) | Avaliar se ainda sao usados |
-| Arquivo avulso na raiz | `snap-patrimonio-mobile.md` | Mover para docs/ ou excluir |
-| Mock data ativo | `lib/mock-financas.ts` USE_MOCK | **Ja corrigido** (setado para `false` nesta sessao) |
+| Pagina legada `/transacoes` | `app/(app)/transacoes/page.tsx` | **Mantido** — 9 referencias ativas (dashboard, financas) |
+| Diretorio `panorama/` | `app/(app)/panorama/` | **Mantido** — contem subdiretorios com conteudo |
+| ~~Diretorio vazio `quick-entry/`~~ | ~~`app/(app)/quick-entry/`~~ | **Excluido** na Fase 0 |
+| ~~Route group vazio `(landing)`~~ | ~~`app/(landing)/`~~ | **Excluido** na Fase 0 |
+| Hook `use-metas.ts` | `hooks/use-metas.ts` (434 linhas) | **Mantido** — importado em 6 paginas (dashboard + tempo) |
+| Componentes `metas/` | `components/metas/` (6 arquivos) | **Mantido** — usados por use-metas.ts |
+| ~~Arquivo avulso na raiz~~ | ~~`snap-patrimonio-mobile.md`~~ | **Excluido** na Fase 0 |
+| ~~Mock data ativo~~ | ~~`lib/mock-financas.ts` USE_MOCK~~ | **Corrigido** na Fase 0 (setado para `false`) |
 
 ### `dangerouslySetInnerHTML` (5 ocorrencias)
 
@@ -205,7 +206,7 @@ Distribuidos em paginas de configuracoes e features. Todos com comentarios expli
 
 | Item | Status | Prioridade |
 |------|--------|------------|
-| Rate limiting | Ausente | Alta |
+| Rate limiting | **Implementado** (Upstash Redis, 4 AI routes) | ~~Alta~~ Resolvido |
 | CSP headers | Ausente | Media |
 | `dangerouslySetInnerHTML` sanitization | 3 de 5 nao verificados | Media |
 | `npm audit` no CI | Ausente | Media |
@@ -279,14 +280,14 @@ Controlado por toggles em `sl_integrations_settings`. Funciona mas depende de lo
 | `README.md` | 4.4 KB | Atualizado nesta sessao (11 modulos, stack real) |
 | 10x `SPEC-FUNCIONAL-*.md` | 620 KB total | Atuais (pos-migration 018) |
 
-### Documentos para EXCLUIR
+### ~~Documentos para EXCLUIR~~ CONCLUIDO
 
-| Documento | Motivo |
+| Documento | Status |
 |-----------|--------|
-| `docs/demais docs depreciados/` (6 docs, 98KB) | Superseded por CLAUDE.md e specs. `21-TEMAS-E-MODOS` contradiz migration 018 |
-| 11 pastas vazias em `docs/atividades a serem implementadas/01..11` | Vazias, sem conteudo |
-| `docs/atividades a serem implementadas/MIGRATION-ELIMINAR-MODO-DUAL.md` | Ja executada (migration 018) |
-| `snap-patrimonio-mobile.md` (raiz) | Snapshot avulso |
+| ~~`docs/demais docs depreciados/` (6 docs, 98KB)~~ | **Excluido** na Fase 0 |
+| ~~11 pastas vazias em `docs/atividades a serem implementadas/01..11`~~ | **Excluido** na Fase 0 |
+| ~~`docs/atividades a serem implementadas/MIGRATION-ELIMINAR-MODO-DUAL.md`~~ | **Excluido** na Fase 0 |
+| ~~`snap-patrimonio-mobile.md` (raiz)~~ | **Excluido** na Fase 0 |
 
 ### Documentos para AVALIAR
 
@@ -299,7 +300,7 @@ Controlado por toggles em `sl_integrations_settings`. Funciona mas depende de lo
 
 | Documento | Proposito | Prioridade |
 |-----------|-----------|------------|
-| `.env.example` | Listar env vars necessarias para setup | Alta |
+| ~~`.env.example`~~ | ~~Listar env vars necessarias para setup~~ | **Criado** na Fase 0 |
 | `docs/ARQUITETURA-V3.md` | Mapa de modulos, hooks, rotas, DB schema | Media |
 | `docs/API-REFERENCE.md` | 5 API routes com input/output schemas | Media |
 
@@ -458,7 +459,7 @@ O SyncLife nao tem um servidor Express, NestJS ou similar. O "backend" e compost
 
 | # | Tarefa | Custo | Detalhe |
 |---|--------|-------|---------|
-| 2.1 | Rate limiting (Upstash) | **FREEMIUM** | Free: 10k req/dia. Pago: $0.20/100k req |
+| ~~2.1~~ | ~~Rate limiting (Upstash)~~ | ~~**FREEMIUM**~~ | **Feito na Fase 0** |
 | 2.2 | Sentry | **FREEMIUM** | Free: 5k events/mes. Pago: $26/mes (50k events) |
 | 2.3 | Testes unitarios | **FREE** | Vitest/Jest, sem custo |
 | 2.4 | Migrar localStorage -> Supabase | **FREE** | Codigo + tabela existente |
@@ -517,20 +518,24 @@ O SyncLife nao tem um servidor Express, NestJS ou similar. O "backend" e compost
 
 ## 13. Roadmap: Proximos Passos para Produto de Mercado
 
-### FASE 0 — Higiene Imediata (1-2 dias)
+### FASE 0 — Higiene Imediata (CONCLUIDA - 12/Mar/2026)
 
 | # | Tarefa | Status |
 |---|--------|--------|
 | 0.1 | Desativar `USE_MOCK = false` | **Feito** |
 | 0.2 | Criar `error.tsx` e `loading.tsx` | **Feito** |
 | 0.3 | Atualizar README.md | **Feito** |
-| 0.4 | Zod validation nas APIs | **Feito** |
-| 0.5 | Atualizar CLAUDE.md (remover Foco/Jornada) | **Feito** |
+| 0.4 | Zod validation nas 5 APIs | **Feito** |
+| 0.5 | Atualizar CLAUDE.md v2.0 (remover Foco/Jornada, 12 temas) | **Feito** |
 | 0.6 | Remover isProOnly residuais | **Feito** |
 | 0.7 | Resolver rota duplicada /futuro/nova vs /novo | **Feito** |
-| 0.8 | Criar `.env.example` | Pendente |
-| 0.9 | Excluir diretorios vazios e codigo morto | Pendente |
-| 0.10 | Excluir docs deprecados | Pendente |
+| 0.8 | Criar `.env.example` com Upstash vars | **Feito** |
+| 0.9 | Excluir diretorios vazios e codigo morto | **Feito** |
+| 0.10 | Excluir docs deprecados (6 docs V1 + migration obsoleta) | **Feito** |
+| 0.11 | Rate limiting Upstash nas 4 APIs de IA | **Feito** |
+| 0.12 | Gerar documento de auditoria completa | **Feito** |
+
+**Branch:** `auditoria-fase0-cleanup` | **Commit:** `41ecef2` | **26 arquivos**, +1.173 / -4.101 linhas
 
 ### FASE 1 — Qualidade e Type Safety (1-2 semanas)
 
@@ -546,11 +551,11 @@ O SyncLife nao tem um servidor Express, NestJS ou similar. O "backend" e compost
 
 | # | Tarefa | Impacto |
 |---|--------|---------|
-| 2.1 | Implementar rate limiting com Upstash nas 4 APIs de IA | Seguranca + custos |
+| ~~2.1~~ | ~~Implementar rate limiting com Upstash nas 4 APIs de IA~~ | **Feito na Fase 0** |
 | 2.2 | Integrar Sentry (free: 5k events/mes) | Visibilidade de erros |
 | 2.3 | Testes unitarios para engines (score, badge, xp) | Confiabilidade |
 | 2.4 | Migrar settings de localStorage para Supabase | Persistencia multi-device |
-| 2.5 | Implementar retry/refetch em falhas de rede | Resiliencia |
+| 2.5 | Implementar retry/refetch em falhas de rede (TanStack Query) | Resiliencia |
 
 ### FASE 3 — Monetizacao (2-3 semanas)
 
@@ -653,4 +658,6 @@ O ponto de atencao e que **100% da logica de negocio roda no browser** (334 cham
 - Testes (engines + hooks criticos): ~30h
 - **Total: ~140h (~4 sprints)**
 
-O app esta funcional e pode ir ao ar para beta testing com as correcoes da Fase 0 (ja executadas). As Fases 1-4 preparam para lancamento publico com monetizacao.
+**Fase 0 concluida (12/Mar/2026):** 12 tarefas executadas em 26 arquivos. Mock desativado, error/loading boundaries criados, Zod em todas APIs, rate limiting Upstash, README/CLAUDE.md atualizados, docs deprecados removidos, rotas e flags limpos.
+
+O app esta funcional e pode ir ao ar para beta testing. As Fases 1-4 preparam para lancamento publico com monetizacao.
