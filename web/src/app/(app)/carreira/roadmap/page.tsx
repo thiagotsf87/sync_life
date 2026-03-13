@@ -189,7 +189,7 @@ export default function RoadmapPage() {
               }
             }
           }
-        } catch { /* ignore integration error */ }
+        } catch (err) { console.warn('[CrossModule] Falha ao criar meta automática em Futuro:', err) }
       }
 
       if (willComplete) {

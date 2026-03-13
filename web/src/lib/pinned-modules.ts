@@ -12,7 +12,7 @@ export function getPinnedModules(): string[] {
   try {
     const stored = localStorage.getItem(PINNED_STORAGE_KEY)
     if (stored) return JSON.parse(stored)
-  } catch { /* ignore */ }
+  } catch (err) { console.warn('[PinnedModules] Falha ao ler localStorage:', err) }
   return DEFAULT_PINNED
 }
 
@@ -20,6 +20,6 @@ export function setPinnedModules(modules: string[]): string[] {
   const next = modules.slice(0, MAX_PINNED)
   try {
     localStorage.setItem(PINNED_STORAGE_KEY, JSON.stringify(next))
-  } catch { /* ignore */ }
+  } catch (err) { console.warn('[PinnedModules] Falha ao salvar localStorage:', err) }
   return next
 }

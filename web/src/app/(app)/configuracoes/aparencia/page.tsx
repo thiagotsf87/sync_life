@@ -106,7 +106,7 @@ export default function AparenciaPage() {
     try {
       const supabase = createClient()
       await (supabase as any).from('profiles').update({ theme: themeId }).eq('id', userId)
-    } catch { /* silent */ }
+    } catch (err) { console.warn('[Settings] Falha ao persistir tema:', err) }
   }
 
   async function persistIface(updates: Partial<InterfaceSettings>) {
@@ -123,7 +123,7 @@ export default function AparenciaPage() {
     try {
       const supabase = createClient()
       await (supabase as any).from('profiles').update(dbUpdates).eq('id', userId)
-    } catch { /* silent */ }
+    } catch (err) { console.warn('[Settings] Falha ao persistir interface:', err) }
   }
 
   function handleThemeSelect(id: ThemeId) {

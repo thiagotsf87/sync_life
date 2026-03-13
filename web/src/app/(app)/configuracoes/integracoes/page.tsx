@@ -105,13 +105,13 @@ export default function IntegracoesPage() {
     try {
       const saved = localStorage.getItem(INTEGRATIONS_KEY)
       if (saved) setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(saved) })
-    } catch { /* ignore */ }
+    } catch (err) { console.warn('[Settings] Falha ao ler integrações do localStorage:', err) }
   }, [])
 
   useEffect(() => {
     try {
       localStorage.setItem(INTEGRATIONS_KEY, JSON.stringify(settings))
-    } catch { /* ignore */ }
+    } catch (err) { console.warn('[Settings] Falha ao salvar integrações no localStorage:', err) }
   }, [settings])
 
   function set(key: keyof IntegrationSettings, val: boolean) {

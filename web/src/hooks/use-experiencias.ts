@@ -1202,9 +1202,7 @@ export function useUpdateTripStatus() {
           .eq('target_module', 'experiencias')
           .eq('linked_entity_id', tripId)
           .eq('status', 'active')
-      } catch {
-        // Silently ignore — integration is best-effort
-      }
+      } catch (err) { console.warn('[CrossModule] Falha ao limpar integrações de viagem:', err) }
     }
   }, [])
 }

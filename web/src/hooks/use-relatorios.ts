@@ -280,24 +280,28 @@ function calcBarChartData(txs: RawTransaction[], months: string[]) {
   })
 }
 
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
+
 export function generateNarrative(stats: PeriodStats, periodLabel: string, fmtR: (v: number) => string): { text: string; tags: NarrativeTag[] } {
   const { totalBalance, avgSavingsRate, topGrowingCategory, topGrowthPct, monthWithBestBalance, totalExpenses, prevTotalExpenses } = stats
   const expenseDelta = prevTotalExpenses > 0
     ? ((totalExpenses - prevTotalExpenses) / prevTotalExpenses * 100).toFixed(1)
     : null
 
-  let text = `No período <em>${periodLabel}</em> você acumulou `
+  let text = `No período <em>${escapeHtml(periodLabel)}</em> você acumulou `
     + `<em>${fmtR(Math.abs(totalBalance))} de saldo ${totalBalance >= 0 ? 'positivo' : 'negativo'}</em>, `
     + `com taxa média de poupança de <em>${avgSavingsRate.toFixed(1)}%</em>. `
 
   if (topGrowingCategory && topGrowthPct > 10) {
-    text += `O gasto com <em>${topGrowingCategory} cresceu ${topGrowthPct.toFixed(0)}%</em> ao longo do período. `
+    text += `O gasto com <em>${escapeHtml(topGrowingCategory)} cresceu ${topGrowthPct.toFixed(0)}%</em> ao longo do período. `
   }
   if (expenseDelta && parseFloat(expenseDelta) > 5) {
     text += `Despesas cresceram ${expenseDelta}% em relação ao período anterior. `
   }
   if (monthWithBestBalance && monthWithBestBalance !== '') {
-    text += `<em>${monthWithBestBalance}</em> foi seu melhor mês em saldo.`
+    text += `<em>${escapeHtml(monthWithBestBalance)}</em> foi seu melhor mês em saldo.`
   }
 
   const tags: NarrativeTag[] = [
@@ -308,9 +312,9 @@ export function generateNarrative(stats: PeriodStats, periodLabel: string, fmtR:
       ? { text: '✓ Meta de poupança atingida', type: 'pos' }
       : { text: `⚠ Poupança ${avgSavingsRate.toFixed(1)}% (abaixo de 20%)`, type: 'neg' },
     ...(topGrowingCategory && topGrowthPct > 15
-      ? [{ text: `⚠ ${topGrowingCategory} em alta`, type: 'neg' as const }]
+      ? [{ text: `⚠ ${escapeHtml(topGrowingCategory)} em alta`, type: 'neg' as const }]
       : []),
-    ...(monthWithBestBalance ? [{ text: `→ Melhor mês: ${monthWithBestBalance}`, type: 'neu' as const }] : []),
+    ...(monthWithBestBalance ? [{ text: `→ Melhor mês: ${escapeHtml(monthWithBestBalance)}`, type: 'neu' as const }] : []),
   ]
 
   return { text, tags }

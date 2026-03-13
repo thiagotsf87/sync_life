@@ -141,9 +141,7 @@ export function TripAIChat({ tripId, trip, itinerary, onItineraryAdded }: TripAI
           }
           setMessages(parsed)
         }
-      } catch {
-        // silent — no history is fine
-      } finally {
+      } catch (err) { console.warn('[AI Chat] Falha ao carregar histórico:', err) } finally {
         setIsLoadingHistory(false)
       }
     }

@@ -326,8 +326,9 @@ export default function PlanejamentoPage() {
   }))
 
   const mobileInsight = (() => {
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     if (nextCritical) {
-      return `O ${nextCritical.name} vai deixar o saldo <strong>negativo em ${fmtR(Math.abs(nextCritical.balance))}</strong>. Quer criar um envelope de reserva para isso?`
+      return `O ${esc(nextCritical.name)} vai deixar o saldo <strong>negativo em ${fmtR(Math.abs(nextCritical.balance))}</strong>. Quer criar um envelope de reserva para isso?`
     }
     return `Projeção de saldo para 6 meses: <strong>${fmtR(bal6m)}</strong>. Continue no ritmo!`
   })()

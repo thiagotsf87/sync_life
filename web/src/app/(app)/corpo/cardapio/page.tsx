@@ -103,13 +103,13 @@ export default function CardapioPage() {
     try {
       const h = localStorage.getItem('sl_cardapio_history')
       if (h) setPlanHistory(JSON.parse(h))
-    } catch { /* ignore */ }
+    } catch (err) { console.warn('[Cardápio] Falha ao ler histórico do localStorage:', err) }
   }, [])
 
   function saveToHistory(p: DayPlan[]) {
     setPlanHistory(prev => {
       const next = [p, ...prev].slice(0, 3)
-      try { localStorage.setItem('sl_cardapio_history', JSON.stringify(next)) } catch { /* ignore */ }
+      try { localStorage.setItem('sl_cardapio_history', JSON.stringify(next)) } catch (err) { console.warn('[Cardápio] Falha ao salvar histórico:', err) }
       return next
     })
   }

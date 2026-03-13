@@ -112,7 +112,7 @@ export function PomodoroTimer({
         setSelectedTrackId(p.selectedTrackId)
         setSessionStarted(p.sessionStarted)
       }
-    } catch { /* ignore */ }
+    } catch (err) { console.warn('[Pomodoro] Falha ao restaurar estado:', err) }
   }, [])
 
   // Persist state
@@ -159,7 +159,7 @@ export function PomodoroTimer({
       setRemainingSeconds(config.focusMinutes * 60)
     }
     // Play a soft notification sound + background notification when available.
-    try { new Audio('/sounds/bell.mp3').play().catch(() => {}) } catch { /* no sound if unavailable */ }
+    try { new Audio('/sounds/bell.mp3').play().catch(() => {}) } catch { /* audio indisponível no ambiente */ }
     if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
       const nextLabel = phase === 'focusing' ? 'Hora da pausa' : 'Hora de focar'
       try {
@@ -168,9 +168,7 @@ export function PomodoroTimer({
             ? 'Ciclo concluído. Faça uma pausa e depois retome.'
             : 'Pausa concluída. Volte para o foco.',
         })
-      } catch {
-        // ignore if browser blocks notifications
-      }
+      } catch { /* browser bloqueou notificações — sem impacto */ }
     }
   }, [remainingSeconds]) // eslint-disable-line react-hooks/exhaustive-deps
 

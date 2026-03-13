@@ -193,9 +193,7 @@ export function useLifeMap(): UseLifeMapReturn {
       ]
 
       setDimensions(dims)
-    } catch {
-      // silent — show empty state
-    } finally {
+    } catch (err) { console.warn('[LifeMap] Falha ao calcular dimensões:', err) } finally {
       setLoading(false)
     }
   }, [])

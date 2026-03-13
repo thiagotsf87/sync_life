@@ -110,13 +110,13 @@ export default function NotificacoesPage() {
     try {
       const saved = localStorage.getItem(NOTIF_KEY)
       if (saved) setNotif({ ...DEFAULT_NOTIF, ...JSON.parse(saved) })
-    } catch { /* ignore */ }
+    } catch (err) { console.warn('[Settings] Falha ao ler notificações do localStorage:', err) }
   }, [])
 
   useEffect(() => {
     try {
       localStorage.setItem(NOTIF_KEY, JSON.stringify(notif))
-    } catch { /* ignore */ }
+    } catch (err) { console.warn('[Settings] Falha ao salvar notificações no localStorage:', err) }
   }, [notif])
 
   const toggle = async (key: NotifKey) => {

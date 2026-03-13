@@ -339,7 +339,7 @@ export default function WeeklyReviewPage() {
         // Atualizar streak
         await updateStreak(user.id)
       }
-    } catch (_) { /* não bloqueia navegação */ }
+    } catch (err) { console.error('[Review] Falha ao salvar review semanal:', err) }
     setDone(true)
     setSaving(false)
     router.push('/dashboard')

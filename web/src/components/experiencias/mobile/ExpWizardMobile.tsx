@@ -123,9 +123,7 @@ export function ExpWizardMobile({ open, onClose, onSubmit, onTripCreated }: ExpW
                 notes: `Criado automaticamente para a viagem ${trip.id}`,
               })
             }
-          } catch {
-            // Silently ignore integration errors
-          }
+          } catch (err) { console.warn('[CrossModule] Falha ao criar transação de viagem em Finanças:', err) }
         }
 
         if (syncAgenda && startDate && endDate && trip?.id) {
@@ -146,9 +144,7 @@ export function ExpWizardMobile({ open, onClose, onSubmit, onTripCreated }: ExpW
                 priority: 'normal',
               })
             }
-          } catch {
-            // Silently ignore integration errors
-          }
+          } catch (err) { console.warn('[CrossModule] Falha ao criar evento de viagem no Tempo:', err) }
         }
 
         onSubmit?.(wizardData)

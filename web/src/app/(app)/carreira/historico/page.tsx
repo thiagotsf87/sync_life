@@ -104,7 +104,7 @@ export default function HistoricoCarreiraPage() {
               competenceDate: data.start_date,
             })
           }
-        } catch { /* ignore integration error */ }
+        } catch (err) { console.warn('[CrossModule] Falha ao criar transação de salário em Finanças:', err) }
       }
 
       // Show celebration modal for promotions in Jornada mode

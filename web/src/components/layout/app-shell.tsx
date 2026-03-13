@@ -23,9 +23,7 @@ export function AppShell({ userName, children }: AppShellProps) {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored !== null) setCollapsed(stored === 'true')
-    } catch {
-      // ignore
-    }
+    } catch (err) { console.warn('[AppShell] Falha ao ler sidebar state:', err) }
   }, [mounted])
 
   const handleToggleCollapse = () => {
@@ -33,9 +31,7 @@ export function AppShell({ userName, children }: AppShellProps) {
       const next = !prev
       try {
         localStorage.setItem(STORAGE_KEY, String(next))
-      } catch {
-        // ignore
-      }
+      } catch (err) { console.warn('[AppShell] Falha ao salvar sidebar state:', err) }
       return next
     })
   }

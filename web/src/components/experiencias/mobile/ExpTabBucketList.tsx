@@ -71,9 +71,7 @@ export function ExpTabBucketList({
     try {
       const prefill = await transformToTrip(item.id)
       onCreateTrip?.(prefill as Record<string, unknown>)
-    } catch {
-      // silently ignore
-    }
+    } catch (err) { console.warn('[Experiências] Falha ao converter bucket list em viagem:', err) }
   }
 
   if (loading) {
