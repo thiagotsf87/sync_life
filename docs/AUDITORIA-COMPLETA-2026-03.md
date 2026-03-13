@@ -80,9 +80,9 @@
 | Qualidade Codigo | **7/10** | 4 paginas >1000 linhas refatoradas em 46 componentes. Hooks mantidos por pragmatismo |
 | Testes | **5/10** | 69 testes unitarios (score + XP engines) via Vitest. Sem testes de integracao |
 | DevOps | **5/10** | Deploy Vercel OK, rate limiting OK, Sentry monitoring configurado. Pendente: CI/CD, staging |
-| Monetizacao | **2/10** | Interfaces existem (ProGate, usePlanLimits) mas tudo retorna `true` |
+| Monetizacao | **8/10** | Stripe integrado (checkout, portal, webhooks), ProGate ativo (3 modos), usePlanLimits real, plano page wired. Pendente: testes e2e do fluxo |
 
-**Media geral: 7.4/10** (era 6.9 apos Fase 1, 6.5 apos Fase 0, 6.2 antes dela)
+**Media geral: 7.8/10** (era 7.4 apos Fase 2, 6.9 apos Fase 1, 6.5 apos Fase 0, 6.2 antes dela)
 
 ---
 
@@ -485,14 +485,14 @@ O SyncLife nao tem um servidor Express, NestJS ou similar. O "backend" e compost
 | 2.4 | Migrar localStorage -> Supabase | **FREE** | **Feito** (dual-write + cache) |
 | 2.5 | TanStack Query (3 hooks piloto) | **FREE** | **Feito** |
 
-### FASE 3 — Monetizacao
+### FASE 3 — Monetizacao (CONCLUIDA - 13/Mar/2026)
 
-| # | Tarefa | Custo | Detalhe |
-|---|--------|-------|---------|
-| 3.1 | Stripe | **PAGO** | 2.9% + $0.30 por transacao. Sem mensalidade |
-| 3.2 | Logica real no usePlanLimits | **FREE** | Codigo |
-| 3.3 | Ativar ProGate | **FREE** | Codigo |
-| 3.4 | Pagina /pricing | **FREE** | Codigo |
+| # | Tarefa | Custo | Status |
+|---|--------|-------|--------|
+| 3.1 | Stripe (checkout, portal, webhooks) | **PAGO** (2.9% + $0.30/tx) | **Feito** |
+| 3.2 | Logica real no usePlanLimits | **FREE** | **Feito** |
+| 3.3 | Ativar ProGate | **FREE** | **Feito** |
+| 3.4 | Pagina /pricing + plano page wired | **FREE** | **Feito** |
 
 ### FASE 4 — DevOps
 
@@ -608,14 +608,37 @@ O SyncLife nao tem um servidor Express, NestJS ou similar. O "backend" e compost
 
 **Branch:** `auditoria-fase0-cleanup` | **Commits:** `d21bca0`, `23b8df5`, `000fc8b`, `517cde0` | **31 arquivos** criados/modificados | **Scorecard: 6.9 → 7.4/10**
 
-### FASE 3 — Monetizacao (2-3 semanas)
+### FASE 3 — Monetizacao (CONCLUIDA - 13/Mar/2026)
 
-| # | Tarefa | Impacto |
-|---|--------|---------|
-| 3.1 | Integrar Stripe (checkout, subscriptions, webhooks) | Receita |
-| 3.2 | Implementar logica real em `use-plan-limits.ts` | Gating funcional |
-| 3.3 | Ativar `ProGate` para bloquear features PRO | Conversao |
-| 3.4 | Criar pagina `/pricing` | Conversao |
+| # | Tarefa | Status |
+|---|--------|--------|
+| 3.1 | Integrar Stripe (checkout, portal, webhooks, migration 021) | **Feito** |
+| 3.2 | Implementar logica real em `use-user-plan.ts` e `use-plan-limits.ts` | **Feito** |
+| 3.3 | Ativar `ProGate` (3 modos: preview/inline/card) e `ProLimitGate` | **Feito** |
+| 3.4 | Criar `/pricing` redirect, wire plano page (checkout/portal/toasts), layout badge dinamico | **Feito** |
+
+**Arquivos criados (6):**
+- `supabase/migrations/021_billing_stripe.sql` — colunas Stripe em profiles (stripe_customer_id, stripe_subscription_id, subscription_status, trial_ends_at, current_period_end)
+- `lib/stripe.ts` — Stripe server client (API version 2026-02-25.clover) + price IDs
+- `api/billing/checkout/route.ts` — POST, Zod validation, lazy customer creation, trial 7 dias, pt-BR
+- `api/billing/portal/route.ts` — POST, redirect para Stripe Customer Portal
+- `api/webhooks/stripe/route.ts` — 4 eventos (checkout.session.completed, subscription.updated/deleted, invoice.payment_failed), signature verification, Supabase service role
+- `app/pricing/page.tsx` — redirect para /#precos
+
+**Arquivos modificados (9):**
+- `package.json` — +stripe dependency
+- `types/database.ts` — +5 campos Stripe em profiles (Row/Insert/Update)
+- `hooks/use-user-plan.ts` — reescrito: le plan_type/subscription real do Supabase
+- `hooks/use-plan-limits.ts` — reescrito: FEATURE_MAP (8 limites) + PRO_ONLY_FEATURES (5 features)
+- `components/ui/pro-gate.tsx` — ProGate (3 modos: blur+overlay, badge inline, card CTA) + ProLimitGate (count display + upgrade)
+- `configuracoes/plano/page.tsx` — checkout/portal integration, interval toggle mensal/anual, toast feedback, trial banner, usage section para FREE
+- `configuracoes/layout.tsx` — badge dinamico Free/Pro com cores diferenciadas
+- `lib/supabase/middleware.ts` — /pricing como rota publica
+- `lib/query-keys.ts` — billing namespace
+
+**Nova dependencia:** stripe (server-side SDK, sem @stripe/react-stripe-js)
+
+**Branch:** `auditoria-fase0-cleanup` | **Commits:** `a4736ce`, `bece0af`, `bcd6e10` | **15 arquivos** criados/modificados | **Scorecard: 7.4 → 7.8/10**
 
 ### FASE 4 — DevOps e Operacoes (1-2 semanas)
 
@@ -690,7 +713,7 @@ O ponto de atencao e que **100% da logica de negocio roda no browser** (334 cham
 3. ~~**Sem cache client**~~ — **Resolvido** (TanStack Query em 3 hooks piloto; demais hooks migram incrementalmente)
 4. ~~**Modularidade** — Paginas e hooks oversized precisam ser divididos~~ **Resolvido** (4 maiores paginas refatoradas, -69%)
 5. ~~**Observabilidade**~~ — **Resolvido** (Sentry client+server+edge, captureApiError em 5 routes, global-error.tsx)
-6. **Monetizacao** — Freemium existe na UI mas nao funciona
+6. ~~**Monetizacao** — Freemium existe na UI mas nao funciona~~ **Resolvido** (Stripe checkout/portal/webhooks, ProGate ativo, usePlanLimits real)
 7. **Testes** — 69 testes unitarios (score + XP engines); pendente badge engine e hooks de calculo
 8. **DevOps** — Sem CI/CD
 
@@ -716,4 +739,6 @@ O ponto de atencao e que **100% da logica de negocio roda no browser** (334 cham
 
 **Fase 2 concluida (13/Mar/2026):** 4 tarefas executadas. Vitest + 69 testes unitarios (score + XP engines), Sentry integrado (client/server/edge + 5 API routes + global error boundary), preferences migradas para Supabase (dual-write + in-memory cache + migration 020), TanStack Query em 3 hooks piloto (transactions, corpo, notifications). **16 arquivos criados, 15 modificados, 4 commits.**
 
-O app esta funcional e pode ir ao ar para beta testing. As Fases 3-4 preparam para lancamento publico com monetizacao.
+**Fase 3 concluida (13/Mar/2026):** 4 tarefas executadas. Stripe SDK integrado com checkout (trial 7 dias, pt-BR), Customer Portal e webhook handler (4 eventos com signature verification). useUserPlan reescrito para ler plan_type real do Supabase. usePlanLimits reescrito com FEATURE_MAP (8 limites contaveis) e PRO_ONLY_FEATURES (5 features on/off). ProGate ativado com 3 modos (preview blur, inline badge, card CTA) + ProLimitGate com contagem. Plano page wired com checkout/portal, toggle mensal/anual, toasts de feedback e banner de trial. Badge dinamico Free/Pro no layout de configuracoes. /pricing redirect criado. **6 arquivos criados, 9 modificados, 3 commits.**
+
+O app esta funcional e pronto para lancamento com monetizacao ativa. A Fase 4 prepara DevOps (CI/CD + staging).
