@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { captureApiError } from '@/lib/sentry-helpers'
 
 // Migrar para Claude: trocar apenas a linha do model
 const model = google('gemini-2.5-flash')
@@ -84,6 +85,7 @@ export async function POST(req: NextRequest) {
     return result.toTextStreamResponse()
   } catch (error) {
     console.error('[AI Viagem] Error:', error)
+    captureApiError('ai/viagem', error)
     return new Response('Erro ao consultar a IA. Tente novamente.', { status: 500 })
   }
 }

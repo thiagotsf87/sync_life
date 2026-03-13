@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { AlertTriangle, RotateCcw } from 'lucide-react'
+import * as Sentry from '@sentry/nextjs'
 
 export default function AppError({
   error,
@@ -12,6 +13,7 @@ export default function AppError({
 }) {
   useEffect(() => {
     console.error('[SyncLife Error]', error)
+    Sentry.captureException(error)
   }, [error])
 
   return (

@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { captureApiError } from '@/lib/sentry-helpers'
 
 // Migrar para Claude: trocar apenas a linha do model
 const model = google('gemini-2.5-flash')
@@ -87,6 +88,7 @@ Cada refeição principal (café, almoço, jantar) deve ter: nome, estimativa de
     return NextResponse.json(object)
   } catch (error) {
     console.error('[AI Cardápio] Error:', error)
+    captureApiError('ai/cardapio', error)
     return NextResponse.json({ error: 'AI generation failed' }, { status: 500 })
   }
 }

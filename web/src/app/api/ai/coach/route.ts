@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { captureApiError } from '@/lib/sentry-helpers'
 
 // Groq + Llama: velocidade alta, custo zero (free tier: 14.400 req/dia)
 // Migrar para Claude: trocar model por anthropic('claude-sonnet-4-5')
@@ -68,6 +69,7 @@ export async function POST(req: NextRequest) {
     return result.toTextStreamResponse()
   } catch (error) {
     console.error('[AI Coach] Error:', error)
+    captureApiError('ai/coach', error)
     return new Response('Erro ao consultar a IA. Tente novamente.', { status: 500 })
   }
 }

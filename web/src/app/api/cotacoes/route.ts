@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { captureApiError } from '@/lib/sentry-helpers'
 
 const BRAPI_BASE = 'https://brapi.dev/api'
 const CACHE_HOURS = 24
@@ -58,6 +59,7 @@ export async function GET(req: NextRequest) {
     })
   } catch (error) {
     console.error('[Cotações] Error:', error)
+    captureApiError('cotacoes', error)
     return NextResponse.json({ error: 'Failed to fetch quotes' }, { status: 500 })
   }
 }
