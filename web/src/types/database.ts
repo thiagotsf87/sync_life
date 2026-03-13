@@ -25,6 +25,11 @@ export interface Database {
           reduced_motion: boolean
           compact_numbers: boolean
           life_moments: Json
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_status: string
+          trial_ends_at: string | null
+          current_period_end: string | null
           created_at: string
           updated_at: string
         }
@@ -42,6 +47,11 @@ export interface Database {
           reduced_motion?: boolean
           compact_numbers?: boolean
           life_moments?: Json
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string
+          trial_ends_at?: string | null
+          current_period_end?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -59,6 +69,11 @@ export interface Database {
           reduced_motion?: boolean
           compact_numbers?: boolean
           life_moments?: Json
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string
+          trial_ends_at?: string | null
+          current_period_end?: string | null
           created_at?: string
           updated_at?: string
         }
