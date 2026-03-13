@@ -1,8 +1,10 @@
 import { createGroq } from '@ai-sdk/groq'
 // import { anthropic } from '@ai-sdk/anthropic'  // ← descomente ao migrar para produção
 import { streamText } from 'ai'
+import { z } from 'zod'
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 // Groq + Llama: velocidade alta, custo zero (free tier: 14.400 req/dia)
 // Migrar para Claude: trocar model por anthropic('claude-sonnet-4-5')
@@ -28,8 +30,30 @@ export async function POST(req: NextRequest) {
     return new Response('Serviço de IA indisponível. Configure a GROQ_API_KEY.', { status: 503 })
   }
 
+  const { allowed } = await checkRateLimit(user.id)
+  if (!allowed) {
+    return new Response(JSON.stringify({ error: 'Muitas requisições. Aguarde um momento.' }), { status: 429, headers: { 'Content-Type': 'application/json' } })
+  }
+
   try {
-    const { messages, healthProfile } = await req.json()
+    const body = await req.json()
+
+    const MessageSchema = z.object({
+      role: z.enum(['user', 'assistant']),
+      content: z.string().min(1).max(4000),
+    })
+
+    const InputSchema = z.object({
+      messages: z.array(MessageSchema).min(1).max(50),
+      healthProfile: z.record(z.string(), z.unknown()).optional(),
+    })
+
+    const parsed = InputSchema.safeParse(body)
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Dados inválidos', details: parsed.error.flatten().fieldErrors }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    }
+
+    const { messages, healthProfile } = parsed.data
 
     const systemWithProfile = healthProfile
       ? `${SYSTEM_PROMPT}\n\nPerfil de saúde do usuário:\n${JSON.stringify(healthProfile, null, 2)}`

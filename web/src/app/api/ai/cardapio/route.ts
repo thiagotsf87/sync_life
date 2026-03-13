@@ -4,6 +4,7 @@ import { generateObject } from 'ai'
 import { z } from 'zod'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 // Migrar para Claude: trocar apenas a linha do model
 const model = google('gemini-2.5-flash')
@@ -43,8 +44,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Serviço de IA indisponível. Configure a GOOGLE_GENERATIVE_AI_API_KEY.' }, { status: 503 })
   }
 
+  const { allowed } = await checkRateLimit(user.id)
+  if (!allowed) {
+    return NextResponse.json({ error: 'Muitas requisições. Aguarde um momento.' }, { status: 429 })
+  }
+
   const body = await req.json()
-  const { tdee, goal_type, dietary_restrictions = [], weekly_budget } = body
+
+  const InputSchema = z.object({
+    tdee: z.number().min(800).max(10000).optional().default(2000),
+    goal_type: z.enum(['lose', 'gain', 'maintain']).optional().default('maintain'),
+    dietary_restrictions: z.array(z.string().max(100)).max(20).optional().default([]),
+    weekly_budget: z.number().min(0).max(100000).optional(),
+  })
+
+  const parsed = InputSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Dados inválidos', details: parsed.error.flatten().fieldErrors },
+      { status: 400 },
+    )
+  }
+
+  const { tdee, goal_type, dietary_restrictions, weekly_budget } = parsed.data
 
   const prompt = `Gere um cardápio semanal saudável para uma pessoa com:
 - TDEE (calorias diárias): ${tdee || 2000} kcal

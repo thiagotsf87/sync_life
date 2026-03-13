@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
 const BRAPI_BASE = 'https://brapi.dev/api'
@@ -20,11 +21,18 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const tickers = searchParams.get('tickers')
 
-  if (!tickers) {
-    return NextResponse.json({ error: 'tickers param required' }, { status: 400 })
+  // Zod validation: ticker must be alphanumeric, max 10 chars, max 20 tickers
+  const TickerSchema = z.string().regex(/^[A-Za-z0-9]{1,10}$/)
+  const TickersSchema = z.string().min(1).transform(s =>
+    s.split(',').map(t => t.trim().toUpperCase())
+  ).pipe(z.array(TickerSchema).min(1).max(20))
+
+  const parsed = TickersSchema.safeParse(tickers)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Parâmetro tickers inválido. Use códigos alfanuméricos separados por vírgula (ex: PETR4,MXRF11).' }, { status: 400 })
   }
 
-  const tickerList = tickers.split(',').map(t => t.trim().toUpperCase())
+  const tickerList = parsed.data
 
   try {
     // Build brapi.dev URL

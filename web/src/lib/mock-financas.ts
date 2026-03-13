@@ -2,7 +2,7 @@
  * Mock data para o módulo Finanças — visual validation only.
  * Setar USE_MOCK = false para desativar e usar dados reais do Supabase.
  */
-export const USE_MOCK = true
+export const USE_MOCK = false
 
 // ─── CATEGORIAS ──────────────────────────────────────────────────────────────
 

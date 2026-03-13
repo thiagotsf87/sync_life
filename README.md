@@ -1,68 +1,76 @@
-# 🔄 SyncLife
+# SyncLife
 
-> **Sua vida inteira, organizada em um só lugar.**
+> Sua vida inteira, organizada em um só lugar.
 
-SyncLife é uma plataforma web (PWA) que centraliza a gestão de todos os aspectos da vida pessoal, oferecendo organização prática para quem busca eficiência e uma experiência de jornada para quem busca transformação.
-
----
-
-## 🎯 Visão
-
-Ser o **sistema operacional da vida pessoal** - um único lugar onde pessoas organizam finanças, metas, tempo e hábitos, com uma experiência que respeita quem quer praticidade e inspira quem busca evolução.
+SyncLife é uma plataforma web (PWA) que centraliza a gestão de todos os aspectos da vida pessoal — finanças, metas, tempo, saúde, carreira, patrimônio e experiências — em uma interface unificada com design system próprio e 12 temas visuais.
 
 ---
 
-## 🚀 Status do Projeto
+## Stack Tecnológica
 
-| Fase | Status | Descrição |
-|------|--------|-----------|
-| Documentação | ✅ Concluído | Visão, requisitos, arquitetura |
-| Protótipos HTML | 🔜 Próximo | Validação de layout |
-| MVP v1 | ⏳ Pendente | Core + Finanças básico |
-| MVP v2 | ⏳ Pendente | Features completas |
-
----
-
-## 📁 Documentação
-
-| Documento | Descrição |
-|-----------|-----------|
-| [01-VISAO-PRODUTO.md](docs/01-VISAO-PRODUTO.md) | Visão, público-alvo, proposta de valor |
-| [02-MVP-V1.md](docs/02-MVP-V1.md) | Escopo do MVP v1 (validação) |
-| [03-MVP-V2.md](docs/03-MVP-V2.md) | Escopo do MVP v2 (completo) |
-| [04-ARQUITETURA.md](docs/04-ARQUITETURA.md) | Stack, estrutura, modelo de dados |
-| [05-ROADMAP.md](docs/05-ROADMAP.md) | Cronograma e fases |
-| [06-MONETIZACAO.md](docs/06-MONETIZACAO.md) | Modelo de negócio |
+| Camada | Tecnologia |
+|--------|-----------|
+| Framework | Next.js 16.1 (App Router) |
+| Linguagem | TypeScript (strict) |
+| UI | React 19 + shadcn/ui (new-york) |
+| Estilo | Tailwind CSS v4 |
+| Gráficos | Recharts |
+| Backend / Auth / DB | Supabase (SSR + RLS) |
+| IA | Vercel AI SDK + Google Gemini + Groq Llama |
+| Deploy | Vercel |
+| PWA | Service Worker + Manifest |
 
 ---
 
-## 🛠️ Stack Tecnológica
+## Módulos (11)
 
-- **Frontend**: Next.js 14+ (App Router)
-- **Styling**: TailwindCSS + shadcn/ui
-- **Backend/Auth/DB**: Supabase
-- **Deploy**: Vercel
-- **Custo inicial**: R$ 0 (free tiers)
-
----
-
-## 📊 Módulos Planejados
-
-| Módulo | MVP v1 | MVP v2 | Futuro |
-|--------|--------|--------|--------|
-| 💰 Finanças | ✅ Básico | ✅ Completo | - |
-| 🎯 Metas | - | - | v3 |
-| 📅 Agenda | - | - | v4 |
-| 🏃 Saúde | - | - | v5+ |
-| 📚 Estudos | - | - | v5+ |
+| Módulo | Rota | Descrição |
+|--------|------|-----------|
+| Panorama | `/dashboard` | Dashboard central, score, XP, conquistas |
+| Finanças | `/financas` | Transações, orçamentos, recorrentes, planejamento, calendário, relatórios |
+| Futuro | `/futuro` | Objetivos de vida com progresso e milestones |
+| Tempo | `/tempo` | Agenda, calendário semanal/mensal, blocos de foco, review |
+| Corpo | `/corpo` | Atividades, peso/medidas, cardápio IA, saúde preventiva, coach IA |
+| Mente | `/mente` | Trilhas de aprendizado, timer, sessões, biblioteca |
+| Patrimônio | `/patrimonio` | Carteira de investimentos, proventos, evolução, simulador IF |
+| Carreira | `/carreira` | Perfil profissional, roadmap, habilidades, histórico |
+| Experiências | `/experiencias` | Viagens, passaporte, memórias, bucket list, assistente IA |
+| Conquistas | `/conquistas` | Badges, ranking, sistema de gamificação |
+| Configurações | `/configuracoes` | Perfil, aparência (12 temas), notificações, categorias, integrações, plano |
 
 ---
 
-## 🏃 Quick Start
+## Engines de Gamificação
+
+- **Score Engine** — Life Sync Score calculado em 8 dimensões com pesos por módulo
+- **Badge Engine** — 20+ evaluators que desbloqueiam conquistas automaticamente
+- **XP System** — 21 ações rastreadas, sistema de levels progressivo
+
+---
+
+## APIs de IA
+
+| Rota | Provider | Função |
+|------|----------|--------|
+| `/api/ai/cardapio` | Google Gemini | Geração de cardápio semanal personalizado |
+| `/api/ai/coach` | Groq Llama 3.3 | Coach de saúde e bem-estar (streaming) |
+| `/api/ai/financas` | Google Gemini | Consultor financeiro personalizado (streaming) |
+| `/api/ai/viagem` | Google Gemini | Assistente de planejamento de viagens (streaming) |
+| `/api/cotacoes` | brapi.dev | Cotações de ativos (cache 24h) |
+
+---
+
+## Quick Start
 
 ```bash
-# Instalação (quando o código estiver pronto)
+# Instalar dependências
+cd web
 npm install
+
+# Configurar variáveis de ambiente
+cp .env.example .env.local
+# Preencher: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
+#            GOOGLE_GENERATIVE_AI_API_KEY, GROQ_API_KEY
 
 # Desenvolvimento
 npm run dev
@@ -73,10 +81,47 @@ npm run build
 
 ---
 
-## 📝 Licença
+## Estrutura de Pastas
+
+```
+web/
+├── src/
+│   ├── app/
+│   │   ├── (app)/          ← telas autenticadas (11 módulos)
+│   │   ├── (auth)/         ← login, cadastro, forgot-password
+│   │   ├── api/            ← API routes (IA + cotações)
+│   │   └── globals.css     ← design tokens + temas
+│   ├── components/
+│   │   ├── ui/             ← shadcn/ui + componentes base SyncLife
+│   │   └── [módulo]/       ← componentes específicos por módulo
+│   ├── hooks/              ← 29 hooks customizados
+│   ├── lib/                ← utilitários, Supabase client, engines
+│   ├── stores/             ← Zustand stores
+│   └── types/              ← TypeScript types
+├── supabase/
+│   └── migrations/         ← 19 migrations SQL
+└── public/
+    ├── manifest.json       ← PWA manifest
+    └── sw.js               ← Service Worker
+```
+
+---
+
+## Documentação
+
+| Documento | Descrição |
+|-----------|-----------|
+| `CLAUDE.md` | Guia de desenvolvimento, design system, convenções |
+| `DESIGN-SYSTEM.md` | Tokens, cores, tipografia, componentes |
+| `docs/SPEC-FUNCIONAL-*.md` | Specs funcionais por módulo (6 documentos) |
+| `docs/PENDENCIAS-REGRAS-NEGOCIO.md` | Backlog de 199 regras de negócio auditadas |
+
+---
+
+## Licença
 
 Projeto privado. Todos os direitos reservados.
 
 ---
 
-*Última atualização: Fevereiro 2026*
+*Última atualização: Março 2026*

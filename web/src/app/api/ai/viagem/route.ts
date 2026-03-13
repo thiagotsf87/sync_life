@@ -1,8 +1,10 @@
 import { google } from '@ai-sdk/google'
 // import { anthropic } from '@ai-sdk/anthropic'  // ← descomente ao migrar para produção
 import { streamText } from 'ai'
+import { z } from 'zod'
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 // Migrar para Claude: trocar apenas a linha do model
 const model = google('gemini-2.5-flash')
@@ -44,8 +46,30 @@ export async function POST(req: NextRequest) {
     return new Response('Serviço de IA indisponível. Configure a GOOGLE_GENERATIVE_AI_API_KEY.', { status: 503 })
   }
 
+  const { allowed } = await checkRateLimit(user.id)
+  if (!allowed) {
+    return new Response(JSON.stringify({ error: 'Muitas requisições. Aguarde um momento.' }), { status: 429, headers: { 'Content-Type': 'application/json' } })
+  }
+
   try {
-    const { messages, context } = await req.json()
+    const body = await req.json()
+
+    const MessageSchema = z.object({
+      role: z.enum(['user', 'assistant']),
+      content: z.string().min(1).max(4000),
+    })
+
+    const InputSchema = z.object({
+      messages: z.array(MessageSchema).min(1).max(50),
+      context: z.record(z.string(), z.unknown()).optional(),
+    })
+
+    const parsed = InputSchema.safeParse(body)
+    if (!parsed.success) {
+      return new Response(JSON.stringify({ error: 'Dados inválidos', details: parsed.error.flatten().fieldErrors }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    }
+
+    const { messages, context } = parsed.data
 
     const systemWithContext = context
       ? `${SYSTEM_PROMPT}\n\nContexto da viagem atual:\n${JSON.stringify(context, null, 2)}`

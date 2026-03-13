@@ -17,6 +17,7 @@
 | Formulários  | react-hook-form + zod              |
 | Backend/Auth | Supabase (SSR)                     |
 | Gráficos     | recharts                           |
+| IA           | Vercel AI SDK + Google Gemini + Groq |
 | Deploy       | Vercel                             |
 
 ---
@@ -28,7 +29,8 @@ web/
 ├── src/
 │   ├── app/               ← App Router (pages, layouts, API routes)
 │   │   ├── (auth)/        ← login, cadastro, forgot-password
-│   │   ├── (dashboard)/   ← telas autenticadas
+│   │   ├── (app)/         ← telas autenticadas (11 módulos)
+│   │   ├── api/           ← API routes (IA + cotações)
 │   │   └── globals.css    ← tokens de cor SyncLife + Tailwind base
 │   ├── components/
 │   │   ├── ui/            ← componentes shadcn/ui (não editar diretamente)
@@ -36,9 +38,32 @@ web/
 │   ├── lib/
 │   │   ├── supabase/      ← client, server, middleware
 │   │   └── utils.ts       ← cn() e outros utilitários
-│   └── hooks/             ← custom hooks
+│   ├── hooks/             ← custom hooks (29)
+│   ├── stores/            ← Zustand stores
+│   ├── styles/            ← themes.css (12 temas)
+│   └── types/             ← TypeScript types
+├── supabase/
+│   └── migrations/        ← migrations SQL (19)
 └── CLAUDE.md              ← este arquivo
 ```
+
+---
+
+## Módulos (11)
+
+| Módulo | Rota base | Cor |
+|--------|-----------|-----|
+| Panorama | `/dashboard` | `#6366f1` |
+| Finanças | `/financas` | `#10b981` |
+| Futuro | `/futuro` | `#8b5cf6` |
+| Tempo | `/tempo` | `#06b6d4` |
+| Corpo | `/corpo` | `#f97316` |
+| Mente | `/mente` | `#eab308` |
+| Patrimônio | `/patrimonio` | `#3b82f6` |
+| Carreira | `/carreira` | `#f43f5e` |
+| Experiências | `/experiencias` | `#ec4899` |
+| Conquistas | `/conquistas` | `#f59e0b` |
+| Configurações | `/configuracoes` | `#64748b` |
 
 ---
 
@@ -50,24 +75,33 @@ web/
 4. **Imports absolutos** com `@/` — nunca `../../`.
 5. **shadcn/ui primeiro** — antes de criar um componente do zero, verificar se existe em `@/components/ui/`.
 6. **Fontes**: Syne (títulos/display), DM Mono (valores monetários e %). Outfit é a fonte base do body desktop. **DM Sans** é a fonte base do body mobile (< 1024px, aplicada via media query no globals.css). Adicionar `font-[Syne]` e `font-[DM_Mono]` via Tailwind quando necessário.
+7. **Zod em API routes** — todo body de POST deve ser validado com Zod schema antes de processar.
 
 ---
 
 ## Design System SyncLife
 
-### Identidade visual
+### Sistema de temas
 
-O SyncLife tem **duas personalidades** e **dois temas** — formando 4 combinações:
+O SyncLife usa **12 temas** controlados via atributo `data-theme` no `<html>`:
 
-| Modo    | Tema  | Classe no `<body>` ou `<html>` |
-|---------|-------|--------------------------------|
-| Foco    | Dark  | *(nenhuma)* — padrão           |
-| Jornada | Dark  | `jornada`                      |
-| Foco    | Light | `light`                        |
-| Jornada | Light | `light jornada`                |
+| Tema | Tipo | ID |
+|------|------|----|
+| Navy Dark | Dark | `navy-dark` |
+| Obsidian | Dark | `obsidian` |
+| Rosewood | Dark | `rosewood` |
+| Graphite | Dark | `graphite` |
+| Twilight | Dark | `twilight` |
+| Carbon | Dark | `carbon` |
+| Clean Light | Light | `clean-light` |
+| Mint Garden | Light | `mint-garden` |
+| Arctic | Light | `arctic` |
+| Sahara | Light | `sahara` |
+| Blossom | Light | `blossom` |
+| Serenity | Light | `serenity` |
 
-**Foco** = analítico, denso, sem elementos motivacionais.  
-**Jornada** = motivacional, narrativo, com score, conquistas e IA.
+Temas definidos em `web/src/styles/themes.css`. Tipos em `web/src/types/shell.ts` (`ThemeId`).
+Tema selecionado via Zustand store (`shell-store.ts`) e persistido no profile do usuário.
 
 ### Cores de marca (invariantes em todos os temas)
 
@@ -90,22 +124,26 @@ No Tailwind, usar as classes geradas pelos tokens do `globals.css`:
 Usar via CSS variables — o tema atual define o valor automaticamente:
 
 ```tsx
-// ✅ Correto — adapta ao tema
+// Correto — adapta ao tema
 <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)]">
 
-// ❌ Errado — hardcoded, não adapta ao tema
+// Errado — hardcoded, não adapta ao tema
 <div className="bg-[#07112b] border border-white/10">
 ```
 
-| Variable      | Dark Foco  | Dark Jornada | Light Foco | Light Jornada |
-|---------------|-----------|--------------|------------|---------------|
-| `--sl-bg`     | `#03071a` | `#020d08`    | `#e6edf5`  | `#c8f0e4`     |
-| `--sl-s1`     | `#07112b` | `#061410`    | `#ffffff`  | `#ffffff`     |
-| `--sl-s2`     | `#0c1a3a` | `#0b1e18`    | `#f0f6fa`  | `#e0f7ef`     |
-| `--sl-s3`     | `#132248` | `#112b22`    | `#dde8f2`  | `#c4eede`     |
-| `--sl-t1`     | `#dff0ff` | `#d6faf0`    | `#03071a`  | `#022016`     |
-| `--sl-t2`     | `#6e90b8` | `#4da888`    | `#1e3a5c`  | `#0d5c3e`     |
-| `--sl-t3`     | `#2e4a6e` | `#235c48`    | `#5a7a9e`  | `#4da888`     |
+Principais variáveis (valores variam por tema):
+
+| Variable | Propósito |
+|----------|-----------|
+| `--sl-bg` | Background da página |
+| `--sl-s1` | Superfície de cards |
+| `--sl-s2` | Superfície secundária (hover, inputs) |
+| `--sl-s3` | Superfície terciária (backgrounds de barras) |
+| `--sl-t1` | Texto primário |
+| `--sl-t2` | Texto secundário |
+| `--sl-t3` | Texto terciário (labels, placeholders) |
+| `--sl-border` | Borda padrão |
+| `--sl-border-h` | Borda em hover |
 
 ### Cores de status (fixas)
 
@@ -152,24 +190,23 @@ function getProgressColor(pct: number): string {
 
 ## Estrutura padrão de tela
 
-**Toda tela autenticada segue esta anatomia — sem exceções:**
+**Toda tela autenticada segue esta anatomia:**
 
 ```tsx
 export default function NomeDaTela() {
   return (
     <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
-      {/* ① Topbar */}
+      {/* 1. Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
         <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)]">
-          🎯 Nome da Tela
+          Nome da Tela
         </h1>
         <div className="flex-1" />
-        {/* Pills de filtro opcional */}
         <button className="btn-primary">+ Nova Ação</button>
       </div>
 
-      {/* ② Summary Strip — 4 KPI cards */}
+      {/* 2. Summary Strip — 4 KPI cards */}
       <div className="grid grid-cols-4 gap-3 mb-5 max-sm:grid-cols-2">
         <KpiCard label="Receitas" value="R$ 5.000" delta="+12%" accent="#10b981" />
         <KpiCard label="Despesas" value="R$ 3.200" delta="-5%"  accent="#f43f5e" />
@@ -177,10 +214,7 @@ export default function NomeDaTela() {
         <KpiCard label="Metas"    value="3 ativas" delta="1 em risco" accent="#f59e0b" />
       </div>
 
-      {/* ③ Jornada Insight — oculto no Foco via CSS */}
-      <JornadaInsight text="Você economizou R$ 180 em Alimentação este mês." />
-
-      {/* ④ Conteúdo principal */}
+      {/* 3. Conteúdo principal */}
       <div className="grid grid-cols-[1fr_340px] gap-4 mb-4 max-lg:grid-cols-1">
         <div className="flex flex-col gap-4">
           {/* Coluna principal */}
@@ -190,15 +224,11 @@ export default function NomeDaTela() {
         </div>
       </div>
 
-      {/* ⑤ Bottom grid — 3 colunas */}
+      {/* 4. Bottom grid — 3 colunas */}
       <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
         <SLCard>...</SLCard>
         <SLCard>...</SLCard>
-        {/* Foco: dados/histórico. Jornada: conquistas */}
-        <FocoJornadaSwitch
-          foco={<HistoricoCard />}
-          jornada={<ConquistasCard />}
-        />
+        <SLCard>...</SLCard>
       </div>
 
     </div>
@@ -226,8 +256,6 @@ export function SLCard({ children, className, hover = true }: SLCardProps) {
       'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5',
       'sl-fade-up',
       hover && 'transition-colors hover:border-[var(--sl-border-h)]',
-      // Sombra no light mode
-      'dark:shadow-none shadow-sm',
       className
     )}>
       {children}
@@ -259,7 +287,6 @@ export function KpiCard({ label, value, delta, deltaType = 'neutral', accent = '
   return (
     <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 overflow-hidden
                     transition-colors hover:border-[var(--sl-border-h)] sl-fade-up">
-      {/* Barra de acento no topo */}
       <div
         className="absolute top-0 left-5 right-5 h-0.5 rounded-b"
         style={{ background: accent }}
@@ -278,56 +305,12 @@ export function KpiCard({ label, value, delta, deltaType = 'neutral', accent = '
 }
 ```
 
-### JornadaInsight — bloco de IA (invisível no Foco)
-
-```tsx
-// components/ui/jornada-insight.tsx
-// Visibilidade controlada por CSS: oculto por padrão, visível em body.jornada
-
-export function JornadaInsight({ text }: { text: React.ReactNode }) {
-  return (
-    // A classe 'jornada-insight' é definida no globals.css:
-    // .jornada-insight { display: none }
-    // body.jornada .jornada-insight { display: flex }
-    <div className="jornada-insight mb-4 hidden items-start gap-3 p-4
-                    bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/9
-                    border border-[#10b981]/20 rounded-[18px] sl-fade-up
-                    [.jornada_&]:flex">
-      <span className="text-lg mt-0.5 shrink-0">💡</span>
-      <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed">{text}</p>
-    </div>
-  )
-}
-```
-
-### FocoJornadaSwitch — renderiza conteúdo diferente por modo
-
-```tsx
-// components/ui/foco-jornada-switch.tsx
-export function FocoJornadaSwitch({
-  foco,
-  jornada,
-}: {
-  foco: React.ReactNode
-  jornada: React.ReactNode
-}) {
-  return (
-    <>
-      {/* Visível apenas no Foco */}
-      <div className="[.jornada_&]:hidden">{foco}</div>
-      {/* Visível apenas no Jornada */}
-      <div className="hidden [.jornada_&]:block">{jornada}</div>
-    </>
-  )
-}
-```
-
 ### ProgressBar — barra de progresso com cor automática
 
 ```tsx
 // components/ui/progress-bar.tsx
 interface ProgressBarProps {
-  value: number  // 0–100
+  value: number  // 0-100
   variant?: 'budget' | 'goal' | 'habit'
   height?: string
 }
@@ -341,7 +324,6 @@ function getColor(value: number, variant: string): string {
 
 export function ProgressBar({ value, variant = 'budget', height = '5px' }: ProgressBarProps) {
   const color = getColor(value, variant)
-  const isGradient = variant === 'goal'
 
   return (
     <div className="w-full bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height }}>
@@ -361,129 +343,13 @@ export function ProgressBar({ value, variant = 'budget', height = '5px' }: Progr
 
 ```tsx
 // components/ui/ring-progress.tsx
-// dasharray = 2 * π * r   (r=44 → 276,  r=32 → 201)
-// dashoffset = dasharray * (1 - pct/100)
-
 interface RingProgressProps {
-  value: number    // 0–100
+  value: number    // 0-100
   size?: number    // px, default 110
   strokeWidth?: number  // default 8
   color?: string
   gradient?: boolean
   label?: string   // texto abaixo do percentual
-}
-
-export function RingProgress({
-  value,
-  size = 110,
-  strokeWidth = 8,
-  color = '#10b981',
-  gradient = false,
-  label,
-}: RingProgressProps) {
-  const r = (size / 2) - strokeWidth
-  const dasharray = 2 * Math.PI * r
-  const dashoffset = dasharray * (1 - value / 100)
-  const gradId = `ring-grad-${Math.random().toString(36).slice(2)}`
-
-  return (
-    <div className="relative inline-flex justify-center items-center" style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
-        {gradient && (
-          <defs>
-            <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#10b981" />
-              <stop offset="100%" stopColor="#0055ff" />
-            </linearGradient>
-          </defs>
-        )}
-        <circle cx={size/2} cy={size/2} r={r} fill="none"
-          stroke="var(--sl-s3)" strokeWidth={strokeWidth} />
-        <circle cx={size/2} cy={size/2} r={r} fill="none"
-          stroke={gradient ? `url(#${gradId})` : color}
-          strokeWidth={strokeWidth} strokeLinecap="round"
-          style={{ strokeDasharray: dasharray, strokeDashoffset: dashoffset,
-                   transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)' }} />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
-        <span className={cn(
-          'font-[Syne] font-extrabold leading-none',
-          gradient ? 'text-sl-grad' : '',
-          size > 90 ? 'text-2xl' : 'text-lg'
-        )} style={!gradient ? { color } : undefined}>
-          {value}%
-        </span>
-        {label && (
-          <span className="text-[9px] uppercase tracking-wider text-[var(--sl-t3)]">{label}</span>
-        )}
-      </div>
-    </div>
-  )
-}
-```
-
----
-
-## Regras Foco vs Jornada
-
-### No Foco
-- Título da tela: texto simples, cor `--sl-t1`
-- Sem Life Sync Score
-- Sem streak badge
-- Insight IA: stats compactos (números, sem narrativa)
-- Bottom card lateral: histórico / resumo de dados
-- Sem badges de conquista
-- Tom: preciso, analítico, neutro
-
-### No Jornada
-- Título da tela: **gradiente Esmeralda → Azul** (`text-sl-grad`)
-- Life Sync Score: card hero com número grande e gradiente
-- Streak badge no header: `🔥 7 dias`
-- Insight IA: parágrafo narrativo com highlights coloridos
-- Campo de pergunta "Pergunte algo..." no bloco de insight
-- Bottom card lateral: conquistas/badges
-- Cards de meta: tip contextual colorida
-- Tom: motivacional, pessoal, celebrativo
-
-### CSS para alternar por modo
-
-```tsx
-// Visível apenas no Foco
-<div className="[.jornada_&]:hidden">...</div>
-
-// Visível apenas no Jornada
-<div className="hidden [.jornada_&]:block">...</div>
-
-// Título que muda de estilo
-<h1 className={cn(
-  'font-[Syne] font-extrabold text-2xl',
-  isJornada ? 'text-sl-grad' : 'text-[var(--sl-t1)]'
-)}>
-  {isJornada ? `Boa tarde, ${user.name}! ✨` : 'Dashboard'}
-</h1>
-```
-
----
-
-## Ícones por módulo
-
-```tsx
-const MODULE_ICONS = {
-  financas:      { icon: '🐷', color: '#10b981' },
-  metas:         { icon: '🎯', color: '#0055ff' },
-  agenda:        { icon: '📅', color: '#06b6d4' },
-  saude:         { icon: '🏥', color: '#f97316' },
-  estudos:       { icon: '📚', color: '#a855f7' },
-  carreira:      { icon: '💼', color: '#f59e0b' },
-  investimentos: { icon: '📈', color: '#10b981' },
-  receitas:      { icon: '💰', color: '#10b981' },
-  despesas:      { icon: '📤', color: '#f43f5e' },
-  recorrentes:   { icon: '🔄', color: '#f97316' },
-  reserva:       { icon: '🛡️', color: '#0055ff' },
-  streak:        { icon: '🔥', color: '#f97316' },
-  conquistas:    { icon: '🏆', color: '#f59e0b' },
-  ia:            { icon: '💡', color: '#10b981' },
-  score:         { icon: '⭐', color: '#10b981' },
 }
 ```
 
@@ -506,32 +372,42 @@ const supabase = createClient()
 
 ---
 
+## APIs de IA
+
+| Rota | Provider | Validação |
+|------|----------|-----------|
+| `/api/ai/cardapio` | Google Gemini | Zod input + output schema |
+| `/api/ai/coach` | Groq Llama 3.3 | Zod input schema |
+| `/api/ai/financas` | Google Gemini | Zod input schema |
+| `/api/ai/viagem` | Google Gemini | Zod input schema |
+| `/api/cotacoes` | brapi.dev | Zod ticker validation |
+
+Todas as APIs de IA exigem autenticação Supabase e verificam env vars.
+Para migrar para Anthropic Claude: trocar apenas a linha do `model` em cada route handler.
+
+---
+
 ## Checklist antes de entregar qualquer tela
 
 - [ ] TypeScript sem erros (`tsc --noEmit`)
-- [ ] Funciona nos 4 modos: Dark Foco, Dark Jornada, Light Foco, Light Jornada
-- [ ] Segue anatomia: topbar → sum-strip → insight → conteúdo → bottom-grid
+- [ ] Visual correto nos 12 temas (testar ao menos 1 dark + 1 light)
+- [ ] Segue anatomia: topbar → sum-strip → conteúdo → bottom-grid
 - [ ] Valores monetários e % em `font-[DM_Mono]`
 - [ ] Títulos em `font-[Syne] font-extrabold`
-- [ ] Cores de barra seguem regra: ≤70% verde, 70–85% amarelo, >85% vermelho, metas gradiente
-- [ ] `JornadaInsight` presente e oculto no Foco
-- [ ] Bottom card alterna conteúdo por modo (dados vs conquistas)
+- [ ] Cores de barra seguem regra: <=70% verde, 70-85% amarelo, >85% vermelho, metas gradiente
 - [ ] Animações `sl-fade-up` nos cards com delays `sl-delay-1` a `sl-delay-5`
 - [ ] Hover de card: `hover:border-[var(--sl-border-h)]`
 - [ ] Responsivo: colapsa para 1 coluna em `max-lg` (grid principal) e `max-sm` (KPIs)
 - [ ] Lucide React para ícones UI (setas, fechar, menu) — emojis só para módulos e categoria
 - [ ] Nenhum `console.log` ou `any` em produção
+- [ ] API routes com Zod validation no body
 
 ---
 
 ## Referências visuais
 
-Os protótipos HTML (na raiz do projeto) mostram exatamente como cada componente deve ficar visualmente. Consulte-os quando tiver dúvida sobre aparência:
+Os protótipos HTML mostram exatamente como cada componente deve ficar visualmente:
 
-- `proto-dashboard.html` — Dashboard completo (Foco e Jornada)
-- `proto-planejamento-v2.html` — Planejamento futuro com timeline
-- `proto-metas.html` — Tela de metas com anéis de progresso
-- `proto-navigation-v3.html` — Navegação + temas + estrutura geral
 - `synclife-design-system.html` — Design System completo (abrir no browser)
 - `DESIGN-SYSTEM.md` — Documentação de tokens e regras
 
@@ -546,4 +422,4 @@ Os protótipos HTML (na raiz do projeto) mostram exatamente como cada componente
     ]
   }
 }
-*SyncLife CLAUDE.md v1.0 — atualizar ao criar novos padrões globais*
+*SyncLife CLAUDE.md v2.0 — atualizado Mar 2026 (12 temas, sem Foco/Jornada)*
