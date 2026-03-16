@@ -4,38 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Mail, CheckCircle, ArrowRight } from 'lucide-react'
-
-function StepDots({ active }: { active: number }) {
-  return (
-    <div className="flex items-center justify-center gap-2 mb-6 lg:hidden">
-      {[1, 2].map((step) => (
-        <div
-          key={step}
-          className="h-[6px] rounded-full transition-all duration-300"
-          style={{
-            width: step === active ? 20 : 6,
-            background: step === active ? 'var(--em)' : 'var(--s3)',
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-function StepIcon({ emoji }: { emoji: string }) {
-  return (
-    <div
-      className="mx-auto mb-4 flex h-[56px] w-[56px] items-center justify-center rounded-full lg:hidden"
-      style={{
-        background: 'rgba(16,185,129,0.1)',
-        border: '1px solid rgba(16,185,129,0.2)',
-      }}
-    >
-      <span className="text-2xl">{emoji}</span>
-    </div>
-  )
-}
+import { ChevronLeft, Lock, Check, Clock, Mail, ArrowRight } from 'lucide-react'
 
 export default function EsqueceuSenhaPage() {
   const [email, setEmail] = useState('')
@@ -59,65 +28,106 @@ export default function EsqueceuSenhaPage() {
     }
   }
 
-  if (isEmailSent) {
-    return (
-      <>
-        <StepDots active={2} />
-        <div className="auth-success-icon">
-          <CheckCircle size={28} />
-        </div>
-        <h2 className="auth-success-title">E-mail enviado!</h2>
-        <p className="auth-success-sub">
-          Enviamos um link de recuperação para{' '}
-          <strong style={{ color: 'var(--t1)' }}>{email}</strong>.
-          {' '}Verifique sua caixa de entrada e spam.
-        </p>
-        <Link href="/login">
-          <button className="btn-submit">
-            Voltar para o login <ArrowRight size={16} />
-          </button>
-        </Link>
-      </>
-    )
-  }
-
   return (
-    <>
-      <StepDots active={1} />
-      <StepIcon emoji="📧" />
+    <div className="recover-layout">
+      {/* Back to login */}
+      <div className="recover-back">
+        <Link href="/login" className="btn-ghost-recover">
+          <ChevronLeft size={14} />
+          Voltar ao login
+        </Link>
+      </div>
 
-      <h2 className="form-title max-[900px]:text-center">Esqueceu a senha?</h2>
-      <p className="form-subtitle max-[900px]:text-center">
-        Digite seu e-mail e enviaremos um link para redefinir sua senha.
-      </p>
+      {isEmailSent ? (
+        /* ══ Step 2: Email Sent ══ */
+        <div className="recover-card anim">
+          <div className="recover-steps">
+            <div className="recover-step active" />
+            <div className="recover-step active" />
+            <div className="recover-step" />
+          </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label className="form-label" htmlFor="email">E-mail</label>
-          <div className="input-wrap">
-            <span className="input-icon"><Mail size={16} /></span>
-            <input
-              id="email"
-              type="email"
-              className="form-input"
-              placeholder="seu@email.com"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+          <div className="recover-success">
+            <div className="check-circle">
+              <Check size={28} strokeWidth={2.5} />
+            </div>
+            <h1>E-mail enviado!</h1>
+            <div className="subtitle">
+              Enviamos um link de recuperacao para{' '}
+              <strong style={{ color: 'var(--t1)' }}>{email}</strong>.
+              {' '}Verifique sua caixa de entrada e spam.
+            </div>
+
+            <div className="recover-info-box">
+              <div className="recover-info-item">
+                <Clock size={16} />
+                <span>O link expira em <strong style={{ color: 'var(--t1)' }}>30 minutos</strong></span>
+              </div>
+              <div className="recover-info-item">
+                <Mail size={16} />
+                <span>Verifique tambem a pasta de spam</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="btn-ghost-full"
+              onClick={() => setIsEmailSent(false)}
+            >
+              Reenviar e-mail
+            </button>
           </div>
         </div>
+      ) : (
+        /* ══ Step 1: Enter Email ══ */
+        <div className="recover-card anim">
+          <div className="recover-steps">
+            <div className="recover-step active" />
+            <div className="recover-step" />
+            <div className="recover-step" />
+          </div>
 
-        <button type="submit" className="btn-submit" disabled={isLoading}>
-          {isLoading ? 'Enviando...' : <>Enviar link de recuperação <ArrowRight size={16} /></>}
-        </button>
-      </form>
+          <div className="recover-icon">
+            <Lock size={24} />
+          </div>
+          <h1>Esqueceu sua senha?</h1>
+          <div className="subtitle">
+            Informe seu e-mail e enviaremos um link para redefinir sua senha.
+          </div>
 
-      <p className="auth-footer-link">
-        Lembrou a senha?{' '}
-        <Link href="/login">Fazer login</Link>
-      </p>
-    </>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="email">E-mail cadastrado</label>
+              <input
+                id="email"
+                type="email"
+                className="form-input"
+                placeholder="seu@email.com"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn-submit"
+              style={{ marginTop: 8 }}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Enviando...' : (
+                <>Enviar link de recuperacao <ArrowRight size={16} /></>
+              )}
+            </button>
+          </form>
+
+          <div className="recover-footer-link">
+            <span>Lembrou a senha? </span>
+            <Link href="/login">Voltar ao login</Link>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

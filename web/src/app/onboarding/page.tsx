@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { ChevronLeft, ArrowRight, Info, Check } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ArrowRight, Info, Check } from 'lucide-react'
 import { SyncLifeIcon } from '@/components/shell/icons'
 import { OnboardingMobile } from '@/components/onboarding/OnboardingMobile'
 
@@ -465,7 +465,7 @@ export default function OnboardingPage() {
                           <div className="celeb-action-title">{action.title}</div>
                           <div className="celeb-action-desc">{action.desc}</div>
                         </div>
-                        <ChevronLeft size={14} style={{ color: 'var(--t3)', transform: 'rotate(180deg)' }} />
+                        <ChevronRight size={14} style={{ color: 'var(--t3)' }} />
                       </div>
                     ))}
                   </div>

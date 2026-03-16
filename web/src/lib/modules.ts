@@ -44,6 +44,7 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
     navItems: [
       { id: 'futuro-objetivos', label: 'Objetivos', icon: 'Target', href: '/futuro' },
       { id: 'futuro-novo', label: 'Novo Objetivo', icon: 'Plus', href: '/futuro/novo' },
+      { id: 'futuro-checkin', label: 'Check-in', icon: 'ClipboardCheck', href: '/futuro/checkin' },
     ],
   },
   tempo: {
