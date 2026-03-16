@@ -2,16 +2,16 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, BookOpen, Brain, Check, Pause } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import {
   useStudyTracks, useCreateTrack, useUpdateTrack, useDeleteTrack, useToggleStep,
-  type TrackStatus, type StudyTrackStep,
+  type TrackStatus, type TrackCategory, type StudyTrackStep,
+  CATEGORY_LABELS, STATUS_LABELS,
 } from '@/hooks/use-mente'
-import { STATUS_LABELS } from '@/hooks/use-mente'
-import { TrackCard } from '@/components/mente/TrackCard'
 import { TrackWizard } from '@/components/mente/TrackWizard'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 
@@ -20,10 +20,32 @@ type FilterStatus = 'all' | TrackStatus
 const STATUS_TABS: { value: FilterStatus; label: string }[] = [
   { value: 'all', label: 'Todas' },
   { value: 'in_progress', label: 'Em andamento' },
-  { value: 'completed', label: 'Concluídas' },
+  { value: 'completed', label: 'Concluidas' },
   { value: 'paused', label: 'Pausadas' },
   { value: 'abandoned', label: 'Abandonadas' },
 ]
+
+const CATEGORY_COLORS: Record<string, string> = {
+  technology: '#eab308',
+  languages: '#3b82f6',
+  management: '#a855f7',
+  marketing: '#f97316',
+  design: '#ec4899',
+  finance: '#10b981',
+  health: '#f43f5e',
+  exam: '#06b6d4',
+  undergraduate: '#6366f1',
+  postgraduate: '#8b5cf6',
+  certification: '#f59e0b',
+  other: '#64748b',
+}
+
+const STATUS_PILL_STYLES: Record<TrackStatus, { bg: string; color: string }> = {
+  in_progress: { bg: 'rgba(234,179,8,.12)', color: '#eab308' },
+  completed: { bg: 'rgba(16,185,129,.12)', color: '#10b981' },
+  paused: { bg: 'rgba(100,116,139,.12)', color: 'var(--sl-t2)' },
+  abandoned: { bg: 'rgba(100,116,139,.12)', color: 'var(--sl-t3)' },
+}
 
 export default function TrilhasPage() {
   const router = useRouter()
@@ -36,12 +58,13 @@ export default function TrilhasPage() {
   const { isPro } = useUserPlan()
 
   const activeTracks = tracks.filter(t => t.status === 'in_progress')
+  const completedCount = tracks.filter(t => t.status === 'completed').length
+  const pausedCount = tracks.filter(t => t.status === 'paused').length
 
   const [wizardOpen, setWizardOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all')
   const [search, setSearch] = useState('')
-  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const filtered = tracks.filter(t => {
     if (statusFilter !== 'all' && t.status !== statusFilter) return false
@@ -50,7 +73,6 @@ export default function TrilhasPage() {
   })
 
   const handleCreate = useCallback(async (data: Parameters<typeof createTrack>[0]) => {
-    // RN-MNT-08: Limite FREE = 3 trilhas ativas
     const limitCheck = checkPlanLimit(isPro, 'active_study_tracks', activeTracks.length)
     if (!limitCheck.allowed) {
       toast.error(limitCheck.upsellMessage)
@@ -81,66 +103,33 @@ export default function TrilhasPage() {
   }, [updateTrack, reload])
 
   const handleDelete = useCallback(async (id: string, name: string) => {
-    // RN-MNT-26: avisar sobre vínculos antes de excluir
     const track = tracks.find(t => t.id === id)
     const hasLinkedSkill = !!track?.linked_skill_id
     const hasCost = track?.cost && track.cost > 0
     const warning = (hasLinkedSkill || hasCost)
-      ? '\n\n⚠️ Esta trilha pode estar vinculada a habilidades de carreira ou ter custo registrado em Finanças.'
+      ? '\n\nEsta trilha pode estar vinculada a habilidades de carreira ou ter custo registrado em Financas.'
       : ''
-    if (!window.confirm(`Excluir a trilha "${name}"? Esta ação não pode ser desfeita.${warning}`)) return
+    if (!window.confirm(`Excluir a trilha "${name}"? Esta acao nao pode ser desfeita.${warning}`)) return
     try {
       await deleteTrack(id)
-      toast.success('Trilha excluída')
+      toast.success('Trilha excluida')
       await reload()
     } catch {
       toast.error('Erro ao excluir trilha')
     }
   }, [tracks, deleteTrack, reload])
 
-  const handleToggleStep = useCallback(async (stepId: string, trackId: string, isCompleted: boolean) => {
-    try {
-      // RN-MNT-06: detectar conclusão da trilha
-      const track = tracks.find(t => t.id === trackId)
-      const prevIncomplete = track?.steps?.filter(s => !s.is_completed) ?? []
-      const willComplete = isCompleted && prevIncomplete.length === 1 && prevIncomplete[0].id === stepId
-
-      await toggleStep(stepId, trackId, isCompleted)
-      await reload()
-
-      if (willComplete) {
-        toast.success(`🎉 Trilha "${track?.name}" concluída!`, {
-          description: 'Parabéns pelo aprendizado! Continue evoluindo.',
-          duration: 6000,
-        })
-        // RN-CAR-15: se trilha vinculada a habilidade, sugerir atualizar nível
-        if (track?.linked_skill_id) {
-          setTimeout(() => {
-            toast.info('💼 Habilidade vinculada detectada', {
-              description: 'Que tal atualizar o nível desta habilidade no Carreira?',
-              action: {
-                label: 'Ir para Habilidades',
-                onClick: () => router.push('/carreira/habilidades'),
-              },
-              duration: 10000,
-            })
-          }, 1500)
-        }
-      }
-    } catch {
-      toast.error('Erro ao atualizar etapa')
-    }
-  }, [tracks, toggleStep, reload])
-
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
-      {/* Topbar */}
-      <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
-          📚 Trilhas de Aprendizado
-        </h1>
-        <div className="flex-1" />
+      {/* ModuleHeader */}
+      <ModuleHeader
+        icon={BookOpen}
+        iconBg="rgba(234,179,8,.1)"
+        iconColor="#eab308"
+        title="Trilhas de Aprendizado"
+        subtitle={`${tracks.length} trilhas criadas \u00B7 ${completedCount} concluida${completedCount !== 1 ? 's' : ''} \u00B7 ${pausedCount} pausada${pausedCount !== 1 ? 's' : ''}`}
+      >
         {!isPro && (
           <span className="text-[11px] text-[var(--sl-t3)] font-medium">
             {activeTracks.length}/3 FREE
@@ -148,66 +137,67 @@ export default function TrilhasPage() {
         )}
         <button
           onClick={() => setWizardOpen(true)}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                     bg-[#a855f7] text-white hover:opacity-90 transition-opacity"
+          className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
+                     bg-[#eab308] text-black hover:brightness-110 transition-all"
         >
           <Plus size={16} />
           Nova Trilha
         </button>
-      </div>
+      </ModuleHeader>
 
       {/* Filters */}
-      <div className="flex items-center gap-2 mb-4 flex-wrap">
+      <div className="flex items-center gap-2 mb-5 flex-wrap sl-fade-up sl-delay-1">
         {STATUS_TABS.map(tab => (
           <button
             key={tab.value}
             onClick={() => setStatusFilter(tab.value)}
             className={cn(
-              'px-3 py-1.5 rounded-full text-[12px] font-medium transition-all border',
+              'px-[14px] py-[6px] rounded-lg text-[12px] font-medium transition-all border',
               statusFilter === tab.value
-                ? 'bg-[#a855f7] text-white border-[#a855f7]'
+                ? 'bg-[rgba(234,179,8,.08)] border-[#eab308] text-[#eab308] font-semibold'
                 : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
             )}
           >
             {tab.label}
           </button>
         ))}
-        <div className="ml-auto flex items-center gap-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] px-3 py-1.5 max-w-[180px]">
-          <Search size={13} className="text-[var(--sl-t3)] shrink-0" />
+        <div className="ml-auto flex items-center gap-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] px-3.5 py-2 w-[200px]
+                        focus-within:border-[rgba(234,179,8,.4)] transition-colors">
+          <Search size={16} className="text-[var(--sl-t3)] shrink-0" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar..."
-            className="bg-transparent text-[12px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none w-full"
+            placeholder="Buscar trilha..."
+            className="bg-transparent text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none w-full"
           />
         </div>
       </div>
 
-      {/* Tracks grid */}
+      {/* FULL-WIDTH HORIZONTAL TRACK CARDS */}
       {loading ? (
-        <div className="grid grid-cols-2 gap-3 max-lg:grid-cols-1">
-          {[...Array(4)].map((_, i) => <div key={i} className="h-[160px] rounded-2xl bg-[var(--sl-s2)] animate-pulse" />)}
+        <div className="flex flex-col gap-[14px]">
+          {[...Array(4)].map((_, i) => <div key={i} className="h-[120px] rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />)}
         </div>
       ) : error ? (
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 text-center">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 text-center">
           <p className="text-[13px] text-[var(--sl-t2)]">
             {error.includes('does not exist') ? 'Execute a migration 005 no Supabase.' : error}
           </p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-10 text-center">
-          <div className="text-4xl mb-3">📚</div>
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
+          <BookOpen size={32} className="text-[#eab308] mx-auto mb-3 opacity-60" />
           <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             {search || statusFilter !== 'all' ? 'Nenhuma trilha encontrada' : 'Crie sua primeira trilha'}
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-4">
-            {search || statusFilter !== 'all' ? 'Tente outros filtros.' : 'Organize tudo que você quer aprender em trilhas.'}
+            {search || statusFilter !== 'all' ? 'Tente outros filtros.' : 'Organize tudo que voce quer aprender em trilhas.'}
           </p>
           {!search && statusFilter === 'all' && (
             <button
               onClick={() => setWizardOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#a855f7] text-white hover:opacity-90"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#eab308] text-black hover:brightness-110"
             >
               <Plus size={15} />
               Criar primeira trilha
@@ -215,68 +205,106 @@ export default function TrilhasPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 max-lg:grid-cols-1">
-          {filtered.map((track, idx) => (
-            <div key={track.id} className={`sl-delay-${Math.min(idx + 1, 5)}`}>
-              {/* Card with expandable steps */}
+        <div className="flex flex-col gap-[14px] sl-fade-up sl-delay-2">
+          {filtered.map((track) => {
+            const steps = track.steps ?? []
+            const completedSteps = steps.filter(s => s.is_completed).length
+            const nextStep = steps.sort((a, b) => a.sort_order - b.sort_order).find(s => !s.is_completed)
+            const catColor = CATEGORY_COLORS[track.category] ?? '#eab308'
+            const catLabel = (CATEGORY_LABELS[track.category as TrackCategory] ?? '').replace(/^.+ /, '')
+            const statusPill = STATUS_PILL_STYLES[track.status] ?? STATUS_PILL_STYLES.in_progress
+            const isCompleted = track.status === 'completed'
+            const isPaused = track.status === 'paused'
+            const daysLeft = track.target_date
+              ? Math.max(0, Math.ceil((new Date(track.target_date).getTime() - Date.now()) / 86400000))
+              : null
+
+            const subParts: string[] = []
+            if (steps.length > 0) subParts.push(`${completedSteps} de ${steps.length} etapas`)
+            if (track.total_hours > 0) subParts.push(`${track.total_hours.toFixed(1)}h`)
+            if (track.cost) subParts.push(track.cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
+
+            return (
               <div
+                key={track.id}
                 className={cn(
-                  'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl overflow-hidden transition-all',
-                  expandedId === track.id && 'border-[#a855f7]/50'
+                  'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] cursor-pointer',
+                  isCompleted && 'opacity-70',
+                  track.status === 'in_progress' && 'border-[rgba(234,179,8,.2)]'
                 )}
+                style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: '20px' }}
+                onClick={() => router.push(`/mente/trilhas/${track.id}`)}
               >
-                <div onClick={() => setExpandedId(id => id === track.id ? null : track.id)}>
-                  <TrackCard track={track} />
-                </div>
-
-                {/* Expanded: steps + actions */}
-                {expandedId === track.id && (
-                  <div className="px-5 pb-5 flex flex-col gap-3">
-                    {/* Steps */}
-                    {(track.steps ?? []).length > 0 && (
-                      <div className="flex flex-col gap-1.5">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">
-                          Etapas ({(track.steps ?? []).filter(s => s.is_completed).length}/{(track.steps ?? []).length})
-                        </p>
-                        {(track.steps ?? []).sort((a, b) => a.sort_order - b.sort_order).map((step: StudyTrackStep) => (
-                          <label key={step.id} className="flex items-center gap-2 cursor-pointer group">
-                            <input
-                              type="checkbox"
-                              checked={step.is_completed}
-                              onChange={e => handleToggleStep(step.id, track.id, e.target.checked)}
-                              className="accent-[#a855f7] w-3.5 h-3.5 rounded"
-                            />
-                            <span className={cn(
-                              'text-[12px] transition-colors',
-                              step.is_completed ? 'text-[var(--sl-t3)] line-through' : 'text-[var(--sl-t1)]'
-                            )}>
-                              {step.title}
-                            </span>
-                          </label>
-                        ))}
+                {/* Left content */}
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div
+                      className="w-[42px] h-[42px] rounded-xl flex items-center justify-center shrink-0"
+                      style={{ background: `${catColor}1a` }}
+                    >
+                      <BookOpen size={20} style={{ color: catColor }} />
+                    </div>
+                    <div>
+                      <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">{track.name}</p>
+                      <div className="flex items-center gap-1.5 mt-[3px]">
+                        <span
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[11px] font-semibold"
+                          style={{ background: statusPill.bg, color: statusPill.color }}
+                        >
+                          {STATUS_LABELS[track.status]}
+                        </span>
+                        <span
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-[var(--sl-s2)] text-[var(--sl-t3)]"
+                        >
+                          {catLabel}
+                        </span>
                       </div>
-                    )}
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 pt-2 border-t border-[var(--sl-border)]">
-                      <button
-                        onClick={() => handleToggleStatus(track.id, track.status)}
-                        className="flex-1 py-1.5 rounded-[8px] text-[12px] font-medium border border-[var(--sl-border)] text-[var(--sl-t2)] hover:bg-[var(--sl-s2)] transition-colors"
-                      >
-                        {track.status === 'in_progress' ? '⏸ Pausar' : '▶ Retomar'}
-                      </button>
-                      <button
-                        onClick={() => handleDelete(track.id, track.name)}
-                        className="py-1.5 px-3 rounded-[8px] text-[12px] font-medium text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] transition-colors"
-                      >
-                        Excluir
-                      </button>
                     </div>
                   </div>
-                )}
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[11px] text-[var(--sl-t3)]">{subParts.join(' \u00B7 ')}</span>
+                    <span className="font-[DM_Mono] text-[14px] font-semibold" style={{ color: isCompleted ? '#10b981' : '#eab308' }}>
+                      {Math.round(track.progress)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height: '5px' }}>
+                    <div
+                      className="h-full rounded-full transition-[width] duration-700"
+                      style={{
+                        width: `${Math.min(track.progress, 100)}%`,
+                        background: isCompleted ? '#10b981' : isPaused ? 'var(--sl-t3)' : '#eab308',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Right panel */}
+                <div className="flex flex-col justify-center items-center border-l border-[var(--sl-border)] pl-5">
+                  {isCompleted ? (
+                    <>
+                      <Check size={22} className="text-[#10b981]" />
+                      <span className="text-[12px] text-[#10b981] mt-1.5 font-semibold">Concluida!</span>
+                    </>
+                  ) : isPaused ? (
+                    <>
+                      <Pause size={22} className="text-[var(--sl-t3)]" />
+                      <span className="text-[12px] text-[var(--sl-t3)] mt-1.5 font-medium">Pausada</span>
+                    </>
+                  ) : nextStep ? (
+                    <>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Proxima etapa</p>
+                      <p className="text-[13px] font-medium text-[var(--sl-t1)] text-center">{nextStep.title}</p>
+                      {daysLeft !== null && (
+                        <p className="text-[11px] text-[var(--sl-t3)] mt-[3px]">{daysLeft}d restantes</p>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-[12px] text-[var(--sl-t3)]">Sem etapas</p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 

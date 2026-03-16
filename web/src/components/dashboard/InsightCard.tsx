@@ -124,56 +124,61 @@ export function InsightCard({
   }, [aiQuery, aiLoading, monthLabel, totalIncome, totalExpense, balance, savingsRate, budgets, categorySpend, activeGoalsCount, goalsAtRisk])
 
   return (
-    <div className="rounded-[16px] p-5 mb-5 sl-fade-up sl-delay-2"
-      style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.06), rgba(0,85,255,0.06))', border: '1px solid rgba(16,185,129,0.18)' }}>
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-[10px] font-bold uppercase tracking-[0.09em]" style={{ color: '#10b981' }}>💡 Consultor Financeiro IA</span>
-        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-[6px]" style={{ background: 'rgba(16,185,129,0.12)', color: '#10b981' }}>
-          AN\u00c1LISE DE {now.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase()}/{String(year).slice(-2)}
-        </span>
-      </div>
-      <p className="text-[13px] text-[var(--sl-t2)] leading-[1.75]">
-        {budgetsOver === 0
-          ? <>Todos os seus or\u00e7amentos est\u00e3o dentro do planejado \u2014 \u00f3tima disciplina! Seu saldo est\u00e1
-            projetado para <span style={{ color: '#10b981' }}><strong>{fmt(projectedBalance)} ao final do m\u00eas</strong></span>.
-            {goalsAtRisk > 0 && <> Aten\u00e7\u00e3o: <span style={{ color: '#f59e0b' }}><strong>{goalsAtRisk} meta(s) abaixo do ritmo</strong></span>.</>}
-          </>
-          : <>Em {now.toLocaleDateString('pt-BR', { month: 'long' })} voc\u00ea tem <span style={{ color: '#f59e0b' }}>
-            <strong>{budgetsOver} or\u00e7amento(s) estourado(s)</strong></span>.
-            Saldo atual: <span style={{ color: '#10b981' }}><strong>{fmt(balance)}</strong></span>.
-            {topExpenseCat && <> Maior gasto: <strong>{topExpenseCat.name}</strong> com {topExpensePct}% da renda.</>}
-          </>
-        }
-      </p>
-      <div className="flex items-center gap-2 mt-3.5 pt-3.5" style={{ borderTop: '1px solid rgba(16,185,129,0.12)' }}>
-        <input
-          className="flex-1 px-3 py-2 rounded-[10px] text-[13px] outline-none transition-colors"
-          style={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', color: 'var(--sl-t1)' }}
-          placeholder="Pergunte algo... ex: Como reduzir gastos em Lazer?"
-          value={aiQuery}
-          onChange={e => setAiQuery(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter') handleAiAsk() }}
-        />
-        <button
-          className="px-3.5 py-2 rounded-[10px] text-[12px] font-semibold text-white cursor-pointer hover:opacity-85 transition-opacity whitespace-nowrap disabled:opacity-50"
-          style={{ background: '#10b981', border: 'none' }}
-          onClick={handleAiAsk}
-          disabled={aiLoading || !aiQuery.trim()}
-        >
-          {aiLoading ? <Loader2 size={14} className="animate-spin" /> : 'Perguntar'}
-        </button>
-      </div>
+    <div className="relative rounded-[18px] overflow-hidden sl-fade-up sl-delay-2">
+      {/* Gradient border via pseudo-element technique */}
+      <div className="absolute -inset-px rounded-[19px] z-0" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,.22), rgba(16,185,129,.12))' }} />
+      <div className="absolute inset-0 rounded-[18px] bg-[var(--sl-s1)] z-0" />
 
-      {/* AI Response */}
-      {aiResponse && (
-        <div className="mt-3 px-4 py-3 rounded-[12px]" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(16,185,129,.12)' }}>
-          <div className="flex items-center gap-1.5 mb-2">
-            <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#10b981]">Resposta da IA</span>
-            {aiLoading && <Loader2 size={10} className="animate-spin text-[#10b981]" />}
-          </div>
-          <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed whitespace-pre-wrap">{aiResponse}</p>
+      {/* Content - relative z-1 to sit above pseudo backgrounds */}
+      <div className="relative z-[1] px-7 py-6">
+        <div className="flex items-center gap-2 mb-3">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">Insight Inteligente</span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold" style={{ background: 'rgba(99,102,241,.12)', color: '#6366f1' }}>IA</span>
         </div>
-      )}
+        <p className="text-[13px] text-[var(--sl-t2)] leading-[1.65]">
+          {budgetsOver === 0
+            ? <>Todos os seus or\u00e7amentos est\u00e3o dentro do planejado \u2014 \u00f3tima disciplina! Seu saldo est\u00e1
+              projetado para <span style={{ color: '#10b981' }}><strong>{fmt(projectedBalance)} ao final do m\u00eas</strong></span>.
+              {goalsAtRisk > 0 && <> Aten\u00e7\u00e3o: <span style={{ color: '#f59e0b' }}><strong>{goalsAtRisk} meta(s) abaixo do ritmo</strong></span>.</>}
+            </>
+            : <>Em {now.toLocaleDateString('pt-BR', { month: 'long' })} voc\u00ea tem <span style={{ color: '#f59e0b' }}>
+              <strong>{budgetsOver} or\u00e7amento(s) estourado(s)</strong></span>.
+              Saldo atual: <span style={{ color: '#10b981' }}><strong>{fmt(balance)}</strong></span>.
+              {topExpenseCat && <> Maior gasto: <strong>{topExpenseCat.name}</strong> com {topExpensePct}% da renda.</>}
+            </>
+          }
+        </p>
+        <div className="flex items-center gap-2.5 mt-3.5 pt-3.5 px-4 py-[11px] bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl">
+          <input
+            className="flex-1 bg-transparent text-[13px] outline-none"
+            style={{ color: 'var(--sl-t1)' }}
+            placeholder="Pergunte algo sobre sua vida..."
+            value={aiQuery}
+            onChange={e => setAiQuery(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') handleAiAsk() }}
+          />
+          <button
+            className="px-[18px] py-[7px] rounded-[9px] text-[12px] font-semibold text-white cursor-pointer hover:opacity-85 transition-opacity whitespace-nowrap disabled:opacity-50"
+            style={{ background: '#6366f1', border: 'none' }}
+            onClick={handleAiAsk}
+            disabled={aiLoading || !aiQuery.trim()}
+          >
+            {aiLoading ? <Loader2 size={14} className="animate-spin" /> : 'Enviar'}
+          </button>
+        </div>
+
+        {/* AI Response */}
+        {aiResponse && (
+          <div className="mt-3 px-4 py-3 rounded-[12px]" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(99,102,241,.12)' }}>
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#6366f1]">Resposta da IA</span>
+              {aiLoading && <Loader2 size={10} className="animate-spin text-[#6366f1]" />}
+            </div>
+            <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed whitespace-pre-wrap">{aiResponse}</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

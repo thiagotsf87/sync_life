@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Plus, Pencil, Trash2, Clock, Volume2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, Clock, Volume2, Target } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
@@ -10,7 +10,7 @@ import { useFocusSessions, type FocusSession, type FocusSessionFormData } from '
 import { useMetas } from '@/hooks/use-metas'
 import { useAgenda } from '@/hooks/use-agenda'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
-import { KpiCard } from '@/components/ui/kpi-card'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { FocusSessionModal } from '@/components/agenda/FocusSessionModal'
 import { ProGate } from '@/components/ui/pro-gate'
 import { playCompletionSound, startAmbientSound, stopAmbientSound, AMBIENT_OPTIONS, type AmbientSound } from '@/lib/timer-sounds'
@@ -205,7 +205,7 @@ export default function BlocosFocoPage() {
   const ringDashoffset = ringDasharray * (1 - timeLeft / (duration * 60))
 
   return (
-    <div className="max-w-[1140px] mx-auto px-4 py-7 pb-16">
+    <div className="max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
       {/* Sub-nav underline tabs (desktop) */}
       <div className="hidden lg:flex border-b border-[var(--sl-border)] mb-5">
@@ -226,98 +226,27 @@ export default function BlocosFocoPage() {
         ))}
       </div>
 
-      {/* ① Topbar */}
-      <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
-          🎯 Blocos de Foco
-        </h1>
-        {todaySessionCount > 0 && (
-          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#f97316]/10 text-[#f97316] border border-[#f97316]/20">
-            🔥 {todaySessionCount} sessão{todaySessionCount !== 1 ? 'ões' : ''} hoje
+      {/* ① ModuleHeader */}
+      <ModuleHeader
+        icon={Target}
+        iconBg="rgba(6,182,212,.1)"
+        iconColor="#06b6d4"
+        title="Modo Foco"
+        subtitle="Timer Pomodoro com sons ambiente e historico de sessoes"
+      >
+        {timerState === 'running' && (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[11px] font-semibold bg-[rgba(6,182,212,.1)] text-[#06b6d4] border border-[rgba(6,182,212,.2)]">
+            <Clock size={12} /> Sessao ativa
           </span>
         )}
-        <div className="flex-1" />
-        <button
-          onClick={() => setModal({ open: true, mode: 'create' })}
-          className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110"
-          style={{ background: '#06b6d4' }}
-        >
-          <Plus size={15} />
-          <span className="max-sm:hidden">Nova Sessão</span>
-        </button>
-      </div>
+      </ModuleHeader>
 
-      {/* ② JornadaInsight */}
-      <JornadaInsight text={
-        <span>
-          {kpis.streakDays > 0
-            ? <><strong className="text-[#f97316]">🔥 {kpis.streakDays} dias seguidos</strong> de foco! Continue assim — a consistência é o segredo do progresso. ✨</>
-            : <>Registre sua primeira sessão de foco hoje e comece seu streak! 💪</>
-          }
-        </span>
-      } />
+      {/* ② Split layout: Timer (left) + History (right) */}
+      <div className="grid grid-cols-[1fr_340px] gap-3.5 max-lg:grid-cols-1">
 
-      {/* ③ KPI Strip */}
-      <div className="grid grid-cols-4 gap-3 mb-5 max-sm:grid-cols-2">
-        <KpiCard
-          label="Horas hoje"
-          value={formatMinutes(kpis.todayMinutes)}
-          delta="sessões registradas"
-          accent="#06b6d4"
-        />
-        <KpiCard
-          label="Horas esta semana"
-          value={formatMinutes(kpis.weekMinutes)}
-          delta="nos últimos 7 dias"
-          accent="#10b981"
-        />
-        <KpiCard
-          label="Streak"
-          value={`${kpis.streakDays}d`}
-          delta={kpis.streakDays > 0 ? 'dias consecutivos!' : 'comece hoje'}
-          deltaType={kpis.streakDays > 0 ? 'up' : 'neutral'}
-          accent="#f97316"
-        />
-        <KpiCard
-          label="Sessões no mês"
-          value={String(kpis.monthCount)}
-          delta={`${formatMinutes(kpis.monthMinutes)} total`}
-          accent="#8b5cf6"
-        />
-      </div>
-
-      {/* ④ Tab bar */}
-      <div className="flex gap-6 border-b border-[var(--sl-border)] mb-6">
-        <button
-          onClick={() => setActiveTab('timer')}
-          className={cn(
-            'pb-2 text-[13px] font-semibold border-b-[3px] transition-colors',
-            activeTab === 'timer'
-              ? 'text-[#06b6d4] border-[#06b6d4]'
-              : 'text-[var(--sl-t2)] border-transparent hover:text-[var(--sl-t1)]'
-          )}
-        >
-          ⏱ Timer
-        </button>
-        <button
-          onClick={() => setActiveTab('history')}
-          className={cn(
-            'pb-2 text-[13px] font-semibold border-b-[3px] transition-colors',
-            activeTab === 'history'
-              ? 'text-[#06b6d4] border-[#06b6d4]'
-              : 'text-[var(--sl-t2)] border-transparent hover:text-[var(--sl-t1)]'
-          )}
-        >
-          📋 Histórico
-        </button>
-      </div>
-
-      {/* ⑤ Tab content */}
-
-      {/* Timer Tab */}
-      {activeTab === 'timer' && (
-        <ProGate module="tempo" feature="timerFoco" preview label="Timer Foco é exclusivo PRO">
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 max-w-[480px] mx-auto sl-fade-up">
+      {/* LEFT: Timer */}
+      <ProGate module="tempo" feature="timerFoco" preview label="Timer Foco e exclusivo PRO">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)] flex flex-col items-center" style={{ padding: '40px 24px' }}>
 
           {/* Session count badge */}
           <div className="text-center mb-4">
@@ -346,36 +275,42 @@ export default function BlocosFocoPage() {
             </div>
           )}
 
-          {/* SVG Ring */}
+          {/* SVG Ring with gradient + drop-shadow */}
           <div className="flex justify-center mb-6">
-            <div className="relative" style={{ width: 240, height: 240 }}>
-              <svg width="240" height="240" viewBox="0 0 240 240" style={{ transform: 'rotate(-90deg)' }}>
-                <circle cx="120" cy="120" r={ringR} fill="none" stroke="var(--sl-s3)" strokeWidth="12" />
+            <div className="relative" style={{ width: 260, height: 260 }}>
+              <svg width="260" height="260" viewBox="0 0 260 260" style={{ transform: 'rotate(-90deg)', filter: 'drop-shadow(0 0 12px rgba(6,182,212,.25))' }}>
+                <defs>
+                  <linearGradient id="timerGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#06b6d4" />
+                    <stop offset="100%" stopColor="#0055ff" />
+                  </linearGradient>
+                </defs>
+                <circle cx="130" cy="130" r="115" fill="none" stroke="var(--sl-s3)" strokeWidth="12" />
                 <circle
-                  cx="120" cy="120" r={ringR} fill="none"
-                  stroke="#06b6d4" strokeWidth="12" strokeLinecap="round"
+                  cx="130" cy="130" r="115" fill="none"
+                  stroke="url(#timerGrad)" strokeWidth="12" strokeLinecap="round"
                   style={{
-                    strokeDasharray: `${ringDasharray}`,
-                    strokeDashoffset: `${ringDashoffset}`,
+                    strokeDasharray: `${2 * Math.PI * 115}`,
+                    strokeDashoffset: `${2 * Math.PI * 115 * (1 - (1 - timeLeft / (duration * 60)))}`,
                     transition: timerState === 'running' ? 'stroke-dashoffset 1s linear' : 'none',
                   }}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-[DM_Mono] font-bold text-5xl text-[var(--sl-t1)] leading-none">
+                <span className="font-[DM_Mono] font-medium text-[52px] text-[var(--sl-t1)] leading-none">
                   {formatTime(timeLeft)}
                 </span>
                 {timerState === 'running' && (
-                  <span className="text-[11px] text-[#06b6d4] mt-2 font-medium">Em foco ●</span>
+                  <span className="text-[12px] text-[#06b6d4] mt-2 font-medium">de {duration}:00</span>
                 )}
                 {timerState === 'paused' && (
-                  <span className="text-[11px] text-[#f59e0b] mt-2 font-medium">Pausado ⏸</span>
+                  <span className="text-[12px] text-[#f59e0b] mt-2 font-medium">Pausado</span>
                 )}
                 {timerState === 'idle' && (
-                  <span className="text-[11px] text-[var(--sl-t3)] mt-2">{duration}min</span>
+                  <span className="text-[12px] text-[var(--sl-t2)] mt-2">de {duration}:00</span>
                 )}
                 {timerState === 'completed' && (
-                  <span className="text-[11px] text-[#10b981] mt-2 font-medium">Concluído ✓</span>
+                  <span className="text-[12px] text-[#10b981] mt-2 font-medium">Concluido</span>
                 )}
               </div>
             </div>
@@ -502,139 +437,96 @@ export default function BlocosFocoPage() {
               </select>
             </div>
           )}
+          {/* Cycles / Focus / Streak stats strip */}
+          <div className="mt-7 flex gap-7 px-7 py-[18px] bg-[var(--sl-s2)] rounded-[14px] border border-[var(--sl-border)] w-full max-w-[360px]">
+            <div className="text-center">
+              <p className="text-[10px] text-[var(--sl-t3)] mb-[3px]">Ciclos</p>
+              <p className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)]">{todaySessionCount}/4</p>
+            </div>
+            <div className="w-px bg-[var(--sl-border)]" />
+            <div className="text-center">
+              <p className="text-[10px] text-[var(--sl-t3)] mb-[3px]">Foco Total</p>
+              <p className="font-[DM_Mono] text-[20px] font-medium text-[#06b6d4]">{formatMinutes(kpis.todayMinutes)}</p>
+            </div>
+            <div className="w-px bg-[var(--sl-border)]" />
+            <div className="text-center">
+              <p className="text-[10px] text-[var(--sl-t3)] mb-[3px]">Streak</p>
+              <p className="font-[DM_Mono] text-[20px] font-medium text-[#f59e0b]">{kpis.streakDays} dias</p>
+            </div>
+          </div>
         </div>
-        </ProGate>
-      )}
+      </ProGate>
 
-      {/* History Tab */}
-      {activeTab === 'history' && (
-        <>
-          {/* Filtro de período */}
-          <div className="flex gap-2 mb-5">
-            {FILTER_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => setFilter(opt.value)}
-                className={cn(
-                  'px-4 py-1.5 rounded-[8px] border text-[12px] font-semibold transition-all',
-                  filter === opt.value
-                    ? 'border-[#06b6d4] bg-[rgba(6,182,212,0.1)] text-[#06b6d4]'
-                    : 'border-[var(--sl-border)] bg-[var(--sl-s1)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]',
-                )}
-              >
-                {opt.label}
-              </button>
-            ))}
+      {/* RIGHT: History + Weekly Summary */}
+      <div className="flex flex-col gap-3.5">
+        {/* Session history */}
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
+          <div className="flex items-center gap-2 mb-[18px]">
+            <Clock size={16} className="text-[#06b6d4]" />
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Historico de Sessoes</h2>
           </div>
 
-          {/* Lista de sessões */}
           {loading ? (
-            <div className="flex items-center justify-center py-16">
-              <p className="text-[13px] text-[var(--sl-t3)]">Carregando sessões...</p>
-            </div>
+            <p className="text-[13px] text-[var(--sl-t3)] text-center py-8">Carregando...</p>
           ) : grouped.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-16 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl">
-              <span className="text-4xl">🎯</span>
-              <p className="font-[Syne] font-extrabold text-[16px] text-[var(--sl-t1)]">Nenhuma sessão registrada</p>
-              <p className="text-[13px] text-[var(--sl-t3)] text-center max-w-[280px]">
-                Use a aba Timer para iniciar uma sessão ou clique em &quot;Nova Sessão&quot; para registrar manualmente.
-              </p>
-              <button
-                onClick={() => setActiveTab('timer')}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110 mt-1"
-                style={{ background: '#06b6d4' }}
-              >
-                ⏱ Ir para Timer
-              </button>
+            <div className="flex flex-col items-center gap-2 py-8">
+              <span className="text-2xl">🎯</span>
+              <p className="text-[12px] text-[var(--sl-t3)] text-center">Nenhuma sessao registrada</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-6">
-              {grouped.map(({ date, items }) => {
-                const totalMin = items.reduce((s, i) => s + i.duration_minutes, 0)
-                return (
-                  <div key={date}>
-                    {/* Header do grupo */}
-                    <div className="flex items-center gap-3 mb-2">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">
-                        {formatDate(date)}
-                      </p>
-                      <div className="flex-1 h-px bg-[var(--sl-border)]" />
-                      <span className="text-[11px] font-[DM_Mono] font-semibold text-[#06b6d4]">
-                        {formatMinutes(totalMin)}
-                      </span>
+            <div className="flex flex-col gap-0">
+              {grouped.slice(0, 5).map(({ date, items }) => (
+                items.slice(0, 2).map((session, si) => {
+                  const goal = goals.find(g => g.id === session.goal_id)
+                  const isLast = si === items.length - 1
+                  return (
+                    <div key={session.id} className="flex gap-3 relative pb-[18px] last:pb-0">
+                      {/* Timeline dot + line */}
+                      <div className="flex flex-col items-center shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-[var(--sl-s2)] border-2 border-[#06b6d4] flex items-center justify-center z-[1]">
+                          <Clock size={12} className="text-[#06b6d4]" />
+                        </div>
+                        {!isLast && <div className="w-px flex-1 bg-[var(--sl-border)]" />}
+                      </div>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-semibold text-[var(--sl-t1)]">{goal?.name ?? 'Sessao livre'}</p>
+                        <p className="text-[11px] text-[var(--sl-t3)] mt-[2px]">{formatDate(date)}{session.start_time ? ` \u00B7 ${session.start_time}` : ''}</p>
+                        <p className="font-[DM_Mono] text-[12px] font-medium text-[#06b6d4] mt-[2px]">{formatMinutes(session.duration_minutes)} de foco</p>
+                      </div>
                     </div>
-
-                    {/* Cards de sessão */}
-                    <div className="flex flex-col gap-2">
-                      {items.map(session => {
-                        const goal = goals.find(g => g.id === session.goal_id)
-                        return (
-                          <div
-                            key={session.id}
-                            className="flex items-start gap-3 px-4 py-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] hover:border-[var(--sl-border-h)] transition-colors sl-fade-up"
-                          >
-                            {/* Ícone de foco */}
-                            <div className="w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0 bg-[rgba(6,182,212,0.1)]">
-                              <Clock size={18} className="text-[#06b6d4]" />
-                            </div>
-
-                            {/* Info */}
-                            <div className="flex-1 min-w-0">
-                              {goal ? (
-                                <div className="flex items-center gap-1.5 mb-0.5">
-                                  <span className="text-sm">{goal.icon}</span>
-                                  <p className="text-[13px] font-semibold text-[var(--sl-t1)] truncate">
-                                    {goal.name}
-                                  </p>
-                                </div>
-                              ) : (
-                                <p className="text-[13px] font-semibold text-[var(--sl-t2)] mb-0.5">Sessão livre</p>
-                              )}
-
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-[DM_Mono] text-[13px] font-bold text-[#06b6d4]">
-                                  {formatMinutes(session.duration_minutes)}
-                                </span>
-                                {session.start_time && (
-                                  <span className="text-[11px] text-[var(--sl-t3)] font-[DM_Mono]">
-                                    às {session.start_time}
-                                  </span>
-                                )}
-                              </div>
-
-                              {session.notes && (
-                                <p className="text-[11px] text-[var(--sl-t3)] mt-1 line-clamp-2">{session.notes}</p>
-                              )}
-                            </div>
-
-                            {/* Ações */}
-                            <div className="flex items-center gap-1 shrink-0">
-                              <button
-                                onClick={() => setModal({ open: true, mode: 'edit', session })}
-                                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors"
-                                title="Editar"
-                              >
-                                <Pencil size={13} />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(session.id)}
-                                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[var(--sl-s2)] transition-colors"
-                                title="Excluir"
-                              >
-                                <Trash2 size={13} />
-                              </button>
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )
-              })}
+                  )
+                })
+              )).flat()}
             </div>
           )}
-        </>
-      )}
+        </div>
+
+        {/* Weekly summary */}
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[18px] sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
+          <p className="font-[Syne] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">Resumo Semanal</p>
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between text-[12px]">
+              <span className="text-[var(--sl-t2)]">Sessoes</span>
+              <span className="font-[DM_Mono] font-medium">{sessions.length}</span>
+            </div>
+            <div className="flex justify-between text-[12px]">
+              <span className="text-[var(--sl-t2)]">Foco total</span>
+              <span className="font-[DM_Mono] font-medium text-[#06b6d4]">{formatMinutes(kpis.weekMinutes)}</span>
+            </div>
+            <div className="flex justify-between text-[12px]">
+              <span className="text-[var(--sl-t2)]">Streak</span>
+              <span className="font-[DM_Mono] font-medium text-[#f59e0b]">{kpis.streakDays} dia{kpis.streakDays !== 1 ? 's' : ''}</span>
+            </div>
+            <div className="flex justify-between text-[12px]">
+              <span className="text-[var(--sl-t2)]">Sessoes no mes</span>
+              <span className="font-[DM_Mono] font-medium">{kpis.monthCount}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div>{/* close split grid */}
 
       {/* FAB mobile */}
       <button

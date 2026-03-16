@@ -34,32 +34,45 @@ export function WeekAgendaWidget({ weekDays, events, now }: WeekAgendaWidgetProp
   const router = useRouter()
 
   return (
-    <div className="flex-1 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-3 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
+    <div className="flex-1 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-3 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-[14px]">
-        <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📅 Agenda da Semana</span>
-        <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
-          onClick={() => router.push('/tempo')}>Ver agenda →</button>
+        <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Agenda da Semana
+        </span>
+        <button className="text-[12px] font-medium text-[#6366f1] hover:opacity-70 transition-opacity cursor-pointer"
+          onClick={() => router.push('/tempo')}>Mar 10-16</button>
       </div>
-      {/* week strip */}
-      <div className="flex gap-1 mb-3.5">
-        {weekDays.map((wd, i) => (
-          <div key={i}
-            className={cn(
-              'flex-1 flex flex-col items-center gap-1 py-2 px-0.5 rounded-[10px] cursor-pointer transition-colors hover:bg-[var(--sl-s2)]',
-              wd.isToday && 'bg-[rgba(16,185,129,0.15)]'
-            )}>
-            <span className="text-[9px] uppercase tracking-[0.05em] text-[var(--sl-t3)]">{DAY_NAMES[i]}</span>
-            <span className={cn(
-              'font-[Syne] font-bold text-[13px] w-6 h-6 rounded-full flex items-center justify-center',
-              wd.isToday ? 'bg-[#10b981] text-white' : 'text-[var(--sl-t1)]'
-            )}>{wd.date.getDate()}</span>
-            <div className="flex gap-0.5">
-              {wd.events.slice(0, 2).map((ev, j) => (
-                <div key={j} className="w-1 h-1 rounded-full" style={{ background: getEventTypeInfo(ev.type)?.color ?? '#6e90b8' }} />
-              ))}
+      {/* week strip - prototype grid */}
+      <div className="grid grid-cols-7 gap-1.5 text-center mb-3.5">
+        {weekDays.map((wd, i) => {
+          const hasEvents = wd.events.length > 0
+          const dotColor = wd.isToday ? '#6366f1' : hasEvents ? (getEventTypeInfo(wd.events[0].type)?.color ?? '#06b6d4') : undefined
+          return (
+            <div key={i}
+              className={cn(
+                'flex flex-col items-center gap-1 py-2 px-1 rounded-[10px] cursor-pointer transition-colors',
+                wd.isToday && 'bg-[rgba(99,102,241,.08)] border border-[rgba(99,102,241,.2)]'
+              )}>
+              <span className={cn('text-[10px] font-semibold', wd.isToday ? 'text-[#6366f1]' : 'text-[var(--sl-t3)]')}>{DAY_NAMES[i]}</span>
+              <div
+                className="w-2 h-2 rounded-full mb-1"
+                style={{
+                  background: dotColor ?? 'var(--sl-s3)',
+                  boxShadow: wd.isToday && dotColor ? `0 0 8px rgba(99,102,241,.4)` : undefined,
+                }}
+              />
+              <span className={cn('font-[DM_Mono] text-[11px]', wd.isToday ? 'text-[#6366f1]' : hasEvents ? 'text-[var(--sl-t2)]' : 'text-[var(--sl-t3)]')}>
+                {hasEvents ? wd.events.length : '\u2014'}
+              </span>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
       {/* events */}
       <div className="flex flex-col">

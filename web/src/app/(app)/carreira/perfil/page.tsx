@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save } from 'lucide-react'
+import { Briefcase, Save, User, Clock, RefreshCw, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import {
@@ -12,6 +12,7 @@ import {
 } from '@/hooks/use-carreira'
 import { createTransactionFromSalario } from '@/lib/integrations/financas'
 import { CarreiraMobile } from '@/components/carreira/CarreiraMobile'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { CARREIRA_XP } from '@/lib/carreira-xp-mock'
 
 const FIELDS: ProfessionalField[] = ['technology', 'finance', 'health', 'education', 'law', 'engineering', 'marketing', 'sales', 'hr', 'design', 'management', 'other']
@@ -153,169 +154,282 @@ export default function PerfilCarreiraPage() {
       }}
       onReload={async () => { await reload() }}
     />
-    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
-      {/* Topbar */}
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => router.push('/carreira')}
-          className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Carreira
-        </button>
-        <h1 className="font-[Syne] font-extrabold text-xl text-sl-grad">
-          👤 Perfil Profissional
-        </h1>
+      {/* MODULE HEADER */}
+      <ModuleHeader
+        icon={User}
+        iconBg="rgba(244,63,94,.08)"
+        iconColor="#f43f5e"
+        title="Perfil Profissional"
+        subtitle="Gerencie seus dados de carreira e sincronize com outros modulos"
+      >
         {!editMode && profile ? (
           <button
             onClick={() => setEditMode(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] hover:border-[var(--sl-border-h)]"
+            className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px]
+                       font-semibold border border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)]
+                       hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-all"
           >
-            ✏️ Editar
+            Editar Perfil
           </button>
         ) : (
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                       bg-[#f59e0b] text-[#03071a] hover:opacity-90 disabled:opacity-50 transition-opacity"
+            className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
+                       bg-[#f43f5e] text-white hover:brightness-110 disabled:opacity-50 transition-all"
           >
             <Save size={15} />
-            {isSaving ? 'Salvando...' : 'Salvar'}
+            {isSaving ? 'Salvando...' : 'Salvar Alteracoes'}
           </button>
         )}
-      </div>
+      </ModuleHeader>
 
       {/* Display view — when profile exists and not in edit mode */}
-      {!editMode && profile && (
-        <div className="grid grid-cols-[1fr_340px] gap-5 max-lg:grid-cols-1">
-
-          {/* Main column: Profile card */}
-          <div className="flex flex-col gap-4">
-            {/* Profile hero card */}
+      {!editMode && profile && (<>
+        {/* Profile Hero Card */}
+        <div
+          className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 overflow-hidden mb-7 sl-fade-up sl-delay-1"
+        >
+          {/* Accent bar */}
+          <div
+            className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[18px]"
+            style={{ background: 'linear-gradient(90deg, #f43f5e, #a855f7, #06b6d4)' }}
+          />
+          <div className="flex items-center gap-6">
+            {/* Avatar with initials */}
             <div
-              className="bg-[var(--sl-s1)] border border-[rgba(244,63,94,0.2)] rounded-2xl p-5"
-              style={{ background: 'linear-gradient(160deg, rgba(244,63,94,0.1), rgba(139,92,246,0.06))' }}
+              className="w-[72px] h-[72px] rounded-full flex items-center justify-center font-[Syne] font-extrabold text-[24px] shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, rgba(244,63,94,.15), rgba(168,85,247,.12))',
+                color: '#f43f5e',
+                border: '2px solid rgba(244,63,94,.25)',
+              }}
             >
-              <div className="flex gap-4 items-start mb-4">
-                <div className="w-16 h-16 rounded-[20px] border-2 border-[rgba(244,63,94,0.3)] bg-[rgba(244,63,94,0.15)] flex items-center justify-center text-[32px] shrink-0">
-                  👨‍💻
-                </div>
-                <div className="flex-1">
-                  <p className="text-[17px] font-bold text-[var(--sl-t1)]">{profile.current_title || 'Sem cargo'}</p>
-                  <p className="text-[13px] text-[#f43f5e] mt-0.5">
-                    {profile.level ? LEVEL_LABELS[profile.level] : '—'} · {profile.field ? FIELD_LABELS[profile.field] : '—'}
-                  </p>
-                  <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">{profile.current_company || '—'}</p>
-                </div>
-              </div>
-              {/* Salary */}
-              {profile.gross_salary && (
-                <div className="pt-3 border-t border-[var(--sl-border)]">
-                  <p className="text-[11px] text-[var(--sl-t3)] mb-1">Salário bruto</p>
-                  <p className="font-[DM_Mono] font-bold text-[18px] text-[#f43f5e]">
-                    {profile.gross_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                  </p>
-                </div>
-              )}
+              {(() => {
+                const name = profile.current_title || 'SP'
+                const parts = name.split(' ').filter(Boolean)
+                if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+                return parts[0]?.slice(0, 2).toUpperCase() || 'SP'
+              })()}
             </div>
+            <div className="flex-1">
+              <h2 className="font-[Syne] font-extrabold text-[22px] text-[var(--sl-t1)] mb-[3px]">
+                {profile.current_title || 'Sem cargo'}
+              </h2>
+              <p className="text-[13px] text-[var(--sl-t2)]">
+                {[
+                  profile.level ? LEVEL_LABELS[profile.level] : null,
+                  profile.current_company,
+                  profile.field ? FIELD_LABELS[profile.field] : null,
+                ].filter(Boolean).join(' \u00B7 ')}
+              </p>
+              <div className="flex gap-[6px] mt-2 flex-wrap">
+                {profile.level && (
+                  <span
+                    className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
+                    style={{ background: 'rgba(244,63,94,.10)', color: '#f43f5e' }}
+                  >
+                    {LEVEL_LABELS[profile.level]}
+                  </span>
+                )}
+                {profile.field && (
+                  <span
+                    className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
+                    style={{ background: 'rgba(59,130,246,.10)', color: '#3b82f6' }}
+                  >
+                    {FIELD_LABELS[profile.field]}
+                  </span>
+                )}
+                {profile.start_date && (
+                  <span
+                    className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
+                    style={{ background: 'rgba(16,185,129,.10)', color: '#10b981' }}
+                  >
+                    {(() => {
+                      const start = new Date(profile.start_date!)
+                      const now = new Date()
+                      const months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth())
+                      if (months < 1) return 'menos de 1 mes'
+                      if (months < 12) return `${months} meses no cargo`
+                      const y = Math.floor(months / 12)
+                      return `${y} ano${y > 1 ? 's' : ''} no cargo`
+                    })()}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
 
-            {/* Jornada-only narrative */}
-            <div className="bg-[var(--sl-s1)] border border-[rgba(139,92,246,0.2)] rounded-2xl p-5">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#c4b5fd] mb-2">✦ HERÓI EM EVOLUÇÃO</p>
+        <div className="grid grid-cols-[1fr_340px] gap-5 max-lg:grid-cols-1 sl-fade-up sl-delay-2">
+
+          {/* Left column: Info cards (read-only display) */}
+          <div className="flex flex-col gap-5">
+            {/* Salary card */}
+            {profile.gross_salary && (
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
+                <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                  <Briefcase size={16} className="text-[#f43f5e]" />
+                  Informacoes do Cargo
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-1">Salario Bruto</p>
+                    <p className="font-[DM_Mono] font-medium text-[18px] text-[#10b981]">
+                      {profile.gross_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    </p>
+                  </div>
+                  {profile.start_date && (
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-1">Data de Inicio</p>
+                      <p className="text-[14px] font-medium text-[var(--sl-t1)]">
+                        {new Date(profile.start_date).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                {profile.sync_salary_to_finance && (
+                  <div className="mt-4 px-4 py-3 bg-[var(--sl-s2)] rounded-xl flex items-center gap-3">
+                    <RefreshCw size={14} className="text-[#f43f5e] shrink-0" />
+                    <p className="text-[12px] text-[var(--sl-t2)]">Salario sincronizado com Financas como receita mensal</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* XP badges card */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
+              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <TrendingUp size={16} className="text-[#f43f5e]" />
+                Evolucao
+              </div>
               <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed">
-                {profile.current_title || 'Profissional'} em evolução constante.
+                {profile.current_title || 'Profissional'} em evolucao constante.
                 {profile.start_date && ` Desde ${new Date(profile.start_date).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}.`}
               </p>
-              {/* XP badges */}
               <div className="flex gap-2 mt-3 flex-wrap">
-                <span className="text-[11px] font-bold px-2 py-1 rounded-full bg-[rgba(139,92,246,0.15)] text-[#c4b5fd]">⚡ Nível {CARREIRA_XP.level}</span>
-                <span className="text-[11px] font-bold px-2 py-1 rounded-full bg-[rgba(16,185,129,0.15)] text-[#10b981]">{history.length} posições</span>
+                <span className="text-[11px] font-semibold px-[10px] py-1 rounded-lg" style={{ background: 'rgba(244,63,94,.10)', color: '#f43f5e' }}>Level {CARREIRA_XP.level}</span>
+                <span className="text-[11px] font-semibold px-[10px] py-1 rounded-lg" style={{ background: 'rgba(16,185,129,.10)', color: '#10b981' }}>{history.length} posicoes</span>
               </div>
             </div>
           </div>
 
           {/* Right column: History sidebar */}
-          <div className="flex flex-col gap-4">
-            {/* Experience section */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-3">
-                <span className="text-[#c4b5fd]">CAPÍTULOS DA JORNADA</span>
-              </p>
+          <div className="flex flex-col gap-5">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
+              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <Clock size={16} className="text-[#f43f5e]" />
+                Historico Recente
+              </div>
               {history.length === 0 ? (
-                <p className="text-[12px] text-[var(--sl-t3)]">Sem histórico ainda.</p>
+                <p className="text-[12px] text-[var(--sl-t3)]">Sem historico ainda.</p>
               ) : (
-                <div className="flex flex-col gap-2">
-                  {history.slice(0, 4).map((entry, i) => (
-                    <div key={entry.id} className="flex items-start gap-3 py-2.5 border-b border-[var(--sl-border)] last:border-0">
-                      <div className={cn(
-                        'w-9 h-9 rounded-[11px] flex items-center justify-center text-[16px] shrink-0',
-                        i === 0 ? 'bg-[rgba(244,63,94,0.15)]' : 'bg-[rgba(100,100,100,0.1)]'
-                      )}>
-                        💼
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-medium text-[var(--sl-t1)]">{entry.title}</p>
-                        <p className="text-[11px] text-[var(--sl-t2)]">
-                          {entry.company} · {new Date(entry.start_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}
+                <div className="flex flex-col gap-[10px]">
+                  {history.slice(0, 4).map((entry, i) => {
+                    const borderColors = ['#10b981', '#a855f7', '#f59e0b', '#3b82f6']
+                    return (
+                      <div
+                        key={entry.id}
+                        className="p-3 bg-[var(--sl-s2)] rounded-[10px]"
+                        style={{ borderLeft: `3px solid ${borderColors[i % borderColors.length]}` }}
+                      >
+                        <p className="text-[12px] font-semibold text-[var(--sl-t1)]">{entry.title}</p>
+                        <p className="text-[11px] text-[var(--sl-t3)]">
+                          {entry.company} &middot; {new Date(entry.start_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}
                         </p>
-                        <p className="text-[10px] text-[#c4b5fd] mt-0.5">
-                          ⚡ +{i === 0 ? 280 : 200} XP neste capítulo
-                        </p>
+                        {entry.salary && (
+                          <p className="font-[DM_Mono] text-[13px] mt-1" style={{ color: i === 0 ? '#10b981' : 'var(--sl-t2)' }}>
+                            {Number(entry.salary).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                          </p>
+                        )}
                       </div>
-                      {i === 0 && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(244,63,94,0.12)] text-[#f43f5e] shrink-0">Atual</span>}
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
           </div>
         </div>
-      )}
+      </>)}
 
       {/* Edit form — when no profile yet or in edit mode */}
       {(editMode || !profile) && (
         <div className="grid grid-cols-[1fr_340px] gap-5 max-lg:grid-cols-1">
 
           {/* Form */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Cargo</label>
-                <input
-                  type="text"
-                  value={form.current_title}
-                  onChange={e => setForm(f => ({ ...f, current_title: e.target.value }))}
-                  placeholder="Ex: Desenvolvedor Sênior"
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b] transition-colors"
-                />
+          <div className="flex flex-col gap-5">
+            {/* Card: Informacoes do Cargo */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex flex-col gap-4 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
+              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <Briefcase size={16} className="text-[#f43f5e]" />
+                Informacoes do Cargo
               </div>
-              <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Empresa</label>
-                <input
-                  type="text"
-                  value={form.current_company}
-                  onChange={e => setForm(f => ({ ...f, current_company: e.target.value }))}
-                  placeholder="Nome da empresa"
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b] transition-colors"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10.5px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-[7px] block">Cargo</label>
+                  <input
+                    type="text"
+                    value={form.current_title}
+                    onChange={e => setForm(f => ({ ...f, current_title: e.target.value }))}
+                    placeholder="Ex: Desenvolvedor Senior"
+                    className="w-full px-[15px] py-[11px] rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10.5px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-[7px] block">Empresa</label>
+                  <input
+                    type="text"
+                    value={form.current_company}
+                    onChange={e => setForm(f => ({ ...f, current_company: e.target.value }))}
+                    placeholder="Nome da empresa"
+                    className="w-full px-[15px] py-[11px] rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10.5px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-[7px] block">Salario Bruto</label>
+                  <input
+                    type="number"
+                    value={form.gross_salary}
+                    onChange={e => setForm(f => ({ ...f, gross_salary: e.target.value }))}
+                    placeholder="0"
+                    min="0"
+                    className="w-full px-[15px] py-[11px] rounded-[10px] text-[13px] font-[DM_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10.5px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-[7px] block">Data de Inicio</label>
+                  <input
+                    type="date"
+                    value={form.start_date}
+                    onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
+                    className="w-full px-[15px] py-[11px] rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
+                  />
+                </div>
               </div>
             </div>
 
-            <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Área</label>
-              <div className="grid grid-cols-3 gap-1.5 max-sm:grid-cols-2">
+            {/* Card: Area de Atuacao */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-3">
+              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Area de Atuacao
+              </div>
+              <div className="flex flex-wrap gap-2">
                 {FIELDS.map(f => (
                   <button
                     key={f}
                     onClick={() => setForm(frm => ({ ...frm, field: f }))}
                     className={cn(
-                      'px-2 py-1.5 rounded-[8px] text-[11px] border transition-all text-left truncate',
+                      'inline-flex items-center gap-[5px] px-[14px] py-2 rounded-[10px] text-[12px] font-medium border transition-all',
                       form.field === f
-                        ? 'border-[#f59e0b] bg-[#f59e0b]/10 text-[var(--sl-t1)]'
-                        : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
+                        ? 'border-[rgba(244,63,94,.2)] text-[#f43f5e]'
+                        : 'border-transparent bg-[var(--sl-s2)] text-[var(--sl-t3)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t2)]'
                     )}
+                    style={form.field === f ? { background: 'rgba(244,63,94,.08)' } : undefined}
                   >
                     {FIELD_LABELS[f]}
                   </button>
@@ -323,19 +437,24 @@ export default function PerfilCarreiraPage() {
               </div>
             </div>
 
-            <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Nível</label>
-              <div className="grid grid-cols-3 gap-1.5 max-sm:grid-cols-2">
+            {/* Card: Nivel Profissional (stepper style) */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-4">
+              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <TrendingUp size={16} className="text-[#f43f5e]" />
+                Nivel Profissional
+              </div>
+              <div className="flex flex-wrap gap-[6px]">
                 {LEVELS.map(l => (
                   <button
                     key={l}
                     onClick={() => setForm(f => ({ ...f, level: l }))}
                     className={cn(
-                      'px-2 py-1.5 rounded-[8px] text-[11px] border transition-all',
+                      'inline-flex px-3 py-[7px] rounded-lg text-[11px] font-semibold transition-all',
                       form.level === l
-                        ? 'border-[#f59e0b] bg-[#f59e0b]/10 text-[var(--sl-t1)]'
-                        : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
+                        ? 'text-[#f43f5e] border border-[rgba(244,63,94,.25)]'
+                        : 'bg-[var(--sl-s2)] text-[var(--sl-t3)] border border-transparent hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t2)]'
                     )}
+                    style={form.level === l ? { background: 'rgba(244,63,94,.12)' } : undefined}
                   >
                     {LEVEL_LABELS[l]}
                   </button>
@@ -343,95 +462,88 @@ export default function PerfilCarreiraPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Salário Bruto (R$)</label>
-                <input
-                  type="number"
-                  value={form.gross_salary}
-                  onChange={e => setForm(f => ({ ...f, gross_salary: e.target.value }))}
-                  placeholder="0"
-                  min="0"
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b] transition-colors"
-                />
+            {/* Sync + Cancel buttons */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
+              <div className="flex items-center justify-between p-[14px_16px] bg-[var(--sl-s2)] rounded-xl mb-3">
+                <div className="flex-1">
+                  <p className="text-[12px] font-semibold text-[var(--sl-t1)]">Sync com Financas</p>
+                  <p className="text-[11px] text-[var(--sl-t3)]">Salario como receita mensal</p>
+                </div>
+                <button
+                  onClick={() => setForm(f => ({ ...f, sync_salary_to_finance: !f.sync_salary_to_finance }))}
+                  className={cn(
+                    'w-10 h-[22px] rounded-[11px] transition-all relative cursor-pointer',
+                    form.sync_salary_to_finance ? 'bg-[#f43f5e]' : 'bg-[var(--sl-s3)]'
+                  )}
+                >
+                  <div className={cn(
+                    'w-[18px] h-[18px] rounded-full bg-white absolute top-[2px] transition-all',
+                    form.sync_salary_to_finance ? 'right-[2px]' : 'left-[2px]'
+                  )} />
+                </button>
               </div>
-              <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Data de Início</label>
-                <input
-                  type="date"
-                  value={form.start_date}
-                  onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b] transition-colors"
-                />
-              </div>
+              {editMode && (
+                <button
+                  onClick={() => setEditMode(false)}
+                  className="w-full py-2.5 rounded-[10px] text-[13px] border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] transition-colors"
+                >
+                  Cancelar
+                </button>
+              )}
             </div>
-
-            {/* Sync toggle */}
-            <div className="flex items-center justify-between p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
-              <div>
-                <p className="text-[13px] font-medium text-[var(--sl-t1)]">Sincronizar salário com Finanças</p>
-                <p className="text-[11px] text-[var(--sl-t3)]">Cria receita recorrente mensal automaticamente</p>
-              </div>
-              <button
-                onClick={() => setForm(f => ({ ...f, sync_salary_to_finance: !f.sync_salary_to_finance }))}
-                className={cn(
-                  'w-10 h-6 rounded-full transition-all relative',
-                  form.sync_salary_to_finance ? 'bg-[#f59e0b]' : 'bg-[var(--sl-s3)]'
-                )}
-              >
-                <div className={cn(
-                  'w-4 h-4 rounded-full bg-white absolute top-1 transition-all',
-                  form.sync_salary_to_finance ? 'left-5' : 'left-1'
-                )} />
-              </button>
-            </div>
-
-            {/* Cancel button when in edit mode */}
-            {editMode && (
-              <button
-                onClick={() => setEditMode(false)}
-                className="w-full py-2.5 rounded-[10px] text-[13px] border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] transition-colors"
-              >
-                Cancelar
-              </button>
-            )}
           </div>
 
           {/* Sidebar: career history */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-            <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">
-              📜 Histórico Recente
-            </h2>
-            {loading ? (
-              <div className="space-y-2">
-                {[1, 2, 3].map(i => <div key={i} className="h-14 rounded-lg bg-[var(--sl-s2)] animate-pulse" />)}
-              </div>
-            ) : history.length === 0 ? (
-              <p className="text-[12px] text-[var(--sl-t3)]">Nenhum histórico ainda.</p>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {history.slice(0, 5).map(entry => (
-                  <div key={entry.id} className="p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-[12px] font-semibold text-[var(--sl-t1)]">{entry.title}</p>
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-[#f59e0b] shrink-0">
-                        {CHANGE_TYPE_LABELS[entry.change_type]}
-                      </span>
-                    </div>
-                    {entry.company && <p className="text-[11px] text-[var(--sl-t3)]">{entry.company}</p>}
-                    <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
-                      {new Date(entry.start_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}
-                      {entry.salary && ` · ${formatCurrency(String(entry.salary))}`}
-                    </p>
-                  </div>
-                ))}
+          <div className="flex flex-col gap-5">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
+              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <Clock size={16} className="text-[#f43f5e]" />
+                Historico Recente
                 {history.length > 5 && (
-                  <button onClick={() => router.push('/carreira/historico')} className="text-[11px] text-[#f59e0b] hover:opacity-80 text-center py-1">
-                    Ver histórico completo →
-                  </button>
+                  <span
+                    className="ml-auto font-sans text-[12px] font-medium text-[#f43f5e] cursor-pointer hover:underline"
+                    onClick={() => router.push('/carreira/historico')}
+                  >
+                    Ver tudo &rarr;
+                  </span>
                 )}
               </div>
-            )}
+              {loading ? (
+                <div className="space-y-2">
+                  {[1, 2, 3].map(i => <div key={i} className="h-14 rounded-lg bg-[var(--sl-s2)] animate-pulse" />)}
+                </div>
+              ) : history.length === 0 ? (
+                <p className="text-[12px] text-[var(--sl-t3)]">Nenhum historico ainda.</p>
+              ) : (
+                <div className="flex flex-col gap-[10px]">
+                  {history.slice(0, 5).map((entry, i) => {
+                    const borderColors = ['#10b981', '#a855f7', '#f59e0b', '#3b82f6', '#06b6d4']
+                    return (
+                      <div
+                        key={entry.id}
+                        className="p-3 bg-[var(--sl-s2)] rounded-[10px]"
+                        style={{ borderLeft: `3px solid ${borderColors[i % borderColors.length]}` }}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-[12px] font-semibold text-[var(--sl-t1)]">{entry.title}</p>
+                          <span
+                            className="text-[10px] font-semibold px-[10px] py-[3px] rounded-lg shrink-0"
+                            style={{ background: `${borderColors[i % borderColors.length]}15`, color: borderColors[i % borderColors.length] }}
+                          >
+                            {CHANGE_TYPE_LABELS[entry.change_type]}
+                          </span>
+                        </div>
+                        {entry.company && <p className="text-[11px] text-[var(--sl-t3)]">{entry.company}</p>}
+                        <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
+                          {new Date(entry.start_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}
+                          {entry.salary && <span className="font-[DM_Mono] ml-1">{formatCurrency(String(entry.salary))}</span>}
+                        </p>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

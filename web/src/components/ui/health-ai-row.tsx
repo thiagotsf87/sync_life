@@ -48,7 +48,7 @@ export function HealthAIRow({
   return (
     <div className={cn('grid grid-cols-[1fr_1fr] gap-3.5 sl-fade-up', 'max-lg:grid-cols-1', className)}>
       {/* Health Score */}
-      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-all hover:border-[var(--sl-border-h)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,.15)]">
         <div
           className="absolute top-0 left-[22px] right-[22px] h-[2.5px] rounded-b"
           style={{ background: `linear-gradient(90deg, ${accentColor}, #0055ff)` }}
@@ -99,39 +99,42 @@ export function HealthAIRow({
         </div>
       </div>
 
-      {/* AI Insights */}
-      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
-        <div className="absolute top-0 left-[22px] right-[22px] h-[2.5px] rounded-b bg-gradient-to-r from-[#a855f7] to-[#06b6d4]" />
+      {/* AI Insights — gradient border via wrapper technique */}
+      <div
+        className="rounded-[19px] p-px relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,.15)]"
+        style={{ background: 'linear-gradient(135deg, rgba(6,182,212,.18), rgba(0,85,255,.10))' }}
+      >
+        <div className="bg-[var(--sl-s1)] rounded-[18px] p-6 relative overflow-hidden">
+          {/* Radial glow */}
+          <div className="absolute top-[-40px] right-[-40px] w-[140px] h-[140px] rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(168,85,247,.06),transparent_70%)]" />
 
-        {/* Radial glow */}
-        <div className="absolute top-[-40px] right-[-40px] w-[140px] h-[140px] rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(168,85,247,.06),transparent_70%)]" />
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles size={14} className="text-[#a855f7]" />
+            <span className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)]">
+              Insights IA
+            </span>
+            <span className="ml-1 px-1.5 py-[1px] rounded text-[9px] font-bold bg-[rgba(168,85,247,.12)] text-[#a855f7]">
+              IA
+            </span>
+          </div>
 
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles size={14} className="text-[#a855f7]" />
-          <span className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)]">
-            Insights IA
-          </span>
-          <span className="ml-1 px-1.5 py-[1px] rounded text-[9px] font-bold bg-[rgba(168,85,247,.12)] text-[#a855f7]">
-            IA
-          </span>
-        </div>
+          <div className="flex flex-col gap-2 mb-3">
+            {insights.map((insight, i) => (
+              <div key={i} className="bg-[var(--sl-s2)] rounded-xl px-3 py-2.5">
+                <p className="text-[12px] font-semibold text-[var(--sl-t1)] mb-0.5">{insight.title}</p>
+                <p className="text-[11px] text-[var(--sl-t2)] leading-relaxed">{insight.description}</p>
+              </div>
+            ))}
+          </div>
 
-        <div className="flex flex-col gap-2 mb-3">
-          {insights.map((insight, i) => (
-            <div key={i} className="bg-[var(--sl-s2)] rounded-xl px-3 py-2.5">
-              <p className="text-[12px] font-semibold text-[var(--sl-t1)] mb-0.5">{insight.title}</p>
-              <p className="text-[11px] text-[var(--sl-t2)] leading-relaxed">{insight.description}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Pergunte algo..."
-            className="w-full pl-3 pr-9 py-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] text-[12px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
-          />
-          <Send size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--sl-t3)]" />
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Pergunte algo..."
+              className="w-full pl-3 pr-9 py-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] text-[12px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
+            />
+            <Send size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--sl-t3)]" />
+          </div>
         </div>
       </div>
     </div>

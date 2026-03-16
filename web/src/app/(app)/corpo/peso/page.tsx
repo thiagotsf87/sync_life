@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, Scale, Heart } from 'lucide-react'
 import { MobileFormHeader } from '@/components/ui/mobile-form-header'
+import { ModuleHeader } from '@/components/ui/module-header'
+import { MetricsStrip } from '@/components/ui/metrics-strip'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import {
@@ -139,7 +141,7 @@ export default function PesoPage() {
     ? calcCaloriesTarget(profile.tdee, profile.weight_goal_type)
     : null
 
-  // RN-CRP-14 + RN-CRP-15: velocidade e previsão baseadas nos últimos 30 dias
+  // RN-CRP-14 + RN-CRP-15: velocidade e previsao baseadas nos ultimos 30 dias
   const last30Entries = entries.filter(e => {
     const d = new Date(e.recorded_at)
     const now = new Date()
@@ -183,221 +185,368 @@ export default function PesoPage() {
     setShowProfileModal(true)
   }
 
+  // Compute previous entry delta
+  function getDelta(idx: number): number | null {
+    if (idx >= entries.length - 1) return null
+    return entries[idx].weight - entries[idx + 1].weight
+  }
+
+  // Goal progress
+  const goalProgress = latestEntry && profile?.weight_goal_kg
+    ? (() => {
+        const initialWeight = entries.length > 1 ? entries[entries.length - 1].weight : latestEntry.weight
+        const totalToLose = initialWeight - profile.weight_goal_kg
+        if (Math.abs(totalToLose) < 0.01) return 100
+        const lost = initialWeight - latestEntry.weight
+        return Math.max(0, Math.min(100, Math.round((lost / totalToLose) * 100)))
+      })()
+    : null
+
   return (
-    <div className="max-w-[1140px] mx-auto px-4 lg:px-6 lg:py-7 lg:pb-16">
-
-      <MobileFormHeader
-        moduleId="corpo"
-        title="⚖️ Peso & Medidas"
-        onBack={() => router.push('/corpo')}
-        rightAction={
-          <div className="flex items-center gap-2">
-            <button
-              onClick={openProfileModal}
-              className="px-3 py-1.5 rounded-[10px] text-[12px] border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] transition-colors"
-            >
-              ⚙️ Perfil
-            </button>
-            <button
-              onClick={() => setShowWeightModal(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f97316] text-white hover:opacity-90 transition-opacity"
-            >
-              <Plus size={16} />
-              Registrar
-            </button>
-          </div>
-        }
-      />
-
-      {loading ? (
-        <div className="h-64 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
-      ) : (
-        <div className="grid grid-cols-[1fr_300px] gap-5 max-lg:grid-cols-1">
-
-          {/* Chart */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">📈 Evolução de Peso</h2>
-              <div className="flex gap-1">
-                {([3, 6, 12] as const).map(m => (
-                  <button
-                    key={m}
-                    onClick={() => setChartMonths(m)}
-                    className={cn(
-                      'px-2.5 py-1 rounded-[7px] text-[11px] font-medium border transition-all',
-                      chartMonths === m
-                        ? 'border-[#f97316] bg-[#f97316]/10 text-[var(--sl-t1)]'
-                        : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]'
-                    )}
-                  >
-                    {m}m
-                  </button>
-                ))}
-              </div>
+    <>
+      {/* Mobile */}
+      <div className="lg:hidden max-w-[1160px] mx-auto px-4">
+        <MobileFormHeader
+          moduleId="corpo"
+          title="Peso & Medidas"
+          onBack={() => router.push('/corpo')}
+          rightAction={
+            <div className="flex items-center gap-2">
+              <button
+                onClick={openProfileModal}
+                className="px-3 py-1.5 rounded-[10px] text-[12px] border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] transition-colors"
+              >
+                Perfil
+              </button>
+              <button
+                onClick={() => setShowWeightModal(true)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f97316] text-white hover:opacity-90 transition-opacity"
+              >
+                <Plus size={16} />
+                Registrar
+              </button>
             </div>
-            <WeightChart entries={entries} goalWeight={profile?.weight_goal_kg} months={chartMonths} />
-          </div>
+          }
+        />
 
-          {/* Stats */}
-          <div className="flex flex-col gap-3">
-            {/* Current stats */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
-              <h3 className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-3">📊 Estatísticas</h3>
-              <div className="flex flex-col gap-2">
-                {[
-                  { label: 'Peso', value: latestEntry ? `${latestEntry.weight} kg` : '—' },
-                  {
-                    label: 'IMC',
-                    value: imc ? imc.toFixed(1) : '—',
-                    sub: imcInfo?.label,
-                    color: imcInfo?.color,
-                  },
-                  { label: 'Altura', value: profile?.height_cm ? `${profile.height_cm} cm` : '—' },
-                  { label: 'TMB', value: profile?.bmr ? `${Math.round(profile.bmr)} kcal` : '—' },
-                  { label: 'TDEE', value: profile?.tdee ? `${Math.round(profile.tdee)} kcal` : '—' },
-                  {
-                    label: 'Meta calórica',
-                    value: caloriesTarget ? `${Math.round(caloriesTarget)} kcal` : '—',
-                    sub: profile?.weight_goal_type ? WEIGHT_GOAL_LABELS[profile.weight_goal_type] : undefined,
-                  },
-                ].map(stat => (
-                  <div key={stat.label} className="flex items-center justify-between">
-                    <span className="text-[11px] text-[var(--sl-t3)]">{stat.label}</span>
-                    <div className="text-right">
-                      <span
-                        className="font-[DM_Mono] text-[13px] font-medium"
-                        style={{ color: (stat as any).color ?? 'var(--sl-t1)' }}
-                      >
-                        {stat.value}
-                      </span>
-                      {(stat as any).sub && (
-                        <p className="text-[10px]" style={{ color: (stat as any).color ?? 'var(--sl-t3)' }}>
-                          {(stat as any).sub}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+        {loading ? (
+          <div className="h-64 rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
+        ) : (
+          <>
+            {/* Mobile chart */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 mb-4">
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-4">Evolucao de Peso</h2>
+              <WeightChart entries={entries} goalWeight={profile?.weight_goal_kg} months={chartMonths} />
             </div>
 
-            {/* Goal */}
-            {profile?.weight_goal_kg && latestEntry && (
-              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
-                <h3 className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-2">🎯 Meta de Peso</h3>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-[DM_Mono] text-[13px] text-[var(--sl-t1)]">{latestEntry.weight} kg</span>
-                  <span className="text-[11px] text-[var(--sl-t3)]">→</span>
-                  <span className="font-[DM_Mono] text-[13px] text-[#10b981]">{profile.weight_goal_kg} kg</span>
+            {/* Mobile stats */}
+            <div className="flex flex-col gap-3 mb-4">
+              {[
+                { label: 'Peso', value: latestEntry ? `${latestEntry.weight} kg` : '--' },
+                { label: 'IMC', value: imc ? imc.toFixed(1) : '--', color: imcInfo?.color },
+                { label: 'TMB', value: profile?.bmr ? `${Math.round(profile.bmr)} kcal` : '--' },
+              ].map(stat => (
+                <div key={stat.label} className="flex items-center justify-between p-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-xl">
+                  <span className="text-[11px] text-[var(--sl-t3)]">{stat.label}</span>
+                  <span className="font-[DM_Mono] text-[13px] font-medium" style={{ color: stat.color ?? 'var(--sl-t1)' }}>{stat.value}</span>
                 </div>
-                {(() => {
-                  const diff = Math.abs(latestEntry.weight - profile.weight_goal_kg)
-                  const direction = latestEntry.weight > profile.weight_goal_kg ? 'Perder' : 'Ganhar'
-                  return (
-                    <p className="text-[11px] text-[var(--sl-t3)]">
-                      {direction} <strong className="text-[var(--sl-t1)]">{diff.toFixed(1)} kg</strong> para atingir a meta.
-                    </p>
-                  )
-                })()}
-                {/* RN-CRP-14: Previsão de data */}
-                {predictedDate && (
-                  <p className="text-[11px] text-[var(--sl-t2)] mt-1.5">
-                    📅 Previsão: <strong className="text-[var(--sl-t1)]">
-                      {predictedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
-                    </strong>
-                    {weeklyVelocity !== null && (
-                      <span className="text-[var(--sl-t3)]"> ({Math.abs(weeklyVelocity).toFixed(1)} kg/sem)</span>
-                    )}
-                  </p>
-                )}
+              ))}
+            </div>
+
+            {/* Mobile history */}
+            {entries.length > 0 && (
+              <div className="mb-4">
+                <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] mb-3">Historico</h2>
+                <div className="flex flex-col gap-2">
+                  {entries.slice(0, 10).map(entry => (
+                    <div key={entry.id} className="flex items-center gap-3 p-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-xl hover:border-[var(--sl-border-h)] transition-colors">
+                      <p className="text-[12px] text-[var(--sl-t3)] w-24 shrink-0">
+                        {new Date(entry.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })}
+                      </p>
+                      <p className="font-[DM_Mono] font-medium text-[14px] text-[var(--sl-t1)]">{entry.weight} kg</p>
+                      <div className="flex-1" />
+                      <button
+                        onClick={() => handleDeleteEntry(entry.id)}
+                        className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors"
+                      >
+                        <Trash2 size={12} className="text-[var(--sl-t3)]" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
+          </>
+        )}
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
+
+        {/* 1. ModuleHeader */}
+        <ModuleHeader
+          icon={Scale}
+          iconBg="rgba(249,115,22,.08)"
+          iconColor="#f97316"
+          title="Peso & Medidas"
+          subtitle="Acompanhe sua evolucao corporal"
+        >
+          <button
+            onClick={openProfileModal}
+            className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
+                       border border-[var(--sl-border)] text-[var(--sl-t2)]
+                       hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors"
+          >
+            Perfil de Saude
+          </button>
+          <button
+            onClick={() => setShowWeightModal(true)}
+            className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
+                       bg-[#f97316] text-white hover:brightness-110 hover:-translate-y-px
+                       transition-all shadow-[0_6px_20px_rgba(249,115,22,.15)]"
+          >
+            <Plus size={16} />
+            Registrar Peso
+          </button>
+        </ModuleHeader>
+
+        {loading ? (
+          <div className="h-64 rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
+        ) : (
+          <>
+            {/* 2. Metrics Strip (6 cells, full-width) */}
+            <MetricsStrip
+              className="mb-[14px] sl-fade-up sl-delay-1"
+              items={[
+                {
+                  label: 'Peso Atual',
+                  value: latestEntry ? `${latestEntry.weight}` : '--',
+                  note: latestEntry ? 'kg' : undefined,
+                  accent: '#f97316',
+                },
+                {
+                  label: 'IMC',
+                  value: imc ? imc.toFixed(1) : '--',
+                  note: imcInfo?.label ?? undefined,
+                  accent: '#10b981',
+                  valueColor: imcInfo?.color ?? undefined,
+                },
+                {
+                  label: 'Altura',
+                  value: profile?.height_cm ? `${profile.height_cm}` : '--',
+                  note: profile?.height_cm ? 'cm' : undefined,
+                  accent: '#06b6d4',
+                },
+                {
+                  label: 'TMB',
+                  value: profile?.bmr ? Math.round(profile.bmr).toLocaleString('pt-BR') : '--',
+                  accent: '#f59e0b',
+                },
+                {
+                  label: 'TDEE',
+                  value: profile?.tdee ? Math.round(profile.tdee).toLocaleString('pt-BR') : '--',
+                  accent: '#a855f7',
+                },
+                {
+                  label: 'Velocidade',
+                  value: weeklyVelocity !== null ? `${weeklyVelocity > 0 ? '+' : ''}${weeklyVelocity.toFixed(1)}` : '--',
+                  note: weeklyVelocity !== null ? 'kg/sem' : undefined,
+                  accent: '#10b981',
+                  valueColor: weeklyVelocity !== null
+                    ? (weeklyVelocity <= 0 ? '#10b981' : '#f43f5e')
+                    : undefined,
+                },
+              ]}
+            />
 
             {/* RN-CRP-15: Alerta velocidade insegura */}
             {speedUnsafe && (
-              <div className="bg-[#f43f5e]/10 border border-[#f43f5e]/30 rounded-xl p-3">
-                <p className="text-[11px] text-[var(--sl-t2)] leading-relaxed">
-                  ⚠️ Velocidade de {weeklyVelocity! > 0 ? 'ganho' : 'perda'} de peso acima de 1 kg/semana
+              <div className="bg-[#f43f5e]/10 border border-[#f43f5e]/30 rounded-[18px] p-6 mb-[14px] sl-fade-up">
+                <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed">
+                  Velocidade de {weeklyVelocity! > 0 ? 'ganho' : 'perda'} de peso acima de 1 kg/semana
                   (<strong className="text-[#f43f5e]">{Math.abs(weeklyVelocity!).toFixed(1)} kg/sem</strong>).
-                  A faixa saudável é de 0,5 a 1 kg/semana. Considere consultar um profissional.
+                  A faixa saudavel e de 0,5 a 1 kg/semana. Considere consultar um profissional.
                 </p>
               </div>
             )}
-          </div>
-        </div>
-      )}
 
-      {/* RN-CRP-16: Gráfico de evolução de medidas (cintura/quadril) */}
-      {entries.some(e => e.waist_cm || e.hip_cm) && (
-        <div className="mt-5 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-          <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] mb-4">📏 Evolução de Medidas</h2>
-          <ResponsiveContainer width="100%" height={180}>
-            <LineChart
-              data={[...entries].reverse().slice(-30).map(e => ({
-                date: new Date(e.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
-                cintura: e.waist_cm ?? undefined,
-                quadril: e.hip_cm ?? undefined,
-              }))}
-              margin={{ top: 4, right: 8, left: -20, bottom: 0 }}
-            >
-              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--sl-t3)' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'var(--sl-t3)' }} axisLine={false} tickLine={false} unit="cm" />
-              <Tooltip
-                contentStyle={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', borderRadius: 10, fontSize: 11 }}
-                labelStyle={{ color: 'var(--sl-t2)' }}
-              />
-              <Legend wrapperStyle={{ fontSize: 11, color: 'var(--sl-t3)' }} />
-              <Line type="monotone" dataKey="cintura" name="Cintura (cm)" stroke="#f59e0b" dot={false} strokeWidth={2} connectNulls />
-              <Line type="monotone" dataKey="quadril" name="Quadril (cm)" stroke="#a855f7" dot={false} strokeWidth={2} connectNulls />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {/* History */}
-      {entries.length > 0 && (
-        <div className="mt-5">
-          <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] mb-3">📜 Histórico</h2>
-          <div className="flex flex-col gap-2">
-            {entries.slice(0, 15).map(entry => (
-              <div key={entry.id} className="flex items-center gap-3 p-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-xl hover:border-[var(--sl-border-h)] transition-colors">
-                <p className="text-[12px] text-[var(--sl-t3)] w-24 shrink-0">
-                  {new Date(entry.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })}
-                </p>
-                <p className="font-[DM_Mono] font-medium text-[14px] text-[var(--sl-t1)]">{entry.weight} kg</p>
-                {entry.waist_cm && <p className="text-[11px] text-[var(--sl-t3)]">Cintura: {entry.waist_cm}cm</p>}
-                {entry.notes && <p className="flex-1 text-[11px] text-[var(--sl-t3)] truncate italic">{entry.notes}</p>}
-                {entry.progress_photo_url && (
-                  <a href={entry.progress_photo_url} target="_blank" rel="noreferrer" className="text-[11px] text-[#f97316] hover:opacity-80">
-                    📷 Foto
-                  </a>
-                )}
-                <button
-                  onClick={() => handleDeleteEntry(entry.id)}
-                  className="ml-auto p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors"
-                >
-                  <Trash2 size={12} className="text-[var(--sl-t3)]" />
-                </button>
+            {/* 3. Goal Inline Bar */}
+            {profile?.weight_goal_kg && latestEntry && goalProgress !== null && (
+              <div className="flex items-center gap-[14px] px-5 py-[14px] bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] mb-[14px] sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
+                <div className="text-center min-w-[50px]">
+                  <span className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)] block">{entries.length > 1 ? entries[entries.length - 1].weight : latestEntry.weight}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">Inicio</span>
+                </div>
+                <div className="flex-1 h-2 bg-[var(--sl-s3)] rounded-full overflow-hidden relative">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${goalProgress}%`,
+                      background: 'linear-gradient(90deg, #10b981, #0055ff)',
+                    }}
+                  />
+                </div>
+                <div className="text-center min-w-[50px]">
+                  <span className="font-[DM_Mono] text-[14px] font-medium text-[#10b981] block">{profile.weight_goal_kg}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">Meta</span>
+                </div>
+                <span className="font-[DM_Mono] text-[13px] text-[#f97316] min-w-[80px] text-right">
+                  {goalProgress}%{predictedDate ? ` \u00B7 ${predictedDate.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })}` : ''}
+                </span>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            )}
+
+            {/* 4. Chart (full-width, protagonist) */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 mb-[14px] sl-fade-up sl-delay-3 hover:border-[var(--sl-border-h)] transition-colors">
+              <div className="flex items-center gap-[9px] mb-[18px]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
+                </svg>
+                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                  Evolucao de Peso
+                </h3>
+                <div className="flex gap-1 ml-auto">
+                  {([3, 6, 12] as const).map(m => (
+                    <button
+                      key={m}
+                      onClick={() => setChartMonths(m)}
+                      className={cn(
+                        'px-3 py-1 rounded-[8px] text-[11px] font-semibold border transition-all',
+                        chartMonths === m
+                          ? 'border-[#f97316] bg-[rgba(249,115,22,.08)] text-[var(--sl-t1)]'
+                          : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]'
+                      )}
+                    >
+                      {m}m
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <WeightChart entries={entries} goalWeight={profile?.weight_goal_kg} months={chartMonths} />
+            </div>
+
+            {/* RN-CRP-16: Grafico de evolucao de medidas (cintura/quadril) */}
+            {entries.some(e => e.waist_cm || e.hip_cm) && (
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 mb-[14px] sl-fade-up hover:border-[var(--sl-border-h)] transition-colors">
+                <div className="flex items-center gap-[9px] mb-[18px]">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 3v18h18" /><path d="M21 17H7" /><path d="M21 13H7" /><path d="M21 9H7" />
+                  </svg>
+                  <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                    Evolucao de Medidas
+                  </h3>
+                </div>
+                <ResponsiveContainer width="100%" height={180}>
+                  <LineChart
+                    data={[...entries].reverse().slice(-30).map(e => ({
+                      date: new Date(e.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
+                      cintura: e.waist_cm ?? undefined,
+                      quadril: e.hip_cm ?? undefined,
+                    }))}
+                    margin={{ top: 4, right: 8, left: -20, bottom: 0 }}
+                  >
+                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--sl-t3)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: 'var(--sl-t3)' }} axisLine={false} tickLine={false} unit="cm" />
+                    <Tooltip
+                      contentStyle={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', borderRadius: 10, fontSize: 11 }}
+                      labelStyle={{ color: 'var(--sl-t2)' }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: 11, color: 'var(--sl-t3)' }} />
+                    <Line type="monotone" dataKey="cintura" name="Cintura (cm)" stroke="#f59e0b" dot={false} strokeWidth={2} connectNulls />
+                    <Line type="monotone" dataKey="quadril" name="Quadril (cm)" stroke="#a855f7" dot={false} strokeWidth={2} connectNulls />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* 5. History Table (Bloomberg-style) */}
+            {entries.length > 0 && (
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-4 hover:border-[var(--sl-border-h)] transition-colors">
+                <div className="flex items-center gap-[9px] mb-[18px]">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sl-t2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 3v18h18" /><path d="M21 17H7" /><path d="M21 13H7" /><path d="M21 9H7" />
+                  </svg>
+                  <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                    Historico de Registros
+                  </h3>
+                  <span className="ml-auto text-[11px] text-[var(--sl-t3)]">{entries.length} registros</span>
+                </div>
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] text-left py-2 px-3 border-b border-[var(--sl-border)]">Data</th>
+                      <th className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] text-left py-2 px-3 border-b border-[var(--sl-border)]">Peso</th>
+                      <th className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] text-left py-2 px-3 border-b border-[var(--sl-border)]">Cintura</th>
+                      <th className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] text-left py-2 px-3 border-b border-[var(--sl-border)]">IMC</th>
+                      <th className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] text-left py-2 px-3 border-b border-[var(--sl-border)]">Variacao</th>
+                      <th className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] text-left py-2 px-3 border-b border-[var(--sl-border)]"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {entries.slice(0, 15).map((entry, idx) => {
+                      const entryImc = profile?.height_cm ? calcIMC(entry.weight, profile.height_cm) : null
+                      const entryImcInfo = entryImc ? IMC_LABEL(entryImc) : null
+                      const delta = getDelta(idx)
+                      return (
+                        <tr key={entry.id} className="group hover:bg-[var(--sl-s2)] transition-colors">
+                          <td className="font-[DM_Mono] text-[12.5px] text-[var(--sl-t3)] py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
+                            {new Date(entry.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })}
+                          </td>
+                          <td className="font-[DM_Mono] text-[12.5px] font-medium text-[var(--sl-t1)] py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
+                            {entry.weight} kg
+                          </td>
+                          <td className="font-[DM_Mono] text-[12.5px] text-[var(--sl-t2)] py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
+                            {entry.waist_cm ? `${entry.waist_cm} cm` : '--'}
+                          </td>
+                          <td className="font-[DM_Mono] text-[12.5px] font-medium py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]" style={{ color: entryImcInfo?.color ?? 'var(--sl-t1)' }}>
+                            {entryImc ? entryImc.toFixed(1) : '--'}
+                          </td>
+                          <td className="py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
+                            {delta !== null && (
+                              <span
+                                className="inline-flex px-2 py-[2px] rounded-md font-[DM_Mono] text-[11px] font-medium"
+                                style={{
+                                  background: delta <= 0 ? 'rgba(16,185,129,.1)' : 'rgba(244,63,94,.1)',
+                                  color: delta <= 0 ? '#10b981' : '#f43f5e',
+                                }}
+                              >
+                                {delta > 0 ? '+' : ''}{delta.toFixed(1)}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
+                            <button
+                              onClick={() => handleDeleteEntry(entry.id)}
+                              className="text-[var(--sl-t3)] hover:text-[#f43f5e] transition-colors text-[12px]"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Weight Entry Modal */}
       {showWeightModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onClick={e => { if (e.target === e.currentTarget) setShowWeightModal(false) }}
         >
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl w-full max-w-[420px]">
-            <div className="border-b border-[var(--sl-border)]">
-              <MobileFormHeader
-                moduleId="corpo"
-                title="Registrar Peso"
-                onBack={() => setShowWeightModal(false)}
-              />
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] w-full max-w-[420px]">
+            <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
+              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
+                <Scale size={20} className="text-[#f97316]" />
+                Registrar Peso
+              </h2>
+              <button onClick={() => setShowWeightModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">&times;</button>
             </div>
-            <div className="p-5 flex flex-col gap-3">
+            <div className="p-6 flex flex-col gap-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Peso (kg)</label>
@@ -473,15 +622,15 @@ export default function PesoPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onClick={e => { if (e.target === e.currentTarget) setShowProfileModal(false) }}
         >
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl w-full max-w-[500px] max-h-[90vh] overflow-y-auto">
-            <div className="border-b border-[var(--sl-border)]">
-              <MobileFormHeader
-                moduleId="corpo"
-                title="Perfil de Saúde"
-                onBack={() => setShowProfileModal(false)}
-              />
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] w-full max-w-[500px] max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
+              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
+                <Heart size={20} className="text-[#f97316]" />
+                Perfil de Saude
+              </h2>
+              <button onClick={() => setShowProfileModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">&times;</button>
             </div>
-            <div className="p-5 flex flex-col gap-4">
+            <div className="p-6 flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Altura (cm)</label>
@@ -501,7 +650,7 @@ export default function PesoPage() {
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1.5 block">Sexo Biológico</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1.5 block">Sexo Biologico</label>
                 <div className="flex gap-2">
                   {(['male', 'female'] as const).map(s => (
                     <button key={s} onClick={() => setProfileForm(f => ({ ...f, biological_sex: s }))}
@@ -512,14 +661,14 @@ export default function PesoPage() {
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
-                      {s === 'male' ? '♂️ Masculino' : '♀️ Feminino'}
+                      {s === 'male' ? 'Masculino' : 'Feminino'}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1.5 block">Nível de Atividade</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1.5 block">Nivel de Atividade</label>
                 <div className="flex flex-col gap-1">
                   {ACTIVITY_LEVELS.map(l => (
                     <button key={l} onClick={() => setProfileForm(f => ({ ...f, activity_level: l }))}
@@ -564,10 +713,10 @@ export default function PesoPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Restrições Alimentares</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Restricoes Alimentares</label>
                   <input type="text" value={profileForm.dietary_restrictions}
                     onChange={e => setProfileForm(f => ({ ...f, dietary_restrictions: e.target.value }))}
-                    placeholder="Ex: Lactose, Glúten"
+                    placeholder="Ex: Lactose, Gluten"
                     className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
                   />
                 </div>
@@ -587,6 +736,6 @@ export default function PesoPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }

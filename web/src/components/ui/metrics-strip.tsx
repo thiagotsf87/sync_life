@@ -23,7 +23,7 @@ export function MetricsStrip({ items, gradient, className }: MetricsStripProps) 
   return (
     <div
       className={cn(
-        'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl overflow-hidden',
+        'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] overflow-hidden',
         'relative flex sl-fade-up transition-colors hover:border-[var(--sl-border-h)]',
         className
       )}

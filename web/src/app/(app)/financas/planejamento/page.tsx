@@ -160,7 +160,7 @@ function SparklineSvg({ data, months, color }: { data: BalanceDataPoint[]; month
 
 function LoadingSkeleton() {
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="max-w-[1160px] mx-auto px-10 py-9 pb-16">
       <div className="h-8 w-56 bg-[var(--sl-s3)] rounded-lg mb-5 animate-pulse" />
       <div className="grid grid-cols-4 gap-3 mb-5 max-sm:grid-cols-2">
         {Array.from({ length: 4 }).map((_, i) => (
@@ -346,7 +346,7 @@ export default function PlanejamentoPage() {
       balanceData={balanceData.slice(0, 7)}
       onAddEvent={openCreate}
     />
-    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
       {/* ① Topbar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">

@@ -112,7 +112,7 @@ export default function MentePage() {
       <MenteMobile />
 
       {/* Desktop layout */}
-      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+      <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
         {/* 1. ModuleHeader */}
         <ModuleHeader
@@ -174,7 +174,7 @@ export default function MentePage() {
         <div className="grid grid-cols-[1fr_380px] gap-[14px] max-lg:grid-cols-1">
 
           {/* ── LEFT: Trilhas Ativas ── */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 sl-fade-up sl-delay-2 transition-colors hover:border-[var(--sl-border-h)]">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-[9px] mb-[18px]">
               <BookOpen size={16} className="text-[#eab308]" />
               <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
@@ -285,7 +285,7 @@ export default function MentePage() {
           <div className="flex flex-col gap-[14px]">
 
             {/* Sessoes Recentes */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 sl-fade-up sl-delay-3 transition-colors hover:border-[var(--sl-border-h)]">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-3 transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-[9px] mb-[18px]">
                 <Clock size={16} className="text-[#eab308]" />
                 <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
@@ -344,7 +344,7 @@ export default function MentePage() {
             </div>
 
             {/* Horas por dia chart */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 sl-fade-up sl-delay-4 transition-colors hover:border-[var(--sl-border-h)]">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-4 transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-[9px] mb-[18px]">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="20" x2="18" y2="10" />

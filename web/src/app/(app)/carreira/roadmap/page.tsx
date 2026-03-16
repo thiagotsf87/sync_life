@@ -2,15 +2,19 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, Trash2, ChevronDown, Clock, TrendingUp, Check } from 'lucide-react'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 import {
   useCareerRoadmaps, useCreateRoadmap, useUpdateRoadmapStep, useDeleteRoadmap,
   useProfessionalProfile, useCareerHistory, useSkills, useSaveSkill, useAddHistoryEntry,
   type CreateRoadmapData, type StepStatus,
 } from '@/hooks/use-carreira'
 import { RoadmapTimeline } from '@/components/carreira/RoadmapTimeline'
+import { HorizontalTimeline } from '@/components/ui/horizontal-timeline'
+import type { TimelineStepStatus } from '@/components/ui/horizontal-timeline'
 import { CarreiraMobile } from '@/components/carreira/CarreiraMobile'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 import { createClient } from '@/lib/supabase/client'
@@ -227,110 +231,209 @@ export default function RoadmapPage() {
       }}
       onReload={async () => { await reload() }}
     />
-    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
-      {/* Topbar */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <button
-          onClick={() => router.push('/carreira')}
-          className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Carreira
-        </button>
-        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
-          🗺 Roadmaps
-        </h1>
+      {/* MODULE HEADER */}
+      <ModuleHeader
+        icon={Clock}
+        iconBg="rgba(244,63,94,.08)"
+        iconColor="#f43f5e"
+        title="Roadmaps"
+        subtitle={roadmaps.length > 0
+          ? `${roadmaps.length} roadmap${roadmaps.length > 1 ? 's' : ''} \u00B7 ${activeRoadmaps.length} ativo${activeRoadmaps.length !== 1 ? 's' : ''}`
+          : 'Crie seu plano de carreira'}
+      >
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                     bg-[#f59e0b] text-[#03071a] hover:opacity-90 transition-opacity"
+          className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
+                     bg-[#f43f5e] text-white hover:brightness-110 transition-all"
         >
           <Plus size={16} />
           Novo Roadmap
         </button>
-      </div>
+      </ModuleHeader>
 
       {/* Content */}
       {loading ? (
-        <div className="flex flex-col gap-3">
-          {[1, 2].map(i => <div key={i} className="h-20 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />)}
+        <div className="flex flex-col gap-[14px]">
+          {[1, 2].map(i => <div key={i} className="h-20 rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />)}
         </div>
       ) : error ? (
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 text-center">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 text-center">
           <p className="text-[13px] text-[var(--sl-t2)]">
             {error.includes('does not exist') ? 'Execute a migration 005 no Supabase.' : error}
           </p>
         </div>
       ) : roadmaps.length === 0 ? (
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-12 text-center">
-          <div className="text-4xl mb-3">🗺</div>
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
           <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhum roadmap criado</h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-5">Crie seu plano de carreira com passos concretos.</p>
           <button
             onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f59e0b] text-[#03071a] hover:opacity-90"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f43f5e] text-white hover:brightness-110"
           >
             <Plus size={15} />
             Criar Roadmap
           </button>
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
-          {roadmaps.map(rm => {
+        <div className="flex flex-col gap-[14px]">
+          {roadmaps.map((rm, rmIdx) => {
             const isExpanded = expandedRoadmap === rm.id
             const color = STATUS_COLORS[rm.status] ?? '#6e90b8'
+
+            // Build steps for HorizontalTimeline
+            const timelineSteps = (rm.steps ?? []).map(s => ({
+              label: s.title,
+              date: s.target_date
+                ? new Date(s.target_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
+                : undefined,
+              status: (s.status === 'completed' ? 'done' : s.status === 'in_progress' ? 'current' : 'pending') as TimelineStepStatus,
+            }))
+
             return (
-              <div key={rm.id} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl overflow-hidden hover:border-[var(--sl-border-h)] transition-colors">
-                {/* Header */}
+              <div
+                key={rm.id}
+                className={cn(
+                  'bg-[var(--sl-s1)] border rounded-[18px] overflow-hidden transition-colors sl-fade-up',
+                  `sl-delay-${Math.min(rmIdx + 1, 5)}`,
+                  rm.status === 'active' ? 'border-[rgba(244,63,94,.18)]' : rm.status === 'completed' ? 'border-[rgba(16,185,129,.15)]' : 'border-[var(--sl-border)]',
+                  'hover:border-[var(--sl-border-h)]',
+                  rm.status === 'paused' || rm.status === 'abandoned' ? 'opacity-60' : ''
+                )}
+              >
+                {/* Accordion Header */}
                 <button
                   onClick={() => setExpandedRoadmap(isExpanded ? null : rm.id)}
-                  className="w-full flex items-center gap-3 p-5 text-left"
+                  className="w-full flex items-center gap-4 p-[22px_28px] text-left"
                 >
+                  {/* Status icon */}
+                  <div
+                    className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
+                    style={{ background: color + '15' }}
+                  >
+                    {rm.status === 'completed' ? (
+                      <Check size={18} style={{ color }} />
+                    ) : (
+                      <TrendingUp size={18} style={{ color }} />
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <h3 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">{rm.name}</h3>
+                    <div className="flex items-center gap-[10px] mb-[2px] flex-wrap">
+                      <span className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">{rm.name}</span>
                       <span
-                        className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
-                        style={{ color, background: color + '20' }}
+                        className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
+                        style={{ background: color + '15', color }}
                       >
                         {STATUS_LABELS[rm.status]}
                       </span>
                     </div>
-                    <p className="text-[12px] text-[var(--sl-t2)]">
-                      {rm.current_title} → {rm.target_title}
+                    <p className="text-[12px] text-[var(--sl-t3)]">
+                      {rm.current_title} &rarr; {rm.target_title}
+                      {rm.target_salary && ` \u00B7 Salario alvo: ${rm.target_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`}
+                      {rm.target_date && ` \u00B7 Prazo: ${new Date(rm.target_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}`}
                     </p>
-                    {/* RN-CAR-10: link para simulador quando tem salário alvo */}
-                    {rm.target_salary && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); router.push('/financas/planejamento') }}
-                        className="mt-1 text-[10px] text-[#f59e0b] hover:opacity-80 transition-opacity"
-                      >
-                        💰 {rm.target_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} alvo → Ver no Simulador →
-                      </button>
-                    )}
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    <div className="text-right hidden sm:block">
-                      <p className="font-[DM_Mono] text-[15px] font-bold" style={{ color }}>{Math.round(rm.progress)}%</p>
-                      <div className="w-20 bg-[var(--sl-s3)] rounded-full overflow-hidden mt-1" style={{ height: '3px' }}>
-                        <div className="h-full rounded-full" style={{ width: `${Math.min(rm.progress, 100)}%`, background: color }} />
+                    <div className="font-[DM_Mono] text-[14px] font-medium" style={{ color }}>
+                      {Math.round(rm.progress)}%
+                    </div>
+                    <div className="w-[120px]">
+                      <div className="h-[5px] bg-[var(--sl-s3)] rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${Math.min(rm.progress, 100)}%`,
+                            background: rm.status === 'active'
+                              ? 'linear-gradient(90deg, #10b981, #f43f5e)'
+                              : color,
+                          }}
+                        />
                       </div>
                     </div>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(rm.id) }}
-                      className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors"
-                    >
-                      <Trash2 size={14} className="text-[var(--sl-t3)]" />
-                    </button>
-                    {isExpanded ? <ChevronUp size={16} className="text-[var(--sl-t3)]" /> : <ChevronDown size={16} className="text-[var(--sl-t3)]" />}
+                    <span className={cn('transition-transform text-[var(--sl-t3)]', isExpanded && 'rotate-180')}>
+                      <ChevronDown size={18} />
+                    </span>
                   </div>
                 </button>
 
-                {/* Expanded: Timeline */}
+                {/* Expanded body with Horizontal Timeline */}
                 {isExpanded && (
-                  <div className="px-5 pb-5 border-t border-[var(--sl-border)] pt-4">
-                    <RoadmapTimeline roadmap={rm} onUpdateStep={handleUpdateStep} />
+                  <div className="px-7 pb-6 border-t border-[var(--sl-border)] pt-5">
+                    {/* Horizontal Timeline */}
+                    {timelineSteps.length > 0 && (
+                      <div className="mb-5">
+                        <HorizontalTimeline
+                          steps={timelineSteps}
+                          progressPercent={Math.round(rm.progress)}
+                          accentColor={rm.status === 'completed' ? '#10b981' : '#10b981'}
+                        />
+                      </div>
+                    )}
+
+                    {/* Detail grid: current step + impact */}
+                    <div className="grid grid-cols-2 gap-[14px]">
+                      {/* Current step detail */}
+                      {(() => {
+                        const nextStep = rm.steps?.find(s => s.status !== 'completed')
+                        if (!nextStep) return null
+                        return (
+                          <div className="p-[16px_18px] bg-[var(--sl-s2)] rounded-xl">
+                            <p className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-[6px]">Etapa Atual</p>
+                            <p className="text-[14px] font-semibold text-[var(--sl-t1)] mb-1">{nextStep.title}</p>
+                            <p className="text-[12px] text-[var(--sl-t2)]">
+                              {nextStep.description || (nextStep.target_date
+                                ? `Prazo: ${new Date(nextStep.target_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}`
+                                : 'Sem prazo definido')}
+                            </p>
+                          </div>
+                        )
+                      })()}
+
+                      {/* Impact projection */}
+                      {rm.target_salary && profile?.gross_salary && (
+                        <div className="p-[16px_18px] bg-[var(--sl-s2)] rounded-xl">
+                          <p className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-[6px]">Impacto Projetado</p>
+                          <div className="flex gap-5 mt-2">
+                            <div>
+                              <p className="text-[11px] text-[var(--sl-t3)]">Salario atual</p>
+                              <p className="font-[DM_Mono] text-[16px] text-[var(--sl-t1)] mt-[2px]">
+                                {profile.gross_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                              </p>
+                            </div>
+                            <div className="flex items-center text-[var(--sl-t3)]">&rarr;</div>
+                            <div>
+                              <p className="text-[11px] text-[var(--sl-t3)]">Salario alvo</p>
+                              <p className="font-[DM_Mono] text-[16px] text-[#10b981] mt-[2px]">
+                                {rm.target_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] text-[var(--sl-t3)]">Aumento</p>
+                              <p className="font-[DM_Mono] text-[16px] text-[#10b981] mt-[2px]">
+                                +{Math.round(((rm.target_salary - profile.gross_salary) / profile.gross_salary) * 100)}%
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Vertical timeline for step management */}
+                    <div className="mt-5">
+                      <RoadmapTimeline roadmap={rm} onUpdateStep={handleUpdateStep} />
+                    </div>
+
+                    {/* Delete button */}
+                    <div className="flex justify-end mt-4">
+                      <button
+                        onClick={() => handleDelete(rm.id)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[11px] text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,.06)] transition-all"
+                      >
+                        <Trash2 size={12} />
+                        Excluir roadmap
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -345,9 +448,12 @@ export default function RoadmapPage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false) }}
         >
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl w-full max-w-[580px] max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-5 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">🗺 Novo Roadmap</h2>
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[580px] max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
+              <h2 className="font-[Syne] font-extrabold text-[20px] text-[var(--sl-t1)] flex items-center gap-[10px]">
+                <Clock size={20} className="text-[#f43f5e]" />
+                Novo Roadmap
+              </h2>
               <button onClick={() => setShowModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] transition-colors text-xl leading-none">×</button>
             </div>
             <div className="p-5 flex flex-col gap-4">
@@ -360,7 +466,7 @@ export default function RoadmapPage() {
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="Ex: Plano para Engenheiro Sênior"
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b]"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)]"
                 />
               </div>
 
@@ -372,7 +478,7 @@ export default function RoadmapPage() {
                     value={form.current_title}
                     onChange={e => setForm(f => ({ ...f, current_title: e.target.value }))}
                     placeholder="Ex: Dev Pleno"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)]"
                   />
                 </div>
                 <div>
@@ -382,7 +488,7 @@ export default function RoadmapPage() {
                     value={form.target_title}
                     onChange={e => setForm(f => ({ ...f, target_title: e.target.value }))}
                     placeholder="Ex: Dev Sênior"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)]"
                   />
                 </div>
               </div>
@@ -393,7 +499,7 @@ export default function RoadmapPage() {
                   <select
                     value={form.linked_objective_id}
                     onChange={e => setForm(f => ({ ...f, linked_objective_id: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-h)]"
                   >
                     <option value="">Nenhum</option>
                     {objectiveOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
@@ -411,7 +517,7 @@ export default function RoadmapPage() {
                     onChange={e => setForm(f => ({ ...f, target_salary: e.target.value }))}
                     placeholder="Opcional"
                     min="0"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)]"
                   />
                 </div>
                 <div>
@@ -420,7 +526,7 @@ export default function RoadmapPage() {
                     type="date"
                     value={form.target_date}
                     onChange={e => setForm(f => ({ ...f, target_date: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-h)]"
                   />
                 </div>
               </div>
@@ -437,11 +543,11 @@ export default function RoadmapPage() {
                     onChange={e => setStepInput(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && addStep()}
                     placeholder="Nome do passo e Enter"
-                    className="flex-1 px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b]"
+                    className="flex-1 px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)]"
                   />
                   <button
                     onClick={addStep}
-                    className="px-3 py-2 rounded-[10px] bg-[#f59e0b]/20 text-[#f59e0b] hover:bg-[#f59e0b]/30 text-[12px] font-semibold transition-colors"
+                    className="px-3 py-2 rounded-[10px] bg-[#f43f5e]/20 text-[#f43f5e] hover:bg-[#f43f5e]/30 text-[12px] font-semibold transition-colors"
                   >
                     <Plus size={14} />
                   </button>
@@ -479,7 +585,7 @@ export default function RoadmapPage() {
                 <button
                   onClick={handleCreate}
                   disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#f59e0b] text-[#03071a] hover:opacity-90 disabled:opacity-50 transition-opacity"
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#f43f5e] text-white hover:brightness-110 disabled:opacity-50 transition-all"
                 >
                   {isSaving ? 'Criando...' : 'Criar Roadmap'}
                 </button>

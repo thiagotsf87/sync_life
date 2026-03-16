@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Sparkles, RefreshCw, Lock, Unlock, History } from 'lucide-react'
+import { Sparkles, RefreshCw, Lock, Unlock, History, Utensils } from 'lucide-react'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useHealthProfile, WEIGHT_GOAL_LABELS } from '@/hooks/use-corpo'
@@ -15,7 +16,7 @@ function getWeekStart(): number {
   return new Date(now.getFullYear(), now.getMonth(), diff).getTime()
 }
 
-// RN-CRP-21: macronutrientes por refeição
+// RN-CRP-21: macronutrientes por refeicao
 interface MealItem {
   name: string
   calories: number
@@ -44,20 +45,26 @@ interface ApiDayPlan {
 }
 
 const DAY_MAP: Record<string, string> = {
-  seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta',
-  sex: 'Sexta', sab: 'Sábado', dom: 'Domingo',
+  seg: 'Segunda', ter: 'Terca', qua: 'Quarta', qui: 'Quinta',
+  sex: 'Sexta', sab: 'Sabado', dom: 'Domingo',
 }
 
 const MEAL_LABELS: Record<string, string> = {
-  breakfast: '☕ Café da manhã',
-  lunch: '🥗 Almoço',
-  dinner: '🍽️ Jantar',
+  breakfast: 'Cafe',
+  lunch: 'Almoco',
+  dinner: 'Jantar',
+}
+
+const MEAL_ICONS: Record<string, string> = {
+  breakfast: 'Cafe',
+  lunch: 'Almoco',
+  dinner: 'Jantar',
 }
 
 function apiToUiPlan(apiDays: ApiDayPlan[]): DayPlan[] {
   return apiDays.map(d => {
     const toMeal = (label: string, m: ApiMeal): MealItem => ({
-      name: `${label} — ${m.name}`,
+      name: m.name,
       calories: m.calories,
       prep_minutes: m.prep_minutes,
       protein_g: m.protein_g,
@@ -65,21 +72,23 @@ function apiToUiPlan(apiDays: ApiDayPlan[]): DayPlan[] {
       fat_g: m.fat_g,
     })
     const meals: MealItem[] = [
-      toMeal(MEAL_LABELS.breakfast, d.breakfast),
-      toMeal(MEAL_LABELS.lunch, d.lunch),
-      toMeal(MEAL_LABELS.dinner, d.dinner),
-      ...(d.snacks ?? []).map((s, i) => ({ name: `${i === 0 ? '🍎' : '🥛'} Lanche — ${s.name}`, calories: s.calories })),
+      { ...toMeal(MEAL_LABELS.breakfast, d.breakfast), name: d.breakfast.name },
+      { ...toMeal(MEAL_LABELS.lunch, d.lunch), name: d.lunch.name },
+      { ...toMeal(MEAL_LABELS.dinner, d.dinner), name: d.dinner.name },
+      ...(d.snacks ?? []).map(s => ({ name: s.name, calories: s.calories })),
     ]
     return { day: DAY_MAP[d.day] ?? d.day, meals }
   })
 }
 
 const RESTRICTION_OPTIONS = [
-  'Vegetariano', 'Vegano', 'Sem lactose', 'Sem glúten',
-  'Sem carne vermelha', 'Diabético', 'Low carb', 'Hipertensão',
+  'Vegetariano', 'Vegano', 'Sem lactose', 'Sem gluten',
+  'Sem carne vermelha', 'Diabetico', 'Low carb', 'Hipertensao',
 ]
 
-const DAYS_PT = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo']
+const DAYS_PT = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom']
+const DAYS_FULL = ['Segunda-feira', 'Terca-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sabado', 'Domingo']
+const MEAL_TYPE_LABELS = ['Cafe', 'Almoco', 'Jantar', 'Lanche', 'Lanche']
 
 export default function CardapioPage() {
   const router = useRouter()
@@ -93,9 +102,9 @@ export default function CardapioPage() {
   const [extraRestrictions, setExtraRestrictions] = useState<string[]>(
     profile?.dietary_restrictions ?? []
   )
-  // RN-CRP-23: dias travados (não regeneram)
+  // RN-CRP-23: dias travados (nao regeneram)
   const [lockedDays, setLockedDays] = useState<Set<number>>(new Set())
-  // RN-CRP-24: histórico de cardápios gerados
+  // RN-CRP-24: historico de cardapios gerados
   const [planHistory, setPlanHistory] = useState<DayPlan[][]>([])
   const [showHistory, setShowHistory] = useState(false)
 
@@ -103,13 +112,13 @@ export default function CardapioPage() {
     try {
       const h = localStorage.getItem('sl_cardapio_history')
       if (h) setPlanHistory(JSON.parse(h))
-    } catch (err) { console.warn('[Cardápio] Falha ao ler histórico do localStorage:', err) }
+    } catch { /* ignore */ }
   }, [])
 
   function saveToHistory(p: DayPlan[]) {
     setPlanHistory(prev => {
       const next = [p, ...prev].slice(0, 3)
-      try { localStorage.setItem('sl_cardapio_history', JSON.stringify(next)) } catch (err) { console.warn('[Cardápio] Falha ao salvar histórico:', err) }
+      try { localStorage.setItem('sl_cardapio_history', JSON.stringify(next)) } catch { /* ignore */ }
       return next
     })
   }
@@ -150,18 +159,18 @@ export default function CardapioPage() {
           : newPlan
         setPlan(merged)
         saveToHistory(merged)
-        // RN-CRP-25: offer to register budget in Finanças
+        // RN-CRP-25: offer to register budget in Financas
         if (budget) {
           const weekStart = new Date(getWeekStart()).toISOString().split('T')[0]
-          toast.success('Cardápio gerado!', {
+          toast.success('Cardapio gerado!', {
             action: {
-              label: 'Registrar orçamento em Finanças',
+              label: 'Registrar orcamento em Financas',
               onClick: async () => {
                 await createTransactionFromCardapio({
                   weeklyBudget: Number(budget),
                   weekStart,
                 }).catch(() => {})
-                toast.success('Orçamento alimentar registrado!')
+                toast.success('Orcamento alimentar registrado!')
               },
             },
             duration: 8000,
@@ -172,7 +181,7 @@ export default function CardapioPage() {
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : ''
-      setError(msg || 'Não foi possível gerar o cardápio. Verifique a conexão e tente novamente.')
+      setError(msg || 'Nao foi possivel gerar o cardapio. Verifique a conexao e tente novamente.')
     } finally {
       setGenerating(false)
     }
@@ -187,26 +196,31 @@ export default function CardapioPage() {
   const dayPlan = plan?.[selectedDay]
   const dayTotalCalories = dayPlan?.meals.reduce((s, m) => s + m.calories, 0) ?? 0
 
-  return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16">
+  // Compute day macro totals
+  const dayProtein = dayPlan?.meals.reduce((s, m) => s + (m.protein_g ?? 0), 0) ?? 0
+  const dayCarbs = dayPlan?.meals.reduce((s, m) => s + (m.carbs_g ?? 0), 0) ?? 0
+  const dayFat = dayPlan?.meals.reduce((s, m) => s + (m.fat_g ?? 0), 0) ?? 0
 
-      {/* Topbar */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <button
-          onClick={() => router.push('/corpo')}
-          className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Corpo
-        </button>
-        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
-          🍽️ Cardápio com IA
-        </h1>
-      </div>
+  return (
+    <div className="max-w-[1160px] mx-auto px-10 py-9 pb-16">
+
+      {/* 1. ModuleHeader */}
+      <ModuleHeader
+        icon={Utensils}
+        iconBg="rgba(249,115,22,.08)"
+        iconColor="#f97316"
+        title="Cardapio com IA"
+        subtitle="Plano alimentar personalizado gerado por inteligencia artificial"
+      >
+        <span className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[11px] font-semibold border border-[rgba(249,115,22,.2)] bg-[rgba(249,115,22,.08)] text-[#f97316]">
+          <Sparkles size={12} />
+          IA
+        </span>
+      </ModuleHeader>
 
       {/* Profile summary */}
       {profile && (
-        <div className="flex items-center gap-3 p-4 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl mb-5 flex-wrap">
+        <div className="flex items-center gap-3 p-6 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] mb-5 flex-wrap sl-fade-up sl-delay-1 hover:border-[var(--sl-border-h)] transition-colors">
           <div className="flex items-center gap-4 flex-wrap">
             {profile.tdee && (
               <div>
@@ -222,7 +236,7 @@ export default function CardapioPage() {
             )}
             {profile.dietary_restrictions?.length > 0 && (
               <div>
-                <p className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-wider">Restrições</p>
+                <p className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-wider">Restricoes</p>
                 <p className="text-[12px] text-[var(--sl-t2)]">{profile.dietary_restrictions.join(', ')}</p>
               </div>
             )}
@@ -230,33 +244,72 @@ export default function CardapioPage() {
           <div className="flex-1" />
           <button onClick={() => router.push('/corpo/peso')}
             className="text-[11px] text-[#f97316] hover:opacity-80">
-            Editar perfil →
+            Editar perfil &rarr;
           </button>
         </div>
       )}
 
       {!profile?.tdee && (
-        <div className="mb-5 p-4 bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-xl">
+        <div className="mb-5 p-6 bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-[18px] sl-fade-up">
           <p className="text-[13px] text-[var(--sl-t2)]">
-            💡 Configure seu <button onClick={() => router.push('/corpo/peso')} className="text-[#f59e0b] font-semibold hover:opacity-80">perfil de saúde</button> para que a IA gere cardápios personalizados para seu TDEE e objetivos.
+            Configure seu <button onClick={() => router.push('/corpo/peso')} className="text-[#f59e0b] font-semibold hover:opacity-80">perfil de saude</button> para que a IA gere cardapios personalizados para seu TDEE e objetivos.
           </p>
         </div>
       )}
 
-      <div className="grid grid-cols-[1fr_280px] gap-5 max-lg:grid-cols-1">
+      {/* Day Navigation (prototype-style with calorie counts) */}
+      {plan && (
+        <div className="flex gap-1 mb-5 sl-fade-up sl-delay-1">
+          {DAYS_PT.map((day, idx) => {
+            const dayCals = plan[idx]?.meals.reduce((s, m) => s + m.calories, 0) ?? 0
+            return (
+              <div key={day} className="relative flex flex-col items-center gap-0.5">
+                <button
+                  onClick={() => setSelectedDay(idx)}
+                  className={cn(
+                    'px-4 py-2 rounded-[10px] text-[12px] font-semibold border text-center transition-all min-w-[70px]',
+                    selectedDay === idx
+                      ? 'border-[#f59e0b] bg-[rgba(245,158,11,.08)] text-[var(--sl-t1)]'
+                      : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t2)]',
+                    lockedDays.has(idx) && 'opacity-70'
+                  )}
+                >
+                  <span className="block">{day}</span>
+                  <span className="block font-[DM_Mono] text-[10px] font-medium text-[#f59e0b] mt-[2px]">
+                    {dayCals.toLocaleString('pt-BR')}
+                  </span>
+                </button>
+                {/* RN-CRP-23: lock day button */}
+                <button
+                  onClick={() => toggleLockDay(idx)}
+                  title={lockedDays.has(idx) ? 'Dia travado (clique para destravar)' : 'Travar dia'}
+                  className="text-[var(--sl-t3)] hover:text-[#f59e0b] transition-colors"
+                >
+                  {lockedDays.has(idx)
+                    ? <Lock size={10} className="text-[#f59e0b]" />
+                    : <Unlock size={10} />}
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Main content: Meals LEFT + Macros sidebar RIGHT */}
+      <div className="grid grid-cols-[1fr_320px] gap-[14px] max-lg:grid-cols-1">
 
         {/* Main */}
         <div className="flex flex-col gap-4">
 
-          {/* Generate section */}
+          {/* Generate section (no plan yet) */}
           {!plan ? (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 text-center">
-              <div className="text-5xl mb-4">🍽️</div>
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 text-center sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
+              <div className="text-5xl mb-4"><Utensils size={48} className="mx-auto text-[#f97316] opacity-60" /></div>
               <h2 className="font-[Syne] font-bold text-[17px] text-[var(--sl-t1)] mb-2">
-                Gere seu Cardápio Semanal
+                Gere seu Cardapio Semanal
               </h2>
               <p className="text-[13px] text-[var(--sl-t2)] mb-6 max-w-sm mx-auto">
-                A IA cria um plano alimentar de 7 dias baseado no seu perfil, restrições e objetivos.
+                A IA cria um plano alimentar de 7 dias baseado no seu perfil, restricoes e objetivos.
               </p>
               {error && (
                 <p className="text-[12px] text-[#f43f5e] mb-4 max-w-sm mx-auto">{error}</p>
@@ -273,85 +326,60 @@ export default function CardapioPage() {
                 ) : (
                   <Sparkles size={16} />
                 )}
-                {generating ? 'Gerando com IA...' : 'Gerar Cardápio com IA'}
+                {generating ? 'Gerando com IA...' : 'Gerar Cardapio com IA'}
               </button>
             </div>
           ) : (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-              {/* Day selector */}
-              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">📅 Cardápio Semanal</h2>
-                <button
-                  onClick={handleGenerate}
-                  disabled={generating}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[11px] font-semibold border border-[#f59e0b]/50 text-[#f59e0b] hover:bg-[#f59e0b]/10 disabled:opacity-50 transition-colors"
-                >
-                  <RefreshCw size={12} className={generating ? 'animate-spin' : ''} />
-                  Regenerar
-                </button>
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
+              {/* Card title */}
+              <div className="flex items-center gap-[9px] mb-5">
+                <Utensils size={16} className="text-[#f59e0b]" />
+                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                  {DAYS_FULL[selectedDay]}
+                </h3>
+                <span className="font-[DM_Mono] text-[12px] text-[#f59e0b] ml-auto">
+                  {dayTotalCalories.toLocaleString('pt-BR')} kcal
+                </span>
               </div>
 
-              <div className="flex gap-1 mb-5 overflow-x-auto pb-1">
-                {DAYS_PT.map((day, idx) => (
-                  <div key={day} className="relative shrink-0 flex flex-col items-center gap-0.5">
-                    <button
-                      onClick={() => setSelectedDay(idx)}
-                      className={cn(
-                        'px-3 py-1.5 rounded-[8px] text-[11px] font-medium border whitespace-nowrap transition-all',
-                        selectedDay === idx
-                          ? 'border-[#f59e0b] bg-[#f59e0b]/10 text-[var(--sl-t1)]'
-                          : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]',
-                        lockedDays.has(idx) && 'opacity-70'
-                      )}
-                    >
-                      {day}
-                    </button>
-                    {/* RN-CRP-23: lock day button */}
-                    <button
-                      onClick={() => toggleLockDay(idx)}
-                      title={lockedDays.has(idx) ? 'Dia travado (clique para destravar)' : 'Travar dia'}
-                      className="text-[var(--sl-t3)] hover:text-[#f59e0b] transition-colors"
-                    >
-                      {lockedDays.has(idx)
-                        ? <Lock size={10} className="text-[#f59e0b]" />
-                        : <Unlock size={10} />}
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* Meals */}
+              {/* Meals list (prototype meal layout) */}
               {dayPlan && (
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">{DAYS_PT[selectedDay]}</h3>
-                    <span className="font-[DM_Mono] text-[12px] text-[#f59e0b]">{dayTotalCalories} kcal total</span>
-                  </div>
+                <div className="flex flex-col">
                   {dayPlan.meals.map((meal, idx) => (
-                    <div key={idx} className="p-3 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl">
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <p className="text-[12px] font-semibold text-[var(--sl-t1)] leading-snug">{meal.name}</p>
-                        <div className="flex items-center gap-2 shrink-0">
-                          {meal.prep_minutes != null && (
-                            <span className="text-[10px] text-[var(--sl-t3)]">⏱ {meal.prep_minutes}m</span>
-                          )}
-                          <span className="font-[DM_Mono] text-[11px] text-[#f97316]">{meal.calories} kcal</span>
-                        </div>
+                    <div key={idx} className="flex items-stretch gap-[14px] py-4 border-b border-[rgba(120,165,220,.04)] last:border-b-0">
+                      {/* Meal time column */}
+                      <div className="w-20 shrink-0 flex flex-col items-center justify-center p-[10px] bg-[var(--sl-s2)] rounded-xl text-center">
+                        <p className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">
+                          {MEAL_TYPE_LABELS[idx] ?? 'Lanche'}
+                        </p>
+                        <p className="font-[DM_Mono] text-[11px] text-[#f59e0b] mt-[2px]">{meal.calories} kcal</p>
                       </div>
-                      {/* RN-CRP-21: macros */}
-                      {(meal.protein_g != null || meal.carbs_g != null || meal.fat_g != null) && (
-                        <div className="flex gap-3 mt-1">
-                          {meal.protein_g != null && (
-                            <span className="text-[10px] text-[#10b981]">P: <strong className="font-[DM_Mono]">{meal.protein_g}g</strong></span>
-                          )}
-                          {meal.carbs_g != null && (
-                            <span className="text-[10px] text-[#f59e0b]">C: <strong className="font-[DM_Mono]">{meal.carbs_g}g</strong></span>
-                          )}
-                          {meal.fat_g != null && (
-                            <span className="text-[10px] text-[#f97316]">G: <strong className="font-[DM_Mono]">{meal.fat_g}g</strong></span>
-                          )}
-                        </div>
-                      )}
+                      {/* Meal body */}
+                      <div className="flex-1">
+                        <h4 className="text-[13px] font-semibold text-[var(--sl-t1)] mb-[2px]">{meal.name}</h4>
+                        {meal.prep_minutes != null && (
+                          <p className="text-[11px] text-[var(--sl-t3)] mb-[6px]">{meal.prep_minutes} min de preparo</p>
+                        )}
+                        {(meal.protein_g != null || meal.carbs_g != null || meal.fat_g != null) && (
+                          <div className="flex gap-[6px]">
+                            {meal.protein_g != null && (
+                              <span className="inline-flex items-center gap-1 px-[10px] py-[3px] rounded-md text-[10px] font-semibold bg-[rgba(59,130,246,.1)] text-[#3b82f6]">
+                                P: {meal.protein_g}g
+                              </span>
+                            )}
+                            {meal.carbs_g != null && (
+                              <span className="inline-flex items-center gap-1 px-[10px] py-[3px] rounded-md text-[10px] font-semibold bg-[rgba(16,185,129,.1)] text-[#10b981]">
+                                C: {meal.carbs_g}g
+                              </span>
+                            )}
+                            {meal.fat_g != null && (
+                              <span className="inline-flex items-center gap-1 px-[10px] py-[3px] rounded-md text-[10px] font-semibold bg-[rgba(245,158,11,.1)] text-[#f59e0b]">
+                                G: {meal.fat_g}g
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -362,19 +390,65 @@ export default function CardapioPage() {
           {/* Legal disclaimer */}
           <div className="p-3 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl">
             <p className="text-[11px] text-[var(--sl-t3)] text-center">
-              ⚠️ Este cardápio é uma sugestão gerada por IA e <strong className="text-[var(--sl-t2)]">não substitui nutricionista</strong>. Consulte um profissional de saúde para orientação personalizada.
+              Este cardapio e uma sugestao gerada por IA e <strong className="text-[var(--sl-t2)]">nao substitui nutricionista</strong>. Consulte um profissional de saude para orientacao personalizada.
             </p>
           </div>
         </div>
 
         {/* Sidebar */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-[14px]">
+
+          {/* Resumo Diario (macros) */}
+          {plan && dayPlan && (
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 hover:border-[var(--sl-border-h)] transition-colors">
+              <div className="flex items-center gap-[9px] mb-[18px]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+                </svg>
+                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                  Resumo Diario
+                </h3>
+              </div>
+              <div className="text-center mb-[14px]">
+                <span className="font-[DM_Mono] text-[28px] font-medium text-[#f59e0b]">{dayTotalCalories.toLocaleString('pt-BR')}</span>
+                <span className="text-[12px] text-[var(--sl-t3)]"> kcal</span>
+              </div>
+              <div className="flex flex-col gap-[10px]">
+                {[
+                  { label: 'Proteina', value: `${dayProtein}g`, color: '#3b82f6', pct: dayProtein > 0 ? Math.min(100, (dayProtein / 200) * 100) : 0 },
+                  { label: 'Carboidratos', value: `${dayCarbs}g`, color: '#10b981', pct: dayCarbs > 0 ? Math.min(100, (dayCarbs / 300) * 100) : 0 },
+                  { label: 'Gordura', value: `${dayFat}g`, color: '#f59e0b', pct: dayFat > 0 ? Math.min(100, (dayFat / 100) * 100) : 0 },
+                ].map(macro => (
+                  <div key={macro.label}>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-[11px]" style={{ color: macro.color }}>{macro.label}</span>
+                      <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t1)]">{macro.value}</span>
+                    </div>
+                    <div className="h-[6px] bg-[var(--sl-s3)] rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-[width] duration-500"
+                        style={{ width: `${macro.pct}%`, background: macro.color }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Preferences */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
-            <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">⚙️ Preferências</h3>
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 hover:border-[var(--sl-border-h)] transition-colors">
+            <div className="flex items-center gap-[9px] mb-[18px]">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sl-t2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3" /><path d="M12 1v6" /><path d="M12 17v6" /><path d="m4.22 4.22 4.24 4.24" /><path d="m15.54 15.54 4.24 4.24" /><path d="M1 12h6" /><path d="M17 12h6" /><path d="m4.22 19.78 4.24-4.24" /><path d="m15.54 8.46 4.24-4.24" />
+              </svg>
+              <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                Preferencias
+              </h3>
+            </div>
 
             <div className="mb-3">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Orçamento semanal (R$)</label>
+              <label className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1 block">Orcamento semanal</label>
               <input type="number" value={budget}
                 onChange={e => setBudget(e.target.value)}
                 placeholder="Ex: 200"
@@ -383,16 +457,16 @@ export default function CardapioPage() {
             </div>
 
             <div>
-              <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1.5 block">Restrições Adicionais</label>
-              <div className="flex flex-wrap gap-1.5">
+              <label className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-[6px] block">Restricoes</label>
+              <div className="flex flex-wrap gap-1">
                 {RESTRICTION_OPTIONS.map(r => (
                   <button
                     key={r}
                     onClick={() => toggleRestriction(r)}
                     className={cn(
-                      'px-2 py-1 rounded-[7px] text-[10px] border transition-all',
+                      'px-[10px] py-1 rounded-[8px] text-[10px] font-semibold border transition-all',
                       extraRestrictions.includes(r)
-                        ? 'border-[#f59e0b] bg-[#f59e0b]/10 text-[var(--sl-t1)]'
+                        ? 'border-[#f59e0b] bg-[rgba(245,158,11,.08)] text-[var(--sl-t1)]'
                         : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]'
                     )}
                   >
@@ -403,36 +477,30 @@ export default function CardapioPage() {
             </div>
           </div>
 
-          {/* Tips */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
-            <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">💡 Dicas</h3>
-            <div className="flex flex-col gap-2">
-              {[
-                'Complete seu perfil de saúde para cardápios mais precisos',
-                'Informe restrições alimentares para evitar ingredientes inadequados',
-                'O orçamento ajuda a IA a sugerir ingredientes acessíveis',
-                'Trave dias bons com o 🔒 para preservar ao regenerar',
-              ].map((tip, i) => (
-                <div key={i} className="flex gap-2">
-                  <span className="text-[#f59e0b] shrink-0 text-[11px]">→</span>
-                  <p className="text-[11px] text-[var(--sl-t3)]">{tip}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Regenerate button */}
+          <button
+            onClick={handleGenerate}
+            disabled={generating}
+            className="w-full inline-flex items-center justify-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
+                       bg-[#f97316] text-white hover:brightness-110 hover:-translate-y-px
+                       transition-all shadow-[0_6px_20px_rgba(249,115,22,.15)] disabled:opacity-50"
+          >
+            <RefreshCw size={16} className={generating ? 'animate-spin' : ''} />
+            {generating ? 'Gerando...' : 'Regenerar Cardapio'}
+          </button>
 
-          {/* RN-CRP-24: Histórico de cardápios */}
+          {/* RN-CRP-24: Historico de cardapios */}
           {planHistory.length > 0 && (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 hover:border-[var(--sl-border-h)] transition-colors">
               <button
                 onClick={() => setShowHistory(h => !h)}
                 className="flex items-center justify-between w-full"
               >
-                <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] flex items-center gap-2">
+                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2">
                   <History size={13} />
-                  Histórico ({planHistory.length})
+                  Historico ({planHistory.length})
                 </h3>
-                <span className="text-[11px] text-[var(--sl-t3)]">{showHistory ? '▲' : '▼'}</span>
+                <span className="text-[11px] text-[var(--sl-t3)]">{showHistory ? '\u25B2' : '\u25BC'}</span>
               </button>
               {showHistory && (
                 <div className="flex flex-col gap-2 mt-3">
@@ -442,8 +510,8 @@ export default function CardapioPage() {
                       onClick={() => { setPlan(hist); setShowHistory(false) }}
                       className="text-left p-2 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] hover:border-[var(--sl-border-h)] transition-colors"
                     >
-                      <p className="text-[11px] font-semibold text-[var(--sl-t1)]">Cardápio #{planHistory.length - hIdx}</p>
-                      <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">{hist[0]?.meals?.[0]?.name?.split('—')[1]?.trim() ?? '7 dias'}</p>
+                      <p className="text-[11px] font-semibold text-[var(--sl-t1)]">Cardapio #{planHistory.length - hIdx}</p>
+                      <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">{hist[0]?.meals?.[0]?.name ?? '7 dias'}</p>
                     </button>
                   ))}
                 </div>

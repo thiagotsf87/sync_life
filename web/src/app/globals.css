@@ -158,7 +158,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
 input[type="number"] { -moz-appearance: textfield; }
 
 @keyframes sl-fade-up {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .sl-fade-up  { animation: sl-fade-up 0.4s ease both; }
@@ -297,5 +297,17 @@ input[type="number"] { -moz-appearance: textfield; }
   50%       { opacity: 1; }
 }
 .badge-shimmer { animation: shimmer 2.5s ease-in-out infinite; }
+
+/* Mente timer: pulsing dot for phase pill */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+/* Mente trilha detalhe: pulsing glow for "next" timeline node */
+@keyframes tl-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(234,179,8,.2); }
+  50%      { box-shadow: 0 0 0 8px rgba(234,179,8,.06); }
+}
 
 } /* end @layer base — SyncLife utilities */

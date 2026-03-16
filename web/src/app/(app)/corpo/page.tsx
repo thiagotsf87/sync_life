@@ -108,7 +108,7 @@ export default function CorpoPage() {
       <CorpoMobile />
 
       {/* Desktop */}
-      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+      <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
         {/* 1. ModuleHeader */}
         <ModuleHeader
@@ -195,16 +195,16 @@ export default function CorpoPage() {
         {loading ? (
           <div className="grid grid-cols-[1fr_380px] gap-[14px] max-lg:grid-cols-1">
             <div className="flex flex-col gap-[14px]">
-              <div className="h-48 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
-              <div className="h-48 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
+              <div className="h-48 rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
+              <div className="h-48 rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
             </div>
             <div className="flex flex-col gap-[14px]">
-              <div className="h-48 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
-              <div className="h-48 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
+              <div className="h-48 rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
+              <div className="h-48 rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
             </div>
           </div>
         ) : error ? (
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 text-center">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 text-center">
             <p className="text-[13px] text-[var(--sl-t2)]">
               {error.includes('does not exist') ? 'Execute a migration 005 no Supabase.' : error}
             </p>
@@ -216,7 +216,7 @@ export default function CorpoPage() {
             <div className="flex flex-col gap-[14px]">
 
               {/* Activity Heatmap */}
-              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
                   <Calendar size={16} className="text-[#f97316]" />
@@ -229,7 +229,7 @@ export default function CorpoPage() {
               </div>
 
               {/* Weight Trend mini */}
-              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 flex-1
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex-1
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
                   <Scale size={16} className="text-[#f97316]" />
@@ -275,7 +275,7 @@ export default function CorpoPage() {
             <div className="flex flex-col gap-[14px]">
 
               {/* Hydration card */}
-              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
                   <Droplets size={16} className="text-[#06b6d4]" />
@@ -331,7 +331,7 @@ export default function CorpoPage() {
               </div>
 
               {/* Appointments card */}
-              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 flex-1
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex-1
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

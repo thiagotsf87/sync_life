@@ -11,7 +11,6 @@ import { useUserPlan } from '@/hooks/use-user-plan'
 import { useLifeMap } from '@/hooks/use-life-map'
 import { checkPlanLimit } from '@/lib/plan-limits'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
-import { ObjectiveWizard } from '@/components/futuro/ObjectiveWizard'
 import { LifeMapRadar } from '@/components/futuro/LifeMapRadar'
 import { FuturoMobile } from '@/components/futuro/FuturoMobile'
 import { FuturoWizardMobile } from '@/components/futuro/mobile/FuturoWizardMobile'
@@ -198,26 +197,6 @@ export default function FuturoPage() {
   const hasMore = filtered.length > MAX_VISIBLE && !showAll
 
   // ─── Handlers ───────────────────────────────────────────────────────────────
-  const handleCreate = useCallback(async (data: Parameters<typeof createObjective>[0]) => {
-    // RN-FUT-06: Limite FREE = 3 objetivos ativos
-    const limitCheck = checkPlanLimit(isPro, 'active_objectives', active.length)
-    if (!limitCheck.allowed) {
-      toast.error(limitCheck.upsellMessage)
-      return
-    }
-
-    setIsCreating(true)
-    try {
-      await createObjective(data)
-      toast.success(`Objetivo "${data.name}" criado!`)
-      setWizardOpen(false)
-      await reload()
-    } catch {
-      toast.error('Erro ao criar objetivo')
-    } finally {
-      setIsCreating(false)
-    }
-  }, [createObjective, reload, isPro, active.length])
 
   // ─── Create from mobile wizard (with goals) ───────────────────────────────────
   const handleCreateMobile = useCallback(async (data: {
@@ -426,7 +405,7 @@ export default function FuturoPage() {
       onSave={handleCreateMobile}
       isLoading={isCreating}
     />
-    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
       {/* ── ModuleHeader ── */}
       <ModuleHeader
@@ -442,7 +421,7 @@ export default function FuturoPage() {
           </span>
         )}
         <button
-          onClick={() => setWizardOpen(true)}
+          onClick={() => router.push('/futuro/novo')}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
                      bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px
                      transition-all shadow-[0_6px_20px_rgba(0,85,255,0.15)]"
@@ -462,7 +441,7 @@ export default function FuturoPage() {
       />
 
       {/* ── Horizon Roadmap Card ── */}
-      <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-7 mb-7 overflow-hidden sl-fade-up sl-delay-1
+      <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 mb-7 overflow-hidden sl-fade-up sl-delay-1
                       hover:border-[var(--sl-border-h)] transition-colors">
         {/* Accent bar */}
         <div className="absolute top-0 left-7 right-7 h-[2.5px] rounded-b-sm"
@@ -597,7 +576,7 @@ export default function FuturoPage() {
               ))}
             </div>
           ) : error ? (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 text-center">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 text-center">
               <div className="text-2xl mb-2">⚠️</div>
               <p className="text-[13px] text-[var(--sl-t2)] mb-4">
                 {error.includes('does not exist')
@@ -612,7 +591,7 @@ export default function FuturoPage() {
               </button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-10 text-center">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
               <div className="text-4xl mb-3">🔮</div>
               <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
                 {search || statusFilter !== 'all' ? 'Nenhum objetivo encontrado' : 'Comece a desenhar seu futuro'}
@@ -624,7 +603,7 @@ export default function FuturoPage() {
               </p>
               {!search && statusFilter === 'all' && (
                 <button
-                  onClick={() => setWizardOpen(true)}
+                  onClick={() => router.push('/futuro/novo')}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
                              bg-[#10b981] text-[#03071a] hover:opacity-90 transition-opacity"
                 >
@@ -757,7 +736,7 @@ export default function FuturoPage() {
         </div>
 
         {/* Right: Radar Sidebar — Mapa da Vida */}
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 self-start
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 self-start
                         hover:border-[var(--sl-border-h)] transition-colors">
           <LifeMapRadar
             dimensions={lifeDimensions}
@@ -779,13 +758,6 @@ export default function FuturoPage() {
         </div>
       </div>
 
-      {/* Wizard */}
-      <ObjectiveWizard
-        open={wizardOpen}
-        onClose={() => setWizardOpen(false)}
-        onSave={handleCreate}
-        isLoading={isCreating}
-      />
     </div>
     </>
   )

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Plus, X, Check, Trash2, Pencil } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, X, Check, Trash2, Pencil, Calendar as CalendarIcon } from 'lucide-react'
 import { TempoMobileShell } from '@/components/tempo/TempoMobileShell'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -11,7 +11,7 @@ import Link from 'next/link'
 import { useAgenda, getMonthRange, EVENT_TYPES, PRIORITY_COLORS, type AgendaEvent, type AgendaEventFormData } from '@/hooks/use-agenda'
 import { useMetas } from '@/hooks/use-metas'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
-import { KpiCard } from '@/components/ui/kpi-card'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { EventModal } from '@/components/agenda/EventModal'
 import { DeleteEventModal } from '@/components/agenda/DeleteEventModal'
 
@@ -183,7 +183,7 @@ function DayDrawer({
   const formattedDate = `${d}/${m}/${y}`
 
   return (
-    <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-4 flex flex-col gap-3">
+    <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[18px] p-6 flex flex-col gap-3">
 
       <div className="flex items-center justify-between">
         <h3 className="font-[Syne] font-extrabold text-[14px] text-[var(--sl-t1)]">
@@ -512,7 +512,7 @@ export default function AgendaMensalPage() {
       </TempoMobileShell>
 
       {/* ─── Desktop ─────────────────────────────────────────────── */}
-      <div className="hidden lg:block max-w-[1140px] mx-auto px-4 py-7 pb-16">
+      <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
       {/* Sub-nav underline tabs (desktop) */}
       <div className="hidden lg:flex border-b border-[var(--sl-border)] mb-5">
@@ -533,83 +533,34 @@ export default function AgendaMensalPage() {
         ))}
       </div>
 
-      {/* ① Topbar */}
-      <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)] jornada:text-sl-grad">
-          📅 Agenda Mensal
-        </h1>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={prevMonth}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors"
-          >
-            <ChevronLeft size={16} />
-          </button>
-          <span className="text-[13px] font-semibold text-[var(--sl-t2)] px-2 min-w-[160px] text-center">
-            {MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}
-          </span>
-          <button
-            onClick={nextMonth}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors"
-          >
-            <ChevronRight size={16} />
-          </button>
-        </div>
-        <div className="flex-1" />
+      {/* ① ModuleHeader */}
+      <ModuleHeader
+        icon={CalendarIcon}
+        iconBg="rgba(6,182,212,.1)"
+        iconColor="#06b6d4"
+        title="Agenda Mensal"
+        subtitle={`${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()} \u00B7 ${monthEvents.length} eventos \u00B7 ${daysWithEvents} dias com evento \u00B7 ${monthEvents.length > 0 ? Math.round((monthEvents.filter(e => e.status === 'concluido').length / monthEvents.length) * 100) : 0}% concluido`}
+        weekNav={{
+          label: `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`,
+          onPrev: prevMonth,
+          onNext: nextMonth,
+        }}
+      >
         <button
           onClick={() => handleNewForDate(today)}
-          className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110"
+          className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold text-white transition-all hover:brightness-110 hover:-translate-y-px"
           style={{ background: '#06b6d4' }}
         >
-          <Plus size={15} />
-          <span className="max-sm:hidden">Novo Evento</span>
+          <Plus size={16} />
+          Novo Evento
         </button>
-      </div>
-
-      {/* ② JornadaInsight */}
-      <JornadaInsight text={
-        <span>
-          Em {MONTH_NAMES[currentDate.getMonth()]}, você tem{' '}
-          <strong className="text-[#06b6d4]">{monthEvents.length} evento{monthEvents.length !== 1 ? 's' : ''}</strong>{' '}
-          distribuídos em {daysWithEvents} dia{daysWithEvents !== 1 ? 's' : ''}.
-          {topType && ` Categoria mais frequente: ${EVENT_TYPES[topType[0] as keyof typeof EVENT_TYPES]?.label ?? topType[0]}. ✨`}
-        </span>
-      } />
-
-      {/* ③ KPI Strip */}
-      <div className="grid grid-cols-4 gap-3 mb-5 max-sm:grid-cols-2">
-        <KpiCard
-          label="Eventos no mês"
-          value={String(monthEvents.length)}
-          delta={`${daysWithEvents} dia${daysWithEvents !== 1 ? 's' : ''} com eventos`}
-          accent="#06b6d4"
-        />
-        <KpiCard
-          label="Tipo principal"
-          value={topType ? EVENT_TYPES[topType[0] as keyof typeof EVENT_TYPES]?.label ?? '—' : '—'}
-          delta={topType ? `${topType[1]} evento${topType[1] !== 1 ? 's' : ''}` : 'sem eventos'}
-          accent={topType ? EVENT_TYPES[topType[0] as keyof typeof EVENT_TYPES]?.color ?? '#06b6d4' : '#06b6d4'}
-        />
-        <KpiCard
-          label="Dias com evento"
-          value={String(daysWithEvents)}
-          delta={`de ${new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()} dias`}
-          accent="#10b981"
-        />
-        <KpiCard
-          label="Concluídos"
-          value={String(monthEvents.filter(e => e.status === 'concluido').length)}
-          delta={`de ${monthEvents.length} total`}
-          deltaType={monthEvents.filter(e => e.status === 'concluido').length > 0 ? 'up' : 'neutral'}
-          accent="#8b5cf6"
-        />
-      </div>
+      </ModuleHeader>
 
       {/* ④ Layout: calendário + drawer */}
       <div className="grid grid-cols-[1fr_300px] gap-4 max-lg:grid-cols-1">
 
         {/* Calendário */}
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl overflow-hidden sl-fade-up">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] overflow-hidden sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
           {/* Headers de dias da semana */}
           <div className="grid grid-cols-7 border-b border-[var(--sl-border)]">
             {DAY_HEADERS.map(d => (
@@ -652,7 +603,7 @@ export default function AgendaMensalPage() {
               onToggle={handleToggle}
             />
           ) : (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 flex flex-col items-center justify-center gap-2 min-h-[180px]">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex flex-col items-center justify-center gap-2 min-h-[180px]">
               <span className="text-3xl">📅</span>
               <p className="text-[13px] text-[var(--sl-t2)] text-center">
                 Clique em um dia para ver os eventos
@@ -667,7 +618,7 @@ export default function AgendaMensalPage() {
           )}
 
           {/* Legenda */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6">
             <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-3">Tipos de evento</p>
             <div className="flex flex-col gap-2">
               {Object.entries(EVENT_TYPES).map(([key, cfg]) => {

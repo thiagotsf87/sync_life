@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
-import { ArrowLeft, Crown, CheckSquare, Calendar, Clock, BarChart3 } from 'lucide-react'
+import { ArrowLeft, Crown, CheckSquare, Calendar, Clock, BarChart3, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { useAgenda } from '@/hooks/use-agenda'
 import { useFocusSessions } from '@/hooks/use-focus-sessions'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { TempoMobileShell } from '@/components/tempo/TempoMobileShell'
 
@@ -141,7 +142,7 @@ export default function WeeklyReviewPage() {
         </TempoMobileShell>
 
         {/* Desktop PRO gate */}
-        <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+        <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
           <div className="hidden lg:flex border-b border-[var(--sl-border)] mb-5">
             {TEMPO_TABS.map(tab => (
               <Link key={tab.href} href={tab.href}
@@ -170,7 +171,7 @@ export default function WeeklyReviewPage() {
               📋 Review Semanal
             </h1>
           </div>
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-12 text-center max-w-[480px] mx-auto">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center max-w-[480px] mx-auto">
             <Crown size={40} className="mx-auto mb-4 text-[#f59e0b]" />
             <h2 className="font-[Syne] font-bold text-lg text-[var(--sl-t1)] mb-2">
               Review Semanal — Recurso PRO
@@ -267,7 +268,7 @@ export default function WeeklyReviewPage() {
           {/* Pending events */}
           {pendingEvents.length > 0 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4">
-              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-3">
                 📌 Pendentes ({pendingEvents.length})
               </h2>
               <div className="flex flex-col gap-2">
@@ -290,7 +291,7 @@ export default function WeeklyReviewPage() {
       </TempoMobileShell>
 
       {/* ─── Desktop ─────────────────────────────────────────────── */}
-      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+      <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
       {/* Sub-nav underline tabs (desktop) */}
       <div className="hidden lg:flex border-b border-[var(--sl-border)] mb-5">
@@ -311,31 +312,28 @@ export default function WeeklyReviewPage() {
         ))}
       </div>
 
-      {/* ① Topbar */}
-      <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <button
-          onClick={() => router.push('/tempo')}
-          className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
-        >
-          <ArrowLeft size={16} /> Tempo
-        </button>
-        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
-          📋 Review Semanal
-        </h1>
+      {/* ① ModuleHeader */}
+      <ModuleHeader
+        icon={FileText}
+        iconBg="rgba(16,185,129,.1)"
+        iconColor="#10b981"
+        title="Review Semanal"
+        subtitle={`Semana ${weekOfYear} \u00B7 ${formatWeekLabel(weekStart)}`}
+      >
         {!completed && (
           <button
             onClick={handleCompleteReview}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold text-[#03071a] hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold text-white transition-all hover:brightness-110 hover:-translate-y-px"
             style={{ background: '#06b6d4' }}
           >
             <CheckSquare size={16} />
             Concluir Review (+10 XP)
           </button>
         )}
-      </div>
+      </ModuleHeader>
 
       {/* ② Hero: Semana + % conclusão */}
-      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 mb-5 relative overflow-hidden sl-fade-up">
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 mb-5 relative overflow-hidden sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
         <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t" style={{ background: '#06b6d4' }} />
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
@@ -406,7 +404,7 @@ export default function WeeklyReviewPage() {
         ].map(kpi => (
           <div
             key={kpi.label}
-            className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 overflow-hidden sl-fade-up"
+            className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 overflow-hidden sl-fade-up transition-colors hover:border-[var(--sl-border-h)]"
           >
             <div
               className="absolute top-0 left-4 right-4 h-0.5 rounded-b"
@@ -445,15 +443,15 @@ export default function WeeklyReviewPage() {
       />
 
       {/* ⑤ Main grid */}
-      <div className="grid grid-cols-[1fr_360px] gap-4 max-lg:grid-cols-1">
+      <div className="grid grid-cols-[1fr_340px] gap-3.5 max-lg:grid-cols-1">
 
         {/* Left: chart + sessions */}
         <div className="flex flex-col gap-4">
 
           {/* Module distribution chart */}
           {chartData.length > 0 && (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up">
-              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-4">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-4">
                 📊 Distribuição por Tipo
               </h2>
               <div className="h-[200px]">
@@ -491,8 +489,8 @@ export default function WeeklyReviewPage() {
 
           {/* Sessions list */}
           {sessions.length > 0 && (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up">
-              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-3">
                 ⏱ Sessões de Foco
               </h2>
               <div className="flex flex-col gap-2">
@@ -516,9 +514,9 @@ export default function WeeklyReviewPage() {
         </div>
 
         {/* Right: Pending tasks */}
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 h-fit sl-fade-up">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 h-fit sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
               📌 Pendentes ({pendingEvents.length})
             </h2>
           </div>

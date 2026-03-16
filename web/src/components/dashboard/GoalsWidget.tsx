@@ -20,52 +20,54 @@ export interface GoalsWidgetProps {
   loading: boolean
 }
 
+const GOAL_COLORS = ['#10b981', '#06b6d4', '#f97316', '#a855f7', '#f43f5e', '#3b82f6']
+
 export function GoalsWidget({ topGoals, loading }: GoalsWidgetProps) {
   const router = useRouter()
 
   return (
-    <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
+    <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-[18px]">
-        <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🎯 Metas em Destaque</span>
-        <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
-          onClick={() => router.push('/futuro')}>Ver todas →</button>
+        <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="6"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+          Metas Ativas
+        </span>
+        <button className="text-[12px] font-medium text-[#6366f1] hover:opacity-70 transition-opacity cursor-pointer"
+          onClick={() => router.push('/futuro')}>{topGoals.length} objetivos</button>
       </div>
       {loading
         ? <div className="flex flex-col gap-3">{[...Array(3)].map((_, i) => <div key={i} className="h-14 rounded-lg bg-[var(--sl-s2)] animate-pulse" />)}</div>
         : topGoals.length === 0
           ? <p className="text-[13px] text-[var(--sl-t3)] text-center py-6">Nenhuma meta ativa</p>
           : (
-            <div className="flex flex-col gap-3.5">
-              {topGoals.map(goal => {
+            <div className="flex flex-col gap-2.5">
+              {topGoals.map((goal, idx) => {
                 const pct = calcProgress(goal.current_amount, goal.target_amount)
-                const isDelayed = pct < 40
                 const pctColor = pct >= 50 ? '#10b981' : '#f59e0b'
-                const dateLabel = goal.target_date
-                  ? new Date(goal.target_date).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })
-                  : null
+                const accentColor = GOAL_COLORS[idx % GOAL_COLORS.length]
                 return (
-                  <div key={goal.id} className="flex flex-col gap-1.5 cursor-pointer" onClick={() => router.push(`/futuro/${goal.id}`)}>
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-[20px] flex-shrink-0">{goal.icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{goal.name}</div>
-                        <div className="text-[11px] text-[var(--sl-t3)]">
-                          {goal.goal_type === 'monetary'
-                            ? `${fmt(goal.current_amount)} de ${fmt(goal.target_amount)}${dateLabel ? ` \u00b7 ${dateLabel}` : ''}`
-                            : `${pct}% conclu\u00eddo${dateLabel ? ` \u00b7 ${dateLabel}` : ''}`}
-                        </div>
+                  <div
+                    key={goal.id}
+                    className="flex items-center gap-3 py-3 px-3.5 bg-[var(--sl-s2)] rounded-xl cursor-pointer transition-colors hover:bg-[var(--sl-s3)]"
+                    style={{ borderLeft: `3px solid ${accentColor}` }}
+                    onClick={() => router.push(`/futuro/${goal.id}`)}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[13px] font-semibold text-[var(--sl-t1)] truncate">{goal.name}</div>
+                      <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">
+                        {goal.goal_type === 'monetary'
+                          ? `${fmt(goal.current_amount)} / ${fmt(goal.target_amount)}`
+                          : `${pct}% conclu\u00eddo`}
                       </div>
-                      <span className="font-[DM_Mono] text-[14px] font-medium flex-shrink-0" style={{ color: pctColor }}>{pct}%</span>
                     </div>
-                    <div className="h-1.5 rounded-full overflow-hidden bg-[var(--sl-s3)]">
-                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
+                    <div className="w-[60px] h-1 bg-[var(--sl-s3)] rounded-[2px] overflow-hidden shrink-0">
+                      <div className="h-full rounded-[2px]" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
                     </div>
-                    {isDelayed && (
-                      <div className="text-[11px] px-2 py-1.5 rounded-[6px]"
-                        style={{ color: '#f59e0b', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)' }}>
-                        ⚠ Meta abaixo do ritmo necessário
-                      </div>
-                    )}
+                    <span className="font-[DM_Mono] text-[14px] font-medium shrink-0" style={{ color: pctColor }}>{pct}%</span>
                   </div>
                 )
               })}

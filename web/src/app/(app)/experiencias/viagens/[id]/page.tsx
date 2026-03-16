@@ -68,7 +68,7 @@ export default function TripDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-[1140px] mx-auto px-6 py-7">
+      <div className="max-w-[1160px] mx-auto px-10 py-9">
         <div className="h-64 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
       </div>
     )
@@ -76,7 +76,7 @@ export default function TripDetailPage() {
 
   if (error || !trip) {
     return (
-      <div className="max-w-[1140px] mx-auto px-6 py-7">
+      <div className="max-w-[1160px] mx-auto px-10 py-9">
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 text-center">
           <p className="text-[13px] text-[var(--sl-t2)]">
             {error?.includes('does not exist') ? 'Execute a migration 006 no Supabase.' : error ?? 'Viagem não encontrada'}
@@ -200,75 +200,141 @@ export default function TripDetailPage() {
     { id: 'ai', label: '🤖 Assistente IA' },
   ]
 
+  const balance = totalEstimated - totalActual
+
   return (
     <>
     {/* Mobile */}
     <ExpDetailMobile trip={trip} checklistPct={Math.round(checklistPct)} />
 
     {/* Desktop */}
-    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
-      {/* Topbar */}
-      <div className="flex items-center gap-3 mb-5 flex-wrap">
+      {/* Back link */}
+      <div className="mb-5 sl-fade-up sl-delay-1">
         <button
           onClick={() => router.push('/experiencias/viagens')}
-          className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
+          className="flex items-center gap-[6px] text-[12px] text-[var(--sl-t3)] hover:text-[var(--sl-t2)] transition-colors bg-transparent border-none cursor-pointer"
         >
-          <ArrowLeft size={16} />
-          Viagens
-        </button>
-        <div className="flex-1 min-w-0">
-          <h1 className="font-[Syne] font-extrabold text-xl truncate text-sl-grad">
-            {trip.name}
-          </h1>
-          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-            <span className="text-[11px] text-[var(--sl-t3)]">
-              📍 {trip.destinations.join(' → ')}
-            </span>
-            <span className="text-[11px] text-[var(--sl-t3)]">·</span>
-            <span className="text-[11px] text-[var(--sl-t3)]">{days} dias</span>
-            <span className="text-[11px] text-[var(--sl-t3)]">·</span>
-            <span className="text-[11px] text-[var(--sl-t3)]">{TRIP_TYPE_LABELS[trip.trip_type]}</span>
-          </div>
-        </div>
-        <select
-          value={trip.status}
-          onChange={e => handleStatusChange(e.target.value as TripStatus)}
-          className="px-3 py-1.5 rounded-[10px] text-[12px] font-bold border outline-none cursor-pointer"
-          style={{
-            borderColor: statusColor,
-            color: statusColor,
-            background: statusColor + '15',
-          }}
-        >
-          {(Object.keys(TRIP_STATUS_LABELS) as TripStatus[]).map(s => (
-            <option key={s} value={s}>{TRIP_STATUS_LABELS[s]}</option>
-          ))}
-        </select>
-        <button
-          onClick={handleDeleteTrip}
-          className="p-2 rounded-[10px] border border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[#f43f5e] hover:text-[#f43f5e] transition-colors"
-        >
-          <Trash2 size={14} />
+          <ArrowLeft size={14} />
+          Voltar para viagens
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 mb-5 overflow-x-auto pb-1">
+      {/* Detail Hero Strip */}
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 pb-0 relative overflow-hidden sl-fade-up sl-delay-2">
+        {/* Bottom gradient accent */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-[3px]"
+          style={{ background: 'linear-gradient(90deg, #ec4899, #a855f7, #ec4899)', opacity: 0.6 }}
+        />
+
+        {/* Top row: title + actions */}
+        <div className="flex items-start justify-between gap-5">
+          <div className="flex-1">
+            <div className="flex items-center gap-[10px] mb-[6px]">
+              <h1 className="font-[Syne] font-extrabold text-[24px]">{trip.name}</h1>
+              <span
+                className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
+                style={{
+                  background: `${statusColor}14`,
+                  color: statusColor,
+                }}
+              >
+                {TRIP_STATUS_LABELS[trip.status]}
+              </span>
+            </div>
+            <div className="flex items-center gap-4 text-[13px] text-[var(--sl-t2)]">
+              <span>{trip.destinations.join(' \u2192 ')}</span>
+              <span className="text-[var(--sl-t3)]">{'\u00B7'}</span>
+              <span>{new Date(trip.start_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '')} {'\u2014'} {new Date(trip.end_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')}</span>
+              <span className="text-[var(--sl-t3)]">{'\u00B7'}</span>
+              <span>{days} dias</span>
+              <span className="text-[var(--sl-t3)]">{'\u00B7'}</span>
+              <span>{trip.travelers_count} viajante{trip.travelers_count > 1 ? 's' : ''}</span>
+              <span className="text-[var(--sl-t3)]">{'\u00B7'}</span>
+              <span>{TRIP_TYPE_LABELS[trip.trip_type]}</span>
+            </div>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <select
+              value={trip.status}
+              onChange={e => handleStatusChange(e.target.value as TripStatus)}
+              className="px-[14px] py-2 rounded-[10px] text-[12px] font-bold border outline-none cursor-pointer bg-transparent"
+              style={{
+                borderColor: statusColor,
+                color: statusColor,
+                background: statusColor + '15',
+              }}
+            >
+              {(Object.keys(TRIP_STATUS_LABELS) as TripStatus[]).map(s => (
+                <option key={s} value={s}>{TRIP_STATUS_LABELS[s]}</option>
+              ))}
+            </select>
+            <button
+              onClick={handleDeleteTrip}
+              className="w-[36px] h-[36px] rounded-[10px] border border-[var(--sl-border)] flex items-center justify-center text-[#f43f5e] hover:border-[#f43f5e] transition-colors bg-transparent cursor-pointer"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* Metrics strip inside hero */}
+        <div className="flex items-center gap-0 mt-5 pt-4 border-t border-[var(--sl-border)] pb-6">
+          <div className="flex-1 text-center">
+            <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Orcamento</div>
+            <div className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)]">
+              {formatTripAmount(totalEstimated)}
+            </div>
+          </div>
+          <div className="w-px h-[36px] bg-[var(--sl-border)]" />
+          <div className="flex-1 text-center">
+            <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Gasto</div>
+            <div className="font-[DM_Mono] text-[20px] font-medium text-[#ec4899]">
+              {formatTripAmount(totalActual)}
+            </div>
+          </div>
+          <div className="w-px h-[36px] bg-[var(--sl-border)]" />
+          <div className="flex-1 text-center">
+            <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Saldo</div>
+            <div className="font-[DM_Mono] text-[20px] font-medium text-[#10b981]">
+              {formatTripAmount(balance)}
+            </div>
+          </div>
+          <div className="w-px h-[36px] bg-[var(--sl-border)]" />
+          <div className="flex-1 text-center">
+            <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Atividades</div>
+            <div className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)]">
+              {itinerary.length}
+            </div>
+          </div>
+          <div className="w-px h-[36px] bg-[var(--sl-border)]" />
+          <div className="flex-1 text-center">
+            <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Checklist</div>
+            <div className="font-[DM_Mono] text-[20px] font-medium text-[#10b981]">
+              {Math.round(checklistPct)}%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Underline Tabs */}
+      <div className="flex gap-0 border-b border-[var(--sl-border)] my-6 sl-fade-up sl-delay-3">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              'flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-[12px] font-medium whitespace-nowrap transition-all',
+              'flex items-center gap-[6px] px-5 py-3 text-[12.5px] font-semibold border-b-2 bg-transparent cursor-pointer transition-all whitespace-nowrap',
               activeTab === tab.id
-                ? 'bg-[#ec4899]/10 border border-[#ec4899] text-[var(--sl-t1)]'
-                : 'border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
+                ? 'text-[var(--sl-t1)] border-b-[#ec4899]'
+                : 'text-[var(--sl-t3)] border-b-transparent hover:text-[var(--sl-t2)]'
             )}
           >
             {tab.label}
             {tab.badge !== undefined && tab.badge > 0 && (
-              <span className="bg-[#ec4899]/20 text-[#ec4899] text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+              <span className="text-[10px] px-[7px] py-[2px] rounded-[6px] bg-[var(--sl-s3)] text-[var(--sl-t2)]">
                 {tab.badge}
               </span>
             )}

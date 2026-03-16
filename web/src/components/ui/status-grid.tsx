@@ -24,7 +24,7 @@ export function StatusGrid({ items, className }: StatusGridProps) {
       {items.map((item, i) => (
         <div
           key={i}
-          className="flex-1 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]"
+          className="flex-1 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 text-center relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]"
         >
           <div
             className="absolute top-0 left-[14px] right-[14px] h-[2.5px] rounded-b"

@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function AppLoading() {
   return (
-    <div className="max-w-[1140px] mx-auto px-6 py-7">
+    <div className="max-w-[1160px] mx-auto px-10 py-9">
       {/* Topbar skeleton */}
       <div className="flex items-center gap-3 mb-5">
         <div className="h-8 w-48 animate-pulse rounded-lg bg-[var(--sl-s2)]" />

@@ -36,8 +36,8 @@ interface PersistedState {
 }
 
 const PHASE_COLORS: Record<TimerPhase, string> = {
-  idle: '#a855f7',
-  focusing: '#0055ff',
+  idle: '#eab308',
+  focusing: '#eab308',
   short_break: '#10b981',
   long_break: '#a855f7',
   paused: '#f59e0b',
@@ -323,8 +323,8 @@ export function PomodoroTimer({
     }
   }, [])
 
-  // SVG ring
-  const r = 90
+  // SVG ring — 260px per prototype
+  const r = 110
   const circumference = 2 * Math.PI * r
   const totalSecs = getTotalForPhase(phase === 'paused' ? 'focusing' : phase, config)
   const progress = phase === 'idle' ? 0 : 1 - remainingSeconds / totalSecs
@@ -368,31 +368,43 @@ export function PomodoroTimer({
         </select>
       </div>
 
-      {/* Phase label */}
+      {/* Phase pill */}
       <div className="text-center">
-        <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color }}>
+        <span
+          className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-[12px] font-bold uppercase tracking-wider"
+          style={{ background: `${color}1f`, color }}
+        >
+          <span
+            className="w-2 h-2 rounded-full"
+            style={{ background: color, animation: isRunning ? 'pulse-dot 1.5s infinite' : 'none' }}
+          />
           {PHASE_LABELS[phase]}
         </span>
         {cyclesCompleted > 0 && (
           <span className="ml-2 text-[11px] text-[var(--sl-t3)]">
-            {cyclesCompleted} ciclo{cyclesCompleted !== 1 ? 's' : ''} completo{cyclesCompleted !== 1 ? 's' : ''}
+            Ciclo {(cyclesCompleted % config.cyclesPerLong) + (isRunning && phase === 'focusing' ? 1 : 0)} de {config.cyclesPerLong}
           </span>
         )}
       </div>
 
-      {/* SVG ring */}
+      {/* SVG ring — 260px, gradient yellow->orange */}
       <div className="relative">
-        <svg width="220" height="220" viewBox="0 0 220 220" style={{ transform: 'rotate(-90deg)' }}>
+        <svg
+          width="260"
+          height="260"
+          viewBox="0 0 260 260"
+          style={{ transform: 'rotate(-90deg)', filter: 'drop-shadow(0 0 24px rgba(234,179,8,.15))' }}
+        >
           <defs>
             <linearGradient id="pom-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor={color} />
-              <stop offset="100%" stopColor={phase === 'focusing' ? '#10b981' : color} />
+              <stop offset="0%" stopColor="#eab308" />
+              <stop offset="100%" stopColor="#f97316" />
             </linearGradient>
           </defs>
-          <circle cx="110" cy="110" r={r} fill="none" stroke="var(--sl-s3)" strokeWidth="10" />
+          <circle cx="130" cy="130" r={r} fill="none" stroke="var(--sl-s3)" strokeWidth="10" />
           <circle
-            cx="110" cy="110" r={r} fill="none"
-            stroke={phase === 'focusing' ? 'url(#pom-grad)' : color}
+            cx="130" cy="130" r={r} fill="none"
+            stroke={phase === 'focusing' || phase === 'idle' ? 'url(#pom-grad)' : color}
             strokeWidth="10" strokeLinecap="round"
             style={{
               strokeDasharray: circumference,
@@ -404,7 +416,7 @@ export function PomodoroTimer({
 
         {/* Center */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-[DM_Mono] text-5xl font-bold text-[var(--sl-t1)] tabular-nums">
+          <span className="font-[DM_Mono] font-bold text-[var(--sl-t1)] tabular-nums tracking-wide" style={{ fontSize: '58px', letterSpacing: '2px' }}>
             {minutes}:{seconds}
           </span>
           {sessionStarted && (
@@ -425,41 +437,41 @@ export function PomodoroTimer({
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="flex items-center gap-4">
+      {/* Controls — prototype: 50px side, 64px center */}
+      <div className="flex items-center justify-center gap-[18px]">
         <button
           onClick={handleFinish}
-          className="p-3 rounded-full hover:bg-[var(--sl-s2)] transition-colors"
-          title="Encerrar e salvar sessão"
+          className="w-[50px] h-[50px] rounded-full flex items-center justify-center bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:border-[var(--sl-border-h)] transition-all"
+          title="Encerrar e salvar sessao"
         >
-          <RotateCcw size={18} className="text-[var(--sl-t3)]" />
+          <RotateCcw size={18} />
         </button>
 
         {isRunning ? (
           <button
             onClick={handlePause}
-            className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95"
-            style={{ background: color }}
+            className="w-16 h-16 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
+            style={{ background: color, boxShadow: `0 4px 24px rgba(234,179,8,.3)` }}
           >
-            <Pause size={24} className="text-white" />
+            <Pause size={22} className="text-black" />
           </button>
         ) : (
           <button
             onClick={handleStart}
-            className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95"
-            style={{ background: color }}
+            className="w-16 h-16 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
+            style={{ background: color, boxShadow: `0 4px 24px rgba(234,179,8,.3)` }}
           >
-            <Play size={24} className="text-white ml-1" />
+            <Play size={22} className="text-black ml-0.5" />
           </button>
         )}
 
         <button
           onClick={handleSkip}
           disabled={phase === 'idle'}
-          className="p-3 rounded-full hover:bg-[var(--sl-s2)] transition-colors disabled:opacity-30"
+          className="w-[50px] h-[50px] rounded-full flex items-center justify-center bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:border-[var(--sl-border-h)] transition-all disabled:opacity-30"
           title="Pular fase"
         >
-          <SkipForward size={18} className="text-[var(--sl-t3)]" />
+          <SkipForward size={18} />
         </button>
       </div>
 

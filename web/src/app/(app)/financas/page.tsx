@@ -208,7 +208,7 @@ export default function FinancasDashboardPage() {
     />
 
     {/* DESKTOP LAYOUT */}
-    <div className="hidden lg:block max-w-[1140px] mx-auto">
+    <div className="hidden lg:block max-w-[1160px] mx-auto">
 
       {/* 1 PAGE HEADER */}
       <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
@@ -310,7 +310,7 @@ export default function FinancasDashboardPage() {
       />
 
       {/* 7 MID GRID: Orcamentos + Ultimas Transacoes */}
-      <div className="grid grid-cols-2 gap-3 mb-3 max-lg:grid-cols-1">
+      <div className="grid grid-cols-2 gap-3.5 mb-3.5 max-lg:grid-cols-1">
         <OrcamentosCard
           activeBudgets={activeBudgets}
           loadingBudgets={loadingBudgets}

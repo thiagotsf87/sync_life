@@ -115,7 +115,7 @@ export default function CarreiraPage() {
       }}
       onReload={async () => { window.location.reload() }}
     />
-    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
       {/* MODULE HEADER */}
       <ModuleHeader
@@ -246,12 +246,12 @@ export default function CarreiraPage() {
           </div>
 
           {/* Right: Quick Stats inline */}
-          <div className="flex border border-[var(--sl-border)] rounded-[14px] overflow-hidden shrink-0">
-            <div className="px-[22px] py-4 text-center border-r border-[var(--sl-border)]">
+          <div className="flex border border-[var(--sl-border)] rounded-[14px] overflow-hidden shrink-0 min-w-0">
+            <div className="flex-1 min-w-0 px-[22px] py-4 text-center border-r border-[var(--sl-border)]">
               <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mb-1">
                 Salario
               </div>
-              <div className="font-[DM_Mono] text-[22px] font-medium leading-none text-[#10b981]">
+              <div className="font-[DM_Mono] text-[22px] font-medium leading-none text-[#10b981] truncate">
                 {salaryLabel}
               </div>
               {history.length > 0 && history[0].salary && profile?.gross_salary && history[0].salary !== profile.gross_salary && (
@@ -262,7 +262,7 @@ export default function CarreiraPage() {
                 </div>
               )}
             </div>
-            <div className="px-[22px] py-4 text-center border-r border-[var(--sl-border)]">
+            <div className="flex-1 min-w-0 px-[22px] py-4 text-center border-r border-[var(--sl-border)]">
               <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mb-1">
                 Roadmap
               </div>
@@ -273,7 +273,7 @@ export default function CarreiraPage() {
                 {completedSteps} de {totalSteps} etapas
               </div>
             </div>
-            <div className="px-[22px] py-4 text-center">
+            <div className="flex-1 min-w-0 px-[22px] py-4 text-center">
               <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mb-1">
                 Skills
               </div>

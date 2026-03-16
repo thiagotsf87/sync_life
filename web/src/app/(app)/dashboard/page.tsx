@@ -355,7 +355,7 @@ export default function DashboardPage() {
         </div>
 
         {/* RIGHT — 380px sidebar */}
-        <div className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-4">
           {/* Goals */}
           <GoalsWidget topGoals={topGoals} loading={loadingGoals} />
 
@@ -363,8 +363,8 @@ export default function DashboardPage() {
           <WeekAgendaWidget weekDays={weekDays} events={events} now={now} />
 
           {/* Destaques */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 transition-colors hover:border-[var(--sl-border-h)]">
-            <div className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-4 flex items-center gap-2">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
+            <div className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-4 flex items-center gap-[9px]">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
               Destaques
             </div>

@@ -20,14 +20,14 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
 
   return (
     <div
-      className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 hover:border-[var(--sl-border-h)] transition-colors cursor-pointer sl-fade-up"
+      className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 hover:border-[var(--sl-border-h)] transition-colors cursor-pointer sl-fade-up"
       onClick={onClick}
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <h3 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] truncate">{trip.name}</h3>
+            <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] truncate">{trip.name}</h3>
             <span
               className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full shrink-0"
               style={{ color: statusColor, background: statusColor + '20' }}

@@ -451,8 +451,9 @@ export default function TempoDashboardPage() {
           items={[
             {
               label: 'Proximo Evento',
+              subtitle: proxEvento?.title,
               value: proxEvento
-                ? formatDuration(proxEventoDuration)
+                ? (proxEventoDuration > 0 ? formatDuration(proxEventoDuration) : (proxEvento.start_time ?? 'Dia todo'))
                 : '--',
               meta: proxEvento
                 ? `${proxEvento.start_time ?? 'Dia todo'}${proxEvento.location ? ` \u00B7 ${proxEvento.location}` : ''}${proxEventoCfg ? ` \u00B7 ${proxEventoCfg.label}` : ''}`
@@ -499,7 +500,7 @@ export default function TempoDashboardPage() {
         <div className="grid grid-cols-[1fr_380px] gap-3.5 mb-7 max-lg:grid-cols-1 sl-fade-up sl-delay-3">
 
           {/* Left: Cronograma do Dia */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-2 mb-[18px]">
               <Clock size={16} className="text-[#06b6d4]" />
               <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Cronograma do Dia</h2>
@@ -557,7 +558,7 @@ export default function TempoDashboardPage() {
           </div>
 
           {/* Right: Donut + Legend */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-2 mb-[18px]">
               <BarChart3 size={16} className="text-[#06b6d4]" />
               <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Tempo por Area</h2>
@@ -602,7 +603,7 @@ export default function TempoDashboardPage() {
         <div className="grid grid-cols-[1fr_1fr] gap-3.5 mb-7 max-lg:grid-cols-1 sl-fade-up sl-delay-4">
 
           {/* Horas por Dia */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-2 mb-[18px]">
               <BarChart3 size={16} className="text-[#06b6d4]" />
               <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Horas por Dia -- Esta Semana</h2>
@@ -663,7 +664,7 @@ export default function TempoDashboardPage() {
           </div>
 
           {/* Proximos 7 Dias */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-2 mb-[18px]">
               <ChevronsRight size={16} className="text-[#06b6d4]" />
               <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Proximos 7 Dias</h2>
@@ -725,7 +726,7 @@ export default function TempoDashboardPage() {
 
         {/* S6 Tendencia Semanal (full width) */}
         <div className="sl-fade-up sl-delay-5 mb-7">
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-2 mb-[18px]">
               <TrendingUp size={16} className="text-[#06b6d4]" />
               <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Resumo da Semana</h2>

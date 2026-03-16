@@ -523,7 +523,7 @@ export default function RankingPage() {
     </PanoramaMobileShell>
 
     {/* ═══════ DESKTOP ═══════ */}
-    <div className="max-w-[1140px] mx-auto px-6 py-7 pb-16 hidden lg:block">
+    <div className="max-w-[1160px] mx-auto px-10 py-9 pb-16 hidden lg:block">
 
       {/* ① TOPBAR ──────────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">

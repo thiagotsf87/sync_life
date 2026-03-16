@@ -154,7 +154,7 @@ export default function PatrimonioPage() {
   return (
     <>
       <PatrimonioMobile initialTab="dashboard" />
-      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+      <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
         {/* S1 ModuleHeader */}
         <ModuleHeader
@@ -183,20 +183,20 @@ export default function PatrimonioPage() {
 
         {loading ? (
           <div className="space-y-3.5">
-            <div className="h-[120px] rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
+            <div className="h-[120px] rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
             <div className="grid grid-cols-2 gap-3.5">
-              <div className="h-[100px] rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
-              <div className="h-[100px] rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
+              <div className="h-[100px] rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
+              <div className="h-[100px] rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
             </div>
           </div>
         ) : error ? (
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 text-center">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 text-center">
             <p className="text-[13px] text-[var(--sl-t2)]">
               {error.includes('does not exist') ? 'Execute a migration 005 no Supabase.' : error}
             </p>
           </div>
         ) : assets.length === 0 ? (
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-12 text-center">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
             <div className="text-5xl mb-3">📈</div>
             <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
             <p className="text-[13px] text-[var(--sl-t2)] mb-5">Registre seus investimentos para acompanhar seu patrimonio.</p>
@@ -211,7 +211,7 @@ export default function PatrimonioPage() {
         ) : (
           <>
             {/* S1 HERO — Full-width patrimonio card */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-7 mb-3.5 relative overflow-hidden
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 mb-3.5 relative overflow-hidden
                             transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-1">
               {/* Top gradient accent */}
               <div
@@ -319,7 +319,7 @@ export default function PatrimonioPage() {
             {/* S3 Treemap (2/3) + Benchmark (1/3) */}
             <div className="grid grid-cols-[2fr_1fr] gap-3.5 mb-3.5 max-lg:grid-cols-1 sl-fade-up sl-delay-3">
               {/* Treemap card */}
-              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 transition-colors hover:border-[var(--sl-border-h)]">
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
                 <div className="flex items-center gap-2.5 mb-[18px]">
                   <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
@@ -338,7 +338,7 @@ export default function PatrimonioPage() {
               {/* Benchmark + Mini KPIs */}
               <div className="flex flex-col gap-3.5">
                 {/* Benchmark 12m */}
-                <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 flex-1 transition-colors hover:border-[var(--sl-border-h)]">
+                <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex-1 transition-colors hover:border-[var(--sl-border-h)]">
                   <div className="flex items-center gap-2.5 mb-[18px]">
                     <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <line x1="18" y1="20" x2="18" y2="10" />
@@ -379,7 +379,7 @@ export default function PatrimonioPage() {
                       })}
                     </div>
                   ) : (
-                    <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-xl p-3 text-center">
+                    <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[14px] p-3 text-center">
                       <Crown size={16} className="mx-auto mb-1.5 text-[#f59e0b]" />
                       <p className="text-[11px] text-[var(--sl-t2)] mb-2">
                         Comparativo com benchmarks e exclusivo do plano PRO.
@@ -425,7 +425,7 @@ export default function PatrimonioPage() {
             </div>
 
             {/* S4 Top Posicoes (full-width compact table) */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl overflow-hidden mb-3.5
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] overflow-hidden mb-3.5
                             transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-4"
                  style={{ padding: '18px 0' }}
             >

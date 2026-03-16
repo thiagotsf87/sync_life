@@ -86,7 +86,7 @@ export default function ExperienciasPage() {
     <ExperienciasMobile />
 
     {/* Desktop */}
-    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+    <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
       {/* 1. Module Header */}
       <ModuleHeader
@@ -158,23 +158,23 @@ export default function ExperienciasPage() {
 
       {/* 3. Content area */}
       {loading ? (
-        <div className="flex flex-col gap-4">
-          <div className="h-[140px] rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
-          <div className="h-[56px] rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
-          <div className="h-[56px] rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
+        <div className="flex flex-col gap-3.5">
+          <div className="h-[140px] rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
+          <div className="h-[56px] rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
+          <div className="h-[56px] rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
           <div className="grid grid-cols-5 gap-2.5">
-            {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-[80px] rounded-2xl bg-[var(--sl-s2)] animate-pulse" />)}
+            {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-[80px] rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />)}
           </div>
         </div>
       ) : error ? (
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 text-center">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 text-center">
           <p className="text-[13px] text-[var(--sl-t2)]">
             {error.includes('does not exist') ? 'Execute a migration 006 no Supabase.' : error}
           </p>
         </div>
       ) : trips.length === 0 ? (
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-16 text-center">
-          <div className="text-6xl mb-4">✈️</div>
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-16 text-center">
+          <div className="text-6xl mb-4">{'\u2708\uFE0F'}</div>
           <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Nenhuma viagem planejada</h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-6 max-w-sm mx-auto">
             Comece planejando sua pr\u00F3xima aventura com roteiro, or\u00E7amento e checklist completo.
@@ -192,10 +192,10 @@ export default function ExperienciasPage() {
 
           {/* Hero: Next Trip */}
           {nextTrip && (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl overflow-hidden relative sl-fade-up sl-delay-2">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] overflow-hidden relative sl-fade-up sl-delay-2">
               {/* Top gradient accent */}
               <div
-                className="absolute top-0 left-0 right-0 h-[2.5px] rounded-t-2xl"
+                className="absolute top-0 left-0 right-0 h-[2.5px] rounded-t-[18px]"
                 style={{ background: 'linear-gradient(90deg, #ec4899, #a855f7, #ec4899)' }}
               />
               {/* Decorative glows */}

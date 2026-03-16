@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams, usePathname } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { useAgenda, getWeekRange, EVENT_TYPES, PRIORITY_COLORS, type AgendaEvent, type AgendaEventFormData } from '@/hooks/use-agenda'
 import { useMetas } from '@/hooks/use-metas'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
-import { KpiCard } from '@/components/ui/kpi-card'
+import { MetricsStrip } from '@/components/ui/metrics-strip'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { EventModal } from '@/components/agenda/EventModal'
 import { DeleteEventModal } from '@/components/agenda/DeleteEventModal'
 import { TempoMobile } from '@/components/tempo/TempoMobile'
@@ -449,7 +450,7 @@ export default function AgendaSemanalPage() {
       </TempoMobileShell>
 
       {/* ─── Desktop ─────────────────────────────────────────────── */}
-      <div className="hidden lg:block max-w-[1140px] mx-auto px-4 py-7 pb-16">
+      <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
       {/* Sub-nav underline tabs */}
       <div className="flex border-b border-[var(--sl-border)] mb-5">
@@ -470,46 +471,28 @@ export default function AgendaSemanalPage() {
         ))}
       </div>
 
-      {/* ① Topbar */}
-      <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)] jornada:text-sl-grad">
-          📅 Agenda Semanal
-        </h1>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={prevWeek}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors"
-          >
-            <ChevronLeft size={16} />
-          </button>
-          <span className="text-[12px] font-semibold text-[var(--sl-t2)] px-2 min-w-[200px] text-center">
-            {formatDateRange(weekDays)}
-          </span>
-          <button
-            onClick={nextWeek}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors"
-          >
-            <ChevronRight size={16} />
-          </button>
-        </div>
-        <div className="flex-1" />
-        {!isCurrentWeek && (
-          <button
-            onClick={goToday}
-            className="px-3 py-1.5 rounded-[8px] border border-[var(--sl-border)] text-[12px] font-semibold text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors"
-          >
-            Hoje
-          </button>
-        )}
+      {/* ① ModuleHeader */}
+      <ModuleHeader
+        icon={CalendarIcon}
+        iconBg="rgba(6,182,212,.1)"
+        iconColor="#06b6d4"
+        title="Agenda Semanal"
+        subtitle="Visao completa da semana com todos os compromissos"
+        weekNav={{
+          label: formatDateRange(weekDays),
+          onPrev: prevWeek,
+          onNext: nextWeek,
+        }}
+      >
         <button
           onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
-          className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110"
+          className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold text-white transition-all hover:brightness-110 hover:-translate-y-px"
           style={{ background: '#06b6d4' }}
         >
-          <Plus size={15} />
-          <span className="max-sm:hidden">Novo Evento</span>
+          <Plus size={16} />
+          Novo Evento
         </button>
-      </div>
+      </ModuleHeader>
 
       {/* ② JornadaInsight */}
       <JornadaInsight text={
@@ -520,38 +503,20 @@ export default function AgendaSemanalPage() {
         </span>
       } />
 
-      {/* ③ KPI Strip */}
-      <div className="grid grid-cols-4 gap-3 mb-5 max-sm:grid-cols-2">
-        <KpiCard
-          label="Esta semana"
-          value={String(weekEvents.length)}
-          delta={weekEvents.length === 0 ? 'nenhum evento' : `${weekEvents.length} evento${weekEvents.length !== 1 ? 's' : ''}`}
-          accent="#06b6d4"
-        />
-        <KpiCard
-          label="Concluídos"
-          value={String(done)}
-          delta={weekEvents.length > 0 ? `${Math.round((done / weekEvents.length) * 100)}% de conclusão` : '—'}
-          deltaType={done > 0 ? 'up' : 'neutral'}
-          accent="#10b981"
-        />
-        <KpiCard
-          label="Em aberto"
-          value={String(pending)}
-          delta={pending === 0 ? 'tudo em dia!' : 'pendentes'}
-          deltaType={pending === 0 ? 'up' : 'warn'}
-          accent="#f59e0b"
-        />
-        <KpiCard
-          label="Horas agendadas"
-          value={`${totalHoras.toFixed(1)}h`}
-          delta="esta semana"
-          accent="#8b5cf6"
-        />
-      </div>
+      {/* ③ Stats Strip (inline metrics) */}
+      <MetricsStrip
+        gradient={['#06b6d4', '#0055ff']}
+        className="mb-5"
+        items={[
+          { label: 'Eventos', value: String(weekEvents.length), note: 'agendados' },
+          { label: 'Concluidos', value: String(done), valueColor: '#10b981', note: weekEvents.length > 0 ? `${Math.round((done / weekEvents.length) * 100)}% conclusao` : '--' },
+          { label: 'Em Aberto', value: String(pending), valueColor: '#f59e0b', note: pending === 0 ? 'tudo em dia!' : 'pendentes' },
+          { label: 'Horas', value: `${totalHoras.toFixed(1)}h`, valueColor: '#06b6d4', note: 'esta semana' },
+        ]}
+      />
 
       {/* ④ Time Grid */}
-      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl overflow-hidden sl-fade-up">
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] overflow-hidden sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
 
         {/* Mobile: chips de navegação entre dias */}
         <div className="md:hidden flex gap-1 px-3 py-2 border-b border-[var(--sl-border)] overflow-x-auto">

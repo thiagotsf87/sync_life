@@ -20,13 +20,13 @@ export function ExplorerBanner({ stats, className }: ExplorerBannerProps) {
   return (
     <div
       className={cn(
-        'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl overflow-hidden relative sl-fade-up sl-delay-1',
+        'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] overflow-hidden relative sl-fade-up sl-delay-1',
         className,
       )}
     >
       {/* Top gradient line */}
       <div
-        className="absolute top-0 left-0 right-0 h-[2.5px] rounded-t-2xl"
+        className="absolute top-0 left-0 right-0 h-[2.5px] rounded-t-[18px]"
         style={{ background: 'linear-gradient(90deg, #ec4899, #a855f7, #06b6d4)' }}
       />
 

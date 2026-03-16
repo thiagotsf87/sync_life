@@ -7,11 +7,16 @@ export function AchievementsWidget() {
   const router = useRouter()
 
   return (
-    <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-2 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
-      <div className="flex items-center justify-between mb-[18px]">
-        <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🏆 Conquistas Recentes</span>
-        <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
-          onClick={() => router.push('/conquistas')}>Ver todas →</button>
+    <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-[18px] sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
+      <div className="flex items-center gap-2 mb-[14px]">
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(234,179,8,.1)' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+          </svg>
+        </div>
+        <span className="text-[12px] font-semibold text-[var(--sl-t2)]">Conquistas Recentes</span>
       </div>
       <div className="flex gap-2.5 flex-wrap mb-4">
         {[

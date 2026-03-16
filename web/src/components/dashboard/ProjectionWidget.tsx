@@ -1,8 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { AreaChart, Area, ResponsiveContainer } from 'recharts'
-import { fmtShort, fmt } from '@/components/dashboard/dashboard-utils'
+import { fmt } from '@/components/dashboard/dashboard-utils'
 
 interface SparklinePoint {
   day: string
@@ -23,44 +21,25 @@ export interface ProjectionWidgetProps {
 }
 
 export function ProjectionWidget({ sparklineData, balance, projectedBalance, nextRecurrence }: ProjectionWidgetProps) {
-  const router = useRouter()
+  const projDate = new Date()
+  projDate.setDate(projDate.getDate() + 30)
+  const projLabel = projDate.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })
 
   return (
-    <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-1 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
-      <div className="flex items-center justify-between mb-1">
-        <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📈 Projeção de Saldo</span>
-        <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
-          onClick={() => router.push('/financas/planejamento')}>Planejamento →</button>
-      </div>
-      <p className="text-[11px] text-[var(--sl-t3)] mb-3">Próximos 30 dias</p>
-      <div className="h-[60px] mx-[-4px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={sparklineData} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
-            <defs>
-              <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#10b981" stopOpacity={0.5} />
-                <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <Area type="monotone" dataKey="saldo" stroke="#10b981" strokeWidth={2} fill="url(#sparkGrad)" dot={false} />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-      <div className="flex justify-between mt-2.5">
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.06em] text-[var(--sl-t3)]">Hoje</div>
-          <div className="font-[DM_Mono] text-[15px] text-[var(--sl-t2)]">{fmtShort(balance > 0 ? balance : 0)}</div>
+    <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-[18px] sl-fade-up sl-delay-1 hover:border-[var(--sl-border-h)] transition-colors">
+      <div className="flex items-center gap-2 mb-[14px]">
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(99,102,241,.1)' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+            <polyline points="17 6 23 6 23 12"/>
+          </svg>
         </div>
-        <div className="text-right">
-          <div className="text-[10px] uppercase tracking-[0.06em] text-[var(--sl-t3)]">30 dias</div>
-          <div className="font-[DM_Mono] text-[15px]" style={{ color: '#10b981' }}>{fmtShort(projectedBalance)}</div>
-        </div>
+        <span className="text-[12px] font-semibold text-[var(--sl-t2)]">Projeção 30 dias</span>
       </div>
-      {nextRecurrence && nextRecurrence.daysLeft <= 7 && (
-        <div className="mt-2.5 p-2 rounded-[8px] text-[12px] text-[var(--sl-t3)] bg-[var(--sl-s2)]">
-          ⚠ {nextRecurrence.name} {fmt(nextRecurrence.amount)} vence {nextRecurrence.daysLeft === 0 ? 'hoje' : `em ${nextRecurrence.daysLeft} ${nextRecurrence.daysLeft === 1 ? 'dia' : 'dias'}`}
-        </div>
-      )}
+      <div className="text-center py-2.5">
+        <div className="font-[DM_Mono] font-medium text-[28px]" style={{ color: '#10b981' }}>{fmt(projectedBalance)}</div>
+        <div className="text-[11px] text-[var(--sl-t3)] mt-1">Saldo projetado em {projLabel}</div>
+      </div>
     </div>
   )
 }

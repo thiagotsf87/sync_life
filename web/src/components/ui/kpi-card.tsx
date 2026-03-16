@@ -17,8 +17,8 @@ export function KpiCard({ label, value, delta, deltaType = 'neutral', accent = '
   }[deltaType]
 
   return (
-    <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 overflow-hidden
-                    transition-colors hover:border-[var(--sl-border-h)] sl-fade-up">
+    <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 overflow-hidden
+                    transition-all hover:border-[var(--sl-border-h)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,.15)] sl-fade-up">
       {/* Accent bar at top */}
       <div
         className="absolute top-0 left-5 right-5 h-0.5 rounded-b"

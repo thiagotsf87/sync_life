@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { usePortfolioAssets, usePortfolioDividends, ASSET_CLASS_LABELS, ASSET_CLASS_COLORS } from '@/hooks/use-patrimonio'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { PatrimonioMobile } from '@/components/patrimonio/PatrimonioMobile'
+import { ModuleHeader } from '@/components/ui/module-header'
+import { MetricsStrip } from '@/components/ui/metrics-strip'
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
   CartesianGrid, Tooltip as ReTooltip,
@@ -17,7 +19,7 @@ type Period = '3m' | '6m' | '1a' | 'all'
 export default function EvolucaoPage() {
   const router = useRouter()
 
-  const [period, setPeriod] = useState<Period>('1a')
+  const [period, setPeriod] = useState<Period>('6m')
 
   const { assets, loading: assetsLoading } = usePortfolioAssets()
   const { dividends, loading: divsLoading } = usePortfolioDividends()
@@ -36,26 +38,21 @@ export default function EvolucaoPage() {
   const totalWithDividends = totalCurrent + totalDividends
 
   // Build simulated evolution from asset.created_at + transactions
-  // Since we don't have historical price snapshots, simulate based on avg_price and created_at
-  // Group assets by creation month to simulate portfolio buildup
   const now = new Date()
   const periodMonths: Record<Period, number> = { '3m': 3, '6m': 6, '1a': 12, 'all': 60 }
   const months = periodMonths[period]
   const cutoff = new Date(now)
   cutoff.setMonth(cutoff.getMonth() - months)
 
-  // Build monthly data points (invested value accumulation proxy)
+  // Build monthly data points
   const dataPoints = Array.from({ length: months + 1 }, (_, i) => {
     const date = new Date(cutoff)
     date.setMonth(date.getMonth() + i)
     const label = date.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })
 
-    // Assets created before or at this point
     const activeAssets = assets.filter(a => new Date(a.created_at) <= date)
     const invested = activeAssets.reduce((s, a) => s + a.quantity * a.avg_price, 0)
 
-    // Simulate market value: apply a linear interpolation between avg_price and current_price
-    // based on elapsed time since asset creation
     const current = activeAssets.reduce((s, a) => {
       if (a.current_price == null) return s + a.quantity * a.avg_price
       const created = new Date(a.created_at).getTime()
@@ -65,7 +62,6 @@ export default function EvolucaoPage() {
       return s + a.quantity * interpPrice
     }, 0)
 
-    // Dividends received up to this point
     const divs = dividends
       .filter(d => d.status === 'received' && new Date(d.payment_date) <= date)
       .reduce((s, d) => s + d.total_amount, 0)
@@ -97,111 +93,90 @@ export default function EvolucaoPage() {
   return (
     <>
       <PatrimonioMobile initialTab="evolucao" />
-      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+      <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
-      {/* Topbar */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <button
-          onClick={() => router.push('/patrimonio')}
-          className="flex items-center gap-1.5 text-[13px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)] transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Patrimônio
-        </button>
-        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
-          📊 Evolução do Patrimônio
-        </h1>
-        <div className="flex gap-1 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] p-0.5">
+      {/* ModuleHeader */}
+      <ModuleHeader
+        icon={TrendingUp}
+        iconBg="rgba(59,130,246,.08)"
+        iconColor="#3b82f6"
+        title="Evolucao Patrimonial"
+        subtitle="Acompanhe o crescimento ao longo do tempo"
+      >
+        <div className="flex bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] p-[3px] gap-0.5">
           {(['3m', '6m', '1a', 'all'] as Period[]).map(p => (
             <button key={p} onClick={() => setPeriod(p)}
               className={cn(
-                'px-3 py-1.5 rounded-[8px] text-[12px] font-medium transition-all',
+                'px-3.5 py-[6px] rounded-[8px] text-[12px] font-semibold transition-all',
                 period === p
-                  ? 'bg-[var(--sl-s1)] text-[var(--sl-t1)] shadow-sm'
-                  : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
+                  ? 'bg-[rgba(59,130,246,.08)] text-[#3b82f6]'
+                  : 'text-[var(--sl-t3)] hover:text-[var(--sl-t1)]'
               )}
             >
               {p === 'all' ? 'Max' : p}
             </button>
           ))}
         </div>
-      </div>
+      </ModuleHeader>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-4 gap-3 mb-5 max-sm:grid-cols-2">
-        {[
-          {
-            label: 'Patrimônio Atual',
-            value: formatCurrency(totalCurrent),
-            delta: `Investido: ${formatCurrency(totalInvested)}`,
-            deltaType: 'neutral' as const,
-            color: '#10b981',
-          },
-          {
-            label: 'Resultado',
-            value: formatCurrency(profitLoss),
-            delta: `${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(2)}%`,
-            deltaType: profitLoss >= 0 ? 'up' as const : 'down' as const,
-            color: profitLoss >= 0 ? '#10b981' : '#f43f5e',
-          },
-          {
-            label: 'Total c/ Proventos',
-            value: formatCurrency(totalWithDividends),
-            delta: `Proventos: ${formatCurrency(totalDividends)}`,
-            deltaType: 'up' as const,
-            color: '#f59e0b',
-          },
-          {
-            label: 'Ativos',
-            value: String(assets.length),
-            delta: `${Object.keys(classTotals).length} classes`,
-            deltaType: 'neutral' as const,
-            color: '#0055ff',
-          },
-        ].map(kpi => (
-          <div key={kpi.label} className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 overflow-hidden">
-            <div className="absolute top-0 left-5 right-5 h-0.5 rounded-b" style={{ background: kpi.color }} />
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">{kpi.label}</p>
-            <p className="font-[DM_Mono] font-medium text-xl text-[var(--sl-t1)] leading-none">{kpi.value}</p>
-            <p className={cn('text-[11px] mt-1', {
-              'text-[#10b981]': kpi.deltaType === 'up',
-              'text-[#f43f5e]': kpi.deltaType === 'down',
-              'text-[var(--sl-t3)]': kpi.deltaType === 'neutral',
-            })}>
-              {kpi.delta}
-            </p>
-          </div>
-        ))}
+      {/* MetricsStrip — inline horizontal strip with internal dividers */}
+      <div className="mb-3.5 sl-fade-up sl-delay-1">
+        <MetricsStrip
+          items={[
+            {
+              label: 'Atual',
+              value: formatCurrency(totalCurrent),
+            },
+            {
+              label: 'Investido',
+              value: formatCurrency(totalInvested),
+            },
+            {
+              label: 'Resultado',
+              value: `${profitLoss >= 0 ? '+' : ''}${formatCurrency(profitLoss)}`,
+              valueColor: profitLoss >= 0 ? '#10b981' : '#f43f5e',
+            },
+            {
+              label: 'c/ Proventos',
+              value: formatCurrency(totalWithDividends),
+              valueColor: '#f59e0b',
+            },
+            {
+              label: 'Rentab.',
+              value: `${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(2)}%`,
+              valueColor: profitLossPct >= 0 ? '#10b981' : '#f43f5e',
+            },
+          ]}
+        />
       </div>
 
       {/* Jornada Insight */}
       <JornadaInsight
         text={
           profitLoss !== 0
-            ? <>Seu patrimônio <strong style={{ color: profitLoss >= 0 ? '#10b981' : '#f43f5e' }}>
+            ? <>Seu patrimonio <strong style={{ color: profitLoss >= 0 ? '#10b981' : '#f43f5e' }}>
                 {profitLoss >= 0 ? 'cresceu' : 'recuou'} {formatCurrency(Math.abs(profitLoss))}
-              </strong> ({profitLossPct >= 0 ? '+' : ''}{profitLossPct.toFixed(2)}%) em relação ao custo médio.
+              </strong> ({profitLossPct >= 0 ? '+' : ''}{profitLossPct.toFixed(2)}%) em relacao ao custo medio.
               {totalDividends > 0 && <> Com proventos, o retorno total chega a <strong className="text-[#f59e0b]">{formatCurrency(profitLoss + totalDividends)}</strong>.</>}
             </>
-            : <>Acompanhe a evolução do seu patrimônio ao longo do tempo. Adicione cotações atuais nos seus ativos para ver o resultado real.</>
+            : <>Acompanhe a evolucao do seu patrimonio ao longo do tempo. Adicione cotacoes atuais nos seus ativos para ver o resultado real.</>
         }
       />
 
       {loading ? (
-        <div className="h-80 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
+        <div className="h-80 rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
       ) : assets.length === 0 ? (
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-12 text-center">
-          <div className="text-5xl mb-3">📊</div>
-          <h3 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
-          <p className="text-[13px] text-[var(--sl-t2)]">Adicione ativos para visualizar a evolução.</p>
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
+          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
+          <p className="text-[13px] text-[var(--sl-t2)]">Adicione ativos para visualizar a evolucao.</p>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3.5">
 
           {/* Evolution chart */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-            <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-4">📈 Evolução patrimonial</h2>
-            <div className="h-72">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
+                          transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
+            <div className="h-[340px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={dataPoints} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
                   <defs>
@@ -213,6 +188,10 @@ export default function EvolucaoPage() {
                       <stop offset="5%" stopColor="#0055ff" stopOpacity={0.15} />
                       <stop offset="95%" stopColor="#0055ff" stopOpacity={0} />
                     </linearGradient>
+                    <linearGradient id="gradWithDivs" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.1} />
+                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                    </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--sl-s3)" />
                   <XAxis dataKey="date" tick={{ fontSize: 9, fill: 'var(--sl-t3)' }} tickLine={false} />
@@ -223,35 +202,51 @@ export default function EvolucaoPage() {
                     labelStyle={{ color: 'var(--sl-t1)', marginBottom: 4 }}
                     formatter={(v: number | undefined, name: string | undefined) => [
                       (v ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-                      name === 'current' ? 'Valor atual' : name === 'invested' ? 'Investido' : 'Total c/ proventos',
+                      name === 'current' ? 'Valor atual' : name === 'invested' ? 'Investido' : 'c/ proventos',
                     ]}
                   />
                   <Area type="monotone" dataKey="invested" stroke="#0055ff" strokeWidth={1.5}
                     fill="url(#gradInvested)" strokeDasharray="4 2" />
+                  <Area type="monotone" dataKey="withDividends" stroke="#f59e0b" strokeWidth={1.5}
+                    fill="url(#gradWithDivs)" />
                   <Area type="monotone" dataKey="current" stroke="#10b981" strokeWidth={2}
                     fill="url(#gradCurrent)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex items-center gap-4 mt-2 justify-center">
+            <div className="flex items-center gap-5 mt-3.5 justify-center">
               <div className="flex items-center gap-1.5">
-                <div className="w-6 h-0.5 bg-[#10b981] rounded-full" />
+                <div className="w-5 h-[3px] bg-[#10b981] rounded-sm" />
                 <span className="text-[10px] text-[var(--sl-t3)]">Valor atual</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-6 h-px bg-[#0055ff] rounded-full" style={{ borderTop: '1px dashed #0055ff' }} />
-                <span className="text-[10px] text-[var(--sl-t3)]">Custo médio</span>
+                <div className="w-5 h-px rounded-sm" style={{ borderTop: '2px dashed #0055ff' }} />
+                <span className="text-[10px] text-[var(--sl-t3)]">Custo medio</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-5 h-[2px] bg-[#f59e0b] rounded-sm" />
+                <span className="text-[10px] text-[var(--sl-t3)]">c/ proventos</span>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-[1fr_280px] gap-4 max-lg:grid-cols-1">
+          <div className="grid grid-cols-[1fr_300px] gap-3.5 max-lg:grid-cols-1 sl-fade-up sl-delay-3">
 
             {/* Performers */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">🏆 Performance por ativo</h2>
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
+                            transition-colors hover:border-[var(--sl-border-h)]">
+              <div className="flex items-center gap-2.5 mb-[18px]">
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                  Performance por Ativo
+                </span>
+              </div>
               {performers.length === 0 ? (
-                <p className="text-[12px] text-[var(--sl-t3)]">Adicione cotações atuais nos ativos para ver performance.</p>
+                <p className="text-[12px] text-[var(--sl-t3)]">Adicione cotacoes atuais nos ativos para ver performance.</p>
               ) : (
                 <div className="flex flex-col gap-2">
                   {performers.slice(0, 10).map(a => (
@@ -282,28 +277,42 @@ export default function EvolucaoPage() {
             </div>
 
             {/* Class distribution */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 h-fit">
-              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">🥧 Distribuição</h2>
-              <div className="flex flex-col gap-2.5">
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 h-fit
+                            transition-colors hover:border-[var(--sl-border-h)]">
+              <div className="flex items-center gap-2.5 mb-[18px]">
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                  <path d="M22 12A10 10 0 0 0 12 2v10z" />
+                </svg>
+                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                  Distribuicao
+                </span>
+              </div>
+              {/* Stacked bar */}
+              <div className="h-5 rounded-[10px] overflow-hidden flex mb-3.5">
                 {Object.entries(classTotals)
                   .sort(([, a], [, b]) => b - a)
                   .map(([cls, val]) => {
                     const pct = totalCurrent > 0 ? (val / totalCurrent) * 100 : 0
                     const color = ASSET_CLASS_COLORS[cls as keyof typeof ASSET_CLASS_COLORS] ?? '#6e90b8'
                     return (
-                      <div key={cls}>
-                        <div className="flex items-center justify-between mb-0.5">
-                          <span className="text-[11px] text-[var(--sl-t2)]">
-                            {ASSET_CLASS_LABELS[cls as keyof typeof ASSET_CLASS_LABELS] ?? cls}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <span className="font-[DM_Mono] text-[10px] text-[var(--sl-t3)]">{formatCurrency(val)}</span>
-                            <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t1)]">{pct.toFixed(1)}%</span>
-                          </div>
-                        </div>
-                        <div className="w-full bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height: '4px' }}>
-                          <div className="h-full rounded-full" style={{ width: `${pct}%`, background: color }} />
-                        </div>
+                      <div key={cls} style={{ width: `${pct}%`, background: color }} />
+                    )
+                  })}
+              </div>
+              <div className="flex flex-col gap-[5px]">
+                {Object.entries(classTotals)
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([cls, val]) => {
+                    const pct = totalCurrent > 0 ? (val / totalCurrent) * 100 : 0
+                    const color = ASSET_CLASS_COLORS[cls as keyof typeof ASSET_CLASS_COLORS] ?? '#6e90b8'
+                    return (
+                      <div key={cls} className="flex items-center gap-1.5 text-[11px]">
+                        <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: color }} />
+                        <span className="flex-1 text-[var(--sl-t2)]">
+                          {ASSET_CLASS_LABELS[cls as keyof typeof ASSET_CLASS_LABELS] ?? cls}
+                        </span>
+                        <span className="font-[DM_Mono] text-[10px] text-[var(--sl-t3)]">{pct.toFixed(0)}%</span>
                       </div>
                     )
                   })}

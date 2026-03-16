@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
@@ -13,6 +13,8 @@ import { EventModal } from '@/components/agenda/EventModal'
 import { DeleteEventModal } from '@/components/agenda/DeleteEventModal'
 import { TempoMobile } from '@/components/tempo/TempoMobile'
 import { TempoMobileShell } from '@/components/tempo/TempoMobileShell'
+import { ModuleHeader } from '@/components/ui/module-header'
+import { MetricsStrip } from '@/components/ui/metrics-strip'
 
 // ─── CONSTANTES ───────────────────────────────────────────────────────────────
 
@@ -304,7 +306,7 @@ export default function AgendaDiariaPage() {
       </TempoMobileShell>
 
       {/* ─── Desktop ─────────────────────────────────────────────── */}
-      <div className="hidden lg:block max-w-[1140px] mx-auto px-4 py-7 pb-16">
+      <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
         {/* Sub-nav underline tabs */}
         <div className="flex border-b border-[var(--sl-border)] mb-5">
@@ -325,30 +327,19 @@ export default function AgendaDiariaPage() {
           ))}
         </div>
 
-        {/* ① Topbar */}
-        <div className="flex items-center gap-3 mb-5 flex-wrap">
-          <h1 className="font-[Syne] font-extrabold text-2xl text-[var(--sl-t1)]">
-            📅 Agenda
-          </h1>
-          {/* Day navigation arrows */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={handlePrevDay}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <span className="text-[13px] font-semibold text-[var(--sl-t2)] px-2 min-w-[200px] text-center">
-              {selectedDate ? formatDayTitle(selectedDate) : '—'}
-            </span>
-            <button
-              onClick={handleNextDay}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
-          <div className="flex-1" />
+        {/* ① ModuleHeader */}
+        <ModuleHeader
+          icon={CalendarIcon}
+          iconBg="rgba(6,182,212,.1)"
+          iconColor="#06b6d4"
+          title="Agenda Diaria"
+          subtitle="Visualize e gerencie os eventos do dia selecionado"
+          weekNav={{
+            label: selectedDate ? formatDayTitle(selectedDate) : '--',
+            onPrev: handlePrevDay,
+            onNext: handleNextDay,
+          }}
+        >
           {!isSelectedToday && (
             <button
               onClick={handleGoToday}
@@ -359,13 +350,13 @@ export default function AgendaDiariaPage() {
           )}
           <button
             onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: selectedDateStr })}
-            className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110"
+            className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold text-white transition-all hover:brightness-110 hover:-translate-y-px"
             style={{ background: '#06b6d4' }}
           >
-            <Plus size={15} />
+            <Plus size={16} />
             Novo Evento
           </button>
-        </div>
+        </ModuleHeader>
 
         {/* ② JornadaInsight */}
         <JornadaInsight text={
@@ -410,9 +401,9 @@ export default function AgendaDiariaPage() {
         </div>
 
         {/* ④ Event List for selected day */}
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-4 sl-fade-up">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 mb-4 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
               {selectedDate ? formatDayTitle(selectedDate) : 'Hoje'}
               {isSelectedToday && <span className="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[rgba(6,182,212,0.15)] text-[#06b6d4]">Hoje</span>}
             </h2>
@@ -453,8 +444,8 @@ export default function AgendaDiariaPage() {
 
         {/* ⑤ Tomorrow Preview */}
         {tomorrowEvents.length > 0 && (
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up" style={{ opacity: 0.75 }}>
-            <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t2)] mb-3">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]" style={{ opacity: 0.75 }}>
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t2)] mb-3">
               Amanhã — {tomorrowEvents.length} evento{tomorrowEvents.length !== 1 ? 's' : ''}
             </h2>
             <div className="flex flex-col gap-2">

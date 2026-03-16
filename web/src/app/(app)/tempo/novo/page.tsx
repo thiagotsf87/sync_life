@@ -11,7 +11,7 @@ export default function NovoEventoPage() {
   }, [router])
 
   return (
-    <div className="max-w-[1140px] mx-auto px-4 py-7 flex items-center justify-center min-h-[200px]">
+    <div className="max-w-[1160px] mx-auto px-10 py-9 flex items-center justify-center min-h-[200px]">
       <p className="text-[13px] text-[var(--sl-t3)]">Redirecionando...</p>
     </div>
   )

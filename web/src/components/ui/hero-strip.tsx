@@ -6,6 +6,7 @@ import { type LucideIcon } from 'lucide-react'
 interface HeroStripItem {
   label: string
   value: string
+  subtitle?: string   // shown above value in Syne font (e.g. event name)
   meta?: string
   icon?: LucideIcon
   color?: string
@@ -26,7 +27,7 @@ export function HeroStrip({
   return (
     <div
       className={cn(
-        'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl overflow-hidden',
+        'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] overflow-hidden',
         'relative sl-fade-up transition-colors hover:border-[var(--sl-border-h)]',
         className,
       )}
@@ -44,10 +45,11 @@ export function HeroStrip({
             <div
               key={i}
               className={cn(
-                'flex-1 px-5 py-5',
+                'px-5 py-5',
                 i < items.length - 1 && 'border-r border-[var(--sl-border)]',
                 item.featured && 'bg-[var(--sl-s2)]',
               )}
+              style={{ flex: item.featured ? '1.4' : '1' }}
             >
               <div className="flex items-center gap-2 mb-2">
                 {Icon && (
@@ -61,6 +63,11 @@ export function HeroStrip({
                   {item.label}
                 </p>
               </div>
+              {item.subtitle && (
+                <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-1 truncate">
+                  {item.subtitle}
+                </p>
+              )}
               <p
                 className={cn(
                   'font-[DM_Mono] font-medium leading-none text-[var(--sl-t1)]',

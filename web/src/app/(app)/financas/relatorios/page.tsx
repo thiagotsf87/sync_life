@@ -161,7 +161,7 @@ export default function RelatoriosPage() {
       />
 
       {/* ═══════════ DESKTOP VIEW ═══════════ */}
-      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+      <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
         {/* ── Page Header ─────────────────────────────────────────── */}
         <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
