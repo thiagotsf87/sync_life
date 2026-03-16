@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function AppLoading() {
   return (
     <div className="max-w-[1140px] mx-auto px-6 py-7">
@@ -28,6 +30,19 @@ export default function AppLoading() {
           <div className="h-40 animate-pulse rounded-2xl border border-[var(--sl-border)] bg-[var(--sl-s1)]" />
           <div className="h-40 animate-pulse rounded-2xl border border-[var(--sl-border)] bg-[var(--sl-s1)]" />
         </div>
+      </div>
+
+      {/* Fallback se demorar — permite tentar login novamente */}
+      <div className="mt-6 text-center">
+        <p className="text-[12px] text-[var(--sl-t3)] mb-2">
+          Carregando...
+        </p>
+        <Link
+          href="/login"
+          className="text-[12px] text-[#f97316] hover:underline"
+        >
+          Demorando? Ir para login
+        </Link>
       </div>
     </div>
   )

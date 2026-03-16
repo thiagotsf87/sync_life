@@ -13,7 +13,7 @@ import {
   CalendarPlus, Timer, Trophy, Medal, User, Palette, Bell, Tags, Crown,
   Dumbbell, Scale, Utensils, HeartPulse, Bot, Library, Calculator,
   UserCheck, Map, Star, History, BookOpen, Clock, Briefcase, DollarSign, Plane,
-  Sparkles, ClipboardCheck, Globe, Link2,
+  Sparkles, ClipboardCheck, Globe, Link2, Upload, BookHeart,
 } from 'lucide-react'
 
 const LUCIDE_MAP: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -22,7 +22,7 @@ const LUCIDE_MAP: Record<string, React.ComponentType<{ size?: number; className?
   CalendarPlus, Timer, Trophy, Medal, User, Palette, Bell, Tags, Crown,
   Dumbbell, Scale, Utensils, HeartPulse, Bot, Library, Calculator,
   UserCheck, Map, Star, History, BookOpen, Clock, Briefcase, DollarSign, Plane,
-  Sparkles, ClipboardCheck, Globe, Link2,
+  Sparkles, ClipboardCheck, Globe, Link2, Upload, BookHeart,
 }
 
 export function Sidebar() {

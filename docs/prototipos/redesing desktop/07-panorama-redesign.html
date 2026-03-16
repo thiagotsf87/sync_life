@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>SyncLife — Panorama Desktop Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03071a;--s1:#091428;--s2:#0e1c35;--s3:#152544;
+  --t1:#e4f1ff;--t2:#7b9fc6;--t3:#3c5d84;
+  --border:rgba(120,165,220,.09);--border-h:rgba(120,165,220,.18);
+  --mod:#6366f1;--mod-rgb:99,102,241;--mod-dim:rgba(99,102,241,.08);
+  --green:#10b981;--red:#f43f5e;--yellow:#f59e0b;--orange:#f97316;
+  --cyan:#06b6d4;--purple:#a855f7;--blue:#3b82f6;--indigo:#6366f1;--pink:#ec4899;
+  --card-r:18px;
+}
+html{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{padding-bottom:52px}
+.page{max-width:1160px;margin:0 auto;padding:36px 40px 60px}
+
+/* ═══ STANDARD MODULE HEADER ═══ */
+.mod-hdr{display:flex;align-items:center;gap:16px;margin-bottom:36px}
+.mod-hdr .ico{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mod-hdr .ico svg{width:22px;height:22px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mod-hdr .info{flex:1}
+.mod-hdr .info h1{font-family:'Syne';font-weight:800;font-size:26px;line-height:1.15}
+.mod-hdr .info p{font-size:13px;color:var(--t2);margin-top:3px}
+.mod-hdr .actions{display:flex;gap:10px;align-items:center}
+
+/* ─── Buttons ─── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:11px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.btn-primary{background:var(--mod);color:#fff}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px rgba(var(--mod-rgb),.25)}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border-h);color:var(--t1)}
+
+/* ═══ CARDS ═══ */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:24px;transition:border-color .2s}
+.card:hover{border-color:var(--border-h)}
+.card-t{font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+.card-t svg{width:16px;height:16px;stroke:var(--mod);fill:none;stroke-width:2;stroke-linecap:round}
+.card-t .rt{margin-left:auto;font-family:'DM Sans';font-size:12px;font-weight:500;color:var(--mod);cursor:pointer}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
+.chart-ph{border:1px dashed var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:12px;min-height:160px;background:rgba(120,165,220,.015)}
+
+/* ═══ Animations ═══ */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.anim{animation:rise .5s ease both}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}.d6{animation-delay:.3s}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(120,165,220,.12);border-radius:3px}
+
+/* ═══ Proto Nav ═══ */
+.pnav{position:fixed;bottom:0;left:0;right:0;height:46px;background:#060a14;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;padding:0 20px;gap:4px;z-index:999}
+.pnav .tag{font-family:'DM Mono';font-size:9px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-right:14px;text-transform:uppercase}
+.pnav button{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;color:rgba(255,255,255,.3);background:none;border:none;cursor:pointer;transition:all .12s}
+.pnav button:hover{color:rgba(255,255,255,.55);background:rgba(255,255,255,.04)}
+.pnav button.on{color:#fff;background:rgba(var(--mod-rgb),.12)}
+.pnav .sep{width:1px;height:16px;background:rgba(255,255,255,.06);margin:0 8px}
+.screen{display:none}.screen.active{display:block}
+
+/* ═══════════════════════════════════════════
+   S1: DASHBOARD — Command Center
+   ═══════════════════════════════════════════ */
+.hero-banner{display:flex;align-items:center;gap:28px;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:24px 32px;margin-bottom:28px;position:relative;overflow:hidden}
+.hero-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--green),var(--indigo),var(--blue));border-radius:0 0 3px 3px}
+.hero-banner .sn{font-family:'DM Mono';font-weight:500;font-size:52px;background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-banner .dv{width:1px;height:48px;background:var(--border);flex-shrink:0}
+.hero-banner .mt{display:flex;flex-direction:column;gap:4px}
+.hero-banner .mt .st{font-family:'Syne';font-weight:700;font-size:16px}
+.hero-banner .mt .dt{font-size:12px;color:var(--green)}
+.wsp{display:flex;align-items:flex-end;gap:3px;height:36px}
+.wsp i{width:16px;border-radius:3px;display:block}
+
+.mosaic{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+.mt2{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden;transition:border-color .2s,box-shadow .25s,transform .2s;cursor:pointer}
+.mt2:hover{border-color:var(--border-h);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.mt2 .ac{position:absolute;top:0;left:18px;right:18px;height:2.5px;border-radius:0 0 3px 3px}
+.mt2 .hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.mt2 .hd .mi{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mt2 .hd .mi svg{width:15px;height:15px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mt2 .hd .mn{font-size:12px;font-weight:600;color:var(--t2)}
+.mt2 .hd .mv{font-family:'DM Mono';font-size:12px;font-weight:500;margin-left:auto}
+.mt2 .mtr{width:100%;height:4px;background:var(--s3);border-radius:2px;margin-top:10px;overflow:hidden}
+.mt2 .mtr i{display:block;height:100%;border-radius:2px}
+.mt2 .ms{font-size:11px;color:var(--t3);margin-top:8px}
+
+.cg{display:grid;grid-template-columns:1fr 380px;gap:16px;margin-bottom:28px}
+
+.ai-w{background:var(--s1);border-radius:var(--card-r);padding:24px 28px;position:relative;overflow:hidden}
+.ai-w::before{content:'';position:absolute;inset:-1px;border-radius:calc(var(--card-r) + 1px);background:linear-gradient(135deg,rgba(99,102,241,.22),rgba(16,185,129,.12));z-index:0}
+.ai-w::after{content:'';position:absolute;inset:0;border-radius:var(--card-r);background:var(--s1);z-index:0}
+.ai-w>*{position:relative;z-index:1}
+.ai-inp{display:flex;gap:10px;padding:11px 16px;background:var(--s2);border:1px solid var(--border);border-radius:12px;margin-top:14px}
+.ai-inp input{flex:1;background:none;border:none;outline:none;color:var(--t1);font-size:13px;font-family:'DM Sans'}
+.ai-inp input::placeholder{color:var(--t3)}
+.ai-inp button{padding:7px 18px;border-radius:9px;background:var(--mod);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer}
+
+.fstrip{display:flex;align-items:center;gap:0;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;margin-bottom:14px}
+.fstrip .fi{flex:1;padding:16px 20px;border-right:1px solid var(--border)}
+.fstrip .fi:last-child{border-right:none}
+.fstrip .fl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:4px}
+.fstrip .fv{font-family:'DM Mono';font-size:18px;font-weight:500}
+.fstrip .fn{font-size:10px;color:var(--t3);margin-top:3px}
+
+.brow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(120,165,220,.04)}
+.brow:last-child{border-bottom:none}
+.brow .bi{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brow .bi svg{width:12px;height:12px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brow .bn{font-size:12px;width:85px;flex-shrink:0}
+.brow .bt{flex:1;height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.brow .bt i{display:block;height:100%;border-radius:2px}
+.brow .bp{font-family:'DM Mono';font-size:11px;width:36px;text-align:right}
+.brow .bv{font-family:'DM Mono';font-size:11px;color:var(--t3);width:100px;text-align:right}
+
+.gc{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--s2);border-radius:12px;border-left:3px solid var(--purple)}
+.gc .gi{flex:1;min-width:0}
+.gc .gi .gn{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gc .gi .gs{font-size:10px;color:var(--t3);margin-top:2px}
+.gc .gp{font-family:'DM Mono';font-size:14px;font-weight:500;flex-shrink:0}
+.gc .gb{width:60px;height:4px;background:var(--s3);border-radius:2px;overflow:hidden;flex-shrink:0}
+.gc .gb i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--blue))}
+
+.agr{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.agr .ad{padding:8px 4px;border-radius:10px;transition:background .15s}
+.agr .ad .al{font-size:10px;font-weight:600;color:var(--t3);margin-bottom:4px}
+.agr .ad .adot{width:8px;height:8px;border-radius:50%;margin:0 auto 4px;background:var(--s3)}
+.agr .ad .ac2{font-family:'DM Mono';font-size:11px;color:var(--t2)}
+.agr .ad.today{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2)}
+.agr .ad.today .al{color:var(--mod)}
+
+.wstrip{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+.wc{min-width:240px;flex:1;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:18px;flex-shrink:0;transition:border-color .15s}
+.wc:hover{border-color:var(--border-h)}
+.wc .wh{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.wc .wi{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.wc .wi svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round}
+.wc .wt{font-size:12px;font-weight:600;color:var(--t2)}
+.wc .wr{display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:5px 0}
+.wc .wr+.wr{border-top:1px solid rgba(120,165,220,.04)}
+
+/* ═══════════════════════════════════════════
+   S2: REVIEW SEMANAL — Vertical Timeline
+   ═══════════════════════════════════════════ */
+.rh{display:flex;align-items:center;gap:16px;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:20px 28px;margin-bottom:28px}
+.rh .ri{flex:1;text-align:center;padding:0 12px}
+.rh .ri+.ri{border-left:1px solid var(--border)}
+.rh .rv{font-family:'DM Mono';font-weight:500;font-size:22px}
+.rh .rl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-top:3px}
+
+.tline{position:relative;padding-left:60px}
+.tline::before{content:'';position:absolute;left:28px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--mod),rgba(var(--mod-rgb),.1));border-radius:1px}
+.tn{position:relative;margin-bottom:20px}
+.tn:last-child{margin-bottom:0}
+.tn .td{position:absolute;left:-42px;top:24px;width:24px;height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;border:2px solid var(--s1);z-index:1}
+.tn .td svg{width:12px;height:12px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tc{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:22px 24px;transition:border-color .2s}
+.tc:hover{border-color:var(--border-h)}
+.tc .th{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.tc .tt{font-family:'Syne';font-weight:700;font-size:15px}
+.tc .tp{font-size:10px;font-weight:700;padding:3px 10px;border-radius:7px}
+.tmg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.tmg.c2{grid-template-columns:repeat(2,1fr)}
+.tmg.c4{grid-template-columns:repeat(4,1fr)}
+.tm{background:var(--s2);border-radius:11px;padding:12px 14px;text-align:center}
+.tm .tv{font-family:'DM Mono';font-size:20px;font-weight:500;line-height:1}
+.tm .tl2{font-size:10px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
+.hb{display:flex;align-items:center;gap:8px;padding:6px 0}
+.hb .hl{font-size:11px;width:80px;flex-shrink:0;color:var(--t2)}
+.hb .ht{flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
+.hb .ht i{display:block;height:100%;border-radius:3px}
+.hb .hv{font-family:'DM Mono';font-size:11px;width:36px;text-align:right;flex-shrink:0}
+
+.rfin{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:36px;text-align:center;position:relative;overflow:hidden}
+.rfin::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--indigo),var(--blue))}
+.rfin .rfs{font-family:'DM Mono';font-weight:500;font-size:72px;background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.rfin .rfl{font-size:12px;color:var(--t3);margin-top:6px;text-transform:uppercase;letter-spacing:.1em}
+
+/* ═══════════════════════════════════════════
+   S3: LIFE SCORE — Deep Dive
+   ═══════════════════════════════════════════ */
+.sh{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+.shl{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:40px 36px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.shl::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--indigo),var(--blue))}
+.shl .sn2{font-family:'DM Mono';font-weight:500;font-size:96px;background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.shl .slb{font-size:14px;color:var(--t3);margin-top:8px;text-transform:uppercase;letter-spacing:.12em}
+.shr{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:28px}
+
+.mr{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;transition:background .15s}
+.mr:hover{background:var(--s2)}
+.mr .mi2{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mr .mi2 svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mr .mn2{font-size:13px;font-weight:600;width:100px;flex-shrink:0}
+.mr .mrt{flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
+.mr .mrt i{display:block;height:100%;border-radius:3px}
+.mr .mrv{font-family:'DM Mono';font-size:14px;font-weight:500;width:40px;text-align:right;flex-shrink:0}
+.mr .mrd{font-size:10px;width:50px;text-align:right;flex-shrink:0}
+
+.evo{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:24px 28px;margin-bottom:28px}
+.evo .eh{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.evo .et{font-family:'Syne';font-weight:700;font-size:15px}
+.evo .ef{display:flex;gap:4px;margin-left:auto}
+.evo .ef button{padding:5px 12px;border-radius:7px;font-size:11px;font-weight:600;color:var(--t3);background:none;border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.evo .ef button:hover{color:var(--t1);border-color:var(--border-h)}
+.evo .ef button.active{color:#fff;background:rgba(var(--mod-rgb),.15);border-color:var(--mod)}
+
+.ais{background:var(--s1);border-radius:var(--card-r);padding:22px 26px;position:relative;overflow:hidden}
+.ais::before{content:'';position:absolute;inset:-1px;border-radius:calc(var(--card-r) + 1px);background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(16,185,129,.10));z-index:0}
+.ais::after{content:'';position:absolute;inset:0;border-radius:var(--card-r);background:var(--s1);z-index:0}
+.ais>*{position:relative;z-index:1}
+
+/* ═══════════════════════════════════════════
+   S4: CONQUISTAS — Trophy Case Gallery
+   ═══════════════════════════════════════════ */
+.xp-bar{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:22px 28px;margin-bottom:28px;display:flex;align-items:center;gap:24px}
+.xp-bar .xp-lvl{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.xp-bar .xp-ring{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(var(--mod-rgb),.15),rgba(16,185,129,.08));display:flex;align-items:center;justify-content:center}
+.xp-bar .xp-ring span{font-family:'Syne';font-weight:800;font-size:22px;background:linear-gradient(135deg,var(--mod),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.xp-bar .xp-info{flex:1}
+.xp-bar .xp-info .xp-name{font-family:'Syne';font-weight:700;font-size:16px;margin-bottom:4px}
+.xp-bar .xp-info .xp-detail{font-size:12px;color:var(--t2)}
+.xp-bar .xp-track{flex:2;display:flex;flex-direction:column;gap:4px}
+.xp-bar .xp-track .xp-nums{display:flex;justify-content:space-between;font-size:10px}
+.xp-bar .xp-track .xp-nums span{color:var(--t3);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.xp-bar .xp-track .xp-nums b{color:var(--mod);font-weight:600}
+.xp-bar .xp-track .xp-bg{height:8px;background:var(--s3);border-radius:4px;overflow:hidden}
+.xp-bar .xp-track .xp-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--mod),var(--green))}
+.xp-bar .xp-stats{display:flex;gap:20px;flex-shrink:0}
+.xp-bar .xp-stats .xs{text-align:center}
+.xp-bar .xp-stats .xs .xsv{font-family:'DM Mono';font-size:18px;font-weight:500}
+.xp-bar .xp-stats .xs .xsl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+
+/* Tab filters */
+.tab-row{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap}
+.tab-btn{padding:7px 16px;border-radius:9px;font-size:12px;font-weight:600;color:var(--t3);background:var(--s1);border:1px solid var(--border);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.tab-btn:hover{border-color:var(--border-h);color:var(--t1)}
+.tab-btn.active{color:#fff;background:rgba(var(--mod-rgb),.12);border-color:var(--mod)}
+.tab-btn svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round}
+
+/* Badge grid */
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.badge{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:22px 18px;text-align:center;transition:all .2s;position:relative;overflow:hidden}
+.badge:hover{border-color:var(--border-h);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.badge .b-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.badge .b-icon svg{width:24px;height:24px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.badge .b-name{font-family:'Syne';font-weight:700;font-size:13px;margin-bottom:4px}
+.badge .b-desc{font-size:11px;color:var(--t3);line-height:1.4;margin-bottom:10px}
+.badge .b-tier{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px;border-radius:6px;display:inline-block}
+.badge.locked{opacity:.5}
+.badge.locked .b-icon{filter:grayscale(1)}
+.badge .b-progress{margin-top:10px}
+.badge .b-prog-track{height:4px;background:var(--s3);border-radius:2px;overflow:hidden;margin-top:4px}
+.badge .b-prog-track i{display:block;height:100%;border-radius:2px}
+.badge .b-prog-label{font-family:'DM Mono';font-size:10px;color:var(--t3);margin-top:4px}
+
+/* Streak section */
+.streak-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+.streak-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:22px;transition:border-color .2s}
+.streak-card:hover{border-color:var(--border-h)}
+.streak-card .sk-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.streak-card .sk-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.streak-card .sk-icon svg{width:16px;height:16px;fill:none;stroke-width:2;stroke-linecap:round}
+.streak-card .sk-title{font-family:'Syne';font-weight:700;font-size:13px}
+.streak-card .sk-val{font-family:'DM Mono';font-size:32px;font-weight:500;line-height:1}
+.streak-card .sk-sub{font-size:11px;color:var(--t3);margin-top:6px}
+.streak-card .sk-dots{display:flex;gap:4px;margin-top:10px}
+.streak-card .sk-dots .dot{width:20px;height:20px;border-radius:5px;background:var(--s3);display:flex;align-items:center;justify-content:center}
+.streak-card .sk-dots .dot svg{width:10px;height:10px;fill:none;stroke-width:2.5}
+
+/* ═══════════════════════════════════════════
+   S5: RANKING — Personal Leaderboard
+   ═══════════════════════════════════════════ */
+.rank-hero{display:grid;grid-template-columns:320px 1fr;gap:24px;margin-bottom:28px}
+.rank-profile{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:28px;text-align:center;position:relative;overflow:hidden}
+.rank-profile::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.rank-profile .rp-avatar{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,rgba(var(--mod-rgb),.15),rgba(234,179,8,.1));display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.rank-profile .rp-avatar svg{width:32px;height:32px;fill:none;stroke:var(--mod);stroke-width:1.5;stroke-linecap:round}
+.rank-profile .rp-name{font-family:'Syne';font-weight:800;font-size:20px;margin-bottom:4px}
+.rank-profile .rp-title{font-size:12px;color:var(--yellow);font-weight:600}
+.rank-profile .rp-stats{display:flex;gap:0;margin-top:16px;border-top:1px solid var(--border);padding-top:16px}
+.rank-profile .rp-stats .rps{flex:1;text-align:center}
+.rank-profile .rp-stats .rps+.rps{border-left:1px solid var(--border)}
+.rank-profile .rp-stats .rps .rpv{font-family:'DM Mono';font-size:18px;font-weight:500}
+.rank-profile .rp-stats .rps .rpl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+
+.rank-board{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:24px}
+.rank-board .rb-head{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.rank-board .rb-title{font-family:'Syne';font-weight:700;font-size:15px}
+.rank-board .rb-subtitle{font-size:12px;color:var(--t3);margin-left:auto}
+.rk-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;transition:background .15s;margin-bottom:4px}
+.rk-row:hover{background:var(--s2)}
+.rk-row.me{background:rgba(var(--mod-rgb),.06);border:1px solid rgba(var(--mod-rgb),.15)}
+.rk-row .rk-pos{font-family:'DM Mono';font-size:16px;font-weight:500;width:32px;flex-shrink:0;text-align:center}
+.rk-row .rk-name{font-size:13px;font-weight:600;flex:1}
+.rk-row .rk-score{font-family:'DM Mono';font-size:14px;font-weight:500;width:50px;text-align:right;flex-shrink:0}
+.rk-row .rk-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0}
+
+/* Records grid */
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.rec-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:22px;transition:border-color .2s;position:relative;overflow:hidden}
+.rec-card:hover{border-color:var(--border-h)}
+.rec-card .rc-accent{position:absolute;top:0;left:22px;right:22px;height:2.5px;border-radius:0 0 3px 3px}
+.rec-card .rc-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rec-card .rc-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+.rec-card .rc-icon svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round}
+.rec-card .rc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3)}
+.rec-card .rc-val{font-family:'DM Mono';font-size:28px;font-weight:500;line-height:1}
+.rec-card .rc-sub{font-size:11px;color:var(--t3);margin-top:6px}
+
+/* Podium for module ranking */
+.podium{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.pod{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:24px;text-align:center;transition:all .2s;position:relative;overflow:hidden}
+.pod:hover{border-color:var(--border-h)}
+.pod .pod-accent{position:absolute;top:0;left:0;right:0;height:3px}
+.pod .pod-pos{font-family:'DM Mono';font-size:14px;font-weight:500;color:var(--t3);margin-bottom:8px}
+.pod .pod-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.pod .pod-icon svg{width:20px;height:20px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pod .pod-name{font-family:'Syne';font-weight:700;font-size:14px;margin-bottom:4px}
+.pod .pod-score{font-family:'DM Mono';font-size:28px;font-weight:500;line-height:1}
+.pod .pod-delta{font-size:11px;margin-top:6px}
+.pod.gold .pod-accent{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.pod.silver .pod-accent{background:linear-gradient(90deg,var(--t3),var(--t2))}
+.pod.bronze .pod-accent{background:linear-gradient(90deg,var(--orange),var(--red))}
+</style>
+</head>
+<body>
+
+<!-- ══════════ S1: DASHBOARD ══════════ -->
+<div id="s-dash" class="screen active">
+<div class="page">
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    </div>
+    <div class="info">
+      <h1>Panorama</h1>
+      <p>Sexta-feira, 14 de março de 2026 · Bom dia, Thiago!</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="go('review')"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>Review Semanal</button>
+      <button class="btn btn-primary" onclick="go('score')"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Life Score</button>
+    </div>
+  </div>
+
+  <!-- Hero Score Banner -->
+  <div class="hero-banner anim d1">
+    <div style="display:flex;align-items:baseline;gap:8px"><span class="sn">74</span><span style="font-size:14px;color:var(--t3);font-weight:500">pontos</span></div>
+    <div class="dv"></div>
+    <div class="mt"><div class="st">Life Sync Score</div><div class="dt"><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--green)" stroke="none" style="display:inline;vertical-align:-1px"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg> +3 pontos vs semana passada</div></div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px">
+      <div style="text-align:right"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3)">Evolução 4 sem</div><div style="font-size:11px;color:var(--t2);margin-top:2px">68 → 70 → 71 → <span style="color:var(--mod);font-weight:600">74</span></div></div>
+      <div class="wsp"><i style="height:68%;background:rgba(var(--mod-rgb),.25)"></i><i style="height:70%;background:rgba(var(--mod-rgb),.3)"></i><i style="height:71%;background:rgba(var(--mod-rgb),.4)"></i><i style="height:74%;background:rgba(var(--mod-rgb),.55)"></i><i style="height:74%;background:var(--mod);box-shadow:0 0 8px rgba(var(--mod-rgb),.4)"></i></div>
+    </div>
+    <div class="pill" style="background:rgba(16,185,129,.1);color:var(--green)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Excelente equilíbrio</div>
+  </div>
+
+  <!-- Module Mosaic -->
+  <div class="mosaic anim d2">
+    <div class="mt2"><div class="ac" style="background:var(--green)"></div><div class="hd"><div class="mi" style="background:rgba(16,185,129,.1)"><svg viewBox="0 0 24 24" stroke="var(--green)"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="mn">Finanças</span><span class="mv" style="color:var(--green)">82</span></div><div class="mtr"><i style="width:82%;background:var(--green)"></i></div><div class="ms">Saldo: R$ 3.250</div></div>
+    <div class="mt2"><div class="ac" style="background:var(--pink)"></div><div class="hd"><div class="mi" style="background:rgba(236,72,153,.1)"><svg viewBox="0 0 24 24" stroke="var(--pink)"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><span class="mn">Experiências</span><span class="mv" style="color:var(--pink)">85</span></div><div class="mtr"><i style="width:85%;background:var(--pink)"></i></div><div class="ms">Buenos Aires em 23d</div></div>
+    <div class="mt2"><div class="ac" style="background:var(--yellow)"></div><div class="hd"><div class="mi" style="background:rgba(234,179,8,.1)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5.4 5 6.5V18h4v-2.5c3-1.1 5-3.5 5-6.5a7 7 0 0 0-7-7z"/><path d="M10 21h4"/></svg></div><span class="mn">Mente</span><span class="mv" style="color:var(--yellow)">80</span></div><div class="mtr"><i style="width:80%;background:var(--yellow)"></i></div><div class="ms">4h 20m medit./estudo</div></div>
+    <div class="mt2"><div class="ac" style="background:var(--orange)"></div><div class="hd"><div class="mi" style="background:rgba(249,115,22,.1)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="mn">Corpo</span><span class="mv" style="color:var(--orange)">78</span></div><div class="mtr"><i style="width:78%;background:var(--orange)"></i></div><div class="ms">82,5 kg · -0,5 kg</div></div>
+    <div class="mt2"><div class="ac" style="background:var(--blue)"></div><div class="hd"><div class="mi" style="background:rgba(59,130,246,.1)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><span class="mn">Patrimônio</span><span class="mv" style="color:var(--blue)">74</span></div><div class="mtr"><i style="width:74%;background:var(--blue)"></i></div><div class="ms">R$ 185.400 · +2,3%</div></div>
+    <div class="mt2"><div class="ac" style="background:var(--cyan)"></div><div class="hd"><div class="mi" style="background:rgba(6,182,212,.1)"><svg viewBox="0 0 24 24" stroke="var(--cyan)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="mn">Tempo</span><span class="mv" style="color:var(--cyan)">71</span></div><div class="mtr"><i style="width:71%;background:var(--cyan)"></i></div><div class="ms">12 eventos · 67% feito</div></div>
+    <div class="mt2"><div class="ac" style="background:var(--red)"></div><div class="hd"><div class="mi" style="background:rgba(244,63,94,.1)"><svg viewBox="0 0 24 24" stroke="var(--red)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div><span class="mn">Carreira</span><span class="mv" style="color:var(--red)">68</span></div><div class="mtr"><i style="width:68%;background:var(--red)"></i></div><div class="ms">2 cursos ativos</div></div>
+    <div class="mt2"><div class="ac" style="background:#0055ff"></div><div class="hd"><div class="mi" style="background:rgba(0,85,255,.1)"><svg viewBox="0 0 24 24" stroke="#0055ff"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><span class="mn">Futuro</span><span class="mv" style="color:#0055ff">65</span></div><div class="mtr"><i style="width:65%;background:#0055ff"></i></div><div class="ms">3 metas · 62% média</div></div>
+  </div>
+
+  <!-- Content Grid -->
+  <div class="cg anim d3">
+    <div>
+      <div class="fstrip" style="margin-bottom:14px">
+        <div class="fi"><div class="fl">Saldo do Mês</div><div class="fv" style="color:var(--green)">R$ 3.250</div><div class="fn"><svg width="10" height="10" viewBox="0 0 24 24" fill="var(--green)" stroke="none" style="display:inline;vertical-align:-1px"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg> R$ 450 vs anterior</div></div>
+        <div class="fi"><div class="fl">Receitas</div><div class="fv">R$ 8.500</div><div class="fn" style="color:var(--green)">+12%</div></div>
+        <div class="fi"><div class="fl">Despesas</div><div class="fv" style="color:var(--red)">R$ 5.250</div><div class="fn" style="color:var(--green)">-5%</div></div>
+        <div class="fi"><div class="fl">Poupança</div><div class="fv" style="color:var(--mod)">38%</div><div class="fn">Meta: 30%</div></div>
+      </div>
+      <div class="card" style="margin-bottom:14px"><div class="card-t"><svg viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>Orçamentos<span class="rt">5 categorias</span></div>
+        <div class="brow"><div class="bi" style="background:rgba(16,185,129,.1)"><svg viewBox="0 0 24 24" stroke="var(--green)"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><span class="bn">Alimentação</span><div class="bt"><i style="width:67%;background:var(--green)"></i></div><span class="bp" style="color:var(--green)">67%</span><span class="bv">R$ 800 / 1.200</span></div>
+        <div class="brow"><div class="bi" style="background:rgba(6,182,212,.1)"><svg viewBox="0 0 24 24" stroke="var(--cyan)"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2"/></svg></div><span class="bn">Transporte</span><div class="bt"><i style="width:70%;background:var(--yellow)"></i></div><span class="bp" style="color:var(--yellow)">70%</span><span class="bv">R$ 350 / 500</span></div>
+        <div class="brow"><div class="bi" style="background:rgba(244,63,94,.1)"><svg viewBox="0 0 24 24" stroke="var(--red)"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div><span class="bn">Lazer</span><div class="bt"><i style="width:100%;background:var(--red)"></i></div><span class="bp" style="color:var(--red)">105%</span><span class="bv">R$ 420 / 400</span></div>
+        <div class="brow"><div class="bi" style="background:rgba(168,85,247,.1)"><svg viewBox="0 0 24 24" stroke="var(--purple)"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><span class="bn">Moradia</span><div class="bt"><i style="width:95%;background:var(--yellow)"></i></div><span class="bp" style="color:var(--yellow)">95%</span><span class="bv">R$ 1.900 / 2.000</span></div>
+        <div class="brow"><div class="bi" style="background:rgba(59,130,246,.1)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><span class="bn">Educação</span><div class="bt"><i style="width:40%;background:var(--green)"></i></div><span class="bp" style="color:var(--green)">40%</span><span class="bv">R$ 200 / 500</span></div>
+      </div>
+      <div class="ai-w">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span style="font-family:'Syne';font-weight:700;font-size:14px">Insight Inteligente</span><span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod);font-size:10px">IA</span></div>
+        <p style="font-size:13px;color:var(--t2);line-height:1.65">Seus gastos com <strong style="color:var(--t1)">Lazer</strong> aumentaram <strong style="color:var(--yellow)">23%</strong> este mês comparado à média dos últimos 3 meses. Considere revisar assinaturas de streaming — você tem 4 ativas totalizando R$ 189/mês.</p>
+        <div class="ai-inp"><input type="text" placeholder="Pergunte algo sobre sua vida..."><button>Enviar</button></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px"><div class="card-t"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Metas Ativas<span class="rt">3 objetivos</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="gc" style="border-left-color:var(--green)"><div class="gi"><div class="gn">Comprar casa</div><div class="gs">R$ 65.000 / R$ 100.000</div></div><div class="gb"><i style="width:65%"></i></div><div class="gp" style="color:var(--green)">65%</div></div>
+          <div class="gc" style="border-left-color:var(--cyan)"><div class="gi"><div class="gn">Curso Inglês</div><div class="gs">8 / 10 módulos</div></div><div class="gb"><i style="width:80%"></i></div><div class="gp" style="color:var(--green)">80%</div></div>
+          <div class="gc" style="border-left-color:var(--orange)"><div class="gi"><div class="gn">Perder 10kg</div><div class="gs">4 / 10 kg</div></div><div class="gb"><i style="width:40%"></i></div><div class="gp" style="color:var(--yellow)">40%</div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:14px"><div class="card-t"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda da Semana<span class="rt">Mar 10-16</span></div>
+        <div class="agr">
+          <div class="ad"><div class="al">Seg</div><div class="adot" style="background:var(--cyan)"></div><div class="ac2">2</div></div>
+          <div class="ad"><div class="al">Ter</div><div class="adot"></div><div class="ac2" style="color:var(--t3)">—</div></div>
+          <div class="ad"><div class="al">Qua</div><div class="adot" style="background:var(--cyan)"></div><div class="ac2">1</div></div>
+          <div class="ad"><div class="al">Qui</div><div class="adot" style="background:var(--orange)"></div><div class="ac2">3</div></div>
+          <div class="ad today"><div class="al">Sex</div><div class="adot" style="background:var(--mod);box-shadow:0 0 8px rgba(var(--mod-rgb),.4)"></div><div class="ac2" style="color:var(--mod)">2</div></div>
+          <div class="ad"><div class="al">Sáb</div><div class="adot" style="background:var(--green)"></div><div class="ac2">1</div></div>
+          <div class="ad"><div class="al">Dom</div><div class="adot"></div><div class="ac2" style="color:var(--t3)">—</div></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-t"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Destaques</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--s2);border-radius:10px"><div style="width:26px;height:26px;border-radius:7px;background:rgba(249,115,22,.1);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div style="flex:1"><div style="font-size:12px;font-weight:600">Corpo</div><div style="font-size:10px;color:var(--t3)">82,5 kg · streak 12d</div></div><span style="font-size:11px;color:var(--green)">-0,5 kg</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--s2);border-radius:10px"><div style="width:26px;height:26px;border-radius:7px;background:rgba(59,130,246,.1);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div style="flex:1"><div style="font-size:12px;font-weight:600">Patrimônio</div><div style="font-size:10px;color:var(--t3)">R$ 185.400</div></div><span style="font-size:11px;color:var(--green)">+2,3%</span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--s2);border-radius:10px"><div style="width:26px;height:26px;border-radius:7px;background:rgba(236,72,153,.1);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2" stroke-linecap="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div style="flex:1"><div style="font-size:12px;font-weight:600">Buenos Aires</div><div style="font-size:10px;color:var(--t3)">Próxima viagem</div></div><span style="font-family:'DM Mono';font-size:12px;color:var(--pink)">23d</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Widget Strip -->
+  <div class="wstrip anim d4">
+    <div class="wc"><div class="wh"><div class="wi" style="background:rgba(249,115,22,.1)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div><span class="wt">Recorrentes · Próx. 5 dias</span></div><div class="wr"><span style="color:var(--t2)">Netflix</span><span style="font-family:'DM Mono';font-size:12px;color:var(--red)">- R$ 55,90</span></div><div class="wr"><span style="color:var(--t2)">Spotify</span><span style="font-family:'DM Mono';font-size:12px;color:var(--red)">- R$ 21,90</span></div><div class="wr"><span style="color:var(--t2)">Internet</span><span style="font-family:'DM Mono';font-size:12px;color:var(--red)">- R$ 119,90</span></div></div>
+    <div class="wc"><div class="wh"><div class="wi" style="background:rgba(var(--mod-rgb),.1)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><span class="wt">Projeção 30 dias</span></div><div style="text-align:center;padding:10px 0"><div style="font-family:'DM Mono';font-weight:500;font-size:28px;color:var(--green)">R$ 4.120</div><div style="font-size:11px;color:var(--t3);margin-top:4px">Saldo projetado em 14/Abr</div></div></div>
+    <div class="wc"><div class="wh"><div class="wi" style="background:rgba(234,179,8,.1)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div><span class="wt">Conquistas Recentes</span></div><div style="display:flex;gap:10px"><div style="text-align:center;flex:1"><div style="width:40px;height:40px;border-radius:10px;background:rgba(234,179,8,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 4px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div style="font-size:10px;color:var(--t3)">Focado</div></div><div style="text-align:center;flex:1"><div style="width:40px;height:40px;border-radius:10px;background:rgba(16,185,129,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 4px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div style="font-size:10px;color:var(--t3)">Poupador</div></div><div style="text-align:center;flex:1"><div style="width:40px;height:40px;border-radius:10px;background:rgba(var(--mod-rgb),.1);display:flex;align-items:center;justify-content:center;margin:0 auto 4px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></div><div style="font-size:10px;color:var(--t3)">Streak 7d</div></div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ S2: REVIEW SEMANAL ══════════ -->
+<div id="s-review" class="screen">
+<div class="page">
+  <div class="mod-hdr anim"><div class="ico" style="background:var(--mod-dim)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="info"><h1>Review Semanal</h1><p>Semana de 10 a 16 de março · Retrospectiva completa</p></div><div class="actions"><button class="btn btn-ghost" onclick="go('dash')"><svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Voltar</button></div></div>
+
+  <div class="rh anim d1">
+    <div class="ri"><div class="rv" style="color:var(--mod)">74</div><div class="rl">Score Semanal</div></div>
+    <div class="ri"><div class="rv" style="color:var(--green)">+3</div><div class="rl">vs Semana Anterior</div></div>
+    <div class="ri"><div class="rv">12</div><div class="rl">Tarefas Concluídas</div></div>
+    <div class="ri"><div class="rv" style="color:var(--yellow)">5</div><div class="rl">Hábitos Mantidos</div></div>
+    <div class="ri"><div class="rv" style="color:var(--orange)">120</div><div class="rl">XP Ganho</div></div>
+  </div>
+
+  <div class="tline anim d2">
+    <div class="tn"><div class="td" style="background:rgba(16,185,129,.15);border-color:var(--green)"><svg viewBox="0 0 24 24" stroke="var(--green)"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="tc"><div class="th"><span class="tt">Finanças</span><span class="tp" style="background:rgba(16,185,129,.12);color:var(--green)">82 pts</span></div><div class="tmg c4"><div class="tm"><div class="tv" style="color:var(--green)">R$ 8.500</div><div class="tl2">Receitas</div></div><div class="tm"><div class="tv" style="color:var(--red)">R$ 5.250</div><div class="tl2">Despesas</div></div><div class="tm"><div class="tv" style="color:var(--green)">R$ 3.250</div><div class="tl2">Saldo</div></div><div class="tm"><div class="tv" style="color:var(--mod)">38%</div><div class="tl2">Poupança</div></div></div><div style="margin-top:12px;display:flex;gap:8px;font-size:11px"><span class="pill" style="background:rgba(16,185,129,.1);color:var(--green)">3/5 orçamentos ok</span><span class="pill" style="background:rgba(244,63,94,.1);color:var(--red)">Lazer 105%</span></div></div></div>
+
+    <div class="tn"><div class="td" style="background:rgba(6,182,212,.15);border-color:var(--cyan)"><svg viewBox="0 0 24 24" stroke="var(--cyan)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="tc"><div class="th"><span class="tt">Tempo</span><span class="tp" style="background:rgba(6,182,212,.12);color:var(--cyan)">71 pts</span></div><div class="tmg"><div class="tm"><div class="tv" style="color:var(--cyan)">12</div><div class="tl2">Eventos</div></div><div class="tm"><div class="tv" style="color:var(--green)">8</div><div class="tl2">Concluídos</div></div><div class="tm"><div class="tv" style="color:var(--yellow)">67%</div><div class="tl2">Conclusão</div></div></div><div style="margin-top:14px"><div class="hb"><span class="hl">Trabalho</span><div class="ht"><i style="width:65%;background:var(--cyan)"></i></div><span class="hv" style="color:var(--cyan)">26h</span></div><div class="hb"><span class="hl">Pessoal</span><div class="ht"><i style="width:25%;background:var(--purple)"></i></div><span class="hv" style="color:var(--purple)">10h</span></div><div class="hb"><span class="hl">Exercício</span><div class="ht"><i style="width:10%;background:var(--orange)"></i></div><span class="hv" style="color:var(--orange)">4h</span></div></div></div></div>
+
+    <div class="tn"><div class="td" style="background:rgba(249,115,22,.15);border-color:var(--orange)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="tc"><div class="th"><span class="tt">Corpo</span><span class="tp" style="background:rgba(249,115,22,.12);color:var(--orange)">78 pts</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center"><div style="text-align:center"><div style="font-family:'DM Mono';font-weight:500;font-size:36px;color:var(--orange)">82,5</div><div style="font-size:11px;color:var(--t3)">kg atual</div><div style="font-size:12px;color:var(--green);margin-top:4px">-0,5 kg esta semana</div></div><div class="tmg c2" style="margin-top:0"><div class="tm"><div class="tv" style="color:var(--orange);font-size:16px">4x</div><div class="tl2">Treinos</div></div><div class="tm"><div class="tv" style="color:var(--green);font-size:16px">2.150</div><div class="tl2">Cal/dia</div></div><div class="tm"><div class="tv" style="color:var(--cyan);font-size:16px">2,1L</div><div class="tl2">Água/dia</div></div><div class="tm"><div class="tv" style="color:var(--yellow);font-size:16px">12d</div><div class="tl2">Streak</div></div></div></div></div></div>
+
+    <div class="tn"><div class="td" style="background:rgba(234,179,8,.15);border-color:var(--yellow)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5.4 5 6.5V18h4v-2.5c3-1.1 5-3.5 5-6.5a7 7 0 0 0-7-7z"/><path d="M10 21h4"/></svg></div><div class="tc"><div class="th"><span class="tt">Mente</span><span class="tp" style="background:rgba(234,179,8,.12);color:var(--yellow)">80 pts</span></div><div class="tmg c4"><div class="tm"><div class="tv" style="color:var(--yellow)">4h20</div><div class="tl2">Medit./Estudo</div></div><div class="tm"><div class="tv" style="color:var(--purple)">6</div><div class="tl2">Sessões</div></div><div class="tm"><div class="tv" style="color:var(--green)">Bom</div><div class="tl2">Humor Médio</div></div><div class="tm"><div class="tv" style="color:var(--cyan)">2</div><div class="tl2">Livros</div></div></div></div></div>
+
+    <div class="tn"><div class="td" style="background:rgba(0,85,255,.15);border-color:#0055ff"><svg viewBox="0 0 24 24" stroke="#0055ff"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div class="tc"><div class="th"><span class="tt">Metas & Futuro</span><span class="tp" style="background:rgba(0,85,255,.12);color:#0055ff">65 pts</span></div><div class="tmg"><div class="tm"><div class="tv" style="color:#0055ff">3</div><div class="tl2">Ativas</div></div><div class="tm"><div class="tv" style="color:var(--green)">62%</div><div class="tl2">Progresso Médio</div></div><div class="tm"><div class="tv" style="color:var(--yellow)">1</div><div class="tl2">Em Risco</div></div></div><div style="margin-top:12px;display:flex;gap:8px;font-size:11px"><span class="pill" style="background:rgba(16,185,129,.1);color:var(--green)">Comprar casa 65%</span><span class="pill" style="background:rgba(16,185,129,.1);color:var(--green)">Curso Inglês 80%</span><span class="pill" style="background:rgba(245,158,11,.1);color:var(--yellow)">Perder 10kg 40%</span></div></div></div>
+
+    <!-- Final Timeline Node: Semana Encerrada -->
+    <div class="tn">
+      <div class="td" style="background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(99,102,241,.2));border-color:var(--green)">
+        <svg viewBox="0 0 24 24" stroke="var(--green)"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="rfin">
+        <div style="font-size:12px;color:var(--t3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px">Semana Encerrada</div>
+        <div class="rfs">74</div><div class="rfl">Life Sync Score</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:20px">
+          <div style="text-align:center"><div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--yellow)">120</div><div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">XP Ganho</div></div>
+          <div style="width:1px;height:32px;background:var(--border)"></div>
+          <div style="text-align:center"><div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--green)">+3</div><div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">Progresso</div></div>
+          <div style="width:1px;height:32px;background:var(--border)"></div>
+          <div style="display:flex;gap:8px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(234,179,8,.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,.1);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:20px" onclick="go('conq')"><svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Ver Conquistas</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ S3: LIFE SCORE ══════════ -->
+<div id="s-score" class="screen">
+<div class="page">
+  <div class="mod-hdr anim"><div class="ico" style="background:var(--mod-dim)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="info"><h1>Life Sync Score</h1><p>Análise detalhada do seu desempenho em todos os módulos</p></div><div class="actions"><button class="btn btn-ghost" onclick="go('dash')"><svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Voltar</button></div></div>
+
+  <div class="sh anim d1">
+    <div class="shl"><div class="sn2">74</div><div class="slb">Life Sync Score</div><div style="display:flex;gap:8px;margin-top:16px"><span class="pill" style="background:rgba(16,185,129,.1);color:var(--green)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Excelente</span><span class="pill" style="background:rgba(var(--mod-rgb),.1);color:var(--mod)">+3 pts vs semana</span></div><div style="margin-top:16px;font-size:12px;color:var(--t2);line-height:1.6;max-width:280px">Seu score está <strong style="color:var(--green)">acima da média</strong> dos últimos 30 dias (71 pts).</div></div>
+    <div class="shr"><div style="font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:16px;display:flex;align-items:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><polygon points="12 2 19 21 2 9 22 9 5 21"/></svg>Radar de Equilíbrio</div><div class="chart-ph" style="min-height:260px">Recharts RadarChart — 8 eixos (Finanças 82, Experiências 85, Mente 80, Corpo 78, Patrimônio 74, Tempo 71, Carreira 68, Futuro 65) com fill gradient indigo/green a 20%</div></div>
+  </div>
+
+  <div class="card anim d2" style="margin-bottom:28px"><div class="card-t"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Desempenho por Módulo<span class="rt">Ordenado por score</span></div>
+    <div class="mr"><div class="mi2" style="background:rgba(236,72,153,.1)"><svg viewBox="0 0 24 24" stroke="var(--pink)"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><span class="mn2">Experiências</span><div class="mrt"><i style="width:85%;background:var(--pink)"></i></div><span class="mrv" style="color:var(--pink)">85</span><span class="mrd" style="color:var(--green)">+2</span></div>
+    <div class="mr"><div class="mi2" style="background:rgba(16,185,129,.1)"><svg viewBox="0 0 24 24" stroke="var(--green)"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="mn2">Finanças</span><div class="mrt"><i style="width:82%;background:var(--green)"></i></div><span class="mrv" style="color:var(--green)">82</span><span class="mrd" style="color:var(--green)">+4</span></div>
+    <div class="mr"><div class="mi2" style="background:rgba(234,179,8,.1)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5.4 5 6.5V18h4v-2.5c3-1.1 5-3.5 5-6.5a7 7 0 0 0-7-7z"/><path d="M10 21h4"/></svg></div><span class="mn2">Mente</span><div class="mrt"><i style="width:80%;background:var(--yellow)"></i></div><span class="mrv" style="color:var(--yellow)">80</span><span class="mrd" style="color:var(--green)">+1</span></div>
+    <div class="mr"><div class="mi2" style="background:rgba(249,115,22,.1)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="mn2">Corpo</span><div class="mrt"><i style="width:78%;background:var(--orange)"></i></div><span class="mrv" style="color:var(--orange)">78</span><span class="mrd" style="color:var(--green)">+3</span></div>
+    <div class="mr"><div class="mi2" style="background:rgba(59,130,246,.1)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><span class="mn2">Patrimônio</span><div class="mrt"><i style="width:74%;background:var(--blue)"></i></div><span class="mrv" style="color:var(--blue)">74</span><span class="mrd" style="color:var(--green)">+5</span></div>
+    <div class="mr"><div class="mi2" style="background:rgba(6,182,212,.1)"><svg viewBox="0 0 24 24" stroke="var(--cyan)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="mn2">Tempo</span><div class="mrt"><i style="width:71%;background:var(--cyan)"></i></div><span class="mrv" style="color:var(--cyan)">71</span><span class="mrd" style="color:var(--green)">+2</span></div>
+    <div class="mr"><div class="mi2" style="background:rgba(244,63,94,.1)"><svg viewBox="0 0 24 24" stroke="var(--red)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div><span class="mn2">Carreira</span><div class="mrt"><i style="width:68%;background:var(--red)"></i></div><span class="mrv" style="color:var(--red)">68</span><span class="mrd" style="color:var(--t3)">+0</span></div>
+    <div class="mr"><div class="mi2" style="background:rgba(0,85,255,.1)"><svg viewBox="0 0 24 24" stroke="#0055ff"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><span class="mn2">Futuro</span><div class="mrt"><i style="width:65%;background:#0055ff"></i></div><span class="mrv" style="color:#0055ff">65</span><span class="mrd" style="color:var(--red)">-2</span></div>
+  </div>
+
+  <div class="evo anim d3"><div class="eh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span class="et">Evolução do Score</span><div class="ef"><button>4 sem</button><button class="active">3 meses</button><button>6 meses</button><button>1 ano</button></div></div><div class="chart-ph" style="min-height:220px">Recharts AreaChart — Eixo X: semanas (Sem1: 68, Sem2: 70, Sem3: 71, Sem4: 74). Fill gradient indigo a 15%. Stroke var(--mod) 2px. Dot no ponto atual com glow.</div></div>
+
+  <div class="ais anim d4"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span style="font-family:'Syne';font-weight:700;font-size:14px">Sugestão da IA</span><span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod);font-size:10px">IA</span></div><p style="font-size:13px;color:var(--t2);line-height:1.65">Seu módulo <strong style="color:#0055ff">Futuro</strong> está com o menor score (<strong style="color:var(--red)">65</strong>). Considere fazer um check-in nas suas metas esta semana — especificamente a meta <strong style="color:var(--t1)">“Perder 10kg”</strong> que está com velocidade abaixo do esperado. Um pequeno avanço pode elevar seu score geral em <strong style="color:var(--green)">+4 pontos</strong>.</p></div>
+</div>
+</div>
+
+<!-- ══════════ S4: CONQUISTAS ══════════ -->
+<div id="s-conq" class="screen">
+<div class="page">
+  <div class="mod-hdr anim"><div class="ico" style="background:var(--mod-dim)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="info"><h1>Conquistas</h1><p>Suas medalhas, badges e marcos de progresso</p></div><div class="actions"><button class="btn btn-ghost" onclick="go('dash')"><svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Voltar</button></div></div>
+
+  <!-- XP Level Bar -->
+  <div class="xp-bar anim d1">
+    <div class="xp-lvl">
+      <div class="xp-ring"><span>12</span></div>
+      <div>
+        <div style="font-family:'Syne';font-weight:700;font-size:15px">N&#237;vel 12</div>
+        <div style="font-size:11px;color:var(--yellow);font-weight:600">Explorador</div>
+      </div>
+    </div>
+    <div class="xp-track">
+      <div class="xp-nums"><span>XP para pr&#243;ximo n&#237;vel</span><b>2.840 / 3.500 XP</b></div>
+      <div class="xp-bg"><div class="xp-fill" style="width:81%"></div></div>
+    </div>
+    <div class="xp-stats">
+      <div class="xs"><div class="xsv" style="color:var(--yellow)">18</div><div class="xsl">Conquistas</div></div>
+      <div class="xs"><div class="xsv" style="color:var(--mod)">2.840</div><div class="xsl">XP Total</div></div>
+      <div class="xs"><div class="xsv" style="color:var(--green)">7</div><div class="xsl">Streak Atual</div></div>
+    </div>
+  </div>
+
+  <!-- Category Tabs -->
+  <div class="tab-row anim d2">
+    <button class="tab-btn active"><svg viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Todas (18)</button>
+    <button class="tab-btn"><svg viewBox="0 0 24 24" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finan&#231;as</button>
+    <button class="tab-btn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Corpo</button>
+    <button class="tab-btn"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5.4 5 6.5V18h4v-2.5c3-1.1 5-3.5 5-6.5a7 7 0 0 0-7-7z"/><path d="M10 21h4"/></svg>Mente</button>
+    <button class="tab-btn"><svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Tempo</button>
+    <button class="tab-btn"><svg viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Metas</button>
+    <button class="tab-btn"><svg viewBox="0 0 24 24" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Especiais</button>
+  </div>
+
+  <!-- Badge Grid -->
+  <div class="badge-grid anim d3">
+    <!-- Earned badges -->
+    <div class="badge">
+      <div class="b-icon" style="background:rgba(16,185,129,.12)"><svg viewBox="0 0 24 24" stroke="var(--green)"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div class="b-name">Poupador</div>
+      <div class="b-desc">Poup&#231;ar 30%+ por 3 meses consecutivos</div>
+      <div class="b-tier" style="background:rgba(234,179,8,.12);color:var(--yellow)">Ouro</div>
+    </div>
+    <div class="badge">
+      <div class="b-icon" style="background:rgba(var(--mod-rgb),.12)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></div>
+      <div class="b-name">Streak Master</div>
+      <div class="b-desc">Manter streak de 7 dias consecutivos</div>
+      <div class="b-tier" style="background:rgba(168,85,247,.12);color:var(--purple)">Prata</div>
+    </div>
+    <div class="badge">
+      <div class="b-icon" style="background:rgba(249,115,22,.12)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="b-name">Atleta</div>
+      <div class="b-desc">Completar 4 treinos por semana</div>
+      <div class="b-tier" style="background:rgba(168,85,247,.12);color:var(--purple)">Prata</div>
+    </div>
+    <div class="badge">
+      <div class="b-icon" style="background:rgba(234,179,8,.12)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5.4 5 6.5V18h4v-2.5c3-1.1 5-3.5 5-6.5a7 7 0 0 0-7-7z"/><path d="M10 21h4"/></svg></div>
+      <div class="b-name">Zen Master</div>
+      <div class="b-desc">20 sess&#245;es de medita&#231;&#227;o no m&#234;s</div>
+      <div class="b-tier" style="background:rgba(16,185,129,.12);color:var(--green)">Bronze</div>
+    </div>
+    <div class="badge">
+      <div class="b-icon" style="background:rgba(6,182,212,.12)"><svg viewBox="0 0 24 24" stroke="var(--cyan)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="b-name">Pontual</div>
+      <div class="b-desc">Completar 90% dos eventos agendados</div>
+      <div class="b-tier" style="background:rgba(16,185,129,.12);color:var(--green)">Bronze</div>
+    </div>
+    <div class="badge">
+      <div class="b-icon" style="background:rgba(16,185,129,.12)"><svg viewBox="0 0 24 24" stroke="var(--green)"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="b-name">Primeira Meta</div>
+      <div class="b-desc">Concluir sua primeira meta no SyncLife</div>
+      <div class="b-tier" style="background:rgba(234,179,8,.12);color:var(--yellow)">Ouro</div>
+    </div>
+    <div class="badge">
+      <div class="b-icon" style="background:rgba(236,72,153,.12)"><svg viewBox="0 0 24 24" stroke="var(--pink)"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div>
+      <div class="b-name">Explorador</div>
+      <div class="b-desc">Registrar 5 experi&#234;ncias no m&#243;dulo</div>
+      <div class="b-tier" style="background:rgba(168,85,247,.12);color:var(--purple)">Prata</div>
+    </div>
+    <!-- Locked badge with progress -->
+    <div class="badge locked">
+      <div class="b-icon" style="background:rgba(244,63,94,.12)"><svg viewBox="0 0 24 24" stroke="var(--red)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+      <div class="b-name">Promo&#231;&#227;o</div>
+      <div class="b-desc">Registrar uma promo&#231;&#227;o de carreira</div>
+      <div class="b-progress">
+        <div class="b-prog-track"><i style="width:0%;background:var(--red)"></i></div>
+        <div class="b-prog-label">0 / 1 promo&#231;&#245;es</div>
+      </div>
+    </div>
+    <div class="badge locked">
+      <div class="b-icon" style="background:rgba(59,130,246,.12)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+      <div class="b-name">R$ 200k Club</div>
+      <div class="b-desc">Atingir R$ 200.000 em patrim&#244;nio</div>
+      <div class="b-progress">
+        <div class="b-prog-track"><i style="width:92%;background:var(--blue)"></i></div>
+        <div class="b-prog-label">R$ 185.400 / R$ 200.000</div>
+      </div>
+    </div>
+    <div class="badge locked">
+      <div class="b-icon" style="background:rgba(var(--mod-rgb),.12)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div class="b-name">Score 80+</div>
+      <div class="b-desc">Atingir Life Sync Score de 80 pontos</div>
+      <div class="b-progress">
+        <div class="b-prog-track"><i style="width:74%;background:var(--mod)"></i></div>
+        <div class="b-prog-label">74 / 80 pontos</div>
+      </div>
+    </div>
+    <div class="badge locked">
+      <div class="b-icon" style="background:rgba(0,85,255,.12)"><svg viewBox="0 0 24 24" stroke="#0055ff"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <div class="b-name">Metas 100%</div>
+      <div class="b-desc">Concluir todas as metas ativas</div>
+      <div class="b-progress">
+        <div class="b-prog-track"><i style="width:62%;background:#0055ff"></i></div>
+        <div class="b-prog-label">62% m&#233;dia progresso</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Streak Section -->
+  <div class="streak-strip anim d4">
+    <div class="streak-card">
+      <div class="sk-head"><div class="sk-icon" style="background:rgba(var(--mod-rgb),.1)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></div><span class="sk-title">Streak Geral</span></div>
+      <div class="sk-val" style="color:var(--mod)">7 <span style="font-size:14px;color:var(--t3);font-weight:400">dias</span></div>
+      <div class="sk-sub">Melhor: 14 dias (fev/2026)</div>
+      <div class="sk-dots">
+        <div class="dot" style="background:var(--green)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--green)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--green)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--green)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--green)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--green)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--green)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </div>
+    </div>
+    <div class="streak-card">
+      <div class="sk-head"><div class="sk-icon" style="background:rgba(249,115,22,.1)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="sk-title">Streak Treinos</span></div>
+      <div class="sk-val" style="color:var(--orange)">12 <span style="font-size:14px;color:var(--t3);font-weight:400">dias</span></div>
+      <div class="sk-sub">Recorde pessoal ativo!</div>
+      <div class="sk-dots">
+        <div class="dot" style="background:var(--orange)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--orange)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--orange)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--orange)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--orange)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--orange)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--orange)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </div>
+    </div>
+    <div class="streak-card">
+      <div class="sk-head"><div class="sk-icon" style="background:rgba(16,185,129,.1)"><svg viewBox="0 0 24 24" stroke="var(--green)"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="sk-title">Streak Or&#231;amento</span></div>
+      <div class="sk-val" style="color:var(--green)">3 <span style="font-size:14px;color:var(--t3);font-weight:400">meses</span></div>
+      <div class="sk-sub">Meta 30% desde jan/2026</div>
+      <div class="sk-dots">
+        <div class="dot" style="background:var(--green)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--green)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot" style="background:var(--green)"><svg viewBox="0 0 24 24" stroke="#fff"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="dot"><svg viewBox="0 0 24 24" stroke="var(--t3)"><circle cx="12" cy="12" r="1"/></svg></div>
+        <div class="dot"><svg viewBox="0 0 24 24" stroke="var(--t3)"><circle cx="12" cy="12" r="1"/></svg></div>
+        <div class="dot"><svg viewBox="0 0 24 24" stroke="var(--t3)"><circle cx="12" cy="12" r="1"/></svg></div>
+        <div class="dot"><svg viewBox="0 0 24 24" stroke="var(--t3)"><circle cx="12" cy="12" r="1"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════ S5: RANKING ══════════ -->
+<div id="s-rank" class="screen">
+<div class="page">
+  <div class="mod-hdr anim"><div class="ico" style="background:var(--mod-dim)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="info"><h1>Ranking & Records</h1><p>Seu desempenho pessoal, recordes e compara&#231;&#245;es</p></div><div class="actions"><button class="btn btn-ghost" onclick="go('dash')"><svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Voltar</button></div></div>
+
+  <!-- Profile + Module Leaderboard -->
+  <div class="rank-hero anim d1">
+    <div class="rank-profile">
+      <div class="rp-avatar"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div class="rp-name">Thiago</div>
+      <div class="rp-title">N&#237;vel 12 &#183; Explorador</div>
+      <div class="rp-stats">
+        <div class="rps"><div class="rpv" style="color:var(--mod)">74</div><div class="rpl">Score</div></div>
+        <div class="rps"><div class="rpv" style="color:var(--yellow)">2.840</div><div class="rpl">XP Total</div></div>
+        <div class="rps"><div class="rpv" style="color:var(--green)">18</div><div class="rpl">Badges</div></div>
+      </div>
+    </div>
+    <div class="rank-board">
+      <div class="rb-head"><span class="rb-title">Ranking dos M&#243;dulos</span><span class="rb-subtitle">Ordenado por score esta semana</span></div>
+      <div class="rk-row"><div class="rk-pos" style="color:var(--yellow)">1&#186;</div><div style="width:26px;height:26px;border-radius:7px;background:rgba(236,72,153,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2" stroke-linecap="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><span class="rk-name">Experi&#234;ncias</span><span class="rk-score" style="color:var(--pink)">85</span><span class="rk-badge" style="background:rgba(234,179,8,.12);color:var(--yellow)">+2</span></div>
+      <div class="rk-row"><div class="rk-pos" style="color:var(--t2)">2&#186;</div><div style="width:26px;height:26px;border-radius:7px;background:rgba(16,185,129,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="rk-name">Finan&#231;as</span><span class="rk-score" style="color:var(--green)">82</span><span class="rk-badge" style="background:rgba(16,185,129,.12);color:var(--green)">+4</span></div>
+      <div class="rk-row"><div class="rk-pos" style="color:var(--orange)">3&#186;</div><div style="width:26px;height:26px;border-radius:7px;background:rgba(234,179,8,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5.4 5 6.5V18h4v-2.5c3-1.1 5-3.5 5-6.5a7 7 0 0 0-7-7z"/><path d="M10 21h4"/></svg></div><span class="rk-name">Mente</span><span class="rk-score" style="color:var(--yellow)">80</span><span class="rk-badge" style="background:rgba(16,185,129,.12);color:var(--green)">+1</span></div>
+      <div class="rk-row"><div class="rk-pos">4&#186;</div><div style="width:26px;height:26px;border-radius:7px;background:rgba(249,115,22,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="rk-name">Corpo</span><span class="rk-score" style="color:var(--orange)">78</span><span class="rk-badge" style="background:rgba(16,185,129,.12);color:var(--green)">+3</span></div>
+      <div class="rk-row"><div class="rk-pos">5&#186;</div><div style="width:26px;height:26px;border-radius:7px;background:rgba(59,130,246,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><span class="rk-name">Patrim&#244;nio</span><span class="rk-score" style="color:var(--blue)">74</span><span class="rk-badge" style="background:rgba(16,185,129,.12);color:var(--green)">+5</span></div>
+      <div class="rk-row"><div class="rk-pos">6&#186;</div><div style="width:26px;height:26px;border-radius:7px;background:rgba(6,182,212,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="rk-name">Tempo</span><span class="rk-score" style="color:var(--cyan)">71</span><span class="rk-badge" style="background:rgba(16,185,129,.12);color:var(--green)">+2</span></div>
+      <div class="rk-row"><div class="rk-pos">7&#186;</div><div style="width:26px;height:26px;border-radius:7px;background:rgba(244,63,94,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div><span class="rk-name">Carreira</span><span class="rk-score" style="color:var(--red)">68</span><span class="rk-badge" style="background:rgba(120,165,220,.08);color:var(--t3)">+0</span></div>
+      <div class="rk-row"><div class="rk-pos">8&#186;</div><div style="width:26px;height:26px;border-radius:7px;background:rgba(0,85,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0055ff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><span class="rk-name">Futuro</span><span class="rk-score" style="color:#0055ff">65</span><span class="rk-badge" style="background:rgba(244,63,94,.12);color:var(--red)">-2</span></div>
+    </div>
+  </div>
+
+  <!-- Podium — Top 3 Modules -->
+  <div class="podium anim d2">
+    <div class="pod gold"><div class="pod-accent"></div><div class="pod-pos">1&#186; Lugar</div><div class="pod-icon" style="background:rgba(236,72,153,.1)"><svg viewBox="0 0 24 24" stroke="var(--pink)"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div class="pod-name">Experi&#234;ncias</div><div class="pod-score" style="color:var(--pink)">85</div><div class="pod-delta" style="color:var(--green)">+2 vs semana anterior</div></div>
+    <div class="pod silver"><div class="pod-accent"></div><div class="pod-pos">2&#186; Lugar</div><div class="pod-icon" style="background:rgba(16,185,129,.1)"><svg viewBox="0 0 24 24" stroke="var(--green)"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="pod-name">Finan&#231;as</div><div class="pod-score" style="color:var(--green)">82</div><div class="pod-delta" style="color:var(--green)">+4 vs semana anterior</div></div>
+    <div class="pod bronze"><div class="pod-accent"></div><div class="pod-pos">3&#186; Lugar</div><div class="pod-icon" style="background:rgba(234,179,8,.1)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><path d="M12 2a7 7 0 0 0-7 7c0 3 2 5.4 5 6.5V18h4v-2.5c3-1.1 5-3.5 5-6.5a7 7 0 0 0-7-7z"/><path d="M10 21h4"/></svg></div><div class="pod-name">Mente</div><div class="pod-score" style="color:var(--yellow)">80</div><div class="pod-delta" style="color:var(--green)">+1 vs semana anterior</div></div>
+  </div>
+
+  <!-- Personal Records -->
+  <div style="font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:16px;display:flex;align-items:center;gap:9px" class="anim d3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Records Pessoais</div>
+  <div class="rec-grid anim d3">
+    <div class="rec-card"><div class="rc-accent" style="background:linear-gradient(90deg,var(--green),var(--blue))"></div><div class="rc-head"><div class="rc-icon" style="background:rgba(16,185,129,.1)"><svg viewBox="0 0 24 24" stroke="var(--green)"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><span class="rc-label">Maior Score</span></div><div class="rc-val" style="color:var(--green)">78</div><div class="rc-sub">Semana 3, fev/2026</div></div>
+    <div class="rec-card"><div class="rc-accent" style="background:linear-gradient(90deg,var(--mod),var(--purple))"></div><div class="rc-head"><div class="rc-icon" style="background:rgba(var(--mod-rgb),.1)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg></div><span class="rc-label">Maior Streak</span></div><div class="rc-val" style="color:var(--mod)">14 <span style="font-size:14px;color:var(--t3)">dias</span></div><div class="rc-sub">Fevereiro 2026</div></div>
+    <div class="rec-card"><div class="rc-accent" style="background:linear-gradient(90deg,var(--yellow),var(--orange))"></div><div class="rc-head"><div class="rc-icon" style="background:rgba(234,179,8,.1)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><span class="rc-label">Mais XP (semana)</span></div><div class="rc-val" style="color:var(--yellow)">180 <span style="font-size:14px;color:var(--t3)">XP</span></div><div class="rc-sub">Semana 1, mar/2026</div></div>
+    <div class="rec-card"><div class="rc-accent" style="background:linear-gradient(90deg,var(--green),var(--cyan))"></div><div class="rc-head"><div class="rc-icon" style="background:rgba(16,185,129,.1)"><svg viewBox="0 0 24 24" stroke="var(--green)"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="rc-label">Melhor Poupan&#231;a</span></div><div class="rc-val" style="color:var(--green)">52%</div><div class="rc-sub">Janeiro 2026</div></div>
+    <div class="rec-card"><div class="rc-accent" style="background:linear-gradient(90deg,var(--orange),var(--red))"></div><div class="rc-head"><div class="rc-icon" style="background:rgba(249,115,22,.1)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="rc-label">Melhor Semana Treinos</span></div><div class="rc-val" style="color:var(--orange)">6x</div><div class="rc-sub">Semana 2, fev/2026</div></div>
+    <div class="rec-card"><div class="rc-accent" style="background:linear-gradient(90deg,var(--cyan),var(--blue))"></div><div class="rc-head"><div class="rc-icon" style="background:rgba(6,182,212,.1)"><svg viewBox="0 0 24 24" stroke="var(--cyan)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="rc-label">Taxa Conclus&#227;o Eventos</span></div><div class="rc-val" style="color:var(--cyan)">95%</div><div class="rc-sub">Semana 4, jan/2026</div></div>
+  </div>
+
+  <!-- Comparison chart -->
+  <div class="evo anim d4"><div class="eh"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span class="et">Esta Semana vs Melhor Semana</span><div class="ef"><button class="active">Compara&#231;&#227;o</button><button>Hist&#243;rico</button></div></div><div class="chart-ph" style="min-height:200px">Recharts BarChart agrupado &#8212; 8 barras duplas (cada m&#243;dulo: semana atual vs melhor semana). Cores: atual = var(--mod), melhor = var(--mod) a 30% opacidade. Eixo X: nomes dos m&#243;dulos. Eixo Y: 0-100.</div></div>
+
+</div>
+</div>
+
+<div class="pnav">
+  <span class="tag">Panorama</span>
+  <button class="on" data-s="dash" onclick="go('dash')">Dashboard</button>
+  <div class="sep"></div>
+  <button data-s="review" onclick="go('review')">Review Semanal</button>
+  <div class="sep"></div>
+  <button data-s="score" onclick="go('score')">Life Score</button>
+  <div class="sep"></div>
+  <button data-s="conq" onclick="go('conq')">Conquistas</button>
+  <div class="sep"></div>
+  <button data-s="rank" onclick="go('rank')">Ranking</button>
+</div>
+<script>
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  var t=document.getElementById('s-'+id);
+  if(t)t.classList.add('active');
+  document.querySelectorAll('.pnav button[data-s]').forEach(function(b){
+    b.classList.toggle('on',b.dataset.s===id);
+  });
+  window.scrollTo(0,0);
+  if(t){t.querySelectorAll('.anim').forEach(function(e){e.style.animation='none';e.offsetHeight;e.style.animation='';});}
+}
+</script>
+</body>
+</html>

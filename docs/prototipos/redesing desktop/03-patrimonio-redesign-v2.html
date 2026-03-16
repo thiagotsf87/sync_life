@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>SyncLife — Patrimônio Redesign v2</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03071a;--s1:#091428;--s2:#0e1c35;--s3:#152544;
+  --t1:#e4f1ff;--t2:#7b9fc6;--t3:#3c5d84;
+  --border:rgba(120,165,220,.09);--bh:rgba(120,165,220,.18);
+  --mod:#3b82f6;--mr:59,130,246;--md:rgba(59,130,246,.08);
+  --green:#10b981;--red:#f43f5e;--yellow:#f59e0b;--orange:#f97316;
+  --cyan:#06b6d4;--purple:#a855f7;--blue:#3b82f6;--indigo:#6366f1;
+  --R:18px;
+}
+html{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{padding-bottom:52px}
+.pg{max-width:1160px;margin:0 auto;padding:36px 40px 60px}
+
+/* Header (standard) */
+.mh{display:flex;align-items:center;gap:16px;margin-bottom:36px}
+.mh .ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mh .ic svg{width:22px;height:22px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mh .nf{flex:1}
+.mh .nf h1{font-family:'Syne';font-weight:800;font-size:26px;line-height:1.15}
+.mh .nf p{font-size:13px;color:var(--t2);margin-top:3px}
+.mh .act{display:flex;gap:10px;align-items:center}
+
+/* Buttons */
+.b{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:11px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.b svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bp{background:var(--mod);color:#fff}.bp:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px rgba(var(--mr),.25)}
+.bg{background:transparent;color:var(--t2);border:1px solid var(--border)}.bg:hover{border-color:var(--bh);color:var(--t1)}
+.bs{padding:7px 14px;font-size:12px;border-radius:9px}
+
+/* Card */
+.cd{background:var(--s1);border:1px solid var(--border);border-radius:var(--R);padding:24px;transition:border-color .2s}
+.cd:hover{border-color:var(--bh)}
+.ct{font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+.ct svg{width:16px;height:16px;stroke:var(--mod);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ct .rt{margin-left:auto;font-family:'DM Sans';font-size:12px;font-weight:500;color:var(--mod);cursor:pointer}
+.ct .badge{margin-left:auto;font-size:10px;font-weight:600;padding:3px 10px;border-radius:7px}
+
+/* KPI (used sparingly) */
+.kpi{background:var(--s1);border:1px solid var(--border);border-radius:var(--R);padding:20px 22px;position:relative;overflow:hidden;transition:border-color .2s,box-shadow .25s}
+.kpi:hover{border-color:var(--bh);box-shadow:0 4px 24px rgba(0,0,0,.2)}
+.kpi .bar{position:absolute;top:0;left:22px;right:22px;height:2.5px;border-radius:0 0 3px 3px}
+.kpi .ki{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.kpi .ki svg{width:18px;height:18px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kpi .lb{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:6px}
+.kpi .vl{font-family:'DM Mono';font-weight:500;font-size:26px;line-height:1}
+.kpi .sub{font-size:12px;color:var(--t3);margin-top:7px}
+.kpi .tg{display:inline-block;margin-top:10px;font-size:11px;padding:4px 10px;border-radius:7px;background:var(--s2);color:var(--t3)}
+.kpi .tg b{font-weight:600}
+.spark{display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:12px}
+.spark i{flex:1;border-radius:2px;display:block}
+
+/* Health */
+.health{display:flex;align-items:center;gap:22px;background:var(--s1);border:1px solid var(--border);border-radius:var(--R);padding:22px 28px;margin-bottom:28px}
+.health .sc{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.health .sc span{font-family:'Syne';font-weight:800;font-size:26px;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
+
+/* AI */
+.ai{background:var(--s1);border-radius:var(--R);padding:24px 28px;margin-bottom:28px;position:relative;overflow:hidden}
+.ai::before{content:'';position:absolute;inset:-1px;border-radius:calc(var(--R) + 1px);background:linear-gradient(135deg,rgba(59,130,246,.18),rgba(16,185,129,.10));z-index:0}
+.ai::after{content:'';position:absolute;inset:0;border-radius:var(--R);background:var(--s1);z-index:0}
+.ai>*{position:relative;z-index:1}
+.aig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.aib{background:var(--s2);border:1px solid var(--border);border-radius:13px;padding:16px 18px}
+.aib .tp{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.aib .tp svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round}
+.aib .tx{font-size:12.5px;color:var(--t2);line-height:1.65}
+.aib .tx b{color:var(--t1);font-weight:600}
+.ain{display:flex;gap:10px;padding:11px 16px;background:var(--s2);border:1px solid var(--border);border-radius:12px}
+.ain input{flex:1;background:none;border:none;outline:none;color:var(--t1);font-size:13px;font-family:'DM Sans'}
+.ain input::placeholder{color:var(--t3)}
+.ain button{padding:7px 18px;border-radius:9px;background:var(--mod);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer}
+
+/* Chart placeholder */
+.chp{border:1px dashed var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:12px;min-height:160px;background:rgba(120,165,220,.015)}
+
+/* Mini KPI */
+.mk{background:var(--s2);border-radius:11px;padding:12px 14px}
+.mk .lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px}
+.mk .vl{font-family:'DM Mono';font-size:16px;font-weight:500}
+.mk .nt{font-size:10px;color:var(--t3);margin-top:3px}
+
+/* Treemap */
+.tm{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:80px 60px 50px;gap:4px}
+.tc{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;cursor:pointer;transition:all .2s}
+.tc:hover{filter:brightness(1.15)}
+
+/* Table-like rows (Carteira) */
+.tbl-hdr{display:grid;grid-template-columns:140px 1fr 100px 100px 90px 70px;gap:12px;padding:10px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);border-bottom:1px solid var(--border)}
+.tbl-row{display:grid;grid-template-columns:140px 1fr 100px 100px 90px 70px;gap:12px;padding:14px 18px;align-items:center;border-bottom:1px solid rgba(120,165,220,.04);transition:background .15s;cursor:pointer}
+.tbl-row:hover{background:var(--s2)}
+.tbl-row:last-child{border-bottom:none}
+
+/* Proventos calendar grid */
+.pv-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.pv-month{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;transition:border-color .2s;position:relative;overflow:hidden}
+.pv-month:hover{border-color:var(--bh)}
+.pv-month .bar{position:absolute;top:0;left:16px;right:16px;height:2.5px;border-radius:0 0 3px 3px}
+.pv-month.current{border-color:rgba(var(--mr),.3);background:rgba(var(--mr),.03)}
+
+/* Simulator split */
+.sim-split{display:grid;grid-template-columns:380px 1fr;gap:14px}
+.sim-panel{background:var(--s1);border:1px solid var(--border);border-radius:var(--R);padding:28px}
+.sl-track{width:100%;height:6px;background:var(--s3);border-radius:3px;position:relative;margin:8px 0 16px}
+.sl-fill{height:100%;border-radius:3px;position:absolute;left:0;top:0}
+.sl-thumb{width:18px;height:18px;border-radius:50%;border:2px solid;position:absolute;top:50%;transform:translate(-50%,-50%);box-shadow:0 2px 6px rgba(0,0,0,.3)}
+
+/* Scenario strip */
+.sc-strip{display:flex;gap:0;margin-bottom:20px}
+.sc-item{flex:1;padding:18px 16px;border:1px solid var(--border);border-right:none;text-align:center;transition:background .15s}
+.sc-item:first-child{border-radius:14px 0 0 14px}
+.sc-item:last-child{border-radius:0 14px 14px 0;border-right:1px solid var(--border)}
+.sc-item.sel{border-color:rgba(var(--mr),.3);background:rgba(var(--mr),.03)}
+
+/* Animations */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.an{animation:rise .5s ease both}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(120,165,220,.12);border-radius:3px}
+
+/* Modal */
+.mo{display:none;position:fixed;inset:0;background:rgba(3,7,26,.8);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.mdl{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;position:relative}
+.mdl h2{font-family:'Syne';font-weight:800;font-size:20px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.mdl h2 .hi{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mdl h2 .hi svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cb{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:18px;border:none;background:none;cursor:pointer}
+.cb:hover{background:var(--s2)}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-size:13px;font-family:'DM Sans';outline:none}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Nav */
+.pnav{position:fixed;bottom:0;left:0;right:0;height:46px;background:#060a14;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;padding:0 20px;gap:4px;z-index:999}
+.pnav .tag{font-family:'DM Mono';font-size:9px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-right:14px;text-transform:uppercase}
+.pnav button{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;color:rgba(255,255,255,.3);background:none;border:none;cursor:pointer;transition:all .12s}
+.pnav button:hover{color:rgba(255,255,255,.55);background:rgba(255,255,255,.04)}
+.pnav button.on{color:#fff;background:rgba(var(--mr),.12)}
+.pnav .sep{width:1px;height:16px;background:rgba(255,255,255,.06);margin:0 8px}
+.screen{display:none}.screen.active{display:block}
+</style>
+</head>
+<body>
+
+<div id="s-dash" class="screen active">
+<div class="pg">
+
+  <!-- Header -->
+  <div class="mh an">
+    <div class="ic" style="background:var(--md)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+    <div class="nf"><h1>Patrimônio</h1><p>Março 2026 · 14 ativos · 5 classes · atualizado há 2h</p></div>
+    <div class="act"><button class="b bg bs"><svg viewBox="0 0 24 24" width="14" height="14"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Atualizar</button><button class="b bp" onclick="openM('m1')"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adicionar Ativo</button></div>
+  </div>
+
+  <!-- §1 HERO — Full-width patrimônio card (unique to dashboard) -->
+  <div class="cd an d1" style="padding:28px;margin-bottom:14px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:28px;right:28px;height:2.5px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,var(--green),var(--mod),var(--purple))"></div>
+    <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:40px;align-items:center">
+      <div>
+        <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:8px">Patrimônio Total</div>
+        <div style="font-family:'DM Mono';font-weight:500;font-size:38px;line-height:1">R$ 487.320</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <span class="pill" style="background:rgba(16,185,129,.10);color:var(--green)">+12,4% 12m</span>
+          <span class="pill" style="background:var(--md);color:var(--mod)">14 ativos</span>
+          <span style="font-size:12px;color:var(--t3);padding-top:4px">Investido: <span style="font-family:'DM Mono';color:var(--t2)">R$ 412.850</span></span>
+        </div>
+      </div>
+      <div style="text-align:center;padding:0 20px;border-left:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Resultado</div>
+        <div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--green)">+R$ 74.470</div>
+        <div style="font-size:11px;color:var(--green);margin-top:2px">+18,03%</div>
+      </div>
+      <div style="text-align:center;padding:0 20px;border-left:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Proventos 12m</div>
+        <div style="font-family:'DM Mono';font-size:22px;font-weight:500">R$ 28.640</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:2px">23 pagamentos</div>
+      </div>
+      <div style="text-align:center;padding:0 20px;border-left:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Renda Passiva/Mês</div>
+        <div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--mod)">R$ 2.386</div>
+        <div style="font-size:11px;color:var(--green);margin-top:2px">+8% vs anterior</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §2 Saúde + AI side by side (compact) -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px" class="an d2">
+    <div class="health" style="margin-bottom:0">
+      <div class="sc" style="background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(16,185,129,.08))"><span style="background:linear-gradient(135deg,var(--mod),var(--green))">92</span></div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600;margin-bottom:3px">Carteira saudável <span style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-left:6px">SAÚDE</span></div>
+        <div class="pills">
+          <span class="pill" style="background:rgba(16,185,129,.10);color:var(--green)">✓ Acima CDI</span>
+          <span class="pill" style="background:rgba(16,185,129,.10);color:var(--green)">✓ Diversificada</span>
+          <span class="pill" style="background:rgba(245,158,11,.10);color:var(--yellow)">⚠ 1 cotação antiga</span>
+        </div>
+      </div>
+    </div>
+    <div class="cd" style="padding:18px;display:flex;flex-direction:column;justify-content:center">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,rgba(59,130,246,.14),rgba(16,185,129,.08));display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" style="width:14px;height:14px;stroke-linecap:round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/></svg></div>
+        <span style="font-family:'Syne';font-weight:700;font-size:13px">Consultor IA</span>
+        <span style="margin-left:auto;font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--md);color:var(--mod)">4 insights</span>
+      </div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.6"><b style="color:var(--yellow)">PETR4</b> representa 16% da carteira — considere rebalancear. Seu <b style="color:var(--green)">YoC médio de 5,8%</b> está sólido. <span style="color:var(--mod);cursor:pointer">Ver todos →</span></div>
+    </div>
+  </div>
+
+  <!-- §3 Bento: Treemap (2/3) + Benchmark (1/3) -->
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px" class="an d3">
+    <div class="cd">
+      <div class="ct"><svg viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>Distribuição por Classe <span class="badge" style="background:var(--md);color:var(--mod)">9 classes</span></div>
+      <div class="tm">
+        <div class="tc" style="grid-row:1/3;background:rgba(0,85,255,.12);border:1px solid rgba(0,85,255,.25)"><div style="font-size:10px;font-weight:700;color:#0055ff;text-transform:uppercase;letter-spacing:.04em">Ações BR</div><div style="font-family:'DM Mono';font-size:20px;margin-top:4px">32%</div><div style="font-family:'DM Mono';font-size:10px;color:var(--t3)">R$ 155.943</div></div>
+        <div class="tc" style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25)"><div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase">FIIs</div><div style="font-family:'DM Mono';font-size:15px;margin-top:2px">24%</div><div style="font-family:'DM Mono';font-size:10px;color:var(--t3)">R$ 116.957</div></div>
+        <div class="tc" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25)"><div style="font-size:10px;font-weight:700;color:var(--yellow);text-transform:uppercase">Renda Fixa</div><div style="font-family:'DM Mono';font-size:15px;margin-top:2px">18%</div><div style="font-family:'DM Mono';font-size:10px;color:var(--t3)">R$ 87.718</div></div>
+        <div class="tc" style="background:rgba(6,182,212,.10);border:1px solid rgba(6,182,212,.2)"><div style="font-size:9px;font-weight:700;color:var(--cyan);text-transform:uppercase">ETFs BR</div><div style="font-family:'DM Mono';font-size:13px;margin-top:2px">10%</div></div>
+        <div class="tc" style="background:rgba(249,115,22,.10);border:1px solid rgba(249,115,22,.2)"><div style="font-size:9px;font-weight:700;color:var(--orange);text-transform:uppercase">Cripto</div><div style="font-family:'DM Mono';font-size:13px;margin-top:2px">8%</div></div>
+        <div class="tc" style="background:rgba(168,85,247,.10);border:1px solid rgba(168,85,247,.2)"><div style="font-size:9px;font-weight:700;color:var(--purple);text-transform:uppercase">BDRs</div><div style="font-family:'DM Mono';font-size:13px;margin-top:2px">5%</div></div>
+        <div class="tc" style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.12)"><div style="font-size:8px;font-weight:700;color:var(--blue);text-transform:uppercase">US</div><div style="font-family:'DM Mono';font-size:11px">2%</div></div>
+        <div class="tc" style="background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.12)"><div style="font-size:8px;font-weight:700;color:#14b8a6;text-transform:uppercase">REITs</div><div style="font-family:'DM Mono';font-size:11px">0.7%</div></div>
+        <div class="tc" style="background:rgba(120,165,220,.04);border:1px solid rgba(120,165,220,.1)"><div style="font-size:8px;font-weight:700;color:var(--t3);text-transform:uppercase">Outros</div><div style="font-family:'DM Mono';font-size:11px">0.3%</div></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="cd" style="flex:1">
+        <div class="ct"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Benchmark 12m</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="padding:10px 12px;background:var(--s2);border-radius:10px"><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--t2)">vs CDI</span><span style="font-family:'DM Mono';font-size:12px;color:var(--green)">+7.53 p.p.</span></div><div style="height:4px;background:var(--s3);border-radius:2px;margin-top:6px;overflow:hidden"><div style="height:100%;width:100%;background:var(--green);border-radius:2px"></div></div></div>
+          <div style="padding:10px 12px;background:var(--s2);border-radius:10px"><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--t2)">vs IBOV</span><span style="font-family:'DM Mono';font-size:12px;color:var(--green)">+6.03 p.p.</span></div><div style="height:4px;background:var(--s3);border-radius:2px;margin-top:6px;overflow:hidden"><div style="height:100%;width:85%;background:#0055ff;border-radius:2px"></div></div></div>
+          <div style="padding:10px 12px;background:var(--s2);border-radius:10px"><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--t2)">vs IFIX</span><span style="font-family:'DM Mono';font-size:12px;color:var(--green)">+9.03 p.p.</span></div><div style="height:4px;background:var(--s3);border-radius:2px;margin-top:6px;overflow:hidden"><div style="height:100%;width:100%;background:var(--yellow);border-radius:2px"></div></div></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="mk"><div class="lb">Meta IF</div><div class="vl" style="color:var(--mod)">38%</div><div class="nt">R$ 2.386 / R$ 6.200</div></div>
+        <div class="mk"><div class="lb">YoC Médio</div><div class="vl" style="color:var(--yellow)">5,8%</div><div class="nt">a.a.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §4 Top Posições (full width compact table) -->
+  <div class="cd an d4" style="padding:18px 0">
+    <div class="ct" style="padding:0 18px"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Maiores Posições <span class="rt">Ver carteira completa →</span></div>
+    <div style="display:grid;grid-template-columns:130px 1fr 80px 80px 80px 60px;gap:12px;padding:8px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);border-bottom:1px solid var(--border)"><span>Ativo</span><span>Nome</span><span style="text-align:right">Posição</span><span style="text-align:right">Resultado</span><span style="text-align:right">Proventos</span><span style="text-align:right">Peso</span></div>
+    <div style="display:grid;grid-template-columns:130px 1fr 80px 80px 80px 60px;gap:12px;padding:13px 18px;align-items:center;border-bottom:1px solid rgba(120,165,220,.04);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><span style="font-family:'DM Mono';font-weight:500">PETR4</span><span style="font-size:12px;color:var(--t2)">Petrobras PN</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 77.440</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--green)">+20,4%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 3.420</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">16%</span></div>
+    <div style="display:grid;grid-template-columns:130px 1fr 80px 80px 80px 60px;gap:12px;padding:13px 18px;align-items:center;border-bottom:1px solid rgba(120,165,220,.04);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><span style="font-family:'DM Mono';font-weight:500">HGLG11</span><span style="font-size:12px;color:var(--t2)">CSHG Logística</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 62.100</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--green)">+8,2%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 2.510</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">13%</span></div>
+    <div style="display:grid;grid-template-columns:130px 1fr 80px 80px 80px 60px;gap:12px;padding:13px 18px;align-items:center;border-bottom:1px solid rgba(120,165,220,.04);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><span style="font-family:'DM Mono';font-weight:500">VALE3</span><span style="font-size:12px;color:var(--t2)">Vale ON</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 54.320</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--red)">-3,1%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 1.440</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">11%</span></div>
+    <div style="display:grid;grid-template-columns:130px 1fr 80px 80px 80px 60px;gap:12px;padding:13px 18px;align-items:center;border-bottom:1px solid rgba(120,165,220,.04);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><span style="font-family:'DM Mono';font-weight:500">ITUB4</span><span style="font-size:12px;color:var(--t2)">Itaú Unibanco</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 48.600</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--green)">+15,7%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 1.875</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">10%</span></div>
+    <div style="display:grid;grid-template-columns:130px 1fr 80px 80px 80px 60px;gap:12px;padding:13px 18px;align-items:center;cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><span style="font-family:'DM Mono';font-weight:500">WEGE3</span><span style="font-size:12px;color:var(--t2)">Weg ON</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 42.180</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--green)">+28,3%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 640</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">9%</span></div>
+  </div>
+
+  <!-- §5 Alertas strip -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px" class="an d4">
+    <div style="padding:12px 16px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.12);border-radius:14px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:6px;height:6px;border-radius:50%;background:var(--yellow)"></div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--yellow)">Atenção</span></div><div style="font-size:12px;color:var(--t2)">HGLG11 cotação desatualizada (7 dias)</div></div>
+    <div style="padding:12px 16px;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.12);border-radius:14px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--green)">Proventos</span></div><div style="font-size:12px;color:var(--t2)">3 pagamentos este mês (R$ 1.697)</div></div>
+    <div style="padding:12px 16px;background:rgba(59,130,246,.04);border:1px solid rgba(59,130,246,.12);border-radius:14px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:6px;height:6px;border-radius:50%;background:var(--mod)"></div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--mod)">Meta IF</span></div><div style="font-size:12px;color:var(--t2)">38% concluída — Nov 2040 (cenário moderado)</div></div>
+  </div>
+</div>
+</div>
+
+<div id="s-carteira" class="screen">
+<div class="pg">
+  <div class="mh an">
+    <div class="ic" style="background:var(--md)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg></div>
+    <div class="nf"><h1>Carteira</h1><p>14 ativos · R$ 487.320 · atualizado há 2h</p></div>
+    <div class="act"><button class="b bp" onclick="openM('m1')"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova Operação</button></div>
+  </div>
+
+  <!-- Search + Filter (NO KPIs — this is a data view) -->
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px" class="an d1">
+    <div style="position:relative;flex:1;max-width:320px">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" style="position:absolute;left:12px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Buscar ticker ou nome..." style="width:100%;padding:10px 14px 10px 36px;background:var(--s1);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-size:13px;outline:none;font-family:'DM Sans'">
+    </div>
+    <div style="display:flex;gap:4px">
+      <span class="pill" style="background:var(--md);color:var(--mod);border:1px solid rgba(var(--mr),.3);cursor:pointer">Todos</span>
+      <span class="pill" style="background:transparent;color:var(--t3);border:1px solid var(--border);cursor:pointer">Ações BR</span>
+      <span class="pill" style="background:transparent;color:var(--t3);border:1px solid var(--border);cursor:pointer">FIIs</span>
+      <span class="pill" style="background:transparent;color:var(--t3);border:1px solid var(--border);cursor:pointer">Renda Fixa</span>
+      <span class="pill" style="background:transparent;color:var(--t3);border:1px solid var(--border);cursor:pointer">Cripto</span>
+      <span class="pill" style="background:transparent;color:var(--t3);border:1px solid var(--border);cursor:pointer">BDRs</span>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--t3)">Ordenar:</span><select style="padding:6px 10px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--t2);font-size:12px;outline:none"><option>Posição ↓</option><option>Resultado %</option><option>Ticker A-Z</option></select></div>
+  </div>
+
+  <!-- Full-width data table (unique layout) -->
+  <div class="cd an d2" style="padding:0;overflow:hidden">
+    <div style="display:grid;grid-template-columns:110px 1fr 80px 90px 90px 80px 60px;gap:8px;padding:12px 18px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);border-bottom:1px solid var(--border)"><span>Ticker</span><span>Nome · Classe</span><span style="text-align:right">Qtd</span><span style="text-align:right">Posição</span><span style="text-align:right">Resultado</span><span style="text-align:right">Proventos</span><span style="text-align:right">Peso</span></div>
+    <div style="display:grid;grid-template-columns:110px 1fr 80px 90px 90px 80px 60px;gap:8px;padding:14px 18px;align-items:center;border-bottom:1px solid rgba(120,165,220,.04);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><div><span style="font-family:'DM Mono';font-weight:500;font-size:13px">PETR4</span><div style="width:4px;height:4px;border-radius:50%;background:var(--green);display:inline-block;margin-left:6px;vertical-align:middle"></div></div><div style="min-width:0"><div style="font-size:12px;color:var(--t2)">Petrobras PN</div><div style="font-size:10px;color:var(--t3)">Ações BR · Energia</div></div><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">2.000</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 77.440</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--green)">+20,4%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 3.420</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">16%</span></div>
+    <div style="display:grid;grid-template-columns:110px 1fr 80px 90px 90px 80px 60px;gap:8px;padding:14px 18px;align-items:center;border-bottom:1px solid rgba(120,165,220,.04);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><div><span style="font-family:'DM Mono';font-weight:500;font-size:13px">HGLG11</span></div><div><div style="font-size:12px;color:var(--t2)">CSHG Logística</div><div style="font-size:10px;color:var(--t3)">FIIs · Logística</div></div><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">300</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 62.100</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--green)">+8,2%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 2.510</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">13%</span></div>
+    <div style="display:grid;grid-template-columns:110px 1fr 80px 90px 90px 80px 60px;gap:8px;padding:14px 18px;align-items:center;border-bottom:1px solid rgba(120,165,220,.04);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><div><span style="font-family:'DM Mono';font-weight:500;font-size:13px">VALE3</span><div style="width:4px;height:4px;border-radius:50%;background:var(--red);display:inline-block;margin-left:6px;vertical-align:middle"></div></div><div><div style="font-size:12px;color:var(--t2)">Vale ON</div><div style="font-size:10px;color:var(--t3)">Ações BR · Mineração</div></div><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">800</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 54.320</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--red)">-3,1%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 1.440</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">11%</span></div>
+    <div style="display:grid;grid-template-columns:110px 1fr 80px 90px 90px 80px 60px;gap:8px;padding:14px 18px;align-items:center;border-bottom:1px solid rgba(120,165,220,.04);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><div><span style="font-family:'DM Mono';font-weight:500;font-size:13px">ITUB4</span></div><div><div style="font-size:12px;color:var(--t2)">Itaú Unibanco</div><div style="font-size:10px;color:var(--t3)">Ações BR · Financeiro</div></div><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">1.500</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 48.600</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--green)">+15,7%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 1.875</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">10%</span></div>
+    <div style="display:grid;grid-template-columns:110px 1fr 80px 90px 90px 80px 60px;gap:8px;padding:14px 18px;align-items:center;border-bottom:1px solid rgba(120,165,220,.04);cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><div><span style="font-family:'DM Mono';font-weight:500;font-size:13px">WEGE3</span></div><div><div style="font-size:12px;color:var(--t2)">Weg ON</div><div style="font-size:10px;color:var(--t3)">Ações BR · Tecnologia</div></div><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">1.000</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 42.180</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--green)">+28,3%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 640</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">9%</span></div>
+    <div style="display:grid;grid-template-columns:110px 1fr 80px 90px 90px 80px 60px;gap:8px;padding:14px 18px;align-items:center;cursor:pointer;transition:background .1s" onmouseover="this.style.background='var(--s2)'" onmouseout="this.style.background=''"><div><span style="font-family:'DM Mono';font-weight:500;font-size:13px">MXRF11</span></div><div><div style="font-size:12px;color:var(--t2)">Maxi Renda</div><div style="font-size:10px;color:var(--t3)">FIIs · Multi</div></div><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">3.200</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 38.400</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--green)">+4,1%</span><span style="font-family:'DM Mono';font-size:12px;text-align:right">R$ 2.288</span><span style="font-family:'DM Mono';font-size:12px;text-align:right;color:var(--t2)">8%</span></div>
+  </div>
+
+  <!-- Summary footer -->
+  <div style="display:flex;gap:20px;padding:16px 0;justify-content:flex-end" class="an d3">
+    <span style="font-size:11px;color:var(--t3)">Total Investido: <span style="font-family:'DM Mono';color:var(--t2)">R$ 412.850</span></span>
+    <span style="font-size:11px;color:var(--t3)">Total Posição: <span style="font-family:'DM Mono';color:var(--t1)">R$ 487.320</span></span>
+    <span style="font-size:11px;color:var(--t3)">Resultado: <span style="font-family:'DM Mono';color:var(--green)">+R$ 74.470 (+18,03%)</span></span>
+  </div>
+</div>
+</div>
+
+<div id="s-detalhe" class="screen">
+<div class="pg">
+  <div class="mh an">
+    <div class="ic" style="background:rgba(0,85,255,.10)"><svg viewBox="0 0 24 24" stroke="#0055ff"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+    <div class="nf">
+      <h1 style="display:flex;align-items:center;gap:12px"><span style="font-family:'DM Mono';letter-spacing:-1px">PETR4</span><span class="pill" style="background:rgba(0,85,255,.10);color:#0055ff;font-size:11px">Ações BR</span><span class="pill" style="background:rgba(249,115,22,.10);color:var(--orange);font-size:11px">Energia</span></h1>
+      <p>Petrobras PN · Petróleo e Gás</p>
+    </div>
+    <div class="act">
+      <div style="text-align:right"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Cotação Atual</div><div style="font-family:'DM Mono';font-size:28px;font-weight:500;margin-top:2px">R$ 38,72</div><div style="font-size:11px;color:var(--green)">+2,14% hoje</div></div>
+    </div>
+  </div>
+
+  <!-- Metrics strip (horizontal, not cards) -->
+  <div style="display:flex;gap:0;margin-bottom:20px;background:var(--s1);border:1px solid var(--border);border-radius:var(--R);overflow:hidden" class="an d1">
+    <div style="flex:1;padding:18px 22px;border-right:1px solid var(--border)"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Posição</div><div style="font-family:'DM Mono';font-size:20px;font-weight:500">R$ 77.440</div><div style="font-size:11px;color:var(--t3);margin-top:2px">2.000 cotas</div></div>
+    <div style="flex:1;padding:18px 22px;border-right:1px solid var(--border)"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Preço Médio</div><div style="font-family:'DM Mono';font-size:20px;font-weight:500">R$ 32,15</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Investido: R$ 64.300</div></div>
+    <div style="flex:1;padding:18px 22px;border-right:1px solid var(--border)"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Resultado</div><div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--green)">+R$ 13.140</div><div style="font-size:11px;color:var(--green);margin-top:2px">+20,44%</div></div>
+    <div style="flex:1;padding:18px 22px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Proventos 12m</div><div style="font-family:'DM Mono';font-size:20px;font-weight:500">R$ 4.820</div><div style="font-size:11px;color:var(--yellow);margin-top:2px">YoC: 7,5% a.a.</div></div>
+  </div>
+
+  <!-- Chart DOMINATES (no sidebar at this level) -->
+  <div class="cd an d2" style="margin-bottom:14px">
+    <div class="ct"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>Histórico de Cotação <div style="display:flex;gap:4px;margin-left:auto"><span class="pill" style="background:transparent;color:var(--t3);border:1px solid var(--border);font-size:10px;cursor:pointer">1m</span><span class="pill" style="background:transparent;color:var(--t3);border:1px solid var(--border);font-size:10px;cursor:pointer">3m</span><span class="pill" style="background:var(--md);color:var(--mod);border:1px solid rgba(var(--mr),.3);font-size:10px;cursor:pointer">6m</span><span class="pill" style="background:transparent;color:var(--t3);border:1px solid var(--border);font-size:10px;cursor:pointer">1a</span><span class="pill" style="background:transparent;color:var(--t3);border:1px solid var(--border);font-size:10px;cursor:pointer">Max</span></div></div>
+    <div class="chp" style="min-height:240px">Gráfico Recharts (área: cotação PETR4 com linha de preço médio R$ 32,15)</div>
+  </div>
+
+  <!-- Operações + Proventos side by side -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" class="an d3">
+    <div class="cd">
+      <div class="ct"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Histórico de Operações</div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:3px;border-radius:2px;background:var(--green);flex-shrink:0"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Compra — 500 cotas @ R$ 28,40</div><div style="font-size:11px;color:var(--t3);margin-top:2px">15/01/2025 · R$ 14.200</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:3px;border-radius:2px;background:var(--green);flex-shrink:0"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Compra — 800 cotas @ R$ 31,50</div><div style="font-size:11px;color:var(--t3);margin-top:2px">20/04/2025 · R$ 25.200</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0"><div style="width:3px;border-radius:2px;background:var(--green);flex-shrink:0"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Compra — 700 cotas @ R$ 35,57</div><div style="font-size:11px;color:var(--t3);margin-top:2px">12/09/2025 · R$ 24.900</div></div></div>
+    </div>
+    <div class="cd">
+      <div class="ct"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Proventos Recebidos <div style="margin-left:auto;display:flex;align-items:center;gap:8px"><div style="position:relative;width:40px;height:40px"><svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="var(--s3)" stroke-width="4"/><circle cx="20" cy="20" r="16" fill="none" stroke="var(--yellow)" stroke-width="4" stroke-linecap="round" stroke-dasharray="100" stroke-dashoffset="25" transform="rotate(-90 20 20)"/></svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'DM Mono';font-size:9px;color:var(--yellow)">7,5%</div></div><span style="font-size:10px;color:var(--t3)">YoC</span></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:3px;border-radius:2px;background:var(--green);flex-shrink:0"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Dividendo — R$ 0,57/ação</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Mar/2026</div></div><div style="font-family:'DM Mono';font-size:13px;color:var(--green)">R$ 1.140</div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:3px;border-radius:2px;background:var(--yellow);flex-shrink:0"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">JCP — R$ 0,42/ação</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Dez/2025</div></div><div style="font-family:'DM Mono';font-size:13px;color:var(--green)">R$ 840</div></div>
+      <div style="display:flex;gap:12px;padding:12px 0"><div style="width:3px;border-radius:2px;background:var(--green);flex-shrink:0"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Dividendo — R$ 0,71/ação</div><div style="font-size:11px;color:var(--t3);margin-top:2px">Set/2025</div></div><div style="font-family:'DM Mono';font-size:13px;color:var(--green)">R$ 1.420</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="s-evolucao" class="screen">
+<div class="pg">
+  <div class="mh an">
+    <div class="ic" style="background:var(--md)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+    <div class="nf"><h1>Evolução Patrimonial</h1><p>Acompanhe o crescimento ao longo do tempo</p></div>
+    <div class="act">
+      <div style="display:flex;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:2px">
+        <button style="padding:6px 14px;font-size:12px;font-weight:600;color:var(--t3);background:none;border:none;border-radius:8px;cursor:pointer">3m</button>
+        <button style="padding:6px 14px;font-size:12px;font-weight:600;background:var(--md);color:var(--mod);border:none;border-radius:8px;cursor:pointer">6m</button>
+        <button style="padding:6px 14px;font-size:12px;font-weight:600;color:var(--t3);background:none;border:none;border-radius:8px;cursor:pointer">1a</button>
+        <button style="padding:6px 14px;font-size:12px;font-weight:600;color:var(--t3);background:none;border:none;border-radius:8px;cursor:pointer">Max</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats strip (inline, not KPI cards) -->
+  <div style="display:flex;gap:24px;padding:16px 24px;background:var(--s1);border:1px solid var(--border);border-radius:var(--R);margin-bottom:14px" class="an d1">
+    <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Atual</span><div style="font-family:'DM Mono';font-size:20px;font-weight:500;margin-top:3px">R$ 487.320</div></div>
+    <div style="border-left:1px solid var(--border);padding-left:24px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Investido</span><div style="font-family:'DM Mono';font-size:20px;font-weight:500;margin-top:3px">R$ 412.850</div></div>
+    <div style="border-left:1px solid var(--border);padding-left:24px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Resultado</span><div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--green);margin-top:3px">+R$ 74.470</div></div>
+    <div style="border-left:1px solid var(--border);padding-left:24px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">c/ Proventos</span><div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--yellow);margin-top:3px">R$ 515.960</div></div>
+    <div style="border-left:1px solid var(--border);padding-left:24px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Rentab.</span><div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--green);margin-top:3px">+18,03%</div></div>
+  </div>
+
+  <!-- THE CHART (dominates the screen) -->
+  <div class="cd an d2" style="margin-bottom:14px">
+    <div class="chp" style="min-height:340px;font-size:13px">Gráfico Recharts (área: Valor Atual + Custo Médio + Com Proventos · 6 meses)</div>
+    <div style="display:flex;align-items:center;gap:20px;justify-content:center;margin-top:14px"><div style="display:flex;align-items:center;gap:4px"><div style="width:20px;height:3px;background:var(--green);border-radius:1px"></div><span style="font-size:10px;color:var(--t3)">Valor atual</span></div><div style="display:flex;align-items:center;gap:4px"><div style="width:20px;height:2px;border-top:2px dashed #0055ff"></div><span style="font-size:10px;color:var(--t3)">Custo médio</span></div><div style="display:flex;align-items:center;gap:4px"><div style="width:20px;height:2px;background:var(--yellow);border-radius:1px"></div><span style="font-size:10px;color:var(--t3)">c/ proventos</span></div></div>
+  </div>
+
+  <!-- Performance breakdown (compact) -->
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:14px" class="an d3">
+    <div class="cd"><div class="ct"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Performance por Ativo</div><div class="chp" style="min-height:180px">Gráfico Recharts (barras horizontais: performance % por ativo)</div></div>
+    <div class="cd"><div class="ct"><svg viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>Distribuição</div><div style="height:20px;border-radius:10px;overflow:hidden;display:flex;margin-bottom:14px"><div style="width:32%;background:#0055ff"></div><div style="width:24%;background:var(--green)"></div><div style="width:18%;background:var(--yellow)"></div><div style="width:10%;background:var(--cyan)"></div><div style="width:8%;background:var(--orange)"></div><div style="width:5%;background:var(--purple)"></div><div style="width:3%;background:var(--blue)"></div></div><div style="display:flex;flex-direction:column;gap:5px"><div style="display:flex;align-items:center;gap:6px;font-size:11px"><span style="width:8px;height:8px;border-radius:2px;background:#0055ff"></span><span style="flex:1;color:var(--t2)">Ações BR</span><span style="font-family:'DM Mono';font-size:10px;color:var(--t3)">32%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:11px"><span style="width:8px;height:8px;border-radius:2px;background:var(--green)"></span><span style="flex:1;color:var(--t2)">FIIs</span><span style="font-family:'DM Mono';font-size:10px;color:var(--t3)">24%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:11px"><span style="width:8px;height:8px;border-radius:2px;background:var(--yellow)"></span><span style="flex:1;color:var(--t2)">Renda Fixa</span><span style="font-family:'DM Mono';font-size:10px;color:var(--t3)">18%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:11px"><span style="width:8px;height:8px;border-radius:2px;background:var(--cyan)"></span><span style="flex:1;color:var(--t2)">ETFs</span><span style="font-family:'DM Mono';font-size:10px;color:var(--t3)">10%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:11px"><span style="width:8px;height:8px;border-radius:2px;background:var(--orange)"></span><span style="flex:1;color:var(--t2)">Cripto</span><span style="font-family:'DM Mono';font-size:10px;color:var(--t3)">8%</span></div></div></div>
+  </div>
+</div>
+</div>
+
+<div id="s-proventos" class="screen">
+<div class="pg">
+  <div class="mh an">
+    <div class="ic" style="background:rgba(245,158,11,.10)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+    <div class="nf"><h1>Proventos</h1><p>2026 · R$ 28.640 acumulados · 23 pagamentos</p></div>
+    <div class="act">
+      <div style="display:flex;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:2px"><button style="padding:6px 12px;font-size:12px;font-weight:600;background:var(--s1);color:var(--t1);border:none;border-radius:8px;cursor:pointer">2026</button><button style="padding:6px 12px;font-size:12px;font-weight:600;color:var(--t3);background:none;border:none;border-radius:8px;cursor:pointer">2025</button><button style="padding:6px 12px;font-size:12px;font-weight:600;color:var(--t3);background:none;border:none;border-radius:8px;cursor:pointer">2024</button></div>
+      <button class="b bp" onclick="openM('m2')"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Registrar</button>
+    </div>
+  </div>
+
+  <!-- Summary strip -->
+  <div style="display:flex;gap:0;background:var(--s1);border:1px solid var(--border);border-radius:var(--R);overflow:hidden;margin-bottom:20px" class="an d1">
+    <div style="flex:1;padding:16px 22px;border-right:1px solid var(--border)"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:4px">Total 2026</div><div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--green)">R$ 28.640</div></div>
+    <div style="flex:1;padding:16px 22px;border-right:1px solid var(--border)"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:4px">Média/Mês</div><div style="font-family:'DM Mono';font-size:22px;font-weight:500">R$ 2.386</div></div>
+    <div style="flex:1;padding:16px 22px;border-right:1px solid var(--border)"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:4px">Pagamentos</div><div style="font-family:'DM Mono';font-size:22px;font-weight:500">23</div></div>
+    <div style="flex:1;padding:16px 22px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:4px">YoC Médio</div><div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--yellow)">5,8%</div></div>
+  </div>
+
+  <!-- CALENDAR GRID — 12 months (unique layout!) -->
+  <div class="pv-grid an d2" style="margin-bottom:20px">
+    <div class="pv-month"><div class="bar" style="background:var(--green)"></div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Jan</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--green)">R$ 2.180</div><div style="font-size:10px;color:var(--t3);margin-top:4px">3 pgtos</div></div>
+    <div class="pv-month"><div class="bar" style="background:var(--green)"></div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Fev</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--green)">R$ 2.420</div><div style="font-size:10px;color:var(--t3);margin-top:4px">2 pgtos</div></div>
+    <div class="pv-month current"><div class="bar" style="background:var(--mod)"></div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--mod);margin-bottom:8px">Mar ●</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--green)">R$ 3.420</div><div style="font-size:10px;color:var(--mod);margin-top:4px">4 pgtos · atual</div></div>
+    <div class="pv-month"><div class="bar" style="background:var(--green)"></div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Abr</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--green)">R$ 2.640</div><div style="font-size:10px;color:var(--t3);margin-top:4px">3 pgtos</div></div>
+    <div class="pv-month"><div class="bar" style="background:var(--green)"></div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Mai</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--green)">R$ 2.150</div><div style="font-size:10px;color:var(--t3);margin-top:4px">2 pgtos</div></div>
+    <div class="pv-month"><div class="bar" style="background:var(--yellow)"></div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Jun</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--yellow)">R$ 1.850</div><div style="font-size:10px;color:var(--t3);margin-top:4px">2 pgtos</div></div>
+    <div class="pv-month"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Jul</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--t3)">R$ 2.380</div><div style="font-size:10px;color:var(--t3);margin-top:4px">projeção</div></div>
+    <div class="pv-month"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Ago</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--t3)">R$ 2.380</div><div style="font-size:10px;color:var(--t3);margin-top:4px">projeção</div></div>
+    <div class="pv-month"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Set</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--t3)">R$ 2.380</div><div style="font-size:10px;color:var(--t3);margin-top:4px">projeção</div></div>
+    <div class="pv-month"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Out</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--t3)">R$ 2.380</div><div style="font-size:10px;color:var(--t3);margin-top:4px">projeção</div></div>
+    <div class="pv-month"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Nov</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--t3)">R$ 2.380</div><div style="font-size:10px;color:var(--t3);margin-top:4px">projeção</div></div>
+    <div class="pv-month"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Dez</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--t3)">R$ 2.380</div><div style="font-size:10px;color:var(--t3);margin-top:4px">projeção</div></div>
+  </div>
+
+  <!-- Detalhamento + Sidebar -->
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:14px" class="an d3">
+    <div class="cd"><div class="ct"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Março 2026 — Detalhamento</div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:3px;border-radius:2px;background:var(--green)"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">PETR4 — Dividendo</div><div style="font-size:11px;color:var(--t3)">20/03 · R$ 0,57/ação · 2.000 cotas</div></div><div style="font-family:'DM Mono';font-size:13px;color:var(--green)">R$ 1.140</div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:3px;border-radius:2px;background:var(--green)"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">MXRF11 — Rendimento</div><div style="font-size:11px;color:var(--t3)">15/03 · R$ 0,10/cota · 3.200 cotas</div></div><div style="font-family:'DM Mono';font-size:13px;color:var(--green)">R$ 312</div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:3px;border-radius:2px;background:var(--green)"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">HGLG11 — Rendimento</div><div style="font-size:11px;color:var(--t3)">15/03 · R$ 0,82/cota · 300 cotas</div></div><div style="font-family:'DM Mono';font-size:13px;color:var(--green)">R$ 245</div></div>
+      <div style="display:flex;gap:12px;padding:12px 0"><div style="width:3px;border-radius:2px;background:var(--purple)"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">ITUB4 — JCP</div><div style="font-size:11px;color:var(--t3)">01/04 · R$ 0,32/ação · 1.500 cotas</div></div><div style="font-family:'DM Mono';font-size:13px;color:var(--green)">R$ 486</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="cd" style="padding:18px">
+        <div style="font-family:'Syne';font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:12px">Top Pagadores</div>
+        <div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between"><span style="font-family:'DM Mono';font-size:12px">PETR4</span><span style="font-family:'DM Mono';font-size:12px;color:var(--green)">R$ 3.420</span></div><div style="display:flex;justify-content:space-between"><span style="font-family:'DM Mono';font-size:12px">HGLG11</span><span style="font-family:'DM Mono';font-size:12px;color:var(--green)">R$ 2.510</span></div><div style="display:flex;justify-content:space-between"><span style="font-family:'DM Mono';font-size:12px">MXRF11</span><span style="font-family:'DM Mono';font-size:12px;color:var(--green)">R$ 2.288</span></div><div style="display:flex;justify-content:space-between"><span style="font-family:'DM Mono';font-size:12px">ITUB4</span><span style="font-family:'DM Mono';font-size:12px;color:var(--green)">R$ 1.875</span></div><div style="display:flex;justify-content:space-between"><span style="font-family:'DM Mono';font-size:12px">VALE3</span><span style="font-family:'DM Mono';font-size:12px;color:var(--green)">R$ 1.440</span></div></div>
+      </div>
+      <div class="cd" style="padding:18px">
+        <div style="font-family:'Syne';font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:12px">Melhor YoC</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="font-family:'DM Mono'">MXRF11</span><span style="font-family:'DM Mono';color:var(--green)">11,2%</span></div><div style="height:3px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="height:100%;width:75%;background:var(--green);border-radius:2px"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="font-family:'DM Mono'">HGLG11</span><span style="font-family:'DM Mono';color:var(--green)">8,4%</span></div><div style="height:3px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="height:100%;width:56%;background:var(--green);border-radius:2px"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="font-family:'DM Mono'">PETR4</span><span style="font-family:'DM Mono';color:var(--green)">7,5%</span></div><div style="height:3px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="height:100%;width:50%;background:var(--green);border-radius:2px"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="s-simulador" class="screen">
+<div class="pg">
+  <div class="mh an">
+    <div class="ic" style="background:rgba(245,158,11,.10)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+    <div class="nf"><h1>Simulador de Independência Financeira</h1><p>Projete quando você alcança a liberdade financeira</p></div>
+  </div>
+
+  <!-- SPLIT LAYOUT: Controls left, Chart right -->
+  <div class="sim-split an d1">
+    <!-- LEFT: Control Panel -->
+    <div class="sim-panel">
+      <div style="font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:24px;display:flex;align-items:center;gap:9px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4 1.65 1.65 0 0 0 13.91 21v.09a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6 1.65 1.65 0 0 0 10.09 3V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06"/></svg>Parâmetros</div>
+
+      <div style="margin-bottom:20px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><label style="font-size:11px;font-weight:600;color:var(--t2)">Patrimônio Atual</label><span style="font-family:'DM Mono';font-size:14px">R$ 487.320</span></div><div class="sl-track"><div class="sl-fill" style="width:48.7%;background:linear-gradient(90deg,var(--green),#0055ff)"></div><div class="sl-thumb" style="left:48.7%;background:var(--s1);border-color:var(--green)"></div></div></div>
+      <div style="margin-bottom:20px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><label style="font-size:11px;font-weight:600;color:var(--t2)">Aporte Mensal</label><span style="font-family:'DM Mono';font-size:14px">R$ 5.000</span></div><div class="sl-track"><div class="sl-fill" style="width:25%;background:linear-gradient(90deg,var(--mod),var(--purple))"></div><div class="sl-thumb" style="left:25%;background:var(--s1);border-color:var(--mod)"></div></div></div>
+      <div style="margin-bottom:20px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><label style="font-size:11px;font-weight:600;color:var(--t2)">Rentabilidade Anual</label><span style="font-family:'DM Mono';font-size:14px">10,5% a.a.</span></div><div class="sl-track"><div class="sl-fill" style="width:52.5%;background:linear-gradient(90deg,var(--yellow),var(--orange))"></div><div class="sl-thumb" style="left:52.5%;background:var(--s1);border-color:var(--yellow)"></div></div></div>
+      <div style="margin-bottom:20px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><label style="font-size:11px;font-weight:600;color:var(--t2)">Renda Passiva Desejada</label><span style="font-family:'DM Mono';font-size:14px">R$ 8.000/mês</span></div><div class="sl-track"><div class="sl-fill" style="width:40%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div><div class="sl-thumb" style="left:40%;background:var(--s1);border-color:var(--green)"></div></div></div>
+
+      <!-- Result highlight -->
+      <div style="padding:16px;background:rgba(59,130,246,.04);border:1px solid rgba(59,130,246,.12);border-radius:14px;margin-top:8px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mod);margin-bottom:6px">Resultado — Cenário Moderado</div>
+        <div style="font-family:'DM Mono';font-size:28px;font-weight:500;color:var(--mod)">14 anos 8m</div>
+        <div style="font-size:12px;color:var(--t2);margin-top:4px">Meta: Nov 2040 · R$ 1.920.000</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Chart + Scenarios -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <!-- Scenario comparison strip (horizontal) -->
+      <div class="sc-strip">
+        <div class="sc-item"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--red);margin-bottom:4px">Conservador</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500">18a 4m</div><div style="font-size:10px;color:var(--t3);margin-top:2px">8% a.a. · Jul 2044</div></div>
+        <div class="sc-item sel"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--mod);margin-bottom:4px">Moderado ●</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--mod)">14a 8m</div><div style="font-size:10px;color:var(--t3);margin-top:2px">10,5% a.a. · Nov 2040</div></div>
+        <div class="sc-item"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--green);margin-bottom:4px">Arrojado</div><div style="font-family:'DM Mono';font-size:18px;font-weight:500">11a 6m</div><div style="font-size:10px;color:var(--t3);margin-top:2px">14% a.a. · Set 2037</div></div>
+      </div>
+
+      <!-- Projection chart -->
+      <div class="cd" style="flex:1">
+        <div class="ct"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>Projeção Patrimonial</div>
+        <div class="chp" style="min-height:280px">Gráfico Recharts (3 linhas: Conservador/Moderado/Arrojado + Meta IF R$ 1,92M dashed)</div>
+        <div style="display:flex;align-items:center;gap:16px;justify-content:center;margin-top:14px"><div style="display:flex;align-items:center;gap:4px"><div style="width:16px;height:2px;background:var(--red);border-radius:1px"></div><span style="font-size:10px;color:var(--t3)">Conservador</span></div><div style="display:flex;align-items:center;gap:4px"><div style="width:16px;height:3px;background:var(--mod);border-radius:1px"></div><span style="font-size:10px;color:var(--t3)">Moderado</span></div><div style="display:flex;align-items:center;gap:4px"><div style="width:16px;height:2px;background:var(--green);border-radius:1px"></div><span style="font-size:10px;color:var(--t3)">Arrojado</span></div><div style="display:flex;align-items:center;gap:4px"><div style="width:16px;height:1px;border-top:2px dashed var(--yellow)"></div><span style="font-size:10px;color:var(--t3)">Meta IF</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div style="padding:16px 20px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.12);border-radius:var(--R);margin-top:14px" class="an d2">
+    <div style="display:flex;align-items:center;gap:10px"><div style="width:8px;height:8px;border-radius:50%;background:var(--yellow);flex-shrink:0"></div><p style="font-size:13px;color:var(--t2)">Com aporte de <b style="font-family:'DM Mono';color:var(--t1)">R$ 5.000/mês</b> e rentabilidade de <b style="font-family:'DM Mono';color:var(--t1)">10,5% a.a.</b>, você alcança a independência financeira (renda passiva de <b style="font-family:'DM Mono';color:var(--green)">R$ 8.000/mês</b>) em <b style="font-family:'DM Mono';color:var(--mod)">14 anos e 8 meses</b>.</p></div>
+  </div>
+</div>
+</div>
+
+<div class="mo" id="m1"><div class="mdl"><button class="cb" onclick="closeM('m1')">&times;</button><h2><div class="hi" style="background:var(--md);color:var(--mod)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>Adicionar Ativo</h2><div class="fg"><label>Ticker</label><input placeholder="PETR4, HGLG11..." style="text-transform:uppercase;font-family:'DM Mono'"></div><div class="fr"><div class="fg"><label>Classe</label><select><option>Ações BR</option><option>FIIs</option><option>Renda Fixa</option><option>Cripto</option><option>BDRs</option></select></div><div class="fg"><label>Setor</label><select><option>Energia</option><option>Financeiro</option><option>Tecnologia</option></select></div></div><div class="fr"><div class="fg"><label>Quantidade</label><input type="number" placeholder="0" style="font-family:'DM Mono'"></div><div class="fg"><label>Preço Médio</label><input placeholder="R$ 0,00" style="font-family:'DM Mono'"></div></div><div class="fg"><label>Data</label><input type="date" value="2026-03-14" style="font-family:'DM Mono'"></div><div style="display:flex;gap:12px;justify-content:flex-end;margin-top:20px"><button class="b bg" onclick="closeM('m1')">Cancelar</button><button class="b bp" onclick="closeM('m1')">Salvar</button></div></div></div>
+
+<div class="mo" id="m2"><div class="mdl"><button class="cb" onclick="closeM('m2')">&times;</button><h2><div class="hi" style="background:rgba(245,158,11,.10);color:var(--yellow)"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>Registrar Provento</h2><div class="fg"><label>Ativo</label><select><option>PETR4</option><option>ITUB4</option><option>HGLG11</option><option>VALE3</option></select></div><div class="fr"><div class="fg"><label>Tipo</label><select><option>Dividendo</option><option>JCP</option><option>Rendimento FII</option></select></div><div class="fg"><label>Valor Total</label><input placeholder="R$ 0,00" style="font-family:'DM Mono'"></div></div><div class="fr"><div class="fg"><label>Data Ex</label><input type="date" style="font-family:'DM Mono'"></div><div class="fg"><label>Pagamento</label><input type="date" value="2026-03-14" style="font-family:'DM Mono'"></div></div><div style="display:flex;gap:12px;justify-content:flex-end;margin-top:20px"><button class="b bg" onclick="closeM('m2')">Cancelar</button><button class="b bp" onclick="closeM('m2')">Registrar</button></div></div></div>
+
+<div class="pnav">
+  <span class="tag">Patrimônio Redesign v2</span>
+  <button class="on" data-s="dash" onclick="go('dash')">Dashboard</button>
+  <button data-s="carteira" onclick="go('carteira')">Carteira</button>
+  <button data-s="detalhe" onclick="go('detalhe')">Detalhe</button>
+  <div class="sep"></div>
+  <button data-s="evolucao" onclick="go('evolucao')">Evolução</button>
+  <button data-s="proventos" onclick="go('proventos')">Proventos</button>
+  <button data-s="simulador" onclick="go('simulador')">Simulador IF</button>
+</div>
+<script>
+function go(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});var t=document.getElementById('s-'+id);if(t)t.classList.add('active');document.querySelectorAll('.pnav button[data-s]').forEach(function(b){b.classList.toggle('on',b.dataset.s===id)});window.scrollTo(0,0);if(t){t.querySelectorAll('.an').forEach(function(e){e.style.animation='none';e.offsetHeight;e.style.animation=''})}}
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+</script>
+</body>
+</html>

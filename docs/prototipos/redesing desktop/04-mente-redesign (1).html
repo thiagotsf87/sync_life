@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>SyncLife — Mente Desktop Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03071a;--s1:#091428;--s2:#0e1c35;--s3:#152544;
+  --t1:#e4f1ff;--t2:#7b9fc6;--t3:#3c5d84;
+  --border:rgba(120,165,220,.09);--border-h:rgba(120,165,220,.18);
+  --mod:#eab308;--mod-rgb:234,179,8;--mod-dim:rgba(234,179,8,.08);
+  --green:#10b981;--red:#f43f5e;--yellow:#f59e0b;--orange:#f97316;
+  --cyan:#06b6d4;--purple:#a855f7;--blue:#3b82f6;--indigo:#6366f1;
+  --card-r:18px;
+}
+html{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{padding-bottom:52px}
+.page{max-width:1160px;margin:0 auto;padding:36px 40px 60px}
+
+/* ═══ STANDARD MODULE HEADER ═══ */
+.mod-hdr{display:flex;align-items:center;gap:16px;margin-bottom:36px}
+.mod-hdr .ico{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mod-hdr .ico svg{width:22px;height:22px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mod-hdr .info{flex:1}
+.mod-hdr .info h1{font-family:'Syne';font-weight:800;font-size:26px;line-height:1.15}
+.mod-hdr .info p{font-size:13px;color:var(--t2);margin-top:3px}
+.mod-hdr .actions{display:flex;gap:10px;align-items:center}
+
+/* ─── Week nav ─── */
+.wk-nav{display:inline-flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.wk-nav button{width:34px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--t3);background:none;border:none;cursor:pointer;transition:all .15s}
+.wk-nav button:hover{color:var(--t1);background:var(--s2)}
+.wk-nav .wk-label{padding:0 14px;font-family:'DM Mono';font-size:12px;font-weight:500;color:var(--t2);border-left:1px solid var(--border);border-right:1px solid var(--border)}
+
+/* ─── Buttons ─── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:11px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.btn-p{background:var(--mod);color:#000}
+.btn-p:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px rgba(var(--mod-rgb),.25)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--border)}
+.btn-g:hover{border-color:var(--border-h);color:var(--t1)}
+.btn-sm{padding:7px 14px;font-size:12px}
+
+/* ═══ CARDS ═══ */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:24px;transition:border-color .2s}
+.card:hover{border-color:var(--border-h)}
+.card-t{font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+.card-t svg{width:16px;height:16px;stroke:var(--mod);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card-t .rt{margin-left:auto;font-family:'DM Sans';font-size:12px;font-weight:500;color:var(--mod);cursor:pointer}
+.card-t .rt:hover{text-decoration:underline}
+
+/* ═══ KPI ROW (dashboard only) ═══ */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.kpi{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:20px 22px;position:relative;overflow:hidden;transition:border-color .2s,box-shadow .25s}
+.kpi:hover{border-color:var(--border-h);box-shadow:0 4px 24px rgba(0,0,0,.2)}
+.kpi .bar{position:absolute;top:0;left:22px;right:22px;height:2.5px;border-radius:0 0 3px 3px}
+.kpi .ki{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.kpi .ki svg{width:18px;height:18px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kpi .lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:6px}
+.kpi .val{font-family:'DM Mono';font-weight:500;font-size:26px;line-height:1}
+.kpi .sub{font-size:12px;color:var(--t3);margin-top:7px}
+.spark{display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:12px}
+.spark i{flex:1;border-radius:2px;display:block}
+
+/* ═══ METRICS STRIP ═══ */
+.m-strip{display:flex;align-items:stretch;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;margin-bottom:28px;position:relative}
+.m-strip::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--mod),var(--orange));border-radius:var(--card-r) var(--card-r) 0 0;z-index:2}
+.m-strip .ms{flex:1;padding:18px 22px;border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:center}
+.m-strip .ms:last-child{border-right:none}
+.m-strip .ms .lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:5px}
+.m-strip .ms .vl{font-family:'DM Mono';font-size:20px;font-weight:500;line-height:1}
+.m-strip .ms .nt{font-size:11px;color:var(--t3);margin-top:4px}
+
+/* ═══ PILLS ═══ */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
+.pill-row{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:500;border:1px solid var(--border);color:var(--t2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.chip:hover{border-color:var(--border-h);color:var(--t1)}
+.chip.on{background:var(--mod-dim);border-color:var(--mod);color:var(--mod);font-weight:600}
+.chip .ct{font-family:'DM Mono';font-size:10px;font-weight:700;padding:1px 6px;border-radius:6px;background:var(--s3);color:var(--t3)}
+.chip.on .ct{background:rgba(var(--mod-rgb),.2);color:var(--mod)}
+
+/* ═══ PROGRESS ═══ */
+.prog{width:100%;height:5px;background:var(--s3);border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;border-radius:99px}
+.prog-lg{height:8px}
+
+/* ═══ CHART PLACEHOLDER ═══ */
+.chart-ph{border:1px dashed var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:12px;min-height:160px;background:rgba(120,165,220,.015)}
+
+/* ═══ TABLE ═══ */
+.tbl{width:100%}
+.tbl th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);padding:0 12px 12px;border-bottom:1px solid var(--border)}
+.tbl td{padding:12px;border-bottom:1px solid rgba(120,165,220,.04);font-size:13px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(120,165,220,.02)}
+.tbl .mono{font-family:'DM Mono';font-weight:500}
+.tbl .dim{color:var(--t3);font-size:11px}
+.tbl .ic-sm{width:32px;height:32px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.tbl .ic-sm svg{width:15px;height:15px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ═══ SEARCH ═══ */
+.search{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;transition:border-color .2s}
+.search:focus-within{border-color:rgba(var(--mod-rgb),.4)}
+.search svg{width:16px;height:16px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+.search input{flex:1;background:none;border:none;outline:none;color:var(--t1);font-family:'DM Sans';font-size:13px}
+.search input::placeholder{color:var(--t3)}
+
+/* ═══ MINI KPI ═══ */
+.mk-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mk{background:var(--s2);border-radius:11px;padding:12px 14px}
+.mk .lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px}
+.mk .vl{font-family:'DM Mono';font-size:16px;font-weight:500}
+.mk .nt{font-size:10px;color:var(--t3);margin-top:3px}
+
+/* ═══ RING ═══ */
+.ring-wrap{position:relative;display:inline-block}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* ═══ PHASE PILL ═══ */
+.phase{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.phase .dot{width:8px;height:8px;border-radius:50%;animation:pulse-d 1.5s infinite}
+@keyframes pulse-d{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ═══ WAVEFORM ═══ */
+.wave{display:flex;align-items:flex-end;gap:3px;height:16px}
+.wave b{width:2px;border-radius:2px;background:var(--mod);animation:wav 1.2s ease-in-out infinite}
+.wave b:nth-child(1){height:6px;animation-delay:0s}
+.wave b:nth-child(2){height:12px;animation-delay:.1s}
+.wave b:nth-child(3){height:8px;animation-delay:.2s}
+.wave b:nth-child(4){height:14px;animation-delay:.3s}
+.wave b:nth-child(5){height:6px;animation-delay:.4s}
+.wave b.off{opacity:.2;animation:none}
+@keyframes wav{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.4)}}
+
+/* ═══ TIMELINE ═══ */
+.tl-node{position:relative;padding-left:42px;padding-bottom:18px}
+.tl-node:last-child{padding-bottom:0}
+.tl-line{position:absolute;left:15px;top:24px;bottom:0;width:2px}
+.tl-dot{position:absolute;left:7px;top:4px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;z-index:1}
+.tl-dot.ok{background:var(--green);color:#fff}
+.tl-dot.nxt{background:var(--mod);color:#000;box-shadow:0 0 0 4px rgba(var(--mod-rgb),.2);animation:puls 2s infinite}
+.tl-dot.pen{background:var(--s3);color:var(--t3)}
+@keyframes puls{0%,100%{box-shadow:0 0 0 4px rgba(var(--mod-rgb),.2)}50%{box-shadow:0 0 0 8px rgba(var(--mod-rgb),.06)}}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.anim{animation:rise .5s ease both}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(120,165,220,.12);border-radius:3px}
+
+/* ═══ MODAL ═══ */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(3,7,26,.82);backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center}
+.modal-ov.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal h2{font-family:'Syne';font-weight:800;font-size:20px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.modal h2 svg{width:20px;height:20px;stroke:var(--mod);fill:none;stroke-width:2;stroke-linecap:round}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-size:13px;font-family:'DM Sans';outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:rgba(var(--mod-rgb),.4)}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-foot{display:flex;gap:12px;justify-content:flex-end;margin-top:20px}
+.close-x{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--t3);background:none;border:none;cursor:pointer;transition:background .2s}
+.close-x:hover{background:var(--s2)}
+.close-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
+/* Mood selectors */
+.mood-grid{display:flex;gap:10px;justify-content:center;margin:12px 0}
+.mood-btn{width:52px;height:52px;border-radius:14px;background:var(--s2);border:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.mood-btn:hover{border-color:var(--border-h)}
+.mood-btn.sel{border-color:var(--mod);background:var(--mod-dim)}
+.mood-btn svg{width:24px;height:24px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tag-pills{display:flex;flex-wrap:wrap;gap:6px}
+.tag-pill{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:500;border:1px solid var(--border);color:var(--t2);cursor:pointer;transition:all .2s;background:none}
+.tag-pill:hover{border-color:var(--border-h);color:var(--t1)}
+.tag-pill.sel{background:var(--mod-dim);border-color:var(--mod);color:var(--mod)}
+
+/* ═══ PROTO NAV ═══ */
+.pnav{position:fixed;bottom:0;left:0;right:0;height:46px;background:#060a14;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;padding:0 20px;gap:4px;z-index:999}
+.pnav .tag{font-family:'DM Mono';font-size:9px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-right:14px;text-transform:uppercase}
+.pnav button{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;color:rgba(255,255,255,.3);background:none;border:none;cursor:pointer;transition:all .12s}
+.pnav button:hover{color:rgba(255,255,255,.55);background:rgba(255,255,255,.04)}
+.pnav button.on{color:#fff;background:rgba(var(--mod-rgb),.12)}
+.pnav .sep{width:1px;height:16px;background:rgba(255,255,255,.06);margin:0 8px}
+.screen{display:none}.screen.active{display:block}
+
+/* ═══ UTILS ═══ */
+.sec{margin-top:28px}
+.sec-t{font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:16px;display:flex;align-items:center;gap:9px}
+.sec-t svg{width:16px;height:16px;stroke:var(--mod);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sec-t .rt{margin-left:auto;font-size:12px;color:var(--mod);cursor:pointer;font-family:'DM Sans';font-weight:500}
+.sec-t .rt:hover{text-decoration:underline}
+.gap-14{gap:14px}.gap-28{gap:28px}
+.fl{display:flex}.fl-c{display:flex;flex-direction:column}.fl-a{align-items:center}.fl-j{justify-content:center}.fl-b{justify-content:space-between}
+.g-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.txt-r{text-align:right}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 1 — DASHBOARD
+     ══════════════════════════════════════════════ -->
+<div id="s-dash" class="screen active">
+<div class="page">
+
+  <!-- MODULE HEADER -->
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><path d="M9 21h6"/><path d="M10 17v4"/><path d="M14 17v4"/></svg>
+    </div>
+    <div class="info">
+      <h1>Mente</h1>
+      <p>Semana 11 de 2026 · 14 dias de streak · 5 trilhas ativas</p>
+    </div>
+    <div class="actions">
+      <div class="wk-nav">
+        <button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <span class="wk-label">Sem 11 · Mar 2026</span>
+        <button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      <button class="btn btn-p" onclick="go('timer')"><svg viewBox="0 0 24 24" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>Timer</button>
+    </div>
+  </div>
+
+  <!-- ── HERO METRICS STRIP (unique to dashboard — not KPI cards) ── -->
+  <div class="m-strip anim d1">
+    <div class="ms" style="flex:1.5">
+      <div class="lb">Horas esta semana</div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span class="vl" style="font-size:30px;color:var(--mod)">12.5h</span>
+        <span style="font-size:12px;color:var(--green);font-weight:600">+3.2h vs anterior</span>
+      </div>
+      <div class="nt">Meta semanal: 15h (80%)</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Streak</div>
+      <div class="fl fl-a" style="gap:6px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round"><path d="M12 2c.5 2.5 2 4.5 2 6.5A4.5 4.5 0 0 1 9.5 13 4 4 0 0 1 8 9c-1.5 1-3 3.5-3 6.5a7 7 0 0 0 14 0c0-4-3-7.5-7-13.5z"/></svg>
+        <span class="vl" style="color:var(--orange)">14d</span>
+      </div>
+      <div class="nt">Recorde: 21d</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Trilhas ativas</div>
+      <div class="vl">5</div>
+      <div class="nt">2 concluidas este mes</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Sessoes hoje</div>
+      <div class="vl" style="color:var(--green)">3</div>
+      <div class="nt">3h 45min focado</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Ciclos totais</div>
+      <div class="vl">214</div>
+      <div class="nt">87 sessoes</div>
+    </div>
+  </div>
+
+  <!-- ── BENTO GRID: 2/3 + 1/3 ── -->
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:14px">
+
+    <!-- LEFT: TRILHAS ATIVAS (compact table-like rows) -->
+    <div class="card anim d2">
+      <div class="card-t">
+        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Trilhas Ativas
+        <span class="rt" onclick="go('trilhas')">Ver todas</span>
+      </div>
+
+      <!-- Track row 1 -->
+      <div style="padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="go('trilha-det')">
+        <div class="fl fl-a fl-b" style="margin-bottom:8px">
+          <div class="fl fl-a" style="gap:10px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(var(--mod-rgb),.10);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+            <div>
+              <div style="font-size:13px;font-weight:600">React Avancado</div>
+              <div style="font-size:11px;color:var(--t3)">Tecnologia · 18.5h · R$ 299</div>
+            </div>
+          </div>
+          <div class="txt-r">
+            <span style="font-family:'DM Mono';font-size:15px;font-weight:500;color:var(--mod)">75%</span>
+            <div style="font-size:10px;color:var(--t3)">6/8 etapas</div>
+          </div>
+        </div>
+        <div class="prog"><i style="width:75%;background:var(--mod)"></i></div>
+      </div>
+
+      <!-- Track row 2 -->
+      <div style="padding:14px 0;border-bottom:1px solid var(--border)">
+        <div class="fl fl-a fl-b" style="margin-bottom:8px">
+          <div class="fl fl-a" style="gap:10px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.10);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div>
+              <div style="font-size:13px;font-weight:600">Ingles C1 — IELTS</div>
+              <div style="font-size:11px;color:var(--t3)">Idiomas · 32.0h · 45d restantes</div>
+            </div>
+          </div>
+          <div class="txt-r">
+            <span style="font-family:'DM Mono';font-size:15px;font-weight:500;color:var(--mod)">40%</span>
+            <div style="font-size:10px;color:var(--t3)">4/10 etapas</div>
+          </div>
+        </div>
+        <div class="prog"><i style="width:40%;background:var(--mod)"></i></div>
+      </div>
+
+      <!-- Track row 3 -->
+      <div style="padding:14px 0;border-bottom:1px solid var(--border)">
+        <div class="fl fl-a fl-b" style="margin-bottom:8px">
+          <div class="fl fl-a" style="gap:10px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(168,85,247,.10);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 2 6 2s6-.9 6-2v-5"/></svg></div>
+            <div>
+              <div style="font-size:13px;font-weight:600">MBA Gestao de Projetos</div>
+              <div style="font-size:11px;color:var(--t3)">Gestao · 14.0h · R$ 1.200</div>
+            </div>
+          </div>
+          <div class="txt-r">
+            <span style="font-family:'DM Mono';font-size:15px;font-weight:500;color:var(--mod)">25%</span>
+            <div style="font-size:10px;color:var(--t3)">3/12 etapas</div>
+          </div>
+        </div>
+        <div class="prog"><i style="width:25%;background:var(--mod)"></i></div>
+      </div>
+
+      <!-- Track row 4 -->
+      <div style="padding:14px 0">
+        <div class="fl fl-a fl-b" style="margin-bottom:8px">
+          <div class="fl fl-a" style="gap:10px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(236,72,153,.10);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+            <div>
+              <div style="font-size:13px;font-weight:600">UI/UX Design System</div>
+              <div style="font-size:11px;color:var(--t3)">Design · 8.0h · 20d restantes</div>
+            </div>
+          </div>
+          <div class="txt-r">
+            <span style="font-family:'DM Mono';font-size:15px;font-weight:500;color:var(--mod)">40%</span>
+            <div style="font-size:10px;color:var(--t3)">2/5 etapas</div>
+          </div>
+        </div>
+        <div class="prog"><i style="width:40%;background:var(--mod)"></i></div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="fl-c" style="gap:14px">
+
+      <!-- Sessoes Recentes (mini-table) -->
+      <div class="card anim d3">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Sessoes Recentes
+          <span class="rt" onclick="go('sess')">Ver todas</span>
+        </div>
+        <div class="fl-c" style="gap:0">
+          <div class="fl fl-a" style="gap:10px;padding:10px 0;border-bottom:1px solid rgba(120,165,220,.04)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--mod);flex-shrink:0"></div>
+            <span style="flex:1;font-size:12px;font-weight:500">React Avancado</span>
+            <span style="font-family:'DM Mono';font-size:12px;color:var(--mod)">75m</span>
+            <span style="font-size:10px;color:var(--t3);width:40px;text-align:right">Hoje</span>
+          </div>
+          <div class="fl fl-a" style="gap:10px;padding:10px 0;border-bottom:1px solid rgba(120,165,220,.04)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0"></div>
+            <span style="flex:1;font-size:12px;font-weight:500">Ingles IELTS</span>
+            <span style="font-family:'DM Mono';font-size:12px;color:var(--mod)">50m</span>
+            <span style="font-size:10px;color:var(--t3);width:40px;text-align:right">Hoje</span>
+          </div>
+          <div class="fl fl-a" style="gap:10px;padding:10px 0;border-bottom:1px solid rgba(120,165,220,.04)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--purple);flex-shrink:0"></div>
+            <span style="flex:1;font-size:12px;font-weight:500">MBA Gestao</span>
+            <span style="font-family:'DM Mono';font-size:12px;color:var(--mod)">100m</span>
+            <span style="font-size:10px;color:var(--t3);width:40px;text-align:right">Hoje</span>
+          </div>
+          <div class="fl fl-a" style="gap:10px;padding:10px 0;border-bottom:1px solid rgba(120,165,220,.04)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0"></div>
+            <span style="flex:1;font-size:12px;font-weight:500">Estudo livre</span>
+            <span style="font-family:'DM Mono';font-size:12px;color:var(--mod)">25m</span>
+            <span style="font-size:10px;color:var(--t3);width:40px;text-align:right">Ontem</span>
+          </div>
+          <div class="fl fl-a" style="gap:10px;padding:10px 0">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--mod);flex-shrink:0"></div>
+            <span style="flex:1;font-size:12px;font-weight:500">React Avancado</span>
+            <span style="font-family:'DM Mono';font-size:12px;color:var(--mod)">50m</span>
+            <span style="font-size:10px;color:var(--t3);width:40px;text-align:right">Ontem</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráfico semanal -->
+      <div class="card anim d4">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Horas por dia
+        </div>
+        <div class="chart-ph" style="min-height:140px">Recharts BarChart — Horas por dia da semana (Seg a Dom), barras cor --mod, eixo Y 0-4h</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 2 — TIMER POMODORO
+     ══════════════════════════════════════════════ -->
+<div id="s-timer" class="screen">
+<div class="page">
+
+  <!-- MODULE HEADER -->
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="info">
+      <h1>Timer Pomodoro</h1>
+      <p>Foco profundo · React Avancado · 2 ciclos completos</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-g btn-sm" onclick="go('dash')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Voltar</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,540px) 1fr;gap:24px">
+
+    <!-- LEFT: TIMER (centered, dominant) -->
+    <div class="fl-c" style="gap:16px">
+      <div class="card anim d1" style="padding:36px;text-align:center">
+
+        <!-- Track selector -->
+        <div style="text-align:left;margin-bottom:20px">
+          <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);display:block;margin-bottom:6px">Trilha (opcional)</label>
+          <select style="width:100%;padding:10px 14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-size:13px;font-family:'DM Sans';outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237b9fc6' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
+            <option>Estudo livre (sem trilha)</option>
+            <option selected>React Avancado</option>
+            <option>Ingles C1 — IELTS</option>
+            <option>MBA Gestao de Projetos</option>
+            <option>UI/UX Design System</option>
+          </select>
+        </div>
+
+        <!-- Phase pill -->
+        <div style="margin-bottom:24px">
+          <span class="phase" style="background:rgba(var(--mod-rgb),.12);color:var(--mod)">
+            <span class="dot" style="background:var(--mod)"></span>
+            FOCO
+          </span>
+          <span style="margin-left:8px;font-size:11px;color:var(--t3)">Ciclo 3 de 4</span>
+        </div>
+
+        <!-- GRADIENT RING -->
+        <div class="ring-wrap" style="margin:0 auto 28px">
+          <svg width="260" height="260" viewBox="0 0 260 260" style="transform:rotate(-90deg);filter:drop-shadow(0 0 24px rgba(234,179,8,.15))">
+            <defs>
+              <linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#eab308"/>
+                <stop offset="100%" stop-color="#f97316"/>
+              </linearGradient>
+            </defs>
+            <circle cx="130" cy="130" r="110" fill="none" stroke="var(--s3)" stroke-width="10"/>
+            <circle cx="130" cy="130" r="110" fill="none" stroke="url(#tg)" stroke-width="10"
+              stroke-linecap="round"
+              style="stroke-dasharray:691.2;stroke-dashoffset:207.3"/>
+          </svg>
+          <div class="ring-center">
+            <span style="font-family:'DM Mono';font-size:58px;font-weight:700;letter-spacing:2px">18:42</span>
+            <div style="display:flex;gap:5px;margin-top:10px">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--mod)"></div>
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--mod)"></div>
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--s3)"></div>
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--s3)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Circular controls -->
+        <div class="fl fl-a fl-j" style="gap:18px;margin-bottom:28px">
+          <button style="width:50px;height:50px;border-radius:50%;background:var(--s2);border:1px solid var(--border);color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s" title="Resetar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          </button>
+          <button style="width:64px;height:64px;border-radius:50%;background:var(--mod);border:none;color:#000;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(var(--mod-rgb),.3);transition:all .2s" title="Pausar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+          </button>
+          <button style="width:50px;height:50px;border-radius:50%;background:var(--s2);border:1px solid var(--border);color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s" title="Pular">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+          </button>
+        </div>
+
+        <!-- Session stats strip -->
+        <div class="mk-row" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="mk" style="text-align:center">
+            <div class="vl" style="color:var(--blue)">52m</div>
+            <div class="lb" style="margin-top:4px;margin-bottom:0">Foco total</div>
+          </div>
+          <div class="mk" style="text-align:center">
+            <div class="vl" style="color:var(--green)">2</div>
+            <div class="lb" style="margin-top:4px;margin-bottom:0">Ciclos</div>
+          </div>
+          <div class="mk" style="text-align:center">
+            <div class="vl" style="color:var(--purple)">10m</div>
+            <div class="lb" style="margin-top:4px;margin-bottom:0">Pausa</div>
+          </div>
+        </div>
+
+        <!-- Ambient sounds -->
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:10px">Sons Ambiente</div>
+          <div class="fl fl-a fl-j" style="gap:8px">
+            <button class="chip" style="padding:6px 12px">Off</button>
+            <button class="chip on" style="padding:6px 12px">
+              <div class="wave"><b></b><b></b><b></b><b></b><b></b></div>
+              Chuva
+            </button>
+            <button class="chip" style="padding:6px 12px">
+              <div class="wave"><b class="off"></b><b class="off"></b><b class="off"></b><b class="off"></b><b class="off"></b></div>
+              Lo-fi
+            </button>
+          </div>
+        </div>
+
+        <!-- Agenda sync -->
+        <label class="fl fl-a fl-j" style="gap:8px;margin-top:14px;cursor:pointer">
+          <input type="checkbox" checked style="accent-color:var(--mod);width:14px;height:14px">
+          <span style="font-size:11px;color:var(--t3)">Registrar sessao na Agenda ao finalizar</span>
+        </label>
+      </div>
+
+      <!-- Collapsible settings -->
+      <div class="card anim d2" style="padding:18px 22px">
+        <div class="fl fl-a fl-b" style="cursor:pointer" onclick="this.parentElement.querySelector('.cfg-body').classList.toggle('open');this.querySelector('.chv').classList.toggle('rot')">
+          <div class="fl fl-a" style="gap:8px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span style="font-size:12px;font-weight:600;color:var(--t2)">Configurar timer</span>
+          </div>
+          <svg class="chv" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" style="transition:transform .3s"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="cfg-body" style="max-height:0;overflow:hidden;transition:max-height .4s ease">
+          <div style="padding-top:14px;display:flex;flex-direction:column;gap:10px">
+            <div class="fl fl-a fl-b"><span style="font-size:12px;color:var(--t2)">Foco (min)</span><span style="font-family:'DM Mono';font-size:13px;color:var(--t1)">25</span></div>
+            <div class="fl fl-a fl-b"><span style="font-size:12px;color:var(--t2)">Pausa curta (min)</span><span style="font-family:'DM Mono';font-size:13px;color:var(--t1)">5</span></div>
+            <div class="fl fl-a fl-b"><span style="font-size:12px;color:var(--t2)">Pausa longa (min)</span><span style="font-family:'DM Mono';font-size:13px;color:var(--t1)">15</span></div>
+            <div class="fl fl-a fl-b"><span style="font-size:12px;color:var(--t2)">Ciclos por pausa longa</span><span style="font-family:'DM Mono';font-size:13px;color:var(--t1)">4</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Stats panel -->
+    <div class="fl-c anim d2" style="gap:14px">
+
+      <!-- Today stats -->
+      <div class="mk-row" style="grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div class="kpi" style="padding:16px">
+          <div class="bar" style="background:var(--orange)"></div>
+          <div class="lbl" style="font-size:9px">Streak</div>
+          <div class="fl fl-a" style="gap:5px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round"><path d="M12 2c.5 2.5 2 4.5 2 6.5A4.5 4.5 0 0 1 9.5 13 4 4 0 0 1 8 9c-1.5 1-3 3.5-3 6.5a7 7 0 0 0 14 0c0-4-3-7.5-7-13.5z"/></svg>
+            <span style="font-family:'DM Mono';font-size:18px;font-weight:700">14d</span>
+          </div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px">Recorde: 21d</div>
+        </div>
+        <div class="kpi" style="padding:16px">
+          <div class="bar" style="background:var(--mod)"></div>
+          <div class="lbl" style="font-size:9px">Semana</div>
+          <div style="font-family:'DM Mono';font-size:18px;font-weight:700">12.5h</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px">~1.8h/dia</div>
+        </div>
+        <div class="kpi" style="padding:16px">
+          <div class="bar" style="background:var(--blue)"></div>
+          <div class="lbl" style="font-size:9px">Top trilha</div>
+          <div style="font-family:'DM Mono';font-size:18px;font-weight:700">32h</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Ingles IELTS</div>
+        </div>
+      </div>
+
+      <!-- Session history scroll -->
+      <div class="card" style="padding:18px">
+        <div class="card-t" style="margin-bottom:14px">
+          <svg viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+          Historico de Sessoes
+        </div>
+        <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:6px">
+          <div style="min-width:170px;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:14px;flex-shrink:0">
+            <div style="font-size:12px;font-weight:500;margin-bottom:4px">React Avancado</div>
+            <div style="font-family:'DM Mono';font-size:18px;font-weight:700;color:var(--mod)">1h 15m</div>
+            <div style="font-size:10px;color:var(--t3);margin-top:4px">3 ciclos · Hoje 14:30</div>
+          </div>
+          <div style="min-width:170px;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:14px;flex-shrink:0">
+            <div style="font-size:12px;font-weight:500;margin-bottom:4px">Ingles IELTS</div>
+            <div style="font-family:'DM Mono';font-size:18px;font-weight:700;color:var(--mod)">0h 50m</div>
+            <div style="font-size:10px;color:var(--t3);margin-top:4px">2 ciclos · Hoje 10:00</div>
+          </div>
+          <div style="min-width:170px;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:14px;flex-shrink:0">
+            <div style="font-size:12px;font-weight:500;margin-bottom:4px">MBA Gestao</div>
+            <div style="font-family:'DM Mono';font-size:18px;font-weight:700;color:var(--mod)">1h 40m</div>
+            <div style="font-size:10px;color:var(--t3);margin-top:4px">4 ciclos · Hoje 08:00</div>
+          </div>
+          <div style="min-width:170px;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:14px;flex-shrink:0">
+            <div style="font-size:12px;font-weight:500;margin-bottom:4px">Estudo livre</div>
+            <div style="font-family:'DM Mono';font-size:18px;font-weight:700;color:var(--mod)">0h 25m</div>
+            <div style="font-size:10px;color:var(--t3);margin-top:4px">1 ciclo · Ontem 21:00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Streak motivational -->
+      <div style="background:linear-gradient(135deg,rgba(var(--mod-rgb),.08),rgba(249,115,22,.06));border:1px solid rgba(var(--mod-rgb),.15);border-radius:var(--card-r);padding:20px;text-align:center">
+        <div class="fl fl-a fl-j" style="gap:8px;margin-bottom:6px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round"><path d="M12 2c.5 2.5 2 4.5 2 6.5A4.5 4.5 0 0 1 9.5 13 4 4 0 0 1 8 9c-1.5 1-3 3.5-3 6.5a7 7 0 0 0 14 0c0-4-3-7.5-7-13.5z"/></svg>
+          <span style="font-family:'Syne';font-weight:700;font-size:15px">14 dias de foco!</span>
+        </div>
+        <p style="font-size:12px;color:var(--t2)">Voce esta construindo um habito solido. Continue!</p>
+      </div>
+
+      <!-- Chart placeholder -->
+      <div class="card">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Foco Semanal
+        </div>
+        <div class="chart-ph">Recharts AreaChart — Horas de foco por dia (ultimos 7 dias), gradient fill --mod, eixo Y 0-4h</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 3 — SESSOES
+     ══════════════════════════════════════════════ -->
+<div id="s-sess" class="screen">
+<div class="page">
+
+  <!-- MODULE HEADER -->
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div class="info">
+      <h1>Historico de Sessoes</h1>
+      <p>87 sessoes registradas · 64.2h de estudo acumulado</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-g btn-sm" onclick="openModal('m-sessao')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Manual</button>
+      <button class="btn btn-p" onclick="go('timer')"><svg viewBox="0 0 24 24" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>Timer</button>
+    </div>
+  </div>
+
+  <!-- STATS STRIP (inline, NOT KPI cards) -->
+  <div class="m-strip anim d1">
+    <div class="ms">
+      <div class="lb">Total sessoes</div>
+      <div class="vl">87</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Horas totais</div>
+      <div class="vl" style="color:var(--mod)">64.2h</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Esta semana</div>
+      <div class="vl">12.5h</div>
+      <div class="nt">18 sessoes</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Ciclos totais</div>
+      <div class="vl">214</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Media/dia</div>
+      <div class="vl">1.8h</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="fl fl-a" style="gap:8px;margin-bottom:18px;flex-wrap:wrap" >
+    <button class="chip on">Todas <span class="ct">87</span></button>
+    <button class="chip">Estudo livre <span class="ct">12</span></button>
+    <button class="chip">React Avancado <span class="ct">24</span></button>
+    <button class="chip">Ingles IELTS <span class="ct">18</span></button>
+    <button class="chip">MBA Gestao <span class="ct">15</span></button>
+    <button class="chip">UI/UX Design <span class="ct">10</span></button>
+    <button class="chip">Python ML <span class="ct">8</span></button>
+    <div style="margin-left:auto">
+      <div class="search" style="width:200px">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Buscar sessao...">
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE (unique layout — not cards) -->
+  <div class="card anim d2" style="padding:0;overflow:hidden">
+    <table class="tbl" style="border-collapse:collapse">
+      <thead>
+        <tr>
+          <th style="padding-left:22px;width:36px"></th>
+          <th>Assunto / Trilha</th>
+          <th>Data</th>
+          <th>Horario</th>
+          <th>Ciclos</th>
+          <th style="text-align:right;padding-right:22px">Duracao</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(var(--mod-rgb),.10)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div></td>
+          <td><div style="font-weight:500">React Avancado</div><div class="dim">Pomodoro</div></td>
+          <td class="dim">13 mar 2026</td>
+          <td class="dim">14:30</td>
+          <td class="mono" style="color:var(--t2)">3</td>
+          <td class="mono txt-r" style="padding-right:22px;color:var(--mod);font-weight:600">1h 15min</td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(59,130,246,.10)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div></td>
+          <td><div style="font-weight:500">Ingles IELTS</div><div class="dim">Pomodoro</div></td>
+          <td class="dim">13 mar 2026</td>
+          <td class="dim">10:00</td>
+          <td class="mono" style="color:var(--t2)">2</td>
+          <td class="mono txt-r" style="padding-right:22px;color:var(--mod);font-weight:600">0h 50min</td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(168,85,247,.10)"><svg viewBox="0 0 24 24" stroke="var(--purple)"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 2 6 2s6-.9 6-2v-5"/></svg></div></td>
+          <td><div style="font-weight:500">MBA Gestao de Projetos</div><div class="dim">Pomodoro</div></td>
+          <td class="dim">13 mar 2026</td>
+          <td class="dim">08:00</td>
+          <td class="mono" style="color:var(--t2)">4</td>
+          <td class="mono txt-r" style="padding-right:22px;color:var(--mod);font-weight:600">1h 40min</td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(16,185,129,.10)"><svg viewBox="0 0 24 24" stroke="var(--green)"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div></td>
+          <td><div style="font-weight:500">Estudo livre</div><div class="dim">Livre</div></td>
+          <td class="dim">12 mar 2026</td>
+          <td class="dim">21:00</td>
+          <td class="mono" style="color:var(--t2)">1</td>
+          <td class="mono txt-r" style="padding-right:22px;color:var(--mod);font-weight:600">0h 25min</td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(var(--mod-rgb),.10)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div></td>
+          <td><div style="font-weight:500">React Avancado</div><div class="dim">Pomodoro</div></td>
+          <td class="dim">12 mar 2026</td>
+          <td class="dim">15:00</td>
+          <td class="mono" style="color:var(--t2)">2</td>
+          <td class="mono txt-r" style="padding-right:22px;color:var(--mod);font-weight:600">0h 50min</td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(236,72,153,.10)"><svg viewBox="0 0 24 24" stroke="#ec4899"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div></td>
+          <td><div style="font-weight:500">UI/UX Design System</div><div class="dim">Pomodoro</div></td>
+          <td class="dim">11 mar 2026</td>
+          <td class="dim">09:30</td>
+          <td class="mono" style="color:var(--t2)">3</td>
+          <td class="mono txt-r" style="padding-right:22px;color:var(--mod);font-weight:600">1h 15min</td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- Summary footer -->
+    <div style="padding:14px 22px;border-top:1px solid var(--border);background:var(--s2);display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--t3)">Exibindo 6 de 87 sessoes</span>
+      <div class="fl fl-a" style="gap:16px">
+        <span style="font-size:11px;color:var(--t3)">Total exibido:</span>
+        <span style="font-family:'DM Mono';font-size:14px;font-weight:600;color:var(--mod)">6h 15min</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="sec">
+    <div class="card anim d3">
+      <div class="card-t">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Distribuicao por Trilha
+      </div>
+      <div class="chart-ph" style="min-height:180px">Recharts PieChart — Distribuicao de horas por trilha (React 28%, IELTS 22%, MBA 18%, Design 14%, Python 10%, Livre 8%)</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 4 — BIBLIOTECA
+     ══════════════════════════════════════════════ -->
+<div id="s-bib" class="screen">
+<div class="page">
+
+  <!-- MODULE HEADER -->
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </div>
+    <div class="info">
+      <h1>Biblioteca de Recursos</h1>
+      <p>8 recursos vinculados · React Avancado selecionada</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adicionar Recurso</button>
+    </div>
+  </div>
+
+  <!-- Search + Track selector + Filters (unique toolbar layout) -->
+  <div class="fl fl-a anim d1" style="gap:14px;margin-bottom:20px;flex-wrap:wrap">
+    <div class="search" style="flex:1;min-width:200px;max-width:320px">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input placeholder="Buscar recurso...">
+    </div>
+    <select style="padding:8px 32px 8px 14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-size:13px;font-family:'DM Sans';outline:none;cursor:pointer;appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237b9fc6' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
+      <option>Todas as trilhas</option>
+      <option selected>React Avancado</option>
+      <option>Ingles C1 — IELTS</option>
+      <option>MBA Gestao de Projetos</option>
+      <option>UI/UX Design System</option>
+    </select>
+    <div class="fl fl-a" style="gap:6px;margin-left:auto">
+      <button class="chip on">Todos</button>
+      <button class="chip">Para estudar</button>
+      <button class="chip">Estudando</button>
+      <button class="chip">Concluido</button>
+    </div>
+    <span style="font-size:11px;color:var(--t3);font-weight:500">8 recursos</span>
+  </div>
+
+  <!-- RESOURCE TABLE (unique to this screen — not card grid) -->
+  <div class="card anim d2" style="padding:0;overflow:hidden">
+    <table class="tbl" style="border-collapse:collapse">
+      <thead>
+        <tr>
+          <th style="padding-left:22px;width:42px">Tipo</th>
+          <th>Recurso</th>
+          <th>Fonte / Detalhes</th>
+          <th style="text-align:center;width:100px">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(59,130,246,.10)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div></td>
+          <td style="font-weight:500">React Server Components Deep Dive</td>
+          <td class="dim">react.dev/blog/server-components</td>
+          <td style="text-align:center"><span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod)">Estudando</span></td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(244,63,94,.10)"><svg viewBox="0 0 24 24" stroke="var(--red)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div></td>
+          <td style="font-weight:500">Next.js 16 Full Course — Fireship</td>
+          <td class="dim">youtube.com/watch?v=abc123</td>
+          <td style="text-align:center"><span class="pill" style="background:rgba(16,185,129,.12);color:var(--green)">Concluido</span></td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(168,85,247,.10)"><svg viewBox="0 0 24 24" stroke="var(--purple)"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div></td>
+          <td style="font-weight:500">Patterns of Enterprise Application Architecture</td>
+          <td class="dim">Martin Fowler · 533 paginas</td>
+          <td style="text-align:center"><span class="pill" style="background:rgba(120,165,220,.10);color:var(--t2)">Para estudar</span></td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(249,115,22,.10)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></td>
+          <td style="font-weight:500">React Performance Cheatsheet.pdf</td>
+          <td class="dim">Atualizado em 10 mar 2026</td>
+          <td style="text-align:center"><span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod)">Estudando</span></td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(var(--mod-rgb),.10)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div></td>
+          <td style="font-weight:500">Anotacoes — Hooks avancados</td>
+          <td class="dim">useReducer, useImperativeHandle, useSyncExternalStore</td>
+          <td style="text-align:center"><span class="pill" style="background:rgba(16,185,129,.12);color:var(--green)">Concluido</span></td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(59,130,246,.10)"><svg viewBox="0 0 24 24" stroke="var(--blue)"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div></td>
+          <td style="font-weight:500">TanStack Query Documentation</td>
+          <td class="dim">tanstack.com/query/latest</td>
+          <td style="text-align:center"><span class="pill" style="background:rgba(120,165,220,.10);color:var(--t2)">Para estudar</span></td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(244,63,94,.10)"><svg viewBox="0 0 24 24" stroke="var(--red)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div></td>
+          <td style="font-weight:500">Zustand vs Redux — Theo</td>
+          <td class="dim">youtube.com/watch?v=xyz789</td>
+          <td style="text-align:center"><span class="pill" style="background:rgba(120,165,220,.10);color:var(--t2)">Para estudar</span></td>
+        </tr>
+        <tr>
+          <td style="padding-left:22px"><div class="ic-sm" style="background:rgba(100,116,139,.10)"><svg viewBox="0 0 24 24" stroke="var(--t3)"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></div></td>
+          <td style="font-weight:500">Repositorio de exemplos — GitHub</td>
+          <td class="dim">github.com/vercel/next.js/examples</td>
+          <td style="text-align:center"><span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod)">Estudando</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 5 — TRILHAS
+     ══════════════════════════════════════════════ -->
+<div id="s-trilhas" class="screen">
+<div class="page">
+
+  <!-- MODULE HEADER -->
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    </div>
+    <div class="info">
+      <h1>Trilhas de Aprendizado</h1>
+      <p>6 trilhas criadas · 1 concluida · 1 pausada</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova Trilha</button>
+    </div>
+  </div>
+
+  <!-- Filters + search -->
+  <div class="fl fl-a anim d1" style="gap:8px;margin-bottom:20px;flex-wrap:wrap">
+    <button class="chip on">Todas</button>
+    <button class="chip">Em andamento</button>
+    <button class="chip">Concluidas</button>
+    <button class="chip">Pausadas</button>
+    <div style="margin-left:auto">
+      <div class="search" style="width:200px">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Buscar trilha...">
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL-WIDTH HORIZONTAL TRACK CARDS (unique layout) -->
+  <div class="fl-c anim d2" style="gap:14px">
+
+    <!-- Track 1: React Avancado -->
+    <div class="card" style="display:grid;grid-template-columns:1fr 200px;gap:20px;cursor:pointer;border-color:rgba(var(--mod-rgb),.2)" onclick="go('trilha-det')">
+      <div>
+        <div class="fl fl-a" style="gap:12px;margin-bottom:12px">
+          <div style="width:42px;height:42px;border-radius:12px;background:rgba(var(--mod-rgb),.10);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+          <div>
+            <div style="font-family:'Syne';font-weight:700;font-size:16px">React Avancado</div>
+            <div class="fl fl-a" style="gap:6px;margin-top:3px">
+              <span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod)">Em andamento</span>
+              <span class="pill" style="background:var(--s2);color:var(--t3)">Tecnologia</span>
+            </div>
+          </div>
+        </div>
+        <div class="fl fl-a fl-b" style="margin-bottom:6px">
+          <span style="font-size:11px;color:var(--t3)">6 de 8 etapas · 18.5h · R$ 299</span>
+          <span style="font-family:'DM Mono';font-size:14px;font-weight:600;color:var(--mod)">75%</span>
+        </div>
+        <div class="prog"><i style="width:75%;background:var(--mod)"></i></div>
+      </div>
+      <div class="fl-c fl-j" style="border-left:1px solid var(--border);padding-left:20px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:4px">Proxima etapa</div>
+        <div style="font-size:13px;font-weight:500">Testes com Vitest + RTL</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px">12d restantes</div>
+      </div>
+    </div>
+
+    <!-- Track 2: Ingles IELTS -->
+    <div class="card" style="display:grid;grid-template-columns:1fr 200px;gap:20px">
+      <div>
+        <div class="fl fl-a" style="gap:12px;margin-bottom:12px">
+          <div style="width:42px;height:42px;border-radius:12px;background:rgba(59,130,246,.10);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <div>
+            <div style="font-family:'Syne';font-weight:700;font-size:16px">Ingles C1 — IELTS</div>
+            <div class="fl fl-a" style="gap:6px;margin-top:3px">
+              <span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod)">Em andamento</span>
+              <span class="pill" style="background:var(--s2);color:var(--t3)">Idiomas</span>
+            </div>
+          </div>
+        </div>
+        <div class="fl fl-a fl-b" style="margin-bottom:6px">
+          <span style="font-size:11px;color:var(--t3)">4 de 10 etapas · 32.0h</span>
+          <span style="font-family:'DM Mono';font-size:14px;font-weight:600;color:var(--mod)">40%</span>
+        </div>
+        <div class="prog"><i style="width:40%;background:var(--mod)"></i></div>
+      </div>
+      <div class="fl-c fl-j" style="border-left:1px solid var(--border);padding-left:20px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:4px">Proxima etapa</div>
+        <div style="font-size:13px;font-weight:500">Writing Task 2</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px">45d restantes</div>
+      </div>
+    </div>
+
+    <!-- Track 3: MBA -->
+    <div class="card" style="display:grid;grid-template-columns:1fr 200px;gap:20px">
+      <div>
+        <div class="fl fl-a" style="gap:12px;margin-bottom:12px">
+          <div style="width:42px;height:42px;border-radius:12px;background:rgba(168,85,247,.10);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 2 6 2s6-.9 6-2v-5"/></svg></div>
+          <div>
+            <div style="font-family:'Syne';font-weight:700;font-size:16px">MBA Gestao de Projetos</div>
+            <div class="fl fl-a" style="gap:6px;margin-top:3px">
+              <span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod)">Em andamento</span>
+              <span class="pill" style="background:var(--s2);color:var(--t3)">Gestao</span>
+            </div>
+          </div>
+        </div>
+        <div class="fl fl-a fl-b" style="margin-bottom:6px">
+          <span style="font-size:11px;color:var(--t3)">3 de 12 etapas · 14.0h · R$ 1.200</span>
+          <span style="font-family:'DM Mono';font-size:14px;font-weight:600;color:var(--mod)">25%</span>
+        </div>
+        <div class="prog"><i style="width:25%;background:var(--mod)"></i></div>
+      </div>
+      <div class="fl-c fl-j" style="border-left:1px solid var(--border);padding-left:20px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:4px">Proxima etapa</div>
+        <div style="font-size:13px;font-weight:500">Gestao de Riscos</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px">90d restantes</div>
+      </div>
+    </div>
+
+    <!-- Track 4: UI/UX -->
+    <div class="card" style="display:grid;grid-template-columns:1fr 200px;gap:20px">
+      <div>
+        <div class="fl fl-a" style="gap:12px;margin-bottom:12px">
+          <div style="width:42px;height:42px;border-radius:12px;background:rgba(236,72,153,.10);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+          <div>
+            <div style="font-family:'Syne';font-weight:700;font-size:16px">UI/UX Design System</div>
+            <div class="fl fl-a" style="gap:6px;margin-top:3px">
+              <span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod)">Em andamento</span>
+              <span class="pill" style="background:var(--s2);color:var(--t3)">Design</span>
+            </div>
+          </div>
+        </div>
+        <div class="fl fl-a fl-b" style="margin-bottom:6px">
+          <span style="font-size:11px;color:var(--t3)">2 de 5 etapas · 8.0h</span>
+          <span style="font-family:'DM Mono';font-size:14px;font-weight:600;color:var(--mod)">40%</span>
+        </div>
+        <div class="prog"><i style="width:40%;background:var(--mod)"></i></div>
+      </div>
+      <div class="fl-c fl-j" style="border-left:1px solid var(--border);padding-left:20px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:4px">Proxima etapa</div>
+        <div style="font-size:13px;font-weight:500">Atomic Design</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px">20d restantes</div>
+      </div>
+    </div>
+
+    <!-- Track 5: Concluida -->
+    <div class="card" style="opacity:.7;display:grid;grid-template-columns:1fr 200px;gap:20px">
+      <div>
+        <div class="fl fl-a" style="gap:12px;margin-bottom:12px">
+          <div style="width:42px;height:42px;border-radius:12px;background:rgba(16,185,129,.10);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div>
+            <div style="font-family:'Syne';font-weight:700;font-size:16px">Financas Pessoais</div>
+            <div class="fl fl-a" style="gap:6px;margin-top:3px">
+              <span class="pill" style="background:rgba(16,185,129,.12);color:var(--green)">Concluida</span>
+              <span class="pill" style="background:var(--s2);color:var(--t3)">Financas</span>
+            </div>
+          </div>
+        </div>
+        <div class="fl fl-a fl-b" style="margin-bottom:6px">
+          <span style="font-size:11px;color:var(--t3)">6 de 6 etapas</span>
+          <span style="font-family:'DM Mono';font-size:14px;font-weight:600;color:var(--green)">100%</span>
+        </div>
+        <div class="prog"><i style="width:100%;background:var(--green)"></i></div>
+      </div>
+      <div class="fl-c fl-j fl-a" style="border-left:1px solid var(--border);padding-left:20px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <div style="font-size:12px;color:var(--green);margin-top:6px;font-weight:600">Concluida!</div>
+      </div>
+    </div>
+
+    <!-- Track 6: Pausada -->
+    <div class="card" style="display:grid;grid-template-columns:1fr 200px;gap:20px">
+      <div>
+        <div class="fl fl-a" style="gap:12px;margin-bottom:12px">
+          <div style="width:42px;height:42px;border-radius:12px;background:rgba(6,182,212,.10);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round"><path d="M12 2v4"/><path d="m6.8 15-3.5 2"/><path d="m20.7 7-3.5 2"/><path d="M6.8 9 3.3 7"/><path d="m20.7 17-3.5-2"/><path d="m9 22 3-8 3 8"/><path d="M8 22h8"/></svg></div>
+          <div>
+            <div style="font-family:'Syne';font-weight:700;font-size:16px">Python Machine Learning</div>
+            <div class="fl fl-a" style="gap:6px;margin-top:3px">
+              <span class="pill" style="background:rgba(100,116,139,.12);color:var(--t2)">Pausada</span>
+              <span class="pill" style="background:var(--s2);color:var(--t3)">Tecnologia</span>
+            </div>
+          </div>
+        </div>
+        <div class="fl fl-a fl-b" style="margin-bottom:6px">
+          <span style="font-size:11px;color:var(--t3)">1 de 8 etapas</span>
+          <span style="font-family:'DM Mono';font-size:14px;font-weight:600;color:var(--t3)">12%</span>
+        </div>
+        <div class="prog"><i style="width:12%;background:var(--t3)"></i></div>
+      </div>
+      <div class="fl-c fl-j fl-a" style="border-left:1px solid var(--border);padding-left:20px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+        <div style="font-size:12px;color:var(--t3);margin-top:6px;font-weight:500">Pausada</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 6 — TRILHA DETALHE
+     ══════════════════════════════════════════════ -->
+<div id="s-trilha-det" class="screen">
+<div class="page">
+
+  <!-- MODULE HEADER (back nav variant) -->
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:rgba(var(--mod-rgb),.10)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+    </div>
+    <div class="info">
+      <h1>React Avancado</h1>
+      <p>Trilha de aprendizado · Tecnologia · Criada em 01 fev 2026</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-g btn-sm" onclick="go('trilhas')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Trilhas</button>
+      <button class="btn btn-g btn-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+    </div>
+  </div>
+
+  <!-- HERO: Large DM Mono value + metrics strip (unique to detail) -->
+  <div class="card anim d1" style="padding:32px;margin-bottom:14px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--mod),var(--orange))"></div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center">
+      <div>
+        <div class="fl fl-a" style="gap:8px;margin-bottom:14px">
+          <span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod)">Em andamento</span>
+          <span class="pill" style="background:rgba(6,182,212,.12);color:var(--cyan)">Tecnologia</span>
+          <span class="pill" style="background:var(--s2);color:var(--t3)">Meta: 25 mar 2026</span>
+        </div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:8px">6 de 8 etapas concluidas · 12 dias restantes</div>
+        <div class="prog prog-lg" style="max-width:400px"><i style="width:75%;background:linear-gradient(90deg,var(--mod),var(--orange))"></i></div>
+      </div>
+      <div style="display:flex;gap:28px;text-align:center">
+        <div>
+          <div style="font-family:'DM Mono';font-size:36px;font-weight:700;color:var(--mod);line-height:1">75%</div>
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-top:4px">Progresso</div>
+        </div>
+        <div style="width:1px;background:var(--border)"></div>
+        <div>
+          <div style="font-family:'DM Mono';font-size:36px;font-weight:700;line-height:1">18.5h</div>
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-top:4px">Estudadas</div>
+        </div>
+        <div style="width:1px;background:var(--border)"></div>
+        <div>
+          <div style="font-family:'DM Mono';font-size:36px;font-weight:700;line-height:1">R$ 299</div>
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-top:4px">Investido</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE + CHART SPLIT -->
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:14px">
+
+    <!-- LEFT: Timeline steps -->
+    <div class="card anim d2">
+      <div class="card-t">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Etapas da Trilha
+      </div>
+      <div style="position:relative">
+        <!-- Step 1 -->
+        <div class="tl-node">
+          <div class="tl-line" style="background:var(--green)"></div>
+          <div class="tl-dot ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style="padding:10px 14px;background:var(--s2);border-radius:12px">
+            <div class="fl fl-a fl-b">
+              <span style="font-size:13px;color:var(--t3);text-decoration:line-through">Fundamentos React 18+</span>
+              <span style="font-size:10px;color:var(--t3)">01/02</span>
+            </div>
+          </div>
+        </div>
+        <!-- Step 2 -->
+        <div class="tl-node">
+          <div class="tl-line" style="background:var(--green)"></div>
+          <div class="tl-dot ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style="padding:10px 14px;background:var(--s2);border-radius:12px">
+            <div class="fl fl-a fl-b">
+              <span style="font-size:13px;color:var(--t3);text-decoration:line-through">Server Components</span>
+              <span style="font-size:10px;color:var(--t3)">08/02</span>
+            </div>
+          </div>
+        </div>
+        <!-- Step 3 -->
+        <div class="tl-node">
+          <div class="tl-line" style="background:var(--green)"></div>
+          <div class="tl-dot ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style="padding:10px 14px;background:var(--s2);border-radius:12px">
+            <div class="fl fl-a fl-b">
+              <span style="font-size:13px;color:var(--t3);text-decoration:line-through">Suspense &amp; Streaming SSR</span>
+              <span style="font-size:10px;color:var(--t3)">15/02</span>
+            </div>
+          </div>
+        </div>
+        <!-- Step 4 -->
+        <div class="tl-node">
+          <div class="tl-line" style="background:var(--green)"></div>
+          <div class="tl-dot ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style="padding:10px 14px;background:var(--s2);border-radius:12px">
+            <div class="fl fl-a fl-b">
+              <span style="font-size:13px;color:var(--t3);text-decoration:line-through">React Compiler</span>
+              <span style="font-size:10px;color:var(--t3)">22/02</span>
+            </div>
+          </div>
+        </div>
+        <!-- Step 5 -->
+        <div class="tl-node">
+          <div class="tl-line" style="background:var(--green)"></div>
+          <div class="tl-dot ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style="padding:10px 14px;background:var(--s2);border-radius:12px">
+            <div class="fl fl-a fl-b">
+              <span style="font-size:13px;color:var(--t3);text-decoration:line-through">Form Actions &amp; useActionState</span>
+              <span style="font-size:10px;color:var(--t3)">01/03</span>
+            </div>
+          </div>
+        </div>
+        <!-- Step 6 -->
+        <div class="tl-node">
+          <div class="tl-line" style="background:var(--green)"></div>
+          <div class="tl-dot ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style="padding:10px 14px;background:var(--s2);border-radius:12px">
+            <div class="fl fl-a fl-b">
+              <span style="font-size:13px;color:var(--t3);text-decoration:line-through">use() hook &amp; Async Resources</span>
+              <span style="font-size:10px;color:var(--t3)">08/03</span>
+            </div>
+          </div>
+        </div>
+        <!-- Step 7: NEXT -->
+        <div class="tl-node">
+          <div class="tl-line" style="background:var(--s3)"></div>
+          <div class="tl-dot nxt"><svg width="9" height="9" viewBox="0 0 24 24" fill="#000" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+          <div style="padding:12px 16px;background:rgba(var(--mod-rgb),.06);border:2px solid var(--mod);border-radius:12px;animation:puls 2s infinite">
+            <div class="fl fl-a fl-b">
+              <div>
+                <span style="font-size:13px;font-weight:600">Testes com Vitest + RTL</span>
+                <span style="font-size:10px;color:var(--mod);font-weight:500;margin-left:6px">proximo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Step 8: Pending -->
+        <div class="tl-node">
+          <div class="tl-dot pen">8</div>
+          <div style="padding:10px 14px;background:var(--s2);border-radius:12px">
+            <span style="font-size:13px;color:var(--t3)">Projeto final: Dashboard completo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="fl" style="gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+        <button class="btn btn-g btn-sm" style="flex:1"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>Pausar</button>
+        <button class="btn btn-g btn-sm" style="flex:1"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar</button>
+        <button class="btn btn-sm" style="background:transparent;color:var(--red);border:1px solid transparent"><svg viewBox="0 0 24 24" stroke="var(--red)"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14H7L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>Excluir</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Chart + Stats -->
+    <div class="fl-c" style="gap:14px">
+      <div class="card anim d3">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Horas de Estudo
+        </div>
+        <div class="chart-ph" style="min-height:200px">Recharts AreaChart — Horas de estudo nesta trilha por semana (8 semanas), gradient --mod, eixo Y 0-6h</div>
+      </div>
+
+      <div class="card anim d4">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Recursos Vinculados
+          <span class="rt" onclick="go('bib')">Ver biblioteca</span>
+        </div>
+        <div class="fl-c" style="gap:8px">
+          <div class="fl fl-a" style="gap:10px;padding:8px 0;border-bottom:1px solid rgba(120,165,220,.04)">
+            <div class="ic-sm" style="background:rgba(59,130,246,.10)"><svg viewBox="0 0 24 24" stroke="var(--blue)" fill="none" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">RSC Deep Dive</div>
+              <div style="font-size:10px;color:var(--t3)">Link</div>
+            </div>
+            <span class="pill" style="background:rgba(var(--mod-rgb),.12);color:var(--mod);font-size:10px">Estudando</span>
+          </div>
+          <div class="fl fl-a" style="gap:10px;padding:8px 0;border-bottom:1px solid rgba(120,165,220,.04)">
+            <div class="ic-sm" style="background:rgba(244,63,94,.10)"><svg viewBox="0 0 24 24" stroke="var(--red)" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Next.js 16 Full Course</div>
+              <div style="font-size:10px;color:var(--t3)">Video</div>
+            </div>
+            <span class="pill" style="background:rgba(16,185,129,.12);color:var(--green);font-size:10px">Concluido</span>
+          </div>
+          <div class="fl fl-a" style="gap:10px;padding:8px 0">
+            <div class="ic-sm" style="background:rgba(168,85,247,.10)"><svg viewBox="0 0 24 24" stroke="var(--purple)" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Patterns of Enterprise Architecture</div>
+              <div style="font-size:10px;color:var(--t3)">Livro</div>
+            </div>
+            <span class="pill" style="background:rgba(120,165,220,.10);color:var(--t2);font-size:10px">Para estudar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODALS
+     ══════════════════════════════════════════════ -->
+
+<!-- Modal: Nova Sessao -->
+<div class="modal-ov" id="m-sessao">
+  <div class="modal" style="position:relative">
+    <button class="close-x" onclick="closeModal('m-sessao')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Nova Sessao</h2>
+    <div class="fg">
+      <label>Assunto / Trilha</label>
+      <select><option>JavaScript Avancado</option><option>Design Patterns</option><option>Meditacao</option><option>Leitura</option><option>Outro</option></select>
+    </div>
+    <div class="fg-row">
+      <div class="fg"><label>Duracao (min)</label><input type="number" placeholder="25" style="font-family:'DM Mono'"></div>
+      <div class="fg"><label>Data</label><input type="date" value="2026-03-14"></div>
+    </div>
+    <div class="fg">
+      <label>Tipo</label>
+      <select><option>Pomodoro</option><option>Estudo livre</option><option>Meditacao</option><option>Leitura</option></select>
+    </div>
+    <div class="fg">
+      <label>Notas</label>
+      <textarea rows="2" placeholder="O que estudou, capitulos, etc."></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-g" onclick="closeModal('m-sessao')">Cancelar</button>
+      <button class="btn btn-p" onclick="closeModal('m-sessao')">Salvar Sessao</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Registrar Humor -->
+<div class="modal-ov" id="m-humor">
+  <div class="modal" style="position:relative">
+    <button class="close-x" onclick="closeModal('m-humor')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>Registrar Humor</h2>
+    <div class="fg">
+      <label>Como voce esta se sentindo?</label>
+      <div class="mood-grid">
+        <button class="mood-btn sel"><svg viewBox="0 0 24 24" stroke="var(--green)"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></button>
+        <button class="mood-btn"><svg viewBox="0 0 24 24" stroke="var(--t2)"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></button>
+        <button class="mood-btn"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></button>
+        <button class="mood-btn"><svg viewBox="0 0 24 24" stroke="var(--red)"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></button>
+      </div>
+    </div>
+    <div class="fg">
+      <label>Energia (1-10)</label>
+      <input type="range" min="1" max="10" value="7" style="width:100%;accent-color:var(--mod)">
+    </div>
+    <div class="fg">
+      <label>O que contribuiu?</label>
+      <div class="tag-pills">
+        <button class="tag-pill sel">Sono bom</button>
+        <button class="tag-pill">Exercicio</button>
+        <button class="tag-pill">Meditacao</button>
+        <button class="tag-pill">Estresse</button>
+        <button class="tag-pill">Social</button>
+      </div>
+    </div>
+    <div class="fg">
+      <label>Diario</label>
+      <textarea rows="3" placeholder="Como foi seu dia..."></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-g" onclick="closeModal('m-humor')">Cancelar</button>
+      <button class="btn btn-p" onclick="closeModal('m-humor')">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROTO NAV -->
+<div class="pnav">
+  <span class="tag">Mente Redesign</span>
+  <button class="on" data-s="dash" onclick="go('dash')">Dashboard</button>
+  <span class="sep"></span>
+  <button data-s="timer" onclick="go('timer')">Timer</button>
+  <span class="sep"></span>
+  <button data-s="sess" onclick="go('sess')">Sessoes</button>
+  <span class="sep"></span>
+  <button data-s="bib" onclick="go('bib')">Biblioteca</button>
+  <span class="sep"></span>
+  <button data-s="trilhas" onclick="go('trilhas')">Trilhas</button>
+  <span class="sep"></span>
+  <button data-s="trilha-det" onclick="go('trilha-det')">Trilha Detalhe</button>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  var t=document.getElementById('s-'+id);
+  if(t)t.classList.add('active');
+  document.querySelectorAll('.pnav button[data-s]').forEach(function(b){b.classList.toggle('on',b.dataset.s===id)});
+  window.scrollTo(0,0);
+  if(t){t.querySelectorAll('.anim').forEach(function(e){e.style.animation='none';e.offsetHeight;e.style.animation=''})}
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+/* Chip toggle */
+document.addEventListener('click',function(e){
+  var c=e.target.closest('.chip');
+  if(!c)return;
+  var p=c.parentElement;
+  if(!p||p.classList.contains('pnav'))return;
+  p.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on')});
+  c.classList.add('on');
+});
+
+/* Config toggle */
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('.mood-btn');
+  if(!btn)return;
+  btn.parentElement.querySelectorAll('.mood-btn').forEach(function(x){x.classList.remove('sel')});
+  btn.classList.add('sel');
+});
+document.addEventListener('click',function(e){
+  var tp=e.target.closest('.tag-pill');
+  if(!tp)return;
+  tp.classList.toggle('sel');
+});
+
+/* Config body toggle */
+document.querySelectorAll('.cfg-body').forEach(function(el){el.style.maxHeight='0'});
+document.addEventListener('click',function(e){
+  var body=e.target.closest('.card')&&e.target.closest('.card').querySelector('.cfg-body');
+  if(!body)return;
+  if(body.style.maxHeight==='0px'||body.style.maxHeight==='0'){body.style.maxHeight='300px'}else{body.style.maxHeight='0'}
+});
+</script>
+</body>
+</html>

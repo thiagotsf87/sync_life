@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>SyncLife — Carreira Desktop Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03071a;--s1:#091428;--s2:#0e1c35;--s3:#152544;
+  --t1:#e4f1ff;--t2:#7b9fc6;--t3:#3c5d84;
+  --border:rgba(120,165,220,.09);--border-h:rgba(120,165,220,.18);
+  --mod:#f43f5e;--mod-rgb:244,63,94;--mod-dim:rgba(244,63,94,.08);
+  --green:#10b981;--red:#f43f5e;--yellow:#f59e0b;--orange:#f97316;
+  --cyan:#06b6d4;--purple:#a855f7;--blue:#3b82f6;--indigo:#6366f1;
+  --card-r:18px;
+}
+html{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{padding-bottom:52px}
+
+/* ─── Page ─── */
+.page{max-width:1160px;margin:0 auto;padding:36px 40px 60px}
+
+/* ═══ STANDARD MODULE HEADER ═══ */
+.mod-hdr{display:flex;align-items:center;gap:16px;margin-bottom:36px}
+.mod-hdr .ico{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mod-hdr .ico svg{width:22px;height:22px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mod-hdr .info{flex:1}
+.mod-hdr .info h1{font-family:'Syne';font-weight:800;font-size:26px;line-height:1.15}
+.mod-hdr .info p{font-size:13px;color:var(--t2);margin-top:3px}
+.mod-hdr .actions{display:flex;gap:10px;align-items:center}
+
+/* ─── Buttons ─── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:11px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.btn-primary{background:var(--mod);color:#fff}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px rgba(var(--mod-rgb),.25)}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border-h);color:var(--t1)}
+
+/* ═══ CARDS ═══ */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:24px;transition:border-color .2s}
+.card:hover{border-color:var(--border-h)}
+.card-t{font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+.card-t svg{width:16px;height:16px;stroke:var(--mod);fill:none;stroke-width:2;stroke-linecap:round}
+.card-t .rt{margin-left:auto;font-family:'DM Sans';font-size:12px;font-weight:500;color:var(--mod);cursor:pointer}
+.card-t .rt:hover{text-decoration:underline}
+
+/* ═══ KPI CARDS (Dashboard only) ═══ */
+.kpi{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:20px 22px;position:relative;overflow:hidden;transition:border-color .2s}
+.kpi:hover{border-color:var(--border-h)}
+.kpi .bar{position:absolute;top:0;left:22px;right:22px;height:2.5px;border-radius:0 0 3px 3px}
+.kpi .ki{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.kpi .ki svg{width:18px;height:18px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kpi .lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:6px}
+.kpi .val{font-family:'DM Mono';font-weight:500;font-size:26px;line-height:1}
+.kpi .sub{font-size:12px;color:var(--t3);margin-top:7px}
+.spark{display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:12px}
+.spark i{flex:1;border-radius:2px;display:block}
+
+/* ─── Pills ─── */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
+
+/* ─── Chart placeholder ─── */
+.chart-ph{border:1px dashed var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:12px;min-height:160px;background:rgba(120,165,220,.015)}
+
+/* ─── Metrics strip ─── */
+.m-strip{display:flex;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden}
+.m-strip .ms{flex:1;padding:18px 22px;border-right:1px solid var(--border)}
+.m-strip .ms:last-child{border-right:none}
+.m-strip .ms .lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:5px}
+.m-strip .ms .vl{font-family:'DM Mono';font-size:20px;font-weight:500;line-height:1}
+.m-strip .ms .nt{font-size:11px;color:var(--t3);margin-top:4px}
+
+/* ─── Hero card ─── */
+.hero-c{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:28px 32px;position:relative;overflow:hidden;margin-bottom:28px}
+.hero-c::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--mod),var(--purple),var(--cyan));border-radius:3px 3px 0 0}
+
+/* ─── Progress bar ─── */
+.pb-wrap{height:5px;background:var(--s3);border-radius:9px;overflow:hidden}
+.pb-fill{height:100%;border-radius:9px;transition:width .8s ease}
+
+/* ─── Horizontal timeline ─── */
+.h-tl{display:flex;align-items:flex-start;position:relative;padding:20px 0 0}
+.h-tl .track{position:absolute;top:34px;left:24px;right:24px;height:3px;background:var(--s3);border-radius:2px}
+.h-tl .track-f{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--mod))}
+.h-tl .step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;z-index:1}
+.h-tl .nd{width:28px;height:28px;border-radius:50%;border:2px solid var(--s3);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.h-tl .nd.done{background:var(--green);border-color:var(--green);color:#fff}
+.h-tl .nd.now{border-color:var(--mod);color:var(--mod);box-shadow:0 0 0 4px rgba(var(--mod-rgb),.15)}
+.h-tl .nd.wait{color:var(--t3)}
+.h-tl .sl{font-size:11px;color:var(--t2);margin-top:8px;text-align:center;max-width:100px}
+.h-tl .sd{font-family:'DM Mono';font-size:10px;color:var(--t3);margin-top:3px}
+
+/* ─── Vertical timeline ─── */
+.v-tl{position:relative;padding-left:28px}
+.v-tl::before{content:'';position:absolute;left:9px;top:0;bottom:0;width:2px;background:var(--s3)}
+.v-tl .ent{position:relative;padding-bottom:24px}
+.v-tl .ent:last-child{padding-bottom:0}
+.v-tl .dt{position:absolute;left:-28px;top:2px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;z-index:1}
+
+/* ─── Skill segmented bar ─── */
+.sk-bar{display:flex;gap:3px}
+.sk-bar .bl{width:20px;height:8px;border-radius:2px;background:var(--s3)}
+.sk-bar .bl.on{background:var(--mod)}
+
+/* ─── Category tabs ─── */
+.c-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.c-tab{padding:9px 18px;font-size:12px;font-weight:600;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.c-tab:hover{color:var(--t2)}
+.c-tab.on{color:var(--t1);border-bottom-color:var(--mod)}
+
+/* ─── Level stepper ─── */
+.lv-step{display:inline-flex;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:600;background:var(--s2);color:var(--t3);cursor:pointer;transition:all .2s}
+.lv-step:hover{background:var(--s3);color:var(--t2)}
+.lv-step.on{background:rgba(var(--mod-rgb),.12);color:var(--mod);border:1px solid rgba(var(--mod-rgb),.25)}
+
+/* ─── Area chips ─── */
+.area-chip{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:500;background:var(--s2);color:var(--t3);cursor:pointer;transition:all .2s;border:1px solid transparent}
+.area-chip:hover{background:var(--s3);color:var(--t2)}
+.area-chip.on{background:rgba(var(--mod-rgb),.08);color:var(--mod);border-color:rgba(var(--mod-rgb),.2)}
+.area-chip svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
+/* ─── Table rows ─── */
+.sk-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(120,165,220,.04)}
+.sk-row:last-child{border-bottom:none}
+.sk-row .sk-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sk-row .sk-nm{font-size:13px;font-weight:500;width:140px;flex-shrink:0}
+.sk-row .sk-cat{width:80px;flex-shrink:0}
+.sk-row .sk-lvl{flex:1;display:flex;align-items:center;gap:10px}
+.sk-row .sk-yr{font-family:'DM Mono';font-size:12px;color:var(--t3);width:60px;text-align:right;flex-shrink:0}
+
+/* ─── Accordion ─── */
+.acc{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;margin-bottom:14px;transition:border-color .2s}
+.acc:hover{border-color:var(--border-h)}
+.acc-hd{padding:22px 28px;cursor:pointer;display:flex;align-items:center;gap:16px}
+.acc-bd{padding:0 28px 24px;display:none}
+.acc.open .acc-bd{display:block}
+.acc-chv{transition:transform .3s;color:var(--t3)}
+.acc.open .acc-chv{transform:rotate(180deg)}
+
+/* ─── Toggle switch ─── */
+.tog{width:40px;height:22px;border-radius:11px;position:relative;cursor:pointer;transition:background .2s}
+.tog .knob{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;transition:.2s}
+.tog.on{background:var(--mod)}.tog.on .knob{right:2px}
+.tog.off{background:var(--s3)}.tog.off .knob{left:2px}
+
+/* ─── Sections ─── */
+.sec{margin-top:28px}
+.sec-t{font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:16px;display:flex;align-items:center;gap:9px}
+.sec-t svg{width:16px;height:16px;stroke:var(--mod);fill:none;stroke-width:2;stroke-linecap:round}
+.sec-t .rt{margin-left:auto;font-size:12px;color:var(--mod);cursor:pointer;font-family:'DM Sans';font-weight:500}
+
+/* ─── Form ─── */
+.f-group{margin-bottom:16px}
+.f-group label{display:block;font-size:10.5px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.f-group input,.f-group select,.f-group textarea{width:100%;padding:11px 15px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-size:13px;font-family:'DM Sans';outline:none;transition:border-color .2s}
+.f-group input:focus,.f-group select:focus{border-color:var(--border-h)}
+
+/* ─── Modal ─── */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(3,7,26,.82);backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center}
+.modal-ov.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal h2{font-family:'Syne';font-weight:800;font-size:20px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.modal h2 svg{width:20px;height:20px;fill:none;stroke:var(--mod);stroke-width:2;stroke-linecap:round}
+.modal .x-btn{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:18px;cursor:pointer;transition:background .2s;background:none;border:none}
+.modal .x-btn:hover{background:var(--s2)}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ═══ Animations ═══ */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.anim{animation:rise .5s ease both}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}
+
+/* ═══ Scrollbar ═══ */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(120,165,220,.12);border-radius:3px}
+
+/* ═══ Proto Nav ═══ */
+.pnav{position:fixed;bottom:0;left:0;right:0;height:46px;background:#060a14;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;padding:0 20px;gap:4px;z-index:999}
+.pnav .tag{font-family:'DM Mono';font-size:9px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-right:14px;text-transform:uppercase}
+.pnav button{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;color:rgba(255,255,255,.3);background:none;border:none;cursor:pointer;transition:all .12s}
+.pnav button:hover{color:rgba(255,255,255,.55);background:rgba(255,255,255,.04)}
+.pnav button.on{color:#fff;background:rgba(var(--mod-rgb),.12)}
+.pnav .sep{width:1px;height:16px;background:rgba(255,255,255,.06);margin:0 8px}
+.screen{display:none}.screen.active{display:block}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 1 — DASHBOARD
+     Bento grid command center
+     ══════════════════════════════════════════════ -->
+<div id="s-dash" class="screen active">
+<div class="page">
+
+  <!-- MODULE HEADER -->
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg stroke="var(--mod)" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+    </div>
+    <div class="info">
+      <h1>Carreira</h1>
+      <p>Desenvolvedor Senior na TechCorp Brasil desde mar 2024</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="go('perfil')">Editar Perfil</button>
+    </div>
+  </div>
+
+  <!-- ── HERO: CAPITULO ATUAL ── -->
+  <div class="hero-c anim d1">
+    <div style="display:flex;align-items:center;gap:24px">
+      <!-- Left: Chapter info -->
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3)">Capitulo Atual</span>
+          <span class="pill" style="background:rgba(var(--mod-rgb),.10);color:var(--mod)">Level 12</span>
+          <span class="pill" style="background:rgba(245,158,11,.10);color:var(--yellow)">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+            14 dias seguidos
+          </span>
+        </div>
+        <h2 style="font-family:'Syne';font-weight:800;font-size:28px;margin-bottom:3px">Desenvolvedor Senior</h2>
+        <p style="font-size:13px;color:var(--t2)">TechCorp Brasil &middot; Tecnologia &middot; 12 meses no cargo</p>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+          <div style="flex:1;max-width:220px">
+            <div class="pb-wrap" style="height:4px"><div class="pb-fill" style="width:62%;background:var(--mod)"></div></div>
+          </div>
+          <span style="font-family:'DM Mono';font-size:11px;color:var(--t2)">1.250 / 2.000 XP</span>
+        </div>
+      </div>
+      <!-- Right: Quick stats inline -->
+      <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:14px;overflow:hidden">
+        <div style="padding:16px 22px;border-right:1px solid var(--border);text-align:center">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:4px">Salario</div>
+          <div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--green)">R$ 12.500</div>
+          <div style="font-size:10px;color:var(--green);margin-top:2px">+35% vs anterior</div>
+        </div>
+        <div style="padding:16px 22px;border-right:1px solid var(--border);text-align:center">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:4px">Roadmap</div>
+          <div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--yellow)">67%</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:2px">4 de 6 etapas</div>
+        </div>
+        <div style="padding:16px 22px;text-align:center">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:4px">Skills</div>
+          <div style="font-family:'DM Mono';font-size:22px;font-weight:500">18</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:2px">3 expert, 8 avanc.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BENTO GRID: Roadmap + Skills ── -->
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:14px" class="anim d2">
+
+    <!-- Left: Active Roadmap -->
+    <div class="card">
+      <div class="card-t">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Roadmap Ativo: Tech Lead em 2 anos
+        <span class="pill" style="background:rgba(245,158,11,.10);color:var(--yellow);margin-left:6px">67%</span>
+        <span class="rt" onclick="go('roadmap')">Ver todos &#8594;</span>
+      </div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:18px">Senior &#8594; Tech Lead &middot; Prazo: dez 2027 &middot; Salario alvo: R$ 18.000</div>
+      <div class="h-tl">
+        <div class="track"><div class="track-f" style="width:67%"></div></div>
+        <div class="step"><div class="nd done"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sl">Certificacao AWS</div><div class="sd">jan 2025</div></div>
+        <div class="step"><div class="nd done"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sl">Liderar squad</div><div class="sd">jun 2025</div></div>
+        <div class="step"><div class="nd done"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sl">Mentoria 2 juniors</div><div class="sd">set 2025</div></div>
+        <div class="step"><div class="nd now">4</div><div class="sl">Arquitetura de sistema</div><div class="sd">mar 2026</div></div>
+        <div class="step"><div class="nd wait">5</div><div class="sl">Gestao de projeto</div><div class="sd">ago 2026</div></div>
+        <div class="step"><div class="nd wait">6</div><div class="sl">Promocao Tech Lead</div><div class="sd">dez 2027</div></div>
+      </div>
+      <!-- Next action -->
+      <div style="margin-top:20px;padding:14px 18px;background:var(--s2);border-radius:12px;display:flex;align-items:center;gap:12px">
+        <div style="width:32px;height:32px;border-radius:9px;background:rgba(var(--mod-rgb),.10);display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:600">Proxima etapa: Arquitetura de sistema</div>
+          <div style="font-size:11px;color:var(--t3)">Prazo: mar 2026 &middot; Faltam 12 meses</div>
+        </div>
+        <span class="pill" style="background:rgba(var(--mod-rgb),.10);color:var(--mod)">Em andamento</span>
+      </div>
+    </div>
+
+    <!-- Right: Top Skills + Simulador -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="flex:1">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="none" stroke="var(--mod)" stroke-width="2"/></svg>
+          Top Habilidades
+          <span class="rt" onclick="go('hab')">Ver todas &#8594;</span>
+        </div>
+        <!-- Skills as compact rows -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;font-weight:500;width:90px">React</span>
+            <div class="sk-bar"><div class="bl on"></div><div class="bl on"></div><div class="bl on"></div><div class="bl on"></div><div class="bl on"></div></div>
+            <span style="font-size:10px;color:var(--mod);margin-left:auto">Expert</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;font-weight:500;width:90px">TypeScript</span>
+            <div class="sk-bar"><div class="bl on"></div><div class="bl on"></div><div class="bl on"></div><div class="bl on"></div><div class="bl"></div></div>
+            <span style="font-size:10px;color:var(--t2);margin-left:auto">Avancado</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;font-weight:500;width:90px">Node.js</span>
+            <div class="sk-bar"><div class="bl on"></div><div class="bl on"></div><div class="bl on"></div><div class="bl on"></div><div class="bl"></div></div>
+            <span style="font-size:10px;color:var(--t2);margin-left:auto">Avancado</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;font-weight:500;width:90px">Lideranca</span>
+            <div class="sk-bar"><div class="bl on" style="background:var(--green)"></div><div class="bl on" style="background:var(--green)"></div><div class="bl on" style="background:var(--green)"></div><div class="bl"></div><div class="bl"></div></div>
+            <span style="font-size:10px;color:var(--t2);margin-left:auto">Intermediario</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;font-weight:500;width:90px">Ingles</span>
+            <div class="sk-bar"><div class="bl on" style="background:var(--yellow)"></div><div class="bl on" style="background:var(--yellow)"></div><div class="bl on" style="background:var(--yellow)"></div><div class="bl on" style="background:var(--yellow)"></div><div class="bl"></div></div>
+            <span style="font-size:10px;color:var(--t2);margin-left:auto">C1</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12px;font-weight:500;width:90px">AWS</span>
+            <div class="sk-bar"><div class="bl on" style="background:var(--purple)"></div><div class="bl on" style="background:var(--purple)"></div><div class="bl on" style="background:var(--purple)"></div><div class="bl on" style="background:var(--purple)"></div><div class="bl on" style="background:var(--purple)"></div></div>
+            <span style="font-size:10px;color:var(--purple);margin-left:auto">Certificado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulador CTA -->
+      <div class="card" style="background:linear-gradient(135deg,rgba(var(--mod-rgb),.06),rgba(168,85,247,.04));border-color:rgba(var(--mod-rgb),.15)">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:40px;height:40px;border-radius:12px;background:rgba(var(--mod-rgb),.12);display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:600;margin-bottom:2px">Simulador de Promocao</div>
+            <div style="font-size:12px;color:var(--t2)">Senior &#8594; Tech Lead: <span style="font-family:'DM Mono';color:var(--green);font-weight:500">+R$ 5.500/mes (+44%)</span></div>
+            <div style="font-size:11px;color:var(--t3);margin-top:2px">Estimativa em 21 meses</div>
+          </div>
+          <button class="btn btn-primary" style="padding:8px 18px;font-size:12px">Simular</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 2 — PERFIL PROFISSIONAL
+     Form-dominant split layout
+     ══════════════════════════════════════════════ -->
+<div id="s-perfil" class="screen">
+<div class="page">
+
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <div class="info">
+      <h1>Perfil Profissional</h1>
+      <p>Gerencie seus dados de carreira e sincronize com outros modulos</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 24 24" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Salvar Alteracoes
+      </button>
+    </div>
+  </div>
+
+  <!-- Profile Hero -->
+  <div class="hero-c anim d1" style="display:flex;align-items:center;gap:24px;margin-bottom:28px">
+    <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,rgba(var(--mod-rgb),.15),rgba(168,85,247,.12));display:flex;align-items:center;justify-content:center;font-family:'Syne';font-weight:800;font-size:24px;color:var(--mod);border:2px solid rgba(var(--mod-rgb),.25);flex-shrink:0">TS</div>
+    <div>
+      <h2 style="font-family:'Syne';font-weight:800;font-size:22px;margin-bottom:3px">Thiago Silva</h2>
+      <p style="font-size:13px;color:var(--t2)">Desenvolvedor Senior &middot; TechCorp Brasil &middot; Tecnologia</p>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <span class="pill" style="background:rgba(var(--mod-rgb),.10);color:var(--mod)">Senior</span>
+        <span class="pill" style="background:rgba(59,130,246,.10);color:var(--blue)">Tecnologia</span>
+        <span class="pill" style="background:rgba(16,185,129,.10);color:var(--green)">12 meses no cargo</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
+    <!-- Left: Form -->
+    <div style="display:flex;flex-direction:column;gap:20px">
+
+      <!-- Card: Informacoes do Cargo -->
+      <div class="card anim d2">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Informacoes do Cargo
+        </div>
+        <div class="f-row" style="margin-bottom:16px">
+          <div class="f-group"><label>Cargo</label><input type="text" value="Desenvolvedor Senior"></div>
+          <div class="f-group"><label>Empresa</label><input type="text" value="TechCorp Brasil"></div>
+        </div>
+        <div class="f-row">
+          <div class="f-group">
+            <label>Salario Bruto</label>
+            <div style="position:relative">
+              <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;font-family:'DM Mono'">R$</span>
+              <input type="text" value="12.500,00" style="padding-left:38px;font-family:'DM Mono'">
+            </div>
+          </div>
+          <div class="f-group"><label>Data de Inicio</label><input type="date" value="2024-03-01"></div>
+        </div>
+      </div>
+
+      <!-- Card: Area de Atuacao -->
+      <div class="card anim d3">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Area de Atuacao
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <div class="area-chip on"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg> Tecnologia</div>
+          <div class="area-chip"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Financas</div>
+          <div class="area-chip"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Saude</div>
+          <div class="area-chip"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Educacao</div>
+          <div class="area-chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m14.7 6.3-4.2 4.2a2.5 2.5 0 0 0 3.5 3.5l4.2-4.2"/></svg> Direito</div>
+          <div class="area-chip"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Engenharia</div>
+          <div class="area-chip"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Marketing</div>
+          <div class="area-chip"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> RH</div>
+          <div class="area-chip"><svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg> Design</div>
+          <div class="area-chip"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> Gestao</div>
+        </div>
+      </div>
+
+      <!-- Card: Nivel -->
+      <div class="card anim d4">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Nivel Profissional
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <div class="lv-step">Estagiario</div>
+          <div class="lv-step">Junior</div>
+          <div class="lv-step">Pleno</div>
+          <div class="lv-step on">Senior</div>
+          <div class="lv-step">Especialista</div>
+          <div class="lv-step">Coordenador</div>
+          <div class="lv-step">Gerente</div>
+          <div class="lv-step">Diretor</div>
+          <div class="lv-step">C-Level</div>
+          <div class="lv-step">Freelancer</div>
+          <div class="lv-step">Empreendedor</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right sidebar -->
+    <div style="display:flex;flex-direction:column;gap:20px">
+
+      <!-- Sync toggle -->
+      <div class="card anim d2">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Integracoes
+        </div>
+        <div style="padding:14px 16px;background:var(--s2);border-radius:12px;display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div class="tog on"><div class="knob"></div></div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600">Sync com Financas</div>
+            <div style="font-size:11px;color:var(--t3)">Salario como receita mensal</div>
+          </div>
+        </div>
+        <div style="padding:14px 16px;background:var(--s2);border-radius:12px;display:flex;align-items:center;gap:12px">
+          <div class="tog off"><div class="knob"></div></div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600">Sync com Futuro</div>
+            <div style="font-size:11px;color:var(--t3)">Metas de carreira vinculadas</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historico Recente -->
+      <div class="card anim d3">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Historico Recente
+          <span class="rt" onclick="go('hist')">Ver tudo &#8594;</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="padding:12px;background:var(--s2);border-radius:10px;border-left:3px solid var(--green)">
+            <div style="font-size:12px;font-weight:600">Desenvolvedor Senior</div>
+            <div style="font-size:11px;color:var(--t3)">TechCorp Brasil &middot; mar 2024</div>
+            <div style="font-family:'DM Mono';font-size:13px;color:var(--green);margin-top:4px">R$ 12.500</div>
+          </div>
+          <div style="padding:12px;background:var(--s2);border-radius:10px;border-left:3px solid var(--purple)">
+            <div style="font-size:12px;font-weight:600">Engenheiro de Software Pleno</div>
+            <div style="font-size:11px;color:var(--t3)">TechCorp Brasil &middot; jan 2022</div>
+            <div style="font-family:'DM Mono';font-size:13px;color:var(--t2);margin-top:4px">R$ 9.200</div>
+          </div>
+          <div style="padding:12px;background:var(--s2);border-radius:10px;border-left:3px solid var(--yellow)">
+            <div style="font-size:12px;font-weight:600">Dev Pleno</div>
+            <div style="font-size:11px;color:var(--t3)">Startup Flow &middot; ago 2020</div>
+            <div style="font-family:'DM Mono';font-size:13px;color:var(--t2);margin-top:4px">R$ 7.500</div>
+          </div>
+          <div style="padding:12px;background:var(--s2);border-radius:10px;border-left:3px solid var(--blue)">
+            <div style="font-size:12px;font-weight:600">Dev Junior</div>
+            <div style="font-size:11px;color:var(--t3)">Startup Flow &middot; mar 2019</div>
+            <div style="font-family:'DM Mono';font-size:13px;color:var(--t2);margin-top:4px">R$ 5.100</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 3 — HABILIDADES
+     Table-driven with radar sidebar
+     ══════════════════════════════════════════════ -->
+<div id="s-hab" class="screen">
+<div class="page">
+
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </div>
+    <div class="info">
+      <h1>Habilidades</h1>
+      <p>18 habilidades mapeadas &middot; Media de proficiencia: 3.8 / 5</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="openModal('m-skill')">
+        <svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adicionar Habilidade
+      </button>
+    </div>
+  </div>
+
+  <!-- Metrics strip (NOT KPI cards — different from dashboard) -->
+  <div class="m-strip anim d1" style="margin-bottom:28px">
+    <div class="ms">
+      <div class="lb">Total</div>
+      <div class="vl" style="color:var(--mod)">18</div>
+      <div class="nt">habilidades</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Hard Skills</div>
+      <div class="vl" style="color:var(--blue)">10</div>
+      <div class="nt">tecnicas</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Soft Skills</div>
+      <div class="vl" style="color:var(--green)">4</div>
+      <div class="nt">comportamentais</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Idiomas</div>
+      <div class="vl" style="color:var(--yellow)">2</div>
+      <div class="nt">linguas</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Certificacoes</div>
+      <div class="vl" style="color:var(--purple)">2</div>
+      <div class="nt">atestados</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
+    <!-- Left: Skills Table -->
+    <div class="anim d2">
+      <!-- Category tabs -->
+      <div class="c-tabs">
+        <div class="c-tab on" onclick="filterCat(this,'all')">Todas</div>
+        <div class="c-tab" onclick="filterCat(this,'hard')">Hard Skills</div>
+        <div class="c-tab" onclick="filterCat(this,'soft')">Soft Skills</div>
+        <div class="c-tab" onclick="filterCat(this,'lang')">Idiomas</div>
+        <div class="c-tab" onclick="filterCat(this,'cert')">Certificacoes</div>
+      </div>
+
+      <!-- Table header -->
+      <div style="display:flex;align-items:center;gap:14px;padding:8px 0;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3)">
+        <span style="width:32px"></span>
+        <span style="width:140px">Nome</span>
+        <span style="width:80px">Categoria</span>
+        <span style="flex:1">Nivel</span>
+        <span style="width:60px;text-align:right">Tempo</span>
+      </div>
+
+      <!-- Skill rows -->
+      <div class="sk-row" data-cat="hard">
+        <div class="sk-ico" style="background:rgba(59,130,246,.10)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <div class="sk-nm">React</div>
+        <div class="sk-cat"><span class="pill" style="background:rgba(59,130,246,.10);color:var(--blue);font-size:10px">Hard</span></div>
+        <div class="sk-lvl"><div class="sk-bar"><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div></div><span style="font-size:11px;color:var(--t2);margin-left:8px">Expert</span></div>
+        <div class="sk-yr">5 anos</div>
+      </div>
+      <div class="sk-row" data-cat="hard">
+        <div class="sk-ico" style="background:rgba(59,130,246,.10)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <div class="sk-nm">TypeScript</div>
+        <div class="sk-cat"><span class="pill" style="background:rgba(59,130,246,.10);color:var(--blue);font-size:10px">Hard</span></div>
+        <div class="sk-lvl"><div class="sk-bar"><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl"></div></div><span style="font-size:11px;color:var(--t2);margin-left:8px">Avancado</span></div>
+        <div class="sk-yr">4 anos</div>
+      </div>
+      <div class="sk-row" data-cat="hard">
+        <div class="sk-ico" style="background:rgba(59,130,246,.10)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="sk-nm">Node.js</div>
+        <div class="sk-cat"><span class="pill" style="background:rgba(59,130,246,.10);color:var(--blue);font-size:10px">Hard</span></div>
+        <div class="sk-lvl"><div class="sk-bar"><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl"></div></div><span style="font-size:11px;color:var(--t2);margin-left:8px">Avancado</span></div>
+        <div class="sk-yr">3 anos</div>
+      </div>
+      <div class="sk-row" data-cat="hard">
+        <div class="sk-ico" style="background:rgba(59,130,246,.10)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+        <div class="sk-nm">Docker</div>
+        <div class="sk-cat"><span class="pill" style="background:rgba(59,130,246,.10);color:var(--blue);font-size:10px">Hard</span></div>
+        <div class="sk-lvl"><div class="sk-bar"><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl on" style="background:var(--blue)"></div><div class="bl"></div><div class="bl"></div></div><span style="font-size:11px;color:var(--t2);margin-left:8px">Intermediario</span></div>
+        <div class="sk-yr">2 anos</div>
+      </div>
+      <div class="sk-row" data-cat="soft">
+        <div class="sk-ico" style="background:rgba(16,185,129,.10)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="sk-nm">Lideranca</div>
+        <div class="sk-cat"><span class="pill" style="background:rgba(16,185,129,.10);color:var(--green);font-size:10px">Soft</span></div>
+        <div class="sk-lvl"><div class="sk-bar"><div class="bl on" style="background:var(--green)"></div><div class="bl on" style="background:var(--green)"></div><div class="bl on" style="background:var(--green)"></div><div class="bl"></div><div class="bl"></div></div><span style="font-size:11px;color:var(--t2);margin-left:8px">Intermediario</span></div>
+        <div class="sk-yr">2 anos</div>
+      </div>
+      <div class="sk-row" data-cat="soft">
+        <div class="sk-ico" style="background:rgba(16,185,129,.10)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="sk-nm">Comunicacao</div>
+        <div class="sk-cat"><span class="pill" style="background:rgba(16,185,129,.10);color:var(--green);font-size:10px">Soft</span></div>
+        <div class="sk-lvl"><div class="sk-bar"><div class="bl on" style="background:var(--green)"></div><div class="bl on" style="background:var(--green)"></div><div class="bl on" style="background:var(--green)"></div><div class="bl on" style="background:var(--green)"></div><div class="bl"></div></div><span style="font-size:11px;color:var(--t2);margin-left:8px">Avancado</span></div>
+        <div class="sk-yr">4 anos</div>
+      </div>
+      <div class="sk-row" data-cat="lang">
+        <div class="sk-ico" style="background:rgba(245,158,11,.10)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="sk-nm">Ingles</div>
+        <div class="sk-cat"><span class="pill" style="background:rgba(245,158,11,.10);color:var(--yellow);font-size:10px">Idioma</span></div>
+        <div class="sk-lvl"><div class="sk-bar"><div class="bl on" style="background:var(--yellow)"></div><div class="bl on" style="background:var(--yellow)"></div><div class="bl on" style="background:var(--yellow)"></div><div class="bl on" style="background:var(--yellow)"></div><div class="bl"></div></div><span style="font-size:11px;color:var(--t2);margin-left:8px">Avancado &middot; C1</span></div>
+        <div class="sk-yr">6 anos</div>
+      </div>
+      <div class="sk-row" data-cat="lang">
+        <div class="sk-ico" style="background:rgba(245,158,11,.10)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="sk-nm">Espanhol</div>
+        <div class="sk-cat"><span class="pill" style="background:rgba(245,158,11,.10);color:var(--yellow);font-size:10px">Idioma</span></div>
+        <div class="sk-lvl"><div class="sk-bar"><div class="bl on" style="background:var(--yellow)"></div><div class="bl on" style="background:var(--yellow)"></div><div class="bl"></div><div class="bl"></div><div class="bl"></div></div><span style="font-size:11px;color:var(--t2);margin-left:8px">Basico &middot; A2</span></div>
+        <div class="sk-yr">1 ano</div>
+      </div>
+      <div class="sk-row" data-cat="cert">
+        <div class="sk-ico" style="background:rgba(168,85,247,.10)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
+        <div class="sk-nm">AWS Solutions Arch.</div>
+        <div class="sk-cat"><span class="pill" style="background:rgba(168,85,247,.10);color:var(--purple);font-size:10px">Cert.</span></div>
+        <div class="sk-lvl"><div class="sk-bar"><div class="bl on" style="background:var(--purple)"></div><div class="bl on" style="background:var(--purple)"></div><div class="bl on" style="background:var(--purple)"></div><div class="bl on" style="background:var(--purple)"></div><div class="bl on" style="background:var(--purple)"></div></div><span style="font-size:11px;color:var(--t2);margin-left:8px">Expert</span></div>
+        <div class="sk-yr">jan 2025</div>
+      </div>
+    </div>
+
+    <!-- Right: Radar + Summary -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="card anim d3">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          Arsenal de Competencias
+        </div>
+        <div class="chart-ph" style="min-height:200px">Recharts Radar — 6 eixos: Hard Skills, Soft Skills, Idiomas, Certificacoes, Lideranca, Gestao. Dados: [90, 70, 75, 80, 55, 45]</div>
+      </div>
+      <div class="card anim d4">
+        <div class="card-t">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+          Resumo
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--t2)">Media Proficiencia</span><span style="font-family:'DM Mono';font-size:18px;font-weight:500;color:var(--mod)">3.8 / 5</span></div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--t2)">Skill mais forte</span><span style="font-size:12px;font-weight:600">React (Expert)</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--t2)">A desenvolver</span><span style="font-size:12px;font-weight:600;color:var(--yellow)">Lideranca</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--t2)">Ultima certificacao</span><span style="font-size:12px;font-weight:600;color:var(--purple)">AWS &middot; jan 2025</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 4 — ROADMAPS
+     Accordion panels
+     ══════════════════════════════════════════════ -->
+<div id="s-road" class="screen">
+<div class="page">
+
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="info">
+      <h1>Roadmaps</h1>
+      <p>3 roadmaps &middot; 1 ativo, 1 concluido, 1 pausado</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Novo Roadmap
+      </button>
+    </div>
+  </div>
+
+  <!-- Accordion: Active Roadmap -->
+  <div class="acc open anim d1" style="border-color:rgba(var(--mod-rgb),.18)">
+    <div class="acc-hd" onclick="toggleAcc(this)">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(var(--mod-rgb),.10);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
+          <span style="font-family:'Syne';font-weight:700;font-size:16px">Tech Lead em 2 anos</span>
+          <span class="pill" style="background:rgba(245,158,11,.10);color:var(--yellow)">Ativo</span>
+        </div>
+        <div style="font-size:12px;color:var(--t3)">Senior &#8594; Tech Lead &middot; Salario alvo: R$ 18.000 &middot; Prazo: dez 2027</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-family:'DM Mono';font-size:14px;font-weight:500;color:var(--mod)">67%</div>
+        <div style="width:120px"><div class="pb-wrap"><div class="pb-fill" style="width:67%;background:linear-gradient(90deg,var(--green),var(--mod))"></div></div></div>
+        <span class="acc-chv"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+    </div>
+    <div class="acc-bd">
+      <div class="h-tl" style="margin-bottom:20px">
+        <div class="track"><div class="track-f" style="width:67%"></div></div>
+        <div class="step"><div class="nd done"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sl">Certificacao AWS</div><div class="sd">jan 2025</div></div>
+        <div class="step"><div class="nd done"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sl">Liderar squad</div><div class="sd">jun 2025</div></div>
+        <div class="step"><div class="nd done"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sl">Mentoria 2 juniors</div><div class="sd">set 2025</div></div>
+        <div class="step"><div class="nd now">4</div><div class="sl">Arquitetura de sistema</div><div class="sd">mar 2026</div></div>
+        <div class="step"><div class="nd wait">5</div><div class="sl">Gestao de projeto</div><div class="sd">ago 2026</div></div>
+        <div class="step"><div class="nd wait">6</div><div class="sl">Promocao Tech Lead</div><div class="sd">dez 2027</div></div>
+      </div>
+      <!-- Next step detail -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="padding:16px 18px;background:var(--s2);border-radius:12px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:6px">Etapa Atual</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:4px">Arquitetura de sistema</div>
+          <div style="font-size:12px;color:var(--t2)">Projetar e documentar a arquitetura de pelo menos 2 sistemas end-to-end, com decisoes de trade-off documentadas.</div>
+        </div>
+        <div style="padding:16px 18px;background:var(--s2);border-radius:12px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:6px">Impacto Projetado</div>
+          <div style="display:flex;gap:20px;margin-top:8px">
+            <div><div style="font-size:11px;color:var(--t3)">Salario atual</div><div style="font-family:'DM Mono';font-size:16px;margin-top:2px">R$ 12.500</div></div>
+            <div style="display:flex;align-items:center;color:var(--t3)">&#8594;</div>
+            <div><div style="font-size:11px;color:var(--t3)">Salario alvo</div><div style="font-family:'DM Mono';font-size:16px;color:var(--green);margin-top:2px">R$ 18.000</div></div>
+            <div><div style="font-size:11px;color:var(--t3)">Aumento</div><div style="font-family:'DM Mono';font-size:16px;color:var(--green);margin-top:2px">+44%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accordion: Completed Roadmap -->
+  <div class="acc anim d2" style="border-color:rgba(16,185,129,.15)">
+    <div class="acc-hd" onclick="toggleAcc(this)">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,.10);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
+          <span style="font-family:'Syne';font-weight:700;font-size:16px">Transicao para Senior</span>
+          <span class="pill" style="background:rgba(16,185,129,.10);color:var(--green)">Concluido</span>
+        </div>
+        <div style="font-size:12px;color:var(--t3)">Pleno &#8594; Senior &middot; Concluido em mar 2024</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-family:'DM Mono';font-size:14px;font-weight:500;color:var(--green)">100%</div>
+        <div style="width:120px"><div class="pb-wrap"><div class="pb-fill" style="width:100%;background:var(--green)"></div></div></div>
+        <span class="acc-chv"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+    </div>
+    <div class="acc-bd">
+      <div class="h-tl">
+        <div class="track"><div class="track-f" style="width:100%;background:var(--green)"></div></div>
+        <div class="step"><div class="nd done"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sl">Dominar React</div><div class="sd">2022</div></div>
+        <div class="step"><div class="nd done"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sl">Projeto solo</div><div class="sd">2023</div></div>
+        <div class="step"><div class="nd done"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sl">Code review</div><div class="sd">2023</div></div>
+        <div class="step"><div class="nd done"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sl">Promocao Senior</div><div class="sd">mar 2024</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accordion: Paused Roadmap -->
+  <div class="acc anim d3" style="opacity:.6">
+    <div class="acc-hd" onclick="toggleAcc(this)">
+      <div style="width:36px;height:36px;border-radius:10px;background:var(--s2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
+          <span style="font-family:'Syne';font-weight:700;font-size:16px">MBA em Gestao</span>
+          <span class="pill" style="background:var(--s2);color:var(--t3)">Pausado</span>
+        </div>
+        <div style="font-size:12px;color:var(--t3)">Curso pausado por falta de tempo &middot; retomar em 2027</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-family:'DM Mono';font-size:14px;font-weight:500;color:var(--t3)">25%</div>
+        <div style="width:120px"><div class="pb-wrap"><div class="pb-fill" style="width:25%;background:var(--t3)"></div></div></div>
+        <span class="acc-chv"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+    </div>
+    <div class="acc-bd">
+      <div style="padding:16px 18px;background:var(--s2);border-radius:12px;font-size:12px;color:var(--t2)">Roadmap pausado desde jun 2025. Motivo: carga horaria incompativel. Planejamento: retomar apos promocao a Tech Lead.</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 5 — HISTORICO PROFISSIONAL
+     Chart-first with metrics strip + vertical timeline
+     ══════════════════════════════════════════════ -->
+<div id="s-hist" class="screen">
+<div class="page">
+
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg viewBox="0 0 24 24" stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="info">
+      <h1>Historico Profissional</h1>
+      <p>7 anos de carreira &middot; 8 movimentacoes registradas</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="openModal('m-event')">
+        <svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adicionar Evento
+      </button>
+    </div>
+  </div>
+
+  <!-- Metrics strip (unique layout — horizontal inline, NOT KPI cards) -->
+  <div class="m-strip anim d1" style="margin-bottom:28px">
+    <div class="ms">
+      <div class="lb">Crescimento Total</div>
+      <div class="vl" style="color:var(--green)">+145%</div>
+      <div class="nt">R$ 5.100 &#8594; R$ 12.500</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Salario Atual</div>
+      <div class="vl">R$ 12.500</div>
+      <div class="nt">maior da carreira</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Media Anual</div>
+      <div class="vl">+20.7%</div>
+      <div class="nt">crescimento por ano</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Tempo Total</div>
+      <div class="vl">7 anos</div>
+      <div class="nt">desde mar 2019</div>
+    </div>
+    <div class="ms">
+      <div class="lb">Movimentacoes</div>
+      <div class="vl">8</div>
+      <div class="nt">registros</div>
+    </div>
+  </div>
+
+  <!-- Chart: Salary Evolution (PROTAGONIST) -->
+  <div class="card anim d2" style="margin-bottom:28px">
+    <div class="card-t">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Evolucao Salarial
+      <div style="margin-left:auto;display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+        <button style="padding:5px 12px;font-size:11px;font-weight:600;color:var(--t3);background:none;border:none;border-right:1px solid var(--border);cursor:pointer">3a</button>
+        <button style="padding:5px 12px;font-size:11px;font-weight:600;color:var(--t3);background:none;border:none;border-right:1px solid var(--border);cursor:pointer">5a</button>
+        <button style="padding:5px 12px;font-size:11px;font-weight:600;color:var(--t1);background:rgba(var(--mod-rgb),.12);border:none;cursor:pointer">Max</button>
+      </div>
+    </div>
+    <div class="chart-ph" style="min-height:280px">Recharts AreaChart — Eixo X: anos (2019-2026). Eixo Y: salario (R$ 5k-15k). Area com gradiente rose. Linha: R$ 5.100 &#8594; R$ 5.100 &#8594; R$ 6.500 &#8594; R$ 7.500 &#8594; R$ 9.200 &#8594; R$ 9.200 &#8594; R$ 12.500. Pontos destacados nas mudancas. Tooltip com detalhes do evento em cada ponto.</div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="sec-t anim d3">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Timeline de Eventos
+  </div>
+
+  <div class="v-tl anim d3">
+    <!-- Promocao Senior -->
+    <div class="ent">
+      <div class="dt" style="background:rgba(16,185,129,.12);border:2px solid var(--green);color:var(--green)"><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:2px 0">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-family:'Syne';font-weight:700;font-size:13px">Promocao a Senior</span>
+            <span class="pill" style="background:rgba(16,185,129,.10);color:var(--green);font-size:10px">Promocao</span>
+          </div>
+          <div style="font-size:12px;color:var(--t2)">TechCorp Brasil &middot; Tecnologia</div>
+          <div style="font-size:11px;color:var(--t3)">mar 2024 &#8212; presente</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'DM Mono';font-size:16px;font-weight:500;color:var(--green)">R$ 12.500</div>
+          <div style="font-size:11px;color:var(--green)">+35.9%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mudanca TechCorp -->
+    <div class="ent">
+      <div class="dt" style="background:rgba(168,85,247,.12);border:2px solid var(--purple);color:var(--purple)"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/></svg></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:2px 0">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-family:'Syne';font-weight:700;font-size:13px">Mudanca para TechCorp</span>
+            <span class="pill" style="background:rgba(168,85,247,.10);color:var(--purple);font-size:10px">Empresa</span>
+          </div>
+          <div style="font-size:12px;color:var(--t2)">TechCorp Brasil &middot; Pleno</div>
+          <div style="font-size:11px;color:var(--t3)">jan 2022 &#8212; mar 2024</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'DM Mono';font-size:16px;font-weight:500">R$ 9.200</div>
+          <div style="font-size:11px;color:var(--green)">+22.7%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ajuste salarial -->
+    <div class="ent">
+      <div class="dt" style="background:rgba(6,182,212,.12);border:2px solid var(--cyan);color:var(--cyan)"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/></svg></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:2px 0">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-family:'Syne';font-weight:700;font-size:13px">Ajuste salarial</span>
+            <span class="pill" style="background:rgba(6,182,212,.10);color:var(--cyan);font-size:10px">Salario</span>
+          </div>
+          <div style="font-size:12px;color:var(--t2)">Startup Flow &middot; Pleno</div>
+          <div style="font-size:11px;color:var(--t3)">jan 2021 &#8212; dez 2021</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'DM Mono';font-size:16px;font-weight:500">R$ 7.500</div>
+          <div style="font-size:11px;color:var(--green)">+15.4%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Promocao Pleno -->
+    <div class="ent">
+      <div class="dt" style="background:rgba(16,185,129,.12);border:2px solid var(--green);color:var(--green)"><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:2px 0">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-family:'Syne';font-weight:700;font-size:13px">Promocao a Pleno</span>
+            <span class="pill" style="background:rgba(16,185,129,.10);color:var(--green);font-size:10px">Promocao</span>
+          </div>
+          <div style="font-size:12px;color:var(--t2)">Startup Flow &middot; Tecnologia</div>
+          <div style="font-size:11px;color:var(--t3)">ago 2020 &#8212; dez 2020</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'DM Mono';font-size:16px;font-weight:500">R$ 6.500</div>
+          <div style="font-size:11px;color:var(--green)">+27.5%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mudanca de area -->
+    <div class="ent">
+      <div class="dt" style="background:rgba(245,158,11,.12);border:2px solid var(--yellow);color:var(--yellow)"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:2px 0">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-family:'Syne';font-weight:700;font-size:13px">Mudanca de area</span>
+            <span class="pill" style="background:rgba(245,158,11,.10);color:var(--yellow);font-size:10px">Lateral</span>
+          </div>
+          <div style="font-size:12px;color:var(--t2)">Startup Flow &middot; Frontend &#8594; Fullstack</div>
+          <div style="font-size:11px;color:var(--t3)">jan 2020 &#8212; jul 2020</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'DM Mono';font-size:16px;font-weight:500">R$ 5.100</div>
+          <div style="font-size:11px;color:var(--t3)">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Primeiro emprego -->
+    <div class="ent">
+      <div class="dt" style="background:rgba(59,130,246,.12);border:2px solid var(--blue);color:var(--blue)"><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:2px 0">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-family:'Syne';font-weight:700;font-size:13px">Primeiro emprego</span>
+            <span class="pill" style="background:rgba(59,130,246,.10);color:var(--blue);font-size:10px">Inicio</span>
+          </div>
+          <div style="font-size:12px;color:var(--t2)">Startup Flow &middot; Dev Junior</div>
+          <div style="font-size:11px;color:var(--t3)">mar 2019 &#8212; dez 2019</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'DM Mono';font-size:16px;font-weight:500">R$ 5.100</div>
+          <div style="font-size:11px;color:var(--t3)">Inicio</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══ MODAL: Nova Habilidade ══ -->
+<div class="modal-ov" id="m-skill">
+  <div class="modal" style="position:relative">
+    <button class="x-btn" onclick="closeModal('m-skill')">&times;</button>
+    <h2>
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nova Habilidade
+    </h2>
+    <div class="f-group"><label>Nome da Habilidade</label><input type="text" placeholder="Ex: React, Lideranca, SQL..."></div>
+    <div class="f-row" style="margin-bottom:16px">
+      <div class="f-group"><label>Categoria</label><select><option>Hard Skill</option><option>Soft Skill</option><option>Idioma</option><option>Certificacao</option></select></div>
+      <div class="f-group"><label>Nivel Atual</label><select><option>Iniciante</option><option>Intermediario</option><option>Avancado</option><option>Expert</option></select></div>
+    </div>
+    <div class="f-row" style="margin-bottom:16px">
+      <div class="f-group"><label>Meta de Nivel</label><select><option>Intermediario</option><option>Avancado</option><option>Expert</option></select></div>
+      <div class="f-group"><label>Prazo</label><input type="date" value="2026-12-31"></div>
+    </div>
+    <div class="f-group"><label>Notas</label><textarea rows="2" placeholder="Recursos, cursos, plano de estudo..." style="width:100%;padding:11px 15px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-size:13px;font-family:'DM Sans';outline:none;resize:vertical"></textarea></div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:20px">
+      <button class="btn btn-ghost" onclick="closeModal('m-skill')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('m-skill')">Salvar Habilidade</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Novo Evento ══ -->
+<div class="modal-ov" id="m-event">
+  <div class="modal" style="position:relative">
+    <button class="x-btn" onclick="closeModal('m-event')">&times;</button>
+    <h2>
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Novo Evento
+    </h2>
+    <div class="f-group"><label>Tipo</label><select><option>Promocao</option><option>Mudanca de Empresa</option><option>Certificacao</option><option>Projeto</option><option>Premiacao</option><option>Ajuste Salarial</option></select></div>
+    <div class="f-group"><label>Titulo</label><input type="text" placeholder="Ex: Promovido a Tech Lead"></div>
+    <div class="f-row" style="margin-bottom:16px">
+      <div class="f-group"><label>Data</label><input type="date" value="2026-03-01"></div>
+      <div class="f-group"><label>Empresa</label><input type="text" placeholder="Nome da empresa"></div>
+    </div>
+    <div class="f-row" style="margin-bottom:16px">
+      <div class="f-group"><label>Cargo</label><input type="text" placeholder="Cargo no momento"></div>
+      <div class="f-group"><label>Salario</label><input type="text" placeholder="R$ 0,00" style="font-family:'DM Mono'"></div>
+    </div>
+    <div class="f-group"><label>Descricao</label><textarea rows="3" placeholder="Detalhes do evento..." style="width:100%;padding:11px 15px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-size:13px;font-family:'DM Sans';outline:none;resize:vertical"></textarea></div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:20px">
+      <button class="btn btn-ghost" onclick="closeModal('m-event')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('m-event')">Salvar Evento</button>
+    </div>
+  </div>
+</div>
+
+<!-- Proto Nav -->
+<div class="pnav">
+  <span class="tag">Carreira Redesign</span>
+  <button class="on" data-s="dash" onclick="go('dash')">Dashboard</button>
+  <div class="sep"></div>
+  <button data-s="perfil" onclick="go('perfil')">Perfil</button>
+  <div class="sep"></div>
+  <button data-s="hab" onclick="go('hab')">Habilidades</button>
+  <div class="sep"></div>
+  <button data-s="road" onclick="go('road')">Roadmaps</button>
+  <div class="sep"></div>
+  <button data-s="hist" onclick="go('hist')">Historico</button>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  var t=document.getElementById('s-'+id);
+  if(t){t.classList.add('active');
+    t.querySelectorAll('.anim').forEach(function(e){e.style.animation='none';e.offsetHeight;e.style.animation=''});
+  }
+  document.querySelectorAll('.pnav button[data-s]').forEach(function(b){b.classList.toggle('on',b.dataset.s===id)});
+  window.scrollTo(0,0);
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function toggleAcc(hd){hd.closest('.acc').classList.toggle('open')}
+function filterCat(el,cat){
+  document.querySelectorAll('.c-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  document.querySelectorAll('.sk-row[data-cat]').forEach(function(r){
+    r.style.display=(cat==='all'||r.dataset.cat===cat)?'':'none';
+  });
+}
+</script>
+</body>
+</html>

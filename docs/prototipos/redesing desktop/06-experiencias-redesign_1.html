@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>SyncLife — Experiências Desktop Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03071a;--s1:#091428;--s2:#0e1c35;--s3:#152544;
+  --t1:#e4f1ff;--t2:#7b9fc6;--t3:#3c5d84;
+  --border:rgba(120,165,220,.09);--bh:rgba(120,165,220,.18);
+  --mod:#ec4899;--mr:236,72,153;--md:rgba(236,72,153,.08);
+  --green:#10b981;--red:#f43f5e;--yellow:#f59e0b;--orange:#f97316;
+  --cyan:#06b6d4;--purple:#a855f7;--blue:#3b82f6;--indigo:#6366f1;
+  --R:18px;
+}
+html{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{padding-bottom:52px}
+.pg{max-width:1160px;margin:0 auto;padding:36px 40px 60px}
+
+/* ═══ MODULE HEADER ═══ */
+.mh{display:flex;align-items:center;gap:16px;margin-bottom:36px}
+.mh .ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mh .ic svg{width:22px;height:22px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mh .nf{flex:1}
+.mh .nf h1{font-family:'Syne';font-weight:800;font-size:26px;line-height:1.15}
+.mh .nf p{font-size:13px;color:var(--t2);margin-top:3px}
+.mh .act{display:flex;gap:10px;align-items:center}
+
+/* ═══ BUTTONS ═══ */
+.b{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:11px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.b svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bp{background:var(--mod);color:#fff}.bp:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px rgba(var(--mr),.25)}
+.bg{background:transparent;color:var(--t2);border:1px solid var(--border)}.bg:hover{border-color:var(--bh);color:var(--t1)}
+
+/* ═══ CARD ═══ */
+.cd{background:var(--s1);border:1px solid var(--border);border-radius:var(--R);padding:24px;position:relative;overflow:hidden;transition:border-color .2s}
+.cd:hover{border-color:var(--bh)}
+.ct{font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+.ct svg{width:16px;height:16px;stroke:var(--mod);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ct .rt{margin-left:auto;font-family:'DM Sans';font-size:12px;font-weight:500;color:var(--mod);cursor:pointer}
+
+/* ═══ PILL ═══ */
+.pl{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
+
+/* ═══ CHART PLACEHOLDER ═══ */
+.ch{border:1px dashed var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:12px;min-height:160px;background:rgba(120,165,220,.015)}
+
+/* ═══ PROGRESS ═══ */
+.pb{width:100%;height:5px;background:var(--s3);border-radius:99px;overflow:hidden}
+.pf{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.an{animation:rise .5s ease both}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(120,165,220,.12);border-radius:3px}
+
+/* ═══ PROTO NAV ═══ */
+.pnav{position:fixed;bottom:0;left:0;right:0;height:46px;background:#060a14;border-top:1px solid rgba(120,165,220,.08);display:flex;align-items:center;padding:0 20px;gap:2px;z-index:999}
+.pnav .lb{font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--t3);margin-right:14px;text-transform:uppercase;white-space:nowrap}
+.pnav button{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;color:var(--t3);background:none;border:none;cursor:pointer;transition:all .15s;white-space:nowrap}
+.pnav button:hover{color:var(--t2);background:rgba(120,165,220,.04)}
+.pnav button.on{color:var(--t1);background:rgba(var(--mr),.12)}
+.pnav .sep{width:1px;height:16px;background:rgba(120,165,220,.06);margin:0 2px}
+
+/* ═══ MODAL ═══ */
+.mo{display:none;position:fixed;inset:0;background:rgba(3,7,26,.82);backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.mx{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.mx h2{font-family:'Syne';font-weight:800;font-size:20px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.mx h2 .hi{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mx h2 .hi svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:6px}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--t1);font-size:13px;font-family:'DM Sans';outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--mod)}
+.fg textarea{resize:vertical;min-height:80px}
+.mf{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+
+/* ═══ SCREEN ═══ */
+.screen{display:none}.screen.active{display:block}
+
+/* ═══ UNIQUE: DASHBOARD HERO ═══ */
+.hero-next{background:var(--s1);border:1px solid var(--border);border-radius:var(--R);padding:0;overflow:hidden;position:relative}
+.hero-next::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--mod),var(--purple),var(--mod));border-radius:var(--R) var(--R) 0 0}
+.hero-next .glow{position:absolute;top:-60px;right:-20px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(var(--mr),.1) 0%,transparent 65%);pointer-events:none}
+.hero-next .glow2{position:absolute;bottom:-80px;left:-40px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.06) 0%,transparent 65%);pointer-events:none}
+.hero-next .inner{display:flex;align-items:center;gap:0;padding:0}
+.hero-next .cd-left{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:160px;padding:32px 36px;background:linear-gradient(135deg,rgba(var(--mr),.06),rgba(168,85,247,.04));border-right:1px solid var(--border);position:relative}
+.hero-next .cd-left .num{font-family:'Syne';font-weight:800;font-size:64px;line-height:1;background:linear-gradient(135deg,var(--mod),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 12px rgba(var(--mr),.3))}
+.hero-next .cd-left .unit{font-size:13px;color:var(--t2);font-weight:700;text-transform:uppercase;letter-spacing:.14em;margin-top:8px}
+.hero-next .cd-left .sub-u{font-size:11px;color:var(--t3);margin-top:4px}
+.hero-next .cd-mid{flex:1;padding:28px 32px}
+.hero-next .cd-right{display:flex;flex-direction:column;gap:8px;padding:28px 32px;border-left:1px solid var(--border)}
+
+/* ═══ UNIQUE: EXPLORER BANNER ═══ */
+.expl{background:var(--s1);border:1px solid var(--border);border-radius:var(--R);padding:0;overflow:hidden;position:relative}
+.expl::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--mod),var(--purple),var(--cyan));border-radius:var(--R) var(--R) 0 0}
+.expl .expl-inner{display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+.expl .expl-cell{padding:24px 20px;text-align:center;position:relative}
+.expl .expl-cell+.expl-cell::before{content:'';position:absolute;left:0;top:20%;height:60%;width:1px;background:var(--border)}
+.expl .expl-cell .ev{font-family:'Syne';font-weight:800;font-size:32px;line-height:1;margin-bottom:4px}
+.expl .expl-cell .esub{font-size:12px;color:var(--t2);font-weight:500;margin-bottom:10px}
+.expl .expl-cell .ebar{width:60px;height:4px;border-radius:2px;background:var(--s3);margin:0 auto;overflow:hidden}
+.expl .expl-cell .ebar i{display:block;height:100%;border-radius:2px}
+
+/* ═══ UNIQUE: STATUS CARD GRID ═══ */
+.stg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.st-item{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;position:relative;overflow:hidden;transition:border-color .2s}
+.st-item:hover{border-color:var(--bh)}
+.st-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;border-radius:14px 14px 0 0}
+.st-item .st-num{font-family:'DM Mono';font-weight:500;font-size:24px;line-height:1;margin-bottom:6px}
+.st-item .st-lbl{font-size:11px;color:var(--t2);font-weight:500}
+
+/* ═══ UNIQUE: TRIP STRIP ═══ */
+.trip-row{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--s1);border:1px solid var(--border);border-radius:14px;transition:all .2s;cursor:pointer}
+.trip-row:hover{border-color:var(--bh);transform:translateX(4px)}
+.trip-row .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.trip-row .info{flex:1;min-width:0}
+.trip-row .nm{font-weight:600;font-size:13.5px;margin-bottom:2px}
+.trip-row .sub{font-size:12px;color:var(--t3)}
+.trip-row .meta{display:flex;align-items:center;gap:14px;flex-shrink:0}
+
+/* ═══ UNIQUE: TABLE ROWS (Viagens) ═══ */
+.tb{width:100%;border-collapse:separate;border-spacing:0 6px}
+.tb th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);padding:0 16px 8px;text-align:left}
+.tb th:last-child{text-align:right}
+.tb td{background:var(--s1);padding:16px;font-size:13px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);transition:background .2s}
+.tb td:first-child{border-left:1px solid var(--border);border-radius:14px 0 0 14px}
+.tb td:last-child{border-right:1px solid var(--border);border-radius:0 14px 14px 0;text-align:right}
+.tb tr:hover td{background:var(--s2);cursor:pointer}
+.tb .tn{font-weight:600;font-size:13.5px}
+.tb .ts{font-size:11.5px;color:var(--t3);margin-top:2px}
+
+/* ═══ UNIQUE: DETAIL HERO STRIP ═══ */
+.dh{background:var(--s1);border:1px solid var(--border);border-radius:var(--R);padding:28px 32px;margin-bottom:0;position:relative;overflow:hidden}
+.dh::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--mod),var(--purple),var(--mod));opacity:.6}
+.dh .top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+
+/* ═══ UNIQUE: UNDERLINE TABS ═══ */
+.utb{display:flex;gap:0;border-bottom:1px solid var(--border);margin:24px 0 24px}
+.utb button{padding:12px 20px;font-size:12.5px;font-weight:600;color:var(--t3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.utb button:hover{color:var(--t2)}
+.utb button.on{color:var(--t1);border-bottom-color:var(--mod)}
+.utb .badge{font-size:10px;padding:2px 7px;border-radius:6px;background:var(--s3);color:var(--t2)}
+
+/* ═══ UNIQUE: WIZARD STEPPER (Nova Viagem) ═══ */
+.wiz{display:grid;grid-template-columns:220px 1fr;gap:32px;min-height:500px}
+.wiz-rail{padding-top:8px}
+.wiz-step{display:flex;align-items:flex-start;gap:14px;padding:14px 0;position:relative}
+.wiz-step::before{content:'';position:absolute;left:15px;top:42px;bottom:0;width:2px;background:var(--s3)}
+.wiz-step:last-child::before{display:none}
+.wiz-step .num{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono';font-size:13px;font-weight:500;flex-shrink:0;border:2px solid var(--s3);color:var(--t3);background:var(--bg);z-index:1;transition:all .2s}
+.wiz-step.active .num{border-color:var(--mod);color:var(--mod);background:rgba(var(--mr),.08)}
+.wiz-step.done .num{border-color:var(--green);color:#fff;background:var(--green);font-size:0}
+.wiz-step.done .num::after{content:'';display:block;width:12px;height:7px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg);margin-top:-2px}
+.wiz-step .txt{padding-top:5px}
+.wiz-step .txt .title{font-weight:600;font-size:13px;color:var(--t3);transition:color .2s}
+.wiz-step.active .txt .title{color:var(--t1)}
+.wiz-step .txt .desc{font-size:11px;color:var(--t3);margin-top:2px}
+
+/* ═══ UNIQUE: PASSPORT RING ═══ */
+.pass-ring{display:flex;flex-direction:column;align-items:center;gap:8px}
+.pass-ring svg{filter:drop-shadow(0 0 20px rgba(var(--mr),.2))}
+
+/* ═══ UNIQUE: CONTINENT CARDS ═══ */
+.cont-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;transition:all .2s;position:relative;overflow:hidden}
+.cont-card:hover{border-color:var(--bh)}
+.cont-card.visited{border-color:rgba(var(--mr),.3)}
+.cont-card.visited::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--mod)}
+.cont-card .ci{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.cont-card .ci svg{width:20px;height:20px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ═══ UNIQUE: COUNTRY BADGE ═══ */
+.cbadge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:var(--s1);border:1px solid var(--border);border-radius:10px;font-size:12.5px;font-weight:500;transition:border-color .2s}
+.cbadge:hover{border-color:var(--bh)}
+.cbadge .flag{width:24px;height:18px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+
+/* ═══ UNIQUE: MEMORY TIMELINE ═══ */
+.mem-tl{position:relative;padding-left:40px}
+.mem-tl::before{content:'';position:absolute;left:15px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--mod),var(--purple),transparent)}
+.mem-entry{position:relative;margin-bottom:28px}
+.mem-entry::before{content:'';position:absolute;left:-33px;top:8px;width:12px;height:12px;border-radius:50%;background:var(--mod);border:3px solid var(--bg);z-index:1}
+.mem-entry .mem-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--R);padding:24px;transition:border-color .2s}
+.mem-entry .mem-card:hover{border-color:var(--bh)}
+.mem-entry .mem-date{font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.mem-entry .mem-title{font-family:'Syne';font-weight:700;font-size:16px;margin-bottom:4px}
+.mem-entry .mem-loc{font-size:12px;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.mem-entry .mem-text{font-size:13px;color:var(--t2);line-height:1.7;font-style:italic}
+.mem-entry .stars{display:flex;gap:2px;margin-top:12px}
+.mem-entry .stars svg{width:14px;height:14px}
+
+/* ═══ UNIQUE: CHECKLIST ═══ */
+.ck{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(120,165,220,.04)}
+.ck:last-child{border-bottom:none}
+.ck .box{width:22px;height:22px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .2s}
+.ck .box.done{background:var(--green);border-color:var(--green)}
+.ck .box.done svg{stroke:#fff}
+.ck .box svg{width:12px;height:12px;fill:none;stroke:transparent;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.ck .lbl{font-size:13px}
+.ck .lbl.done{text-decoration:line-through;color:var(--t3)}
+
+/* ═══ UNIQUE: ROTEIRO TIMELINE ═══ */
+.rot-day{margin-bottom:28px}
+.rot-day .day-hd{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.rot-day .day-hd .dn{font-family:'Syne';font-weight:700;font-size:14px;color:var(--mod)}
+.rot-day .day-hd .dd{font-size:12px;color:var(--t3)}
+.rot-act{display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--s2);border:1px solid var(--border);border-radius:12px;margin-bottom:6px;margin-left:24px;position:relative;transition:border-color .2s}
+.rot-act:hover{border-color:var(--bh)}
+.rot-act::before{content:'';position:absolute;left:-18px;top:50%;width:12px;height:2px;background:var(--s3)}
+.rot-act .seq{width:28px;height:28px;border-radius:8px;background:rgba(var(--mr),.1);display:flex;align-items:center;justify-content:center;font-family:'DM Mono';font-size:11px;font-weight:500;color:var(--mod);flex-shrink:0}
+.rot-act .ri{flex:1;min-width:0}
+.rot-act .ri .rn{font-weight:600;font-size:13px}
+.rot-act .ri .rd{font-size:11px;color:var(--t3);margin-top:1px}
+.rot-act .rv{font-family:'DM Mono';font-size:12px;color:var(--mod);flex-shrink:0}
+
+/* ═══ TAB CONTENT ═══ */
+.tc{display:none}.tc.on{display:block}
+
+/* ═══ SEARCH BAR ═══ */
+.sbar{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:16px;transition:border-color .2s}
+.sbar:focus-within{border-color:var(--bh)}
+.sbar svg{width:16px;height:16px;stroke:var(--t3);fill:none;stroke-width:2;flex-shrink:0}
+.sbar input{flex:1;background:none;border:none;outline:none;color:var(--t1);font-size:13px;font-family:'DM Sans'}
+.sbar input::placeholder{color:var(--t3)}
+
+/* Filter pills */
+.fp{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:9px;font-size:12px;font-weight:600;border:1px solid var(--border);color:var(--t2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.fp:hover{border-color:var(--bh)}
+.fp.on{background:rgba(var(--mr),.1);border-color:rgba(var(--mr),.3);color:var(--t1)}
+.fp .cnt{font-family:'DM Mono';font-size:10px;color:var(--t3)}
+
+/* Summary row */
+.summ{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--s1);border:1px solid var(--border);border-radius:12px;margin-top:14px}
+.summ .si{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+.summ .si b{font-family:'DM Mono';font-weight:500;color:var(--t1)}
+
+/* Status bar removed — replaced by .stg grid */
+
+</style>
+</head>
+<body>
+
+<!-- ══════════ SCREEN 1: DASHBOARD ══════════ -->
+<div id="s-dash" class="screen active">
+<div class="pg">
+
+  <!-- Module Header -->
+  <div class="mh an d1">
+    <div class="ic" style="background:rgba(var(--mr),.1)">
+      <svg stroke="var(--mod)"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.4-.1.9.3 1.1L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.6 5.2c.2.4.7.5 1.1.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+    </div>
+    <div class="nf">
+      <h1>Experiencias</h1>
+      <p>3 viagens ativas &middot; 7 concluidas &middot; 42 dias viajados</p>
+    </div>
+    <div class="act">
+      <button class="b bg" onclick="go('viagens')"><svg><path d="M3 6h18M3 12h18M3 18h18"/></svg> Todas</button>
+      <button class="b bp" onclick="go('nova')"><svg><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Viagem</button>
+    </div>
+  </div>
+
+  <!-- ★ EXPLORER BANNER (destaque principal — motivador) -->
+  <div class="expl an d2" style="margin-bottom:28px">
+    <div class="expl-inner">
+      <div class="expl-cell">
+        <div class="ev" style="color:var(--mod)">5</div>
+        <div class="esub">Paises Visitados</div>
+        <div class="ebar"><i style="width:2.6%;background:linear-gradient(90deg,var(--mod),var(--purple))"></i></div>
+        <div style="font-size:10px;color:var(--t3);margin-top:6px">de 195</div>
+      </div>
+      <div class="expl-cell">
+        <div class="ev" style="color:var(--cyan)">2</div>
+        <div class="esub">Continentes</div>
+        <div class="ebar"><i style="width:28.6%;background:linear-gradient(90deg,var(--cyan),var(--blue))"></i></div>
+        <div style="font-size:10px;color:var(--t3);margin-top:6px">de 7</div>
+      </div>
+      <div class="expl-cell">
+        <div class="ev" style="color:var(--yellow)">42</div>
+        <div class="esub">Dias Viajados</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:6px">desde 2020</div>
+      </div>
+      <div class="expl-cell">
+        <div class="ev" style="color:var(--green)">12</div>
+        <div class="esub">Total Viagens</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:6px">7 concluidas</div>
+      </div>
+      <div class="expl-cell" style="cursor:pointer" onclick="go('passaporte')">
+        <div class="ev" style="color:var(--purple)">3</div>
+        <div class="esub">Memorias</div>
+        <div style="font-size:10px;color:var(--mod);font-weight:600;margin-top:6px">Ver passaporte →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ★ HERO: Proxima Viagem (redesigned) -->
+  <div class="hero-next an d3" style="margin-bottom:28px">
+    <div class="glow"></div>
+    <div class="glow2"></div>
+    <div class="inner">
+      <!-- Left: Countdown -->
+      <div class="cd-left">
+        <div class="num">12</div>
+        <div class="unit">dias</div>
+        <div class="sub-u">para decolar</div>
+      </div>
+      <!-- Mid: Trip info -->
+      <div class="cd-mid">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span class="pl" style="background:rgba(var(--mr),.1);color:var(--mod);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em">Proxima Viagem</span>
+        </div>
+        <div style="font-family:'Syne';font-weight:800;font-size:22px;margin-bottom:8px">Lua de Mel em Santorini</div>
+        <div style="display:flex;align-items:center;gap:16px;font-size:12.5px;color:var(--t2);margin-bottom:16px">
+          <span style="display:flex;align-items:center;gap:5px">
+            <svg width="14" height="14" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><path d="M7 4v3l2 2"/></svg>
+            26 mar — 05 abr 2026
+          </span>
+          <span style="display:flex;align-items:center;gap:5px">
+            <svg width="14" height="14" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="5" r="3"/><path d="M7 12C10 9 12 7 12 5a5 5 0 00-10 0c0 2 2 4 5 7z"/></svg>
+            Santorini, Grecia
+          </span>
+          <span style="display:flex;align-items:center;gap:5px">
+            <svg width="14" height="14" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="5" r="3"/><path d="M2 14c0-3 2.5-5 5-5s5 2 5 5"/></svg>
+            2 viajantes
+          </span>
+          <span class="pl" style="background:rgba(59,130,246,.1);color:var(--blue)">Reservado</span>
+        </div>
+        <!-- Budget bar -->
+        <div style="display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center">
+          <div>
+            <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Orcamento</div>
+            <div style="font-family:'DM Mono';font-size:17px;font-weight:500">R$ 25.000</div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3);margin-bottom:5px">
+              <span>R$ 8.750 gastos</span>
+              <span style="color:var(--mod);font-weight:600">35%</span>
+            </div>
+            <div class="pb" style="height:6px;border-radius:3px"><div class="pf" style="width:35%;background:linear-gradient(90deg,var(--mod),var(--purple));border-radius:3px"></div></div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Checklist</div>
+            <div style="font-family:'DM Mono';font-size:17px;font-weight:500;color:var(--green)">72%</div>
+          </div>
+        </div>
+      </div>
+      <!-- Right: Actions -->
+      <div class="cd-right">
+        <button class="b bp" style="padding:9px 22px;font-size:12px;width:100%" onclick="go('detalhe')">
+          <svg width="14" height="14"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Ver detalhes
+        </button>
+        <button class="b bg" style="padding:9px 22px;font-size:12px;width:100%">
+          <svg width="14" height="14"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Checklist
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trip Strips (upcoming/active) -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px" class="an d3">
+    <div style="font-family:'Syne';font-weight:700;font-size:15px">Viagens Ativas</div>
+    <span style="font-size:12px;color:var(--mod);cursor:pointer" onclick="go('viagens')">Ver todas →</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:28px">
+    <div class="trip-row an d3" onclick="go('detalhe')">
+      <div class="dot" style="background:var(--blue)"></div>
+      <div class="info">
+        <div class="nm">Lua de Mel em Santorini</div>
+        <div class="sub">Santorini, Grecia &middot; 26 mar — 05 abr &middot; 10 dias</div>
+      </div>
+      <div class="meta">
+        <span class="pl" style="background:rgba(59,130,246,.1);color:var(--blue)">Reservado</span>
+        <span style="font-family:'DM Mono';font-size:13px;color:var(--mod)">R$ 25.000</span>
+        <svg width="16" height="16" fill="none" stroke="var(--t3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    </div>
+    <div class="trip-row an d4">
+      <div class="dot" style="background:var(--green)"></div>
+      <div class="info">
+        <div class="nm">Carnaval em Salvador</div>
+        <div class="sub">Salvador, BA &middot; 14 — 19 fev &middot; 5 dias &middot; 4 viajantes</div>
+      </div>
+      <div class="meta">
+        <span class="pl" style="background:rgba(16,185,129,.1);color:var(--green)">Em andamento</span>
+        <span style="font-family:'DM Mono';font-size:13px">R$ 8.000</span>
+        <svg width="16" height="16" fill="none" stroke="var(--t3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    </div>
+    <div class="trip-row an d5">
+      <div class="dot" style="background:var(--yellow)"></div>
+      <div class="info">
+        <div class="nm">Ski em Bariloche</div>
+        <div class="sub">Bariloche, Argentina &middot; jul 2026 &middot; 7 dias &middot; 2 viajantes</div>
+      </div>
+      <div class="meta">
+        <span class="pl" style="background:rgba(245,158,11,.1);color:var(--yellow)">Planejando</span>
+        <span style="font-family:'DM Mono';font-size:13px">R$ 15.000</span>
+        <svg width="16" height="16" fill="none" stroke="var(--t3)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ★ STATUS: Mini card grid (redesigned) -->
+  <div style="font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:14px" class="an d5">Status das Viagens</div>
+  <div class="stg an d5">
+    <div class="st-item" style="--sc:var(--yellow)">
+      <div style="position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--yellow);border-radius:14px 14px 0 0"></div>
+      <div class="st-num" style="color:var(--yellow)">3</div>
+      <div class="st-lbl">Planejando</div>
+    </div>
+    <div class="st-item">
+      <div style="position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--blue);border-radius:14px 14px 0 0"></div>
+      <div class="st-num" style="color:var(--blue)">2</div>
+      <div class="st-lbl">Reservado</div>
+    </div>
+    <div class="st-item">
+      <div style="position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--green);border-radius:14px 14px 0 0"></div>
+      <div class="st-num" style="color:var(--green)">1</div>
+      <div class="st-lbl">Em andamento</div>
+    </div>
+    <div class="st-item">
+      <div style="position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--t3);border-radius:14px 14px 0 0"></div>
+      <div class="st-num" style="color:var(--t2)">5</div>
+      <div class="st-lbl">Concluidas</div>
+    </div>
+    <div class="st-item">
+      <div style="position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--red);border-radius:14px 14px 0 0"></div>
+      <div class="st-num" style="color:var(--red)">1</div>
+      <div class="st-lbl">Cancelada</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════ SCREEN 2: VIAGENS ══════════ -->
+<div id="s-viagens" class="screen">
+<div class="pg">
+
+  <div class="mh an d1">
+    <div class="ic" style="background:rgba(var(--mr),.1)">
+      <svg stroke="var(--mod)"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.4-.1.9.3 1.1L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.6 5.2c.2.4.7.5 1.1.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+    </div>
+    <div class="nf">
+      <h1>Minhas Viagens</h1>
+      <p>12 viagens registradas &middot; R$ 115.000 total investido</p>
+    </div>
+    <div class="act">
+      <button class="b bp" onclick="go('nova')"><svg><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Viagem</button>
+    </div>
+  </div>
+
+  <!-- Search + Filters -->
+  <div class="sbar an d1">
+    <svg><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Buscar viagens por nome, destino ou data...">
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px" class="an d2">
+    <div class="fp on">Todas <span class="cnt">12</span></div>
+    <div class="fp">Planejando <span class="cnt">3</span></div>
+    <div class="fp">Reservado <span class="cnt">2</span></div>
+    <div class="fp">Em andamento <span class="cnt">1</span></div>
+    <div class="fp">Concluidas <span class="cnt">5</span></div>
+    <div class="fp">Canceladas <span class="cnt">1</span></div>
+  </div>
+
+  <!-- Table -->
+  <table class="tb an d3">
+    <thead><tr>
+      <th style="width:40px"></th>
+      <th>Viagem</th>
+      <th>Destino</th>
+      <th>Periodo</th>
+      <th>Status</th>
+      <th>Orcamento</th>
+    </tr></thead>
+    <tbody>
+      <tr onclick="go('detalhe')">
+        <td><div style="width:10px;height:10px;border-radius:50%;background:var(--blue);margin:auto"></div></td>
+        <td><div class="tn">Lua de Mel em Santorini</div><div class="ts">2 viajantes &middot; Lazer</div></td>
+        <td>Santorini, Grecia</td>
+        <td><span style="font-family:'DM Mono';font-size:12px">26 mar — 05 abr</span><div class="ts">10 dias</div></td>
+        <td><span class="pl" style="background:rgba(59,130,246,.1);color:var(--blue)">Reservado</span></td>
+        <td><span style="font-family:'DM Mono';font-weight:500">R$ 25.000</span></td>
+      </tr>
+      <tr>
+        <td><div style="width:10px;height:10px;border-radius:50%;background:var(--green);margin:auto"></div></td>
+        <td><div class="tn">Carnaval em Salvador</div><div class="ts">4 viajantes &middot; Lazer</div></td>
+        <td>Salvador, BA</td>
+        <td><span style="font-family:'DM Mono';font-size:12px">14 — 19 fev</span><div class="ts">5 dias</div></td>
+        <td><span class="pl" style="background:rgba(16,185,129,.1);color:var(--green)">Em andamento</span></td>
+        <td><span style="font-family:'DM Mono';font-weight:500">R$ 8.000</span></td>
+      </tr>
+      <tr>
+        <td><div style="width:10px;height:10px;border-radius:50%;background:var(--yellow);margin:auto"></div></td>
+        <td><div class="tn">Ski em Bariloche</div><div class="ts">2 viajantes &middot; Lazer</div></td>
+        <td>Bariloche, Argentina</td>
+        <td><span style="font-family:'DM Mono';font-size:12px">jul 2026</span><div class="ts">7 dias</div></td>
+        <td><span class="pl" style="background:rgba(245,158,11,.1);color:var(--yellow)">Planejando</span></td>
+        <td><span style="font-family:'DM Mono';font-weight:500">R$ 15.000</span></td>
+      </tr>
+      <tr>
+        <td><div style="width:10px;height:10px;border-radius:50%;background:var(--t3);margin:auto"></div></td>
+        <td><div class="tn">Mochilao Portugal</div><div class="ts">1 viajante &middot; Lazer</div></td>
+        <td>Lisboa, Porto</td>
+        <td><span style="font-family:'DM Mono';font-size:12px">set 2025</span><div class="ts">14 dias</div></td>
+        <td><span class="pl" style="background:var(--s3);color:var(--t2)">Concluida</span></td>
+        <td><span style="font-family:'DM Mono';font-weight:500;color:var(--t2)">R$ 12.000</span></td>
+      </tr>
+      <tr>
+        <td><div style="width:10px;height:10px;border-radius:50%;background:var(--t3);margin:auto"></div></td>
+        <td><div class="tn">Viagem Corporativa SP</div><div class="ts">1 viajante &middot; Trabalho</div></td>
+        <td>Sao Paulo, SP</td>
+        <td><span style="font-family:'DM Mono';font-size:12px">nov 2025</span><div class="ts">3 dias</div></td>
+        <td><span class="pl" style="background:var(--s3);color:var(--t2)">Concluida</span></td>
+        <td><span style="font-family:'DM Mono';font-weight:500;color:var(--t2)">R$ 3.500</span></td>
+      </tr>
+      <tr>
+        <td><div style="width:10px;height:10px;border-radius:50%;background:var(--red);margin:auto"></div></td>
+        <td><div class="tn" style="color:var(--t2)">Weekend em Campos do Jordao</div><div class="ts">2 viajantes &middot; Lazer</div></td>
+        <td style="color:var(--t3)">Campos do Jordao, SP</td>
+        <td><span style="font-family:'DM Mono';font-size:12px;color:var(--t3)">ago 2025</span><div class="ts">3 dias</div></td>
+        <td><span class="pl" style="background:rgba(244,63,94,.1);color:var(--red)">Cancelada</span></td>
+        <td><span style="font-family:'DM Mono';font-weight:500;color:var(--t3)">—</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Summary -->
+  <div class="summ an d4">
+    <div class="si">
+      <svg width="14" height="14" fill="none" stroke="var(--t3)" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <span>6 viagens exibidas de 12</span>
+    </div>
+    <div style="display:flex;gap:20px">
+      <div class="si"><span>Orcamento total:</span> <b>R$ 63.500</b></div>
+      <div class="si"><span>Dias viajados:</span> <b>42</b></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════ SCREEN 3: DETALHE ══════════ -->
+<div id="s-detalhe" class="screen">
+<div class="pg">
+
+  <!-- Back -->
+  <div style="margin-bottom:20px" class="an d1">
+    <button style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t3);background:none;border:none;cursor:pointer" onclick="go('viagens')">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Voltar para viagens
+    </button>
+  </div>
+
+  <!-- Detail Hero Strip -->
+  <div class="dh an d2">
+    <div class="top">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <h1 style="font-family:'Syne';font-weight:800;font-size:24px">Lua de Mel em Santorini</h1>
+          <span class="pl" style="background:rgba(59,130,246,.1);color:var(--blue)">Reservado</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;font-size:13px;color:var(--t2)">
+          <span>Santorini, Grecia</span>
+          <span style="color:var(--t3)">&middot;</span>
+          <span>26 mar — 05 abr 2026</span>
+          <span style="color:var(--t3)">&middot;</span>
+          <span>10 dias</span>
+          <span style="color:var(--t3)">&middot;</span>
+          <span>2 viajantes</span>
+          <span style="color:var(--t3)">&middot;</span>
+          <span>Lazer</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="b bg" style="padding:8px 14px;font-size:12px">Editar</button>
+        <button style="width:36px;height:36px;border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;background:none;cursor:pointer;color:var(--red);transition:all .2s">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Metrics strip inside hero -->
+    <div style="display:flex;align-items:center;gap:0;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <div style="flex:1;text-align:center">
+        <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Orcamento</div>
+        <div style="font-family:'DM Mono';font-size:20px;font-weight:500">R$ 25.000</div>
+      </div>
+      <div style="width:1px;height:36px;background:var(--border)"></div>
+      <div style="flex:1;text-align:center">
+        <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Gasto</div>
+        <div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--mod)">R$ 8.750</div>
+      </div>
+      <div style="width:1px;height:36px;background:var(--border)"></div>
+      <div style="flex:1;text-align:center">
+        <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Saldo</div>
+        <div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--green)">R$ 16.250</div>
+      </div>
+      <div style="width:1px;height:36px;background:var(--border)"></div>
+      <div style="flex:1;text-align:center">
+        <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Atividades</div>
+        <div style="font-family:'DM Mono';font-size:20px;font-weight:500">12</div>
+      </div>
+      <div style="width:1px;height:36px;background:var(--border)"></div>
+      <div style="flex:1;text-align:center">
+        <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Checklist</div>
+        <div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--green)">72%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Underline Tabs -->
+  <div class="utb an d3" id="dtabs">
+    <button class="on" data-tab="t-over" onclick="dtab(this)">Visao Geral</button>
+    <button data-tab="t-rot" onclick="dtab(this)">Roteiro <span class="badge">5</span></button>
+    <button data-tab="t-budg" onclick="dtab(this)">Orcamento</button>
+    <button data-tab="t-check" onclick="dtab(this)">Checklist <span class="badge">3</span></button>
+    <button data-tab="t-hosp" onclick="dtab(this)">Hospedagem <span class="badge">2</span></button>
+    <button data-tab="t-transp" onclick="dtab(this)">Transporte <span class="badge">2</span></button>
+  </div>
+
+  <!-- TAB: Visao Geral -->
+  <div id="t-over" class="tc on">
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:16px">
+      <div>
+        <!-- Timeline -->
+        <div class="cd an d3" style="margin-bottom:14px">
+          <div class="ct"><svg><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Timeline</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 0">
+            <div style="text-align:center">
+              <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Ida</div>
+              <div style="font-family:'DM Mono';font-size:18px;font-weight:500">26 mar</div>
+              <div style="font-size:11px;color:var(--t3)">2026</div>
+            </div>
+            <div style="flex:1;display:flex;align-items:center;gap:8px;padding:0 24px">
+              <div style="flex:1;height:2px;background:linear-gradient(90deg,var(--mod),transparent)"></div>
+              <div style="padding:6px 14px;border-radius:8px;background:rgba(var(--mr),.1);font-family:'DM Mono';font-size:12px;font-weight:500;color:var(--mod)">10 dias</div>
+              <div style="flex:1;height:2px;background:linear-gradient(90deg,transparent,var(--purple))"></div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Volta</div>
+              <div style="font-family:'DM Mono';font-size:18px;font-weight:500">05 abr</div>
+              <div style="font-size:11px;color:var(--t3)">2026</div>
+            </div>
+          </div>
+        </div>
+        <!-- Notes -->
+        <div class="cd an d4">
+          <div class="ct"><svg><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Notas</div>
+          <p style="font-size:13px;color:var(--t2);line-height:1.7">Reservar restaurante panoramico para o por do sol em Oia. Verificar transfer do aeroporto. Levar adaptador de tomada europeu. Contratar seguro viagem para dois.</p>
+        </div>
+      </div>
+      <div>
+        <!-- Budget by Category -->
+        <div class="cd an d3" style="margin-bottom:14px">
+          <div class="ct"><svg><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Orcamento</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Hospedagem</span><span style="font-family:'DM Mono';font-size:11px;color:var(--t2)">R$ 8.000</span></div><div class="pb" style="height:4px"><div class="pf" style="width:40%;background:var(--mod)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Transporte</span><span style="font-family:'DM Mono';font-size:11px;color:var(--t2)">R$ 6.000</span></div><div class="pb" style="height:4px"><div class="pf" style="width:85%;background:var(--yellow)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Alimentacao</span><span style="font-family:'DM Mono';font-size:11px;color:var(--t2)">R$ 5.000</span></div><div class="pb" style="height:4px"><div class="pf" style="width:20%;background:var(--mod)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Atividades</span><span style="font-family:'DM Mono';font-size:11px;color:var(--t2)">R$ 4.000</span></div><div class="pb" style="height:4px"><div class="pf" style="width:15%;background:var(--mod)"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Outros</span><span style="font-family:'DM Mono';font-size:11px;color:var(--t2)">R$ 2.000</span></div><div class="pb" style="height:4px"><div class="pf" style="width:10%;background:var(--mod)"></div></div></div>
+          </div>
+        </div>
+        <!-- Quick Checklist -->
+        <div class="cd an d4">
+          <div class="ct"><svg><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Checklist</div>
+          <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Passaporte valido</span></div>
+          <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Seguro viagem</span></div>
+          <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Reserva de hotel</span></div>
+          <div class="ck"><div class="box"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl">Comprar euros</span></div>
+          <div class="ck"><div class="box"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl">Confirmar transfer</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Roteiro -->
+  <div id="t-rot" class="tc">
+    <div class="cd an d3">
+      <div class="ct"><svg><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 7 8 11.7z"/></svg> Roteiro dia a dia</div>
+      <div class="rot-day">
+        <div class="day-hd"><div class="dn">Dia 1</div><div class="dd">Quinta, 26 mar</div></div>
+        <div class="rot-act"><div class="seq">1</div><div class="ri"><div class="rn">Chegada em Santorini</div><div class="rd">Aeroporto JTR &middot; 14:30</div></div><div class="rv">—</div></div>
+        <div class="rot-act"><div class="seq">2</div><div class="ri"><div class="rn">Check-in Hotel Mystique</div><div class="rd">Oia &middot; 15:30</div></div><div class="rv">R$ 800</div></div>
+      </div>
+      <div class="rot-day">
+        <div class="day-hd"><div class="dn">Dia 2</div><div class="dd">Sexta, 27 mar</div></div>
+        <div class="rot-act"><div class="seq">1</div><div class="ri"><div class="rn">Passeio de barco pela Caldera</div><div class="rd">Porto de Fira &middot; 09:00</div></div><div class="rv">R$ 450</div></div>
+        <div class="rot-act"><div class="seq">2</div><div class="ri"><div class="rn">Almoco em Amoudi Bay</div><div class="rd">Amoudi Bay &middot; 13:00</div></div><div class="rv">R$ 300</div></div>
+        <div class="rot-act"><div class="seq">3</div><div class="ri"><div class="rn">Por do Sol em Oia</div><div class="rd">Castelo de Oia &middot; 18:00</div></div><div class="rv">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Orcamento -->
+  <div id="t-budg" class="tc">
+    <!-- Budget KPIs -->
+    <div style="display:flex;gap:14px;margin-bottom:20px" class="an d3">
+      <div class="cd" style="flex:1;text-align:center;padding:20px"><div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Estimado</div><div style="font-family:'DM Mono';font-size:22px;font-weight:500">R$ 25.000</div></div>
+      <div class="cd" style="flex:1;text-align:center;padding:20px"><div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Gasto</div><div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--mod)">R$ 8.750</div></div>
+      <div class="cd" style="flex:1;text-align:center;padding:20px"><div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Saldo</div><div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--green)">R$ 16.250</div></div>
+    </div>
+    <!-- Category Table -->
+    <div class="cd an d4">
+      <div class="ct"><svg><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> Por Categoria</div>
+      <div style="display:grid;grid-template-columns:1fr 110px 110px 120px;gap:10px;align-items:center">
+        <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase">Categoria</div>
+        <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;text-align:center">Estimado</div>
+        <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;text-align:center">Gasto</div>
+        <div></div>
+
+        <div style="font-size:13px">Hospedagem</div>
+        <div style="font-family:'DM Mono';font-size:12px;text-align:center">R$ 8.000</div>
+        <div style="font-family:'DM Mono';font-size:12px;text-align:center;color:var(--mod)">R$ 3.200</div>
+        <div class="pb" style="height:4px"><div class="pf" style="width:40%;background:var(--mod)"></div></div>
+
+        <div style="font-size:13px">Transporte</div>
+        <div style="font-family:'DM Mono';font-size:12px;text-align:center">R$ 6.000</div>
+        <div style="font-family:'DM Mono';font-size:12px;text-align:center;color:var(--yellow)">R$ 5.100</div>
+        <div class="pb" style="height:4px"><div class="pf" style="width:85%;background:var(--yellow)"></div></div>
+
+        <div style="font-size:13px">Alimentacao</div>
+        <div style="font-family:'DM Mono';font-size:12px;text-align:center">R$ 5.000</div>
+        <div style="font-family:'DM Mono';font-size:12px;text-align:center">R$ 450</div>
+        <div class="pb" style="height:4px"><div class="pf" style="width:9%;background:var(--mod)"></div></div>
+
+        <div style="font-size:13px">Atividades</div>
+        <div style="font-family:'DM Mono';font-size:12px;text-align:center">R$ 4.000</div>
+        <div style="font-family:'DM Mono';font-size:12px;text-align:center">R$ 0</div>
+        <div class="pb" style="height:4px"><div class="pf" style="width:0%;background:var(--mod)"></div></div>
+
+        <div style="font-size:13px">Outros</div>
+        <div style="font-family:'DM Mono';font-size:12px;text-align:center">R$ 2.000</div>
+        <div style="font-family:'DM Mono';font-size:12px;text-align:center">R$ 0</div>
+        <div class="pb" style="height:4px"><div class="pf" style="width:0%;background:var(--mod)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Checklist -->
+  <div id="t-check" class="tc">
+    <div class="cd an d3">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="ct" style="margin-bottom:0"><svg><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Checklist Completa</div>
+        <div style="font-family:'DM Mono';font-size:13px;color:var(--green)">8 de 11 (72%)</div>
+      </div>
+      <div class="pb" style="height:6px;margin-bottom:20px"><div class="pf" style="width:72%;background:linear-gradient(90deg,var(--mod),var(--green))"></div></div>
+
+      <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Documentos</div>
+      <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Passaporte valido (validade >6 meses)</span></div>
+      <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Seguro viagem internacional</span></div>
+      <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Copia dos documentos (digital)</span></div>
+
+      <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 10px">Reservas</div>
+      <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Reserva de hotel</span></div>
+      <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Passagens aereas</span></div>
+      <div class="ck"><div class="box"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl">Confirmar transfer aeroporto → hotel</span></div>
+
+      <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 10px">Antes da Viagem</div>
+      <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Vacinas em dia</span></div>
+      <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Chip internacional</span></div>
+      <div class="ck"><div class="box done"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl done">Aviso ao banco (viagem)</span></div>
+      <div class="ck"><div class="box"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl">Comprar euros</span></div>
+      <div class="ck"><div class="box"><svg><polyline points="20 6 9 17 4 12"/></svg></div><span class="lbl">Fazer mala</span></div>
+    </div>
+  </div>
+
+  <!-- TAB: Hospedagem -->
+  <div id="t-hosp" class="tc">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="cd an d3">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div style="font-family:'Syne';font-weight:700;font-size:16px;margin-bottom:4px">Hotel Mystique</div>
+            <div style="font-size:12px;color:var(--t2)">Oia, Santorini</div>
+          </div>
+          <span class="pl" style="background:rgba(16,185,129,.1);color:var(--green)">Pago</span>
+        </div>
+        <div style="display:flex;gap:20px;font-size:12px;color:var(--t3);margin-bottom:12px">
+          <span style="display:flex;align-items:center;gap:4px"><svg width="12" height="12" fill="none" stroke="var(--t3)" stroke-width="2"><rect x="1" y="3" width="10" height="8" rx="1"/><path d="M1 5h10"/></svg> Check-in: 26 mar</span>
+          <span style="display:flex;align-items:center;gap:4px"><svg width="12" height="12" fill="none" stroke="var(--t3)" stroke-width="2"><rect x="1" y="3" width="10" height="8" rx="1"/><path d="M1 5h10"/></svg> Check-out: 02 abr</span>
+          <span>7 noites</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border)">
+          <span style="font-family:'DM Mono';font-size:16px;font-weight:500;color:var(--mod)">R$ 5.600</span>
+          <span style="font-size:11px;color:var(--t3)">Confirmacao: HTL-78234</span>
+        </div>
+      </div>
+      <div class="cd an d4">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div style="font-family:'Syne';font-weight:700;font-size:16px;margin-bottom:4px">Airbnb em Fira</div>
+            <div style="font-size:12px;color:var(--t2)">Fira, Santorini</div>
+          </div>
+          <span class="pl" style="background:rgba(59,130,246,.1);color:var(--blue)">Reservado</span>
+        </div>
+        <div style="display:flex;gap:20px;font-size:12px;color:var(--t3);margin-bottom:12px">
+          <span>Check-in: 02 abr</span>
+          <span>Check-out: 05 abr</span>
+          <span>3 noites</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border)">
+          <span style="font-family:'DM Mono';font-size:16px;font-weight:500;color:var(--mod)">R$ 2.400</span>
+          <span style="font-size:11px;color:var(--t3)">Confirmacao: AIR-45612</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Transporte -->
+  <div id="t-transp" class="tc">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="cd an d3">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div style="font-family:'Syne';font-weight:700;font-size:16px;margin-bottom:4px">Voo GRU → ATH → JTR</div>
+            <div style="font-size:12px;color:var(--t2)">LATAM + Aegean Airlines</div>
+          </div>
+          <span class="pl" style="background:rgba(16,185,129,.1);color:var(--green)">Pago</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--s2);border-radius:12px;margin-bottom:12px">
+          <div style="text-align:center"><div style="font-family:'DM Mono';font-weight:500;font-size:15px">06:00</div><div style="font-size:10px;color:var(--t3);font-weight:700">GRU</div></div>
+          <div style="flex:1;display:flex;align-items:center;gap:6px">
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+            <div style="font-size:10px;color:var(--t3);padding:2px 8px;border-radius:4px;background:var(--s3)">Conexao ATH</div>
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+          </div>
+          <div style="text-align:center"><div style="font-family:'DM Mono';font-weight:500;font-size:15px">14:30</div><div style="font-size:10px;color:var(--t3);font-weight:700">JTR</div></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-family:'DM Mono';font-size:16px;font-weight:500;color:var(--mod)">R$ 4.200</span>
+          <span style="font-size:11px;color:var(--t3)">Localizador: XKMP43</span>
+        </div>
+      </div>
+      <div class="cd an d4">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div style="font-family:'Syne';font-weight:700;font-size:16px;margin-bottom:4px">Voo JTR → ATH → GRU</div>
+            <div style="font-size:12px;color:var(--t2)">Aegean Airlines + LATAM</div>
+          </div>
+          <span class="pl" style="background:rgba(16,185,129,.1);color:var(--green)">Pago</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--s2);border-radius:12px;margin-bottom:12px">
+          <div style="text-align:center"><div style="font-family:'DM Mono';font-weight:500;font-size:15px">08:00</div><div style="font-size:10px;color:var(--t3);font-weight:700">JTR</div></div>
+          <div style="flex:1;display:flex;align-items:center;gap:6px">
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+            <div style="font-size:10px;color:var(--t3);padding:2px 8px;border-radius:4px;background:var(--s3)">Conexao ATH</div>
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+          </div>
+          <div style="text-align:center"><div style="font-family:'DM Mono';font-weight:500;font-size:15px">22:30</div><div style="font-size:10px;color:var(--t3);font-weight:700">GRU</div></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-family:'DM Mono';font-size:16px;font-weight:500;color:var(--mod)">R$ 3.800</span>
+          <span style="font-size:11px;color:var(--t3)">Localizador: YBNQ27</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════ SCREEN 4: NOVA VIAGEM ══════════ -->
+<div id="s-nova" class="screen">
+<div class="pg">
+
+  <div class="mh an d1">
+    <div class="ic" style="background:rgba(var(--mr),.1)">
+      <svg stroke="var(--mod)"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+    <div class="nf">
+      <h1>Nova Viagem</h1>
+      <p>Planeje sua proxima aventura</p>
+    </div>
+  </div>
+
+  <div class="wiz an d2">
+    <!-- Left Rail: Steps -->
+    <div class="wiz-rail">
+      <div class="wiz-step done">
+        <div class="num"></div>
+        <div class="txt"><div class="title" style="color:var(--green)">Destino</div><div class="desc">Onde voce vai?</div></div>
+      </div>
+      <div class="wiz-step active">
+        <div class="num">2</div>
+        <div class="txt"><div class="title">Datas e Viajantes</div><div class="desc">Quando e com quem</div></div>
+      </div>
+      <div class="wiz-step">
+        <div class="num">3</div>
+        <div class="txt"><div class="title">Orcamento</div><div class="desc">Defina limites</div></div>
+      </div>
+      <div class="wiz-step">
+        <div class="num">4</div>
+        <div class="txt"><div class="title">Resumo</div><div class="desc">Revisar e criar</div></div>
+      </div>
+    </div>
+
+    <!-- Right: Form -->
+    <div>
+      <div class="cd">
+        <div style="font-family:'Syne';font-weight:700;font-size:17px;margin-bottom:6px">Datas e Viajantes</div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:24px">Defina o periodo e quem vai junto</div>
+
+        <div class="fg">
+          <label>Nome da Viagem</label>
+          <input type="text" value="Lua de Mel em Santorini" placeholder="Ex: Lua de Mel em Santorini">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="fg">
+            <label>Data de Ida</label>
+            <input type="date" value="2026-03-26">
+          </div>
+          <div class="fg">
+            <label>Data de Volta</label>
+            <input type="date" value="2026-04-05">
+          </div>
+        </div>
+
+        <div style="text-align:center;margin:4px 0 16px">
+          <span class="pl" style="background:rgba(var(--mr),.1);color:var(--mod);font-size:12px;padding:5px 14px">10 dias de viagem</span>
+        </div>
+
+        <div class="fg">
+          <label>Tipo de Viagem</label>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px">
+            <div style="padding:14px 8px;text-align:center;background:rgba(var(--mr),.08);border:1px solid rgba(var(--mr),.3);border-radius:11px;cursor:pointer">
+              <svg width="20" height="20" fill="none" stroke="var(--mod)" stroke-width="2" style="margin:0 auto 6px;display:block"><circle cx="10" cy="10" r="8"/><path d="M6 14c1-2 3-3 4-3s3 1 4 3"/></svg>
+              <div style="font-size:12px;font-weight:600">Lazer</div>
+            </div>
+            <div style="padding:14px 8px;text-align:center;background:var(--s2);border:1px solid var(--border);border-radius:11px;cursor:pointer">
+              <svg width="20" height="20" fill="none" stroke="var(--t3)" stroke-width="2" style="margin:0 auto 6px;display:block"><rect x="2" y="6" width="16" height="12" rx="2"/><path d="M6 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+              <div style="font-size:12px;color:var(--t2)">Trabalho</div>
+            </div>
+            <div style="padding:14px 8px;text-align:center;background:var(--s2);border:1px solid var(--border);border-radius:11px;cursor:pointer">
+              <svg width="20" height="20" fill="none" stroke="var(--t3)" stroke-width="2" style="margin:0 auto 6px;display:block"><path d="M2 3h6a4 4 0 014 4v13a3 3 0 00-3-3H2z"/><path d="M18 3h-6a4 4 0 00-4 4v13a3 3 0 013-3h7z"/></svg>
+              <div style="font-size:12px;color:var(--t2)">Estudo</div>
+            </div>
+            <div style="padding:14px 8px;text-align:center;background:var(--s2);border:1px solid var(--border);border-radius:11px;cursor:pointer">
+              <svg width="20" height="20" fill="none" stroke="var(--t3)" stroke-width="2" style="margin:0 auto 6px;display:block"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+              <div style="font-size:12px;color:var(--t2)">Mista</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Destinos</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+            <span class="pl" style="background:rgba(var(--mr),.1);color:var(--mod);font-size:12px;padding:5px 12px">Santorini <span style="margin-left:4px;opacity:.6;cursor:pointer">x</span></span>
+            <span class="pl" style="background:rgba(var(--mr),.1);color:var(--mod);font-size:12px;padding:5px 12px">Atenas <span style="margin-left:4px;opacity:.6;cursor:pointer">x</span></span>
+          </div>
+          <input type="text" placeholder="Adicionar outro destino...">
+        </div>
+
+        <div class="fg">
+          <label>Numero de Viajantes</label>
+          <input type="number" value="2" min="1" max="20" style="width:100px;text-align:center">
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-top:24px">
+          <button class="b bg">← Voltar</button>
+          <button class="b bp">Proximo →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════ SCREEN 5: PASSAPORTE ══════════ -->
+<div id="s-passaporte" class="screen">
+<div class="pg">
+
+  <div class="mh an d1">
+    <div class="ic" style="background:rgba(var(--mr),.1)">
+      <svg stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+    </div>
+    <div class="nf">
+      <h1>Passaporte do Explorador</h1>
+      <p>Seu progresso pelo mundo</p>
+    </div>
+    <div class="act">
+      <button class="b bg" onclick="go('memorias')"><svg><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Memorias</button>
+    </div>
+  </div>
+
+  <!-- Progress Ring + Stats -->
+  <div style="display:grid;grid-template-columns:280px 1fr;gap:24px;margin-bottom:28px" class="an d2">
+    <div class="cd" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px">
+      <div class="pass-ring">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="68" fill="none" stroke="var(--s3)" stroke-width="10"/>
+          <circle cx="80" cy="80" r="68" fill="none" stroke="url(#pg)" stroke-width="10" stroke-linecap="round" stroke-dasharray="427.3" stroke-dashoffset="416.6" transform="rotate(-90 80 80)"/>
+          <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--mod)"/><stop offset="100%" stop-color="var(--purple)"/></linearGradient></defs>
+          <text x="80" y="72" text-anchor="middle" fill="var(--t1)" font-family="Syne" font-weight="800" font-size="36">5</text>
+          <text x="80" y="94" text-anchor="middle" fill="var(--t3)" font-family="DM Sans" font-weight="600" font-size="11">de 195 paises</text>
+        </svg>
+      </div>
+      <div style="font-size:12px;color:var(--t2);margin-top:12px;text-align:center">2.6% do mundo explorado</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="cd" style="padding:20px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(var(--mr),.1);display:flex;align-items:center;justify-content:center">
+            <svg width="18" height="18" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="9" r="8"/><line x1="1" y1="9" x2="17" y2="9"/></svg>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em">Continentes</div>
+            <div style="font-family:'DM Mono';font-size:22px;font-weight:500;margin-top:2px">2 <span style="font-size:13px;color:var(--t3)">/ 7</span></div>
+          </div>
+        </div>
+        <div class="pb" style="height:5px"><div class="pf" style="width:28.6%;background:var(--mod)"></div></div>
+      </div>
+      <div class="cd" style="padding:20px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(6,182,212,.1);display:flex;align-items:center;justify-content:center">
+            <svg width="18" height="18" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2"/></svg>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em">Total Viagens</div>
+            <div style="font-family:'DM Mono';font-size:22px;font-weight:500;margin-top:2px">12</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--t3)">Desde 2020</div>
+      </div>
+      <div class="cd" style="padding:20px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,.1);display:flex;align-items:center;justify-content:center">
+            <svg width="18" height="18" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="9" r="8"/><path d="M9 5v4l2.5 2.5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em">Dias no Exterior</div>
+            <div style="font-family:'DM Mono';font-size:22px;font-weight:500;margin-top:2px">42</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--t3)">Media: 3.5 dias/viagem</div>
+      </div>
+      <div class="cd" style="padding:20px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(168,85,247,.1);display:flex;align-items:center;justify-content:center">
+            <svg width="18" height="18" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em">Memorias</div>
+            <div style="font-family:'DM Mono';font-size:22px;font-weight:500;margin-top:2px">3</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--t3)">de 7 viagens concluidas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Continents -->
+  <div style="font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:14px" class="an d3">Continentes</div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:28px" class="an d3">
+    <div class="cont-card visited">
+      <div class="ci" style="background:rgba(var(--mr),.1)"><svg stroke="var(--mod)"><circle cx="12" cy="12" r="10"/></svg></div>
+      <div style="font-weight:600;font-size:12.5px;margin-bottom:2px">America do Sul</div>
+      <div style="font-size:11px;color:var(--mod);font-weight:600">3 paises</div>
+    </div>
+    <div class="cont-card visited">
+      <div class="ci" style="background:rgba(var(--mr),.1)"><svg stroke="var(--mod)"><circle cx="12" cy="12" r="10"/></svg></div>
+      <div style="font-weight:600;font-size:12.5px;margin-bottom:2px">Europa</div>
+      <div style="font-size:11px;color:var(--mod);font-weight:600">2 paises</div>
+    </div>
+    <div class="cont-card" style="opacity:.5">
+      <div class="ci" style="background:var(--s2)"><svg stroke="var(--t3)"><circle cx="12" cy="12" r="10"/></svg></div>
+      <div style="font-weight:600;font-size:12.5px;color:var(--t3);margin-bottom:2px">Asia</div>
+      <div style="font-size:11px;color:var(--t3)">—</div>
+    </div>
+    <div class="cont-card" style="opacity:.5">
+      <div class="ci" style="background:var(--s2)"><svg stroke="var(--t3)"><circle cx="12" cy="12" r="10"/></svg></div>
+      <div style="font-weight:600;font-size:12.5px;color:var(--t3);margin-bottom:2px">Africa</div>
+      <div style="font-size:11px;color:var(--t3)">—</div>
+    </div>
+    <div class="cont-card" style="opacity:.5">
+      <div class="ci" style="background:var(--s2)"><svg stroke="var(--t3)"><circle cx="12" cy="12" r="10"/></svg></div>
+      <div style="font-weight:600;font-size:12.5px;color:var(--t3);margin-bottom:2px">America do Norte</div>
+      <div style="font-size:11px;color:var(--t3)">—</div>
+    </div>
+    <div class="cont-card" style="opacity:.5">
+      <div class="ci" style="background:var(--s2)"><svg stroke="var(--t3)"><circle cx="12" cy="12" r="10"/></svg></div>
+      <div style="font-weight:600;font-size:12.5px;color:var(--t3);margin-bottom:2px">Oceania</div>
+      <div style="font-size:11px;color:var(--t3)">—</div>
+    </div>
+    <div class="cont-card" style="opacity:.5">
+      <div class="ci" style="background:var(--s2)"><svg stroke="var(--t3)"><circle cx="12" cy="12" r="10"/></svg></div>
+      <div style="font-weight:600;font-size:12.5px;color:var(--t3);margin-bottom:2px">Antartica</div>
+      <div style="font-size:11px;color:var(--t3)">—</div>
+    </div>
+  </div>
+
+  <!-- Countries Visited -->
+  <div style="font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:14px" class="an d4">Paises Visitados</div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px" class="an d4">
+    <div class="cbadge"><div class="flag" style="background:linear-gradient(to bottom,#009c3b 50%,#ffdf00 50%)">BR</div><div><div style="font-weight:600">Brasil</div><div style="font-size:11px;color:var(--t3)">5 viagens</div></div></div>
+    <div class="cbadge"><div class="flag" style="background:linear-gradient(to bottom,#74acdf 33%,#fff 33%,#fff 67%,#74acdf 67%)">AR</div><div><div style="font-weight:600">Argentina</div><div style="font-size:11px;color:var(--t3)">2 viagens</div></div></div>
+    <div class="cbadge"><div class="flag" style="background:linear-gradient(to right,#006600 40%,#ff0000 40%)">PT</div><div><div style="font-weight:600">Portugal</div><div style="font-size:11px;color:var(--t3)">1 viagem</div></div></div>
+    <div class="cbadge"><div class="flag" style="background:linear-gradient(to bottom,#0d5eaf 50%,#fff 50%)">GR</div><div><div style="font-weight:600">Grecia</div><div style="font-size:11px;color:var(--mod)">Proxima!</div></div></div>
+    <div class="cbadge"><div class="flag" style="background:linear-gradient(to bottom,#0038A8 33%,#fff 33%,#fff 67%,#0038A8 67%)">UY</div><div><div style="font-weight:600">Uruguai</div><div style="font-size:11px;color:var(--t3)">1 viagem</div></div></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════ SCREEN 6: MEMORIAS ══════════ -->
+<div id="s-memorias" class="screen">
+<div class="pg">
+
+  <div class="mh an d1">
+    <div class="ic" style="background:rgba(var(--mr),.1)">
+      <svg stroke="var(--mod)"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    </div>
+    <div class="nf">
+      <h1>Memorias de Viagem</h1>
+      <p>Reviva suas experiencias mais marcantes</p>
+    </div>
+    <div class="act">
+      <button class="b bg" onclick="go('passaporte')"><svg><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg> Passaporte</button>
+    </div>
+  </div>
+
+  <!-- Memory Timeline -->
+  <div class="mem-tl an d2">
+
+    <div class="mem-entry">
+      <div class="mem-card">
+        <div class="mem-date">Setembro 2025</div>
+        <div class="mem-title">Mochilao Portugal</div>
+        <div class="mem-loc">
+          <svg width="12" height="12" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="5" r="3"/><path d="M6 12C9 9 11 7 11 5a5 5 0 00-10 0c0 2 2 4 5 7z"/></svg>
+          Lisboa, Porto
+        </div>
+        <div class="mem-text">"Uma das melhores experiencias da minha vida. Os pasteis de Belem sao incriveis e o porto do Douro e magico ao entardecer. Lisboa tem uma energia unica, uma mistura de historia e modernidade que encanta."</div>
+        <div class="stars">
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="mem-entry">
+      <div class="mem-card">
+        <div class="mem-date">Novembro 2025</div>
+        <div class="mem-title">Viagem Corporativa SP</div>
+        <div class="mem-loc">
+          <svg width="12" height="12" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="5" r="3"/><path d="M6 12C9 9 11 7 11 5a5 5 0 00-10 0c0 2 2 4 5 7z"/></svg>
+          Sao Paulo, SP
+        </div>
+        <div class="mem-text">"Hotel bom, conferencia produtiva. Pena que nao deu tempo de explorar a cidade. O jantar no A Casa do Porco foi sensacional. Avenida Paulista de noite tem uma vibe incrivel."</div>
+        <div class="stars">
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--s3)" stroke="var(--t3)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--s3)" stroke="var(--t3)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="mem-entry">
+      <div class="mem-card">
+        <div class="mem-date">Julho 2024</div>
+        <div class="mem-title">Ski em Bariloche</div>
+        <div class="mem-loc">
+          <svg width="12" height="12" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="5" r="3"/><path d="M6 12C9 9 11 7 11 5a5 5 0 00-10 0c0 2 2 4 5 7z"/></svg>
+          Bariloche, Argentina
+        </div>
+        <div class="mem-text">"Primeira vez esquiando! Cerro Catedral e lindo. Chocolate quente no centro e obrigatorio. A vista dos lagos com neve e de tirar o folego. Voltaria sem pensar duas vezes."</div>
+        <div class="stars">
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--yellow)" stroke="var(--yellow)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+          <svg fill="var(--s3)" stroke="var(--t3)" stroke-width="1"><polygon points="7 1 9 5 13 5.5 10 8.5 10.8 12.5 7 10.5 3.2 12.5 4 8.5 1 5.5 5 5"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="mem-entry" style="opacity:.6">
+      <div class="mem-card" style="border-style:dashed;text-align:center;padding:32px">
+        <svg width="28" height="28" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round" style="margin:0 auto 12px;display:block"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        <div style="font-size:13px;color:var(--t3);margin-bottom:12px">Carnaval em Salvador ainda nao tem memoria</div>
+        <button class="b bg" style="font-size:12px;padding:7px 16px">Adicionar Memoria</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<!-- Proto Nav -->
+<div class="pnav">
+  <span class="lb">Experiencias</span>
+  <button class="on" data-s="dash" onclick="go('dash')">Dashboard</button>
+  <div class="sep"></div>
+  <button data-s="viagens" onclick="go('viagens')">Viagens</button>
+  <div class="sep"></div>
+  <button data-s="detalhe" onclick="go('detalhe')">Detalhe</button>
+  <div class="sep"></div>
+  <button data-s="nova" onclick="go('nova')">Nova Viagem</button>
+  <div class="sep"></div>
+  <button data-s="passaporte" onclick="go('passaporte')">Passaporte</button>
+  <div class="sep"></div>
+  <button data-s="memorias" onclick="go('memorias')">Memorias</button>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  var t=document.getElementById('s-'+id);
+  if(t)t.classList.add('active');
+  document.querySelectorAll('.pnav button[data-s]').forEach(function(b){b.classList.toggle('on',b.dataset.s===id)});
+  window.scrollTo(0,0);
+  if(t){t.querySelectorAll('.an').forEach(function(e){e.style.animation='none';e.offsetHeight;e.style.animation=''})}
+}
+
+function dtab(el){
+  document.querySelectorAll('.utb button').forEach(function(b){b.classList.remove('on')});
+  el.classList.add('on');
+  document.querySelectorAll('.tc').forEach(function(c){c.classList.remove('on')});
+  var tid=el.getAttribute('data-tab');
+  var tc=document.getElementById(tid);
+  if(tc){tc.classList.add('on');tc.querySelectorAll('.an').forEach(function(e){e.style.animation='none';e.offsetHeight;e.style.animation=''})}
+}
+
+// Filter pills
+document.querySelectorAll('.fp').forEach(function(p){
+  p.addEventListener('click',function(){
+    document.querySelectorAll('.fp').forEach(function(x){x.classList.remove('on')});
+    p.classList.add('on');
+  });
+});
+
+// Checkboxes
+document.querySelectorAll('.ck .box').forEach(function(b){
+  b.addEventListener('click',function(){
+    b.classList.toggle('done');
+    var lbl=b.nextElementSibling;
+    if(lbl)lbl.classList.toggle('done');
+  });
+});
+</script>
+</body>
+</html>

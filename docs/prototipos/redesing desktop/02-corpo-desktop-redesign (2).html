@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>SyncLife — Corpo Desktop Redesign</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03071a;--s1:#091428;--s2:#0e1c35;--s3:#152544;
+  --t1:#e4f1ff;--t2:#7b9fc6;--t3:#3c5d84;
+  --border:rgba(120,165,220,.09);--border-h:rgba(120,165,220,.18);
+  --mod:#f97316;--mod-rgb:249,115,22;--mod-dim:rgba(249,115,22,.08);
+  --green:#10b981;--red:#f43f5e;--yellow:#f59e0b;--orange:#f97316;
+  --cyan:#06b6d4;--purple:#a855f7;--blue:#3b82f6;--indigo:#6366f1;
+  --card-r:18px;
+}
+html{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{padding-bottom:52px}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:inherit;text-decoration:none}
+.screen{display:none}.screen.active{display:block}
+.page{max-width:1160px;margin:0 auto;padding:36px 40px 60px}
+
+/* ─── Animations ─── */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ringIn{from{stroke-dashoffset:var(--circ)}to{stroke-dashoffset:var(--off)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes barGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.anim{animation:rise .5s ease-out both}
+.d1{animation-delay:.06s}.d2{animation-delay:.12s}.d3{animation-delay:.18s}.d4{animation-delay:.24s}.d5{animation-delay:.3s}.d6{animation-delay:.36s}
+
+/* ═══ STANDARD HEADER ═══ */
+.mod-hdr{display:flex;align-items:center;gap:16px;margin-bottom:36px}
+.mod-hdr .ico{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mod-hdr .ico svg{width:22px;height:22px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mod-hdr .info{flex:1}
+.mod-hdr .info h1{font-family:'Syne';font-weight:800;font-size:26px;line-height:1.15}
+.mod-hdr .info p{font-size:13px;color:var(--t2);margin-top:3px}
+.mod-hdr .actions{display:flex;gap:10px;align-items:center}
+
+/* ─── Buttons ─── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:11px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.btn-p{background:var(--mod);color:#fff}
+.btn-p:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px rgba(var(--mod-rgb),.25)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--border)}
+.btn-g:hover{border-color:var(--border-h);color:var(--t1)}
+
+/* ─── Cards ─── */
+.cd{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:24px;transition:border-color .2s}
+.cd:hover{border-color:var(--border-h)}
+.cd .bar{position:absolute;top:0;left:22px;right:22px;height:2.5px;border-radius:0 0 3px 3px}
+.cd-t{font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+.cd-t svg{width:16px;height:16px;stroke:var(--mod);fill:none;stroke-width:2;stroke-linecap:round}
+.cd-t .rt{margin-left:auto;font-family:'DM Sans';font-size:12px;font-weight:500;color:var(--mod);cursor:pointer}
+
+/* ─── Pills ─── */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
+
+/* ─── Chart placeholders ─── */
+.chart-ph{width:100%;border:1px dashed var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:12px;font-style:italic;padding:16px}
+
+/* ─── DM Mono helper ─── */
+.mono{font-family:'DM Mono',monospace}
+
+/* ═══════════════════════════════════════
+   SCREEN 1 — DASHBOARD
+   Vitals strip + asymmetric grid
+   ═══════════════════════════════════════ */
+.vitals{display:flex;align-items:stretch;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;margin-bottom:28px}
+.vitals .vt{flex:1;padding:20px 24px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border);position:relative}
+.vitals .vt:last-child{border-right:none}
+.vitals .vt .vt-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.vitals .vt .vt-lbl svg{width:14px;height:14px;stroke-width:2;fill:none;stroke-linecap:round}
+.vitals .vt .vt-val{font-family:'DM Mono';font-weight:500;font-size:24px;line-height:1}
+.vitals .vt .vt-sub{font-size:11px;color:var(--t3);margin-top:4px}
+.vitals .vt .vt-bar{position:absolute;top:0;left:16px;right:16px;height:2.5px;border-radius:0 0 3px 3px}
+
+/* Body score hero (compact, left-aligned) */
+.score-hero{display:flex;align-items:center;gap:20px;padding:24px 28px;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);margin-bottom:14px;position:relative;overflow:hidden}
+.score-hero::before{content:'';position:absolute;top:0;left:22px;right:22px;height:2.5px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,var(--mod),var(--yellow))}
+.score-hero::after{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(var(--mod-rgb),.06),transparent 70%)}
+.score-ring{position:relative;width:86px;height:86px;flex-shrink:0}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .bg{fill:none;stroke:var(--s3);stroke-width:7}
+.score-ring .fg{fill:none;stroke-width:7;stroke-linecap:round;animation:ringIn 1.2s ease-out both}
+.score-ring .ct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-ring .ct b{font-family:'DM Mono';font-size:22px;font-weight:500;line-height:1}
+.score-ring .ct span{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
+
+/* Heatmap compact */
+.hm-grid{display:grid;grid-template-columns:repeat(28,1fr);gap:3px}
+.hm-grid .c{aspect-ratio:1;border-radius:3px;transition:transform .15s}
+.hm-grid .c:hover{transform:scale(1.3);z-index:1}
+.hm-grid .c.l0{background:var(--s3)}.hm-grid .c.l1{background:rgba(var(--mod-rgb),.2)}.hm-grid .c.l2{background:rgba(var(--mod-rgb),.4)}.hm-grid .c.l3{background:rgba(var(--mod-rgb),.65)}.hm-grid .c.l4{background:var(--mod)}
+
+/* Hydration inline */
+.hydro{display:flex;align-items:center;gap:16px}
+.hydro-bar{width:100%;height:10px;background:var(--s3);border-radius:99px;overflow:hidden;flex:1}
+.hydro-bar i{display:block;height:100%;border-radius:99px;background:var(--cyan)}
+
+/* Appt cards horizontal */
+.appt-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:var(--s3) transparent}
+.appt-row::-webkit-scrollbar{height:3px}
+.appt-row::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+.appt{min-width:180px;padding:16px;background:var(--s2);border:1px solid var(--border);border-radius:14px;flex-shrink:0;transition:all .2s}
+.appt:hover{border-color:var(--mod);transform:translateY(-2px)}
+
+/* Nav strip compact */
+.nav-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.ns{padding:14px;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);text-align:center;transition:all .2s;cursor:pointer}
+.ns:hover{border-color:var(--border-h);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.ns .ns-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.ns .ns-ico svg{width:16px;height:16px;fill:none;stroke-width:2;stroke-linecap:round}
+.ns .ns-nm{font-size:12px;font-weight:600}
+.ns .ns-vl{font-size:10px;color:var(--t3);margin-top:2px}
+
+/* ═══════════════════════════════════════
+   SCREEN 2 — PESO (Chart-first)
+   ═══════════════════════════════════════ */
+.metric-strip{display:flex;align-items:center;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;margin-bottom:14px}
+.metric-strip .ms{flex:1;padding:14px 20px;border-right:1px solid var(--border);text-align:center}
+.metric-strip .ms:last-child{border-right:none}
+.metric-strip .ms .ms-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3)}
+.metric-strip .ms .ms-val{font-family:'DM Mono';font-size:18px;font-weight:500;margin-top:2px}
+
+/* Goal inline */
+.goal-inline{display:flex;align-items:center;gap:14px;padding:14px 20px;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);margin-bottom:14px}
+.goal-inline .gi-end{text-align:center;min-width:50px}
+.goal-inline .gi-end b{font-family:'DM Mono';font-size:14px;font-weight:500;display:block}
+.goal-inline .gi-end span{font-size:9px;color:var(--t3);text-transform:uppercase}
+.goal-inline .gi-bar{flex:1;height:8px;background:var(--s3);border-radius:99px;overflow:hidden;position:relative}
+.goal-inline .gi-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--blue))}
+.goal-inline .gi-bar .dot{position:absolute;top:-4px;width:16px;height:16px;border-radius:50%;background:var(--t1);border:3px solid var(--mod)}
+.goal-inline .gi-pct{font-family:'DM Mono';font-size:13px;color:var(--mod);min-width:50px;text-align:right}
+
+/* History table Bloomberg-style */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border)}
+.tbl td{font-size:12.5px;padding:10px 12px;border-bottom:1px solid rgba(120,165,220,.04);transition:background .15s}
+.tbl tr:hover td{background:var(--s2)}
+.tbl .mono{font-family:'DM Mono';font-weight:500}
+.delta{display:inline-flex;padding:2px 8px;border-radius:6px;font-family:'DM Mono';font-size:11px;font-weight:500}
+.delta.dn{background:rgba(16,185,129,.1);color:var(--green)}
+.delta.up{background:rgba(244,63,94,.1);color:var(--red)}
+
+/* ═══════════════════════════════════════
+   SCREEN 3 — ATIVIDADES (Feed + sidebar)
+   ═══════════════════════════════════════ */
+.streak-strip{display:flex;align-items:center;gap:20px;padding:18px 24px;background:linear-gradient(135deg,rgba(var(--mod-rgb),.1),rgba(245,158,11,.06));border:1px solid rgba(var(--mod-rgb),.2);border-radius:var(--card-r);margin-bottom:28px}
+.streak-strip svg{width:32px;height:32px;stroke:var(--mod);flex-shrink:0}
+.streak-strip .ss-num{font-family:'Syne';font-size:36px;font-weight:800;line-height:1}
+.streak-strip .ss-lbl{font-size:12px;color:var(--t2)}
+.streak-strip .milestones{display:flex;gap:6px;margin-left:auto}
+.streak-strip .ml{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1px solid var(--border);color:var(--t3)}
+.streak-strip .ml.done{border-color:var(--mod);background:var(--mod-dim);color:var(--mod)}
+.streak-strip .ml.cur{border-color:var(--mod);box-shadow:0 0 10px rgba(var(--mod-rgb),.3)}
+
+.act-feed{display:flex;flex-direction:column;gap:12px}
+.af{display:flex;align-items:stretch;gap:16px;padding:18px 22px;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);transition:all .2s}
+.af:hover{border-color:var(--border-h);box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.af .af-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.af .af-ico svg{width:20px;height:20px;fill:none;stroke-width:2;stroke-linecap:round}
+.af .af-body{flex:1}
+.af .af-body h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.af .af-body .af-meta{font-size:11px;color:var(--t3)}
+.af .af-stats{display:flex;gap:20px;align-items:center}
+.af .af-stats .st{text-align:center}
+.af .af-stats .st b{font-family:'DM Mono';font-size:15px;font-weight:500;display:block}
+.af .af-stats .st span{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+.af .af-stats .intensity{display:flex;gap:3px;align-items:center}
+.af .af-stats .intensity i{width:5px;height:14px;border-radius:3px;background:var(--s3)}
+.af .af-stats .intensity i.on{background:var(--mod)}
+
+/* Sidebar summary */
+.summary-box{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:22px}
+.summary-box h3{font-family:'Syne';font-weight:700;font-size:13px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px}
+.sb-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(120,165,220,.04)}
+.sb-row:last-child{border-bottom:none}
+.sb-row span{font-size:12px;color:var(--t3)}
+.sb-row b{font-family:'DM Mono';font-size:13px;font-weight:500}
+
+/* ═══════════════════════════════════════
+   SCREEN 4 — SAUDE (Hero + Table)
+   ═══════════════════════════════════════ */
+.next-appt{display:flex;align-items:center;gap:24px;padding:28px 32px;background:var(--s1);border:1px solid rgba(var(--mod-rgb),.2);border-radius:var(--card-r);margin-bottom:28px;position:relative;overflow:hidden}
+.next-appt::before{content:'';position:absolute;top:0;left:24px;right:24px;height:2.5px;border-radius:0 0 3px 3px;background:var(--mod)}
+.next-appt .na-date{text-align:center;min-width:64px}
+.next-appt .na-date .day{font-family:'DM Mono';font-size:32px;font-weight:500;line-height:1}
+.next-appt .na-date .mo{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mod)}
+.next-appt .na-body{flex:1}
+.next-appt .na-body h3{font-size:16px;font-weight:600;margin-bottom:2px}
+.next-appt .na-body p{font-size:12px;color:var(--t2)}
+.next-appt .na-actions{display:flex;gap:8px}
+
+/* Stats mini strip for saude */
+.saude-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.ss{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:16px 18px;text-align:center;position:relative;overflow:hidden}
+.ss .ss-bar{position:absolute;top:0;left:16px;right:16px;height:2.5px;border-radius:0 0 3px 3px}
+.ss .ss-val{font-family:'DM Mono';font-size:22px;font-weight:500;margin-top:4px}
+.ss .ss-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:4px}
+
+/* Appt table */
+.appt-tbl{width:100%;border-collapse:collapse}
+.appt-tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border)}
+.appt-tbl td{padding:14px;border-bottom:1px solid rgba(120,165,220,.04);font-size:13px;transition:background .15s}
+.appt-tbl tr:hover td{background:var(--s2)}
+.status-pill{display:inline-flex;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700}
+
+/* ═══════════════════════════════════════
+   SCREEN 5 — CARDAPIO (Split panel)
+   ═══════════════════════════════════════ */
+.day-nav{display:flex;gap:4px;margin-bottom:20px}
+.dn{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:600;border:1px solid var(--border);color:var(--t3);text-align:center;cursor:pointer;transition:all .15s}
+.dn:hover{border-color:var(--border-h);color:var(--t2)}
+.dn.on{border-color:var(--yellow);background:rgba(245,158,11,.08);color:var(--t1)}
+.dn b{display:block;font-family:'DM Mono';font-size:10px;color:var(--yellow);margin-top:2px;font-weight:500}
+
+.meal{display:flex;align-items:stretch;gap:14px;padding:16px 0;border-bottom:1px solid rgba(120,165,220,.04)}
+.meal:last-child{border-bottom:none}
+.meal .ml-time{width:80px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;background:var(--s2);border-radius:12px;text-align:center}
+.meal .ml-time svg{width:20px;height:20px;stroke:var(--yellow);fill:none;stroke-width:2;margin-bottom:4px}
+.meal .ml-time .ml-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.meal .ml-time .ml-kcal{font-family:'DM Mono';font-size:11px;color:var(--yellow);margin-top:2px}
+.meal .ml-body{flex:1}
+.meal .ml-body h4{font-size:13px;font-weight:600;margin-bottom:2px}
+.meal .ml-body .ml-prep{font-size:11px;color:var(--t3);margin-bottom:6px}
+.macro{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:600;margin-right:6px}
+
+/* ═══════════════════════════════════════
+   SCREEN 6 — COACH IA
+   ═══════════════════════════════════════ */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 160px);min-height:500px}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px 0;display:flex;flex-direction:column;gap:16px}
+.msg{display:flex;gap:10px;max-width:70%}
+.msg.usr{margin-left:auto;flex-direction:row-reverse}
+.msg .av{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.msg.ai .av{background:rgba(var(--mod-rgb),.12)}
+.msg.usr .av{background:rgba(var(--mod-rgb),.12)}
+.msg .av svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round}
+.msg .bbl{padding:14px 18px;border-radius:18px;font-size:13px;line-height:1.6}
+.msg.ai .bbl{background:var(--s1);border:1px solid var(--border);border-top-left-radius:4px}
+.msg.usr .bbl{background:var(--mod);color:#fff;border-top-right-radius:4px}
+.chat-in{display:flex;gap:10px;padding:12px 16px;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);margin-top:12px;align-items:flex-end}
+.chat-in textarea{flex:1;background:none;border:none;color:var(--t1);font-size:13px;resize:none;outline:none;line-height:1.5;max-height:100px;font-family:'DM Sans'}
+.chat-in textarea::placeholder{color:var(--t3)}
+.chat-in .send{width:36px;height:36px;border-radius:99px;background:var(--mod);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;transition:opacity .2s}
+.chat-in .send:hover{opacity:.85}
+.sug-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:460px;margin:0 auto}
+.sug{padding:12px 16px;background:var(--s1);border:1px solid var(--border);border-radius:12px;font-size:12px;color:var(--t2);cursor:pointer;transition:all .15s}
+.sug:hover{border-color:var(--border-h);color:var(--t1)}
+
+/* ═══ PROTO NAV ═══ */
+.pnav{position:fixed;bottom:0;left:0;right:0;height:46px;background:#060a14;border-top:1px solid rgba(120,165,220,.06);display:flex;align-items:center;padding:0 16px;gap:4px;z-index:999}
+.pnav .lbl{font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--t3);margin-right:12px;text-transform:uppercase;white-space:nowrap}
+.pnav button{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;color:var(--t3);transition:all .15s;white-space:nowrap}
+.pnav button:hover{color:var(--t1);background:rgba(255,255,255,.04)}
+.pnav button.on{color:#fff;background:rgba(var(--mod-rgb),.12)}
+.pnav .sep{width:1px;height:18px;background:var(--border);margin:0 2px}
+
+/* ─── Modal ─── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(3,7,26,.7);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:28px;width:440px;max-width:90vw}
+.modal h2{font-family:'Syne';font-weight:700;font-size:18px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.modal h2 svg{width:20px;height:20px;stroke:var(--mod);fill:none;stroke-width:2}
+.modal label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:6px;margin-top:14px}
+.modal input,.modal select{width:100%;padding:10px 14px;border-radius:10px;font-size:13px;background:var(--s2);border:1px solid var(--border);color:var(--t1);outline:none;font-family:'DM Sans'}
+.modal input:focus,.modal select:focus{border-color:var(--mod)}
+.modal .modal-btns{display:flex;gap:10px;margin-top:22px;justify-content:flex-end}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ SCREEN 1 — DASHBOARD ═══════════════ -->
+<div id="s-dash" class="screen active">
+<div class="page">
+
+  <!-- Header -->
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg stroke="var(--mod)"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    </div>
+    <div class="info">
+      <h1>Corpo</h1>
+      <p>78.2 kg &middot; 3 atividades esta semana &middot; IMC 24.1</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="document.getElementById('m-peso').classList.add('open')">
+        <svg><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Registrar Peso
+      </button>
+    </div>
+  </div>
+
+  <!-- Score Hero (compact) -->
+  <div class="score-hero anim d1">
+    <div class="score-ring" style="--circ:226;--off:54">
+      <svg width="86" height="86" viewBox="0 0 86 86">
+        <circle class="bg" cx="43" cy="43" r="36"/>
+        <circle class="fg" cx="43" cy="43" r="36" style="stroke:url(#grd1);stroke-dasharray:226;stroke-dashoffset:54"/>
+        <defs><linearGradient id="grd1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--green)"/><stop offset="100%" stop-color="var(--blue)"/></linearGradient></defs>
+      </svg>
+      <div class="ct"><b>76</b><span>Score</span></div>
+    </div>
+    <div style="flex:1">
+      <div style="font-family:Syne;font-weight:700;font-size:16px;margin-bottom:3px">Corpo em evolucao</div>
+      <div style="font-size:12px;color:var(--t2)">Voce perdeu <b style="color:var(--green)">1.3 kg</b> nos ultimos 30 dias. Ritmo saudavel.</div>
+    </div>
+    <div style="display:flex;gap:20px;align-items:center">
+      <div style="text-align:center"><span class="mono" style="font-size:18px;font-weight:500">1,812</span><br><span style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">TMB</span></div>
+      <div style="width:1px;height:28px;background:var(--border)"></div>
+      <div style="text-align:center"><span class="mono" style="font-size:18px;font-weight:500">2,356</span><br><span style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">TDEE</span></div>
+    </div>
+  </div>
+
+  <!-- Vitals Strip -->
+  <div class="vitals anim d2">
+    <div class="vt">
+      <div class="vt-bar" style="background:var(--mod)"></div>
+      <div class="vt-lbl"><svg stroke="var(--mod)"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>Peso Atual</div>
+      <div class="vt-val">78.2 <span style="font-size:13px;color:var(--t3)">kg</span></div>
+      <div class="vt-sub" style="color:var(--green)">-0.4 kg vs semana</div>
+    </div>
+    <div class="vt">
+      <div class="vt-bar" style="background:var(--green)"></div>
+      <div class="vt-lbl"><svg stroke="var(--green)"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>IMC</div>
+      <div class="vt-val" style="color:var(--green)">24.1</div>
+      <div class="vt-sub">Normal</div>
+    </div>
+    <div class="vt">
+      <div class="vt-bar" style="background:var(--green)"></div>
+      <div class="vt-lbl"><svg stroke="var(--green)"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>Atividades</div>
+      <div class="vt-val">3</div>
+      <div class="vt-sub">150 min &middot; 680 kcal</div>
+    </div>
+    <div class="vt">
+      <div class="vt-bar" style="background:var(--cyan)"></div>
+      <div class="vt-lbl"><svg stroke="var(--cyan)"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>Hidratacao</div>
+      <div class="vt-val" style="color:var(--cyan)">1.8<span style="font-size:13px;color:var(--t3)">L</span></div>
+      <div class="vt-sub">72% da meta</div>
+    </div>
+    <div class="vt">
+      <div class="vt-bar" style="background:var(--yellow)"></div>
+      <div class="vt-lbl"><svg stroke="var(--yellow)"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Streak</div>
+      <div class="vt-val">5 <span style="font-size:13px;color:var(--t3)">dias</span></div>
+      <div class="vt-sub" style="color:var(--yellow)">Recorde: 12</div>
+    </div>
+  </div>
+
+  <!-- Main Grid: Heatmap + Trend LEFT | Hydration + Appointments RIGHT -->
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:14px;margin-bottom:28px" class="anim d3">
+
+    <!-- LEFT: Heatmap + Weight Trend stacked -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- Activity Heatmap (28 days linear) -->
+      <div class="cd">
+        <div class="cd-t">
+          <svg stroke="var(--mod)"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          Mapa de Atividades
+          <span style="margin-left:auto;font-size:11px;color:var(--t3)">Ultimas 4 semanas</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <span style="font-size:9px;color:var(--t3)">Seg</span>
+          <span style="font-size:9px;color:var(--t3);margin-left:auto">Dom</span>
+        </div>
+        <div class="hm-grid">
+          <div class="c l3"></div><div class="c l0"></div><div class="c l4"></div><div class="c l0"></div><div class="c l2"></div><div class="c l1"></div><div class="c l0"></div>
+          <div class="c l1"></div><div class="c l4"></div><div class="c l0"></div><div class="c l2"></div><div class="c l3"></div><div class="c l0"></div><div class="c l0"></div>
+          <div class="c l0"></div><div class="c l2"></div><div class="c l3"></div><div class="c l0"></div><div class="c l4"></div><div class="c l1"></div><div class="c l0"></div>
+          <div class="c l2"></div><div class="c l0"></div><div class="c l1"></div><div class="c l4"></div><div class="c l0"></div><div class="c l3"></div><div class="c l2"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:8px;justify-content:flex-end">
+          <span style="font-size:9px;color:var(--t3)">Menos</span>
+          <div style="width:10px;height:10px;border-radius:2px;background:var(--s3)"></div>
+          <div style="width:10px;height:10px;border-radius:2px;background:rgba(var(--mod-rgb),.2)"></div>
+          <div style="width:10px;height:10px;border-radius:2px;background:rgba(var(--mod-rgb),.4)"></div>
+          <div style="width:10px;height:10px;border-radius:2px;background:rgba(var(--mod-rgb),.65)"></div>
+          <div style="width:10px;height:10px;border-radius:2px;background:var(--mod)"></div>
+          <span style="font-size:9px;color:var(--t3)">Mais</span>
+        </div>
+      </div>
+
+      <!-- Weight Trend mini -->
+      <div class="cd" style="flex:1">
+        <div class="cd-t">
+          <svg stroke="var(--mod)"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+          Tendencia
+          <span class="rt" onclick="go('peso')">Detalhes &rarr;</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px">
+          <span class="mono" style="font-size:26px;font-weight:500">78.2 <span style="font-size:12px;color:var(--t3)">kg</span></span>
+          <span class="pill" style="background:rgba(16,185,129,.1);color:var(--green)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 15 6-6 6 6"/></svg>
+            -1.3 kg (30d)
+          </span>
+        </div>
+        <div class="chart-ph" style="height:100px">Recharts: LineChart — peso ultimos 30 dias com area gradient laranja, linha meta 75kg tracejada verde</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Hydration + Appointments stacked -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- Hydration -->
+      <div class="cd">
+        <div class="cd-t">
+          <svg stroke="var(--cyan)"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+          Hidratacao
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
+          <span class="mono" style="font-size:24px;font-weight:500;color:var(--cyan)">1.8</span>
+          <span style="font-size:12px;color:var(--t3)">/ 2.5L</span>
+          <span class="mono" style="font-size:12px;color:var(--cyan);margin-left:auto">72%</span>
+        </div>
+        <div class="hydro" style="margin-bottom:12px">
+          <div class="hydro-bar"><i style="width:72%"></i></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-g" style="flex:1;justify-content:center;padding:8px;font-size:12px">+250ml</button>
+          <button class="btn" style="flex:1;justify-content:center;padding:8px;font-size:12px;background:var(--cyan);color:#fff">+500ml</button>
+        </div>
+      </div>
+
+      <!-- Appointments -->
+      <div class="cd" style="flex:1">
+        <div class="cd-t">
+          <svg stroke="var(--purple)"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+          Proximas Consultas
+          <span class="rt" onclick="go('saude')">Ver todas &rarr;</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--s2);border-radius:12px;border:1px solid var(--border)">
+            <div style="text-align:center;min-width:40px">
+              <div class="mono" style="font-size:18px;font-weight:500;line-height:1">22</div>
+              <div style="font-size:9px;font-weight:700;color:var(--cyan);text-transform:uppercase">MAR</div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600">Cardiologista</div>
+              <div style="font-size:11px;color:var(--t3)">Dr. Oliveira</div>
+            </div>
+            <div class="pill" style="background:rgba(6,182,212,.1);color:var(--cyan)">7 dias</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--s2);border-radius:12px;border:1px solid var(--border)">
+            <div style="text-align:center;min-width:40px">
+              <div class="mono" style="font-size:18px;font-weight:500;line-height:1">05</div>
+              <div style="font-size:9px;font-weight:700;color:var(--yellow);text-transform:uppercase">ABR</div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600">Dermatologista</div>
+              <div style="font-size:11px;color:var(--t3)">Dra. Santos</div>
+            </div>
+            <div class="pill" style="background:rgba(245,158,11,.1);color:var(--yellow)">21 dias</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--s2);border-radius:12px;border:1px solid var(--border)">
+            <div style="text-align:center;min-width:40px">
+              <div class="mono" style="font-size:18px;font-weight:500;line-height:1">18</div>
+              <div style="font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase">ABR</div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600">Nutricionista</div>
+              <div style="font-size:11px;color:var(--t3)">Dra. Lima</div>
+            </div>
+            <div class="pill" style="background:var(--s3);color:var(--t3)">34 dias</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+</div>
+
+<!-- ═══════════════ SCREEN 2 — PESO ═══════════════ -->
+<div id="s-peso" class="screen">
+<div class="page">
+
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg stroke="var(--mod)"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+    </div>
+    <div class="info">
+      <h1>Peso &amp; Medidas</h1>
+      <p>Acompanhe sua evolucao corporal</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-g">Perfil de Saude</button>
+      <button class="btn btn-p" onclick="document.getElementById('m-peso').classList.add('open')">
+        <svg><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Registrar Peso
+      </button>
+    </div>
+  </div>
+
+  <!-- Metrics Strip (horizontal, 6 metrics) -->
+  <div class="metric-strip anim d1">
+    <div class="ms"><div class="ms-lbl">Peso Atual</div><div class="ms-val">78.2 <span style="font-size:11px;color:var(--t3)">kg</span></div></div>
+    <div class="ms"><div class="ms-lbl">IMC</div><div class="ms-val" style="color:var(--green)">24.1</div></div>
+    <div class="ms"><div class="ms-lbl">Altura</div><div class="ms-val">180 <span style="font-size:11px;color:var(--t3)">cm</span></div></div>
+    <div class="ms"><div class="ms-lbl">TMB</div><div class="ms-val">1,812</div></div>
+    <div class="ms"><div class="ms-lbl">TDEE</div><div class="ms-val">2,356</div></div>
+    <div class="ms"><div class="ms-lbl">Velocidade</div><div class="ms-val" style="color:var(--green)">-0.4 <span style="font-size:11px;color:var(--t3)">kg/sem</span></div></div>
+  </div>
+
+  <!-- Goal Inline -->
+  <div class="goal-inline anim d2">
+    <div class="gi-end"><b>79.5</b><span>Inicio</span></div>
+    <div class="gi-bar">
+      <i style="width:38%"></i>
+      <div class="dot" style="left:calc(38% - 8px)"></div>
+    </div>
+    <div class="gi-end"><b style="color:var(--green)">75.0</b><span>Meta</span></div>
+    <div class="gi-pct">38% &middot; Jun 26</div>
+  </div>
+
+  <!-- CHART — protagonist -->
+  <div class="cd anim d3" style="margin-bottom:14px">
+    <div class="cd-t">
+      <svg stroke="var(--mod)"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+      Evolucao de Peso
+      <div style="display:flex;gap:4px;margin-left:auto">
+        <button style="padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid var(--mod);background:var(--mod-dim);color:var(--t1)">3m</button>
+        <button style="padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid var(--border);color:var(--t3)">6m</button>
+        <button style="padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid var(--border);color:var(--t3)">12m</button>
+        <button style="padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid var(--border);color:var(--t3)">Max</button>
+      </div>
+    </div>
+    <div class="chart-ph" style="min-height:280px">Recharts: AreaChart — peso diario ultimos 3 meses, area gradient laranja, linha tracejada verde meta 75kg, tooltip com peso + IMC + data, eixo Y 74-80kg, eixo X datas</div>
+  </div>
+
+  <!-- History Table Bloomberg-style -->
+  <div class="cd anim d4">
+    <div class="cd-t">
+      <svg stroke="var(--t2)"><path d="M3 3v18h18"/><path d="M21 17H7"/><path d="M21 13H7"/><path d="M21 9H7"/></svg>
+      Historico de Registros
+      <span style="margin-left:auto;font-size:11px;color:var(--t3)">15 registros</span>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>Data</th><th>Peso</th><th>Cintura</th><th>IMC</th><th>Variacao</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="mono" style="color:var(--t3)">15 Mar 26</td><td class="mono">78.2 kg</td><td class="mono" style="color:var(--t2)">82 cm</td><td class="mono" style="color:var(--green)">24.1</td><td><span class="delta dn">-0.3</span></td><td style="color:var(--t3);cursor:pointer;font-size:12px">&times;</td></tr>
+        <tr><td class="mono" style="color:var(--t3)">12 Mar 26</td><td class="mono">78.5 kg</td><td class="mono" style="color:var(--t2)">82.5 cm</td><td class="mono" style="color:var(--green)">24.2</td><td><span class="delta dn">-0.2</span></td><td style="color:var(--t3);cursor:pointer;font-size:12px">&times;</td></tr>
+        <tr><td class="mono" style="color:var(--t3)">08 Mar 26</td><td class="mono">78.7 kg</td><td class="mono" style="color:var(--t2)">83 cm</td><td class="mono" style="color:var(--green)">24.3</td><td><span class="delta up">+0.1</span></td><td style="color:var(--t3);cursor:pointer;font-size:12px">&times;</td></tr>
+        <tr><td class="mono" style="color:var(--t3)">04 Mar 26</td><td class="mono">78.6 kg</td><td class="mono" style="color:var(--t2)">83 cm</td><td class="mono" style="color:var(--green)">24.2</td><td><span class="delta dn">-0.5</span></td><td style="color:var(--t3);cursor:pointer;font-size:12px">&times;</td></tr>
+        <tr><td class="mono" style="color:var(--t3)">28 Fev 26</td><td class="mono">79.1 kg</td><td class="mono" style="color:var(--t2)">84 cm</td><td class="mono" style="color:var(--yellow)">24.4</td><td><span class="delta dn">-0.4</span></td><td style="color:var(--t3);cursor:pointer;font-size:12px">&times;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════ SCREEN 3 — ATIVIDADES ═══════════════ -->
+<div id="s-ativ" class="screen">
+<div class="page">
+
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg stroke="var(--mod)"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+    </div>
+    <div class="info">
+      <h1>Atividades Fisicas</h1>
+      <p>Registre e acompanhe seus treinos</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="document.getElementById('m-ativ').classList.add('open')">
+        <svg><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Registrar Atividade
+      </button>
+    </div>
+  </div>
+
+  <!-- Streak Strip -->
+  <div class="streak-strip anim d1">
+    <svg fill="none" stroke-width="2" stroke-linecap="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+    <div>
+      <div class="ss-num">5</div>
+      <div class="ss-lbl">dias consecutivos de atividade</div>
+    </div>
+    <div class="milestones">
+      <div class="ml done">3</div>
+      <div class="ml cur">7</div>
+      <div class="ml">14</div>
+      <div class="ml">30</div>
+    </div>
+  </div>
+
+  <!-- Layout: Feed LEFT + Summary sidebar RIGHT -->
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:14px" class="anim d2">
+
+    <!-- Activity Feed -->
+    <div class="act-feed">
+      <div class="af">
+        <div class="af-ico" style="background:var(--mod-dim)"><svg stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <div class="af-body">
+          <h4>Corrida</h4>
+          <div class="af-meta">Hoje, 07:30 &middot; Parque Ibirapuera &middot; Moderada</div>
+        </div>
+        <div class="af-stats">
+          <div class="st"><b>45</b><span>min</span></div>
+          <div class="st"><b>5.2</b><span>km</span></div>
+          <div class="st"><b>320</b><span>kcal</span></div>
+          <div class="intensity"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+        </div>
+      </div>
+
+      <div class="af">
+        <div class="af-ico" style="background:rgba(168,85,247,.08)"><svg stroke="var(--purple)"><path d="M6.5 6.5h11"/><path d="M6.5 10h11"/><path d="M6.5 13.5h11"/><path d="M6.5 17h11"/></svg></div>
+        <div class="af-body">
+          <h4>Musculacao</h4>
+          <div class="af-meta">Ontem, 18:00 &middot; Academia &middot; Intensa</div>
+        </div>
+        <div class="af-stats">
+          <div class="st"><b>60</b><span>min</span></div>
+          <div class="st"><b>--</b><span>km</span></div>
+          <div class="st"><b>250</b><span>kcal</span></div>
+          <div class="intensity"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+        </div>
+      </div>
+
+      <div class="af">
+        <div class="af-ico" style="background:rgba(6,182,212,.08)"><svg stroke="var(--cyan)"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg></div>
+        <div class="af-body">
+          <h4>Ciclismo</h4>
+          <div class="af-meta">13 Mar, 06:45 &middot; Marginal &middot; Leve</div>
+        </div>
+        <div class="af-stats">
+          <div class="st"><b>45</b><span>min</span></div>
+          <div class="st"><b>12</b><span>km</span></div>
+          <div class="st"><b>110</b><span>kcal</span></div>
+          <div class="intensity"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="cd" style="margin-top:2px">
+        <div class="cd-t">
+          <svg stroke="var(--green)"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          Evolucao Semanal
+        </div>
+        <div class="chart-ph" style="min-height:160px">Recharts: BarChart — minutos ativos por semana (ultimas 8 semanas), barras laranja, eixo Y minutos, tooltip com total + media</div>
+      </div>
+    </div>
+
+    <!-- Sidebar Summary -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="summary-box">
+        <h3>Resumo Semanal</h3>
+        <div class="sb-row"><span>Atividades</span><b>3</b></div>
+        <div class="sb-row"><span>Meta semanal</span><b style="color:var(--t3)">4/semana</b></div>
+        <div class="sb-row"><span>Minutos ativos</span><b>150</b></div>
+        <div class="sb-row"><span>Media/treino</span><b>50 min</b></div>
+        <div class="sb-row"><span>Calorias</span><b>680</b></div>
+        <div class="sb-row"><span>Media/treino</span><b>227 kcal</b></div>
+        <div class="sb-row"><span>Streak</span><b style="color:var(--mod)">5 dias</b></div>
+        <div class="sb-row"><span>Recorde</span><b style="color:var(--yellow)">12 dias</b></div>
+      </div>
+
+      <div class="summary-box">
+        <h3>Por Tipo</h3>
+        <div class="sb-row"><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:2px;background:var(--mod)"></span>Corrida</span><b>45 min</b></div>
+        <div class="sb-row"><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:2px;background:var(--purple)"></span>Musculacao</span><b>60 min</b></div>
+        <div class="sb-row"><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:2px;background:var(--cyan)"></span>Ciclismo</span><b>45 min</b></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════ SCREEN 4 — SAUDE ═══════════════ -->
+<div id="s-saude" class="screen">
+<div class="page">
+
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg stroke="var(--mod)"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    </div>
+    <div class="info">
+      <h1>Saude Preventiva</h1>
+      <p>Consultas, exames e acompanhamento medico</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="document.getElementById('m-consulta').classList.add('open')">
+        <svg><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Agendar Consulta
+      </button>
+    </div>
+  </div>
+
+  <!-- Next Appointment Hero -->
+  <div class="next-appt anim d1">
+    <div class="na-date">
+      <div class="mo">MAR</div>
+      <div class="day">22</div>
+    </div>
+    <div style="width:1px;height:40px;background:var(--border)"></div>
+    <div class="na-body">
+      <h3>Cardiologista</h3>
+      <p>Dr. Oliveira &middot; Hospital Albert Einstein &middot; 10:00</p>
+    </div>
+    <div class="na-actions">
+      <button class="btn btn-g" style="font-size:12px;padding:8px 16px">Remarcar</button>
+      <button class="btn btn-g" style="font-size:12px;padding:8px 16px">Cancelar</button>
+    </div>
+    <div class="pill" style="background:var(--mod-dim);color:var(--mod)">em 7 dias</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="saude-stats anim d2">
+    <div class="ss"><div class="ss-bar" style="background:var(--yellow)"></div><div class="ss-lbl">Proximas</div><div class="ss-val">2</div></div>
+    <div class="ss"><div class="ss-bar" style="background:var(--green)"></div><div class="ss-lbl">Realizadas</div><div class="ss-val">8</div></div>
+    <div class="ss"><div class="ss-bar" style="background:var(--cyan)"></div><div class="ss-lbl">Total</div><div class="ss-val">10</div></div>
+    <div class="ss"><div class="ss-bar" style="background:var(--red)"></div><div class="ss-lbl">Custo Total</div><div class="ss-val" style="font-size:17px">R$ 1.850</div></div>
+  </div>
+
+  <!-- Filter pills -->
+  <div style="display:flex;gap:6px;margin-bottom:20px" class="anim d3">
+    <button style="padding:6px 16px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--mod);background:var(--mod-dim);color:var(--t1)">Todas</button>
+    <button style="padding:6px 16px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--border);color:var(--t3)">Proximas</button>
+    <button style="padding:6px 16px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--border);color:var(--t3)">Realizadas</button>
+  </div>
+
+  <!-- Appointments Table -->
+  <div class="cd anim d4">
+    <table class="appt-tbl">
+      <thead><tr><th>Data</th><th>Especialidade</th><th>Profissional</th><th>Local</th><th>Custo</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono" style="color:var(--t2)">22 Mar 26</td>
+          <td style="font-weight:600">Cardiologista</td>
+          <td>Dr. Oliveira</td>
+          <td style="color:var(--t3)">Hospital Albert Einstein</td>
+          <td class="mono">R$ 350</td>
+          <td><span class="status-pill" style="background:rgba(6,182,212,.1);color:var(--cyan)">Agendada</span></td>
+        </tr>
+        <tr>
+          <td class="mono" style="color:var(--t2)">05 Abr 26</td>
+          <td style="font-weight:600">Dermatologista</td>
+          <td>Dra. Santos</td>
+          <td style="color:var(--t3)">Clinica Derma SP</td>
+          <td class="mono">R$ 280</td>
+          <td><span class="status-pill" style="background:rgba(245,158,11,.1);color:var(--yellow)">Agendada</span></td>
+        </tr>
+        <tr>
+          <td class="mono" style="color:var(--t2)">10 Fev 26</td>
+          <td style="font-weight:600">Clinico Geral</td>
+          <td>Dr. Silva</td>
+          <td style="color:var(--t3)">UBS Pinheiros</td>
+          <td class="mono">R$ 0</td>
+          <td><span class="status-pill" style="background:rgba(16,185,129,.1);color:var(--green)">Realizada</span></td>
+        </tr>
+        <tr>
+          <td class="mono" style="color:var(--t2)">18 Jan 26</td>
+          <td style="font-weight:600">Oftalmologista</td>
+          <td>Dra. Ferreira</td>
+          <td style="color:var(--t3)">Vision Center</td>
+          <td class="mono">R$ 220</td>
+          <td><span class="status-pill" style="background:rgba(16,185,129,.1);color:var(--green)">Realizada</span></td>
+        </tr>
+        <tr>
+          <td class="mono" style="color:var(--t2)">05 Dez 25</td>
+          <td style="font-weight:600">Nutricionista</td>
+          <td>Dra. Lima</td>
+          <td style="color:var(--t3)">Clinica NutriVida</td>
+          <td class="mono">R$ 200</td>
+          <td><span class="status-pill" style="background:rgba(16,185,129,.1);color:var(--green)">Realizada</span></td>
+        </tr>
+        <tr>
+          <td class="mono" style="color:var(--t2)">20 Nov 25</td>
+          <td style="font-weight:600">Dentista</td>
+          <td>Dr. Costa</td>
+          <td style="color:var(--t3)">OdontoPrime</td>
+          <td class="mono">R$ 180</td>
+          <td><span class="status-pill" style="background:rgba(16,185,129,.1);color:var(--green)">Realizada</span></td>
+        </tr>
+        <tr>
+          <td class="mono" style="color:var(--t2)">01 Out 25</td>
+          <td style="font-weight:600">Ortopedista</td>
+          <td>Dr. Almeida</td>
+          <td style="color:var(--t3)">Hospital Sirio</td>
+          <td class="mono">R$ 320</td>
+          <td><span class="status-pill" style="background:rgba(16,185,129,.1);color:var(--green)">Realizada</span></td>
+        </tr>
+        <tr>
+          <td class="mono" style="color:var(--t2)">15 Set 25</td>
+          <td style="font-weight:600">Endocrinologista</td>
+          <td>Dra. Rocha</td>
+          <td style="color:var(--t3)">Clinica EndoCenter</td>
+          <td class="mono">R$ 300</td>
+          <td><span class="status-pill" style="background:rgba(16,185,129,.1);color:var(--green)">Realizada</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-top:1px solid var(--border);margin-top:4px">
+      <span style="font-size:11px;color:var(--t3)">Media: R$ 185/consulta</span>
+      <span class="mono" style="font-size:13px;font-weight:500">Total: R$ 1.850</span>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════ SCREEN 5 — CARDAPIO ═══════════════ -->
+<div id="s-cardapio" class="screen">
+<div class="page">
+
+  <div class="mod-hdr anim">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg stroke="var(--mod)"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+    </div>
+    <div class="info">
+      <h1>Cardapio com IA</h1>
+      <p>Plano alimentar personalizado gerado por inteligencia artificial</p>
+    </div>
+    <div class="actions">
+      <span class="pill" style="background:var(--mod-dim);border:1px solid rgba(var(--mod-rgb),.2);color:var(--mod)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        IA
+      </span>
+    </div>
+  </div>
+
+  <!-- Day Navigation -->
+  <div class="day-nav anim d1">
+    <div class="dn on"><span>Seg</span><b>2,050</b></div>
+    <div class="dn"><span>Ter</span><b>2,120</b></div>
+    <div class="dn"><span>Qua</span><b>1,980</b></div>
+    <div class="dn"><span>Qui</span><b>2,100</b></div>
+    <div class="dn"><span>Sex</span><b>2,050</b></div>
+    <div class="dn"><span>Sab</span><b>2,200</b></div>
+    <div class="dn"><span>Dom</span><b>2,150</b></div>
+  </div>
+
+  <!-- Split: Meals LEFT + Macros RIGHT -->
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:14px" class="anim d2">
+
+    <!-- Meals -->
+    <div class="cd">
+      <div class="cd-t">
+        <svg stroke="var(--yellow)"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+        Segunda-feira
+        <span class="mono" style="font-size:12px;color:var(--yellow);margin-left:auto">2,050 kcal</span>
+      </div>
+
+      <div class="meal">
+        <div class="ml-time">
+          <svg><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>
+          <div class="ml-lbl">Cafe</div>
+          <div class="ml-kcal">450 kcal</div>
+        </div>
+        <div class="ml-body">
+          <h4>Omelete com espinafre e queijo cottage</h4>
+          <div class="ml-prep">15 min de preparo</div>
+          <div><span class="macro" style="background:rgba(59,130,246,.1);color:var(--blue)">P: 28g</span><span class="macro" style="background:rgba(16,185,129,.1);color:var(--green)">C: 12g</span><span class="macro" style="background:rgba(245,158,11,.1);color:var(--yellow)">G: 18g</span></div>
+        </div>
+      </div>
+
+      <div class="meal">
+        <div class="ml-time">
+          <svg><path d="M18 11H6a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2Z"/><path d="M6 11V9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/></svg>
+          <div class="ml-lbl">Almoco</div>
+          <div class="ml-kcal">680 kcal</div>
+        </div>
+        <div class="ml-body">
+          <h4>Frango grelhado com arroz integral e salada</h4>
+          <div class="ml-prep">25 min de preparo</div>
+          <div><span class="macro" style="background:rgba(59,130,246,.1);color:var(--blue)">P: 42g</span><span class="macro" style="background:rgba(16,185,129,.1);color:var(--green)">C: 55g</span><span class="macro" style="background:rgba(245,158,11,.1);color:var(--yellow)">G: 15g</span></div>
+        </div>
+      </div>
+
+      <div class="meal">
+        <div class="ml-time">
+          <svg><path d="M12 22c-4.97 0-9-2.582-9-6 0-1.5.75-2.5 1.875-3.375C6.75 11.5 8 10.625 8 9a4 4 0 0 1 8 0c0 1.625 1.25 2.5 2.125 3.625C19.25 13.5 20 14.5 20 16c0 3.418-4.03 6-9 6Z"/></svg>
+          <div class="ml-lbl">Lanche</div>
+          <div class="ml-kcal">220 kcal</div>
+        </div>
+        <div class="ml-body">
+          <h4>Iogurte grego com granola e mel</h4>
+          <div class="ml-prep">3 min</div>
+          <div><span class="macro" style="background:rgba(59,130,246,.1);color:var(--blue)">P: 15g</span><span class="macro" style="background:rgba(16,185,129,.1);color:var(--green)">C: 28g</span><span class="macro" style="background:rgba(245,158,11,.1);color:var(--yellow)">G: 6g</span></div>
+        </div>
+      </div>
+
+      <div class="meal">
+        <div class="ml-time">
+          <svg><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+          <div class="ml-lbl">Jantar</div>
+          <div class="ml-kcal">700 kcal</div>
+        </div>
+        <div class="ml-body">
+          <h4>Salmao assado com batata doce e brocolis</h4>
+          <div class="ml-prep">30 min de preparo</div>
+          <div><span class="macro" style="background:rgba(59,130,246,.1);color:var(--blue)">P: 38g</span><span class="macro" style="background:rgba(16,185,129,.1);color:var(--green)">C: 45g</span><span class="macro" style="background:rgba(245,158,11,.1);color:var(--yellow)">G: 22g</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Macros + Preferences -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- Resumo Diario -->
+      <div class="cd">
+        <div class="cd-t">
+          <svg stroke="var(--yellow)"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Resumo Diario
+        </div>
+        <div style="text-align:center;margin-bottom:14px">
+          <span class="mono" style="font-size:28px;font-weight:500;color:var(--yellow)">2,050</span>
+          <span style="font-size:12px;color:var(--t3)"> kcal</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--blue)">Proteina</span><span class="mono" style="font-size:11px">123g</span></div>
+            <div style="height:6px;background:var(--s3);border-radius:99px;overflow:hidden"><div style="width:62%;height:100%;background:var(--blue);border-radius:99px"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--green)">Carboidratos</span><span class="mono" style="font-size:11px">140g</span></div>
+            <div style="height:6px;background:var(--s3);border-radius:99px;overflow:hidden"><div style="width:55%;height:100%;background:var(--green);border-radius:99px"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--yellow)">Gordura</span><span class="mono" style="font-size:11px">61g</span></div>
+            <div style="height:6px;background:var(--s3);border-radius:99px;overflow:hidden"><div style="width:40%;height:100%;background:var(--yellow);border-radius:99px"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferencias -->
+      <div class="cd">
+        <div class="cd-t">
+          <svg stroke="var(--t2)"><circle cx="12" cy="12" r="3"/><path d="M12 1v6"/><path d="M12 17v6"/><path d="m4.22 4.22 4.24 4.24"/><path d="m15.54 15.54 4.24 4.24"/><path d="M1 12h6"/><path d="M17 12h6"/><path d="m4.22 19.78 4.24-4.24"/><path d="m15.54 8.46 4.24-4.24"/></svg>
+          Preferencias
+        </div>
+        <div style="margin-bottom:12px">
+          <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);display:block;margin-bottom:4px">Orcamento semanal</label>
+          <div style="padding:8px 12px;border-radius:10px;font-size:12px;background:var(--s2);border:1px solid var(--border);color:var(--t1)">R$ 200</div>
+        </div>
+        <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);display:block;margin-bottom:6px">Restricoes</label>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <span class="pill" style="border:1px solid var(--yellow);background:rgba(245,158,11,.08);color:var(--t1)">Sem lactose</span>
+          <span class="pill" style="border:1px solid var(--border);color:var(--t3)">Vegetariano</span>
+          <span class="pill" style="border:1px solid var(--border);color:var(--t3)">Low carb</span>
+          <span class="pill" style="border:1px solid var(--border);color:var(--t3)">Sem gluten</span>
+        </div>
+      </div>
+
+      <!-- Regenerar -->
+      <button class="btn btn-p" style="width:100%;justify-content:center;background:var(--mod)">
+        <svg><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        Regenerar Cardapio
+      </button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════ SCREEN 6 — COACH IA ═══════════════ -->
+<div id="s-coach" class="screen">
+<div class="page" style="padding-bottom:16px">
+
+  <div class="mod-hdr anim" style="margin-bottom:16px">
+    <div class="ico" style="background:var(--mod-dim)">
+      <svg stroke="var(--mod)"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+    </div>
+    <div class="info">
+      <h1>Coach IA</h1>
+      <p>Orientacoes sobre alimentacao, exercicios e bem-estar</p>
+    </div>
+    <div class="actions">
+      <span class="pill" style="background:var(--mod-dim);border:1px solid rgba(var(--mod-rgb),.2);color:var(--mod)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        IA
+      </span>
+    </div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--s2);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;font-size:11px;color:var(--t3)" class="anim d1">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
+    O Coach IA oferece orientacoes gerais. Consulte um profissional de saude para orientacao personalizada.
+  </div>
+
+  <!-- Chat -->
+  <div class="chat-wrap anim d2">
+    <div class="chat-msgs">
+      <div style="text-align:center;padding:40px 0">
+        <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(var(--mod-rgb),.15),rgba(245,158,11,.08));display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+        </div>
+        <h2 style="font-family:Syne;font-size:16px;font-weight:700;margin-bottom:4px">Ola! Sou seu Coach IA</h2>
+        <p style="font-size:12px;color:var(--t2);max-width:320px;margin:0 auto 20px">Posso ajudar com alimentacao, exercicios, sono e bem-estar geral. Ja tenho acesso ao seu perfil.</p>
+        <div class="sug-grid">
+          <div class="sug">Como perder 5kg com saude?</div>
+          <div class="sug">Monte uma rotina de exercicios</div>
+          <div class="sug">Melhor dieta para ganho de massa?</div>
+          <div class="sug">Dicas de alimentacao pos-treino</div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-in">
+      <textarea placeholder="Pergunte ao seu coach..." rows="1"></textarea>
+      <button class="send"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- Modal: Registrar Peso -->
+<div class="modal-bg" id="m-peso">
+  <div class="modal">
+    <h2><svg><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>Registrar Peso</h2>
+    <label>Peso (kg)</label>
+    <input type="number" placeholder="78.2" step="0.1">
+    <label>Cintura (cm)</label>
+    <input type="number" placeholder="82">
+    <label>Data</label>
+    <input type="date" value="2026-03-15">
+    <div class="modal-btns">
+      <button class="btn btn-g" onclick="this.closest('.modal-bg').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-p" onclick="this.closest('.modal-bg').classList.remove('open')">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Registrar Atividade -->
+<div class="modal-bg" id="m-ativ">
+  <div class="modal">
+    <h2><svg><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>Registrar Atividade</h2>
+    <label>Tipo</label>
+    <select>
+      <option>Corrida</option><option>Musculacao</option><option>Ciclismo</option><option>Natacao</option><option>Caminhada</option><option>Yoga</option><option>Outro</option>
+    </select>
+    <label>Duracao (min)</label>
+    <input type="number" placeholder="45">
+    <label>Distancia (km)</label>
+    <input type="number" placeholder="5.2" step="0.1">
+    <label>Calorias</label>
+    <input type="number" placeholder="320">
+    <label>Intensidade</label>
+    <select><option>Leve</option><option selected>Moderada</option><option>Intensa</option></select>
+    <div class="modal-btns">
+      <button class="btn btn-g" onclick="this.closest('.modal-bg').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-p" onclick="this.closest('.modal-bg').classList.remove('open')">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Agendar Consulta -->
+<div class="modal-bg" id="m-consulta">
+  <div class="modal">
+    <h2><svg><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Agendar Consulta</h2>
+    <label>Especialidade</label>
+    <input type="text" placeholder="Cardiologista">
+    <label>Profissional</label>
+    <input type="text" placeholder="Dr. Oliveira">
+    <label>Local</label>
+    <input type="text" placeholder="Hospital Albert Einstein">
+    <label>Data</label>
+    <input type="date">
+    <label>Horario</label>
+    <input type="time">
+    <label>Custo estimado</label>
+    <input type="number" placeholder="350">
+    <div class="modal-btns">
+      <button class="btn btn-g" onclick="this.closest('.modal-bg').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-p" onclick="this.closest('.modal-bg').classList.remove('open')">Agendar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ PROTO NAV ═══════════════ -->
+<div class="pnav">
+  <span class="lbl">Corpo</span>
+  <button class="on" data-s="dash" onclick="go('dash')">Dashboard</button>
+  <div class="sep"></div>
+  <button data-s="peso" onclick="go('peso')">Peso</button>
+  <div class="sep"></div>
+  <button data-s="ativ" onclick="go('ativ')">Atividades</button>
+  <div class="sep"></div>
+  <button data-s="saude" onclick="go('saude')">Saude</button>
+  <div class="sep"></div>
+  <button data-s="cardapio" onclick="go('cardapio')">Cardapio</button>
+  <div class="sep"></div>
+  <button data-s="coach" onclick="go('coach')">Coach IA</button>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  var t=document.getElementById('s-'+id);
+  if(t)t.classList.add('active');
+  document.querySelectorAll('.pnav button[data-s]').forEach(function(b){
+    b.classList.toggle('on',b.dataset.s===id);
+  });
+  window.scrollTo(0,0);
+  if(t){t.querySelectorAll('.anim').forEach(function(e){e.style.animation='none';e.offsetHeight;e.style.animation=''})}
+}
+document.querySelectorAll('.modal-bg').forEach(function(m){
+  m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('open')});
+});
+</script>
+
+</body>
+</html>

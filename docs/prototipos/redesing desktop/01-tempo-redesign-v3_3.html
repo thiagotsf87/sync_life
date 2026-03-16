@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>SyncLife — Tempo Desktop Redesign v3</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03071a;--s1:#091428;--s2:#0e1c35;--s3:#152544;
+  --t1:#e4f1ff;--t2:#7b9fc6;--t3:#3c5d84;
+  --border:rgba(120,165,220,.09);--border-h:rgba(120,165,220,.18);
+  --mod:#06b6d4;--mod-rgb:6,182,212;--mod-dim:rgba(6,182,212,.08);
+  --green:#10b981;--red:#f43f5e;--yellow:#f59e0b;--orange:#f97316;
+  --cyan:#06b6d4;--purple:#a855f7;--blue:#3b82f6;--indigo:#6366f1;
+  --rose:#f43f5e;--pink:#ec4899;
+  --card-r:18px;
+}
+html{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{padding-bottom:52px}
+.page{max-width:1160px;margin:0 auto;padding:36px 40px 60px}
+
+/* ═══ MODULE HEADER ═══ */
+.mh{display:flex;align-items:center;gap:16px;margin-bottom:36px}
+.mh .ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mh .ic svg{width:22px;height:22px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mh .nf{flex:1}
+.mh .nf h1{font-family:'Syne';font-weight:800;font-size:26px;line-height:1.15}
+.mh .nf p{font-size:13px;color:var(--t2);margin-top:3px}
+.mh .ac{display:flex;gap:10px;align-items:center}
+.mn{display:inline-flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.mn button{width:34px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--t3);background:none;border:none;cursor:pointer;transition:all .15s}
+.mn button:hover{color:var(--t1);background:var(--s2)}
+.mn .ml{padding:0 14px;font-family:'DM Mono';font-size:12px;font-weight:500;color:var(--t2);border-left:1px solid var(--border);border-right:1px solid var(--border)}
+
+/* ═══ BUTTONS ═══ */
+.bt{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:11px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap}
+.bt svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bp{background:var(--mod);color:#fff}
+.bp:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px rgba(var(--mod-rgb),.25)}
+.bg{background:transparent;color:var(--t2);border:1px solid var(--border)}
+.bg:hover{border-color:var(--border-h);color:var(--t1)}
+.bs{padding:7px 14px;font-size:12px;border-radius:9px}
+
+/* ═══ CARDS ═══ */
+.cd{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:24px;position:relative;overflow:hidden;transition:border-color .2s}
+.cd:hover{border-color:var(--border-h)}
+.ct{font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:18px;display:flex;align-items:center;gap:9px}
+.ct svg{width:16px;height:16px;stroke:var(--mod);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ct .rt{margin-left:auto;font-family:'DM Sans';font-size:12px;font-weight:500;color:var(--mod);cursor:pointer}
+.ct .rt:hover{text-decoration:underline}
+.ct .bd{margin-left:auto;font-size:10px;font-weight:600;padding:3px 10px;border-radius:7px}
+
+/* ═══ PILL ═══ */
+.pl{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
+
+/* ═══ CHART PLACEHOLDER ═══ */
+.ch{border:1px dashed var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:12px;min-height:160px;background:rgba(120,165,220,.015)}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.an{animation:rise .5s ease both}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(120,165,220,.12);border-radius:3px}
+
+/* ═══ MODAL ═══ */
+.mo{display:none;position:fixed;inset:0;background:rgba(3,7,26,.8);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.md{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;position:relative}
+.md h2{font-family:'Syne';font-weight:800;font-size:20px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.md h2 .hi{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.md h2 .hi svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cb{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:18px;border:none;background:none;cursor:pointer;transition:background .2s}
+.cb:hover{background:var(--s2)}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:12px;font-weight:600;color:var(--t2);margin-bottom:6px}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-size:13px;font-family:'DM Sans';outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--border-h)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ═══ PROTO NAV ═══ */
+.pn{position:fixed;bottom:0;left:0;right:0;height:46px;background:#060a14;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;padding:0 20px;gap:4px;z-index:999}
+.pn .tg{font-family:'DM Mono';font-size:9px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.2);margin-right:14px;text-transform:uppercase}
+.pn button{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;color:rgba(255,255,255,.3);background:none;border:none;cursor:pointer;transition:all .12s}
+.pn button:hover{color:rgba(255,255,255,.55);background:rgba(255,255,255,.04)}
+.pn button.on{color:#fff;background:rgba(var(--mod-rgb),.12)}
+.pn .sp{width:1px;height:16px;background:rgba(255,255,255,.06);margin:0 8px}
+.sc{display:none}.sc.active{display:block}
+
+/* ════════════════════════════════════════════
+   SCREEN-SPECIFIC: DASHBOARD — Hero strip
+   ════════════════════════════════════════════ */
+.hero{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:0;display:flex;overflow:hidden;margin-bottom:28px;position:relative}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--mod),#0055ff);border-radius:var(--card-r) var(--card-r) 0 0;z-index:2}
+.hero .hm{flex:1;padding:24px 28px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border)}
+.hero .hm:last-child{border-right:none}
+.hero .hm .lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.hero .hm .lb svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero .hm .vl{font-family:'DM Mono';font-weight:500;font-size:28px;line-height:1}
+.hero .hm .vl span{font-size:14px;color:var(--t2)}
+.hero .hm .nt{font-size:11px;color:var(--t3);margin-top:6px}
+.hero .hm.feat{flex:1.4;background:rgba(var(--mod-rgb),.03)}
+.hero .hm.feat .vl{color:var(--mod)}
+
+/* ═══ HEALTH+AI COMPACT ROW ═══ */
+.ha-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
+.ha-health{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:20px 24px;display:flex;align-items:center;gap:16px}
+.ha-health .sco{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ha-health .sco span{font-family:'Syne';font-weight:800;font-size:22px;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ha-ai{background:var(--s1);border-radius:var(--card-r);padding:20px 24px;position:relative;overflow:hidden}
+.ha-ai::before{content:'';position:absolute;inset:-1px;border-radius:calc(var(--card-r)+1px);background:linear-gradient(135deg,rgba(6,182,212,.18),rgba(0,85,255,.10));z-index:0}
+.ha-ai::after{content:'';position:absolute;inset:0;border-radius:var(--card-r);background:var(--s1);z-index:0}
+.ha-ai>*{position:relative;z-index:1}
+
+/* ═══ TIMELINE ═══ */
+.tl{display:flex;gap:14px;align-items:flex-start;padding:13px 0;border-bottom:1px solid rgba(120,165,220,.04)}
+.tl:last-child{border-bottom:none}
+.tl .tm{width:52px;text-align:right;font-family:'DM Mono';font-size:12px;color:var(--t2);flex-shrink:0;padding-top:3px}
+.tl .br{width:3px;min-height:36px;align-self:stretch;border-radius:3px;flex-shrink:0}
+.tl .bd{flex:1;min-width:0}
+.tl .bd .en{font-size:13px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl .bd .em{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
+.nl{display:flex;align-items:center;gap:0;margin:8px 0 8px 66px}
+.nd{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;animation:pd 2s ease-in-out infinite}
+.nr{flex:1;height:1.5px;background:var(--red)}
+@keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+
+/* ═══ DISTRIBUTION LEGEND ═══ */
+.dl{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:12px}
+.dl .dt{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+.dl .di{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dl .di svg{width:12px;height:12px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ═══ TREND CELLS ═══ */
+.tr-row{display:flex;gap:0}
+.tr-c{flex:1;text-align:center;padding:16px 10px;border:1px solid var(--border);border-right:none}
+.tr-c:first-child{border-radius:14px 0 0 14px}
+.tr-c:last-child{border-radius:0 14px 14px 0;border-right:1px solid var(--border)}
+.tr-c.warn{border-color:rgba(244,63,94,.25);background:rgba(244,63,94,.02)}
+.tr-c.best{border-color:rgba(16,185,129,.25);background:rgba(16,185,129,.02)}
+.tr-c .lb{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+.tr-c .vl{font-family:'DM Mono';font-size:18px;font-weight:500;margin-top:5px}
+.tr-c .nt{font-size:10px;color:var(--t3);margin-top:3px}
+
+/* ═══ RECURRENTS SCROLL ═══ */
+.rc-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+.rc-row::-webkit-scrollbar{height:4px}
+.rc-row::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+.rc{min-width:185px;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:16px;flex-shrink:0;transition:border-color .15s}
+.rc:hover{border-color:var(--border-h)}
+.rc .rh{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.rc .ri{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+.rc .ri svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rc .rb{margin-left:auto;font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--s3);color:var(--t3)}
+
+/* ════════════════════════════════════════════
+   SCREEN-SPECIFIC: AGENDA — Day view
+   ════════════════════════════════════════════ */
+.ws{display:flex;gap:8px;margin-bottom:20px}
+.wd{flex:1;display:flex;flex-direction:column;align-items:center;padding:12px 4px 10px;border-radius:14px;border:1px solid var(--border);background:var(--s1);transition:all .2s;cursor:pointer}
+.wd:hover{border-color:var(--border-h)}
+.wd.td{background:rgba(6,182,212,.06);border-color:rgba(6,182,212,.35)}
+.wd .dn{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+.wd.td .dn{color:var(--mod)}
+.wd .dd{font-family:'DM Mono';font-size:16px;font-weight:500;color:var(--t1);margin-top:3px}
+.wd.td .dd{color:var(--mod)}
+.wd .ds{display:flex;gap:3px;margin-top:6px;min-height:6px}
+.wd .ds span{width:5px;height:5px;border-radius:50%;display:block}
+
+/* Event cards for agenda */
+.ec{border:1px solid var(--border);border-radius:var(--card-r);margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.ec:hover{border-color:var(--border-h)}
+.er{display:flex;gap:14px;align-items:center;padding:14px 18px;position:relative;cursor:pointer}
+.er .ei{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.er .ei svg{width:16px;height:16px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ex{padding:0 18px 16px 86px;border-top:1px solid var(--border)}
+.ex .ed{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.ex .ed .ei{background:var(--s2);border-radius:10px;padding:10px 14px}
+.ex .ed .ei .el{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:4px}
+.ex .ed .ei .ev{font-size:13px;font-weight:500}
+/* Agenda summary strip */
+.as{display:flex;gap:0;background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:20px}
+.as .am{flex:1;padding:14px 18px;text-align:center;border-right:1px solid var(--border)}
+.as .am:last-child{border-right:none}
+.as .am .lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:4px}
+.as .am .vl{font-family:'DM Mono';font-size:16px;font-weight:500}
+
+/* ════════════════════════════════════════════
+   SCREEN-SPECIFIC: SEMANAL — Stats strip + Weekly grid
+   ════════════════════════════════════════════ */
+.ss{display:flex;gap:0;background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;margin-bottom:20px}
+.ss .si{flex:1;padding:18px 20px;text-align:center;border-right:1px solid var(--border)}
+.ss .si:last-child{border-right:none}
+.ss .si .lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:6px}
+.ss .si .vl{font-family:'DM Mono';font-size:20px;font-weight:500}
+.ss .si .nt{font-size:10px;color:var(--t3);margin-top:3px}
+
+/* Weekly grid */
+.ww{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden}
+.wh{display:flex;border-bottom:1px solid var(--border)}
+.wh .st{width:50px;flex-shrink:0}
+.wh .co{flex:1;text-align:center;padding:12px 0;border-left:1px solid var(--border)}
+.wh .co .dn{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.wh .co .dd{font-size:16px;font-weight:700;color:var(--t1);margin-top:3px;display:inline-flex;align-items:center;justify-content:center}
+.wh .co .dd.td{width:28px;height:28px;border-radius:50%;background:var(--mod);color:#fff}
+.wb{overflow-y:auto;max-height:580px;position:relative}
+.wi{display:flex;height:960px}
+.whr{width:50px;flex-shrink:0;position:relative}
+.whr span{position:absolute;right:8px;font-family:'DM Mono';font-size:9px;color:var(--t3);line-height:1}
+.wc{display:flex;flex:1;position:relative}
+.wgl{position:absolute;left:0;right:0;border-top:1px solid var(--border)}
+.wgl.hf{border-top-color:rgba(128,128,128,.04)}
+.wcl{flex:1;position:relative;border-left:1px solid var(--border)}
+.we{position:absolute;left:3px;right:3px;border-radius:10px;padding:5px 8px;overflow:hidden;cursor:pointer;transition:all .15s}
+.we:hover{filter:brightness(1.15);z-index:5}
+.we .en{font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.we .et{font-family:'DM Mono';font-size:9px;opacity:.7;margin-top:1px}
+
+/* ════════════════════════════════════════════
+   SCREEN-SPECIFIC: MENSAL — Calendar + Drawer
+   ════════════════════════════════════════════ */
+.cg-hd{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--border)}
+.cg-hd span{padding:12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--border)}
+.cc{border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:92px;padding:8px;cursor:pointer;transition:background .15s;position:relative}
+.cc:hover{background:var(--s3)}
+.cc.ot{opacity:.22;cursor:default}
+.cc.hoy{background:rgba(6,182,212,.03)}
+.cc.hoy::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--mod),#0055ff)}
+.cc .dn{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:5px}
+.cc.hoy .dn{display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;border-radius:50%;background:var(--mod);color:#fff;font-size:11px}
+.cb2{height:4px;border-radius:2px;margin-bottom:3px}
+/* Drawer */
+.dw{background:var(--s1);border:1px solid var(--border);border-radius:var(--card-r);padding:22px}
+.dw .dh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.dw .dh h3{font-family:'Syne';font-weight:800;font-size:14px}
+.de{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--s2);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;position:relative;overflow:hidden;transition:border-color .15s}
+.de:hover{border-color:var(--border-h)}
+.de:last-child{margin-bottom:0}
+.de .bt2{position:absolute;top:0;left:14px;right:14px;height:2px;border-radius:0 0 2px 2px}
+.de .dic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.de .dic svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.de .ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--t3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.de .ck.ok{background:var(--green);border-color:var(--green)}
+.de .ck.ok svg{width:10px;height:10px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+
+/* ════════════════════════════════════════════
+   SCREEN-SPECIFIC: REVIEW — Ring hero + Split
+   ════════════════════════════════════════════ */
+.rw{display:flex;align-items:center;justify-content:center;position:relative}
+.rw svg{transform:rotate(-90deg)}
+.rl{position:absolute;text-align:center}
+.rl .pc{font-family:'Syne';font-weight:800;font-size:40px;color:var(--t1);line-height:1}
+.rl .sb{font-size:12px;color:var(--t2);margin-top:2px}
+.sk{display:flex;height:20px;border-radius:10px;overflow:hidden;margin:14px 0}
+.sk div{height:100%;transition:width .5s}
+/* Pending items */
+.pd{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--s2);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;transition:border-color .15s}
+.pd:hover{border-color:var(--border-h)}
+.pd:last-child{margin-bottom:0}
+.pd .pb{width:3px;height:34px;border-radius:2px;flex-shrink:0}
+.pd .pi{flex:1;min-width:0}
+.pd .pi .pt{font-size:12px;font-weight:500}
+.pd .pi .pm{font-size:10px;color:var(--t3);margin-top:2px}
+
+/* ════════════════════════════════════════════
+   SCREEN-SPECIFIC: FOCO — Timer central
+   ════════════════════════════════════════════ */
+.pp{padding:5px 14px;border-radius:8px;font-size:12px;font-weight:600;background:var(--s2);color:var(--t3);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.pp.act{background:var(--mod-dim);color:var(--mod);border-color:rgba(var(--mod-rgb),.3)}
+.tb{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s;border:none;cursor:pointer}
+.tb svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tb.py{background:var(--mod);color:#fff;width:58px;height:58px}
+.tb.py:hover{filter:brightness(1.15);transform:scale(1.05)}
+.tb.se{background:var(--s2);border:1px solid var(--border);color:var(--t2)}
+.tb.se:hover{border-color:var(--border-h);color:var(--t1)}
+.tb.se svg{width:18px;height:18px}
+.sv{display:flex;align-items:flex-end;gap:3px;height:20px}
+.sv i{width:3px;border-radius:2px;background:var(--mod);animation:eq 1s ease-in-out infinite alternate}
+.sv i:nth-child(1){height:8px;animation-delay:0s}
+.sv i:nth-child(2){height:16px;animation-delay:.15s}
+.sv i:nth-child(3){height:6px;animation-delay:.3s}
+.sv i:nth-child(4){height:18px;animation-delay:.1s}
+.sv i:nth-child(5){height:12px;animation-delay:.25s}
+@keyframes eq{0%{transform:scaleY(.4)}100%{transform:scaleY(1)}}
+/* Session timeline */
+.se-i{display:flex;gap:12px;position:relative;padding-bottom:18px}
+.se-i:last-child{padding-bottom:0}
+.se-i::before{content:'';position:absolute;left:13px;top:28px;bottom:0;width:1px;background:var(--border)}
+.se-i:last-child::before{display:none}
+.se-i .dot{width:28px;height:28px;border-radius:50%;background:var(--s2);border:2px solid var(--mod);display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1}
+.se-i .dot svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.se-i .si{flex:1}
+.se-i .si .t{font-size:13px;font-weight:600}
+.se-i .si .m{font-size:11px;color:var(--t3);margin-top:2px}
+.se-i .si .d{font-family:'DM Mono';font-size:12px;font-weight:500;color:var(--mod);margin-top:2px}
+</style>
+</head>
+<body>
+
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 1 — DASHBOARD
+     ══════════════════════════════════════════════ -->
+<div id="s-dash" class="sc active">
+<div class="page">
+
+  <!-- Header -->
+  <div class="mh an">
+    <div class="ic" style="background:rgba(6,182,212,.10)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+    <div class="nf"><h1>Tempo</h1><p>Março de 2026 · semana 2 de 5 · 17 dias restantes</p></div>
+    <div class="ac">
+      <div class="mn"><button><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button><span class="ml">Mar 2026</span><button><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div>
+      <button class="bt bp" onclick="openM('modal-evento')"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo Evento</button>
+    </div>
+  </div>
+
+  <!-- §1 HERO STRIP — Full-width with inline metrics (NOT 4 KPI cards) -->
+  <div class="hero an d1">
+    <div class="hm feat">
+      <div class="lb" style="color:var(--mod)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>PRÓXIMO EVENTO</div>
+      <div style="font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:4px">Reunião de Sprint</div>
+      <div class="vl">45<span> min</span></div>
+      <div class="nt">14:30 · Sala 3 · <b style="color:var(--rose);font-weight:600">Carreira</b></div>
+    </div>
+    <div class="hm">
+      <div class="lb"><svg viewBox="0 0 24 24" stroke="var(--green)"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>EVENTOS HOJE</div>
+      <div class="vl">6</div>
+      <div class="nt">4 concluídos · 2 pendentes</div>
+    </div>
+    <div class="hm">
+      <div class="lb"><svg viewBox="0 0 24 24" stroke="var(--purple)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>HORAS PLANEJADAS</div>
+      <div class="vl">18<span>h</span></div>
+      <div class="nt">Esta semana</div>
+    </div>
+    <div class="hm">
+      <div class="lb"><svg viewBox="0 0 24 24" stroke="var(--green)"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>CONCLUSÃO</div>
+      <div class="vl" style="color:var(--green)">72<span>%</span></div>
+      <div class="nt">13 de 18 concluídos</div>
+    </div>
+  </div>
+
+  <!-- §2 HEALTH + AI COMPACT SIDE BY SIDE (not full-width sections) -->
+  <div class="ha-row an d2">
+    <!-- Health compact -->
+    <div class="ha-health">
+      <div class="sco" style="background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(0,85,255,.08))"><span style="background:linear-gradient(135deg,var(--mod),#0055ff)">85</span></div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600;margin-bottom:3px">Semana equilibrada <span style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-left:6px">SAÚDE DO TEMPO</span></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span class="pl" style="background:rgba(16,185,129,.10);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:.7em;height:.7em;vertical-align:-1px"><polyline points="20 6 9 17 4 12"/></svg> Foco ativo</span>
+          <span class="pl" style="background:rgba(245,158,11,.10);color:var(--yellow)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:.7em;height:.7em;vertical-align:-1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Mente 6%</span>
+          <span class="pl" style="background:rgba(244,63,94,.10);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:.7em;height:.7em;vertical-align:-1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg> 5 pendentes</span>
+        </div>
+      </div>
+    </div>
+    <!-- AI compact -->
+    <div class="ha-ai">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,rgba(6,182,212,.14),rgba(0,85,255,.08));display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--mod)" stroke-width="2" style="width:15px;height:15px;stroke-linecap:round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/></svg></div>
+        <span style="font-family:'Syne';font-weight:700;font-size:13px">Consultor IA</span>
+        <span style="margin-left:auto;font-size:10px;font-weight:600;padding:3px 10px;border-radius:7px;background:rgba(6,182,212,.10);color:var(--mod)">4 insights</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px 12px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:3px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>ALERTA</div><div style="font-size:11.5px;color:var(--t2);line-height:1.5"><b style="color:var(--t1);font-weight:600">Carreira</b> ocupa 42% — <b style="color:var(--t1)">Mente</b> só 6%.</div></div>
+        <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:10px 12px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green);margin-bottom:3px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>FOCO</div><div style="font-size:11.5px;color:var(--t2);line-height:1.5"><b style="color:var(--t1)">4h35 de foco</b> esta semana. Melhor dia: Qui.</div></div>
+      </div>
+      <div style="display:flex;gap:8px;padding:8px 12px;background:var(--s2);border:1px solid var(--border);border-radius:10px"><input style="flex:1;background:none;border:none;outline:none;color:var(--t1);font-size:12px;font-family:'DM Sans'" placeholder="Pergunte... ex: &quot;Dia mais livre?&quot;"><button style="padding:5px 14px;border-radius:8px;background:var(--mod);color:#fff;font-size:11px;font-weight:600;border:none;cursor:pointer">Perguntar</button></div>
+    </div>
+  </div>
+
+  <!-- §3 BENTO GRID: Cronograma (2/3) + Distribuição (1/3) -->
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:14px" class="an d3">
+    <div class="cd">
+      <div class="ct"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Cronograma do Dia <span class="bd" style="background:var(--mod-dim);color:var(--mod)">6 eventos</span></div>
+      <div class="tl"><div class="tm">07:00</div><div class="br" style="background:var(--orange)"></div><div class="bd"><div class="en">Treino HIIT</div><div class="em"><span class="pl" style="background:rgba(249,115,22,.10);color:var(--orange)"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Corpo</span><span style="font-size:10px;color:var(--t3)">07:00 – 08:00 · 1h</span></div></div></div>
+      <div class="tl"><div class="tm">09:00</div><div class="br" style="background:var(--rose)"></div><div class="bd"><div class="en">Daily Standup</div><div class="em"><span class="pl" style="background:rgba(244,63,94,.10);color:var(--rose)"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg> Carreira</span><span style="font-size:10px;color:var(--t3)">09:00 – 09:15 · 15min</span></div></div></div>
+      <div class="tl"><div class="tm">10:30</div><div class="br" style="background:var(--purple)"></div><div class="bd"><div class="en">Estudar TypeScript Avançado</div><div class="em"><span class="pl" style="background:rgba(168,85,247,.10);color:var(--purple)"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Estudo</span><span style="font-size:10px;color:var(--t3)">10:30 – 12:00 · 1h30</span></div></div></div>
+      <div class="nl"><div class="nd"></div><div class="nr"></div><span style="font-family:'DM Mono';font-size:10px;color:var(--red);margin-left:6px;font-weight:500">13:45 agora</span></div>
+      <div class="tl"><div class="tm">14:30</div><div class="br" style="background:var(--rose)"></div><div class="bd"><div class="en">Reunião de Sprint</div><div class="em"><span class="pl" style="background:rgba(244,63,94,.10);color:var(--rose)"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg> Carreira</span><span style="font-size:10px;color:var(--t3)">14:30 – 15:30 · Sala 3</span></div></div></div>
+      <div class="tl"><div class="tm">16:00</div><div class="br" style="background:var(--mod)"></div><div class="bd"><div class="en">Revisão de código</div><div class="em"><span class="pl" style="background:var(--mod-dim);color:var(--mod)"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Pessoal</span><span style="font-size:10px;color:var(--t3)">16:00 – 17:30 · 1h30</span></div></div></div>
+      <div class="tl" style="opacity:.45"><div class="tm">18:30</div><div class="br" style="background:var(--yellow)"></div><div class="bd"><div class="en">Meditação</div><div class="em"><span class="pl" style="background:rgba(234,179,8,.10);color:var(--yellow)"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a10 10 0 0 0 0 20 10 10 0 0 0 0-20z"/></svg> Mente</span><span style="font-size:10px;color:var(--t3)">18:30 – 19:00 · 30min</span></div></div></div>
+    </div>
+
+    <!-- RIGHT: Distribution donut + legend -->
+    <div class="cd">
+      <div class="ct"><svg viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>Tempo por Área <span class="bd" style="background:rgba(245,158,11,.08);color:var(--yellow)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:.7em;height:.7em;vertical-align:-1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Mente 6%</span></div>
+      <div style="display:flex;justify-content:center;margin-bottom:18px">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="56" fill="none" stroke="var(--s3)" stroke-width="14"/>
+          <circle cx="70" cy="70" r="56" fill="none" stroke="var(--rose)" stroke-width="14" stroke-dasharray="148 204" transform="rotate(-90 70 70)"/>
+          <circle cx="70" cy="70" r="56" fill="none" stroke="var(--orange)" stroke-width="14" stroke-dasharray="97 255" stroke-dashoffset="-148" transform="rotate(-90 70 70)"/>
+          <circle cx="70" cy="70" r="56" fill="none" stroke="var(--purple)" stroke-width="14" stroke-dasharray="53 299" stroke-dashoffset="-245" transform="rotate(-90 70 70)"/>
+          <circle cx="70" cy="70" r="56" fill="none" stroke="var(--mod)" stroke-width="14" stroke-dasharray="35 317" stroke-dashoffset="-298" transform="rotate(-90 70 70)"/>
+          <text x="70" y="66" text-anchor="middle" fill="var(--t1)" font-family="DM Mono" font-size="16" font-weight="500">18h</text>
+          <text x="70" y="82" text-anchor="middle" fill="var(--t3)" font-family="DM Sans" font-size="10">SEMANA</text>
+        </svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div class="dl"><div class="dt" style="background:var(--rose)"></div><div class="di" style="background:rgba(244,63,94,.10)"><svg viewBox="0 0 24 24" stroke="var(--rose)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg></div><span style="flex:1;color:var(--t2)">Carreira</span><span style="font-family:'DM Mono';font-size:11px">7.5h</span><span style="color:var(--t3);font-size:11px;width:30px;text-align:right">42%</span></div>
+        <div class="dl"><div class="dt" style="background:var(--orange)"></div><div class="di" style="background:rgba(249,115,22,.10)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><span style="flex:1;color:var(--t2)">Corpo</span><span style="font-family:'DM Mono';font-size:11px">5.0h</span><span style="color:var(--t3);font-size:11px;width:30px;text-align:right">28%</span></div>
+        <div class="dl"><div class="dt" style="background:var(--purple)"></div><div class="di" style="background:rgba(168,85,247,.10)"><svg viewBox="0 0 24 24" stroke="var(--purple)"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><span style="flex:1;color:var(--t2)">Estudo</span><span style="font-family:'DM Mono';font-size:11px">2.5h</span><span style="color:var(--t3);font-size:11px;width:30px;text-align:right">14%</span></div>
+        <div class="dl"><div class="dt" style="background:var(--mod)"></div><div class="di" style="background:var(--mod-dim)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><span style="flex:1;color:var(--t2)">Pessoal</span><span style="font-family:'DM Mono';font-size:11px">1.5h</span><span style="color:var(--t3);font-size:11px;width:30px;text-align:right">8%</span></div>
+        <div class="dl"><div class="dt" style="background:var(--yellow)"></div><div class="di" style="background:rgba(234,179,8,.10)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><path d="M12 2a10 10 0 0 0 0 20 10 10 0 0 0 0-20z"/></svg></div><span style="flex:1;color:var(--t2)">Mente</span><span style="font-family:'DM Mono';font-size:11px">1.0h</span><span style="color:var(--t3);font-size:11px;width:30px;text-align:right">6%</span></div>
+        <div class="dl"><div class="dt" style="background:var(--green)"></div><div class="di" style="background:rgba(16,185,129,.10)"><svg viewBox="0 0 24 24" stroke="var(--green)"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span style="flex:1;color:var(--t2)">Financeiro</span><span style="font-family:'DM Mono';font-size:11px">0.5h</span><span style="color:var(--t3);font-size:11px;width:30px;text-align:right">3%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- §4 BENTO 50/50: Horas por Dia + Próximos 7 Dias -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px" class="an d4">
+    <div class="cd">
+      <div class="ct"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Horas por Dia — Esta Semana</div>
+      <div class="ch">Recharts BarChart — barras diárias Seg–Dom com cores por área empilhadas</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px">
+        <div style="background:var(--s2);border-radius:11px;padding:12px 14px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Dia Cheio</div><div style="font-family:'DM Mono';font-size:16px;font-weight:500;color:var(--rose)">Quinta</div><div style="font-size:10px;color:var(--t3);margin-top:3px">4h 30min</div></div>
+        <div style="background:var(--s2);border-radius:11px;padding:12px 14px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Dia Livre</div><div style="font-family:'DM Mono';font-size:16px;font-weight:500;color:var(--green)">Sábado</div><div style="font-size:10px;color:var(--t3);margin-top:3px">0h · livre</div></div>
+        <div style="background:var(--s2);border-radius:11px;padding:12px 14px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Média/Dia</div><div style="font-family:'DM Mono';font-size:16px;font-weight:500;color:var(--mod)">2.6h</div><div style="font-size:10px;color:var(--t3);margin-top:3px">18h / 7</div></div>
+        <div style="background:var(--s2);border-radius:11px;padding:12px 14px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:5px">Foco Total</div><div style="font-family:'DM Mono';font-size:16px;font-weight:500;color:var(--purple)">4h 35m</div><div style="font-size:10px;color:var(--t3);margin-top:3px">8 sessões</div></div>
+      </div>
+    </div>
+    <div class="cd">
+      <div class="ct"><svg viewBox="0 0 24 24"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Próximos 7 Dias <span class="rt">Ver agenda →</span></div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:38px;height:38px;border-radius:11px;background:rgba(244,63,94,.07);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--rose)" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500">Sprint Planning</div><div style="font-size:11px;color:var(--t3)">Seg, 16/03 · 10:00</div></div><div style="text-align:right"><div style="font-family:'DM Mono';font-size:13.5px;font-weight:500;color:var(--rose)">2h</div><div style="font-size:10px;color:var(--t3)">Carreira</div></div></div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:38px;height:38px;border-radius:11px;background:rgba(168,85,247,.07);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Workshop React 19</div><div style="font-size:11px;color:var(--t3)">Ter, 17/03 · 14:00</div></div><div style="text-align:right"><div style="font-family:'DM Mono';font-size:13.5px;font-weight:500;color:var(--purple)">3h</div><div style="font-size:10px;color:var(--t3)">Estudo</div></div></div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:38px;height:38px;border-radius:11px;background:rgba(16,185,129,.07);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Reunião Contador</div><div style="font-size:11px;color:var(--t3)">Qua, 18/03 · 09:00</div></div><div style="text-align:right"><div style="font-family:'DM Mono';font-size:13.5px;font-weight:500;color:var(--green)">1h</div><div style="font-size:10px;color:var(--t3)">Financeiro</div></div></div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(120,165,220,.04)"><div style="width:38px;height:38px;border-radius:11px;background:rgba(249,115,22,.07);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Exame médico anual</div><div style="font-size:11px;color:var(--t3)">Qui, 19/03 · 08:00</div></div><div style="text-align:right"><div style="font-family:'DM Mono';font-size:13.5px;font-weight:500;color:var(--orange)">2h</div><div style="font-size:10px;color:var(--t3)">Corpo</div></div></div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 0"><div style="width:38px;height:38px;border-radius:11px;background:rgba(234,179,8,.07);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round"><path d="M12 2a10 10 0 0 0 0 20 10 10 0 0 0 0-20z"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Terapia</div><div style="font-size:11px;color:var(--t3)">Sex, 20/03 · 15:00</div></div><div style="text-align:right"><div style="font-family:'DM Mono';font-size:13.5px;font-weight:500;color:var(--yellow)">1h</div><div style="font-size:10px;color:var(--t3)">Mente</div></div></div>
+    </div>
+  </div>
+
+  <!-- §5 TENDÊNCIA SEMANAL -->
+  <div style="margin-top:28px" class="an d5">
+    <div class="cd">
+      <div class="ct"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Tendência de Horas — Últimas 5 Semanas <span class="rt">Ver review →</span></div>
+      <div style="background:var(--s2);border-radius:13px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;gap:20px">
+        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)">Horas Semana Atual</div><div style="font-family:'DM Mono';font-size:26px;font-weight:500;margin-top:5px">18.0<span style="font-size:14px;color:var(--t2)">h</span></div><div style="font-size:11px;color:var(--t3);margin-top:3px">14 de março de 2026 · 13 concluídos</div></div>
+        <div style="margin-left:auto;display:flex;gap:24px">
+          <div style="text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:3px">Foco</div><div style="font-family:'DM Mono';font-size:15px;color:var(--mod)">4h 35m</div></div>
+          <div style="text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:3px">Conclusão</div><div style="font-family:'DM Mono';font-size:15px;color:var(--green)">72%</div></div>
+          <div style="text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:3px">Pendentes</div><div style="font-family:'DM Mono';font-size:15px;color:var(--red)">5</div></div>
+        </div>
+      </div>
+      <div class="tr-row">
+        <div class="tr-c"><div class="lb">Sem 7</div><div class="vl">14.0h</div><div class="nt">58% conclusão</div></div>
+        <div class="tr-c"><div class="lb">Sem 8</div><div class="vl">16.5h</div><div class="nt" style="color:var(--green)">+18%</div></div>
+        <div class="tr-c warn"><div class="lb">Sem 9</div><div class="vl" style="color:var(--red)">12.0h</div><div class="nt" style="color:var(--red)">-27% férias</div></div>
+        <div class="tr-c best"><div class="lb">Sem 10</div><div class="vl" style="color:var(--green)">20.5h</div><div class="nt" style="color:var(--green)">+71% melhor</div></div>
+        <div class="tr-c"><div class="lb">Sem 11</div><div class="vl">18.0h</div><div class="nt">atual · 72%</div></div>
+      </div>
+      <div style="margin-top:12px;padding:8px 14px;border-radius:9px;background:rgba(6,182,212,.03);border:1px solid rgba(6,182,212,.08);font-size:11px;color:var(--t2)"><b style="color:var(--mod)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:.7em;height:.7em;vertical-align:-1px"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> Tendência positiva.</b> Média das últimas 5 semanas: 16.2h. Você está acima da média.</div>
+    </div>
+  </div>
+
+  <!-- §6 RECORRENTES -->
+  <div style="margin-top:28px">
+    <div style="font-family:'Syne';font-weight:700;font-size:15px;margin-bottom:16px;display:flex;align-items:center;gap:9px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Eventos Recorrentes <span class="rt" style="margin-left:auto;font-family:'DM Sans';font-size:12px;font-weight:500;color:var(--mod);cursor:pointer">Ver todos</span></div>
+    <div class="rc-row an d5">
+      <div class="rc"><div class="rh"><div class="ri" style="background:rgba(244,63,94,.10)"><svg viewBox="0 0 24 24" stroke="var(--rose)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg></div><span class="rb">Seg–Sex</span></div><div style="font-size:13px;font-weight:500">Daily Standup</div><div style="font-size:12px;color:var(--t3);margin-top:3px">09:00 · 15min</div></div>
+      <div class="rc"><div class="rh"><div class="ri" style="background:rgba(249,115,22,.10)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><span class="rb">Seg/Qua/Sex</span></div><div style="font-size:13px;font-weight:500">Treino HIIT</div><div style="font-size:12px;color:var(--t3);margin-top:3px">07:00 · 1h</div></div>
+      <div class="rc"><div class="rh"><div class="ri" style="background:rgba(168,85,247,.10)"><svg viewBox="0 0 24 24" stroke="var(--purple)"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><span class="rb">Ter/Qui</span></div><div style="font-size:13px;font-weight:500">TypeScript Avançado</div><div style="font-size:12px;color:var(--t3);margin-top:3px">10:30 · 1h30</div></div>
+      <div class="rc"><div class="rh"><div class="ri" style="background:rgba(234,179,8,.10)"><svg viewBox="0 0 24 24" stroke="var(--yellow)"><path d="M12 2a10 10 0 0 0 0 20 10 10 0 0 0 0-20z"/></svg></div><span class="rb">Diário</span></div><div style="font-size:13px;font-weight:500">Meditação</div><div style="font-size:12px;color:var(--t3);margin-top:3px">18:30 · 30min</div></div>
+      <div class="rc"><div class="rh"><div class="ri" style="background:rgba(244,63,94,.10)"><svg viewBox="0 0 24 24" stroke="var(--rose)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg></div><span class="rb">Sexta</span></div><div style="font-size:13px;font-weight:500">Sprint Review</div><div style="font-size:12px;color:var(--t3);margin-top:3px">14:30 · 1h</div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 2 — AGENDA DIÁRIA
+     ══════════════════════════════════════════════ -->
+<div id="s-agenda" class="sc">
+<div class="page">
+  <div class="mh an">
+    <div class="ic" style="background:rgba(6,182,212,.10)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+    <div class="nf"><h1>Agenda Diária</h1><p>Visualize e gerencie os eventos do dia selecionado</p></div>
+    <div class="ac">
+      <div class="mn"><button><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button><span class="ml">14/Mar · Sábado</span><button><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div>
+      <button class="bt bg bs">Hoje</button>
+      <button class="bt bp" onclick="openM('modal-evento')"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo Evento</button>
+    </div>
+  </div>
+
+  <!-- Week strip -->
+  <div class="ws an d1">
+    <div class="wd"><span class="dn">Dom</span><span class="dd">9</span><div class="ds"><span style="background:rgba(6,182,212,.3)"></span></div></div>
+    <div class="wd"><span class="dn">Seg</span><span class="dd">10</span><div class="ds"><span style="background:var(--rose)"></span><span style="background:var(--orange)"></span><span style="background:var(--purple)"></span></div></div>
+    <div class="wd"><span class="dn">Ter</span><span class="dd">11</span><div class="ds"><span style="background:var(--rose)"></span><span style="background:var(--yellow)"></span></div></div>
+    <div class="wd"><span class="dn">Qua</span><span class="dd">12</span><div class="ds"><span style="background:var(--mod)"></span></div></div>
+    <div class="wd"><span class="dn">Qui</span><span class="dd">13</span><div class="ds"><span style="background:var(--rose)"></span><span style="background:var(--orange)"></span><span style="background:var(--purple)"></span></div></div>
+    <div class="wd td"><span class="dn">Sex</span><span class="dd">14</span><div class="ds"><span style="background:var(--green)"></span><span style="background:var(--rose)"></span></div></div>
+    <div class="wd"><span class="dn">Sáb</span><span class="dd">15</span><div class="ds"><span style="background:rgba(6,182,212,.3)"></span></div></div>
+  </div>
+
+  <!-- Full-width event list (NO sidebar) -->
+  <div class="an d2">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="ct" style="margin-bottom:0"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>14 de Março · Sábado <span class="pl" style="background:var(--mod-dim);color:var(--mod)">Hoje</span></div>
+      <span style="font-size:11px;color:var(--t3)">4 eventos · 4h 45min</span>
+    </div>
+
+    <!-- Event 1 — Expanded -->
+    <div class="ec">
+      <div class="er"><div style="position:absolute;top:0;left:18px;right:18px;height:2.5px;border-radius:0 0 3px 3px;background:var(--orange)"></div><span style="font-family:'DM Mono';font-size:12px;color:var(--t2);width:48px;text-align:right;flex-shrink:0">07:00</span><div class="ei" style="background:rgba(249,115,22,.10)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">Treino HIIT</div><div style="display:flex;gap:6px;margin-top:3px"><span class="pl" style="background:rgba(249,115,22,.10);color:var(--orange)">Corpo</span><span style="font-size:10px;color:var(--t3)">07:00 – 08:00</span></div></div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--t3)" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+      <div class="ex"><div class="ed"><div class="ei"><div class="el">Duração</div><div class="ev" style="font-family:'DM Mono'">1h 00min</div></div><div class="ei"><div class="el">Local</div><div class="ev">Academia SmartFit</div></div><div class="ei"><div class="el">Recorrência</div><div class="ev">Seg, Qua, Sex</div></div><div class="ei"><div class="el">Módulo</div><div class="ev" style="color:var(--orange)">Corpo</div></div></div><div style="display:flex;gap:8px;margin-top:14px"><button class="bt bg bs"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button><button class="bt bg bs" style="color:var(--red)"><svg viewBox="0 0 24 24" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Excluir</button></div></div>
+    </div>
+
+    <!-- Events 2-4 collapsed -->
+    <div class="ec"><div class="er"><div style="position:absolute;top:0;left:18px;right:18px;height:2.5px;border-radius:0 0 3px 3px;background:var(--rose)"></div><span style="font-family:'DM Mono';font-size:12px;color:var(--t2);width:48px;text-align:right;flex-shrink:0">09:00</span><div class="ei" style="background:rgba(244,63,94,.10)"><svg viewBox="0 0 24 24" stroke="var(--rose)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:600">Daily Standup</div><div style="display:flex;gap:6px;margin-top:3px"><span class="pl" style="background:rgba(244,63,94,.10);color:var(--rose)">Carreira</span><span style="font-size:10px;color:var(--t3)">09:00 – 09:15</span></div></div></div></div>
+    <div class="ec"><div class="er"><div style="position:absolute;top:0;left:18px;right:18px;height:2.5px;border-radius:0 0 3px 3px;background:var(--purple)"></div><span style="font-family:'DM Mono';font-size:12px;color:var(--t2);width:48px;text-align:right;flex-shrink:0">10:30</span><div class="ei" style="background:rgba(168,85,247,.10)"><svg viewBox="0 0 24 24" stroke="var(--purple)"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:600">Estudar TypeScript Avançado</div><div style="display:flex;gap:6px;margin-top:3px"><span class="pl" style="background:rgba(168,85,247,.10);color:var(--purple)">Estudo</span><span style="font-size:10px;color:var(--t3)">10:30 – 12:00</span></div></div></div></div>
+    <div class="ec"><div class="er"><div style="position:absolute;top:0;left:18px;right:18px;height:2.5px;border-radius:0 0 3px 3px;background:var(--rose)"></div><span style="font-family:'DM Mono';font-size:12px;color:var(--t2);width:48px;text-align:right;flex-shrink:0">14:30</span><div class="ei" style="background:rgba(244,63,94,.10)"><svg viewBox="0 0 24 24" stroke="var(--rose)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:600">Reunião de Sprint</div><div style="display:flex;gap:6px;margin-top:3px"><span class="pl" style="background:rgba(244,63,94,.10);color:var(--rose)">Carreira</span><span style="font-size:10px;color:var(--t3)">14:30 – 15:30 · Sala 3</span></div></div></div></div>
+  </div>
+
+  <!-- Summary strip at bottom (NOT a sidebar) -->
+  <div class="as an d3">
+    <div class="am"><div class="lb">Total Eventos</div><div class="vl">4</div></div>
+    <div class="am"><div class="lb">Horas Ocupadas</div><div class="vl" style="color:var(--mod)">4h 45m</div></div>
+    <div class="am"><div class="lb">Horas Livres</div><div class="vl" style="color:var(--green)">11h 15m</div></div>
+    <div class="am"><div class="lb">Tipo Principal</div><div class="vl" style="color:var(--rose)">Carreira</div></div>
+    <div class="am"><div class="lb">Tipos</div><div style="display:flex;gap:4px;margin-top:5px;justify-content:center"><span style="width:8px;height:8px;border-radius:3px;background:var(--rose)"></span><span style="width:8px;height:8px;border-radius:3px;background:var(--purple)"></span><span style="width:8px;height:8px;border-radius:3px;background:var(--orange)"></span><span style="width:8px;height:8px;border-radius:3px;background:var(--mod)"></span></div></div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 3 — AGENDA SEMANAL
+     ══════════════════════════════════════════════ -->
+<div id="s-semanal" class="sc">
+<div class="page">
+  <div class="mh an">
+    <div class="ic" style="background:rgba(6,182,212,.10)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="10" y1="4" x2="10" y2="20"/></svg></div>
+    <div class="nf"><h1>Agenda Semanal</h1><p>Visão completa da semana com todos os compromissos</p></div>
+    <div class="ac">
+      <div class="mn"><button><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button><span class="ml">9 – 15 Mar 2026</span><button><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div>
+      <button class="bt bp" onclick="openM('modal-evento')"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo Evento</button>
+    </div>
+  </div>
+
+  <!-- STATS STRIP — inline horizontal metrics (NOT KPI cards) -->
+  <div class="ss an d1">
+    <div class="si"><div class="lb">Eventos</div><div class="vl">12</div><div class="nt">agendados</div></div>
+    <div class="si"><div class="lb">Concluídos</div><div class="vl" style="color:var(--green)">8</div><div class="nt">67% conclusão</div></div>
+    <div class="si"><div class="lb">Em Aberto</div><div class="vl" style="color:var(--yellow)">4</div><div class="nt">pendentes</div></div>
+    <div class="si"><div class="lb">Horas</div><div class="vl" style="color:var(--mod)">18.5<span style="font-size:12px;color:var(--t2)">h</span></div><div class="nt">esta semana</div></div>
+    <div class="si"><div class="lb">Foco</div><div class="vl" style="color:var(--purple)">4h 35m</div><div class="nt">8 sessões</div></div>
+  </div>
+
+  <!-- WEEKLY GRID — the dominant visual element -->
+  <div class="ww an d2">
+    <div class="wh"><div class="st"></div><div class="co"><div class="dn">Dom</div><div class="dd">9</div></div><div class="co"><div class="dn">Seg</div><div class="dd">10</div></div><div class="co"><div class="dn">Ter</div><div class="dd">11</div></div><div class="co"><div class="dn">Qua</div><div class="dd">12</div></div><div class="co"><div class="dn">Qui</div><div class="dd">13</div></div><div class="co"><div class="dn">Sex</div><div class="dd td">14</div></div><div class="co"><div class="dn">Sáb</div><div class="dd">15</div></div></div>
+    <div class="wb" id="wgBody"><div class="wi"><div class="whr"><span style="top:-6px">06:00</span><span style="top:54px">07:00</span><span style="top:114px">08:00</span><span style="top:174px">09:00</span><span style="top:234px">10:00</span><span style="top:294px">11:00</span><span style="top:354px">12:00</span><span style="top:414px">13:00</span><span style="top:474px">14:00</span><span style="top:534px">15:00</span><span style="top:594px">16:00</span><span style="top:654px">17:00</span><span style="top:714px">18:00</span><span style="top:774px">19:00</span><span style="top:834px">20:00</span><span style="top:894px">21:00</span></div>
+    <div class="wc"><div style="position:absolute;inset:0;pointer-events:none"><div class="wgl" style="top:0"></div><div class="wgl hf" style="top:30px"></div><div class="wgl" style="top:60px"></div><div class="wgl hf" style="top:90px"></div><div class="wgl" style="top:120px"></div><div class="wgl hf" style="top:150px"></div><div class="wgl" style="top:180px"></div><div class="wgl hf" style="top:210px"></div><div class="wgl" style="top:240px"></div><div class="wgl hf" style="top:270px"></div><div class="wgl" style="top:300px"></div><div class="wgl hf" style="top:330px"></div><div class="wgl" style="top:360px"></div><div class="wgl hf" style="top:390px"></div><div class="wgl" style="top:420px"></div><div class="wgl hf" style="top:450px"></div><div class="wgl" style="top:480px"></div><div class="wgl hf" style="top:510px"></div><div class="wgl" style="top:540px"></div><div class="wgl hf" style="top:570px"></div><div class="wgl" style="top:600px"></div><div class="wgl hf" style="top:630px"></div><div class="wgl" style="top:660px"></div><div class="wgl hf" style="top:690px"></div><div class="wgl" style="top:720px"></div><div class="wgl hf" style="top:750px"></div><div class="wgl" style="top:780px"></div><div class="wgl hf" style="top:810px"></div><div class="wgl" style="top:840px"></div><div class="wgl hf" style="top:870px"></div><div class="wgl" style="top:900px"></div><div class="wgl hf" style="top:930px"></div></div>
+    <!-- Dom --><div class="wcl"></div>
+    <!-- Seg --><div class="wcl"><div class="we" style="top:62px;height:56px;background:rgba(249,115,22,.15);border-left:3px solid var(--orange);color:var(--orange)"><div class="en">Treino</div><div class="et">07–08</div></div><div class="we" style="top:182px;height:14px;background:rgba(244,63,94,.15);border-left:3px solid var(--rose);color:var(--rose)"><div class="en">Daily</div></div><div class="we" style="top:302px;height:56px;background:rgba(168,85,247,.15);border-left:3px solid var(--purple);color:var(--purple)"><div class="en">Estudar TS</div><div class="et">11–12</div></div></div>
+    <!-- Ter --><div class="wcl"><div class="we" style="top:182px;height:14px;background:rgba(244,63,94,.15);border-left:3px solid var(--rose);color:var(--rose)"><div class="en">Daily</div></div><div class="we" style="top:542px;height:56px;background:rgba(234,179,8,.15);border-left:3px solid var(--yellow);color:var(--yellow)"><div class="en">Meditação</div><div class="et">15–16</div></div></div>
+    <!-- Qua --><div class="wcl"><div class="we" style="top:242px;height:88px;background:rgba(6,182,212,.15);border-left:3px solid var(--mod);color:var(--mod)"><div class="en">Pair Programming</div><div class="et">10–11:30</div></div></div>
+    <!-- Qui --><div class="wcl"><div class="we" style="top:62px;height:56px;background:rgba(249,115,22,.15);border-left:3px solid var(--orange);color:var(--orange)"><div class="en">Treino HIIT</div><div class="et">07–08</div></div><div class="we" style="top:182px;height:14px;background:rgba(244,63,94,.15);border-left:3px solid var(--rose);color:var(--rose)"><div class="en">Daily</div></div><div class="we" style="top:272px;height:88px;background:rgba(168,85,247,.15);border-left:3px solid var(--purple);color:var(--purple)"><div class="en">TypeScript</div><div class="et">10:30–12</div></div><div class="we" style="top:512px;height:56px;background:rgba(244,63,94,.15);border-left:3px solid var(--rose);color:var(--rose)"><div class="en">Sprint Review</div><div class="et">14:30–15:30</div></div></div>
+    <!-- Sex --><div class="wcl" style="background:rgba(6,182,212,.015)"><div class="we" style="top:122px;height:88px;background:rgba(16,185,129,.15);border-left:3px solid var(--green);color:var(--green)"><div class="en">Reunião Contador</div><div class="et">08–09:30</div></div><div class="we" style="top:542px;height:56px;background:rgba(244,63,94,.15);border-left:3px solid var(--rose);color:var(--rose)"><div class="en">Code Review</div><div class="et">15–16</div></div><div style="position:absolute;left:0;right:0;top:466px;display:flex;align-items:center;z-index:10;pointer-events:none"><div class="nd" style="margin-left:-4px"></div><div class="nr"></div></div></div>
+    <!-- Sab --><div class="wcl"></div>
+    </div></div></div>
+  </div>
+  <!-- Legend -->
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;padding:0 4px"><div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:var(--rose)"></span><span style="font-size:11px;color:var(--t3)">Trabalho</span></div><div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:var(--orange)"></span><span style="font-size:11px;color:var(--t3)">Saúde</span></div><div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:var(--purple)"></span><span style="font-size:11px;color:var(--t3)">Estudo</span></div><div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:var(--mod)"></span><span style="font-size:11px;color:var(--t3)">Pessoal</span></div><div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:var(--green)"></span><span style="font-size:11px;color:var(--t3)">Financeiro</span></div><div style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:var(--yellow)"></span><span style="font-size:11px;color:var(--t3)">Mente</span></div></div>
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 4 — AGENDA MENSAL
+     ══════════════════════════════════════════════ -->
+<div id="s-mensal" class="sc">
+<div class="page">
+  <div class="mh an">
+    <div class="ic" style="background:rgba(6,182,212,.10)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+    <div class="nf">
+      <h1>Agenda Mensal</h1>
+      <p style="display:flex;align-items:center;gap:16px">Março 2026 · <span style="font-family:'DM Mono';font-weight:500;color:var(--mod)">28 eventos</span> · <span style="font-family:'DM Mono';font-weight:500">18 dias com evento</span> · <span style="font-family:'DM Mono';font-weight:500;color:var(--green)">54% concluído</span></p>
+    </div>
+    <div class="ac"><div class="mn"><button><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button><span class="ml">Março 2026</span><button><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div><button class="bt bp" onclick="openM('modal-evento')"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo Evento</button></div>
+  </div>
+
+  <!-- Calendar + Drawer -->
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:14px" class="an d1">
+    <div class="cd" style="padding:0;overflow:hidden">
+      <div class="cg-hd"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+      <div class="cg">
+        <div class="cc ot"><div class="dn">23</div></div><div class="cc ot"><div class="dn">24</div></div><div class="cc ot"><div class="dn">25</div></div><div class="cc ot"><div class="dn">26</div></div><div class="cc ot"><div class="dn">27</div></div><div class="cc ot"><div class="dn">28</div></div><div class="cc"><div class="dn">1</div></div>
+        <div class="cc"><div class="dn">2</div></div><div class="cc"><div class="dn">3</div><div class="cb2" style="background:var(--rose);width:70%"></div></div><div class="cc"><div class="dn">4</div><div class="cb2" style="background:var(--orange);width:50%"></div></div><div class="cc"><div class="dn">5</div></div><div class="cc"><div class="dn">6</div><div class="cb2" style="background:var(--purple);width:60%"></div></div><div class="cc"><div class="dn">7</div><div class="cb2" style="background:var(--mod);width:40%"></div></div><div class="cc"><div class="dn">8</div></div>
+        <div class="cc"><div class="dn">9</div></div><div class="cc"><div class="dn">10</div><div class="cb2" style="background:var(--rose);width:70%"></div><div class="cb2" style="background:var(--orange);width:50%"></div><div class="cb2" style="background:var(--purple);width:40%"></div></div><div class="cc"><div class="dn">11</div><div class="cb2" style="background:var(--rose);width:60%"></div><div class="cb2" style="background:var(--yellow);width:50%"></div></div><div class="cc"><div class="dn">12</div><div class="cb2" style="background:var(--mod);width:50%"></div></div><div class="cc"><div class="dn">13</div><div class="cb2" style="background:var(--rose);width:80%"></div><div class="cb2" style="background:var(--orange);width:50%"></div></div><div class="cc hoy"><div class="dn">14</div><div class="cb2" style="background:var(--green);width:70%"></div><div class="cb2" style="background:var(--rose);width:50%"></div></div><div class="cc"><div class="dn">15</div></div>
+        <div class="cc"><div class="dn">16</div></div><div class="cc"><div class="dn">17</div><div class="cb2" style="background:var(--rose);width:70%"></div></div><div class="cc"><div class="dn">18</div><div class="cb2" style="background:var(--purple);width:60%"></div></div><div class="cc"><div class="dn">19</div><div class="cb2" style="background:var(--mod);width:40%"></div></div><div class="cc"><div class="dn">20</div><div class="cb2" style="background:var(--rose);width:80%"></div></div><div class="cc"><div class="dn">21</div></div><div class="cc"><div class="dn">22</div></div>
+        <div class="cc"><div class="dn">23</div></div><div class="cc"><div class="dn">24</div><div class="cb2" style="background:var(--rose);width:60%"></div></div><div class="cc"><div class="dn">25</div><div class="cb2" style="background:var(--yellow);width:40%"></div></div><div class="cc"><div class="dn">26</div></div><div class="cc"><div class="dn">27</div><div class="cb2" style="background:var(--orange);width:50%"></div></div><div class="cc"><div class="dn">28</div></div><div class="cc"><div class="dn">29</div></div>
+        <div class="cc"><div class="dn">30</div></div><div class="cc"><div class="dn">31</div><div class="cb2" style="background:var(--rose);width:60%"></div></div><div class="cc ot"><div class="dn">1</div></div><div class="cc ot"><div class="dn">2</div></div><div class="cc ot"><div class="dn">3</div></div><div class="cc ot"><div class="dn">4</div></div><div class="cc ot"><div class="dn">5</div></div>
+      </div>
+    </div>
+
+    <!-- Drawer sidebar -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="dw">
+        <div class="dh"><h3>14/03/2026</h3><button class="bt bp bs" onclick="openM('modal-evento')" style="padding:5px 12px;font-size:11px"><svg viewBox="0 0 24 24" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Evento</button></div>
+        <div class="de"><div class="bt2" style="background:var(--orange)"></div><div class="dic" style="background:rgba(249,115,22,.10)"><svg viewBox="0 0 24 24" stroke="var(--orange)"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:600">Treino HIIT</div><div style="font-size:11px;color:var(--t3)">07:00 – 08:00 · <span style="color:var(--orange)">Corpo</span></div></div><div class="ck ok"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+        <div class="de"><div class="bt2" style="background:var(--rose)"></div><div class="dic" style="background:rgba(244,63,94,.10)"><svg viewBox="0 0 24 24" stroke="var(--rose)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:600">Daily Standup</div><div style="font-size:11px;color:var(--t3)">09:00 – 09:15 · <span style="color:var(--rose)">Carreira</span></div></div><div class="ck"></div></div>
+        <div class="de"><div class="bt2" style="background:var(--purple)"></div><div class="dic" style="background:rgba(168,85,247,.10)"><svg viewBox="0 0 24 24" stroke="var(--purple)"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:600">TypeScript Avançado</div><div style="font-size:11px;color:var(--t3)">10:30 – 12:00 · <span style="color:var(--purple)">Estudo</span></div></div><div class="ck"></div></div>
+        <div class="de"><div class="bt2" style="background:var(--rose)"></div><div class="dic" style="background:rgba(244,63,94,.10)"><svg viewBox="0 0 24 24" stroke="var(--rose)"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg></div><div style="flex:1"><div style="font-size:13px;font-weight:600">Sprint Review</div><div style="font-size:11px;color:var(--t3)">14:30 – 15:30 · <span style="color:var(--rose)">Carreira</span></div></div><div class="ck"></div></div>
+      </div>
+      <div class="cd" style="padding:16px"><div style="font-family:'Syne';font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:12px">Tipos de Evento</div><div style="display:flex;flex-direction:column;gap:7px"><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:3px;background:var(--rose)"></span><span style="font-size:12px;color:var(--t2);flex:1">Trabalho</span><span style="font-family:'DM Mono';font-size:11px;font-weight:600;color:var(--rose)">12</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:3px;background:var(--orange)"></span><span style="font-size:12px;color:var(--t2);flex:1">Saúde</span><span style="font-family:'DM Mono';font-size:11px;font-weight:600;color:var(--orange)">6</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:3px;background:var(--purple)"></span><span style="font-size:12px;color:var(--t2);flex:1">Estudo</span><span style="font-family:'DM Mono';font-size:11px;font-weight:600;color:var(--purple)">4</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:3px;background:var(--green)"></span><span style="font-size:12px;color:var(--t2);flex:1">Financeiro</span><span style="font-family:'DM Mono';font-size:11px;font-weight:600;color:var(--green)">3</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:3px;background:var(--mod)"></span><span style="font-size:12px;color:var(--t2);flex:1">Pessoal</span><span style="font-family:'DM Mono';font-size:11px;font-weight:600;color:var(--mod)">2</span></div><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:3px;background:var(--yellow)"></span><span style="font-size:12px;color:var(--t2);flex:1">Mente</span><span style="font-family:'DM Mono';font-size:11px;font-weight:600;color:var(--yellow)">1</span></div></div></div>
+      <button class="bt bg" style="width:100%;justify-content:center"><svg viewBox="0 0 24 24" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="10" y1="4" x2="10" y2="20"/></svg>Ver vista semanal</button>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 5 — REVIEW SEMANAL
+     ══════════════════════════════════════════════ -->
+<div id="s-review" class="sc">
+<div class="page">
+  <div class="mh an">
+    <div class="ic" style="background:rgba(16,185,129,.10)"><svg viewBox="0 0 24 24" stroke="var(--green)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+    <div class="nf"><h1>Review Semanal</h1><p>Semana 11 · 9 – 15 de Março 2026</p></div>
+    <div class="ac"><button class="bt bp"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Concluir Review (+10 XP)</button></div>
+  </div>
+
+  <!-- HERO: Ring + Inline metrics -->
+  <div class="cd an d1" style="margin-bottom:28px">
+    <div style="display:flex;align-items:center;gap:40px;flex-wrap:wrap">
+      <div class="rw" style="width:200px;height:200px"><svg width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="none" stroke="var(--s3)" stroke-width="10"/><circle cx="100" cy="100" r="88" fill="none" stroke="url(#rg)" stroke-width="10" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="155"/><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--mod)"/><stop offset="100%" stop-color="#0055ff"/></linearGradient></defs></svg><div class="rl"><div class="pc" style="color:var(--green)">72%</div><div class="sb">de conclusão</div></div></div>
+      <div style="flex:1;min-width:240px"><div style="font-family:'Syne';font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-bottom:8px">Semana 11 · 9 – 15 de Mar</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:12px"><div><span style="font-size:11px;color:var(--t3)">Total</span><div style="font-family:'DM Mono';font-size:22px;font-weight:500">18</div></div><div><span style="font-size:11px;color:var(--t3)">Concluídos</span><div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--green)">13</div></div><div><span style="font-size:11px;color:var(--t3)">Horas Foco</span><div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--mod)">4.5h</div></div><div><span style="font-size:11px;color:var(--t3)">Pendentes</span><div style="font-family:'DM Mono';font-size:22px;font-weight:500;color:var(--red)">5</div></div></div></div>
+    </div>
+  </div>
+
+  <!-- SPLIT: Distribution+Foco LEFT | Pendentes RIGHT -->
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:14px" class="an d2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="cd"><div class="ct"><svg viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>Distribuição por Tipo</div><div class="sk"><div style="width:40%;background:var(--rose)"></div><div style="width:22%;background:var(--orange)"></div><div style="width:18%;background:var(--purple)"></div><div style="width:10%;background:var(--mod)"></div><div style="width:6%;background:var(--yellow)"></div><div style="width:4%;background:var(--green)"></div></div><div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px"><span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t2)"><span style="width:8px;height:8px;border-radius:2px;background:var(--rose);display:block"></span>Trabalho 40%</span><span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t2)"><span style="width:8px;height:8px;border-radius:2px;background:var(--orange);display:block"></span>Saúde 22%</span><span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t2)"><span style="width:8px;height:8px;border-radius:2px;background:var(--purple);display:block"></span>Estudo 18%</span><span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t2)"><span style="width:8px;height:8px;border-radius:2px;background:var(--mod);display:block"></span>Pessoal 10%</span><span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t2)"><span style="width:8px;height:8px;border-radius:2px;background:var(--yellow);display:block"></span>Mente 6%</span><span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t2)"><span style="width:8px;height:8px;border-radius:2px;background:var(--green);display:block"></span>Financeiro 4%</span></div></div>
+      <div class="cd"><div class="ct"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Sessões de Foco</div><div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--s2);border-radius:12px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:7px;background:var(--mod-dim);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span style="font-size:12px">Seg, 10/03</span></div><span style="font-family:'DM Mono';font-size:12px;font-weight:600;color:var(--mod)">45min</span></div><div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--s2);border-radius:12px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:7px;background:var(--mod-dim);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span style="font-size:12px">Ter, 11/03</span></div><span style="font-family:'DM Mono';font-size:12px;font-weight:600;color:var(--mod)">60min</span></div><div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--s2);border-radius:12px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:7px;background:var(--mod-dim);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span style="font-size:12px">Qui, 13/03</span></div><span style="font-family:'DM Mono';font-size:12px;font-weight:600;color:var(--mod)">90min</span></div><div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--s2);border-radius:12px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:7px;background:var(--mod-dim);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span style="font-size:12px">Sex, 14/03</span></div><span style="font-family:'DM Mono';font-size:12px;font-weight:600;color:var(--mod)">75min</span></div></div></div>
+    </div>
+    <div class="cd" style="height:fit-content"><div class="ct"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Pendentes (5)</div>
+      <div class="pd"><div class="pb" style="background:var(--rose)"></div><div class="pi"><div class="pt">Atualizar portfólio</div><div class="pm">Seg, 10/03 · 16:00</div></div><span class="pl" style="background:rgba(245,158,11,.10);color:var(--yellow);font-size:9px">Mover</span></div>
+      <div class="pd"><div class="pb" style="background:var(--yellow)"></div><div class="pi"><div class="pt">Revisão de código PR #230</div><div class="pm">Ter, 11/03 · 14:00</div></div><span class="pl" style="background:rgba(245,158,11,.10);color:var(--yellow);font-size:9px">Mover</span></div>
+      <div class="pd"><div class="pb" style="background:var(--mod)"></div><div class="pi"><div class="pt">Ligar pro dentista</div><div class="pm">Qua, 12/03</div></div><span class="pl" style="background:rgba(245,158,11,.10);color:var(--yellow);font-size:9px">Mover</span></div>
+      <div class="pd"><div class="pb" style="background:var(--rose)"></div><div class="pi"><div class="pt">Enviar relatório mensal</div><div class="pm">Qui, 13/03 · 17:00</div></div><span class="pl" style="background:rgba(244,63,94,.10);color:var(--red);font-size:9px">Urgente</span></div>
+      <div class="pd"><div class="pb" style="background:var(--purple)"></div><div class="pi"><div class="pt">Completar exercício 5</div><div class="pm">Sex, 14/03 · 11:00</div></div><span class="pl" style="background:rgba(245,158,11,.10);color:var(--yellow);font-size:9px">Mover</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 6 — MODO FOCO
+     ══════════════════════════════════════════════ -->
+<div id="s-foco" class="sc">
+<div class="page">
+  <div class="mh an">
+    <div class="ic" style="background:rgba(6,182,212,.10)"><svg viewBox="0 0 24 24" stroke="var(--mod)"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+    <div class="nf"><h1>Modo Foco</h1><p>Timer Pomodoro com sons ambiente e histórico de sessões</p></div>
+    <div class="ac"><span class="pl" style="background:var(--mod-dim);color:var(--mod);font-size:11px;padding:5px 12px"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Sessão ativa</span></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:14px" class="an d1">
+    <!-- LEFT: Timer -->
+    <div class="cd" style="display:flex;flex-direction:column;align-items:center;padding:40px 24px">
+      <div style="display:flex;gap:6px;margin-bottom:28px"><span class="pp act">Foco</span><span class="pp">Pausa</span><span class="pp">Pausa Longa</span></div>
+      <div class="rw" style="width:260px;height:260px"><svg width="260" height="260" viewBox="0 0 260 260" style="filter:drop-shadow(0 0 12px rgba(6,182,212,.25))"><circle cx="130" cy="130" r="115" fill="none" stroke="var(--s3)" stroke-width="12"/><circle cx="130" cy="130" r="115" fill="none" stroke="url(#tg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="723" stroke-dashoffset="181"/><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="var(--mod)"/><stop offset="100%" stop-color="#0055ff"/></linearGradient></defs></svg><div class="rl"><div style="font-family:'DM Mono';font-weight:500;font-size:52px;line-height:1">18:42</div><div style="font-size:12px;color:var(--t2);margin-top:4px">de 25:00</div></div></div>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:16px"><button class="tb se"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button><button class="tb py"><svg viewBox="0 0 24 24" width="24" height="24"><line x1="10" y1="6" x2="10" y2="18" stroke-width="3"/><line x1="16" y1="6" x2="16" y2="18" stroke-width="3"/></svg></button><button class="tb se"><svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button></div>
+      <div style="margin-top:28px;width:100%;max-width:320px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:8px;text-align:center">Duração do Foco</div><div style="display:flex;background:var(--s2);border-radius:10px;overflow:hidden;border:1px solid var(--border)"><button style="flex:1;padding:9px;font-size:12px;font-weight:600;color:var(--t3);background:none;border:none;cursor:pointer">15m</button><button style="flex:1;padding:9px;font-size:12px;font-weight:600;background:var(--mod-dim);color:var(--mod);border:none;cursor:pointer">25m</button><button style="flex:1;padding:9px;font-size:12px;font-weight:600;color:var(--t3);background:none;border:none;cursor:pointer">45m</button><button style="flex:1;padding:9px;font-size:12px;font-weight:600;color:var(--t3);background:none;border:none;cursor:pointer">60m</button></div></div>
+      <div style="margin-top:24px;display:flex;align-items:center;gap:12px"><span style="font-size:11px;color:var(--t3)">Ambiente:</span><div style="display:flex;align-items:center;gap:8px;padding:7px 14px;background:var(--s2);border:1px solid var(--border);border-radius:10px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--mod)" stroke-width="2" stroke-linecap="round"><path d="M8 2h8l4 10H4z"/><path d="M12 12v10"/><path d="M8 22h8"/></svg><span style="font-size:12px;font-weight:500">Chuva</span><div class="sv"><i></i><i></i><i></i><i></i><i></i></div></div><button class="bt bg bs" style="padding:5px 10px;font-size:11px"><svg viewBox="0 0 24 24" width="12" height="12"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>Silêncio</button><button class="bt bg bs" style="padding:5px 10px;font-size:11px"><svg viewBox="0 0 24 24" width="12" height="12"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Café</button></div>
+      <div style="margin-top:28px;display:flex;gap:28px;padding:18px 28px;background:var(--s2);border-radius:14px;border:1px solid var(--border)"><div style="text-align:center"><div style="font-size:10px;color:var(--t3);margin-bottom:3px">Ciclos</div><div style="font-family:'DM Mono';font-size:20px;font-weight:500">2/4</div></div><div style="width:1px;background:var(--border)"></div><div style="text-align:center"><div style="font-size:10px;color:var(--t3);margin-bottom:3px">Foco Total</div><div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--mod)">56min</div></div><div style="width:1px;background:var(--border)"></div><div style="text-align:center"><div style="font-size:10px;color:var(--t3);margin-bottom:3px">Streak</div><div style="font-family:'DM Mono';font-size:20px;font-weight:500;color:var(--yellow)">5 dias</div></div></div>
+    </div>
+
+    <!-- RIGHT: History + Weekly summary -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="cd"><div class="ct"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Histórico de Sessões</div>
+        <div class="se-i"><div class="dot" style="border-color:var(--green);color:var(--green)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="si"><div class="t">TypeScript Avançado</div><div class="m">Hoje, 10:30 · 4 ciclos</div><div class="d">90min de foco</div></div></div>
+        <div class="se-i"><div class="dot" style="border-color:var(--green);color:var(--green)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="si"><div class="t">Revisão de PRs</div><div class="m">Ontem, 14:00 · 3 ciclos</div><div class="d">75min de foco</div></div></div>
+        <div class="se-i"><div class="dot" style="border-color:var(--green);color:var(--green)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="si"><div class="t">Estudar React 19</div><div class="m">11/03, 09:00 · 2 ciclos</div><div class="d">45min de foco</div></div></div>
+        <div class="se-i"><div class="dot" style="border-color:var(--green);color:var(--green)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="si"><div class="t">Planejamento Sprint</div><div class="m">10/03, 08:30 · 2 ciclos</div><div class="d">50min de foco</div></div></div>
+        <div class="se-i"><div class="dot" style="border-color:var(--mod);color:var(--mod)"><svg viewBox="0 0 24 24" width="10" height="10"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg></div><div class="si"><div class="t">Leitura: Clean Code</div><div class="m">09/03, 16:00 · 1 ciclo</div><div class="d">25min de foco</div></div></div>
+      </div>
+      <div class="cd" style="padding:18px"><div style="font-family:'Syne';font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:12px">Resumo Semanal</div><div style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--t2)">Sessões</span><span style="font-family:'DM Mono';font-weight:500">8</span></div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--t2)">Foco total</span><span style="font-family:'DM Mono';font-weight:500;color:var(--mod)">4h 35min</span></div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--t2)">Melhor dia</span><span style="font-family:'DM Mono';font-weight:500;color:var(--green)">Qui (90min)</span></div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--t2)">Média diária</span><span style="font-family:'DM Mono';font-weight:500">39min</span></div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- Modal -->
+<div class="mo" id="modal-evento">
+  <div class="md">
+    <button class="cb" onclick="closeM('modal-evento')">&times;</button>
+    <h2><div class="hi" style="background:var(--mod-dim);color:var(--mod)"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>Novo Evento</h2>
+    <div class="fg"><label>Título</label><input type="text" placeholder="Ex: Reunião de equipe, Almoço..."></div>
+    <div class="fr"><div class="fg"><label>Data</label><input type="date" value="2026-03-14"></div><div class="fg"><label>Horário</label><div style="display:flex;gap:8px;align-items:center"><input type="time" value="09:00" style="flex:1"><span style="color:var(--t3)">até</span><input type="time" value="10:00" style="flex:1"></div></div></div>
+    <div class="fg"><label>Tipo</label><select><option>Trabalho</option><option>Pessoal</option><option>Saúde</option><option>Estudos</option><option>Lazer</option></select></div>
+    <div class="fg"><label>Recorrência</label><select><option>Não repete</option><option>Diário</option><option>Semanal</option><option>Mensal</option></select></div>
+    <div class="fg"><label>Descrição</label><textarea rows="2" placeholder="Detalhes opcionais..."></textarea></div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:20px"><button class="bt bg" onclick="closeM('modal-evento')">Cancelar</button><button class="bt bp" onclick="closeM('modal-evento')">Salvar Evento</button></div>
+  </div>
+</div>
+
+<!-- Proto Nav -->
+<div class="pn">
+  <span class="tg">Tempo Redesign v3</span>
+  <button class="on" data-s="dash" onclick="go('dash')">Dashboard</button>
+  <button data-s="agenda" onclick="go('agenda')">Agenda</button>
+  <button data-s="semanal" onclick="go('semanal')">Semanal</button>
+  <button data-s="mensal" onclick="go('mensal')">Mensal</button>
+  <div class="sp"></div>
+  <button data-s="review" onclick="go('review')">Review</button>
+  <button data-s="foco" onclick="go('foco')">Foco</button>
+</div>
+
+<script>
+function go(id){document.querySelectorAll('.sc').forEach(function(s){s.classList.remove('active')});var t=document.getElementById('s-'+id);if(t)t.classList.add('active');document.querySelectorAll('.pn button[data-s]').forEach(function(b){b.classList.toggle('on',b.dataset.s===id)});window.scrollTo(0,0);if(t){t.querySelectorAll('.an').forEach(function(e){e.style.animation='none';e.offsetHeight;e.style.animation=''})}if(id==='semanal'){var g=document.getElementById('wgBody');if(g)g.scrollTop=380}}
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+document.addEventListener('DOMContentLoaded',function(){var g=document.getElementById('wgBody');if(g)g.scrollTop=380})
+</script>
+</body>
+</html>

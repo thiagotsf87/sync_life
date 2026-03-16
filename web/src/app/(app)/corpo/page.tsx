@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Droplets } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Plus, Droplets, Activity, Scale, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCorpoDashboard, useWaterIntake, useUpdateWater, calcIMC, IMC_LABEL } from '@/hooks/use-corpo'
-import { KpiCard } from '@/components/ui/kpi-card'
-import { JornadaInsight } from '@/components/ui/jornada-insight'
-import { ActivityCard } from '@/components/corpo/ActivityCard'
-import { AppointmentCard } from '@/components/corpo/AppointmentCard'
+import { ModuleHeader } from '@/components/ui/module-header'
+import { ScoreHero } from '@/components/ui/score-hero'
+import { MetricsStrip } from '@/components/ui/metrics-strip'
+import { ActivityHeatmap } from '@/components/ui/activity-heatmap'
 import { CorpoMobile } from '@/components/corpo/CorpoMobile'
 
 export default function CorpoPage() {
@@ -32,7 +31,7 @@ export default function CorpoPage() {
       await reloadWater()
       toast.success(`+${ml}ml registrado!`)
     } catch {
-      toast.error('Erro ao registrar hidratação')
+      toast.error('Erro ao registrar hidratacao')
     }
   }, [waterIntake, waterGoal, todayStr, updateWater, reloadWater])
 
@@ -51,209 +50,361 @@ export default function CorpoPage() {
     ? Math.ceil((nextApptDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null
 
+  // Build subtitle for ModuleHeader
+  const subtitleParts: string[] = []
+  if (latestWeight) subtitleParts.push(`${latestWeight.weight} kg`)
+  if (weekActivities.length > 0) subtitleParts.push(`${weekActivities.length} atividade${weekActivities.length !== 1 ? 's' : ''} esta semana`)
+  if (imc) subtitleParts.push(`IMC ${imc.toFixed(1)}`)
+  const headerSubtitle = subtitleParts.length > 0 ? subtitleParts.join(' \u00B7 ') : 'Configure seu perfil de saude'
+
+  // Build a rough corpo score (0-100) from available data
+  const corpoScore = useMemo(() => {
+    let score = 50
+    if (weekActivities.length >= (profile?.weekly_activity_goal ?? 3)) score += 15
+    else if (weekActivities.length > 0) score += 8
+    if (waterPct >= 100) score += 10
+    else if (waterPct >= 50) score += 5
+    if (imc && imc >= 18.5 && imc < 25) score += 15
+    else if (imc && imc >= 25 && imc < 30) score += 5
+    if (latestWeight) score += 5
+    if (profile?.bmr) score += 5
+    return Math.min(100, score)
+  }, [weekActivities, profile, waterPct, imc, latestWeight])
+
+  // Score description
+  const scoreDescription = useMemo(() => {
+    if (!latestWeight) return 'Registre seu peso para acompanhar sua evolucao.'
+    const parts: string[] = []
+    parts.push(`Seu peso atual e ${latestWeight.weight} kg.`)
+    if (weekActivities.length > 0) {
+      parts.push(`${weekActivities.length} atividade${weekActivities.length !== 1 ? 's' : ''} esta semana.`)
+    }
+    return parts.join(' ')
+  }, [latestWeight, weekActivities])
+
+  // Build heatmap data from weekActivities (last 28 days)
+  const heatmapDays = useMemo(() => {
+    const days: { date: string; level: 0 | 1 | 2 | 3 | 4; minutes?: number }[] = []
+    const today = new Date()
+    for (let i = 27; i >= 0; i--) {
+      const d = new Date(today)
+      d.setDate(d.getDate() - i)
+      const dateStr = d.toISOString().split('T')[0]
+      const dayActivities = weekActivities.filter(a => a.recorded_at.startsWith(dateStr))
+      const totalMinutes = dayActivities.reduce((s, a) => s + a.duration_minutes, 0)
+      let level: 0 | 1 | 2 | 3 | 4 = 0
+      if (totalMinutes >= 60) level = 4
+      else if (totalMinutes >= 40) level = 3
+      else if (totalMinutes >= 20) level = 2
+      else if (totalMinutes > 0) level = 1
+      days.push({ date: dateStr, level, minutes: totalMinutes })
+    }
+    return days
+  }, [weekActivities])
+
   return (
     <>
       {/* Mobile */}
       <CorpoMobile />
 
       {/* Desktop */}
-    <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
+      <div className="hidden lg:block max-w-[1140px] mx-auto px-6 py-7 pb-16">
 
-      {/* ① Topbar */}
-      <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className="font-[Syne] font-extrabold text-2xl text-sl-grad">
-          🏃 Corpo
-        </h1>
-        <div className="flex-1" />
-        <button
-          onClick={() => router.push('/corpo/peso')}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                     bg-[#f97316] text-white hover:opacity-90 transition-opacity"
+        {/* 1. ModuleHeader */}
+        <ModuleHeader
+          icon={Activity}
+          iconBg="rgba(249,115,22,.08)"
+          iconColor="#f97316"
+          title="Corpo"
+          subtitle={headerSubtitle}
         >
-          <Plus size={16} />
-          Registrar Peso
-        </button>
-      </div>
-
-      {/* ② KPI Strip */}
-      <div className="grid grid-cols-4 gap-3 mb-5 max-sm:grid-cols-2">
-        <KpiCard
-          label="Peso Atual"
-          value={latestWeight ? `${latestWeight.weight} kg` : '—'}
-          delta={imc && imcInfo ? `IMC ${imc.toFixed(1)} · ${imcInfo.label}` : 'Registre seu peso'}
-          deltaType="neutral"
-          accent="#f97316"
-        />
-        <KpiCard
-          label="TMB"
-          value={profile?.bmr ? `${Math.round(profile.bmr)} kcal` : '—'}
-          delta={profile?.tdee ? `TDEE: ${Math.round(profile.tdee)} kcal` : 'Configure perfil'}
-          deltaType="neutral"
-          accent="#f59e0b"
-        />
-        <KpiCard
-          label="Atividades (semana)"
-          value={String(weekActivities.length)}
-          delta={weekMinutes > 0 ? `${weekMinutes} min · ${Math.round(weekCalories)} kcal` : 'Nenhuma este semana'}
-          deltaType={weekActivities.length >= (profile?.weekly_activity_goal ?? 3) ? 'up' : 'neutral'}
-          accent="#10b981"
-        />
-        <KpiCard
-          label="Próxima Consulta"
-          value={nextApptDate ? nextApptDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : '—'}
-          delta={
-            daysUntil !== null
-              ? daysUntil === 0 ? 'Hoje!'
-              : daysUntil === 1 ? 'Amanhã'
-              : `em ${daysUntil} dias`
-              : 'Sem consultas'
-          }
-          deltaType={daysUntil !== null && daysUntil <= 7 ? 'warn' : 'neutral'}
-          accent="#06b6d4"
-        />
-      </div>
-
-      {/* ③ Jornada Insight */}
-      <JornadaInsight
-        text={
-          profile && latestWeight
-            ? <>Seu peso atual é <strong className="text-[var(--sl-t1)]">{latestWeight.weight} kg</strong>
-              {imc && imcInfo && <> (IMC <strong style={{ color: imcInfo.color }}>{imc.toFixed(1)} — {imcInfo.label}</strong>)</>}.
-              {weekActivities.length > 0 && <> Você fez <strong className="text-[#10b981]">{weekActivities.length} atividade{weekActivities.length !== 1 ? 's' : ''}</strong> essa semana.</>}
-            </>
-            : <>Configure seu perfil de saúde para habilitar o cálculo de TMB, TDEE e acompanhamento personalizado.</>
-        }
-      />
-
-      {/* ④ Main grid */}
-      {loading ? (
-        <div className="grid grid-cols-[1fr_300px] gap-4 max-lg:grid-cols-1">
-          <div className="h-64 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
-          <div className="h-64 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
-        </div>
-      ) : error ? (
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 text-center">
-          <p className="text-[13px] text-[var(--sl-t2)]">
-            {error.includes('does not exist') ? 'Execute a migration 005 no Supabase.' : error}
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-[1fr_300px] gap-4 max-lg:grid-cols-1">
-
-          {/* Atividades */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">🏋️ Atividades Recentes</h2>
-              <button onClick={() => router.push('/corpo/atividades')} className="text-[12px] text-[#f97316] hover:opacity-80">
-                Ver todas →
-              </button>
-            </div>
-
-            {weekActivities.length === 0 ? (
-              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-10 text-center">
-                <div className="text-4xl mb-3">🏃</div>
-                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhuma atividade essa semana</h3>
-                <button
-                  onClick={() => router.push('/corpo/atividades')}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f97316] text-white hover:opacity-90"
-                >
-                  <Plus size={15} />
-                  Registrar
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
-                {weekActivities.slice(0, 6).map(a => <ActivityCard key={a.id} activity={a} />)}
-              </div>
-            )}
-          </div>
-
-          {/* Próximas consultas */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 h-fit">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🏥 Próximas Consultas</h2>
-              <button onClick={() => router.push('/corpo/saude')} className="text-[11px] text-[#f97316] hover:opacity-80">
-                Gerenciar →
-              </button>
-            </div>
-            {!nextAppointment ? (
-              <p className="text-[12px] text-[var(--sl-t3)]">Nenhuma consulta agendada.</p>
-            ) : (
-              <AppointmentCard appointment={nextAppointment} />
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ⑤ Hydration Tracker */}
-      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mt-4 sl-fade-up">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Droplets size={16} className="text-[#06b6d4]" />
-            <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">Hidratação</h2>
-          </div>
-          <span className="text-[11px] text-[var(--sl-t3)]">
-            Meta: {(waterGoal / 1000).toFixed(1)}L
-          </span>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {/* Progress bar */}
-          <div className="flex-1">
-            <div className="h-[8px] bg-[var(--sl-s3)] rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-[width] duration-500"
-                style={{
-                  width: `${waterPct}%`,
-                  background: waterPct >= 100 ? '#10b981' : '#06b6d4',
-                }}
-              />
-            </div>
-            <div className="flex justify-between mt-1.5">
-              <span className="font-[DM_Mono] text-[13px] font-semibold" style={{ color: waterPct >= 100 ? '#10b981' : '#06b6d4' }}>
-                {(waterIntake / 1000).toFixed(1)}L
-              </span>
-              <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t3)]">
-                {waterPct}%
-              </span>
-            </div>
-          </div>
-
-          {/* Quick-add buttons */}
-          <div className="flex gap-2 shrink-0">
-            <button
-              onClick={() => handleAddWater(250)}
-              className="px-3 py-2 rounded-[10px] text-[12px] font-semibold border border-[#06b6d4]/30 text-[#06b6d4] hover:bg-[#06b6d4]/10 transition-colors"
-            >
-              +250ml
-            </button>
-            <button
-              onClick={() => handleAddWater(500)}
-              className="px-3 py-2 rounded-[10px] text-[12px] font-semibold bg-[#06b6d4] text-white hover:opacity-90 transition-opacity"
-            >
-              +500ml
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick actions */}
-      <div className="grid grid-cols-4 gap-3 mt-4 max-sm:grid-cols-2">
-        {[
-          { label: '⚖️ Peso', href: '/corpo/peso', color: '#f97316' },
-          { label: '🏋️ Atividades', href: '/corpo/atividades', color: '#10b981' },
-          { label: '🍽️ Cardápio', href: '/corpo/cardapio', color: '#f59e0b' },
-          { label: '🏥 Saúde', href: '/corpo/saude', color: '#06b6d4' },
-        ].map(({ label, href, color }) => (
-          <button key={href} onClick={() => router.push(href)}
-            className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 text-left hover:border-[var(--sl-border-h)] transition-colors sl-fade-up"
+          <button
+            onClick={() => router.push('/corpo/peso')}
+            className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
+                       bg-[#f97316] text-white hover:brightness-110 hover:-translate-y-px
+                       transition-all shadow-[0_6px_20px_rgba(249,115,22,.15)]"
           >
-            <div className="h-0.5 w-8 rounded-full mb-2" style={{ background: color }} />
-            <p className="font-medium text-[13px] text-[var(--sl-t1)]">{label}</p>
+            <Plus size={16} />
+            Registrar Peso
           </button>
-        ))}
+        </ModuleHeader>
+
+        {/* 2. ScoreHero */}
+        <ScoreHero
+          score={corpoScore}
+          label="Score Corporal"
+          title={corpoScore >= 70 ? 'Corpo em evolucao' : corpoScore >= 40 ? 'Progresso constante' : 'Comece hoje'}
+          description={scoreDescription}
+          accentColor="#f97316"
+          stats={[
+            {
+              label: 'TMB',
+              value: profile?.bmr ? Math.round(profile.bmr).toLocaleString('pt-BR') : '--',
+            },
+            {
+              label: 'TDEE',
+              value: profile?.tdee ? Math.round(profile.tdee).toLocaleString('pt-BR') : '--',
+            },
+          ]}
+          className="mb-[14px]"
+        />
+
+        {/* 3. Vitals Strip */}
+        <MetricsStrip
+          className="mb-7"
+          items={[
+            {
+              label: 'Peso Atual',
+              value: latestWeight ? `${latestWeight.weight}` : '--',
+              note: imc && imcInfo
+                ? `${imc > 0 ? (latestWeight?.weight ?? 0) < (profile?.current_weight ?? 999) ? '-' : '' : ''}vs semana`
+                : undefined,
+              accent: '#f97316',
+              valueColor: undefined,
+            },
+            {
+              label: 'IMC',
+              value: imc ? imc.toFixed(1) : '--',
+              note: imcInfo?.label ?? undefined,
+              accent: '#10b981',
+              valueColor: imcInfo?.color ?? undefined,
+            },
+            {
+              label: 'Atividades',
+              value: String(weekActivities.length),
+              note: weekMinutes > 0 ? `${weekMinutes} min \u00B7 ${Math.round(weekCalories)} kcal` : 'Nenhuma esta semana',
+              accent: '#10b981',
+            },
+            {
+              label: 'Hidratacao',
+              value: `${(waterIntake / 1000).toFixed(1)}`,
+              note: `${waterPct}% da meta`,
+              accent: '#06b6d4',
+              valueColor: '#06b6d4',
+            },
+            {
+              label: 'Streak',
+              value: weekActivities.length > 0 ? `${weekActivities.length}` : '0',
+              note: 'dias',
+              accent: '#f59e0b',
+            },
+          ]}
+        />
+
+        {/* 4. Main Bento Grid */}
+        {loading ? (
+          <div className="grid grid-cols-[1fr_380px] gap-[14px] max-lg:grid-cols-1">
+            <div className="flex flex-col gap-[14px]">
+              <div className="h-48 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
+              <div className="h-48 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
+            </div>
+            <div className="flex flex-col gap-[14px]">
+              <div className="h-48 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
+              <div className="h-48 rounded-2xl bg-[var(--sl-s2)] animate-pulse" />
+            </div>
+          </div>
+        ) : error ? (
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 text-center">
+            <p className="text-[13px] text-[var(--sl-t2)]">
+              {error.includes('does not exist') ? 'Execute a migration 005 no Supabase.' : error}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-[1fr_380px] gap-[14px] max-lg:grid-cols-1 sl-fade-up sl-delay-3">
+
+            {/* LEFT: Heatmap + Weight Trend stacked */}
+            <div className="flex flex-col gap-[14px]">
+
+              {/* Activity Heatmap */}
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6
+                              hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
+                <div className="flex items-center gap-[9px] mb-[18px]">
+                  <Calendar size={16} className="text-[#f97316]" />
+                  <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                    Mapa de Atividades
+                  </h3>
+                  <span className="ml-auto text-[11px] text-[var(--sl-t3)]">Ultimas 4 semanas</span>
+                </div>
+                <ActivityHeatmap days={heatmapDays} accentColor="#f97316" />
+              </div>
+
+              {/* Weight Trend mini */}
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 flex-1
+                              hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
+                <div className="flex items-center gap-[9px] mb-[18px]">
+                  <Scale size={16} className="text-[#f97316]" />
+                  <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                    Tendencia
+                  </h3>
+                  <button
+                    onClick={() => router.push('/corpo/peso')}
+                    className="ml-auto text-[12px] font-medium text-[#f97316] hover:opacity-80 transition-opacity"
+                  >
+                    Detalhes &rarr;
+                  </button>
+                </div>
+
+                {/* Weight value + delta pill */}
+                <div className="flex items-center gap-4 mb-3">
+                  <span className="font-[DM_Mono] font-medium text-[26px] text-[var(--sl-t1)] leading-none">
+                    {latestWeight ? latestWeight.weight : '--'}
+                    <span className="text-[12px] text-[var(--sl-t3)] ml-1">kg</span>
+                  </span>
+                  {latestWeight && (
+                    <span className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[11px] font-semibold
+                                     bg-[rgba(16,185,129,.1)] text-[#10b981]">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m6 15 6-6 6 6"/>
+                      </svg>
+                      Ultimos 30d
+                    </span>
+                  )}
+                </div>
+
+                {/* Chart placeholder */}
+                <div className="w-full border border-dashed border-[var(--sl-border)] rounded-xl
+                                flex items-center justify-center text-[var(--sl-t3)] text-[12px] italic p-4"
+                     style={{ minHeight: 100 }}
+                >
+                  Recharts: LineChart &mdash; peso ultimos 30 dias
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT: Hydration + Appointments stacked */}
+            <div className="flex flex-col gap-[14px]">
+
+              {/* Hydration card */}
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6
+                              hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
+                <div className="flex items-center gap-[9px] mb-[18px]">
+                  <Droplets size={16} className="text-[#06b6d4]" />
+                  <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                    Hidratacao
+                  </h3>
+                </div>
+
+                {/* Hydration value row */}
+                <div className="flex items-center gap-[14px] mb-3">
+                  <span className="font-[DM_Mono] font-medium text-[24px] text-[#06b6d4] leading-none">
+                    {(waterIntake / 1000).toFixed(1)}
+                  </span>
+                  <span className="text-[12px] text-[var(--sl-t3)]">
+                    / {(waterGoal / 1000).toFixed(1)}L
+                  </span>
+                  <span className="font-[DM_Mono] text-[12px] text-[#06b6d4] ml-auto">
+                    {waterPct}%
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="mb-3">
+                  <div className="h-[10px] bg-[var(--sl-s3)] rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-[width] duration-500"
+                      style={{
+                        width: `${waterPct}%`,
+                        background: waterPct >= 100 ? '#10b981' : '#06b6d4',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Quick-add buttons */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleAddWater(250)}
+                    className="flex-1 flex items-center justify-center px-2 py-2 rounded-[11px] text-[12px] font-semibold
+                               border border-[var(--sl-border)] text-[var(--sl-t2)]
+                               hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors"
+                  >
+                    +250ml
+                  </button>
+                  <button
+                    onClick={() => handleAddWater(500)}
+                    className="flex-1 flex items-center justify-center px-2 py-2 rounded-[11px] text-[12px] font-semibold
+                               bg-[#06b6d4] text-white hover:opacity-90 transition-opacity"
+                  >
+                    +500ml
+                  </button>
+                </div>
+              </div>
+
+              {/* Appointments card */}
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 flex-1
+                              hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
+                <div className="flex items-center gap-[9px] mb-[18px]">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="18" height="18" x="3" y="4" rx="2"/>
+                    <path d="M16 2v4"/>
+                    <path d="M8 2v4"/>
+                    <path d="M3 10h18"/>
+                  </svg>
+                  <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                    Proximas Consultas
+                  </h3>
+                  <button
+                    onClick={() => router.push('/corpo/saude')}
+                    className="ml-auto text-[12px] font-medium text-[#f97316] hover:opacity-80 transition-opacity"
+                  >
+                    Ver todas &rarr;
+                  </button>
+                </div>
+
+                {!nextAppointment ? (
+                  <p className="text-[12px] text-[var(--sl-t3)]">Nenhuma consulta agendada.</p>
+                ) : (
+                  <div className="flex flex-col gap-[10px]">
+                    {/* Appointment row - matching prototype style */}
+                    <div className="flex items-center gap-3 p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
+                      <div className="text-center min-w-[40px]">
+                        <div className="font-[DM_Mono] text-[18px] font-medium leading-none text-[var(--sl-t1)]">
+                          {nextApptDate ? nextApptDate.getDate().toString().padStart(2, '0') : '--'}
+                        </div>
+                        <div className="text-[9px] font-bold uppercase tracking-[.08em] text-[#06b6d4] mt-0.5">
+                          {nextApptDate ? nextApptDate.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '') : ''}
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] font-semibold text-[var(--sl-t1)]">
+                          {nextAppointment.specialty}
+                        </div>
+                        {nextAppointment.doctor_name && (
+                          <div className="text-[11px] text-[var(--sl-t3)]">
+                            Dr(a). {nextAppointment.doctor_name}
+                          </div>
+                        )}
+                      </div>
+                      <span
+                        className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
+                        style={{
+                          background: daysUntil !== null && daysUntil <= 7
+                            ? 'rgba(6,182,212,.1)'
+                            : daysUntil !== null && daysUntil <= 21
+                              ? 'rgba(245,158,11,.1)'
+                              : 'var(--sl-s3)',
+                          color: daysUntil !== null && daysUntil <= 7
+                            ? '#06b6d4'
+                            : daysUntil !== null && daysUntil <= 21
+                              ? '#f59e0b'
+                              : 'var(--sl-t3)',
+                        }}
+                      >
+                        {daysUntil !== null
+                          ? daysUntil === 0 ? 'Hoje'
+                          : daysUntil === 1 ? 'Amanha'
+                          : `${daysUntil} dias`
+                          : '--'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
-    </div>
     </>
   )
 }

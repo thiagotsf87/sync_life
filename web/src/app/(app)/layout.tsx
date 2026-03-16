@@ -22,13 +22,19 @@ export default async function AppLayout({
     redirect('/login')
   }
 
-  // Get user profile with preferences
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
-    .from('profiles')
-    .select('full_name, theme, sidebar_state, onboarding_completed')
-    .eq('id', user.id)
-    .single() as { data: ProfileData | null }
+  // Get user profile with preferences (maybeSingle evita erro quando perfil nao existe)
+  let profile: ProfileData | null = null
+  try {
+    const { data } = await (supabase as any)
+      .from('profiles')
+      .select('full_name, theme, sidebar_state, onboarding_completed')
+      .eq('id', user.id)
+      .maybeSingle()
+    profile = data
+  } catch {
+    // Falha ao buscar perfil — redireciona para onboarding para criar
+    redirect('/onboarding')
+  }
 
   // Guard: redirect to onboarding if not completed
   if (!profile?.onboarding_completed) {
