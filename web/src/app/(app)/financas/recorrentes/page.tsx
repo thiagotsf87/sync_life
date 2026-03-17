@@ -3,8 +3,9 @@
 import { useState, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import {
-  Plus, Calendar, Clock, Pencil, Pause, Play, Trash2, AlertTriangle, MoreVertical,
+  Repeat, Plus, Calendar, Clock, Pencil, Pause, Play, Trash2, AlertTriangle, MoreVertical,
 } from 'lucide-react'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
@@ -472,19 +473,14 @@ export default function RecorrentesPage() {
       <div className="hidden lg:block max-w-[1100px] mx-auto px-6 py-7 pb-16">
 
         {/* ① Topbar */}
-        <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#10b981] mb-1">💰 Finanças</p>
-            <h1 className={cn(
-              'font-[Syne] font-extrabold text-2xl tracking-tight',
-              'text-sl-grad'
-            )}>
-              Transações Recorrentes
-            </h1>
-            <p className="text-[13px] text-[var(--sl-t2)] mt-1">
-              Despesas e receitas que acontecem automaticamente todo período.
-            </p>
-          </div>
+        <ModuleHeader
+          icon={Repeat}
+          iconBg="rgba(16,185,129,.08)"
+          iconColor="#10b981"
+          title="Recorrentes"
+          subtitle="Despesas e receitas que acontecem automaticamente todo período."
+          className="mb-6"
+        >
           <button
             onClick={openCreate}
             className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full border-none cursor-pointer shadow-[0_4px_16px_rgba(16,185,129,0.25)] hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(16,185,129,0.35)] transition-all shrink-0 text-[#03071a]"
@@ -493,7 +489,7 @@ export default function RecorrentesPage() {
             <Plus size={14} strokeWidth={2.5} />
             Nova recorrente
           </button>
-        </div>
+        </ModuleHeader>
 
         {/* ② FREE Banner */}
         {isFree && activeCount >= 4 && (

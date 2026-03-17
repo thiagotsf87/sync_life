@@ -7,7 +7,8 @@ import { USE_MOCK } from '@/lib/mock-financas'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useTransactions } from '@/hooks/use-transactions'
 import { useRecorrentes } from '@/hooks/use-recorrentes'
-import { CalendarDays, Plus, ChevronLeft, ChevronRight } from 'lucide-react'
+import { TrendingUp, CalendarDays, Plus, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { FinancasMobile } from '@/components/financas/FinancasMobile'
 import { KpiStrip } from '@/components/financas/KpiStrip'
 import { HealthBand } from '@/components/financas/HealthBand'
@@ -211,52 +212,45 @@ export default function FinancasDashboardPage() {
     <div className="hidden lg:block max-w-[1160px] mx-auto">
 
       {/* 1 PAGE HEADER */}
-      <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
-        <div>
-          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#10b981] mb-1">
-            <div className="w-[5px] h-[5px] rounded-full bg-[#10b981]" />
-            Módulo Finanças
-          </div>
-          <h1 className="font-[Syne] font-extrabold text-[22px] text-[var(--sl-t1)] tracking-tight leading-none">
-            Visão Geral
-          </h1>
-          <p className="text-[11px] text-[var(--sl-t3)] mt-1">
-            {mesAno} · semana {weekOfMonth} de {totalWeeks} · {daysLeftInMonth} dias restantes
-          </p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-1">
-            <button onClick={prevMonth} aria-label="Mês anterior"
-              className="w-7 h-7 rounded-[8px] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
-              <ChevronLeft size={14} />
-            </button>
-            <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)] px-2.5 py-1.5 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] whitespace-nowrap min-w-[130px] text-center flex items-center justify-center gap-1.5">
-              <CalendarDays size={12} className="text-[var(--sl-t3)]" />
-              {mesAno}
-            </span>
-            <button onClick={nextMonth} aria-label="Próximo mês"
-              className="w-7 h-7 rounded-[8px] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
-              <ChevronRight size={14} />
-            </button>
-            {(month !== now.getMonth() + 1 || year !== now.getFullYear()) && (
-              <button
-                onClick={() => { setMonth(now.getMonth() + 1); setYear(now.getFullYear()) }}
-                className="ml-1 text-[11px] text-[#10b981] hover:underline"
-              >
-                Hoje
-              </button>
-            )}
-          </div>
-          <button
-            onClick={() => router.push('/financas/transacoes')}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-[9px] border-none text-white text-[12px] font-bold transition-all hover:brightness-110"
-            style={{ background: '#10b981' }}
-          >
-            <Plus size={12} />
-            Nova Transação
+      <ModuleHeader
+        icon={TrendingUp}
+        iconBg="rgba(16,185,129,.08)"
+        iconColor="#10b981"
+        title="Visão Geral"
+        subtitle={`${mesAno} · semana ${weekOfMonth} de ${totalWeeks} · ${daysLeftInMonth} dias restantes`}
+        className="mb-4"
+      >
+        <div className="flex items-center gap-1">
+          <button onClick={prevMonth} aria-label="Mês anterior"
+            className="w-7 h-7 rounded-[8px] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
+            <ChevronLeft size={14} />
           </button>
+          <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)] px-2.5 py-1.5 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] whitespace-nowrap min-w-[130px] text-center flex items-center justify-center gap-1.5">
+            <CalendarDays size={12} className="text-[var(--sl-t3)]" />
+            {mesAno}
+          </span>
+          <button onClick={nextMonth} aria-label="Próximo mês"
+            className="w-7 h-7 rounded-[8px] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
+            <ChevronRight size={14} />
+          </button>
+          {(month !== now.getMonth() + 1 || year !== now.getFullYear()) && (
+            <button
+              onClick={() => { setMonth(now.getMonth() + 1); setYear(now.getFullYear()) }}
+              className="ml-1 text-[11px] text-[#10b981] hover:underline"
+            >
+              Hoje
+            </button>
+          )}
         </div>
-      </div>
+        <button
+          onClick={() => router.push('/financas/transacoes')}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-[9px] border-none text-white text-[12px] font-bold transition-all hover:brightness-110"
+          style={{ background: '#10b981' }}
+        >
+          <Plus size={12} />
+          Nova Transação
+        </button>
+      </ModuleHeader>
 
       {/* 2 KPI STRIP */}
       <KpiStrip

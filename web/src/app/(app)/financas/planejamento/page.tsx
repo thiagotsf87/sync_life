@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Pencil, Trash2, CheckCircle2 } from 'lucide-react'
+import { LineChart, Plus, Pencil, Trash2, CheckCircle2 } from 'lucide-react'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useUserPlan } from '@/hooks/use-user-plan'
@@ -349,15 +350,13 @@ export default function PlanejamentoPage() {
     <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
       {/* ① Topbar */}
-      <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <h1 className={cn(
-          'font-[Syne] font-extrabold text-[22px] tracking-tight',
-          'text-sl-grad'
-        )}>
-          📈 Planejamento Futuro
-        </h1>
-        <div className="flex-1" />
-
+      <ModuleHeader
+        icon={LineChart}
+        iconBg="rgba(16,185,129,.08)"
+        iconColor="#10b981"
+        title="Planejamento Futuro"
+        className="mb-5"
+      >
         {/* Scenario group */}
         <div className="flex bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[20px] p-0.5 gap-0.5">
           {SCENARIOS.map(sc => (
@@ -376,7 +375,7 @@ export default function PlanejamentoPage() {
           <Plus size={13} strokeWidth={2.5} />
           Novo Evento
         </button>
-      </div>
+      </ModuleHeader>
 
       {/* Error */}
       {error && (

@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { cn } from '@/lib/utils'
-import { Plus, ChevronLeft, ChevronRight, AlertTriangle, Pencil, Trash2, Copy, X } from 'lucide-react'
+import { Target, Plus, ChevronLeft, ChevronRight, AlertTriangle, Pencil, Trash2, Copy, X } from 'lucide-react'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { KpiCard } from '@/components/ui/kpi-card'
@@ -527,19 +528,13 @@ export default function OrcamentosPage() {
       <div className="hidden lg:block max-w-[1000px] mx-auto px-6 py-8 pb-20">
 
         {/* ① Header */}
-        <div className="flex items-center justify-between mb-7 gap-4 flex-wrap">
-          <div>
-            <p className="text-[11px] text-[#10b981] font-bold uppercase tracking-[.07em] mb-1">
-              💰 Finanças
-            </p>
-            <h1 className={cn(
-              'font-[Syne] font-extrabold text-[24px] tracking-tight',
-              'text-sl-grad'
-            )}>
-              Orçamentos
-            </h1>
-          </div>
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <ModuleHeader
+          icon={Target}
+          iconBg="rgba(16,185,129,.08)"
+          iconColor="#10b981"
+          title="Orçamentos"
+          className="mb-7"
+        >
           {budgets.length === 0 && prevMonthBudgets.length > 0 && (
             <button
               onClick={() => setCopyModalOpen(true)}
@@ -572,8 +567,7 @@ export default function OrcamentosPage() {
               Novo Envelope
             </button>
           </ProLimitGate>
-        </div>
-      </div>
+        </ModuleHeader>
 
       {/* ② KPIs */}
       <div className="grid grid-cols-4 gap-3 mb-6 max-sm:grid-cols-2">

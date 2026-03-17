@@ -2,6 +2,7 @@
 
 import { useCallback, useRef } from 'react'
 import { Upload, FileSpreadsheet, CheckCircle2, AlertTriangle, ArrowLeft, Loader2 } from 'lucide-react'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { useImport } from '@/hooks/use-import'
 import { SLCard } from '@/components/ui/sl-card'
 import { SLSelect } from '@/components/ui/sl-select'
@@ -47,19 +48,19 @@ export default function ImportarPage() {
   return (
     <div className="max-w-[800px] mx-auto px-6 py-7 pb-16">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-5">
-        <Link href="/financas/transacoes" className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] transition-colors">
-          <ArrowLeft size={18} />
+      <ModuleHeader
+        icon={Upload}
+        iconBg="rgba(16,185,129,.08)"
+        iconColor="#10b981"
+        title="Importar Extrato"
+        subtitle="CSV (Nubank, Inter, Itaú, Bradesco) ou OFX/QFX"
+        className="mb-5"
+      >
+        <Link href="/financas/transacoes" className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[9px] border border-[var(--sl-border)] bg-[var(--sl-s1)] text-[var(--sl-t2)] text-[12px] font-semibold hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
+          <ArrowLeft size={13} />
+          Voltar
         </Link>
-        <div>
-          <h1 className="font-[Syne] font-extrabold text-[22px] text-[var(--sl-t1)]">
-            Importar Extrato
-          </h1>
-          <p className="text-[11px] text-[var(--sl-t3)]">
-            CSV (Nubank, Inter, Itaú, Bradesco) ou OFX/QFX
-          </p>
-        </div>
-      </div>
+      </ModuleHeader>
 
       {/* Steps indicator */}
       <div className="flex items-center gap-2 mb-6">

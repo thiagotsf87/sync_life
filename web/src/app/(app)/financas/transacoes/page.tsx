@@ -3,9 +3,10 @@
 import { useState, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import {
-  Plus, Search, ChevronLeft, ChevronRight, AlertTriangle,
+  ArrowLeftRight, Plus, Search, ChevronLeft, ChevronRight, AlertTriangle,
   Pencil, Trash2, X, SlidersHorizontal,
 } from 'lucide-react'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { useCategories } from '@/hooks/use-categories'
@@ -524,19 +525,14 @@ export default function TransacoesPage() {
       {/* ═══ DESKTOP HEADER ═══ */}
       <div className="hidden md:block px-4 sm:px-0">
         {/* ① Topbar */}
-        <div className="flex items-center gap-2.5 mb-5 flex-wrap">
-          <div className="flex items-center gap-2.5">
-            <h1 className={cn(
-              'font-[Syne] font-extrabold text-[22px] tracking-tight',
-              'text-sl-grad'
-            )}>
-              Transações
-            </h1>
-            <span className="text-[11px] font-semibold text-[var(--sl-t2)] bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-full px-2.5 py-0.5">
-              {isLoading ? '…' : total} itens
-            </span>
-          </div>
-          <div className="flex-1" />
+        <ModuleHeader
+          icon={ArrowLeftRight}
+          iconBg="rgba(16,185,129,.08)"
+          iconColor="#10b981"
+          title="Transações"
+          subtitle={`${isLoading ? '…' : total} itens`}
+          className="mb-5"
+        >
           <button
             onClick={openCreate}
             className="flex items-center gap-1.5 text-[#03071a] font-bold text-[13px] px-5 py-2.5 rounded-full border-none shadow-[0_4px_16px_rgba(16,185,129,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
@@ -545,7 +541,7 @@ export default function TransacoesPage() {
             <Plus size={14} />
             Nova Transação
           </button>
-        </div>
+        </ModuleHeader>
 
         {/* ② Insight Jornada */}
         <JornadaInsight text={

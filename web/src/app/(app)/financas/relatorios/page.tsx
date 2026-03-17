@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
-import { Download, FileText, BarChart2, Lock } from 'lucide-react'
+import { BarChart3, Download, FileText, BarChart2, Lock } from 'lucide-react'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { cn } from '@/lib/utils'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import {
@@ -164,23 +165,14 @@ export default function RelatoriosPage() {
       <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
         {/* ── Page Header ─────────────────────────────────────────── */}
-        <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
-          <div>
-            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#10b981] mb-0.5">
-              <span className="w-[5px] h-[5px] rounded-full bg-[#10b981]" />
-              Módulo Finanças · Análise
-            </div>
-            <h1 className={cn(
-              'font-[Syne] font-extrabold text-[22px] tracking-tight',
-              'text-sl-grad'
-            )}>
-              📊 Relatórios Históricos
-            </h1>
-            <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">
-              {periodLabel} · {periodStats.monthCount} {periodStats.monthCount === 1 ? 'mês' : 'meses'} · {periodStats.txCount} transações
-            </p>
-          </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <ModuleHeader
+          icon={BarChart3}
+          iconBg="rgba(16,185,129,.08)"
+          iconColor="#10b981"
+          title="Relatórios"
+          subtitle={`${periodLabel} · ${periodStats.monthCount} ${periodStats.monthCount === 1 ? 'mês' : 'meses'} · ${periodStats.txCount} transações`}
+          className="mb-4"
+        >
           <button
             onClick={exportCSV}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[9px] border border-[var(--sl-border)] bg-[var(--sl-s1)] text-[var(--sl-t1)] text-[12px] font-semibold cursor-pointer hover:bg-[var(--sl-s2)] hover:border-[var(--sl-border-h)] transition-all">
@@ -197,8 +189,7 @@ export default function RelatoriosPage() {
               </span>
             )}
           </button>
-        </div>
-      </div>
+        </ModuleHeader>
 
       {/* ── Upgrade Banner (FREE) ───────────────────────────────── */}
       {!isPro && (

@@ -1,7 +1,8 @@
 'use client'
 
 import { Fragment, useState } from 'react'
-import { ChevronLeft, ChevronRight, X, Plus, Info } from 'lucide-react'
+import { Calendar, ChevronLeft, ChevronRight, X, Plus, Info } from 'lucide-react'
+import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useCategories } from '@/hooks/use-categories'
@@ -457,23 +458,14 @@ export default function CalendarioFinanceiroPage() {
       <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
 
         {/* ① Page Header */}
-        <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
-          <div>
-            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#10b981] mb-0.5">
-              <span className="w-[5px] h-[5px] rounded-full bg-[#10b981]" />
-              Finanças
-            </div>
-            <h1 className={cn(
-              'font-[Syne] font-extrabold text-[22px] tracking-tight',
-              'text-sl-grad'
-            )}>
-              📅 Calendário Financeiro
-            </h1>
-            <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Visualize e planeje suas finanças dia a dia.</p>
-          </div>
-
-        <div className="flex items-center gap-2 shrink-0 flex-wrap">
-          {/* Month navigation */}
+        <ModuleHeader
+          icon={Calendar}
+          iconBg="rgba(16,185,129,.08)"
+          iconColor="#10b981"
+          title="Calendário Financeiro"
+          subtitle="Visualize e planeje suas finanças dia a dia."
+          className="mb-4"
+        >
           <div className="flex border border-[var(--sl-border)] rounded-[9px] overflow-hidden bg-[var(--sl-s1)]">
             <button onClick={prevMonth}
               className="px-2.5 py-1.5 bg-transparent cursor-pointer text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)] transition-all flex items-center">
@@ -496,8 +488,7 @@ export default function CalendarioFinanceiroPage() {
             <Plus size={13} />
             Adicionar
           </button>
-        </div>
-      </div>
+        </ModuleHeader>
 
       {/* ② Jornada Projection Card */}
       <div className="flex items-center gap-3 p-[11px] px-[14px] rounded-[11px] border border-[rgba(16,185,129,0.2)] bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] mb-4">
