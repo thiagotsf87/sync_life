@@ -12,7 +12,6 @@ import { useAgenda } from '@/hooks/use-agenda'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { FocusSessionModal } from '@/components/agenda/FocusSessionModal'
-import { ProGate } from '@/components/ui/pro-gate'
 import { playCompletionSound, startAmbientSound, stopAmbientSound, AMBIENT_OPTIONS, type AmbientSound } from '@/lib/timer-sounds'
 
 // ─── TABS ─────────────────────────────────────────────────────────────────────
@@ -22,7 +21,7 @@ const TEMPO_TABS = [
   { label: 'Agenda', href: '/tempo/agenda' },
   { label: 'Semanal', href: '/tempo/semanal' },
   { label: 'Mensal', href: '/tempo/mensal' },
-  { label: 'Review', href: '/tempo/review', pro: true },
+  { label: 'Review', href: '/tempo/review' },
 ]
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -218,7 +217,6 @@ export default function BlocosFocoPage() {
                 : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
             )}>
             {tab.label}
-            {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#f59e0b] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
             {pathname === tab.href && (
               <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#06b6d4]" />
             )}
@@ -245,7 +243,6 @@ export default function BlocosFocoPage() {
       <div className="grid grid-cols-[1fr_340px] gap-3.5 max-lg:grid-cols-1">
 
       {/* LEFT: Timer */}
-      <ProGate module="tempo" feature="timerFoco" preview label="Timer Foco e exclusivo PRO">
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)] flex flex-col items-center" style={{ padding: '40px 24px' }}>
 
           {/* Session count badge */}
@@ -455,8 +452,6 @@ export default function BlocosFocoPage() {
             </div>
           </div>
         </div>
-      </ProGate>
-
       {/* RIGHT: History + Weekly Summary */}
       <div className="flex flex-col gap-3.5">
         {/* Session history */}

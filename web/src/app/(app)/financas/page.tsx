@@ -18,6 +18,7 @@ import { OrcamentosCard } from '@/components/financas/OrcamentosCard'
 import { UltimasTransacoes } from '@/components/financas/UltimasTransacoes'
 import { ProjecaoSaldo } from '@/components/financas/ProjecaoSaldo'
 import { ProximasRecorrentes } from '@/components/financas/ProximasRecorrentes'
+import { FinancialInsightCard } from '@/components/financas/FinancialInsightCard'
 import type { MonthlyAgg, CatDataItem, CfDay } from '@/components/financas/helpers'
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
@@ -44,7 +45,7 @@ export default function FinancasDashboardPage() {
 
   // ── Real data hooks ──────────────────────────────────────────────────────
   const {
-    receitasMes, totalGasto, naoAlocado, activeBudgets,
+    receitasMes, totalGasto, totalDespesas, naoAlocado, activeBudgets,
     qtdOk, qtdAlert, qtdOver, isLoading: loadingBudgets,
   } = useBudgets({ month, year })
 
@@ -104,7 +105,7 @@ export default function FinancasDashboardPage() {
   }, [month, year])
 
   // ── Derived data ──────────────────────────────────────────────────────────
-  const saldoMes = receitasMes - totalGasto
+  const saldoMes = receitasMes - totalDespesas
   const taxaPoupanca = receitasMes > 0 ? Math.round((saldoMes / receitasMes) * 100) : 0
 
   const catData = useMemo((): CatDataItem[] => {
@@ -186,10 +187,10 @@ export default function FinancasDashboardPage() {
     {/* MOBILE LAYOUT */}
     <FinancasMobile
       totalIncome={receitasMes}
-      totalExpense={totalGasto}
+      totalExpense={totalDespesas}
       balance={saldoMes}
       budgets={activeBudgets}
-      projectedBalance={saldoMes + (receitasMes - totalGasto) * 0.3}
+      projectedBalance={saldoMes + (receitasMes - totalDespesas) * 0.3}
       mesLabel={mesAno}
       latestTransactions={latestTxns}
     />
@@ -241,7 +242,7 @@ export default function FinancasDashboardPage() {
       {/* 2 KPI STRIP */}
       <KpiStrip
         receitasMes={receitasMes}
-        totalGasto={totalGasto}
+        totalGasto={totalDespesas}
         saldoMes={saldoMes}
         naoAlocado={naoAlocado}
         taxaPoupanca={taxaPoupanca}
@@ -251,7 +252,7 @@ export default function FinancasDashboardPage() {
       {/* 3 HEALTH BAND */}
       <HealthBand
         receitasMes={receitasMes}
-        totalGasto={totalGasto}
+        totalGasto={totalDespesas}
         saldoMes={saldoMes}
         taxaPoupanca={taxaPoupanca}
         qtdOk={qtdOk}
@@ -263,7 +264,7 @@ export default function FinancasDashboardPage() {
       <AiConsultant
         mesAno={mesAno}
         receitasMes={receitasMes}
-        totalGasto={totalGasto}
+        totalGasto={totalDespesas}
         taxaPoupanca={taxaPoupanca}
         daysLeftInMonth={daysLeftInMonth}
         daysInMonth={daysInMonth}
@@ -271,6 +272,11 @@ export default function FinancasDashboardPage() {
         activeBudgets={activeBudgets}
         pendingRecCount={pendingRecCount}
       />
+
+      {/* 4.5 AI INSIGHTS */}
+      <div className="mb-3.5">
+        <FinancialInsightCard month={month} year={year} />
+      </div>
 
       {/* 5 TOP GRID: Historico + Gastos por Categoria */}
       <HistoricoChart
@@ -308,7 +314,7 @@ export default function FinancasDashboardPage() {
       {/* 8 PROJECAO DE SALDO */}
       <ProjecaoSaldo
         saldoMes={saldoMes}
-        totalGasto={totalGasto}
+        totalGasto={totalDespesas}
         naoAlocado={naoAlocado}
         taxaPoupanca={taxaPoupanca}
         todayD={todayD}

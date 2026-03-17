@@ -11,6 +11,7 @@ import { TopHeader } from './TopHeader'
 import { ContentArea } from './ContentArea'
 import { MobileBottomBar } from './MobileBottomBar'
 import { MobileSubNav } from './MobileSubNav'
+import { CoachFab } from './CoachFab'
 import { MODULE_BAR_W, SB_OPEN, SB_COLLAPSED } from '@/lib/constants'
 import { createClient } from '@/lib/supabase/client'
 import { resolveSystemTheme, isDarkTheme } from '@/types/shell'
@@ -137,6 +138,9 @@ export function NewAppShell({
           <MobileSubNav />
           <ContentArea>{children}</ContentArea>
         </div>
+
+        {/* Coach IA floating action button */}
+        <CoachFab />
 
         {/* Mobile bottom bar */}
         <MobileBottomBar userName={userName} />

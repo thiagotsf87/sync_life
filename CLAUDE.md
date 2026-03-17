@@ -38,12 +38,12 @@ web/
 │   ├── lib/
 │   │   ├── supabase/      ← client, server, middleware
 │   │   └── utils.ts       ← cn() e outros utilitários
-│   ├── hooks/             ← custom hooks (29)
+│   ├── hooks/             ← custom hooks (32+)
 │   ├── stores/            ← Zustand stores
 │   ├── styles/            ← themes.css (12 temas)
 │   └── types/             ← TypeScript types
 ├── supabase/
-│   └── migrations/        ← migrations SQL (19)
+│   └── migrations/        ← migrations SQL (24)
 └── CLAUDE.md              ← este arquivo
 ```
 
@@ -385,6 +385,54 @@ const supabase = createClient()
 Todas as APIs de IA exigem autenticação Supabase e verificam env vars.
 Para migrar para Anthropic Claude: trocar apenas a linha do `model` em cada route handler.
 
+## APIs adicionais
+
+| Rota | Tipo | Descrição |
+|------|------|-----------|
+| `/api/push/subscribe` | POST/DELETE | Inscrição/remoção de push subscription (VAPID) |
+| `/api/push/send` | POST | Envio de push notification para usuário |
+| `/api/cron/weekly-digest` | GET (cron) | Resumo semanal automático (Domingo 10h UTC, protegido por CRON_SECRET) |
+| `/api/integrations/google-calendar/auth` | GET | Inicia OAuth 2.0 flow com Google |
+| `/api/integrations/google-calendar/callback` | GET | Callback OAuth, troca code por tokens |
+| `/api/integrations/google-calendar/sync` | POST | Sincronização bidirecional com Google Calendar |
+
+## Hooks adicionais (Sprint Mar 2026)
+
+| Hook | Arquivo | Descrição |
+|------|---------|-----------|
+| `useFinancialInsights` | `hooks/use-financial-insights.ts` | Insights IA financeiros com cache mensal em localStorage (PRO) |
+| `usePushNotifications` | `hooks/use-push-notifications.ts` | Subscribe/unsubscribe web push (VAPID) |
+| `useRelatorioCompleto` | `hooks/use-relatorio-completo.ts` | Gerador PDF cross-module via jsPDF (PRO) |
+
+## Componentes adicionais (Sprint Mar 2026)
+
+| Componente | Arquivo | Descrição |
+|------------|---------|-----------|
+| `FinancialInsightCard` | `components/financas/FinancialInsightCard.tsx` | Card de insights IA com ProGate (3 tipos: positive/warning/tip) |
+| `CardapioWizard` | `components/corpo/CardapioWizard.tsx` | Wizard 4 passos: dados físicos + TMB, dieta, proteínas, refeições |
+| `CoachFab` | `components/shell/CoachFab.tsx` | FAB flutuante para Coach IA (PRO only, oculto em /coach e /configuracoes) |
+
+## Libs adicionais (Sprint Mar 2026)
+
+| Lib | Arquivo | Descrição |
+|-----|---------|-----------|
+| `generateBadgeImage` | `lib/share/badge-image.ts` | Canvas API: gera card 600x400 PNG de badge com raridade |
+| `shareBadgeImage` / `shareToWhatsApp` / `shareToTwitter` / `copyBadgeLink` | `lib/share/share-utils.ts` | Compartilhamento social de conquistas |
+| `generateRelatorioPdfCompleto` | `lib/pdf/relatorio-completo.ts` | PDF A4 via jsPDF com 7 seções (score, finanças, futuro, corpo, patrimônio, tempo, mente) |
+
+## Migrations recentes
+
+| Migration | Arquivo | Descrição |
+|-----------|---------|-----------|
+| 023 | `supabase/migrations/023_dietary_preferences.sql` | Adiciona colunas de preferências alimentares a `health_profiles` |
+| 024 | `supabase/migrations/024_user_integrations.sql` | Cria tabela `user_integrations` para OAuth tokens (Google Calendar) |
+
+## Redirects e rotas especiais
+
+- `/corpo/coach` redireciona para `/coach` (Coach IA cross-module, página standalone)
+- `/metas` redireciona para `/futuro` (legacy)
+- `/agenda` redireciona para `/tempo` (legacy)
+
 ---
 
 ## Checklist antes de entregar qualquer tela
@@ -422,4 +470,4 @@ Os protótipos HTML mostram exatamente como cada componente deve ficar visualmen
     ]
   }
 }
-*SyncLife CLAUDE.md v2.0 — atualizado Mar 2026 (12 temas, sem Foco/Jornada)*
+*SyncLife CLAUDE.md v2.1 — atualizado Mar 2026 (12 temas, 12 features avançadas: SW Toast, Import Nav, Share Badges, AI Insights, PDF Cross-Module, Push, Cron Digest, CI/CD, Coach Cross-Module, Cardápio Wizard, Google Calendar, PRO Gate)*

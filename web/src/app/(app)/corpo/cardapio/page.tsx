@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Sparkles, RefreshCw, Lock, Unlock, History, Utensils } from 'lucide-react'
+import { Sparkles, RefreshCw, Lock, Unlock, History, Utensils, Settings } from 'lucide-react'
+import { CardapioWizard } from '@/components/corpo/CardapioWizard'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -107,6 +108,15 @@ export default function CardapioPage() {
   // RN-CRP-24: historico de cardapios gerados
   const [planHistory, setPlanHistory] = useState<DayPlan[][]>([])
   const [showHistory, setShowHistory] = useState(false)
+  const [showWizard, setShowWizard] = useState(false)
+  const [wizardCompleted, setWizardCompleted] = useState(false)
+
+  // Check if wizard was completed before
+  useEffect(() => {
+    if (profile && (profile as any).cardapio_wizard_completed) {
+      setWizardCompleted(true)
+    }
+  }, [profile])
 
   useEffect(() => {
     try {
@@ -144,6 +154,12 @@ export default function CardapioPage() {
           goal_type: profile?.weight_goal_type ?? 'maintain',
           dietary_restrictions: extraRestrictions,
           weekly_budget: budget ? Number(budget) : undefined,
+          diet_type: (profile as any)?.diet_type ?? undefined,
+          preferred_proteins: (profile as any)?.preferred_proteins ?? undefined,
+          meals_per_day: (profile as any)?.meals_per_day ?? undefined,
+          pre_workout_meal: (profile as any)?.pre_workout_meal ?? undefined,
+          post_workout_meal: (profile as any)?.post_workout_meal ?? undefined,
+          supplements: (profile as any)?.supplements ?? undefined,
         }),
       })
       if (!res.ok) {
@@ -201,8 +217,40 @@ export default function CardapioPage() {
   const dayCarbs = dayPlan?.meals.reduce((s, m) => s + (m.carbs_g ?? 0), 0) ?? 0
   const dayFat = dayPlan?.meals.reduce((s, m) => s + (m.fat_g ?? 0), 0) ?? 0
 
+  // Show wizard: first time (not completed and no plan) or user clicked edit
+  if (showWizard || (!wizardCompleted && !plan)) {
+    return (
+      <div className="max-w-[1160px] mx-auto px-10 py-9 pb-16">
+        <CardapioWizard
+          initialData={profile ? {
+            weight: profile.current_weight ?? 70,
+            height: profile.height_cm ?? 170,
+            sex: profile.biological_sex === 'female' ? 'female' : 'male',
+            activityLevel: (profile.activity_level ?? 'moderate') as any,
+            dietType: (profile as any).diet_type ?? 'balanced',
+            preferredProteins: (profile as any).preferred_proteins ?? [],
+            mealsPerDay: (profile as any).meals_per_day ?? 3,
+            preWorkout: (profile as any).pre_workout_meal ?? false,
+            postWorkout: (profile as any).post_workout_meal ?? false,
+            supplements: (profile as any).supplements ?? [],
+          } : undefined}
+          onComplete={() => {
+            setWizardCompleted(true)
+            setShowWizard(false)
+          }}
+          onCancel={() => {
+            setWizardCompleted(true)
+            setShowWizard(false)
+          }}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-[1160px] mx-auto px-10 py-9 pb-16">
+
+      <>
 
       {/* 1. ModuleHeader */}
       <ModuleHeader
@@ -212,6 +260,13 @@ export default function CardapioPage() {
         title="Cardapio com IA"
         subtitle="Plano alimentar personalizado gerado por inteligencia artificial"
       >
+        <button
+          onClick={() => setShowWizard(true)}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-[9px] border border-[var(--sl-border)] text-[var(--sl-t2)] text-[12px] font-medium transition-all hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)]"
+        >
+          <Settings size={12} />
+          Editar configuracoes
+        </button>
         <span className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[11px] font-semibold border border-[rgba(249,115,22,.2)] bg-[rgba(249,115,22,.08)] text-[#f97316]">
           <Sparkles size={12} />
           IA
@@ -520,6 +575,8 @@ export default function CardapioPage() {
           )}
         </div>
       </div>
+
+      </>
     </div>
   )
 }

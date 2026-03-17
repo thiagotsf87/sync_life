@@ -837,9 +837,9 @@ export default function TransacoesPage() {
                   <p className="text-[11px] font-semibold text-[var(--sl-t2)]">{formatDate(group.date)}</p>
                   <p className={cn(
                     'font-[DM_Mono] text-[12px] font-medium',
-                    group.subtotal >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                    group.runningBalance >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
                   )}>
-                    {group.subtotal >= 0 ? '+' : ''}R$ {fmtR$(Math.abs(group.subtotal))}
+                    Saldo: {group.runningBalance >= 0 ? '' : '-'}R$ {fmtR$(Math.abs(group.runningBalance))}
                   </p>
                 </div>
                 {group.transactions.map(tx => (

@@ -1,7 +1,7 @@
 // ─── Dashboard shared helpers ──────────────────────────────────────────────
 
 export function fmt(val: number) {
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })
+  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
 export function fmtShort(val: number) {

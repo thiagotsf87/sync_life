@@ -96,7 +96,7 @@ export function V3ModulesRow({
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Carteira total</p>
             <p className="font-[DM_Mono] font-medium text-[22px] text-[var(--sl-t1)] leading-none">
               {totalPatrimonio > 0
-                ? totalPatrimonio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                ? totalPatrimonio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
                 : '\u2014'}
             </p>
           </div>

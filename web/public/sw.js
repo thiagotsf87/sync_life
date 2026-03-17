@@ -5,8 +5,7 @@ const CACHE_NAME = 'synclife-v1'
 
 // ── Install ──────────────────────────────────────────────────────────────────
 self.addEventListener('install', (event) => {
-  // Ativa imediatamente sem esperar tabs antigas fecharem
-  self.skipWaiting()
+  // Aguarda mensagem SKIP_WAITING do client para ativar (controle do usuário)
 })
 
 // ── Activate ─────────────────────────────────────────────────────────────────
@@ -114,4 +113,42 @@ self.addEventListener('fetch', (event) => {
       })
     )
   }
+})
+
+// ── Message (skip waiting controlado pelo usuário) ──────────────────────────
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
+})
+
+// ── Push Notifications ──────────────────────────────────────────────────────
+self.addEventListener('push', (event) => {
+  const data = event.data ? event.data.json() : {}
+  const title = data.title || 'SyncLife'
+  const options = {
+    body: data.body || '',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-72.png',
+    data: { url: data.url || '/' },
+  }
+  event.waitUntil(self.registration.showNotification(title, options))
+})
+
+// ── Notification Click ──────────────────────────────────────────────────────
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const url = event.notification.data?.url || '/'
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clients) => {
+        for (const client of clients) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            client.navigate(url)
+            return client.focus()
+          }
+        }
+        return self.clients.openWindow(url)
+      })
+  )
 })

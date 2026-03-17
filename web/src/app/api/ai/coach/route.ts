@@ -12,12 +12,26 @@ import { captureApiError } from '@/lib/sentry-helpers'
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY })
 const model = groq('llama-3.3-70b-versatile')
 
-const SYSTEM_PROMPT = `Você é um coach de saúde e bem-estar chamado "SyncLife Coach".
-Você ajuda usuários a atingir objetivos de saúde: perda de peso, ganho de massa, melhor alimentação e exercícios.
-Seja empático, motivador e científico nas suas respostas.
-Baseie suas sugestões em evidências científicas atuais.
-Responda sempre em português do Brasil.
-IMPORTANTE: Você não é médico. Para questões médicas, sempre oriente o usuário a consultar um profissional de saúde.`
+const SYSTEM_PROMPT = `Você é o Coach de Vida do SyncLife — um assistente completo que ajuda o usuário a evoluir em todas as dimensões da vida.
+
+Áreas de atuação:
+- FINANÇAS: orçamento, investimentos, dívidas, economia
+- SAÚDE: exercícios, alimentação, sono, peso, bem-estar
+- METAS: objetivos pessoais e profissionais, planejamento
+- CARREIRA: crescimento profissional, habilidades, networking
+- PATRIMÔNIO: investimentos, diversificação, independência financeira
+- TEMPO: produtividade, organização, priorização
+- BEM-ESTAR: equilíbrio, mindfulness, hábitos
+
+Regras:
+1. Seja empático, motivador e prático
+2. Use dados do contexto para personalizar cada resposta
+3. Sugira ações concretas e mensuráveis
+4. Responda em português do Brasil
+5. Mantenha respostas concisas (máximo 300 palavras)
+6. Para questões médicas ou jurídicas, oriente procurar um profissional
+7. Quando possível, faça conexões entre áreas (ex: como saúde impacta produtividade)
+8. Use formato markdown para listas e destaque`
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient()
@@ -47,6 +61,7 @@ export async function POST(req: NextRequest) {
     const InputSchema = z.object({
       messages: z.array(MessageSchema).min(1).max(50),
       healthProfile: z.record(z.string(), z.unknown()).optional(),
+      lifeContext: z.record(z.string(), z.unknown()).optional(),
     })
 
     const parsed = InputSchema.safeParse(body)
@@ -54,15 +69,19 @@ export async function POST(req: NextRequest) {
       return new Response(JSON.stringify({ error: 'Dados inválidos', details: parsed.error.flatten().fieldErrors }), { status: 400, headers: { 'Content-Type': 'application/json' } })
     }
 
-    const { messages, healthProfile } = parsed.data
+    const { messages, healthProfile, lifeContext } = parsed.data
 
-    const systemWithProfile = healthProfile
-      ? `${SYSTEM_PROMPT}\n\nPerfil de saúde do usuário:\n${JSON.stringify(healthProfile, null, 2)}`
-      : SYSTEM_PROMPT
+    let systemWithContext = SYSTEM_PROMPT
+    if (healthProfile) {
+      systemWithContext += `\n\nPerfil de saúde:\n${JSON.stringify(healthProfile, null, 2)}`
+    }
+    if (lifeContext) {
+      systemWithContext += `\n\nContexto de vida do usuário:\n${JSON.stringify(lifeContext, null, 2)}`
+    }
 
     const result = streamText({
       model,
-      system: systemWithProfile,
+      system: systemWithContext,
       messages,
     })
 

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { ToggleSwitch } from '@/components/settings/toggle-switch'
 import { createClient } from '@/lib/supabase/client'
 import { saveUserPreferences, setCachedNotifSettings } from '@/lib/user-preferences'
+import { usePushNotifications } from '@/hooks/use-push-notifications'
 
 const NOTIF_KEY = 'sl_notif_settings'
 
@@ -107,6 +108,7 @@ const DEFAULT_NOTIF: NotifState = {
 export default function NotificacoesPage() {
   const [notif, setNotif] = useState<NotifState>(DEFAULT_NOTIF)
   const isInitialLoad = useRef(true)
+  const pushNotifs = usePushNotifications()
 
   // RN-FUT-51: persistir configurações de notificação
   useEffect(() => {
@@ -145,11 +147,14 @@ export default function NotificacoesPage() {
   const toggle = async (key: NotifKey) => {
     if (key === 'dailyReminderTime') return
 
-    if (key === 'push' && !notif.push) {
-      // Requesting push permission when enabling
-      if ('Notification' in window) {
-        const permission = await Notification.requestPermission()
-        if (permission !== 'granted') return // user denied — don't toggle on
+    if (key === 'push') {
+      if (!notif.push) {
+        // Enabling push — subscribe
+        await pushNotifs.subscribe()
+        if (!pushNotifs.isSubscribed && Notification.permission !== 'granted') return
+      } else {
+        // Disabling push — unsubscribe
+        await pushNotifs.unsubscribe()
       }
     }
 
@@ -171,9 +176,18 @@ export default function NotificacoesPage() {
         <NotifRow
           icon="🔔"
           label="Notificações push"
-          description="Alertas direto no navegador (requer permissão)"
-          checked={notif.push}
+          description={
+            !pushNotifs.isSupported
+              ? 'Seu navegador não suporta notificações push'
+              : pushNotifs.permission === 'denied'
+              ? 'Permissão negada — habilite nas configurações do navegador'
+              : pushNotifs.isSubscribed
+              ? 'Ativo — você receberá alertas em tempo real'
+              : 'Alertas direto no navegador (requer permissão)'
+          }
+          checked={notif.push && pushNotifs.isSubscribed}
           onChange={() => toggle('push')}
+          disabled={!pushNotifs.isSupported || pushNotifs.permission === 'denied' || pushNotifs.loading}
         />
         <NotifRow
           icon="📧"

@@ -1,7 +1,7 @@
 // ─── Shared helpers for Financas module ─────────────────────────────────────
 
 export function fmtR$(n: number): string {
-  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Math.abs(n))
+  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(n))
 }
 
 export function fmtDate(dateStr: string): string {

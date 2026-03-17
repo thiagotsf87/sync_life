@@ -291,6 +291,7 @@ export interface GroupedTransactions {
   date: string
   transactions: Transaction[]
   subtotal: number
+  runningBalance: number
 }
 
 export function groupByDate(transactions: Transaction[]): GroupedTransactions[] {
@@ -300,9 +301,24 @@ export function groupByDate(transactions: Transaction[]): GroupedTransactions[] 
     if (!groups.has(key)) groups.set(key, [])
     groups.get(key)!.push(tx)
   }
-  return Array.from(groups.entries()).map(([date, txns]) => ({
+
+  // Build groups with daily subtotal
+  const result = Array.from(groups.entries()).map(([date, txns]) => ({
     date,
     transactions: txns,
     subtotal: txns.reduce((sum, t) => sum + (t.type === 'income' ? t.amount : -t.amount), 0),
+    runningBalance: 0,
   }))
+
+  // Sort by date ascending to compute running balance correctly
+  result.sort((a, b) => a.date.localeCompare(b.date))
+  let cumulative = 0
+  for (const group of result) {
+    cumulative += group.subtotal
+    group.runningBalance = cumulative
+  }
+
+  // Re-sort by date descending (newest first, matching default display)
+  result.sort((a, b) => b.date.localeCompare(a.date))
+  return result
 }

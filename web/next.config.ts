@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
       { source: '/metas/:path*', destination: '/futuro/:path*', permanent: true },
       { source: '/agenda', destination: '/tempo', permanent: true },
       { source: '/agenda/:path*', destination: '/tempo/:path*', permanent: true },
+      // Coach IA promoted to top-level
+      { source: '/corpo/coach', destination: '/coach', permanent: true },
     ]
   },
 };

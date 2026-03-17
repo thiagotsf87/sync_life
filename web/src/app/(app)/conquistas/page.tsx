@@ -250,19 +250,51 @@ function BadgeModal({ badge: b, onClose }: { badge: Badge; onClose: () => void }
           </div>
         )}
 
-        {/* Share button (unlocked badges only) */}
+        {/* Share buttons (unlocked badges only) */}
         {b.unlocked && (
-          <button
-            className="w-full py-[13px] rounded-[12px] font-[Syne] text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
-            style={{ background: '#6366f1' }}
-            onClick={() => {
-              if (typeof navigator !== 'undefined' && navigator.share) {
-                navigator.share({ title: `Conquista: ${b.name}`, text: `Desbloqueei a badge "${b.name}" no SyncLife! ${b.desc}` })
-              }
-            }}
-          >
-            Compartilhar 🔗
-          </button>
+          <div className="flex flex-col gap-2">
+            <button
+              className="w-full py-[13px] rounded-[12px] font-[Syne] text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
+              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+              onClick={async () => {
+                const { shareBadgeImage } = await import('@/lib/share/share-utils')
+                await shareBadgeImage({ icon: b.icon, name: b.name, desc: b.desc, rarity: b.rarity })
+              }}
+            >
+              Compartilhar com Imagem
+            </button>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                className="py-[10px] rounded-[10px] text-[12px] font-semibold bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20 hover:bg-[#25D366]/20 transition-colors"
+                onClick={async () => {
+                  const { shareToWhatsApp } = await import('@/lib/share/share-utils')
+                  shareToWhatsApp({ icon: b.icon, name: b.name, desc: b.desc, rarity: b.rarity })
+                }}
+              >
+                WhatsApp
+              </button>
+              <button
+                className="py-[10px] rounded-[10px] text-[12px] font-semibold bg-[#1DA1F2]/10 text-[#1DA1F2] border border-[#1DA1F2]/20 hover:bg-[#1DA1F2]/20 transition-colors"
+                onClick={async () => {
+                  const { shareToTwitter } = await import('@/lib/share/share-utils')
+                  shareToTwitter({ icon: b.icon, name: b.name, desc: b.desc, rarity: b.rarity })
+                }}
+              >
+                Twitter/X
+              </button>
+              <button
+                className="py-[10px] rounded-[10px] text-[12px] font-semibold bg-[var(--sl-s2)] text-[var(--sl-t2)] border border-[var(--sl-border)] hover:border-[var(--sl-border-h)] transition-colors"
+                onClick={async () => {
+                  const { copyBadgeLink } = await import('@/lib/share/share-utils')
+                  await copyBadgeLink({ icon: b.icon, name: b.name, desc: b.desc, rarity: b.rarity })
+                  const { toast } = await import('sonner')
+                  toast.success('Link copiado!')
+                }}
+              >
+                Copiar
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

@@ -6,7 +6,7 @@ import { AIInsightCard } from '@/components/ui/ai-insight-card'
 import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
 
 function fmtR$(n: number): string {
-  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Math.abs(n))
+  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(n))
 }
 
 function fmtDate(dateStr: string): string {

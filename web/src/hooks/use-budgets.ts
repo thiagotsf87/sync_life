@@ -43,6 +43,7 @@ interface UseBudgetsReturn {
   inactiveBudgets: BudgetWithSpend[]
   totalOrcado: number
   totalGasto: number
+  totalDespesas: number
   naoAlocado: number
   receitasMes: number
   monthlyIncome: number
@@ -62,6 +63,7 @@ interface UseBudgetsReturn {
 export function useBudgets({ month, year }: { month: number; year: number }): UseBudgetsReturn {
   const [budgets, setBudgets] = useState<BudgetWithSpend[]>([])
   const [receitasMes, setReceitasMes] = useState(0)
+  const [totalDespesasState, setTotalDespesasState] = useState(0)
   const [monthlyIncome, setMonthlyIncome] = useState(0)
   const [prevMonthBudgets, setPrevMonthBudgets] = useState<Budget[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -141,6 +143,7 @@ export function useBudgets({ month, year }: { month: number; year: number }): Us
       }
 
       const recTotal = (receitasRes.data ?? []).reduce((s: number, r: { amount: number }) => s + r.amount, 0)
+      const allExpenses = (spendsRes.data ?? []).reduce((s: number, t: { amount: number }) => s + t.amount, 0)
       const income = (profileRes.data as any)?.monthly_income ?? 0
 
       // Prev month budgets for rollover calc
@@ -211,6 +214,7 @@ export function useBudgets({ month, year }: { month: number; year: number }): Us
 
       setBudgets(enriched)
       setReceitasMes(recTotal)
+      setTotalDespesasState(allExpenses)
       setMonthlyIncome(income)
       setPrevMonthBudgets(prevBudgetsData)
       setIsLoading(false)
@@ -339,7 +343,7 @@ export function useBudgets({ month, year }: { month: number; year: number }): Us
 
   return {
     budgets, activeBudgets, inactiveBudgets,
-    totalOrcado, totalGasto, naoAlocado, receitasMes, monthlyIncome,
+    totalOrcado, totalGasto, totalDespesas: totalDespesasState, naoAlocado, receitasMes, monthlyIncome,
     qtdOk, qtdAlert, qtdOver,
     isLoading, error, refresh,
     create, update, remove, copyFromPreviousMonth,

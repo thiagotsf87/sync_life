@@ -6,7 +6,7 @@ import { AIInsightCard } from '@/components/ui/ai-insight-card'
 import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
 
 const fmtR = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })
+  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 interface MonthPill {
   label: string

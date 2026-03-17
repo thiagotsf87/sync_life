@@ -36,7 +36,10 @@ const PRO_ONLY_FEATURES = new Set([
   'tempo:timerFoco',
   'experiencias:aiSuggestions',
   'corpo:aiCardapio',
+  'corpo:aiCoach',
+  'coach:aiCoach',
   'financas:aiInsights',
+  'panorama:pdfReport',
 ])
 
 // ─── STANDALONE FUNCTIONS ───────────────────────────────────────────────────

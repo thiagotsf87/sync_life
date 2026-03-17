@@ -47,7 +47,6 @@ export function CorpoMobile() {
   const [activeModal, setActiveModal] = useState<ModalId>(null)
   const [activeMealSlot, setActiveMealSlot] = useState<MealSlot>('breakfast')
   const tabsRef = useRef<HTMLDivElement>(null)
-
   const todayStr = new Date().toISOString().split('T')[0]
 
   // ─── Tab scroll-into-view ─────────────────────────────────────
@@ -235,14 +234,6 @@ export function CorpoMobile() {
             <Plus size={20} />
           </button>
         )}
-        {activeTab === 'coach' && (
-          <span
-            className="text-[12px] font-semibold px-3 py-1 rounded-full"
-            style={{ background: 'rgba(168,85,247,0.14)', color: '#a855f7' }}
-          >
-            💎 PRO
-          </span>
-        )}
         {activeTab === 'dashboard' && weekActivities.length > 0 && profile?.weekly_activity_goal && (
           <span
             className="text-[12px] font-semibold px-3 py-1 rounded-full"
@@ -321,7 +312,7 @@ export function CorpoMobile() {
           profile={profile}
           weekActivities={weekActivities}
           latestWeight={latestWeight}
-          isPro={false}
+          isPro={true}
         />
       )}
     </div>

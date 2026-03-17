@@ -57,6 +57,12 @@ export async function POST(req: NextRequest) {
     goal_type: z.enum(['lose', 'gain', 'maintain']).optional().default('maintain'),
     dietary_restrictions: z.array(z.string().max(100)).max(20).optional().default([]),
     weekly_budget: z.number().min(0).max(100000).optional(),
+    diet_type: z.string().optional(),
+    preferred_proteins: z.array(z.string()).optional(),
+    meals_per_day: z.number().min(3).max(6).optional(),
+    pre_workout_meal: z.boolean().optional(),
+    post_workout_meal: z.boolean().optional(),
+    supplements: z.array(z.string()).optional(),
   })
 
   const parsed = InputSchema.safeParse(body)
@@ -67,16 +73,68 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const { tdee, goal_type, dietary_restrictions, weekly_budget } = parsed.data
+  const {
+    tdee, goal_type, dietary_restrictions, weekly_budget,
+    diet_type, preferred_proteins, meals_per_day,
+    pre_workout_meal, post_workout_meal, supplements,
+  } = parsed.data
 
-  const prompt = `Gere um cardápio semanal saudável para uma pessoa com:
-- TDEE (calorias diárias): ${tdee || 2000} kcal
-- Objetivo: ${goal_type === 'lose' ? 'Perder peso (déficit de 300-500 kcal)' : goal_type === 'gain' ? 'Ganhar massa (superávit de 200-400 kcal)' : 'Manter peso'}
-- Restrições alimentares: ${dietary_restrictions.length > 0 ? dietary_restrictions.join(', ') : 'Nenhuma'}
-${weekly_budget ? `- Orçamento semanal: R$ ${weekly_budget}` : ''}
+  const dietTypeLabel: Record<string, string> = {
+    balanced: 'Balanceada',
+    'low-carb': 'Low Carb',
+    ketogenic: 'Cetogenica',
+    vegetarian: 'Vegetariana',
+    vegan: 'Vegana',
+    carnivore: 'Carnivora',
+    mediterranean: 'Mediterranea',
+    paleo: 'Paleo',
+  }
 
-Priorize refeições simples, práticas e típicas da culinária brasileira.
-Cada refeição principal (café, almoço, jantar) deve ter: nome, estimativa de calorias, tempo de preparo em minutos e macronutrientes (proteína em g, carboidrato em g, gordura em g).`
+  const proteinLabel: Record<string, string> = {
+    chicken: 'Frango',
+    beef: 'Carne Bovina',
+    fish: 'Peixe',
+    eggs: 'Ovos',
+    whey: 'Whey Protein',
+    tofu: 'Tofu',
+    legumes: 'Leguminosas',
+  }
+
+  const supplementLabel: Record<string, string> = {
+    creatine: 'Creatina',
+    whey: 'Whey Protein',
+    bcaa: 'BCAA',
+    glutamine: 'Glutamina',
+    multivitamin: 'Multivitaminico',
+    omega3: 'Omega 3',
+  }
+
+  const wizardLines: string[] = []
+  if (diet_type) wizardLines.push(`- Tipo de dieta preferida: ${dietTypeLabel[diet_type] ?? diet_type}`)
+  if (preferred_proteins && preferred_proteins.length > 0) {
+    wizardLines.push(`- Proteinas preferidas: ${preferred_proteins.map(p => proteinLabel[p] ?? p).join(', ')}`)
+  }
+  if (meals_per_day) wizardLines.push(`- Numero de refeicoes por dia: ${meals_per_day}`)
+  if (pre_workout_meal) wizardLines.push(`- Incluir refeicao pre-treino`)
+  if (post_workout_meal) wizardLines.push(`- Incluir refeicao pos-treino`)
+  if (supplements && supplements.length > 0) {
+    wizardLines.push(`- Suplementos em uso: ${supplements.map(s => supplementLabel[s] ?? s).join(', ')}`)
+  }
+
+  const prompt = `Gere um cardapio semanal saudavel para uma pessoa com:
+- TDEE (calorias diarias): ${tdee || 2000} kcal
+- Objetivo: ${goal_type === 'lose' ? 'Perder peso (deficit de 300-500 kcal)' : goal_type === 'gain' ? 'Ganhar massa (superavit de 200-400 kcal)' : 'Manter peso'}
+- Restricoes alimentares: ${dietary_restrictions.length > 0 ? dietary_restrictions.join(', ') : 'Nenhuma'}
+${weekly_budget ? `- Orcamento semanal: R$ ${weekly_budget}` : ''}
+${wizardLines.length > 0 ? '\nPreferencias do wizard:\n' + wizardLines.join('\n') : ''}
+
+Priorize refeicoes simples, praticas e tipicas da culinaria brasileira.
+Cada refeicao principal (cafe, almoco, jantar) deve ter: nome, estimativa de calorias, tempo de preparo em minutos e macronutrientes (proteina em g, carboidrato em g, gordura em g).
+${diet_type ? `Adapte todas as refeicoes ao estilo ${dietTypeLabel[diet_type] ?? diet_type}.` : ''}
+${preferred_proteins && preferred_proteins.length > 0 ? `Priorize as seguintes fontes de proteina: ${preferred_proteins.map(p => proteinLabel[p] ?? p).join(', ')}.` : ''}
+${pre_workout_meal ? 'Inclua uma refeicao leve pre-treino (30-60 min antes do exercicio).' : ''}
+${post_workout_meal ? 'Inclua uma refeicao pos-treino rica em proteina e carboidrato.' : ''}
+${supplements && supplements.length > 0 ? `O usuario toma os seguintes suplementos: ${supplements.map(s => supplementLabel[s] ?? s).join(', ')}. Considere isso na distribuicao de macros.` : ''}`
 
   try {
     const { object } = await generateObject({

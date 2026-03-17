@@ -31,6 +31,7 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
       { id: 'fin-calendario', label: 'Calendário', icon: 'CalendarDays', href: '/financas/calendario' },
       { id: 'fin-planejamento', label: 'Planejamento', icon: 'TrendingUp', href: '/financas/planejamento' },
       { id: 'fin-relatorios', label: 'Relatórios', icon: 'BarChart3', href: '/financas/relatorios' },
+      { id: 'fin-importar', label: 'Importar', icon: 'Upload', href: '/financas/importar' },
     ],
   },
   futuro: {
@@ -79,7 +80,6 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
       { id: 'corpo-peso', label: 'Peso & Medidas', icon: 'Scale', href: '/corpo/peso' },
       { id: 'corpo-cardapio', label: 'Cardápio', icon: 'Utensils', href: '/corpo/cardapio' },
       { id: 'corpo-saude', label: 'Saúde Preventiva', icon: 'HeartPulse', href: '/corpo/saude' },
-      { id: 'corpo-coach', label: 'Coach IA', icon: 'Bot', href: '/corpo/coach' },
     ],
   },
   mente: {
@@ -193,6 +193,7 @@ export function getModuleByPath(pathname: string): ModuleId {
   if (pathname.startsWith('/conquistas')) return 'panorama'
   if (pathname.startsWith('/dashboard')) return 'panorama'
   if (pathname.startsWith('/configuracoes')) return 'configuracoes'
+  if (pathname.startsWith('/coach')) return 'panorama'
   return 'panorama'
 }
 

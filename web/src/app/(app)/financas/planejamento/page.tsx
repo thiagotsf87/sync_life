@@ -28,7 +28,7 @@ import { PlanejamentoMobile } from '@/components/financas/PlanejamentoMobile'
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
 const fmtR = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })
+  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 const fmtDate = (iso: string) => {
   const d = new Date(iso + 'T00:00:00')

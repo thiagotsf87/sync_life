@@ -9,7 +9,7 @@ import { PanoramaMobileShell } from '@/components/dashboard/PanoramaMobileShell'
 // ─── helpers ──────────────────────────────────────────
 
 function fmt(val: number) {
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })
+  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
 function getGreeting(): string {
@@ -324,7 +324,7 @@ export function DashboardMobile({
                   <div className="flex items-center justify-between mt-0.5">
                     <span className="text-[13px] text-[var(--sl-t2)]">{d.cat}</span>
                     <span className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
-                      {d.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 })}
+                      {d.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
                 ) : (

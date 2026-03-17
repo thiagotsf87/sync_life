@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { saveUserPreferences, setCachedIntegrationSettings } from '@/lib/user-preferences'
@@ -100,9 +102,67 @@ function IntegrationRow({ from, to, label, description, checked, onChange }: Int
   )
 }
 
-export default function IntegracoesPage() {
+function IntegracoesPageContent() {
   const [settings, setSettings] = useState<IntegrationSettings>(DEFAULT_SETTINGS)
   const isInitialLoad = useRef(true)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [gcalConnected, setGcalConnected] = useState(false)
+  const [gcalSyncing, setGcalSyncing] = useState(false)
+
+  // Check Google Calendar connection status
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return
+      const { data } = await (supabase as any)
+        .from('user_integrations')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('provider', 'google_calendar')
+        .single()
+      setGcalConnected(!!data)
+    })
+  }, [])
+
+  // Handle OAuth callback params
+  useEffect(() => {
+    if (searchParams.get('google') === 'connected') {
+      setGcalConnected(true)
+      toast.success('Google Calendar conectado!')
+      router.replace('/configuracoes/integracoes')
+    }
+    if (searchParams.get('error')) {
+      toast.error('Erro ao conectar Google Calendar')
+      router.replace('/configuracoes/integracoes')
+    }
+  }, [searchParams, router])
+
+  async function handleGcalSync() {
+    setGcalSyncing(true)
+    try {
+      const res = await fetch('/api/integrations/google-calendar/sync', { method: 'POST' })
+      const data = await res.json()
+      if (res.ok) {
+        toast.success(`${data.synced} eventos sincronizados!`)
+      } else {
+        toast.error(data.error || 'Erro ao sincronizar')
+      }
+    } catch {
+      toast.error('Erro ao sincronizar')
+    } finally {
+      setGcalSyncing(false)
+    }
+  }
+
+  async function handleGcalDisconnect() {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await (supabase as any).from('user_integrations').delete().eq('user_id', user.id).eq('provider', 'google_calendar')
+    setGcalConnected(false)
+    toast.success('Google Calendar desconectado')
+  }
 
   useEffect(() => {
     try {
@@ -205,6 +265,58 @@ export default function IntegracoesPage() {
       </p>
 
       <div className="flex flex-col gap-3">
+        {/* Google Calendar */}
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 hover:border-[var(--sl-border-h)] transition-colors">
+          <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-3">
+            Integracoes Externas
+          </p>
+          <div className="flex items-start justify-between gap-4 py-3">
+            <div className="flex items-start gap-3 flex-1 min-w-0">
+              <div className="w-8 h-8 rounded-[9px] bg-[var(--sl-s3)] flex items-center justify-center text-base shrink-0 mt-0.5">
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+                  <path d="M18 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2z" stroke="var(--sl-t2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M16 2v4M8 2v4M4 10h16" stroke="var(--sl-t2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-semibold text-[var(--sl-t1)]">Google Calendar</p>
+                <p className="text-[11px] text-[var(--sl-t3)] leading-snug mt-0.5">
+                  {gcalConnected
+                    ? 'Conectado — seus eventos sao sincronizados automaticamente'
+                    : 'Sincronize eventos do Google Calendar com sua Agenda SyncLife'}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              {gcalConnected ? (
+                <>
+                  <button
+                    onClick={handleGcalSync}
+                    disabled={gcalSyncing}
+                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/20 hover:bg-[#10b981]/20 transition-colors disabled:opacity-50"
+                  >
+                    {gcalSyncing ? 'Sincronizando...' : 'Sincronizar'}
+                  </button>
+                  <button
+                    onClick={handleGcalDisconnect}
+                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#f43f5e]/10 text-[#f43f5e] border border-[#f43f5e]/20 hover:bg-[#f43f5e]/20 transition-colors"
+                  >
+                    Desconectar
+                  </button>
+                </>
+              ) : (
+                <a
+                  href="/api/integrations/google-calendar/auth"
+                  className="px-3 py-1.5 rounded-lg text-[11px] font-bold text-white transition-all hover:brightness-110"
+                  style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+                >
+                  Conectar
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+
         {groups.map(group => (
           <div key={group.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 hover:border-[var(--sl-border-h)] transition-colors">
             <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-3">
@@ -231,5 +343,13 @@ export default function IntegracoesPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function IntegracoesPage() {
+  return (
+    <Suspense>
+      <IntegracoesPageContent />
+    </Suspense>
   )
 }

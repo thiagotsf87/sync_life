@@ -17,7 +17,7 @@ import { useTransactions, type TransacaoFormData } from '@/hooks/use-transaction
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
 const fmtR = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 })
+  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 const fmtRShort = (v: number) => {
   const abs = Math.abs(v)

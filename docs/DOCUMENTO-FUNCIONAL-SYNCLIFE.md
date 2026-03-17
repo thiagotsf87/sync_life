@@ -1,8 +1,9 @@
 # Documento Funcional SyncLife
 
-**Versão:** 1.0  
-**Data:** Março 2026  
+**Versão:** 1.1
+**Data:** Março 2026
 **Objetivo:** Detalhamento passo a passo de todas as funcionalidades, requisitos de dados dos gráficos, processos E2E e diferenças entre desktop e mobile.
+**Atualização 1.1:** Adicionada seção 18 com 12 features avançadas (SW Update Toast, Import Extrato Nav, Share Conquistas, AI Insights, PDF Cross-Module, Push Notifications, Weekly Digest, CI/CD, Coach IA, Cardápio Wizard, Google Calendar Sync, PRO Gate Audit).
 
 ---
 
@@ -971,6 +972,392 @@ flowchart TB
 
 ---
 
+## 18. Features Avançadas (Sprint Mar 2026)
+
+### 18.1 SW Update Toast
+
+**Componente:** `web/src/components/pwa/sw-register.tsx`
+**Arquivo relacionado:** `web/public/sw.js`
+
+**Descrição:** Quando uma nova versão do Service Worker é detectada (o SW instalou mas há um controller ativo anterior), um toast persistente (sonner, `duration: Infinity`) aparece com a mensagem "Nova versão disponível!" e um botão "Atualizar agora". O usuário controla o momento da atualização.
+
+**Passo a passo:**
+1. O componente `ServiceWorkerRegistration` registra `/sw.js` no mount
+2. Listener `updatefound` detecta novo SW em estado `installing`
+3. Quando o novo SW muda para `installed` (e já existe um controller ativo), exibe o toast via sonner
+4. Ao clicar em "Atualizar agora", envia `postMessage({ type: 'SKIP_WAITING' })` ao worker
+5. O SW executa `self.skipWaiting()`, dispara o evento `controllerchange`
+6. Listener de `controllerchange` recarrega a página (`window.location.reload()`)
+
+**Notas:**
+- Em ambiente de desenvolvimento (HTTP), falhas de registro do SW são silenciosas
+- O toast permanece visível até o usuário agir (sem timeout)
+
+---
+
+### 18.2 Import Extrato — Navegação via Sidebar
+
+**Arquivo de configuração:** `web/src/lib/modules.ts`
+**Rota:** `/financas/importar`
+
+**Descrição:** A página de importação de extratos agora é acessível diretamente pela sidebar do módulo Finanças como item de navegação. Suporta importação de arquivos CSV e OFX/QFX (Nubank, Inter, Itaú, Bradesco) com um wizard de 4 passos.
+
+**Passo a passo:**
+1. Acessar módulo Finanças via ModuleBar
+2. Clicar em "Importar" na sidebar (novo item de navegação)
+3. **Upload:** arrastar ou selecionar arquivo CSV ou OFX/QFX
+4. **Mapeamento:** associar colunas do arquivo (data, descrição, valor, tipo)
+5. **Revisão:** visualizar preview, marcar linhas para skip (duplicatas detectadas)
+6. **Importar:** executar importação das transações selecionadas
+
+---
+
+### 18.3 Compartilhamento de Conquistas com Imagem
+
+**Arquivos:**
+- `web/src/lib/share/badge-image.ts` — geração de imagem via Canvas API
+- `web/src/lib/share/share-utils.ts` — utilitários de compartilhamento
+- `web/src/app/(app)/conquistas/page.tsx` — integração na página
+
+**Descrição:** Ao visualizar uma conquista (badge), o usuário pode compartilhar uma imagem card 600x400 gerada via Canvas API. O card inclui ícone do badge, nome, descrição, pill de raridade (Comum/Incomum/Rara/Lendária) e watermark SyncLife. Suporta 4 canais de compartilhamento.
+
+**Passo a passo:**
+1. Acessar `/conquistas`
+2. Clicar em um badge desbloqueado para abrir o modal
+3. Clicar em "Compartilhar"
+4. Opções de compartilhamento:
+   - **Web Share API:** se o dispositivo suporta `navigator.canShare({ files })`, abre o share nativo com a imagem PNG
+   - **WhatsApp:** abre `wa.me` com texto formatado da conquista
+   - **Twitter/X:** abre `twitter.com/intent/tweet` com texto da conquista
+   - **Copiar link:** copia texto descritivo para o clipboard
+5. Fallback: se Web Share API não suportado, faz download da imagem PNG
+
+**Detalhes do card gerado:**
+- Dimensões: 600x400 pixels, formato PNG
+- Background: gradiente escuro (#0a1628 para #0d2847)
+- Barra de acento superior e inferior: gradiente Esmeralda para Azul Elétrico
+- Pill de raridade com cor por nível: common (#64748b), uncommon (#10b981), rare (#8b5cf6), legendary (#f59e0b)
+- Word wrap automático na descrição
+
+---
+
+### 18.4 AI Financial Insights (PRO)
+
+**Arquivos:**
+- `web/src/hooks/use-financial-insights.ts` — hook de dados
+- `web/src/components/financas/FinancialInsightCard.tsx` — componente visual
+
+**Descrição:** Card de insights financeiros gerados por IA (Google Gemini via `/api/ai/financas`). O hook busca transações do mês, calcula contexto financeiro (receitas, despesas, saldo, taxa de poupança, top 5 categorias) e envia para a IA, que retorna 3 insights tipados. Feature exclusiva PRO, protegida por ProGate.
+
+**Passo a passo:**
+1. Componente `FinancialInsightCard` é renderizado no dashboard de Finanças
+2. ProGate verifica se o plano é PRO (feature `financas:aiInsights`)
+3. Hook `useFinancialInsights({ month, year })` verifica cache no localStorage
+4. Se cache válido (mesmo mês/ano): retorna insights cacheados
+5. Senão: busca transações do mês via Supabase, calcula contexto, chama `/api/ai/financas`
+6. A IA retorna 3 insights com prefixos `[POSITIVO]`, `[ALERTA]` ou `[DICA]`
+7. Insights parseados e cacheados em localStorage (chave `sl_fin_insights_YYYY-MM`)
+8. Botão "Regenerar" (RefreshCw) força nova consulta à IA (ignora cache)
+
+**Tipos de insight:**
+| Tipo | Cor | Ícone |
+|------|-----|-------|
+| POSITIVO (positive) | `#10b981` | TrendingUp |
+| ALERTA (warning) | `#f59e0b` | AlertTriangle |
+| DICA (tip) | `#0055ff` | Sparkles |
+
+**Validação:** Se não há transações no mês, exibe dica genérica sem chamar IA.
+
+---
+
+### 18.5 Relatório PDF Cross-Module (PRO)
+
+**Arquivos:**
+- `web/src/lib/pdf/relatorio-completo.ts` — gerador PDF via jsPDF + jspdf-autotable
+- `web/src/hooks/use-relatorio-completo.ts` — hook de orquestração
+
+**Descrição:** Relatório completo em PDF A4 cobrindo 7 módulos: Life Sync Score, Finanças, Futuro, Corpo, Patrimônio, Tempo e Mente. Seções sem dados são automaticamente omitidas. Gerado client-side via jsPDF. Feature exclusiva PRO (feature `panorama:pdfReport`).
+
+**Passo a passo:**
+1. Acessar Dashboard ou Configurações
+2. Clicar em "Relatório Completo" (botão protegido por ProGate)
+3. Hook `useRelatorioCompleto()` busca dados de todos os módulos em paralelo via `Promise.all`
+4. Monta objeto `ReportData` com seções condicionais
+5. Chama `generateRelatorioPdfCompleto(data)` que gera o PDF
+6. PDF é baixado automaticamente com nome `SyncLife_Relatorio_Completo_{periodo}.pdf`
+
+**Seções do relatório:**
+| Seção | Cor do header | Dados |
+|-------|---------------|-------|
+| Life Sync Score | Indigo (#6366F1) | Score total + 8 dimensões em tabela |
+| Finanças | Esmeralda (#10b981) | Receitas, Despesas, Saldo, Taxa Poupança, Top 5 categorias |
+| Futuro | Roxo (#8B5CF6) | Metas ativas/concluídas, progresso por meta |
+| Corpo | Laranja (#F97316) | Atividades, minutos, peso atual |
+| Patrimônio | Azul (#3B82F6) | Valor total, investido, rentabilidade |
+| Tempo | Cyan (#06B6D4) | Total eventos, concluídos |
+| Mente | Amarelo (#EAB308) | Horas de estudo, trilhas ativas |
+
+**Notas:**
+- Paginação automática: verifica espaço disponível antes de cada seção (`checkPage`)
+- Footer em todas as páginas: "Gerado por SyncLife — Página X de Y"
+- Dependências: `jspdf`, `jspdf-autotable` (lazy import)
+
+---
+
+### 18.6 Push Notifications (Web Push)
+
+**Arquivos:**
+- `web/src/hooks/use-push-notifications.ts` — hook client-side
+- `web/src/app/api/push/subscribe/route.ts` — API de inscrição/remoção
+- `web/src/app/api/push/send/route.ts` — API de envio
+
+**Descrição:** Sistema de notificações push baseado em VAPID (Voluntary Application Server Identification). Suporta subscribe, unsubscribe e envio de notificações via web-push. Toggle de ativação em Configurações > Notificações.
+
+**Pré-requisitos:**
+- Variáveis de ambiente: `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`
+- Service Worker registrado e ativo
+- Suporte do navegador: `serviceWorker`, `PushManager`, `Notification`
+
+**Passo a passo — Ativar push:**
+1. Acessar `/configuracoes/notificacoes`
+2. Toggle "Push Notifications"
+3. Hook `usePushNotifications()` verifica suporte do browser
+4. `subscribe()` solicita permissão via `Notification.requestPermission()`
+5. Se concedida: cria subscription via `PushManager.subscribe()` com applicationServerKey (VAPID)
+6. Envia subscription (endpoint, keys p256dh/auth) para `POST /api/push/subscribe`
+7. API persiste em tabela `push_subscriptions` no Supabase
+
+**Passo a passo — Desativar push:**
+1. Toggle "Push Notifications" off
+2. `unsubscribe()` busca subscription ativa
+3. Envia `DELETE /api/push/subscribe` com endpoint
+4. Remove subscription do PushManager local
+
+**Interface do hook:**
+```typescript
+interface UsePushNotificationsReturn {
+  isSupported: boolean
+  permission: NotificationPermission | 'unsupported'
+  isSubscribed: boolean
+  loading: boolean
+  subscribe: () => Promise<void>
+  unsubscribe: () => Promise<void>
+}
+```
+
+---
+
+### 18.7 Weekly Digest (Cron)
+
+**Arquivos:**
+- `web/src/app/api/cron/weekly-digest/route.ts` — rota cron
+- `web/vercel.json` — configuração de schedule
+
+**Descrição:** Resumo semanal automático enviado via push notification e notificação in-app. Roda todo Domingo às 10h UTC. Agrega dados de finanças (saldo semanal), metas ativas e eventos concluídos.
+
+**Schedule:** `0 10 * * 0` (Domingo 10:00 UTC)
+
+**Autenticação:** Header `Authorization: Bearer ${CRON_SECRET}` (protegido)
+
+**Passo a passo:**
+1. Vercel Cron dispara `GET /api/cron/weekly-digest` no schedule
+2. Autentica via `CRON_SECRET` no header Authorization
+3. Usa Supabase service role (sem auth de usuário)
+4. Busca todos os `push_subscriptions` e agrupa por `user_id`
+5. Para cada usuário:
+   a. Busca transações da semana (7 dias anteriores)
+   b. Busca metas ativas
+   c. Busca eventos da semana e conta concluídos
+   d. Monta mensagem: "Saldo semanal: R$ X | Y metas ativas | Z/W eventos concluídos"
+6. Cria notificação in-app em `notifications` (type: `weekly_summary`, module: `panorama`)
+7. Envia push notification via web-push para cada subscription do usuário
+8. Subscriptions expiradas são automaticamente removidas (cleanup)
+
+**Resposta:**
+```json
+{ "message": "Digest sent", "sent": 5, "users": 3 }
+```
+
+---
+
+### 18.8 CI/CD + Coverage
+
+**Arquivos:**
+- `web/vitest.config.mts` — configuração Vitest
+- `.github/workflows/ci.yml` — workflow GitHub Actions
+
+**Descrição:** Pipeline de integração contínua com Vitest, coverage via @vitest/coverage-v8, threshold de 80% em linhas, e upload de artefato de coverage.
+
+**Workflow CI (GitHub Actions):**
+1. Trigger: push em `main` ou `auditoria-fase0-cleanup`, ou PR para `main`
+2. Runner: `ubuntu-latest`, Node 20
+3. Steps:
+   a. `npm ci` — instala dependências
+   b. `npx tsc --noEmit` — typecheck
+   c. `npm run lint` — lint
+   d. `npx vitest run --coverage` — testes unitários com coverage
+   e. Upload artifact `coverage-report` (retenção 7 dias)
+   f. `npm run build` — build de produção (com env vars placeholder)
+
+**Vitest config:**
+- Environment: `node`
+- Globals: `true`
+- Include: `src/**/__tests__/**/*.test.ts`, `src/**/__tests__/**/*.test.tsx`
+- Coverage provider: `v8`, reporters: `text` + `lcov`
+- Coverage include: `src/lib/**/*.ts`, `src/hooks/**/*.ts`
+- Coverage exclude: `src/lib/supabase/**`, `__tests__`, `.d.ts`
+- Threshold: 80% linhas
+
+---
+
+### 18.9 Coach IA Cross-Module (PRO)
+
+**Arquivos:**
+- `web/src/app/(app)/coach/page.tsx` — página do Coach
+- `web/src/components/shell/CoachFab.tsx` — FAB (Floating Action Button)
+- `web/src/app/api/ai/coach/route.ts` — API route (Groq Llama 3.3)
+
+**Descrição:** Chat com IA que analisa dados de múltiplos módulos (finanças, futuro, corpo, patrimônio) para oferecer recomendações personalizadas. Acessível via FAB flutuante no shell (visível em todas as páginas para usuários PRO) ou diretamente em `/coach`. A rota `/corpo/coach` redireciona para `/coach`.
+
+**Feature PRO:** `coach:aiCoach` (ProGate wrapper na página)
+
+**Dados cross-module enviados ao coach:**
+| Módulo | Dados | Hook |
+|--------|-------|------|
+| Finanças | income, expenses, balance, savingsRate | useTransactions |
+| Futuro | activeGoals, nome/progresso das metas | useMetas |
+| Corpo | weight, height, weightGoal, activityLevel | useHealthProfile |
+| Patrimônio | totalValue, assetCount | usePatrimonioDashboard |
+
+**Passo a passo:**
+1. Clicar no FAB (ícone Bot, gradiente Esmeralda/Azul) ou navegar para `/coach`
+2. ProGate verifica plano PRO
+3. Tela de boas-vindas com 6 prompts sugeridos (ex: "Como melhorar meu Life Sync Score?")
+4. Digitar mensagem ou clicar em prompt sugerido
+5. Hook monta `lifeContext` com dados dos 4 módulos
+6. Envia para `/api/ai/coach` com `messages`, `healthProfile` e `lifeContext`
+7. Resposta via streaming (ReadableStream) — mensagem aparece incrementalmente
+8. Histórico de chat mantido em estado local (não persistido)
+
+**CoachFab:**
+- Posição: fixed bottom-right (bottom-5 right-5, z-50)
+- Em mobile: `bottom-[72px]` (acima da MobileBottomBar)
+- Oculto em: `/coach` (página do coach), `/configuracoes`, e para usuários FREE
+- Visual: círculo 52px, gradiente SyncLife, sombra esmeralda
+
+---
+
+### 18.10 Cardápio IA Wizard (PRO)
+
+**Arquivos:**
+- `web/src/components/corpo/CardapioWizard.tsx` — wizard de 4 passos
+- `web/supabase/migrations/023_dietary_preferences.sql` — migration DB
+
+**Descrição:** Wizard de configuração obrigatória (primeira vez) antes de gerar cardápios com IA. Coleta dados físicos, calcula TMB/TDEE (Harris-Benedict), preferências alimentares e salva em `health_profiles`. Feature PRO (feature `corpo:aiCardapio`).
+
+**Passo a passo:**
+1. Acessar `/corpo/cardapio`
+2. Se `cardapio_wizard_completed = false` ou primeiro acesso: wizard exibido
+3. **Passo 1 — Dados Físicos + TMB:**
+   - Peso (kg), Altura (cm), Idade, Sexo (Masculino/Feminino)
+   - Nível de atividade: Sedentário, Leve, Moderado, Ativo, Muito Ativo
+   - TMB calculado via Harris-Benedict: homem = 88.362 + (13.397 * peso) + (4.799 * altura) - (5.677 * idade)
+   - TDEE = TMB * multiplicador de atividade (1.2 a 1.9)
+   - Preview em tempo real: "TMB: X kcal · TDEE: Y kcal/dia"
+4. **Passo 2 — Tipo de Dieta:**
+   - 8 opções: Balanceada, Low Carb, Cetogênica, Vegetariana, Vegana, Carnívora, Mediterrânea, Paleo
+   - Seleção única (radio-style com cards)
+5. **Passo 3 — Proteínas Preferidas:**
+   - 7 opções (múltipla escolha): Frango, Carne Bovina, Peixe, Ovos, Whey Protein, Tofu, Leguminosas
+   - Toggle chips com ícones emoji
+6. **Passo 4 — Refeições e Suplementos:**
+   - Refeições por dia: 3, 4, 5 ou 6 (seleção única)
+   - Toggles: Pré-treino, Pós-treino
+   - Suplementos (múltipla escolha): Creatina, Whey, BCAA, Glutamina, Multivitamínico, Ômega 3
+7. Clicar em "Concluir" salva via upsert em `health_profiles` (onConflict: `user_id`)
+8. Campos persistidos: diet_type, preferred_proteins, meals_per_day, pre_workout_meal, post_workout_meal, supplements, cardapio_wizard_completed
+
+**Migration 023:** Adiciona colunas à tabela `health_profiles`: `diet_type`, `preferred_proteins`, `meals_per_day`, `pre_workout_meal`, `post_workout_meal`, `supplements`, `cardapio_wizard_completed`
+
+---
+
+### 18.11 Google Calendar Sync
+
+**Arquivos:**
+- `web/src/app/api/integrations/google-calendar/auth/route.ts` — inicia OAuth flow
+- `web/src/app/api/integrations/google-calendar/callback/route.ts` — callback OAuth
+- `web/src/app/api/integrations/google-calendar/sync/route.ts` — sincronização bidirecional
+- `web/supabase/migrations/024_user_integrations.sql` — tabela de integrações
+
+**Descrição:** Integração bidirecional com Google Calendar via OAuth 2.0. Permite conectar, sincronizar e desconectar a conta Google. Gerenciado em Configurações > Integrações.
+
+**Pré-requisitos:**
+- Variáveis de ambiente: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+- `NEXT_PUBLIC_APP_URL` configurada corretamente
+- Projeto Google Cloud com Calendar API habilitada
+
+**Scopes OAuth:**
+- `https://www.googleapis.com/auth/calendar.readonly`
+- `https://www.googleapis.com/auth/calendar.events`
+
+**Passo a passo — Conectar:**
+1. Acessar `/configuracoes/integracoes`
+2. Clicar em "Conectar" no card Google Calendar
+3. `GET /api/integrations/google-calendar/auth` verifica autenticação Supabase
+4. Redireciona para Google OAuth (`accounts.google.com/o/oauth2/v2/auth`)
+5. Usuário autoriza acesso
+6. Google redireciona para `/api/integrations/google-calendar/callback` com code
+7. Callback troca code por tokens (access_token, refresh_token)
+8. Tokens salvos na tabela `user_integrations` (provider: `google-calendar`)
+
+**Passo a passo — Sincronizar:**
+1. Clicar em "Sincronizar" no card Google Calendar
+2. `POST /api/integrations/google-calendar/sync`
+3. Busca eventos do Google Calendar
+4. Sincroniza com `agenda_events` no Supabase
+5. Bidirectional: eventos criados no SyncLife também são enviados ao Google Calendar
+
+**Passo a passo — Desconectar:**
+1. Clicar em "Desconectar" no card Google Calendar
+2. Remove tokens da tabela `user_integrations`
+
+**Migration 024:** Cria tabela `user_integrations` com colunas: `id`, `user_id`, `provider`, `access_token`, `refresh_token`, `token_expires_at`, `metadata`, `created_at`, `updated_at`
+
+---
+
+### 18.12 PRO Gate Audit
+
+**Arquivo principal:** `web/src/hooks/use-plan-limits.ts`
+**Componente:** `web/src/components/ui/pro-gate.tsx`
+
+**Descrição:** Todas as features de IA e features avançadas são devidamente protegidas por ProGate. O hook `usePlanLimits()` verifica o plano do usuário (FREE/PRO) e o sistema de gating controla acesso a features baseado no plano.
+
+**Features exclusivas PRO (8 total):**
+
+| Feature Key | Módulo | Descrição |
+|-------------|--------|-----------|
+| `futuro:checkin` | Futuro | Check-in de humor e progresso |
+| `tempo:timerFoco` | Tempo | Timer Pomodoro / Blocos de foco |
+| `experiencias:aiSuggestions` | Experiências | Sugestões de viagem por IA |
+| `corpo:aiCardapio` | Corpo | Geração de cardápio por IA |
+| `corpo:aiCoach` | Corpo | Coach IA (redirecionado para /coach) |
+| `coach:aiCoach` | Coach | Coach IA cross-module |
+| `financas:aiInsights` | Finanças | Insights financeiros por IA |
+| `panorama:pdfReport` | Panorama | Relatório PDF cross-module |
+
+**Features com limites numéricos (FREE vs PRO):**
+
+| Feature Key | FREE | PRO |
+|-------------|------|-----|
+| `futuro:objectives` | Limitado | Ilimitado |
+| `experiencias:trips` | Limitado | Ilimitado |
+| `mente:tracks` | Limitado | Ilimitado |
+| `patrimonio:assets` | Limitado | Ilimitado |
+| `carreira:roadmaps` | Limitado | Ilimitado |
+| `corpo:consultations` | Limitado | Ilimitado |
+
+---
+
 ## Referências
 
 - `web/src/lib/modules.ts` — lista de módulos e rotas
@@ -979,3 +1366,13 @@ flowchart TB
 - `web/e2e/helpers/crud.helpers.ts` — helpers de CRUD
 - `docs/AUDITORIA-COMPLETA-2026-03.md` — inventário de páginas e hooks
 - `CLAUDE.md` — guia de desenvolvimento do projeto
+- `web/src/hooks/use-financial-insights.ts` — hook de insights financeiros IA
+- `web/src/hooks/use-push-notifications.ts` — hook de push notifications
+- `web/src/hooks/use-relatorio-completo.ts` — hook de relatório PDF cross-module
+- `web/src/lib/share/badge-image.ts` — geração de imagem de badge via Canvas
+- `web/src/lib/share/share-utils.ts` — utilitários de compartilhamento social
+- `web/src/lib/pdf/relatorio-completo.ts` — gerador PDF jsPDF
+- `web/src/components/shell/CoachFab.tsx` — FAB do Coach IA
+- `web/src/components/corpo/CardapioWizard.tsx` — wizard de preferências alimentares
+- `web/src/components/financas/FinancialInsightCard.tsx` — card de insights IA
+- `.github/workflows/ci.yml` — pipeline CI com coverage

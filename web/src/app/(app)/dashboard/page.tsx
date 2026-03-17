@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Globe, ClipboardList, Activity, DollarSign, Clock, Brain, Briefcase, Target, TrendingUp, Plane } from 'lucide-react'
+import { Globe, ClipboardList, Activity, DollarSign, Clock, Brain, Briefcase, Target, TrendingUp, Plane, FileText } from 'lucide-react'
 import { useTransactions } from '@/hooks/use-transactions'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useMetas, calcProgress } from '@/hooks/use-metas'
@@ -23,6 +23,7 @@ import { WeekAgendaWidget } from '@/components/dashboard/WeekAgendaWidget'
 import { RecurrencesWidget } from '@/components/dashboard/RecurrencesWidget'
 import { ProjectionWidget } from '@/components/dashboard/ProjectionWidget'
 import { AchievementsWidget } from '@/components/dashboard/AchievementsWidget'
+import { useRelatorioCompleto } from '@/hooks/use-relatorio-completo'
 
 // ─── Inline Sparkline bars ─────────────────────────────────────────────────
 function SparkBars({ values }: { values: number[] }) {
@@ -99,6 +100,7 @@ export default function DashboardPage() {
   const { dimensions: lifeDimensions, overallScore: lifeScore, loading: lifeLoading } = useLifeMap()
   const { result: scoreResult } = useScoreEngine()
   const realScore = scoreResult?.total ?? lifeScore
+  const { generate: generatePdf, generating: pdfGenerating } = useRelatorioCompleto()
 
   // ── financial KPIs ──
   const totalIncome = useMemo(() => transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0), [transactions])
@@ -250,6 +252,17 @@ export default function DashboardPage() {
         <button className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#6366f1] text-white border-none cursor-pointer hover:brightness-110 transition-all">
           <Activity size={16} />
           Life Score
+        </button>
+        <button
+          onClick={() => generatePdf(
+            realScore,
+            lifeDimensions.map(d => ({ name: d.label, score: d.value }))
+          )}
+          disabled={pdfGenerating}
+          className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold border border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-all cursor-pointer disabled:opacity-50"
+        >
+          <FileText size={16} />
+          {pdfGenerating ? 'Gerando...' : 'Gerar Relatório'}
         </button>
       </ModuleHeader>
 
