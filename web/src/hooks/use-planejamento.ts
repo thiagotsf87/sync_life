@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { RecurringTransaction } from '@/hooks/use-recorrentes'
-import { USE_MOCK, MOCK_PLANNING_EVENTS, MOCK_RECORRENTES, MOCK_PROFILE } from '@/lib/mock-financas'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
@@ -244,14 +243,6 @@ export function usePlanejamento(): UsePlanejamentoReturn {
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
-
-    if (USE_MOCK) {
-      setPlanningEvents(MOCK_PLANNING_EVENTS as unknown as PlanningEvent[])
-      setRecurringItems(MOCK_RECORRENTES.filter(r => r.type === 'expense' || r.type === 'income') as unknown as RecurringTransaction[])
-      setProfile(MOCK_PROFILE)
-      setLoading(false)
-      return
-    }
 
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()

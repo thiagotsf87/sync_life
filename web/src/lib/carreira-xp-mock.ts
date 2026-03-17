@@ -11,12 +11,12 @@ export interface CarreiraXpData {
 }
 
 export const CARREIRA_XP: CarreiraXpData = {
-  level: 6,
-  levelTitle: 'Profissional Estratégico',
-  streak: 28,
-  currentXp: 720,
-  nextLevelXp: 1000,
-  totalXpEarned: 480,
+  level: 0,
+  levelTitle: '',
+  streak: 0,
+  currentXp: 0,
+  nextLevelXp: 1,
+  totalXpEarned: 0,
 }
 
 export function getCarreiraXpPct(xp: CarreiraXpData): number {

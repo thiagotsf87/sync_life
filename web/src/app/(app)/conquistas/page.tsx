@@ -56,68 +56,14 @@ const RARITY_LABELS: Record<BadgeRarity, string> = {
   legendary: 'Lendária',
 }
 
-const BADGES: Badge[] = [
-  // ── Financeiras ────────────────────────────────────────────────────────────
-  { id: 1,  cat: 'fin',    icon: '💰', name: 'Primeiro Passo',       desc: 'Registrou a primeira transação',            rarity: 'common',    unlocked: true,  date: '15 Jan 2026', criteria: 'Registre sua primeira transação no app.',                                          progress: 1,   progressMax: 1,   motivation: '"Todo grande começo tem um pequeno passo."' },
-  { id: 2,  cat: 'fin',    icon: '🟢', name: '3 Meses no Verde',     desc: 'Saldo positivo por 3 meses seguidos',       rarity: 'uncommon',  unlocked: true,  date: '01 Fev 2026', criteria: 'Mantenha saldo positivo por 3 meses consecutivos.',                                progress: 3,   progressMax: 3,   motivation: '"Consistência financeira é liberdade."' },
-  { id: 3,  cat: 'fin',    icon: '🎯', name: 'Orçamento Cumprido',   desc: 'Respeitou o orçamento mensal',              rarity: 'common',    unlocked: true,  date: '31 Jan 2026', criteria: 'Termine o mês sem ultrapassar nenhuma categoria de orçamento.',                    progress: 1,   progressMax: 1,   motivation: '"Planejar é o primeiro ato de controle."' },
-  { id: 4,  cat: 'fin',    icon: '📊', name: 'Analista',             desc: 'Gerou seu primeiro relatório',              rarity: 'common',    unlocked: true,  date: '10 Fev 2026', criteria: 'Acesse e gere um relatório mensal.',                                               progress: 1,   progressMax: 1,   motivation: '"Dados claros levam a decisões melhores."' },
-  { id: 5,  cat: 'fin',    icon: '🔥', name: '6 Meses no Verde',     desc: 'Saldo positivo por 6 meses seguidos',       rarity: 'rare',      unlocked: false, date: null,          criteria: 'Mantenha saldo positivo por 6 meses consecutivos.',                                progress: 3,   progressMax: 6,   motivation: '"Metade do caminho já foi percorrido."' },
-  { id: 6,  cat: 'fin',    icon: '💎', name: 'Investidor Iniciante', desc: 'Registrou primeiro investimento',           rarity: 'uncommon',  unlocked: false, date: null,          criteria: 'Registre uma transação do tipo "Investimento".',                                   progress: 0,   progressMax: 1,   motivation: '' },
-  { id: 7,  cat: 'fin',    icon: '🏦', name: 'Reserva Construída',   desc: 'Atingiu meta de reserva de emergência',     rarity: 'legendary', unlocked: false, date: null,          criteria: 'Conclua uma meta financeira do tipo "Reserva de Emergência".',                    progress: 75,  progressMax: 100, motivation: '' },
-  // ── Metas ──────────────────────────────────────────────────────────────────
-  { id: 8,  cat: 'meta',   icon: '🎯', name: 'Sonhador',             desc: 'Criou sua primeira meta',                   rarity: 'common',    unlocked: true,  date: '12 Jan 2026', criteria: 'Crie sua primeira meta no módulo de Metas.',                                       progress: 1,   progressMax: 1,   motivation: '"Sonhos com prazo são objetivos."' },
-  { id: 9,  cat: 'meta',   icon: '🚀', name: 'Na Velocidade',        desc: 'Meta 25% acima do ritmo',                   rarity: 'uncommon',  unlocked: true,  date: '20 Jan 2026', criteria: 'Registre progresso 25% acima do ritmo necessário por 30 dias.',                    progress: 1,   progressMax: 1,   motivation: '"Quando você vai além do necessário, algo especial acontece."' },
-  { id: 10, cat: 'meta',   icon: '🏆', name: 'Meta Concluída',       desc: 'Completou uma meta',                        rarity: 'uncommon',  unlocked: true,  date: '05 Fev 2026', criteria: 'Conclua qualquer meta (atingir 100% do objetivo).',                                progress: 1,   progressMax: 1,   motivation: '"Uma meta realizada abre espaço para uma nova."' },
-  { id: 11, cat: 'meta',   icon: '⭐', name: 'Triatleta de Metas',   desc: '3 metas ativas simultaneamente',            rarity: 'rare',      unlocked: false, date: null,          criteria: 'Tenha 3 metas ativas ao mesmo tempo.',                                             progress: 1,   progressMax: 3,   motivation: '' },
-  { id: 12, cat: 'meta',   icon: '🌟', name: 'Lendário',             desc: 'Conclua 5 metas',                           rarity: 'legendary', unlocked: false, date: null,          criteria: 'Conclua um total de 5 metas quaisquer.',                                           progress: 1,   progressMax: 5,   motivation: '' },
-  // ── Consistência ───────────────────────────────────────────────────────────
-  { id: 13, cat: 'cons',   icon: '🔥', name: 'Sequência de 7 dias',  desc: 'Acessou o app 7 dias seguidos',             rarity: 'common',    unlocked: true,  date: '22 Jan 2026', criteria: 'Faça login e registre alguma atividade por 7 dias consecutivos.',                  progress: 7,   progressMax: 7,   motivation: '"7 dias. Hábito em formação."' },
-  { id: 14, cat: 'cons',   icon: '📅', name: 'Mês Completo',         desc: 'Ativo todos os dias em um mês',             rarity: 'uncommon',  unlocked: true,  date: '31 Jan 2026', criteria: 'Faça login e registre alguma atividade todos os dias de um mês.',                  progress: 31,  progressMax: 31,  motivation: '"31 dias de consistência. Isso é caráter."' },
-  { id: 15, cat: 'cons',   icon: '💪', name: 'Madrugador',           desc: '3 registros antes das 8h',                  rarity: 'common',    unlocked: true,  date: '18 Jan 2026', criteria: 'Registre alguma atividade antes das 8:00 em 3 dias diferentes.',                  progress: 3,   progressMax: 3,   motivation: '"Quem controla a manhã, controla o dia."' },
-  { id: 16, cat: 'cons',   icon: '🏅', name: 'Sequência de 30 dias', desc: '30 dias seguidos usando o app',             rarity: 'rare',      unlocked: false, date: null,          criteria: 'Faça login e registre atividade por 30 dias consecutivos.',                       progress: 22,  progressMax: 30,  motivation: '' },
-  { id: 17, cat: 'cons',   icon: '👑', name: 'Veterano',             desc: '6 meses usando o SyncLife',                 rarity: 'legendary', unlocked: false, date: null,          criteria: 'Use o app por 6 meses (não precisa ser consecutivo).',                             progress: 2,   progressMax: 6,   motivation: '' },
-  // ── Agenda ─────────────────────────────────────────────────────────────────
-  { id: 18, cat: 'agenda',       icon: '📅', name: 'Organizador',          desc: 'Criou o primeiro evento',                   rarity: 'common',    unlocked: true,  date: '14 Jan 2026', criteria: 'Crie seu primeiro evento no módulo de Agenda.',                                    progress: 1,   progressMax: 1,   motivation: '"Agenda vazia é plano que não existe."' },
-  { id: 19, cat: 'agenda',       icon: '✅', name: '100% Concluído',       desc: 'Completou todos eventos de uma semana',     rarity: 'uncommon',  unlocked: true,  date: '02 Fev 2026', criteria: 'Marque como concluídos todos os eventos de uma semana.',                           progress: 1,   progressMax: 1,   motivation: '"Uma semana executada ao máximo."' },
-  { id: 20, cat: 'agenda',       icon: '🔗', name: 'Integrador',           desc: 'Meta vinculada a um evento',                rarity: 'uncommon',  unlocked: false, date: null,          criteria: 'Crie um evento na Agenda vinculado a uma Meta.',                                   progress: 0,   progressMax: 1,   motivation: '' },
-  { id: 21, cat: 'agenda',       icon: '🗓️', name: 'Planner Master',       desc: '50 eventos criados',                        rarity: 'rare',      unlocked: false, date: null,          criteria: 'Crie um total de 50 eventos no módulo de Agenda.',                                 progress: 12,  progressMax: 50,  motivation: '' },
-  // ── Corpo ──────────────────────────────────────────────────────────────────
-  { id: 22, cat: 'corpo',        icon: '🏥', name: 'Check-up Registrado',  desc: 'Primeira consulta médica registrada',       rarity: 'common',    unlocked: true,  date: '10 Fev 2026', criteria: 'Registre sua primeira consulta médica no módulo Corpo.',                          progress: 1,   progressMax: 1,   motivation: '"Saúde é o primeiro patrimônio."' },
-  { id: 23, cat: 'corpo',        icon: '🏃', name: 'Em Movimento',         desc: '7 atividades físicas registradas',          rarity: 'common',    unlocked: false, date: null,          criteria: 'Registre 7 atividades físicas no módulo Corpo.',                                   progress: 4,   progressMax: 7,   motivation: '' },
-  { id: 24, cat: 'corpo',        icon: '💪', name: 'Rotina Semanal',        desc: 'Meta de atividades atingida por 4 semanas', rarity: 'uncommon',  unlocked: false, date: null,          criteria: 'Atinja sua meta de atividades semanais por 4 semanas consecutivas.',               progress: 1,   progressMax: 4,   motivation: '' },
-  { id: 25, cat: 'corpo',        icon: '🩺', name: 'Saúde em Dia',          desc: 'Check-up anual completo',                   rarity: 'rare',      unlocked: false, date: null,          criteria: 'Registre consultas em 5 especialidades diferentes no ano.',                        progress: 1,   progressMax: 5,   motivation: '' },
-  // ── Patrimônio ─────────────────────────────────────────────────────────────
-  { id: 26, cat: 'patrimonio',   icon: '📈', name: 'Primeiro Ativo',        desc: 'Primeiro ativo adicionado à carteira',      rarity: 'common',    unlocked: true,  date: '15 Jan 2026', criteria: 'Adicione seu primeiro ativo no módulo Patrimônio.',                                progress: 1,   progressMax: 1,   motivation: '"O melhor momento para investir foi ontem. O segundo melhor é hoje."' },
-  { id: 27, cat: 'patrimonio',   icon: '🌐', name: 'Diversificado',         desc: 'Carteira com 3 classes de ativos',          rarity: 'uncommon',  unlocked: false, date: null,          criteria: 'Tenha ativos em pelo menos 3 classes diferentes na carteira.',                     progress: 1,   progressMax: 3,   motivation: '' },
-  { id: 28, cat: 'patrimonio',   icon: '💰', name: 'Acúmulo Consistente',   desc: 'Aportes por 6 meses seguidos',              rarity: 'rare',      unlocked: false, date: null,          criteria: 'Registre pelo menos um aporte em cada um dos últimos 6 meses.',                   progress: 2,   progressMax: 6,   motivation: '' },
-  { id: 29, cat: 'patrimonio',   icon: '🏆', name: 'Independência',         desc: 'Carteira suficiente para a regra dos 4%',   rarity: 'legendary', unlocked: false, date: null,          criteria: 'Atinja o valor-alvo calculado pelo simulador de independência financeira.',        progress: 8,   progressMax: 100, motivation: '' },
-  // ── Experiências ───────────────────────────────────────────────────────────
-  { id: 30, cat: 'experiencias', icon: '✈️', name: 'Primeira Aventura',     desc: 'Primeira viagem registrada',                rarity: 'common',    unlocked: true,  date: '08 Fev 2026', criteria: 'Registre sua primeira viagem no módulo Experiências.',                             progress: 1,   progressMax: 1,   motivation: '"Viajar é a única coisa que te enriquece ao gastar."' },
-  { id: 31, cat: 'experiencias', icon: '🌍', name: 'Viajante',              desc: '3 viagens concluídas',                      rarity: 'uncommon',  unlocked: false, date: null,          criteria: 'Conclua 3 viagens (status "Concluída") no módulo Experiências.',                   progress: 1,   progressMax: 3,   motivation: '' },
-  { id: 32, cat: 'experiencias', icon: '🗺️', name: 'Explorador',            desc: '10 destinos diferentes visitados',          rarity: 'rare',      unlocked: false, date: null,          criteria: 'Registre viagens com 10 destinos diferentes.',                                     progress: 2,   progressMax: 10,  motivation: '' },
-  { id: 33, cat: 'experiencias', icon: '🌟', name: 'Nômade',                desc: 'Viajou em 4 países diferentes',             rarity: 'legendary', unlocked: false, date: null,          criteria: 'Registre viagens para pelo menos 4 países diferentes.',                            progress: 1,   progressMax: 4,   motivation: '' },
-]
+const BADGES: Badge[] = []
 
 // Dados derivados estáticos (determinísticos — sem random)
-const TOTAL_UNLOCKED = BADGES.filter(b => b.unlocked).length    // 12
-const TOTAL_ALL      = BADGES.length                             // 21
-const PCT            = Math.round(TOTAL_UNLOCKED / TOTAL_ALL * 100) // 57
+const TOTAL_UNLOCKED = 0
+const TOTAL_ALL      = 0
+const PCT            = 0
 
-const LIVE_RECENT_UNLOCKED: Badge[] = (() => {
-  const MONTH_IDX: Record<string, number> = {
-    Jan: 0, Fev: 1, Mar: 2, Abr: 3, Mai: 4, Jun: 5,
-    Jul: 6, Ago: 7, Set: 8, Out: 9, Nov: 10, Dez: 11,
-  }
-  const parseDate = (d: string) => {
-    const [day, mon, year] = d.split(' ')
-    return new Date(parseInt(year), MONTH_IDX[mon] ?? 0, parseInt(day)).getTime()
-  }
-  return BADGES
-    .filter(b => b.unlocked && b.date)
-    .sort((a, b) => parseDate(b.date!) - parseDate(a.date!))
-    .slice(0, 3)
-})()
+const LIVE_RECENT_UNLOCKED: Badge[] = []
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 

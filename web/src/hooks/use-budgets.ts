@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { USE_MOCK, MOCK_BUDGETS, MOCK_RECEITAS_MES, MOCK_MONTHLY_INCOME } from '@/lib/mock-financas'
 
 export interface Budget {
   id: string
@@ -74,15 +73,6 @@ export function useBudgets({ month, year }: { month: number; year: number }): Us
     cancelled.current = false
     setIsLoading(true)
     setError(null)
-
-    if (USE_MOCK) {
-      setBudgets(MOCK_BUDGETS as unknown as BudgetWithSpend[])
-      setReceitasMes(MOCK_RECEITAS_MES)
-      setMonthlyIncome(MOCK_MONTHLY_INCOME)
-      setPrevMonthBudgets([])
-      setIsLoading(false)
-      return
-    }
 
     const supabase = createClient()
 

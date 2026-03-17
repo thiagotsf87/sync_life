@@ -8,10 +8,6 @@ import {
   Smile,
   FileText,
   Clock,
-  Home,
-  Dumbbell,
-  BookOpen,
-  BarChart3,
   ChevronRight,
   Frown,
   Meh,
@@ -47,62 +43,7 @@ interface CheckinGoal {
   type: 'currency' | 'number' | 'days'
 }
 
-const MOCK_GOALS: CheckinGoal[] = [
-  {
-    id: 'goal-1',
-    title: 'Comprar Casa',
-    icon: <Home size={16} />,
-    iconBg: 'rgba(244,63,94,0.10)',
-    iconColor: '#f43f5e',
-    status: 'at_risk',
-    statusLabel: 'Em Risco',
-    inputLabel: 'Aportei:',
-    inputPlaceholder: 'R$ 0,00',
-    currentValue: '',
-    type: 'currency',
-  },
-  {
-    id: 'goal-2',
-    title: 'Perder 10kg',
-    icon: <Dumbbell size={16} />,
-    iconBg: 'rgba(245,158,11,0.10)',
-    iconColor: '#f59e0b',
-    status: 'attention',
-    statusLabel: 'Atenção',
-    inputLabel: 'Peso atual:',
-    inputPlaceholder: '0,0',
-    inputSuffix: 'kg',
-    currentValue: '82,0',
-    type: 'number',
-  },
-  {
-    id: 'goal-3',
-    title: 'Ler 24 livros',
-    icon: <BookOpen size={16} />,
-    iconBg: 'rgba(16,185,129,0.10)',
-    iconColor: '#10b981',
-    status: 'on_track',
-    statusLabel: 'No Ritmo',
-    inputLabel: 'Lidos:',
-    inputPlaceholder: '0',
-    inputSuffix: '/ 24',
-    currentValue: '6',
-    type: 'number',
-  },
-  {
-    id: 'goal-4',
-    title: 'Treinar 4x/semana',
-    icon: <BarChart3 size={16} />,
-    iconBg: 'rgba(16,185,129,0.10)',
-    iconColor: '#10b981',
-    status: 'on_track',
-    statusLabel: 'No Ritmo',
-    inputLabel: 'Esta semana:',
-    inputPlaceholder: '',
-    currentValue: '',
-    type: 'days',
-  },
-]
+const MOCK_GOALS: CheckinGoal[] = []
 
 // ─── Mock check-in history ────────────────────────────────────────────────
 
@@ -115,12 +56,7 @@ interface CheckinHistoryItem {
   moodBg: string
 }
 
-const MOCK_HISTORY: CheckinHistoryItem[] = [
-  { id: 'h1', date: '07 de março de 2026', objectivesUpdated: 4, moodLevel: 'good', moodColor: '#10b981', moodBg: 'rgba(16,185,129,0.10)' },
-  { id: 'h2', date: '28 de fevereiro de 2026', objectivesUpdated: 3, moodLevel: 'neutral', moodColor: '#f59e0b', moodBg: 'rgba(245,158,11,0.10)' },
-  { id: 'h3', date: '21 de fevereiro de 2026', objectivesUpdated: 5, moodLevel: 'good', moodColor: '#10b981', moodBg: 'rgba(16,185,129,0.10)' },
-  { id: 'h4', date: '14 de fevereiro de 2026', objectivesUpdated: 6, moodLevel: 'good', moodColor: '#10b981', moodBg: 'rgba(16,185,129,0.10)' },
-]
+const MOCK_HISTORY: CheckinHistoryItem[] = []
 
 // ─── Status pill helpers ───────────────────────────────────────────────────
 
@@ -187,9 +123,7 @@ export default function FuturoCheckinPage() {
     return initial
   })
   const [dayToggles, setDayToggles] = useState<boolean[]>(() => {
-    const todayIdx = getTodayDayIndex()
-    // Pre-fill: first 3 days done (mock)
-    return DAY_LABELS.map((_, i) => i < 3)
+    return DAY_LABELS.map(() => false)
   })
   const [saving, setSaving] = useState(false)
 

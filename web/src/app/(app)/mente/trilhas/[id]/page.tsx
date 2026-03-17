@@ -14,7 +14,6 @@ import {
   CATEGORY_LABELS,
 } from '@/hooks/use-mente'
 import type { TrackStatus, TrackCategory, StudyTrackStep } from '@/hooks/use-mente'
-import { MOCK_TRACKS } from '@/lib/mente-mock-data'
 import { MenteTrackEditModal, type EditTrackData } from '@/components/mente/mobile/MenteTrackEditModal'
 import { MenteTrackDeleteModal } from '@/components/mente/mobile/MenteTrackDeleteModal'
 import { ModuleHeader } from '@/components/ui/module-header'
@@ -52,9 +51,9 @@ export default function TrilhaDetalhePage() {
   const deleteTrack = useDeleteTrack()
   const toggleStep = useToggleStep()
 
-  // Fallback to mock when Supabase returns empty
-  const isMockMode = tracks.length === 0
-  const tracksForLookup = tracks.length > 0 ? tracks : MOCK_TRACKS
+  // No mock fallback — empty state when no real data
+  const isMockMode = false
+  const tracksForLookup = tracks
   const track = tracksForLookup.find((t) => t.id === id)
 
   // Local state for mock

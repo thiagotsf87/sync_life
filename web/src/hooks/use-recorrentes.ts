@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { USE_MOCK, MOCK_RECORRENTES } from '@/lib/mock-financas'
 
 export type Frequency = 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'annual'
 
@@ -187,12 +186,6 @@ export function useRecorrentes(): UseRecorrentesReturn {
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
-
-    if (USE_MOCK) {
-      setRecorrentes(MOCK_RECORRENTES as unknown as RecurrenteWithCategory[])
-      setLoading(false)
-      return
-    }
 
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { USE_MOCK, MOCK_REPORT_DATA, MOCK_PROFILE } from '@/lib/mock-financas'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
@@ -389,16 +388,6 @@ export function useRelatorios(): UseRelatoriosReturn {
   const handleGenerate = useCallback(async () => {
     setLoading(true)
     setError(null)
-
-    if (USE_MOCK) {
-      const range = getRange(period)
-      setPeriodRange(range)
-      setTransactions(MOCK_REPORT_DATA.current as RawTransaction[])
-      setPrevTransactions(MOCK_REPORT_DATA.prev as RawTransaction[])
-      setProfile(MOCK_PROFILE as any)
-      setLoading(false)
-      return
-    }
 
     const supabase = createClient() as any
     const { data: { user } } = await supabase.auth.getUser()

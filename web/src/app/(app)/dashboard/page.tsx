@@ -272,27 +272,28 @@ export default function DashboardPage() {
         {/* Label + delta */}
         <div className="flex flex-col gap-1">
           <span className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">Life Sync Score</span>
-          <span className="text-[12px] text-[#10b981]">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="#10b981" stroke="none" className="inline align-[-1px] mr-0.5"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
-            +3 pontos vs semana passada
+          <span className="text-[12px] text-[var(--sl-t3)]">
+            Acompanhe sua evolucao semanal
           </span>
         </div>
 
         {/* Sparkline + Pill (right) */}
         <div className="ml-auto flex items-center gap-4 shrink-0">
           <div className="text-right">
-            <div className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)]">Evolução 4 sem</div>
+            <div className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)]">Evolucao 4 sem</div>
             <div className="text-[11px] text-[var(--sl-t2)] mt-0.5">
-              68 → 70 → 71 → <span className="text-[#6366f1] font-semibold">{Math.round(realScore) || 74}</span>
+              {realScore > 0 ? <span className="text-[#6366f1] font-semibold">{Math.round(realScore)}</span> : <span className="text-[var(--sl-t3)]">—</span>}
             </div>
           </div>
-          <SparkBars values={[68, 70, 71, 74, 74]} />
+          <SparkBars values={realScore > 0 ? [0, 0, 0, 0, Math.round(realScore)] : [0, 0, 0, 0, 0]} />
         </div>
 
+        {realScore > 0 && (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[rgba(16,185,129,.1)] text-[#10b981] shrink-0">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          Excelente equilíbrio
+          Acompanhando
         </span>
+        )}
       </div>
 
       {/* ③ MODULE MOSAIC */}

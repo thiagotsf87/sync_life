@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { USE_MOCK } from '@/lib/mock-financas'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useTransactions } from '@/hooks/use-transactions'
 import { useRecorrentes } from '@/hooks/use-recorrentes'
@@ -59,19 +58,6 @@ export default function FinancasDashboardPage() {
   const [histData, setHistData] = useState<MonthlyAgg[]>([])
 
   useEffect(() => {
-    if (USE_MOCK) {
-      const mockHist: MonthlyAgg[] = [
-        { mes: 'Out', rec: 9500, des: 5510 },
-        { mes: 'Nov', rec: 10200, des: 6350 },
-        { mes: 'Dez', rec: 12800, des: 8200 },
-        { mes: 'Jan', rec: 10500, des: 5100 },
-        { mes: 'Fev', rec: 10500, des: 6600 },
-        { mes: 'Mar', rec: 10500, des: 5380 },
-      ]
-      setHistData(mockHist)
-      return
-    }
-
     const supabase = createClient()
     let cancelled = false
 
