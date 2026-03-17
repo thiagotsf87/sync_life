@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient as createSupabaseAdmin } from '@supabase/supabase-js'
-import { stripe } from '@/lib/stripe'
+import { getStripeClient } from '@/lib/stripe'
 import type Stripe from 'stripe'
 
 // Service role client — bypasses RLS (no user session)
@@ -46,6 +46,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
   }
 
+  const stripe = getStripeClient()
   let event: Stripe.Event
   try {
     event = stripe.webhooks.constructEvent(

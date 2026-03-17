@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { stripe, STRIPE_PRICES } from '@/lib/stripe'
+import { getStripeClient, STRIPE_PRICES } from '@/lib/stripe'
 
 const CheckoutSchema = z.object({
   interval: z.enum(['monthly', 'yearly']),
@@ -9,6 +9,7 @@ const CheckoutSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    const stripe = getStripeClient()
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
