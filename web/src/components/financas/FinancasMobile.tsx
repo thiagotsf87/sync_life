@@ -37,7 +37,7 @@ interface BudgetItem {
 interface TxItem {
   id: string
   amount: number
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'transfer'
   description: string
   date: string
   payment_method: string

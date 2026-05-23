@@ -157,7 +157,10 @@ function CoachChat() {
   }
 
   return (
-    <div className="max-w-[900px] mx-auto px-6 py-7 pb-4 flex flex-col" style={{ height: 'calc(100vh - 54px)' }}>
+    <div
+      className="max-w-[900px] mx-auto px-6 py-7 pb-4 flex flex-col overflow-hidden"
+      style={{ height: 'calc(100dvh - 180px)', minHeight: 400 }}
+    >
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-5 shrink-0">
         <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
@@ -176,7 +179,7 @@ function CoachChat() {
       </div>
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto flex flex-col gap-4 pr-1 mb-4">
+      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 pr-1 mb-4">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center flex-1 gap-6">
             <div className="flex flex-col items-center gap-3 text-center">

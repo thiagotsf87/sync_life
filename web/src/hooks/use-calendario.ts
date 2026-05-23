@@ -9,10 +9,10 @@ export interface CalendarTransaction {
   id: string
   description: string
   amount: number
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'transfer'
   categoryName: string | null
   icon: string | null
-  dotType: 'income' | 'expense' | 'recorrente' | 'planned'
+  dotType: 'income' | 'expense' | 'transfer' | 'recorrente' | 'planned'
   is_future: boolean
   recurring_transaction_id: string | null
 }
@@ -68,10 +68,10 @@ function buildCalendarDays(args: {
         id: t.id,
         description: t.description,
         amount: t.amount,
-        type: t.type as 'income' | 'expense',
+        type: t.type as 'income' | 'expense' | 'transfer',
         categoryName: t.categories?.name ?? null,
         icon: t.categories?.icon ?? null,
-        dotType: t.recurring_transaction_id ? 'recorrente' : t.type,
+        dotType: t.type === 'transfer' ? 'transfer' : t.recurring_transaction_id ? 'recorrente' : t.type,
         is_future: t.is_future,
         recurring_transaction_id: t.recurring_transaction_id,
       }))
@@ -106,13 +106,13 @@ function buildCalendarDays(args: {
         recurring_transaction_id: null,
       }))
 
-    // Sort: recorrente first, then income, expense, planned
-    const DOT_ORDER = { recorrente: 0, income: 1, expense: 2, planned: 3 }
+    // Sort: recorrente first, then income, expense, transfer, planned
+    const DOT_ORDER = { recorrente: 0, income: 1, expense: 2, transfer: 3, planned: 4 }
     const allTxs = [...dayTxs, ...dayPlanEvents, ...dayProjectedDividends]
       .sort((a, b) => DOT_ORDER[a.dotType] - DOT_ORDER[b.dotType])
 
     const balance = allTxs
-      .filter(t => !t.is_future)
+      .filter(t => !t.is_future && t.type !== 'transfer')
       .reduce((sum, t) => sum + (t.type === 'income' ? t.amount : -t.amount), 0)
 
     days.push({

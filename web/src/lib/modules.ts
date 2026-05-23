@@ -11,6 +11,7 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
     defaultNavId: 'pan-dashboard',
     navItems: [
       { id: 'pan-dashboard', label: 'Dashboard', icon: 'LayoutDashboard', href: '/dashboard' },
+      { id: 'pan-coach', label: 'Coach IA', icon: 'Bot', href: '/coach' },
       { id: 'pan-conquistas', label: 'Conquistas', icon: 'Trophy', href: '/conquistas' },
       { id: 'pan-ranking', label: 'Ranking', icon: 'Medal', href: '/conquistas/ranking' },
     ],
@@ -173,6 +174,7 @@ export const MODULES: Record<ModuleId, ModuleConfig> = {
       { id: 'cfg-aparencia', label: 'Aparência', icon: 'Palette', href: '/configuracoes/aparencia' },
       { id: 'cfg-notif', label: 'Notificações', icon: 'Bell', href: '/configuracoes/notificacoes' },
       { id: 'cfg-categorias', label: 'Categorias', icon: 'Tags', href: '/configuracoes/categorias' },
+      { id: 'cfg-contas', label: 'Contas', icon: 'Landmark', href: '/configuracoes/contas' },
       { id: 'cfg-integracoes', label: 'Integrações', icon: 'Link2', href: '/configuracoes/integracoes' },
       { id: 'cfg-plano', label: 'Plano', icon: 'Crown', href: '/configuracoes/plano' },
     ],

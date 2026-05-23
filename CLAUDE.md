@@ -43,7 +43,7 @@ web/
 │   ├── styles/            ← themes.css (12 temas)
 │   └── types/             ← TypeScript types
 ├── supabase/
-│   └── migrations/        ← migrations SQL (24)
+│   └── migrations/        ← migrations SQL (25)
 └── CLAUDE.md              ← este arquivo
 ```
 
@@ -426,6 +426,7 @@ Para migrar para Anthropic Claude: trocar apenas a linha do `model` em cada rout
 |-----------|---------|-----------|
 | 023 | `supabase/migrations/023_dietary_preferences.sql` | Adiciona colunas de preferências alimentares a `health_profiles` |
 | 024 | `supabase/migrations/024_user_integrations.sql` | Cria tabela `user_integrations` para OAuth tokens (Google Calendar) |
+| 025 | `supabase/migrations/025_user_accounts.sql` | Contas bancárias do usuário (transferências) |
 
 ## Redirects e rotas especiais
 
@@ -454,10 +455,9 @@ Para migrar para Anthropic Claude: trocar apenas a linha do `model` em cada rout
 
 ## Referências visuais
 
-Os protótipos HTML mostram exatamente como cada componente deve ficar visualmente:
-
-- `synclife-design-system.html` — Design System completo (abrir no browser)
-- `DESIGN-SYSTEM.md` — Documentação de tokens e regras
+- `DESIGN-SYSTEM.md` — tokens, tipografia, componentes e checklist de tela
+- `web/src/app/globals.css` + `web/src/styles/themes.css` — 12 temas via `data-theme`
+- `docs/README.md` — índice de specs funcionais e features
 
 ---
 {

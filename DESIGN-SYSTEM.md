@@ -2,9 +2,10 @@
 
 > **Fonte única de verdade** para qualquer nova tela.  
 > Arquivos de referência:
-> - `synclife-design-system.html` → guia visual interativo (abrir no browser)
-> - `synclife-tokens.css` → importar em toda nova tela
+> - `web/src/app/globals.css` + `web/src/styles/themes.css` → 12 temas no app
+> - `synclife-tokens.css` → tokens CSS standalone (legado; preferir globals.css)
 > - `DESIGN-SYSTEM.md` → este arquivo (referência rápida)
+> - `CLAUDE.md` → convenções de implementação Next.js/React
 
 ---
 
@@ -87,30 +88,18 @@ Metas  →  --grad   (gradiente esmeralda → azul)
 
 ---
 
-## 3. Temas (4 combinações)
+## 3. Temas (12 variantes)
 
-Controlados por classes na `<body>`. Importar `synclife-tokens.css` resolve tudo automaticamente.
+No app Next.js, os temas são controlados por `data-theme` no `<html>` (ver `web/src/styles/themes.css` e `shell-store.ts`).
 
-```
-body               = 🌙 Dark Foco    (padrão — sem classes)
-body.jornada       = 🌙 Dark Jornada
-body.light         = ☀️  Light Foco
-body.light.jornada = ☀️  Light Jornada
-```
+| Tipo | IDs |
+|------|-----|
+| Dark | `navy-dark`, `obsidian`, `rosewood`, `graphite`, `twilight`, `carbon` |
+| Light | `clean-light`, `mint-garden`, `arctic`, `sahara`, `blossom`, `serenity` |
 
-### Tokens de superfície por tema
+Tokens de superfície usam prefixo `--sl-*` no app (`--sl-bg`, `--sl-s1`, `--sl-s2`, `--sl-t1`, etc.) e variam automaticamente com o tema ativo.
 
-| Token       | Dark Foco  | Dark Jornada | Light Foco | Light Jornada |
-|-------------|-----------|--------------|------------|---------------|
-| `--bg`      | `#03071a` | `#020d08`    | `#e6edf5`  | `#c8f0e4`     |
-| `--s1`      | `#07112b` | `#061410`    | `#ffffff`  | `#ffffff`     |
-| `--s2`      | `#0c1a3a` | `#0b1e18`    | `#f0f6fa`  | `#e0f7ef`     |
-| `--s3`      | `#132248` | `#112b22`    | `#dde8f2`  | `#c4eede`     |
-| `--t1`      | `#dff0ff` | `#d6faf0`    | `#03071a`  | `#022016`     |
-| `--t2`      | `#6e90b8` | `#4da888`    | `#1e3a5c`  | `#0d5c3e`     |
-| `--t3`      | `#2e4a6e` | `#235c48`    | `#5a7a9e`  | `#4da888`     |
-
-> **Dica:** `--s1` é sempre o fundo de cards. `--s2` é o fundo de inputs e elementos secundários. `--s3` é o fundo de barras de progresso e elementos terciários.
+> **Legado:** `synclife-tokens.css` ainda documenta tokens `--bg`, `--s1`… para HTML standalone. **Não use** classes `body.jornada` / `body.light` — o sistema Modo Foco/Jornada foi removido em mar/2026.
 
 ---
 
@@ -337,33 +326,21 @@ body.light .card     { box-shadow: 0 2px 12px rgba(3,7,26,.07); }
 
 ---
 
-## 8. Modo Foco vs Modo Jornada
+## 8. Experiência unificada
 
-### Diferenças obrigatórias por modo
+Desde mar/2026 **não existe** toggle Modo Foco / Modo Jornada. Todos os usuários têm a mesma experiência enriquecida (gamificação, insights, labels narrativos).
 
-| Elemento                    | 🎯 Foco                     | 🌱 Jornada                         |
-|-----------------------------|-----------------------------|------------------------------------|
-| Saudação no header          | Título estático ("Dashboard")| "Boa tarde, Thiago! ✨"            |
-| Life Sync Score             | Oculto                      | Card hero com número grande        |
-| Streak badge                | Oculto                      | 🔥 N dias no header               |
-| Insight IA                  | Grid de stats compactos     | Texto narrativo com highlights     |
-| Campo de pergunta IA        | Ausente                     | Input "Pergunte algo..."           |
-| Card bottom direito         | Resumo de dados / histórico | Conquistas / badges                |
-| Tips em cards de meta       | Ausentes                    | Card colorido com dica contextual  |
-| Page title                  | Cor normal (`--t1`)         | Gradiente esmeralda → azul         |
-| Tom                         | Preciso, analítico, neutro  | Motivacional, pessoal, celebrativo |
+| Elemento | Comportamento padrão |
+|----------|----------------------|
+| Header mobile | Saudação + streak quando aplicável |
+| Life Sync Score | Visível no Panorama |
+| Insight IA | Cards narrativos nos módulos (`JornadaInsight`) |
+| Gamificação | XP, badges e conquistas ativos |
+| Tom | Motivacional + dados — sem alternar "modo analítico" |
 
-### Como implementar no CSS
+**Exceção:** `/tempo/foco` é a tela de **sessão Pomodoro** (timer), não um modo global do app.
 
-```css
-/* Elementos exclusivos do Jornada — usar CSS puro, nunca JS */
-.jornada-only { display: none; }
-body.jornada .jornada-only { display: flex; } /* ou block, grid */
-
-/* Elementos exclusivos do Foco */
-.foco-only { display: block; }
-body.jornada .foco-only { display: none; }
-```
+**Specs antigas** que citam `.jornada-only` ou Foco vs Jornada estão desatualizadas — ver `docs/Especificacoes funcionais/README.md`.
 
 ---
 
@@ -420,11 +397,15 @@ body.jornada .foco-only { display: none; }
 | 💰    | Receitas              | 🔥    | Streak              |
 | 📤    | Despesas              | 🏆    | Conquistas          |
 | 🔄    | Recorrentes           | 💡    | IA Insight          |
-| ⭐    | Score / Destaque      | 🌱    | Jornada (modo)      |
+| ⭐    | Score / Destaque      | ✨    | Gamificação / XP    |
 
 ---
 
 ## 11. Guia rápido para criar nova tela
+
+No app, siga a anatomia documentada em `CLAUDE.md` (Server Components, `SLCard`, `KpiCard`, tokens `--sl-*`).
+
+Para protótipo HTML standalone (raro):
 
 ```html
 <!DOCTYPE html>
@@ -433,97 +414,36 @@ body.jornada .foco-only { display: none; }
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SyncLife — [Nome da Tela]</title>
-  <!-- 1. Fontes -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800
-    &family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600
-    &family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <!-- 2. Tokens -->
   <link rel="stylesheet" href="synclife-tokens.css">
-  <style>
-    /* CSS específico desta tela aqui */
-  </style>
 </head>
 <body>
-  <!-- 3. Controles de dev (remover em produção) -->
-  <div class="controls">...</div>
-
   <div class="page">
-    <!-- ① Topbar -->
-    <div class="topbar">
-      <div class="page-title">🎯 Nome da Tela</div>
-      <div class="topbar-spacer"></div>
-      <!-- Pills / filtros -->
-      <button class="btn btn-primary">+ Nova Ação</button>
-    </div>
-
-    <!-- ② Summary Strip -->
-    <div class="sum-strip">
-      <div class="sum-card d1">...</div>
-      <div class="sum-card d2">...</div>
-      <div class="sum-card d3">...</div>
-      <div class="sum-card d4">...</div>
-    </div>
-
-    <!-- ③ Jornada Insight (CSS controla visibilidade) -->
-    <div class="jornada-insight">
-      <div class="ji-icon">💡</div>
-      <div class="ji-text">Texto narrativo da IA...</div>
-    </div>
-
-    <!-- ④ Conteúdo principal -->
-    <div class="main-grid">
-      <div style="display:flex;flex-direction:column;gap:16px">
-        <div class="card d1">...</div>
-        <div class="card d2">...</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:16px">
-        <div class="card d3">...</div>
-      </div>
-    </div>
-
-    <!-- ⑤ Bottom Grid -->
-    <div class="bottom-grid">
-      <div class="card d1">...</div>
-      <div class="card d2">...</div>
-      <!-- Foco: resumo / Jornada: conquistas -->
-      <div class="card d3">
-        <div class="foco-only">Histórico...</div>
-        <div class="jornada-only">Conquistas...</div>
-      </div>
-    </div>
+    <div class="topbar">...</div>
+    <div class="sum-strip">...</div>
+    <div class="jornada-insight">...</div>
+    <div class="main-grid">...</div>
+    <div class="bottom-grid">...</div>
   </div>
-
-  <script>
-    function setMode(m) {
-      document.body.classList.toggle('jornada', m === 'jornada');
-    }
-    function setTheme(t) {
-      document.body.classList.toggle('light', t === 'light');
-    }
-  </script>
 </body>
 </html>
 ```
+
+Preferir sempre implementar direto em `web/src/app/(app)/` com Tailwind + componentes base.
 
 ---
 
 ## 12. Checklist antes de publicar nova tela
 
 - [ ] Fontes Syne, DM Sans e DM Mono carregando
-- [ ] `synclife-tokens.css` importado
-- [ ] Funciona nos 4 modos: Dark Foco, Dark Jornada, Light Foco, Light Jornada
+- [ ] Tokens `--sl-*` / classes Tailwind do design system
+- [ ] Testado em ao menos 1 tema dark + 1 light (`data-theme`)
 - [ ] Estrutura de tela correta: topbar → sum-strip → insight → conteúdo → bottom-grid
 - [ ] Valores monetários e % usam `DM Mono`
-- [ ] Page title em gradiente no Jornada
-- [ ] `.jornada-insight` aparece só em `body.jornada`
-- [ ] Bottom card muda (dados vs conquistas) por modo
-- [ ] Cards entram com `fadeUp` e delays `.d1`–`.d5`
-- [ ] Barras de progresso animam com `transition: width 1s cubic-bezier(.4,0,.2,1)`
-- [ ] Cores de barra seguem regra: ≤70% verde, 70–85% amarelo, >85% vermelho, metas gradiente
-- [ ] Hover de card: `border-color: var(--border-h)`
-- [ ] Hover de lista: background `var(--s2)` + margin negativa
-- [ ] Responsivo: colapsa para 1 coluna em `max-width: 900px`
+- [ ] Títulos de página em `font-[Syne] font-extrabold`
+- [ ] Cards entram com `sl-fade-up` e delays `sl-delay-1`–`sl-delay-5`
+- [ ] Barras de progresso seguem regra: ≤70% verde, 70–85% amarelo, >85% vermelho, metas gradiente
+- [ ] Hover de card: `border-[var(--sl-border-h)]`
+- [ ] Responsivo: colapsa para 1 coluna em `max-lg` / `max-sm` conforme anatomia da tela
 
 ---
 

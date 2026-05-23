@@ -1,8 +1,11 @@
 # Documento Funcional SyncLife
 
-**Versão:** 1.1
-**Data:** Março 2026
+**Versão:** 1.1  
+**Data:** Março 2026  
 **Objetivo:** Detalhamento passo a passo de todas as funcionalidades, requisitos de dados dos gráficos, processos E2E e diferenças entre desktop e mobile.
+
+> **Nota (mai/2026):** Referências a Modo Foco/Jornada estão **obsoletas** — ver experiência unificada em [`Especificacoes funcionais/README.md`](./Especificacoes%20funcionais/README.md).
+
 **Atualização 1.1:** Adicionada seção 18 com 12 features avançadas (SW Update Toast, Import Extrato Nav, Share Conquistas, AI Insights, PDF Cross-Module, Push Notifications, Weekly Digest, CI/CD, Coach IA, Cardápio Wizard, Google Calendar Sync, PRO Gate Audit).
 
 ---

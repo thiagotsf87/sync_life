@@ -19,6 +19,11 @@ export const EXPENSE_CATEGORIES: DefaultCategory[] = [
   { id: 'vestuario', name: 'Vestuário', icon: '👔', color: '#ec4899', type: 'expense' },
   { id: 'compras', name: 'Compras', icon: '🛍️', color: '#f472b6', type: 'expense' },
   { id: 'servicos', name: 'Serviços', icon: '🔧', color: '#f59e0b', type: 'expense' },
+  { id: 'impostos', name: 'Impostos', icon: '🏛️', color: '#ef4444', type: 'expense' },
+  { id: 'diarista', name: 'Diarista/Domésticos', icon: '🧹', color: '#8b5cf6', type: 'expense' },
+  { id: 'investimentos-despesa', name: 'Investimentos', icon: '📊', color: '#14b8a6', type: 'expense' },
+  { id: 'pets', name: 'Pets', icon: '🐾', color: '#f97316', type: 'expense' },
+  { id: 'assinaturas', name: 'Assinaturas', icon: '📱', color: '#3b82f6', type: 'expense' },
   { id: 'outros-despesa', name: 'Outros', icon: '📦', color: '#64748b', type: 'expense' },
 ]
 

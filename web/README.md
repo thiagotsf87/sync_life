@@ -1,124 +1,70 @@
-# SyncLife - Controle Financeiro Inteligente
+# SyncLife — App Web
 
-Sua vida em sincronia. Organize, evolua, conquiste.
+Aplicação Next.js do SyncLife. Documentação completa do projeto: [`../README.md`](../README.md).
 
-## 🚀 Stack Tecnológica
+---
 
-- **Framework**: Next.js 14+ (App Router)
-- **Linguagem**: TypeScript
-- **Estilização**: TailwindCSS + shadcn/ui
-- **Backend**: Supabase (Auth + PostgreSQL)
-- **Deploy**: Vercel
-
-## 📋 Pré-requisitos
-
-- Node.js 18+
-- npm ou pnpm
-- Conta no [Supabase](https://supabase.com)
-
-## 🛠️ Configuração
-
-### 1. Instalar dependências
+## Quick start
 
 ```bash
 cd web
 npm install
-```
-
-### 2. Configurar Supabase
-
-1. Crie um novo projeto no [Supabase](https://supabase.com)
-2. Vá em **Project Settings > API** e copie:
-   - Project URL
-   - anon public key
-
-3. Copie o arquivo de exemplo e configure:
-
-```bash
 cp .env.example .env.local
-```
+# Preencher NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-4. Edite `.env.local` com suas credenciais:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-anon-key
-```
-
-### 3. Configurar o banco de dados
-
-1. No Supabase, vá em **SQL Editor**
-2. Execute o conteúdo do arquivo `supabase/schema.sql`
-
-### 4. Configurar autenticação
-
-1. No Supabase, vá em **Authentication > Providers > Email**
-2. Para **desenvolvimento/testes**: desmarque **"Confirm email"** para permitir login sem confirmar e-mail
-3. (Opcional) Configure **Google OAuth**:
-   - Crie credenciais no [Google Cloud Console](https://console.cloud.google.com)
-   - Adicione as credenciais no Supabase
-
-## 🏃 Executar localmente
-
-```bash
 npm run dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000)
+Abra [http://localhost:3005](http://localhost:3005) (porta definida em `package.json`).
 
-## 🧪 Testes E2E (Playwright)
+Atalho Windows: [`INICIAR-SYNCLIFE.bat`](./INICIAR-SYNCLIFE.bat)
 
-- **Sem login:** `npm run test:e2e:auth` — Landing, Login (erro), Cadastro (form), Esqueceu senha, redirecionamento de rotas protegidas.
-- **Com login:** desmarque "Confirm email" no Supabase (Authentication > Email). Defina `PLAYWRIGHT_TEST_EMAIL` e `PLAYWRIGHT_TEST_PASSWORD` no ambiente e rode `npm run test:e2e` para incluir Dashboard, Transações, Nova transação e Configurações.
+---
 
-## 🚀 Deploy na Vercel
+## Scripts
 
-1. Faça push do código para o GitHub
-2. Importe o projeto na [Vercel](https://vercel.com)
-3. Configure as variáveis de ambiente:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-4. Deploy!
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Desenvolvimento (porta 3005) |
+| `npm run build` | Build de produção |
+| `npm run start` | Servidor de produção |
+| `npm run lint` | ESLint |
+| `npm run test:unit` | Vitest |
+| `npm run test:e2e` | Playwright (requer credenciais de teste) |
+| `npm run test:e2e:auth` | E2E sem login |
 
-## 📁 Estrutura do Projeto
+---
+
+## Estrutura
 
 ```
 src/
-├── app/                      # Next.js App Router
-│   ├── (auth)/               # Rotas de autenticação
-│   │   ├── login/
-│   │   ├── cadastro/
-│   │   └── esqueceu-senha/
-│   ├── (app)/                # Rotas protegidas
-│   │   ├── dashboard/
-│   │   ├── transacoes/
-│   │   └── configuracoes/
-│   └── auth/callback/        # OAuth callback
-├── components/
-│   ├── ui/                   # shadcn/ui
-│   ├── layout/               # Sidebar, Header
-│   ├── dashboard/            # Componentes do dashboard
-│   └── transactions/         # Componentes de transações
-├── lib/
-│   ├── supabase/             # Cliente Supabase
-│   ├── utils.ts
-│   └── format.ts             # Formatação
-├── types/                    # TypeScript types
-├── constants/                # Categorias, etc.
-└── hooks/                    # React hooks
+├── app/           # App Router — (app), (auth), api/
+├── components/    # UI por módulo + shell
+├── hooks/         # Data fetching e lógica de domínio
+├── lib/           # Supabase, engines, utilitários
+├── stores/        # Zustand (shell)
+└── types/         # TypeScript
+
+supabase/migrations/   # Schema SQL (25 migrations)
+e2e/                   # Testes Playwright
+public/                # PWA (manifest, service worker)
 ```
 
-## ✨ Funcionalidades (MVP v1)
+---
 
-- [x] Autenticação (Email/Senha + Google)
-- [x] Dashboard com resumo financeiro
-- [x] Gráficos de receitas vs despesas
-- [x] Gerenciamento de transações (CRUD)
-- [x] Filtros por tipo, categoria e data
-- [x] Categorias pré-definidas
-- [x] Layout responsivo (mobile/desktop)
-- [x] Tema dark mode
+## Variáveis de ambiente
 
-## 📄 Licença
+Ver [`.env.example`](./.env.example). Mínimo para rodar localmente:
 
-Projeto privado - © 2026 SyncLife
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+Opcionais: chaves de IA (`GOOGLE_GENERATIVE_AI_API_KEY`, `GROQ_API_KEY`), Stripe, Sentry, Upstash.
+
+---
+
+## Documentação
+
+- [`../CLAUDE.md`](../CLAUDE.md) — guia de desenvolvimento
+- [`../docs/README.md`](../docs/README.md) — índice de specs e features

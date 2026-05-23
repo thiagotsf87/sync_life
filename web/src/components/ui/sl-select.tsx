@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { ChevronDown, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -18,6 +19,8 @@ interface SLSelectProps {
   label?: string
   className?: string
   disabled?: boolean
+  /** Render dropdown in portal — use when inside scroll containers to avoid clipping */
+  portal?: boolean
 }
 
 export function SLSelect({
@@ -28,25 +31,52 @@ export function SLSelect({
   label,
   className,
   disabled = false,
+  portal = false,
 }: SLSelectProps) {
   const [open, setOpen] = useState(false)
   const [highlightIdx, setHighlightIdx] = useState(-1)
+  const [dropdownRect, setDropdownRect] = useState<{ top: number; left: number; width: number } | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
   const selected = options.find(o => o.value === value)
 
+  // Update dropdown position when opening (for portal) — useLayoutEffect to avoid flash
+  useLayoutEffect(() => {
+    if (!open || !portal) {
+      if (!open) setDropdownRect(null)
+      return
+    }
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const vh = window.innerHeight
+    const vw = window.innerWidth
+    const padding = 8
+    const listHeight = Math.min(240, options.length * 36 + 16)
+    const listWidth = Math.max(rect.width, 200) // min 200px para labels completos
+    const spaceBelow = vh - rect.bottom - padding
+    const spaceAbove = rect.top - padding
+    const openDown = spaceBelow >= listHeight || spaceBelow >= spaceAbove
+    let top = openDown ? rect.bottom + 4 : rect.top - listHeight - 4
+    let left = rect.left
+    // Clamp to viewport para evitar corte
+    top = Math.max(padding, Math.min(top, vh - listHeight - padding))
+    left = Math.max(padding, Math.min(left, vw - listWidth - padding))
+    setDropdownRect({ top, left, width: listWidth })
+  }, [open, portal, options.length])
+
   // Close on outside click
   useEffect(() => {
     if (!open) return
     function handleClick(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+      const target = e.target as Node
+      const inTrigger = containerRef.current?.contains(target)
+      const inList = portal ? listRef.current?.contains(target) : false
+      if (!inTrigger && !inList) setOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
-  }, [open])
+  }, [open, portal])
 
   // Scroll highlighted item into view
   useEffect(() => {
@@ -127,7 +157,51 @@ export function SLSelect({
         />
       </button>
 
-      {open && (
+      {open && (portal && dropdownRect ? (
+        createPortal(
+          <div
+            ref={listRef}
+            role="listbox"
+            className={cn(
+              'fixed z-[9999] rounded-[10px] border border-[var(--sl-border)]',
+              'bg-[var(--sl-s1)] shadow-lg max-h-[240px] overflow-y-auto',
+              'py-1',
+            )}
+            style={{
+              top: dropdownRect.top,
+              left: dropdownRect.left,
+              width: dropdownRect.width,
+            }}
+          >
+            {options.map((opt, i) => (
+              <div
+                key={opt.value}
+                data-sl-option
+                role="option"
+                aria-selected={opt.value === value}
+                className={cn(
+                  'flex items-center gap-2 px-3 py-2 text-[13px] cursor-pointer transition-colors',
+                  i === highlightIdx && 'bg-[var(--sl-s2)]',
+                  opt.value === value ? 'text-[var(--sl-t1)] font-medium' : 'text-[var(--sl-t2)]',
+                )}
+                onMouseEnter={() => setHighlightIdx(i)}
+                onClick={() => {
+                  onChange(opt.value)
+                  setOpen(false)
+                }}
+              >
+                {opt.icon && <span className="text-[14px] shrink-0">{opt.icon}</span>}
+                <span className="flex-1 min-w-0 break-words">{opt.label}</span>
+                {opt.value === value && <Check size={14} className="text-[#10b981] shrink-0" />}
+              </div>
+            ))}
+            {options.length === 0 && (
+              <div className="px-3 py-2 text-[12px] text-[var(--sl-t3)]">Nenhuma opção</div>
+            )}
+          </div>,
+          document.body,
+        )
+      ) : !portal && (
         <div
           ref={listRef}
           role="listbox"
@@ -154,8 +228,8 @@ export function SLSelect({
                 setOpen(false)
               }}
             >
-              {opt.icon && <span className="text-[14px]">{opt.icon}</span>}
-              <span className="flex-1 truncate">{opt.label}</span>
+              {opt.icon && <span className="text-[14px] shrink-0">{opt.icon}</span>}
+              <span className="flex-1 min-w-0 break-words">{opt.label}</span>
               {opt.value === value && <Check size={14} className="text-[#10b981] shrink-0" />}
             </div>
           ))}
@@ -163,7 +237,7 @@ export function SLSelect({
             <div className="px-3 py-2 text-[12px] text-[var(--sl-t3)]">Nenhuma opção</div>
           )}
         </div>
-      )}
+      ))}
     </div>
   )
 }

@@ -7,13 +7,19 @@ Documentação de planos e cenários de testes E2E.
 | Documento | Descrição |
 |-----------|-----------|
 | [E2E-TEST-SCENARIOS.md](./E2E-TEST-SCENARIOS.md) | Plano consolidado com todos os cenários por módulo |
-| [panorama-plan.md](./panorama-plan.md) | Cenários do módulo Panorama |
-| [financas-plan.md](./financas-plan.md) | Cenários do módulo Finanças |
 
-## Estrutura dos testes
+## Implementação
 
-Os testes são implementados em `web/e2e/` com Playwright. Consulte o documento principal para o mapeamento completo Spec → Cenário.
+Os testes ficam em `web/e2e/` (Playwright). Consulte o documento principal para o mapeamento Spec → Cenário.
 
-## Status
+## Comandos
 
-**Não executar cenários** até validação das implementações em desenvolvimento.
+```bash
+cd web
+npm run test:e2e:auth   # sem login
+npm run test:e2e        # suite completa (requer PLAYWRIGHT_TEST_EMAIL/PASSWORD)
+```
+
+## Nota histórica
+
+Cenários que validavam Modo Foco/Jornada foram substituídos por testes de experiência unificada (ver `shell-navigation.spec.ts`).

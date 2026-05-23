@@ -16,7 +16,7 @@ export interface RawTransaction {
   id: string
   description: string
   amount: number
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'transfer'
   date: string
   payment_method: string | null
   notes: string | null
@@ -471,7 +471,7 @@ export function useRelatorios(): UseRelatoriosReturn {
       t.date,
       `"${t.description}"`,
       `"${t.categories?.name ?? ''}"`,
-      t.type === 'income' ? 'Receita' : 'Despesa',
+      t.type === 'income' ? 'Receita' : t.type === 'transfer' ? 'Transferência' : 'Despesa',
       t.amount.toFixed(2).replace('.', ','),
       t.payment_method ?? '',
       `"${t.notes ?? ''}"`,

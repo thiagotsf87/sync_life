@@ -54,7 +54,7 @@ interface RecorrenteModalProps {
 export function RecorrenteModal({
   open, mode, recorrente, categories, onClose, onSave,
 }: RecorrenteModalProps) {
-  const [type, setType] = useState<'income' | 'expense'>('expense')
+  const [type, setType] = useState<'income' | 'expense' | 'transfer'>('expense')
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
   const [frequency, setFrequency] = useState<Frequency>('monthly')

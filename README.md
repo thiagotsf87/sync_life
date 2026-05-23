@@ -2,7 +2,7 @@
 
 > Sua vida inteira, organizada em um só lugar.
 
-SyncLife é uma plataforma web (PWA) que centraliza a gestão de todos os aspectos da vida pessoal — finanças, metas, tempo, saúde, carreira, patrimônio e experiências — em uma interface unificada com design system próprio e 12 temas visuais.
+SyncLife é uma plataforma web (PWA) que centraliza a gestão de todos os aspectos da vida pessoal — finanças, metas, tempo, saúde, carreira, patrimônio e experiências — em uma interface unificada com design system próprio e **12 temas visuais**.
 
 ---
 
@@ -30,13 +30,21 @@ SyncLife é uma plataforma web (PWA) que centraliza a gestão de todos os aspect
 | Finanças | `/financas` | Transações, orçamentos, recorrentes, planejamento, calendário, relatórios |
 | Futuro | `/futuro` | Objetivos de vida com progresso e milestones |
 | Tempo | `/tempo` | Agenda, calendário semanal/mensal, blocos de foco, review |
-| Corpo | `/corpo` | Atividades, peso/medidas, cardápio IA, saúde preventiva, coach IA |
+| Corpo | `/corpo` | Atividades, peso/medidas, cardápio IA, saúde preventiva |
 | Mente | `/mente` | Trilhas de aprendizado, timer, sessões, biblioteca |
 | Patrimônio | `/patrimonio` | Carteira de investimentos, proventos, evolução, simulador IF |
 | Carreira | `/carreira` | Perfil profissional, roadmap, habilidades, histórico |
 | Experiências | `/experiencias` | Viagens, passaporte, memórias, bucket list, assistente IA |
 | Conquistas | `/conquistas` | Badges, ranking, sistema de gamificação |
 | Configurações | `/configuracoes` | Perfil, aparência (12 temas), notificações, categorias, integrações, plano |
+
+Coach IA cross-module: `/coach`
+
+---
+
+## Experiência unificada
+
+Desde mar/2026 o app **não possui** Modo Foco / Modo Jornada. Gamificação, insights e labels narrativos fazem parte da experiência padrão para todos os usuários. Detalhes: [`docs/Especificacoes funcionais/README.md`](docs/Especificacoes%20funcionais/README.md).
 
 ---
 
@@ -63,21 +71,18 @@ SyncLife é uma plataforma web (PWA) que centraliza a gestão de todos os aspect
 ## Quick Start
 
 ```bash
-# Instalar dependências
 cd web
 npm install
 
-# Configurar variáveis de ambiente
 cp .env.example .env.local
-# Preencher: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
-#            GOOGLE_GENERATIVE_AI_API_KEY, GROQ_API_KEY
+# Preencher: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
+# Opcional: GOOGLE_GENERATIVE_AI_API_KEY, GROQ_API_KEY
 
-# Desenvolvimento
 npm run dev
-
-# Build
-npm run build
+# → http://localhost:3005
 ```
+
+Windows: execute `web/INICIAR-SYNCLIFE.bat`
 
 ---
 
@@ -89,17 +94,18 @@ web/
 │   ├── app/
 │   │   ├── (app)/          ← telas autenticadas (11 módulos)
 │   │   ├── (auth)/         ← login, cadastro, forgot-password
-│   │   ├── api/            ← API routes (IA + cotações)
+│   │   ├── api/            ← API routes (IA + cotações + push + cron)
 │   │   └── globals.css     ← design tokens + temas
 │   ├── components/
 │   │   ├── ui/             ← shadcn/ui + componentes base SyncLife
 │   │   └── [módulo]/       ← componentes específicos por módulo
-│   ├── hooks/              ← 29 hooks customizados
+│   ├── hooks/              ← hooks customizados
 │   ├── lib/                ← utilitários, Supabase client, engines
 │   ├── stores/             ← Zustand stores
 │   └── types/              ← TypeScript types
 ├── supabase/
-│   └── migrations/         ← 19 migrations SQL
+│   └── migrations/         ← 25 migrations SQL
+├── e2e/                    ← testes Playwright
 └── public/
     ├── manifest.json       ← PWA manifest
     └── sw.js               ← Service Worker
@@ -111,10 +117,11 @@ web/
 
 | Documento | Descrição |
 |-----------|-----------|
-| `CLAUDE.md` | Guia de desenvolvimento, design system, convenções |
-| `DESIGN-SYSTEM.md` | Tokens, cores, tipografia, componentes |
-| `docs/SPEC-FUNCIONAL-*.md` | Specs funcionais por módulo (6 documentos) |
-| `docs/PENDENCIAS-REGRAS-NEGOCIO.md` | Backlog de 199 regras de negócio auditadas |
+| [`CLAUDE.md`](CLAUDE.md) | Guia de desenvolvimento, design system, convenções |
+| [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) | Tokens, cores, tipografia, componentes |
+| [`docs/README.md`](docs/README.md) | Índice completo de specs, features e E2E |
+| [`docs/AUDITORIA-COMPLETA-2026-03.md`](docs/AUDITORIA-COMPLETA-2026-03.md) | Auditoria de mar/2026 (referência histórica) |
+| [`web/README.md`](web/README.md) | Quick start focado no app Next.js |
 
 ---
 
@@ -124,4 +131,4 @@ Projeto privado. Todos os direitos reservados.
 
 ---
 
-*Última atualização: Março 2026*
+*Última atualização: maio 2026*

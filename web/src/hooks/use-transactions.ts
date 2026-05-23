@@ -12,7 +12,7 @@ import { addXP } from '@/hooks/use-xp'
 export interface Transaction {
   id: string
   amount: number
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'transfer'
   description: string
   date: string
   payment_method: string
@@ -26,20 +26,24 @@ export interface Transaction {
     icon: string
     color: string
   } | null
+  account_from?: { id: string; name: string; icon: string; color: string } | null
+  account_to?: { id: string; name: string; icon: string; color: string } | null
 }
 
 export interface TransacaoFormData {
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'transfer'
   description: string
   amount: number
   category_id: string
   date: string
   payment_method: 'pix' | 'credit' | 'debit' | 'cash' | 'transfer' | 'boleto'
   notes?: string
+  account_from_id?: string
+  account_to_id?: string
 }
 
 export type SortOption = 'newest' | 'oldest' | 'highest' | 'lowest'
-export type TypeFilter = 'all' | 'income' | 'expense' | 'recurring'
+export type TypeFilter = 'all' | 'income' | 'expense' | 'transfer' | 'recurring'
 
 interface UseTransactionsOptions {
   month: number
@@ -94,12 +98,14 @@ async function fetchTransactions(
   const startDate = `${options.year}-${monthStr}-01`
   const endDate = new Date(options.year, options.month, 0).toISOString().split('T')[0]
 
-  let query = supabase
+  let query = (supabase as any)
     .from('transactions')
     .select(`
       id, amount, type, description, date,
       payment_method, notes, is_future, recurring_transaction_id, created_at,
-      category:categories(id, name, icon, color)
+      category:categories(id, name, icon, color),
+      account_from:user_accounts!account_from_id(id, name, icon, color),
+      account_to:user_accounts!account_to_id(id, name, icon, color)
     `, { count: 'exact' })
     .eq('user_id', user.id)
     .gte('date', startDate)
@@ -107,6 +113,7 @@ async function fetchTransactions(
 
   if (options.type === 'income')    query = query.eq('type', 'income')
   if (options.type === 'expense')   query = query.eq('type', 'expense')
+  if (options.type === 'transfer')  query = query.eq('type', 'transfer')
   if (options.type === 'recurring') query = query.not('recurring_transaction_id', 'is', null)
 
   if (debouncedSearch) query = query.ilike('description', `%${debouncedSearch}%`)
@@ -169,11 +176,12 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Não autenticado')
 
-      const { data: created, error: err } = await supabase
+      const sb = supabase as any
+      const { data: created, error: err } = await sb
         .from('transactions')
         .insert({
           user_id: user.id,
-          category_id: formData.category_id,
+          category_id: formData.category_id || null,
           amount: formData.amount,
           type: formData.type,
           description: formData.description,
@@ -182,8 +190,13 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
           notes: formData.notes ?? null,
           is_future: isDateInFuture(formData.date),
           recurring_transaction_id: null,
-        } as any)
-        .select('id, amount, type, description, date, payment_method, notes, is_future, recurring_transaction_id, created_at, category:categories(id, name, icon, color)')
+          account_from_id: formData.account_from_id ?? null,
+          account_to_id: formData.account_to_id ?? null,
+        })
+        .select(`id, amount, type, description, date, payment_method, notes, is_future, recurring_transaction_id, created_at,
+          category:categories(id, name, icon, color),
+          account_from:user_accounts!account_from_id(id, name, icon, color),
+          account_to:user_accounts!account_to_id(id, name, icon, color)`)
         .single()
 
       if (err) throw new Error(err.message)
@@ -214,6 +227,8 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
       }
       if (formData.payment_method !== undefined) updatePayload.payment_method = formData.payment_method
       if ('notes' in formData) updatePayload.notes = formData.notes ?? null
+      if (formData.account_from_id !== undefined) updatePayload.account_from_id = formData.account_from_id || null
+      if (formData.account_to_id !== undefined) updatePayload.account_to_id = formData.account_to_id || null
 
       const sb = supabase as any
       const { data: updated, error: err } = await sb
@@ -221,7 +236,10 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
         .update(updatePayload)
         .eq('id', id)
         .eq('user_id', user.id)
-        .select('id, amount, type, description, date, payment_method, notes, is_future, recurring_transaction_id, created_at, category:categories(id, name, icon, color)')
+        .select(`id, amount, type, description, date, payment_method, notes, is_future, recurring_transaction_id, created_at,
+          category:categories(id, name, icon, color),
+          account_from:user_accounts!account_from_id(id, name, icon, color),
+          account_to:user_accounts!account_to_id(id, name, icon, color)`)
         .single()
 
       if (err) throw new Error(err.message)
@@ -306,7 +324,7 @@ export function groupByDate(transactions: Transaction[]): GroupedTransactions[] 
   const result = Array.from(groups.entries()).map(([date, txns]) => ({
     date,
     transactions: txns,
-    subtotal: txns.reduce((sum, t) => sum + (t.type === 'income' ? t.amount : -t.amount), 0),
+    subtotal: txns.reduce((sum, t) => t.type === 'transfer' ? sum : sum + (t.type === 'income' ? t.amount : -t.amount), 0),
     runningBalance: 0,
   }))
 

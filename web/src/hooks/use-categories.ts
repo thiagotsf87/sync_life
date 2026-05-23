@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 export interface Category {
@@ -17,21 +17,29 @@ interface UseCategoriesReturn {
   categories: Category[]
   isLoading: boolean
   error: Error | null
+  refetch: () => void
 }
 
 // Module-level cache to avoid repeated fetches during session
 let cachedCategories: Category[] | null = null
+
+/** Invalidate the module-level cache so next useCategories() call re-fetches */
+export function invalidateCategoriesCache() {
+  cachedCategories = null
+}
 
 export function useCategories(): UseCategoriesReturn {
   const [categories, setCategories] = useState<Category[]>(cachedCategories ?? [])
   const [isLoading, setIsLoading] = useState(cachedCategories === null)
   const [error, setError] = useState<Error | null>(null)
   const cancelled = useRef(false)
+  const [fetchKey, setFetchKey] = useState(0)
 
   useEffect(() => {
-    if (cachedCategories !== null) return
+    if (cachedCategories !== null && fetchKey === 0) return
 
     cancelled.current = false
+    setIsLoading(true)
     const supabase = createClient()
 
     async function load() {
@@ -58,7 +66,12 @@ export function useCategories(): UseCategoriesReturn {
 
     load()
     return () => { cancelled.current = true }
+  }, [fetchKey])
+
+  const refetch = useCallback(() => {
+    cachedCategories = null
+    setFetchKey(k => k + 1)
   }, [])
 
-  return { categories, isLoading, error }
+  return { categories, isLoading, error, refetch }
 }

@@ -108,11 +108,9 @@
 }
 
 /* ══════════════════════════════════════════════════════
-   2. TEMAS
-   body              = Dark Foco   (padrão)
-   body.jornada      = Dark Jornada
-   body.light        = Light Foco
-   body.light.jornada= Light Jornada
+   2. TEMAS (legado HTML standalone)
+   Preferir web/src/styles/themes.css (12 temas via data-theme).
+   body.jornada / body.light.jornada — DEPRECATED (modo dual removido mar/2026)
 ══════════════════════════════════════════════════════ */
 body.jornada {
   --bg: #020d08; --s1: #061410; --s2: #0b1e18; --s3: #112b22;

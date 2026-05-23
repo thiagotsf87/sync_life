@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { X, ChevronDown, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useCategories } from '@/hooks/use-categories'
+import { useAccounts } from '@/hooks/use-accounts'
 import { cn } from '@/lib/utils'
 
 // ── Types ───────────────────────────────────────────────────────────────────
@@ -76,12 +77,16 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [accountFromId, setAccountFromId] = useState<string | null>(null)
+  const [accountToId, setAccountToId] = useState<string | null>(null)
+  const [showAccountPicker, setShowAccountPicker] = useState<'from' | 'to' | null>(null)
 
   const { categories } = useCategories()
+  const { accounts } = useAccounts()
 
-  const filteredCats = categories.filter(c =>
-    type === 'expense' ? c.type === 'expense' : c.type === 'income'
-  )
+  const filteredCats = type === 'transfer'
+    ? categories
+    : categories.filter(c => c.type === type)
 
   // IA: smart category suggestion based on description keywords
   const suggestedCat = (() => {
@@ -151,10 +156,32 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
     setShowCatPicker(false)
     setError(null)
     setSuccess(false)
+    setAccountFromId(null)
+    setAccountToId(null)
+    setShowAccountPicker(null)
   }, [])
 
+  const isTransfer = type === 'transfer'
+  const accountFrom = accounts.find(a => a.id === accountFromId)
+  const accountTo = accounts.find(a => a.id === accountToId)
+  const transferAutoDesc = accountFrom && accountTo ? `${accountFrom.name} → ${accountTo.name}` : ''
+
   const handleConfirm = useCallback(async () => {
-    if (numericValue <= 0 || !selectedCat || saving) return
+    if (numericValue <= 0 || saving) return
+
+    // Validate depending on type
+    if (isTransfer) {
+      if (!accountFromId || !accountToId) {
+        setError('Selecione conta de origem e destino')
+        return
+      }
+      if (accountFromId === accountToId) {
+        setError('Contas devem ser diferentes')
+        return
+      }
+    } else {
+      if (!selectedCat) return
+    }
 
     setSaving(true)
     setError(null)
@@ -169,17 +196,23 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
       const txDate = new Date(date + 'T00:00:00')
       const isFuture = txDate > today
 
+      const finalDescription = isTransfer
+        ? (description.trim() || transferAutoDesc || 'Transferência')
+        : (description.trim() || selectedCat?.name || '')
+
       const { error: err } = await sb.from('transactions').insert({
         user_id: user.id,
-        category_id: selectedCat.id,
+        category_id: isTransfer ? null : selectedCat?.id,
         amount: numericValue,
-        type: type === 'transfer' ? 'expense' : type,
-        description: description.trim() || selectedCat.name,
+        type: type,
+        description: finalDescription,
         date,
-        payment_method: paymentMethod,
+        payment_method: isTransfer ? 'transfer' : paymentMethod,
         notes: null,
         is_future: isFuture,
         recurring_transaction_id: null,
+        account_from_id: isTransfer ? accountFromId : null,
+        account_to_id: isTransfer ? accountToId : null,
       })
 
       if (err) throw new Error(err.message)
@@ -194,7 +227,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
     } finally {
       setSaving(false)
     }
-  }, [numericValue, selectedCat, saving, date, description, paymentMethod, type, resetState, onSuccess])
+  }, [numericValue, selectedCat, saving, date, description, paymentMethod, type, resetState, onSuccess, isTransfer, accountFromId, accountToId, transferAutoDesc])
 
   const typeStyle = TYPE_STYLES[type]
 
@@ -271,51 +304,123 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
             </div>
           </div>
 
-          {/* AI Category */}
-          <div className="flex items-center justify-center gap-2 pb-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => setShowCatPicker(p => !p)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-[20px] bg-[var(--sl-s2)] border border-[var(--sl-border-h)] text-[13px] text-[var(--sl-t1)] transition-colors active:bg-[var(--sl-s3)]"
-            >
-              <span>{selectedCat ? `${selectedCat.icon} ${selectedCat.name}` : '📦 Selecionar'}</span>
-              {suggestedCat && !selectedCategoryId && (
-                <span
-                  className="text-[10px] px-1.5 py-0.5 rounded-[6px] font-medium text-[#10b981]"
-                  style={{ background: 'rgba(16,185,129,0.15)' }}
+          {/* AI Category / Account selectors */}
+          {isTransfer ? (
+            <>
+              {/* Account pills for transfer */}
+              <div className="flex items-center justify-center gap-2 pb-2 shrink-0 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setShowAccountPicker(showAccountPicker === 'from' ? null : 'from')}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-[20px] text-[13px] transition-colors active:bg-[var(--sl-s3)]',
+                    accountFrom
+                      ? 'bg-[var(--sl-s2)] border border-[rgba(0,85,255,0.35)] text-[var(--sl-t1)]'
+                      : 'bg-[var(--sl-s2)] border border-[var(--sl-border-h)] text-[var(--sl-t3)]'
+                  )}
                 >
-                  IA
-                </span>
-              )}
-            </button>
-            <span className="text-[11px] text-[var(--sl-t3)]">Toque para mudar</span>
-          </div>
-
-          {/* Category Picker */}
-          {showCatPicker && (
-            <div className="mx-4 mb-2 px-3 py-2.5 rounded-[12px] bg-[var(--sl-s1)] border border-[var(--sl-border)] max-h-[110px] overflow-y-auto shrink-0">
-              <div className="flex flex-wrap gap-1.5">
-                {filteredCats.length === 0 ? (
-                  <p className="text-[12px] text-[var(--sl-t3)]">Nenhuma categoria disponível</p>
-                ) : (
-                  filteredCats.map(c => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => { setSelectedCategoryId(c.id); setShowCatPicker(false) }}
-                      className={cn(
-                        'flex items-center gap-1 px-2.5 py-1 rounded-[10px] text-[12px] transition-colors',
-                        selectedCat?.id === c.id
-                          ? 'bg-[var(--sl-s3)] text-[var(--sl-t1)] border border-[var(--sl-border-h)]'
-                          : 'bg-[var(--sl-s2)] text-[var(--sl-t2)] border border-[var(--sl-border)]'
-                      )}
-                    >
-                      {c.icon} {c.name}
-                    </button>
-                  ))
-                )}
+                  <span>{accountFrom ? `${accountFrom.icon} ${accountFrom.name}` : '🏦 Origem'}</span>
+                </button>
+                <span className="text-[var(--sl-t3)] text-[14px]">→</span>
+                <button
+                  type="button"
+                  onClick={() => setShowAccountPicker(showAccountPicker === 'to' ? null : 'to')}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-[20px] text-[13px] transition-colors active:bg-[var(--sl-s3)]',
+                    accountTo
+                      ? 'bg-[var(--sl-s2)] border border-[rgba(0,85,255,0.35)] text-[var(--sl-t1)]'
+                      : 'bg-[var(--sl-s2)] border border-[var(--sl-border-h)] text-[var(--sl-t3)]'
+                  )}
+                >
+                  <span>{accountTo ? `${accountTo.icon} ${accountTo.name}` : '🏦 Destino'}</span>
+                </button>
               </div>
-            </div>
+
+              {/* Account picker dropdown */}
+              {showAccountPicker && (
+                <div className="mx-4 mb-2 px-3 py-2.5 rounded-[12px] bg-[var(--sl-s1)] border border-[var(--sl-border)] max-h-[110px] overflow-y-auto shrink-0">
+                  <div className="flex flex-wrap gap-1.5">
+                    {accounts.length === 0 ? (
+                      <p className="text-[12px] text-[var(--sl-t3)]">Nenhuma conta cadastrada. Vá em Configurações &gt; Contas.</p>
+                    ) : (
+                      accounts.map(acc => {
+                        const isExcluded = showAccountPicker === 'from' ? acc.id === accountToId : acc.id === accountFromId
+                        const isSelected = showAccountPicker === 'from' ? acc.id === accountFromId : acc.id === accountToId
+                        return (
+                          <button
+                            key={acc.id}
+                            type="button"
+                            disabled={isExcluded}
+                            onClick={() => {
+                              if (showAccountPicker === 'from') setAccountFromId(acc.id)
+                              else setAccountToId(acc.id)
+                              setShowAccountPicker(null)
+                            }}
+                            className={cn(
+                              'flex items-center gap-1 px-2.5 py-1 rounded-[10px] text-[12px] transition-colors',
+                              isExcluded && 'opacity-40 cursor-not-allowed',
+                              isSelected
+                                ? 'bg-[rgba(0,85,255,0.12)] text-[#0055ff] border border-[rgba(0,85,255,0.3)]'
+                                : 'bg-[var(--sl-s2)] text-[var(--sl-t2)] border border-[var(--sl-border)]'
+                            )}
+                          >
+                            {acc.icon} {acc.name}
+                          </button>
+                        )
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-center gap-2 pb-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowCatPicker(p => !p)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-[20px] bg-[var(--sl-s2)] border border-[var(--sl-border-h)] text-[13px] text-[var(--sl-t1)] transition-colors active:bg-[var(--sl-s3)]"
+                >
+                  <span>{selectedCat ? `${selectedCat.icon} ${selectedCat.name}` : '📦 Selecionar'}</span>
+                  {suggestedCat && !selectedCategoryId && (
+                    <span
+                      className="text-[10px] px-1.5 py-0.5 rounded-[6px] font-medium text-[#10b981]"
+                      style={{ background: 'rgba(16,185,129,0.15)' }}
+                    >
+                      IA
+                    </span>
+                  )}
+                </button>
+                <span className="text-[11px] text-[var(--sl-t3)]">Toque para mudar</span>
+              </div>
+
+              {/* Category Picker */}
+              {showCatPicker && (
+                <div className="mx-4 mb-2 px-3 py-2.5 rounded-[12px] bg-[var(--sl-s1)] border border-[var(--sl-border)] max-h-[110px] overflow-y-auto shrink-0">
+                  <div className="flex flex-wrap gap-1.5">
+                    {filteredCats.length === 0 ? (
+                      <p className="text-[12px] text-[var(--sl-t3)]">Nenhuma categoria disponível</p>
+                    ) : (
+                      filteredCats.map(c => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => { setSelectedCategoryId(c.id); setShowCatPicker(false) }}
+                          className={cn(
+                            'flex items-center gap-1 px-2.5 py-1 rounded-[10px] text-[12px] transition-colors',
+                            selectedCat?.id === c.id
+                              ? 'bg-[var(--sl-s3)] text-[var(--sl-t1)] border border-[var(--sl-border-h)]'
+                              : 'bg-[var(--sl-s2)] text-[var(--sl-t2)] border border-[var(--sl-border)]'
+                          )}
+                        >
+                          {c.icon} {c.name}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Date Picker */}
@@ -414,17 +519,19 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
             <button
               type="button"
               onClick={success ? undefined : handleConfirm}
-              disabled={saving || numericValue <= 0 || !selectedCat}
+              disabled={saving || numericValue <= 0 || (isTransfer ? (!accountFromId || !accountToId) : !selectedCat)}
               className="w-full rounded-[16px] flex items-center justify-center gap-2 font-[Syne] text-[15px] font-bold text-white transition-all disabled:opacity-50 active:brightness-90 shrink-0"
               style={{
                 height: 52,
-                background: success ? '#10b981' : 'linear-gradient(135deg,#10b981,#0055ff)',
+                background: success ? '#10b981' : isTransfer ? '#0055ff' : 'linear-gradient(135deg,#10b981,#0055ff)',
               }}
             >
               {success ? (
                 <><Check size={18} /> Salvo com sucesso!</>
               ) : saving ? (
                 'Salvando...'
+              ) : isTransfer ? (
+                `🔄 Transferir — R$ ${numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
               ) : (
                 `✓ Confirmar — R$ ${numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
               )}

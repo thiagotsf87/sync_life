@@ -1,9 +1,11 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import { Upload, FileSpreadsheet, CheckCircle2, AlertTriangle, ArrowLeft, Loader2, Trash2, FileText, Calendar, Tag } from 'lucide-react'
+import { Upload, FileSpreadsheet, CheckCircle2, AlertTriangle, ArrowLeft, Loader2, Trash2, FileText, Calendar, Tag, Plus } from 'lucide-react'
+import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { useImport, useImportHistory } from '@/hooks/use-import'
+import { InlineCategoryForm } from '@/components/financas/InlineCategoryForm'
 import { SLCard } from '@/components/ui/sl-card'
 import { SLSelect } from '@/components/ui/sl-select'
 import { cn } from '@/lib/utils'
@@ -26,7 +28,7 @@ export default function ImportarPage() {
     duplicateIndices, skippedIndices,
     importProgress, importTotal, importedCount,
     error,
-    categories, categoryAssignments, uncategorizedCount,
+    categories, categoryAssignments, uncategorizedCount, refetchCategories,
     setFile, setColumnMapping, applyMapping,
     toggleSkip, toggleAll,
     setCategoryForTransaction, setCategoryForAll,
@@ -37,6 +39,7 @@ export default function ImportarPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [showCategorize, setShowCategorize] = useState(false)
+  const [showNewCatForm, setShowNewCatForm] = useState<number | 'bulk' | null>(null)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -106,8 +109,17 @@ export default function ImportarPage() {
     : ['Upload', 'Mapeamento', 'Revisão', 'Concluído']
 
   return (
-    <div className="max-w-[800px] mx-auto px-6 py-7 pb-16">
-      {/* Header */}
+    <>
+    {/* Mobile tabs navigation */}
+    <div className="md:hidden">
+      <FinancasMobileShell>
+        <div />
+      </FinancasMobileShell>
+    </div>
+
+    <div className="max-w-[800px] mx-auto px-4 md:px-6 py-4 md:py-7 pb-16">
+      {/* Header — desktop only (mobile uses FinancasMobileShell title) */}
+      <div className="hidden md:block">
       <ModuleHeader
         icon={Upload}
         iconBg="rgba(16,185,129,.08)"
@@ -121,6 +133,7 @@ export default function ImportarPage() {
           Voltar
         </Link>
       </ModuleHeader>
+      </div>
 
       {/* Steps indicator */}
       <div className="flex items-center gap-2 mb-6">
@@ -155,28 +168,32 @@ export default function ImportarPage() {
       {step === 'upload' && (
         <SLCard>
           <div
-            className="border-2 border-dashed border-[var(--sl-border)] rounded-2xl p-12 text-center cursor-pointer transition-colors hover:border-[#10b981]/40 hover:bg-[rgba(16,185,129,0.03)]"
+            className="border-2 border-dashed border-[var(--sl-border)] rounded-2xl p-12 text-center transition-colors hover:border-[#10b981]/40 hover:bg-[rgba(16,185,129,0.03)]"
             onDrop={handleFileDrop}
             onDragOver={e => e.preventDefault()}
-            onClick={() => inputRef.current?.click()}
           >
             <Upload size={40} className="mx-auto mb-3 text-[var(--sl-t3)]" />
             <p className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-1">
               Arraste seu arquivo aqui
             </p>
-            <p className="text-[12px] text-[var(--sl-t3)] mb-3">
-              ou clique para selecionar
+            <p className="text-[12px] text-[var(--sl-t3)] mb-4">
+              ou
             </p>
-            <p className="text-[10px] text-[var(--sl-t3)]">
+            <label className="inline-flex cursor-pointer">
+              <input
+                ref={inputRef}
+                type="file"
+                accept=".csv,.ofx,.qfx,.pdf"
+                onChange={handleFileSelect}
+                className="sr-only"
+              />
+              <span className="inline-block px-6 py-3 rounded-xl bg-[#10b981] text-white text-[14px] font-bold hover:bg-[#0da876] transition-colors select-none">
+                Selecionar arquivo
+              </span>
+            </label>
+            <p className="text-[10px] text-[var(--sl-t3)] mt-4">
               Formatos aceitos: .pdf, .csv, .ofx, .qfx
             </p>
-            <input
-              ref={inputRef}
-              type="file"
-              accept=".csv,.ofx,.qfx,.pdf"
-              className="hidden"
-              onChange={handleFileSelect}
-            />
           </div>
 
           <div className="mt-4 p-3 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)]">
@@ -387,28 +404,40 @@ export default function ImportarPage() {
 
             {/* Bulk assign */}
             {uncategorizedIndices.length > 0 && categories.length > 0 && (
-              <div className="flex items-center gap-2 mb-4 p-2.5 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)]">
-                <span className="text-[11px] text-[var(--sl-t2)] font-medium">Aplicar a todas sem categoria:</span>
-                <select
-                  onChange={(e) => {
-                    if (e.target.value) setCategoryForAll(e.target.value)
-                    e.target.value = ''
-                  }}
-                  defaultValue=""
-                  className="text-[11px] px-2 py-1 rounded-lg bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none cursor-pointer"
+              <div className="flex items-center gap-2 mb-4 p-2.5 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] flex-wrap">
+                <span className="text-[11px] text-[var(--sl-t2)] font-medium shrink-0">Aplicar a todas sem categoria:</span>
+                <SLSelect
+                  value=""
+                  onChange={(val) => { if (val) setCategoryForAll(val) }}
+                  placeholder="Selecione..."
+                  options={[
+                    ...categories.filter(c => c.type === 'expense').map(cat => ({ value: cat.id, label: cat.name, icon: cat.icon })),
+                    ...categories.filter(c => c.type === 'income').map(cat => ({ value: cat.id, label: cat.name, icon: cat.icon })),
+                  ]}
+                  className="min-w-[180px]"
+                />
+                <button
+                  onClick={() => setShowNewCatForm('bulk')}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--sl-border)] text-[11px] font-medium text-[var(--sl-t2)] hover:border-[#10b981] hover:text-[#10b981] transition-colors"
                 >
-                  <option value="" disabled>Selecione...</option>
-                  <optgroup label="Despesas">
-                    {categories.filter(c => c.type === 'expense').map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
-                    ))}
-                  </optgroup>
-                  <optgroup label="Receitas">
-                    {categories.filter(c => c.type === 'income').map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
-                    ))}
-                  </optgroup>
-                </select>
+                  <Plus size={12} />
+                  Nova categoria
+                </button>
+              </div>
+            )}
+
+            {/* Inline form for new category (bulk) */}
+            {showNewCatForm === 'bulk' && (
+              <div className="mb-4">
+                <InlineCategoryForm
+                  onCreated={(cat) => {
+                    setCategoryForAll(cat.id)
+                    setShowNewCatForm(null)
+                    refetchCategories()
+                    toast.success(`Categoria "${cat.name}" criada e aplicada!`)
+                  }}
+                  onCancel={() => setShowNewCatForm(null)}
+                />
               </div>
             )}
 
@@ -443,21 +472,44 @@ export default function ImportarPage() {
                           {tx.type === 'expense' ? '-' : '+'}{fmtCurrency(tx.amount)}
                         </td>
                         <td className="py-2 px-2">
-                          <select
-                            value={assignedCatId}
-                            onChange={(e) => setCategoryForTransaction(idx, e.target.value || null)}
-                            className={cn(
-                              'text-[11px] w-full max-w-[160px] px-2 py-1.5 rounded-lg border outline-none transition-colors',
-                              assignedCat
-                                ? 'bg-[var(--sl-s2)] border-[#10b981]/30 text-[var(--sl-t1)]'
-                                : 'bg-[rgba(245,158,11,0.06)] border-[rgba(245,158,11,0.3)] text-[#f59e0b]',
-                            )}
-                          >
-                            <option value="">Selecione...</option>
-                            {typeCats.map(cat => (
-                              <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
-                            ))}
-                          </select>
+                          <div className="flex items-center gap-1.5">
+                            <SLSelect
+                              value={assignedCatId}
+                              onChange={(val) => setCategoryForTransaction(idx, val ? val : null)}
+                              placeholder="Selecione..."
+                              options={[
+                                { value: '', label: 'Selecione...' },
+                                ...typeCats.map(cat => ({ value: cat.id, label: cat.name, icon: cat.icon })),
+                              ]}
+                              portal
+                              className={cn(
+                                'w-full min-w-[140px] max-w-[180px] [&_button]:py-1.5 [&_button]:text-[11px] [&_button]:rounded-[10px] [&_button]:bg-[var(--sl-s2)] [&_button]:border-[var(--sl-border)]',
+                                assignedCat ? '[&_button]:text-[var(--sl-t1)]' : '[&_button]:text-[var(--sl-t2)]',
+                              )}
+                            />
+                            <button
+                              onClick={() => setShowNewCatForm(idx)}
+                              className="w-7 h-7 shrink-0 rounded-lg border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t3)] hover:border-[#10b981] hover:text-[#10b981] transition-colors"
+                              title="Nova categoria"
+                            >
+                              <Plus size={12} />
+                            </button>
+                          </div>
+                          {showNewCatForm === idx && (
+                            <div className="mt-2">
+                              <InlineCategoryForm
+                                defaultType={tx.type === 'income' ? 'income' : 'expense'}
+                                defaultName={tx.description}
+                                onCreated={(cat) => {
+                                  setCategoryForTransaction(idx, cat.id)
+                                  setShowNewCatForm(null)
+                                  refetchCategories()
+                                  toast.success(`Categoria "${cat.name}" criada!`)
+                                }}
+                                onCancel={() => setShowNewCatForm(null)}
+                              />
+                            </div>
+                          )}
                         </td>
                       </tr>
                     )
@@ -475,34 +527,34 @@ export default function ImportarPage() {
                 </span>
               </div>
             )}
-          </SLCard>
 
-          {/* Actions */}
-          <div className="flex items-center justify-between gap-2">
-            <button
-              onClick={() => setShowCategorize(false)}
-              className="px-4 py-2 rounded-lg border border-[var(--sl-border)] text-[12px] text-[var(--sl-t2)] hover:bg-[var(--sl-s2)] transition-colors"
-            >
-              Voltar
-            </button>
-            <div className="flex items-center gap-2">
-              {uncategorizedIndices.length > 0 && (
+            {/* Actions — inside card */}
+            <div className="flex items-center justify-between gap-2 pt-4 mt-4 border-t border-[var(--sl-border)]">
+              <button
+                onClick={() => setShowCategorize(false)}
+                className="px-4 py-2 rounded-lg border border-[var(--sl-border)] text-[12px] text-[var(--sl-t2)] hover:bg-[var(--sl-s2)] transition-colors"
+              >
+                Voltar
+              </button>
+              <div className="flex items-center gap-2">
+                {uncategorizedIndices.length > 0 && (
+                  <button
+                    onClick={handleConfirmImport}
+                    className="px-4 py-2 rounded-lg border border-[var(--sl-border)] text-[12px] text-[var(--sl-t2)] hover:bg-[var(--sl-s2)] transition-colors"
+                  >
+                    Pular e importar ({uncategorizedIndices.length} sem categoria)
+                  </button>
+                )}
                 <button
                   onClick={handleConfirmImport}
-                  className="px-4 py-2 rounded-lg border border-[var(--sl-border)] text-[12px] text-[var(--sl-t2)] hover:bg-[var(--sl-s2)] transition-colors"
+                  disabled={uncategorizedIndices.length > 0}
+                  className="px-5 py-2 rounded-lg bg-[#10b981] text-white text-[12px] font-bold disabled:opacity-40 hover:bg-[#0da876] transition-colors"
                 >
-                  Pular e importar ({uncategorizedIndices.length} sem categoria)
+                  Importar {toImportCount} transações
                 </button>
-              )}
-              <button
-                onClick={handleConfirmImport}
-                disabled={uncategorizedIndices.length > 0}
-                className="px-5 py-2 rounded-lg bg-[#10b981] text-white text-[12px] font-bold disabled:opacity-40 hover:bg-[#0da876] transition-colors"
-              >
-                Importar {toImportCount} transações
-              </button>
+              </div>
             </div>
-          </div>
+          </SLCard>
         </>
       )}
 
@@ -638,5 +690,6 @@ export default function ImportarPage() {
         </div>
       )}
     </div>
+    </>
   )
 }

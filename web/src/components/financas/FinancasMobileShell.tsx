@@ -13,6 +13,7 @@ const TABS: { label: string; key: string; href: string }[] = [
   { label: 'Calendário', key: 'calendario', href: '/financas/calendario' },
   { label: 'Planejamento', key: 'planejamento', href: '/financas/planejamento' },
   { label: 'Relatórios', key: 'relatorios', href: '/financas/relatorios' },
+  { label: 'Importar', key: 'importar', href: '/financas/importar' },
 ]
 
 const PAGE_TITLES: Record<string, { label: string; key: string }> = {
@@ -23,6 +24,7 @@ const PAGE_TITLES: Record<string, { label: string; key: string }> = {
   '/financas/calendario': { label: 'Calendário', key: 'calendario' },
   '/financas/planejamento': { label: 'Planejamento', key: 'planejamento' },
   '/financas/relatorios': { label: 'Relatórios', key: 'relatorios' },
+  '/financas/importar': { label: 'Importar', key: 'importar' },
 }
 
 function getPageTitle(pathname: string): string {

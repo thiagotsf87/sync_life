@@ -178,6 +178,7 @@ function TransactionRow({
   onDelete: (tx: Transaction) => void
 }) {
   const isIncome = tx.type === 'income'
+  const isTransfer = tx.type === 'transfer'
 
   return (
     <>
@@ -198,6 +199,29 @@ function TransactionRow({
           <div className="min-w-0">
             <p className="text-[13px] text-[var(--sl-t1)] truncate font-medium">{tx.description}</p>
             <div className="flex items-center gap-1.5 flex-wrap">
+              {isTransfer && (
+                <>
+                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                    style={{ background: 'rgba(0,85,255,.12)', color: '#0055ff', border: '1px solid rgba(0,85,255,.25)' }}>
+                    🔄 Transf.
+                  </span>
+                  {tx.account_from && (
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-[6px]"
+                      style={{ background: `${tx.account_from.color}18`, color: tx.account_from.color }}>
+                      {tx.account_from.icon} {tx.account_from.name}
+                    </span>
+                  )}
+                  {tx.account_from && tx.account_to && (
+                    <span className="text-[10px] text-[var(--sl-t3)]">→</span>
+                  )}
+                  {tx.account_to && (
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-[6px]"
+                      style={{ background: `${tx.account_to.color}18`, color: tx.account_to.color }}>
+                      {tx.account_to.icon} {tx.account_to.name}
+                    </span>
+                  )}
+                </>
+              )}
               {tx.recurring_transaction_id && (
                 <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                   style={{ background: 'rgba(139,92,246,.12)', color: '#a78bfa', border: '1px solid rgba(139,92,246,.25)' }}>
@@ -243,9 +267,9 @@ function TransactionRow({
         {/* Valor */}
         <div className={cn(
           'font-[DM_Mono] text-[14px] font-medium self-center text-right',
-          isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
+          isTransfer ? 'text-[#0055ff]' : isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
         )}>
-          {isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
+          {isTransfer ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
         </div>
 
         {/* Ações */}
@@ -286,9 +310,9 @@ function TransactionRow({
           <div className="flex items-center gap-1.5 shrink-0">
             <p className={cn(
               'font-[DM_Mono] text-[15px] font-medium',
-              isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
+              isTransfer ? 'text-[#0055ff]' : isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
             )}>
-              {isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
+              {isTransfer ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
             </p>
             <button
               onClick={e => { e.stopPropagation(); onDelete(tx) }}
@@ -384,7 +408,7 @@ export default function TransacoesPage() {
     }
   }, [deleteTx, remove])
 
-  // Summary for insight
+  // Summary for insight — exclude transfers
   const totalReceitas = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0)
   const totalDespesas = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
   const poupancaPct = totalReceitas > 0 ? Math.round(((totalReceitas - totalDespesas) / totalReceitas) * 100) : 0
@@ -403,6 +427,7 @@ export default function TransacoesPage() {
     { value: 'all', label: 'Todos' },
     { value: 'expense', label: 'Despesas' },
     { value: 'income', label: 'Receitas' },
+    { value: 'transfer', label: 'Transferências' },
     ...categories.slice(0, 4).map(c => ({ value: `cat:${c.id}`, label: c.name })),
   ]
 
@@ -609,6 +634,7 @@ export default function TransacoesPage() {
               { value: 'all', label: 'Todos' },
               { value: 'income', label: 'Receitas' },
               { value: 'expense', label: 'Despesas' },
+              { value: 'transfer', label: 'Transferências' },
               { value: 'recurring', label: 'Recorrentes' },
             ] as const).map(chip => (
               <button
@@ -620,6 +646,7 @@ export default function TransacoesPage() {
                     ? chip.value === 'all' ? 'bg-[#10b981] text-[#03071a] border-transparent font-bold'
                       : chip.value === 'income' ? 'bg-[rgba(16,185,129,.10)] text-[#10b981] border-[rgba(16,185,129,.30)]'
                       : chip.value === 'expense' ? 'bg-[rgba(244,63,94,.08)] text-[#f43f5e] border-[rgba(244,63,94,.25)]'
+                      : chip.value === 'transfer' ? 'bg-[rgba(0,85,255,.10)] text-[#0055ff] border-[rgba(0,85,255,.30)]'
                       : 'bg-[rgba(139,92,246,.12)] text-[#a78bfa] border-[rgba(139,92,246,.30)]'
                     : 'bg-[var(--sl-s2)] text-[var(--sl-t2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                 )}
@@ -690,6 +717,7 @@ export default function TransacoesPage() {
               <div className="mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[12px] overflow-hidden">
                 {group.transactions.map(tx => {
                   const isIncome = tx.type === 'income'
+                  const isTx = tx.type === 'transfer'
                   return (
                     <div
                       key={tx.id}
@@ -700,22 +728,29 @@ export default function TransacoesPage() {
                       )}
                     >
                       <div className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center text-[18px] shrink-0"
-                        style={{ background: tx.category?.color ? `${tx.category.color}15` : 'var(--sl-s3)' }}>
-                        {tx.category?.icon ?? '💳'}
+                        style={{ background: isTx ? 'rgba(0,85,255,0.08)' : tx.category?.color ? `${tx.category.color}15` : 'var(--sl-s3)' }}>
+                        {isTx ? '🔄' : tx.category?.icon ?? '💳'}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{tx.description}</p>
                         <p className="text-[12px] text-[var(--sl-t2)] mt-[1px]">
-                          {tx.recurring_transaction_id ? '🔄 Recorrente · ' : ''}
-                          {tx.category?.name ?? 'Sem categoria'}
+                          {isTx ? (
+                            <>
+                              {'🔄 '}
+                              {tx.account_from && tx.account_to
+                                ? <>{tx.account_from.icon} {tx.account_from.name} → {tx.account_to.icon} {tx.account_to.name}</>
+                                : 'Transferência'}
+                            </>
+                          ) : tx.recurring_transaction_id ? '🔄 Recorrente · ' : ''}
+                          {!isTx && (tx.category?.name ?? 'Sem categoria')}
                         </p>
                       </div>
                       <div className="text-right shrink-0">
                         <p className={cn(
                           'font-[DM_Mono] text-[14px] font-medium',
-                          isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                          isTx ? 'text-[#0055ff]' : isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
                         )}>
-                          {isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
+                          {isTx ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
                         </p>
                         <p className="text-[11px] text-[var(--sl-t2)] mt-[1px]">
                           {tx.date.split('-')[2]}/{tx.date.split('-')[1]}
@@ -731,6 +766,7 @@ export default function TransacoesPage() {
           <div className="mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[12px] overflow-hidden">
             {transactions.map(tx => {
               const isIncome = tx.type === 'income'
+              const isTx = tx.type === 'transfer'
               return (
                 <div
                   key={tx.id}
@@ -741,21 +777,28 @@ export default function TransacoesPage() {
                   )}
                 >
                   <div className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center text-[18px] shrink-0"
-                    style={{ background: tx.category?.color ? `${tx.category.color}15` : 'var(--sl-s3)' }}>
-                    {tx.category?.icon ?? '💳'}
+                    style={{ background: isTx ? 'rgba(0,85,255,0.08)' : tx.category?.color ? `${tx.category.color}15` : 'var(--sl-s3)' }}>
+                    {isTx ? '🔄' : tx.category?.icon ?? '💳'}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{tx.description}</p>
                     <p className="text-[12px] text-[var(--sl-t2)] mt-[1px]">
-                      {tx.category?.name ?? 'Sem categoria'}
+                      {isTx ? (
+                        <>
+                          {'🔄 '}
+                          {tx.account_from && tx.account_to
+                            ? <>{tx.account_from.icon} {tx.account_from.name} → {tx.account_to.icon} {tx.account_to.name}</>
+                            : 'Transferência'}
+                        </>
+                      ) : (tx.category?.name ?? 'Sem categoria')}
                     </p>
                   </div>
                   <div className="text-right shrink-0">
                     <p className={cn(
                       'font-[DM_Mono] text-[14px] font-medium',
-                      isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                      isTx ? 'text-[#0055ff]' : isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
                     )}>
-                      {isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
+                      {isTx ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
                     </p>
                   </div>
                 </div>

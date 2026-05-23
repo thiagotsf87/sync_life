@@ -81,6 +81,7 @@ export default function FinancasDashboardPage() {
 
       const map = new Map<string, { rec: number; des: number }>()
       for (const t of txns as { amount: number; type: string; date: string }[]) {
+        if (t.type === 'transfer') continue
         const key = t.date.slice(0, 7)
         if (!map.has(key)) map.set(key, { rec: 0, des: 0 })
         const v = map.get(key)!
@@ -130,7 +131,7 @@ export default function FinancasDashboardPage() {
       isFuture: i + 1 > todayD,
     }))
     for (const t of transactions) {
-      if (t.is_future) continue
+      if (t.is_future || t.type === 'transfer') continue
       const day = parseInt(t.date.slice(8, 10), 10)
       if (day >= 1 && day <= daysInMonth) {
         if (t.type === 'income') days[day - 1].inc += t.amount

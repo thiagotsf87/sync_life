@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { User, Palette, Bell, Tags, Link2, Crown } from 'lucide-react'
+import { User, Palette, Bell, Tags, Link2, Crown, Landmark } from 'lucide-react'
 import { useUserPlan } from '@/hooks/use-user-plan'
 
 interface CfgNavItem {
@@ -27,6 +27,7 @@ const CFG_GROUPS: { label: string; items: CfgNavItem[] }[] = [
     items: [
       { id: 'notif', label: 'Notificações', Icon: Bell, href: '/configuracoes/notificacoes' },
       { id: 'cat', label: 'Categorias', Icon: Tags, href: '/configuracoes/categorias' },
+      { id: 'contas', label: 'Contas', Icon: Landmark, href: '/configuracoes/contas' },
       { id: 'integracoes', label: 'Integrações', Icon: Link2, href: '/configuracoes/integracoes' },
     ],
   },

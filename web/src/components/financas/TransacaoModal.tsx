@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, Loader2, ChevronDown, Calendar } from 'lucide-react'
+import { X, Loader2, ChevronDown, Calendar, ArrowDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Category } from '@/hooks/use-categories'
 import type { Transaction, TransacaoFormData } from '@/hooks/use-transactions'
+import { AccountSelector } from './AccountSelector'
+import { useAccounts } from '@/hooks/use-accounts'
 
 const PAYMENT_OPTIONS = [
   { value: 'pix',      label: 'Pix',           icon: '⚡' },
@@ -67,7 +69,7 @@ const MONTHS_PT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set'
 export function TransacaoModal({
   open, mode, transaction, categories, defaultDate, onClose, onSave,
 }: TransacaoModalProps) {
-  const [type, setType] = useState<'income' | 'expense'>('expense')
+  const [type, setType] = useState<'income' | 'expense' | 'transfer'>('expense')
   const [description, setDescription] = useState('')
   const [amountStr, setAmountStr] = useState('')
   const [categoryId, setCategoryId] = useState('')
@@ -84,6 +86,13 @@ export function TransacaoModal({
   })
   const metodoRef = useRef<HTMLDivElement>(null)
   const datePickerRef = useRef<HTMLDivElement>(null)
+
+  // Account state for transfers
+  const [accountFromId, setAccountFromId] = useState('')
+  const [accountToId, setAccountToId] = useState('')
+  const { accounts } = useAccounts()
+
+  const isTransfer = type === 'transfer'
 
   // Sync calView when date picker opens
   useEffect(() => {
@@ -103,6 +112,8 @@ export function TransacaoModal({
       setDate(transaction.date)
       setPaymentMethod((transaction.payment_method as TransacaoFormData['payment_method']) ?? 'pix')
       setNotes(transaction.notes ?? '')
+      setAccountFromId(transaction.account_from?.id ?? '')
+      setAccountToId(transaction.account_to?.id ?? '')
     } else if (mode === 'create') {
       setType('expense')
       setDescription('')
@@ -111,13 +122,19 @@ export function TransacaoModal({
       setDate(defaultDate ?? todayStr())
       setPaymentMethod('pix')
       setNotes('')
+      setAccountFromId('')
+      setAccountToId('')
     }
     setErrors({})
   }, [open, mode, transaction, defaultDate])
 
-  // Reset category when type changes
+  // Reset category and accounts when type changes
   useEffect(() => {
-    if (!transaction || mode === 'create') setCategoryId('')
+    if (!transaction || mode === 'create') {
+      setCategoryId('')
+      setAccountFromId('')
+      setAccountToId('')
+    }
   }, [type]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Click outside to close dropdowns
@@ -131,6 +148,15 @@ export function TransacaoModal({
   }, [])
 
   if (!open) return null
+
+  // Auto-generate transfer description
+  const autoDescription = (() => {
+    if (!isTransfer) return ''
+    const from = accounts.find(a => a.id === accountFromId)
+    const to = accounts.find(a => a.id === accountToId)
+    if (from && to) return `${from.name} → ${to.name}`
+    return ''
+  })()
 
   function setDateFromCalendar(y: number, m: number, d: number) {
     setDate(`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`)
@@ -161,15 +187,24 @@ export function TransacaoModal({
   const selM = selectedParts[1] ? selectedParts[1] - 1 : -1
   const selD = selectedParts[2]
 
-  const filteredCategories = categories.filter(c => c.type === type)
+  const filteredCategories = isTransfer ? categories : categories.filter(c => c.type === type)
 
   function validate(): boolean {
     const errs: Record<string, string> = {}
-    if (!description.trim()) errs.description = 'Descrição obrigatória'
     const amt = parseCurrency(amountStr)
     if (!amountStr || isNaN(amt) || amt <= 0) errs.amount = 'Valor inválido'
-    if (!categoryId) errs.category = 'Selecione uma categoria'
     if (!date) errs.date = 'Data obrigatória'
+
+    if (isTransfer) {
+      if (!accountFromId) errs.accountFrom = 'Selecione conta de origem'
+      if (!accountToId) errs.accountTo = 'Selecione conta de destino'
+      if (accountFromId && accountToId && accountFromId === accountToId) errs.accountTo = 'Contas devem ser diferentes'
+      // Description is optional for transfers (auto-generated)
+    } else {
+      if (!description.trim()) errs.description = 'Descrição obrigatória'
+      if (!categoryId) errs.category = 'Selecione uma categoria'
+    }
+
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -179,14 +214,20 @@ export function TransacaoModal({
     setSaving(true)
     try {
       const amt = parseCurrency(amountStr)
+      const finalDescription = isTransfer
+        ? (description.trim() || autoDescription || 'Transferência')
+        : description.trim()
+
       await onSave({
         type,
-        description: description.trim(),
+        description: finalDescription,
         amount: amt,
-        category_id: categoryId,
+        category_id: isTransfer ? '' : categoryId,
         date,
-        payment_method: paymentMethod,
+        payment_method: isTransfer ? 'transfer' : paymentMethod,
         notes: notes.trim() || undefined,
+        account_from_id: isTransfer ? accountFromId : undefined,
+        account_to_id: isTransfer ? accountToId : undefined,
       })
       onClose()
     } catch {
@@ -210,7 +251,9 @@ export function TransacaoModal({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)] shrink-0">
           <h2 className="font-[Syne] font-extrabold text-[16px] text-[var(--sl-t1)]">
-            {mode === 'create' ? 'Nova Transação' : 'Editar Transação'}
+            {isTransfer
+              ? (mode === 'create' ? 'Nova Transferência' : 'Editar Transferência')
+              : (mode === 'create' ? 'Nova Transação' : 'Editar Transação')}
           </h2>
           <button
             onClick={onClose}
@@ -235,210 +278,368 @@ export function TransacaoModal({
           )}
 
           {/* Toggle tipo */}
-          <div className="grid grid-cols-2 gap-2">
-            {(['expense', 'income'] as const).map(t => (
-              <button
-                key={t}
-                onClick={() => setType(t)}
-                className={cn(
-                  'py-3 rounded-[12px] border-[1.5px] bg-[var(--sl-s2)] cursor-pointer flex items-center justify-center gap-2 transition-all',
-                  type === 'expense' && t === 'expense' ? 'border-[#f43f5e] bg-[rgba(244,63,94,.07)]'
-                    : type === 'income' && t === 'income' ? 'border-[#10b981] bg-[rgba(16,185,129,.07)]'
-                    : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
-                )}
-              >
-                <span className="text-xl">{t === 'expense' ? '📤' : '💰'}</span>
-                <span className={cn(
-                  'text-[14px] font-semibold',
-                  type === t ? (t === 'expense' ? 'text-[#f43f5e]' : 'text-[#10b981]') : 'text-[var(--sl-t2)]'
-                )}>
-                  {t === 'expense' ? 'Despesa' : 'Receita'}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Descrição */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Descrição</label>
-            <input
-              type="text"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Ex: Supermercado, Salário, Netflix..."
-              className={cn(
-                'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none transition-colors',
-                errors.description ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus:border-[#10b981]'
-              )}
-            />
-            {errors.description && <p className="text-[11px] text-[#f43f5e]">{errors.description}</p>}
-          </div>
-
-          {/* Valor */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Valor</label>
-            <div className={cn(
-              'flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
-              errors.amount ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus-within:border-[#10b981]'
-            )}>
-              <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={amountStr}
-                onChange={e => setAmountStr(maskCurrency(e.target.value))}
-                placeholder="0,00"
-                className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
-              />
-            </div>
-            {errors.amount && <p className="text-[11px] text-[#f43f5e]">{errors.amount}</p>}
-          </div>
-
-          {/* Grid de categorias */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Categoria</label>
-            {filteredCategories.length === 0 ? (
-              <p className="text-[12px] text-[var(--sl-t3)] py-2">Nenhuma categoria disponível.</p>
-            ) : (
-              <div className="grid grid-cols-4 gap-2">
-                {filteredCategories.map(cat => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setCategoryId(cat.id)}
-                    className={cn(
-                      'py-2.5 px-1.5 rounded-[11px] border-[1.5px] bg-[var(--sl-s2)] cursor-pointer text-center transition-all hover:border-[var(--sl-border-h)] hover:-translate-y-px',
-                      categoryId === cat.id
-                        ? 'border-[#10b981] bg-[rgba(16,185,129,.08)]'
-                        : 'border-[var(--sl-border)]'
-                    )}
-                  >
-                    <span className="text-[20px] block mb-1">{cat.icon}</span>
-                    <span className={cn(
-                      'text-[11px] leading-tight block truncate',
-                      categoryId === cat.id ? 'text-[#10b981] font-semibold' : 'text-[var(--sl-t2)]'
-                    )}>
-                      {cat.name}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-            {errors.category && <p className="text-[11px] text-[#f43f5e]">{errors.category}</p>}
-          </div>
-
-          {/* Data + Método */}
-          <div className="grid grid-cols-2 gap-3">
-            {/* Data — custom date picker */}
-            <div className="flex flex-col gap-1.5 relative" ref={datePickerRef}>
-              <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Data</label>
-              <input type="hidden" value={date} readOnly />
-              <button
-                type="button"
-                onClick={() => setDatePickerOpen(o => !o)}
-                className={cn(
-                  'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono] flex items-center justify-between gap-2 text-left',
-                  errors.date ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-                  datePickerOpen && 'border-[#10b981]'
-                )}
-              >
-                <span>{formatDateDisplay(date)}</span>
-                <Calendar size={14} className="text-[var(--sl-t3)] shrink-0" />
-              </button>
-              {datePickerOpen && (
-                <div
-                  className="absolute z-[70] mt-1 p-2 rounded-[12px] min-w-[260px]"
-                  style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+          <div className="grid grid-cols-3 gap-2">
+            {([
+              { value: 'expense' as const, label: 'Despesa', icon: '📤', color: '#f43f5e' },
+              { value: 'income' as const, label: 'Receita', icon: '💰', color: '#10b981' },
+              { value: 'transfer' as const, label: 'Transfer.', icon: '🔄', color: '#0055ff' },
+            ]).map(t => {
+              const isActive = type === t.value
+              return (
+                <button
+                  key={t.value}
+                  onClick={() => setType(t.value)}
+                  className={cn(
+                    'py-3 rounded-[12px] border-[1.5px] bg-[var(--sl-s2)] cursor-pointer flex items-center justify-center gap-2 transition-all',
+                    isActive
+                      ? `border-[${t.color}]`
+                      : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
+                  )}
+                  style={isActive ? { borderColor: t.color, background: `${t.color}12` } : undefined}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <button type="button" onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
-                      ‹
-                    </button>
-                    <span className="text-[13px] font-semibold text-[var(--sl-t1)]">
-                      {MONTHS_PT[calView.month]} {calView.year}
-                    </span>
-                    <button type="button" onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
-                      ›
-                    </button>
+                  <span className="text-xl">{t.icon}</span>
+                  <span className={cn(
+                    'text-[14px] font-semibold',
+                    isActive ? '' : 'text-[var(--sl-t2)]'
+                  )}
+                  style={isActive ? { color: t.color } : undefined}
+                  >
+                    {t.label}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* ═══ TRANSFER FORM ═══ */}
+          {isTransfer ? (
+            <>
+              {/* Account selectors */}
+              <AccountSelector
+                accounts={accounts}
+                selectedId={accountFromId}
+                onChange={setAccountFromId}
+                label="Conta de Origem"
+                excludeId={accountToId}
+                error={errors.accountFrom}
+              />
+
+              {/* Arrow indicator */}
+              <div className="flex items-center justify-center -my-1">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ background: 'rgba(0,85,255,0.08)', border: '1px solid rgba(0,85,255,0.2)' }}>
+                  <ArrowDown size={14} className="text-[#0055ff]" />
+                </div>
+              </div>
+
+              <AccountSelector
+                accounts={accounts}
+                selectedId={accountToId}
+                onChange={setAccountToId}
+                label="Conta de Destino"
+                excludeId={accountFromId}
+                error={errors.accountTo}
+              />
+
+              {/* Auto-description preview */}
+              {autoDescription && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-[10px] text-[12px]"
+                  style={{ background: 'rgba(0,85,255,0.05)', border: '1px solid rgba(0,85,255,0.15)' }}>
+                  <span className="text-[#0055ff]">🔄</span>
+                  <span className="text-[var(--sl-t2)]">Descrição: <strong className="text-[var(--sl-t1)]">{autoDescription}</strong></span>
+                </div>
+              )}
+
+              {/* Valor */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Valor</label>
+                <div className={cn(
+                  'flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
+                  errors.amount ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus-within:border-[#0055ff]'
+                )}>
+                  <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={amountStr}
+                    onChange={e => setAmountStr(maskCurrency(e.target.value))}
+                    placeholder="0,00"
+                    className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                  />
+                </div>
+                {errors.amount && <p className="text-[11px] text-[#f43f5e]">{errors.amount}</p>}
+              </div>
+
+              {/* Data (full width for transfer) */}
+              <div className="flex flex-col gap-1.5 relative" ref={datePickerRef}>
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Data</label>
+                <input type="hidden" value={date} readOnly />
+                <button
+                  type="button"
+                  onClick={() => setDatePickerOpen(o => !o)}
+                  className={cn(
+                    'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono] flex items-center justify-between gap-2 text-left',
+                    errors.date ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                    datePickerOpen && 'border-[#0055ff]'
+                  )}
+                >
+                  <span>{formatDateDisplay(date)}</span>
+                  <Calendar size={14} className="text-[var(--sl-t3)] shrink-0" />
+                </button>
+                {datePickerOpen && (
+                  <div
+                    className="absolute z-[70] mt-1 p-2 rounded-[12px] min-w-[260px]"
+                    style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <button type="button" onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
+                        ‹
+                      </button>
+                      <span className="text-[13px] font-semibold text-[var(--sl-t1)]">
+                        {MONTHS_PT[calView.month]} {calView.year}
+                      </span>
+                      <button type="button" onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
+                        ›
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-7 gap-0.5 text-[10px] text-[var(--sl-t3)] mb-1">
+                      {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((d, i) => <div key={i} className="text-center py-1">{d}</div>)}
+                    </div>
+                    <div className="grid grid-cols-7 gap-0.5">
+                      {calDays.map((d, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          disabled={!d}
+                          onClick={() => d && setDateFromCalendar(calView.year, calView.month + 1, d)}
+                          className={cn(
+                            'w-8 h-8 rounded-[8px] text-[12px] font-medium transition-colors',
+                            !d && 'invisible',
+                            d && selY === calView.year && selM === calView.month && selD === d
+                              ? 'bg-[#0055ff] text-white'
+                              : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
+                          )}
+                        >
+                          {d ?? ''}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-7 gap-0.5 text-[10px] text-[var(--sl-t3)] mb-1">
-                    {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map(d => <div key={d} className="text-center py-1">{d}</div>)}
-                  </div>
-                  <div className="grid grid-cols-7 gap-0.5">
-                    {calDays.map((d, i) => (
+                )}
+                {errors.date && <p className="text-[11px] text-[#f43f5e]">{errors.date}</p>}
+              </div>
+
+              {/* Descrição (optional override) */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Descrição (opcional)</label>
+                <input
+                  type="text"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder={autoDescription || 'Descrição da transferência...'}
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0055ff] transition-colors"
+                />
+              </div>
+
+              {/* Notas */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Observações (opcional)</label>
+                <textarea
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  placeholder="Adicione uma observação..."
+                  rows={2}
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0055ff] transition-colors resize-none"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              {/* ═══ INCOME / EXPENSE FORM (unchanged) ═══ */}
+
+              {/* Descrição */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Descrição</label>
+                <input
+                  type="text"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder="Ex: Supermercado, Salário, Netflix..."
+                  className={cn(
+                    'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none transition-colors',
+                    errors.description ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus:border-[#10b981]'
+                  )}
+                />
+                {errors.description && <p className="text-[11px] text-[#f43f5e]">{errors.description}</p>}
+              </div>
+
+              {/* Valor */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Valor</label>
+                <div className={cn(
+                  'flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
+                  errors.amount ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus-within:border-[#10b981]'
+                )}>
+                  <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={amountStr}
+                    onChange={e => setAmountStr(maskCurrency(e.target.value))}
+                    placeholder="0,00"
+                    className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                  />
+                </div>
+                {errors.amount && <p className="text-[11px] text-[#f43f5e]">{errors.amount}</p>}
+              </div>
+
+              {/* Grid de categorias */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Categoria</label>
+                {filteredCategories.length === 0 ? (
+                  <p className="text-[12px] text-[var(--sl-t3)] py-2">Nenhuma categoria disponível.</p>
+                ) : (
+                  <div className="grid grid-cols-4 gap-2">
+                    {filteredCategories.map(cat => (
                       <button
-                        key={i}
-                        type="button"
-                        disabled={!d}
-                        onClick={() => d && setDateFromCalendar(calView.year, calView.month + 1, d)}
+                        key={cat.id}
+                        onClick={() => setCategoryId(cat.id)}
                         className={cn(
-                          'w-8 h-8 rounded-[8px] text-[12px] font-medium transition-colors',
-                          !d && 'invisible',
-                          d && selY === calView.year && selM === calView.month && selD === d
-                            ? 'bg-[#10b981] text-[#03071a]'
-                            : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
+                          'py-2.5 px-1.5 rounded-[11px] border-[1.5px] bg-[var(--sl-s2)] cursor-pointer text-center transition-all hover:border-[var(--sl-border-h)] hover:-translate-y-px',
+                          categoryId === cat.id
+                            ? 'border-[#10b981] bg-[rgba(16,185,129,.08)]'
+                            : 'border-[var(--sl-border)]'
                         )}
                       >
-                        {d ?? ''}
+                        <span className="text-[20px] block mb-1">{cat.icon}</span>
+                        <span className={cn(
+                          'text-[11px] leading-tight block truncate',
+                          categoryId === cat.id ? 'text-[#10b981] font-semibold' : 'text-[var(--sl-t2)]'
+                        )}>
+                          {cat.name}
+                        </span>
                       </button>
                     ))}
                   </div>
-                </div>
-              )}
-              {errors.date && <p className="text-[11px] text-[#f43f5e]">{errors.date}</p>}
-            </div>
-
-            {/* Método — custom dropdown */}
-            <div className="flex flex-col gap-1.5 relative" ref={metodoRef}>
-              <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Método</label>
-              <button
-                type="button"
-                onClick={() => setMetodoOpen(o => !o)}
-                className={cn(
-                  'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors flex items-center justify-between gap-2 text-left',
-                  'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-                  metodoOpen && 'border-[#10b981]'
                 )}
-              >
-                <span>{PAYMENT_OPTIONS.find(p => p.value === paymentMethod)?.icon} {PAYMENT_OPTIONS.find(p => p.value === paymentMethod)?.label}</span>
-                <ChevronDown size={14} className={cn('text-[var(--sl-t3)] shrink-0 transition-transform', metodoOpen && 'rotate-180')} />
-              </button>
-              {metodoOpen && (
-                <div
-                  className="absolute z-[70] top-full left-0 right-0 mt-1 py-1 rounded-[10px] max-h-[200px] overflow-y-auto"
-                  style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
-                >
-                  {PAYMENT_OPTIONS.map(p => (
-                    <button
-                      key={p.value}
-                      type="button"
-                      onClick={() => { setPaymentMethod(p.value as TransacaoFormData['payment_method']); setMetodoOpen(false) }}
-                      className={cn(
-                        'w-full px-3.5 py-2.5 text-left text-[13px] flex items-center gap-2 transition-colors',
-                        paymentMethod === p.value
-                          ? 'bg-[rgba(16,185,129,.12)] text-[#10b981] font-semibold'
-                          : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
-                      )}
-                    >
-                      <span>{p.icon}</span>
-                      <span>{p.label}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+                {errors.category && <p className="text-[11px] text-[#f43f5e]">{errors.category}</p>}
+              </div>
 
-          {/* Notas */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Observações (opcional)</label>
-            <textarea
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              placeholder="Adicione uma observação..."
-              rows={2}
-              className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors resize-none"
-            />
-          </div>
+              {/* Data + Método */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* Data — custom date picker */}
+                <div className="flex flex-col gap-1.5 relative" ref={datePickerRef}>
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Data</label>
+                  <input type="hidden" value={date} readOnly />
+                  <button
+                    type="button"
+                    onClick={() => setDatePickerOpen(o => !o)}
+                    className={cn(
+                      'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono] flex items-center justify-between gap-2 text-left',
+                      errors.date ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                      datePickerOpen && 'border-[#10b981]'
+                    )}
+                  >
+                    <span>{formatDateDisplay(date)}</span>
+                    <Calendar size={14} className="text-[var(--sl-t3)] shrink-0" />
+                  </button>
+                  {datePickerOpen && (
+                    <div
+                      className="absolute z-[70] mt-1 p-2 rounded-[12px] min-w-[260px]"
+                      style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <button type="button" onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
+                          ‹
+                        </button>
+                        <span className="text-[13px] font-semibold text-[var(--sl-t1)]">
+                          {MONTHS_PT[calView.month]} {calView.year}
+                        </span>
+                        <button type="button" onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
+                          ›
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-7 gap-0.5 text-[10px] text-[var(--sl-t3)] mb-1">
+                        {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((d, i) => <div key={i} className="text-center py-1">{d}</div>)}
+                      </div>
+                      <div className="grid grid-cols-7 gap-0.5">
+                        {calDays.map((d, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            disabled={!d}
+                            onClick={() => d && setDateFromCalendar(calView.year, calView.month + 1, d)}
+                            className={cn(
+                              'w-8 h-8 rounded-[8px] text-[12px] font-medium transition-colors',
+                              !d && 'invisible',
+                              d && selY === calView.year && selM === calView.month && selD === d
+                                ? 'bg-[#10b981] text-[#03071a]'
+                                : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
+                            )}
+                          >
+                            {d ?? ''}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {errors.date && <p className="text-[11px] text-[#f43f5e]">{errors.date}</p>}
+                </div>
+
+                {/* Método — custom dropdown */}
+                <div className="flex flex-col gap-1.5 relative" ref={metodoRef}>
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Método</label>
+                  <button
+                    type="button"
+                    onClick={() => setMetodoOpen(o => !o)}
+                    className={cn(
+                      'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors flex items-center justify-between gap-2 text-left',
+                      'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                      metodoOpen && 'border-[#10b981]'
+                    )}
+                  >
+                    <span>{PAYMENT_OPTIONS.find(p => p.value === paymentMethod)?.icon} {PAYMENT_OPTIONS.find(p => p.value === paymentMethod)?.label}</span>
+                    <ChevronDown size={14} className={cn('text-[var(--sl-t3)] shrink-0 transition-transform', metodoOpen && 'rotate-180')} />
+                  </button>
+                  {metodoOpen && (
+                    <div
+                      className="absolute z-[70] top-full left-0 right-0 mt-1 py-1 rounded-[10px] max-h-[200px] overflow-y-auto"
+                      style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                    >
+                      {PAYMENT_OPTIONS.map(p => (
+                        <button
+                          key={p.value}
+                          type="button"
+                          onClick={() => { setPaymentMethod(p.value as TransacaoFormData['payment_method']); setMetodoOpen(false) }}
+                          className={cn(
+                            'w-full px-3.5 py-2.5 text-left text-[13px] flex items-center gap-2 transition-colors',
+                            paymentMethod === p.value
+                              ? 'bg-[rgba(16,185,129,.12)] text-[#10b981] font-semibold'
+                              : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
+                          )}
+                        >
+                          <span>{p.icon}</span>
+                          <span>{p.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Notas */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Observações (opcional)</label>
+                <textarea
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  placeholder="Adicione uma observação..."
+                  rows={2}
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors resize-none"
+                />
+              </div>
+            </>
+          )}
 
         </div>
 
@@ -454,10 +655,12 @@ export function TransacaoModal({
             onClick={handleSave}
             disabled={saving}
             className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-[#03071a] transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#10b981' }}
+            style={{ background: isTransfer ? '#0055ff' : '#10b981' }}
           >
             {saving && <Loader2 size={14} className="animate-spin" />}
-            {mode === 'create' ? 'Adicionar' : 'Salvar alterações'}
+            {isTransfer
+              ? (mode === 'create' ? '🔄 Transferir' : '🔄 Salvar transferência')
+              : (mode === 'create' ? 'Adicionar' : 'Salvar alterações')}
           </button>
         </div>
 

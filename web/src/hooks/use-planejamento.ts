@@ -135,8 +135,8 @@ function buildProjection(input: {
 
   const projectedEvents: ProjectedEvent[] = []
 
-  // 1. Expand recurring transactions
-  for (const rec of recurringItems) {
+  // 1. Expand recurring transactions (exclude transfers — neutral)
+  for (const rec of recurringItems.filter(r => r.type !== 'transfer')) {
     for (const m of months) {
       if (!occursInMonth(rec, m.year, m.month)) continue
       if (rec.end_date && new Date(rec.end_date + 'T00:00:00') < m.date) continue

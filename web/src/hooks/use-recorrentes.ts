@@ -11,7 +11,7 @@ export interface RecurringTransaction {
   category_id: string | null
   name: string
   amount: number
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'transfer'
   frequency: Frequency
   day_of_month: number | null
   start_date: string
@@ -37,7 +37,7 @@ export interface UpcomingOccurrence {
   id: string
   name: string
   icon: string
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'transfer'
   amount: number
   frequency: Frequency
   date: Date
@@ -47,7 +47,7 @@ export interface UpcomingOccurrence {
 }
 
 export interface RecorrenteFormData {
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'transfer'
   name: string
   amount: string
   frequency: Frequency

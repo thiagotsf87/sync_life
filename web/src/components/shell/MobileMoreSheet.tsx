@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { LogOut, Pin, Settings } from 'lucide-react'
+import { Bot, LogOut, Pin, Settings } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { MODULES } from '@/lib/modules'
 import { useShellStore } from '@/stores/shell-store'
@@ -150,8 +150,19 @@ export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreShee
           })}
         </div>
 
-        {/* Config + Logout — linha separada */}
+        {/* Coach IA + Config + Logout — linha separada */}
         <div className="mt-4 pt-4 border-t border-[var(--sl-border)] space-y-1">
+          <button
+            onClick={() => { router.push('/coach'); onOpenChange(false) }}
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-[12px]
+                       text-[14px] transition-colors
+                       hover:bg-[var(--sl-s2)] active:bg-[var(--sl-s3)]"
+            style={{ color: '#10b981' }}
+          >
+            <Bot size={18} strokeWidth={1.8} />
+            <span className="font-semibold">Coach IA</span>
+            <span className="ml-auto text-[10px] font-bold text-[#f59e0b] bg-[rgba(245,158,11,0.15)] px-1.5 py-0.5 rounded-md">PRO</span>
+          </button>
           <button
             onClick={() => handleNavigate('configuracoes')}
             className="flex items-center gap-3 w-full px-4 py-3 rounded-[12px]

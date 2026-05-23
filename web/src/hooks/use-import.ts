@@ -34,6 +34,7 @@ export interface UseImportReturn {
   categories: Category[]
   categoryAssignments: Map<number, string>
   uncategorizedCount: number
+  refetchCategories: () => void
 
   setFile: (file: File) => Promise<void>
   setColumnMapping: (mapping: ColumnMapping) => void
@@ -81,17 +82,32 @@ const EXPENSE_KEYWORDS: Record<string, string[]> = {
     'udemy', 'alura', 'hotmart', 'apostila',
   ],
   'lazer': [
-    'cinema', 'netflix', 'spotify', 'show', 'teatro', 'viagem', 'hotel',
-    'bar', 'festa', 'jogo', 'streaming', 'disney', 'hbo', 'prime video',
-    'amazon prime', 'globoplay', 'ingresso',
+    'cinema', 'show', 'teatro', 'viagem', 'hotel',
+    'bar', 'festa', 'jogo', 'ingresso',
   ],
   'vestuario': [
     'roupa', 'calcado', 'sapato', 'tenis', 'loja', 'shopping',
     'renner', 'riachuelo', 'c&a', 'zara', 'shein',
   ],
-  'investimentos': [
+  'impostos': [
+    'imposto', 'irpf', 'irrf', 'darf', 'das', 'inss', 'icms', 'iss',
+    'taxa', 'tributo', 'receita federal',
+  ],
+  'diarista': [
+    'diarista', 'faxina', 'domestica', 'empregada', 'passadeira',
+    'limpeza residencial',
+  ],
+  'investimentos-despesa': [
     'aporte', 'investimento', 'acao', 'fii', 'cdb', 'tesouro',
-    'aplicacao', 'resgate', 'btg', 'xp ', 'rico ', 'nuinvest', 'clear',
+    'aplicacao', 'btg', 'xp ', 'rico ', 'nuinvest', 'clear',
+  ],
+  'pets': [
+    'pet', 'veterinario', 'racao', 'petshop', 'pet shop', 'petz', 'cobasi',
+  ],
+  'assinaturas': [
+    'netflix', 'spotify', 'disney', 'hbo', 'amazon prime', 'globoplay',
+    'youtube premium', 'icloud', 'google one', 'chatgpt', 'claude',
+    'prime video', 'streaming',
   ],
 }
 
@@ -178,7 +194,7 @@ export function useImport(): UseImportReturn {
   const [categoryAssignments, setCategoryAssignments] = useState<Map<number, string>>(new Map())
   const rawRowsRef = useRef<Record<string, string>[]>([])
 
-  const { categories } = useCategories()
+  const { categories, refetch: refetchCategories } = useCategories()
 
   // Auto-suggest categories when transactions are parsed and categories are available
   useEffect(() => {
@@ -421,7 +437,7 @@ export function useImport(): UseImportReturn {
     duplicateIndices, skippedIndices,
     importProgress, importTotal, importedCount,
     error,
-    categories, categoryAssignments, uncategorizedCount,
+    categories, categoryAssignments, uncategorizedCount, refetchCategories,
     setFile, setColumnMapping, applyMapping,
     toggleSkip, toggleAll,
     setCategoryForTransaction, setCategoryForAll,
