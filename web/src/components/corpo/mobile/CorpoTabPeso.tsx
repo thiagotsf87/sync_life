@@ -4,8 +4,8 @@ import { useMemo, useState } from 'react'
 import { Plus } from 'lucide-react'
 import { calcIMC, type WeightEntry, type HealthProfile } from '@/hooks/use-corpo'
 
-const CORPO_COLOR = '#f97316'
-const CORPO_BG = 'rgba(249,115,22,0.12)'
+const CORPO_COLOR = '#D97534'
+const CORPO_BG = 'rgba(217,117,52,0.12)'
 
 const PERIOD_FILTERS = [
   { label: '30 dias', days: 30 },
@@ -92,9 +92,9 @@ export function CorpoTabPeso({ entries, profile, onOpenModal }: CorpoTabPesoProp
           <span className="text-[14px] font-semibold text-[var(--sl-t1)]">Peso (kg)</span>
           {latest && (
             <div className="text-right">
-              <p className="font-[DM_Mono] text-[18px]" style={{ color: CORPO_COLOR }}>{latest.weight}</p>
+              <p className="font-[IBM_Plex_Mono] text-[18px]" style={{ color: CORPO_COLOR }}>{latest.weight}</p>
               {delta !== null && (
-                <p className="text-[11px]" style={{ color: parseFloat(delta) < 0 ? '#10b981' : '#f43f5e' }}>
+                <p className="text-[11px]" style={{ color: parseFloat(delta) < 0 ? '#0F766E' : '#DB6478' }}>
                   {parseFloat(delta) < 0 ? '↓' : '↑'} {Math.abs(parseFloat(delta))}kg no período
                 </p>
               )}
@@ -119,7 +119,7 @@ export function CorpoTabPeso({ entries, profile, onOpenModal }: CorpoTabPesoProp
                   <path d={d} fill="none" stroke={CORPO_COLOR} strokeWidth="2.5" strokeLinecap="round" />
                   <circle cx={chartPoints[chartPoints.length - 1].x} cy={chartPoints[chartPoints.length - 1].y} r="5" fill={CORPO_COLOR} />
                   {profile?.weight_goal_kg && (
-                    <line x1="0" y1="15" x2="320" y2="15" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" strokeDasharray="6,4" />
+                    <line x1="0" y1="15" x2="320" y2="15" stroke="rgba(15,118,110,0.4)" strokeWidth="1.5" strokeDasharray="6,4" />
                   )}
                 </>
               )
@@ -150,7 +150,7 @@ export function CorpoTabPeso({ entries, profile, onOpenModal }: CorpoTabPesoProp
               const isPositive = diff > 0
               const isGood = invert ? !isPositive : isPositive
               return (
-                <span className="text-[11px]" style={{ color: isGood ? '#10b981' : '#f43f5e' }}>
+                <span className="text-[11px]" style={{ color: isGood ? '#0F766E' : '#DB6478' }}>
                   {isPositive ? '↑' : '↓'} {Math.abs(diff).toFixed(1)}{unit} no período
                 </span>
               )
@@ -160,28 +160,28 @@ export function CorpoTabPeso({ entries, profile, onOpenModal }: CorpoTabPesoProp
               <div className="grid grid-cols-2 gap-2 px-4 mb-3">
                 <div className="rounded-[10px] p-3" style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
                   <p className="text-[10px] text-[var(--sl-t2)] uppercase mb-1">Cintura</p>
-                  <p className="font-[DM_Mono] text-[20px] font-bold" style={{ color: latest.waist_cm ? CORPO_COLOR : 'var(--sl-t3)' }}>
+                  <p className="font-[IBM_Plex_Mono] text-[20px] font-bold" style={{ color: latest.waist_cm ? CORPO_COLOR : 'var(--sl-t3)' }}>
                     {latest.waist_cm ?? '—'}{latest.waist_cm ? <span className="text-[13px]">cm</span> : ''}
                   </p>
                   {deltaLabel(latest.waist_cm, prev?.waist_cm, 'cm', true)}
                 </div>
                 <div className="rounded-[10px] p-3" style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
                   <p className="text-[10px] text-[var(--sl-t2)] uppercase mb-1">Quadril</p>
-                  <p className="font-[DM_Mono] text-[20px] font-bold text-[var(--sl-t1)]">
+                  <p className="font-[IBM_Plex_Mono] text-[20px] font-bold text-[var(--sl-t1)]">
                     {latest.hip_cm ?? '—'}{latest.hip_cm ? <span className="text-[13px]">cm</span> : ''}
                   </p>
                   {deltaLabel(latest.hip_cm, prev?.hip_cm, 'cm', true)}
                 </div>
                 <div className="rounded-[10px] p-3" style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
                   <p className="text-[10px] text-[var(--sl-t2)] uppercase mb-1">Gordura corp.</p>
-                  <p className="font-[DM_Mono] text-[20px] font-bold" style={{ color: latest.body_fat_pct ? '#f59e0b' : 'var(--sl-t3)' }}>
+                  <p className="font-[IBM_Plex_Mono] text-[20px] font-bold" style={{ color: latest.body_fat_pct ? '#D9962E' : 'var(--sl-t3)' }}>
                     {latest.body_fat_pct ?? '—'}{latest.body_fat_pct ? <span className="text-[13px]">%</span> : ''}
                   </p>
                   {deltaLabel(latest.body_fat_pct, prev?.body_fat_pct, '%', true)}
                 </div>
                 <div className="rounded-[10px] p-3" style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
                   <p className="text-[10px] text-[var(--sl-t2)] uppercase mb-1">Massa muscular</p>
-                  <p className="font-[DM_Mono] text-[20px] font-bold" style={{ color: latestMuscle ? '#10b981' : 'var(--sl-t3)' }}>
+                  <p className="font-[IBM_Plex_Mono] text-[20px] font-bold" style={{ color: latestMuscle ? '#0F766E' : 'var(--sl-t3)' }}>
                     {latestMuscle ? <>{latestMuscle.toFixed(1)}<span className="text-[13px]">kg</span></> : '—'}
                   </p>
                   {deltaLabel(latestMuscle, prevMuscle, 'kg', false)}
@@ -197,7 +197,7 @@ export function CorpoTabPeso({ entries, profile, onOpenModal }: CorpoTabPesoProp
         <button
           onClick={onOpenModal}
           className="w-full rounded-[10px] p-[14px] flex items-center justify-between"
-          style={{ background: `linear-gradient(135deg,${CORPO_COLOR},rgba(249,115,22,0.6))` }}
+          style={{ background: `linear-gradient(135deg,${CORPO_COLOR},rgba(217,117,52,0.6))` }}
         >
           <div className="flex items-center gap-[10px]">
             <span className="text-[20px]">📏</span>
@@ -226,7 +226,7 @@ export function CorpoTabPeso({ entries, profile, onOpenModal }: CorpoTabPesoProp
               return (
                 <div key={entry.id} className="flex items-center gap-3 px-5 py-3 border-b border-[var(--sl-border)] last:border-b-0">
                   <div className="w-[42px] text-center flex-shrink-0">
-                    <p className="font-[DM_Mono] text-[14px]" style={{ color: CORPO_COLOR }}>{entry.weight}</p>
+                    <p className="font-[IBM_Plex_Mono] text-[14px]" style={{ color: CORPO_COLOR }}>{entry.weight}</p>
                     <p className="text-[10px] text-[var(--sl-t3)]">kg</p>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -239,7 +239,7 @@ export function CorpoTabPeso({ entries, profile, onOpenModal }: CorpoTabPesoProp
                     </p>
                   </div>
                   {entryDelta !== null && (
-                    <span className="text-[12px] flex-shrink-0" style={{ color: parseFloat(entryDelta) < 0 ? '#10b981' : '#f43f5e' }}>
+                    <span className="text-[12px] flex-shrink-0" style={{ color: parseFloat(entryDelta) < 0 ? '#0F766E' : '#DB6478' }}>
                       {parseFloat(entryDelta) < 0 ? '↓' : '↑'} {Math.abs(parseFloat(entryDelta))}
                     </span>
                   )}

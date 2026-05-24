@@ -192,7 +192,7 @@ export function SLSelect({
               >
                 {opt.icon && <span className="text-[14px] shrink-0">{opt.icon}</span>}
                 <span className="flex-1 min-w-0 break-words">{opt.label}</span>
-                {opt.value === value && <Check size={14} className="text-[#10b981] shrink-0" />}
+                {opt.value === value && <Check size={14} className="text-[#0F766E] shrink-0" />}
               </div>
             ))}
             {options.length === 0 && (
@@ -230,7 +230,7 @@ export function SLSelect({
             >
               {opt.icon && <span className="text-[14px] shrink-0">{opt.icon}</span>}
               <span className="flex-1 min-w-0 break-words">{opt.label}</span>
-              {opt.value === value && <Check size={14} className="text-[#10b981] shrink-0" />}
+              {opt.value === value && <Check size={14} className="text-[#0F766E] shrink-0" />}
             </div>
           ))}
           {options.length === 0 && (

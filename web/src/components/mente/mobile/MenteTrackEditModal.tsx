@@ -6,8 +6,8 @@ import type { TrackCategory, StudyTrack } from '@/hooks/use-mente'
 import { CATEGORY_LABELS } from '@/hooks/use-mente'
 import { cn } from '@/lib/utils'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.12)'
+const MENTE_COLOR = '#D9962E'
+const MENTE_BG = 'rgba(217,150,46,0.12)'
 
 export interface EditTrackData {
   name: string
@@ -89,7 +89,7 @@ export function MenteTrackEditModal({
             <p className="text-[11px] font-medium" style={{ color: MENTE_COLOR }}>
               Editar trilha
             </p>
-            <h2 className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)]">
+            <h2 className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)]">
               {track?.name ?? 'Trilha'}
             </h2>
           </div>
@@ -195,7 +195,7 @@ export function MenteTrackEditModal({
             <button
               onClick={handleSave}
               disabled={saving || !name.trim()}
-              className="w-full py-3.5 rounded-[10px] font-[Syne] font-bold text-[15px] text-black disabled:opacity-50 transition-opacity"
+              className="w-full py-3.5 rounded-[10px] font-[Space_Grotesk] font-bold text-[15px] text-black disabled:opacity-50 transition-opacity"
               style={{ background: MENTE_COLOR }}
             >
               {saving ? 'Salvando...' : 'Salvar alterações'}

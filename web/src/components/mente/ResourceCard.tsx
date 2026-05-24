@@ -22,8 +22,8 @@ const TYPE_ICONS: Record<ResourceType, React.ReactNode> = {
 
 const STATUS_COLORS: Record<ResourceStatus, string> = {
   to_study: '#6e90b8',
-  studying: '#f59e0b',
-  completed: '#10b981',
+  studying: '#D9962E',
+  completed: '#0F766E',
 }
 
 const STATUS_SEQUENCE: ResourceStatus[] = ['to_study', 'studying', 'completed']
@@ -80,7 +80,7 @@ export function ResourceCard({ resource, onUpdateStatus, onDelete }: ResourceCar
               {onDelete && (
                 <button
                   onClick={() => onDelete(resource.id)}
-                  className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors"
                 >
                   <Trash2 size={12} className="text-[var(--sl-t3)]" />
                 </button>

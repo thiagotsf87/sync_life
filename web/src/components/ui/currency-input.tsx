@@ -37,12 +37,12 @@ export function CurrencyInput({
     <div
       className={cn(
         'relative bg-[var(--sl-s2)] border rounded-[10px] transition-colors',
-        'focus-within:border-[#10b981]',
-        error ? 'border-[#f43f5e]' : 'border-[var(--sl-border)]',
+        'focus-within:border-[#0F766E]',
+        error ? 'border-[#DB6478]' : 'border-[var(--sl-border)]',
         className
       )}
     >
-      <span className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[13px] font-[DM_Mono] text-[var(--sl-t3)] pointer-events-none">
+      <span className="absolute left-[14px] top-1/2 -translate-y-1/2 text-[13px] font-[IBM_Plex_Mono] text-[var(--sl-t3)] pointer-events-none">
         {prefix}
       </span>
       <input
@@ -51,7 +51,7 @@ export function CurrencyInput({
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full bg-transparent pl-[38px] pr-3 py-2.5 text-[14px] font-[DM_Mono] text-[var(--sl-t1)] outline-none placeholder:text-[var(--sl-t3)]/50"
+        className="w-full bg-transparent pl-[38px] pr-3 py-2.5 text-[14px] font-[IBM_Plex_Mono] text-[var(--sl-t1)] outline-none placeholder:text-[var(--sl-t3)]/50"
       />
     </div>
   )

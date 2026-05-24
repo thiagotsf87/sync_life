@@ -32,11 +32,11 @@ const CHANGE_TYPE_LABELS: Record<ChangeType, string> = {
 }
 
 const CHANGE_TYPE_COLORS: Record<ChangeType, string> = {
-  initial: '#0055ff',
-  promotion: '#10b981',
-  lateral: '#f59e0b',
+  initial: '#0B2D34',
+  promotion: '#0F766E',
+  lateral: '#D9962E',
   company_change: '#a855f7',
-  salary_change: '#06b6d4',
+  salary_change: '#3CA0B5',
   other: '#6e90b8',
 }
 
@@ -181,13 +181,13 @@ export default function HistoricoCarreiraPage() {
           <ArrowLeft size={16} />
           Carreira
         </button>
-        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
+        <h1 className="font-[Space_Grotesk] font-extrabold text-xl flex-1 text-sl-grad">
           📜 Histórico de Carreira
         </h1>
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                     bg-[#f59e0b] text-[#03071a] hover:opacity-90 transition-opacity"
+                     bg-[#D9962E] text-[#03071a] hover:opacity-90 transition-opacity"
         >
           <Plus size={16} />
           Adicionar
@@ -198,37 +198,37 @@ export default function HistoricoCarreiraPage() {
       {history.length > 0 && (
         <div className="grid grid-cols-4 gap-3 mb-5 max-sm:grid-cols-2">
           <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 overflow-hidden">
-            <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#10b981]" />
+            <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#0F766E]" />
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Crescimento Total</p>
-            <p className={cn('font-[DM_Mono] font-medium text-xl', totalGrowthPct >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+            <p className={cn('font-[IBM_Plex_Mono] font-medium text-xl', totalGrowthPct >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
               {withSalary.length >= 2 ? `${totalGrowthPct >= 0 ? '+' : ''}${totalGrowthPct.toFixed(1)}%` : '—'}
             </p>
           </div>
           <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 overflow-hidden">
-            <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#10b981]" />
+            <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#0F766E]" />
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Maior Salário</p>
-            <p className="font-[DM_Mono] font-medium text-xl text-[var(--sl-t1)]">
+            <p className="font-[IBM_Plex_Mono] font-medium text-xl text-[var(--sl-t1)]">
               {withSalary.length > 0 ? maxSalary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}
             </p>
           </div>
           <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 overflow-hidden">
-            <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#0055ff]" />
+            <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#0B2D34]" />
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Registros</p>
-            <p className="font-[DM_Mono] font-medium text-xl text-[var(--sl-t1)]">{history.length}</p>
+            <p className="font-[IBM_Plex_Mono] font-medium text-xl text-[var(--sl-t1)]">{history.length}</p>
           </div>
           {withSalary.length > 0 ? (
             <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#0055ff]" />
+              <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#0B2D34]" />
               <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Salário Inicial</p>
-              <p className="font-[DM_Mono] font-medium text-xl text-[var(--sl-t1)]">
+              <p className="font-[IBM_Plex_Mono] font-medium text-xl text-[var(--sl-t1)]">
                 {withSalary[withSalary.length - 1].salary!.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </p>
             </div>
           ) : (
             <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 overflow-hidden">
-              <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#0055ff]" />
+              <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#0B2D34]" />
               <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Salário Inicial</p>
-              <p className="font-[DM_Mono] font-medium text-xl text-[var(--sl-t1)]">—</p>
+              <p className="font-[IBM_Plex_Mono] font-medium text-xl text-[var(--sl-t1)]">—</p>
             </div>
           )}
         </div>
@@ -237,7 +237,7 @@ export default function HistoricoCarreiraPage() {
       {/* Salary Chart */}
       {withSalary.length >= 2 && (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-5 sl-fade-up">
-          <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-4">📈 Evolução Salarial</h2>
+          <h2 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)] mb-4">📈 Evolução Salarial</h2>
           <div className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
@@ -249,8 +249,8 @@ export default function HistoricoCarreiraPage() {
               >
                 <defs>
                   <linearGradient id="salGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.02} />
+                    <stop offset="5%" stopColor="#0F766E" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#0F766E" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--sl-s3)" />
@@ -261,7 +261,7 @@ export default function HistoricoCarreiraPage() {
                   contentStyle={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', borderRadius: '10px', fontSize: '11px' }}
                   formatter={(v: number | undefined) => [typeof v === 'number' ? v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—', 'Salário']}
                 />
-                <Area type="monotone" dataKey="salary" stroke="#10b981" strokeWidth={2} fill="url(#salGrad)" dot={{ fill: '#10b981', r: 3 }} />
+                <Area type="monotone" dataKey="salary" stroke="#0F766E" strokeWidth={2} fill="url(#salGrad)" dot={{ fill: '#0F766E', r: 3 }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -276,11 +276,11 @@ export default function HistoricoCarreiraPage() {
       ) : history.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-12 text-center">
           <div className="text-4xl mb-3">📜</div>
-          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Histórico vazio</h3>
+          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Histórico vazio</h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-5">Registre sua trajetória profissional.</p>
           <button
             onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f59e0b] text-[#03071a] hover:opacity-90"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#D9962E] text-[#03071a] hover:opacity-90"
           >
             <Plus size={15} />
             Primeiro registro
@@ -332,13 +332,13 @@ export default function HistoricoCarreiraPage() {
 
                       {entry.salary != null && (
                         <div className="text-right shrink-0">
-                          <p className="font-[DM_Mono] font-medium text-[14px] text-[var(--sl-t1)]">
+                          <p className="font-[IBM_Plex_Mono] font-medium text-[14px] text-[var(--sl-t1)]">
                             {entry.salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                           </p>
                           {delta != null && (
                             <div className={cn(
                               'flex items-center justify-end gap-0.5 text-[11px] font-semibold mt-0.5',
-                              delta >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                              delta >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]'
                             )}>
                               {delta >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
                               {delta >= 0 ? '+' : ''}{delta.toFixed(1)}%
@@ -364,12 +364,12 @@ export default function HistoricoCarreiraPage() {
       {/* Conquistas do Herói — Jornada only */}
       {history.length > 0 && (
         <div className="mt-5 bg-[var(--sl-s1)] border rounded-2xl p-5"
-          style={{ borderColor: 'rgba(139,92,246,0.25)', background: 'linear-gradient(135deg, rgba(139,92,246,0.06), rgba(236,72,153,0.03))' }}>
-          <h2 className="font-[Syne] font-bold text-[13px] mb-3" style={{ color: '#c4b5fd' }}>🏆 Conquistas do Herói</h2>
+          style={{ borderColor: 'rgba(139,123,212,0.25)', background: 'linear-gradient(135deg, rgba(139,123,212,0.06), rgba(199,103,149,0.03))' }}>
+          <h2 className="font-[Space_Grotesk] font-bold text-[13px] mb-3" style={{ color: '#c4b5fd' }}>🏆 Conquistas do Herói</h2>
           <div className="flex gap-2 flex-wrap">
             {history.filter(h => h.change_type === 'promotion' || h.change_type === 'initial').map((h, i) => (
               <div key={h.id} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold"
-                style={{ background: 'rgba(139,92,246,0.15)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.2)' }}>
+                style={{ background: 'rgba(139,123,212,0.15)', color: '#c4b5fd', border: '1px solid rgba(139,123,212,0.2)' }}>
                 {i === 0 ? '🥇' : i === 1 ? '🥈' : '⭐'} {h.title}
               </div>
             ))}
@@ -385,21 +385,21 @@ export default function HistoricoCarreiraPage() {
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-[var(--sl-border)]">
               <p className="text-[12px] font-bold text-[#c4b5fd]">✦ Conquista Desbloqueada!</p>
-              <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">Promoção Registrada</h3>
+              <h3 className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)]">Promoção Registrada</h3>
               <button onClick={() => setCelebracao(null)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)]">✕</button>
             </div>
 
             {/* Hero */}
             <div
-              className="m-4 p-5 rounded-2xl text-center border border-[rgba(139,92,246,0.28)]"
-              style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.14), rgba(244,63,94,0.08))' }}
+              className="m-4 p-5 rounded-2xl text-center border border-[rgba(139,123,212,0.28)]"
+              style={{ background: 'linear-gradient(135deg, rgba(139,123,212,0.14), rgba(219,100,120,0.08))' }}
             >
               <div className="text-[48px] mb-2">🎉</div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-[#c4b5fd] mb-1">NOVO CAPÍTULO DESBLOQUEADO</p>
-              <p className="font-[Syne] font-extrabold text-[22px] text-[var(--sl-t1)] mb-1">{celebracao.newTitle}</p>
+              <p className="font-[Space_Grotesk] font-extrabold text-[22px] text-[var(--sl-t1)] mb-1">{celebracao.newTitle}</p>
               <p
-                className="font-[DM_Mono] font-bold text-[28px]"
-                style={{ background: 'linear-gradient(135deg, #f43f5e, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                className="font-[IBM_Plex_Mono] font-bold text-[28px]"
+                style={{ background: 'linear-gradient(135deg, #DB6478, #8B7BD4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
               >
                 +100 XP
               </p>
@@ -409,26 +409,26 @@ export default function HistoricoCarreiraPage() {
             {/* Impacto financeiro */}
             {celebracao.oldSalary > 0 && celebracao.newSalary > celebracao.oldSalary && (
               <div
-                className="mx-4 mb-3 p-4 rounded-xl border border-[rgba(16,185,129,0.2)]"
-                style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(244,63,94,0.06))' }}
+                className="mx-4 mb-3 p-4 rounded-xl border border-[rgba(15,118,110,0.2)]"
+                style={{ background: 'linear-gradient(135deg, rgba(15,118,110,0.08), rgba(219,100,120,0.06))' }}
               >
                 <p className="text-[11px] font-bold text-[#c4b5fd] mb-2.5">💰 IMPACTO DA CONQUISTA</p>
                 <div className="flex justify-between mb-1.5">
                   <span className="text-[12px] text-[var(--sl-t2)]">Salário anterior</span>
-                  <span className="font-[DM_Mono] text-[13px] text-[var(--sl-t1)] line-through">
+                  <span className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t1)] line-through">
                     {celebracao.oldSalary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </span>
                 </div>
                 <div className="flex justify-between mb-1.5">
                   <span className="text-[12px] text-[var(--sl-t2)]">Novo salário</span>
-                  <span className="font-[DM_Mono] text-[13px] font-semibold text-[#f43f5e]">
+                  <span className="font-[IBM_Plex_Mono] text-[13px] font-semibold text-[#DB6478]">
                     {celebracao.newSalary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </span>
                 </div>
                 <div className="h-px bg-[var(--sl-border)] my-2" />
                 <div className="flex justify-between">
                   <span className="text-[12px] font-semibold text-[var(--sl-t1)]">Aumento</span>
-                  <span className="font-[DM_Mono] text-[14px] font-bold text-[#10b981]">
+                  <span className="font-[IBM_Plex_Mono] text-[14px] font-bold text-[#0F766E]">
                     +{Math.round(((celebracao.newSalary - celebracao.oldSalary) / celebracao.oldSalary) * 100)}% · +{(celebracao.newSalary - celebracao.oldSalary).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/mês
                   </span>
                 </div>
@@ -438,7 +438,7 @@ export default function HistoricoCarreiraPage() {
             {/* Badges */}
             <div className="grid grid-cols-3 gap-2 mx-4 mb-4">
               {([['🏆', 'Evolução'], ['📈', '+Salary'], ['⭐', `Nível ${CARREIRA_XP.level}`]] as [string, string][]).map(([emoji, label]) => (
-                <div key={label} className="p-3 bg-[var(--sl-s2)] border border-[rgba(139,92,246,0.2)] rounded-xl text-center">
+                <div key={label} className="p-3 bg-[var(--sl-s2)] border border-[rgba(139,123,212,0.2)] rounded-xl text-center">
                   <div className="text-[24px] mb-1">{emoji}</div>
                   <p className="text-[10px] font-bold text-[#c4b5fd]">{label}</p>
                 </div>
@@ -449,8 +449,8 @@ export default function HistoricoCarreiraPage() {
             <div className="px-4 pb-4">
               <button
                 onClick={() => setCelebracao(null)}
-                className="w-full py-3.5 rounded-[14px] font-[Syne] font-bold text-[16px] text-white"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #f43f5e)' }}
+                className="w-full py-3.5 rounded-[14px] font-[Space_Grotesk] font-bold text-[16px] text-white"
+                style={{ background: 'linear-gradient(135deg, #8B7BD4, #DB6478)' }}
               >
                 ✦ Continuar
               </button>
@@ -467,7 +467,7 @@ export default function HistoricoCarreiraPage() {
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-5 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">📜 Novo Registro</h2>
+              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">📜 Novo Registro</h2>
               <button onClick={() => setShowModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">×</button>
             </div>
             <div className="p-5 flex flex-col gap-4">
@@ -505,7 +505,7 @@ export default function HistoricoCarreiraPage() {
                     value={form.title}
                     onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     placeholder="Ex: Dev Sênior"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#D9962E]"
                   />
                 </div>
                 <div>
@@ -515,7 +515,7 @@ export default function HistoricoCarreiraPage() {
                     value={form.company}
                     onChange={e => setForm(f => ({ ...f, company: e.target.value }))}
                     placeholder="Nome da empresa"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#D9962E]"
                   />
                 </div>
               </div>
@@ -530,7 +530,7 @@ export default function HistoricoCarreiraPage() {
                     onChange={e => setForm(f => ({ ...f, salary: e.target.value }))}
                     placeholder="Opcional"
                     min="0"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#D9962E]"
                   />
                 </div>
                 <div>
@@ -538,7 +538,7 @@ export default function HistoricoCarreiraPage() {
                   <select
                     value={form.level}
                     onChange={e => setForm(f => ({ ...f, level: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b] appearance-none"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D9962E] appearance-none"
                   >
                     <option value="">Selecione</option>
                     {Object.entries(LEVEL_LABELS).map(([v, l]) => (
@@ -556,7 +556,7 @@ export default function HistoricoCarreiraPage() {
                     type="date"
                     value={form.start_date}
                     onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D9962E]"
                   />
                 </div>
                 <div>
@@ -565,7 +565,7 @@ export default function HistoricoCarreiraPage() {
                     type="date"
                     value={form.end_date}
                     onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D9962E]"
                   />
                 </div>
               </div>
@@ -578,7 +578,7 @@ export default function HistoricoCarreiraPage() {
                   onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
                   placeholder="Conquistas, motivos, contexto..."
                   rows={2}
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#f59e0b] resize-none"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#D9962E] resize-none"
                 />
               </div>
 
@@ -592,7 +592,7 @@ export default function HistoricoCarreiraPage() {
                 <button
                   onClick={handleAdd}
                   disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#f59e0b] text-[#03071a] hover:opacity-90 disabled:opacity-50 transition-opacity"
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#D9962E] text-[#03071a] hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   {isSaving ? 'Salvando...' : 'Adicionar'}
                 </button>

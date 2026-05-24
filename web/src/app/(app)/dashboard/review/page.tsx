@@ -62,10 +62,10 @@ const SLIDE_LABELS: Record<string, string> = {
 function SlideHeader({ step, total, weekLabel }: { step: number; total: number; weekLabel: string }) {
   return (
     <div className="text-center px-5 pt-4 pb-3">
-      <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[#6366f1] mb-1.5">
+      <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-[#6B6FD4] mb-1.5">
         SUA SEMANA NO SYNCLIFE
       </p>
-      <p className="font-[Syne] text-[17px] font-bold text-[var(--sl-t1)] mb-0.5">
+      <p className="font-[Space_Grotesk] text-[17px] font-bold text-[var(--sl-t1)] mb-0.5">
         {weekLabel}
       </p>
       <p className="text-[11px] text-[var(--sl-t3)]">Slide {step} de {total}</p>
@@ -82,21 +82,21 @@ function SlideFinancas() {
   ]
   return (
     <div className="mx-4 rounded-[14px] p-4"
-         style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.02))', border: '1px solid rgba(16,185,129,0.2)' }}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[#10b981] mb-2">
+         style={{ background: 'linear-gradient(135deg, rgba(15,118,110,0.08), rgba(15,118,110,0.02))', border: '1px solid rgba(15,118,110,0.2)' }}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[#0F766E] mb-2">
         💰 Finanças da semana
       </p>
-      <p className="font-[DM_Mono] text-[28px] font-bold text-[var(--sl-t1)] mb-0.5">R$ 1.240</p>
+      <p className="font-[IBM_Plex_Mono] text-[28px] font-bold text-[var(--sl-t1)] mb-0.5">R$ 1.240</p>
       <p className="text-[13px] text-[var(--sl-t2)] mb-3">
         gastos esta semana ·{' '}
-        <span className="text-[#10b981] font-semibold">18% menos</span> que a média
+        <span className="text-[#0F766E] font-semibold">18% menos</span> que a média
       </p>
       <p className="text-[11px] font-semibold text-[var(--sl-t2)] mb-2">Top categorias:</p>
       <div className="flex flex-col gap-2">
         {cats.map((c) => (
           <div key={c.label} className="flex items-center justify-between">
             <span className="text-[12px] text-[var(--sl-t1)]">{c.label}</span>
-            <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">{c.value}</span>
+            <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t2)]">{c.value}</span>
           </div>
         ))}
       </div>
@@ -106,14 +106,14 @@ function SlideFinancas() {
 
 function SlideMetas() {
   const goals = [
-    { label: 'Reserva de emergência', from: 68, to: 70, color: '#10b981' },
-    { label: 'Viagem Europa',         from: 42, to: 42, color: '#f59e0b' },
-    { label: 'Curso Python',          from: 15, to: 22, color: '#6366f1' },
+    { label: 'Reserva de emergência', from: 68, to: 70, color: '#0F766E' },
+    { label: 'Viagem Europa',         from: 42, to: 42, color: '#D9962E' },
+    { label: 'Curso Python',          from: 15, to: 22, color: '#6B6FD4' },
   ]
   return (
     <div className="mx-4 rounded-[14px] p-4"
-         style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(0,85,255,0.03))', border: '1px solid rgba(99,102,241,0.2)' }}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[#6366f1] mb-3">
+         style={{ background: 'linear-gradient(135deg, rgba(107,111,212,0.08), rgba(0,85,255,0.03))', border: '1px solid rgba(107,111,212,0.2)' }}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[#6B6FD4] mb-3">
         🎯 Metas ativas — progresso
       </p>
       <div className="flex flex-col gap-4">
@@ -123,7 +123,7 @@ function SlideMetas() {
             <div key={g.label}>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[13px] text-[var(--sl-t1)]">{g.label}</span>
-                <span className="font-[DM_Mono] text-[11px]" style={{ color: g.color }}>
+                <span className="font-[IBM_Plex_Mono] text-[11px]" style={{ color: g.color }}>
                   {g.from}% → {g.to}%{diff > 0 ? ` (+${diff}%)` : ' (sem aporte)'}
                 </span>
               </div>
@@ -140,22 +140,22 @@ function SlideMetas() {
 
 function SlideCorpo() {
   const metrics = [
-    { label: 'Treinos',         value: '4 sessões',    color: '#f97316' },
-    { label: 'Peso registrado', value: '73,8 kg',      color: '#10b981' },
-    { label: 'Água média/dia',  value: '2,1 L',        color: '#06b6d4' },
+    { label: 'Treinos',         value: '4 sessões',    color: '#D97534' },
+    { label: 'Peso registrado', value: '73,8 kg',      color: '#0F766E' },
+    { label: 'Água média/dia',  value: '2,1 L',        color: '#3CA0B5' },
     { label: 'Sono médio',      value: '7h 12min',     color: '#a855f7' },
   ]
   return (
     <div className="mx-4 rounded-[14px] p-4"
-         style={{ background: 'linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02))', border: '1px solid rgba(249,115,22,0.2)' }}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[#f97316] mb-3">
+         style={{ background: 'linear-gradient(135deg, rgba(217,117,52,0.08), rgba(217,117,52,0.02))', border: '1px solid rgba(217,117,52,0.2)' }}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[#D97534] mb-3">
         🏃 Corpo — dados da semana
       </p>
       <div className="grid grid-cols-2 gap-2.5">
         {metrics.map((m) => (
           <div key={m.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3">
             <p className="text-[10px] text-[var(--sl-t3)] mb-1">{m.label}</p>
-            <p className="font-[DM_Mono] text-[16px] font-medium" style={{ color: m.color }}>{m.value}</p>
+            <p className="font-[IBM_Plex_Mono] text-[16px] font-medium" style={{ color: m.color }}>{m.value}</p>
           </div>
         ))}
       </div>
@@ -165,11 +165,11 @@ function SlideCorpo() {
 
 function SlideScore() {
   const modules = [
-    { label: 'Finanças',    pct: 72, color: '#10b981' },
-    { label: 'Futuro',      pct: 55, color: '#8b5cf6' },
-    { label: 'Corpo',       pct: 80, color: '#f97316' },
-    { label: 'Tempo',       pct: 65, color: '#06b6d4' },
-    { label: 'Mente',       pct: 50, color: '#eab308' },
+    { label: 'Finanças',    pct: 72, color: '#0F766E' },
+    { label: 'Futuro',      pct: 55, color: '#8B7BD4' },
+    { label: 'Corpo',       pct: 80, color: '#D97534' },
+    { label: 'Tempo',       pct: 65, color: '#3CA0B5' },
+    { label: 'Mente',       pct: 50, color: '#D9962E' },
   ]
   const score = 68
   const r = 52
@@ -179,8 +179,8 @@ function SlideScore() {
   return (
     <div className="mx-4">
       <div className="rounded-[14px] p-4 text-center"
-           style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(0,85,255,0.05))', border: '1px solid rgba(99,102,241,0.25)' }}>
-        <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[#6366f1] mb-3">
+           style={{ background: 'linear-gradient(135deg, rgba(107,111,212,0.1), rgba(0,85,255,0.05))', border: '1px solid rgba(107,111,212,0.25)' }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[#6B6FD4] mb-3">
           ⭐ Life Sync Score — semana
         </p>
         <div className="flex items-center justify-center mb-3">
@@ -188,8 +188,8 @@ function SlideScore() {
             <svg width="120" height="120" viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)' }}>
               <defs>
                 <linearGradient id="reviewRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#6366f1" />
-                  <stop offset="100%" stopColor="#0055ff" />
+                  <stop offset="0%" stopColor="#6B6FD4" />
+                  <stop offset="100%" stopColor="#0B2D34" />
                 </linearGradient>
               </defs>
               <circle cx="60" cy="60" r={r} fill="none" stroke="var(--sl-s3)" strokeWidth="8" />
@@ -199,8 +199,8 @@ function SlideScore() {
                 style={{ transition: 'stroke-dasharray 1.2s cubic-bezier(0.4,0,0.2,1)' }} />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-[Syne] text-[28px] font-extrabold leading-none"
-                style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <span className="font-[Space_Grotesk] text-[28px] font-extrabold leading-none"
+                style={{ background: 'linear-gradient(135deg, #6B6FD4, #0B2D34)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 {score}
               </span>
               <span className="text-[10px] text-[var(--sl-t3)]">/ 100</span>
@@ -208,8 +208,8 @@ function SlideScore() {
           </div>
         </div>
         <div className="flex items-center justify-center gap-1.5 mb-3">
-          <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold text-[#10b981]"
-                style={{ background: 'rgba(16,185,129,0.12)' }}>
+          <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold text-[#0F766E]"
+                style={{ background: 'rgba(15,118,110,0.12)' }}>
             ▲ +4 pts vs semana anterior
           </span>
         </div>
@@ -220,7 +220,7 @@ function SlideScore() {
               <div className="flex-1 h-[4px] rounded-full bg-[var(--sl-s3)] overflow-hidden">
                 <div className="h-full rounded-full" style={{ width: `${m.pct}%`, background: m.color }} />
               </div>
-              <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t2)] w-[28px] text-right">{m.pct}</span>
+              <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t2)] w-[28px] text-right">{m.pct}</span>
             </div>
           ))}
         </div>
@@ -231,13 +231,13 @@ function SlideScore() {
 
 function SlideBadges() {
   const badgesThisWeek = [
-    { icon: '💰', name: 'Primeiro Registro', rarity: 'Comum', pts: 10, color: '#64748b' },
-    { icon: '🔥', name: '7 Dias Seguidos',   rarity: 'Incomum', pts: 25, color: '#10b981' },
+    { icon: '💰', name: 'Primeiro Registro', rarity: 'Comum', pts: 10, color: '#6F7986' },
+    { icon: '🔥', name: '7 Dias Seguidos',   rarity: 'Incomum', pts: 25, color: '#0F766E' },
   ]
   return (
     <div className="mx-4 rounded-[14px] p-4"
-         style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02))', border: '1px solid rgba(245,158,11,0.2)' }}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[#f59e0b] mb-3">
+         style={{ background: 'linear-gradient(135deg, rgba(217,150,46,0.08), rgba(217,150,46,0.02))', border: '1px solid rgba(217,150,46,0.2)' }}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[#D9962E] mb-3">
         🏆 Conquistas desta semana
       </p>
       {badgesThisWeek.length > 0 ? (
@@ -249,7 +249,7 @@ function SlideBadges() {
                 <p className="text-[13px] font-semibold text-[var(--sl-t1)]">{b.name}</p>
                 <p className="text-[11px] font-medium" style={{ color: b.color }}>{b.rarity} · +{b.pts} pts</p>
               </div>
-              <CheckCircle size={18} className="text-[#10b981] shrink-0" />
+              <CheckCircle size={18} className="text-[#0F766E] shrink-0" />
             </div>
           ))}
         </div>
@@ -268,19 +268,19 @@ function SlideCTA({ onComplete }: { onComplete: () => void }) {
   return (
     <div className="mx-4">
       <div className="rounded-[14px] p-5 text-center mb-4"
-           style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(0,85,255,0.06))', border: '1px solid rgba(99,102,241,0.25)' }}>
+           style={{ background: 'linear-gradient(135deg, rgba(107,111,212,0.12), rgba(0,85,255,0.06))', border: '1px solid rgba(107,111,212,0.25)' }}>
         <div className="text-[48px] mb-3">🎉</div>
-        <p className="font-[Syne] text-[20px] font-extrabold text-[var(--sl-t1)] mb-2">
+        <p className="font-[Space_Grotesk] text-[20px] font-extrabold text-[var(--sl-t1)] mb-2">
           Review completo!
         </p>
         <p className="text-[13px] text-[var(--sl-t2)] leading-[1.6] mb-4">
           Você ganhou{' '}
-          <span className="font-[DM_Mono] font-bold text-[#f59e0b]">+50 pts</span>
+          <span className="font-[IBM_Plex_Mono] font-bold text-[#D9962E]">+50 pts</span>
           {' '}por completar sua review semanal. Sua streak continua!
         </p>
         <div className="flex items-center justify-center gap-2 mb-1">
-          <span className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[#6366f1]"
-                style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)' }}>
+          <span className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[#6B6FD4]"
+                style={{ background: 'rgba(107,111,212,0.15)', border: '1px solid rgba(107,111,212,0.3)' }}>
             ⭐ +50 XP adicionados
           </span>
         </div>
@@ -289,8 +289,8 @@ function SlideCTA({ onComplete }: { onComplete: () => void }) {
       <button
         onClick={onComplete}
         className="w-full h-[52px] rounded-[14px] flex items-center justify-center gap-2
-                   font-[Syne] text-[15px] font-bold text-white transition-all mb-3"
-        style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)' }}
+                   font-[Space_Grotesk] text-[15px] font-bold text-white transition-all mb-3"
+        style={{ background: 'linear-gradient(135deg, #6B6FD4, #0B2D34)' }}
       >
         Ir para o Dashboard
       </button>
@@ -350,7 +350,7 @@ export default function WeeklyReviewPage() {
     return (
       <div className="fixed inset-0 z-50 bg-[var(--sl-bg)] flex flex-col items-center justify-center px-6 lg:relative lg:max-w-[600px] lg:mx-auto">
         <div className="text-[48px] mb-4">📅</div>
-        <h2 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)] text-center mb-2">
+        <h2 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)] text-center mb-2">
           Review indisponível
         </h2>
         <p className="text-[13px] text-[var(--sl-t2)] text-center leading-[1.6] mb-6">
@@ -361,7 +361,7 @@ export default function WeeklyReviewPage() {
         <button
           onClick={() => router.push('/dashboard')}
           className="px-6 py-3 rounded-[12px] text-[14px] font-semibold text-white"
-          style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)' }}
+          style={{ background: 'linear-gradient(135deg, #6B6FD4, #0B2D34)' }}
         >
           Voltar ao Dashboard
         </button>
@@ -388,7 +388,7 @@ export default function WeeklyReviewPage() {
 
       {/* Slide label */}
       <div className="flex items-center justify-center px-4 pb-0 shrink-0">
-        <span className="text-[11px] font-semibold text-[#6366f1] uppercase tracking-[1px]">
+        <span className="text-[11px] font-semibold text-[#6B6FD4] uppercase tracking-[1px]">
           {SLIDE_LABELS[SLIDES[step].id]}
         </span>
       </div>
@@ -400,14 +400,14 @@ export default function WeeklyReviewPage() {
         <div className="pb-4">
           {SLIDES[step].id === 'capa'     && (
             <div className="mx-4 rounded-[14px] p-6 text-center"
-                 style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(0,85,255,0.06))', border: '1px solid rgba(99,102,241,0.25)' }}>
+                 style={{ background: 'linear-gradient(135deg, rgba(107,111,212,0.12), rgba(0,85,255,0.06))', border: '1px solid rgba(107,111,212,0.25)' }}>
               <div className="text-[52px] mb-3">🌐</div>
-              <p className="font-[Syne] text-[20px] font-extrabold text-[var(--sl-t1)] mb-2">
+              <p className="font-[Space_Grotesk] text-[20px] font-extrabold text-[var(--sl-t1)] mb-2">
                 Sua semana em review
               </p>
               <p className="text-[13px] text-[var(--sl-t2)] leading-[1.6]">
                 Vamos juntos analisar o que aconteceu e comemorar suas conquistas. Complete para ganhar{' '}
-                <span className="font-[DM_Mono] font-bold text-[#f59e0b]">+50 pts</span>.
+                <span className="font-[IBM_Plex_Mono] font-bold text-[#D9962E]">+50 pts</span>.
               </p>
             </div>
           )}
@@ -432,7 +432,7 @@ export default function WeeklyReviewPage() {
                 style={{
                   width:      i === step ? 20 : 8,
                   height:     8,
-                  background: i === step ? '#6366f1' : 'rgba(99,102,241,0.25)',
+                  background: i === step ? '#6B6FD4' : 'rgba(107,111,212,0.25)',
                 }}
               />
             ))}
@@ -452,7 +452,7 @@ export default function WeeklyReviewPage() {
             <button
               onClick={() => setStep(s => Math.min(total - 1, s + 1))}
               className="flex-1 h-[48px] rounded-[12px] text-[14px] font-bold text-white transition-all"
-              style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)' }}
+              style={{ background: 'linear-gradient(135deg, #6B6FD4, #0B2D34)' }}
             >
               {step === total - 2 ? 'Ver conclusão →' : 'Próximo →'}
             </button>

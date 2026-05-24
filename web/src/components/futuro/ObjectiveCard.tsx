@@ -15,9 +15,9 @@ function getDeadlineStatus(targetDate: string | null): {
   const target = new Date(targetDate)
   const diffDays = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
 
-  if (diffDays < 0) return { label: 'Atrasado', color: '#f43f5e' }
-  if (diffDays <= 30) return { label: `${diffDays}d`, color: '#f59e0b' }
-  if (diffDays <= 90) return { label: `${Math.ceil(diffDays / 7)}sem`, color: '#06b6d4' }
+  if (diffDays < 0) return { label: 'Atrasado', color: '#DB6478' }
+  if (diffDays <= 30) return { label: `${diffDays}d`, color: '#D9962E' }
+  if (diffDays <= 90) return { label: `${Math.ceil(diffDays / 7)}sem`, color: '#3CA0B5' }
   return { label: `${Math.ceil(diffDays / 30)}m`, color: 'var(--sl-t3)' }
 }
 
@@ -26,9 +26,9 @@ function formatDate(dateStr: string): string {
 }
 
 const PRIORITY_ACCENT: Record<string, string> = {
-  high: '#f43f5e',
-  medium: '#f59e0b',
-  low: '#06b6d4',
+  high: '#DB6478',
+  medium: '#D9962E',
+  low: '#3CA0B5',
 }
 
 // ─── Module badges ────────────────────────────────────────────────────────────
@@ -50,10 +50,10 @@ function ModuleBadges({ goals }: { goals: ObjectiveGoal[] }) {
 
 function ObjectiveProgressBar({ value, status }: { value: number; status: string }) {
   const color = status === 'completed'
-    ? '#10b981'
-    : value >= 85 ? '#f43f5e'
-    : value >= 70 ? '#f59e0b'
-    : '#10b981'
+    ? '#0F766E'
+    : value >= 85 ? '#DB6478'
+    : value >= 70 ? '#D9962E'
+    : '#0F766E'
 
   return (
     <div className="w-full bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height: '4px' }}>
@@ -61,7 +61,7 @@ function ObjectiveProgressBar({ value, status }: { value: number; status: string
         className="h-full rounded-full transition-[width] duration-700 ease-out"
         style={{
           width: `${Math.min(value, 100)}%`,
-          background: status === 'active' ? 'linear-gradient(90deg, #10b981, #0055ff)' : color,
+          background: status === 'active' ? 'linear-gradient(90deg, #0F766E, #0B2D34)' : color,
         }}
       />
     </div>
@@ -115,7 +115,7 @@ export function ObjectiveCard({ objective, onClick, onRestore }: ObjectiveCardPr
         <div className="flex items-center gap-2">
           <span className="text-xl shrink-0">{objective.icon}</span>
           <div>
-            <h3 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] leading-tight">
+            <h3 className="font-[Space_Grotesk] font-bold text-[14px] text-[var(--sl-t1)] leading-tight">
               {objective.name}
             </h3>
             <span className="text-[10px] uppercase tracking-wider font-semibold text-[var(--sl-t3)]">
@@ -124,8 +124,8 @@ export function ObjectiveCard({ objective, onClick, onRestore }: ObjectiveCardPr
           </div>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
-          <span className="font-[DM_Mono] font-medium text-[15px]"
-            style={{ color: progress >= 100 ? '#10b981' : 'var(--sl-t2)' }}>
+          <span className="font-[IBM_Plex_Mono] font-medium text-[15px]"
+            style={{ color: progress >= 100 ? '#0F766E' : 'var(--sl-t2)' }}>
             {progress}%
           </span>
           {deadline.label && (
@@ -150,7 +150,7 @@ export function ObjectiveCard({ objective, onClick, onRestore }: ObjectiveCardPr
           {atRisk && (
             <span
               className="text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0"
-              style={{ color: '#f59e0b', background: 'rgba(245,158,11,0.12)' }}
+              style={{ color: '#D9962E', background: 'rgba(217,150,46,0.12)' }}
             >
               ⚠ Ritmo insuficiente
             </span>
@@ -167,13 +167,13 @@ export function ObjectiveCard({ objective, onClick, onRestore }: ObjectiveCardPr
           )}
           {isCompleted && (
             <>
-              <span className="text-[10px] font-bold text-[#10b981]">✓ Concluído</span>
+              <span className="text-[10px] font-bold text-[#0F766E]">✓ Concluído</span>
               {onRestore && (
                 <button
                   onClick={(e) => { e.stopPropagation(); onRestore(objective.id) }}
-                  className="text-[10px] font-semibold text-[var(--sl-t3)] hover:text-[#0055ff]
+                  className="text-[10px] font-semibold text-[var(--sl-t3)] hover:text-[#0B2D34]
                              px-1.5 py-0.5 rounded border border-[var(--sl-border)]
-                             hover:border-[#0055ff]/40 transition-colors"
+                             hover:border-[#0B2D34]/40 transition-colors"
                 >
                   Restaurar
                 </button>
@@ -181,7 +181,7 @@ export function ObjectiveCard({ objective, onClick, onRestore }: ObjectiveCardPr
             </>
           )}
           {isPaused && (
-            <span className="text-[10px] font-bold text-[#f59e0b]">Pausado</span>
+            <span className="text-[10px] font-bold text-[#D9962E]">Pausado</span>
           )}
         </div>
       </div>

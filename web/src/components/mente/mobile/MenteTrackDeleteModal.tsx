@@ -45,14 +45,14 @@ export function MenteTrackDeleteModal({
         className="max-w-[340px] bg-[var(--sl-s1)] border-[var(--sl-border)]"
       >
         <DialogHeader>
-          <DialogTitle className="font-[Syne] font-bold text-[var(--sl-t1)]">
+          <DialogTitle className="font-[Space_Grotesk] font-bold text-[var(--sl-t1)]">
             Excluir trilha
           </DialogTitle>
           <DialogDescription className="text-[13px] text-[var(--sl-t2)] leading-relaxed">
             Tem certeza que deseja excluir a trilha &quot;{trackName}&quot;? Esta ação não pode ser desfeita.
             As sessões de estudo vinculadas serão mantidas.
             {hasLinkedSkillOrCost && (
-              <span className="block mt-2 text-[#f59e0b]">
+              <span className="block mt-2 text-[#D9962E]">
                 ⚠️ Esta trilha pode estar vinculada a habilidades de carreira ou ter custo registrado em Finanças.
               </span>
             )}
@@ -69,7 +69,7 @@ export function MenteTrackDeleteModal({
           <Button
             onClick={handleConfirm}
             disabled={loading}
-            className="flex-1 bg-[#f43f5e] hover:bg-[#e11d48] text-white disabled:opacity-70"
+            className="flex-1 bg-[#DB6478] hover:bg-[#e11d48] text-white disabled:opacity-70"
           >
             {loading ? 'Excluindo...' : 'Excluir'}
           </Button>

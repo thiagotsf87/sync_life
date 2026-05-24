@@ -1,28 +1,57 @@
 interface ProgressBarProps {
-  value: number
+  value: number        // 0-100
   variant?: 'budget' | 'goal' | 'habit'
-  height?: string
+  height?: string      // default '5px'
+  showLabel?: boolean
+  className?: string
 }
 
-function getColor(value: number, variant: string): string {
-  if (variant === 'goal') return 'linear-gradient(90deg, #10b981, #0055ff)'
-  if (value > 85) return '#f43f5e'
-  if (value > 70) return '#f59e0b'
-  return '#10b981'
+function getProgressColor(pct: number): string {
+  if (pct > 85) return 'var(--sl-danger)'
+  if (pct > 70) return 'var(--sl-warning)'
+  return 'var(--sl-success)'
 }
 
-export function ProgressBar({ value, variant = 'budget', height = '5px' }: ProgressBarProps) {
-  const color = getColor(value, variant)
+export function ProgressBar({
+  value,
+  variant = 'budget',
+  height = '5px',
+  showLabel = false,
+  className,
+}: ProgressBarProps) {
+  const clamped = Math.min(Math.max(value, 0), 100)
+  const background =
+    variant === 'goal'
+      ? 'var(--sl-grad)'
+      : getProgressColor(clamped)
 
   return (
-    <div className="w-full bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height }}>
+    <div className={className}>
       <div
-        className="h-full rounded-full transition-[width] duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)]"
+        className="w-full overflow-hidden"
         style={{
-          width: `${Math.min(value, 100)}%`,
-          background: color,
+          height,
+          borderRadius: '3px',
+          background: 'var(--sl-s3)',
         }}
-      />
+      >
+        <div
+          style={{
+            height: '100%',
+            width: `${clamped}%`,
+            borderRadius: '3px',
+            background,
+            transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+        />
+      </div>
+      {showLabel && (
+        <span
+          className="text-[11px] font-[DM_Sans] text-[var(--sl-t3)] mt-1 block tabular-nums"
+        >
+          {clamped}%
+        </span>
+      )}
     </div>
   )
 }

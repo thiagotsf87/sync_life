@@ -17,10 +17,10 @@ interface BudgetHealthScoreProps {
 type HealthLevel = 'excellent' | 'good' | 'warning' | 'danger'
 
 const HEALTH_CONFIG: Record<HealthLevel, { color: string; label: string; emoji: string }> = {
-  excellent: { color: '#10b981', label: 'Excelente',  emoji: '🟢' },
-  good:      { color: '#06b6d4', label: 'Bom',        emoji: '🔵' },
-  warning:   { color: '#f59e0b', label: 'Atenção',    emoji: '🟡' },
-  danger:    { color: '#f43f5e', label: 'Crítico',     emoji: '🔴' },
+  excellent: { color: '#0F766E', label: 'Excelente',  emoji: '🟢' },
+  good:      { color: '#3CA0B5', label: 'Bom',        emoji: '🔵' },
+  warning:   { color: '#D9962E', label: 'Atenção',    emoji: '🟡' },
+  danger:    { color: '#DB6478', label: 'Crítico',     emoji: '🔴' },
 }
 
 function getHealthLevel(percentages: number[]): HealthLevel {
@@ -100,13 +100,13 @@ export function BudgetHealthCard({ budgetPercentages, totalBudgets, respected, c
 
       <div className="flex items-baseline gap-1.5 mb-2">
         <span className="text-[28px]">{config.emoji}</span>
-        <span className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)]">
+        <span className="font-[Space_Grotesk] font-extrabold text-xl text-[var(--sl-t1)]">
           {config.label}
         </span>
       </div>
 
       <p className="text-[12px] text-[var(--sl-t2)]">
-        <span className="font-[DM_Mono] font-medium" style={{ color: config.color }}>
+        <span className="font-[IBM_Plex_Mono] font-medium" style={{ color: config.color }}>
           {respected}/{totalBudgets}
         </span>
         {' '}orçamentos respeitados este mês

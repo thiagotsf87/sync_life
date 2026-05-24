@@ -24,7 +24,7 @@ export function ExpKpiGrid({ items }: ExpKpiGridProps) {
         >
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">{item.label}</p>
           <p
-            className="font-[DM_Mono] text-[19px] font-bold text-[var(--sl-t1)]"
+            className="font-[IBM_Plex_Mono] text-[19px] font-bold text-[var(--sl-t1)]"
             style={item.valueColor ? { color: item.valueColor } : undefined}
           >
             {item.value}

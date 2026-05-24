@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { MEAL_SLOT_CONFIG, type MealSlot, type SaveMealData, type HealthProfile } from '@/hooks/use-corpo'
 import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 
-const CORPO_COLOR = '#f97316'
+const CORPO_COLOR = '#D97534'
 
 interface CorpoMealModalProps {
   slot: MealSlot
@@ -100,7 +100,7 @@ export function CorpoMealModal({ slot, profile, totalConsumedKcal, onClose, onSa
             value={calories}
             onChange={(e) => setCalories(e.target.value)}
             placeholder="Ex: 340"
-            className="w-full rounded-[10px] px-3 py-3 text-[20px] font-[DM_Mono] font-bold outline-none text-center"
+            className="w-full rounded-[10px] px-3 py-3 text-[20px] font-[IBM_Plex_Mono] font-bold outline-none text-center"
             style={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', color: CORPO_COLOR }}
           />
         </div>
@@ -112,9 +112,9 @@ export function CorpoMealModal({ slot, profile, totalConsumedKcal, onClose, onSa
           </label>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: 'Proteína (g)', val: protein, set: setProtein, color: '#10b981' },
-              { label: 'Carbos (g)', val: carbs, set: setCarbs, color: '#0055ff' },
-              { label: 'Gordura (g)', val: fat, set: setFat, color: '#f59e0b' },
+              { label: 'Proteína (g)', val: protein, set: setProtein, color: '#0F766E' },
+              { label: 'Carbos (g)', val: carbs, set: setCarbs, color: '#0B2D34' },
+              { label: 'Gordura (g)', val: fat, set: setFat, color: '#D9962E' },
             ].map(({ label, val, set, color }) => (
               <div key={label}>
                 <p className="text-[10px] text-[var(--sl-t3)] mb-1 text-center">{label}</p>
@@ -136,21 +136,21 @@ export function CorpoMealModal({ slot, profile, totalConsumedKcal, onClose, onSa
         {tdee !== null && caloriesNum > 0 && (
           <div
             className="rounded-[10px] p-3"
-            style={{ background: 'rgba(249,115,22,0.12)' }}
+            style={{ background: 'rgba(217,117,52,0.12)' }}
           >
             <p className="text-[11px] text-[var(--sl-t2)] mb-2 uppercase tracking-wide">IMPACTO NO DIA</p>
             <div className="flex justify-between">
               <div>
                 <span className="text-[12px] text-[var(--sl-t2)]">Total: </span>
-                <span className="font-[DM_Mono] text-[14px]" style={{ color: CORPO_COLOR }}>
+                <span className="font-[IBM_Plex_Mono] text-[14px]" style={{ color: CORPO_COLOR }}>
                   {impactTotal} kcal
                 </span>
               </div>
               <div>
                 <span className="text-[12px] text-[var(--sl-t2)]">Restante: </span>
                 <span
-                  className="font-[DM_Mono] text-[14px]"
-                  style={{ color: remaining !== null && remaining >= 0 ? '#10b981' : '#f43f5e' }}
+                  className="font-[IBM_Plex_Mono] text-[14px]"
+                  style={{ color: remaining !== null && remaining >= 0 ? '#0F766E' : '#DB6478' }}
                 >
                   {remaining !== null ? `${remaining} kcal` : '—'}
                 </span>
@@ -162,7 +162,7 @@ export function CorpoMealModal({ slot, profile, totalConsumedKcal, onClose, onSa
         <button
           onClick={handleSave}
           disabled={saving || !description.trim() || caloriesNum < 1}
-          className="w-full py-[14px] rounded-[10px] font-[Syne] text-[15px] font-bold text-black disabled:opacity-50"
+          className="w-full py-[14px] rounded-[10px] font-[Space_Grotesk] text-[15px] font-bold text-black disabled:opacity-50"
           style={{ background: CORPO_COLOR }}
         >
           {saving ? 'Registrando…' : 'Registrar Refeição 🍽️'}

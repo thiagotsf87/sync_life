@@ -20,7 +20,7 @@ export function StreakBanner({
   count,
   milestones = [],
   icon: Icon = Flame,
-  accentColor = '#f97316',
+  accentColor = '#D97534',
   className,
 }: StreakBannerProps) {
   return (
@@ -31,7 +31,7 @@ export function StreakBanner({
         className,
       )}
       style={{
-        background: `linear-gradient(135deg, ${accentColor}1A, rgba(245,158,11,.06))`,
+        background: `linear-gradient(135deg, ${accentColor}1A, rgba(217,150,46,.06))`,
         border: `1px solid ${accentColor}33`,
       }}
     >
@@ -41,7 +41,7 @@ export function StreakBanner({
       {/* Count + label */}
       <div className="flex-1 min-w-0">
         <span
-          className="font-[Syne] font-extrabold text-[36px] leading-none"
+          className="font-[Space_Grotesk] font-extrabold text-[36px] leading-none"
           style={{ color: accentColor }}
         >
           {count}

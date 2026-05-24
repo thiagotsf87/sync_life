@@ -29,7 +29,7 @@ export function ActivityCard({ activity, onDelete }: ActivityCardProps) {
         {onDelete && (
           <button
             onClick={() => onDelete(activity.id)}
-            className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors shrink-0"
+            className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors shrink-0"
           >
             <Trash2 size={12} className="text-[var(--sl-t3)]" />
           </button>
@@ -39,18 +39,18 @@ export function ActivityCard({ activity, onDelete }: ActivityCardProps) {
       <div className="flex items-center gap-3 mt-2 flex-wrap">
         <div className="flex items-center gap-1">
           <span className="text-[10px] text-[var(--sl-t3)]">⏱</span>
-          <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">{activity.duration_minutes}min</span>
+          <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">{activity.duration_minutes}min</span>
         </div>
         {activity.calories_burned != null && (
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-[var(--sl-t3)]">🔥</span>
-            <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">{Math.round(activity.calories_burned)}kcal</span>
+            <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">{Math.round(activity.calories_burned)}kcal</span>
           </div>
         )}
         {activity.distance_km != null && (
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-[var(--sl-t3)]">📍</span>
-            <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">{activity.distance_km}km</span>
+            <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">{activity.distance_km}km</span>
           </div>
         )}
         {/* Intensity dots */}
@@ -59,7 +59,7 @@ export function ActivityCard({ activity, onDelete }: ActivityCardProps) {
             <div
               key={i}
               className="w-2 h-2 rounded-full"
-              style={{ background: i < activity.intensity ? '#f97316' : 'var(--sl-s3)' }}
+              style={{ background: i < activity.intensity ? '#D97534' : 'var(--sl-s3)' }}
             />
           ))}
         </div>

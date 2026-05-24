@@ -59,10 +59,10 @@ export function DeleteConfirmModal({ open, transaction, onClose, onConfirm }: De
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(244,63,94,.12)]">
-              <AlertTriangle size={16} className="text-[#f43f5e]" />
+            <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(219,100,120,.12)]">
+              <AlertTriangle size={16} className="text-[#DB6478]" />
             </div>
-            <h2 className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)]">Excluir transação</h2>
+            <h2 className="font-[Space_Grotesk] font-extrabold text-[15px] text-[var(--sl-t1)]">Excluir transação</h2>
           </div>
           <button
             onClick={onClose}
@@ -90,8 +90,8 @@ export function DeleteConfirmModal({ open, transaction, onClose, onConfirm }: De
               </p>
             </div>
             <p className={cn(
-              'font-[DM_Mono] text-[15px] font-medium shrink-0',
-              transaction.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]'
+              'font-[IBM_Plex_Mono] text-[15px] font-medium shrink-0',
+              transaction.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]'
             )}>
               {transaction.type === 'income' ? '+' : '-'}R$ {fmtR$(transaction.amount)}
             </p>
@@ -110,7 +110,7 @@ export function DeleteConfirmModal({ open, transaction, onClose, onConfirm }: De
             onClick={handleConfirm}
             disabled={deleting}
             className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#f43f5e' }}
+            style={{ background: '#DB6478' }}
           >
             {deleting && <Loader2 size={14} className="animate-spin" />}
             Excluir

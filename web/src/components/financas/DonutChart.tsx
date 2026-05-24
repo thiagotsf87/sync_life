@@ -40,7 +40,7 @@ export function DonutChart({ data, totalGasto }: DonutChartProps) {
         })}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
-        <span className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)] leading-none">
+        <span className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t1)] leading-none">
           R$ {fmtR$(totalGasto)}
         </span>
         <span className="text-[9px] uppercase tracking-wider text-[var(--sl-t3)]">Gasto</span>

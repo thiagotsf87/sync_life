@@ -47,7 +47,7 @@ const MOCK_GROUPS: TimelineGroup[] = [
   {
     id: 'europa',
     icon: '✈️',
-    iconBg: 'rgba(6,182,212,0.15)',
+    iconBg: 'rgba(60,160,181,0.15)',
     name: 'Viagem Europa',
     progressPct: 65,
     deadline: 'Jul 2026',
@@ -61,7 +61,7 @@ const MOCK_GROUPS: TimelineGroup[] = [
   {
     id: 'mba',
     icon: '🎓',
-    iconBg: 'rgba(234,179,8,0.15)',
+    iconBg: 'rgba(217,150,46,0.15)',
     name: 'MBA Internacional',
     progressPct: 40,
     deadline: 'Jan 2027',
@@ -103,7 +103,7 @@ export function FuturoTimelineTab() {
               style={{
                 background: isActive ? FUTURO_PRIMARY_BG : 'var(--sl-s2)',
                 border: isActive
-                  ? `1px solid rgba(139,92,246,0.3)`
+                  ? `1px solid rgba(139,123,212,0.3)`
                   : '1px solid var(--sl-border)',
                 color: isActive ? FUTURO_PRIMARY_LIGHT : 'var(--sl-t2)',
               }}
@@ -126,7 +126,7 @@ export function FuturoTimelineTab() {
               {group.icon}
             </div>
             <div>
-              <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">
+              <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">
                 {`Missão: ${group.name.replace('Comprar ', '').replace('Viagem ', '')}`}
               </p>
               <p className="text-[11px] text-[var(--sl-t2)] mt-[1px]">
@@ -146,10 +146,10 @@ export function FuturoTimelineTab() {
                 {/* Today marker */}
                 {showTodayBefore && (
                   <div className="flex items-center gap-2 my-2 pl-1">
-                    <span className="text-[9px] font-bold uppercase tracking-[1px] text-[#06b6d4]">
+                    <span className="text-[9px] font-bold uppercase tracking-[1px] text-[#3CA0B5]">
                       Hoje — Mar 2026
                     </span>
-                    <div className="flex-1 h-px bg-[#06b6d4] opacity-40" />
+                    <div className="flex-1 h-px bg-[#3CA0B5] opacity-40" />
                   </div>
                 )}
 
@@ -165,9 +165,9 @@ export function FuturoTimelineTab() {
                     className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-[11px] relative z-[1]"
                     style={
                       ms.status === 'done'
-                        ? { background: 'rgba(16,185,129,0.15)', border: '2px solid rgba(16,185,129,0.4)' }
+                        ? { background: 'rgba(15,118,110,0.15)', border: '2px solid rgba(15,118,110,0.4)' }
                         : ms.status === 'current'
-                          ? { background: 'rgba(139,92,246,0.2)', border: '2px solid rgba(139,92,246,0.5)' }
+                          ? { background: 'rgba(139,123,212,0.2)', border: '2px solid rgba(139,123,212,0.5)' }
                           : { background: 'var(--sl-s2)', border: '2px solid var(--sl-border)' }
                     }
                   >

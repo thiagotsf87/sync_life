@@ -89,28 +89,28 @@ export function CarreiraMobile({
           <p className="text-[12px] font-semibold mb-[2px]" style={{ color: CARREIRA_PRIMARY_LIGHT }}>
             ✦ {jornadaLabel('carreira', 'module', 'Carreira')}
           </p>
-          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
             Sua jornada
           </h1>
         </div>
         <div className="flex items-center gap-2">
           {activeTab === 'perfil' && (
-            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.2)] text-[#c4b5fd]">
+            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,123,212,0.12)] border border-[rgba(139,123,212,0.2)] text-[#c4b5fd]">
               ⚡ Nível 6
             </span>
           )}
           {activeTab === 'roadmap' && (
-            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.2)] text-[#c4b5fd]">
+            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,123,212,0.12)] border border-[rgba(139,123,212,0.2)] text-[#c4b5fd]">
               ⚡ 55%
             </span>
           )}
           {activeTab === 'habilidades' && (
-            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.2)] text-[#c4b5fd]">
+            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,123,212,0.12)] border border-[rgba(139,123,212,0.2)] text-[#c4b5fd]">
               ⚡ 14 skills
             </span>
           )}
           {activeTab === 'historico' && (
-            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.2)] text-[#c4b5fd]">
+            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,123,212,0.12)] border border-[rgba(139,123,212,0.2)] text-[#c4b5fd]">
               ⚡ 480 XP
             </span>
           )}

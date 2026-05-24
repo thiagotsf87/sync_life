@@ -27,11 +27,11 @@ function getAccentBarStyle(accent: string) {
 
 describe('VitalsStrip', () => {
   const MOCK_ITEMS: VitalsItem[] = [
-    { icon: null, label: 'Peso', value: '78.5 kg', note: '-2.5 kg', accent: '#10b981' },
-    { icon: null, label: 'IMC', value: '24.1', note: 'Normal', accent: '#06b6d4' },
-    { icon: null, label: 'Agua', value: '2.1 L', note: '7 copos', accent: '#3b82f6' },
+    { icon: null, label: 'Peso', value: '78.5 kg', note: '-2.5 kg', accent: '#0F766E' },
+    { icon: null, label: 'IMC', value: '24.1', note: 'Normal', accent: '#3CA0B5' },
+    { icon: null, label: 'Agua', value: '2.1 L', note: '7 copos', accent: '#4F88D4' },
     { icon: null, label: 'Sono', value: '7h30', note: 'Bom', accent: '#a855f7' },
-    { icon: null, label: 'Streak', value: '12 dias', accent: '#f59e0b' },
+    { icon: null, label: 'Streak', value: '12 dias', accent: '#D9962E' },
   ]
 
   describe('item validation', () => {
@@ -46,7 +46,7 @@ describe('VitalsStrip', () => {
     })
 
     it('rejects items without label', () => {
-      const result = validateItems([{ icon: null, label: '', value: '78kg', accent: '#10b981' }])
+      const result = validateItems([{ icon: null, label: '', value: '78kg', accent: '#0F766E' }])
       expect(result.valid).toBe(false)
     })
 
@@ -56,7 +56,7 @@ describe('VitalsStrip', () => {
     })
 
     it('accepts items without optional note', () => {
-      const result = validateItems([{ icon: null, label: 'Peso', value: '78kg', accent: '#10b981' }])
+      const result = validateItems([{ icon: null, label: 'Peso', value: '78kg', accent: '#0F766E' }])
       expect(result.valid).toBe(true)
     })
   })

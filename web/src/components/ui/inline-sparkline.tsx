@@ -10,7 +10,7 @@ interface InlineSparklineProps {
 
 export function InlineSparkline({
   values,
-  color = '#10b981',
+  color = '#0F766E',
   height = 36,
   barWidth = 16,
   className,

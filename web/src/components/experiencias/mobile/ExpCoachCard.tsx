@@ -14,8 +14,8 @@ export function ExpCoachCard({ label = 'Coach Sync', message, cta, onCtaClick }:
     <div
       className="mx-4 mb-3 rounded-[16px] p-[13px_14px] flex gap-[11px]"
       style={{
-        background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(236,72,153,0.06))',
-        border: '1px solid rgba(139,92,246,0.25)',
+        background: 'linear-gradient(135deg, rgba(139,123,212,0.12), rgba(199,103,149,0.06))',
+        border: '1px solid rgba(139,123,212,0.25)',
       }}
     >
       <div

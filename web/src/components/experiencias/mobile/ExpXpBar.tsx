@@ -16,14 +16,14 @@ export function ExpXpBar() {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-[6px]">
           <span
-            className="font-[Syne] text-[10px] font-extrabold text-white rounded-lg px-2 py-[2px]"
+            className="font-[Space_Grotesk] text-[10px] font-extrabold text-white rounded-lg px-2 py-[2px]"
             style={{ background: EXP_GRAD }}
           >
             Nível {level}
           </span>
           <span className="text-[11px] text-[var(--sl-t2)]">{levelTitle}</span>
         </div>
-        <span className="text-[11px] font-[DM_Mono] font-medium text-[var(--sl-t2)]">
+        <span className="text-[11px] font-[IBM_Plex_Mono] font-medium text-[var(--sl-t2)]">
           {totalXP.toLocaleString('pt-BR')} XP
         </span>
       </div>

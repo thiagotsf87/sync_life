@@ -86,7 +86,7 @@ export function PlanningEventModal({
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)] shrink-0">
-          <h2 className="font-[Syne] font-extrabold text-[16px] text-[var(--sl-t1)]">
+          <h2 className="font-[Space_Grotesk] font-extrabold text-[16px] text-[var(--sl-t1)]">
             {mode === 'create' ? 'Novo Evento' : 'Editar Evento'}
           </h2>
           <button onClick={onClose}
@@ -104,13 +104,13 @@ export function PlanningEventModal({
               <button key={t} onClick={() => setType(t)}
                 className={cn(
                   'py-3 rounded-[12px] border-[1.5px] bg-[var(--sl-s2)] cursor-pointer flex items-center justify-center gap-2 transition-all',
-                  type === 'expense' && t === 'expense' ? 'border-[#f43f5e] bg-[rgba(244,63,94,.07)]'
-                    : type === 'income' && t === 'income' ? 'border-[#10b981] bg-[rgba(16,185,129,.07)]'
+                  type === 'expense' && t === 'expense' ? 'border-[#DB6478] bg-[rgba(219,100,120,.07)]'
+                    : type === 'income' && t === 'income' ? 'border-[#0F766E] bg-[rgba(15,118,110,.07)]'
                     : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                 )}>
                 <span className="text-xl">{t === 'expense' ? '📤' : '💰'}</span>
                 <span className={cn('text-[14px] font-semibold',
-                  type === t ? (t === 'expense' ? 'text-[#f43f5e]' : 'text-[#10b981]') : 'text-[var(--sl-t2)]')}>
+                  type === t ? (t === 'expense' ? 'text-[#DB6478]' : 'text-[#0F766E]') : 'text-[var(--sl-t2)]')}>
                   {t === 'expense' ? 'Despesa' : 'Receita'}
                 </span>
               </button>
@@ -123,8 +123,8 @@ export function PlanningEventModal({
             <input type="text" value={name} onChange={e => setName(e.target.value)}
               placeholder="Ex: Compra do carro, Bônus, Viagem..."
               className={cn('w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none transition-colors',
-                errors.name ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus:border-[#10b981]')} />
-            {errors.name && <p className="text-[11px] text-[#f43f5e]">{errors.name}</p>}
+                errors.name ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus:border-[#0F766E]')} />
+            {errors.name && <p className="text-[11px] text-[#DB6478]">{errors.name}</p>}
           </div>
 
           {/* Valor + Data */}
@@ -132,22 +132,22 @@ export function PlanningEventModal({
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Valor</label>
               <div className={cn('flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
-                errors.amount ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus-within:border-[#10b981]')}>
-                <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+                errors.amount ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus-within:border-[#0F766E]')}>
+                <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
                 <input type="text" inputMode="decimal" value={amount}
                   onChange={e => setAmount(e.target.value.replace(/[^0-9.,]/g, ''))}
                   placeholder="0,00"
-                  className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[15px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]" />
+                  className="flex-1 bg-transparent outline-none font-[IBM_Plex_Mono] text-[15px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]" />
               </div>
-              {errors.amount && <p className="text-[11px] text-[#f43f5e]">{errors.amount}</p>}
+              {errors.amount && <p className="text-[11px] text-[#DB6478]">{errors.amount}</p>}
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Data prevista</label>
               <input type="date" value={date} onChange={e => setDate(e.target.value)}
-                className={cn('w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono]',
-                  errors.date ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus:border-[#10b981]')} />
-              {errors.date && <p className="text-[11px] text-[#f43f5e]">{errors.date}</p>}
+                className={cn('w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[IBM_Plex_Mono]',
+                  errors.date ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus:border-[#0F766E]')} />
+              {errors.date && <p className="text-[11px] text-[#DB6478]">{errors.date}</p>}
             </div>
           </div>
 
@@ -155,7 +155,7 @@ export function PlanningEventModal({
           <div className="flex flex-col gap-1.5">
             <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Categoria (opcional)</label>
             <select value={catId} onChange={e => setCatId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] outline-none focus:border-[#10b981] transition-colors cursor-pointer">
+              className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] outline-none focus:border-[#0F766E] transition-colors cursor-pointer">
               <option value="">Sem categoria</option>
               {filteredCats.map(cat => (
                 <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
@@ -168,7 +168,7 @@ export function PlanningEventModal({
             <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Notas (opcional)</label>
             <textarea value={notes} onChange={e => setNotes(e.target.value)}
               placeholder="Descrição adicional..." rows={2}
-              className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors resize-none" />
+              className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors resize-none" />
           </div>
         </div>
 
@@ -180,7 +180,7 @@ export function PlanningEventModal({
           </button>
           <button onClick={handleSave} disabled={saving}
             className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-[#03071a] transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#10b981' }}>
+            style={{ background: '#0F766E' }}>
             {saving && <Loader2 size={14} className="animate-spin" />}
             {mode === 'create' ? 'Criar evento' : 'Salvar'}
           </button>

@@ -117,12 +117,12 @@ export function ExperienciasMobile() {
             className="text-[18px] text-[var(--sl-t2)] w-6 shrink-0"
           >←</button>
           <span
-            className="font-[Syne] text-[16px] font-bold flex-1"
-            style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            className="font-[Space_Grotesk] text-[16px] font-bold flex-1"
+            style={{ background: 'linear-gradient(135deg, #8B7BD4, #C76795)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
           >
             Diário do Explorador
           </span>
-          <span className="text-[14px]" style={{ color: '#ec4899' }}>✏️</span>
+          <span className="text-[14px]" style={{ color: '#C76795' }}>✏️</span>
         </div>
 
         {/* Tabs */}
@@ -147,7 +147,7 @@ export function ExperienciasMobile() {
                 {active && (
                   <span
                     className="absolute bottom-[-1px] left-[10%] w-[80%] h-0.5 rounded-sm"
-                    style={{ background: '#8b5cf6' }}
+                    style={{ background: '#8B7BD4' }}
                   />
                 )}
               </button>
@@ -170,7 +170,7 @@ export function ExperienciasMobile() {
           <p className="text-[12px] font-semibold mb-[2px]" style={{ color: EXP_PRIMARY }}>
             ✦ {jornadaLabel('experiencias', 'module', 'Experiências')}
           </p>
-          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
             Explorador Nível {level}
           </h1>
         </div>

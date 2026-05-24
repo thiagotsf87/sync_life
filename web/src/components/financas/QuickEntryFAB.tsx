@@ -19,9 +19,9 @@ const TYPE_LABELS: Record<EntryType, string> = {
 }
 
 const TYPE_STYLES: Record<EntryType, { bg: string; border: string; color: string }> = {
-  expense:  { bg: 'rgba(244,63,94,0.15)',  border: 'rgba(244,63,94,0.4)',  color: '#f43f5e' },
-  income:   { bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.4)', color: '#10b981' },
-  transfer: { bg: 'rgba(0,85,255,0.15)',   border: 'rgba(0,85,255,0.4)',   color: '#0055ff' },
+  expense:  { bg: 'rgba(219,100,120,0.15)',  border: 'rgba(219,100,120,0.4)',  color: '#DB6478' },
+  income:   { bg: 'rgba(15,118,110,0.15)', border: 'rgba(15,118,110,0.4)', color: '#0F766E' },
+  transfer: { bg: 'rgba(0,85,255,0.15)',   border: 'rgba(0,85,255,0.4)',   color: '#0B2D34' },
 }
 
 const PAYMENT_LABELS: Record<PaymentMethod, string> = {
@@ -240,8 +240,8 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
         aria-label="Registrar transação rápida"
         className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full flex items-center justify-center text-white shadow-xl active:scale-95 transition-transform"
         style={{
-          background: 'linear-gradient(135deg,#10b981,#0055ff)',
-          boxShadow: '0 4px 20px rgba(16,185,129,0.4)',
+          background: 'linear-gradient(135deg,#0F766E,#0B2D34)',
+          boxShadow: '0 4px 20px rgba(15,118,110,0.4)',
         }}
       >
         <span className="text-[28px] font-[300] leading-none">+</span>
@@ -255,7 +255,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[var(--sl-border)] shrink-0">
-            <p className="font-[Syne] text-[17px] font-bold text-[var(--sl-t1)]">Registrar</p>
+            <p className="font-[Space_Grotesk] text-[17px] font-bold text-[var(--sl-t1)]">Registrar</p>
             <button
               type="button"
               onClick={resetState}
@@ -360,7 +360,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
                               'flex items-center gap-1 px-2.5 py-1 rounded-[10px] text-[12px] transition-colors',
                               isExcluded && 'opacity-40 cursor-not-allowed',
                               isSelected
-                                ? 'bg-[rgba(0,85,255,0.12)] text-[#0055ff] border border-[rgba(0,85,255,0.3)]'
+                                ? 'bg-[rgba(0,85,255,0.12)] text-[#0B2D34] border border-[rgba(0,85,255,0.3)]'
                                 : 'bg-[var(--sl-s2)] text-[var(--sl-t2)] border border-[var(--sl-border)]'
                             )}
                           >
@@ -384,8 +384,8 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
                   <span>{selectedCat ? `${selectedCat.icon} ${selectedCat.name}` : '📦 Selecionar'}</span>
                   {suggestedCat && !selectedCategoryId && (
                     <span
-                      className="text-[10px] px-1.5 py-0.5 rounded-[6px] font-medium text-[#10b981]"
-                      style={{ background: 'rgba(16,185,129,0.15)' }}
+                      className="text-[10px] px-1.5 py-0.5 rounded-[6px] font-medium text-[#0F766E]"
+                      style={{ background: 'rgba(15,118,110,0.15)' }}
                     >
                       IA
                     </span>
@@ -457,7 +457,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
                 placeholder="Descrição (opcional)"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                className="px-3 py-2.5 rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+                className="px-3 py-2.5 rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
               />
               <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                 {(Object.keys(PAYMENT_LABELS) as PaymentMethod[]).map(m => (
@@ -468,7 +468,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
                     className={cn(
                       'px-2.5 py-1.5 rounded-[10px] text-[11px] whitespace-nowrap shrink-0 transition-colors border',
                       paymentMethod === m
-                        ? 'bg-[rgba(16,185,129,0.15)] border-[rgba(16,185,129,0.3)] text-[#10b981]'
+                        ? 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.3)] text-[#0F766E]'
                         : 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t2)]'
                     )}
                   >
@@ -481,7 +481,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
 
           {/* Error */}
           {error && (
-            <p className="text-[12px] text-[#f43f5e] text-center px-5 pb-1 shrink-0">{error}</p>
+            <p className="text-[12px] text-[#DB6478] text-center px-5 pb-1 shrink-0">{error}</p>
           )}
 
           {/* Numpad */}
@@ -501,9 +501,9 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
                     className="rounded-[12px] flex items-center justify-center active:scale-95 transition-transform select-none"
                     style={{
                       height: 54,
-                      background: isDecimal ? 'rgba(16,185,129,0.12)' : 'var(--sl-s2)',
-                      border: `1px solid ${isDecimal ? 'rgba(16,185,129,0.3)' : 'var(--sl-border)'}`,
-                      color: isDecimal ? '#10b981' : isDelete ? 'var(--sl-t2)' : 'var(--sl-t1)',
+                      background: isDecimal ? 'rgba(15,118,110,0.12)' : 'var(--sl-s2)',
+                      border: `1px solid ${isDecimal ? 'rgba(15,118,110,0.3)' : 'var(--sl-border)'}`,
+                      color: isDecimal ? '#0F766E' : isDelete ? 'var(--sl-t2)' : 'var(--sl-t1)',
                       fontFamily: isDelete ? 'inherit' : "'DM Mono', monospace",
                       fontSize: isDelete ? 18 : 22,
                       fontWeight: 600,
@@ -520,10 +520,10 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
               type="button"
               onClick={success ? undefined : handleConfirm}
               disabled={saving || numericValue <= 0 || (isTransfer ? (!accountFromId || !accountToId) : !selectedCat)}
-              className="w-full rounded-[16px] flex items-center justify-center gap-2 font-[Syne] text-[15px] font-bold text-white transition-all disabled:opacity-50 active:brightness-90 shrink-0"
+              className="w-full rounded-[16px] flex items-center justify-center gap-2 font-[Space_Grotesk] text-[15px] font-bold text-white transition-all disabled:opacity-50 active:brightness-90 shrink-0"
               style={{
                 height: 52,
-                background: success ? '#10b981' : isTransfer ? '#0055ff' : 'linear-gradient(135deg,#10b981,#0055ff)',
+                background: success ? '#0F766E' : isTransfer ? '#0B2D34' : 'linear-gradient(135deg,#0F766E,#0B2D34)',
               }}
             >
               {success ? (

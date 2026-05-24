@@ -77,7 +77,7 @@ export default function ExperienciasPage() {
   }
 
   function getTripDotColor(t: Trip): string {
-    return TRIP_STATUS_COLORS[t.status] ?? '#3b82f6'
+    return TRIP_STATUS_COLORS[t.status] ?? '#4F88D4'
   }
 
   return (
@@ -91,8 +91,8 @@ export default function ExperienciasPage() {
       {/* 1. Module Header */}
       <ModuleHeader
         icon={Plane}
-        iconBg="rgba(236,72,153,.1)"
-        iconColor="#ec4899"
+        iconBg="rgba(199,103,149,.1)"
+        iconColor="#C76795"
         title="Experiencias"
         subtitle={`${upcoming.length + completed.length} viagens ativas \u00B7 ${completed.length} conclu\u00EDdas \u00B7 ${totalDaysViajados} dias viajados`}
       >
@@ -105,7 +105,7 @@ export default function ExperienciasPage() {
         </button>
         <button
           onClick={() => router.push('/experiencias/nova')}
-          className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#ec4899] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(236,72,153,.25)] transition-all"
+          className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#C76795] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(199,103,149,.25)] transition-all"
         >
           <Plus size={16} />
           Nova Viagem
@@ -119,7 +119,7 @@ export default function ExperienciasPage() {
             {
               value: uniqueCountries || 0,
               label: 'Pa\u00EDses Visitados',
-              color: '#ec4899',
+              color: '#C76795',
               progress: { current: uniqueCountries, total: 195 },
             },
             {
@@ -130,19 +130,19 @@ export default function ExperienciasPage() {
                   ).size
                 : 0,
               label: 'Continentes',
-              color: '#06b6d4',
+              color: '#3CA0B5',
               progress: { current: Math.min(new Set(completed.map(() => 'c')).size, 7), total: 7 },
             },
             {
               value: totalDaysViajados,
               label: 'Dias Viajados',
-              color: '#f59e0b',
+              color: '#D9962E',
               subtext: completed.length > 0 ? `desde ${new Date(completed[completed.length - 1]?.start_date ?? '').getFullYear() || '---'}` : 'nenhum ainda',
             },
             {
               value: trips.length,
               label: 'Total Viagens',
-              color: '#10b981',
+              color: '#0F766E',
               subtext: `${completed.length} conclu\u00EDdas`,
             },
             {
@@ -175,13 +175,13 @@ export default function ExperienciasPage() {
       ) : trips.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-16 text-center">
           <div className="text-6xl mb-4">{'\u2708\uFE0F'}</div>
-          <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Nenhuma viagem planejada</h3>
+          <h3 className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Nenhuma viagem planejada</h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-6 max-w-sm mx-auto">
             Comece planejando sua pr\u00F3xima aventura com roteiro, or\u00E7amento e checklist completo.
           </p>
           <button
             onClick={() => router.push('/experiencias/nova')}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#ec4899] text-white hover:opacity-90"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#C76795] text-white hover:opacity-90"
           >
             <Plus size={16} />
             Planejar minha primeira viagem
@@ -196,24 +196,24 @@ export default function ExperienciasPage() {
               {/* Top gradient accent */}
               <div
                 className="absolute top-0 left-0 right-0 h-[2.5px] rounded-t-[18px]"
-                style={{ background: 'linear-gradient(90deg, #ec4899, #a855f7, #ec4899)' }}
+                style={{ background: 'linear-gradient(90deg, #C76795, #a855f7, #C76795)' }}
               />
               {/* Decorative glows */}
               <div className="absolute top-[-60px] right-[-20px] w-[320px] h-[320px] rounded-full pointer-events-none"
-                style={{ background: 'radial-gradient(circle, rgba(236,72,153,.1) 0%, transparent 65%)' }} />
+                style={{ background: 'radial-gradient(circle, rgba(199,103,149,.1) 0%, transparent 65%)' }} />
               <div className="absolute bottom-[-80px] left-[-40px] w-[240px] h-[240px] rounded-full pointer-events-none"
                 style={{ background: 'radial-gradient(circle, rgba(168,85,247,.06) 0%, transparent 65%)' }} />
 
               <div className="flex items-center">
                 {/* Left: Countdown */}
                 <div className="flex flex-col items-center justify-center min-w-[160px] py-8 px-9 border-r border-[var(--sl-border)] relative"
-                  style={{ background: 'linear-gradient(135deg, rgba(236,72,153,.06), rgba(168,85,247,.04))' }}>
-                  <div className="font-[Syne] font-extrabold text-[64px] leading-none"
+                  style={{ background: 'linear-gradient(135deg, rgba(199,103,149,.06), rgba(168,85,247,.04))' }}>
+                  <div className="font-[Space_Grotesk] font-extrabold text-[64px] leading-none"
                     style={{
-                      background: 'linear-gradient(135deg, #ec4899, #a855f7)',
+                      background: 'linear-gradient(135deg, #C76795, #a855f7)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
-                      filter: 'drop-shadow(0 2px 12px rgba(236,72,153,.3))',
+                      filter: 'drop-shadow(0 2px 12px rgba(199,103,149,.3))',
                     }}>
                     {daysUntilNext != null ? (daysUntilNext <= 0 ? '0' : daysUntilNext) : '--'}
                   </div>
@@ -228,24 +228,24 @@ export default function ExperienciasPage() {
                 {/* Mid: Trip info */}
                 <div className="flex-1 py-7 px-8">
                   <div className="flex items-center gap-[10px] mb-[10px]">
-                    <span className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[10px] font-bold uppercase tracking-[.06em] bg-[rgba(236,72,153,.1)] text-[#ec4899]">
+                    <span className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[10px] font-bold uppercase tracking-[.06em] bg-[rgba(199,103,149,.1)] text-[#C76795]">
                       Pr\u00F3xima Viagem
                     </span>
                   </div>
-                  <h2 className="font-[Syne] font-extrabold text-[22px] text-[var(--sl-t1)] mb-2">
+                  <h2 className="font-[Space_Grotesk] font-extrabold text-[22px] text-[var(--sl-t1)] mb-2">
                     {nextTrip.name}
                   </h2>
                   <div className="flex items-center gap-4 text-[12.5px] text-[var(--sl-t2)] mb-4">
                     <span className="flex items-center gap-[5px]">
-                      <Clock size={14} className="text-[#ec4899]" />
+                      <Clock size={14} className="text-[#C76795]" />
                       {formatDate(nextTrip.start_date)} - {formatDate(nextTrip.end_date)}
                     </span>
                     <span className="flex items-center gap-[5px]">
-                      <MapPin size={14} className="text-[#ec4899]" />
+                      <MapPin size={14} className="text-[#C76795]" />
                       {nextTrip.destinations[0]}
                     </span>
                     <span className="flex items-center gap-[5px]">
-                      <Users size={14} className="text-[#ec4899]" />
+                      <Users size={14} className="text-[#C76795]" />
                       {nextTrip.travelers_count} viajante{nextTrip.travelers_count > 1 ? 's' : ''}
                     </span>
                     <span
@@ -265,21 +265,21 @@ export default function ExperienciasPage() {
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-[3px]">
                         Or\u00E7amento
                       </div>
-                      <div className="font-[DM_Mono] text-[17px] font-medium text-[var(--sl-t1)]">
+                      <div className="font-[IBM_Plex_Mono] text-[17px] font-medium text-[var(--sl-t1)]">
                         {nextTrip.total_budget ? formatCurrency(nextTrip.total_budget) : '--'}
                       </div>
                     </div>
                     <div>
                       <div className="flex justify-between text-[10px] text-[var(--sl-t3)] mb-[5px]">
                         <span>{formatCurrency(nextTrip.total_spent)} gastos</span>
-                        <span className="text-[#ec4899] font-semibold">{nextTripBudgetPct}%</span>
+                        <span className="text-[#C76795] font-semibold">{nextTripBudgetPct}%</span>
                       </div>
                       <div className="w-full h-[6px] bg-[var(--sl-s3)] rounded-[3px] overflow-hidden">
                         <div
                           className="h-full rounded-[3px] transition-[width] duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)]"
                           style={{
                             width: `${nextTripBudgetPct}%`,
-                            background: 'linear-gradient(90deg, #ec4899, #a855f7)',
+                            background: 'linear-gradient(90deg, #C76795, #a855f7)',
                           }}
                         />
                       </div>
@@ -288,7 +288,7 @@ export default function ExperienciasPage() {
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-[3px]">
                         Checklist
                       </div>
-                      <div className="font-[DM_Mono] text-[17px] font-medium text-[#10b981]">
+                      <div className="font-[IBM_Plex_Mono] text-[17px] font-medium text-[#0F766E]">
                         {checklistPct != null ? `${checklistPct}%` : '--'}
                       </div>
                     </div>
@@ -299,7 +299,7 @@ export default function ExperienciasPage() {
                 <div className="flex flex-col gap-2 py-7 px-8 border-l border-[var(--sl-border)]">
                   <button
                     onClick={() => router.push(`/experiencias/viagens/${nextTrip.id}`)}
-                    className="flex items-center gap-[7px] px-[22px] py-[9px] rounded-[11px] text-[12px] font-semibold bg-[#ec4899] text-white hover:brightness-110 hover:-translate-y-px transition-all w-full justify-center"
+                    className="flex items-center gap-[7px] px-[22px] py-[9px] rounded-[11px] text-[12px] font-semibold bg-[#C76795] text-white hover:brightness-110 hover:-translate-y-px transition-all w-full justify-center"
                   >
                     <ArrowRight size={14} />
                     Ver detalhes
@@ -320,13 +320,13 @@ export default function ExperienciasPage() {
           {activeTrips.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-[14px] sl-fade-up sl-delay-3">
-                <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                   Viagens Ativas
                 </h2>
                 {trips.length > 5 && (
                   <span
                     onClick={() => router.push('/experiencias/viagens')}
-                    className="text-[12px] text-[#ec4899] cursor-pointer hover:opacity-80 transition-opacity"
+                    className="text-[12px] text-[#C76795] cursor-pointer hover:opacity-80 transition-opacity"
                   >
                     Ver todas →
                   </span>
@@ -353,17 +353,17 @@ export default function ExperienciasPage() {
 
           {/* Status Grid */}
           <div>
-            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-4">
+            <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-4">
               Status das Viagens
             </h2>
             <StatusGrid
               className="sl-delay-5"
               items={[
-                { label: 'Planejando', count: statusCounts.planning, color: '#f59e0b' },
-                { label: 'Reservado', count: statusCounts.reserved, color: '#3b82f6' },
-                { label: 'Em andamento', count: statusCounts.ongoing, color: '#10b981' },
+                { label: 'Planejando', count: statusCounts.planning, color: '#D9962E' },
+                { label: 'Reservado', count: statusCounts.reserved, color: '#4F88D4' },
+                { label: 'Em andamento', count: statusCounts.ongoing, color: '#0F766E' },
                 { label: 'Conclu\u00EDdas', count: statusCounts.completed, color: 'var(--sl-t3)' },
-                { label: 'Cancelada', count: statusCounts.cancelled, color: '#f43f5e' },
+                { label: 'Cancelada', count: statusCounts.cancelled, color: '#DB6478' },
               ]}
             />
           </div>

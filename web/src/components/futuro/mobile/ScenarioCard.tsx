@@ -43,10 +43,10 @@ export function ScenarioCard({
       className="w-full mx-4 mb-[10px] rounded-[16px] p-[13px_15px] text-left transition-colors"
       style={{
         background: selected
-          ? 'rgba(139,92,246,0.06)'
+          ? 'rgba(139,123,212,0.06)'
           : 'var(--sl-s1)',
         border: selected
-          ? '1px solid rgba(139,92,246,0.45)'
+          ? '1px solid rgba(139,123,212,0.45)'
           : '1px solid var(--sl-border)',
       }}
     >
@@ -60,9 +60,9 @@ export function ScenarioCard({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 flex-wrap">
-            <span className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">{name}</span>
+            <span className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">{name}</span>
             {isRecommended && (
-              <span className="inline-flex items-center gap-1 px-2 py-[2px] rounded-[10px] text-[10px] font-semibold bg-[rgba(16,185,129,0.12)] text-[#10b981]">
+              <span className="inline-flex items-center gap-1 px-2 py-[2px] rounded-[10px] text-[10px] font-semibold bg-[rgba(15,118,110,0.12)] text-[#0F766E]">
                 ⭐ Recomendado
               </span>
             )}
@@ -95,7 +95,7 @@ export function ScenarioCard({
         {stats.map((stat, i) => (
           <div key={i} className="flex-1 bg-[var(--sl-s2)] rounded-lg p-[7px_8px]">
             <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-[0.5px] mb-[2px]">{stat.label}</p>
-            <p className="font-[DM_Mono] text-[12px] font-medium" style={{ color: stat.color ?? 'var(--sl-t1)' }}>
+            <p className="font-[IBM_Plex_Mono] text-[12px] font-medium" style={{ color: stat.color ?? 'var(--sl-t1)' }}>
               {stat.value}
             </p>
           </div>

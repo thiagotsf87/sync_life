@@ -27,18 +27,18 @@ const TYPE_ICONS: Record<ResourceType, typeof Link2> = {
 }
 
 const TYPE_COLORS: Record<ResourceType, string> = {
-  link: '#3b82f6',
-  video: '#f43f5e',
+  link: '#4F88D4',
+  video: '#DB6478',
   book: '#a855f7',
-  pdf: '#f97316',
-  note: '#eab308',
-  other: '#64748b',
+  pdf: '#D97534',
+  note: '#D9962E',
+  other: '#6F7986',
 }
 
 const STATUS_STYLES: Record<ResourceStatus, { bg: string; color: string; label: string }> = {
   to_study: { bg: 'rgba(120,165,220,.10)', color: 'var(--sl-t2)', label: 'Para estudar' },
-  studying: { bg: 'rgba(234,179,8,.12)', color: '#eab308', label: 'Estudando' },
-  completed: { bg: 'rgba(16,185,129,.12)', color: '#10b981', label: 'Concluido' },
+  studying: { bg: 'rgba(217,150,46,.12)', color: '#D9962E', label: 'Estudando' },
+  completed: { bg: 'rgba(15,118,110,.12)', color: '#0F766E', label: 'Concluido' },
 }
 
 export default function BibliotecaPage() {
@@ -128,8 +128,8 @@ export default function BibliotecaPage() {
       {/* ModuleHeader */}
       <ModuleHeader
         icon={BookOpen}
-        iconBg="rgba(234,179,8,.1)"
-        iconColor="#eab308"
+        iconBg="rgba(217,150,46,.1)"
+        iconColor="#D9962E"
         title="Biblioteca de Recursos"
         subtitle={selectedTrackName ? `${filtered.length} recursos vinculados \u00B7 ${selectedTrackName} selecionada` : 'Selecione uma trilha para ver recursos'}
       >
@@ -137,7 +137,7 @@ export default function BibliotecaPage() {
           <button
             onClick={() => setAddOpen(true)}
             className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#eab308] text-black hover:brightness-110 transition-all"
+                       bg-[#D9962E] text-black hover:brightness-110 transition-all"
           >
             <Plus size={16} />
             Adicionar Recurso
@@ -148,7 +148,7 @@ export default function BibliotecaPage() {
       {/* Search + Track selector + Filters toolbar */}
       <div className="flex items-center gap-[14px] mb-5 flex-wrap sl-fade-up sl-delay-1">
         <div className="flex items-center gap-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] px-3.5 py-2 flex-1 min-w-[200px] max-w-[320px]
-                        focus-within:border-[rgba(234,179,8,.4)] transition-colors">
+                        focus-within:border-[rgba(217,150,46,.4)] transition-colors">
           <Search size={16} className="text-[var(--sl-t3)] shrink-0" />
           <input
             type="text"
@@ -178,7 +178,7 @@ export default function BibliotecaPage() {
               className={cn(
                 'px-[14px] py-[6px] rounded-lg text-[12px] font-medium transition-all border',
                 statusFilter === s
-                  ? 'bg-[rgba(234,179,8,.08)] border-[#eab308] text-[#eab308] font-semibold'
+                  ? 'bg-[rgba(217,150,46,.08)] border-[#D9962E] text-[#D9962E] font-semibold'
                   : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
               )}
             >
@@ -195,8 +195,8 @@ export default function BibliotecaPage() {
       {/* Content */}
       {!selectedTrackId ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
-          <BookOpen size={32} className="text-[#eab308] mx-auto mb-3 opacity-60" />
-          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+          <BookOpen size={32} className="text-[#D9962E] mx-auto mb-3 opacity-60" />
+          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             Selecione uma trilha
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)]">
@@ -209,8 +209,8 @@ export default function BibliotecaPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
-          <BookOpen size={32} className="text-[#eab308] mx-auto mb-3 opacity-60" />
-          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+          <BookOpen size={32} className="text-[#D9962E] mx-auto mb-3 opacity-60" />
+          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             {statusFilter !== 'all' ? 'Nenhum recurso com este status' : 'Nenhum recurso ainda'}
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-4">
@@ -219,7 +219,7 @@ export default function BibliotecaPage() {
           <button
             onClick={() => setAddOpen(true)}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                       bg-[#eab308] text-black hover:brightness-110"
+                       bg-[#D9962E] text-black hover:brightness-110"
           >
             <Plus size={15} />
             Adicionar Recurso
@@ -239,7 +239,7 @@ export default function BibliotecaPage() {
             <tbody>
               {filtered.map((resource) => {
                 const TypeIcon = TYPE_ICONS[resource.type as ResourceType] ?? Paperclip
-                const typeColor = TYPE_COLORS[resource.type as ResourceType] ?? '#64748b'
+                const typeColor = TYPE_COLORS[resource.type as ResourceType] ?? '#6F7986'
                 const statusStyle = STATUS_STYLES[resource.status as ResourceStatus] ?? STATUS_STYLES.to_study
 
                 return (
@@ -291,7 +291,7 @@ export default function BibliotecaPage() {
           <div className="w-full max-w-[420px] bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] overflow-hidden shadow-2xl">
 
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Novo Recurso</h2>
+              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Novo Recurso</h2>
               <button onClick={() => setAddOpen(false)} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)]">
                 <X size={16} className="text-[var(--sl-t2)]" />
               </button>
@@ -307,7 +307,7 @@ export default function BibliotecaPage() {
                   value={form.title}
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                   placeholder="Nome do recurso..."
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#eab308] transition-colors"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#D9962E] transition-colors"
                 />
               </div>
 
@@ -322,7 +322,7 @@ export default function BibliotecaPage() {
                       className={cn(
                         'px-2 py-1.5 rounded-[8px] text-[11px] border transition-all',
                         form.type === t
-                          ? 'border-[#eab308] bg-[#eab308]/10 text-[var(--sl-t1)]'
+                          ? 'border-[#D9962E] bg-[#D9962E]/10 text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -341,7 +341,7 @@ export default function BibliotecaPage() {
                     value={form.url ?? ''}
                     onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
                     placeholder="https://..."
-                    className="w-full px-3 py-2 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#eab308] transition-colors"
+                    className="w-full px-3 py-2 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#D9962E] transition-colors"
                   />
                 </div>
               )}
@@ -357,7 +357,7 @@ export default function BibliotecaPage() {
                       className={cn(
                         'flex-1 py-1.5 rounded-[8px] text-[11px] border transition-all',
                         form.status === s
-                          ? 'border-[#eab308] bg-[#eab308]/10 text-[var(--sl-t1)]'
+                          ? 'border-[#D9962E] bg-[#D9962E]/10 text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)]'
                       )}
                     >
@@ -375,7 +375,7 @@ export default function BibliotecaPage() {
                   onChange={e => setForm(f => ({ ...f, personal_notes: e.target.value }))}
                   placeholder="Suas anotacoes sobre o recurso..."
                   rows={2}
-                  className="w-full px-3 py-2 rounded-[10px] text-[13px] resize-none bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#eab308] transition-colors"
+                  className="w-full px-3 py-2 rounded-[10px] text-[13px] resize-none bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#D9962E] transition-colors"
                 />
               </div>
             </div>
@@ -394,7 +394,7 @@ export default function BibliotecaPage() {
                   'px-5 py-2 rounded-[10px] text-[13px] font-semibold transition-all',
                   !form.title.trim() || isAdding
                     ? 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
-                    : 'bg-[#eab308] text-black hover:brightness-110'
+                    : 'bg-[#D9962E] text-black hover:brightness-110'
                 )}
               >
                 {isAdding ? 'Adicionando...' : 'Adicionar'}

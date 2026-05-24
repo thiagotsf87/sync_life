@@ -41,7 +41,7 @@ export function PanoramaMobileShell({
               className={cn(
                 'px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors',
                 isActive
-                  ? 'text-[#6366f1] border-b-[#6366f1]'
+                  ? 'text-[#6B6FD4] border-b-[#6B6FD4]'
                   : 'text-[var(--sl-t3)] border-b-transparent',
               )}
             >
@@ -54,7 +54,7 @@ export function PanoramaMobileShell({
       {/* ── Título opcional — aparece abaixo das tabs (usado por Conquistas, Ranking) */}
       {title && (
         <div className="px-5 pt-[14px] pb-3">
-          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
             {title}
           </h1>
           {subtitle && (

@@ -25,9 +25,9 @@ const CATEGORY_OPTIONS: { value: ObjectiveCategory; icon: string; label: string;
 ]
 
 const PRIORITY_OPTIONS: { value: ObjectivePriority; label: string; color: string; desc: string }[] = [
-  { value: 'high', label: 'Alta', color: '#f43f5e', desc: 'Foco principal agora' },
-  { value: 'medium', label: 'Media', color: '#f59e0b', desc: 'Importante, nao urgente' },
-  { value: 'low', label: 'Baixa', color: '#06b6d4', desc: 'Quando der, futuramente' },
+  { value: 'high', label: 'Alta', color: '#DB6478', desc: 'Foco principal agora' },
+  { value: 'medium', label: 'Media', color: '#D9962E', desc: 'Importante, nao urgente' },
+  { value: 'low', label: 'Baixa', color: '#3CA0B5', desc: 'Quando der, futuramente' },
 ]
 
 interface FormState {
@@ -132,7 +132,7 @@ export default function NovoObjetivoPage() {
           <ArrowLeft size={15} />
           Voltar
         </button>
-        <h1 className="font-[Syne] font-extrabold text-[24px] text-[var(--sl-t1)]">Novo Objetivo</h1>
+        <h1 className="font-[Space_Grotesk] font-extrabold text-[24px] text-[var(--sl-t1)]">Novo Objetivo</h1>
       </div>
 
       {/* ── Two-column wizard layout ── */}
@@ -147,7 +147,7 @@ export default function NovoObjetivoPage() {
                 key={i}
                 className={cn(
                   'h-[4px] flex-1 rounded-[2px] transition-colors duration-300',
-                  i <= step ? 'bg-[#0055ff]' : 'bg-[var(--sl-s3)]'
+                  i <= step ? 'bg-[#0B2D34]' : 'bg-[var(--sl-s3)]'
                 )}
               />
             ))}
@@ -156,8 +156,8 @@ export default function NovoObjetivoPage() {
           {/* Step 0: Info Basica */}
           {step === 0 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7">
-              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
-                <Target size={18} className="text-[#0055ff]" />
+              <h2 className="font-[Space_Grotesk] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
+                <Target size={18} className="text-[#0B2D34]" />
                 Informacoes Basicas
               </h2>
               <div className="flex flex-col gap-4">
@@ -199,7 +199,7 @@ export default function NovoObjetivoPage() {
                   className={cn(
                     'inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold transition-all',
                     canNext
-                      ? 'bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)]'
+                      ? 'bg-[#0B2D34] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)]'
                       : 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
                   )}
                 >
@@ -213,8 +213,8 @@ export default function NovoObjetivoPage() {
           {/* Step 1: Categoria & Icone */}
           {step === 1 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7">
-              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
-                <Target size={18} className="text-[#0055ff]" />
+              <h2 className="font-[Space_Grotesk] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
+                <Target size={18} className="text-[#0B2D34]" />
                 Categoria & Icone
               </h2>
 
@@ -228,7 +228,7 @@ export default function NovoObjetivoPage() {
                     className={cn(
                       'bg-[var(--sl-s2)] border rounded-[12px] p-[14px] text-center cursor-pointer transition-all',
                       form.category === cat.value
-                        ? 'border-[#0055ff] bg-[rgba(0,85,255,0.08)]'
+                        ? 'border-[#0B2D34] bg-[rgba(0,85,255,0.08)]'
                         : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                     )}
                   >
@@ -238,7 +238,7 @@ export default function NovoObjetivoPage() {
                     </div>
                     <div className={cn(
                       'text-[12px] font-semibold',
-                      form.category === cat.value ? 'text-[#0055ff]' : 'text-[var(--sl-t1)]'
+                      form.category === cat.value ? 'text-[#0B2D34]' : 'text-[var(--sl-t1)]'
                     )}>
                       {cat.label}
                     </div>
@@ -256,7 +256,7 @@ export default function NovoObjetivoPage() {
                     className={cn(
                       'w-[42px] h-[42px] rounded-[11px] flex items-center justify-center text-xl transition-all border',
                       form.icon === icon
-                        ? 'bg-[rgba(0,85,255,0.10)] border-[#0055ff]'
+                        ? 'bg-[rgba(0,85,255,0.10)] border-[#0B2D34]'
                         : 'bg-[var(--sl-s2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                     )}
                   >
@@ -304,7 +304,7 @@ export default function NovoObjetivoPage() {
                 <button
                   onClick={() => setStep(2)}
                   className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                             bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)] transition-all"
+                             bg-[#0B2D34] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)] transition-all"
                 >
                   Proximo
                   <ChevronRight size={16} />
@@ -316,8 +316,8 @@ export default function NovoObjetivoPage() {
           {/* Step 2: Metas & Prazos */}
           {step === 2 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7">
-              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
-                <Target size={18} className="text-[#0055ff]" />
+              <h2 className="font-[Space_Grotesk] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
+                <Target size={18} className="text-[#0B2D34]" />
                 Metas & Prazos
               </h2>
               <div className="grid grid-cols-2 gap-3 mb-4">
@@ -328,7 +328,7 @@ export default function NovoObjetivoPage() {
                   <input
                     type="date"
                     defaultValue={new Date().toISOString().split('T')[0]}
-                    className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] font-[DM_Mono]
+                    className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] font-[IBM_Plex_Mono]
                                bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
                                outline-none focus:border-[rgba(0,85,255,0.5)] transition-colors"
                   />
@@ -342,7 +342,7 @@ export default function NovoObjetivoPage() {
                     value={form.target_date}
                     onChange={e => setForm(f => ({ ...f, target_date: e.target.value }))}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] font-[DM_Mono]
+                    className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] font-[IBM_Plex_Mono]
                                bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
                                outline-none focus:border-[rgba(0,85,255,0.5)] transition-colors"
                   />
@@ -371,7 +371,7 @@ export default function NovoObjetivoPage() {
                     type="checkbox"
                     checked={form.syncToAgenda}
                     onChange={e => setForm(f => ({ ...f, syncToAgenda: e.target.checked }))}
-                    className="accent-[#0055ff] w-3.5 h-3.5 shrink-0"
+                    className="accent-[#0B2D34] w-3.5 h-3.5 shrink-0"
                   />
                   <span className="text-[12px] text-[var(--sl-t2)]">
                     Criar lembrete na Agenda no dia do prazo
@@ -391,7 +391,7 @@ export default function NovoObjetivoPage() {
                 <button
                   onClick={() => setStep(3)}
                   className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                             bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)] transition-all"
+                             bg-[#0B2D34] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)] transition-all"
                 >
                   Proximo
                   <ChevronRight size={16} />
@@ -403,8 +403,8 @@ export default function NovoObjetivoPage() {
           {/* Step 3: Resumo */}
           {step === 3 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7">
-              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
-                <Target size={18} className="text-[#0055ff]" />
+              <h2 className="font-[Space_Grotesk] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
+                <Target size={18} className="text-[#0B2D34]" />
                 Resumo do Objetivo
               </h2>
 
@@ -415,7 +415,7 @@ export default function NovoObjetivoPage() {
                     {form.icon}
                   </div>
                   <div>
-                    <div className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">{form.name || 'Sem nome'}</div>
+                    <div className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)]">{form.name || 'Sem nome'}</div>
                     <div className="text-[11px] text-[var(--sl-t3)] mt-[2px]">
                       {CATEGORY_LABELS[form.category]} &middot; Prioridade {PRIORITY_OPTIONS.find(p => p.value === form.priority)?.label}
                     </div>
@@ -453,7 +453,7 @@ export default function NovoObjetivoPage() {
                   className={cn(
                     'inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold transition-all',
                     !isLoading && form.name.trim()
-                      ? 'bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)]'
+                      ? 'bg-[#0B2D34] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)]'
                       : 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
                   )}
                 >
@@ -476,7 +476,7 @@ export default function NovoObjetivoPage() {
             {/* Preview card */}
             <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[14px] p-5 relative overflow-hidden">
               {/* Accent bar */}
-              <div className="absolute top-0 left-5 right-5 h-[2px] rounded-b-sm bg-[#f59e0b]" />
+              <div className="absolute top-0 left-5 right-5 h-[2px] rounded-b-sm bg-[#D9962E]" />
 
               <div className="flex items-center gap-3 mb-[14px]">
                 <div className="w-[44px] h-[44px] rounded-[12px] flex items-center justify-center text-[22px]"
@@ -484,7 +484,7 @@ export default function NovoObjetivoPage() {
                   {form.icon}
                 </div>
                 <div>
-                  <div className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">
+                  <div className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)]">
                     {form.name || 'Nome do objetivo'}
                   </div>
                   <div className="text-[11px] text-[var(--sl-t3)] mt-[2px]">
@@ -502,7 +502,7 @@ export default function NovoObjetivoPage() {
               {/* Preview metrics */}
               <div className="flex gap-0 mt-[14px] pt-[14px] border-t border-[var(--sl-border)]">
                 <div className="flex-1 text-center">
-                  <div className="font-[DM_Mono] text-[15px] font-medium text-[#0055ff]">0%</div>
+                  <div className="font-[IBM_Plex_Mono] text-[15px] font-medium text-[#0B2D34]">0%</div>
                   <div className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mt-[3px]">Progresso</div>
                 </div>
                 <div className="flex-1 text-center border-l border-r border-[var(--sl-border)]">
@@ -510,7 +510,7 @@ export default function NovoObjetivoPage() {
                   <div className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mt-[3px]">Prazo</div>
                 </div>
                 <div className="flex-1 text-center">
-                  <div className="font-[DM_Mono] text-[15px] font-medium text-[#10b981]">0</div>
+                  <div className="font-[IBM_Plex_Mono] text-[15px] font-medium text-[#0F766E]">0</div>
                   <div className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mt-[3px]">Metas</div>
                 </div>
               </div>

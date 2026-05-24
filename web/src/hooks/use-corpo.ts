@@ -158,10 +158,10 @@ export const SPECIALTIES = [
 export const MEAL_SLOT_CONFIG: Record<MealSlot, {
   label: string; icon: string; defaultTime: string; color: string; bg: string
 }> = {
-  breakfast: { label: 'Café da manhã', icon: '🌅', defaultTime: '07:30', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
-  lunch:     { label: 'Almoço',        icon: '☀️',  defaultTime: '12:30', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
-  snack:     { label: 'Lanche',        icon: '🌇',  defaultTime: '16:00', color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
-  dinner:    { label: 'Jantar',        icon: '🌙',  defaultTime: '19:30', color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
+  breakfast: { label: 'Café da manhã', icon: '🌅', defaultTime: '07:30', color: '#D9962E', bg: 'rgba(217,150,46,0.12)' },
+  lunch:     { label: 'Almoço',        icon: '☀️',  defaultTime: '12:30', color: '#0F766E', bg: 'rgba(15,118,110,0.12)' },
+  snack:     { label: 'Lanche',        icon: '🌇',  defaultTime: '16:00', color: '#D97534', bg: 'rgba(217,117,52,0.12)' },
+  dinner:    { label: 'Jantar',        icon: '🌙',  defaultTime: '19:30', color: '#6B6FD4', bg: 'rgba(107,111,212,0.12)' },
 }
 
 export const ACTIVITY_TYPES: { type: string; label: string; met: number; icon: string }[] = [
@@ -178,12 +178,12 @@ export const ACTIVITY_TYPES: { type: string; label: string; met: number; icon: s
 ]
 
 export const IMC_LABEL = (imc: number): { label: string; color: string } => {
-  if (imc < 18.5) return { label: 'Abaixo do peso', color: '#06b6d4' }
-  if (imc < 25) return { label: 'Normal', color: '#10b981' }
-  if (imc < 30) return { label: 'Sobrepeso', color: '#f59e0b' }
-  if (imc < 35) return { label: 'Obesidade I', color: '#f97316' }
-  if (imc < 40) return { label: 'Obesidade II', color: '#f43f5e' }
-  return { label: 'Obesidade III', color: '#f43f5e' }
+  if (imc < 18.5) return { label: 'Abaixo do peso', color: '#3CA0B5' }
+  if (imc < 25) return { label: 'Normal', color: '#0F766E' }
+  if (imc < 30) return { label: 'Sobrepeso', color: '#D9962E' }
+  if (imc < 35) return { label: 'Obesidade I', color: '#D97534' }
+  if (imc < 40) return { label: 'Obesidade II', color: '#DB6478' }
+  return { label: 'Obesidade III', color: '#DB6478' }
 }
 
 // ─── Calculations ─────────────────────────────────────────────────────────────

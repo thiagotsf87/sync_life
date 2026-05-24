@@ -53,8 +53,8 @@ export function TempoMobileShell({
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
-          <p className="text-[12px] font-semibold text-[#06b6d4] mb-[2px]">✦ {jornadaLabel('tempo', 'module', 'Tempo')}</p>
-          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+          <p className="text-[12px] font-semibold text-[#3CA0B5] mb-[2px]">✦ {jornadaLabel('tempo', 'module', 'Tempo')}</p>
+          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
             {pageTitle}
           </h1>
           {subtitle && <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">{subtitle}</p>}
@@ -81,12 +81,12 @@ export function TempoMobileShell({
               onClick={() => router.push(tab.href)}
               className={cn(
                 'px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors',
-                isActive ? 'text-[var(--sl-t1)] font-semibold border-b-[#06b6d4]' : 'text-[var(--sl-t3)] border-b-transparent'
+                isActive ? 'text-[var(--sl-t1)] font-semibold border-b-[#3CA0B5]' : 'text-[var(--sl-t3)] border-b-transparent'
               )}
             >
               {jornadaLabel('tempo', tab.key, tab.label)}
               {tab.pro && (
-                <Crown size={8} className="ml-1 inline text-[#f59e0b] align-super" />
+                <Crown size={8} className="ml-1 inline text-[#D9962E] align-super" />
               )}
             </button>
           )

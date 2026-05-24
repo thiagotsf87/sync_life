@@ -57,18 +57,18 @@ function getObjectiveHealthStatus(obj: Objective): 'on_track' | 'attention' | 'a
 
 function getStatusPill(status: 'on_track' | 'attention' | 'at_risk' | 'completed'): { label: string; bg: string; color: string } {
   switch (status) {
-    case 'on_track': return { label: 'No Ritmo', bg: 'rgba(16,185,129,0.10)', color: '#10b981' }
-    case 'attention': return { label: 'Atenção', bg: 'rgba(245,158,11,0.10)', color: '#f59e0b' }
-    case 'at_risk': return { label: 'Em Risco', bg: 'rgba(244,63,94,0.10)', color: '#f43f5e' }
-    case 'completed': return { label: 'Concluído', bg: 'rgba(16,185,129,0.10)', color: '#10b981' }
+    case 'on_track': return { label: 'No Ritmo', bg: 'rgba(15,118,110,0.10)', color: '#0F766E' }
+    case 'attention': return { label: 'Atenção', bg: 'rgba(217,150,46,0.10)', color: '#D9962E' }
+    case 'at_risk': return { label: 'Em Risco', bg: 'rgba(219,100,120,0.10)', color: '#DB6478' }
+    case 'completed': return { label: 'Concluído', bg: 'rgba(15,118,110,0.10)', color: '#0F766E' }
   }
 }
 
 function getProgressColor(progress: number, status: string): string {
-  if (status === 'completed') return '#10b981'
-  if (progress > 85) return '#f43f5e'
-  if (progress > 70) return '#f59e0b'
-  return '#10b981'
+  if (status === 'completed') return '#0F766E'
+  if (progress > 85) return '#DB6478'
+  if (progress > 70) return '#D9962E'
+  return '#0F766E'
 }
 
 function formatDeadline(dateStr: string | null): string {
@@ -105,8 +105,8 @@ function HorizonRing({ progress }: { progress: number }) {
       <svg viewBox="0 0 96 96" className="w-[96px] h-[96px]">
         <defs>
           <linearGradient id="hz-ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0055ff" />
-            <stop offset="100%" stopColor="#10b981" />
+            <stop offset="0%" stopColor="#0B2D34" />
+            <stop offset="100%" stopColor="#0F766E" />
           </linearGradient>
         </defs>
         <circle cx="48" cy="48" r={radius} fill="none" stroke="var(--sl-s3)" strokeWidth="7" />
@@ -121,7 +121,7 @@ function HorizonRing({ progress }: { progress: number }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-[DM_Mono] font-medium text-[28px] leading-none text-sl-grad">{progress}%</span>
+        <span className="font-[IBM_Plex_Mono] font-medium text-[28px] leading-none text-sl-grad">{progress}%</span>
         <span className="text-[10px] text-[var(--sl-t3)] mt-0.5">Geral</span>
       </div>
     </div>
@@ -261,21 +261,21 @@ export default function FuturoPage() {
 
   // ─── Mobile data ──────────────────────────────────────────────────────────
   const MODULE_META: Record<string, { emoji: string; label: string; color: string; bg: string }> = {
-    financas:     { emoji: '💰', label: 'Finanças',     color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
-    tempo:        { emoji: '⏳', label: 'Tempo',        color: '#06b6d4', bg: 'rgba(6,182,212,0.15)' },
-    futuro:       { emoji: '🔮', label: 'Futuro',       color: '#0055ff', bg: 'rgba(0,85,255,0.15)' },
-    corpo:        { emoji: '🏃', label: 'Corpo',        color: '#f97316', bg: 'rgba(249,115,22,0.15)' },
-    mente:        { emoji: '🧠', label: 'Mente',        color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
-    patrimonio:   { emoji: '📈', label: 'Patrimônio',   color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
-    carreira:     { emoji: '💼', label: 'Carreira',     color: '#ec4899', bg: 'rgba(236,72,153,0.15)' },
+    financas:     { emoji: '💰', label: 'Finanças',     color: '#0F766E', bg: 'rgba(15,118,110,0.15)' },
+    tempo:        { emoji: '⏳', label: 'Tempo',        color: '#3CA0B5', bg: 'rgba(60,160,181,0.15)' },
+    futuro:       { emoji: '🔮', label: 'Futuro',       color: '#0B2D34', bg: 'rgba(0,85,255,0.15)' },
+    corpo:        { emoji: '🏃', label: 'Corpo',        color: '#D97534', bg: 'rgba(217,117,52,0.15)' },
+    mente:        { emoji: '🧠', label: 'Mente',        color: '#8B7BD4', bg: 'rgba(139,123,212,0.15)' },
+    patrimonio:   { emoji: '📈', label: 'Patrimônio',   color: '#D9962E', bg: 'rgba(217,150,46,0.15)' },
+    carreira:     { emoji: '💼', label: 'Carreira',     color: '#C76795', bg: 'rgba(199,103,149,0.15)' },
     experiencias: { emoji: '✈️', label: 'Experiências', color: '#14b8a6', bg: 'rgba(20,184,166,0.15)' },
   }
 
   const CATEGORY_BG: Record<string, string> = {
-    financial: 'rgba(16,185,129,0.12)',
-    professional: 'rgba(245,158,11,0.12)',
-    health: 'rgba(249,115,22,0.12)',
-    educational: 'rgba(139,92,246,0.12)',
+    financial: 'rgba(15,118,110,0.12)',
+    professional: 'rgba(217,150,46,0.12)',
+    health: 'rgba(217,117,52,0.12)',
+    educational: 'rgba(139,123,212,0.12)',
     experience: 'rgba(20,184,166,0.12)',
     personal: 'rgba(0,85,255,0.12)',
     other: 'rgba(100,116,139,0.12)',
@@ -336,7 +336,7 @@ export default function FuturoPage() {
       modules: linkedModules,
       progressLabel: rawLabel,
       progressPct: obj.progress,
-      progressColor: obj.progress >= 60 ? '#10b981' : obj.progress >= 40 ? '#f59e0b' : '#f43f5e',
+      progressColor: obj.progress >= 60 ? '#0F766E' : obj.progress >= 40 ? '#D9962E' : '#DB6478',
       isDelayed,
       narrativeHint,
       status: obj.status as 'active' | 'completed' | 'paused',
@@ -356,36 +356,36 @@ export default function FuturoPage() {
     }
     const behindGoal = active.find(o => o.progress < 30 && o.target_date)
     if (behindGoal) {
-      return `O objetivo "${behindGoal.name}" está com apenas <span style="color:#f59e0b;">${behindGoal.progress}% de progresso</span>. Ajuste a contribuição mensal.`
+      return `O objetivo "${behindGoal.name}" está com apenas <span style="color:#D9962E;">${behindGoal.progress}% de progresso</span>. Ajuste a contribuição mensal.`
     }
     return undefined
   })()
 
   // ─── Priority icon color mapping ────────────────────────────────────────────
   const PRIORITY_ICON_COLOR: Record<string, string> = {
-    high: '#f43f5e',
-    medium: '#f59e0b',
-    low: '#06b6d4',
+    high: '#DB6478',
+    medium: '#D9962E',
+    low: '#3CA0B5',
   }
 
   const CATEGORY_ICON_BG: Record<string, string> = {
-    financial: 'rgba(16,185,129,0.10)',
-    health: 'rgba(249,115,22,0.10)',
-    professional: 'rgba(245,158,11,0.10)',
-    educational: 'rgba(139,92,246,0.10)',
+    financial: 'rgba(15,118,110,0.10)',
+    health: 'rgba(217,117,52,0.10)',
+    professional: 'rgba(217,150,46,0.10)',
+    educational: 'rgba(139,123,212,0.10)',
     experience: 'rgba(20,184,166,0.10)',
     personal: 'rgba(0,85,255,0.10)',
     other: 'rgba(100,116,139,0.10)',
   }
 
   const CATEGORY_ICON_COLOR: Record<string, string> = {
-    financial: '#10b981',
-    health: '#f97316',
-    professional: '#f59e0b',
+    financial: '#0F766E',
+    health: '#D97534',
+    professional: '#D9962E',
     educational: '#a855f7',
     experience: '#14b8a6',
-    personal: '#0055ff',
-    other: '#64748b',
+    personal: '#0B2D34',
+    other: '#6F7986',
   }
 
   return (
@@ -411,7 +411,7 @@ export default function FuturoPage() {
       <ModuleHeader
         icon={Target}
         iconBg="rgba(0,85,255,0.08)"
-        iconColor="#0055ff"
+        iconColor="#0B2D34"
         title="Futuro"
         subtitle={`${active.length} objetivos ativos · ${stats.onTrack} no ritmo · Progresso geral ${avgProgress}%`}
       >
@@ -423,7 +423,7 @@ export default function FuturoPage() {
         <button
           onClick={() => router.push('/futuro/novo')}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px
+                     bg-[#0B2D34] text-white hover:brightness-110 hover:-translate-y-px
                      transition-all shadow-[0_6px_20px_rgba(0,85,255,0.15)]"
         >
           <Plus size={16} />
@@ -435,7 +435,7 @@ export default function FuturoPage() {
       <JornadaInsight
         text={
           active.length > 0
-            ? <>Você tem <strong className="text-[var(--sl-t1)]">{active.length} objetivos ativos</strong> com progresso médio de <strong className="text-[#10b981]">{avgProgress}%</strong>. {avgProgress >= 50 ? 'Você está no caminho certo!' : 'Vamos adicionar mais metas para acelerar.'}</>
+            ? <>Você tem <strong className="text-[var(--sl-t1)]">{active.length} objetivos ativos</strong> com progresso médio de <strong className="text-[#0F766E]">{avgProgress}%</strong>. {avgProgress >= 50 ? 'Você está no caminho certo!' : 'Vamos adicionar mais metas para acelerar.'}</>
             : <>Crie seu primeiro objetivo para começar a mapear o futuro que você quer construir.</>
         }
       />
@@ -445,7 +445,7 @@ export default function FuturoPage() {
                       hover:border-[var(--sl-border-h)] transition-colors">
         {/* Accent bar */}
         <div className="absolute top-0 left-7 right-7 h-[2.5px] rounded-b-sm"
-          style={{ background: 'linear-gradient(90deg, #0055ff, #10b981)' }} />
+          style={{ background: 'linear-gradient(90deg, #0B2D34, #0F766E)' }} />
 
         {/* Head: Ring + Stats */}
         <div className="flex items-center gap-4 mb-6">
@@ -454,17 +454,17 @@ export default function FuturoPage() {
           {/* Stats strip */}
           <div className="flex flex-1">
             {[
-              { value: active.length, label: 'Objetivos', color: '#0055ff' },
-              { value: stats.onTrack, label: 'No Ritmo', color: '#10b981' },
-              { value: stats.attention, label: 'Atenção', color: '#f59e0b' },
-              { value: stats.atRisk, label: 'Em Risco', color: '#f43f5e' },
-              { value: stats.completed, label: 'Concluídos', color: '#10b981' },
+              { value: active.length, label: 'Objetivos', color: '#0B2D34' },
+              { value: stats.onTrack, label: 'No Ritmo', color: '#0F766E' },
+              { value: stats.attention, label: 'Atenção', color: '#D9962E' },
+              { value: stats.atRisk, label: 'Em Risco', color: '#DB6478' },
+              { value: stats.completed, label: 'Concluídos', color: '#0F766E' },
             ].map((s, i, arr) => (
               <div key={s.label} className={cn(
                 'flex-1 px-4',
                 i < arr.length - 1 && 'border-r border-[var(--sl-border)]'
               )}>
-                <div className="font-[DM_Mono] font-medium text-[22px] leading-none" style={{ color: s.color }}>
+                <div className="font-[IBM_Plex_Mono] font-medium text-[22px] leading-none" style={{ color: s.color }}>
                   {s.value}
                 </div>
                 <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mt-[5px]">
@@ -481,9 +481,9 @@ export default function FuturoPage() {
             {active.map(obj => {
               const progress = calcObjectiveProgress(obj.goals ?? [])
               const health = getObjectiveHealthStatus(obj)
-              const laneColor = health === 'at_risk' ? '#f43f5e'
-                : health === 'attention' ? '#f59e0b'
-                : '#10b981'
+              const laneColor = health === 'at_risk' ? '#DB6478'
+                : health === 'attention' ? '#D9962E'
+                : '#0F766E'
 
               return (
                 <div key={obj.id} className="flex items-center gap-3 py-[7px] border-b border-[rgba(120,165,220,0.04)] last:border-b-0">
@@ -504,12 +504,12 @@ export default function FuturoPage() {
                       className="h-full rounded-[3px] transition-[width] duration-800 ease-out"
                       style={{
                         width: `${Math.min(progress, 100)}%`,
-                        background: `linear-gradient(90deg, #0055ff, ${laneColor})`,
+                        background: `linear-gradient(90deg, #0B2D34, ${laneColor})`,
                       }}
                     />
                   </div>
                   {/* Pct */}
-                  <div className="font-[DM_Mono] text-[11px] w-[40px] text-right shrink-0" style={{ color: laneColor }}>
+                  <div className="font-[IBM_Plex_Mono] text-[11px] w-[40px] text-right shrink-0" style={{ color: laneColor }}>
                     {progress}%
                   </div>
                   {/* Deadline */}
@@ -537,7 +537,7 @@ export default function FuturoPage() {
                   className={cn(
                     'px-[14px] py-2 text-[12px] font-semibold border-b-2 transition-all relative',
                     statusFilter === tab.value
-                      ? 'text-[#0055ff] border-[#0055ff]'
+                      ? 'text-[#0B2D34] border-[#0B2D34]'
                       : 'text-[var(--sl-t3)] border-transparent hover:text-[var(--sl-t2)]'
                   )}
                 >
@@ -593,7 +593,7 @@ export default function FuturoPage() {
           ) : filtered.length === 0 ? (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
               <div className="text-4xl mb-3">🔮</div>
-              <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+              <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
                 {search || statusFilter !== 'all' ? 'Nenhum objetivo encontrado' : 'Comece a desenhar seu futuro'}
               </h3>
               <p className="text-[13px] text-[var(--sl-t2)] max-w-sm mx-auto mb-4">
@@ -605,7 +605,7 @@ export default function FuturoPage() {
                 <button
                   onClick={() => router.push('/futuro/novo')}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                             bg-[#10b981] text-[#03071a] hover:opacity-90 transition-opacity"
+                             bg-[#0F766E] text-[#03071a] hover:opacity-90 transition-opacity"
                 >
                   <Plus size={15} />
                   Criar primeiro objetivo
@@ -621,7 +621,7 @@ export default function FuturoPage() {
                   const pill = getStatusPill(health)
                   const firstGoal = (obj.goals ?? [])[0]
                   const sub = getSubtitle(firstGoal, obj)
-                  const iconColor = CATEGORY_ICON_COLOR[obj.category] ?? '#0055ff'
+                  const iconColor = CATEGORY_ICON_COLOR[obj.category] ?? '#0B2D34'
                   const iconBg = CATEGORY_ICON_BG[obj.category] ?? 'rgba(0,85,255,0.10)'
                   const isCompleted = obj.status === 'completed'
 
@@ -682,7 +682,7 @@ export default function FuturoPage() {
                             className="h-full rounded-[3px] transition-[width] duration-700 ease-out"
                             style={{
                               width: `${Math.min(progress, 100)}%`,
-                              background: 'linear-gradient(90deg, #0055ff, #10b981)',
+                              background: 'linear-gradient(90deg, #0B2D34, #0F766E)',
                             }}
                           />
                         </div>
@@ -690,7 +690,7 @@ export default function FuturoPage() {
 
                       {/* Percentage */}
                       <div
-                        className="font-[DM_Mono] text-[16px] font-medium w-[50px] text-right shrink-0"
+                        className="font-[IBM_Plex_Mono] text-[16px] font-medium w-[50px] text-right shrink-0"
                         style={{ color: getProgressColor(progress, obj.status) }}
                       >
                         {progress}%
@@ -710,9 +710,9 @@ export default function FuturoPage() {
                     <button
                       key={`restore-${obj.id}`}
                       onClick={(e) => { e.stopPropagation(); handleRestore(obj.id) }}
-                      className="text-[10px] font-semibold text-[var(--sl-t3)] hover:text-[#0055ff]
+                      className="text-[10px] font-semibold text-[var(--sl-t3)] hover:text-[#0B2D34]
                                  px-2 py-1 rounded border border-[var(--sl-border)]
-                                 hover:border-[#0055ff]/40 transition-colors mr-2"
+                                 hover:border-[#0B2D34]/40 transition-colors mr-2"
                     >
                       Restaurar &quot;{obj.name}&quot;
                     </button>
@@ -750,7 +750,7 @@ export default function FuturoPage() {
             return (
               <div className="mt-4 pt-4 border-t border-[var(--sl-border)]">
                 <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed">
-                  💡 Seu ponto mais forte esta semana é <strong className="text-[var(--sl-t1)]">{strongest.icon} {strongest.fullLabel}</strong> ({strongest.value}%). Foque em <strong style={{ color: '#f59e0b' }}>{weakest.icon} {weakest.fullLabel}</strong> ({weakest.value}%) para equilibrar seu Mapa da Vida.
+                  💡 Seu ponto mais forte esta semana é <strong className="text-[var(--sl-t1)]">{strongest.icon} {strongest.fullLabel}</strong> ({strongest.value}%). Foque em <strong style={{ color: '#D9962E' }}>{weakest.icon} {weakest.fullLabel}</strong> ({weakest.value}%) para equilibrar seu Mapa da Vida.
                 </p>
               </div>
             )

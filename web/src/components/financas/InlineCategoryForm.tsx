@@ -12,9 +12,9 @@ const PRESET_ICONS = [
 ]
 
 const PRESET_COLORS = [
-  '#ef4444', '#f97316', '#f59e0b', '#eab308',
-  '#84cc16', '#22c55e', '#10b981', '#14b8a6',
-  '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899',
+  '#ef4444', '#D97534', '#D9962E', '#D9962E',
+  '#84cc16', '#0F766E', '#0F766E', '#14b8a6',
+  '#3CA0B5', '#4F88D4', '#8B7BD4', '#C76795',
 ]
 
 interface InlineCategoryFormProps {
@@ -28,7 +28,7 @@ export function InlineCategoryForm({ defaultType = 'expense', defaultName = '', 
   const [type, setType] = useState<'income' | 'expense'>(defaultType)
   const [name, setName] = useState(defaultName)
   const [icon, setIcon] = useState('📦')
-  const [color, setColor] = useState('#3b82f6')
+  const [color, setColor] = useState('#4F88D4')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -88,8 +88,8 @@ export function InlineCategoryForm({ defaultType = 'expense', defaultName = '', 
               'flex-1 py-2 rounded-[10px] border text-[12px] font-medium transition-all',
               type === t
                 ? t === 'expense'
-                  ? 'border-[#f43f5e] bg-[rgba(244,63,94,.08)] text-[#f43f5e]'
-                  : 'border-[#10b981] bg-[rgba(16,185,129,.08)] text-[#10b981]'
+                  ? 'border-[#DB6478] bg-[rgba(219,100,120,.08)] text-[#DB6478]'
+                  : 'border-[#0F766E] bg-[rgba(15,118,110,.08)] text-[#0F766E]'
                 : 'border-[var(--sl-border)] text-[var(--sl-t2)]'
             )}
           >
@@ -104,7 +104,7 @@ export function InlineCategoryForm({ defaultType = 'expense', defaultName = '', 
         value={name}
         onChange={e => setName(e.target.value)}
         placeholder="Nome da categoria"
-        className="w-full px-3 py-2 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+        className="w-full px-3 py-2 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
       />
 
       {/* Ícones */}
@@ -118,7 +118,7 @@ export function InlineCategoryForm({ defaultType = 'expense', defaultName = '', 
               className={cn(
                 'w-8 h-8 rounded-[8px] flex items-center justify-center text-[16px] border transition-colors',
                 icon === ic
-                  ? 'border-[#10b981] bg-[rgba(16,185,129,.12)]'
+                  ? 'border-[#0F766E] bg-[rgba(15,118,110,.12)]'
                   : 'border-transparent hover:bg-[var(--sl-s2)]'
               )}
             >
@@ -154,14 +154,14 @@ export function InlineCategoryForm({ defaultType = 'expense', defaultName = '', 
       </div>
 
       {/* Error */}
-      {error && <p className="text-[11px] text-[#f43f5e]">{error}</p>}
+      {error && <p className="text-[11px] text-[#DB6478]">{error}</p>}
 
       {/* Submit */}
       <button
         onClick={handleCreate}
         disabled={saving || !name.trim()}
         className="flex items-center justify-center gap-2 w-full py-2.5 rounded-[10px] text-[13px] font-bold text-[#03071a] transition-all hover:brightness-110 disabled:opacity-60"
-        style={{ background: '#10b981' }}
+        style={{ background: '#0F766E' }}
       >
         {saving && <Loader2 size={14} className="animate-spin" />}
         Criar e selecionar

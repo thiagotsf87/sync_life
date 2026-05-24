@@ -78,7 +78,7 @@ export default function ConfiguracoesLayout({ children }: { children: React.Reac
                       className={cn(
                         'text-[9px] font-bold px-1.5 py-0.5 rounded-md',
                         badge === 'Pro'
-                          ? 'bg-[rgba(16,185,129,0.15)] text-[#10b981]'
+                          ? 'bg-[rgba(15,118,110,0.15)] text-[#0F766E]'
                           : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]',
                       )}
                     >

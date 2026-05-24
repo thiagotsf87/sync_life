@@ -21,8 +21,8 @@ export function CategorySpendWidget({ categorySpend, maxCatSpend, totalExpense, 
   return (
     <div className="flex-1 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-3 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-[18px]">
-        <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📊 Gastos por Categoria</span>
-        <button className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
+        <span className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">📊 Gastos por Categoria</span>
+        <button className="text-[11px] text-[#0F766E] hover:opacity-70 transition-opacity"
           onClick={() => router.push('/financas/relatorios')}>Relatório →</button>
       </div>
       {loading || categorySpend.length === 0
@@ -37,7 +37,7 @@ export function CategorySpendWidget({ categorySpend, maxCatSpend, totalExpense, 
                 const pct = totalExpense > 0 ? Math.round((cat.total / totalExpense) * 100) : 0
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center h-full justify-end">
-                    <span className="font-[DM_Mono] text-[9px] font-semibold mb-0.5 text-[var(--sl-t2)]">{pct}%</span>
+                    <span className="font-[IBM_Plex_Mono] text-[9px] font-semibold mb-0.5 text-[var(--sl-t2)]">{pct}%</span>
                     <div className="w-full rounded-t-[4px] min-h-[4px] transition-[height] duration-[900ms]"
                       style={{ height: `${heightPct}%`, background: cat.color, opacity: 0.8 }} />
                   </div>

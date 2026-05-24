@@ -64,7 +64,7 @@ export function ExpTabMemorias({
             className="rounded-[12px] py-[10px] px-2 text-center"
             style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}
           >
-            <p className="font-[DM_Mono] text-[20px] font-medium leading-none" style={{ color: accentLight }}>
+            <p className="font-[IBM_Plex_Mono] text-[20px] font-medium leading-none" style={{ color: accentLight }}>
               {s.val}
             </p>
             <p className="text-[10px] text-[var(--sl-t3)] mt-[3px]">{s.label}</p>
@@ -75,7 +75,7 @@ export function ExpTabMemorias({
       {/* Highlights */}
       {highlights.length > 0 && (
         <>
-          <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
+          <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
             Highlights
           </p>
           <div className="grid grid-cols-3 gap-2 mb-[14px]">
@@ -86,7 +86,7 @@ export function ExpTabMemorias({
                 style={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)' }}
               >
                 <div className="text-[24px] mb-1">{h.emoji}</div>
-                <p className="font-[DM_Mono] text-[12px] font-medium text-[var(--sl-t1)] leading-none truncate">
+                <p className="font-[IBM_Plex_Mono] text-[12px] font-medium text-[var(--sl-t1)] leading-none truncate">
                   {h.label}
                 </p>
                 <p className="text-[9px] text-[var(--sl-t3)] mt-[3px] leading-[1.2]">{h.sub}</p>
@@ -99,7 +99,7 @@ export function ExpTabMemorias({
       {/* Trips without memory — pending */}
       {tripsWithoutMemory.length > 0 && (
         <>
-          <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
+          <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
             Missões sem diário
           </p>
           <div
@@ -124,7 +124,7 @@ export function ExpTabMemorias({
                   onClick={() => onOpenMemoryForm(trip)}
                   className="text-[10px] font-semibold px-[10px] py-1 rounded-[10px] shrink-0"
                   style={{
-                    background: 'rgba(139,92,246,0.15)',
+                    background: 'rgba(139,123,212,0.15)',
                     color: '#c4b5fd',
                   }}
                 >
@@ -152,7 +152,7 @@ export function ExpTabMemorias({
       {memories.length > 0 && (
         <>
           <div className="flex justify-between items-center mb-[10px]">
-            <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
+            <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
               Missões Registradas
             </p>
           </div>
@@ -196,7 +196,7 @@ export function ExpTabMemorias({
                 <button
                   onClick={() => onOpenDetail(mem.id)}
                   className="text-[12px] shrink-0"
-                  style={{ color: '#f59e0b' }}
+                  style={{ color: '#D9962E' }}
                 >
                   ⭐ {mem.rating}
                 </button>

@@ -12,7 +12,7 @@ interface SegmentedBarProps {
 export function SegmentedBar({
   level,
   maxLevel = 5,
-  color = '#f43f5e',
+  color = '#DB6478',
   className,
 }: SegmentedBarProps) {
   return (

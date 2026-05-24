@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife V4 — Dashboard Interativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   V4 COLOR SYSTEM
+   ═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0c1520;
+  --s1:        #121d2e;
+  --s2:        #192638;
+  --s3:        #213045;
+  --s4:        #2a3d56;
+
+  --t1:        #dde9f5;
+  --t2:        #7494b8;
+  --t3:        #3a5470;
+
+  --accent:    #22d3ee;
+  --em:        #10b981;
+  --danger:    #f43f5e;
+  --warn:      #f59e0b;
+  --purple:    #a855f7;
+
+  --border:    rgba(116, 148, 184, 0.11);
+  --border-h:  rgba(116, 148, 184, 0.22);
+
+  --font-d:  'Bricolage Grotesque', sans-serif;
+  --font-b:  'DM Sans', sans-serif;
+  --font-m:  'DM Mono', monospace;
+
+  --r:         12px;
+  --r-sm:      8px;
+  --r-lg:      18px;
+  --r-xl:      24px;
+
+  --sb-w:      228px;
+  --mb-w:      72px;
+  --hdr-h:     54px;
+
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─── Global ─── */
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  font-family: var(--font-b);
+  color: var(--t1);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Ambient gradient mesh */
+.ambient {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+}
+.ambient-1 {
+  top: -200px; left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(34,211,238,0.05) 0%, transparent 60%);
+  animation: ambient-drift-1 20s ease-in-out infinite;
+}
+.ambient-2 {
+  bottom: -100px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(16,185,129,0.04) 0%, transparent 60%);
+  animation: ambient-drift-2 25s ease-in-out infinite;
+}
+
+@keyframes ambient-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, 30px) scale(1.1); }
+  66% { transform: translate(-40px, 60px) scale(0.95); }
+}
+@keyframes ambient-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-60px, -40px) scale(1.08); }
+}
+
+/* ═══════════════════════════════════════════════
+   SHELL LAYOUT
+   ═══════════════════════════════════════════════ */
+.shell {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Module Bar ─── */
+.module-bar {
+  width: var(--mb-w);
+  background: #08111e;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  gap: 6px;
+}
+
+.logo-mark {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--accent), var(--em));
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-d);
+  font-weight: 800;
+  font-size: 14px;
+  color: #fff;
+  letter-spacing: -0.06em;
+  margin-bottom: 16px;
+  box-shadow: 0 0 24px rgba(34,211,238,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s;
+  cursor: pointer;
+}
+.logo-mark:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 36px rgba(34,211,238,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.mod-btn {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s var(--ease-spring);
+  position: relative;
+  border: 1px solid transparent;
+}
+.mod-btn svg { width: 20px; height: 20px; stroke: var(--t3); transition: stroke 0.2s; }
+.mod-btn:hover { background: rgba(255,255,255,0.04); transform: scale(1.05); }
+.mod-btn:hover svg { stroke: var(--t2); }
+.mod-btn.active {
+  background: rgba(34,211,238,0.10);
+  border-color: rgba(34,211,238,0.15);
+}
+.mod-btn.active svg { stroke: var(--accent); }
+.mod-btn.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 2.5px; height: 20px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 8px rgba(34,211,238,0.6);
+}
+
+.mod-btn-label {
+  position: absolute;
+  left: calc(100% + 8px);
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--t1);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 200;
+}
+.mod-btn:hover .mod-btn-label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.mb-spacer { flex: 1; }
+
+/* ─── Sidebar ─── */
+.sidebar {
+  width: var(--sb-w);
+  background: #0a1622;
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0;
+  left: var(--mb-w);
+  bottom: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+  gap: 2px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+.sidebar-module-name {
+  font-family: var(--font-d);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  padding: 4px 10px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-module-name .mod-color-dot {
+  width: 6px; height: 6px;
+  background: var(--em);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--em);
+}
+
+.sidebar-section {
+  font-family: var(--font-m);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t3);
+  padding: 12px 10px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+  overflow: hidden;
+  color: var(--t2);
+  font-size: 13px;
+  font-weight: 400;
+  text-decoration: none;
+}
+.nav-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(34,211,238,0.04), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.nav-item:hover { color: var(--t1); }
+.nav-item:hover::before { opacity: 1; }
+.nav-item.active {
+  background: rgba(34,211,238,0.08);
+  color: var(--accent);
+  border: 1px solid rgba(34,211,238,0.12);
+}
+.nav-item.active svg { stroke: var(--accent); }
+.nav-item svg {
+  width: 15px; height: 15px;
+  stroke: var(--t3);
+  flex-shrink: 0;
+  transition: stroke 0.15s;
+}
+.nav-item:hover svg { stroke: var(--t2); }
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.score-mini {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.score-ring {
+  position: relative;
+  width: 36px; height: 36px;
+  flex-shrink: 0;
+}
+.score-ring svg { width: 36px; height: 36px; }
+.score-ring-num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-m);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--t1);
+}
+.score-info { flex: 1; min-width: 0; }
+.score-label { font-family: var(--font-m); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--t3); }
+.score-sub { font-size: 11px; color: var(--t2); margin-top: 1px; }
+
+/* ─── Top Header ─── */
+.top-header {
+  position: fixed;
+  top: 0;
+  left: calc(var(--mb-w) + var(--sb-w));
+  right: 0;
+  height: var(--hdr-h);
+  background: rgba(12, 21, 32, 0.85);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 12px;
+  z-index: 80;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--t3);
+}
+.breadcrumb .sep { font-size: 10px; }
+.breadcrumb .current { color: var(--t1); font-weight: 500; }
+
+.hdr-spacer { flex: 1; }
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 6px;
+}
+.month-nav button {
+  width: 24px; height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--t2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.month-nav button:hover { background: var(--s3); color: var(--t1); }
+.month-nav button svg { width: 14px; height: 14px; }
+.month-label {
+  font-family: var(--font-m);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--t1);
+  min-width: 80px;
+  text-align: center;
+}
+
+.hdr-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(34,211,238,0.08);
+  color: var(--accent);
+  border: 1px solid rgba(34,211,238,0.15);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.hdr-pill:hover { background: rgba(34,211,238,0.14); }
+
+.hdr-avatar {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--accent), var(--em));
+  border-radius: 50%;
+  border: 2px solid rgba(34,211,238,0.2);
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-spring);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-d);
+  font-weight: 700;
+  font-size: 12px;
+  color: rgba(255,255,255,0.9);
+}
+.hdr-avatar:hover { transform: scale(1.08); }
+
+.hdr-notif {
+  width: 32px; height: 32px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.hdr-notif svg { width: 16px; height: 16px; stroke: var(--t2); }
+.hdr-notif:hover { background: var(--s3); border-color: var(--border-h); }
+.hdr-notif:hover svg { stroke: var(--t1); }
+.notif-dot {
+  position: absolute;
+  top: 5px; right: 5px;
+  width: 7px; height: 7px;
+  background: var(--danger);
+  border-radius: 50%;
+  border: 1.5px solid var(--s1);
+  box-shadow: 0 0 6px var(--danger);
+}
+
+/* ─── Content Area ─── */
+.content-area {
+  margin-left: calc(var(--mb-w) + var(--sb-w));
+  margin-top: var(--hdr-h);
+  min-height: calc(100vh - var(--hdr-h));
+  padding: 28px;
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE CONTENT
+   ═══════════════════════════════════════════════ */
+.max-w { max-width: 1200px; }
+
+/* ─── Page Header ─── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.page-title-block { flex: 1; }
+
+.module-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.15);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--em);
+  margin-bottom: 6px;
+  font-family: var(--font-m);
+}
+.module-badge svg { width: 10px; height: 10px; stroke: var(--em); }
+
+.page-h1 {
+  font-family: var(--font-d);
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 700;
+  color: var(--t1);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.page-meta {
+  font-family: var(--font-m);
+  font-size: 11px;
+  color: var(--t3);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.page-meta-sep { width: 1px; height: 10px; background: var(--border); }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(34,211,238,0.12), rgba(16,185,129,0.12));
+  border: 1px solid rgba(34,211,238,0.18);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-b);
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(34,211,238,0.06), rgba(16,185,129,0.06));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover { border-color: rgba(34,211,238,0.3); box-shadow: 0 0 20px rgba(34,211,238,0.1); }
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary:active { transform: translateY(1px) scale(0.99); box-shadow: 0 0 8px rgba(34,211,238,0.08); }
+.btn-primary svg { width: 14px; height: 14px; }
+
+/* ─── KPI Strip — Asymmetric ─── */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 0.85fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s var(--ease-spring);
+}
+.kpi-card:hover {
+  border-color: var(--border-h);
+  transform: translateY(-2px);
+}
+
+/* Accent top line */
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 14px; right: 14px;
+  height: 1.5px;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Gradient mesh in corner */
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  bottom: -10px; right: -10px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.kpi-card.green::before  { background: var(--em); box-shadow: 0 0 12px rgba(16,185,129,0.5); }
+.kpi-card.green::after   { background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%); }
+.kpi-card.green:hover    { box-shadow: 0 8px 32px rgba(16,185,129,0.08); }
+
+.kpi-card.red::before    { background: var(--danger); box-shadow: 0 0 12px rgba(244,63,94,0.4); }
+.kpi-card.red::after     { background: radial-gradient(circle, rgba(244,63,94,0.06) 0%, transparent 70%); }
+.kpi-card.red:hover      { box-shadow: 0 8px 32px rgba(244,63,94,0.08); }
+
+.kpi-card.cyan::before   { background: var(--accent); box-shadow: 0 0 12px rgba(34,211,238,0.5); }
+.kpi-card.cyan::after    { background: radial-gradient(circle, rgba(34,211,238,0.07) 0%, transparent 70%); }
+.kpi-card.cyan:hover     { box-shadow: 0 8px 32px rgba(34,211,238,0.1); }
+
+.kpi-card.gold::before   { background: var(--warn); box-shadow: 0 0 12px rgba(245,158,11,0.4); }
+.kpi-card.gold::after    { background: radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%); }
+.kpi-card.gold:hover     { box-shadow: 0 8px 32px rgba(245,158,11,0.08); }
+
+.kpi-label {
+  font-family: var(--font-m);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.kpi-value {
+  font-family: var(--font-m);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--t1);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  position: relative;
+  transition: all 0.6s var(--ease-out);
+}
+
+.kpi-delta {
+  font-size: 11px;
+  margin-top: 6px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+.kpi-delta.up   { color: var(--em); }
+.kpi-delta.down { color: var(--danger); }
+.kpi-delta.warn { color: var(--warn); }
+
+/* ─── Main grid — asymmetric ─── */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.col-main { display: flex; flex-direction: column; gap: 14px; }
+.col-side { display: flex; flex-direction: column; gap: 14px; }
+
+/* ─── SLCard base ─── */
+.sl-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.sl-card:hover { border-color: var(--border-h); }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-family: var(--font-d);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--t1);
+  letter-spacing: -0.025em;
+}
+.card-meta {
+  font-family: var(--font-m);
+  font-size: 10px;
+  color: var(--t3);
+}
+
+/* ─── Bar chart ─── */
+.bar-chart-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 120px;
+  margin-bottom: 10px;
+}
+
+.bar-group-v {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+}
+
+.bar-pair-v {
+  flex: 1;
+  display: flex;
+  gap: 3px;
+  align-items: flex-end;
+  width: 100%;
+  justify-content: center;
+}
+
+.bar-v {
+  width: 18px;
+  border-radius: 4px 4px 0 0;
+  transition: height 1.2s var(--ease-out), opacity 0.2s;
+  position: relative;
+}
+.bar-v:hover { opacity: 0.85; }
+.bar-v.income {
+  background: linear-gradient(to top, var(--em), rgba(16,185,129,0.6));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.bar-v.expense {
+  background: linear-gradient(to top, rgba(244,63,94,0.7), rgba(244,63,94,0.3));
+}
+
+/* "active month" highlight */
+.bar-group-v.active .bar-v.income { box-shadow: 0 0 12px rgba(16,185,129,0.3), inset 0 1px 0 rgba(255,255,255,0.15); }
+.bar-group-v.active .bar-v.expense { box-shadow: 0 0 12px rgba(244,63,94,0.2); }
+
+.bar-label-v {
+  font-family: var(--font-m);
+  font-size: 9px;
+  color: var(--t3);
+}
+.bar-group-v.active .bar-label-v { color: var(--t2); }
+
+.chart-legend {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-m);
+  font-size: 10px;
+  color: var(--t3);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+}
+
+/* ─── Budget progress ─── */
+.budget-list { display: flex; flex-direction: column; gap: 12px; }
+
+.budget-item { }
+
+.budget-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.budget-name {
+  font-size: 12px;
+  color: var(--t2);
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.budget-name .emoji {
+  width: 22px; height: 22px;
+  background: var(--s2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+.budget-nums {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.budget-pct {
+  font-family: var(--font-m);
+  font-size: 12px;
+  font-weight: 500;
+}
+.budget-amounts {
+  font-family: var(--font-m);
+  font-size: 10px;
+  color: var(--t3);
+}
+
+.budget-track {
+  height: 4px;
+  background: var(--s3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.budget-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1.2s var(--ease-out);
+  position: relative;
+}
+.budget-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 6px; height: 100%;
+  background: rgba(255,255,255,0.3);
+  border-radius: 4px;
+}
+
+/* ─── Side widgets ─── */
+.score-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.score-card:hover { border-color: rgba(34,211,238,0.2); box-shadow: 0 0 40px rgba(34,211,238,0.05); }
+.score-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(34,211,238,0.3), transparent);
+}
+
+.score-ring-lg { position: relative; width: 120px; height: 120px; }
+.score-ring-lg svg { width: 120px; height: 120px; }
+.score-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.score-num {
+  font-family: var(--font-m);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--t1);
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+.score-max {
+  font-family: var(--font-m);
+  font-size: 11px;
+  color: var(--t3);
+}
+
+.score-title {
+  font-family: var(--font-d);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t1);
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+.score-sub-text {
+  font-size: 11px;
+  color: var(--t3);
+  text-align: center;
+  line-height: 1.5;
+  max-width: 200px;
+}
+
+.score-dims {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.score-dim {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dim-label { font-size: 10px; color: var(--t3); flex: 1; }
+.dim-bar {
+  width: 80px;
+  height: 3px;
+  background: var(--s3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.dim-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+.dim-val {
+  font-family: var(--font-m);
+  font-size: 9px;
+  color: var(--t3);
+  width: 22px;
+  text-align: right;
+}
+
+/* Quick stats card */
+.quick-stats {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.qs-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.qs-item:last-child { border-bottom: none; }
+.qs-label {
+  font-size: 12px;
+  color: var(--t2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.qs-icon {
+  width: 24px; height: 24px;
+  border-radius: 7px;
+  background: var(--s3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+.qs-value {
+  font-family: var(--font-m);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--t1);
+  letter-spacing: -0.02em;
+}
+
+/* ─── Bottom grid ─── */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+/* Recent transactions */
+.txn-list { display: flex; flex-direction: column; gap: 2px; }
+.txn-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.txn-item:hover { background: var(--s2); }
+.txn-icon {
+  width: 32px; height: 32px;
+  border-radius: 9px;
+  background: var(--s2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.txn-info { flex: 1; min-width: 0; }
+.txn-name {
+  font-size: 12px;
+  color: var(--t1);
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.txn-date { font-family: var(--font-m); font-size: 9px; color: var(--t3); margin-top: 1px; }
+.txn-amount {
+  font-family: var(--font-m);
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.txn-amount.income { color: var(--em); }
+.txn-amount.expense { color: var(--danger); }
+
+/* Próximas recorrentes */
+.recorr-list { display: flex; flex-direction: column; gap: 6px; }
+.recorr-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--s2);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.recorr-days {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-m);
+  flex-shrink: 0;
+}
+.recorr-days .days-num { font-size: 14px; font-weight: 500; line-height: 1; }
+.recorr-days .days-label { font-size: 7px; color: var(--t3); }
+.recorr-days.soon { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.15); }
+.recorr-days.soon .days-num { color: var(--warn); }
+.recorr-days.ok { background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.12); }
+.recorr-days.ok .days-num { color: var(--accent); }
+.recorr-info { flex: 1; min-width: 0; }
+.recorr-name { font-size: 12px; color: var(--t1); font-weight: 400; }
+.recorr-freq { font-size: 10px; color: var(--t3); font-family: var(--font-m); margin-top: 1px; }
+.recorr-value { font-family: var(--font-m); font-size: 13px; font-weight: 500; color: var(--danger); flex-shrink: 0; }
+
+/* AI Insight card */
+.insight-card {
+  background: linear-gradient(135deg, rgba(34,211,238,0.04) 0%, rgba(16,185,129,0.04) 100%);
+  border: 1px solid rgba(34,211,238,0.12);
+  border-radius: var(--r);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.insight-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--em));
+  opacity: 0.4;
+}
+.insight-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(34,211,238,0.08);
+  border: 1px solid rgba(34,211,238,0.15);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  font-family: var(--font-m);
+  margin-bottom: 10px;
+}
+.insight-ai-badge::before { content: '✦'; font-size: 8px; }
+.insight-text { font-size: 13px; color: var(--t2); line-height: 1.6; font-weight: 300; }
+.insight-text strong { color: var(--t1); font-weight: 500; }
+.insight-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+  cursor: pointer;
+  transition: gap 0.2s;
+}
+.insight-action:hover { gap: 8px; }
+
+/* ═══════════════════════════════════════════════
+   SCROLL REVEAL ANIMATIONS
+   ═══════════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.05s; }
+.reveal-delay-2 { transition-delay: 0.10s; }
+.reveal-delay-3 { transition-delay: 0.15s; }
+.reveal-delay-4 { transition-delay: 0.20s; }
+.reveal-delay-5 { transition-delay: 0.25s; }
+.reveal-delay-6 { transition-delay: 0.30s; }
+
+/* ─── Input with microinteraction ─── */
+.input-demo {
+  padding: 20px;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.input-demo-title {
+  font-family: var(--font-d);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t1);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.input-field {
+  position: relative;
+}
+.input-label {
+  display: block;
+  font-family: var(--font-m);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 5px;
+  transition: color 0.2s;
+}
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-prefix {
+  position: absolute;
+  left: 12px;
+  font-family: var(--font-m);
+  font-size: 14px;
+  color: var(--t3);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+input.sl-input {
+  width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px 10px 28px;
+  font-family: var(--font-m);
+  font-size: 14px;
+  color: var(--t1);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+input.sl-input::placeholder { color: var(--t3); }
+input.sl-input:focus {
+  border-color: rgba(34,211,238,0.35);
+  box-shadow: 0 0 0 3px rgba(34,211,238,0.08), 0 0 16px rgba(34,211,238,0.05);
+  background: var(--s2);
+}
+input.sl-input:focus + .input-glow { opacity: 1; }
+
+.input-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 9px;
+  border: 1px solid rgba(34,211,238,0.2);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.input-validation {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-m);
+  font-size: 10px;
+}
+.validation-ok { color: var(--em); opacity: 0; transition: opacity 0.3s; }
+.validation-ok.show { opacity: 1; }
+
+/* ─── Button microinteraction showcase ─── */
+.btn-showcase { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+.btn-v4 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-b);
+  transition: transform 0.15s var(--ease-spring), box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-v4::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.05);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.btn-v4:hover::after { opacity: 1; }
+.btn-v4:active { transform: translateY(2px) scale(0.98); box-shadow: none !important; }
+
+.btn-v4-solid {
+  background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(16,185,129,0.2));
+  border: 1px solid rgba(34,211,238,0.25);
+  color: var(--accent);
+  box-shadow: 0 4px 16px rgba(34,211,238,0.1);
+}
+.btn-v4-solid:hover { box-shadow: 0 6px 24px rgba(34,211,238,0.18); transform: translateY(-1px); }
+
+.btn-v4-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--t2);
+}
+.btn-v4-ghost:hover { border-color: var(--border-h); color: var(--t1); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+.btn-v4-danger {
+  background: rgba(244,63,94,0.1);
+  border: 1px solid rgba(244,63,94,0.2);
+  color: var(--danger);
+  box-shadow: 0 4px 16px rgba(244,63,94,0.08);
+}
+.btn-v4-danger:hover { box-shadow: 0 6px 24px rgba(244,63,94,0.15); transform: translateY(-1px); }
+
+/* ─── Theme switcher demo ─── */
+.theme-demo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 200;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+.theme-title {
+  font-family: var(--font-m);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--t3);
+  margin-bottom: 2px;
+}
+.theme-swatches { display: flex; gap: 6px; }
+.theme-swatch {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s var(--ease-spring), border-color 0.2s;
+}
+.theme-swatch:hover { transform: scale(1.15); }
+.theme-swatch.active { border-color: var(--accent); box-shadow: 0 0 8px rgba(34,211,238,0.3); }
+
+/* ─── Responsive ─── */
+@media (max-width: 1200px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .col-side { display: grid; grid-template-columns: 1fr 1fr; }
+  .bottom-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .content-area { margin-left: var(--mb-w); }
+  .top-header { left: var(--mb-w); }
+  .kpi-strip { grid-template-columns: 1fr 1fr; }
+  .bottom-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .module-bar { display: none; }
+  .content-area { margin-left: 0; margin-top: 0; padding: 16px; }
+  .top-header { left: 0; }
+  .kpi-strip { grid-template-columns: 1fr 1fr; gap: 8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient gradients -->
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+
+<!-- ═══════════ SHELL ═══════════ -->
+<div class="shell">
+
+  <!-- Module Bar -->
+  <nav class="module-bar">
+    <div class="logo-mark">SL</div>
+
+    <div class="mod-btn" onclick="setModule('home')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <div class="mod-btn-label">Home</div>
+    </div>
+
+    <div class="mod-btn active" onclick="setModule('fin')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <div class="mod-btn-label">Finanças</div>
+    </div>
+
+    <div class="mod-btn" onclick="setModule('fut')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      <div class="mod-btn-label">Futuro</div>
+    </div>
+
+    <div class="mod-btn" onclick="setModule('time')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <div class="mod-btn-label">Tempo</div>
+    </div>
+
+    <div class="mod-btn" onclick="setModule('body')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      <div class="mod-btn-label">Corpo</div>
+    </div>
+
+    <div class="mod-btn" onclick="setModule('mind')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      <div class="mod-btn-label">Mente</div>
+    </div>
+
+    <div class="mod-btn" onclick="setModule('pat')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      <div class="mod-btn-label">Patrimônio</div>
+    </div>
+
+    <div class="mb-spacer"></div>
+
+    <div class="mod-btn" onclick="setModule('cfg')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      <div class="mod-btn-label">Config</div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-module-name">
+      <div class="mod-color-dot"></div>
+      Finanças
+    </div>
+
+    <div class="sidebar-section">Visão Geral</div>
+    <a class="nav-item active" href="#">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" href="#">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Transações
+    </a>
+    <a class="nav-item" href="#">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      Orçamentos
+    </a>
+
+    <div class="sidebar-section">Planejamento</div>
+    <a class="nav-item" href="#">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      Recorrentes
+    </a>
+    <a class="nav-item" href="#">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Calendário
+    </a>
+    <a class="nav-item" href="#">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+      Projeção
+    </a>
+
+    <div class="sidebar-section">Histórico</div>
+    <a class="nav-item" href="#">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      Relatórios
+    </a>
+    <a class="nav-item" href="#">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+      Importar
+    </a>
+
+    <div class="sidebar-bottom">
+      <div class="score-mini">
+        <div class="score-ring">
+          <svg viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="14" fill="none" stroke="#213045" stroke-width="3.5"/>
+            <circle cx="18" cy="18" r="14" fill="none" stroke="url(#miniGrad)" stroke-width="3.5"
+              stroke-linecap="round"
+              stroke-dasharray="87.96"
+              stroke-dashoffset="21.1"
+              transform="rotate(-90 18 18)"
+              style="filter:drop-shadow(0 0 3px rgba(34,211,238,0.4))"/>
+            <defs>
+              <linearGradient id="miniGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#22d3ee"/>
+                <stop offset="100%" stop-color="#10b981"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="score-ring-num">76</div>
+        </div>
+        <div class="score-info">
+          <div class="score-label">Life Sync Score</div>
+          <div class="score-sub">Na Trilha ↑</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Top Header -->
+  <header class="top-header">
+    <div class="breadcrumb">
+      <span>App</span>
+      <svg class="sep" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span>Finanças</span>
+      <svg class="sep" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span class="current">Dashboard</span>
+    </div>
+
+    <div class="hdr-spacer"></div>
+
+    <div class="month-nav">
+      <button><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg></button>
+      <div class="month-label" id="month-label">Maio 2026</div>
+      <button><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+
+    <div class="hdr-pill">Modo Foco</div>
+
+    <div class="hdr-notif">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      <div class="notif-dot"></div>
+    </div>
+
+    <div class="hdr-avatar">TF</div>
+  </header>
+
+  <!-- Content Area -->
+  <main class="content-area">
+    <div class="max-w">
+
+      <!-- Page header -->
+      <div class="page-header reveal reveal-delay-1">
+        <div class="page-title-block">
+          <div class="module-badge">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Módulo Finanças
+          </div>
+          <h1 class="page-h1">Visão Financeira</h1>
+          <div class="page-meta">
+            <span>Maio 2026</span>
+            <div class="page-meta-sep"></div>
+            <span>Semana 21 de 52</span>
+            <div class="page-meta-sep"></div>
+            <span style="color:var(--em)">↑ Tendência positiva</span>
+          </div>
+        </div>
+        <button class="btn-primary">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Nova Transação
+        </button>
+      </div>
+
+      <!-- KPI strip — ASYMMETRIC columns -->
+      <div class="kpi-strip">
+        <div class="kpi-card green reveal reveal-delay-1">
+          <div class="kpi-label">Receitas do Mês</div>
+          <div class="kpi-value" data-count="8450" data-prefix="R$&nbsp;">R$&nbsp;0</div>
+          <div class="kpi-delta up">↑ +12% vs Abril 2026</div>
+        </div>
+        <div class="kpi-card red reveal reveal-delay-2">
+          <div class="kpi-label">Despesas</div>
+          <div class="kpi-value" data-count="5230" data-prefix="R$&nbsp;">R$&nbsp;0</div>
+          <div class="kpi-delta down">↓ −8% bem abaixo do orçamento</div>
+        </div>
+        <div class="kpi-card cyan reveal reveal-delay-3">
+          <div class="kpi-label">Saldo Livre</div>
+          <div class="kpi-value" data-count="3220" data-prefix="R$&nbsp;">R$&nbsp;0</div>
+          <div class="kpi-delta up">↑ Acima da meta mensal</div>
+        </div>
+        <div class="kpi-card gold reveal reveal-delay-4">
+          <div class="kpi-label">Metas Ativas</div>
+          <div class="kpi-value">4/6</div>
+          <div class="kpi-delta warn">⚠ 2 precisam de atenção</div>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="main-grid">
+        <div class="col-main">
+
+          <!-- Bar chart card -->
+          <div class="sl-card reveal reveal-delay-2">
+            <div class="card-header">
+              <div class="card-title">Histórico 6 Meses</div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div class="chart-legend">
+                  <div class="legend-item">
+                    <div class="legend-dot" style="background:var(--em)"></div>
+                    Receitas
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-dot" style="background:rgba(244,63,94,0.65)"></div>
+                    Despesas
+                  </div>
+                </div>
+                <div class="card-meta">Dez 25 – Mai 26</div>
+              </div>
+            </div>
+            <div class="bar-chart-wrap">
+              <div class="bar-group-v">
+                <div class="bar-pair-v">
+                  <div class="bar-v income" style="height:55%"></div>
+                  <div class="bar-v expense" style="height:42%"></div>
+                </div>
+                <div class="bar-label-v">Dez</div>
+              </div>
+              <div class="bar-group-v">
+                <div class="bar-pair-v">
+                  <div class="bar-v income" style="height:63%"></div>
+                  <div class="bar-v expense" style="height:52%"></div>
+                </div>
+                <div class="bar-label-v">Jan</div>
+              </div>
+              <div class="bar-group-v">
+                <div class="bar-pair-v">
+                  <div class="bar-v income" style="height:60%"></div>
+                  <div class="bar-v expense" style="height:68%"></div>
+                </div>
+                <div class="bar-label-v">Fev</div>
+              </div>
+              <div class="bar-group-v">
+                <div class="bar-pair-v">
+                  <div class="bar-v income" style="height:72%"></div>
+                  <div class="bar-v expense" style="height:56%"></div>
+                </div>
+                <div class="bar-label-v">Mar</div>
+              </div>
+              <div class="bar-group-v">
+                <div class="bar-pair-v">
+                  <div class="bar-v income" style="height:78%"></div>
+                  <div class="bar-v expense" style="height:60%"></div>
+                </div>
+                <div class="bar-label-v">Abr</div>
+              </div>
+              <div class="bar-group-v active">
+                <div class="bar-pair-v">
+                  <div class="bar-v income" style="height:92%"></div>
+                  <div class="bar-v expense" style="height:57%"></div>
+                </div>
+                <div class="bar-label-v">Mai</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Budgets card -->
+          <div class="sl-card reveal reveal-delay-3">
+            <div class="card-header">
+              <div class="card-title">Orçamentos</div>
+              <div class="card-meta">Mai 2026 · 4 categorias</div>
+            </div>
+            <div class="budget-list">
+              <div class="budget-item">
+                <div class="budget-row">
+                  <div class="budget-name">
+                    <div class="emoji">🍔</div>
+                    Alimentação
+                  </div>
+                  <div class="budget-nums">
+                    <div class="budget-amounts">R$ 870 / R$ 1.500</div>
+                    <div class="budget-pct" style="color:var(--em)">58%</div>
+                  </div>
+                </div>
+                <div class="budget-track">
+                  <div class="budget-fill" style="width:58%;background:var(--em)"></div>
+                </div>
+              </div>
+              <div class="budget-item">
+                <div class="budget-row">
+                  <div class="budget-name">
+                    <div class="emoji">🚗</div>
+                    Transporte
+                  </div>
+                  <div class="budget-nums">
+                    <div class="budget-amounts">R$ 380 / R$ 500</div>
+                    <div class="budget-pct" style="color:var(--warn)">76%</div>
+                  </div>
+                </div>
+                <div class="budget-track">
+                  <div class="budget-fill" style="width:76%;background:var(--warn)"></div>
+                </div>
+              </div>
+              <div class="budget-item">
+                <div class="budget-row">
+                  <div class="budget-name">
+                    <div class="emoji">🎮</div>
+                    Lazer
+                  </div>
+                  <div class="budget-nums">
+                    <div class="budget-amounts">R$ 455 / R$ 500</div>
+                    <div class="budget-pct" style="color:var(--danger)">91%</div>
+                  </div>
+                </div>
+                <div class="budget-track">
+                  <div class="budget-fill" style="width:91%;background:var(--danger)"></div>
+                </div>
+              </div>
+              <div class="budget-item">
+                <div class="budget-row">
+                  <div class="budget-name">
+                    <div class="emoji">📚</div>
+                    Educação
+                  </div>
+                  <div class="budget-nums">
+                    <div class="budget-amounts">R$ 160 / R$ 500</div>
+                    <div class="budget-pct" style="color:var(--accent)">32%</div>
+                  </div>
+                </div>
+                <div class="budget-track">
+                  <div class="budget-fill" style="width:32%;background:linear-gradient(90deg,var(--accent),var(--em))"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Microinteractions demo -->
+          <div class="sl-card reveal reveal-delay-4">
+            <div class="card-header">
+              <div class="card-title">Microinterações V4</div>
+              <div class="card-meta">Teste os componentes</div>
+            </div>
+
+            <div style="margin-bottom:16px;">
+              <div class="input-demo-title" style="margin-bottom:10px;">Inputs com feedback visual</div>
+              <div class="input-field">
+                <label class="input-label">Valor da transação</label>
+                <div class="input-wrap">
+                  <div class="input-prefix">R$</div>
+                  <input class="sl-input" type="number" placeholder="0,00" id="demo-input" oninput="validateInput(this)">
+                  <div class="input-glow"></div>
+                  <div class="input-validation">
+                    <span class="validation-ok" id="validation-ok">✓ Válido</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="input-demo-title" style="margin-bottom:10px;">Botões com física de interação</div>
+              <div class="btn-showcase">
+                <button class="btn-v4 btn-v4-solid">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                  Confirmar
+                </button>
+                <button class="btn-v4 btn-v4-ghost">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                  Cancelar
+                </button>
+                <button class="btn-v4 btn-v4-danger">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  Excluir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side column -->
+        <div class="col-side">
+
+          <!-- Score ring -->
+          <div class="score-card reveal reveal-delay-2">
+            <div class="score-ring-lg">
+              <svg viewBox="0 0 120 120">
+                <defs>
+                  <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#22d3ee"/>
+                    <stop offset="100%" stop-color="#10b981"/>
+                  </linearGradient>
+                </defs>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#213045" stroke-width="8"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="url(#scoreGrad)" stroke-width="8"
+                  stroke-linecap="round"
+                  stroke-dasharray="314.16"
+                  stroke-dashoffset="75.4"
+                  transform="rotate(-90 60 60)"
+                  style="filter:drop-shadow(0 0 6px rgba(34,211,238,0.5));transition:stroke-dashoffset 1.5s cubic-bezier(0.22,1,0.36,1)"/>
+              </svg>
+              <div class="score-ring-center">
+                <div class="score-num">76</div>
+                <div class="score-max">/ 100</div>
+              </div>
+            </div>
+            <div class="score-title">Life Sync Score</div>
+            <div class="score-sub-text">Suas dimensões estão em harmonia este mês. Continue assim!</div>
+            <div class="score-dims">
+              <div class="score-dim">
+                <div class="dim-label">Finanças</div>
+                <div class="dim-bar"><div class="dim-fill" style="width:82%;background:var(--em)"></div></div>
+                <div class="dim-val">82</div>
+              </div>
+              <div class="score-dim">
+                <div class="dim-label">Saúde</div>
+                <div class="dim-bar"><div class="dim-fill" style="width:74%;background:var(--accent)"></div></div>
+                <div class="dim-val">74</div>
+              </div>
+              <div class="score-dim">
+                <div class="dim-label">Carreira</div>
+                <div class="dim-bar"><div class="dim-fill" style="width:68%;background:var(--purple)"></div></div>
+                <div class="dim-val">68</div>
+              </div>
+              <div class="score-dim">
+                <div class="dim-label">Relacionamentos</div>
+                <div class="dim-bar"><div class="dim-fill" style="width:88%;background:var(--warn)"></div></div>
+                <div class="dim-val">88</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick stats -->
+          <div class="quick-stats reveal reveal-delay-3">
+            <div class="qs-item">
+              <div class="qs-label">
+                <div class="qs-icon">💰</div>
+                Economizado
+              </div>
+              <div class="qs-value" style="color:var(--em)">R$ 1.800</div>
+            </div>
+            <div class="qs-item">
+              <div class="qs-label">
+                <div class="qs-icon">📈</div>
+                Investido/mês
+              </div>
+              <div class="qs-value" style="color:var(--accent)">R$ 650</div>
+            </div>
+            <div class="qs-item">
+              <div class="qs-label">
+                <div class="qs-icon">🔔</div>
+                Próxima conta
+              </div>
+              <div class="qs-value" style="font-size:13px;color:var(--t2)">em 3 dias</div>
+            </div>
+            <div class="qs-item">
+              <div class="qs-label">
+                <div class="qs-icon">🏦</div>
+                Conta corrente
+              </div>
+              <div class="qs-value" style="color:var(--t1)">Nubank</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom grid — 3 col -->
+      <div class="bottom-grid">
+
+        <!-- Recent transactions -->
+        <div class="sl-card reveal reveal-delay-2">
+          <div class="card-header">
+            <div class="card-title">Transações Recentes</div>
+            <div style="font-size:12px;color:var(--accent);cursor:pointer;">Ver todas →</div>
+          </div>
+          <div class="txn-list">
+            <div class="txn-item">
+              <div class="txn-icon">🍔</div>
+              <div class="txn-info">
+                <div class="txn-name">iFood — Almoço</div>
+                <div class="txn-date">Hoje · 12:31 · Alimentação</div>
+              </div>
+              <div class="txn-amount expense">−R$ 47,00</div>
+            </div>
+            <div class="txn-item">
+              <div class="txn-icon">⛽</div>
+              <div class="txn-info">
+                <div class="txn-name">Posto Ipiranga</div>
+                <div class="txn-date">Ontem · 18:14 · Transporte</div>
+              </div>
+              <div class="txn-amount expense">−R$ 120,00</div>
+            </div>
+            <div class="txn-item">
+              <div class="txn-icon">💼</div>
+              <div class="txn-info">
+                <div class="txn-name">Salário — Empresa X</div>
+                <div class="txn-date">01 Mai · 09:00 · Receita</div>
+              </div>
+              <div class="txn-amount income">+R$ 8.450</div>
+            </div>
+            <div class="txn-item">
+              <div class="txn-icon">🎮</div>
+              <div class="txn-info">
+                <div class="txn-name">Steam — Jogo</div>
+                <div class="txn-date">30 Abr · 20:45 · Lazer</div>
+              </div>
+              <div class="txn-amount expense">−R$ 89,90</div>
+            </div>
+            <div class="txn-item">
+              <div class="txn-icon">📚</div>
+              <div class="txn-info">
+                <div class="txn-name">Coursera — Curso IA</div>
+                <div class="txn-date">28 Abr · 14:22 · Educação</div>
+              </div>
+              <div class="txn-amount expense">−R$ 59,90</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recorrentes -->
+        <div class="sl-card reveal reveal-delay-3">
+          <div class="card-header">
+            <div class="card-title">Próximas Recorrentes</div>
+            <div class="card-meta">7 dias</div>
+          </div>
+          <div class="recorr-list">
+            <div class="recorr-item">
+              <div class="recorr-days soon">
+                <div class="days-num">2</div>
+                <div class="days-label">dias</div>
+              </div>
+              <div class="recorr-info">
+                <div class="recorr-name">Netflix</div>
+                <div class="recorr-freq">Mensal · Lazer</div>
+              </div>
+              <div class="recorr-value">−R$ 45,90</div>
+            </div>
+            <div class="recorr-item">
+              <div class="recorr-days soon">
+                <div class="days-num">3</div>
+                <div class="days-label">dias</div>
+              </div>
+              <div class="recorr-info">
+                <div class="recorr-name">Spotify</div>
+                <div class="recorr-freq">Mensal · Lazer</div>
+              </div>
+              <div class="recorr-value">−R$ 21,90</div>
+            </div>
+            <div class="recorr-item">
+              <div class="recorr-days ok">
+                <div class="days-num">5</div>
+                <div class="days-label">dias</div>
+              </div>
+              <div class="recorr-info">
+                <div class="recorr-name">Aluguel</div>
+                <div class="recorr-freq">Mensal · Moradia</div>
+              </div>
+              <div class="recorr-value">−R$ 1.800</div>
+            </div>
+            <div class="recorr-item">
+              <div class="recorr-days ok">
+                <div class="days-num">7</div>
+                <div class="days-label">dias</div>
+              </div>
+              <div class="recorr-info">
+                <div class="recorr-name">Internet</div>
+                <div class="recorr-freq">Mensal · Moradia</div>
+              </div>
+              <div class="recorr-value">−R$ 109,90</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Insight -->
+        <div class="insight-card reveal reveal-delay-4">
+          <div class="insight-ai-badge">IA Financeira</div>
+          <div class="card-title" style="margin-bottom:10px;">Insight do Mês</div>
+          <div class="insight-text">
+            Você gastou <strong>R$ 455 em Lazer</strong> até agora, o que representa <strong>91% do orçamento</strong> com 8 dias restantes. Se mantiver o ritmo, vai ultrapassar em ~R$ 60.<br><br>
+            Sua <strong>categoria Educação está em apenas 32%</strong> do orçamento — há espaço para investir mais em desenvolvimento pessoal este mês.
+          </div>
+          <div class="insight-action">Ver análise completa <span>→</span></div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Theme Switcher Demo -->
+<div class="theme-demo">
+  <div class="theme-title">Tema Demo</div>
+  <div class="theme-swatches">
+    <div class="theme-swatch active" style="background:#0c1520;" onclick="setTheme('navy')" title="Ardósia (V4)"></div>
+    <div class="theme-swatch" style="background:#0a0a0f;" onclick="setTheme('obsidian')" title="Obsidian"></div>
+    <div class="theme-swatch" style="background:#1a0a18;" onclick="setTheme('rosewood')" title="Rosewood"></div>
+    <div class="theme-swatch" style="background:#f0f6fa;" onclick="setTheme('light')" title="Clean Light"></div>
+  </div>
+</div>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Trigger immediate for above-fold elements
+setTimeout(() => {
+  document.querySelectorAll('.reveal').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight) el.classList.add('visible');
+  });
+}, 100);
+
+// Animated number counter
+function animateCount(el) {
+  const target = parseInt(el.dataset.count);
+  const prefix = el.dataset.prefix || '';
+  const dur = 1200;
+  const start = performance.now();
+
+  function tick(now) {
+    const t = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const val = Math.round(ease * target);
+    el.innerHTML = prefix + val.toLocaleString('pt-BR');
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// Trigger counters when visible
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && e.target.dataset.count) {
+      animateCount(e.target);
+      countObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('[data-count]').forEach(el => countObserver.observe(el));
+
+// Input validation microinteraction
+function validateInput(input) {
+  const ok = document.getElementById('validation-ok');
+  if (parseFloat(input.value) > 0) {
+    ok.classList.add('show');
+  } else {
+    ok.classList.remove('show');
+  }
+}
+
+// Module switcher
+function setModule(mod) {
+  document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+// Theme switcher (demo — changes some CSS vars)
+const themes = {
+  navy:     { '--bg': '#0c1520', '--s1': '#121d2e', '--s2': '#192638', '--s3': '#213045', '--accent': '#22d3ee' },
+  obsidian: { '--bg': '#0a0a0f', '--s1': '#12121a', '--s2': '#1a1a24', '--s3': '#22222e', '--accent': '#d4a853' },
+  rosewood: { '--bg': '#1a0a18', '--s1': '#261020', '--s2': '#321828', '--s3': '#3e2034', '--accent': '#f43f5e' },
+  light:    { '--bg': '#e6eef5', '--s1': '#ffffff', '--s2': '#f0f6fa', '--s3': '#e0eaf3', '--accent': '#10b981' },
+};
+
+function setTheme(name) {
+  const t = themes[name];
+  if (!t) return;
+  const r = document.documentElement;
+  Object.entries(t).forEach(([k, v]) => r.style.setProperty(k, v));
+
+  // Update text colors for light theme
+  if (name === 'light') {
+    r.style.setProperty('--t1', '#03071a');
+    r.style.setProperty('--t2', '#1e3a5c');
+    r.style.setProperty('--t3', '#5a7a9e');
+    r.style.setProperty('--border', 'rgba(3,7,26,0.08)');
+  } else {
+    r.style.setProperty('--t1', '#dde9f5');
+    r.style.setProperty('--t2', '#7494b8');
+    r.style.setProperty('--t3', '#3a5470');
+    r.style.setProperty('--border', 'rgba(116,148,184,0.11)');
+  }
+
+  document.querySelectorAll('.theme-swatch').forEach((s,i) => {
+    s.classList.toggle('active', ['navy','obsidian','rosewood','light'][i] === name);
+  });
+}
+
+// Month navigation
+const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+let currentMonth = 4; // Mai = index 4
+let currentYear = 2026;
+
+document.querySelectorAll('.month-nav button').forEach((btn, i) => {
+  btn.addEventListener('click', () => {
+    if (i === 0) { currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } }
+    else { currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } }
+    document.getElementById('month-label').textContent = `${months[currentMonth]} ${currentYear}`;
+  });
+});
+</script>
+</body>
+</html>

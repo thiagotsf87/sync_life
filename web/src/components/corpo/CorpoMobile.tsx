@@ -31,7 +31,7 @@ import {
 type TabId = 'dashboard' | 'atividades' | 'peso' | 'cardapio' | 'saude' | 'coach'
 type ModalId = 'activity' | 'weight' | 'appointment' | 'meal' | 'profile' | null
 
-const CORPO_COLOR = '#f97316'
+const CORPO_COLOR = '#D97534'
 
 const TABS: { id: TabId; label: string; key: string }[] = [
   { id: 'dashboard', label: 'Dashboard', key: 'dashboard' },
@@ -111,7 +111,7 @@ export function CorpoMobile() {
         <div className="flex items-center justify-between px-5 pt-14 pb-3">
           <div className="flex items-center gap-2">
             <span className="text-[20px]">🏃</span>
-            <span className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">Corpo</span>
+            <span className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">Corpo</span>
           </div>
           <div className="h-7 w-20 rounded-full bg-[var(--sl-s2)] animate-pulse" />
         </div>
@@ -200,7 +200,7 @@ export function CorpoMobile() {
           <p className="text-[12px] font-semibold mb-[2px]" style={{ color: CORPO_COLOR }}>
             ✦ {jornadaLabel('corpo', 'module', 'Corpo')}
           </p>
-          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
             Seu corpo hoje
           </h1>
         </div>
@@ -237,7 +237,7 @@ export function CorpoMobile() {
         {activeTab === 'dashboard' && weekActivities.length > 0 && profile?.weekly_activity_goal && (
           <span
             className="text-[12px] font-semibold px-3 py-1 rounded-full"
-            style={{ background: 'rgba(249,115,22,0.14)', color: CORPO_COLOR }}
+            style={{ background: 'rgba(217,117,52,0.14)', color: CORPO_COLOR }}
           >
             {weekActivities.length}/{profile.weekly_activity_goal} atividades
           </span>

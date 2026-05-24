@@ -54,7 +54,7 @@ export function RelatoriosMobileView({
               className={cn(
                 'px-3 py-[6px] rounded-full text-[13px] font-medium whitespace-nowrap shrink-0 transition-colors',
                 period === opt.key
-                  ? 'bg-[#10b981] text-black'
+                  ? 'bg-[#0F766E] text-black'
                   : 'bg-[var(--sl-s2)] text-[var(--sl-t2)] border border-[var(--sl-border)]'
               )}
             >
@@ -67,12 +67,12 @@ export function RelatoriosMobileView({
       </div>
 
       {/* Month summary card */}
-      <div className="rounded-2xl p-4 mb-3" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(0,85,255,0.06))', border: '1px solid var(--sl-border)' }}>
+      <div className="rounded-2xl p-4 mb-3" style={{ background: 'linear-gradient(135deg, rgba(15,118,110,0.1), rgba(0,85,255,0.06))', border: '1px solid var(--sl-border)' }}>
         <div className="text-center mb-3">
           <div className="text-[12px] text-[var(--sl-t2)] mb-1">Saldo do período</div>
           <div className={cn(
-            'font-[DM_Mono] text-[30px] font-extrabold',
-            periodStats.totalBalance >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
+            'font-[IBM_Plex_Mono] text-[30px] font-extrabold',
+            periodStats.totalBalance >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]'
           )}>
             {periodStats.totalBalance >= 0 ? '+' : ''}{fmtR(periodStats.totalBalance)}
           </div>
@@ -80,12 +80,12 @@ export function RelatoriosMobileView({
         <div className="flex justify-around border-t border-[var(--sl-border)] pt-3">
           <div className="text-center">
             <div className="text-[11px] text-[var(--sl-t2)] mb-1">Receitas</div>
-            <div className="font-[DM_Mono] text-[16px] text-[#10b981]">+{fmtR(periodStats.totalRecipes)}</div>
+            <div className="font-[IBM_Plex_Mono] text-[16px] text-[#0F766E]">+{fmtR(periodStats.totalRecipes)}</div>
           </div>
           <div className="w-px bg-[var(--sl-border)]" />
           <div className="text-center">
             <div className="text-[11px] text-[var(--sl-t2)] mb-1">Despesas</div>
-            <div className="font-[DM_Mono] text-[16px] text-[#f43f5e]">-{fmtR(periodStats.totalExpenses)}</div>
+            <div className="font-[IBM_Plex_Mono] text-[16px] text-[#DB6478]">-{fmtR(periodStats.totalExpenses)}</div>
           </div>
         </div>
       </div>
@@ -93,7 +93,7 @@ export function RelatoriosMobileView({
       {/* Category breakdown */}
       {mobileTopCats.length > 0 && (
         <>
-          <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-1">Gastos por categoria</div>
+          <div className="font-[Space_Grotesk] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-1">Gastos por categoria</div>
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-3">
             <div className="flex flex-col gap-[10px]">
               {mobileTopCats.map(cat => {
@@ -104,10 +104,10 @@ export function RelatoriosMobileView({
                     <div className="flex-1">
                       <div className="flex justify-between mb-[3px]">
                         <span className="text-[12px] text-[var(--sl-t1)]">{cat.name}</span>
-                        <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">{fmtR(cat.currentTotal)}</span>
+                        <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t2)]">{fmtR(cat.currentTotal)}</span>
                       </div>
                       <div className="h-[6px] bg-[var(--sl-s3)] rounded-[3px] overflow-hidden">
-                        <div className="h-full rounded-[3px]" style={{ width: `${pct}%`, background: pct > 50 ? '#f43f5e' : pct > 30 ? '#f59e0b' : '#10b981' }} />
+                        <div className="h-full rounded-[3px]" style={{ width: `${pct}%`, background: pct > 50 ? '#DB6478' : pct > 30 ? '#D9962E' : '#0F766E' }} />
                       </div>
                     </div>
                   </div>
@@ -121,12 +121,12 @@ export function RelatoriosMobileView({
       {/* Comparison card */}
       {barChartData.length > 1 && (
         <>
-          <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2">Comparativo</div>
+          <div className="font-[Space_Grotesk] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2">Comparativo</div>
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-3">
             <div className="flex justify-between mb-3">
               <span className="text-[13px] text-[var(--sl-t2)]">vs. período anterior</span>
               {expenseDelta !== null && (
-                <span className={cn('text-[11px] font-medium px-2 py-0.5 rounded-full', expenseDelta <= 0 ? 'bg-[rgba(16,185,129,0.12)] text-[#10b981]' : 'bg-[rgba(244,63,94,0.12)] text-[#f43f5e]')}>
+                <span className={cn('text-[11px] font-medium px-2 py-0.5 rounded-full', expenseDelta <= 0 ? 'bg-[rgba(15,118,110,0.12)] text-[#0F766E]' : 'bg-[rgba(219,100,120,0.12)] text-[#DB6478]')}>
                   {expenseDelta > 0 ? '↑' : '↓'} {fmtR(Math.abs(periodStats.totalExpenses - periodStats.prevTotalExpenses))}
                 </span>
               )}
@@ -141,9 +141,9 @@ export function RelatoriosMobileView({
                   <div key={bar.month} className="flex flex-col items-center gap-1">
                     <div className="w-8 rounded-t" style={{
                       height: h,
-                      background: isLast ? '#10b981' : 'rgba(16,185,129,0.3)',
+                      background: isLast ? '#0F766E' : 'rgba(15,118,110,0.3)',
                     }} />
-                    <span className={cn('text-[10px]', isLast ? 'text-[#10b981] font-semibold' : 'text-[var(--sl-t2)]')}>{bar.month}</span>
+                    <span className={cn('text-[10px]', isLast ? 'text-[#0F766E] font-semibold' : 'text-[var(--sl-t2)]')}>{bar.month}</span>
                   </div>
                 )
               })}

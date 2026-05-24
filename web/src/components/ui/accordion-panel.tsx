@@ -23,7 +23,7 @@ export function AccordionPanel({
   title,
   subtitle,
   statusLabel,
-  statusColor = '#10b981',
+  statusColor = '#0F766E',
   progress,
   defaultOpen = false,
   accentColor,
@@ -94,7 +94,7 @@ export function AccordionPanel({
                 }}
               />
             </div>
-            <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)]">
+            <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)]">
               {Math.round(progress)}%
             </span>
           </div>

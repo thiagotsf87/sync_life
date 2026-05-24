@@ -43,11 +43,11 @@ export function ExpUpgradeModal({
         <div className="text-center mb-4">
           <div
             className="w-16 h-16 rounded-[20px] flex items-center justify-center text-[32px] mx-auto mb-3"
-            style={{ background: 'rgba(139,92,246,0.15)' }}
+            style={{ background: 'rgba(139,123,212,0.15)' }}
           >
             ⚡
           </div>
-          <h3 className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)] mb-2">
+          <h3 className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)] mb-2">
             Limite de Explorador
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] leading-[1.5]">

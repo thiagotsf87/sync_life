@@ -42,7 +42,7 @@ export function TopHeader({ userName }: TopHeaderProps) {
       {/* Greeting — always visible */}
       <div className="flex items-center gap-2">
         <span className="text-lg">{greeting.emoji}</span>
-        <h1 className="font-[Syne] font-bold text-base text-sl-grad">
+        <h1 className="font-[Space_Grotesk] font-bold text-base text-sl-grad">
           {greeting.text}
         </h1>
       </div>

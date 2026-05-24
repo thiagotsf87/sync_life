@@ -145,9 +145,9 @@ function Pagination({
                 key={p}
                 onClick={() => onPage(p as number)}
                 className={cn(
-                  'w-7 h-7 rounded-[8px] border font-[DM_Mono] text-[12px] transition-colors',
+                  'w-7 h-7 rounded-[8px] border font-[IBM_Plex_Mono] text-[12px] transition-colors',
                   p === page
-                    ? 'bg-[#10b981] text-[#03071a] border-transparent font-bold'
+                    ? 'bg-[#0F766E] text-[#03071a] border-transparent font-bold'
                     : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)]'
                 )}
               >
@@ -202,7 +202,7 @@ function TransactionRow({
               {isTransfer && (
                 <>
                   <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                    style={{ background: 'rgba(0,85,255,.12)', color: '#0055ff', border: '1px solid rgba(0,85,255,.25)' }}>
+                    style={{ background: 'rgba(0,85,255,.12)', color: '#0B2D34', border: '1px solid rgba(0,85,255,.25)' }}>
                     🔄 Transf.
                   </span>
                   {tx.account_from && (
@@ -224,7 +224,7 @@ function TransactionRow({
               )}
               {tx.recurring_transaction_id && (
                 <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                  style={{ background: 'rgba(139,92,246,.12)', color: '#a78bfa', border: '1px solid rgba(139,92,246,.25)' }}>
+                  style={{ background: 'rgba(139,123,212,.12)', color: '#a78bfa', border: '1px solid rgba(139,123,212,.25)' }}>
                   🔄 Recorrente
                 </span>
               )}
@@ -241,7 +241,7 @@ function TransactionRow({
         </div>
 
         {/* Data */}
-        <div className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)] self-center">
+        <div className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] self-center">
           {formatDateShort(tx.date)}
         </div>
 
@@ -266,8 +266,8 @@ function TransactionRow({
 
         {/* Valor */}
         <div className={cn(
-          'font-[DM_Mono] text-[14px] font-medium self-center text-right',
-          isTransfer ? 'text-[#0055ff]' : isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
+          'font-[IBM_Plex_Mono] text-[14px] font-medium self-center text-right',
+          isTransfer ? 'text-[#0B2D34]' : isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]'
         )}>
           {isTransfer ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
         </div>
@@ -276,13 +276,13 @@ function TransactionRow({
         <div className="flex items-center justify-end gap-1 self-center opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(tx)}
-            className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#10b981] hover:bg-[rgba(16,185,129,.08)] transition-colors"
+            className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#0F766E] hover:bg-[rgba(15,118,110,.08)] transition-colors"
           >
             <Pencil size={13} />
           </button>
           <button
             onClick={() => onDelete(tx)}
-            className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,.08)] transition-colors"
+            className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[rgba(219,100,120,.08)] transition-colors"
           >
             <Trash2 size={13} />
           </button>
@@ -309,14 +309,14 @@ function TransactionRow({
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
             <p className={cn(
-              'font-[DM_Mono] text-[15px] font-medium',
-              isTransfer ? 'text-[#0055ff]' : isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
+              'font-[IBM_Plex_Mono] text-[15px] font-medium',
+              isTransfer ? 'text-[#0B2D34]' : isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]'
             )}>
               {isTransfer ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
             </p>
             <button
               onClick={e => { e.stopPropagation(); onDelete(tx) }}
-              className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,.08)] transition-colors"
+              className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[rgba(219,100,120,.08)] transition-colors"
             >
               <Trash2 size={13} />
             </button>
@@ -452,7 +452,7 @@ export default function TransacoesPage() {
               <button
                 onClick={openCreate}
                 className="flex h-9 w-9 items-center justify-center rounded-[10px] text-white"
-                style={{ background: '#10b981' }}
+                style={{ background: '#0F766E' }}
               >
                 <Plus size={16} />
               </button>
@@ -461,7 +461,7 @@ export default function TransacoesPage() {
         >
         {/* Mobile search bar (toggle) */}
         {mobileSearch && (
-          <div className="flex items-center gap-2 mb-2 px-3 py-2.5 rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] focus-within:border-[#10b981] transition-colors">
+          <div className="flex items-center gap-2 mb-2 px-3 py-2.5 rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] focus-within:border-[#0F766E] transition-colors">
             <Search size={14} className="text-[var(--sl-t3)] shrink-0" />
             <input
               type="text"
@@ -488,7 +488,7 @@ export default function TransacoesPage() {
           >
             <ChevronLeft size={16} />
           </button>
-          <span className="font-[Syne] text-[14px] font-semibold text-[var(--sl-t1)] min-w-[120px] text-center">
+          <span className="font-[Space_Grotesk] text-[14px] font-semibold text-[var(--sl-t1)] min-w-[120px] text-center">
             {MONTH_NAMES[month - 1]} {year}
           </span>
           <button
@@ -521,7 +521,7 @@ export default function TransacoesPage() {
                 className={cn(
                   'px-3.5 py-[7px] rounded-[20px] border text-[12px] font-medium shrink-0 transition-all',
                   isActive
-                    ? 'bg-[rgba(16,185,129,0.15)] border-[rgba(16,185,129,0.35)] text-[#10b981]'
+                    ? 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.35)] text-[#0F766E]'
                     : 'bg-[var(--sl-s1)] border-[var(--sl-border)] text-[var(--sl-t2)]'
                 )}
               >
@@ -534,14 +534,14 @@ export default function TransacoesPage() {
         {/* Mobile summary cards */}
         <div className="flex gap-2 mb-3">
           <div className="flex-1 rounded-[10px] px-3 py-2.5"
-            style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
+            style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.2)' }}>
             <p className="text-[11px] text-[var(--sl-t2)]">Receitas</p>
-            <p className="font-[DM_Mono] text-[16px] font-medium text-[#10b981]">+R$ {fmtR$(totalReceitas)}</p>
+            <p className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#0F766E]">+R$ {fmtR$(totalReceitas)}</p>
           </div>
           <div className="flex-1 rounded-[10px] px-3 py-2.5"
-            style={{ background: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.2)' }}>
+            style={{ background: 'rgba(219,100,120,0.08)', border: '1px solid rgba(219,100,120,0.2)' }}>
             <p className="text-[11px] text-[var(--sl-t2)]">Despesas</p>
-            <p className="font-[DM_Mono] text-[16px] font-medium text-[#f43f5e]">-R$ {fmtR$(totalDespesas)}</p>
+            <p className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#DB6478]">-R$ {fmtR$(totalDespesas)}</p>
           </div>
         </div>
         </FinancasMobileShell>
@@ -552,16 +552,16 @@ export default function TransacoesPage() {
         {/* ① Topbar */}
         <ModuleHeader
           icon={ArrowLeftRight}
-          iconBg="rgba(16,185,129,.08)"
-          iconColor="#10b981"
+          iconBg="rgba(15,118,110,.08)"
+          iconColor="#0F766E"
           title="Transações"
           subtitle={`${isLoading ? '…' : total} itens`}
           className="mb-5"
         >
           <button
             onClick={openCreate}
-            className="flex items-center gap-1.5 text-[#03071a] font-bold text-[13px] px-5 py-2.5 rounded-full border-none shadow-[0_4px_16px_rgba(16,185,129,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
-            style={{ background: '#10b981' }}
+            className="flex items-center gap-1.5 text-[#03071a] font-bold text-[13px] px-5 py-2.5 rounded-full border-none shadow-[0_4px_16px_rgba(15,118,110,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
+            style={{ background: '#0F766E' }}
           >
             <Plus size={14} />
             Nova Transação
@@ -572,9 +572,9 @@ export default function TransacoesPage() {
         <JornadaInsight text={
           <>
             Este mês você registrou <strong>R$ {fmtR$(totalReceitas)}</strong> em receitas
-            e <strong className="text-[#f43f5e]">R$ {fmtR$(totalDespesas)}</strong> em despesas.
+            e <strong className="text-[#DB6478]">R$ {fmtR$(totalDespesas)}</strong> em despesas.
             {poupancaPct > 0 && (
-              <> Taxa de poupança: <span className="text-[#10b981]">{poupancaPct}%</span>.</>
+              <> Taxa de poupança: <span className="text-[#0F766E]">{poupancaPct}%</span>.</>
             )}
             {maiorCategoria && <> Maior gasto: <strong>{maiorCategoria}</strong>.</>}
           </>
@@ -585,7 +585,7 @@ export default function TransacoesPage() {
           {/* Linha 1: busca + seletor de mês */}
           <div className="flex items-center gap-3 mb-3 flex-wrap">
             {/* Busca */}
-            <div className="flex items-center gap-2 flex-1 min-w-[180px] px-3 py-2 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] focus-within:border-[#10b981] transition-colors">
+            <div className="flex items-center gap-2 flex-1 min-w-[180px] px-3 py-2 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] focus-within:border-[#0F766E] transition-colors">
               <Search size={14} className="text-[var(--sl-t3)] shrink-0" />
               <input
                 type="text"
@@ -608,7 +608,7 @@ export default function TransacoesPage() {
                 className="w-7 h-7 rounded-[8px] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
                 <ChevronLeft size={14} />
               </button>
-              <span className="font-[DM_Mono] text-[13px] text-[var(--sl-t1)] px-3 py-1.5 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] whitespace-nowrap min-w-[140px] text-center">
+              <span className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t1)] px-3 py-1.5 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] whitespace-nowrap min-w-[140px] text-center">
                 {MONTH_NAMES[month - 1]} {year}
               </span>
               <button onClick={nextMonth}
@@ -618,7 +618,7 @@ export default function TransacoesPage() {
               {(month !== now.getMonth() + 1 || year !== now.getFullYear()) && (
                 <button
                   onClick={() => { setMonth(now.getMonth() + 1); setYear(now.getFullYear()); setPage(1) }}
-                  className="ml-1 text-[11px] text-[#10b981] hover:underline"
+                  className="ml-1 text-[11px] text-[#0F766E] hover:underline"
                 >
                   Hoje
                 </button>
@@ -643,11 +643,11 @@ export default function TransacoesPage() {
                 className={cn(
                   'px-3 py-1.5 rounded-full border text-[12px] font-semibold transition-all',
                   typeFilter === chip.value
-                    ? chip.value === 'all' ? 'bg-[#10b981] text-[#03071a] border-transparent font-bold'
-                      : chip.value === 'income' ? 'bg-[rgba(16,185,129,.10)] text-[#10b981] border-[rgba(16,185,129,.30)]'
-                      : chip.value === 'expense' ? 'bg-[rgba(244,63,94,.08)] text-[#f43f5e] border-[rgba(244,63,94,.25)]'
-                      : chip.value === 'transfer' ? 'bg-[rgba(0,85,255,.10)] text-[#0055ff] border-[rgba(0,85,255,.30)]'
-                      : 'bg-[rgba(139,92,246,.12)] text-[#a78bfa] border-[rgba(139,92,246,.30)]'
+                    ? chip.value === 'all' ? 'bg-[#0F766E] text-[#03071a] border-transparent font-bold'
+                      : chip.value === 'income' ? 'bg-[rgba(15,118,110,.10)] text-[#0F766E] border-[rgba(15,118,110,.30)]'
+                      : chip.value === 'expense' ? 'bg-[rgba(219,100,120,.08)] text-[#DB6478] border-[rgba(219,100,120,.25)]'
+                      : chip.value === 'transfer' ? 'bg-[rgba(0,85,255,.10)] text-[#0B2D34] border-[rgba(0,85,255,.30)]'
+                      : 'bg-[rgba(139,123,212,.12)] text-[#a78bfa] border-[rgba(139,123,212,.30)]'
                     : 'bg-[var(--sl-s2)] text-[var(--sl-t2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                 )}
               >
@@ -690,10 +690,10 @@ export default function TransacoesPage() {
           <TableSkeleton />
         ) : error ? (
           <div className="py-12 text-center px-6">
-            <AlertTriangle size={32} className="text-[#f43f5e] mx-auto mb-3" />
+            <AlertTriangle size={32} className="text-[#DB6478] mx-auto mb-3" />
             <p className="text-[13px] text-[var(--sl-t2)] mb-1">
               Erro ao carregar transações.{' '}
-              <button onClick={refresh} className="text-[#10b981] hover:underline">Tentar novamente</button>
+              <button onClick={refresh} className="text-[#0F766E] hover:underline">Tentar novamente</button>
             </p>
           </div>
         ) : transactions.length === 0 ? (
@@ -701,7 +701,7 @@ export default function TransacoesPage() {
             <span className="text-5xl block mb-3 opacity-60">
               {typeFilter === 'income' ? '💰' : typeFilter === 'expense' ? '📤' : '💳'}
             </span>
-            <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1.5">
+            <h3 className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-1.5">
               {search ? 'Nenhum resultado encontrado' : 'Nenhuma transação'}
             </h3>
             <p className="text-[13px] text-[var(--sl-t2)]">
@@ -711,7 +711,7 @@ export default function TransacoesPage() {
         ) : groupedByDate ? (
           groupedByDate.map(group => (
             <div key={group.date}>
-              <p className="px-1 pb-2 pt-1 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+              <p className="px-1 pb-2 pt-1 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
                 {formatDate(group.date)}
               </p>
               <div className="mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[12px] overflow-hidden">
@@ -747,8 +747,8 @@ export default function TransacoesPage() {
                       </div>
                       <div className="text-right shrink-0">
                         <p className={cn(
-                          'font-[DM_Mono] text-[14px] font-medium',
-                          isTx ? 'text-[#0055ff]' : isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                          'font-[IBM_Plex_Mono] text-[14px] font-medium',
+                          isTx ? 'text-[#0B2D34]' : isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]'
                         )}>
                           {isTx ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
                         </p>
@@ -795,8 +795,8 @@ export default function TransacoesPage() {
                   </div>
                   <div className="text-right shrink-0">
                     <p className={cn(
-                      'font-[DM_Mono] text-[14px] font-medium',
-                      isTx ? 'text-[#0055ff]' : isIncome ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                      'font-[IBM_Plex_Mono] text-[14px] font-medium',
+                      isTx ? 'text-[#0B2D34]' : isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]'
                     )}>
                       {isTx ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
                     </p>
@@ -817,7 +817,7 @@ export default function TransacoesPage() {
             >
               Anterior
             </button>
-            <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">{page}/{totalPages}</span>
+            <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t2)]">{page}/{totalPages}</span>
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
@@ -848,12 +848,12 @@ export default function TransacoesPage() {
             <TableSkeleton />
           ) : error ? (
             <div className="py-12 text-center px-6">
-              <AlertTriangle size={32} className="text-[#f43f5e] mx-auto mb-3" />
+              <AlertTriangle size={32} className="text-[#DB6478] mx-auto mb-3" />
               <p className="text-[13px] text-[var(--sl-t2)] mb-1">
                 Erro ao carregar transações.{' '}
-                <button onClick={refresh} className="text-[#10b981] hover:underline">Tentar novamente</button>
+                <button onClick={refresh} className="text-[#0F766E] hover:underline">Tentar novamente</button>
               </p>
-              <p className="text-[11px] text-[var(--sl-t3)] font-[DM_Mono] mt-2 max-w-md mx-auto break-all">
+              <p className="text-[11px] text-[var(--sl-t3)] font-[IBM_Plex_Mono] mt-2 max-w-md mx-auto break-all">
                 {error.message}
               </p>
             </div>
@@ -862,7 +862,7 @@ export default function TransacoesPage() {
               <span className="text-5xl block mb-3 opacity-60">
                 {typeFilter === 'income' ? '💰' : typeFilter === 'expense' ? '📤' : '💳'}
               </span>
-              <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1.5">
+              <h3 className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-1.5">
                 {search ? 'Nenhum resultado encontrado' : 'Nenhuma transação neste período'}
               </h3>
               <p className="text-[13px] text-[var(--sl-t2)]">
@@ -879,8 +879,8 @@ export default function TransacoesPage() {
                 <div className="flex items-center justify-between px-5 py-2.5 bg-[var(--sl-s2)] border-b border-[var(--sl-border)] sticky top-0">
                   <p className="text-[11px] font-semibold text-[var(--sl-t2)]">{formatDate(group.date)}</p>
                   <p className={cn(
-                    'font-[DM_Mono] text-[12px] font-medium',
-                    group.runningBalance >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                    'font-[IBM_Plex_Mono] text-[12px] font-medium',
+                    group.runningBalance >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]'
                   )}>
                     Saldo: {group.runningBalance >= 0 ? '' : '-'}R$ {fmtR$(Math.abs(group.runningBalance))}
                   </p>

@@ -1,5 +1,6 @@
 {
   "permissions": {
+    "defaultMode": "bypassPermissions",
     "allow": [
       "Bash(*)",
       "Write(*)",
@@ -10,7 +11,9 @@
       "mcp__claude_ai_Supabase__*",
       "mcp__claude_ai_Vercel__*",
       "mcp__playwright-test__browser_navigate",
-      "mcp__playwright-test__browser_open"
+      "mcp__playwright-test__browser_open",
+      "PowerShell(Start-Process \"C:\\\\Projetos\\\\sync_life\\\\docs\\\\prototypes-v4\\\\mockup-scene.html\"; Start-Sleep 1; Start-Process \"C:\\\\Projetos\\\\sync_life\\\\docs\\\\prototypes-v4\\\\interactive-dashboard.html\")",
+      "Skill(update-config)"
     ]
   }
 }

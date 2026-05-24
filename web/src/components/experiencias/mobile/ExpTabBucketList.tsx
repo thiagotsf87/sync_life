@@ -20,9 +20,9 @@ interface ExpTabBucketListProps {
 type BucketFilter = 'all' | 'visited' | 'pending'
 
 const PRIORITY_STYLE: Record<string, { bg: string; color: string; label: string; jornada: string }> = {
-  high:   { bg: 'rgba(244,63,94,0.15)',   color: '#f43f5e', label: 'Alta',  jornada: '🔥' },
-  medium: { bg: 'rgba(245,158,11,0.15)',  color: '#f59e0b', label: 'Média', jornada: '⚡' },
-  low:    { bg: 'rgba(236,72,153,0.15)',  color: '#ec4899', label: 'Baixa', jornada: '💎' },
+  high:   { bg: 'rgba(219,100,120,0.15)',   color: '#DB6478', label: 'Alta',  jornada: '🔥' },
+  medium: { bg: 'rgba(217,150,46,0.15)',  color: '#D9962E', label: 'Média', jornada: '⚡' },
+  low:    { bg: 'rgba(199,103,149,0.15)',  color: '#C76795', label: 'Baixa', jornada: '💎' },
 }
 
 const FREE_LIMIT = 10
@@ -94,11 +94,11 @@ export function ExpTabBucketList({
 
       {/* Add button row */}
       <div className="flex justify-between items-center mb-[14px]">
-        <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">
+        <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">
           Lista de Aventuras
           {items.length >= FREE_LIMIT && (
             <span className="ml-2 text-[9px] px-[6px] py-[2px] rounded-[6px]"
-              style={{ background: 'rgba(245,158,11,0.15)', color: '#f59e0b' }}>
+              style={{ background: 'rgba(217,150,46,0.15)', color: '#D9962E' }}>
               LIMITE
             </span>
           )}
@@ -107,7 +107,7 @@ export function ExpTabBucketList({
           onClick={handleAddClick}
           className="flex items-center gap-1 text-[12px] font-semibold px-3 py-[6px] rounded-[20px]"
           style={{
-            background: 'rgba(139,92,246,0.15)',
+            background: 'rgba(139,123,212,0.15)',
             color: '#c4b5fd',
           }}
         >
@@ -126,9 +126,9 @@ export function ExpTabBucketList({
               onClick={() => setFilter(f.key)}
               className="text-[11px] font-medium px-3 py-[5px] rounded-[20px] transition-colors"
               style={{
-                background: active ? 'rgba(139,92,246,0.15)' : 'var(--sl-s2)',
+                background: active ? 'rgba(139,123,212,0.15)' : 'var(--sl-s2)',
                 color: active ? '#c4b5fd' : 'var(--sl-t2)',
-                border: `1px solid ${active ? 'rgba(139,92,246,0.3)' : 'var(--sl-border)'}`,
+                border: `1px solid ${active ? 'rgba(139,123,212,0.3)' : 'var(--sl-border)'}`,
               }}
             >
               {f.label} ({f.count})
@@ -150,7 +150,7 @@ export function ExpTabBucketList({
           <button
             onClick={handleAddClick}
             className="px-5 py-2 rounded-[12px] text-[13px] font-semibold"
-            style={{ background: 'rgba(139,92,246,0.15)', color: '#c4b5fd' }}
+            style={{ background: 'rgba(139,123,212,0.15)', color: '#c4b5fd' }}
           >
             + Adicionar primeira aventura
           </button>
@@ -188,7 +188,7 @@ export function ExpTabBucketList({
                   {ps.jornada}
                 </span>
               ) : (
-                <span className="text-[10px] font-semibold" style={{ color: '#10b981' }}>
+                <span className="text-[10px] font-semibold" style={{ color: '#0F766E' }}>
                   ✅
                 </span>
               )}
@@ -225,7 +225,7 @@ export function ExpTabBucketList({
                 onClick={() => handleTransformToTrip(item)}
                 className="block w-full text-center text-[12px] font-semibold py-2 rounded-[10px] mt-2"
                 style={{
-                  background: 'rgba(139,92,246,0.15)',
+                  background: 'rgba(139,123,212,0.15)',
                   color: '#c4b5fd',
                 }}
               >
@@ -243,7 +243,7 @@ export function ExpTabBucketList({
           style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}
         >
           <p className="text-[11px] text-[var(--sl-t3)] mb-1">Custo total estimado</p>
-          <p className="font-[DM_Mono] text-[22px] font-medium" style={{ color: accentLight }}>
+          <p className="font-[IBM_Plex_Mono] text-[22px] font-medium" style={{ color: accentLight }}>
             R$ {totalCost.toLocaleString('pt-BR')}
           </p>
           <p className="text-[10px] text-[var(--sl-t3)] mt-[2px]">

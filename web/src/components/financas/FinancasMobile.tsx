@@ -20,10 +20,10 @@ const PAYMENT_LABELS: Record<string, string> = {
 }
 
 function getEnvColor(pct: number): string {
-  if (pct >= 100) return '#f43f5e'
-  if (pct >= 80) return '#f97316'
-  if (pct >= 61) return '#f59e0b'
-  return '#10b981'
+  if (pct >= 100) return '#DB6478'
+  if (pct >= 80) return '#D97534'
+  if (pct >= 61) return '#D9962E'
+  return '#0F766E'
 }
 
 interface BudgetItem {
@@ -74,14 +74,14 @@ export function FinancasMobile({
     <FinancasMobileShell subtitle={mesLabel}>
       <div className="px-4">
       {/* Balance hero card — Jornada: gradient bg, Foco: plain card */}
-      <div className="mb-3 rounded-[16px] p-5 border bg-[linear-gradient(135deg,rgba(16,185,129,0.12),rgba(0,85,255,0.08))] border-[rgba(16,185,129,0.2)]">
+      <div className="mb-3 rounded-[16px] p-5 border bg-[linear-gradient(135deg,rgba(15,118,110,0.12),rgba(0,85,255,0.08))] border-[rgba(15,118,110,0.2)]">
         <p className="text-[12px] text-[var(--sl-t2)] mb-1">Saldo disponível</p>
-        <p className="font-[DM_Mono] text-[36px] font-medium text-[var(--sl-t1)] tracking-[-1px] leading-none">
+        <p className="font-[IBM_Plex_Mono] text-[36px] font-medium text-[var(--sl-t1)] tracking-[-1px] leading-none">
           R$ {fmtR$(balance)}
         </p>
         <div className="flex items-center gap-1.5 mt-2">
             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-[20px] text-[11px] font-medium
-                            bg-[rgba(16,185,129,0.12)] text-[#10b981]">
+                            bg-[rgba(15,118,110,0.12)] text-[#0F766E]">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
               </svg>
@@ -94,12 +94,12 @@ export function FinancasMobile({
       <div className="grid grid-cols-2 gap-2.5 mb-3">
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3.5">
           <p className="text-[10px] text-[var(--sl-t2)] mb-1">Receitas</p>
-          <p className="font-[DM_Mono] text-[20px] font-medium text-[#10b981]">R$ {fmtR$(totalIncome)}</p>
+          <p className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[#0F766E]">R$ {fmtR$(totalIncome)}</p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-0.5">↑ Salário + Freela</p>
         </div>
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3.5">
           <p className="text-[10px] text-[var(--sl-t2)] mb-1">Despesas</p>
-          <p className="font-[DM_Mono] text-[20px] font-medium text-[#f43f5e]">R$ {fmtR$(totalExpense)}</p>
+          <p className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[#DB6478]">R$ {fmtR$(totalExpense)}</p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-0.5">→ {totalIncome > 0 ? Math.round((totalExpense / totalIncome) * 100) : 0}% da renda</p>
         </div>
       </div>
@@ -115,7 +115,7 @@ export function FinancasMobile({
       </div>
 
       {/* Budget envelopes — both modes */}
-      <p className="px-1 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+      <p className="px-1 pb-2 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
         Orçamentos do mês
       </p>
       {budgets.slice(0, 5).map((b) => {
@@ -129,7 +129,7 @@ export function FinancasMobile({
               <span className="text-[13px] font-medium text-[var(--sl-t1)] flex items-center gap-1.5">
                 {b.category?.icon ?? '📦'} {b.category?.name ?? 'Categoria'}
               </span>
-              <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">
+              <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t2)]">
                 R$ {fmtR$(b.gasto)} / R$ {fmtR$(b.amount)}
               </span>
             </div>
@@ -157,12 +157,12 @@ export function FinancasMobile({
 
       {/* ── Últimas Transações ─────────────────────────────────────── */}
       <div className="flex items-center justify-between px-1 pb-2 pt-1">
-        <p className="font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+        <p className="font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
           Últimas Transações
         </p>
         <button
           onClick={() => router.push('/financas/transacoes')}
-          className="text-[11px] text-[#10b981] font-medium"
+          className="text-[11px] text-[#0F766E] font-medium"
         >
           Ver todas →
         </button>
@@ -185,7 +185,7 @@ export function FinancasMobile({
               >
                 <div
                   className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center text-[18px] shrink-0"
-                  style={{ background: isIncome ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.1)' }}
+                  style={{ background: isIncome ? 'rgba(15,118,110,0.12)' : 'rgba(219,100,120,0.1)' }}
                 >
                   {t.category?.icon ?? (isIncome ? '💰' : '📤')}
                 </div>
@@ -196,8 +196,8 @@ export function FinancasMobile({
                   </p>
                 </div>
                 <p
-                  className="font-[DM_Mono] text-[14px] font-medium shrink-0"
-                  style={{ color: isIncome ? '#10b981' : '#f43f5e' }}
+                  className="font-[IBM_Plex_Mono] text-[14px] font-medium shrink-0"
+                  style={{ color: isIncome ? '#0F766E' : '#DB6478' }}
                 >
                   {isIncome ? '+' : '−'}R$ {fmtR$(t.amount)}
                 </p>

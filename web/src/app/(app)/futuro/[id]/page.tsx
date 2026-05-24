@@ -40,8 +40,8 @@ function DetailRing({ progress }: { progress: number }) {
       <svg viewBox="0 0 140 140" className="w-[140px] h-[140px]">
         <defs>
           <linearGradient id="det-ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0055ff" />
-            <stop offset="100%" stopColor="#10b981" />
+            <stop offset="0%" stopColor="#0B2D34" />
+            <stop offset="100%" stopColor="#0F766E" />
           </linearGradient>
         </defs>
         <circle cx="70" cy="70" r={radius} fill="none" stroke="var(--sl-s3)" strokeWidth="9" />
@@ -56,7 +56,7 @@ function DetailRing({ progress }: { progress: number }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-[DM_Mono] font-medium text-[36px] leading-none text-[#0055ff]">{progress}%</span>
+        <span className="font-[IBM_Plex_Mono] font-medium text-[36px] leading-none text-[#0B2D34]">{progress}%</span>
         <span className="text-[11px] text-[var(--sl-t3)] mt-1">Progresso</span>
       </div>
     </div>
@@ -93,9 +93,9 @@ function HorizontalMilestones({ milestones, progress }: {
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 mb-7 relative overflow-hidden
                     hover:border-[var(--sl-border-h)] transition-colors">
       {/* accent bar */}
-      <div className="absolute top-0 left-[22px] right-[22px] h-[2.5px] rounded-b-sm bg-[#0055ff]" />
-      <h3 className="text-[15px] font-[Syne] font-bold text-[var(--sl-t1)] mb-5 flex items-center gap-[9px]">
-        <CheckCircle size={16} className="text-[#0055ff]" />
+      <div className="absolute top-0 left-[22px] right-[22px] h-[2.5px] rounded-b-sm bg-[#0B2D34]" />
+      <h3 className="text-[15px] font-[Space_Grotesk] font-bold text-[var(--sl-t1)] mb-5 flex items-center gap-[9px]">
+        <CheckCircle size={16} className="text-[#0B2D34]" />
         Milestones
       </h3>
       <div className="flex items-start">
@@ -108,7 +108,7 @@ function HorizontalMilestones({ milestones, progress }: {
               <div
                 className="absolute top-[14px] left-0 right-0 h-[2px]"
                 style={{
-                  background: isDone ? '#10b981' : isCurrent ? 'linear-gradient(90deg, #10b981, #0055ff)' : 'var(--sl-s3)',
+                  background: isDone ? '#0F766E' : isCurrent ? 'linear-gradient(90deg, #0F766E, #0B2D34)' : 'var(--sl-s3)',
                   ...(i === 0 ? { left: '50%' } : {}),
                   ...(i === nodes.length - 1 ? { right: '50%' } : {}),
                 }}
@@ -117,8 +117,8 @@ function HorizontalMilestones({ milestones, progress }: {
               <div
                 className={cn(
                   'w-[28px] h-[28px] rounded-full border-2 flex items-center justify-center mx-auto mb-[10px] relative z-[1]',
-                  isDone && 'border-[#10b981] bg-[#10b981]',
-                  isCurrent && 'border-[#0055ff] bg-[#0055ff] shadow-[0_0_12px_rgba(0,85,255,0.4)]',
+                  isDone && 'border-[#0F766E] bg-[#0F766E]',
+                  isCurrent && 'border-[#0B2D34] bg-[#0B2D34] shadow-[0_0_12px_rgba(0,85,255,0.4)]',
                   !isDone && !isCurrent && 'border-[var(--sl-s3)] bg-[var(--sl-bg)]',
                 )}
               >
@@ -129,14 +129,14 @@ function HorizontalMilestones({ milestones, progress }: {
               </div>
               <div className={cn(
                 'text-[12px] font-semibold',
-                isCurrent && 'text-[#0055ff]',
+                isCurrent && 'text-[#0B2D34]',
                 !isDone && !isCurrent && 'text-[var(--sl-t2)]',
               )}>
                 {node.label}
               </div>
               <div className={cn(
                 'text-[10px] mt-[2px]',
-                isDone ? 'text-[#10b981]' : 'text-[var(--sl-t3)]',
+                isDone ? 'text-[#0F766E]' : 'text-[var(--sl-t3)]',
               )}>
                 {node.date}
               </div>
@@ -300,12 +300,12 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
   if (error || !objective) {
     return (
       <div className="max-w-[1160px] mx-auto px-10 py-16 text-center">
-        <p className="text-[#f43f5e] font-semibold mb-2">Objetivo nao encontrado</p>
+        <p className="text-[#DB6478] font-semibold mb-2">Objetivo nao encontrado</p>
         <p className="text-[13px] text-[var(--sl-t3)] mb-4">{error}</p>
         <button
           onClick={() => router.push('/futuro')}
           className="px-4 py-2 rounded-[10px] text-[13px] font-semibold"
-          style={{ background: '#10b981', color: '#03071a' }}
+          style={{ background: '#0F766E', color: '#03071a' }}
         >
           Voltar para Futuro
         </button>
@@ -344,12 +344,12 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
 
   // Status pill
   const statusPill = isCompleted
-    ? { label: 'Concluido', bg: 'rgba(16,185,129,0.10)', color: '#10b981' }
+    ? { label: 'Concluido', bg: 'rgba(15,118,110,0.10)', color: '#0F766E' }
     : isPaused
-    ? { label: 'Pausado', bg: 'rgba(100,116,139,0.10)', color: '#64748b' }
+    ? { label: 'Pausado', bg: 'rgba(100,116,139,0.10)', color: '#6F7986' }
     : atRisk
-    ? { label: 'Em Risco', bg: 'rgba(244,63,94,0.10)', color: '#f43f5e' }
-    : { label: 'No Ritmo', bg: 'rgba(16,185,129,0.10)', color: '#10b981' }
+    ? { label: 'Em Risco', bg: 'rgba(219,100,120,0.10)', color: '#DB6478' }
+    : { label: 'No Ritmo', bg: 'rgba(15,118,110,0.10)', color: '#0F766E' }
 
   return (
     <>
@@ -378,7 +378,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
               {objective.icon}
             </div>
             <div>
-              <h1 className="font-[Syne] font-extrabold text-[24px] leading-[1.15] text-[var(--sl-t1)]">
+              <h1 className="font-[Space_Grotesk] font-extrabold text-[24px] leading-[1.15] text-[var(--sl-t1)]">
                 {objective.name}
               </h1>
               <div className="flex items-center gap-2 mt-1">
@@ -426,7 +426,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
               <button
                 onClick={handleComplete}
                 className="inline-flex items-center gap-[7px] px-[14px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                           bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/30 hover:bg-[#10b981]/20 transition-colors"
+                           bg-[#0F766E]/10 text-[#0F766E] border border-[#0F766E]/30 hover:bg-[#0F766E]/20 transition-colors"
               >
                 <CheckCircle size={13} />
                 Concluir
@@ -436,9 +436,9 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="p-[10px] rounded-[11px] hover:bg-[rgba(244,63,94,0.1)] transition-colors border border-[var(--sl-border)]"
+            className="p-[10px] rounded-[11px] hover:bg-[rgba(219,100,120,0.1)] transition-colors border border-[var(--sl-border)]"
           >
-            <Trash2 size={16} className="text-[var(--sl-t3)] hover:text-[#f43f5e]" />
+            <Trash2 size={16} className="text-[var(--sl-t3)] hover:text-[#DB6478]" />
           </button>
         </div>
       </div>
@@ -448,7 +448,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
                       overflow-hidden mb-7 relative sl-fade-up sl-delay-1
                       hover:border-[var(--sl-border-h)] transition-colors">
         {/* Accent bar */}
-        <div className="absolute top-0 left-7 right-7 h-[2.5px] rounded-b-sm bg-[#0055ff]" />
+        <div className="absolute top-0 left-7 right-7 h-[2.5px] rounded-b-sm bg-[#0B2D34]" />
 
         {/* Left: Ring */}
         <div className="flex-[0_0_220px] flex flex-col items-center justify-center py-8 px-8 border-r border-[var(--sl-border)]">
@@ -458,13 +458,13 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
             <div
               className="inline-flex items-center gap-[5px] mt-[14px] px-3 py-[5px] rounded-lg"
               style={{
-                background: atRisk ? 'rgba(244,63,94,0.08)' : 'rgba(16,185,129,0.08)',
+                background: atRisk ? 'rgba(219,100,120,0.08)' : 'rgba(15,118,110,0.08)',
               }}
             >
-              <TrendingDown size={12} style={{ color: atRisk ? '#f43f5e' : '#10b981' }} />
+              <TrendingDown size={12} style={{ color: atRisk ? '#DB6478' : '#0F766E' }} />
               <span
                 className="text-[11px] font-semibold"
-                style={{ color: atRisk ? '#f43f5e' : '#10b981' }}
+                style={{ color: atRisk ? '#DB6478' : '#0F766E' }}
               >
                 {atRisk ? 'Velocidade Lenta' : 'No Ritmo'}
               </span>
@@ -483,25 +483,25 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
             {isMonetary ? (
               <>
                 <div className="flex-1 px-[18px] border-r border-[var(--sl-border)] first:pl-0">
-                  <div className="font-[DM_Mono] font-medium text-[20px] leading-none text-[#10b981]">
+                  <div className="font-[IBM_Plex_Mono] font-medium text-[20px] leading-none text-[#0F766E]">
                     R$ {currentValue.toLocaleString('pt-BR')}
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mt-[5px]">Atual</div>
                 </div>
                 <div className="flex-1 px-[18px] border-r border-[var(--sl-border)]">
-                  <div className="font-[DM_Mono] font-medium text-[20px] leading-none text-[var(--sl-t1)]">
+                  <div className="font-[IBM_Plex_Mono] font-medium text-[20px] leading-none text-[var(--sl-t1)]">
                     R$ {targetValue.toLocaleString('pt-BR')}
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mt-[5px]">Meta</div>
                 </div>
                 <div className="flex-1 px-[18px] border-r border-[var(--sl-border)]">
-                  <div className="font-[DM_Mono] font-medium text-[20px] leading-none text-[#f43f5e]">
+                  <div className="font-[IBM_Plex_Mono] font-medium text-[20px] leading-none text-[#DB6478]">
                     R$ {remaining.toLocaleString('pt-BR')}
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mt-[5px]">Falta</div>
                 </div>
                 <div className="flex-1 px-[18px] last:pr-0">
-                  <div className="font-[DM_Mono] font-medium text-[20px] leading-none text-[#f59e0b]">
+                  <div className="font-[IBM_Plex_Mono] font-medium text-[20px] leading-none text-[#D9962E]">
                     R$ {monthlyNeeded.toLocaleString('pt-BR')}
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mt-[5px]">Necessario/Mes</div>
@@ -510,20 +510,20 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
             ) : (
               <>
                 <div className="flex-1 px-[18px] border-r border-[var(--sl-border)] first:pl-0">
-                  <div className="font-[DM_Mono] font-medium text-[20px] leading-none text-[#10b981]">
+                  <div className="font-[IBM_Plex_Mono] font-medium text-[20px] leading-none text-[#0F766E]">
                     {completedGoals}/{goals.length}
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mt-[5px]">Metas</div>
                 </div>
                 <div className="flex-1 px-[18px] border-r border-[var(--sl-border)]">
-                  <div className="font-[DM_Mono] font-medium text-[20px] leading-none text-[var(--sl-t1)]">
+                  <div className="font-[IBM_Plex_Mono] font-medium text-[20px] leading-none text-[var(--sl-t1)]">
                     {progress}%
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mt-[5px]">Progresso</div>
                 </div>
                 <div className="flex-1 px-[18px]">
-                  <div className="font-[DM_Mono] font-medium text-[20px] leading-none"
-                    style={{ color: velocity > 0 ? '#10b981' : velocity < 0 ? '#f43f5e' : 'var(--sl-t3)' }}>
+                  <div className="font-[IBM_Plex_Mono] font-medium text-[20px] leading-none"
+                    style={{ color: velocity > 0 ? '#0F766E' : velocity < 0 ? '#DB6478' : 'var(--sl-t3)' }}>
                     {velocityLabel ?? '\u2014'}
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mt-[5px]">Velocidade</div>
@@ -549,7 +549,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
                       hover:border-[var(--sl-border-h)] transition-colors">
         <div className="flex items-center justify-between mb-1">
           <span className="text-[12px] font-semibold text-[var(--sl-t2)]">Progresso ate a meta</span>
-          <span className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
+          <span className="font-[IBM_Plex_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
             {isMonetary
               ? `R$ ${currentValue.toLocaleString('pt-BR')} / R$ ${targetValue.toLocaleString('pt-BR')}`
               : `${completedGoals} / ${goals.length} metas`
@@ -562,7 +562,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
             className="h-full rounded-[5px] relative z-[1] transition-[width] duration-1000"
             style={{
               width: `${Math.min(progress, 100)}%`,
-              background: 'linear-gradient(90deg, #0055ff, #10b981)',
+              background: 'linear-gradient(90deg, #0B2D34, #0F766E)',
             }}
           />
           {/* 25/50/75 markers */}
@@ -604,12 +604,12 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden
                         hover:border-[var(--sl-border-h)] transition-colors">
           {/* Accent bar */}
-          <div className="absolute top-0 left-[22px] right-[22px] h-[2.5px] rounded-b-sm bg-[#0055ff]" />
+          <div className="absolute top-0 left-[22px] right-[22px] h-[2.5px] rounded-b-sm bg-[#0B2D34]" />
 
-          <div className="text-[15px] font-[Syne] font-bold text-[var(--sl-t1)] mb-[18px] flex items-center gap-[9px]">
-            <CheckCircle size={16} className="text-[#0055ff]" />
+          <div className="text-[15px] font-[Space_Grotesk] font-bold text-[var(--sl-t1)] mb-[18px] flex items-center gap-[9px]">
+            <CheckCircle size={16} className="text-[#0B2D34]" />
             Sub-Metas
-            <span className="ml-auto font-[DM_Sans] text-[12px] font-medium text-[#0055ff]">
+            <span className="ml-auto font-[DM_Sans] text-[12px] font-medium text-[#0B2D34]">
               {completedGoals}/{goals.length} concluidas
             </span>
           </div>
@@ -631,18 +631,18 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
                     key={goal.id}
                     className={cn(
                       'flex items-center gap-3 px-[14px] py-3 bg-[var(--sl-s2)] rounded-[11px] transition-colors hover:bg-[var(--sl-s3)]',
-                      isCurrent && 'border-l-[3px] border-l-[#0055ff] rounded-l-lg',
+                      isCurrent && 'border-l-[3px] border-l-[#0B2D34] rounded-l-lg',
                     )}
                   >
                     {/* Check circle */}
                     <div className={cn(
                       'w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center shrink-0',
-                      goalCompleted && 'border-[#10b981] bg-[#10b981]',
-                      isCurrent && 'border-[#0055ff]',
+                      goalCompleted && 'border-[#0F766E] bg-[#0F766E]',
+                      isCurrent && 'border-[#0B2D34]',
                       !goalCompleted && !isCurrent && 'border-[var(--sl-border)]',
                     )}>
                       {goalCompleted && <Check size={12} strokeWidth={2.5} className="text-[var(--sl-bg)]" />}
-                      {isCurrent && <div className="w-[8px] h-[8px] rounded-full bg-[#0055ff]" />}
+                      {isCurrent && <div className="w-[8px] h-[8px] rounded-full bg-[#0B2D34]" />}
                     </div>
                     {/* Text */}
                     <div className="flex-1 min-w-0">
@@ -655,7 +655,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
                       </div>
                       <div className={cn(
                         'text-[10px] mt-[1px]',
-                        goalCompleted ? 'text-[#10b981]' : 'text-[var(--sl-t3)]',
+                        goalCompleted ? 'text-[#0F766E]' : 'text-[var(--sl-t3)]',
                       )}>
                         {goalCompleted
                           ? `Concluido`
@@ -665,7 +665,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
                     </div>
                     {/* Value */}
                     {goal.target_value != null && (
-                      <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t2)] shrink-0">
+                      <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t2)] shrink-0">
                         {goal.indicator_type === 'monetary'
                           ? `R$ ${goal.current_value.toLocaleString('pt-BR')}`
                           : `${goal.current_value}`
@@ -688,7 +688,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
             <button
               onClick={() => setAddGoalOpen(true)}
               className="flex items-center gap-1.5 mt-4 px-3 py-2 rounded-[10px] text-[12px] font-semibold
-                         bg-[#10b981] text-[#03071a] hover:opacity-90 transition-opacity"
+                         bg-[#0F766E] text-[#03071a] hover:opacity-90 transition-opacity"
             >
               <Plus size={13} />
               Nova Meta
@@ -700,12 +700,12 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 h-fit relative overflow-hidden
                         hover:border-[var(--sl-border-h)] transition-colors">
           {/* Accent bar green */}
-          <div className="absolute top-0 left-[22px] right-[22px] h-[2.5px] rounded-b-sm bg-[#10b981]" />
+          <div className="absolute top-0 left-[22px] right-[22px] h-[2.5px] rounded-b-sm bg-[#0F766E]" />
 
-          <div className="text-[15px] font-[Syne] font-bold text-[var(--sl-t1)] mb-[18px] flex items-center gap-[9px]">
-            <DollarSign size={16} className="text-[#10b981]" />
+          <div className="text-[15px] font-[Space_Grotesk] font-bold text-[var(--sl-t1)] mb-[18px] flex items-center gap-[9px]">
+            <DollarSign size={16} className="text-[#0F766E]" />
             Aportes Recentes
-            <span className="ml-auto font-[DM_Sans] text-[12px] font-medium text-[#0055ff] cursor-pointer"
+            <span className="ml-auto font-[DM_Sans] text-[12px] font-medium text-[#0B2D34] cursor-pointer"
               onClick={() => setAddGoalOpen(true)}>
               + Novo aporte
             </span>
@@ -737,7 +737,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
                         {new Date(m.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </div>
                     </div>
-                    <div className="font-[DM_Mono] text-[13px] text-[#10b981] font-medium">
+                    <div className="font-[IBM_Plex_Mono] text-[13px] text-[#0F766E] font-medium">
                       {m.event_type === 'progress_50' ? '50%' : m.event_type === 'progress_75' ? '75%' : m.event_type === 'progress_90' ? '90%' : '+'}
                     </div>
                   </div>
@@ -746,7 +746,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
                 {/* Summary footer */}
                 <div className="flex justify-between items-center px-[14px] pt-[14px] mt-[10px] border-t border-[var(--sl-border)]">
                   <span className="text-[12px] text-[var(--sl-t3)]">Progresso geral</span>
-                  <span className="font-[DM_Mono] text-[16px] font-medium text-[#10b981]">{progress}%</span>
+                  <span className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#0F766E]">{progress}%</span>
                 </div>
               </>
             )
@@ -755,7 +755,7 @@ export default function ObjectiveDetailPage({ params }: { params: Promise<{ id: 
           {/* Historical timeline below */}
           {milestones.length > 0 && (
             <div className="mt-5 pt-4 border-t border-[var(--sl-border)]">
-              <h4 className="text-[13px] font-[Syne] font-bold text-[var(--sl-t1)] mb-3">
+              <h4 className="text-[13px] font-[Space_Grotesk] font-bold text-[var(--sl-t1)] mb-3">
                 Historico
               </h4>
               <div className="flex flex-col gap-2">

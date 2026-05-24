@@ -25,9 +25,9 @@ function generateId(): string {
 
 const PRIORITIES: { value: EventPriority; label: string; color: string }[] = [
   { value: 'baixa',   label: 'Baixa',   color: '#6e90b8' },
-  { value: 'normal',  label: 'Normal',  color: '#06b6d4' },
-  { value: 'alta',    label: 'Alta',    color: '#f59e0b' },
-  { value: 'urgente', label: 'Urgente', color: '#f43f5e' },
+  { value: 'normal',  label: 'Normal',  color: '#3CA0B5' },
+  { value: 'alta',    label: 'Alta',    color: '#D9962E' },
+  { value: 'urgente', label: 'Urgente', color: '#DB6478' },
 ]
 
 const REMINDERS = [
@@ -59,7 +59,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 const inputCls = cn(
   'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)]',
   'text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none',
-  'focus:border-[#06b6d4] transition-colors',
+  'focus:border-[#3CA0B5] transition-colors',
 )
 
 // ─── PROPS ────────────────────────────────────────────────────────────────────
@@ -202,10 +202,10 @@ export function EventModal({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)] shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(6,182,212,0.12)]">
+            <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(60,160,181,0.12)]">
               <span className="text-sm">📅</span>
             </div>
-            <h2 className="font-[Syne] font-extrabold text-[16px] text-[var(--sl-t1)]">
+            <h2 className="font-[Space_Grotesk] font-extrabold text-[16px] text-[var(--sl-t1)]">
               {mode === 'create' ? 'Novo Evento' : 'Editar Evento'}
             </h2>
           </div>
@@ -277,13 +277,13 @@ export function EventModal({
                 className={cn(
                   'flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] border text-[13px] font-semibold transition-all',
                   form.all_day
-                    ? 'border-[#06b6d4] bg-[rgba(6,182,212,0.08)] text-[#06b6d4]'
+                    ? 'border-[#3CA0B5] bg-[rgba(60,160,181,0.08)] text-[#3CA0B5]'
                     : 'border-[var(--sl-border)] bg-[var(--sl-s2)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]',
                 )}
               >
                 <span className={cn(
                   'w-4 h-4 rounded border-2 flex items-center justify-center shrink-0',
-                  form.all_day ? 'border-[#06b6d4] bg-[#06b6d4]' : 'border-[var(--sl-t3)]',
+                  form.all_day ? 'border-[#3CA0B5] bg-[#3CA0B5]' : 'border-[var(--sl-t3)]',
                 )}>
                   {form.all_day && <span className="text-white text-[9px] font-bold">✓</span>}
                 </span>
@@ -295,7 +295,7 @@ export function EventModal({
                 type="date"
                 value={form.date}
                 onChange={e => set('date', e.target.value)}
-                className={cn(inputCls, 'font-[DM_Mono]')}
+                className={cn(inputCls, 'font-[IBM_Plex_Mono]')}
               />
             </Field>
           </div>
@@ -308,7 +308,7 @@ export function EventModal({
                   type="time"
                   value={form.start_time}
                   onChange={e => set('start_time', e.target.value)}
-                  className={cn(inputCls, 'font-[DM_Mono]')}
+                  className={cn(inputCls, 'font-[IBM_Plex_Mono]')}
                 />
               </Field>
               <Field label="Hora fim">
@@ -316,7 +316,7 @@ export function EventModal({
                   type="time"
                   value={form.end_time}
                   onChange={e => set('end_time', e.target.value)}
-                  className={cn(inputCls, 'font-[DM_Mono]')}
+                  className={cn(inputCls, 'font-[IBM_Plex_Mono]')}
                 />
               </Field>
             </div>
@@ -353,7 +353,7 @@ export function EventModal({
                   className={cn(
                     'px-3 py-1.5 rounded-[8px] border text-[12px] font-semibold transition-all',
                     form.reminder === r.value
-                      ? 'border-[#06b6d4] bg-[rgba(6,182,212,0.1)] text-[#06b6d4]'
+                      ? 'border-[#3CA0B5] bg-[rgba(60,160,181,0.1)] text-[#3CA0B5]'
                       : 'border-[var(--sl-border)] bg-[var(--sl-s2)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]',
                   )}
                 >
@@ -373,7 +373,7 @@ export function EventModal({
                   className={cn(
                     'px-3 py-1.5 rounded-[8px] border text-[12px] font-semibold transition-all',
                     form.recurrence === r.value
-                      ? 'border-[#06b6d4] bg-[rgba(6,182,212,0.1)] text-[#06b6d4]'
+                      ? 'border-[#3CA0B5] bg-[rgba(60,160,181,0.1)] text-[#3CA0B5]'
                       : 'border-[var(--sl-border)] bg-[var(--sl-s2)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]',
                   )}
                 >
@@ -419,7 +419,7 @@ export function EventModal({
                     onClick={() => set('checklist', form.checklist.map(i => i.id === item.id ? { ...i, done: !i.done } : i))}
                     className={cn(
                       'w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all',
-                      item.done ? 'border-[#10b981] bg-[#10b981]' : 'border-[var(--sl-t3)]',
+                      item.done ? 'border-[#0F766E] bg-[#0F766E]' : 'border-[var(--sl-t3)]',
                     )}
                   >
                     {item.done && <span className="text-white text-[9px] font-bold">✓</span>}
@@ -427,7 +427,7 @@ export function EventModal({
                   <span className={cn('flex-1 text-[13px]', item.done ? 'line-through text-[var(--sl-t3)]' : 'text-[var(--sl-t1)]')}>
                     {item.text}
                   </span>
-                  <button onClick={() => removeChecklistItem(item.id)} className="text-[var(--sl-t3)] hover:text-[#f43f5e] transition-colors">
+                  <button onClick={() => removeChecklistItem(item.id)} className="text-[var(--sl-t3)] hover:text-[#DB6478] transition-colors">
                     <Trash2 size={13} />
                   </button>
                 </div>
@@ -443,7 +443,7 @@ export function EventModal({
                 />
                 <button
                   onClick={addChecklistItem}
-                  className="px-3 py-2.5 rounded-[10px] border border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[#06b6d4] hover:text-[#06b6d4] transition-colors"
+                  className="px-3 py-2.5 rounded-[10px] border border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[#3CA0B5] hover:text-[#3CA0B5] transition-colors"
                 >
                   <Plus size={15} />
                 </button>
@@ -465,7 +465,7 @@ export function EventModal({
             onClick={handleSave}
             disabled={saving || !form.title.trim()}
             className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#10b981' }}
+            style={{ background: '#0F766E' }}
           >
             {saving && <Loader2 size={14} className="animate-spin" />}
             {mode === 'create' ? 'Criar evento' : 'Salvar'}

@@ -2,8 +2,8 @@
 
 import type { MedicalAppointment } from '@/hooks/use-corpo'
 
-const CORPO_COLOR = '#f97316'
-const CORPO_BG = 'rgba(249,115,22,0.12)'
+const CORPO_COLOR = '#D97534'
+const CORPO_BG = 'rgba(217,117,52,0.12)'
 
 const SPECIALTY_ICONS: Record<string, string> = {
   'Dentista': '🦷', 'Cardiologista': '❤️', 'Oftalmologista': '👁️',
@@ -19,9 +19,9 @@ function getDaysUntil(dateStr: string): number {
 
 function getBadge(days: number): { label: string; color: string; bg: string } {
   if (days < 0) return { label: 'Passado', color: 'var(--sl-t3)', bg: 'var(--sl-s2)' }
-  if (days === 0) return { label: 'Hoje!', color: '#10b981', bg: 'rgba(16,185,129,0.12)' }
+  if (days === 0) return { label: 'Hoje!', color: '#0F766E', bg: 'rgba(15,118,110,0.12)' }
   if (days <= 3) return { label: `${days} dias`, color: CORPO_COLOR, bg: CORPO_BG }
-  if (days <= 14) return { label: `${days} dias`, color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' }
+  if (days <= 14) return { label: `${days} dias`, color: '#D9962E', bg: 'rgba(217,150,46,0.12)' }
   return { label: `${days} dias`, color: 'var(--sl-t2)', bg: 'var(--sl-s2)' }
 }
 
@@ -64,7 +64,7 @@ export function CorpoTabSaude({ appointments, onOpenModal }: CorpoTabSaudeProps)
               <div
                 key={appt.id}
                 className="mx-4 mb-3 rounded-2xl p-4"
-                style={{ background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.25)' }}
+                style={{ background: 'rgba(217,117,52,0.07)', border: '1px solid rgba(217,117,52,0.25)' }}
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-[46px] h-[46px] rounded-[13px] flex items-center justify-center text-[22px] flex-shrink-0" style={{ background: CORPO_BG }}>
@@ -100,7 +100,7 @@ export function CorpoTabSaude({ appointments, onOpenModal }: CorpoTabSaudeProps)
                   </div>
                   <div className="flex-1 rounded-[10px] p-2 text-center" style={{ background: 'var(--sl-s2)' }}>
                     <p className="text-[10px] text-[var(--sl-t2)] mb-1">CUSTO</p>
-                    <p className="text-[13px] font-semibold" style={{ color: appt.cost ? '#f59e0b' : 'var(--sl-t3)' }}>
+                    <p className="text-[13px] font-semibold" style={{ color: appt.cost ? '#D9962E' : 'var(--sl-t3)' }}>
                       {appt.cost ? `R$ ${appt.cost.toFixed(0)}` : '—'}
                     </p>
                   </div>
@@ -142,8 +142,8 @@ export function CorpoTabSaude({ appointments, onOpenModal }: CorpoTabSaudeProps)
           onClick={onOpenModal}
           className="w-full rounded-[10px] p-4 text-center transition-colors"
           style={{
-            background: 'rgba(249,115,22,0.06)',
-            border: '1.5px dashed rgba(249,115,22,0.35)',
+            background: 'rgba(217,117,52,0.06)',
+            border: '1.5px dashed rgba(217,117,52,0.35)',
           }}
         >
           <p className="text-[22px] mb-1.5">📅</p>
@@ -165,7 +165,7 @@ export function CorpoTabSaude({ appointments, onOpenModal }: CorpoTabSaudeProps)
               <div
                 key={`fu-${appt.id}`}
                 className="mx-4 mb-2 rounded-2xl p-4"
-                style={{ background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)' }}
+                style={{ background: 'rgba(217,150,46,0.07)', border: '1px solid rgba(217,150,46,0.2)' }}
               >
                 <div className="flex gap-[10px] items-center">
                   <span className="text-[20px]">⚠️</span>
@@ -206,7 +206,7 @@ export function CorpoTabSaude({ appointments, onOpenModal }: CorpoTabSaudeProps)
                       <div className="mt-1">
                         <span
                           className="text-[11px] px-2 py-[2px] rounded-[10px]"
-                          style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}
+                          style={{ background: 'rgba(15,118,110,0.1)', color: '#0F766E' }}
                         >
                           ↩ Retorno {new Date(appt.follow_up_reminder_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}
                         </span>

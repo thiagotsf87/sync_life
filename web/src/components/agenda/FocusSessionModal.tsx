@@ -14,7 +14,7 @@ const QUICK_DURATIONS = [25, 45, 60, 90]
 const inputCls = cn(
   'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)]',
   'text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none',
-  'focus:border-[#06b6d4] transition-colors',
+  'focus:border-[#3CA0B5] transition-colors',
 )
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -140,10 +140,10 @@ export function FocusSessionModal({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(6,182,212,0.12)]">
+            <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(60,160,181,0.12)]">
               <span className="text-sm">🎯</span>
             </div>
-            <h2 className="font-[Syne] font-extrabold text-[16px] text-[var(--sl-t1)]">
+            <h2 className="font-[Space_Grotesk] font-extrabold text-[16px] text-[var(--sl-t1)]">
               {mode === 'create' ? 'Nova Sessão de Foco' : 'Editar Sessão'}
             </h2>
           </div>
@@ -169,11 +169,11 @@ export function FocusSessionModal({
                     className={cn(
                       'px-4 py-2.5 rounded-[10px] border text-[13px] font-bold transition-all',
                       form.duration_minutes === min && form.customDuration === ''
-                        ? 'border-[#06b6d4] bg-[rgba(6,182,212,0.1)] text-[#06b6d4]'
+                        ? 'border-[#3CA0B5] bg-[rgba(60,160,181,0.1)] text-[#3CA0B5]'
                         : 'border-[var(--sl-border)] bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]',
                     )}
                   >
-                    <span className="font-[DM_Mono]">{min}</span>
+                    <span className="font-[IBM_Plex_Mono]">{min}</span>
                     <span className="text-[10px] ml-1 opacity-70">min</span>
                   </button>
                 ))}
@@ -182,7 +182,7 @@ export function FocusSessionModal({
                   className={cn(
                     'px-4 py-2.5 rounded-[10px] border text-[13px] font-bold transition-all',
                     form.duration_minutes === 0 && form.customDuration !== ''
-                      ? 'border-[#06b6d4] bg-[rgba(6,182,212,0.1)] text-[#06b6d4]'
+                      ? 'border-[#3CA0B5] bg-[rgba(60,160,181,0.1)] text-[#3CA0B5]'
                       : 'border-[var(--sl-border)] bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]',
                   )}
                 >
@@ -196,13 +196,13 @@ export function FocusSessionModal({
                   value={form.customDuration}
                   onChange={e => set('customDuration', e.target.value)}
                   placeholder="Minutos (ex: 120)"
-                  className={cn(inputCls, 'font-[DM_Mono]')}
+                  className={cn(inputCls, 'font-[IBM_Plex_Mono]')}
                   autoFocus
                 />
               )}
             </div>
             {effectiveDuration > 0 && (
-              <p className="text-[11px] text-[#06b6d4] mt-1">
+              <p className="text-[11px] text-[#3CA0B5] mt-1">
                 {effectiveDuration >= 60
                   ? `${Math.floor(effectiveDuration / 60)}h${effectiveDuration % 60 ? ` ${effectiveDuration % 60}min` : ''}`
                   : `${effectiveDuration} minutos`}
@@ -217,7 +217,7 @@ export function FocusSessionModal({
                 type="date"
                 value={form.date}
                 onChange={e => set('date', e.target.value)}
-                className={cn(inputCls, 'font-[DM_Mono]')}
+                className={cn(inputCls, 'font-[IBM_Plex_Mono]')}
               />
             </Field>
             <Field label="Hora início (opcional)">
@@ -225,7 +225,7 @@ export function FocusSessionModal({
                 type="time"
                 value={form.start_time}
                 onChange={e => set('start_time', e.target.value)}
-                className={cn(inputCls, 'font-[DM_Mono]')}
+                className={cn(inputCls, 'font-[IBM_Plex_Mono]')}
               />
             </Field>
           </div>
@@ -287,7 +287,7 @@ export function FocusSessionModal({
             onClick={handleSave}
             disabled={saving || effectiveDuration <= 0}
             className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#10b981' }}
+            style={{ background: '#0F766E' }}
           >
             {saving && <Loader2 size={14} className="animate-spin" />}
             {mode === 'create' ? 'Registrar sessão' : 'Salvar'}

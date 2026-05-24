@@ -20,10 +20,10 @@ export function ToggleSwitch({ checked, onChange, disabled }: ToggleSwitchProps)
         className="absolute inset-0 rounded-full transition-all duration-200"
         style={{
           background: checked
-            ? 'linear-gradient(90deg, #10b981, #0055ff)'
+            ? 'linear-gradient(90deg, #0F766E, #0B2D34)'
             : 'var(--sl-s3)',
           border: checked
-            ? '1px solid rgba(16,185,129,0.4)'
+            ? '1px solid rgba(15,118,110,0.4)'
             : '1px solid var(--sl-border-h)',
         }}
       />

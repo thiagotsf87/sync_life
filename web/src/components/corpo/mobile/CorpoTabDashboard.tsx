@@ -4,9 +4,9 @@ import { useMemo } from 'react'
 import { calcIMC, IMC_LABEL } from '@/hooks/use-corpo'
 import type { HealthProfile, WeightEntry, MedicalAppointment, Activity, DailyWaterIntake } from '@/hooks/use-corpo'
 
-const CORPO_COLOR = '#f97316'
-const CORPO_BG = 'rgba(249,115,22,0.12)'
-const WATER_COLOR = '#06b6d4'
+const CORPO_COLOR = '#D97534'
+const CORPO_BG = 'rgba(217,117,52,0.12)'
+const WATER_COLOR = '#3CA0B5'
 
 interface CorpoTabDashboardProps {
   profile: HealthProfile | null
@@ -87,7 +87,7 @@ export function CorpoTabDashboard({
         {/* Peso */}
         <div className="rounded-[10px] p-3" style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">Peso atual</p>
-          <p className="font-[DM_Mono] text-[20px] font-bold" style={{ color: CORPO_COLOR }}>
+          <p className="font-[IBM_Plex_Mono] text-[20px] font-bold" style={{ color: CORPO_COLOR }}>
             {latestWeight ? <>{latestWeight.weight}<span className="text-[13px]">kg</span></> : <span className="text-[var(--sl-t3)]">—</span>}
           </p>
           <div className="text-[11px] text-[var(--sl-t2)] mt-[2px]">
@@ -100,7 +100,7 @@ export function CorpoTabDashboard({
         {/* TMB/TDEE */}
         <div className="rounded-[10px] p-3" style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">TMB / TDEE</p>
-          <p className="font-[DM_Mono] text-[20px] font-bold" style={{ color: profile?.bmr ? '#f59e0b' : 'var(--sl-t3)' }}>
+          <p className="font-[IBM_Plex_Mono] text-[20px] font-bold" style={{ color: profile?.bmr ? '#D9962E' : 'var(--sl-t3)' }}>
             {profile?.bmr ? <>{Math.round(profile.bmr)}<span className="text-[13px]">kcal</span></> : <span>—</span>}
           </p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">
@@ -111,7 +111,7 @@ export function CorpoTabDashboard({
         {/* Atividades */}
         <div className="rounded-[10px] p-3" style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">Atividades (semana)</p>
-          <p className="font-[DM_Mono] text-[20px] font-bold text-[var(--sl-t1)]">
+          <p className="font-[IBM_Plex_Mono] text-[20px] font-bold text-[var(--sl-t1)]">
             {actCount}<span className="text-[13px] text-[var(--sl-t3)]">/{weekGoal}</span>
           </p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">Meta: {weekGoal}/semana</p>
@@ -120,7 +120,7 @@ export function CorpoTabDashboard({
         {/* Próxima consulta */}
         <div className="rounded-[10px] p-3" style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">Próxima consulta</p>
-          <p className="font-[DM_Mono] text-[20px] font-bold" style={{ color: nextApptDate ? WATER_COLOR : 'var(--sl-t3)' }}>
+          <p className="font-[IBM_Plex_Mono] text-[20px] font-bold" style={{ color: nextApptDate ? WATER_COLOR : 'var(--sl-t3)' }}>
             {nextApptDate
               ? nextApptDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
               : '—'}
@@ -145,8 +145,8 @@ export function CorpoTabDashboard({
               <span
                 className="text-[11px] font-medium px-2 py-[3px] rounded-full"
                 style={{
-                  background: parseFloat(weightDelta) < 0 ? 'rgba(16,185,129,0.12)' : 'rgba(249,115,22,0.12)',
-                  color: parseFloat(weightDelta) < 0 ? '#10b981' : CORPO_COLOR,
+                  background: parseFloat(weightDelta) < 0 ? 'rgba(15,118,110,0.12)' : 'rgba(217,117,52,0.12)',
+                  color: parseFloat(weightDelta) < 0 ? '#0F766E' : CORPO_COLOR,
                 }}
               >
                 {parseFloat(weightDelta) < 0 ? '↓' : '↑'} {Math.abs(parseFloat(weightDelta))}kg no período
@@ -169,7 +169,7 @@ export function CorpoTabDashboard({
                   <path d={pathD} fill="none" stroke={CORPO_COLOR} strokeWidth="2.5" strokeLinecap="round" />
                   <circle cx={sparkPoints[sparkPoints.length - 1].x} cy={sparkPoints[sparkPoints.length - 1].y} r="5" fill={CORPO_COLOR} />
                   {profile?.weight_goal_kg && (
-                    <line x1="0" y1="10" x2="320" y2="10" stroke="rgba(16,185,129,0.35)" strokeWidth="1.5" strokeDasharray="5,4" />
+                    <line x1="0" y1="10" x2="320" y2="10" stroke="rgba(15,118,110,0.35)" strokeWidth="1.5" strokeDasharray="5,4" />
                   )}
                 </>
               )
@@ -190,7 +190,7 @@ export function CorpoTabDashboard({
         <div className="flex justify-between items-center mb-2">
           <span className="text-[13px] font-semibold text-[var(--sl-t1)]">💧 Hidratação</span>
           <span>
-            <span className="font-[DM_Mono] text-[14px]" style={{ color: WATER_COLOR }}>{waterL}L</span>
+            <span className="font-[IBM_Plex_Mono] text-[14px]" style={{ color: WATER_COLOR }}>{waterL}L</span>
             <span className="text-[var(--sl-t3)] text-[12px]"> / {waterGoalL}L</span>
           </span>
         </div>
@@ -228,7 +228,7 @@ export function CorpoTabDashboard({
       {nextAppointment && nextApptDate && (
         <div
           className="mx-4 mb-3 rounded-2xl p-4"
-          style={{ background: 'rgba(249,115,22,0.06)', border: '1px solid rgba(249,115,22,0.2)' }}
+          style={{ background: 'rgba(217,117,52,0.06)', border: '1px solid rgba(217,117,52,0.2)' }}
         >
           <div className="flex gap-3 items-center">
             <div
@@ -248,14 +248,14 @@ export function CorpoTabDashboard({
                 {nextApptDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
               </p>
               {nextAppointment.cost && (
-                <p className="text-[12px] mt-[2px]" style={{ color: '#f59e0b' }}>
+                <p className="text-[12px] mt-[2px]" style={{ color: '#D9962E' }}>
                   💰 R$ {nextAppointment.cost.toFixed(0)} em Saúde
                 </p>
               )}
             </div>
             <span
               className="text-[11px] font-medium px-2 py-[3px] rounded-full flex-shrink-0"
-              style={{ background: 'rgba(249,115,22,0.12)', color: CORPO_COLOR }}
+              style={{ background: 'rgba(217,117,52,0.12)', color: CORPO_COLOR }}
             >
               {formatDaysUntil(nextAppointment.appointment_date)}
             </span>
@@ -268,16 +268,16 @@ export function CorpoTabDashboard({
         <>
           <div
             className="mx-4 mb-3 rounded-2xl p-6 text-center"
-            style={{ background: 'linear-gradient(135deg,rgba(249,115,22,0.1),rgba(249,115,22,0.05))', border: '1px solid rgba(249,115,22,0.2)' }}
+            style={{ background: 'linear-gradient(135deg,rgba(217,117,52,0.1),rgba(217,117,52,0.05))', border: '1px solid rgba(217,117,52,0.2)' }}
           >
             <p className="text-[40px] mb-3">🏃</p>
-            <p className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-2">Configure seu Corpo</p>
+            <p className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)] mb-2">Configure seu Corpo</p>
             <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed mb-4">
               Para calcular TMB, TDEE e metas personalizadas, precisamos de alguns dados básicos.
             </p>
             <button
               onClick={onOpenProfile}
-              className="px-6 py-3 rounded-[10px] font-[Syne] text-[14px] font-bold text-black"
+              className="px-6 py-3 rounded-[10px] font-[Space_Grotesk] text-[14px] font-bold text-black"
               style={{ background: CORPO_COLOR }}
             >
               Configurar Perfil de Saúde →

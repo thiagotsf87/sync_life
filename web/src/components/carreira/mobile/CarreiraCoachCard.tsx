@@ -8,12 +8,12 @@ interface CarreiraCoachCardProps {
 
 export function CarreiraCoachCard({ message, cta, onCtaClick }: CarreiraCoachCardProps) {
   return (
-    <div className="mx-4 mb-3 flex gap-[11px] p-[13px_14px] rounded-2xl border border-[rgba(139,92,246,0.25)]"
-      style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(236,72,153,0.06))' }}
+    <div className="mx-4 mb-3 flex gap-[11px] p-[13px_14px] rounded-2xl border border-[rgba(139,123,212,0.25)]"
+      style={{ background: 'linear-gradient(135deg, rgba(139,123,212,0.12), rgba(199,103,149,0.06))' }}
     >
       <div
         className="w-9 h-9 rounded-full flex items-center justify-center text-[17px] shrink-0"
-        style={{ background: 'linear-gradient(135deg, #ec4899, #8b5cf6)' }}
+        style={{ background: 'linear-gradient(135deg, #C76795, #8B7BD4)' }}
       >
         🤖
       </div>

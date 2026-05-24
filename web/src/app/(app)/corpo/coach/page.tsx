@@ -131,18 +131,18 @@ export default function CoachPage() {
           <ArrowLeft size={16} />
           Corpo
         </button>
-        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
+        <h1 className="font-[Space_Grotesk] font-extrabold text-xl flex-1 text-sl-grad">
           🤖 Coach IA
         </h1>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#10b981]/10 border border-[#10b981]/20">
-          <Sparkles size={11} className="text-[#10b981]" />
-          <span className="text-[10px] font-bold text-[#10b981]">IA</span>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0F766E]/10 border border-[#0F766E]/20">
+          <Sparkles size={11} className="text-[#0F766E]" />
+          <span className="text-[10px] font-bold text-[#0F766E]">IA</span>
         </div>
       </div>
 
       {/* Disclaimer */}
       <div className="shrink-0 mb-4 flex items-start gap-2.5 p-3 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[11px] text-[var(--sl-t3)]">
-        <Sparkles size={13} className="shrink-0 mt-0.5 text-[#f59e0b]" />
+        <Sparkles size={13} className="shrink-0 mt-0.5 text-[#D9962E]" />
         <span>O SyncLife Coach oferece orientações gerais de saúde e bem-estar. Para diagnósticos, tratamentos e questões médicas, consulte sempre um profissional de saúde.</span>
       </div>
 
@@ -151,11 +151,11 @@ export default function CoachPage() {
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center flex-1 gap-6">
             <div className="flex flex-col items-center gap-3 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f97316]/20 to-[#f59e0b]/10
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#D97534]/20 to-[#D9962E]/10
                               flex items-center justify-center text-3xl">
                 🤖
               </div>
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                 Olá! Sou seu Coach IA
               </h2>
               <p className="text-[12px] text-[var(--sl-t2)] max-w-[300px]">
@@ -190,14 +190,14 @@ export default function CoachPage() {
                 )}
               >
                 {msg.role === 'assistant' && (
-                  <div className="w-7 h-7 rounded-lg bg-[#f97316]/15 flex items-center justify-center shrink-0 mt-0.5">
-                    <Bot size={14} className="text-[#f97316]" />
+                  <div className="w-7 h-7 rounded-lg bg-[#D97534]/15 flex items-center justify-center shrink-0 mt-0.5">
+                    <Bot size={14} className="text-[#D97534]" />
                   </div>
                 )}
                 <div className={cn(
                   'max-w-[75%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed',
                   msg.role === 'user'
-                    ? 'bg-[#10b981] text-white rounded-tr-sm'
+                    ? 'bg-[#0F766E] text-white rounded-tr-sm'
                     : 'bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t1)] rounded-tl-sm'
                 )}>
                   {msg.content || (
@@ -209,8 +209,8 @@ export default function CoachPage() {
                   )}
                 </div>
                 {msg.role === 'user' && (
-                  <div className="w-7 h-7 rounded-lg bg-[#10b981]/15 flex items-center justify-center shrink-0 mt-0.5">
-                    <User size={14} className="text-[#10b981]" />
+                  <div className="w-7 h-7 rounded-lg bg-[#0F766E]/15 flex items-center justify-center shrink-0 mt-0.5">
+                    <User size={14} className="text-[#0F766E]" />
                   </div>
                 )}
               </div>
@@ -237,7 +237,7 @@ export default function CoachPage() {
           onClick={() => sendMessage(input)}
           disabled={!input.trim() || isLoading}
           className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0
-                     bg-[#10b981] text-white disabled:opacity-40 transition-opacity hover:opacity-90"
+                     bg-[#0F766E] text-white disabled:opacity-40 transition-opacity hover:opacity-90"
         >
           <Send size={14} />
         </button>

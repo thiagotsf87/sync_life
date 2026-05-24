@@ -172,7 +172,7 @@ export function ExpWizardMobile({ open, onClose, onSubmit, onTripCreated }: ExpW
           <p className="text-[12px] font-medium" style={{ color: EXP_PRIMARY_LIGHT }}>
             ✦ Nova Missão de Viagem
           </p>
-          <p className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)]">
+          <p className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)]">
             {step > 1 && tripName ? `${tripName} 🇯🇵` : 'Sua próxima aventura'}
           </p>
         </div>
@@ -232,7 +232,7 @@ export function ExpWizardMobile({ open, onClose, onSubmit, onTripCreated }: ExpW
         {saveError && (
           <div
             className="rounded-[10px] p-3 mb-3 text-[12px]"
-            style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.2)', color: '#f43f5e' }}
+            style={{ background: 'rgba(219,100,120,0.1)', border: '1px solid rgba(219,100,120,0.2)', color: '#DB6478' }}
           >
             {saveError}
           </div>

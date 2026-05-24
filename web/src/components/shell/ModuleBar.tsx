@@ -30,7 +30,6 @@ const MODULE_BAR_LABELS: Partial<Record<ModuleId, string>> = {
   configuracoes: 'Config',
 }
 
-const GRAD_BRAND = 'linear-gradient(135deg, #10b981, #0055ff)'
 
 export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
   const router = useRouter()
@@ -110,32 +109,17 @@ export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
                   ['--module-glow' as string]: mod.glowColor,
                 }}
               >
-                {/* Active pill indicator */}
+                {/* Active pill indicator — solid module color (v3: no gradients outside logo/ring) */}
                 {isActive && (
                   <span
                     className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[20px] rounded-r-full"
-                    style={{ background: moduleId === 'panorama' ? GRAD_BRAND : mod.color }}
+                    style={{ background: mod.color }}
                   />
                 )}
-                {/* Panorama ativo: gradiente brand; demais: cor sólida via CSS */}
-                {moduleId === 'panorama' && isActive ? (
-                  <>
-                    <span style={{ background: GRAD_BRAND, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'flex' }}>
-                      <Icon size={20} />
-                    </span>
-                    <span className="module-label text-[10px] font-medium leading-[1.15] text-center"
-                      style={{ background: GRAD_BRAND, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                      {label}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <Icon size={20} />
-                    <span className="module-label text-[10px] font-medium leading-[1.15] text-center">
-                      {label}
-                    </span>
-                  </>
-                )}
+                <Icon size={20} />
+                <span className="module-label text-[10px] font-medium leading-[1.15] text-center">
+                  {label}
+                </span>
               </button>
             )
           })}
@@ -180,7 +164,7 @@ export function ModuleBar({ userName = 'U' }: ModuleBarProps) {
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-[13px]
-                             text-[#f43f5e] hover:bg-[rgba(244,63,94,0.08)]
+                             text-[#DB6478] hover:bg-[rgba(219,100,120,0.08)]
                              transition-colors"
                 >
                   <LogOut size={14} className="shrink-0" />

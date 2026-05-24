@@ -57,7 +57,7 @@ export function ExpTabRoteiro({ days: propDays }: ExpTabRoteiroProps) {
       <div className="mx-4 mb-[10px] flex items-center justify-between px-[13px] py-2 rounded-[12px]"
         style={{ background: 'var(--sl-s1)', border: `1px solid ${EXP_PRIMARY_BORDER}` }}>
         <div className="flex items-center gap-2">
-          <span className="font-[Syne] text-[10px] font-extrabold text-white rounded-lg px-2 py-[2px]"
+          <span className="font-[Space_Grotesk] text-[10px] font-extrabold text-white rounded-lg px-2 py-[2px]"
             style={{ background: EXP_GRAD }}>Nível 4</span>
           <span className="text-[11px] text-[var(--sl-t2)]">Explorador Audacioso</span>
         </div>
@@ -91,7 +91,7 @@ export function ExpTabRoteiro({ days: propDays }: ExpTabRoteiroProps) {
               </p>
             </div>
             <div className="text-right">
-              <p className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">{day.cost}</p>
+              <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t2)]">{day.cost}</p>
               <p className="text-[10px] font-bold" style={{ color: EXP_PRIMARY_LIGHT }}>+40 XP disponíveis</p>
             </div>
           </div>
@@ -99,7 +99,7 @@ export function ExpTabRoteiro({ days: propDays }: ExpTabRoteiroProps) {
           {/* Timeline */}
           {day.items.map((item, i) => (
             <div key={i} className="flex gap-3 px-5 py-2">
-              <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)] w-[42px] shrink-0 pt-[2px]">
+              <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] w-[42px] shrink-0 pt-[2px]">
                 {item.time}
               </span>
               <div
@@ -107,7 +107,7 @@ export function ExpTabRoteiro({ days: propDays }: ExpTabRoteiroProps) {
                 style={{
                   background: 'var(--sl-s1)',
                   borderLeft: `3px solid ${
-                    item.isPast ? 'rgba(139,92,246,0.35)' : '#8b5cf6'
+                    item.isPast ? 'rgba(139,123,212,0.35)' : '#8B7BD4'
                   }`,
                 }}
               >

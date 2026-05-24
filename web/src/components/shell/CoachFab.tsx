@@ -18,8 +18,8 @@ export function CoachFab() {
                  text-white shadow-xl transition-all hover:scale-105 hover:shadow-2xl
                  max-lg:bottom-[72px]"
       style={{
-        background: 'linear-gradient(135deg, #10b981, #0055ff)',
-        boxShadow: '0 4px 24px rgba(16,185,129,0.35)',
+        background: 'linear-gradient(135deg, #0F766E, #0B2D34)',
+        boxShadow: '0 4px 24px rgba(15,118,110,0.35)',
       }}
       aria-label="Coach IA"
     >

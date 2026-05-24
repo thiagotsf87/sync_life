@@ -107,9 +107,9 @@ export function DatePickerInput({
         type="button"
         onClick={() => setOpen(o => !o)}
         className={cn(
-          'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono] flex items-center justify-between gap-2 text-left',
-          error ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-          open && 'border-[#10b981]'
+          'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[IBM_Plex_Mono] flex items-center justify-between gap-2 text-left',
+          error ? 'border-[#DB6478]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+          open && 'border-[#0F766E]'
         )}
       >
         <span>{value ? formatDateDisplay(value) : placeholder}</span>
@@ -151,7 +151,7 @@ export function DatePickerInput({
                   'w-8 h-8 rounded-[8px] text-[12px] font-medium transition-colors',
                   !d && 'invisible',
                   d && selY === calView.year && selM === calView.month && selD === d
-                    ? 'bg-[#10b981] text-[#03071a]'
+                    ? 'bg-[#0F766E] text-[#03071a]'
                     : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
                 )}
               >

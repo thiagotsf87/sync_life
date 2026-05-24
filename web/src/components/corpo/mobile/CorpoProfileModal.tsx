@@ -8,8 +8,8 @@ import {
   type ActivityLevelType, type WeightGoalType, type BiologicalSex,
 } from '@/hooks/use-corpo'
 
-const CORPO_COLOR = '#f97316'
-const CORPO_BG = 'rgba(249,115,22,0.12)'
+const CORPO_COLOR = '#D97534'
+const CORPO_BG = 'rgba(217,117,52,0.12)'
 
 const ACTIVITY_OPTIONS: ActivityLevelType[] = ['sedentary', 'light', 'moderate', 'very_active', 'extreme']
 const GOAL_OPTIONS: WeightGoalType[] = ['lose', 'maintain', 'gain']
@@ -63,7 +63,7 @@ export function CorpoProfileModal({ profile, onClose, onSave }: CorpoProfileModa
         <button onClick={onClose} className="text-[14px] font-medium" style={{ color: CORPO_COLOR }}>
           ← Dashboard
         </button>
-        <span className="font-[Syne] text-[17px] font-bold text-[var(--sl-t1)]">Perfil de Saúde</span>
+        <span className="font-[Space_Grotesk] text-[17px] font-bold text-[var(--sl-t1)]">Perfil de Saúde</span>
         <button onClick={handleSave} disabled={saving} className="text-[13px] font-semibold" style={{ color: CORPO_COLOR }}>
           {saving ? '…' : 'Salvar'}
         </button>
@@ -74,14 +74,14 @@ export function CorpoProfileModal({ profile, onClose, onSave }: CorpoProfileModa
         <div className="flex gap-3 mb-5">
           <div className="flex-1 rounded-[10px] p-3 text-center" style={{ background: CORPO_BG }}>
             <p className="text-[10px] text-[var(--sl-t2)]">TMB</p>
-            <p className="font-[DM_Mono] text-[20px] font-bold" style={{ color: CORPO_COLOR }}>
+            <p className="font-[IBM_Plex_Mono] text-[20px] font-bold" style={{ color: CORPO_COLOR }}>
               {bmr ?? '—'}
             </p>
             <p className="text-[10px] text-[var(--sl-t3)]">kcal/dia</p>
           </div>
-          <div className="flex-1 rounded-[10px] p-3 text-center" style={{ background: 'rgba(245,158,11,0.1)' }}>
+          <div className="flex-1 rounded-[10px] p-3 text-center" style={{ background: 'rgba(217,150,46,0.1)' }}>
             <p className="text-[10px] text-[var(--sl-t2)]">TDEE</p>
-            <p className="font-[DM_Mono] text-[20px] font-bold" style={{ color: '#f59e0b' }}>
+            <p className="font-[IBM_Plex_Mono] text-[20px] font-bold" style={{ color: '#D9962E' }}>
               {tdee ?? '—'}
             </p>
             <p className="text-[10px] text-[var(--sl-t3)]">kcal/dia</p>
@@ -206,7 +206,7 @@ export function CorpoProfileModal({ profile, onClose, onSave }: CorpoProfileModa
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full py-[14px] rounded-[10px] font-[Syne] text-[15px] font-bold text-black disabled:opacity-50"
+          className="w-full py-[14px] rounded-[10px] font-[Space_Grotesk] text-[15px] font-bold text-black disabled:opacity-50"
           style={{ background: CORPO_COLOR }}
         >
           {saving ? 'Salvando…' : 'Salvar Perfil'}

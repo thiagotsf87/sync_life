@@ -48,14 +48,14 @@ export function ExpWizardStep5({
       <div
         className="rounded-[16px] p-4 text-center mb-[14px]"
         style={{
-          background: 'linear-gradient(135deg, rgba(139,92,246,0.14), rgba(236,72,153,0.08))',
-          border: `1px solid rgba(139,92,246,0.28)`,
+          background: 'linear-gradient(135deg, rgba(139,123,212,0.14), rgba(199,103,149,0.08))',
+          border: `1px solid rgba(139,123,212,0.28)`,
         }}
       >
         <p className="text-[11px] font-bold uppercase tracking-[0.5px] mb-[6px]" style={{ color: EXP_PRIMARY_LIGHT }}>
           ⚡ XP TOTAL DESTA MISSÃO
         </p>
-        <p className="font-[DM_Mono] text-[36px] font-bold" style={{
+        <p className="font-[IBM_Plex_Mono] text-[36px] font-bold" style={{
           background: EXP_GRAD,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -79,7 +79,7 @@ export function ExpWizardStep5({
           border: `1px solid ${EXP_PRIMARY_BORDER}`,
         }}
       >
-        <p className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)] mb-3">
+        <p className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)] mb-3">
           🗾 Missão {tripName}
         </p>
         <div className="flex flex-col gap-[10px]">
@@ -107,7 +107,7 @@ export function ExpWizardStep5({
           <div className="h-[1px]" style={{ background: 'var(--sl-border)' }} />
           <div className="flex justify-between">
             <span className="text-[12px] text-[var(--sl-t2)]">Missão financeira</span>
-            <span className="font-[DM_Mono] text-[13px] font-semibold text-[var(--sl-t1)]">
+            <span className="font-[IBM_Plex_Mono] text-[13px] font-semibold text-[var(--sl-t1)]">
               R$ {budget.toLocaleString('pt-BR')}
             </span>
           </div>
@@ -123,13 +123,13 @@ export function ExpWizardStep5({
         <div className="flex gap-[6px] flex-wrap">
           {syncFinance && (
             <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-semibold"
-              style={{ background: 'rgba(16,185,129,0.12)', color: '#10b981' }}>
+              style={{ background: 'rgba(15,118,110,0.12)', color: '#0F766E' }}>
               ✓ Finanças · +10 XP/aporte
             </span>
           )}
           {syncAgenda && (
             <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-semibold"
-              style={{ background: 'rgba(236,72,153,0.12)', color: '#f472b6' }}>
+              style={{ background: 'rgba(199,103,149,0.12)', color: '#f472b6' }}>
               ✓ Agenda
             </span>
           )}

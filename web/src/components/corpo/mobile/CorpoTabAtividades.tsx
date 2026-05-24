@@ -3,8 +3,8 @@
 import { useMemo, useState } from 'react'
 import { ACTIVITY_TYPES, type Activity } from '@/hooks/use-corpo'
 
-const CORPO_COLOR = '#f97316'
-const CORPO_BG = 'rgba(249,115,22,0.12)'
+const CORPO_COLOR = '#D97534'
+const CORPO_BG = 'rgba(217,117,52,0.12)'
 
 const WEEK_DAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
 const TYPE_FILTERS = [
@@ -109,7 +109,7 @@ export function CorpoTabAtividades({ activities, weekActivities, onOpenModal }: 
                   style={{
                     height: barH,
                     background: isEmpty ? 'var(--sl-s2)' : CORPO_COLOR,
-                    border: isEmpty ? '1px dashed rgba(249,115,22,0.3)' : 'none',
+                    border: isEmpty ? '1px dashed rgba(217,117,52,0.3)' : 'none',
                     opacity: isEmpty ? 1 : 0.9,
                   }}
                 />
@@ -189,7 +189,7 @@ export function CorpoTabAtividades({ activities, weekActivities, onOpenModal }: 
                     {a.calories_burned && (
                       <span
                         className="text-[11px] px-[7px] py-[2px] rounded-[8px]"
-                        style={{ background: 'rgba(244,63,94,0.1)', color: '#f43f5e' }}
+                        style={{ background: 'rgba(219,100,120,0.1)', color: '#DB6478' }}
                       >
                         🔥 {Math.round(a.calories_burned)} kcal
                       </span>

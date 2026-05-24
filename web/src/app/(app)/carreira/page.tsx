@@ -74,11 +74,11 @@ export default function CarreiraPage() {
     name: s.name,
     level: Math.min(Math.max(s.proficiency_level, 1), 5) as 1 | 2 | 3 | 4 | 5,
     label: SKILL_LEVEL_LABELS[s.proficiency_level] ?? 'N/A',
-    color: s.category === 'hard_skill' ? '#f43f5e'
-      : s.category === 'soft_skill' ? '#10b981'
-      : s.category === 'language' ? '#f59e0b'
+    color: s.category === 'hard_skill' ? '#DB6478'
+      : s.category === 'soft_skill' ? '#0F766E'
+      : s.category === 'language' ? '#D9962E'
       : s.category === 'certification' ? '#a855f7'
-      : '#f43f5e',
+      : '#DB6478',
   }))
 
   // Roadmap completed/total steps count
@@ -120,8 +120,8 @@ export default function CarreiraPage() {
       {/* MODULE HEADER */}
       <ModuleHeader
         icon={Briefcase}
-        iconBg="rgba(244,63,94,.08)"
-        iconColor="#f43f5e"
+        iconBg="rgba(219,100,120,.08)"
+        iconColor="#DB6478"
         title="Carreira"
         subtitle={headerSubtitle}
       >
@@ -139,7 +139,7 @@ export default function CarreiraPage() {
       {!loading && !profile && (
         <div className="py-10 text-center">
           <div className="text-6xl mb-4">💼</div>
-          <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] mb-2">Mapeie sua carreira</h2>
+          <h2 className="font-[Space_Grotesk] font-bold text-[18px] text-[var(--sl-t1)] mb-2">Mapeie sua carreira</h2>
           <p className="text-[14px] text-[var(--sl-t2)] leading-relaxed mb-6 max-w-sm mx-auto">
             Configure seu perfil profissional para acompanhar sua evolucao, mapear habilidades e planejar proximos passos.
           </p>
@@ -153,11 +153,11 @@ export default function CarreiraPage() {
             ].map(step => (
               <div key={step.n} className={cn(
                 'flex items-center gap-3 p-3.5 bg-[var(--sl-s1)] border rounded-[14px]',
-                step.active ? 'border-[rgba(244,63,94,0.3)]' : 'border-[var(--sl-border)]'
+                step.active ? 'border-[rgba(219,100,120,0.3)]' : 'border-[var(--sl-border)]'
               )}>
                 <div className={cn(
-                  'w-8 h-8 rounded-full flex items-center justify-center font-[Syne] text-[14px] font-extrabold shrink-0',
-                  step.active ? 'bg-[#f43f5e] text-white' : 'bg-[var(--sl-s3)] text-[var(--sl-t2)]'
+                  'w-8 h-8 rounded-full flex items-center justify-center font-[Space_Grotesk] text-[14px] font-extrabold shrink-0',
+                  step.active ? 'bg-[#DB6478] text-white' : 'bg-[var(--sl-s3)] text-[var(--sl-t2)]'
                 )}>
                   {step.n}
                 </div>
@@ -171,8 +171,8 @@ export default function CarreiraPage() {
 
           <button
             onClick={() => router.push('/carreira/perfil')}
-            className="px-6 py-3 rounded-[14px] font-[Syne] font-bold text-[15px] text-white"
-            style={{ background: 'linear-gradient(135deg, #f43f5e, #8b5cf6)' }}
+            className="px-6 py-3 rounded-[14px] font-[Space_Grotesk] font-bold text-[15px] text-white"
+            style={{ background: 'linear-gradient(135deg, #DB6478, #8B7BD4)' }}
           >
             Comecar configuracao
           </button>
@@ -190,7 +190,7 @@ export default function CarreiraPage() {
         {/* Accent bar: gradient rose -> purple -> cyan */}
         <div
           className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[18px]"
-          style={{ background: 'linear-gradient(90deg, #f43f5e, #a855f7, #06b6d4)' }}
+          style={{ background: 'linear-gradient(90deg, #DB6478, #a855f7, #3CA0B5)' }}
         />
 
         <div className="flex items-center gap-6">
@@ -202,20 +202,20 @@ export default function CarreiraPage() {
               </span>
               <span
                 className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[11px] font-semibold"
-                style={{ background: 'rgba(244,63,94,0.10)', color: '#f43f5e' }}
+                style={{ background: 'rgba(219,100,120,0.10)', color: '#DB6478' }}
               >
                 Level {CARREIRA_XP.level}
               </span>
               <span
                 className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[11px] font-semibold"
-                style={{ background: 'rgba(245,158,11,0.10)', color: '#f59e0b' }}
+                style={{ background: 'rgba(217,150,46,0.10)', color: '#D9962E' }}
               >
                 <Flame size={11} />
                 {CARREIRA_XP.streak} dias seguidos
               </span>
             </div>
 
-            <h2 className="font-[Syne] font-extrabold text-[28px] leading-[1.15] text-[var(--sl-t1)] mb-[3px]">
+            <h2 className="font-[Space_Grotesk] font-extrabold text-[28px] leading-[1.15] text-[var(--sl-t1)] mb-[3px]">
               {profile?.current_title ?? 'Configure seu cargo'}
             </h2>
             <p className="text-[13px] text-[var(--sl-t2)]">
@@ -234,12 +234,12 @@ export default function CarreiraPage() {
                     className="h-full rounded-full transition-[width] duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)]"
                     style={{
                       width: `${Math.round(CARREIRA_XP.currentXp / CARREIRA_XP.nextLevelXp * 100)}%`,
-                      background: '#f43f5e',
+                      background: '#DB6478',
                     }}
                   />
                 </div>
               </div>
-              <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t2)]">
+              <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t2)]">
                 {CARREIRA_XP.currentXp} / {CARREIRA_XP.nextLevelXp} XP
               </span>
             </div>
@@ -251,11 +251,11 @@ export default function CarreiraPage() {
               <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mb-1">
                 Salario
               </div>
-              <div className="font-[DM_Mono] text-[22px] font-medium leading-none text-[#10b981] truncate">
+              <div className="font-[IBM_Plex_Mono] text-[22px] font-medium leading-none text-[#0F766E] truncate">
                 {salaryLabel}
               </div>
               {history.length > 0 && history[0].salary && profile?.gross_salary && history[0].salary !== profile.gross_salary && (
-                <div className="text-[10px] text-[#10b981] mt-[2px]">
+                <div className="text-[10px] text-[#0F766E] mt-[2px]">
                   {profile.gross_salary > history[0].salary
                     ? `+${Math.round(((profile.gross_salary - history[0].salary) / history[0].salary) * 100)}% vs anterior`
                     : ''}
@@ -266,7 +266,7 @@ export default function CarreiraPage() {
               <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mb-1">
                 Roadmap
               </div>
-              <div className="font-[DM_Mono] text-[22px] font-medium leading-none text-[#f59e0b]">
+              <div className="font-[IBM_Plex_Mono] text-[22px] font-medium leading-none text-[#D9962E]">
                 {roadmapProgress}%
               </div>
               <div className="text-[10px] text-[var(--sl-t3)] mt-[2px]">
@@ -277,7 +277,7 @@ export default function CarreiraPage() {
               <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mb-1">
                 Skills
               </div>
-              <div className="font-[DM_Mono] text-[22px] font-medium leading-none text-[var(--sl-t1)]">
+              <div className="font-[IBM_Plex_Mono] text-[22px] font-medium leading-none text-[var(--sl-t1)]">
                 {skills.length}
               </div>
               <div className="text-[10px] text-[var(--sl-t3)] mt-[2px]">
@@ -293,7 +293,7 @@ export default function CarreiraPage() {
         text={
           profile
             ? <>Voce e <strong className="text-[var(--sl-t1)]">{profile.current_title ?? 'profissional'}</strong>
-              {activeRoadmap && <> com <strong className="text-[#f59e0b]">{roadmapProgress}%</strong> do caminho para <strong className="text-[var(--sl-t1)]">{activeRoadmap.target_title}</strong> percorrido</>}.
+              {activeRoadmap && <> com <strong className="text-[#D9962E]">{roadmapProgress}%</strong> do caminho para <strong className="text-[var(--sl-t1)]">{activeRoadmap.target_title}</strong> percorrido</>}.
               {nextStep && <> Proximo passo: {nextStep.title}.</>}</>
             : <>Configure seu perfil profissional para desbloquear projecoes de carreira e integracao com o modulo Financas.</>
         }
@@ -316,8 +316,8 @@ export default function CarreiraPage() {
 
           {/* LEFT: Active Roadmap */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-            <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-              <Clock size={16} className="text-[#f43f5e]" />
+            <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+              <Clock size={16} className="text-[#DB6478]" />
               {activeRoadmap
                 ? <>Roadmap Ativo: {activeRoadmap.target_title}{activeRoadmap.target_date ? ` em ${Math.max(0, Math.ceil((new Date(activeRoadmap.target_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24 * 365)))} ano${Math.ceil((new Date(activeRoadmap.target_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24 * 365)) !== 1 ? 's' : ''}` : ''}</>
                 : 'Roadmap Ativo'
@@ -325,13 +325,13 @@ export default function CarreiraPage() {
               {activeRoadmap && (
                 <span
                   className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold ml-[6px]"
-                  style={{ background: 'rgba(245,158,11,0.10)', color: '#f59e0b' }}
+                  style={{ background: 'rgba(217,150,46,0.10)', color: '#D9962E' }}
                 >
                   {roadmapProgress}%
                 </span>
               )}
               <span
-                className="ml-auto font-sans text-[12px] font-medium text-[#f43f5e] cursor-pointer hover:underline"
+                className="ml-auto font-sans text-[12px] font-medium text-[#DB6478] cursor-pointer hover:underline"
                 onClick={() => router.push('/carreira/roadmap')}
               >
                 Ver todos &rarr;
@@ -350,7 +350,7 @@ export default function CarreiraPage() {
                 <HorizontalTimeline
                   steps={timelineSteps}
                   progressPercent={roadmapProgress}
-                  accentColor="#10b981"
+                  accentColor="#0F766E"
                 />
 
                 {/* Next action box */}
@@ -358,9 +358,9 @@ export default function CarreiraPage() {
                   <div className="mt-5 px-[18px] py-[14px] bg-[var(--sl-s2)] rounded-xl flex items-center gap-3">
                     <div
                       className="w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0"
-                      style={{ background: 'rgba(244,63,94,0.10)' }}
+                      style={{ background: 'rgba(219,100,120,0.10)' }}
                     >
-                      <CheckCircle2 size={16} className="text-[#f43f5e]" />
+                      <CheckCircle2 size={16} className="text-[#DB6478]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[12px] font-semibold text-[var(--sl-t1)]">
@@ -374,7 +374,7 @@ export default function CarreiraPage() {
                     </div>
                     <span
                       className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold shrink-0"
-                      style={{ background: 'rgba(244,63,94,0.10)', color: '#f43f5e' }}
+                      style={{ background: 'rgba(219,100,120,0.10)', color: '#DB6478' }}
                     >
                       Em andamento
                     </span>
@@ -384,11 +384,11 @@ export default function CarreiraPage() {
             ) : (
               <div className="text-center py-8">
                 <div className="text-4xl mb-3">🗺</div>
-                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhum roadmap ativo</h3>
+                <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhum roadmap ativo</h3>
                 <p className="text-[13px] text-[var(--sl-t2)] mb-4">Crie um plano de carreira com passos concretos.</p>
                 <button
                   onClick={() => router.push('/carreira/roadmap')}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f43f5e] text-white hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#DB6478] text-white hover:opacity-90 transition-opacity"
                 >
                   Criar Roadmap
                 </button>
@@ -400,11 +400,11 @@ export default function CarreiraPage() {
           <div className="flex flex-col gap-[14px]">
             {/* Top Skills card */}
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex-1 transition-colors hover:border-[var(--sl-border-h)]">
-              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <Star size={16} className="text-[#f43f5e]" />
+              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <Star size={16} className="text-[#DB6478]" />
                 Top Habilidades
                 <span
-                  className="ml-auto font-sans text-[12px] font-medium text-[#f43f5e] cursor-pointer hover:underline"
+                  className="ml-auto font-sans text-[12px] font-medium text-[#DB6478] cursor-pointer hover:underline"
                   onClick={() => router.push('/carreira/habilidades')}
                 >
                   Ver todas &rarr;
@@ -414,7 +414,7 @@ export default function CarreiraPage() {
               {skills.length === 0 ? (
                 <p className="text-[12px] text-[var(--sl-t3)]">Nenhuma habilidade cadastrada.</p>
               ) : (
-                <SkillBars skills={skillBarsData} accentColor="#f43f5e" />
+                <SkillBars skills={skillBarsData} accentColor="#DB6478" />
               )}
             </div>
 
@@ -422,17 +422,17 @@ export default function CarreiraPage() {
             <div
               className="bg-[var(--sl-s1)] border rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] cursor-pointer"
               style={{
-                background: 'linear-gradient(135deg, rgba(244,63,94,0.06), rgba(168,85,247,0.04))',
-                borderColor: 'rgba(244,63,94,0.15)',
+                background: 'linear-gradient(135deg, rgba(219,100,120,0.06), rgba(168,85,247,0.04))',
+                borderColor: 'rgba(219,100,120,0.15)',
               }}
               onClick={() => setShowSimulador(true)}
             >
               <div className="flex items-center gap-[14px]">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: 'rgba(244,63,94,0.12)' }}
+                  style={{ background: 'rgba(219,100,120,0.12)' }}
                 >
-                  <BarChart3 size={20} className="text-[#f43f5e]" />
+                  <BarChart3 size={20} className="text-[#DB6478]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[14px] font-semibold text-[var(--sl-t1)] mb-[2px]">
@@ -443,7 +443,7 @@ export default function CarreiraPage() {
                       ? <>{activeRoadmap.current_title} &rarr; {activeRoadmap.target_title}: </>
                       : 'Impacto estimado: '
                     }
-                    <span className="font-[DM_Mono] text-[#10b981] font-medium">
+                    <span className="font-[IBM_Plex_Mono] text-[#0F766E] font-medium">
                       +{estimatedImpact.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/mes
                       {estimatedPct > 0 ? ` (+${estimatedPct}%)` : ''}
                     </span>
@@ -456,7 +456,7 @@ export default function CarreiraPage() {
                 </div>
                 <button
                   className="inline-flex items-center gap-[7px] px-[18px] py-2 rounded-[11px] text-[12px]
-                             font-semibold bg-[#f43f5e] text-white hover:brightness-110 transition-all shrink-0"
+                             font-semibold bg-[#DB6478] text-white hover:brightness-110 transition-all shrink-0"
                   onClick={(e) => {
                     e.stopPropagation()
                     setShowSimulador(true)

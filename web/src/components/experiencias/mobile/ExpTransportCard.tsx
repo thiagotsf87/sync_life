@@ -14,13 +14,13 @@ interface ExpTransportCardProps {
 export function ExpTransportCard({
   icon, route, company, dateTime, duration, cost, status, statusType,
 }: ExpTransportCardProps) {
-  const statusColor = statusType === 'paid' ? '#10b981' : statusType === 'included' ? '#10b981' : '#f59e0b'
+  const statusColor = statusType === 'paid' ? '#0F766E' : statusType === 'included' ? '#0F766E' : '#D9962E'
 
   return (
     <div className="mx-4 mb-[10px] rounded-[10px] p-[14px] flex gap-3"
       style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
       <div className="w-[42px] h-[42px] rounded-[12px] flex items-center justify-center text-[20px] shrink-0"
-        style={{ background: 'rgba(236,72,153,0.15)' }}>
+        style={{ background: 'rgba(199,103,149,0.15)' }}>
         {icon}
       </div>
       <div className="flex-1 min-w-0">
@@ -40,7 +40,7 @@ export function ExpTransportCard({
           <span>📅 {dateTime}</span>
           <span>⏱️ {duration}</span>
         </div>
-        <p className="font-[DM_Mono] text-[13px] text-[var(--sl-t1)] font-semibold mt-[6px]">
+        <p className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t1)] font-semibold mt-[6px]">
           {cost}{' '}
           <span className="text-[10px] font-semibold" style={{ color: statusColor }}>{status}</span>
         </p>

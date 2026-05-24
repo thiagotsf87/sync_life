@@ -22,7 +22,7 @@ export function SliderControl({
   max,
   step = 1,
   formatValue,
-  gradientColors = ['#10b981', '#0055ff'],
+  gradientColors = ['#0F766E', '#0B2D34'],
   onChange,
   className,
 }: SliderControlProps) {
@@ -36,7 +36,7 @@ export function SliderControl({
         <label htmlFor={id} className="text-[12px] font-medium text-[var(--sl-t2)]">
           {label}
         </label>
-        <span className="font-[DM_Mono] text-[13px] font-semibold text-[var(--sl-t1)]">
+        <span className="font-[IBM_Plex_Mono] text-[13px] font-semibold text-[var(--sl-t1)]">
           {displayValue}
         </span>
       </div>

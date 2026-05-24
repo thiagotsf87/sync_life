@@ -83,12 +83,12 @@ const HEATMAP_DAYS: HeatmapDay[] = [
 ]
 
 function getHeatmapColor(val: number): string {
-  if (val === 0)  return 'rgba(16,185,129,0.04)'
-  if (val > 200)  return 'rgba(244,63,94,0.3)'
-  if (val > 100)  return 'rgba(245,158,11,0.2)'
-  if (val > 50)   return 'rgba(16,185,129,0.25)'
-  if (val > 30)   return 'rgba(16,185,129,0.15)'
-  return 'rgba(16,185,129,0.08)'
+  if (val === 0)  return 'rgba(15,118,110,0.04)'
+  if (val > 200)  return 'rgba(219,100,120,0.3)'
+  if (val > 100)  return 'rgba(217,150,46,0.2)'
+  if (val > 50)   return 'rgba(15,118,110,0.25)'
+  if (val > 30)   return 'rgba(15,118,110,0.15)'
+  return 'rgba(15,118,110,0.08)'
 }
 
 // ─── Component ────────────────────────────────────────
@@ -113,7 +113,7 @@ export function DashboardMobile({
 
   const [activeHeatDay, setActiveHeatDay] = useState<number | null>(null)
 
-  // Life Score ring — gradiente indigo→blue (#6366f1 → #0055ff)
+  // Life Score ring — gradiente indigo→blue (#6B6FD4 → #0B2D34)
   const ringR    = 68
   const ringCirc = 2 * Math.PI * ringR
   const ringFill = (lifeScore / 100) * ringCirc
@@ -122,8 +122,8 @@ export function DashboardMobile({
   const ringColor = lifeScore >= 60
     ? `url(#${ringGradId})`
     : lifeScore >= 30
-      ? '#f59e0b'
-      : '#f43f5e'
+      ? '#D9962E'
+      : '#DB6478'
 
   return (
     // Dashboard não passa title/subtitle — tabs vão direto para o conteúdo
@@ -133,24 +133,24 @@ export function DashboardMobile({
       {isEmpty && (
         <div className="px-4 pt-2 pb-6">
           <div className="px-1 pb-3 pt-1">
-            <div className="font-[Syne] text-[22px] font-extrabold text-[var(--sl-t1)]">Bem-vindo ao SyncLife! 🌟</div>
+            <div className="font-[Space_Grotesk] text-[22px] font-extrabold text-[var(--sl-t1)]">Bem-vindo ao SyncLife! 🌟</div>
             <div className="text-[13px] text-[var(--sl-t2)] mt-1">Vamos organizar sua vida juntos.</div>
           </div>
 
           {/* Card CTA */}
           <div
             className="rounded-[16px] p-6 text-center mb-3"
-            style={{ background: 'linear-gradient(135deg,rgba(99,102,241,0.10),rgba(0,85,255,0.08))', border: '1px solid rgba(99,102,241,0.25)' }}
+            style={{ background: 'linear-gradient(135deg,rgba(107,111,212,0.10),rgba(0,85,255,0.08))', border: '1px solid rgba(107,111,212,0.25)' }}
           >
             <div className="text-[48px] mb-3">🌐</div>
-            <div className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-2">Seu Panorama está vazio</div>
+            <div className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)] mb-2">Seu Panorama está vazio</div>
             <div className="text-[13px] text-[var(--sl-t2)] leading-[1.5] mb-4">
               Comece registrando sua primeira transação ou configurando um orçamento para ver seus dados aqui.
             </div>
             <button
               onClick={() => router.push('/financas/transacoes')}
-              className="inline-flex px-6 py-[12px] rounded-[12px] font-[Syne] text-[14px] font-bold text-white"
-              style={{ background: '#6366f1' }}
+              className="inline-flex px-6 py-[12px] rounded-[12px] font-[Space_Grotesk] text-[14px] font-bold text-white"
+              style={{ background: '#6B6FD4' }}
             >
               Começar agora →
             </button>
@@ -160,9 +160,9 @@ export function DashboardMobile({
           <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] px-1 mb-2 mt-4">PRIMEIROS PASSOS</div>
           <div className="flex flex-col gap-2">
             {[
-              { num: '1', color: 'rgba(16,185,129,0.12)', label: 'Registrar primeira transação', hint: 'Desbloqueie: 🎯 Primeiro Passo (+10 pts)', href: '/financas/transacoes' },
-              { num: '2', color: 'rgba(99,102,241,0.12)', label: 'Configurar um orçamento', hint: 'Ative os alertas do Dashboard', href: '/financas/orcamentos' },
-              { num: '3', color: 'rgba(139,92,246,0.12)', label: 'Criar primeiro objetivo', hint: 'Desbloqueie: 🎯 Primeiro Sonho (+10 pts)', href: '/futuro' },
+              { num: '1', color: 'rgba(15,118,110,0.12)', label: 'Registrar primeira transação', hint: 'Desbloqueie: 🎯 Primeiro Passo (+10 pts)', href: '/financas/transacoes' },
+              { num: '2', color: 'rgba(107,111,212,0.12)', label: 'Configurar um orçamento', hint: 'Ative os alertas do Dashboard', href: '/financas/orcamentos' },
+              { num: '3', color: 'rgba(139,123,212,0.12)', label: 'Criar primeiro objetivo', hint: 'Desbloqueie: 🎯 Primeiro Sonho (+10 pts)', href: '/futuro' },
             ].map(step => (
               <button
                 key={step.num}
@@ -176,7 +176,7 @@ export function DashboardMobile({
                   <div className="text-[13px] font-medium text-[var(--sl-t1)]">{step.label}</div>
                   <div className="text-[11px] text-[var(--sl-t3)] mt-0.5">{step.hint}</div>
                 </div>
-                <span className="text-[14px] text-[#6366f1] shrink-0">→</span>
+                <span className="text-[14px] text-[#6B6FD4] shrink-0">→</span>
               </button>
             ))}
           </div>
@@ -187,7 +187,7 @@ export function DashboardMobile({
       <>
         {/* Saudação — dentro do conteúdo, abaixo das tabs (como protótipo) */}
           <div className="px-5 pb-3 pt-3">
-            <div className="font-[Syne] text-[22px] font-extrabold text-[var(--sl-t1)]">
+            <div className="font-[Space_Grotesk] text-[22px] font-extrabold text-[var(--sl-t1)]">
               {greeting}, {userName} ✨
             </div>
             <div className="text-[13px] text-[var(--sl-t2)] mt-0.5">{dateLabel}</div>
@@ -199,8 +199,8 @@ export function DashboardMobile({
               <svg width="160" height="160" viewBox="0 0 160 160" style={{ transform: 'rotate(-90deg)' }}>
                 <defs>
                   <linearGradient id={ringGradId} x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#6366f1" />
-                    <stop offset="100%" stopColor="#0055ff" />
+                    <stop offset="0%" stopColor="#6B6FD4" />
+                    <stop offset="100%" stopColor="#0B2D34" />
                   </linearGradient>
                 </defs>
                 {/* Track */}
@@ -219,9 +219,9 @@ export function DashboardMobile({
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span
-                  className="font-[Syne] text-[36px] font-extrabold leading-none"
+                  className="font-[Space_Grotesk] text-[36px] font-extrabold leading-none"
                   style={{
-                    background: 'linear-gradient(135deg, #6366f1, #0055ff)',
+                    background: 'linear-gradient(135deg, #6B6FD4, #0B2D34)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: lifeScore >= 60 ? 'transparent' : undefined,
                     color: lifeScore < 60 ? ringColor : undefined,
@@ -236,12 +236,12 @@ export function DashboardMobile({
             {/* Evolution badge */}
             <div className="flex items-center gap-1.5 justify-center mb-2">
               <div className="inline-flex items-center gap-1 px-3 py-[5px] rounded-[20px]
-                              bg-[rgba(99,102,241,0.1)] border border-[rgba(99,102,241,0.25)]">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.5">
+                              bg-[rgba(107,111,212,0.1)] border border-[rgba(107,111,212,0.25)]">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B6FD4" strokeWidth="2.5">
                   <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
                   <polyline points="17 6 23 6 23 12" />
                 </svg>
-                <span className="text-[12px] font-medium text-[#6366f1]">+4 pts essa semana</span>
+                <span className="text-[12px] font-medium text-[#6B6FD4]">+4 pts essa semana</span>
               </div>
             </div>
           </div>
@@ -278,7 +278,7 @@ export function DashboardMobile({
       {!isEmpty && <>
 
       {/* ─── Alertas — ambos os modos ─── */}
-      <p className="px-5 pb-2 mt-1 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+      <p className="px-5 pb-2 mt-1 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
         Hoje
       </p>
       {alerts.map((alert, i) => (
@@ -301,7 +301,7 @@ export function DashboardMobile({
       ))}
 
       {/* ─── Mini Heatmap — ambos os modos ─── */}
-      <p className="px-5 pb-2 mt-3 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+      <p className="px-5 pb-2 mt-3 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
         Gastos — {today.toLocaleDateString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}
       </p>
       <div className="mx-4 mb-1">
@@ -323,7 +323,7 @@ export function DashboardMobile({
                 {d.value > 0 ? (
                   <div className="flex items-center justify-between mt-0.5">
                     <span className="text-[13px] text-[var(--sl-t2)]">{d.cat}</span>
-                    <span className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
+                    <span className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
                       {d.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
@@ -364,7 +364,7 @@ export function DashboardMobile({
       </div>
 
       {/* ─── Ações Rápidas — 4 em Jornada, 3 em Foco (sem Foto Recibo) ─── */}
-      <p className="px-5 pb-2 mt-3 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+      <p className="px-5 pb-2 mt-3 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
         Ações Rápidas
       </p>
       <div className="grid gap-2.5 px-4 pb-6 grid-cols-2">
@@ -374,7 +374,7 @@ export function DashboardMobile({
                      transition-colors active:bg-[var(--sl-s2)]"
         >
           <div className="h-8 w-8 rounded-[9px] flex items-center justify-center"
-            style={{ background: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
+            style={{ background: 'rgba(15,118,110,0.15)', color: '#0F766E' }}>
             <DollarSign size={16} />
           </div>
           <span className="text-[13px] font-medium text-[var(--sl-t1)]">Transação</span>
@@ -387,7 +387,7 @@ export function DashboardMobile({
                      transition-colors active:bg-[var(--sl-s2)]"
         >
           <div className="h-8 w-8 rounded-[9px] flex items-center justify-center"
-            style={{ background: 'rgba(6,182,212,0.15)', color: '#06b6d4' }}>
+            style={{ background: 'rgba(60,160,181,0.15)', color: '#3CA0B5' }}>
             <Calendar size={16} />
           </div>
           <span className="text-[13px] font-medium text-[var(--sl-t1)]">Evento</span>
@@ -400,7 +400,7 @@ export function DashboardMobile({
                      transition-colors active:bg-[var(--sl-s2)]"
         >
           <div className="h-8 w-8 rounded-[9px] flex items-center justify-center"
-            style={{ background: 'rgba(99,102,241,0.15)', color: '#6366f1' }}>
+            style={{ background: 'rgba(107,111,212,0.15)', color: '#6B6FD4' }}>
             <Clock size={16} />
           </div>
           <span className="text-[13px] font-medium text-[var(--sl-t1)]">Revisão</span>
@@ -413,7 +413,7 @@ export function DashboardMobile({
                      transition-colors active:bg-[var(--sl-s2)]"
         >
           <div className="h-8 w-8 rounded-[9px] flex items-center justify-center"
-            style={{ background: 'rgba(139,92,246,0.15)', color: '#8b5cf6' }}>
+            style={{ background: 'rgba(139,123,212,0.15)', color: '#8B7BD4' }}>
             <Camera size={16} />
           </div>
           <span className="text-[13px] font-medium text-[var(--sl-t1)]">Foto Recibo</span>

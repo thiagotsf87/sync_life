@@ -32,18 +32,18 @@ describe('UnderlineTabs', () => {
 
   describe('active tab styling', () => {
     it('returns border style for active tab', () => {
-      const style = getActiveTabStyle(true, '#ec4899')
-      expect(style).toEqual({ borderBottomColor: '#ec4899' })
+      const style = getActiveTabStyle(true, '#C76795')
+      expect(style).toEqual({ borderBottomColor: '#C76795' })
     })
 
     it('returns undefined for inactive tab', () => {
-      const style = getActiveTabStyle(false, '#ec4899')
+      const style = getActiveTabStyle(false, '#C76795')
       expect(style).toBeUndefined()
     })
 
     it('uses custom accent color', () => {
-      const style = getActiveTabStyle(true, '#f97316')
-      expect(style).toEqual({ borderBottomColor: '#f97316' })
+      const style = getActiveTabStyle(true, '#D97534')
+      expect(style).toEqual({ borderBottomColor: '#D97534' })
     })
   })
 

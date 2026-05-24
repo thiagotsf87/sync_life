@@ -36,12 +36,12 @@ export function ExpMemoryDetailMobile({ onBack }: ExpMemoryDetailMobileProps) {
         <div
           className="h-[90px] flex items-end px-[14px] pb-[10px] relative"
           style={{
-            background: 'linear-gradient(135deg, #1a0a2e 0%, #2d1b69 50%, #ec4899 150%)',
+            background: 'linear-gradient(135deg, #1a0a2e 0%, #2d1b69 50%, #C76795 150%)',
           }}
         >
           <span className="text-[30px] mr-[10px]">{detail.flag}</span>
           <div>
-            <p className="font-[Syne] text-[16px] font-bold text-white">
+            <p className="font-[Space_Grotesk] text-[16px] font-bold text-white">
               ✅ {detail.name.split(' — ')[0]} Conquistado
             </p>
             <p className="text-[11px] text-white/70 mt-[2px]">
@@ -61,8 +61,8 @@ export function ExpMemoryDetailMobile({ onBack }: ExpMemoryDetailMobileProps) {
                 key={star}
                 className="w-8 h-8 rounded-[8px] flex items-center justify-center text-[18px]"
                 style={{
-                  background: filled ? 'rgba(245,158,11,0.2)' : 'var(--sl-s2)',
-                  border: `1px solid ${filled ? 'rgba(245,158,11,0.3)' : 'var(--sl-border)'}`,
+                  background: filled ? 'rgba(217,150,46,0.2)' : 'var(--sl-s2)',
+                  border: `1px solid ${filled ? 'rgba(217,150,46,0.3)' : 'var(--sl-border)'}`,
                 }}
               >
                 {filled ? '⭐' : '☆'}
@@ -92,7 +92,7 @@ export function ExpMemoryDetailMobile({ onBack }: ExpMemoryDetailMobileProps) {
 
       {/* Tags */}
       <div className="mb-[14px]">
-        <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
+        <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
           Emoções da Aventura
         </p>
         <div className="flex flex-wrap gap-[6px]">
@@ -102,10 +102,10 @@ export function ExpMemoryDetailMobile({ onBack }: ExpMemoryDetailMobileProps) {
               className="text-[11px] px-[10px] py-1 rounded-[20px]"
               style={{
                 background: tag.selected
-                  ? 'rgba(139,92,246,0.15)'
+                  ? 'rgba(139,123,212,0.15)'
                   : 'var(--sl-s2)',
                 border: `1px solid ${tag.selected
-                  ? 'rgba(139,92,246,0.3)'
+                  ? 'rgba(139,123,212,0.3)'
                   : 'var(--sl-border)'}`,
                 color: tag.selected
                   ? '#c4b5fd'
@@ -128,13 +128,13 @@ export function ExpMemoryDetailMobile({ onBack }: ExpMemoryDetailMobileProps) {
         </p>
         <div className="flex justify-between items-center py-[6px]">
           <span className="text-[11px] text-[var(--sl-t2)]">Orçado</span>
-          <span className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
+          <span className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
             R$ {detail.budgetPlanned.toLocaleString('pt-BR')}
           </span>
         </div>
         <div className="flex justify-between items-center py-[6px]">
           <span className="text-[11px] text-[var(--sl-t2)]">Real gasto</span>
-          <span className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
+          <span className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
             R$ {detail.budgetReal.toLocaleString('pt-BR')}
           </span>
         </div>
@@ -143,7 +143,7 @@ export function ExpMemoryDetailMobile({ onBack }: ExpMemoryDetailMobileProps) {
           <span className="text-[11px] text-[var(--sl-t2)]">
             Economia 🎉
           </span>
-          <span className="font-[DM_Mono] text-[13px] font-medium" style={{ color: economy >= 0 ? '#10b981' : '#f43f5e' }}>
+          <span className="font-[IBM_Plex_Mono] text-[13px] font-medium" style={{ color: economy >= 0 ? '#0F766E' : '#DB6478' }}>
             R$ {Math.abs(economy).toLocaleString('pt-BR')} ({economyPct}%)
           </span>
         </div>

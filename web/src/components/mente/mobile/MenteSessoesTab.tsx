@@ -3,8 +3,8 @@
 import { useMemo, useState } from 'react'
 import type { FocusSession, StudyStreak } from '@/hooks/use-mente'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.14)'
+const MENTE_COLOR = '#D9962E'
+const MENTE_BG = 'rgba(217,150,46,0.14)'
 
 const WEEK_DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 const WEEK_GOAL = 10 // hours
@@ -125,7 +125,7 @@ export function MenteSessoesTab({ sessions, weekHours, streak }: MenteSessoesTab
             className="h-full rounded-full"
             style={{
               width: `${weekPct}%`,
-              background: `linear-gradient(90deg, ${MENTE_COLOR}, rgba(139,92,246,0.5))`,
+              background: `linear-gradient(90deg, ${MENTE_COLOR}, rgba(139,123,212,0.5))`,
             }}
           />
         </div>
@@ -144,7 +144,7 @@ export function MenteSessoesTab({ sessions, weekHours, streak }: MenteSessoesTab
                     height: barH,
                     background: isEmpty ? 'var(--sl-s2)' : MENTE_COLOR,
                     opacity: isEmpty ? 1 : 0.85,
-                    border: isEmpty ? '1px dashed rgba(139,92,246,0.3)' : 'none',
+                    border: isEmpty ? '1px dashed rgba(139,123,212,0.3)' : 'none',
                   }}
                 />
                 <span
@@ -202,7 +202,7 @@ export function MenteSessoesTab({ sessions, weekHours, streak }: MenteSessoesTab
                   </span>
                   <span
                     className="text-[11px] px-[7px] py-[2px] rounded-[8px]"
-                    style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}
+                    style={{ background: 'rgba(15,118,110,0.1)', color: '#0F766E' }}
                   >
                     ✓ Concluída
                   </span>

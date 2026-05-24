@@ -37,9 +37,9 @@ const CATEGORY_TIPS: Partial<Record<ObjectiveCategory, string>> = {
 }
 
 const PRIORITY_OPTIONS: { value: ObjectivePriority; label: string; color: string; desc: string }[] = [
-  { value: 'high', label: 'Alta', color: '#f43f5e', desc: 'Foco principal agora' },
-  { value: 'medium', label: 'Média', color: '#f59e0b', desc: 'Importante, não urgente' },
-  { value: 'low', label: 'Baixa', color: '#06b6d4', desc: 'Quando der, futuramente' },
+  { value: 'high', label: 'Alta', color: '#DB6478', desc: 'Foco principal agora' },
+  { value: 'medium', label: 'Média', color: '#D9962E', desc: 'Importante, não urgente' },
+  { value: 'low', label: 'Baixa', color: '#3CA0B5', desc: 'Quando der, futuramente' },
 ]
 
 interface FormState {
@@ -126,7 +126,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div>
-            <h2 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">
+            <h2 className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)]">
               Novo Objetivo
             </h2>
             <p className="text-[11px] text-[var(--sl-t3)]">
@@ -145,7 +145,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
               key={i}
               className={cn(
                 'h-[3px] flex-1 rounded-full transition-colors duration-300',
-                i <= step ? 'bg-[#10b981]' : 'bg-[var(--sl-s3)]'
+                i <= step ? 'bg-[#0F766E]' : 'bg-[var(--sl-s3)]'
               )}
             />
           ))}
@@ -170,7 +170,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
                   maxLength={80}
                   className="w-full px-3 py-2.5 rounded-[10px] text-[14px] font-medium
                              bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
                 />
                 <p className="text-[10px] text-[var(--sl-t3)] mt-1 text-right">{form.name.length}/80</p>
               </div>
@@ -186,7 +186,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
                       className={cn(
                         'w-9 h-9 flex items-center justify-center rounded-lg text-xl transition-all',
                         form.icon === icon
-                          ? 'bg-[#10b981]/20 border-2 border-[#10b981]'
+                          ? 'bg-[#0F766E]/20 border-2 border-[#0F766E]'
                           : 'bg-[var(--sl-s2)] border border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -206,7 +206,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
                   rows={2}
                   className="w-full px-3 py-2.5 rounded-[10px] text-[13px]
                              bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors resize-none"
+                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors resize-none"
                 />
               </div>
             </div>
@@ -226,7 +226,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
                     className={cn(
                       'flex items-center gap-2.5 px-3 py-3 rounded-[12px] text-left transition-all border',
                       form.category === cat.value
-                        ? 'border-[#10b981] bg-[#10b981]/10'
+                        ? 'border-[#0F766E] bg-[#0F766E]/10'
                         : 'border-[var(--sl-border)] bg-[var(--sl-s2)] hover:border-[var(--sl-border-h)]'
                     )}
                   >
@@ -237,7 +237,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
               </div>
               {/* RN-FUT-09/41: module hint for selected category */}
               {CATEGORY_TIPS[form.category] && (
-                <div className="mt-3 p-3 bg-[#10b981]/5 border border-[#10b981]/20 rounded-[10px]">
+                <div className="mt-3 p-3 bg-[#0F766E]/5 border border-[#0F766E]/20 rounded-[10px]">
                   <p className="text-[11px] text-[var(--sl-t2)]">{CATEGORY_TIPS[form.category]}</p>
                 </div>
               )}
@@ -258,7 +258,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
                     className={cn(
                       'flex items-center gap-3 px-4 py-3 rounded-[12px] text-left transition-all border',
                       form.priority === p.value
-                        ? 'border-[#10b981] bg-[#10b981]/10'
+                        ? 'border-[#0F766E] bg-[#0F766E]/10'
                         : 'border-[var(--sl-border)] bg-[var(--sl-s2)] hover:border-[var(--sl-border-h)]'
                     )}
                   >
@@ -287,7 +287,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
                   min={new Date().toISOString().split('T')[0]}
                   className="w-full px-3 py-2.5 rounded-[10px] text-[14px]
                              bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                             outline-none focus:border-[#10b981] transition-colors"
+                             outline-none focus:border-[#0F766E] transition-colors"
                 />
               </div>
               {form.target_date && (
@@ -302,7 +302,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
                     placeholder="Ex: Quero realizar antes dos 35 anos"
                     className="w-full px-3 py-2.5 rounded-[10px] text-[13px]
                                bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                               placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+                               placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
                   />
                 </div>
               )}
@@ -313,7 +313,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
                     type="checkbox"
                     checked={form.syncToAgenda}
                     onChange={e => setForm(f => ({ ...f, syncToAgenda: e.target.checked }))}
-                    className="accent-[#10b981] w-3.5 h-3.5 shrink-0"
+                    className="accent-[#0F766E] w-3.5 h-3.5 shrink-0"
                   />
                   <span className="text-[12px] text-[var(--sl-t2)]">
                     📅 Criar lembrete na Agenda no dia do prazo
@@ -362,7 +362,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
               className={cn(
                 'flex items-center gap-1.5 px-5 py-2 rounded-[10px] text-[13px] font-semibold transition-all',
                 canNext
-                  ? 'bg-[#10b981] text-[#03071a] hover:opacity-90'
+                  ? 'bg-[#0F766E] text-[#03071a] hover:opacity-90'
                   : 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
               )}
             >
@@ -376,7 +376,7 @@ export function ObjectiveWizard({ open, onClose, onSave, isLoading = false }: Ob
               className={cn(
                 'flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-semibold transition-all',
                 !isLoading && form.name.trim()
-                  ? 'bg-[#10b981] text-[#03071a] hover:opacity-90'
+                  ? 'bg-[#0F766E] text-[#03071a] hover:opacity-90'
                   : 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
               )}
             >

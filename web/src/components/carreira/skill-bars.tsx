@@ -15,7 +15,7 @@ interface SkillBarsProps {
   className?: string
 }
 
-export function SkillBars({ skills, accentColor = '#f43f5e', className }: SkillBarsProps) {
+export function SkillBars({ skills, accentColor = '#DB6478', className }: SkillBarsProps) {
   return (
     <div className={cn('flex flex-col gap-3', className)}>
       {skills.map((skill, i) => (

@@ -199,8 +199,8 @@ export default function ProventosPage() {
       {/* ModuleHeader */}
       <ModuleHeader
         icon={CreditCard}
-        iconBg="rgba(245,158,11,.10)"
-        iconColor="#f59e0b"
+        iconBg="rgba(217,150,46,.10)"
+        iconColor="#D9962E"
         title="Proventos"
         subtitle={`${filterYear} · ${fmtCurrency(totalYear)} acumulados · ${paymentCount} pagamentos`}
       >
@@ -219,7 +219,7 @@ export default function ProventosPage() {
         <button
           onClick={() => setShowModal(true)}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#3b82f6] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(59,130,246,.25)] transition-all"
+                     bg-[#4F88D4] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(79,136,212,.25)] transition-all"
         >
           <Plus size={16} strokeWidth={2.5} />
           Registrar
@@ -233,7 +233,7 @@ export default function ProventosPage() {
             {
               label: `Total ${filterYear}`,
               value: fmtCurrency(totalYear),
-              valueColor: '#10b981',
+              valueColor: '#0F766E',
             },
             {
               label: 'Media/Mes',
@@ -246,7 +246,7 @@ export default function ProventosPage() {
             {
               label: 'YoC Medio',
               value: `${avgYoc.toFixed(1)}%`,
-              valueColor: '#f59e0b',
+              valueColor: '#D9962E',
             },
           ]}
         />
@@ -256,7 +256,7 @@ export default function ProventosPage() {
       <JornadaInsight
         text={
           monthlyAvg > 0
-            ? <>Voce recebe em media <strong className="text-[#10b981]">{fmtCurrency(monthlyAvg)}</strong> por mes em proventos.
+            ? <>Voce recebe em media <strong className="text-[#0F766E]">{fmtCurrency(monthlyAvg)}</strong> por mes em proventos.
               {monthlyAvg >= 5000 && <> Sua renda passiva ja cobre despesas significativas — continue reinvestindo!</>}
             </>
             : <>Registre seus proventos para acompanhar sua renda passiva e evolucao para a independencia financeira.</>
@@ -286,9 +286,9 @@ export default function ProventosPage() {
                   className={cn(
                     'bg-[var(--sl-s1)] border rounded-[14px] p-4 text-center relative overflow-hidden cursor-pointer transition-colors',
                     isCurrent
-                      ? 'border-[rgba(59,130,246,.3)] bg-[rgba(59,130,246,.03)]'
+                      ? 'border-[rgba(79,136,212,.3)] bg-[rgba(79,136,212,.03)]'
                       : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-                    selectedMonth === month && 'ring-1 ring-[#3b82f6]/40'
+                    selectedMonth === month && 'ring-1 ring-[#4F88D4]/40'
                   )}
                   onClick={() => setSelectedMonth(month)}
                 >
@@ -296,24 +296,24 @@ export default function ProventosPage() {
                   {isPast && total > 0 && (
                     <div
                       className="absolute top-0 left-4 right-4 h-[2.5px] rounded-b"
-                      style={{ background: isCurrent ? '#3b82f6' : total > monthlyAvg ? '#10b981' : '#f59e0b' }}
+                      style={{ background: isCurrent ? '#4F88D4' : total > monthlyAvg ? '#0F766E' : '#D9962E' }}
                     />
                   )}
                   <div className={cn(
                     'text-[10px] font-bold uppercase mb-2',
-                    isCurrent ? 'text-[#3b82f6]' : 'text-[var(--sl-t3)]'
+                    isCurrent ? 'text-[#4F88D4]' : 'text-[var(--sl-t3)]'
                   )}>
                     {months[month - 1]}{isCurrent ? ' \u25cf' : ''}
                   </div>
                   <div className={cn(
-                    'font-[DM_Mono] text-[18px] font-medium',
-                    isProjection ? 'text-[var(--sl-t3)]' : total > 0 ? 'text-[#10b981]' : 'text-[var(--sl-t3)]'
+                    'font-[IBM_Plex_Mono] text-[18px] font-medium',
+                    isProjection ? 'text-[var(--sl-t3)]' : total > 0 ? 'text-[#0F766E]' : 'text-[var(--sl-t3)]'
                   )}>
                     {isProjection ? fmtCurrency(monthlyAvg) : fmtCurrency(total)}
                   </div>
                   <div className={cn(
                     'text-[10px] mt-1',
-                    isCurrent ? 'text-[#3b82f6]' : 'text-[var(--sl-t3)]'
+                    isCurrent ? 'text-[#4F88D4]' : 'text-[var(--sl-t3)]'
                   )}>
                     {isProjection ? 'projecao' : count > 0 ? `${count} pgto${count > 1 ? 's' : ''}${isCurrent ? ' · atual' : ''}` : '--'}
                   </div>
@@ -328,11 +328,11 @@ export default function ProventosPage() {
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
                             transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-2.5 mb-[18px]">
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <line x1="12" y1="1" x2="12" y2="23" />
                   <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
-                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                   {months[selectedMonth - 1]} {filterYear} — Detalhamento
                 </span>
               </div>
@@ -342,7 +342,7 @@ export default function ProventosPage() {
                   <p className="text-[13px] text-[var(--sl-t2)] mb-3">Nenhum provento em {months[selectedMonth - 1]} {filterYear}</p>
                   <button
                     onClick={() => setShowModal(true)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#3b82f6] text-white hover:opacity-90"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#4F88D4] text-white hover:opacity-90"
                   >
                     <Plus size={15} />
                     Registrar Provento
@@ -356,7 +356,7 @@ export default function ProventosPage() {
                       <div key={d.id} className="flex gap-3 py-3 border-b border-[rgba(120,165,220,.04)] last:border-b-0">
                         <div
                           className="w-[3px] rounded-sm shrink-0"
-                          style={{ background: d.type === 'jcp' ? '#a855f7' : '#10b981' }}
+                          style={{ background: d.type === 'jcp' ? '#a855f7' : '#0F766E' }}
                         />
                         <div className="flex-1 min-w-0">
                           <div className="text-[13px] font-medium text-[var(--sl-t1)]">
@@ -368,19 +368,19 @@ export default function ProventosPage() {
                             {asset && ` · ${asset.quantity.toLocaleString('pt-BR')} cotas`}
                           </div>
                         </div>
-                        <div className="font-[DM_Mono] text-[13px] text-[#10b981] shrink-0">
+                        <div className="font-[IBM_Plex_Mono] text-[13px] text-[#0F766E] shrink-0">
                           {fmtCurrency(d.total_amount)}
                         </div>
                         {d.status === 'announced' && (
                           <button
                             onClick={() => handleMarkAsReceived(d.id)}
-                            className="px-2 py-1 rounded-[8px] text-[10px] font-bold border border-[#10b981]/40 text-[#10b981] hover:bg-[#10b981]/10 transition-colors shrink-0"
+                            className="px-2 py-1 rounded-[8px] text-[10px] font-bold border border-[#0F766E]/40 text-[#0F766E] hover:bg-[#0F766E]/10 transition-colors shrink-0"
                           >
                             Recebido
                           </button>
                         )}
                         <button onClick={() => handleDelete(d.id)}
-                          className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors shrink-0"
+                          className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors shrink-0"
                         >
                           <Trash2 size={13} className="text-[var(--sl-t3)]" />
                         </button>
@@ -396,7 +396,7 @@ export default function ProventosPage() {
               {/* Top Pagadores */}
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[18px]
                               transition-colors hover:border-[var(--sl-border-h)]">
-                <div className="font-[Syne] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">
+                <div className="font-[Space_Grotesk] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">
                   Top Pagadores
                 </div>
                 {assetEntries.length === 0 ? (
@@ -405,8 +405,8 @@ export default function ProventosPage() {
                   <div className="flex flex-col gap-1.5">
                     {assetEntries.map(([ticker, total]) => (
                       <div key={ticker} className="flex justify-between">
-                        <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">{ticker}</span>
-                        <span className="font-[DM_Mono] text-[12px] text-[#10b981]">{fmtCurrency(total)}</span>
+                        <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">{ticker}</span>
+                        <span className="font-[IBM_Plex_Mono] text-[12px] text-[#0F766E]">{fmtCurrency(total)}</span>
                       </div>
                     ))}
                   </div>
@@ -417,19 +417,19 @@ export default function ProventosPage() {
               {yocByAsset.length > 0 && (
                 <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[18px]
                                 transition-colors hover:border-[var(--sl-border-h)]">
-                  <div className="font-[Syne] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">
+                  <div className="font-[Space_Grotesk] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">
                     Melhor YoC
                   </div>
                   <div className="flex flex-col gap-2">
                     {yocByAsset.slice(0, 3).map(({ ticker, yoc }) => (
                       <div key={ticker}>
                         <div className="flex justify-between text-[11px] mb-[3px]">
-                          <span className="font-[DM_Mono] text-[var(--sl-t1)]">{ticker}</span>
-                          <span className="font-[DM_Mono] text-[#10b981]">{yoc.toFixed(1)}%</span>
+                          <span className="font-[IBM_Plex_Mono] text-[var(--sl-t1)]">{ticker}</span>
+                          <span className="font-[IBM_Plex_Mono] text-[#0F766E]">{yoc.toFixed(1)}%</span>
                         </div>
                         <div className="h-[3px] bg-[var(--sl-s3)] rounded-sm overflow-hidden">
                           <div
-                            className="h-full rounded-sm bg-[#10b981]"
+                            className="h-full rounded-sm bg-[#0F766E]"
                             style={{ width: `${Math.min(yoc / 15 * 100, 100)}%` }}
                           />
                         </div>
@@ -450,9 +450,9 @@ export default function ProventosPage() {
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[480px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(245,158,11,.10)' }}>
-                  <CreditCard size={18} className="text-[#f59e0b]" />
+              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(217,150,46,.10)' }}>
+                  <CreditCard size={18} className="text-[#D9962E]" />
                 </div>
                 Registrar Provento
               </h2>
@@ -469,7 +469,7 @@ export default function ProventosPage() {
                   <select
                     value={form.asset_id}
                     onChange={e => setForm(f => ({ ...f, asset_id: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D9962E]"
                   >
                     <option value="">Selecione...</option>
                     {assets.map(a => (
@@ -488,7 +488,7 @@ export default function ProventosPage() {
                   <select
                     value={form.type}
                     onChange={e => setForm(f => ({ ...f, type: e.target.value as DividendType }))}
-                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D9962E]"
                   >
                     {(Object.keys(DIVIDEND_TYPE_LABELS) as DividendType[]).map(t => (
                       <option key={t} value={t}>{DIVIDEND_TYPE_LABELS[t]}</option>
@@ -500,7 +500,7 @@ export default function ProventosPage() {
                   <input type="number" step="0.01" value={form.total_amount}
                     onChange={e => setForm(f => ({ ...f, total_amount: e.target.value }))}
                     placeholder="0,00"
-                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] font-[DM_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] font-[IBM_Plex_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D9962E]"
                   />
                 </div>
               </div>
@@ -511,14 +511,14 @@ export default function ProventosPage() {
                   <label className="text-[11px] font-semibold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1.5 block">Data Ex</label>
                   <input type="date" value={form.ex_date}
                     onChange={e => setForm(f => ({ ...f, ex_date: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D9962E]"
                   />
                 </div>
                 <div>
                   <label className="text-[11px] font-semibold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1.5 block">Pagamento*</label>
                   <input type="date" value={form.payment_date}
                     onChange={e => setForm(f => ({ ...f, payment_date: e.target.value }))}
-                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D9962E]"
                   />
                 </div>
               </div>
@@ -532,7 +532,7 @@ export default function ProventosPage() {
                       className={cn(
                         'flex-1 py-2 rounded-[10px] text-[12px] font-medium border transition-all',
                         form.status === s
-                          ? 'border-[#10b981] bg-[#10b981]/10 text-[var(--sl-t1)]'
+                          ? 'border-[#0F766E] bg-[#0F766E]/10 text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t3)]'
                       )}
                     >
@@ -550,7 +550,7 @@ export default function ProventosPage() {
                   </div>
                   <button
                     onClick={() => setForm(f => ({ ...f, syncToFinancas: !f.syncToFinancas }))}
-                    className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', form.syncToFinancas ? 'bg-[#10b981]' : 'bg-[var(--sl-s3)]')}
+                    className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', form.syncToFinancas ? 'bg-[#0F766E]' : 'bg-[var(--sl-s3)]')}
                   >
                     <div className={cn('w-4 h-4 rounded-full bg-white absolute top-1 transition-all', form.syncToFinancas ? 'left-5' : 'left-1')} />
                   </button>
@@ -563,7 +563,7 @@ export default function ProventosPage() {
                   Cancelar
                 </button>
                 <button onClick={handleSave} disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#3b82f6] text-white hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#4F88D4] text-white hover:opacity-90 disabled:opacity-50">
                   {isSaving ? 'Registrando...' : 'Registrar'}
                 </button>
               </div>

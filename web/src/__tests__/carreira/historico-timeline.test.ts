@@ -5,11 +5,11 @@ import { describe, it, expect } from 'vitest'
 type ChangeType = 'initial' | 'promotion' | 'lateral' | 'company_change' | 'salary_change' | 'other'
 
 const CHANGE_TYPE_COLORS: Record<ChangeType, string> = {
-  initial: '#0055ff',
-  promotion: '#10b981',
-  lateral: '#f59e0b',
+  initial: '#0B2D34',
+  promotion: '#0F766E',
+  lateral: '#D9962E',
   company_change: '#a855f7',
-  salary_change: '#06b6d4',
+  salary_change: '#3CA0B5',
   other: '#6e90b8',
 }
 
@@ -83,7 +83,7 @@ const HISTORY: HistoryEntry[] = [
 describe('Histórico Timeline', () => {
   describe('CHANGE_TYPE_COLORS', () => {
     it('maps promotion to green', () => {
-      expect(CHANGE_TYPE_COLORS.promotion).toBe('#10b981')
+      expect(CHANGE_TYPE_COLORS.promotion).toBe('#0F766E')
     })
 
     it('maps company_change to purple', () => {
@@ -91,15 +91,15 @@ describe('Histórico Timeline', () => {
     })
 
     it('maps salary_change to cyan', () => {
-      expect(CHANGE_TYPE_COLORS.salary_change).toBe('#06b6d4')
+      expect(CHANGE_TYPE_COLORS.salary_change).toBe('#3CA0B5')
     })
 
     it('maps initial to blue', () => {
-      expect(CHANGE_TYPE_COLORS.initial).toBe('#0055ff')
+      expect(CHANGE_TYPE_COLORS.initial).toBe('#0B2D34')
     })
 
     it('maps lateral to yellow', () => {
-      expect(CHANGE_TYPE_COLORS.lateral).toBe('#f59e0b')
+      expect(CHANGE_TYPE_COLORS.lateral).toBe('#D9962E')
     })
   })
 

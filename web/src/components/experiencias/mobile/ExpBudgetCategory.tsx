@@ -14,8 +14,8 @@ interface ExpBudgetCategoryProps {
 }
 
 function getBarColor(pct: number, isPaid?: boolean): string {
-  if (isPaid || pct >= 100) return '#10b981'
-  if (pct >= 70) return '#f59e0b'
+  if (isPaid || pct >= 100) return '#0F766E'
+  if (pct >= 70) return '#D9962E'
   return EXP_PRIMARY
 }
 
@@ -28,7 +28,7 @@ export function ExpBudgetCategory({
     <div className="flex items-center gap-3 px-5 py-3" style={{ borderBottom: '1px solid var(--sl-border)' }}>
       <div
         className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center shrink-0 text-[18px]"
-        style={{ background: isPaid ? 'rgba(16,185,129,0.15)' : 'rgba(236,72,153,0.15)' }}
+        style={{ background: isPaid ? 'rgba(15,118,110,0.15)' : 'rgba(199,103,149,0.15)' }}
       >
         {icon}
       </div>
@@ -36,7 +36,7 @@ export function ExpBudgetCategory({
         <div className="flex items-center gap-[6px] mb-1">
           <p className="text-[14px] font-medium text-[var(--sl-t1)]">{name}</p>
           {isPaid && (
-            <span className="text-[9px] font-semibold px-[6px] py-[1px] rounded-[10px]" style={{ background: 'rgba(16,185,129,0.12)', color: '#10b981' }}>
+            <span className="text-[9px] font-semibold px-[6px] py-[1px] rounded-[10px]" style={{ background: 'rgba(15,118,110,0.12)', color: '#0F766E' }}>
               ✓ Pago
             </span>
           )}
@@ -49,7 +49,7 @@ export function ExpBudgetCategory({
         )}
       </div>
       <div className="text-right min-w-[80px]">
-        <p className="font-[DM_Mono] text-[13px]" style={{ color: isPaid ? '#10b981' : current > 0 ? 'var(--sl-t1)' : 'var(--sl-t3)' }}>
+        <p className="font-[IBM_Plex_Mono] text-[13px]" style={{ color: isPaid ? '#0F766E' : current > 0 ? 'var(--sl-t1)' : 'var(--sl-t3)' }}>
           {formatValue(current)}
         </p>
         {total > 0 && !isPaid && (

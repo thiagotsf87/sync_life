@@ -61,9 +61,9 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
           className={cn(
             'rounded-full transition-all',
             i < current
-              ? 'w-6 h-1.5 bg-[#10b981]'
+              ? 'w-6 h-1.5 bg-[#0F766E]'
               : i === current
-              ? 'w-8 h-1.5 bg-[#10b981]'
+              ? 'w-8 h-1.5 bg-[#0F766E]'
               : 'w-4 h-1.5 bg-[var(--sl-s3)]',
           )}
         />
@@ -78,7 +78,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
     <div className="flex flex-col gap-1.5">
       <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">{label}</label>
       {children}
-      {error && <p className="text-[11px] text-[#f43f5e]">{error}</p>}
+      {error && <p className="text-[11px] text-[#DB6478]">{error}</p>}
     </div>
   )
 }
@@ -86,7 +86,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 // ── Input base styles ─────────────────────────────────────────────────────
 const inputCls = (hasError?: boolean) => cn(
   'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none transition-colors',
-  hasError ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus:border-[#10b981]',
+  hasError ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus:border-[#0F766E]',
 )
 
 // ── Props ──────────────────────────────────────────────────────────────────
@@ -240,7 +240,7 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)] shrink-0">
           <div className="flex flex-col gap-1.5">
-            <h2 className="font-[Syne] font-extrabold text-[16px] text-[var(--sl-t1)]">
+            <h2 className="font-[Space_Grotesk] font-extrabold text-[16px] text-[var(--sl-t1)]">
               {mode === 'create' ? 'Nova Meta' : 'Editar Meta'}
             </h2>
             <div className="flex items-center gap-2">
@@ -280,7 +280,7 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
                   onChange={e => set('description', e.target.value)}
                   placeholder="Conte mais sobre esta meta..."
                   rows={2}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors resize-none"
                 />
               </Field>
 
@@ -293,7 +293,7 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
                       className={cn(
                         'h-9 rounded-[8px] text-[20px] flex items-center justify-center border transition-all hover:-translate-y-px',
                         form.icon === icon
-                          ? 'border-[#10b981] bg-[rgba(16,185,129,.08)]'
+                          ? 'border-[#0F766E] bg-[rgba(15,118,110,.08)]'
                           : 'border-[var(--sl-border)] bg-[var(--sl-s2)] hover:border-[var(--sl-border-h)]',
                       )}
                     >
@@ -312,14 +312,14 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
                       className={cn(
                         'py-2.5 px-1 rounded-[10px] border text-center transition-all hover:-translate-y-px',
                         form.category === cat.value
-                          ? 'border-[#10b981] bg-[rgba(16,185,129,.08)]'
+                          ? 'border-[#0F766E] bg-[rgba(15,118,110,.08)]'
                           : 'border-[var(--sl-border)] bg-[var(--sl-s2)] hover:border-[var(--sl-border-h)]',
                       )}
                     >
                       <span className="text-[18px] block mb-0.5">{cat.icon}</span>
                       <span className={cn(
                         'text-[10px] leading-tight block truncate',
-                        form.category === cat.value ? 'text-[#10b981] font-semibold' : 'text-[var(--sl-t3)]',
+                        form.category === cat.value ? 'text-[#0F766E] font-semibold' : 'text-[var(--sl-t3)]',
                       )}>
                         {cat.label}
                       </span>
@@ -336,30 +336,30 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
               <Field label="Valor da meta" error={errors.targetAmount}>
                 <div className={cn(
                   'flex items-center gap-2 px-3.5 py-3 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
-                  errors.targetAmount ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus-within:border-[#10b981]',
+                  errors.targetAmount ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus-within:border-[#0F766E]',
                 )}>
-                  <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+                  <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
                   <input
                     type="text"
                     inputMode="numeric"
                     value={form.targetAmountStr}
                     onChange={e => set('targetAmountStr', maskCurrency(e.target.value))}
                     placeholder="0,00"
-                    className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                    className="flex-1 bg-transparent outline-none font-[IBM_Plex_Mono] text-[20px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
                   />
                 </div>
               </Field>
 
               <Field label="Já possuo (opcional)">
-                <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] focus-within:border-[#10b981] transition-colors">
-                  <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+                <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] focus-within:border-[#0F766E] transition-colors">
+                  <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
                   <input
                     type="text"
                     inputMode="numeric"
                     value={form.currentAmountStr}
                     onChange={e => set('currentAmountStr', maskCurrency(e.target.value))}
                     placeholder="0,00"
-                    className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                    className="flex-1 bg-transparent outline-none font-[IBM_Plex_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
                   />
                 </div>
               </Field>
@@ -370,7 +370,7 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
                     type="date"
                     value={form.startDate}
                     onChange={e => set('startDate', e.target.value)}
-                    className={inputCls() + ' font-[DM_Mono]'}
+                    className={inputCls() + ' font-[IBM_Plex_Mono]'}
                   />
                 </Field>
                 <Field label="Prazo (opcional)">
@@ -379,7 +379,7 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
                     value={form.targetDate}
                     onChange={e => set('targetDate', e.target.value)}
                     min={form.startDate}
-                    className={inputCls() + ' font-[DM_Mono]'}
+                    className={inputCls() + ' font-[IBM_Plex_Mono]'}
                   />
                 </Field>
               </div>
@@ -390,15 +390,15 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
           {step === 2 && (
             <div className="flex flex-col gap-5">
               <Field label="Aporte mensal planejado">
-                <div className="flex items-center gap-2 px-3.5 py-3 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] focus-within:border-[#10b981] transition-colors">
-                  <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+                <div className="flex items-center gap-2 px-3.5 py-3 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] focus-within:border-[#0F766E] transition-colors">
+                  <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
                   <input
                     type="text"
                     inputMode="numeric"
                     value={form.monthlyStr}
                     onChange={e => set('monthlyStr', maskCurrency(e.target.value))}
                     placeholder="0,00"
-                    className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                    className="flex-1 bg-transparent outline-none font-[IBM_Plex_Mono] text-[20px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
                   />
                 </div>
                 <p className="text-[11px] text-[var(--sl-t3)]">Quanto pretende guardar por mês para esta meta?</p>
@@ -411,11 +411,11 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <p className="text-[10px] text-[var(--sl-t3)]">Progresso atual</p>
-                      <p className="font-[DM_Mono] font-bold text-[16px] text-[#10b981]">{pct}%</p>
+                      <p className="font-[IBM_Plex_Mono] font-bold text-[16px] text-[#0F766E]">{pct}%</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-[var(--sl-t3)]">Conclusão estimada</p>
-                      <p className="font-[DM_Mono] font-bold text-[14px] text-[var(--sl-t1)]">
+                      <p className="font-[IBM_Plex_Mono] font-bold text-[14px] text-[var(--sl-t1)]">
                         {projDate
                           ? projDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
                           : '—'}
@@ -431,7 +431,7 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
                   onChange={e => set('notes', e.target.value)}
                   placeholder="Estratégia, motivação, detalhes..."
                   rows={3}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors resize-none"
                 />
               </Field>
             </div>
@@ -443,7 +443,7 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
               <div className="flex items-center gap-3 p-4 rounded-[14px] bg-[var(--sl-s2)]">
                 <span className="text-4xl">{form.icon}</span>
                 <div>
-                  <p className="font-[Syne] font-extrabold text-[17px] text-[var(--sl-t1)]">{form.name}</p>
+                  <p className="font-[Space_Grotesk] font-extrabold text-[17px] text-[var(--sl-t1)]">{form.name}</p>
                   {form.description && <p className="text-[12px] text-[var(--sl-t3)] mt-0.5">{form.description}</p>}
                 </div>
               </div>
@@ -465,7 +465,7 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
                 </div>
               )}
 
-              <div className="p-3.5 rounded-[12px] bg-gradient-to-br from-[#10b981]/8 to-[#0055ff]/8 border border-[#10b981]/20">
+              <div className="p-3.5 rounded-[12px] bg-gradient-to-br from-[#0F766E]/8 to-[#0B2D34]/8 border border-[#0F766E]/20">
                 <p className="text-[12px] text-[var(--sl-t2)]">
                   💡 Após criar, você receberá 4 marcos automáticos (25%, 50%, 75%, 100%) e poderá registrar aportes a qualquer momento.
                 </p>
@@ -489,7 +489,7 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
             <button
               onClick={handleNext}
               className="flex items-center gap-1.5 px-5 py-2 rounded-[10px] text-[13px] font-bold text-[#03071a] transition-all hover:brightness-110"
-              style={{ background: '#10b981' }}
+              style={{ background: '#0F766E' }}
             >
               Próximo
               <ChevronRight size={14} />
@@ -499,7 +499,7 @@ export function MetaModal({ open, mode, goal, onClose, onSave }: MetaModalProps)
               onClick={handleSave}
               disabled={saving}
               className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-[#03071a] transition-all hover:brightness-110 disabled:opacity-60"
-              style={{ background: '#10b981' }}
+              style={{ background: '#0F766E' }}
             >
               {saving && <Loader2 size={14} className="animate-spin" />}
               {mode === 'create' ? 'Criar Meta' : 'Salvar alterações'}
@@ -516,7 +516,7 @@ function ReviewRow({ label, value, mono }: { label: string; value: string; mono?
   return (
     <div className="bg-[var(--sl-s2)] rounded-[10px] p-2.5">
       <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-0.5">{label}</p>
-      <p className={cn('text-[13px] text-[var(--sl-t1)]', mono && 'font-[DM_Mono]')}>{value}</p>
+      <p className={cn('text-[13px] text-[var(--sl-t1)]', mono && 'font-[IBM_Plex_Mono]')}>{value}</p>
     </div>
   )
 }

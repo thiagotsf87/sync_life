@@ -27,7 +27,7 @@ interface ExpWizardStep4Props {
   travelers: number
 }
 
-function Toggle({ value, onChange, color = '#10b981' }: { value: boolean; onChange: (v: boolean) => void; color?: string }) {
+function Toggle({ value, onChange, color = '#0F766E' }: { value: boolean; onChange: (v: boolean) => void; color?: string }) {
   return (
     <button
       onClick={() => onChange(!value)}
@@ -75,7 +75,7 @@ export function ExpWizardStep4({
             className="w-full px-[14px] py-3 rounded-[10px] text-[14px] text-[var(--sl-t1)] outline-none"
             style={{
               background: 'var(--sl-s1)',
-              border: '1.5px solid rgba(139,92,246,0.3)',
+              border: '1.5px solid rgba(139,123,212,0.3)',
             }}
           />
         </div>
@@ -96,14 +96,14 @@ export function ExpWizardStep4({
         <div
           className="rounded-[16px] p-[14px] mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(236,72,153,0.06))',
+            background: 'linear-gradient(135deg, rgba(139,123,212,0.1), rgba(199,103,149,0.06))',
             border: `1px solid ${EXP_PRIMARY_BORDER}`,
           }}
         >
           <p className="text-[11px] font-bold mb-1 uppercase tracking-[0.5px]" style={{ color: EXP_PRIMARY_LIGHT }}>
             💰 MISSÃO FINANCEIRA
           </p>
-          <p className="font-[DM_Mono] text-[22px] font-bold" style={{ color: accent }}>
+          <p className="font-[IBM_Plex_Mono] text-[22px] font-bold" style={{ color: accent }}>
             R$ {perDay.toLocaleString('pt-BR')}/dia
           </p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-1">
@@ -154,7 +154,7 @@ export function ExpWizardStep4({
               </p>
             </div>
           </div>
-          <Toggle value={syncFuturo} onChange={setSyncFuturo} color="#8b5cf6" />
+          <Toggle value={syncFuturo} onChange={setSyncFuturo} color="#8B7BD4" />
         </div>
       </div>
 
@@ -175,10 +175,10 @@ export function ExpWizardStep4({
                   className="flex items-center gap-[10px] p-[10px] rounded-[10px] text-left transition-colors w-full"
                   style={{
                     background: linkedObjectiveId === obj.id
-                      ? 'rgba(139,92,246,0.15)'
+                      ? 'rgba(139,123,212,0.15)'
                       : 'var(--sl-s2)',
                     border: `1.5px solid ${linkedObjectiveId === obj.id
-                      ? '#8b5cf6'
+                      ? '#8B7BD4'
                       : 'var(--sl-border)'}`,
                   }}
                 >

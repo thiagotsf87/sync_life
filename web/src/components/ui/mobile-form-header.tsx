@@ -22,17 +22,17 @@ interface MobileFormHeaderProps {
 }
 
 const MODULE_COLORS: Record<ModuleId, string> = {
-  panorama: '#6366f1',
-  financas: '#10b981',
-  futuro: '#8b5cf6',
-  tempo: '#06b6d4',
-  corpo: '#f97316',
-  mente: '#eab308',
-  patrimonio: '#3b82f6',
-  carreira: '#f43f5e',
-  experiencias: '#ec4899',
-  conquistas: '#f59e0b',
-  configuracoes: '#64748b',
+  panorama: '#6B6FD4',
+  financas: '#0F766E',
+  futuro: '#8B7BD4',
+  tempo: '#3CA0B5',
+  corpo: '#D97534',
+  mente: '#D9962E',
+  patrimonio: '#4F88D4',
+  carreira: '#DB6478',
+  experiencias: '#C76795',
+  conquistas: '#D9962E',
+  configuracoes: '#6F7986',
 }
 
 export function MobileFormHeader({
@@ -45,7 +45,7 @@ export function MobileFormHeader({
   className,
 }: MobileFormHeaderProps) {
   const mod = MODULES[moduleId]
-  const color = mod?.color ?? MODULE_COLORS[moduleId] ?? '#10b981'
+  const color = mod?.color ?? MODULE_COLORS[moduleId] ?? '#0F766E'
 
   return (
     <div
@@ -71,7 +71,7 @@ export function MobileFormHeader({
       {/* Linha 2: título + ação à direita (sem nome do módulo) */}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
             {title}
           </h1>
           {subtitle && (

@@ -73,14 +73,14 @@ export default function ViagensPage() {
       {/* Module Header */}
       <ModuleHeader
         icon={Plane}
-        iconBg="rgba(236,72,153,.1)"
-        iconColor="#ec4899"
+        iconBg="rgba(199,103,149,.1)"
+        iconColor="#C76795"
         title="Minhas Viagens"
         subtitle={`${trips.length} viagens registradas \u00B7 ${formatCurrency(totalBudget)} total investido`}
       >
         <button
           onClick={() => router.push('/experiencias/nova')}
-          className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#ec4899] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(236,72,153,.25)] transition-all"
+          className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#C76795] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(199,103,149,.25)] transition-all"
         >
           <Plus size={16} />
           Nova Viagem
@@ -110,12 +110,12 @@ export default function ViagensPage() {
               className={cn(
                 'inline-flex items-center gap-[5px] px-[14px] py-[6px] rounded-[9px] text-[12px] font-semibold border cursor-pointer transition-all whitespace-nowrap',
                 filterStatus === f.value
-                  ? 'bg-[rgba(236,72,153,.1)] border-[rgba(236,72,153,.3)] text-[var(--sl-t1)]'
+                  ? 'bg-[rgba(199,103,149,.1)] border-[rgba(199,103,149,.3)] text-[var(--sl-t1)]'
                   : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
               )}
             >
               {f.label}
-              <span className="font-[DM_Mono] text-[10px] text-[var(--sl-t3)]">({count})</span>
+              <span className="font-[IBM_Plex_Mono] text-[10px] text-[var(--sl-t3)]">({count})</span>
             </button>
           )
         })}
@@ -135,7 +135,7 @@ export default function ViagensPage() {
       ) : filtered.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
           <div className="text-5xl mb-3">{'\u2708\uFE0F'}</div>
-          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             {filterStatus === 'all' ? 'Nenhuma viagem ainda' : `Nenhuma viagem ${TRIP_STATUS_LABELS[filterStatus as TripStatus]?.toLowerCase()}`}
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-5">
@@ -146,7 +146,7 @@ export default function ViagensPage() {
           {filterStatus === 'all' && (
             <button
               onClick={() => router.push('/experiencias/nova')}
-              className="inline-flex items-center gap-1.5 px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#ec4899] text-white hover:brightness-110"
+              className="inline-flex items-center gap-1.5 px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#C76795] text-white hover:brightness-110"
             >
               <Plus size={15} />
               Planejar viagem
@@ -195,7 +195,7 @@ export default function ViagensPage() {
                       {t.destinations[0] ?? '--'}
                     </td>
                     <td className="bg-[var(--sl-s1)] px-4 py-4 text-[13px] border-t border-b border-[var(--sl-border)] group-hover:bg-[var(--sl-s2)] transition-colors">
-                      <span className={cn('font-[DM_Mono] text-[12px]', isCancelled && 'text-[var(--sl-t3)]')}>
+                      <span className={cn('font-[IBM_Plex_Mono] text-[12px]', isCancelled && 'text-[var(--sl-t3)]')}>
                         {formatDate(t.start_date)} {'\u2014'} {formatDate(t.end_date)}
                       </span>
                       <div className="text-[11.5px] text-[var(--sl-t3)] mt-0.5">{days} dias</div>
@@ -212,7 +212,7 @@ export default function ViagensPage() {
                       </span>
                     </td>
                     <td className="bg-[var(--sl-s1)] px-4 py-4 text-[13px] border-t border-b border-r border-[var(--sl-border)] rounded-r-[14px] text-right group-hover:bg-[var(--sl-s2)] transition-colors">
-                      <span className={cn('font-[DM_Mono] font-medium', (isCancelled || !t.total_budget) ? 'text-[var(--sl-t3)]' : isCompleted ? 'text-[var(--sl-t2)]' : '')}>
+                      <span className={cn('font-[IBM_Plex_Mono] font-medium', (isCancelled || !t.total_budget) ? 'text-[var(--sl-t3)]' : isCompleted ? 'text-[var(--sl-t2)]' : '')}>
                         {t.total_budget ? formatCurrency(t.total_budget) : '\u2014'}
                       </span>
                     </td>
@@ -231,13 +231,13 @@ export default function ViagensPage() {
             <div className="flex gap-5">
               <div className="flex items-center gap-[6px] text-[12px] text-[var(--sl-t2)]">
                 <span>Orcamento total:</span>
-                <span className="font-[DM_Mono] font-medium text-[var(--sl-t1)]">
+                <span className="font-[IBM_Plex_Mono] font-medium text-[var(--sl-t1)]">
                   {formatCurrency(filtered.reduce((s, t) => s + (t.total_budget ?? 0), 0))}
                 </span>
               </div>
               <div className="flex items-center gap-[6px] text-[12px] text-[var(--sl-t2)]">
                 <span>Dias viajados:</span>
-                <span className="font-[DM_Mono] font-medium text-[var(--sl-t1)]">
+                <span className="font-[IBM_Plex_Mono] font-medium text-[var(--sl-t1)]">
                   {filtered.reduce((s, t) => s + calcTripDays(t.start_date, t.end_date), 0)}
                 </span>
               </div>

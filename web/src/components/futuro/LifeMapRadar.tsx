@@ -10,9 +10,9 @@ import type { LifeDimension } from '@/hooks/use-life-map'
 // ─── Score color helper ───────────────────────────────────────────────────────
 
 function scoreColor(v: number): string {
-  if (v >= 75) return '#10b981'
-  if (v >= 50) return '#f59e0b'
-  return '#f43f5e'
+  if (v >= 75) return '#0F766E'
+  if (v >= 50) return '#D9962E'
+  return '#DB6478'
 }
 
 // ─── Custom tooltip ───────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { payl
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-xl px-3 py-2 shadow-md text-center">
       <p className="text-[13px] font-bold text-[var(--sl-t1)]">{d.icon} {d.fullLabel}</p>
-      <p className="font-[DM_Mono] text-xl font-bold mt-0.5" style={{ color: scoreColor(d.value) }}>
+      <p className="font-[IBM_Plex_Mono] text-xl font-bold mt-0.5" style={{ color: scoreColor(d.value) }}>
         {d.value}%
       </p>
     </div>
@@ -45,7 +45,7 @@ function ScoreBadge({ dim }: { dim: LifeDimension }) {
             style={{ width: `${dim.value}%`, background: c }} />
         </div>
       </div>
-      <span className="font-[DM_Mono] text-[13px] font-bold shrink-0" style={{ color: c }}>
+      <span className="font-[IBM_Plex_Mono] text-[13px] font-bold shrink-0" style={{ color: c }}>
         {dim.value}
       </span>
     </div>
@@ -73,7 +73,7 @@ export function LifeMapRadar({
     return (
       <div className={cn('flex items-center justify-center', compact ? 'h-[200px]' : 'h-[300px]', className)}>
         <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: '#10b981 transparent transparent transparent' }} />
+          style={{ borderColor: '#0F766E transparent transparent transparent' }} />
       </div>
     )
   }
@@ -105,7 +105,7 @@ export function LifeMapRadar({
           )}
         </div>
         <div className="text-right">
-          <p className="font-[Syne] font-extrabold text-2xl leading-none" style={{ color: overallColor }}>
+          <p className="font-[Space_Grotesk] font-extrabold text-2xl leading-none" style={{ color: overallColor }}>
             {overallScore}
           </p>
           <p className="text-[9px] uppercase tracking-widest text-[var(--sl-t3)]">score geral</p>
@@ -119,8 +119,8 @@ export function LifeMapRadar({
             outerRadius={compact ? 70 : 100}>
             <defs>
               <linearGradient id="radarGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#10b981" stopOpacity={0.6} />
-                <stop offset="100%" stopColor="#0055ff" stopOpacity={0.6} />
+                <stop offset="0%" stopColor="#0F766E" stopOpacity={0.6} />
+                <stop offset="100%" stopColor="#0B2D34" stopOpacity={0.6} />
               </linearGradient>
             </defs>
             <PolarGrid
@@ -133,11 +133,11 @@ export function LifeMapRadar({
             />
             <Radar
               dataKey="value"
-              stroke="#10b981"
+              stroke="#0F766E"
               strokeWidth={2}
               fill="url(#radarGrad)"
               fillOpacity={0.35}
-              dot={{ fill: '#10b981', r: compact ? 3 : 4, strokeWidth: 0 }}
+              dot={{ fill: '#0F766E', r: compact ? 3 : 4, strokeWidth: 0 }}
             />
             <Tooltip content={<CustomTooltip />} />
           </RadarChart>

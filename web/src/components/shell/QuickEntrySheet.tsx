@@ -13,16 +13,16 @@ type EntryType = 'despesa' | 'receita' | 'transferencia'
 
 const TYPE_STYLES: Record<EntryType, { active: string; color: string }> = {
   despesa: {
-    active: 'bg-[rgba(244,63,94,0.15)] border-[rgba(244,63,94,0.4)] text-[#f43f5e]',
-    color: '#f43f5e',
+    active: 'bg-[rgba(219,100,120,0.15)] border-[rgba(219,100,120,0.4)] text-[#DB6478]',
+    color: '#DB6478',
   },
   receita: {
-    active: 'bg-[rgba(16,185,129,0.15)] border-[rgba(16,185,129,0.4)] text-[#10b981]',
-    color: '#10b981',
+    active: 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.4)] text-[#0F766E]',
+    color: '#0F766E',
   },
   transferencia: {
-    active: 'bg-[rgba(0,85,255,0.15)] border-[rgba(0,85,255,0.4)] text-[#0055ff]',
-    color: '#0055ff',
+    active: 'bg-[rgba(0,85,255,0.15)] border-[rgba(0,85,255,0.4)] text-[#0B2D34]',
+    color: '#0B2D34',
   },
 }
 
@@ -107,7 +107,7 @@ export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
         </div>
 
         {/* Amount */}
-        <div className="font-[DM_Mono] text-[52px] font-medium text-[var(--sl-t1)] tracking-[-2px]">
+        <div className="font-[IBM_Plex_Mono] text-[52px] font-medium text-[var(--sl-t1)] tracking-[-2px]">
           <span className="text-[24px] text-[var(--sl-t2)] mr-1">R$</span>
           {formatAmount(amount)}
         </div>
@@ -118,7 +118,7 @@ export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
             <span className="text-[13px] text-[var(--sl-t1)]">
               {category.emoji} {category.label}
             </span>
-            <span className="text-[10px] bg-[rgba(16,185,129,0.15)] text-[#10b981] px-1.5 py-0.5 rounded-lg">
+            <span className="text-[10px] bg-[rgba(15,118,110,0.15)] text-[#0F766E] px-1.5 py-0.5 rounded-lg">
               IA
             </span>
           </div>
@@ -148,7 +148,7 @@ export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
                 className={cn(
                   'px-3 py-1.5 rounded-[20px] text-[12px] border transition-colors',
                   category.label === cat.label
-                    ? 'bg-[rgba(16,185,129,0.15)] border-[rgba(16,185,129,0.35)] text-[#10b981]'
+                    ? 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.35)] text-[#0F766E]'
                     : 'bg-[var(--sl-s1)] border-[var(--sl-border)] text-[var(--sl-t2)]',
                 )}
               >
@@ -172,8 +172,8 @@ export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
                 key === 'del'
                   ? 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t1)] text-[16px]'
                   : key === '.,'
-                    ? 'bg-[rgba(16,185,129,0.15)] border-[var(--sl-border)] text-[#10b981] text-[14px] font-semibold'
-                    : 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t1)] text-[22px] font-normal font-[DM_Mono]',
+                    ? 'bg-[rgba(15,118,110,0.15)] border-[var(--sl-border)] text-[#0F766E] text-[14px] font-semibold'
+                    : 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t1)] text-[22px] font-normal font-[IBM_Plex_Mono]',
               )}
             >
               {key === 'del' ? '⌫' : key}
@@ -185,7 +185,7 @@ export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
             className="col-span-3 h-[52px] rounded-[16px] mt-1 flex items-center justify-center
                         text-white text-[15px] font-semibold border-none
                         active:scale-[0.98] transition-transform"
-            style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+            style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
           >
             ✓ Confirmar — R$ {formatAmount(amount)}
           </button>

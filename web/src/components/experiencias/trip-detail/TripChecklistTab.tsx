@@ -61,7 +61,7 @@ export function TripChecklistTab({
         if (catItems.length === 0) return null
         return (
           <div key={cat} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-            <h3 className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-3">{CHECKLIST_CATEGORY_LABELS[cat]}</h3>
+            <h3 className="font-[Space_Grotesk] font-bold text-[12px] text-[var(--sl-t1)] mb-3">{CHECKLIST_CATEGORY_LABELS[cat]}</h3>
             <div className="flex flex-col gap-2">
               {catItems.map(item => (
                 <div key={item.id} className="flex items-center gap-2 group">
@@ -69,7 +69,7 @@ export function TripChecklistTab({
                     onClick={() => handleToggle(item.id, item.is_completed)}
                     className={cn(
                       'w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-all',
-                      item.is_completed ? 'bg-[#10b981] border-[#10b981]' : 'border-[var(--sl-border)] hover:border-[#10b981]'
+                      item.is_completed ? 'bg-[#0F766E] border-[#0F766E]' : 'border-[var(--sl-border)] hover:border-[#0F766E]'
                     )}
                   >
                     {item.is_completed && <Check size={11} className="text-[#03071a]" />}
@@ -82,7 +82,7 @@ export function TripChecklistTab({
                   </span>
                   <button
                     onClick={async () => { await deleteChecklistItem(item.id); await reload() }}
-                    className="p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[rgba(244,63,94,0.1)]"
+                    className="p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[rgba(219,100,120,0.1)]"
                   >
                     <Trash2 size={11} className="text-[var(--sl-t3)]" />
                   </button>
@@ -95,7 +95,7 @@ export function TripChecklistTab({
 
       {/* Add item */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-        <h3 className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-3">+ Adicionar item</h3>
+        <h3 className="font-[Space_Grotesk] font-bold text-[12px] text-[var(--sl-t1)] mb-3">+ Adicionar item</h3>
         <div className="flex gap-2">
           <input
             type="text"
@@ -103,19 +103,19 @@ export function TripChecklistTab({
             onChange={e => setNewTitle(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') handleAdd() }}
             placeholder="Novo item..."
-            className="flex-1 px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
+            className="flex-1 px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]"
           />
           <select
             value={newCategory}
             onChange={e => setNewCategory(e.target.value as ChecklistCategory)}
-            className="px-2 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
+            className="px-2 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]"
           >
             {(Object.keys(CHECKLIST_CATEGORY_LABELS) as ChecklistCategory[]).map(c => (
               <option key={c} value={c}>{CHECKLIST_CATEGORY_LABELS[c]}</option>
             ))}
           </select>
           <button onClick={handleAdd}
-            className="p-2 rounded-[10px] bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20">
+            className="p-2 rounded-[10px] bg-[#C76795]/10 border border-[#C76795] text-[#C76795] hover:bg-[#C76795]/20">
             <Plus size={15} />
           </button>
         </div>

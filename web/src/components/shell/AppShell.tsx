@@ -66,7 +66,7 @@ export function NewAppShell({
 
     const mql = window.matchMedia('(prefers-color-scheme: dark)')
     const handler = (e: MediaQueryListEvent) => {
-      const resolved: ResolvedThemeId = e.matches ? 'navy-dark' : 'clean-light'
+      const resolved: ResolvedThemeId = e.matches ? 'navy-deep' : 'cream'
       document.documentElement.setAttribute('data-theme', resolved)
       document.documentElement.setAttribute('data-scheme', isDarkTheme(resolved) ? 'dark' : 'light')
       useShellStore.setState({ resolvedTheme: resolved })

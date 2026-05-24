@@ -99,31 +99,31 @@ export function AiConsultant({
   return (
     <div
       className="relative overflow-hidden rounded-[14px] px-5 py-[18px] mb-3"
-      style={{ background: 'linear-gradient(135deg,rgba(16,185,129,.10),rgba(0,85,255,.10))', border: '1px solid rgba(16,185,129,.28)' }}
+      style={{ background: 'linear-gradient(135deg,rgba(15,118,110,.10),rgba(0,85,255,.10))', border: '1px solid rgba(15,118,110,.28)' }}
     >
-      <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(16,185,129,.14),transparent 70%)' }} />
+      <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(15,118,110,.14),transparent 70%)' }} />
       <div className="absolute -bottom-10 left-1/3 w-44 h-44 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(0,85,255,.10),transparent 70%)' }} />
 
       <div className="flex items-center gap-3 mb-4 relative">
-        <div className="w-[38px] h-[38px] rounded-[12px] flex items-center justify-center text-lg shrink-0" style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)', boxShadow: '0 4px 16px rgba(16,185,129,.35)' }}>
+        <div className="w-[38px] h-[38px] rounded-[12px] flex items-center justify-center text-lg shrink-0" style={{ background: 'linear-gradient(135deg,#0F766E,#0B2D34)', boxShadow: '0 4px 16px rgba(15,118,110,.35)' }}>
           💡
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)] tracking-tight">Consultor Financeiro IA</p>
+          <p className="font-[Space_Grotesk] font-extrabold text-[15px] text-[var(--sl-t1)] tracking-tight">Consultor Financeiro IA</p>
           <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Análise personalizada · {mesAno} · atualizado agora</p>
         </div>
-        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-bold text-[#10b981] shrink-0" style={{ background: 'rgba(16,185,129,.12)', border: '1px solid rgba(16,185,129,.20)' }}>
-          <div className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" />
+        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-bold text-[#0F766E] shrink-0" style={{ background: 'rgba(15,118,110,.12)', border: '1px solid rgba(15,118,110,.20)' }}>
+          <div className="w-1.5 h-1.5 rounded-full bg-[#0F766E] animate-pulse" />
           4 insights hoje
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-4 max-sm:grid-cols-1 relative">
         {[
-          { type: 'urgent', ico: '🔥', tag: 'Alerta', border: 'rgba(244,63,94,.25)', bg: 'rgba(244,63,94,.04)', tagColor: '#f43f5e', text: <><strong>Lazer atingiu 82%</strong> do orçamento. Com {daysLeftInMonth} dias restantes, risco de estouro.</> },
-          { type: 'action', ico: '🎯', tag: 'Ação recomendada', border: 'rgba(0,85,255,.20)', bg: 'rgba(0,85,255,.04)', tagColor: '#0055ff', text: <>Meta <strong>Reserva de emergência</strong> está abaixo do ritmo. Considere um aporte extra este mês.</> },
-          { type: 'positive', ico: '🌟', tag: 'Conquista', border: 'rgba(16,185,129,.20)', bg: 'rgba(16,185,129,.04)', tagColor: '#10b981', text: <>Taxa de poupança em <strong>{taxaPoupanca}%</strong>{taxaPoupanca >= 30 ? ' — acima da meta de 30%! Continue!' : ' — tente chegar a 30% este mês.'}</> },
-          { type: 'heads-up', ico: '📅', tag: 'Previsão', border: 'rgba(245,158,11,.20)', bg: 'rgba(245,158,11,.04)', tagColor: '#f59e0b', text: <>Faltam <strong>{daysLeftInMonth} dias</strong> no mês. Revise seus orçamentos e planeje os gastos restantes.</> },
+          { type: 'urgent', ico: '🔥', tag: 'Alerta', border: 'rgba(219,100,120,.25)', bg: 'rgba(219,100,120,.04)', tagColor: '#DB6478', text: <><strong>Lazer atingiu 82%</strong> do orçamento. Com {daysLeftInMonth} dias restantes, risco de estouro.</> },
+          { type: 'action', ico: '🎯', tag: 'Ação recomendada', border: 'rgba(0,85,255,.20)', bg: 'rgba(0,85,255,.04)', tagColor: '#0B2D34', text: <>Meta <strong>Reserva de emergência</strong> está abaixo do ritmo. Considere um aporte extra este mês.</> },
+          { type: 'positive', ico: '🌟', tag: 'Conquista', border: 'rgba(15,118,110,.20)', bg: 'rgba(15,118,110,.04)', tagColor: '#0F766E', text: <>Taxa de poupança em <strong>{taxaPoupanca}%</strong>{taxaPoupanca >= 30 ? ' — acima da meta de 30%! Continue!' : ' — tente chegar a 30% este mês.'}</> },
+          { type: 'heads-up', ico: '📅', tag: 'Previsão', border: 'rgba(217,150,46,.20)', bg: 'rgba(217,150,46,.04)', tagColor: '#D9962E', text: <>Faltam <strong>{daysLeftInMonth} dias</strong> no mês. Revise seus orçamentos e planeje os gastos restantes.</> },
         ].map(ins => (
           <div
             key={ins.type}
@@ -144,7 +144,7 @@ export function AiConsultant({
 
       <div
         className="flex items-center gap-2 px-3 py-2.5 rounded-[12px] relative"
-        style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(16,185,129,.15)' }}
+        style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(15,118,110,.15)' }}
       >
         <span className="text-sm opacity-70">💬</span>
         <input
@@ -159,7 +159,7 @@ export function AiConsultant({
           onClick={handleAiAsk}
           disabled={aiLoading || !aiQuery.trim()}
           className="shrink-0 px-3 py-1.5 rounded-[8px] border-none text-white text-[12px] font-bold transition-opacity hover:opacity-85 disabled:opacity-50"
-          style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)' }}
+          style={{ background: 'linear-gradient(135deg,#0F766E,#0B2D34)' }}
         >
           {aiLoading ? <Loader2 size={14} className="animate-spin" /> : 'Perguntar'}
         </button>
@@ -167,10 +167,10 @@ export function AiConsultant({
 
       {/* AI Response */}
       {aiResponse && (
-        <div className="mt-3 px-4 py-3 rounded-[12px] relative" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(16,185,129,.12)' }}>
+        <div className="mt-3 px-4 py-3 rounded-[12px] relative" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(15,118,110,.12)' }}>
           <div className="flex items-center gap-1.5 mb-2">
-            <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#10b981]">Resposta da IA</span>
-            {aiLoading && <Loader2 size={10} className="animate-spin text-[#10b981]" />}
+            <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#0F766E]">Resposta da IA</span>
+            {aiLoading && <Loader2 size={10} className="animate-spin text-[#0F766E]" />}
           </div>
           <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed whitespace-pre-wrap">{aiResponse}</p>
         </div>

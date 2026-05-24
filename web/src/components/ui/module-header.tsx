@@ -11,8 +11,8 @@ interface WeekNavProps {
 
 interface ModuleHeaderProps {
   icon: LucideIcon
-  iconBg: string      // e.g. 'rgba(236,72,153,.1)'
-  iconColor: string   // e.g. '#ec4899'
+  iconBg: string      // e.g. 'rgba(199,103,149,.1)'
+  iconColor: string   // e.g. '#C76795'
   title: string
   subtitle?: string
   weekNav?: WeekNavProps  // optional week/month navigator
@@ -39,11 +39,11 @@ export function ModuleHeader({
         <Icon size={22} className="stroke-2" style={{ color: iconColor }} />
       </div>
       <div className="flex-1 min-w-0">
-        <h1 className="font-[Syne] font-extrabold text-[26px] leading-[1.15] text-[var(--sl-t1)]">
+        <h1 className="font-[Space_Grotesk] font-bold text-[26px] leading-[1.15] tracking-tight text-[var(--sl-t1)]">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-[13px] text-[var(--sl-t2)] mt-[3px]">{subtitle}</p>
+          <p className="text-[11px] font-[DM_Sans] uppercase tracking-[0.14em] text-[var(--sl-t3)] mt-[3px]">{subtitle}</p>
         )}
       </div>
       {weekNav && (

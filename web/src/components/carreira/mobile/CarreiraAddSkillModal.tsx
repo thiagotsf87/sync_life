@@ -60,14 +60,14 @@ export function CarreiraAddSkillModal({ open, onClose, onSave }: CarreiraAddSkil
             <p className="text-[12px] font-medium" style={{ color: '#c4b5fd' }}>
               ✦ Novo Poder
             </p>
-            <p className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)]">Nova Habilidade</p>
+            <p className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)]">Nova Habilidade</p>
           </div>
           <button onClick={onClose} className="text-[13px] text-[var(--sl-t3)]">Cancelar</button>
         </div>
 
         {/* XP banner */}
-        <div className="mx-4 mb-3 flex items-center gap-2 px-[13px] py-2 rounded-full border border-[rgba(139,92,246,0.2)]"
-          style={{ background: 'rgba(139,92,246,0.08)' }}>
+        <div className="mx-4 mb-3 flex items-center gap-2 px-[13px] py-2 rounded-full border border-[rgba(139,123,212,0.2)]"
+          style={{ background: 'rgba(139,123,212,0.08)' }}>
           <span className="text-[14px]">⚡</span>
           <span className="text-[12px] text-[#c4b5fd] font-semibold">
             Adicionar habilidade vale <strong className="text-[var(--sl-t1)]">+10 XP</strong>
@@ -86,7 +86,7 @@ export function CarreiraAddSkillModal({ open, onClose, onSave }: CarreiraAddSkil
             onChange={e => setName(e.target.value)}
             placeholder="Ex: Docker"
             className="w-full px-[14px] py-3 bg-[var(--sl-s1)] border rounded-[10px] text-[14px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none mb-[14px]"
-            style={{ borderColor: 'rgba(139,92,246,0.3)' }}
+            style={{ borderColor: 'rgba(139,123,212,0.3)' }}
           />
 
           {/* Category */}
@@ -101,7 +101,7 @@ export function CarreiraAddSkillModal({ open, onClose, onSave }: CarreiraAddSkil
                 onClick={() => setCategory(c.key)}
                 className="px-[14px] py-2 rounded-full text-[12px] font-medium"
                 style={{
-                  background: category === c.key ? '#8b5cf6' : 'var(--sl-s1)',
+                  background: category === c.key ? '#8B7BD4' : 'var(--sl-s1)',
                   color: category === c.key ? '#fff' : 'var(--sl-t2)',
                   border: category === c.key ? 'none' : '1px solid var(--sl-border)',
                 }}
@@ -123,9 +123,9 @@ export function CarreiraAddSkillModal({ open, onClose, onSave }: CarreiraAddSkil
                 onClick={() => setLevel(l)}
                 className="flex-1 py-[10px] rounded-[10px] text-center text-[12px]"
                 style={{
-                  background: level === l ? '#8b5cf6' : 'var(--sl-s1)',
+                  background: level === l ? '#8B7BD4' : 'var(--sl-s1)',
                   color: level === l ? '#fff' : 'var(--sl-t2)',
-                  border: level === l ? '1px solid #8b5cf6' : '1px solid var(--sl-border)',
+                  border: level === l ? '1px solid #8B7BD4' : '1px solid var(--sl-border)',
                   fontWeight: level === l ? 600 : 400,
                 }}
               >
@@ -146,8 +146,8 @@ export function CarreiraAddSkillModal({ open, onClose, onSave }: CarreiraAddSkil
           <div
             className="flex items-center gap-[10px] px-[14px] py-[14px] rounded-[10px] border mb-[14px]"
             style={{
-              background: 'linear-gradient(135deg, var(--sl-s1), rgba(139,92,246,0.04))',
-              borderColor: 'rgba(139,92,246,0.2)',
+              background: 'linear-gradient(135deg, var(--sl-s1), rgba(139,123,212,0.04))',
+              borderColor: 'rgba(139,123,212,0.2)',
             }}
           >
             <span className="text-[16px]">🧠</span>

@@ -213,12 +213,12 @@ export default function BlocosFocoPage() {
             className={cn(
               'relative px-4 py-2.5 text-[13px] transition-colors',
               pathname === tab.href
-                ? 'text-[#06b6d4] font-semibold'
+                ? 'text-[#3CA0B5] font-semibold'
                 : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
             )}>
             {tab.label}
             {pathname === tab.href && (
-              <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#06b6d4]" />
+              <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#3CA0B5]" />
             )}
           </Link>
         ))}
@@ -227,13 +227,13 @@ export default function BlocosFocoPage() {
       {/* ① ModuleHeader */}
       <ModuleHeader
         icon={Target}
-        iconBg="rgba(6,182,212,.1)"
-        iconColor="#06b6d4"
+        iconBg="rgba(60,160,181,.1)"
+        iconColor="#3CA0B5"
         title="Modo Foco"
         subtitle="Timer Pomodoro com sons ambiente e historico de sessoes"
       >
         {timerState === 'running' && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[11px] font-semibold bg-[rgba(6,182,212,.1)] text-[#06b6d4] border border-[rgba(6,182,212,.2)]">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[11px] font-semibold bg-[rgba(60,160,181,.1)] text-[#3CA0B5] border border-[rgba(60,160,181,.2)]">
             <Clock size={12} /> Sessao ativa
           </span>
         )}
@@ -247,7 +247,7 @@ export default function BlocosFocoPage() {
 
           {/* Session count badge */}
           <div className="text-center mb-4">
-            <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#06b6d4]/10 text-[#06b6d4] border border-[#06b6d4]/20">
+            <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#3CA0B5]/10 text-[#3CA0B5] border border-[#3CA0B5]/20">
               Sessão {todaySessionCount + 1} de 4
             </span>
           </div>
@@ -262,7 +262,7 @@ export default function BlocosFocoPage() {
                   className={cn(
                     'px-4 py-2 rounded-[10px] text-[13px] font-semibold border transition-all',
                     duration === d
-                      ? 'border-[#06b6d4] bg-[#06b6d4]/10 text-[#06b6d4]'
+                      ? 'border-[#3CA0B5] bg-[#3CA0B5]/10 text-[#3CA0B5]'
                       : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                   )}
                 >
@@ -275,11 +275,11 @@ export default function BlocosFocoPage() {
           {/* SVG Ring with gradient + drop-shadow */}
           <div className="flex justify-center mb-6">
             <div className="relative" style={{ width: 260, height: 260 }}>
-              <svg width="260" height="260" viewBox="0 0 260 260" style={{ transform: 'rotate(-90deg)', filter: 'drop-shadow(0 0 12px rgba(6,182,212,.25))' }}>
+              <svg width="260" height="260" viewBox="0 0 260 260" style={{ transform: 'rotate(-90deg)', filter: 'drop-shadow(0 0 12px rgba(60,160,181,.25))' }}>
                 <defs>
                   <linearGradient id="timerGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#06b6d4" />
-                    <stop offset="100%" stopColor="#0055ff" />
+                    <stop offset="0%" stopColor="#3CA0B5" />
+                    <stop offset="100%" stopColor="#0B2D34" />
                   </linearGradient>
                 </defs>
                 <circle cx="130" cy="130" r="115" fill="none" stroke="var(--sl-s3)" strokeWidth="12" />
@@ -294,20 +294,20 @@ export default function BlocosFocoPage() {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-[DM_Mono] font-medium text-[52px] text-[var(--sl-t1)] leading-none">
+                <span className="font-[IBM_Plex_Mono] font-medium text-[52px] text-[var(--sl-t1)] leading-none">
                   {formatTime(timeLeft)}
                 </span>
                 {timerState === 'running' && (
-                  <span className="text-[12px] text-[#06b6d4] mt-2 font-medium">de {duration}:00</span>
+                  <span className="text-[12px] text-[#3CA0B5] mt-2 font-medium">de {duration}:00</span>
                 )}
                 {timerState === 'paused' && (
-                  <span className="text-[12px] text-[#f59e0b] mt-2 font-medium">Pausado</span>
+                  <span className="text-[12px] text-[#D9962E] mt-2 font-medium">Pausado</span>
                 )}
                 {timerState === 'idle' && (
                   <span className="text-[12px] text-[var(--sl-t2)] mt-2">de {duration}:00</span>
                 )}
                 {timerState === 'completed' && (
-                  <span className="text-[12px] text-[#10b981] mt-2 font-medium">Concluido</span>
+                  <span className="text-[12px] text-[#0F766E] mt-2 font-medium">Concluido</span>
                 )}
               </div>
             </div>
@@ -317,13 +317,13 @@ export default function BlocosFocoPage() {
           {timerState === 'completed' && (
             <div className="text-center mb-6">
               <p className="text-xl mb-4">🎉</p>
-              <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-1">Sessão concluída!</p>
+              <p className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-1">Sessão concluída!</p>
               <p className="text-[12px] text-[var(--sl-t2)] mb-4">{duration}min de foco intenso</p>
               <div className="flex gap-2 max-w-[300px] mx-auto">
                 <button
                   onClick={handleRegister}
                   className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold text-[#03071a] hover:opacity-90 transition-opacity"
-                  style={{ background: '#06b6d4' }}
+                  style={{ background: '#3CA0B5' }}
                 >
                   Registrar Sessão
                 </button>
@@ -344,7 +344,7 @@ export default function BlocosFocoPage() {
                 <button
                   onClick={() => { setTimerState('running'); startedAtRef.current = new Date(); if (ambientSound !== 'none') startAmbientSound(ambientSound) }}
                   className="flex-1 py-3 rounded-[10px] text-[14px] font-semibold text-[#03071a] hover:opacity-90 transition-opacity"
-                  style={{ background: '#06b6d4' }}
+                  style={{ background: '#3CA0B5' }}
                 >
                   ▶ Iniciar
                 </button>
@@ -354,13 +354,13 @@ export default function BlocosFocoPage() {
                   <button
                     onClick={() => { setTimerState('paused'); stopAmbientSound() }}
                     className="flex-1 py-3 rounded-[10px] text-[14px] font-semibold text-[#03071a] hover:opacity-90 transition-opacity"
-                    style={{ background: '#f59e0b' }}
+                    style={{ background: '#D9962E' }}
                   >
                     ⏸ Pausar
                   </button>
                   <button
                     onClick={() => { setTimerState('idle'); setTimeLeft(duration * 60); startedAtRef.current = null; stopAmbientSound() }}
-                    className="px-4 py-3 rounded-[10px] text-[14px] font-semibold border border-[#f43f5e] text-[#f43f5e] hover:bg-[#f43f5e]/10 transition-colors"
+                    className="px-4 py-3 rounded-[10px] text-[14px] font-semibold border border-[#DB6478] text-[#DB6478] hover:bg-[#DB6478]/10 transition-colors"
                   >
                     ⏹
                   </button>
@@ -371,13 +371,13 @@ export default function BlocosFocoPage() {
                   <button
                     onClick={() => { setTimerState('running'); if (ambientSound !== 'none') startAmbientSound(ambientSound) }}
                     className="flex-1 py-3 rounded-[10px] text-[14px] font-semibold text-[#03071a] hover:opacity-90 transition-opacity"
-                    style={{ background: '#06b6d4' }}
+                    style={{ background: '#3CA0B5' }}
                   >
                     ▶ Retomar
                   </button>
                   <button
                     onClick={() => { setTimerState('idle'); setTimeLeft(duration * 60); startedAtRef.current = null; stopAmbientSound() }}
-                    className="px-4 py-3 rounded-[10px] text-[14px] font-semibold border border-[#f43f5e] text-[#f43f5e] hover:bg-[#f43f5e]/10 transition-colors"
+                    className="px-4 py-3 rounded-[10px] text-[14px] font-semibold border border-[#DB6478] text-[#DB6478] hover:bg-[#DB6478]/10 transition-colors"
                   >
                     ⏹
                   </button>
@@ -403,9 +403,9 @@ export default function BlocosFocoPage() {
                     onClick={() => handleAmbientChange(opt.value)}
                     className="px-2.5 py-1.5 rounded-[8px] text-[11px] font-medium transition-colors"
                     style={{
-                      background: ambientSound === opt.value ? 'rgba(6,182,212,0.15)' : 'var(--sl-s2)',
-                      border: ambientSound === opt.value ? '1px solid rgba(6,182,212,0.3)' : '1px solid var(--sl-border)',
-                      color: ambientSound === opt.value ? '#06b6d4' : 'var(--sl-t2)',
+                      background: ambientSound === opt.value ? 'rgba(60,160,181,0.15)' : 'var(--sl-s2)',
+                      border: ambientSound === opt.value ? '1px solid rgba(60,160,181,0.3)' : '1px solid var(--sl-border)',
+                      color: ambientSound === opt.value ? '#3CA0B5' : 'var(--sl-t2)',
                     }}
                   >
                     {opt.icon} {opt.label}
@@ -423,7 +423,7 @@ export default function BlocosFocoPage() {
               <select
                 value={selectedGoalId}
                 onChange={e => setSelectedGoalId(e.target.value)}
-                className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3CA0B5]"
               >
                 <option value="">Sem meta vinculada</option>
                 {goalOptions.map(g => (
@@ -438,17 +438,17 @@ export default function BlocosFocoPage() {
           <div className="mt-7 flex gap-7 px-7 py-[18px] bg-[var(--sl-s2)] rounded-[14px] border border-[var(--sl-border)] w-full max-w-[360px]">
             <div className="text-center">
               <p className="text-[10px] text-[var(--sl-t3)] mb-[3px]">Ciclos</p>
-              <p className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)]">{todaySessionCount}/4</p>
+              <p className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[var(--sl-t1)]">{todaySessionCount}/4</p>
             </div>
             <div className="w-px bg-[var(--sl-border)]" />
             <div className="text-center">
               <p className="text-[10px] text-[var(--sl-t3)] mb-[3px]">Foco Total</p>
-              <p className="font-[DM_Mono] text-[20px] font-medium text-[#06b6d4]">{formatMinutes(kpis.todayMinutes)}</p>
+              <p className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[#3CA0B5]">{formatMinutes(kpis.todayMinutes)}</p>
             </div>
             <div className="w-px bg-[var(--sl-border)]" />
             <div className="text-center">
               <p className="text-[10px] text-[var(--sl-t3)] mb-[3px]">Streak</p>
-              <p className="font-[DM_Mono] text-[20px] font-medium text-[#f59e0b]">{kpis.streakDays} dias</p>
+              <p className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[#D9962E]">{kpis.streakDays} dias</p>
             </div>
           </div>
         </div>
@@ -457,8 +457,8 @@ export default function BlocosFocoPage() {
         {/* Session history */}
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
           <div className="flex items-center gap-2 mb-[18px]">
-            <Clock size={16} className="text-[#06b6d4]" />
-            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Historico de Sessoes</h2>
+            <Clock size={16} className="text-[#3CA0B5]" />
+            <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Historico de Sessoes</h2>
           </div>
 
           {loading ? (
@@ -478,8 +478,8 @@ export default function BlocosFocoPage() {
                     <div key={session.id} className="flex gap-3 relative pb-[18px] last:pb-0">
                       {/* Timeline dot + line */}
                       <div className="flex flex-col items-center shrink-0">
-                        <div className="w-7 h-7 rounded-full bg-[var(--sl-s2)] border-2 border-[#06b6d4] flex items-center justify-center z-[1]">
-                          <Clock size={12} className="text-[#06b6d4]" />
+                        <div className="w-7 h-7 rounded-full bg-[var(--sl-s2)] border-2 border-[#3CA0B5] flex items-center justify-center z-[1]">
+                          <Clock size={12} className="text-[#3CA0B5]" />
                         </div>
                         {!isLast && <div className="w-px flex-1 bg-[var(--sl-border)]" />}
                       </div>
@@ -487,7 +487,7 @@ export default function BlocosFocoPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-semibold text-[var(--sl-t1)]">{goal?.name ?? 'Sessao livre'}</p>
                         <p className="text-[11px] text-[var(--sl-t3)] mt-[2px]">{formatDate(date)}{session.start_time ? ` \u00B7 ${session.start_time}` : ''}</p>
-                        <p className="font-[DM_Mono] text-[12px] font-medium text-[#06b6d4] mt-[2px]">{formatMinutes(session.duration_minutes)} de foco</p>
+                        <p className="font-[IBM_Plex_Mono] text-[12px] font-medium text-[#3CA0B5] mt-[2px]">{formatMinutes(session.duration_minutes)} de foco</p>
                       </div>
                     </div>
                   )
@@ -499,23 +499,23 @@ export default function BlocosFocoPage() {
 
         {/* Weekly summary */}
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[18px] sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
-          <p className="font-[Syne] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">Resumo Semanal</p>
+          <p className="font-[Space_Grotesk] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">Resumo Semanal</p>
           <div className="flex flex-col gap-2">
             <div className="flex justify-between text-[12px]">
               <span className="text-[var(--sl-t2)]">Sessoes</span>
-              <span className="font-[DM_Mono] font-medium">{sessions.length}</span>
+              <span className="font-[IBM_Plex_Mono] font-medium">{sessions.length}</span>
             </div>
             <div className="flex justify-between text-[12px]">
               <span className="text-[var(--sl-t2)]">Foco total</span>
-              <span className="font-[DM_Mono] font-medium text-[#06b6d4]">{formatMinutes(kpis.weekMinutes)}</span>
+              <span className="font-[IBM_Plex_Mono] font-medium text-[#3CA0B5]">{formatMinutes(kpis.weekMinutes)}</span>
             </div>
             <div className="flex justify-between text-[12px]">
               <span className="text-[var(--sl-t2)]">Streak</span>
-              <span className="font-[DM_Mono] font-medium text-[#f59e0b]">{kpis.streakDays} dia{kpis.streakDays !== 1 ? 's' : ''}</span>
+              <span className="font-[IBM_Plex_Mono] font-medium text-[#D9962E]">{kpis.streakDays} dia{kpis.streakDays !== 1 ? 's' : ''}</span>
             </div>
             <div className="flex justify-between text-[12px]">
               <span className="text-[var(--sl-t2)]">Sessoes no mes</span>
-              <span className="font-[DM_Mono] font-medium">{kpis.monthCount}</span>
+              <span className="font-[IBM_Plex_Mono] font-medium">{kpis.monthCount}</span>
             </div>
           </div>
         </div>
@@ -527,7 +527,7 @@ export default function BlocosFocoPage() {
       <button
         onClick={() => setModal({ open: true, mode: 'create' })}
         className="fixed bottom-6 right-6 md:hidden w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-white z-30 transition-all hover:brightness-110"
-        style={{ background: '#06b6d4' }}
+        style={{ background: '#3CA0B5' }}
       >
         <Plus size={22} />
       </button>

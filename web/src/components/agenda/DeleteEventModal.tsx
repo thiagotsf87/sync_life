@@ -47,10 +47,10 @@ export function DeleteEventModal({ open, event, onClose, onConfirm }: DeleteEven
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(244,63,94,.12)]">
-              <AlertTriangle size={16} className="text-[#f43f5e]" />
+            <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(219,100,120,.12)]">
+              <AlertTriangle size={16} className="text-[#DB6478]" />
             </div>
-            <h2 className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)]">Excluir evento</h2>
+            <h2 className="font-[Space_Grotesk] font-extrabold text-[15px] text-[var(--sl-t1)]">Excluir evento</h2>
           </div>
           <button
             onClick={onClose}
@@ -102,7 +102,7 @@ export function DeleteEventModal({ open, event, onClose, onConfirm }: DeleteEven
             onClick={handleConfirm}
             disabled={deleting}
             className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#f43f5e' }}
+            style={{ background: '#DB6478' }}
           >
             {deleting && <Loader2 size={14} className="animate-spin" />}
             Excluir

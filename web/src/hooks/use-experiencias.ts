@@ -119,11 +119,11 @@ export const TRIP_STATUS_LABELS: Record<TripStatus, string> = {
 }
 
 export const TRIP_STATUS_COLORS: Record<TripStatus, string> = {
-  planning: '#f59e0b',
-  reserved: '#0055ff',
-  ongoing: '#10b981',
+  planning: '#D9962E',
+  reserved: '#0B2D34',
+  ongoing: '#0F766E',
   completed: '#6e90b8',
-  cancelled: '#f43f5e',
+  cancelled: '#DB6478',
 }
 
 export const TRIP_TYPE_LABELS: Record<TripType, string> = {

@@ -120,7 +120,7 @@ export default function PatrimonioPage() {
         type: 'warning',
         label: 'Atencao',
         text: `${staleAssets[0]?.ticker ?? 'Ativo'} cotacao desatualizada (7+ dias)`,
-        color: '#f59e0b',
+        color: '#D9962E',
       })
     }
     const thisMonthDivs = dividends.filter(d => {
@@ -134,14 +134,14 @@ export default function PatrimonioPage() {
         type: 'success',
         label: 'Proventos',
         text: `${thisMonthDivs.length} pagamento${thisMonthDivs.length > 1 ? 's' : ''} este mes (${totalThisMonth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })})`,
-        color: '#10b981',
+        color: '#0F766E',
       })
     }
     list.push({
       type: 'info',
       label: 'Meta IF',
       text: `${metaIFPct.toFixed(0)}% concluida`,
-      color: '#3b82f6',
+      color: '#4F88D4',
     })
     return list
   })()
@@ -159,8 +159,8 @@ export default function PatrimonioPage() {
         {/* S1 ModuleHeader */}
         <ModuleHeader
           icon={TrendingUp}
-          iconBg="rgba(59,130,246,.08)"
-          iconColor="#3b82f6"
+          iconBg="rgba(79,136,212,.08)"
+          iconColor="#4F88D4"
           title="Patrimonio"
           subtitle={`${monthNames[now.getMonth()]} ${now.getFullYear()} · ${assets.length} ativo${assets.length !== 1 ? 's' : ''} · ${classCount} classe${classCount !== 1 ? 's' : ''}`}
         >
@@ -174,7 +174,7 @@ export default function PatrimonioPage() {
           <button
             onClick={() => router.push('/patrimonio/carteira')}
             className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#3b82f6] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(59,130,246,.25)] transition-all"
+                       bg-[#4F88D4] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(79,136,212,.25)] transition-all"
           >
             <Plus size={16} strokeWidth={2.5} />
             Adicionar Ativo
@@ -198,11 +198,11 @@ export default function PatrimonioPage() {
         ) : assets.length === 0 ? (
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
             <div className="text-5xl mb-3">📈</div>
-            <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
+            <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
             <p className="text-[13px] text-[var(--sl-t2)] mb-5">Registre seus investimentos para acompanhar seu patrimonio.</p>
             <button
               onClick={() => router.push('/patrimonio/carteira')}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#3b82f6] text-white hover:opacity-90"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#4F88D4] text-white hover:opacity-90"
             >
               <Plus size={15} />
               Adicionar Ativo
@@ -216,7 +216,7 @@ export default function PatrimonioPage() {
               {/* Top gradient accent */}
               <div
                 className="absolute top-0 left-7 right-7 h-[2.5px] rounded-b"
-                style={{ background: 'linear-gradient(90deg, #10b981, #3b82f6, #a855f7)' }}
+                style={{ background: 'linear-gradient(90deg, #0F766E, #4F88D4, #a855f7)' }}
               />
               <div className="grid grid-cols-[1fr_auto_auto_auto] gap-10 items-center">
                 {/* Total */}
@@ -224,7 +224,7 @@ export default function PatrimonioPage() {
                   <p className="text-[10.5px] font-bold uppercase tracking-[.09em] text-[var(--sl-t3)] mb-2">
                     Patrimonio Total
                   </p>
-                  <p className="font-[DM_Mono] font-medium text-[38px] leading-none text-[var(--sl-t1)]">
+                  <p className="font-[IBM_Plex_Mono] font-medium text-[38px] leading-none text-[var(--sl-t1)]">
                     {fmtCurrency(totalCurrent)}
                   </p>
                   <div className="flex gap-2 mt-2.5 items-center flex-wrap">
@@ -232,8 +232,8 @@ export default function PatrimonioPage() {
                       <span
                         className="inline-flex items-center gap-1 px-2.5 py-[3px] rounded-md text-[11px] font-semibold"
                         style={{
-                          background: profitLossPct >= 0 ? 'rgba(16,185,129,.10)' : 'rgba(244,63,94,.10)',
-                          color: profitLossPct >= 0 ? '#10b981' : '#f43f5e',
+                          background: profitLossPct >= 0 ? 'rgba(15,118,110,.10)' : 'rgba(219,100,120,.10)',
+                          color: profitLossPct >= 0 ? '#0F766E' : '#DB6478',
                         }}
                       >
                         {profitLossPct >= 0 ? '+' : ''}{profitLossPct.toFixed(1)}% 12m
@@ -241,12 +241,12 @@ export default function PatrimonioPage() {
                     )}
                     <span
                       className="inline-flex items-center gap-1 px-2.5 py-[3px] rounded-md text-[11px] font-semibold"
-                      style={{ background: 'rgba(59,130,246,.08)', color: '#3b82f6' }}
+                      style={{ background: 'rgba(79,136,212,.08)', color: '#4F88D4' }}
                     >
                       {assets.length} ativo{assets.length !== 1 ? 's' : ''}
                     </span>
                     <span className="text-[12px] text-[var(--sl-t3)] pt-0.5">
-                      Investido: <span className="font-[DM_Mono] text-[var(--sl-t2)]">{fmtCurrency(totalInvested)}</span>
+                      Investido: <span className="font-[IBM_Plex_Mono] text-[var(--sl-t2)]">{fmtCurrency(totalInvested)}</span>
                     </span>
                   </div>
                 </div>
@@ -256,10 +256,10 @@ export default function PatrimonioPage() {
                   <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1.5">
                     Resultado
                   </p>
-                  <p className="font-[DM_Mono] text-[22px] font-medium" style={{ color: profitLoss >= 0 ? '#10b981' : '#f43f5e' }}>
+                  <p className="font-[IBM_Plex_Mono] text-[22px] font-medium" style={{ color: profitLoss >= 0 ? '#0F766E' : '#DB6478' }}>
                     {profitLoss >= 0 ? '+' : ''}{fmtCurrency(profitLoss)}
                   </p>
-                  <p className="text-[11px] mt-0.5" style={{ color: profitLoss >= 0 ? '#10b981' : '#f43f5e' }}>
+                  <p className="text-[11px] mt-0.5" style={{ color: profitLoss >= 0 ? '#0F766E' : '#DB6478' }}>
                     {profitLossPct >= 0 ? '+' : ''}{profitLossPct.toFixed(2)}%
                   </p>
                 </div>
@@ -269,7 +269,7 @@ export default function PatrimonioPage() {
                   <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1.5">
                     Proventos 12m
                   </p>
-                  <p className="font-[DM_Mono] text-[22px] font-medium text-[var(--sl-t1)]">
+                  <p className="font-[IBM_Plex_Mono] text-[22px] font-medium text-[var(--sl-t1)]">
                     {fmtCurrency(dividends12m)}
                   </p>
                   <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">
@@ -282,10 +282,10 @@ export default function PatrimonioPage() {
                   <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1.5">
                     Renda Passiva/Mes
                   </p>
-                  <p className="font-[DM_Mono] text-[22px] font-medium text-[#3b82f6]">
+                  <p className="font-[IBM_Plex_Mono] text-[22px] font-medium text-[#4F88D4]">
                     {fmtCurrency(rendaPassivaMes)}
                   </p>
-                  <p className="text-[11px] text-[#10b981] mt-0.5">
+                  <p className="text-[11px] text-[#0F766E] mt-0.5">
                     {dividends12m > 0 ? 'Media 12m' : 'Adicione proventos'}
                   </p>
                 </div>
@@ -298,7 +298,7 @@ export default function PatrimonioPage() {
                 score={healthScore}
                 title="Carteira saudavel"
                 pills={healthPills}
-                accentColor="#3b82f6"
+                accentColor="#4F88D4"
                 insights={[
                   {
                     title: 'Rebalanceamento',
@@ -321,14 +321,14 @@ export default function PatrimonioPage() {
               {/* Treemap card */}
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
                 <div className="flex items-center gap-2.5 mb-[18px]">
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
                     <path d="M22 12A10 10 0 0 0 12 2v10z" />
                   </svg>
-                  <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                  <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                     Distribuicao por Classe
                   </span>
-                  <span className="ml-auto text-[10px] font-semibold px-2.5 py-[3px] rounded-[7px] bg-[rgba(59,130,246,.08)] text-[#3b82f6]">
+                  <span className="ml-auto text-[10px] font-semibold px-2.5 py-[3px] rounded-[7px] bg-[rgba(79,136,212,.08)] text-[#4F88D4]">
                     {classCount} classe{classCount !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -340,12 +340,12 @@ export default function PatrimonioPage() {
                 {/* Benchmark 12m */}
                 <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex-1 transition-colors hover:border-[var(--sl-border-h)]">
                   <div className="flex items-center gap-2.5 mb-[18px]">
-                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <line x1="18" y1="20" x2="18" y2="10" />
                       <line x1="12" y1="20" x2="12" y2="4" />
                       <line x1="6" y1="20" x2="6" y2="14" />
                     </svg>
-                    <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                    <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                       Benchmark 12m
                     </span>
                   </div>
@@ -353,9 +353,9 @@ export default function PatrimonioPage() {
                   {isPro ? (
                     <div className="flex flex-col gap-2.5">
                       {[
-                        { key: 'cdi', label: 'vs CDI', color: '#10b981' },
-                        { key: 'ibov', label: 'vs IBOV', color: '#0055ff' },
-                        { key: 'ifix', label: 'vs IFIX', color: '#f59e0b' },
+                        { key: 'cdi', label: 'vs CDI', color: '#0F766E' },
+                        { key: 'ibov', label: 'vs IBOV', color: '#0B2D34' },
+                        { key: 'ifix', label: 'vs IFIX', color: '#D9962E' },
                       ].map((b) => {
                         const ref = benchmarkPct[b.key as keyof typeof benchmarkPct]
                         const diff = portfolioReturn12m - ref
@@ -364,7 +364,7 @@ export default function PatrimonioPage() {
                           <div key={b.key} className="bg-[var(--sl-s2)] rounded-[10px] px-3 py-2.5">
                             <div className="flex justify-between text-[12px]">
                               <span className="text-[var(--sl-t2)]">{b.label}</span>
-                              <span className="font-[DM_Mono] text-[12px]" style={{ color: diff >= 0 ? '#10b981' : '#f43f5e' }}>
+                              <span className="font-[IBM_Plex_Mono] text-[12px]" style={{ color: diff >= 0 ? '#0F766E' : '#DB6478' }}>
                                 {diff >= 0 ? '+' : ''}{diff.toFixed(2)} p.p.
                               </span>
                             </div>
@@ -380,14 +380,14 @@ export default function PatrimonioPage() {
                     </div>
                   ) : (
                     <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[14px] p-3 text-center">
-                      <Crown size={16} className="mx-auto mb-1.5 text-[#f59e0b]" />
+                      <Crown size={16} className="mx-auto mb-1.5 text-[#D9962E]" />
                       <p className="text-[11px] text-[var(--sl-t2)] mb-2">
                         Comparativo com benchmarks e exclusivo do plano PRO.
                       </p>
                       <button
                         onClick={() => router.push('/configuracoes/plano')}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[11px] font-semibold
-                                   bg-gradient-to-r from-[#10b981] to-[#0055ff] text-white hover:opacity-90"
+                                   bg-gradient-to-r from-[#0F766E] to-[#0B2D34] text-white hover:opacity-90"
                       >
                         <Crown size={12} />
                         Ver plano PRO
@@ -402,7 +402,7 @@ export default function PatrimonioPage() {
                     <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1.5">
                       Meta IF
                     </p>
-                    <p className="font-[DM_Mono] text-[16px] font-medium text-[#3b82f6]">
+                    <p className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#4F88D4]">
                       {metaIFPct.toFixed(0)}%
                     </p>
                     <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
@@ -413,7 +413,7 @@ export default function PatrimonioPage() {
                     <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1.5">
                       YoC Medio
                     </p>
-                    <p className="font-[DM_Mono] text-[16px] font-medium text-[#f59e0b]">
+                    <p className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#D9962E]">
                       {yocMedio.toFixed(1)}%
                     </p>
                     <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
@@ -430,16 +430,16 @@ export default function PatrimonioPage() {
                  style={{ padding: '18px 0' }}
             >
               <div className="flex items-center gap-2.5 px-[18px] mb-[18px]">
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
                   <polyline points="17 6 23 6 23 12" />
                 </svg>
-                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                   Maiores Posicoes
                 </span>
                 <button
                   onClick={() => router.push('/patrimonio/carteira')}
-                  className="ml-auto text-[12px] font-medium text-[#3b82f6] hover:opacity-80 transition-opacity cursor-pointer"
+                  className="ml-auto text-[12px] font-medium text-[#4F88D4] hover:opacity-80 transition-opacity cursor-pointer"
                 >
                   Ver carteira completa →
                 </button>
@@ -472,21 +472,21 @@ export default function PatrimonioPage() {
                                cursor-pointer transition-colors hover:bg-[var(--sl-s2)]"
                     style={{ gridTemplateColumns: '130px 1fr 80px 80px 80px 60px' }}
                   >
-                    <span className="font-[DM_Mono] font-medium text-[var(--sl-t1)]">{a.ticker}</span>
+                    <span className="font-[IBM_Plex_Mono] font-medium text-[var(--sl-t1)]">{a.ticker}</span>
                     <span className="text-[12px] text-[var(--sl-t2)] truncate">{a.asset_name}</span>
-                    <span className="font-[DM_Mono] text-[12px] text-right text-[var(--sl-t1)]">
+                    <span className="font-[IBM_Plex_Mono] text-[12px] text-right text-[var(--sl-t1)]">
                       {fmtCurrency(currentVal)}
                     </span>
                     <span
-                      className="font-[DM_Mono] text-[12px] text-right"
-                      style={{ color: pl >= 0 ? '#10b981' : '#f43f5e' }}
+                      className="font-[IBM_Plex_Mono] text-[12px] text-right"
+                      style={{ color: pl >= 0 ? '#0F766E' : '#DB6478' }}
                     >
                       {pl >= 0 ? '+' : ''}{plPct.toFixed(1)}%
                     </span>
-                    <span className="font-[DM_Mono] text-[12px] text-right text-[var(--sl-t1)]">
+                    <span className="font-[IBM_Plex_Mono] text-[12px] text-right text-[var(--sl-t1)]">
                       {fmtCurrency(divs)}
                     </span>
-                    <span className="font-[DM_Mono] text-[12px] text-right text-[var(--sl-t2)]">
+                    <span className="font-[IBM_Plex_Mono] text-[12px] text-right text-[var(--sl-t2)]">
                       {weight.toFixed(0)}%
                     </span>
                   </div>

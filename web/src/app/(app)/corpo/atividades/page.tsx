@@ -151,7 +151,7 @@ export default function AtividadesPage() {
     return acc
   }, {})
 
-  const typeColors = ['#f97316', '#a855f7', '#06b6d4', '#10b981', '#f59e0b', '#3b82f6']
+  const typeColors = ['#D97534', '#a855f7', '#3CA0B5', '#0F766E', '#D9962E', '#4F88D4']
 
   return (
     <>
@@ -164,7 +164,7 @@ export default function AtividadesPage() {
           rightAction={
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#10b981] text-[#03071a] hover:opacity-90 transition-opacity"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#0F766E] text-[#03071a] hover:opacity-90 transition-opacity"
             >
               <Plus size={16} />
               Registrar
@@ -175,22 +175,22 @@ export default function AtividadesPage() {
         {/* Mobile week stats */}
         <div className="grid grid-cols-3 gap-3 mb-5 max-sm:grid-cols-1">
           {[
-            { label: 'Atividades esta semana', value: String(weekActivities.length), color: '#10b981' },
-            { label: 'Minutos ativos', value: `${weekMinutes}min`, color: '#f97316' },
-            { label: 'Calorias queimadas', value: `${Math.round(weekCalories)} kcal`, color: '#f59e0b' },
+            { label: 'Atividades esta semana', value: String(weekActivities.length), color: '#0F766E' },
+            { label: 'Minutos ativos', value: `${weekMinutes}min`, color: '#D97534' },
+            { label: 'Calorias queimadas', value: `${Math.round(weekCalories)} kcal`, color: '#D9962E' },
           ].map(stat => (
             <div key={stat.label} className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 overflow-hidden">
               <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: stat.color }} />
               <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">{stat.label}</p>
-              <p className="font-[DM_Mono] font-medium text-xl text-[var(--sl-t1)]">{stat.value}</p>
+              <p className="font-[IBM_Plex_Mono] font-medium text-xl text-[var(--sl-t1)]">{stat.value}</p>
             </div>
           ))}
         </div>
 
         {currentStreak > 0 && (
-          <div className="mb-5 bg-gradient-to-br from-[#f97316]/10 to-[#f59e0b]/10 border border-[#f97316]/30 rounded-[18px] p-6">
+          <div className="mb-5 bg-gradient-to-br from-[#D97534]/10 to-[#D9962E]/10 border border-[#D97534]/30 rounded-[18px] p-6">
             <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Conquista de consistencia</p>
-            <p className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)]">{currentStreak} dias seguidos</p>
+            <p className="font-[Space_Grotesk] font-extrabold text-xl text-[var(--sl-t1)]">{currentStreak} dias seguidos</p>
             <p className="text-[12px] text-[var(--sl-t2)] mt-1">Continue para desbloquear marcos de 7, 14 e 30 dias.</p>
           </div>
         )}
@@ -202,11 +202,11 @@ export default function AtividadesPage() {
           </div>
         ) : activities.length === 0 ? (
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
-            <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhuma atividade registrada</h3>
+            <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhuma atividade registrada</h3>
             <p className="text-[13px] text-[var(--sl-t2)] mb-5">Registre seus treinos e acompanhe seu progresso.</p>
             <button
               onClick={() => setShowModal(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#10b981] text-[#03071a] hover:opacity-90"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#0F766E] text-[#03071a] hover:opacity-90"
             >
               <Plus size={15} />
               Primeira atividade
@@ -225,16 +225,16 @@ export default function AtividadesPage() {
         {/* 1. ModuleHeader */}
         <ModuleHeader
           icon={BarChart3}
-          iconBg="rgba(249,115,22,.08)"
-          iconColor="#f97316"
+          iconBg="rgba(217,117,52,.08)"
+          iconColor="#D97534"
           title="Atividades Fisicas"
           subtitle="Registre e acompanhe seus treinos"
         >
           <button
             onClick={() => setShowModal(true)}
             className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#f97316] text-white hover:brightness-110 hover:-translate-y-px
-                       transition-all shadow-[0_6px_20px_rgba(249,115,22,.15)]"
+                       bg-[#D97534] text-white hover:brightness-110 hover:-translate-y-px
+                       transition-all shadow-[0_6px_20px_rgba(217,117,52,.15)]"
           >
             <Plus size={16} />
             Registrar Atividade
@@ -243,12 +243,12 @@ export default function AtividadesPage() {
 
         {/* 2. Streak Strip */}
         {currentStreak > 0 && (
-          <div className="flex items-center gap-5 px-6 py-[18px] bg-gradient-to-br from-[rgba(249,115,22,.1)] to-[rgba(245,158,11,.06)] border border-[rgba(249,115,22,.2)] rounded-[18px] mb-7 sl-fade-up sl-delay-1">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" className="shrink-0">
+          <div className="flex items-center gap-5 px-6 py-[18px] bg-gradient-to-br from-[rgba(217,117,52,.1)] to-[rgba(217,150,46,.06)] border border-[rgba(217,117,52,.2)] rounded-[18px] mb-7 sl-fade-up sl-delay-1">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D97534" strokeWidth="2" strokeLinecap="round" className="shrink-0">
               <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
             </svg>
             <div>
-              <div className="font-[Syne] text-[36px] font-extrabold leading-none text-[var(--sl-t1)]">{currentStreak}</div>
+              <div className="font-[Space_Grotesk] text-[36px] font-extrabold leading-none text-[var(--sl-t1)]">{currentStreak}</div>
               <div className="text-[12px] text-[var(--sl-t2)]">dias consecutivos de atividade</div>
             </div>
             <div className="flex gap-[6px] ml-auto">
@@ -258,9 +258,9 @@ export default function AtividadesPage() {
                   className={cn(
                     'w-[34px] h-[34px] rounded-[9px] flex items-center justify-center text-[11px] font-bold border',
                     currentStreak >= m
-                      ? 'border-[#f97316] bg-[rgba(249,115,22,.08)] text-[#f97316]'
+                      ? 'border-[#D97534] bg-[rgba(217,117,52,.08)] text-[#D97534]'
                       : currentStreak >= m - 2
-                        ? 'border-[#f97316] text-[var(--sl-t3)] shadow-[0_0_10px_rgba(249,115,22,.3)]'
+                        ? 'border-[#D97534] text-[var(--sl-t3)] shadow-[0_0_10px_rgba(217,117,52,.3)]'
                         : 'border-[var(--sl-border)] text-[var(--sl-t3)]'
                   )}
                 >
@@ -289,11 +289,11 @@ export default function AtividadesPage() {
           </div>
         ) : activities.length === 0 ? (
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center sl-fade-up sl-delay-2">
-            <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhuma atividade registrada</h3>
+            <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhuma atividade registrada</h3>
             <p className="text-[13px] text-[var(--sl-t2)] mb-5">Registre seus treinos e acompanhe seu progresso.</p>
             <button
               onClick={() => setShowModal(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f97316] text-white hover:opacity-90"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#D97534] text-white hover:opacity-90"
             >
               <Plus size={15} />
               Primeira atividade
@@ -314,7 +314,7 @@ export default function AtividadesPage() {
                   >
                     <div
                       className="w-[44px] h-[44px] rounded-xl flex items-center justify-center shrink-0 text-xl"
-                      style={{ background: 'rgba(249,115,22,.08)' }}
+                      style={{ background: 'rgba(217,117,52,.08)' }}
                     >
                       {meta?.icon ?? ''}
                     </div>
@@ -329,15 +329,15 @@ export default function AtividadesPage() {
                     </div>
                     <div className="flex gap-5 items-center">
                       <div className="text-center">
-                        <span className="font-[DM_Mono] text-[15px] font-medium text-[var(--sl-t1)] block">{a.duration_minutes}</span>
+                        <span className="font-[IBM_Plex_Mono] text-[15px] font-medium text-[var(--sl-t1)] block">{a.duration_minutes}</span>
                         <span className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">min</span>
                       </div>
                       <div className="text-center">
-                        <span className="font-[DM_Mono] text-[15px] font-medium text-[var(--sl-t1)] block">{a.distance_km ?? '--'}</span>
+                        <span className="font-[IBM_Plex_Mono] text-[15px] font-medium text-[var(--sl-t1)] block">{a.distance_km ?? '--'}</span>
                         <span className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">km</span>
                       </div>
                       <div className="text-center">
-                        <span className="font-[DM_Mono] text-[15px] font-medium text-[var(--sl-t1)] block">{a.calories_burned ? Math.round(a.calories_burned) : '--'}</span>
+                        <span className="font-[IBM_Plex_Mono] text-[15px] font-medium text-[var(--sl-t1)] block">{a.calories_burned ? Math.round(a.calories_burned) : '--'}</span>
                         <span className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">kcal</span>
                       </div>
                       <div className="flex gap-[3px] items-center">
@@ -346,7 +346,7 @@ export default function AtividadesPage() {
                             key={i}
                             className="w-[5px] h-[14px] rounded-[3px]"
                             style={{
-                              background: i <= (a.intensity ?? 0) ? '#f97316' : 'var(--sl-s3)',
+                              background: i <= (a.intensity ?? 0) ? '#D97534' : 'var(--sl-s3)',
                             }}
                           />
                         ))}
@@ -362,7 +362,7 @@ export default function AtividadesPage() {
 
               {/* Weekly Summary */}
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[22px] hover:border-[var(--sl-border-h)] transition-colors">
-                <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t3)] uppercase tracking-[.06em] mb-4">
+                <h3 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t3)] uppercase tracking-[.06em] mb-4">
                   Resumo Semanal
                 </h3>
                 <div className="flex flex-col">
@@ -373,11 +373,11 @@ export default function AtividadesPage() {
                     { label: 'Media/treino', value: `${avgMinutes} min` },
                     { label: 'Calorias', value: String(Math.round(weekCalories)) },
                     { label: 'Media/treino', value: `${avgCalories} kcal` },
-                    { label: 'Streak', value: `${currentStreak} dias`, color: '#f97316' },
+                    { label: 'Streak', value: `${currentStreak} dias`, color: '#D97534' },
                   ].map((row, i) => (
                     <div key={i} className="flex justify-between py-2 border-b border-[rgba(120,165,220,.04)] last:border-b-0">
                       <span className="text-[12px] text-[var(--sl-t3)]">{row.label}</span>
-                      <span className="font-[DM_Mono] text-[13px] font-medium" style={{ color: row.color ?? 'var(--sl-t1)' }}>{row.value}</span>
+                      <span className="font-[IBM_Plex_Mono] text-[13px] font-medium" style={{ color: row.color ?? 'var(--sl-t1)' }}>{row.value}</span>
                     </div>
                   ))}
                 </div>
@@ -386,7 +386,7 @@ export default function AtividadesPage() {
               {/* By Type */}
               {Object.keys(typeBreakdown).length > 0 && (
                 <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[22px] hover:border-[var(--sl-border-h)] transition-colors">
-                  <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t3)] uppercase tracking-[.06em] mb-4">
+                  <h3 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t3)] uppercase tracking-[.06em] mb-4">
                     Por Tipo
                   </h3>
                   <div className="flex flex-col">
@@ -396,7 +396,7 @@ export default function AtividadesPage() {
                           <span className="w-2 h-2 rounded-sm" style={{ background: typeColors[i % typeColors.length] }} />
                           {label}
                         </span>
-                        <span className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)]">{minutes} min</span>
+                        <span className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t1)]">{minutes} min</span>
                       </div>
                     ))}
                   </div>
@@ -414,8 +414,8 @@ export default function AtividadesPage() {
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] w-full max-w-[500px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
-                <BarChart3 size={20} className="text-[#f97316]" />
+              <h2 className="font-[Space_Grotesk] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
+                <BarChart3 size={20} className="text-[#D97534]" />
                 Registrar Atividade
               </h2>
               <button onClick={() => setShowModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">&times;</button>
@@ -431,7 +431,7 @@ export default function AtividadesPage() {
                       className={cn(
                         'flex flex-col items-center gap-0.5 py-2 rounded-[10px] border transition-all',
                         form.type === at.type
-                          ? 'border-[#10b981] bg-[#10b981]/10'
+                          ? 'border-[#0F766E] bg-[#0F766E]/10'
                           : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -449,14 +449,14 @@ export default function AtividadesPage() {
                   <input type="number" value={form.duration_minutes}
                     onChange={e => setForm(f => ({ ...f, duration_minutes: parseInt(e.target.value) || 0 }))}
                     min="1"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#10b981]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#0F766E]"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Data/Hora</label>
                   <input type="datetime-local" value={form.recorded_at}
                     onChange={e => setForm(f => ({ ...f, recorded_at: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#10b981]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#0F766E]"
                   />
                 </div>
               </div>
@@ -471,9 +471,9 @@ export default function AtividadesPage() {
                     <button key={i} onClick={() => setForm(f => ({ ...f, intensity: i }))}
                       className="flex-1 py-2 rounded-[10px] text-[11px] font-bold border transition-all"
                       style={{
-                        borderColor: i <= form.intensity ? '#f97316' : 'var(--sl-border)',
-                        background: i <= form.intensity ? '#f97316' + '20' : 'transparent',
-                        color: i <= form.intensity ? '#f97316' : 'var(--sl-t3)',
+                        borderColor: i <= form.intensity ? '#D97534' : 'var(--sl-border)',
+                        background: i <= form.intensity ? '#D97534' + '20' : 'transparent',
+                        color: i <= form.intensity ? '#D97534' : 'var(--sl-t3)',
                       }}
                     >
                       {i}
@@ -489,7 +489,7 @@ export default function AtividadesPage() {
                   <input type="number" step="0.1" value={form.distance}
                     onChange={e => setForm(f => ({ ...f, distance: e.target.value }))}
                     placeholder="Opcional"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#10b981]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#0F766E]"
                   />
                 </div>
                 <div>
@@ -497,14 +497,14 @@ export default function AtividadesPage() {
                   <input type="number" value={form.steps}
                     onChange={e => setForm(f => ({ ...f, steps: e.target.value }))}
                     placeholder="Opcional"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#10b981]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#0F766E]"
                   />
                 </div>
               </div>
 
               {/* Preview calories */}
               {previewCalories > 0 && (
-                <div className="flex items-center gap-2 p-3 bg-[#f97316]/10 border border-[#f97316]/30 rounded-xl">
+                <div className="flex items-center gap-2 p-3 bg-[#D97534]/10 border border-[#D97534]/30 rounded-xl">
                   <p className="text-[12px] text-[var(--sl-t2)]">
                     Estimativa: <strong className="text-[var(--sl-t1)]">{Math.round(previewCalories)} kcal</strong> queimadas
                     {!profile?.current_weight && <span className="text-[var(--sl-t3)]"> (usando 70kg de referencia)</span>}
@@ -517,7 +517,7 @@ export default function AtividadesPage() {
                 <input type="text" value={form.notes}
                   onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
                   placeholder="Opcional..."
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#10b981]"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#0F766E]"
                 />
               </div>
 
@@ -527,7 +527,7 @@ export default function AtividadesPage() {
                   type="checkbox"
                   checked={form.syncToAgenda}
                   onChange={e => setForm(f => ({ ...f, syncToAgenda: e.target.checked }))}
-                  className="accent-[#10b981] w-3.5 h-3.5"
+                  className="accent-[#0F766E] w-3.5 h-3.5"
                 />
                 <span className="text-[12px] text-[var(--sl-t2)]">Adicionar a Agenda</span>
               </label>
@@ -538,7 +538,7 @@ export default function AtividadesPage() {
                   Cancelar
                 </button>
                 <button onClick={handleSave} disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#10b981] text-[#03071a] hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#0F766E] text-[#03071a] hover:opacity-90 disabled:opacity-50">
                   {isSaving ? 'Registrando...' : 'Registrar'}
                 </button>
               </div>

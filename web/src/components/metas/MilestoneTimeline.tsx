@@ -35,17 +35,17 @@ export function MilestoneTimeline({ milestones, currentPct }: MilestoneTimelineP
               <div className={cn(
                 'absolute -left-6 top-0.5 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center shrink-0 transition-all',
                 isPast
-                  ? 'border-[#10b981] bg-[#10b981]'
+                  ? 'border-[#0F766E] bg-[#0F766E]'
                   : isCurrent
-                  ? 'border-[#f59e0b] bg-[var(--sl-s2)]'
+                  ? 'border-[#D9962E] bg-[var(--sl-s2)]'
                   : 'border-[var(--sl-border)] bg-[var(--sl-s2)]',
               )}>
                 {isPast ? (
                   <span className="text-[10px] text-white font-bold">✓</span>
                 ) : (
                   <span className={cn(
-                    'text-[9px] font-[DM_Mono] font-bold',
-                    isCurrent ? 'text-[#f59e0b]' : 'text-[var(--sl-t3)]',
+                    'text-[9px] font-[IBM_Plex_Mono] font-bold',
+                    isCurrent ? 'text-[#D9962E]' : 'text-[var(--sl-t3)]',
                   )}>
                     {ms.target_pct}
                   </span>
@@ -57,16 +57,16 @@ export function MilestoneTimeline({ milestones, currentPct }: MilestoneTimelineP
                 <div className="flex items-center justify-between gap-2">
                   <p className={cn(
                     'text-[13px] font-semibold leading-tight',
-                    isPast ? 'text-[#10b981]' : isCurrent ? 'text-[#f59e0b]' : 'text-[var(--sl-t3)]',
+                    isPast ? 'text-[#0F766E]' : isCurrent ? 'text-[#D9962E]' : 'text-[var(--sl-t3)]',
                   )}>
                     {ms.name}
                   </p>
                   <span className={cn(
-                    'text-[10px] font-[DM_Mono] font-bold px-1.5 py-0.5 rounded-md shrink-0',
+                    'text-[10px] font-[IBM_Plex_Mono] font-bold px-1.5 py-0.5 rounded-md shrink-0',
                     isPast
-                      ? 'bg-[rgba(16,185,129,.12)] text-[#10b981]'
+                      ? 'bg-[rgba(15,118,110,.12)] text-[#0F766E]'
                       : isCurrent
-                      ? 'bg-[rgba(245,158,11,.12)] text-[#f59e0b]'
+                      ? 'bg-[rgba(217,150,46,.12)] text-[#D9962E]'
                       : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]',
                   )}>
                     {ms.target_pct}%
@@ -78,7 +78,7 @@ export function MilestoneTimeline({ milestones, currentPct }: MilestoneTimelineP
                   </p>
                 )}
                 {isCurrent && !reached && (
-                  <p className="text-[11px] text-[#f59e0b] mt-0.5">Em progresso...</p>
+                  <p className="text-[11px] text-[#D9962E] mt-0.5">Em progresso...</p>
                 )}
               </div>
             </div>

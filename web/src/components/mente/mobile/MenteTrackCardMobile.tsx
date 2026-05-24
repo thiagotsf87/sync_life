@@ -3,19 +3,19 @@
 import type { StudyTrack, TrackCategory } from '@/hooks/use-mente'
 import { CATEGORY_LABELS } from '@/hooks/use-mente'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.14)'
+const MENTE_COLOR = '#D9962E'
+const MENTE_BG = 'rgba(217,150,46,0.14)'
 
 function getBadgeStyle(progress: number): { bg: string; color: string } {
-  if (progress >= 50) return { bg: 'rgba(234,179,8,0.12)', color: '#eab308' }
-  if (progress >= 25) return { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' }
+  if (progress >= 50) return { bg: 'rgba(217,150,46,0.12)', color: '#D9962E' }
+  if (progress >= 25) return { bg: 'rgba(217,150,46,0.12)', color: '#D9962E' }
   return { bg: 'rgba(0,85,255,0.12)', color: '#60a5fa' }
 }
 
 function getBarColor(progress: number): string {
   if (progress >= 50) return MENTE_COLOR
-  if (progress >= 25) return '#f59e0b'
-  return '#0055ff'
+  if (progress >= 25) return '#D9962E'
+  return '#0B2D34'
 }
 
 const CATEGORY_EMOJI: Record<TrackCategory, string> = {
@@ -117,7 +117,7 @@ export function MenteTrackCardMobile({
           {emoji}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-[Syne] text-[15px] font-semibold text-[var(--sl-t1)] truncate">{track.name}</div>
+          <div className="font-[Space_Grotesk] text-[15px] font-semibold text-[var(--sl-t1)] truncate">{track.name}</div>
           <div className="text-[12px] text-[var(--sl-t2)]">
             {categoryName} · Iniciado {getDaysAgo(track.created_at)}
           </div>

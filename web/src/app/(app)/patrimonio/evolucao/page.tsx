@@ -98,8 +98,8 @@ export default function EvolucaoPage() {
       {/* ModuleHeader */}
       <ModuleHeader
         icon={TrendingUp}
-        iconBg="rgba(59,130,246,.08)"
-        iconColor="#3b82f6"
+        iconBg="rgba(79,136,212,.08)"
+        iconColor="#4F88D4"
         title="Evolucao Patrimonial"
         subtitle="Acompanhe o crescimento ao longo do tempo"
       >
@@ -109,7 +109,7 @@ export default function EvolucaoPage() {
               className={cn(
                 'px-3.5 py-[6px] rounded-[8px] text-[12px] font-semibold transition-all',
                 period === p
-                  ? 'bg-[rgba(59,130,246,.08)] text-[#3b82f6]'
+                  ? 'bg-[rgba(79,136,212,.08)] text-[#4F88D4]'
                   : 'text-[var(--sl-t3)] hover:text-[var(--sl-t1)]'
               )}
             >
@@ -134,17 +134,17 @@ export default function EvolucaoPage() {
             {
               label: 'Resultado',
               value: `${profitLoss >= 0 ? '+' : ''}${formatCurrency(profitLoss)}`,
-              valueColor: profitLoss >= 0 ? '#10b981' : '#f43f5e',
+              valueColor: profitLoss >= 0 ? '#0F766E' : '#DB6478',
             },
             {
               label: 'c/ Proventos',
               value: formatCurrency(totalWithDividends),
-              valueColor: '#f59e0b',
+              valueColor: '#D9962E',
             },
             {
               label: 'Rentab.',
               value: `${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(2)}%`,
-              valueColor: profitLossPct >= 0 ? '#10b981' : '#f43f5e',
+              valueColor: profitLossPct >= 0 ? '#0F766E' : '#DB6478',
             },
           ]}
         />
@@ -154,10 +154,10 @@ export default function EvolucaoPage() {
       <JornadaInsight
         text={
           profitLoss !== 0
-            ? <>Seu patrimonio <strong style={{ color: profitLoss >= 0 ? '#10b981' : '#f43f5e' }}>
+            ? <>Seu patrimonio <strong style={{ color: profitLoss >= 0 ? '#0F766E' : '#DB6478' }}>
                 {profitLoss >= 0 ? 'cresceu' : 'recuou'} {formatCurrency(Math.abs(profitLoss))}
               </strong> ({profitLossPct >= 0 ? '+' : ''}{profitLossPct.toFixed(2)}%) em relacao ao custo medio.
-              {totalDividends > 0 && <> Com proventos, o retorno total chega a <strong className="text-[#f59e0b]">{formatCurrency(profitLoss + totalDividends)}</strong>.</>}
+              {totalDividends > 0 && <> Com proventos, o retorno total chega a <strong className="text-[#D9962E]">{formatCurrency(profitLoss + totalDividends)}</strong>.</>}
             </>
             : <>Acompanhe a evolucao do seu patrimonio ao longo do tempo. Adicione cotacoes atuais nos seus ativos para ver o resultado real.</>
         }
@@ -167,7 +167,7 @@ export default function EvolucaoPage() {
         <div className="h-80 rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
       ) : assets.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
-          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
+          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
           <p className="text-[13px] text-[var(--sl-t2)]">Adicione ativos para visualizar a evolucao.</p>
         </div>
       ) : (
@@ -181,16 +181,16 @@ export default function EvolucaoPage() {
                 <AreaChart data={dataPoints} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="gradCurrent" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#0F766E" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#0F766E" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="gradInvested" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0055ff" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#0055ff" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#0B2D34" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#0B2D34" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="gradWithDivs" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.1} />
-                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#D9962E" stopOpacity={0.1} />
+                      <stop offset="95%" stopColor="#D9962E" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--sl-s3)" />
@@ -205,26 +205,26 @@ export default function EvolucaoPage() {
                       name === 'current' ? 'Valor atual' : name === 'invested' ? 'Investido' : 'c/ proventos',
                     ]}
                   />
-                  <Area type="monotone" dataKey="invested" stroke="#0055ff" strokeWidth={1.5}
+                  <Area type="monotone" dataKey="invested" stroke="#0B2D34" strokeWidth={1.5}
                     fill="url(#gradInvested)" strokeDasharray="4 2" />
-                  <Area type="monotone" dataKey="withDividends" stroke="#f59e0b" strokeWidth={1.5}
+                  <Area type="monotone" dataKey="withDividends" stroke="#D9962E" strokeWidth={1.5}
                     fill="url(#gradWithDivs)" />
-                  <Area type="monotone" dataKey="current" stroke="#10b981" strokeWidth={2}
+                  <Area type="monotone" dataKey="current" stroke="#0F766E" strokeWidth={2}
                     fill="url(#gradCurrent)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
             <div className="flex items-center gap-5 mt-3.5 justify-center">
               <div className="flex items-center gap-1.5">
-                <div className="w-5 h-[3px] bg-[#10b981] rounded-sm" />
+                <div className="w-5 h-[3px] bg-[#0F766E] rounded-sm" />
                 <span className="text-[10px] text-[var(--sl-t3)]">Valor atual</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-5 h-px rounded-sm" style={{ borderTop: '2px dashed #0055ff' }} />
+                <div className="w-5 h-px rounded-sm" style={{ borderTop: '2px dashed #0B2D34' }} />
                 <span className="text-[10px] text-[var(--sl-t3)]">Custo medio</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-5 h-[2px] bg-[#f59e0b] rounded-sm" />
+                <div className="w-5 h-[2px] bg-[#D9962E] rounded-sm" />
                 <span className="text-[10px] text-[var(--sl-t3)]">c/ proventos</span>
               </div>
             </div>
@@ -236,12 +236,12 @@ export default function EvolucaoPage() {
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
                             transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-2.5 mb-[18px]">
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="20" x2="18" y2="10" />
                   <line x1="12" y1="20" x2="12" y2="4" />
                   <line x1="6" y1="20" x2="6" y2="14" />
                 </svg>
-                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                   Performance por Ativo
                 </span>
               </div>
@@ -251,23 +251,23 @@ export default function EvolucaoPage() {
                 <div className="flex flex-col gap-2">
                   {performers.slice(0, 10).map(a => (
                     <div key={a.id} className="flex items-center gap-3">
-                      <span className="font-[DM_Mono] font-bold text-[12px] text-[var(--sl-t1)] w-20 shrink-0">{a.ticker}</span>
+                      <span className="font-[IBM_Plex_Mono] font-bold text-[12px] text-[var(--sl-t1)] w-20 shrink-0">{a.ticker}</span>
                       <div className="flex-1 bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height: '4px' }}>
                         <div
                           className="h-full rounded-full"
                           style={{
                             width: `${Math.min(Math.abs(a.pct), 100)}%`,
-                            background: a.pct >= 0 ? '#10b981' : '#f43f5e',
+                            background: a.pct >= 0 ? '#0F766E' : '#DB6478',
                           }}
                         />
                       </div>
                       <span
-                        className="font-[DM_Mono] text-[11px] font-bold w-16 text-right shrink-0"
-                        style={{ color: a.pct >= 0 ? '#10b981' : '#f43f5e' }}
+                        className="font-[IBM_Plex_Mono] text-[11px] font-bold w-16 text-right shrink-0"
+                        style={{ color: a.pct >= 0 ? '#0F766E' : '#DB6478' }}
                       >
                         {a.pct >= 0 ? '+' : ''}{a.pct.toFixed(2)}%
                       </span>
-                      <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)] w-24 text-right shrink-0">
+                      <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] w-24 text-right shrink-0">
                         {a.pnl >= 0 ? '+' : ''}{formatCurrency(a.pnl)}
                       </span>
                     </div>
@@ -280,11 +280,11 @@ export default function EvolucaoPage() {
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 h-fit
                             transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-2.5 mb-[18px]">
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
                   <path d="M22 12A10 10 0 0 0 12 2v10z" />
                 </svg>
-                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                   Distribuicao
                 </span>
               </div>
@@ -312,7 +312,7 @@ export default function EvolucaoPage() {
                         <span className="flex-1 text-[var(--sl-t2)]">
                           {ASSET_CLASS_LABELS[cls as keyof typeof ASSET_CLASS_LABELS] ?? cls}
                         </span>
-                        <span className="font-[DM_Mono] text-[10px] text-[var(--sl-t3)]">{pct.toFixed(0)}%</span>
+                        <span className="font-[IBM_Plex_Mono] text-[10px] text-[var(--sl-t3)]">{pct.toFixed(0)}%</span>
                       </div>
                     )
                   })}

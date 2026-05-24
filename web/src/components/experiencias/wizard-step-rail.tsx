@@ -36,9 +36,9 @@ export function WizardStepRail({ steps, currentStep, className }: WizardStepRail
             <div
               className={cn(
                 'w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0',
-                'font-[DM_Mono] text-[13px] font-medium border-2 z-[1] transition-all',
-                isDone && 'border-[#10b981] bg-[#10b981] text-white',
-                isActive && 'border-[#ec4899] bg-[rgba(236,72,153,.08)] text-[#ec4899]',
+                'font-[IBM_Plex_Mono] text-[13px] font-medium border-2 z-[1] transition-all',
+                isDone && 'border-[#0F766E] bg-[#0F766E] text-white',
+                isActive && 'border-[#C76795] bg-[rgba(199,103,149,.08)] text-[#C76795]',
                 !isDone && !isActive && 'border-[var(--sl-s3)] bg-[var(--sl-bg)] text-[var(--sl-t3)]',
               )}
             >
@@ -50,7 +50,7 @@ export function WizardStepRail({ steps, currentStep, className }: WizardStepRail
               <div
                 className={cn(
                   'font-semibold text-[13px] transition-colors',
-                  isDone && 'text-[#10b981]',
+                  isDone && 'text-[#0F766E]',
                   isActive && 'text-[var(--sl-t1)]',
                   !isDone && !isActive && 'text-[var(--sl-t3)]',
                 )}

@@ -20,7 +20,7 @@ export interface GoalsWidgetProps {
   loading: boolean
 }
 
-const GOAL_COLORS = ['#10b981', '#06b6d4', '#f97316', '#a855f7', '#f43f5e', '#3b82f6']
+const GOAL_COLORS = ['#0F766E', '#3CA0B5', '#D97534', '#a855f7', '#DB6478', '#4F88D4']
 
 export function GoalsWidget({ topGoals, loading }: GoalsWidgetProps) {
   const router = useRouter()
@@ -28,15 +28,15 @@ export function GoalsWidget({ topGoals, loading }: GoalsWidgetProps) {
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-[18px]">
-        <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round">
+        <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B6FD4" strokeWidth="2" strokeLinecap="round">
             <circle cx="12" cy="12" r="10"/>
             <circle cx="12" cy="12" r="6"/>
             <circle cx="12" cy="12" r="2"/>
           </svg>
           Metas Ativas
         </span>
-        <button className="text-[12px] font-medium text-[#6366f1] hover:opacity-70 transition-opacity cursor-pointer"
+        <button className="text-[12px] font-medium text-[#6B6FD4] hover:opacity-70 transition-opacity cursor-pointer"
           onClick={() => router.push('/futuro')}>{topGoals.length} objetivos</button>
       </div>
       {loading
@@ -47,7 +47,7 @@ export function GoalsWidget({ topGoals, loading }: GoalsWidgetProps) {
             <div className="flex flex-col gap-2.5">
               {topGoals.map((goal, idx) => {
                 const pct = calcProgress(goal.current_amount, goal.target_amount)
-                const pctColor = pct >= 50 ? '#10b981' : '#f59e0b'
+                const pctColor = pct >= 50 ? '#0F766E' : '#D9962E'
                 const accentColor = GOAL_COLORS[idx % GOAL_COLORS.length]
                 return (
                   <div
@@ -65,9 +65,9 @@ export function GoalsWidget({ topGoals, loading }: GoalsWidgetProps) {
                       </div>
                     </div>
                     <div className="w-[60px] h-1 bg-[var(--sl-s3)] rounded-[2px] overflow-hidden shrink-0">
-                      <div className="h-full rounded-[2px]" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
+                      <div className="h-full rounded-[2px]" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #0F766E, #0B2D34)' }} />
                     </div>
-                    <span className="font-[DM_Mono] text-[14px] font-medium shrink-0" style={{ color: pctColor }}>{pct}%</span>
+                    <span className="font-[IBM_Plex_Mono] text-[14px] font-medium shrink-0" style={{ color: pctColor }}>{pct}%</span>
                   </div>
                 )
               })}

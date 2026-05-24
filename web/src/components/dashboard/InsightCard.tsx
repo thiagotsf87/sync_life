@@ -126,25 +126,25 @@ export function InsightCard({
   return (
     <div className="relative rounded-[18px] overflow-hidden sl-fade-up sl-delay-2">
       {/* Gradient border via pseudo-element technique */}
-      <div className="absolute -inset-px rounded-[19px] z-0" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,.22), rgba(16,185,129,.12))' }} />
+      <div className="absolute -inset-px rounded-[19px] z-0" style={{ background: 'linear-gradient(135deg, rgba(107,111,212,.22), rgba(15,118,110,.12))' }} />
       <div className="absolute inset-0 rounded-[18px] bg-[var(--sl-s1)] z-0" />
 
       {/* Content - relative z-1 to sit above pseudo backgrounds */}
       <div className="relative z-[1] px-7 py-6">
         <div className="flex items-center gap-2 mb-3">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">Insight Inteligente</span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold" style={{ background: 'rgba(99,102,241,.12)', color: '#6366f1' }}>IA</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B6FD4" strokeWidth="2" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span className="font-[Space_Grotesk] font-bold text-[14px] text-[var(--sl-t1)]">Insight Inteligente</span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold" style={{ background: 'rgba(107,111,212,.12)', color: '#6B6FD4' }}>IA</span>
         </div>
         <p className="text-[13px] text-[var(--sl-t2)] leading-[1.65]">
           {budgetsOver === 0
             ? <>Todos os seus or\u00e7amentos est\u00e3o dentro do planejado \u2014 \u00f3tima disciplina! Seu saldo est\u00e1
-              projetado para <span style={{ color: '#10b981' }}><strong>{fmt(projectedBalance)} ao final do m\u00eas</strong></span>.
-              {goalsAtRisk > 0 && <> Aten\u00e7\u00e3o: <span style={{ color: '#f59e0b' }}><strong>{goalsAtRisk} meta(s) abaixo do ritmo</strong></span>.</>}
+              projetado para <span style={{ color: '#0F766E' }}><strong>{fmt(projectedBalance)} ao final do m\u00eas</strong></span>.
+              {goalsAtRisk > 0 && <> Aten\u00e7\u00e3o: <span style={{ color: '#D9962E' }}><strong>{goalsAtRisk} meta(s) abaixo do ritmo</strong></span>.</>}
             </>
-            : <>Em {now.toLocaleDateString('pt-BR', { month: 'long' })} voc\u00ea tem <span style={{ color: '#f59e0b' }}>
+            : <>Em {now.toLocaleDateString('pt-BR', { month: 'long' })} voc\u00ea tem <span style={{ color: '#D9962E' }}>
               <strong>{budgetsOver} or\u00e7amento(s) estourado(s)</strong></span>.
-              Saldo atual: <span style={{ color: '#10b981' }}><strong>{fmt(balance)}</strong></span>.
+              Saldo atual: <span style={{ color: '#0F766E' }}><strong>{fmt(balance)}</strong></span>.
               {topExpenseCat && <> Maior gasto: <strong>{topExpenseCat.name}</strong> com {topExpensePct}% da renda.</>}
             </>
           }
@@ -160,7 +160,7 @@ export function InsightCard({
           />
           <button
             className="px-[18px] py-[7px] rounded-[9px] text-[12px] font-semibold text-white cursor-pointer hover:opacity-85 transition-opacity whitespace-nowrap disabled:opacity-50"
-            style={{ background: '#6366f1', border: 'none' }}
+            style={{ background: '#6B6FD4', border: 'none' }}
             onClick={handleAiAsk}
             disabled={aiLoading || !aiQuery.trim()}
           >
@@ -170,10 +170,10 @@ export function InsightCard({
 
         {/* AI Response */}
         {aiResponse && (
-          <div className="mt-3 px-4 py-3 rounded-[12px]" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(99,102,241,.12)' }}>
+          <div className="mt-3 px-4 py-3 rounded-[12px]" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(107,111,212,.12)' }}>
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#6366f1]">Resposta da IA</span>
-              {aiLoading && <Loader2 size={10} className="animate-spin text-[#6366f1]" />}
+              <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#6B6FD4]">Resposta da IA</span>
+              {aiLoading && <Loader2 size={10} className="animate-spin text-[#6B6FD4]" />}
             </div>
             <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed whitespace-pre-wrap">{aiResponse}</p>
           </div>

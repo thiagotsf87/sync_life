@@ -22,14 +22,14 @@ export const metadata: Metadata = {
 }
 
 const MODULES = [
-  { name: 'Finanças', desc: 'Controle de receitas, despesas, orçamento por envelopes e visão completa do seu dinheiro.', color: '#10b981', bgAlpha: 'rgba(16,185,129,.1)', pills: ['Envelopes', 'Recorrentes', 'Projeção'], iconPath: 'M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6' },
-  { name: 'Tempo', desc: 'Agenda semanal, blocos de foco, eventos e gerenciamento inteligente da sua rotina.', color: '#06b6d4', bgAlpha: 'rgba(6,182,212,.1)', pills: ['Pomodoro', 'Agenda', 'Blocos'], iconType: 'clock' },
-  { name: 'Futuro', desc: 'Defina objetivos de longo prazo, acompanhe progresso e planeje marcos importantes.', color: '#0055ff', bgAlpha: 'rgba(0,85,255,.1)', pills: ['Objetivos', 'Milestones', 'Aportes'], iconType: 'target' },
-  { name: 'Corpo', desc: 'Registre peso, exercícios, alimentação e acompanhe a evolução da sua saúde física.', color: '#f97316', bgAlpha: 'rgba(249,115,22,.1)', pills: ['Peso', 'Exercícios', 'Nutrição'], iconPath: 'M22 12h-4l-3 9L9 3l-3 9H2' },
-  { name: 'Mente', desc: 'Diário de humor, hábitos, meditação e cuidados com o bem-estar mental.', color: '#eab308', bgAlpha: 'rgba(234,179,8,.1)', pills: ['Humor', 'Hábitos', 'Diário'], iconPath: 'M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8z' },
-  { name: 'Patrimônio', desc: 'Acompanhe investimentos, ativos, proventos e a evolução do seu patrimônio.', color: '#3b82f6', bgAlpha: 'rgba(59,130,246,.1)', pills: ['Carteira', 'Proventos', 'Evolução'], iconType: 'trending' },
-  { name: 'Carreira', desc: 'Gerencie projetos profissionais, certificações, networking e evolução de carreira.', color: '#f43f5e', bgAlpha: 'rgba(244,63,94,.1)', pills: ['Projetos', 'Skills', 'Network'], iconType: 'briefcase' },
-  { name: 'Experiências', desc: 'Planeje viagens, organize roteiros, orçamento e checklists de aventuras.', color: '#ec4899', bgAlpha: 'rgba(236,72,153,.1)', pills: ['Viagens', 'Roteiros', 'Budget'], iconType: 'plane' },
+  { name: 'Finanças', desc: 'Controle de receitas, despesas, orçamento por envelopes e visão completa do seu dinheiro.', color: '#0F766E', bgAlpha: 'rgba(15,118,110,.1)', pills: ['Envelopes', 'Recorrentes', 'Projeção'], iconPath: 'M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6' },
+  { name: 'Tempo', desc: 'Agenda semanal, blocos de foco, eventos e gerenciamento inteligente da sua rotina.', color: '#3CA0B5', bgAlpha: 'rgba(60,160,181,.1)', pills: ['Pomodoro', 'Agenda', 'Blocos'], iconType: 'clock' },
+  { name: 'Futuro', desc: 'Defina objetivos de longo prazo, acompanhe progresso e planeje marcos importantes.', color: '#8B7BD4', bgAlpha: 'rgba(139,123,212,.1)', pills: ['Objetivos', 'Milestones', 'Aportes'], iconType: 'target' },
+  { name: 'Corpo', desc: 'Registre peso, exercícios, alimentação e acompanhe a evolução da sua saúde física.', color: '#D97534', bgAlpha: 'rgba(217,117,52,.1)', pills: ['Peso', 'Exercícios', 'Nutrição'], iconPath: 'M22 12h-4l-3 9L9 3l-3 9H2' },
+  { name: 'Mente', desc: 'Diário de humor, hábitos, meditação e cuidados com o bem-estar mental.', color: '#D9962E', bgAlpha: 'rgba(217,150,46,.1)', pills: ['Humor', 'Hábitos', 'Diário'], iconPath: 'M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8z' },
+  { name: 'Patrimônio', desc: 'Acompanhe investimentos, ativos, proventos e a evolução do seu patrimônio.', color: '#4F88D4', bgAlpha: 'rgba(79,136,212,.1)', pills: ['Carteira', 'Proventos', 'Evolução'], iconType: 'trending' },
+  { name: 'Carreira', desc: 'Gerencie projetos profissionais, certificações, networking e evolução de carreira.', color: '#DB6478', bgAlpha: 'rgba(219,100,120,.1)', pills: ['Projetos', 'Skills', 'Network'], iconType: 'briefcase' },
+  { name: 'Experiências', desc: 'Planeje viagens, organize roteiros, orçamento e checklists de aventuras.', color: '#C76795', bgAlpha: 'rgba(199,103,149,.1)', pills: ['Viagens', 'Roteiros', 'Budget'], iconType: 'plane' },
 ]
 
 function ModuleIcon({ mod }: { mod: typeof MODULES[number] }) {
@@ -71,15 +71,15 @@ export default function LandingPage() {
               </div>
               <div className="hero-info anim d5">
                 <span className="hero-info-item">
-                  <Check size={14} color="#10b981" strokeWidth={2} />
+                  <Check size={14} color="#0F766E" strokeWidth={2} />
                   Sem cartao de credito
                 </span>
                 <span className="hero-info-item">
-                  <Check size={14} color="#10b981" strokeWidth={2} />
+                  <Check size={14} color="#0F766E" strokeWidth={2} />
                   8 dimensoes da vida
                 </span>
                 <span className="hero-info-item">
-                  <Check size={14} color="#10b981" strokeWidth={2} />
+                  <Check size={14} color="#0F766E" strokeWidth={2} />
                   12 temas visuais
                 </span>
               </div>
@@ -115,10 +115,10 @@ export default function LandingPage() {
                 </div>
                 <div className="dp-modules">
                   {[
-                    { name: 'Financas', val: '85', color: 'var(--green)', bg: 'rgba(16,185,129,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
-                    { name: 'Tempo', val: '68', color: 'var(--cyan)', bg: 'rgba(6,182,212,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
-                    { name: 'Corpo', val: '74', color: 'var(--orange)', bg: 'rgba(249,115,22,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
-                    { name: 'Futuro', val: '61', color: 'var(--el)', bg: 'rgba(0,85,255,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--el)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> },
+                    { name: 'Financas', val: '85', color: 'var(--green)', bg: 'rgba(15,118,110,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
+                    { name: 'Tempo', val: '68', color: '#3CA0B5', bg: 'rgba(60,160,181,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3CA0B5" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
+                    { name: 'Corpo', val: '74', color: '#D97534', bg: 'rgba(217,117,52,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97534" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
+                    { name: 'Futuro', val: '61', color: '#8B7BD4', bg: 'rgba(139,123,212,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B7BD4" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> },
                   ].map(m => (
                     <div key={m.name} className="dp-mod">
                       <div className="dp-mod-icon" style={{ background: m.bg }}>{m.icon}</div>
@@ -240,7 +240,7 @@ export default function LandingPage() {
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <div className="score-info-item">
-                    <div className="score-info-icon" style={{ background: 'rgba(16,185,129,.08)' }}>
+                    <div className="score-info-icon" style={{ background: 'rgba(15,118,110,.08)' }}>
                       <Activity size={16} color="var(--green)" />
                     </div>
                     <div>
@@ -249,8 +249,8 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <div className="score-info-item">
-                    <div className="score-info-icon" style={{ background: 'rgba(6,182,212,.08)' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" strokeWidth="2" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                    <div className="score-info-icon" style={{ background: 'rgba(60,160,181,.08)' }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3CA0B5" strokeWidth="2" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
                     </div>
                     <div>
                       <div className="score-info-title">Evolucao semanal</div>
@@ -258,7 +258,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <div className="score-info-item">
-                    <div className="score-info-icon" style={{ background: 'rgba(99,102,241,.08)' }}>
+                    <div className="score-info-icon" style={{ background: 'rgba(107,111,212,.08)' }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                     </div>
                     <div>

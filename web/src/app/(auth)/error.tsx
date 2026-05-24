@@ -16,11 +16,11 @@ export default function AuthError({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center bg-[var(--sl-bg)]">
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f43f5e]/10">
-        <AlertTriangle className="h-8 w-8 text-[#f43f5e]" />
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#DB6478]/10">
+        <AlertTriangle className="h-8 w-8 text-[#DB6478]" />
       </div>
       <div className="flex flex-col gap-2">
-        <h2 className="font-[Syne] text-xl font-extrabold text-[var(--sl-t1)]">
+        <h2 className="font-[Space_Grotesk] text-xl font-extrabold text-[var(--sl-t1)]">
           Erro na autenticação
         </h2>
         <p className="max-w-md text-sm text-[var(--sl-t2)]">
@@ -37,7 +37,7 @@ export default function AuthError({
         </button>
         <a
           href="/login"
-          className="inline-flex items-center gap-2 rounded-xl bg-[#10b981] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0d9668]"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#0F766E] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0d9668]"
         >
           Ir ao Login
         </a>

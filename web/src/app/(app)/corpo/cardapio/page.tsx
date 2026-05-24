@@ -255,8 +255,8 @@ export default function CardapioPage() {
       {/* 1. ModuleHeader */}
       <ModuleHeader
         icon={Utensils}
-        iconBg="rgba(249,115,22,.08)"
-        iconColor="#f97316"
+        iconBg="rgba(217,117,52,.08)"
+        iconColor="#D97534"
         title="Cardapio com IA"
         subtitle="Plano alimentar personalizado gerado por inteligencia artificial"
       >
@@ -267,7 +267,7 @@ export default function CardapioPage() {
           <Settings size={12} />
           Editar configuracoes
         </button>
-        <span className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[11px] font-semibold border border-[rgba(249,115,22,.2)] bg-[rgba(249,115,22,.08)] text-[#f97316]">
+        <span className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[11px] font-semibold border border-[rgba(217,117,52,.2)] bg-[rgba(217,117,52,.08)] text-[#D97534]">
           <Sparkles size={12} />
           IA
         </span>
@@ -280,7 +280,7 @@ export default function CardapioPage() {
             {profile.tdee && (
               <div>
                 <p className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-wider">TDEE</p>
-                <p className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)]">{Math.round(profile.tdee)} kcal</p>
+                <p className="font-[IBM_Plex_Mono] text-[14px] font-medium text-[var(--sl-t1)]">{Math.round(profile.tdee)} kcal</p>
               </div>
             )}
             {profile.weight_goal_type && (
@@ -298,16 +298,16 @@ export default function CardapioPage() {
           </div>
           <div className="flex-1" />
           <button onClick={() => router.push('/corpo/peso')}
-            className="text-[11px] text-[#f97316] hover:opacity-80">
+            className="text-[11px] text-[#D97534] hover:opacity-80">
             Editar perfil &rarr;
           </button>
         </div>
       )}
 
       {!profile?.tdee && (
-        <div className="mb-5 p-6 bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-[18px] sl-fade-up">
+        <div className="mb-5 p-6 bg-[#D9962E]/10 border border-[#D9962E]/30 rounded-[18px] sl-fade-up">
           <p className="text-[13px] text-[var(--sl-t2)]">
-            Configure seu <button onClick={() => router.push('/corpo/peso')} className="text-[#f59e0b] font-semibold hover:opacity-80">perfil de saude</button> para que a IA gere cardapios personalizados para seu TDEE e objetivos.
+            Configure seu <button onClick={() => router.push('/corpo/peso')} className="text-[#D9962E] font-semibold hover:opacity-80">perfil de saude</button> para que a IA gere cardapios personalizados para seu TDEE e objetivos.
           </p>
         </div>
       )}
@@ -324,13 +324,13 @@ export default function CardapioPage() {
                   className={cn(
                     'px-4 py-2 rounded-[10px] text-[12px] font-semibold border text-center transition-all min-w-[70px]',
                     selectedDay === idx
-                      ? 'border-[#f59e0b] bg-[rgba(245,158,11,.08)] text-[var(--sl-t1)]'
+                      ? 'border-[#D9962E] bg-[rgba(217,150,46,.08)] text-[var(--sl-t1)]'
                       : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t2)]',
                     lockedDays.has(idx) && 'opacity-70'
                   )}
                 >
                   <span className="block">{day}</span>
-                  <span className="block font-[DM_Mono] text-[10px] font-medium text-[#f59e0b] mt-[2px]">
+                  <span className="block font-[IBM_Plex_Mono] text-[10px] font-medium text-[#D9962E] mt-[2px]">
                     {dayCals.toLocaleString('pt-BR')}
                   </span>
                 </button>
@@ -338,10 +338,10 @@ export default function CardapioPage() {
                 <button
                   onClick={() => toggleLockDay(idx)}
                   title={lockedDays.has(idx) ? 'Dia travado (clique para destravar)' : 'Travar dia'}
-                  className="text-[var(--sl-t3)] hover:text-[#f59e0b] transition-colors"
+                  className="text-[var(--sl-t3)] hover:text-[#D9962E] transition-colors"
                 >
                   {lockedDays.has(idx)
-                    ? <Lock size={10} className="text-[#f59e0b]" />
+                    ? <Lock size={10} className="text-[#D9962E]" />
                     : <Unlock size={10} />}
                 </button>
               </div>
@@ -359,21 +359,21 @@ export default function CardapioPage() {
           {/* Generate section (no plan yet) */}
           {!plan ? (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 text-center sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
-              <div className="text-5xl mb-4"><Utensils size={48} className="mx-auto text-[#f97316] opacity-60" /></div>
-              <h2 className="font-[Syne] font-bold text-[17px] text-[var(--sl-t1)] mb-2">
+              <div className="text-5xl mb-4"><Utensils size={48} className="mx-auto text-[#D97534] opacity-60" /></div>
+              <h2 className="font-[Space_Grotesk] font-bold text-[17px] text-[var(--sl-t1)] mb-2">
                 Gere seu Cardapio Semanal
               </h2>
               <p className="text-[13px] text-[var(--sl-t2)] mb-6 max-w-sm mx-auto">
                 A IA cria um plano alimentar de 7 dias baseado no seu perfil, restricoes e objetivos.
               </p>
               {error && (
-                <p className="text-[12px] text-[#f43f5e] mb-4 max-w-sm mx-auto">{error}</p>
+                <p className="text-[12px] text-[#DB6478] mb-4 max-w-sm mx-auto">{error}</p>
               )}
               <button
                 onClick={handleGenerate}
                 disabled={generating}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-[12px] text-[14px] font-semibold
-                           bg-gradient-to-r from-[#f59e0b] to-[#f97316] text-[#03071a] hover:opacity-90
+                           bg-gradient-to-r from-[#D9962E] to-[#D97534] text-[#03071a] hover:opacity-90
                            disabled:opacity-60 transition-opacity"
               >
                 {generating ? (
@@ -388,11 +388,11 @@ export default function CardapioPage() {
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
               {/* Card title */}
               <div className="flex items-center gap-[9px] mb-5">
-                <Utensils size={16} className="text-[#f59e0b]" />
-                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <Utensils size={16} className="text-[#D9962E]" />
+                <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                   {DAYS_FULL[selectedDay]}
                 </h3>
-                <span className="font-[DM_Mono] text-[12px] text-[#f59e0b] ml-auto">
+                <span className="font-[IBM_Plex_Mono] text-[12px] text-[#D9962E] ml-auto">
                   {dayTotalCalories.toLocaleString('pt-BR')} kcal
                 </span>
               </div>
@@ -407,7 +407,7 @@ export default function CardapioPage() {
                         <p className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">
                           {MEAL_TYPE_LABELS[idx] ?? 'Lanche'}
                         </p>
-                        <p className="font-[DM_Mono] text-[11px] text-[#f59e0b] mt-[2px]">{meal.calories} kcal</p>
+                        <p className="font-[IBM_Plex_Mono] text-[11px] text-[#D9962E] mt-[2px]">{meal.calories} kcal</p>
                       </div>
                       {/* Meal body */}
                       <div className="flex-1">
@@ -418,17 +418,17 @@ export default function CardapioPage() {
                         {(meal.protein_g != null || meal.carbs_g != null || meal.fat_g != null) && (
                           <div className="flex gap-[6px]">
                             {meal.protein_g != null && (
-                              <span className="inline-flex items-center gap-1 px-[10px] py-[3px] rounded-md text-[10px] font-semibold bg-[rgba(59,130,246,.1)] text-[#3b82f6]">
+                              <span className="inline-flex items-center gap-1 px-[10px] py-[3px] rounded-md text-[10px] font-semibold bg-[rgba(79,136,212,.1)] text-[#4F88D4]">
                                 P: {meal.protein_g}g
                               </span>
                             )}
                             {meal.carbs_g != null && (
-                              <span className="inline-flex items-center gap-1 px-[10px] py-[3px] rounded-md text-[10px] font-semibold bg-[rgba(16,185,129,.1)] text-[#10b981]">
+                              <span className="inline-flex items-center gap-1 px-[10px] py-[3px] rounded-md text-[10px] font-semibold bg-[rgba(15,118,110,.1)] text-[#0F766E]">
                                 C: {meal.carbs_g}g
                               </span>
                             )}
                             {meal.fat_g != null && (
-                              <span className="inline-flex items-center gap-1 px-[10px] py-[3px] rounded-md text-[10px] font-semibold bg-[rgba(245,158,11,.1)] text-[#f59e0b]">
+                              <span className="inline-flex items-center gap-1 px-[10px] py-[3px] rounded-md text-[10px] font-semibold bg-[rgba(217,150,46,.1)] text-[#D9962E]">
                                 G: {meal.fat_g}g
                               </span>
                             )}
@@ -457,27 +457,27 @@ export default function CardapioPage() {
           {plan && dayPlan && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 hover:border-[var(--sl-border-h)] transition-colors">
               <div className="flex items-center gap-[9px] mb-[18px]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9962E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
                 </svg>
-                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                   Resumo Diario
                 </h3>
               </div>
               <div className="text-center mb-[14px]">
-                <span className="font-[DM_Mono] text-[28px] font-medium text-[#f59e0b]">{dayTotalCalories.toLocaleString('pt-BR')}</span>
+                <span className="font-[IBM_Plex_Mono] text-[28px] font-medium text-[#D9962E]">{dayTotalCalories.toLocaleString('pt-BR')}</span>
                 <span className="text-[12px] text-[var(--sl-t3)]"> kcal</span>
               </div>
               <div className="flex flex-col gap-[10px]">
                 {[
-                  { label: 'Proteina', value: `${dayProtein}g`, color: '#3b82f6', pct: dayProtein > 0 ? Math.min(100, (dayProtein / 200) * 100) : 0 },
-                  { label: 'Carboidratos', value: `${dayCarbs}g`, color: '#10b981', pct: dayCarbs > 0 ? Math.min(100, (dayCarbs / 300) * 100) : 0 },
-                  { label: 'Gordura', value: `${dayFat}g`, color: '#f59e0b', pct: dayFat > 0 ? Math.min(100, (dayFat / 100) * 100) : 0 },
+                  { label: 'Proteina', value: `${dayProtein}g`, color: '#4F88D4', pct: dayProtein > 0 ? Math.min(100, (dayProtein / 200) * 100) : 0 },
+                  { label: 'Carboidratos', value: `${dayCarbs}g`, color: '#0F766E', pct: dayCarbs > 0 ? Math.min(100, (dayCarbs / 300) * 100) : 0 },
+                  { label: 'Gordura', value: `${dayFat}g`, color: '#D9962E', pct: dayFat > 0 ? Math.min(100, (dayFat / 100) * 100) : 0 },
                 ].map(macro => (
                   <div key={macro.label}>
                     <div className="flex justify-between mb-1">
                       <span className="text-[11px]" style={{ color: macro.color }}>{macro.label}</span>
-                      <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t1)]">{macro.value}</span>
+                      <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t1)]">{macro.value}</span>
                     </div>
                     <div className="h-[6px] bg-[var(--sl-s3)] rounded-full overflow-hidden">
                       <div
@@ -497,7 +497,7 @@ export default function CardapioPage() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sl-t2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="3" /><path d="M12 1v6" /><path d="M12 17v6" /><path d="m4.22 4.22 4.24 4.24" /><path d="m15.54 15.54 4.24 4.24" /><path d="M1 12h6" /><path d="M17 12h6" /><path d="m4.22 19.78 4.24-4.24" /><path d="m15.54 8.46 4.24-4.24" />
               </svg>
-              <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+              <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                 Preferencias
               </h3>
             </div>
@@ -507,7 +507,7 @@ export default function CardapioPage() {
               <input type="number" value={budget}
                 onChange={e => setBudget(e.target.value)}
                 placeholder="Ex: 200"
-                className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f59e0b]"
+                className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D9962E]"
               />
             </div>
 
@@ -521,7 +521,7 @@ export default function CardapioPage() {
                     className={cn(
                       'px-[10px] py-1 rounded-[8px] text-[10px] font-semibold border transition-all',
                       extraRestrictions.includes(r)
-                        ? 'border-[#f59e0b] bg-[rgba(245,158,11,.08)] text-[var(--sl-t1)]'
+                        ? 'border-[#D9962E] bg-[rgba(217,150,46,.08)] text-[var(--sl-t1)]'
                         : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]'
                     )}
                   >
@@ -537,8 +537,8 @@ export default function CardapioPage() {
             onClick={handleGenerate}
             disabled={generating}
             className="w-full inline-flex items-center justify-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#f97316] text-white hover:brightness-110 hover:-translate-y-px
-                       transition-all shadow-[0_6px_20px_rgba(249,115,22,.15)] disabled:opacity-50"
+                       bg-[#D97534] text-white hover:brightness-110 hover:-translate-y-px
+                       transition-all shadow-[0_6px_20px_rgba(217,117,52,.15)] disabled:opacity-50"
           >
             <RefreshCw size={16} className={generating ? 'animate-spin' : ''} />
             {generating ? 'Gerando...' : 'Regenerar Cardapio'}
@@ -551,7 +551,7 @@ export default function CardapioPage() {
                 onClick={() => setShowHistory(h => !h)}
                 className="flex items-center justify-between w-full"
               >
-                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2">
+                <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2">
                   <History size={13} />
                   Historico ({planHistory.length})
                 </h3>

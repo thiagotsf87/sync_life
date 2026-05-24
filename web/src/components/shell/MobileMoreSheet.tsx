@@ -18,13 +18,13 @@ interface MobileMoreSheetProps {
 }
 
 const PINNABLE_MODULES = [
-  { id: 'financas', emoji: '💰', label: 'Finanças', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
-  { id: 'tempo', emoji: '⏳', label: 'Tempo', color: '#06b6d4', bg: 'rgba(6,182,212,0.15)' },
-  { id: 'futuro', emoji: '🔮', label: 'Futuro', color: '#0055ff', bg: 'rgba(0,85,255,0.15)' },
-  { id: 'corpo', emoji: '🏃', label: 'Corpo', color: '#f97316', bg: 'rgba(249,115,22,0.15)' },
-  { id: 'mente', emoji: '🧠', label: 'Mente', color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
-  { id: 'patrimonio', emoji: '📈', label: 'Patrimônio', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
-  { id: 'carreira', emoji: '💼', label: 'Carreira', color: '#ec4899', bg: 'rgba(236,72,153,0.15)' },
+  { id: 'financas', emoji: '💰', label: 'Finanças', color: '#0F766E', bg: 'rgba(15,118,110,0.15)' },
+  { id: 'tempo', emoji: '⏳', label: 'Tempo', color: '#3CA0B5', bg: 'rgba(60,160,181,0.15)' },
+  { id: 'futuro', emoji: '🔮', label: 'Futuro', color: '#0B2D34', bg: 'rgba(0,85,255,0.15)' },
+  { id: 'corpo', emoji: '🏃', label: 'Corpo', color: '#D97534', bg: 'rgba(217,117,52,0.15)' },
+  { id: 'mente', emoji: '🧠', label: 'Mente', color: '#8B7BD4', bg: 'rgba(139,123,212,0.15)' },
+  { id: 'patrimonio', emoji: '📈', label: 'Patrimônio', color: '#D9962E', bg: 'rgba(217,150,46,0.15)' },
+  { id: 'carreira', emoji: '💼', label: 'Carreira', color: '#C76795', bg: 'rgba(199,103,149,0.15)' },
   { id: 'experiencias', emoji: '✈️', label: 'Experiências', color: '#14b8a6', bg: 'rgba(20,184,166,0.15)' },
 ] as const
 
@@ -87,7 +87,7 @@ export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreShee
           <div className="h-1 w-10 rounded-full bg-[var(--sl-s3)]" />
         </div>
 
-        <h2 className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)] mb-1">
+        <h2 className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)] mb-1">
           Todos os Módulos
         </h2>
         <p className="text-[12px] text-[var(--sl-t3)] mb-4">
@@ -106,7 +106,7 @@ export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreShee
                   'flex flex-col items-center gap-1.5 rounded-[14px] px-2 py-3 cursor-pointer',
                   'border transition-all duration-150 active:scale-95',
                   isPinned
-                    ? 'border-[rgba(16,185,129,0.4)]'
+                    ? 'border-[rgba(15,118,110,0.4)]'
                     : 'border-[var(--sl-border)]',
                 )}
                 style={{
@@ -122,7 +122,7 @@ export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreShee
                   </div>
                   {isPinned && (
                     <span
-                      className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#10b981]"
+                      className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0F766E]"
                       title="Fixado na barra"
                     >
                       <Pin size={10} className="text-white" strokeWidth={2.5} />
@@ -139,7 +139,7 @@ export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreShee
                     'text-[10px] font-medium px-2 py-1 rounded-lg transition-colors',
                     'min-h-[24px] flex items-center justify-center',
                     isPinned
-                      ? 'bg-[#10b981]/20 text-[#10b981]'
+                      ? 'bg-[#0F766E]/20 text-[#0F766E]'
                       : 'text-[var(--sl-t3)] hover:bg-[var(--sl-s3)]',
                   )}
                 >
@@ -157,11 +157,11 @@ export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreShee
             className="flex items-center gap-3 w-full px-4 py-3 rounded-[12px]
                        text-[14px] transition-colors
                        hover:bg-[var(--sl-s2)] active:bg-[var(--sl-s3)]"
-            style={{ color: '#10b981' }}
+            style={{ color: '#0F766E' }}
           >
             <Bot size={18} strokeWidth={1.8} />
             <span className="font-semibold">Coach IA</span>
-            <span className="ml-auto text-[10px] font-bold text-[#f59e0b] bg-[rgba(245,158,11,0.15)] px-1.5 py-0.5 rounded-md">PRO</span>
+            <span className="ml-auto text-[10px] font-bold text-[#D9962E] bg-[rgba(217,150,46,0.15)] px-1.5 py-0.5 rounded-md">PRO</span>
           </button>
           <button
             onClick={() => handleNavigate('configuracoes')}

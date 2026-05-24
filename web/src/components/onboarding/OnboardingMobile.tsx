@@ -8,12 +8,12 @@ import { Check } from 'lucide-react'
 import { SyncLifeIcon } from '@/components/shell/icons'
 
 const MODULES = [
-  { value: 'financas', icon: '💰', name: 'Finanças', desc: 'Despesas, orçamento, planejamento', bg: 'rgba(16,185,129,0.15)' },
-  { value: 'tempo',    icon: '⏳', name: 'Tempo',    desc: 'Agenda e compromissos',             bg: 'rgba(6,182,212,0.15)' },
+  { value: 'financas', icon: '💰', name: 'Finanças', desc: 'Despesas, orçamento, planejamento', bg: 'rgba(15,118,110,0.15)' },
+  { value: 'tempo',    icon: '⏳', name: 'Tempo',    desc: 'Agenda e compromissos',             bg: 'rgba(60,160,181,0.15)' },
   { value: 'futuro',   icon: '🔮', name: 'Futuro',   desc: 'Objetivos e metas de vida',         bg: 'rgba(0,85,255,0.15)' },
-  { value: 'corpo',    icon: '🏃', name: 'Corpo',    desc: 'Atividades, peso e saúde',           bg: 'rgba(249,115,22,0.15)' },
-  { value: 'mente',    icon: '🧠', name: 'Mente',    desc: 'Foco, meditação e leitura',          bg: 'rgba(139,92,246,0.15)' },
-  { value: 'carreira', icon: '💼', name: 'Carreira',  desc: 'Evolução profissional',             bg: 'rgba(236,72,153,0.15)' },
+  { value: 'corpo',    icon: '🏃', name: 'Corpo',    desc: 'Atividades, peso e saúde',           bg: 'rgba(217,117,52,0.15)' },
+  { value: 'mente',    icon: '🧠', name: 'Mente',    desc: 'Foco, meditação e leitura',          bg: 'rgba(139,123,212,0.15)' },
+  { value: 'carreira', icon: '💼', name: 'Carreira',  desc: 'Evolução profissional',             bg: 'rgba(199,103,149,0.15)' },
 ]
 
 const DEFAULT_SELECTED = ['financas', 'tempo']
@@ -32,9 +32,9 @@ function ProgressDots({ current }: { current: number }) {
           style={{
             width: i <= current ? 28 : 16,
             background: i < current
-              ? '#10b981'
+              ? '#0F766E'
               : i === current
-                ? 'linear-gradient(90deg, #10b981, #0055ff)'
+                ? 'linear-gradient(90deg, #0F766E, #0B2D34)'
                 : 'var(--sl-s3)',
           }}
         />
@@ -93,11 +93,11 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
         {/* Logo */}
         <div className="flex items-center gap-2.5 mb-6">
           <SyncLifeIcon size={42} animated={false} />
-          <span className="font-[Syne] text-[22px] font-extrabold">
+          <span className="font-[Space_Grotesk] text-[22px] font-extrabold">
             <span className="text-[var(--sl-t1)]">Sync</span>
             <span
               style={{
-                background: 'linear-gradient(135deg, #10b981, #0055ff)',
+                background: 'linear-gradient(135deg, #0F766E, #0B2D34)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -114,7 +114,7 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
         {step === 1 && (
           <>
             <p className="text-[12px] text-[var(--sl-t2)] mb-2">Passo 1 de 2</p>
-            <h1 className="font-[Syne] text-[26px] font-bold text-[var(--sl-t1)] leading-[1.25] mb-2">
+            <h1 className="font-[Space_Grotesk] text-[26px] font-bold text-[var(--sl-t1)] leading-[1.25] mb-2">
               O que você quer sincronizar?
             </h1>
             <p className="text-[14px] text-[var(--sl-t2)] leading-[1.6] mb-6">
@@ -133,7 +133,7 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
                 placeholder="Como quer ser chamado?"
                 className="w-full h-[48px] px-4 rounded-[12px] bg-[var(--sl-s1)] border border-[var(--sl-border)]
                            text-[15px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]
-                           focus:outline-none focus:border-[#10b981]/50 transition-colors"
+                           focus:outline-none focus:border-[#0F766E]/50 transition-colors"
               />
               <p className="text-[11px] text-[var(--sl-t3)] mt-1.5">
                 É assim que vamos te cumprimentar no app.
@@ -149,8 +149,8 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
                     onClick={() => toggleModule(mod.value)}
                     className="flex items-center gap-3.5 p-3.5 rounded-[10px] border transition-all"
                     style={{
-                      background: isSelected ? 'rgba(16,185,129,0.15)' : 'var(--sl-s1)',
-                      borderColor: isSelected ? 'rgba(16,185,129,0.5)' : 'var(--sl-border)',
+                      background: isSelected ? 'rgba(15,118,110,0.15)' : 'var(--sl-s1)',
+                      borderColor: isSelected ? 'rgba(15,118,110,0.5)' : 'var(--sl-border)',
                     }}
                   >
                     <div
@@ -166,8 +166,8 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
                     <div
                       className="flex h-[22px] w-[22px] items-center justify-center rounded-full border-2 shrink-0"
                       style={{
-                        background: isSelected ? '#10b981' : 'transparent',
-                        borderColor: isSelected ? '#10b981' : 'var(--sl-border-h)',
+                        background: isSelected ? '#0F766E' : 'transparent',
+                        borderColor: isSelected ? '#0F766E' : 'var(--sl-border-h)',
                       }}
                     >
                       {isSelected && <Check size={12} strokeWidth={3} color="white" />}
@@ -183,7 +183,7 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
               className="w-full flex items-center justify-center h-[52px] rounded-[14px]
                          text-[15px] font-semibold text-white transition-all
                          disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
             >
               Continuar →
             </button>
@@ -197,7 +197,7 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
         {step === 2 && (
           <>
             <p className="text-[12px] text-[var(--sl-t2)] mb-2">Passo 2 de 2</p>
-            <h1 className="font-[Syne] text-[26px] font-bold text-[var(--sl-t1)] leading-[1.25] mb-2">
+            <h1 className="font-[Space_Grotesk] text-[26px] font-bold text-[var(--sl-t1)] leading-[1.25] mb-2">
               Tudo pronto{displayName ? `, ${displayName}` : ''}!
             </h1>
             <p className="text-[14px] text-[var(--sl-t2)] leading-[1.6] mb-6">
@@ -208,8 +208,8 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
             <div
               className="flex items-center gap-4 p-4 rounded-[14px] mb-5"
               style={{
-                background: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(0,85,255,0.12))',
-                border: '1px solid rgba(16,185,129,0.25)',
+                background: 'linear-gradient(135deg, rgba(15,118,110,0.12), rgba(0,85,255,0.12))',
+                border: '1px solid rgba(15,118,110,0.25)',
               }}
             >
               <div className="relative w-[52px] h-[52px] shrink-0">
@@ -222,15 +222,15 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
                   />
                   <defs>
                     <linearGradient id="ob-score-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#10b981" />
-                      <stop offset="100%" stopColor="#0055ff" />
+                      <stop offset="0%" stopColor="#0F766E" />
+                      <stop offset="100%" stopColor="#0B2D34" />
                     </linearGradient>
                   </defs>
                 </svg>
                 <span
-                  className="absolute inset-0 flex items-center justify-center font-[Syne] text-[16px] font-extrabold"
+                  className="absolute inset-0 flex items-center justify-center font-[Space_Grotesk] text-[16px] font-extrabold"
                   style={{
-                    background: 'linear-gradient(135deg, #10b981, #0055ff)',
+                    background: 'linear-gradient(135deg, #0F766E, #0B2D34)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                   }}
@@ -275,8 +275,8 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
                 'Tudo configurável depois em Ajustes',
               ].map(item => (
                 <div key={item} className="flex items-start gap-2.5 mb-2">
-                  <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#10b981]/20 shrink-0 mt-0.5">
-                    <Check size={10} strokeWidth={3} color="#10b981" />
+                  <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#0F766E]/20 shrink-0 mt-0.5">
+                    <Check size={10} strokeWidth={3} color="#0F766E" />
                   </div>
                   <p className="text-[13px] text-[var(--sl-t2)] leading-[1.5]">{item}</p>
                 </div>
@@ -289,7 +289,7 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
               className="w-full flex items-center justify-center h-[52px] rounded-[14px]
                          text-[15px] font-semibold text-white transition-all
                          disabled:opacity-60"
-              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+              style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
             >
               {isLoading ? 'Preparando...' : 'Começar minha jornada 🚀'}
             </button>

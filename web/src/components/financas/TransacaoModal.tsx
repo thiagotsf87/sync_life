@@ -250,7 +250,7 @@ export function TransacaoModal({
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)] shrink-0">
-          <h2 className="font-[Syne] font-extrabold text-[16px] text-[var(--sl-t1)]">
+          <h2 className="font-[Space_Grotesk] font-extrabold text-[16px] text-[var(--sl-t1)]">
             {isTransfer
               ? (mode === 'create' ? 'Nova Transferência' : 'Editar Transferência')
               : (mode === 'create' ? 'Nova Transação' : 'Editar Transação')}
@@ -269,7 +269,7 @@ export function TransacaoModal({
           {/* Aviso para transação recorrente */}
           {mode === 'edit' && transaction?.recurring_transaction_id && (
             <div className="flex items-start gap-2 px-3 py-2.5 rounded-[10px] text-[12px]"
-              style={{ background: 'rgba(139,92,246,.08)', border: '1px solid rgba(139,92,246,.20)' }}>
+              style={{ background: 'rgba(139,123,212,.08)', border: '1px solid rgba(139,123,212,.20)' }}>
               <span className="text-base shrink-0">🔄</span>
               <p className="text-[#a78bfa] leading-snug">
                 Esta é uma ocorrência gerada automaticamente. A edição altera apenas este lançamento, não a série.
@@ -280,9 +280,9 @@ export function TransacaoModal({
           {/* Toggle tipo */}
           <div className="grid grid-cols-3 gap-2">
             {([
-              { value: 'expense' as const, label: 'Despesa', icon: '📤', color: '#f43f5e' },
-              { value: 'income' as const, label: 'Receita', icon: '💰', color: '#10b981' },
-              { value: 'transfer' as const, label: 'Transfer.', icon: '🔄', color: '#0055ff' },
+              { value: 'expense' as const, label: 'Despesa', icon: '📤', color: '#DB6478' },
+              { value: 'income' as const, label: 'Receita', icon: '💰', color: '#0F766E' },
+              { value: 'transfer' as const, label: 'Transfer.', icon: '🔄', color: '#0B2D34' },
             ]).map(t => {
               const isActive = type === t.value
               return (
@@ -328,7 +328,7 @@ export function TransacaoModal({
               <div className="flex items-center justify-center -my-1">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center"
                   style={{ background: 'rgba(0,85,255,0.08)', border: '1px solid rgba(0,85,255,0.2)' }}>
-                  <ArrowDown size={14} className="text-[#0055ff]" />
+                  <ArrowDown size={14} className="text-[#0B2D34]" />
                 </div>
               </div>
 
@@ -345,7 +345,7 @@ export function TransacaoModal({
               {autoDescription && (
                 <div className="flex items-center gap-2 px-3 py-2 rounded-[10px] text-[12px]"
                   style={{ background: 'rgba(0,85,255,0.05)', border: '1px solid rgba(0,85,255,0.15)' }}>
-                  <span className="text-[#0055ff]">🔄</span>
+                  <span className="text-[#0B2D34]">🔄</span>
                   <span className="text-[var(--sl-t2)]">Descrição: <strong className="text-[var(--sl-t1)]">{autoDescription}</strong></span>
                 </div>
               )}
@@ -355,19 +355,19 @@ export function TransacaoModal({
                 <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Valor</label>
                 <div className={cn(
                   'flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
-                  errors.amount ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus-within:border-[#0055ff]'
+                  errors.amount ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus-within:border-[#0B2D34]'
                 )}>
-                  <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+                  <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
                   <input
                     type="text"
                     inputMode="numeric"
                     value={amountStr}
                     onChange={e => setAmountStr(maskCurrency(e.target.value))}
                     placeholder="0,00"
-                    className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                    className="flex-1 bg-transparent outline-none font-[IBM_Plex_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
                   />
                 </div>
-                {errors.amount && <p className="text-[11px] text-[#f43f5e]">{errors.amount}</p>}
+                {errors.amount && <p className="text-[11px] text-[#DB6478]">{errors.amount}</p>}
               </div>
 
               {/* Data (full width for transfer) */}
@@ -378,9 +378,9 @@ export function TransacaoModal({
                   type="button"
                   onClick={() => setDatePickerOpen(o => !o)}
                   className={cn(
-                    'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono] flex items-center justify-between gap-2 text-left',
-                    errors.date ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-                    datePickerOpen && 'border-[#0055ff]'
+                    'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[IBM_Plex_Mono] flex items-center justify-between gap-2 text-left',
+                    errors.date ? 'border-[#DB6478]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                    datePickerOpen && 'border-[#0B2D34]'
                   )}
                 >
                   <span>{formatDateDisplay(date)}</span>
@@ -416,7 +416,7 @@ export function TransacaoModal({
                             'w-8 h-8 rounded-[8px] text-[12px] font-medium transition-colors',
                             !d && 'invisible',
                             d && selY === calView.year && selM === calView.month && selD === d
-                              ? 'bg-[#0055ff] text-white'
+                              ? 'bg-[#0B2D34] text-white'
                               : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
                           )}
                         >
@@ -426,7 +426,7 @@ export function TransacaoModal({
                     </div>
                   </div>
                 )}
-                {errors.date && <p className="text-[11px] text-[#f43f5e]">{errors.date}</p>}
+                {errors.date && <p className="text-[11px] text-[#DB6478]">{errors.date}</p>}
               </div>
 
               {/* Descrição (optional override) */}
@@ -437,7 +437,7 @@ export function TransacaoModal({
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder={autoDescription || 'Descrição da transferência...'}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0055ff] transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0B2D34] transition-colors"
                 />
               </div>
 
@@ -449,7 +449,7 @@ export function TransacaoModal({
                   onChange={e => setNotes(e.target.value)}
                   placeholder="Adicione uma observação..."
                   rows={2}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0055ff] transition-colors resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0B2D34] transition-colors resize-none"
                 />
               </div>
             </>
@@ -467,10 +467,10 @@ export function TransacaoModal({
                   placeholder="Ex: Supermercado, Salário, Netflix..."
                   className={cn(
                     'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none transition-colors',
-                    errors.description ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus:border-[#10b981]'
+                    errors.description ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus:border-[#0F766E]'
                   )}
                 />
-                {errors.description && <p className="text-[11px] text-[#f43f5e]">{errors.description}</p>}
+                {errors.description && <p className="text-[11px] text-[#DB6478]">{errors.description}</p>}
               </div>
 
               {/* Valor */}
@@ -478,19 +478,19 @@ export function TransacaoModal({
                 <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Valor</label>
                 <div className={cn(
                   'flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
-                  errors.amount ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus-within:border-[#10b981]'
+                  errors.amount ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus-within:border-[#0F766E]'
                 )}>
-                  <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+                  <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
                   <input
                     type="text"
                     inputMode="numeric"
                     value={amountStr}
                     onChange={e => setAmountStr(maskCurrency(e.target.value))}
                     placeholder="0,00"
-                    className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                    className="flex-1 bg-transparent outline-none font-[IBM_Plex_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
                   />
                 </div>
-                {errors.amount && <p className="text-[11px] text-[#f43f5e]">{errors.amount}</p>}
+                {errors.amount && <p className="text-[11px] text-[#DB6478]">{errors.amount}</p>}
               </div>
 
               {/* Grid de categorias */}
@@ -507,14 +507,14 @@ export function TransacaoModal({
                         className={cn(
                           'py-2.5 px-1.5 rounded-[11px] border-[1.5px] bg-[var(--sl-s2)] cursor-pointer text-center transition-all hover:border-[var(--sl-border-h)] hover:-translate-y-px',
                           categoryId === cat.id
-                            ? 'border-[#10b981] bg-[rgba(16,185,129,.08)]'
+                            ? 'border-[#0F766E] bg-[rgba(15,118,110,.08)]'
                             : 'border-[var(--sl-border)]'
                         )}
                       >
                         <span className="text-[20px] block mb-1">{cat.icon}</span>
                         <span className={cn(
                           'text-[11px] leading-tight block truncate',
-                          categoryId === cat.id ? 'text-[#10b981] font-semibold' : 'text-[var(--sl-t2)]'
+                          categoryId === cat.id ? 'text-[#0F766E] font-semibold' : 'text-[var(--sl-t2)]'
                         )}>
                           {cat.name}
                         </span>
@@ -522,7 +522,7 @@ export function TransacaoModal({
                     ))}
                   </div>
                 )}
-                {errors.category && <p className="text-[11px] text-[#f43f5e]">{errors.category}</p>}
+                {errors.category && <p className="text-[11px] text-[#DB6478]">{errors.category}</p>}
               </div>
 
               {/* Data + Método */}
@@ -535,9 +535,9 @@ export function TransacaoModal({
                     type="button"
                     onClick={() => setDatePickerOpen(o => !o)}
                     className={cn(
-                      'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono] flex items-center justify-between gap-2 text-left',
-                      errors.date ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-                      datePickerOpen && 'border-[#10b981]'
+                      'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[IBM_Plex_Mono] flex items-center justify-between gap-2 text-left',
+                      errors.date ? 'border-[#DB6478]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                      datePickerOpen && 'border-[#0F766E]'
                     )}
                   >
                     <span>{formatDateDisplay(date)}</span>
@@ -573,7 +573,7 @@ export function TransacaoModal({
                               'w-8 h-8 rounded-[8px] text-[12px] font-medium transition-colors',
                               !d && 'invisible',
                               d && selY === calView.year && selM === calView.month && selD === d
-                                ? 'bg-[#10b981] text-[#03071a]'
+                                ? 'bg-[#0F766E] text-[#03071a]'
                                 : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
                             )}
                           >
@@ -583,7 +583,7 @@ export function TransacaoModal({
                       </div>
                     </div>
                   )}
-                  {errors.date && <p className="text-[11px] text-[#f43f5e]">{errors.date}</p>}
+                  {errors.date && <p className="text-[11px] text-[#DB6478]">{errors.date}</p>}
                 </div>
 
                 {/* Método — custom dropdown */}
@@ -595,7 +595,7 @@ export function TransacaoModal({
                     className={cn(
                       'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors flex items-center justify-between gap-2 text-left',
                       'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-                      metodoOpen && 'border-[#10b981]'
+                      metodoOpen && 'border-[#0F766E]'
                     )}
                   >
                     <span>{PAYMENT_OPTIONS.find(p => p.value === paymentMethod)?.icon} {PAYMENT_OPTIONS.find(p => p.value === paymentMethod)?.label}</span>
@@ -614,7 +614,7 @@ export function TransacaoModal({
                           className={cn(
                             'w-full px-3.5 py-2.5 text-left text-[13px] flex items-center gap-2 transition-colors',
                             paymentMethod === p.value
-                              ? 'bg-[rgba(16,185,129,.12)] text-[#10b981] font-semibold'
+                              ? 'bg-[rgba(15,118,110,.12)] text-[#0F766E] font-semibold'
                               : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
                           )}
                         >
@@ -635,7 +635,7 @@ export function TransacaoModal({
                   onChange={e => setNotes(e.target.value)}
                   placeholder="Adicione uma observação..."
                   rows={2}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors resize-none"
                 />
               </div>
             </>
@@ -655,7 +655,7 @@ export function TransacaoModal({
             onClick={handleSave}
             disabled={saving}
             className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-[#03071a] transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: isTransfer ? '#0055ff' : '#10b981' }}
+            style={{ background: isTransfer ? '#0B2D34' : '#0F766E' }}
           >
             {saving && <Loader2 size={14} className="animate-spin" />}
             {isTransfer

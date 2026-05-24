@@ -80,14 +80,14 @@ export default function SimuladorPage() {
       <div className="max-w-[1160px] mx-auto px-10 py-9 pb-16">
         <ModuleHeader
           icon={Target}
-          iconBg="rgba(245,158,11,.10)"
-          iconColor="#f59e0b"
+          iconBg="rgba(217,150,46,.10)"
+          iconColor="#D9962E"
           title="Simulador IF"
           subtitle="Projete quando voce alcanca a liberdade financeira"
         />
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center max-w-[480px] mx-auto">
-          <Crown size={40} className="mx-auto mb-4 text-[#f59e0b]" />
-          <h2 className="font-[Syne] font-bold text-lg text-[var(--sl-t1)] mb-2">
+          <Crown size={40} className="mx-auto mb-4 text-[#D9962E]" />
+          <h2 className="font-[Space_Grotesk] font-bold text-lg text-[var(--sl-t1)] mb-2">
             Simulador IF — Recurso PRO
           </h2>
           <p className="text-[13px] text-[var(--sl-t2)] mb-6 leading-relaxed">
@@ -96,7 +96,7 @@ export default function SimuladorPage() {
           <button
             onClick={() => router.push('/configuracoes/plano')}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] font-semibold text-[13px]
-                       bg-gradient-to-r from-[#10b981] to-[#0055ff] text-white hover:opacity-90 transition-opacity"
+                       bg-gradient-to-r from-[#0F766E] to-[#0B2D34] text-white hover:opacity-90 transition-opacity"
           >
             <Crown size={14} />
             Assinar PRO
@@ -112,8 +112,8 @@ export default function SimuladorPage() {
       {/* ModuleHeader */}
       <ModuleHeader
         icon={Target}
-        iconBg="rgba(245,158,11,.10)"
-        iconColor="#f59e0b"
+        iconBg="rgba(217,150,46,.10)"
+        iconColor="#D9962E"
         title="Simulador de Independencia Financeira"
         subtitle="Projete quando voce alcanca a liberdade financeira"
       />
@@ -125,11 +125,11 @@ export default function SimuladorPage() {
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7
                         transition-colors hover:border-[var(--sl-border-h)]">
           <div className="flex items-center gap-2.5 mb-6">
-            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4 1.65 1.65 0 0 0 13.91 21v.09a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9" />
             </svg>
-            <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+            <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
               Parametros
             </span>
           </div>
@@ -138,12 +138,12 @@ export default function SimuladorPage() {
           <div className="mb-5">
             <div className="flex justify-between mb-1">
               <label className="text-[11px] font-semibold text-[var(--sl-t2)]">Patrimonio Atual</label>
-              <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t1)]">{formatCurrency(pvSlider)}</span>
+              <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t1)]">{formatCurrency(pvSlider)}</span>
             </div>
             <div className="relative w-full h-[6px] bg-[var(--sl-s3)] rounded-[3px] my-2">
               <div
                 className="absolute left-0 top-0 h-full rounded-[3px]"
-                style={{ width: `${Math.min(pvSlider / 1000000 * 100, 100)}%`, background: 'linear-gradient(90deg, #10b981, #0055ff)' }}
+                style={{ width: `${Math.min(pvSlider / 1000000 * 100, 100)}%`, background: 'linear-gradient(90deg, #0F766E, #0B2D34)' }}
               />
               <input
                 type="range"
@@ -155,7 +155,7 @@ export default function SimuladorPage() {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full border-2 border-[#10b981] bg-[var(--sl-s1)] shadow-[0_2px_6px_rgba(0,0,0,.3)] pointer-events-none"
+                className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full border-2 border-[#0F766E] bg-[var(--sl-s1)] shadow-[0_2px_6px_rgba(0,0,0,.3)] pointer-events-none"
                 style={{ left: `calc(${Math.min(pvSlider / 1000000 * 100, 100)}% - 9px)` }}
               />
             </div>
@@ -165,12 +165,12 @@ export default function SimuladorPage() {
           <div className="mb-5">
             <div className="flex justify-between mb-1">
               <label className="text-[11px] font-semibold text-[var(--sl-t2)]">Aporte Mensal</label>
-              <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t1)]">{formatCurrency(pmtSlider)}</span>
+              <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t1)]">{formatCurrency(pmtSlider)}</span>
             </div>
             <div className="relative w-full h-[6px] bg-[var(--sl-s3)] rounded-[3px] my-2">
               <div
                 className="absolute left-0 top-0 h-full rounded-[3px]"
-                style={{ width: `${Math.min(pmtSlider / 20000 * 100, 100)}%`, background: 'linear-gradient(90deg, #3b82f6, #a855f7)' }}
+                style={{ width: `${Math.min(pmtSlider / 20000 * 100, 100)}%`, background: 'linear-gradient(90deg, #4F88D4, #a855f7)' }}
               />
               <input
                 type="range"
@@ -182,7 +182,7 @@ export default function SimuladorPage() {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full border-2 border-[#3b82f6] bg-[var(--sl-s1)] shadow-[0_2px_6px_rgba(0,0,0,.3)] pointer-events-none"
+                className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full border-2 border-[#4F88D4] bg-[var(--sl-s1)] shadow-[0_2px_6px_rgba(0,0,0,.3)] pointer-events-none"
                 style={{ left: `calc(${Math.min(pmtSlider / 20000 * 100, 100)}% - 9px)` }}
               />
             </div>
@@ -192,12 +192,12 @@ export default function SimuladorPage() {
           <div className="mb-5">
             <div className="flex justify-between mb-1">
               <label className="text-[11px] font-semibold text-[var(--sl-t2)]">Rentabilidade Anual</label>
-              <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t1)]">{rateSlider.toFixed(1)}% a.a.</span>
+              <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t1)]">{rateSlider.toFixed(1)}% a.a.</span>
             </div>
             <div className="relative w-full h-[6px] bg-[var(--sl-s3)] rounded-[3px] my-2">
               <div
                 className="absolute left-0 top-0 h-full rounded-[3px]"
-                style={{ width: `${Math.min(rateSlider / 20 * 100, 100)}%`, background: 'linear-gradient(90deg, #f59e0b, #f97316)' }}
+                style={{ width: `${Math.min(rateSlider / 20 * 100, 100)}%`, background: 'linear-gradient(90deg, #D9962E, #D97534)' }}
               />
               <input
                 type="range"
@@ -209,7 +209,7 @@ export default function SimuladorPage() {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full border-2 border-[#f59e0b] bg-[var(--sl-s1)] shadow-[0_2px_6px_rgba(0,0,0,.3)] pointer-events-none"
+                className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full border-2 border-[#D9962E] bg-[var(--sl-s1)] shadow-[0_2px_6px_rgba(0,0,0,.3)] pointer-events-none"
                 style={{ left: `calc(${Math.min(rateSlider / 20 * 100, 100)}% - 9px)` }}
               />
             </div>
@@ -219,12 +219,12 @@ export default function SimuladorPage() {
           <div className="mb-5">
             <div className="flex justify-between mb-1">
               <label className="text-[11px] font-semibold text-[var(--sl-t2)]">Renda Passiva Desejada</label>
-              <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t1)]">{formatCurrency(incomeSlider)}/mes</span>
+              <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t1)]">{formatCurrency(incomeSlider)}/mes</span>
             </div>
             <div className="relative w-full h-[6px] bg-[var(--sl-s3)] rounded-[3px] my-2">
               <div
                 className="absolute left-0 top-0 h-full rounded-[3px]"
-                style={{ width: `${Math.min(incomeSlider / 20000 * 100, 100)}%`, background: 'linear-gradient(90deg, #10b981, #06b6d4)' }}
+                style={{ width: `${Math.min(incomeSlider / 20000 * 100, 100)}%`, background: 'linear-gradient(90deg, #0F766E, #3CA0B5)' }}
               />
               <input
                 type="range"
@@ -236,7 +236,7 @@ export default function SimuladorPage() {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full border-2 border-[#10b981] bg-[var(--sl-s1)] shadow-[0_2px_6px_rgba(0,0,0,.3)] pointer-events-none"
+                className="absolute top-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full border-2 border-[#0F766E] bg-[var(--sl-s1)] shadow-[0_2px_6px_rgba(0,0,0,.3)] pointer-events-none"
                 style={{ left: `calc(${Math.min(incomeSlider / 20000 * 100, 100)}% - 9px)` }}
               />
             </div>
@@ -244,11 +244,11 @@ export default function SimuladorPage() {
 
           {/* Result highlight */}
           <div className="p-4 rounded-[14px] mt-2"
-               style={{ background: 'rgba(59,130,246,.04)', border: '1px solid rgba(59,130,246,.12)' }}>
-            <div className="text-[10px] font-bold uppercase tracking-[.06em] text-[#3b82f6] mb-1.5">
+               style={{ background: 'rgba(79,136,212,.04)', border: '1px solid rgba(79,136,212,.12)' }}>
+            <div className="text-[10px] font-bold uppercase tracking-[.06em] text-[#4F88D4] mb-1.5">
               Resultado — Cenario Moderado
             </div>
-            <div className="font-[DM_Mono] text-[28px] font-medium text-[#3b82f6]">
+            <div className="font-[IBM_Plex_Mono] text-[28px] font-medium text-[#4F88D4]">
               {formatYears(months)}
             </div>
             <div className="text-[12px] text-[var(--sl-t2)] mt-1">
@@ -265,8 +265,8 @@ export default function SimuladorPage() {
             <div className={cn(
               'flex-1 py-[18px] px-4 text-center border border-[var(--sl-border)] border-r-0 rounded-l-[14px] transition-colors'
             )}>
-              <div className="text-[10px] font-bold uppercase text-[#f43f5e] mb-1">Conservador</div>
-              <div className="font-[DM_Mono] text-[18px] font-medium text-[var(--sl-t1)]">
+              <div className="text-[10px] font-bold uppercase text-[#DB6478] mb-1">Conservador</div>
+              <div className="font-[IBM_Plex_Mono] text-[18px] font-medium text-[var(--sl-t1)]">
                 {formatYears(conservador.months)}
               </div>
               <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">
@@ -275,10 +275,10 @@ export default function SimuladorPage() {
             </div>
             <div className={cn(
               'flex-1 py-[18px] px-4 text-center border transition-colors',
-              'border-[rgba(59,130,246,.3)] bg-[rgba(59,130,246,.03)]'
+              'border-[rgba(79,136,212,.3)] bg-[rgba(79,136,212,.03)]'
             )}>
-              <div className="text-[10px] font-bold uppercase text-[#3b82f6] mb-1">Moderado</div>
-              <div className="font-[DM_Mono] text-[18px] font-medium text-[#3b82f6]">
+              <div className="text-[10px] font-bold uppercase text-[#4F88D4] mb-1">Moderado</div>
+              <div className="font-[IBM_Plex_Mono] text-[18px] font-medium text-[#4F88D4]">
                 {formatYears(moderado.months)}
               </div>
               <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">
@@ -288,8 +288,8 @@ export default function SimuladorPage() {
             <div className={cn(
               'flex-1 py-[18px] px-4 text-center border border-[var(--sl-border)] border-l-0 rounded-r-[14px] transition-colors'
             )}>
-              <div className="text-[10px] font-bold uppercase text-[#10b981] mb-1">Arrojado</div>
-              <div className="font-[DM_Mono] text-[18px] font-medium text-[var(--sl-t1)]">
+              <div className="text-[10px] font-bold uppercase text-[#0F766E] mb-1">Arrojado</div>
+              <div className="font-[IBM_Plex_Mono] text-[18px] font-medium text-[var(--sl-t1)]">
                 {formatYears(arrojado.months)}
               </div>
               <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">
@@ -302,10 +302,10 @@ export default function SimuladorPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex-1
                           transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-3">
             <div className="flex items-center gap-2.5 mb-[18px]">
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
               </svg>
-              <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+              <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                 Projecao Patrimonial
               </span>
             </div>
@@ -343,14 +343,14 @@ export default function SimuladorPage() {
                   />
                   <ReferenceLine
                     y={targetPortfolio}
-                    stroke="#f59e0b"
+                    stroke="#D9962E"
                     strokeDasharray="6 3"
                     strokeWidth={1.5}
-                    label={{ value: 'Meta IF', position: 'right', fontSize: 10, fill: '#f59e0b' }}
+                    label={{ value: 'Meta IF', position: 'right', fontSize: 10, fill: '#D9962E' }}
                   />
-                  <Line type="monotone" dataKey="pessimistic" stroke="#f43f5e" strokeWidth={1.5} dot={false} />
-                  <Line type="monotone" dataKey="base" stroke="#3b82f6" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="optimistic" stroke="#10b981" strokeWidth={1.5} dot={false} />
+                  <Line type="monotone" dataKey="pessimistic" stroke="#DB6478" strokeWidth={1.5} dot={false} />
+                  <Line type="monotone" dataKey="base" stroke="#4F88D4" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="optimistic" stroke="#0F766E" strokeWidth={1.5} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -358,10 +358,10 @@ export default function SimuladorPage() {
             {/* Legend */}
             <div className="flex items-center gap-4 mt-3.5 justify-center flex-wrap">
               {[
-                { color: '#f43f5e', label: 'Conservador' },
-                { color: '#3b82f6', label: 'Moderado' },
-                { color: '#10b981', label: 'Arrojado' },
-                { color: '#f59e0b', label: 'Meta IF', dashed: true },
+                { color: '#DB6478', label: 'Conservador' },
+                { color: '#4F88D4', label: 'Moderado' },
+                { color: '#0F766E', label: 'Arrojado' },
+                { color: '#D9962E', label: 'Meta IF', dashed: true },
               ].map(l => (
                 <div key={l.label} className="flex items-center gap-1.5">
                   <div
@@ -382,11 +382,11 @@ export default function SimuladorPage() {
 
       {/* Summary strip */}
       <div className="p-4 rounded-[18px] mt-3.5 sl-fade-up sl-delay-4"
-           style={{ background: 'rgba(245,158,11,.04)', border: '1px solid rgba(245,158,11,.12)' }}>
+           style={{ background: 'rgba(217,150,46,.04)', border: '1px solid rgba(217,150,46,.12)' }}>
         <div className="flex items-center gap-2.5">
-          <div className="w-2 h-2 rounded-full bg-[#f59e0b] shrink-0" />
+          <div className="w-2 h-2 rounded-full bg-[#D9962E] shrink-0" />
           <p className="text-[13px] text-[var(--sl-t2)]">
-            Com aporte de <b className="font-[DM_Mono] text-[var(--sl-t1)]">{formatCurrency(pmt)}/mes</b> e rentabilidade de <b className="font-[DM_Mono] text-[var(--sl-t1)]">{rate.toFixed(1)}% a.a.</b>, voce alcanca a independencia financeira (renda passiva de <b className="font-[DM_Mono] text-[#10b981]">{formatCurrency(desiredIncome)}/mes</b>) em <b className="font-[DM_Mono] text-[#3b82f6]">{formatYears(months)}</b>.
+            Com aporte de <b className="font-[IBM_Plex_Mono] text-[var(--sl-t1)]">{formatCurrency(pmt)}/mes</b> e rentabilidade de <b className="font-[IBM_Plex_Mono] text-[var(--sl-t1)]">{rate.toFixed(1)}% a.a.</b>, voce alcanca a independencia financeira (renda passiva de <b className="font-[IBM_Plex_Mono] text-[#0F766E]">{formatCurrency(desiredIncome)}/mes</b>) em <b className="font-[IBM_Plex_Mono] text-[#4F88D4]">{formatYears(months)}</b>.
           </p>
         </div>
       </div>

@@ -52,12 +52,12 @@ export function Treemap({ items, className }: TreemapProps) {
           </p>
           <div className="mt-auto">
             <p
-              className="font-[DM_Mono] font-bold text-lg leading-none"
+              className="font-[IBM_Plex_Mono] font-bold text-lg leading-none"
               style={{ color: item.color }}
             >
               {item.percent.toFixed(1)}%
             </p>
-            <p className="text-[10px] text-[var(--sl-t3)] mt-0.5 font-[DM_Mono]">
+            <p className="text-[10px] text-[var(--sl-t3)] mt-0.5 font-[IBM_Plex_Mono]">
               {item.value}
             </p>
           </div>

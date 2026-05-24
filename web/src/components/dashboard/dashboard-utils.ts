@@ -10,9 +10,9 @@ export function fmtShort(val: number) {
 }
 
 export function getBudgetColor(pct: number): string {
-  if (pct > 85) return '#f43f5e'
-  if (pct > 70) return '#f59e0b'
-  return '#10b981'
+  if (pct > 85) return '#DB6478'
+  if (pct > 70) return '#D9962E'
+  return '#0F766E'
 }
 
 export function getGreeting(): string {

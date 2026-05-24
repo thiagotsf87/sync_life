@@ -38,8 +38,8 @@ export default function PassaportePage() {
         {/* Module Header */}
         <ModuleHeader
           icon={Globe}
-          iconBg="rgba(236,72,153,.1)"
-          iconColor="#ec4899"
+          iconBg="rgba(199,103,149,.1)"
+          iconColor="#C76795"
           title="Passaporte do Explorador"
           subtitle="Seu progresso pelo mundo"
         >
@@ -63,7 +63,7 @@ export default function PassaportePage() {
             <div className="grid gap-6 mb-7 sl-fade-up sl-delay-2" style={{ gridTemplateColumns: '280px 1fr' }}>
               {/* Ring Card */}
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] flex flex-col items-center justify-center p-8 hover:border-[var(--sl-border-h)] transition-colors">
-                <div style={{ filter: 'drop-shadow(0 0 20px rgba(236,72,153,.2))' }}>
+                <div style={{ filter: 'drop-shadow(0 0 20px rgba(199,103,149,.2))' }}>
                   <svg width="160" height="160" viewBox="0 0 160 160">
                     <circle cx="80" cy="80" r={radius} fill="none" stroke="var(--sl-s3)" strokeWidth="10" />
                     <circle
@@ -78,7 +78,7 @@ export default function PassaportePage() {
                     />
                     <defs>
                       <linearGradient id="passportGrad" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stopColor="#ec4899" />
+                        <stop offset="0%" stopColor="#C76795" />
                         <stop offset="100%" stopColor="#a855f7" />
                       </linearGradient>
                     </defs>
@@ -100,30 +100,30 @@ export default function PassaportePage() {
                 {/* Continentes */}
                 <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-5 hover:border-[var(--sl-border-h)] transition-colors">
                   <div className="flex items-center gap-[10px] mb-[14px]">
-                    <div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(236,72,153,.1)' }}>
-                      <Globe size={18} className="text-[#ec4899]" />
+                    <div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(199,103,149,.1)' }}>
+                      <Globe size={18} className="text-[#C76795]" />
                     </div>
                     <div>
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em]">Continentes</div>
-                      <div className="font-[DM_Mono] text-[22px] font-medium mt-[2px]">
+                      <div className="font-[IBM_Plex_Mono] text-[22px] font-medium mt-[2px]">
                         {passport?.continents ?? 0} <span className="text-[13px] text-[var(--sl-t3)]">/ 7</span>
                       </div>
                     </div>
                   </div>
                   <div className="w-full h-[5px] bg-[var(--sl-s3)] rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${((passport?.continents ?? 0) / 7) * 100}%`, background: '#ec4899' }} />
+                    <div className="h-full rounded-full" style={{ width: `${((passport?.continents ?? 0) / 7) * 100}%`, background: '#C76795' }} />
                   </div>
                 </div>
 
                 {/* Total Viagens */}
                 <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-5 hover:border-[var(--sl-border-h)] transition-colors">
                   <div className="flex items-center gap-[10px] mb-[14px]">
-                    <div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(6,182,212,.1)' }}>
-                      <Plane size={18} className="text-[#06b6d4]" />
+                    <div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(60,160,181,.1)' }}>
+                      <Plane size={18} className="text-[#3CA0B5]" />
                     </div>
                     <div>
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em]">Total Viagens</div>
-                      <div className="font-[DM_Mono] text-[22px] font-medium mt-[2px]">{trips.length}</div>
+                      <div className="font-[IBM_Plex_Mono] text-[22px] font-medium mt-[2px]">{trips.length}</div>
                     </div>
                   </div>
                   <div className="text-[12px] text-[var(--sl-t3)]">
@@ -134,12 +134,12 @@ export default function PassaportePage() {
                 {/* Dias no Exterior */}
                 <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-5 hover:border-[var(--sl-border-h)] transition-colors">
                   <div className="flex items-center gap-[10px] mb-[14px]">
-                    <div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(245,158,11,.1)' }}>
-                      <Clock size={18} className="text-[#f59e0b]" />
+                    <div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(217,150,46,.1)' }}>
+                      <Clock size={18} className="text-[#D9962E]" />
                     </div>
                     <div>
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em]">Dias no Exterior</div>
-                      <div className="font-[DM_Mono] text-[22px] font-medium mt-[2px]">{totalDays}</div>
+                      <div className="font-[IBM_Plex_Mono] text-[22px] font-medium mt-[2px]">{totalDays}</div>
                     </div>
                   </div>
                   <div className="text-[12px] text-[var(--sl-t3)]">Media: {avgDays} dias/viagem</div>
@@ -153,7 +153,7 @@ export default function PassaportePage() {
                     </div>
                     <div>
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em]">Memorias</div>
-                      <div className="font-[DM_Mono] text-[22px] font-medium mt-[2px]">{memoriesCount}</div>
+                      <div className="font-[IBM_Plex_Mono] text-[22px] font-medium mt-[2px]">{memoriesCount}</div>
                     </div>
                   </div>
                   <div className="text-[12px] text-[var(--sl-t3)]">de {completedTrips.length} viagens concluidas</div>
@@ -162,7 +162,7 @@ export default function PassaportePage() {
             </div>
 
             {/* Continents Section */}
-            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-3">Continentes</h2>
+            <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-3">Continentes</h2>
             <div className="grid grid-cols-7 gap-[10px] mb-7 sl-fade-up sl-delay-3">
               {(passport?.continentProgress ?? []).map(cont => {
                 const isVisited = cont.visited > 0
@@ -170,20 +170,20 @@ export default function PassaportePage() {
                   <div
                     key={cont.name}
                     className={`bg-[var(--sl-s1)] border rounded-[14px] p-[18px] text-center relative overflow-hidden transition-all hover:border-[var(--sl-border-h)] ${
-                      isVisited ? 'border-[rgba(236,72,153,.3)]' : 'border-[var(--sl-border)] opacity-50'
+                      isVisited ? 'border-[rgba(199,103,149,.3)]' : 'border-[var(--sl-border)] opacity-50'
                     }`}
                   >
                     {isVisited && (
-                      <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-[#ec4899]" />
+                      <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-[#C76795]" />
                     )}
                     <div
                       className="w-[40px] h-[40px] rounded-[12px] flex items-center justify-center mx-auto mb-[10px]"
-                      style={{ background: isVisited ? 'rgba(236,72,153,.1)' : 'var(--sl-s2)' }}
+                      style={{ background: isVisited ? 'rgba(199,103,149,.1)' : 'var(--sl-s2)' }}
                     >
-                      <Globe size={20} className={isVisited ? 'text-[#ec4899]' : 'text-[var(--sl-t3)]'} />
+                      <Globe size={20} className={isVisited ? 'text-[#C76795]' : 'text-[var(--sl-t3)]'} />
                     </div>
                     <div className="font-semibold text-[12.5px] mb-[2px]">{cont.name}</div>
-                    <div className={`text-[11px] font-semibold ${isVisited ? 'text-[#ec4899]' : 'text-[var(--sl-t3)]'}`}>
+                    <div className={`text-[11px] font-semibold ${isVisited ? 'text-[#C76795]' : 'text-[var(--sl-t3)]'}`}>
                       {isVisited ? `${cont.visited} paises` : '\u2014'}
                     </div>
                   </div>
@@ -202,7 +202,7 @@ export default function PassaportePage() {
             {/* Countries Visited */}
             {passport && passport.countriesList.length > 0 && (
               <>
-                <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-4">Paises Visitados</h2>
+                <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-4">Paises Visitados</h2>
                 <div className="flex flex-wrap gap-2 sl-fade-up sl-delay-4">
                   {passport.countriesList.map(c => (
                     <div

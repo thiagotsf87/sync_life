@@ -108,7 +108,7 @@ describe('generateRelatorioPdf', () => {
         monthWithBestBalance: '',
       },
       catCompData: [
-        { name: 'Alimentação', color: '#10b981', currentTotal: 1500, prevTotal: 1200, delta: 25 },
+        { name: 'Alimentação', color: '#0F766E', currentTotal: 1500, prevTotal: 1200, delta: 25 },
       ],
       topExpenses: [],
       barChartData: [],

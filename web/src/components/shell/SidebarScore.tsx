@@ -11,8 +11,8 @@ export function SidebarScore() {
         Life Sync Score
       </p>
       <div className="flex items-baseline gap-2">
-        <span className="font-[Syne] font-extrabold text-2xl text-sl-grad">{score}</span>
-        <span className="text-[11px] text-[#10b981]">{delta}</span>
+        <span className="font-[Space_Grotesk] font-extrabold text-2xl text-sl-grad">{score}</span>
+        <span className="text-[11px] text-[#0F766E]">{delta}</span>
       </div>
       {/* Progress bar */}
       <div className="mt-2 h-[5px] w-full rounded-full bg-[var(--sl-s3)] overflow-hidden">
@@ -20,7 +20,7 @@ export function SidebarScore() {
           className="h-full rounded-full"
           style={{
             width: `${score}%`,
-            background: 'linear-gradient(90deg, #10b981, #0055ff)',
+            background: 'linear-gradient(90deg, #0F766E, #0B2D34)',
             transition: 'width 1s cubic-bezier(0.4,0,0.2,1)',
           }}
         />

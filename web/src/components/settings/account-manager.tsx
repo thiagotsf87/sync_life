@@ -15,7 +15,7 @@ const PRESET_ICONS = [
 const PRESET_COLORS = [
   '#820AD1', '#FF7A00', '#EC7000', '#CC092F',
   '#FFED00', '#005CA9', '#CC0000', '#242424',
-  '#1C3D73', '#21C25E', '#009EE3', '#10b981',
+  '#1C3D73', '#21C25E', '#009EE3', '#0F766E',
 ]
 
 const ACCOUNT_TYPES: { value: CreateAccountData['type']; label: string }[] = [
@@ -38,7 +38,7 @@ const DEFAULT_FORM: AccountFormState = {
   bank: '',
   type: 'checking',
   icon: '🏦',
-  color: '#3b82f6',
+  color: '#4F88D4',
 }
 
 export function AccountManager() {
@@ -178,7 +178,7 @@ export function AccountManager() {
               >
                 <span className="text-base shrink-0">{preset.icon}</span>
                 <span className="text-[12px] font-medium text-[var(--sl-t1)] truncate flex-1">{preset.bank}</span>
-                {isAdded && <Check size={12} className="text-[#10b981] shrink-0" />}
+                {isAdded && <Check size={12} className="text-[#0F766E] shrink-0" />}
               </button>
             )
           })}
@@ -232,7 +232,7 @@ export function AccountManager() {
                   <button
                     onClick={() => handleDeleteClick(acc)}
                     disabled={isCheckingUsage}
-                    className="p-1 rounded-md text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[var(--sl-s3)] transition-colors disabled:opacity-40"
+                    className="p-1 rounded-md text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[var(--sl-s3)] transition-colors disabled:opacity-40"
                   >
                     <Trash2 size={12} />
                   </button>
@@ -245,7 +245,7 @@ export function AccountManager() {
         {/* Add new button */}
         <button
           onClick={openNewForm}
-          className="flex items-center justify-center gap-2 w-full mt-3 p-2.5 rounded-xl border border-dashed border-[var(--sl-border-h)] text-[var(--sl-t3)] hover:text-[#0055ff] hover:border-[rgba(0,85,255,0.4)] hover:bg-[rgba(0,85,255,0.04)] transition-all text-[12px] font-medium min-h-[44px]"
+          className="flex items-center justify-center gap-2 w-full mt-3 p-2.5 rounded-xl border border-dashed border-[var(--sl-border-h)] text-[var(--sl-t3)] hover:text-[#0B2D34] hover:border-[rgba(0,85,255,0.4)] hover:bg-[rgba(0,85,255,0.04)] transition-all text-[12px] font-medium min-h-[44px]"
         >
           <Plus size={14} />
           Nova conta manual
@@ -257,7 +257,7 @@ export function AccountManager() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="font-[Syne] font-bold text-base text-[var(--sl-t1)]">
+              <h3 className="font-[Space_Grotesk] font-bold text-base text-[var(--sl-t1)]">
                 {editingId ? 'Editar conta' : 'Nova conta'}
               </h3>
               <button
@@ -276,7 +276,7 @@ export function AccountManager() {
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="Ex: Nubank Principal"
-                  className="w-full bg-[var(--sl-s3)] border border-[var(--sl-border)] rounded-[9px] px-3 py-2 text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0055ff] transition-colors"
+                  className="w-full bg-[var(--sl-s3)] border border-[var(--sl-border)] rounded-[9px] px-3 py-2 text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0B2D34] transition-colors"
                 />
               </div>
 
@@ -287,7 +287,7 @@ export function AccountManager() {
                   value={form.bank}
                   onChange={e => setForm(f => ({ ...f, bank: e.target.value }))}
                   placeholder="Ex: Nubank"
-                  className="w-full bg-[var(--sl-s3)] border border-[var(--sl-border)] rounded-[9px] px-3 py-2 text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0055ff] transition-colors"
+                  className="w-full bg-[var(--sl-s3)] border border-[var(--sl-border)] rounded-[9px] px-3 py-2 text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0B2D34] transition-colors"
                 />
               </div>
 
@@ -303,7 +303,7 @@ export function AccountManager() {
                       className={cn(
                         'py-1.5 px-3 rounded-[9px] text-[12px] font-semibold border transition-all',
                         form.type === t.value
-                          ? 'bg-[rgba(0,85,255,0.12)] text-[#0055ff] border-[rgba(0,85,255,0.3)]'
+                          ? 'bg-[rgba(0,85,255,0.12)] text-[#0B2D34] border-[rgba(0,85,255,0.3)]'
                           : 'bg-transparent text-[var(--sl-t2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
                       )}
                     >
@@ -385,7 +385,7 @@ export function AccountManager() {
                 onClick={handleSave}
                 disabled={isSaving}
                 className="flex-1 px-4 py-2 rounded-[9px] text-white text-[13px] font-bold transition-all hover:brightness-110 disabled:opacity-60"
-                style={{ background: '#0055ff' }}
+                style={{ background: '#0B2D34' }}
               >
                 {isSaving ? 'Salvando...' : 'Salvar'}
               </button>
@@ -399,8 +399,8 @@ export function AccountManager() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
             <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle size={18} className="text-[#f43f5e]" />
-              <h3 className="font-[Syne] font-bold text-base text-[var(--sl-t1)]">Desativar conta?</h3>
+              <AlertTriangle size={18} className="text-[#DB6478]" />
+              <h3 className="font-[Space_Grotesk] font-bold text-base text-[var(--sl-t1)]">Desativar conta?</h3>
             </div>
 
             <p className="text-[13px] text-[var(--sl-t2)] mb-3">
@@ -409,11 +409,11 @@ export function AccountManager() {
 
             {deleteConfirm.usageCount !== null && deleteConfirm.usageCount > 0 && (
               <div className="flex items-start gap-2 p-3 rounded-xl border mb-4"
-                style={{ background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.25)' }}>
-                <AlertTriangle size={14} className="text-[#f59e0b] mt-0.5 shrink-0" />
+                style={{ background: 'rgba(217,150,46,0.08)', borderColor: 'rgba(217,150,46,0.25)' }}>
+                <AlertTriangle size={14} className="text-[#D9962E] mt-0.5 shrink-0" />
                 <p className="text-[12px] text-[var(--sl-t2)] leading-snug">
                   Esta conta está em uso em{' '}
-                  <span className="font-bold text-[#f59e0b]">{deleteConfirm.usageCount}</span>{' '}
+                  <span className="font-bold text-[#D9962E]">{deleteConfirm.usageCount}</span>{' '}
                   {deleteConfirm.usageCount === 1 ? 'transferência' : 'transferências'}.
                 </p>
               </div>
@@ -431,7 +431,7 @@ export function AccountManager() {
                 onClick={handleDeleteConfirm}
                 disabled={isDeleting}
                 className="flex-1 px-4 py-2 rounded-[9px] text-white text-[13px] font-bold transition-all hover:brightness-110 disabled:opacity-60"
-                style={{ background: '#f43f5e' }}
+                style={{ background: '#DB6478' }}
               >
                 <span className="flex items-center justify-center gap-1.5">
                   <Trash2 size={13} />
@@ -448,9 +448,9 @@ export function AccountManager() {
         <div
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-2.5 px-4 py-2.5 rounded-xl border shadow-lg text-[13px] font-medium transition-all"
           style={{
-            background: toast.type === 'ok' ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.1)',
-            borderColor: toast.type === 'ok' ? 'rgba(16,185,129,0.25)' : 'rgba(244,63,94,0.25)',
-            color: toast.type === 'ok' ? '#10b981' : '#f43f5e',
+            background: toast.type === 'ok' ? 'rgba(15,118,110,0.1)' : 'rgba(219,100,120,0.1)',
+            borderColor: toast.type === 'ok' ? 'rgba(15,118,110,0.25)' : 'rgba(219,100,120,0.25)',
+            color: toast.type === 'ok' ? '#0F766E' : '#DB6478',
           }}
         >
           {toast.msg}

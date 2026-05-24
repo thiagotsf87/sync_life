@@ -24,8 +24,8 @@ export default function BucketListPage() {
         {/* Module Header */}
         <ModuleHeader
           icon={MapPin}
-          iconBg="rgba(236,72,153,.1)"
-          iconColor="#ec4899"
+          iconBg="rgba(199,103,149,.1)"
+          iconColor="#C76795"
           title="Lista de Aventuras"
           subtitle={items.length > 0 ? `${pending} pendentes \u00B7 ${done} concluidas \u00B7 R$ ${totalCost.toLocaleString('pt-BR')} estimado` : 'Adicione destinos dos seus sonhos'}
         />

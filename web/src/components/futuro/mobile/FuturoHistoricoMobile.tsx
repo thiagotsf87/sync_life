@@ -24,7 +24,7 @@ export function FuturoHistoricoMobile({ objectiveName, objectiveIcon, open, onCl
 
       {/* Title */}
       <div className="px-5 pt-3 pb-3">
-        <h1 className="font-[Syne] text-[17px] font-bold text-[var(--sl-t1)]">Contribuições</h1>
+        <h1 className="font-[Space_Grotesk] text-[17px] font-bold text-[var(--sl-t1)]">Contribuições</h1>
         <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">{objectiveIcon} {objectiveName}</p>
       </div>
 
@@ -32,16 +32,16 @@ export function FuturoHistoricoMobile({ objectiveName, objectiveIcon, open, onCl
       <div className="grid grid-cols-3 gap-2 px-4 pb-[14px]">
         <div
           className="bg-[var(--sl-s1)] rounded-[10px] p-[10px_12px] text-center"
-          style={{ border: '1px solid rgba(139,92,246,0.2)' }}
+          style={{ border: '1px solid rgba(139,123,212,0.2)' }}
         >
           <p className="text-[9px] text-[var(--sl-t2)] uppercase tracking-[1px] mb-1">Total</p>
-          <p className="font-[DM_Mono] text-[14px]" style={{ color: accent }}>R$ 34.800</p>
+          <p className="font-[IBM_Plex_Mono] text-[14px]" style={{ color: accent }}>R$ 34.800</p>
         </div>
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-[10px_12px] text-center">
           <p className="text-[9px] text-[var(--sl-t2)] uppercase tracking-[1px] mb-1">
             XP Ganhos
           </p>
-          <p className="font-[DM_Mono] text-[14px]" style={{ color: FUTURO_PRIMARY_LIGHT }}>
+          <p className="font-[IBM_Plex_Mono] text-[14px]" style={{ color: FUTURO_PRIMARY_LIGHT }}>
             2.480
           </p>
         </div>
@@ -49,7 +49,7 @@ export function FuturoHistoricoMobile({ objectiveName, objectiveIcon, open, onCl
           <p className="text-[9px] text-[var(--sl-t2)] uppercase tracking-[1px] mb-1">
             Streak
           </p>
-          <p className="font-[DM_Mono] text-[14px]" style={{ color: '#fb923c' }}>
+          <p className="font-[IBM_Plex_Mono] text-[14px]" style={{ color: '#fb923c' }}>
             🔥 14
           </p>
         </div>
@@ -62,7 +62,7 @@ export function FuturoHistoricoMobile({ objectiveName, objectiveIcon, open, onCl
         totalColor={accent}
         entries={[
           { id: 'c1', name: 'Contribuição automática', date: '01 Fev · Débito automático', value: '+R$ 800', color: accent, dotColor: accent },
-          { id: 'c2', name: 'Excedente direcionado', date: '28 Fev · Sugestão IA aceita', value: '+R$ 200', color: '#10b981', dotColor: '#10b981' },
+          { id: 'c2', name: 'Excedente direcionado', date: '28 Fev · Sugestão IA aceita', value: '+R$ 200', color: '#0F766E', dotColor: '#0F766E' },
           {
             id: 'c3', name: 'XP — disciplina mensal', date: '28 Fev · 14 dias de streak ativo', value: '+40 XP', color: FUTURO_PRIMARY_LIGHT, dotColor: FUTURO_PRIMARY_LIGHT, isXpEvent: true,
           },
@@ -73,11 +73,11 @@ export function FuturoHistoricoMobile({ objectiveName, objectiveIcon, open, onCl
       <ContribMonthBand
         month="Novembro 2025"
         total="R$ 0"
-        totalColor="#f43f5e"
+        totalColor="#DB6478"
         entries={[
-          { id: 'n1', name: 'Mês sem contribuição', date: 'Saldo insuficiente — IPVA', value: 'R$ 0', color: '#f43f5e', dotColor: '#f43f5e' },
+          { id: 'n1', name: 'Mês sem contribuição', date: 'Saldo insuficiente — IPVA', value: 'R$ 0', color: '#DB6478', dotColor: '#DB6478' },
           {
-            id: 'n2', name: 'Streak quebrado', date: 'Nov 2025 · Penalidade mínima', value: '−5 XP', color: '#f43f5e', dotColor: '#f43f5e', isXpEvent: true,
+            id: 'n2', name: 'Streak quebrado', date: 'Nov 2025 · Penalidade mínima', value: '−5 XP', color: '#DB6478', dotColor: '#DB6478', isXpEvent: true,
           },
         ]}
       />

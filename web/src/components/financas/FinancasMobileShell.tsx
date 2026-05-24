@@ -58,8 +58,8 @@ export function FinancasMobileShell({
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
-          <p className="text-[12px] font-semibold text-[#10b981] mb-[2px]">✦ {jornadaLabel('financas', 'module', 'Finanças')}</p>
-          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+          <p className="text-[12px] font-semibold text-[#0F766E] mb-[2px]">✦ {jornadaLabel('financas', 'module', 'Finanças')}</p>
+          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
             {pageTitle}
           </h1>
           {subtitle && <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">{subtitle}</p>}
@@ -86,12 +86,12 @@ export function FinancasMobileShell({
               onClick={() => router.push(tab.href)}
               className={cn(
                 'px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors',
-                isActive ? 'text-[var(--sl-t1)] font-semibold border-b-[#10b981]' : 'text-[var(--sl-t3)] border-b-transparent'
+                isActive ? 'text-[var(--sl-t1)] font-semibold border-b-[#0F766E]' : 'text-[var(--sl-t3)] border-b-transparent'
               )}
             >
               {jornadaLabel('financas', tab.key, tab.label)}
               {tab.href === '/financas/planejamento' && (
-                <span className="ml-1 text-[8px] font-bold text-[#f59e0b] align-super">PRO</span>
+                <span className="ml-1 text-[8px] font-bold text-[#D9962E] align-super">PRO</span>
               )}
             </button>
           )

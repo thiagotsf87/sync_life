@@ -60,7 +60,7 @@ function NotifRow({
           <p className="text-[13px] font-semibold text-[var(--sl-t1)]">
             {label}
             {modeBadge === 'foco' && (
-              <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(16,185,129,0.1)] text-[#10b981] align-middle">
+              <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(15,118,110,0.1)] text-[#0F766E] align-middle">
                 Foco
               </span>
             )}
@@ -71,7 +71,7 @@ function NotifRow({
             )}
             {modeBadge === 'both' && (
               <>
-                <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(16,185,129,0.1)] text-[#10b981] align-middle">
+                <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(15,118,110,0.1)] text-[#0F766E] align-middle">
                   Foco
                 </span>
                 <span className="ml-1 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(0,85,255,0.1)] text-[#6e9fff] align-middle">
@@ -163,7 +163,7 @@ export default function NotificacoesPage() {
 
   return (
     <div className="max-w-[680px]">
-      <h1 className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)] mb-1">Notificações</h1>
+      <h1 className="font-[Space_Grotesk] font-extrabold text-xl text-[var(--sl-t1)] mb-1">Notificações</h1>
       <p className="text-[13px] text-[var(--sl-t3)] mb-6">
         Configure como e quando o SyncLife entra em contato com você.
       </p>
@@ -287,7 +287,7 @@ export default function NotificacoesPage() {
                   type="time"
                   value={notif.dailyReminderTime}
                   onChange={(e) => setNotif((p) => ({ ...p, dailyReminderTime: e.target.value }))}
-                  className="bg-[var(--sl-s3)] border border-[var(--sl-border)] rounded-[8px] px-2.5 py-1 font-[DM_Mono] text-[12px] text-[var(--sl-t1)] outline-none w-[90px]"
+                  className="bg-[var(--sl-s3)] border border-[var(--sl-border)] rounded-[8px] px-2.5 py-1 font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)] outline-none w-[90px]"
                 />
               </div>
             ) : null

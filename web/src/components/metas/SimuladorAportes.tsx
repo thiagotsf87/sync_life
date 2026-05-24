@@ -65,23 +65,23 @@ export function SimuladorAportes({ goals }: SimuladorAportesProps) {
         monthly: slider,
         months: monthsUntil(current, target, slider),
         date: monthsUntil(current, target, slider) !== null ? addMonths(today, monthsUntil(current, target, slider)!) : null,
-        color: '#10b981',
-        bg: 'rgba(16,185,129,.08)',
+        color: '#0F766E',
+        bg: 'rgba(15,118,110,.08)',
       },
       {
         label: 'Ritmo atual',
         monthly: currentMonthly,
         months: monthsUntil(current, target, currentMonthly),
         date: monthsUntil(current, target, currentMonthly) !== null ? addMonths(today, monthsUntil(current, target, currentMonthly)!) : null,
-        color: '#f59e0b',
-        bg: 'rgba(245,158,11,.08)',
+        color: '#D9962E',
+        bg: 'rgba(217,150,46,.08)',
       },
       {
         label: 'Para cumprir prazo',
         monthly: monthlyForPrazo ?? 0,
         months: prazoMonths,
         date: prazoMonths !== null ? addMonths(today, prazoMonths) : null,
-        color: '#0055ff',
+        color: '#0B2D34',
         bg: 'rgba(0,85,255,.08)',
       },
       {
@@ -89,8 +89,8 @@ export function SimuladorAportes({ goals }: SimuladorAportesProps) {
         monthly: 0,
         months: null,
         date: null,
-        color: '#f43f5e',
-        bg: 'rgba(244,63,94,.08)',
+        color: '#DB6478',
+        bg: 'rgba(219,100,120,.08)',
       },
     ]
   }, [goal, slider, today])
@@ -107,7 +107,7 @@ export function SimuladorAportes({ goals }: SimuladorAportesProps) {
 
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up">
-      <h3 className="font-[Syne] font-extrabold text-[14px] text-[var(--sl-t1)] mb-4">
+      <h3 className="font-[Space_Grotesk] font-extrabold text-[14px] text-[var(--sl-t1)] mb-4">
         🧮 Simulador de Aportes
       </h3>
 
@@ -123,7 +123,7 @@ export function SimuladorAportes({ goals }: SimuladorAportesProps) {
                 className={cn(
                   'flex items-center gap-1.5 px-2.5 py-1.5 rounded-[8px] text-[12px] font-semibold border transition-all',
                   selectedId === g.id
-                    ? 'border-[#10b981] bg-[rgba(16,185,129,.08)] text-[#10b981]'
+                    ? 'border-[#0F766E] bg-[rgba(15,118,110,.08)] text-[#0F766E]'
                     : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]',
                 )}
               >
@@ -152,7 +152,7 @@ export function SimuladorAportes({ goals }: SimuladorAportesProps) {
       <div className="mb-5">
         <div className="flex items-center justify-between mb-2">
           <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Aporte mensal</label>
-          <span className="font-[DM_Mono] font-medium text-[15px] text-[#10b981]">
+          <span className="font-[IBM_Plex_Mono] font-medium text-[15px] text-[#0F766E]">
             {formatCurrency(slider)}
           </span>
         </div>
@@ -163,11 +163,11 @@ export function SimuladorAportes({ goals }: SimuladorAportesProps) {
           step={50}
           value={slider}
           onChange={e => setSlider(Number(e.target.value))}
-          className="w-full accent-[#10b981] cursor-pointer"
+          className="w-full accent-[#0F766E] cursor-pointer"
         />
         <div className="flex justify-between mt-1">
-          <span className="text-[10px] text-[var(--sl-t3)] font-[DM_Mono]">R$ 100</span>
-          <span className="text-[10px] text-[var(--sl-t3)] font-[DM_Mono]">
+          <span className="text-[10px] text-[var(--sl-t3)] font-[IBM_Plex_Mono]">R$ 100</span>
+          <span className="text-[10px] text-[var(--sl-t3)] font-[IBM_Plex_Mono]">
             {formatCurrency(Math.max(5000, (goal?.target_amount ?? 5000) / 10))}
           </span>
         </div>
@@ -184,7 +184,7 @@ export function SimuladorAportes({ goals }: SimuladorAportesProps) {
             <div>
               <p className="text-[12px] font-semibold" style={{ color: sc.color }}>{sc.label}</p>
               {sc.monthly > 0 && (
-                <p className="text-[11px] text-[var(--sl-t3)] font-[DM_Mono]">
+                <p className="text-[11px] text-[var(--sl-t3)] font-[IBM_Plex_Mono]">
                   {formatCurrency(sc.monthly)}/mês
                 </p>
               )}
@@ -192,7 +192,7 @@ export function SimuladorAportes({ goals }: SimuladorAportesProps) {
             <div className="text-right">
               {sc.date ? (
                 <>
-                  <p className="font-[DM_Mono] font-bold text-[13px]" style={{ color: sc.color }}>
+                  <p className="font-[IBM_Plex_Mono] font-bold text-[13px]" style={{ color: sc.color }}>
                     {formatDate(sc.date)}
                   </p>
                   {sc.months !== null && (
@@ -200,7 +200,7 @@ export function SimuladorAportes({ goals }: SimuladorAportesProps) {
                   )}
                 </>
               ) : (
-                <p className="font-[DM_Mono] text-[12px]" style={{ color: sc.color }}>
+                <p className="font-[IBM_Plex_Mono] text-[12px]" style={{ color: sc.color }}>
                   {sc.monthly === 0 ? 'Não concluirá' : 'Já concluída'}
                 </p>
               )}

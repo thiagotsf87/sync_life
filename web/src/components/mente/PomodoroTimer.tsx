@@ -36,11 +36,11 @@ interface PersistedState {
 }
 
 const PHASE_COLORS: Record<TimerPhase, string> = {
-  idle: '#eab308',
-  focusing: '#eab308',
-  short_break: '#10b981',
+  idle: '#D9962E',
+  focusing: '#D9962E',
+  short_break: '#0F766E',
   long_break: '#a855f7',
-  paused: '#f59e0b',
+  paused: '#D9962E',
 }
 
 const PHASE_LABELS: Record<TimerPhase, string> = {
@@ -393,12 +393,12 @@ export function PomodoroTimer({
           width="260"
           height="260"
           viewBox="0 0 260 260"
-          style={{ transform: 'rotate(-90deg)', filter: 'drop-shadow(0 0 24px rgba(234,179,8,.15))' }}
+          style={{ transform: 'rotate(-90deg)', filter: 'drop-shadow(0 0 24px rgba(217,150,46,.15))' }}
         >
           <defs>
             <linearGradient id="pom-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#eab308" />
-              <stop offset="100%" stopColor="#f97316" />
+              <stop offset="0%" stopColor="#D9962E" />
+              <stop offset="100%" stopColor="#D97534" />
             </linearGradient>
           </defs>
           <circle cx="130" cy="130" r={r} fill="none" stroke="var(--sl-s3)" strokeWidth="10" />
@@ -416,7 +416,7 @@ export function PomodoroTimer({
 
         {/* Center */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-[DM_Mono] font-bold text-[var(--sl-t1)] tabular-nums tracking-wide" style={{ fontSize: '58px', letterSpacing: '2px' }}>
+          <span className="font-[IBM_Plex_Mono] font-bold text-[var(--sl-t1)] tabular-nums tracking-wide" style={{ fontSize: '58px', letterSpacing: '2px' }}>
             {minutes}:{seconds}
           </span>
           {sessionStarted && (
@@ -451,7 +451,7 @@ export function PomodoroTimer({
           <button
             onClick={handlePause}
             className="w-16 h-16 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
-            style={{ background: color, boxShadow: `0 4px 24px rgba(234,179,8,.3)` }}
+            style={{ background: color, boxShadow: `0 4px 24px rgba(217,150,46,.3)` }}
           >
             <Pause size={22} className="text-black" />
           </button>
@@ -459,7 +459,7 @@ export function PomodoroTimer({
           <button
             onClick={handleStart}
             className="w-16 h-16 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
-            style={{ background: color, boxShadow: `0 4px 24px rgba(234,179,8,.3)` }}
+            style={{ background: color, boxShadow: `0 4px 24px rgba(217,150,46,.3)` }}
           >
             <Play size={22} className="text-black ml-0.5" />
           </button>
@@ -479,12 +479,12 @@ export function PomodoroTimer({
       {sessionStarted && (
         <div className="w-full grid grid-cols-3 gap-2">
           {[
-            { label: 'Foco', value: `${Math.floor(totalFocusSeconds / 60)}m`, color: '#0055ff' },
-            { label: 'Ciclos', value: String(cyclesCompleted), color: '#10b981' },
+            { label: 'Foco', value: `${Math.floor(totalFocusSeconds / 60)}m`, color: '#0B2D34' },
+            { label: 'Ciclos', value: String(cyclesCompleted), color: '#0F766E' },
             { label: 'Pausa', value: `${Math.floor(totalBreakSeconds / 60)}m`, color: '#a855f7' },
           ].map(({ label, value, color: c }) => (
             <div key={label} className="bg-[var(--sl-s2)] rounded-xl p-3 text-center">
-              <p className="font-[DM_Mono] text-[16px] font-bold" style={{ color: c }}>{value}</p>
+              <p className="font-[IBM_Plex_Mono] text-[16px] font-bold" style={{ color: c }}>{value}</p>
               <p className="text-[9px] uppercase tracking-wider text-[var(--sl-t3)] mt-0.5">{label}</p>
             </div>
           ))}
@@ -545,7 +545,7 @@ export function PomodoroTimer({
                   disabled={isRunning}
                   className="w-6 h-6 rounded-full bg-[var(--sl-s3)] text-[var(--sl-t2)] text-sm flex items-center justify-center hover:bg-[var(--sl-border)] disabled:opacity-40"
                 >-</button>
-                <span className="font-[DM_Mono] text-[13px] text-[var(--sl-t1)] w-7 text-center">
+                <span className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t1)] w-7 text-center">
                   {config[key]}
                 </span>
                 <button

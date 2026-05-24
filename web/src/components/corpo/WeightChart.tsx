@@ -76,17 +76,17 @@ export function WeightChart({ entries, goalWeight, months = 3 }: WeightChartProp
         {goalWeight && (
           <ReferenceLine
             y={goalWeight}
-            stroke="#10b981"
+            stroke="#0F766E"
             strokeDasharray="6 3"
-            label={{ value: `Meta ${goalWeight}kg`, fill: '#10b981', fontSize: 9, position: 'insideTopRight' }}
+            label={{ value: `Meta ${goalWeight}kg`, fill: '#0F766E', fontSize: 9, position: 'insideTopRight' }}
           />
         )}
         <Line
           type="monotone"
           dataKey="weight"
-          stroke="#f97316"
+          stroke="#D97534"
           strokeWidth={2}
-          dot={{ r: 3, fill: '#f97316', strokeWidth: 0 }}
+          dot={{ r: 3, fill: '#D97534', strokeWidth: 0 }}
           activeDot={{ r: 5 }}
         />
       </LineChart>

@@ -29,9 +29,9 @@ const CATEGORY_ICONS: Record<SkillCategory, string> = {
 }
 
 const CATEGORY_COLORS: Record<SkillCategory, string> = {
-  hard_skill: '#0055ff',
-  soft_skill: '#10b981',
-  language: '#f59e0b',
+  hard_skill: '#0B2D34',
+  soft_skill: '#0F766E',
+  language: '#D9962E',
   certification: '#a855f7',
 }
 
@@ -164,8 +164,8 @@ export default function HabilidadesPage() {
       {/* MODULE HEADER */}
       <ModuleHeader
         icon={Star}
-        iconBg="rgba(244,63,94,.08)"
-        iconColor="#f43f5e"
+        iconBg="rgba(219,100,120,.08)"
+        iconColor="#DB6478"
         title="Habilidades"
         subtitle={skills.length > 0
           ? `${skills.length} habilidades mapeadas \u00B7 Media de proficiencia: ${(skills.reduce((a, s) => a + s.proficiency_level, 0) / Math.max(1, skills.length)).toFixed(1)} / 5`
@@ -174,7 +174,7 @@ export default function HabilidadesPage() {
         <button
           onClick={openCreate}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#f43f5e] text-white hover:brightness-110 transition-all"
+                     bg-[#DB6478] text-white hover:brightness-110 transition-all"
         >
           <Plus size={16} />
           Adicionar Habilidade
@@ -186,10 +186,10 @@ export default function HabilidadesPage() {
         <MetricsStrip
           className="mb-7 sl-fade-up sl-delay-1"
           items={[
-            { label: 'Total', value: String(skills.length), note: 'habilidades', valueColor: '#f43f5e' },
-            { label: 'Hard Skills', value: String(skills.filter(s => s.category === 'hard_skill').length), note: 'tecnicas', valueColor: '#0055ff' },
-            { label: 'Soft Skills', value: String(skills.filter(s => s.category === 'soft_skill').length), note: 'comportamentais', valueColor: '#10b981' },
-            { label: 'Idiomas', value: String(skills.filter(s => s.category === 'language').length), note: 'linguas', valueColor: '#f59e0b' },
+            { label: 'Total', value: String(skills.length), note: 'habilidades', valueColor: '#DB6478' },
+            { label: 'Hard Skills', value: String(skills.filter(s => s.category === 'hard_skill').length), note: 'tecnicas', valueColor: '#0B2D34' },
+            { label: 'Soft Skills', value: String(skills.filter(s => s.category === 'soft_skill').length), note: 'comportamentais', valueColor: '#0F766E' },
+            { label: 'Idiomas', value: String(skills.filter(s => s.category === 'language').length), note: 'linguas', valueColor: '#D9962E' },
             { label: 'Certificacoes', value: String(skills.filter(s => s.category === 'certification').length), note: 'atestados', valueColor: '#a855f7' },
           ]}
         />
@@ -207,7 +207,7 @@ export default function HabilidadesPage() {
               className={cn(
                 'px-[18px] py-[9px] text-[12px] font-semibold border-b-2 transition-all',
                 filterCat === 'all'
-                  ? 'text-[var(--sl-t1)] border-b-[#f43f5e]'
+                  ? 'text-[var(--sl-t1)] border-b-[#DB6478]'
                   : 'text-[var(--sl-t3)] border-b-transparent hover:text-[var(--sl-t2)]'
               )}
             >
@@ -220,7 +220,7 @@ export default function HabilidadesPage() {
                 className={cn(
                   'px-[18px] py-[9px] text-[12px] font-semibold border-b-2 transition-all',
                   filterCat === cat
-                    ? 'text-[var(--sl-t1)] border-b-[#f43f5e]'
+                    ? 'text-[var(--sl-t1)] border-b-[#DB6478]'
                     : 'text-[var(--sl-t3)] border-b-transparent hover:text-[var(--sl-t2)]'
                 )}
               >
@@ -242,13 +242,13 @@ export default function HabilidadesPage() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
-              <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+              <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
                 {skills.length === 0 ? 'Nenhuma habilidade cadastrada' : 'Nenhuma habilidade encontrada'}
               </h3>
               {skills.length === 0 && (
                 <button
                   onClick={openCreate}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f43f5e] text-white hover:brightness-110 mt-3"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#DB6478] text-white hover:brightness-110 mt-3"
                 >
                   <Plus size={15} />
                   Adicionar habilidade
@@ -321,8 +321,8 @@ export default function HabilidadesPage() {
           {/* Radar chart */}
           {skills.length >= 3 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" strokeWidth="2" strokeLinecap="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DB6478" strokeWidth="2" strokeLinecap="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
                 Arsenal de Competencias
               </div>
               <div className="h-[200px]">
@@ -338,7 +338,7 @@ export default function HabilidadesPage() {
                     <PolarGrid stroke="var(--sl-s3)" />
                     <PolarAngleAxis dataKey="axis" tick={{ fontSize: 10, fill: 'var(--sl-t3)' }} />
                     <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
-                    <Radar name="Habilidades" dataKey="value" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.2} />
+                    <Radar name="Habilidades" dataKey="value" stroke="#DB6478" fill="#DB6478" fillOpacity={0.2} />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
@@ -347,14 +347,14 @@ export default function HabilidadesPage() {
 
           {/* Summary card */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-            <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-              <BarChart3 size={16} className="text-[#f43f5e]" />
+            <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+              <BarChart3 size={16} className="text-[#DB6478]" />
               Resumo
             </div>
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <span className="text-[12px] text-[var(--sl-t2)]">Media Proficiencia</span>
-                <span className="font-[DM_Mono] text-[18px] font-medium text-[#f43f5e]">
+                <span className="font-[IBM_Plex_Mono] text-[18px] font-medium text-[#DB6478]">
                   {skills.length > 0 ? (skills.reduce((a, s) => a + s.proficiency_level, 0) / skills.length).toFixed(1) : '0'} / 5
                 </span>
               </div>
@@ -370,7 +370,7 @@ export default function HabilidadesPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[12px] text-[var(--sl-t2)]">A desenvolver</span>
-                <span className="text-[12px] font-semibold text-[#f59e0b]">
+                <span className="text-[12px] font-semibold text-[#D9962E]">
                   {(() => {
                     const weakest = [...skills].sort((a, b) => a.proficiency_level - b.proficiency_level)[0]
                     return weakest ? weakest.name : '-'
@@ -399,8 +399,8 @@ export default function HabilidadesPage() {
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[460px]">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Syne] font-extrabold text-[20px] text-[var(--sl-t1)] flex items-center gap-[10px]">
-                <Star size={20} className="text-[#f43f5e]" />
+              <h2 className="font-[Space_Grotesk] font-extrabold text-[20px] text-[var(--sl-t1)] flex items-center gap-[10px]">
+                <Star size={20} className="text-[#DB6478]" />
                 {editingSkill ? 'Editar Habilidade' : 'Nova Habilidade'}
               </h2>
               <button onClick={() => setShowModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] transition-colors text-xl leading-none">×</button>
@@ -518,7 +518,7 @@ export default function HabilidadesPage() {
                 <button
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#f43f5e] text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#DB6478] text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   {isSaving ? 'Salvando...' : editingSkill ? 'Atualizar' : 'Adicionar'}
                 </button>

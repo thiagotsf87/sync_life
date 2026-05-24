@@ -19,7 +19,7 @@ export function CategoryTabs({
   tabs,
   activeId,
   onSelect,
-  accentColor = '#f43f5e',
+  accentColor = '#DB6478',
   className,
 }: CategoryTabsProps) {
   return (

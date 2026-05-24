@@ -15,10 +15,10 @@ export const PAYMENT_LABELS: Record<string, string> = {
 }
 
 export function getEnvColor(pct: number): string {
-  if (pct >= 100) return '#f43f5e'
-  if (pct >= 80) return '#f97316'
-  if (pct >= 61) return '#f59e0b'
-  return '#10b981'
+  if (pct >= 100) return '#DB6478'
+  if (pct >= 80) return '#D97534'
+  if (pct >= 61) return '#D9962E'
+  return '#0F766E'
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────

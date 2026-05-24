@@ -27,7 +27,7 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] truncate">{trip.name}</h3>
+            <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] truncate">{trip.name}</h3>
             <span
               className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full shrink-0"
               style={{ color: statusColor, background: statusColor + '20' }}
@@ -43,7 +43,7 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
         {onDelete && (
           <button
             onClick={e => { e.stopPropagation(); onDelete(trip.id) }}
-            className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors shrink-0"
+            className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors shrink-0"
           >
             <Trash2 size={12} className="text-[var(--sl-t3)]" />
           </button>
@@ -76,7 +76,7 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
         <div className="mt-3 pt-3 border-t border-[var(--sl-border)]">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-[var(--sl-t3)]">Orçamento</span>
-            <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t1)]">
+            <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t1)]">
               {trip.total_budget.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </span>
           </div>
@@ -87,7 +87,7 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
                   className="h-full rounded-full"
                   style={{
                     width: `${Math.min((trip.total_spent / trip.total_budget) * 100, 100)}%`,
-                    background: trip.total_spent > trip.total_budget ? '#f43f5e' : '#ec4899',
+                    background: trip.total_spent > trip.total_budget ? '#DB6478' : '#C76795',
                   }}
                 />
               </div>
@@ -102,8 +102,8 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
       {/* Countdown */}
       {isUpcoming && (
         <div className="mt-2 flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#ec4899] animate-pulse" />
-          <span className="text-[11px] text-[#ec4899] font-medium">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#C76795] animate-pulse" />
+          <span className="text-[11px] text-[#C76795] font-medium">
             {daysUntil === 1 ? 'Amanhã!' : `em ${daysUntil} dias`}
           </span>
         </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { X, Search, ChevronDown, ChevronUp } from 'lucide-react'
+import { X, Search, ChevronDown, ChevronUp, Lock, Trophy, Calendar, Bot } from 'lucide-react'
 import { AIInsightCard } from '@/components/ui/ai-insight-card'
 import { PanoramaMobileShell } from '@/components/dashboard/PanoramaMobileShell'
 import { useBadgeEngine } from '@/hooks/use-badge-engine'
@@ -29,24 +29,24 @@ interface Badge {
 // ─── CONSTANTES ───────────────────────────────────────────────────────────────
 
 const CAT_COLORS: Record<BadgeCat, string> = {
-  fin:         '#10b981',
-  meta:        '#0055ff',
-  cons:        '#f59e0b',
-  agenda:      '#06b6d4',
-  corpo:       '#f97316',
-  patrimonio:  '#10b981',
-  experiencias:'#06b6d4',
+  fin:         '#0F766E',
+  meta:        '#8B7BD4',
+  cons:        '#D9962E',
+  agenda:      '#3CA0B5',
+  corpo:       '#D97534',
+  patrimonio:  '#4F88D4',
+  experiencias:'#C76795',
 }
 
 const CAT_LABELS: Record<string, string> = {
   all:         'Todas',
-  fin:         '💰 Financeiras',
-  meta:        '🎯 Metas',
-  cons:        '📅 Consistência',
-  agenda:      '📆 Agenda',
-  corpo:       '🏥 Corpo',
-  patrimonio:  '📈 Patrimônio',
-  experiencias:'✈️ Experiências',
+  fin:         'Financeiras',
+  meta:        'Metas',
+  cons:        'Consistência',
+  agenda:      'Agenda',
+  corpo:       'Corpo',
+  patrimonio:  'Patrimônio',
+  experiencias:'Experiências',
 }
 
 const RARITY_LABELS: Record<BadgeRarity, string> = {
@@ -69,19 +69,19 @@ const LIVE_RECENT_UNLOCKED: Badge[] = []
 
 function getRarityBorder(rarity: BadgeRarity): string {
   switch (rarity) {
-    case 'uncommon':  return 'border-[rgba(16,185,129,0.4)]'
-    case 'rare':      return 'border-[rgba(139,92,246,0.5)] shadow-[0_0_20px_rgba(139,92,246,0.12)]'
-    case 'legendary': return 'border-[rgba(245,158,11,0.6)] shadow-[0_0_24px_rgba(245,158,11,0.15)]'
+    case 'uncommon':  return 'border-[rgba(15,118,110,0.4)]'
+    case 'rare':      return 'border-[rgba(139,123,212,0.5)] shadow-[0_0_20px_rgba(139,123,212,0.12)]'
+    case 'legendary': return 'border-[rgba(217,150,46,0.6)] shadow-[0_0_24px_rgba(217,150,46,0.15)]'
     default:          return ''
   }
 }
 
 function getRarityPill(rarity: BadgeRarity): string {
   switch (rarity) {
-    case 'common':    return 'bg-[rgba(100,116,139,0.15)] text-[#64748b]'
-    case 'uncommon':  return 'bg-[rgba(16,185,129,0.12)] text-[#10b981]'
-    case 'rare':      return 'bg-[rgba(139,92,246,0.15)] text-[#8b5cf6]'
-    case 'legendary': return 'bg-[rgba(245,158,11,0.15)] text-[#f59e0b]'
+    case 'common':    return 'bg-[rgba(100,116,139,0.15)] text-[#6F7986]'
+    case 'uncommon':  return 'bg-[rgba(15,118,110,0.12)] text-[#0F766E]'
+    case 'rare':      return 'bg-[rgba(139,123,212,0.15)] text-[#8B7BD4]'
+    case 'legendary': return 'bg-[rgba(217,150,46,0.15)] text-[#D9962E]'
   }
 }
 
@@ -105,14 +105,14 @@ function BadgeCard({ badge: b, delay, onClick }: { badge: Badge; delay: number; 
     <div
       className={`bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[18px_16px] text-center relative overflow-hidden sl-fade-up transition-all
         ${b.unlocked ? `cursor-pointer hover:-translate-y-[3px] hover:border-[var(--sl-border-h)] ${rarityBorder}` : 'cursor-default'}
-        ${isLegendaryUnlocked ? 'bg-gradient-to-br from-[var(--sl-s1)] to-[rgba(245,158,11,0.04)]' : ''}`}
+        ${isLegendaryUnlocked ? 'bg-gradient-to-br from-[var(--sl-s1)] to-[rgba(217,150,46,0.04)]' : ''}`}
       style={{ animationDelay: `${delay}s` }}
       onClick={onClick}
     >
       {/* Lock overlay */}
       {!b.unlocked && (
-        <div className="absolute top-[10px] right-[10px] w-5 h-5 rounded-[6px] bg-[var(--sl-s3)] border border-[var(--sl-border)] flex items-center justify-center text-[11px]">
-          🔒
+        <div className="absolute top-[10px] right-[10px] w-5 h-5 rounded-[6px] bg-[var(--sl-s3)] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t3)]">
+          <Lock size={10} />
         </div>
       )}
 
@@ -132,12 +132,12 @@ function BadgeCard({ badge: b, delay, onClick }: { badge: Badge; delay: number; 
       </div>
 
       {/* Name & desc */}
-      <div className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-1 leading-[1.3]">{b.name}</div>
+      <div className="font-[Space_Grotesk] font-bold text-[12px] text-[var(--sl-t1)] mb-1 leading-[1.3]">{b.name}</div>
       <div className="text-[11px] text-[var(--sl-t2)] leading-[1.5] mb-2">{b.desc}</div>
 
       {/* Date or progress */}
       {b.unlocked
-        ? <div className="text-[10px] text-[var(--sl-t3)]">🗓 {b.date}</div>
+        ? <div className="text-[10px] text-[var(--sl-t3)] flex items-center justify-center gap-1"><Calendar size={9} />{b.date}</div>
         : (
           <div className="mt-2">
             <div className="h-1 bg-[var(--sl-s3)] rounded-full overflow-hidden mb-1">
@@ -197,7 +197,7 @@ function BadgeModal({ badge: b, onClose }: { badge: Badge; onClose: () => void }
           >
             {b.icon}
           </span>
-          <div className="font-[Syne] font-extrabold text-[20px] text-[var(--sl-t1)] mb-[6px]">{b.name}</div>
+          <div className="font-[Space_Grotesk] font-extrabold text-[20px] text-[var(--sl-t1)] mb-[6px]">{b.name}</div>
           <div className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">{b.desc}</div>
           <div className="flex items-center justify-center gap-[10px] mt-[10px] flex-wrap">
             <span className={`inline-flex items-center gap-[3px] text-[9px] font-bold uppercase tracking-[0.07em] px-[7px] py-[2px] rounded-[8px] ${getRarityPill(b.rarity)}`}>
@@ -233,20 +233,20 @@ function BadgeModal({ badge: b, onClose }: { badge: Badge; onClose: () => void }
             <div className="text-[12px] text-[var(--sl-t3)]">
               {pct < 100
                 ? `Faltam ${b.progressMax - b.progress} para desbloquear`
-                : '✅ Critério atingido!'}
+                : 'Critério atingido!'}
             </div>
           </div>
         ) : (
-          <div className="flex items-center gap-2 p-[12px_16px] rounded-[12px] bg-[rgba(16,185,129,0.08)] border border-[rgba(16,185,129,0.2)] mb-4 text-[13px] text-[var(--sl-t2)]">
-            <span className="text-[20px]">🏆</span>
-            <span>Conquistado em <strong className="text-[#10b981]">{b.date}</strong></span>
+          <div className="flex items-center gap-2 p-[12px_16px] rounded-[12px] bg-[rgba(15,118,110,0.08)] border border-[rgba(15,118,110,0.2)] mb-4 text-[13px] text-[var(--sl-t2)]">
+            <Trophy size={18} className="text-[var(--sl-em)] shrink-0" />
+            <span>Conquistado em <strong className="text-[#0F766E]">{b.date}</strong></span>
           </div>
         )}
 
         {/* Motivation */}
         {b.motivation && (
-          <div className="p-[12px_16px] rounded-[12px] bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/6 border border-[rgba(16,185,129,0.18)] text-[13px] text-[var(--sl-t2)] italic mb-4">
-            ✨ {b.motivation}
+          <div className="p-[12px_16px] rounded-[12px] bg-[rgba(15,118,110,0.07)] border border-[rgba(15,118,110,0.18)] text-[13px] text-[var(--sl-t2)] italic mb-4">
+            {b.motivation}
           </div>
         )}
 
@@ -254,8 +254,8 @@ function BadgeModal({ badge: b, onClose }: { badge: Badge; onClose: () => void }
         {b.unlocked && (
           <div className="flex flex-col gap-2">
             <button
-              className="w-full py-[13px] rounded-[12px] font-[Syne] text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+              className="w-full py-[13px] rounded-[12px] font-[Space_Grotesk] text-[14px] font-bold text-white flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
+              style={{ background: '#0F766E' }}
               onClick={async () => {
                 const { shareBadgeImage } = await import('@/lib/share/share-utils')
                 await shareBadgeImage({ icon: b.icon, name: b.name, desc: b.desc, rarity: b.rarity })
@@ -411,15 +411,14 @@ export default function ConquistasPage() {
       {/* Hero card */}
       <div className="mx-4 mb-3 rounded-[16px] p-5 relative overflow-hidden bg-[var(--sl-s1)] border border-[var(--sl-border)]">
         <div className="absolute top-0 left-0 right-0 h-[3px]"
-             style={{ background: 'linear-gradient(90deg, #6366f1, #0055ff)' }} />
+             style={{ background: 'var(--sl-em)' }} />
         <div className="flex items-end gap-1.5 mb-1.5">
-          <span className="font-[Syne] text-[42px] font-extrabold leading-none"
-                style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <span className="font-[Space_Grotesk] text-[42px] font-extrabold leading-none sl-num-strong text-[var(--sl-em)]">
             {heroCount}
           </span>
-          <span className="font-[DM_Mono] text-[16px] text-[var(--sl-t3)] mb-1">/ {LIVE_TOTAL_ALL}</span>
+          <span className="sl-num text-[16px] text-[var(--sl-t3)] mb-1">/ {LIVE_TOTAL_ALL}</span>
         </div>
-        <p className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] mb-1">Conquistas desbloqueadas</p>
+        <p className="font-[Space_Grotesk] font-bold text-[14px] text-[var(--sl-t1)] mb-1">Conquistas desbloqueadas</p>
         <p className="text-[12px] text-[var(--sl-t3)] mb-3">
           Você está no <strong className="text-[var(--sl-t1)]">Top 15%</strong> dos usuários
         </p>
@@ -427,7 +426,7 @@ export default function ConquistasPage() {
           <div className="h-full rounded-full"
                style={{
                  width: `${heroBarW}%`,
-                 background: 'linear-gradient(90deg, #6366f1, #0055ff)',
+                 background: 'var(--sl-grad)',
                  transition: 'width 1.4s cubic-bezier(0.4,0,0.2,1)',
                }} />
         </div>
@@ -445,7 +444,7 @@ export default function ConquistasPage() {
       )}
 
       {/* Recent unlocked */}
-      <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+      <p className="px-5 pb-2 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
         Recentes
       </p>
       <div className="flex flex-col gap-2 px-4 mb-3">
@@ -476,7 +475,7 @@ export default function ConquistasPage() {
             onClick={() => setCurCat(cat)}
             className={`whitespace-nowrap px-3.5 py-[7px] rounded-[20px] text-[12px] font-medium border shrink-0 transition-colors ${
               curCat === cat
-                ? 'bg-[rgba(99,102,241,0.15)] border-[rgba(99,102,241,0.35)] text-[#6366f1]'
+                ? 'bg-[rgba(107,111,212,0.15)] border-[rgba(107,111,212,0.35)] text-[#6B6FD4]'
                 : 'bg-[var(--sl-s1)] border-[var(--sl-border)] text-[var(--sl-t2)]'
             }`}
           >
@@ -488,8 +487,8 @@ export default function ConquistasPage() {
       {/* Desbloqueadas */}
       {visUnlocked.length > 0 && (
         <>
-          <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
-            ✅ Desbloqueadas ({visUnlocked.length})
+          <p className="px-5 pb-2 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+            Desbloqueadas ({visUnlocked.length})
           </p>
           <div className="grid grid-cols-2 gap-2.5 px-4 mb-2">
             {(mobileExpandUnlocked ? visUnlocked : visUnlocked.slice(0, 4)).map(b => {
@@ -509,9 +508,9 @@ export default function ConquistasPage() {
                   >
                     {b.icon}
                   </div>
-                  <p className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-1 leading-[1.3]">{b.name}</p>
+                  <p className="font-[Space_Grotesk] font-bold text-[12px] text-[var(--sl-t1)] mb-1 leading-[1.3]">{b.name}</p>
                   <p className="text-[11px] text-[var(--sl-t2)] leading-[1.4] mb-1.5">{b.desc}</p>
-                  <p className="text-[10px] text-[var(--sl-t3)]">🗓 {b.date}</p>
+                  <p className="text-[10px] text-[var(--sl-t3)] flex items-center justify-center gap-1"><Calendar size={9} />{b.date}</p>
                   <div className="absolute bottom-0 left-0 right-0 h-[3px] rounded-b-[14px]" style={{ background: col }} />
                 </div>
               )
@@ -534,8 +533,8 @@ export default function ConquistasPage() {
       {/* Bloqueadas */}
       {allLocked.length > 0 && (
         <>
-          <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
-            🔒 Bloqueadas ({allLocked.length})
+          <p className="px-5 pb-2 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+            Bloqueadas ({allLocked.length})
           </p>
           <div className="grid grid-cols-2 gap-2.5 px-4 mb-2">
             {(mobileExpandLocked ? allLocked : allLocked.slice(0, 4)).map(b => {
@@ -547,8 +546,8 @@ export default function ConquistasPage() {
                   onClick={() => setModalBadge(b)}
                   className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5 text-center relative overflow-hidden opacity-50 cursor-pointer active:bg-[var(--sl-s2)]"
                 >
-                  <div className="absolute top-2 right-2 w-[18px] h-[18px] rounded-[6px] bg-[var(--sl-s3)] border border-[var(--sl-border)] flex items-center justify-center text-[10px]">
-                    🔒
+                  <div className="absolute top-2 right-2 w-[18px] h-[18px] rounded-[6px] bg-[var(--sl-s3)] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t3)]">
+                    <Lock size={9} />
                   </div>
                   <div className={`inline-flex text-[9px] font-bold uppercase tracking-[0.5px] px-[7px] py-[2px] rounded-[8px] mb-1.5 ${getRarityPill(b.rarity)}`}>
                     {RARITY_LABELS[b.rarity]}
@@ -559,7 +558,7 @@ export default function ConquistasPage() {
                   >
                     {b.icon}
                   </div>
-                  <p className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-1 leading-[1.3]">{b.name}</p>
+                  <p className="font-[Space_Grotesk] font-bold text-[12px] text-[var(--sl-t1)] mb-1 leading-[1.3]">{b.name}</p>
                   <p className="text-[11px] text-[var(--sl-t2)] leading-[1.4] mb-1.5">{b.desc}</p>
                   <div className="h-[3px] rounded-full overflow-hidden bg-[var(--sl-s3)] mx-2 mb-1">
                     <div className="h-full rounded-full" style={{ width: `${progressPct}%`, background: col }} />
@@ -594,19 +593,19 @@ export default function ConquistasPage() {
 
         {/* Score Card */}
         <div className="flex-1 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] p-[24px_28px] relative overflow-hidden">
-          {/* Rainbow top bar */}
+          {/* Top bar */}
           <div
             className="absolute top-0 left-0 right-0 h-[3px]"
-            style={{ background: 'linear-gradient(90deg, #6366f1, #0055ff)' }}
+            style={{ background: 'var(--sl-em)' }}
           />
           {/* Counter */}
           <div className="flex items-end gap-[6px] mb-[6px]">
-            <span className="font-[Syne] font-extrabold text-[44px] leading-none bg-gradient-to-br from-[#6366f1] to-[#0055ff] text-transparent bg-clip-text">
+            <span className="font-[Space_Grotesk] font-extrabold text-[44px] leading-none sl-num-strong text-[var(--sl-em)]">
               {heroCount}
             </span>
-            <span className="font-[DM_Mono] text-[18px] text-[var(--sl-t3)] mb-1">/ {LIVE_TOTAL_ALL}</span>
+            <span className="sl-num text-[18px] text-[var(--sl-t3)] mb-1">/ {LIVE_TOTAL_ALL}</span>
           </div>
-          <div className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[3px]">
+          <div className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[3px]">
             Conquistas desbloqueadas
           </div>
           <div className="text-[12px] text-[var(--sl-t3)] mb-4">
@@ -618,7 +617,7 @@ export default function ConquistasPage() {
               className="h-full rounded-full"
               style={{
                 width:      `${heroBarW}%`,
-                background: 'linear-gradient(90deg, #6366f1, #0055ff)',
+                background: 'var(--sl-grad)',
                 transition: 'width 1.4s cubic-bezier(0.4,0,0.2,1)',
               }}
             />
@@ -653,8 +652,8 @@ export default function ConquistasPage() {
       </div>
 
       {/* ② Jornada Motivational Phrase */}
-      <div className="flex items-center gap-3 p-[14px_18px] rounded-[14px] mb-5 bg-gradient-to-br from-[#10b981]/7 to-[#0055ff]/7 border border-[rgba(16,185,129,0.18)] sl-fade-up">
-        <span className="text-[22px] shrink-0">🤖</span>
+      <div className="flex items-center gap-3 p-[14px_18px] rounded-[14px] mb-5 bg-[rgba(15,118,110,0.07)] border border-[rgba(15,118,110,0.18)] sl-fade-up">
+        <Bot size={20} className="text-[var(--sl-em)] shrink-0" />
         <span className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">
           Você tem{' '}
           <strong className="text-[var(--sl-t1)]">{LIVE_TOTAL_UNLOCKED} conquistas desbloqueadas</strong>{' '}
@@ -678,12 +677,12 @@ export default function ConquistasPage() {
               onClick={() => setCurCat(cat)}
               className={`inline-flex items-center gap-[6px] px-[14px] py-[7px] rounded-[20px] border text-[12px] font-medium transition-all ${
                 isActive
-                  ? 'border-[#6366f1] bg-[rgba(99,102,241,0.15)] text-[#6366f1]'
+                  ? 'border-[#6B6FD4] bg-[rgba(107,111,212,0.15)] text-[#6B6FD4]'
                   : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t2)]'
               }`}
             >
               {CAT_LABELS[cat]}
-              <span className="font-[DM_Mono] text-[10px] opacity-70">{cnt.done}/{cnt.total}</span>
+              <span className="font-[IBM_Plex_Mono] text-[10px] opacity-70">{cnt.done}/{cnt.total}</span>
             </button>
           )
         })}
@@ -692,7 +691,7 @@ export default function ConquistasPage() {
             type="checkbox"
             checked={showLocked}
             onChange={e => setShowLocked(e.target.checked)}
-            className="accent-[#0055ff] cursor-pointer"
+            className="accent-[#0F766E] cursor-pointer"
           />
           Mostrar bloqueadas
         </label>
@@ -702,7 +701,7 @@ export default function ConquistasPage() {
       <div>
         {visUnlocked.length > 0 && (
           <>
-            <SectionLabel>✅ Desbloqueadas ({visUnlocked.length})</SectionLabel>
+            <SectionLabel>Desbloqueadas ({visUnlocked.length})</SectionLabel>
             <div className="grid grid-cols-4 gap-[14px] mb-7 max-[900px]:grid-cols-3 max-sm:grid-cols-2">
               {visUnlocked.map((b, i) => (
                 <BadgeCard key={b.id} badge={b} delay={i * 0.04} onClick={() => setModalBadge(b)} />
@@ -712,7 +711,7 @@ export default function ConquistasPage() {
         )}
         {visLocked.length > 0 && (
           <>
-            <SectionLabel>🔒 Bloqueadas ({visLocked.length})</SectionLabel>
+            <SectionLabel>Bloqueadas ({visLocked.length})</SectionLabel>
             <div className="grid grid-cols-4 gap-[14px] mb-7 max-[900px]:grid-cols-3 max-sm:grid-cols-2">
               {visLocked.map((b, i) => (
                 <BadgeCard

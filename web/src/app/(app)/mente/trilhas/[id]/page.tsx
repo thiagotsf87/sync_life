@@ -18,26 +18,26 @@ import { MenteTrackEditModal, type EditTrackData } from '@/components/mente/mobi
 import { MenteTrackDeleteModal } from '@/components/mente/mobile/MenteTrackDeleteModal'
 import { ModuleHeader } from '@/components/ui/module-header'
 
-const MENTE_COLOR = '#eab308'
+const MENTE_COLOR = '#D9962E'
 
 const CATEGORY_COLORS: Record<string, string> = {
-  technology: '#eab308',
-  languages: '#3b82f6',
+  technology: '#D9962E',
+  languages: '#4F88D4',
   management: '#a855f7',
-  marketing: '#f97316',
-  design: '#ec4899',
-  finance: '#10b981',
-  health: '#f43f5e',
-  exam: '#06b6d4',
-  undergraduate: '#6366f1',
-  postgraduate: '#8b5cf6',
-  certification: '#f59e0b',
-  other: '#64748b',
+  marketing: '#D97534',
+  design: '#C76795',
+  finance: '#0F766E',
+  health: '#DB6478',
+  exam: '#3CA0B5',
+  undergraduate: '#6B6FD4',
+  postgraduate: '#8B7BD4',
+  certification: '#D9962E',
+  other: '#6F7986',
 }
 
 const STATUS_PILL_STYLES: Record<TrackStatus, { bg: string; color: string }> = {
-  in_progress: { bg: 'rgba(234,179,8,.12)', color: '#eab308' },
-  completed: { bg: 'rgba(16,185,129,.12)', color: '#10b981' },
+  in_progress: { bg: 'rgba(217,150,46,.12)', color: '#D9962E' },
+  completed: { bg: 'rgba(15,118,110,.12)', color: '#0F766E' },
   paused: { bg: 'rgba(100,116,139,.12)', color: 'var(--sl-t2)' },
   abandoned: { bg: 'rgba(100,116,139,.12)', color: 'var(--sl-t3)' },
 }
@@ -227,7 +227,7 @@ export default function TrilhaDetalhePage() {
     )
   }
 
-  const catColor = CATEGORY_COLORS[track.category] ?? '#eab308'
+  const catColor = CATEGORY_COLORS[track.category] ?? '#D9962E'
   const catLabel = (CATEGORY_LABELS[track.category as TrackCategory] ?? '').replace(/^.+ /, '')
   const statusPill = STATUS_PILL_STYLES[(effectiveTrack?.status ?? track.status) as TrackStatus] ?? STATUS_PILL_STYLES.in_progress
 
@@ -301,7 +301,7 @@ export default function TrilhaDetalhePage() {
                 </button>
                 <button
                   onClick={() => { setDeleteOpen(true); setMenuOpen(false) }}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-left text-[13px] text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] transition-colors"
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-left text-[13px] text-[#DB6478] hover:bg-[rgba(219,100,120,0.1)] transition-colors"
                 >
                   <X size={16} />
                   Excluir
@@ -321,7 +321,7 @@ export default function TrilhaDetalhePage() {
         >
           <ArrowLeft size={20} className="text-[var(--sl-t2)]" />
         </button>
-        <h1 className="flex-1 min-w-0 font-[Syne] font-extrabold text-base sm:text-lg truncate text-center text-[var(--sl-t1)]">
+        <h1 className="flex-1 min-w-0 font-[Space_Grotesk] font-extrabold text-base sm:text-lg truncate text-center text-[var(--sl-t1)]">
           {effectiveTrack?.name ?? track.name}
         </h1>
         <div className="relative shrink-0" ref={menuRef}>
@@ -337,7 +337,7 @@ export default function TrilhaDetalhePage() {
       {/* HERO card — gradient accent bar + 36px values */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 mb-[14px] relative overflow-hidden sl-fade-up sl-delay-1 transition-colors hover:border-[var(--sl-border-h)]">
         {/* Gradient accent bar */}
-        <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: 'linear-gradient(90deg, #eab308, #f97316)' }} />
+        <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: 'linear-gradient(90deg, #D9962E, #D97534)' }} />
 
         <div className="grid grid-cols-[1fr_auto] gap-7 items-center max-sm:grid-cols-1">
           {/* Left: pills + progress */}
@@ -351,7 +351,7 @@ export default function TrilhaDetalhePage() {
               </span>
               <span
                 className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold"
-                style={{ background: 'rgba(6,182,212,.12)', color: '#06b6d4' }}
+                style={{ background: 'rgba(60,160,181,.12)', color: '#3CA0B5' }}
               >
                 {catLabel}
               </span>
@@ -370,7 +370,7 @@ export default function TrilhaDetalhePage() {
                 className="h-full rounded-full transition-[width] duration-700"
                 style={{
                   width: `${Math.min(effectiveProgress, 100)}%`,
-                  background: 'linear-gradient(90deg, #eab308, #f97316)',
+                  background: 'linear-gradient(90deg, #D9962E, #D97534)',
                 }}
               />
             </div>
@@ -379,21 +379,21 @@ export default function TrilhaDetalhePage() {
           {/* Right: 36px values */}
           <div className="flex gap-7 text-center max-sm:justify-around">
             <div>
-              <p className="font-[DM_Mono] font-bold leading-none text-[#eab308]" style={{ fontSize: '36px' }}>
+              <p className="font-[IBM_Plex_Mono] font-bold leading-none text-[#D9962E]" style={{ fontSize: '36px' }}>
                 {effectiveProgress}%
               </p>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--sl-t3)] mt-1">Progresso</p>
             </div>
             <div className="w-px bg-[var(--sl-border)]" />
             <div>
-              <p className="font-[DM_Mono] font-bold leading-none text-[var(--sl-t1)]" style={{ fontSize: '36px' }}>
+              <p className="font-[IBM_Plex_Mono] font-bold leading-none text-[var(--sl-t1)]" style={{ fontSize: '36px' }}>
                 {track.total_hours}h
               </p>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--sl-t3)] mt-1">Estudadas</p>
             </div>
             <div className="w-px bg-[var(--sl-border)]" />
             <div>
-              <p className="font-[DM_Mono] font-bold leading-none text-[var(--sl-t1)]" style={{ fontSize: '36px' }}>
+              <p className="font-[IBM_Plex_Mono] font-bold leading-none text-[var(--sl-t1)]" style={{ fontSize: '36px' }}>
                 {(effectiveTrack?.cost ?? track.cost) != null ? `R$ ${(effectiveTrack?.cost ?? track.cost)!.toFixed(0)}` : '\u2014'}
               </p>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--sl-t3)] mt-1">Investido</p>
@@ -409,10 +409,10 @@ export default function TrilhaDetalhePage() {
         {steps.length > 0 && (
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-[9px] mb-[18px]">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9962E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                 Etapas da Trilha
               </h2>
             </div>
@@ -433,7 +433,7 @@ export default function TrilhaDetalhePage() {
                     {!isLast && (
                       <div
                         className="absolute left-[15px] top-[24px] bottom-0 w-[2px]"
-                        style={{ background: step.is_completed ? '#10b981' : 'var(--sl-s3)' }}
+                        style={{ background: step.is_completed ? '#0F766E' : 'var(--sl-s3)' }}
                       />
                     )}
 
@@ -443,9 +443,9 @@ export default function TrilhaDetalhePage() {
                         'absolute left-[7px] top-1 w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] z-[1]',
                       )}
                       style={{
-                        background: step.is_completed ? '#10b981' : isNext ? '#eab308' : 'var(--sl-s3)',
+                        background: step.is_completed ? '#0F766E' : isNext ? '#D9962E' : 'var(--sl-s3)',
                         color: step.is_completed ? '#fff' : isNext ? '#000' : 'var(--sl-t3)',
-                        boxShadow: isNext ? '0 0 0 4px rgba(234,179,8,.2)' : undefined,
+                        boxShadow: isNext ? '0 0 0 4px rgba(217,150,46,.2)' : undefined,
                         animation: isNext ? 'tl-pulse 2s infinite' : undefined,
                       }}
                     >
@@ -465,8 +465,8 @@ export default function TrilhaDetalhePage() {
                         isNext ? 'border-2' : 'bg-[var(--sl-s2)]',
                       )}
                       style={isNext ? {
-                        borderColor: '#eab308',
-                        background: 'rgba(234,179,8,.06)',
+                        borderColor: '#D9962E',
+                        background: 'rgba(217,150,46,.06)',
                       } : undefined}
                     >
                       <div className="flex items-center justify-between">
@@ -475,7 +475,7 @@ export default function TrilhaDetalhePage() {
                             type="checkbox"
                             checked={step.is_completed}
                             onChange={(e) => handleToggleStep(step.id, track.id, e.target.checked)}
-                            className="accent-[#eab308] w-4 h-4 rounded shrink-0"
+                            className="accent-[#D9962E] w-4 h-4 rounded shrink-0"
                           />
                           <span
                             className={cn(
@@ -486,7 +486,7 @@ export default function TrilhaDetalhePage() {
                           >
                             {step.title}
                             {isNext && (
-                              <span className="ml-1.5 text-[10px] font-medium text-[#eab308]">proximo</span>
+                              <span className="ml-1.5 text-[10px] font-medium text-[#D9962E]">proximo</span>
                             )}
                           </span>
                         </label>
@@ -523,7 +523,7 @@ export default function TrilhaDetalhePage() {
               <button
                 onClick={() => setDeleteOpen(true)}
                 className="flex-1 flex items-center justify-center gap-1.5 py-[7px] rounded-[10px] text-[12px] font-semibold
-                           text-[#f43f5e] hover:bg-[rgba(244,63,94,0.1)] transition-colors border border-transparent"
+                           text-[#DB6478] hover:bg-[rgba(219,100,120,0.1)] transition-colors border border-transparent"
               >
                 <X size={14} />
                 Excluir
@@ -537,12 +537,12 @@ export default function TrilhaDetalhePage() {
           {/* Placeholder chart card */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-3 transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-[9px] mb-[18px]">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9962E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="20" x2="18" y2="10" />
                 <line x1="12" y1="20" x2="12" y2="4" />
                 <line x1="6" y1="20" x2="6" y2="14" />
               </svg>
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                 Horas de Estudo
               </h2>
             </div>
@@ -555,8 +555,8 @@ export default function TrilhaDetalhePage() {
           {(effectiveTrack?.notes ?? track.notes) && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-4 transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-[9px] mb-3">
-                <BookOpen size={16} className="text-[#eab308]" />
-                <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <BookOpen size={16} className="text-[#D9962E]" />
+                <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                   Notas
                 </h2>
               </div>

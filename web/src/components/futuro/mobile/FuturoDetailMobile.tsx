@@ -48,13 +48,13 @@ export function FuturoDetailMobile({ objective }: FuturoDetailMobileProps) {
 
   // Module config for goal rows
   const MODULE_CFG: Record<string, { emoji: string; color: string; label: string }> = {
-    financas:     { emoji: '💰', color: '#10b981', label: 'Finanças' },
-    patrimonio:   { emoji: '📈', color: '#3b82f6', label: 'Patrimônio' },
-    carreira:     { emoji: '💼', color: '#f59e0b', label: 'Carreira' },
-    tempo:        { emoji: '⏳', color: '#06b6d4', label: 'Tempo' },
-    corpo:        { emoji: '🏃', color: '#f97316', label: 'Corpo' },
-    mente:        { emoji: '🧠', color: '#8b5cf6', label: 'Mente' },
-    experiencias: { emoji: '✈️', color: '#ec4899', label: 'Experiências' },
+    financas:     { emoji: '💰', color: '#0F766E', label: 'Finanças' },
+    patrimonio:   { emoji: '📈', color: '#4F88D4', label: 'Patrimônio' },
+    carreira:     { emoji: '💼', color: '#D9962E', label: 'Carreira' },
+    tempo:        { emoji: '⏳', color: '#3CA0B5', label: 'Tempo' },
+    corpo:        { emoji: '🏃', color: '#D97534', label: 'Corpo' },
+    mente:        { emoji: '🧠', color: '#8B7BD4', label: 'Mente' },
+    experiencias: { emoji: '✈️', color: '#C76795', label: 'Experiências' },
   }
 
   const INDICATOR_LABELS: Record<string, string> = {
@@ -116,8 +116,8 @@ export function FuturoDetailMobile({ objective }: FuturoDetailMobileProps) {
       <div
         className="mx-4 mb-[14px] rounded-[16px] p-[15px]"
         style={{
-          background: `linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.08))`,
-          border: `1px solid rgba(139,92,246,0.3)`,
+          background: `linear-gradient(135deg, rgba(139,123,212,0.15), rgba(199,103,149,0.08))`,
+          border: `1px solid rgba(139,123,212,0.3)`,
         }}
       >
         {/* Mission label */}
@@ -129,18 +129,18 @@ export function FuturoDetailMobile({ objective }: FuturoDetailMobileProps) {
         <div className="flex items-center gap-[11px] mb-[13px]">
           <div
             className="w-[45px] h-[45px] rounded-[12px] flex items-center justify-center text-[22px]"
-            style={{ background: 'rgba(139,92,246,0.15)' }}
+            style={{ background: 'rgba(139,123,212,0.15)' }}
           >
             {objective.icon}
           </div>
           <div>
-            <p className="font-[Syne] text-[17px] font-extrabold text-[var(--sl-t1)]">
+            <p className="font-[Space_Grotesk] text-[17px] font-extrabold text-[var(--sl-t1)]">
               {`Missão: ${objective.name.replace('Comprar ', '')}`}
             </p>
             <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">
               {categoryDisplay}
               {isDelayed && (
-                <span className="inline-flex items-center gap-1 ml-1 px-2 py-[2px] rounded-[10px] text-[10px] font-semibold bg-[rgba(245,158,11,0.12)] text-[#f59e0b]">
+                <span className="inline-flex items-center gap-1 ml-1 px-2 py-[2px] rounded-[10px] text-[10px] font-semibold bg-[rgba(217,150,46,0.12)] text-[#D9962E]">
                   ⚠ Atrasado
                 </span>
               )}
@@ -165,7 +165,7 @@ export function FuturoDetailMobile({ objective }: FuturoDetailMobileProps) {
                 strokeDasharray={dasharray} strokeLinecap="round" />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-[Syne] text-[20px] font-extrabold leading-none" style={{ color: FUTURO_PRIMARY_LIGHT }}>
+              <span className="font-[Space_Grotesk] text-[20px] font-extrabold leading-none" style={{ color: FUTURO_PRIMARY_LIGHT }}>
                 {progress}%
               </span>
               <span className="text-[9px] text-[var(--sl-t2)]">
@@ -178,25 +178,25 @@ export function FuturoDetailMobile({ objective }: FuturoDetailMobileProps) {
           <div className="flex-1 flex flex-col gap-1.5">
             <div className="flex justify-between">
               <span className="text-[11px] text-[var(--sl-t2)]">Acumulado</span>
-              <span className="font-[DM_Mono] text-[12px]" style={{ color: FUTURO_PRIMARY_LIGHT }}>
+              <span className="font-[IBM_Plex_Mono] text-[12px]" style={{ color: FUTURO_PRIMARY_LIGHT }}>
                 R$ {accumulated.toLocaleString('pt-BR')}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-[11px] text-[var(--sl-t2)]">Meta</span>
-              <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">
+              <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">
                 R$ {target.toLocaleString('pt-BR')}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-[11px] text-[var(--sl-t2)]">Restante</span>
-              <span className="font-[DM_Mono] text-[12px] text-[#f59e0b]">
+              <span className="font-[IBM_Plex_Mono] text-[12px] text-[#D9962E]">
                 R$ {remaining.toLocaleString('pt-BR')}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-[11px] text-[var(--sl-t2)]">Prazo projetado</span>
-              <span className="font-[DM_Mono] text-[12px] text-[#f43f5e]">
+              <span className="font-[IBM_Plex_Mono] text-[12px] text-[#DB6478]">
                 Fev 2029
               </span>
             </div>
@@ -207,10 +207,10 @@ export function FuturoDetailMobile({ objective }: FuturoDetailMobileProps) {
       {/* Goals list */}
       <div
         className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] overflow-hidden"
-        style={{ borderColor: 'rgba(139,92,246,0.2)' }}
+        style={{ borderColor: 'rgba(139,123,212,0.2)' }}
       >
         <div className="flex items-center justify-between px-[14px] py-[11px] border-b border-[var(--sl-border)]">
-          <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">
+          <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">
             Aliados desta missão
           </p>
           <button className="text-[11px] font-semibold" style={{ color: FUTURO_PRIMARY }}>
@@ -260,7 +260,7 @@ export function FuturoDetailMobile({ objective }: FuturoDetailMobileProps) {
                   {/* Progress % + link */}
                   <div className="flex flex-col items-end shrink-0">
                     <span
-                      className="font-[DM_Mono] text-[12px] font-bold"
+                      className="font-[IBM_Plex_Mono] text-[12px] font-bold"
                       style={{ color: goalProgress > 0 ? FUTURO_PRIMARY : 'var(--sl-t3)' }}
                     >
                       {goalProgress}%
@@ -288,7 +288,7 @@ export function FuturoDetailMobile({ objective }: FuturoDetailMobileProps) {
 
       {/* Milestones section */}
       <div className="flex items-center justify-between px-5 mb-1">
-        <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
+        <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
           Marcos da Missão
         </p>
       </div>

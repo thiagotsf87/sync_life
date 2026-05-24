@@ -37,15 +37,15 @@ export function FluxoCaixaChart({ days }: FluxoCaixaChartProps) {
       {/* Legend */}
       <div className="flex items-center gap-3 mb-2">
         <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
-          <span className="w-3 h-2 rounded-sm inline-block" style={{ background: '#10b981', opacity: 0.8 }} />
+          <span className="w-3 h-2 rounded-sm inline-block" style={{ background: '#0F766E', opacity: 0.8 }} />
           Receitas
         </span>
         <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
-          <span className="w-3 h-2 rounded-sm inline-block" style={{ background: '#f43f5e', opacity: 0.7 }} />
+          <span className="w-3 h-2 rounded-sm inline-block" style={{ background: '#DB6478', opacity: 0.7 }} />
           Despesas
         </span>
         <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
-          <span className="w-6 h-px inline-block" style={{ background: '#0055ff' }} />
+          <span className="w-6 h-px inline-block" style={{ background: '#0B2D34' }} />
           Saldo
         </span>
       </div>
@@ -55,7 +55,7 @@ export function FluxoCaixaChart({ days }: FluxoCaixaChartProps) {
           {yLabels.map((v, i) => (
             <span
               key={i}
-              className="absolute right-0 font-[DM_Mono] text-[9px] text-[var(--sl-t3)]"
+              className="absolute right-0 font-[IBM_Plex_Mono] text-[9px] text-[var(--sl-t3)]"
               style={{ top: `${(i / 3) * h}px`, transform: 'translateY(-50%)' }}
             >
               {v >= 1000 ? `${(v / 1000).toFixed(1)}k` : Math.round(v)}
@@ -81,8 +81,8 @@ export function FluxoCaixaChart({ days }: FluxoCaixaChartProps) {
                 >
                   {isToday && (
                     <>
-                      <div className="absolute top-0 bottom-0 left-1/2 w-px bg-[#10b981] opacity-50 -translate-x-1/2" />
-                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[7px] font-bold text-[#10b981] whitespace-nowrap bg-[rgba(16,185,129,0.1)] px-1 py-0.5 rounded">
+                      <div className="absolute top-0 bottom-0 left-1/2 w-px bg-[#0F766E] opacity-50 -translate-x-1/2" />
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[7px] font-bold text-[#0F766E] whitespace-nowrap bg-[rgba(15,118,110,0.1)] px-1 py-0.5 rounded">
                         Hoje
                       </div>
                     </>
@@ -91,13 +91,13 @@ export function FluxoCaixaChart({ days }: FluxoCaixaChartProps) {
                     {incH > 0 && (
                       <div
                         className="w-4/5 max-w-[13px] rounded-t-sm"
-                        style={{ height: incH, background: '#10b981', opacity: isFuture ? 0.3 : 0.8 }}
+                        style={{ height: incH, background: '#0F766E', opacity: isFuture ? 0.3 : 0.8 }}
                       />
                     )}
                     {expH > 0 && (
                       <div
                         className="w-4/5 max-w-[13px] rounded-b-sm mt-px"
-                        style={{ height: expH, background: '#f43f5e', opacity: isFuture ? 0.3 : 0.7 }}
+                        style={{ height: expH, background: '#DB6478', opacity: isFuture ? 0.3 : 0.7 }}
                       />
                     )}
                   </div>
@@ -116,7 +116,7 @@ export function FluxoCaixaChart({ days }: FluxoCaixaChartProps) {
             <polyline
               points={balPts}
               fill="none"
-              stroke="#0055ff"
+              stroke="#0B2D34"
               strokeWidth="1"
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -130,8 +130,8 @@ export function FluxoCaixaChart({ days }: FluxoCaixaChartProps) {
               <div
                 key={d}
                 className={cn(
-                  'flex-1 text-center font-[DM_Mono] text-[7px]',
-                  isToday ? 'font-bold text-[#10b981]' : 'text-[var(--sl-t2)]'
+                  'flex-1 text-center font-[IBM_Plex_Mono] text-[7px]',
+                  isToday ? 'font-bold text-[#0F766E]' : 'text-[var(--sl-t2)]'
                 )}
                 style={{ opacity: isFuture ? 0.4 : 1 }}
               >

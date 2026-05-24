@@ -87,19 +87,19 @@ export function TempoMobile({
               className="flex flex-col items-center py-2.5 px-3 rounded-[14px] shrink-0 transition-all border"
               style={{
                 minWidth: 46,
-                background: isToday && !isSelected ? 'rgba(16,185,129,0.15)' : isSelected ? 'var(--sl-s2)' : 'var(--sl-s1)',
-                borderColor: isToday ? 'rgba(16,185,129,0.4)' : isSelected ? 'var(--sl-border-h)' : 'var(--sl-border)',
+                background: isToday && !isSelected ? 'rgba(15,118,110,0.15)' : isSelected ? 'var(--sl-s2)' : 'var(--sl-s1)',
+                borderColor: isToday ? 'rgba(15,118,110,0.4)' : isSelected ? 'var(--sl-border-h)' : 'var(--sl-border)',
               }}
             >
               <span
                 className="text-[10px] font-medium mb-1"
-                style={{ color: isToday ? '#10b981' : 'var(--sl-t2)' }}
+                style={{ color: isToday ? '#0F766E' : 'var(--sl-t2)' }}
               >
                 {WEEK_DAYS_SHORT[day.getDay()]}
               </span>
               <span
-                className="font-[DM_Mono] text-[16px] font-medium"
-                style={{ color: isToday ? '#10b981' : 'var(--sl-t1)' }}
+                className="font-[IBM_Plex_Mono] text-[16px] font-medium"
+                style={{ color: isToday ? '#0F766E' : 'var(--sl-t1)' }}
               >
                 {day.getDate()}
               </span>
@@ -115,7 +115,7 @@ export function TempoMobile({
       {/* Event groups */}
       {groupedEvents.map((group) => (
         <div key={group.dateStr}>
-          <p className="px-5 pb-2 pt-1 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+          <p className="px-5 pb-2 pt-1 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
             {group.label}
           </p>
 
@@ -133,11 +133,11 @@ export function TempoMobile({
               >
                 {/* Time column */}
                 <div className="text-right shrink-0" style={{ minWidth: 44 }}>
-                  <p className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t2)]">
+                  <p className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t2)]">
                     {ev.startTime ?? '—'}
                   </p>
                   {ev.endTime && (
-                    <p className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t2)]">
+                    <p className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t2)]">
                       {ev.endTime}
                     </p>
                   )}

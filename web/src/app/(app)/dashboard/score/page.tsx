@@ -7,18 +7,18 @@ import { useLifeMap } from '@/hooks/use-life-map'
 import { AIInsightCard } from '@/components/ui/ai-insight-card'
 
 const MODULE_META: Record<string, { emoji: string; color: string; bg: string }> = {
-  financas:   { emoji: '💰', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
-  tempo:      { emoji: '⏳', color: '#06b6d4', bg: 'rgba(6,182,212,0.15)' },
-  futuro:     { emoji: '🔮', color: '#0055ff', bg: 'rgba(0,85,255,0.15)' },
-  corpo:      { emoji: '🏃', color: '#f97316', bg: 'rgba(249,115,22,0.15)' },
-  mente:      { emoji: '🧠', color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
-  patrimonio: { emoji: '📈', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+  financas:   { emoji: '💰', color: '#0F766E', bg: 'rgba(15,118,110,0.15)' },
+  tempo:      { emoji: '⏳', color: '#3CA0B5', bg: 'rgba(60,160,181,0.15)' },
+  futuro:     { emoji: '🔮', color: '#0B2D34', bg: 'rgba(0,85,255,0.15)' },
+  corpo:      { emoji: '🏃', color: '#D97534', bg: 'rgba(217,117,52,0.15)' },
+  mente:      { emoji: '🧠', color: '#8B7BD4', bg: 'rgba(139,123,212,0.15)' },
+  patrimonio: { emoji: '📈', color: '#D9962E', bg: 'rgba(217,150,46,0.15)' },
 }
 
 function getProgressColor(pct: number): string {
-  if (pct >= 70) return '#10b981'
-  if (pct >= 40) return '#f59e0b'
-  return '#f43f5e'
+  if (pct >= 70) return '#0F766E'
+  if (pct >= 40) return '#D9962E'
+  return '#DB6478'
 }
 
 export default function LifeScorePage() {
@@ -46,9 +46,9 @@ export default function LifeScorePage() {
     if (activeModules.length === 0) {
       // Default mock arcs
       return [
-        { color: '#10b981', dasharray: `${circ * 0.42} ${circ * 0.58}`, dashoffset: 0 },
-        { color: '#06b6d4', dasharray: `${circ * 0.18} ${circ * 0.82}`, dashoffset: -(circ * 0.44) },
-        { color: '#0055ff', dasharray: `${circ * 0.13} ${circ * 0.87}`, dashoffset: -(circ * 0.64) },
+        { color: '#0F766E', dasharray: `${circ * 0.42} ${circ * 0.58}`, dashoffset: 0 },
+        { color: '#3CA0B5', dasharray: `${circ * 0.18} ${circ * 0.82}`, dashoffset: -(circ * 0.44) },
+        { color: '#0B2D34', dasharray: `${circ * 0.13} ${circ * 0.87}`, dashoffset: -(circ * 0.64) },
       ]
     }
     const totalPct = activeModules.reduce((s, m) => s + m.pct, 0)
@@ -59,7 +59,7 @@ export default function LifeScorePage() {
       const arcLen = totalArc * share
       const gap = 5
       const a = {
-        color: m.color ?? '#10b981',
+        color: m.color ?? '#0F766E',
         dasharray: `${Math.max(0, arcLen - gap)} ${circ - Math.max(0, arcLen - gap)}`,
         dashoffset: -offset,
       }
@@ -78,7 +78,7 @@ export default function LifeScorePage() {
         key,
         label: dim?.fullLabel ?? key.charAt(0).toUpperCase() + key.slice(1),
         emoji: meta?.emoji ?? '📊',
-        color: meta?.color ?? '#64748b',
+        color: meta?.color ?? '#6F7986',
         bg: meta?.bg ?? 'rgba(100,116,139,0.1)',
         pct: dim?.value ?? 0,
         active: (dim?.value ?? 0) > 0,
@@ -97,7 +97,7 @@ export default function LifeScorePage() {
     <div className="max-w-[600px] mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 lg:px-0">
-        <h1 className="font-[Syne] text-[20px] font-bold text-sl-grad">Life Score</h1>
+        <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-sl-grad">Life Score</h1>
         <button
           onClick={() => router.push('/configuracoes')}
           className="flex h-9 w-9 items-center justify-center rounded-[10px]
@@ -127,7 +127,7 @@ export default function LifeScorePage() {
             ))}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="font-[Syne] text-[56px] font-extrabold text-[var(--sl-t1)] leading-none">
+            <span className="font-[Space_Grotesk] text-[56px] font-extrabold text-[var(--sl-t1)] leading-none">
               {loading ? '—' : score}
             </span>
             <span className="text-[13px] text-[var(--sl-t2)] mt-1">de 100</span>
@@ -136,18 +136,18 @@ export default function LifeScorePage() {
 
         {/* Evolution badge — Jornada only */}
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[20px]
-                        bg-[rgba(16,185,129,0.1)] border border-[rgba(16,185,129,0.3)]">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" width="14" height="14">
+                        bg-[rgba(15,118,110,0.1)] border border-[rgba(15,118,110,0.3)]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0F766E" strokeWidth="2.5" width="14" height="14">
             <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
           </svg>
-          <span className="text-[13px] font-medium text-[#10b981]">
+          <span className="text-[13px] font-medium text-[#0F766E]">
             +4 pontos esta semana · Melhor semana do mês!
           </span>
         </div>
       </div>
 
       {/* Module grid */}
-      <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+      <p className="px-5 pb-2 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
         Por Módulo
       </p>
       <div className="grid grid-cols-2 gap-2 px-4 lg:px-0">
@@ -167,7 +167,7 @@ export default function LifeScorePage() {
             </div>
             {m.active ? (
               <>
-                <p className="font-[DM_Mono] text-[18px] font-semibold" style={{ color: m.color }}>
+                <p className="font-[IBM_Plex_Mono] text-[18px] font-semibold" style={{ color: m.color }}>
                   {m.pct}%
                 </p>
                 <div className="h-1.5 rounded-full overflow-hidden bg-[var(--sl-s3)] mt-1.5">
@@ -179,7 +179,7 @@ export default function LifeScorePage() {
               </>
             ) : (
               <>
-                <p className="font-[DM_Mono] text-[18px] font-semibold text-[var(--sl-t3)]">—</p>
+                <p className="font-[IBM_Plex_Mono] text-[18px] font-semibold text-[var(--sl-t3)]">—</p>
                 <p className="text-[10px] text-[var(--sl-t3)] mt-1">Ative no v3</p>
               </>
             )}

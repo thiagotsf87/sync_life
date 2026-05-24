@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useTransactions } from '@/hooks/use-transactions'
 import { useRecorrentes } from '@/hooks/use-recorrentes'
-import { TrendingUp, CalendarDays, Plus, ChevronLeft, ChevronRight } from 'lucide-react'
+import { TrendingUp, CalendarDays, Plus, ChevronLeft, ChevronRight, CreditCard, RefreshCw, Wallet } from 'lucide-react'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { FinancasMobile } from '@/components/financas/FinancasMobile'
 import { KpiStrip } from '@/components/financas/KpiStrip'
@@ -117,7 +117,7 @@ export default function FinancasDashboardPage() {
         nome: `${b.category?.icon ?? '📦'} ${b.category?.name ?? 'Outro'}`,
         pct: Math.round((b.gasto / totalGasto) * 100),
         val: b.gasto,
-        cor: b.category?.color ?? '#64748b',
+        cor: b.category?.color ?? '#6F7986',
       }))
       .sort((a, b) => b.val - a.val)
   }, [activeBudgets, totalGasto])
@@ -202,8 +202,8 @@ export default function FinancasDashboardPage() {
       {/* 1 PAGE HEADER */}
       <ModuleHeader
         icon={TrendingUp}
-        iconBg="rgba(16,185,129,.08)"
-        iconColor="#10b981"
+        iconBg="rgba(15,118,110,.08)"
+        iconColor="#0F766E"
         title="Visão Geral"
         subtitle={`${mesAno} · semana ${weekOfMonth} de ${totalWeeks} · ${daysLeftInMonth} dias restantes`}
         className="mb-4"
@@ -213,7 +213,7 @@ export default function FinancasDashboardPage() {
             className="w-7 h-7 rounded-[8px] border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors">
             <ChevronLeft size={14} />
           </button>
-          <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)] px-2.5 py-1.5 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] whitespace-nowrap min-w-[130px] text-center flex items-center justify-center gap-1.5">
+          <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)] px-2.5 py-1.5 rounded-[8px] bg-[var(--sl-s2)] border border-[var(--sl-border)] whitespace-nowrap min-w-[130px] text-center flex items-center justify-center gap-1.5">
             <CalendarDays size={12} className="text-[var(--sl-t3)]" />
             {mesAno}
           </span>
@@ -224,7 +224,7 @@ export default function FinancasDashboardPage() {
           {(month !== now.getMonth() + 1 || year !== now.getFullYear()) && (
             <button
               onClick={() => { setMonth(now.getMonth() + 1); setYear(now.getFullYear()) }}
-              className="ml-1 text-[11px] text-[#10b981] hover:underline"
+              className="ml-1 text-[11px] text-[#0F766E] hover:underline"
             >
               Hoje
             </button>
@@ -233,7 +233,7 @@ export default function FinancasDashboardPage() {
         <button
           onClick={() => router.push('/financas/transacoes')}
           className="flex items-center gap-1.5 px-3 py-2 rounded-[9px] border-none text-white text-[12px] font-bold transition-all hover:brightness-110"
-          style={{ background: '#10b981' }}
+          style={{ background: '#0F766E' }}
         >
           <Plus size={12} />
           Nova Transação
@@ -332,16 +332,16 @@ export default function FinancasDashboardPage() {
         {fabOpen && (
           <div className="flex flex-col items-end gap-1.5 mb-1">
             {[
-              { label: 'Nova Transação', ico: '💳', href: '/financas/transacoes' },
-              { label: 'Nova Recorrente', ico: '🔄', href: '/financas/recorrentes' },
-              { label: 'Novo Orçamento', ico: '💼', href: '/financas/orcamentos' },
+              { label: 'Nova Transação', Icon: CreditCard, href: '/financas/transacoes' },
+              { label: 'Nova Recorrente', Icon: RefreshCw, href: '/financas/recorrentes' },
+              { label: 'Novo Orçamento', Icon: Wallet, href: '/financas/orcamentos' },
             ].map(a => (
               <button
                 key={a.label}
                 onClick={() => { router.push(a.href); setFabOpen(false) }}
                 className="flex items-center gap-2 pl-3 pr-2 py-2 rounded-xl bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[12px] font-semibold text-[var(--sl-t1)] shadow-xl hover:border-[var(--sl-border-h)] transition-all"
               >
-                <span>{a.ico}</span>
+                <a.Icon size={13} className="text-[var(--sl-t2)]" />
                 {a.label}
               </button>
             ))}
@@ -350,7 +350,7 @@ export default function FinancasDashboardPage() {
         <button
           onClick={() => setFabOpen(o => !o)}
           className="w-[46px] h-[46px] rounded-full flex items-center justify-center text-white shadow-xl transition-all hover:brightness-110 hover:scale-105"
-          style={{ background: 'linear-gradient(135deg,#10b981,#0055ff)', boxShadow: '0 4px 20px rgba(16,185,129,.35)', transform: fabOpen ? 'rotate(45deg)' : 'rotate(0deg)' }}
+          style={{ background: '#0F766E', boxShadow: '0 4px 20px rgba(15,118,110,.35)', transform: fabOpen ? 'rotate(45deg)' : 'rotate(0deg)' }}
         >
           <Plus size={20} />
         </button>

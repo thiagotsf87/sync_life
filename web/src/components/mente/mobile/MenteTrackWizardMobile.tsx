@@ -6,9 +6,9 @@ import type { TrackCategory, CreateTrackData } from '@/hooks/use-mente'
 import { CATEGORY_LABELS } from '@/hooks/use-mente'
 import { useObjectives } from '@/hooks/use-futuro'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.14)'
-const MENTE_BORDER = 'rgba(234,179,8,0.3)'
+const MENTE_COLOR = '#D9962E'
+const MENTE_BG = 'rgba(217,150,46,0.14)'
+const MENTE_BORDER = 'rgba(217,150,46,0.3)'
 const FREE_TRACK_LIMIT = 3
 
 interface StepInput {
@@ -117,7 +117,7 @@ export function MenteTrackWizardMobile({
             <p className="text-[11px] font-medium" style={{ color: MENTE_COLOR }}>
               🧠 Nova Trilha — Passo {step} de 3
             </p>
-            <h2 className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)]">
+            <h2 className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)]">
               {step === 1 ? 'Informações básicas' : step === 2 ? 'Etapas de aprendizado' : 'Prazo e objetivo'}
             </h2>
           </div>
@@ -146,18 +146,18 @@ export function MenteTrackWizardMobile({
             <div
               className="rounded-2xl p-5 text-center"
               style={{
-                background: 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(139,92,246,0.1))',
-                border: '1.5px solid rgba(245,158,11,0.3)',
+                background: 'linear-gradient(135deg,rgba(217,150,46,0.15),rgba(139,123,212,0.1))',
+                border: '1.5px solid rgba(217,150,46,0.3)',
               }}
             >
               <span className="text-[32px]">💎</span>
-              <h3 className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mt-2 mb-1">
+              <h3 className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)] mt-2 mb-1">
                 Limite FREE atingido
               </h3>
               <p className="text-[13px] text-[var(--sl-t2)] mb-4">
                 Você tem {existingTrackCount} trilhas ativas. O plano FREE permite até {FREE_TRACK_LIMIT} trilhas simultâneas.
               </p>
-              <p className="text-[13px] font-medium" style={{ color: '#f59e0b' }}>
+              <p className="text-[13px] font-medium" style={{ color: '#D9962E' }}>
                 PRO: trilhas ilimitadas + IA personalizada
               </p>
             </div>

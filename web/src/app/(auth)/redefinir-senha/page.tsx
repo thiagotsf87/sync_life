@@ -15,7 +15,7 @@ function calculateStrength(password: string): { score: number; label: string; co
   if (/[A-Z]/.test(password) && /[0-9]/.test(password)) score++
   if (/[^A-Za-z0-9]/.test(password)) score++
   const labels = ['', 'Fraca', 'Média', 'Forte', 'Muito forte']
-  const colors = ['', '#f43f5e', '#f59e0b', '#10b981', '#10b981']
+  const colors = ['', '#DB6478', '#D9962E', '#0F766E', '#0F766E']
   return { score, label: labels[score] ?? '', color: colors[score] ?? '' }
 }
 
@@ -76,12 +76,12 @@ export default function RedefinirSenhaPage() {
         </div>
 
         <div className="auth-recover-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth={2} strokeLinecap="round">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0F766E" strokeWidth={2} strokeLinecap="round">
             <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
           </svg>
         </div>
 
-        <h1 className="font-[Syne] text-[22px] font-extrabold mb-2">Nova senha</h1>
+        <h1 className="font-[Space_Grotesk] text-[22px] font-extrabold mb-2">Nova senha</h1>
         <p className="text-sm text-[var(--auth-t2)] mb-6 leading-relaxed">
           Escolha uma senha forte para proteger sua conta.
         </p>
@@ -148,7 +148,7 @@ export default function RedefinirSenhaPage() {
               </button>
             </div>
             {confirmPassword && password !== confirmPassword && (
-              <p className="mt-1 text-[11px] text-[#f43f5e]">As senhas não coincidem</p>
+              <p className="mt-1 text-[11px] text-[#DB6478]">As senhas não coincidem</p>
             )}
           </div>
 

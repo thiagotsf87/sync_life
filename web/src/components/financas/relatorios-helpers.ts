@@ -24,6 +24,6 @@ export const PERIOD_LABELS: Record<string, string> = {
 
 export function getDeltaColor(type: 'recipes' | 'expenses' | 'balance' | 'savings', delta: number | null): string {
   if (delta === null) return 'text-[var(--sl-t3)]'
-  if (type === 'expenses') return delta > 0 ? 'text-[#f43f5e]' : 'text-[#10b981]'
-  return delta > 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
+  if (type === 'expenses') return delta > 0 ? 'text-[#DB6478]' : 'text-[#0F766E]'
+  return delta > 0 ? 'text-[#0F766E]' : 'text-[#DB6478]'
 }

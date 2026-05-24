@@ -99,7 +99,7 @@ export function AddContributionModal({ open, goal, onClose, onSave }: AddContrib
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div className="flex items-center gap-2">
             <span className="text-xl">{goal.icon}</span>
-            <h2 className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)]">
+            <h2 className="font-[Space_Grotesk] font-extrabold text-[15px] text-[var(--sl-t1)]">
               Registrar Aporte
             </h2>
           </div>
@@ -118,13 +118,13 @@ export function AddContributionModal({ open, goal, onClose, onSave }: AddContrib
           <div className="flex items-center justify-between p-3 rounded-[12px] bg-[var(--sl-s2)]">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Faltam</p>
-              <p className="font-[DM_Mono] font-medium text-[15px] text-[var(--sl-t1)]">
+              <p className="font-[IBM_Plex_Mono] font-medium text-[15px] text-[var(--sl-t1)]">
                 {remaining.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </p>
             </div>
             <div className="text-right">
               <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Meta</p>
-              <p className="font-[DM_Mono] text-[13px] text-[var(--sl-t2)]">
+              <p className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t2)]">
                 {goal.name}
               </p>
             </div>
@@ -135,19 +135,19 @@ export function AddContributionModal({ open, goal, onClose, onSave }: AddContrib
             <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Valor do aporte</label>
             <div className={cn(
               'flex items-center gap-2 px-3.5 py-3 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
-              errors.amount ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus-within:border-[#10b981]',
+              errors.amount ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus-within:border-[#0F766E]',
             )}>
-              <span className="font-[DM_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+              <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
               <input
                 type="text"
                 inputMode="numeric"
                 value={amountStr}
                 onChange={e => setAmountStr(maskCurrency(e.target.value))}
                 placeholder="0,00"
-                className="flex-1 bg-transparent outline-none font-[DM_Mono] text-[18px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                className="flex-1 bg-transparent outline-none font-[IBM_Plex_Mono] text-[18px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
               />
             </div>
-            {errors.amount && <p className="text-[11px] text-[#f43f5e]">{errors.amount}</p>}
+            {errors.amount && <p className="text-[11px] text-[#DB6478]">{errors.amount}</p>}
           </div>
 
           {/* Data */}
@@ -158,11 +158,11 @@ export function AddContributionModal({ open, goal, onClose, onSave }: AddContrib
               value={date}
               onChange={e => setDate(e.target.value)}
               className={cn(
-                'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[DM_Mono]',
-                errors.date ? 'border-[#f43f5e]' : 'border-[var(--sl-border)] focus:border-[#10b981]',
+                'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[IBM_Plex_Mono]',
+                errors.date ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus:border-[#0F766E]',
               )}
             />
-            {errors.date && <p className="text-[11px] text-[#f43f5e]">{errors.date}</p>}
+            {errors.date && <p className="text-[11px] text-[#DB6478]">{errors.date}</p>}
           </div>
 
           {/* Notas */}
@@ -173,7 +173,7 @@ export function AddContributionModal({ open, goal, onClose, onSave }: AddContrib
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="Ex: Aporte mensal, bônus..."
-              className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
             />
           </div>
 
@@ -191,7 +191,7 @@ export function AddContributionModal({ open, goal, onClose, onSave }: AddContrib
             onClick={handleSave}
             disabled={saving}
             className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-[#03071a] transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#10b981' }}
+            style={{ background: '#0F766E' }}
           >
             {saving && <Loader2 size={14} className="animate-spin" />}
             Confirmar Aporte

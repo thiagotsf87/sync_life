@@ -82,9 +82,9 @@ export function calcProgress(current: number, target: number): number {
 }
 
 export function calcRingColor(goal: Goal): string {
-  if (goal.status === 'completed') return '#10b981'
-  if (goal.status === 'paused') return '#f59e0b'
-  if (!goal.target_date) return '#10b981'
+  if (goal.status === 'completed') return '#0F766E'
+  if (goal.status === 'paused') return '#D9962E'
+  if (!goal.target_date) return '#0F766E'
 
   const today = new Date()
   const start = new Date(goal.start_date)
@@ -94,15 +94,15 @@ export function calcRingColor(goal: Goal): string {
   const timePct = totalMs > 0 ? (elapsedMs / totalMs) * 100 : 0
   const valuePct = calcProgress(goal.current_amount, goal.target_amount)
 
-  if (valuePct >= 100) return '#10b981'
-  if (timePct > 99) return '#f43f5e'
-  if (timePct > 85 && valuePct < timePct) return '#f43f5e'
-  if (timePct > 70 && valuePct < timePct) return '#f59e0b'
-  return '#10b981'
+  if (valuePct >= 100) return '#0F766E'
+  if (timePct > 99) return '#DB6478'
+  if (timePct > 85 && valuePct < timePct) return '#DB6478'
+  if (timePct > 70 && valuePct < timePct) return '#D9962E'
+  return '#0F766E'
 }
 
 export function useGradient(goal: Goal): boolean {
-  return goal.status !== 'completed' && calcRingColor(goal) === '#10b981'
+  return goal.status !== 'completed' && calcRingColor(goal) === '#0F766E'
 }
 
 export function calcProjectedDate(

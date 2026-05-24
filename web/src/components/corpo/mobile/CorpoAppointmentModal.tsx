@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { SPECIALTIES, type SaveAppointmentData } from '@/hooks/use-corpo'
 import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 
-const CORPO_COLOR = '#f97316'
-const CORPO_BG = 'rgba(249,115,22,0.12)'
+const CORPO_COLOR = '#D97534'
+const CORPO_BG = 'rgba(217,117,52,0.12)'
 
 const FOLLOW_UP_OPTIONS = [
   { label: 'Sem retorno', value: null },
@@ -170,7 +170,7 @@ export function CorpoAppointmentModal({ onClose, onSave }: CorpoAppointmentModal
               value={cost}
               onChange={(e) => setCost(e.target.value)}
               placeholder="0,00"
-              className="w-full rounded-[10px] px-3 py-3 text-[14px] text-[var(--sl-t1)] outline-none text-center font-[DM_Mono]"
+              className="w-full rounded-[10px] px-3 py-3 text-[14px] text-[var(--sl-t1)] outline-none text-center font-[IBM_Plex_Mono]"
               style={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)' }}
             />
           </div>
@@ -211,7 +211,7 @@ export function CorpoAppointmentModal({ onClose, onSave }: CorpoAppointmentModal
         <button
           onClick={handleSave}
           disabled={saving || !date}
-          className="w-full py-[14px] rounded-[10px] font-[Syne] text-[15px] font-bold text-black disabled:opacity-50"
+          className="w-full py-[14px] rounded-[10px] font-[Space_Grotesk] text-[15px] font-bold text-black disabled:opacity-50"
           style={{ background: CORPO_COLOR }}
         >
           {saving ? 'Agendando…' : 'Agendar Consulta 📅'}

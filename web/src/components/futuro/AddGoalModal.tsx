@@ -166,7 +166,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
-          <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Nova Meta</h2>
+          <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Nova Meta</h2>
           <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] transition-colors">
             <X size={16} className="text-[var(--sl-t2)]" />
           </button>
@@ -188,7 +188,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
               placeholder="Ex: Economizar R$ 50.000"
               className="w-full px-3 py-2.5 rounded-[10px] text-[13px] font-medium
                          bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                         placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+                         placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
             />
           </div>
 
@@ -205,7 +205,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
                   className={cn(
                     'flex items-center gap-1.5 px-2.5 py-2 rounded-[8px] text-[12px] transition-all border',
                     form.target_module === m
-                      ? 'border-[#10b981] bg-[#10b981]/10 text-[var(--sl-t1)]'
+                      ? 'border-[#0F766E] bg-[#0F766E]/10 text-[var(--sl-t1)]'
                       : 'border-[var(--sl-border)] bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                   )}
                 >
@@ -225,7 +225,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
                 onChange={e => setForm(f => ({ ...f, linked_entity_id: e.target.value }))}
                 className="w-full px-3 py-2.5 rounded-[10px] text-[13px]
                            bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                           outline-none focus:border-[#10b981] transition-colors"
+                           outline-none focus:border-[#0F766E] transition-colors"
               >
                 <option value="">Nenhum</option>
                 {linkOptions.map(opt => (
@@ -248,7 +248,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
               onChange={e => setForm(f => ({ ...f, indicator_type: e.target.value as GoalIndicatorType, target_unit: '' }))}
               className="w-full px-3 py-2.5 rounded-[10px] text-[13px]
                          bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                         outline-none focus:border-[#10b981] transition-colors"
+                         outline-none focus:border-[#0F766E] transition-colors"
             >
               {INDICATORS.map(ind => (
                 <option key={ind} value={ind}>{INDICATOR_LABELS[ind]}</option>
@@ -270,7 +270,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
                   placeholder={isWeight ? 'Ex: 85' : '0'}
                   className="w-full px-3 py-2 rounded-[10px] text-[13px]
                              bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
                 />
               </div>
               <div>
@@ -284,7 +284,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
                   placeholder={isWeight ? 'Ex: 75' : '0'}
                   className="w-full px-3 py-2 rounded-[10px] text-[13px]
                              bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
                 />
               </div>
             </div>
@@ -309,7 +309,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
                 }
                 className="w-full px-3 py-2 rounded-[10px] text-[13px]
                            bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                           placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+                           placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
               />
               {isWeight && form.initial_value && form.target_value && (
                 <p className="text-[10px] text-[var(--sl-t3)] mt-1">
@@ -336,7 +336,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
                       className={cn(
                         'px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all',
                         form.target_unit === s
-                          ? 'border-[#10b981] bg-[#10b981]/10 text-[#10b981]'
+                          ? 'border-[#0F766E] bg-[#0F766E]/10 text-[#0F766E]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -352,7 +352,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
                   placeholder="Ex: horas, livros, km..."
                   className="w-full px-3 py-2 rounded-[10px] text-[13px]
                              bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#10b981] transition-colors"
+                             placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
                 />
               )}
             </div>
@@ -371,7 +371,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
                   className={cn(
                     'flex-1 py-1.5 rounded-[8px] text-[11px] font-medium border transition-all',
                     parseInt(form.weight) === w
-                      ? 'border-[#10b981] bg-[#10b981]/10 text-[var(--sl-t1)]'
+                      ? 'border-[#0F766E] bg-[#0F766E]/10 text-[var(--sl-t1)]'
                       : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                   )}
                 >
@@ -398,7 +398,7 @@ export function AddGoalModal({ open, onClose, onSave, isLoading = false }: AddGo
             className={cn(
               'px-5 py-2 rounded-[10px] text-[13px] font-semibold transition-all',
               canSave && !isLoading
-                ? 'bg-[#10b981] text-[#03071a] hover:opacity-90'
+                ? 'bg-[#0F766E] text-[#03071a] hover:opacity-90'
                 : 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
             )}
           >

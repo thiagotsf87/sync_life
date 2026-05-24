@@ -19,17 +19,17 @@ interface ExpBucketListProps {
 }
 
 const BADGE_STYLES: Record<string, { bg: string; color: string }> = {
-  soon: { bg: 'rgba(236,72,153,0.12)', color: '#f472b6' },
+  soon: { bg: 'rgba(199,103,149,0.12)', color: '#f472b6' },
   pending: { bg: 'var(--sl-s2)', color: 'var(--sl-t3)' },
-  visited: { bg: 'rgba(16,185,129,0.12)', color: '#10b981' },
-  mission: { bg: 'rgba(139,92,246,0.12)', color: '#c4b5fd' },
+  visited: { bg: 'rgba(15,118,110,0.12)', color: '#0F766E' },
+  mission: { bg: 'rgba(139,123,212,0.12)', color: '#c4b5fd' },
   dream: { bg: 'var(--sl-s2)', color: 'var(--sl-t3)' },
 }
 
 export function ExpBucketList({ title, items }: ExpBucketListProps) {
   return (
     <div>
-      <p className="font-[Syne] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 pb-2 mt-1">
+      <p className="font-[Space_Grotesk] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 pb-2 mt-1">
         {title}
       </p>
       <div style={{ background: 'var(--sl-s1)', borderTop: '1px solid var(--sl-border)', borderBottom: '1px solid var(--sl-border)' }}>

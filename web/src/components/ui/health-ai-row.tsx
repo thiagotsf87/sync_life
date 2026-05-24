@@ -24,10 +24,10 @@ interface HealthAIRowProps {
 }
 
 const PILL_STYLES: Record<string, { bg: string; text: string; icon: string }> = {
-  success: { bg: 'rgba(16,185,129,.08)', text: '#10b981', icon: '\u2713' },
-  warning: { bg: 'rgba(245,158,11,.08)', text: '#f59e0b', icon: '\u26A0' },
-  danger: { bg: 'rgba(244,63,94,.08)', text: '#f43f5e', icon: '\u2716' },
-  info: { bg: 'rgba(6,182,212,.08)', text: '#06b6d4', icon: '\u2139' },
+  success: { bg: 'rgba(15,118,110,.08)', text: '#0F766E', icon: '\u2713' },
+  warning: { bg: 'rgba(217,150,46,.08)', text: '#D9962E', icon: '\u26A0' },
+  danger: { bg: 'rgba(219,100,120,.08)', text: '#DB6478', icon: '\u2716' },
+  info: { bg: 'rgba(60,160,181,.08)', text: '#3CA0B5', icon: '\u2139' },
 }
 
 export function HealthAIRow({
@@ -35,7 +35,7 @@ export function HealthAIRow({
   title,
   pills,
   insights,
-  accentColor = '#10b981',
+  accentColor = '#0F766E',
   className,
 }: HealthAIRowProps) {
   const size = 72
@@ -51,7 +51,7 @@ export function HealthAIRow({
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-all hover:border-[var(--sl-border-h)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,.15)]">
         <div
           className="absolute top-0 left-[22px] right-[22px] h-[2.5px] rounded-b"
-          style={{ background: `linear-gradient(90deg, ${accentColor}, #0055ff)` }}
+          style={{ background: `linear-gradient(90deg, ${accentColor}, #0B2D34)` }}
         />
         <div className="flex items-center gap-4">
           {/* Ring */}
@@ -59,8 +59,8 @@ export function HealthAIRow({
             <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
               <defs>
                 <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="100%" stopColor="#0055ff" />
+                  <stop offset="0%" stopColor="#0F766E" />
+                  <stop offset="100%" stopColor="#0B2D34" />
                 </linearGradient>
               </defs>
               <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="var(--sl-s3)" strokeWidth={strokeWidth} />
@@ -73,13 +73,13 @@ export function HealthAIRow({
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-[DM_Mono] font-medium text-[20px] leading-none text-[var(--sl-t1)]">{score}</span>
+              <span className="font-[IBM_Plex_Mono] font-medium text-[20px] leading-none text-[var(--sl-t1)]">{score}</span>
             </div>
           </div>
 
           {/* Pills */}
           <div className="flex-1 min-w-0">
-            <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">{title}</p>
+            <p className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">{title}</p>
             <div className="flex flex-wrap gap-1.5">
               {pills.map((pill, i) => {
                 const s = PILL_STYLES[pill.type]
@@ -102,7 +102,7 @@ export function HealthAIRow({
       {/* AI Insights — gradient border via wrapper technique */}
       <div
         className="rounded-[19px] p-px relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,.15)]"
-        style={{ background: 'linear-gradient(135deg, rgba(6,182,212,.18), rgba(0,85,255,.10))' }}
+        style={{ background: 'linear-gradient(135deg, rgba(60,160,181,.18), rgba(0,85,255,.10))' }}
       >
         <div className="bg-[var(--sl-s1)] rounded-[18px] p-6 relative overflow-hidden">
           {/* Radial glow */}

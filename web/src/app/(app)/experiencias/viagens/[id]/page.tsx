@@ -226,14 +226,14 @@ export default function TripDetailPage() {
         {/* Bottom gradient accent */}
         <div
           className="absolute bottom-0 left-0 right-0 h-[3px]"
-          style={{ background: 'linear-gradient(90deg, #ec4899, #a855f7, #ec4899)', opacity: 0.6 }}
+          style={{ background: 'linear-gradient(90deg, #C76795, #a855f7, #C76795)', opacity: 0.6 }}
         />
 
         {/* Top row: title + actions */}
         <div className="flex items-start justify-between gap-5">
           <div className="flex-1">
             <div className="flex items-center gap-[10px] mb-[6px]">
-              <h1 className="font-[Syne] font-extrabold text-[24px]">{trip.name}</h1>
+              <h1 className="font-[Space_Grotesk] font-extrabold text-[24px]">{trip.name}</h1>
               <span
                 className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
                 style={{
@@ -273,7 +273,7 @@ export default function TripDetailPage() {
             </select>
             <button
               onClick={handleDeleteTrip}
-              className="w-[36px] h-[36px] rounded-[10px] border border-[var(--sl-border)] flex items-center justify-center text-[#f43f5e] hover:border-[#f43f5e] transition-colors bg-transparent cursor-pointer"
+              className="w-[36px] h-[36px] rounded-[10px] border border-[var(--sl-border)] flex items-center justify-center text-[#DB6478] hover:border-[#DB6478] transition-colors bg-transparent cursor-pointer"
             >
               <Trash2 size={16} />
             </button>
@@ -284,35 +284,35 @@ export default function TripDetailPage() {
         <div className="flex items-center gap-0 mt-5 pt-4 border-t border-[var(--sl-border)] pb-6">
           <div className="flex-1 text-center">
             <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Orcamento</div>
-            <div className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)]">
+            <div className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[var(--sl-t1)]">
               {formatTripAmount(totalEstimated)}
             </div>
           </div>
           <div className="w-px h-[36px] bg-[var(--sl-border)]" />
           <div className="flex-1 text-center">
             <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Gasto</div>
-            <div className="font-[DM_Mono] text-[20px] font-medium text-[#ec4899]">
+            <div className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[#C76795]">
               {formatTripAmount(totalActual)}
             </div>
           </div>
           <div className="w-px h-[36px] bg-[var(--sl-border)]" />
           <div className="flex-1 text-center">
             <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Saldo</div>
-            <div className="font-[DM_Mono] text-[20px] font-medium text-[#10b981]">
+            <div className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[#0F766E]">
               {formatTripAmount(balance)}
             </div>
           </div>
           <div className="w-px h-[36px] bg-[var(--sl-border)]" />
           <div className="flex-1 text-center">
             <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Atividades</div>
-            <div className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)]">
+            <div className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[var(--sl-t1)]">
               {itinerary.length}
             </div>
           </div>
           <div className="w-px h-[36px] bg-[var(--sl-border)]" />
           <div className="flex-1 text-center">
             <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Checklist</div>
-            <div className="font-[DM_Mono] text-[20px] font-medium text-[#10b981]">
+            <div className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[#0F766E]">
               {Math.round(checklistPct)}%
             </div>
           </div>
@@ -328,7 +328,7 @@ export default function TripDetailPage() {
             className={cn(
               'flex items-center gap-[6px] px-5 py-3 text-[12.5px] font-semibold border-b-2 bg-transparent cursor-pointer transition-all whitespace-nowrap',
               activeTab === tab.id
-                ? 'text-[var(--sl-t1)] border-b-[#ec4899]'
+                ? 'text-[var(--sl-t1)] border-b-[#C76795]'
                 : 'text-[var(--sl-t3)] border-b-transparent hover:text-[var(--sl-t2)]'
             )}
           >

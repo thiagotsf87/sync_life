@@ -18,19 +18,19 @@ interface ExpTabViagensProps {
 type FilterKey = 'all' | 'planning' | 'reserved' | 'ongoing' | 'completed' | 'cancelled'
 
 const BORDER_COLORS: Record<TripStatus, string> = {
-  planning:  '#f59e0b',
-  reserved:  '#0055ff',
-  ongoing:   '#10b981',
+  planning:  '#D9962E',
+  reserved:  '#0B2D34',
+  ongoing:   '#0F766E',
   completed: '#6e90b8',
-  cancelled: '#f43f5e',
+  cancelled: '#DB6478',
 }
 
 const STATUS_BADGE: Record<TripStatus, { bg: string; color: string }> = {
-  planning:  { bg: 'rgba(245,158,11,0.15)',  color: '#f59e0b' },
-  reserved:  { bg: 'rgba(0,85,255,0.15)',    color: '#0055ff' },
-  ongoing:   { bg: 'rgba(236,72,153,0.15)',  color: '#ec4899' },
-  completed: { bg: 'rgba(16,185,129,0.15)',  color: '#10b981' },
-  cancelled: { bg: 'rgba(244,63,94,0.15)',   color: '#f43f5e' },
+  planning:  { bg: 'rgba(217,150,46,0.15)',  color: '#D9962E' },
+  reserved:  { bg: 'rgba(0,85,255,0.15)',    color: '#0B2D34' },
+  ongoing:   { bg: 'rgba(199,103,149,0.15)',  color: '#C76795' },
+  completed: { bg: 'rgba(15,118,110,0.15)',  color: '#0F766E' },
+  cancelled: { bg: 'rgba(219,100,120,0.15)',   color: '#DB6478' },
 }
 
 const FILTER_GROUPS: { key: FilterKey; label: string }[] = [
@@ -116,9 +116,9 @@ export function ExpTabViagens({
               onClick={() => setFilter(f.key)}
               className="text-[11px] font-medium px-3 py-[5px] rounded-[20px] transition-colors"
               style={{
-                background: active ? 'rgba(139,92,246,0.15)' : 'var(--sl-s2)',
+                background: active ? 'rgba(139,123,212,0.15)' : 'var(--sl-s2)',
                 color: active ? '#c4b5fd' : 'var(--sl-t2)',
-                border: `1px solid ${active ? 'rgba(139,92,246,0.3)' : 'var(--sl-border)'}`,
+                border: `1px solid ${active ? 'rgba(139,123,212,0.3)' : 'var(--sl-border)'}`,
               }}
             >
               {f.key === 'all' ? 'Missões' : (f.key === 'completed' ? 'Conquistadas' : f.label)} ({count})
@@ -202,7 +202,7 @@ export function ExpTabViagens({
                 <button
                   onClick={() => onOpenMemoryForm?.(trip)}
                   className="text-[10px] px-2 py-[2px] rounded-[10px]"
-                  style={{ background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}
+                  style={{ background: 'rgba(217,150,46,0.12)', color: '#D9962E' }}
                 >
                   📸 Sem diário
                 </button>
@@ -211,7 +211,7 @@ export function ExpTabViagens({
               {trip.objective_id && (
                 <span
                   className="text-[10px] px-2 py-[2px] rounded-[10px]"
-                  style={{ background: 'rgba(99,102,241,0.12)', color: '#6366f1' }}
+                  style={{ background: 'rgba(107,111,212,0.12)', color: '#6B6FD4' }}
                 >
                   🔮 Missão de Vida
                 </span>

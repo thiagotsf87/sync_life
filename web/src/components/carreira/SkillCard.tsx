@@ -12,9 +12,9 @@ interface SkillCardProps {
 }
 
 const CATEGORY_COLORS: Record<SkillCategory, string> = {
-  hard_skill: '#0055ff',
-  soft_skill: '#10b981',
-  language: '#f59e0b',
+  hard_skill: '#0B2D34',
+  soft_skill: '#0F766E',
+  language: '#D9962E',
   certification: '#a855f7',
 }
 
@@ -40,7 +40,7 @@ export function SkillCard({ skill, onEdit, onDelete }: SkillCardProps) {
             </button>
           )}
           {onDelete && (
-            <button onClick={() => onDelete(skill.id)} className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors">
+            <button onClick={() => onDelete(skill.id)} className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors">
               <Trash2 size={12} className="text-[var(--sl-t3)]" />
             </button>
           )}

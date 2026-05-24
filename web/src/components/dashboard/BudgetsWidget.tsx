@@ -23,25 +23,25 @@ export interface BudgetsWidgetProps {
 }
 
 const CATEGORY_ICON_MAP: Record<string, { icon: LucideIcon; color: string }> = {
-  'alimentação': { icon: Utensils, color: '#10b981' },
-  'alimentacao': { icon: Utensils, color: '#10b981' },
-  'mercado': { icon: ShoppingCart, color: '#10b981' },
-  'transporte': { icon: Car, color: '#06b6d4' },
-  'lazer': { icon: Compass, color: '#f43f5e' },
+  'alimentação': { icon: Utensils, color: '#0F766E' },
+  'alimentacao': { icon: Utensils, color: '#0F766E' },
+  'mercado': { icon: ShoppingCart, color: '#0F766E' },
+  'transporte': { icon: Car, color: '#3CA0B5' },
+  'lazer': { icon: Compass, color: '#DB6478' },
   'moradia': { icon: Home, color: '#a855f7' },
-  'educação': { icon: BookOpen, color: '#3b82f6' },
-  'educacao': { icon: BookOpen, color: '#3b82f6' },
-  'saúde': { icon: Heart, color: '#f97316' },
-  'saude': { icon: Heart, color: '#f97316' },
-  'tecnologia': { icon: Smartphone, color: '#6366f1' },
-  'trabalho': { icon: Briefcase, color: '#64748b' },
-  'fitness': { icon: Dumbbell, color: '#f97316' },
-  'vestuário': { icon: Shirt, color: '#ec4899' },
-  'vestuario': { icon: Shirt, color: '#ec4899' },
-  'presentes': { icon: Gift, color: '#f59e0b' },
+  'educação': { icon: BookOpen, color: '#4F88D4' },
+  'educacao': { icon: BookOpen, color: '#4F88D4' },
+  'saúde': { icon: Heart, color: '#D97534' },
+  'saude': { icon: Heart, color: '#D97534' },
+  'tecnologia': { icon: Smartphone, color: '#6B6FD4' },
+  'trabalho': { icon: Briefcase, color: '#6F7986' },
+  'fitness': { icon: Dumbbell, color: '#D97534' },
+  'vestuário': { icon: Shirt, color: '#C76795' },
+  'vestuario': { icon: Shirt, color: '#C76795' },
+  'presentes': { icon: Gift, color: '#D9962E' },
   'assinaturas': { icon: Music, color: '#a855f7' },
-  'entretenimento': { icon: Gamepad2, color: '#f43f5e' },
-  'investimentos': { icon: Wallet, color: '#3b82f6' },
+  'entretenimento': { icon: Gamepad2, color: '#DB6478' },
+  'investimentos': { icon: Wallet, color: '#4F88D4' },
 }
 
 function getCategoryIcon(name?: string): { Icon: LucideIcon; color: string } {
@@ -62,14 +62,14 @@ export function BudgetsWidget({ budgets, loading }: BudgetsWidgetProps) {
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-[18px]">
-        <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round">
+        <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B6FD4" strokeWidth="2" strokeLinecap="round">
             <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
             <path d="M22 12A10 10 0 0 0 12 2v10z"/>
           </svg>
           Orçamentos
         </span>
-        <button className="text-[12px] font-medium text-[#6366f1] hover:opacity-70 transition-opacity cursor-pointer"
+        <button className="text-[12px] font-medium text-[#6B6FD4] hover:opacity-70 transition-opacity cursor-pointer"
           onClick={() => router.push('/financas/orcamentos')}>{budgets.length} categorias</button>
       </div>
       {loading
@@ -97,8 +97,8 @@ export function BudgetsWidget({ budgets, loading }: BudgetsWidgetProps) {
                       <div className="h-full rounded-[2px] transition-[width] duration-700"
                         style={{ width: `${Math.min(b.pct, 100)}%`, background: color }} />
                     </div>
-                    <span className="font-[DM_Mono] text-[11px] font-medium w-[36px] text-right" style={{ color }}>{b.pct}%</span>
-                    <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)] w-[100px] text-right">
+                    <span className="font-[IBM_Plex_Mono] text-[11px] font-medium w-[36px] text-right" style={{ color }}>{b.pct}%</span>
+                    <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] w-[100px] text-right">
                       {fmt(b.gasto)} / {fmt(b.amount)}
                     </span>
                   </div>

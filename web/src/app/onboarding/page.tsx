@@ -18,27 +18,27 @@ interface OnboardingState {
 
 // ── Objectives Data ──────────────────────────────────────
 const OBJECTIVES = [
-  { value: 'financas', title: 'Organizar minhas financas', desc: 'Sair do vermelho, controlar gastos, criar orcamento', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: 'dollar' },
-  { value: 'patrimonio', title: 'Construir patrimonio', desc: 'Investir, acompanhar proventos, crescer o patrimonio', color: '#3b82f6', bg: 'rgba(59,130,246,.1)', icon: 'chart' },
-  { value: 'saude', title: 'Cuidar da saude', desc: 'Exercicios, alimentacao, perder peso, ganhar massa', color: '#f97316', bg: 'rgba(249,115,22,.1)', icon: 'pulse' },
-  { value: 'tempo', title: 'Ter mais tempo livre', desc: 'Organizar rotina, parar de procrastinar, blocos de foco', color: '#06b6d4', bg: 'rgba(6,182,212,.1)', icon: 'clock' },
-  { value: 'carreira', title: 'Crescer na carreira', desc: 'Projetos, certificacoes, networking, promocao', color: '#f43f5e', bg: 'rgba(244,63,94,.1)', icon: 'briefcase' },
-  { value: 'sonhos', title: 'Realizar sonhos', desc: 'Casa propria, viagem dos sonhos, aposentadoria antecipada', color: '#0055ff', bg: 'rgba(0,85,255,.1)', icon: 'target' },
-  { value: 'mente', title: 'Equilibrio mental', desc: 'Menos ansiedade, habitos saudaveis, diario e reflexao', color: '#eab308', bg: 'rgba(234,179,8,.1)', icon: 'heart' },
-  { value: 'viagens', title: 'Viajar mais', desc: 'Planejar viagens, roteiros, orcamento de aventuras', color: '#ec4899', bg: 'rgba(236,72,153,.1)', icon: 'plane' },
-  { value: 'equilibrio', title: 'Vida equilibrada', desc: 'Visao holistica, nenhuma area negligenciada', color: '#6366f1', bg: 'rgba(99,102,241,.1)', icon: 'globe' },
+  { value: 'financas', title: 'Organizar minhas financas', desc: 'Sair do vermelho, controlar gastos, criar orcamento', color: '#0F766E', bg: 'rgba(15,118,110,.1)', icon: 'dollar' },
+  { value: 'patrimonio', title: 'Construir patrimonio', desc: 'Investir, acompanhar proventos, crescer o patrimonio', color: '#4F88D4', bg: 'rgba(79,136,212,.1)', icon: 'chart' },
+  { value: 'saude', title: 'Cuidar da saude', desc: 'Exercicios, alimentacao, perder peso, ganhar massa', color: '#D97534', bg: 'rgba(217,117,52,.1)', icon: 'pulse' },
+  { value: 'tempo', title: 'Ter mais tempo livre', desc: 'Organizar rotina, parar de procrastinar, blocos de foco', color: '#3CA0B5', bg: 'rgba(60,160,181,.1)', icon: 'clock' },
+  { value: 'carreira', title: 'Crescer na carreira', desc: 'Projetos, certificacoes, networking, promocao', color: '#DB6478', bg: 'rgba(219,100,120,.1)', icon: 'briefcase' },
+  { value: 'sonhos', title: 'Realizar sonhos', desc: 'Casa propria, viagem dos sonhos, aposentadoria antecipada', color: '#0B2D34', bg: 'rgba(0,85,255,.1)', icon: 'target' },
+  { value: 'mente', title: 'Equilibrio mental', desc: 'Menos ansiedade, habitos saudaveis, diario e reflexao', color: '#D9962E', bg: 'rgba(217,150,46,.1)', icon: 'heart' },
+  { value: 'viagens', title: 'Viajar mais', desc: 'Planejar viagens, roteiros, orcamento de aventuras', color: '#C76795', bg: 'rgba(199,103,149,.1)', icon: 'plane' },
+  { value: 'equilibrio', title: 'Vida equilibrada', desc: 'Visao holistica, nenhuma area negligenciada', color: '#6B6FD4', bg: 'rgba(107,111,212,.1)', icon: 'globe' },
 ]
 
 // ── Dimensions Data ──────────────────────────────────────
 const DIMENSIONS = [
-  { value: 'financas', name: 'Financas', desc: 'Despesas, orcamento, receitas e projecoes', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: 'dollar', recommended: true },
-  { value: 'tempo', name: 'Tempo', desc: 'Agenda, rotina, blocos de foco e Pomodoro', color: '#06b6d4', bg: 'rgba(6,182,212,.1)', icon: 'clock', recommended: true },
-  { value: 'futuro', name: 'Futuro', desc: 'Objetivos de longo prazo, metas e milestones', color: '#0055ff', bg: 'rgba(0,85,255,.1)', icon: 'target' },
-  { value: 'corpo', name: 'Corpo', desc: 'Peso, exercicios, alimentacao e saude fisica', color: '#f97316', bg: 'rgba(249,115,22,.1)', icon: 'pulse' },
-  { value: 'mente', name: 'Mente', desc: 'Humor, habitos, meditacao e bem-estar mental', color: '#eab308', bg: 'rgba(234,179,8,.1)', icon: 'heart' },
-  { value: 'patrimonio', name: 'Patrimonio', desc: 'Investimentos, ativos e proventos', color: '#3b82f6', bg: 'rgba(59,130,246,.1)', icon: 'chart' },
-  { value: 'carreira', name: 'Carreira', desc: 'Projetos, certificacoes e networking', color: '#f43f5e', bg: 'rgba(244,63,94,.1)', icon: 'briefcase' },
-  { value: 'experiencias', name: 'Experiencias', desc: 'Viagens, roteiros e aventuras', color: '#ec4899', bg: 'rgba(236,72,153,.1)', icon: 'plane' },
+  { value: 'financas', name: 'Financas', desc: 'Despesas, orcamento, receitas e projecoes', color: '#0F766E', bg: 'rgba(15,118,110,.1)', icon: 'dollar', recommended: true },
+  { value: 'tempo', name: 'Tempo', desc: 'Agenda, rotina, blocos de foco e Pomodoro', color: '#3CA0B5', bg: 'rgba(60,160,181,.1)', icon: 'clock', recommended: true },
+  { value: 'futuro', name: 'Futuro', desc: 'Objetivos de longo prazo, metas e milestones', color: '#0B2D34', bg: 'rgba(0,85,255,.1)', icon: 'target' },
+  { value: 'corpo', name: 'Corpo', desc: 'Peso, exercicios, alimentacao e saude fisica', color: '#D97534', bg: 'rgba(217,117,52,.1)', icon: 'pulse' },
+  { value: 'mente', name: 'Mente', desc: 'Humor, habitos, meditacao e bem-estar mental', color: '#D9962E', bg: 'rgba(217,150,46,.1)', icon: 'heart' },
+  { value: 'patrimonio', name: 'Patrimonio', desc: 'Investimentos, ativos e proventos', color: '#4F88D4', bg: 'rgba(79,136,212,.1)', icon: 'chart' },
+  { value: 'carreira', name: 'Carreira', desc: 'Projetos, certificacoes e networking', color: '#DB6478', bg: 'rgba(219,100,120,.1)', icon: 'briefcase' },
+  { value: 'experiencias', name: 'Experiencias', desc: 'Viagens, roteiros e aventuras', color: '#C76795', bg: 'rgba(199,103,149,.1)', icon: 'plane' },
 ]
 
 const DEFAULT_DIMENSIONS = ['financas', 'tempo', 'futuro', 'corpo', 'mente']
@@ -63,9 +63,9 @@ function ObjIcon({ type, color, size = 18 }: { type: string; color: string; size
 
 // ── "Start here" suggestions ─────────────────────────────
 const START_ACTIONS = [
-  { title: 'Registre sua primeira transacao', desc: 'Financas \u00b7 30 segundos', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: 'dollar', href: '/financas/transacoes' },
-  { title: 'Crie seu primeiro objetivo', desc: 'Futuro \u00b7 1 minuto', color: '#0055ff', bg: 'rgba(0,85,255,.1)', icon: 'target', href: '/futuro' },
-  { title: 'Configure sua agenda semanal', desc: 'Tempo \u00b7 2 minutos', color: '#06b6d4', bg: 'rgba(6,182,212,.1)', icon: 'clock', href: '/tempo' },
+  { title: 'Registre sua primeira transacao', desc: 'Financas \u00b7 30 segundos', color: '#0F766E', bg: 'rgba(15,118,110,.1)', icon: 'dollar', href: '/financas/transacoes' },
+  { title: 'Crie seu primeiro objetivo', desc: 'Futuro \u00b7 1 minuto', color: '#0B2D34', bg: 'rgba(0,85,255,.1)', icon: 'target', href: '/futuro' },
+  { title: 'Configure sua agenda semanal', desc: 'Tempo \u00b7 2 minutos', color: '#3CA0B5', bg: 'rgba(60,160,181,.1)', icon: 'clock', href: '/tempo' },
 ]
 
 // ── Main Component ────────────────────────────────────────

@@ -40,9 +40,9 @@ export function TripTransportsTab({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">✈️ Transportes</h2>
+        <h2 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">✈️ Transportes</h2>
         <button onClick={() => setShowModal(true)}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20">
+          className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#C76795]/10 border border-[#C76795] text-[#C76795] hover:bg-[#C76795]/20">
           <Plus size={13} />
           Adicionar
         </button>
@@ -68,9 +68,9 @@ export function TripTransportsTab({
                     </span>
                     <span className={cn(
                       'text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full',
-                      t.booking_status === 'paid' ? 'text-[#10b981] bg-[#10b981]/10' :
-                      t.booking_status === 'reserved' ? 'text-[#0055ff] bg-[#0055ff]/10' :
-                      'text-[#f59e0b] bg-[#f59e0b]/10'
+                      t.booking_status === 'paid' ? 'text-[#0F766E] bg-[#0F766E]/10' :
+                      t.booking_status === 'reserved' ? 'text-[#0B2D34] bg-[#0B2D34]/10' :
+                      'text-[#D9962E] bg-[#D9962E]/10'
                     )}>
                       {t.booking_status === 'paid' ? 'Pago' : t.booking_status === 'reserved' ? 'Reservado' : 'Estimado'}
                     </span>
@@ -85,12 +85,12 @@ export function TripTransportsTab({
                 </div>
                 <div className="flex items-center gap-2">
                   {t.cost != null && (
-                    <span className="font-[DM_Mono] text-[12px] text-[#ec4899]">
+                    <span className="font-[IBM_Plex_Mono] text-[12px] text-[#C76795]">
                       {formatTripAmountCompact(t.cost)}
                     </span>
                   )}
                   <button onClick={async () => { await deleteTransport(t.id); await reload() }}
-                    className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors">
+                    className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors">
                     <Trash2 size={12} className="text-[var(--sl-t3)]" />
                   </button>
                 </div>

@@ -32,14 +32,14 @@ function calculateStrength(password: string): { score: number; label: string; co
 }
 
 const MODULE_ITEMS = [
-  { name: 'Financas', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
-  { name: 'Tempo', color: '#06b6d4', bg: 'rgba(6,182,212,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
-  { name: 'Futuro', color: '#0055ff', bg: 'rgba(0,85,255,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0055ff" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> },
-  { name: 'Corpo', color: '#f97316', bg: 'rgba(249,115,22,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
-  { name: 'Mente', color: '#eab308', bg: 'rgba(234,179,8,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round"><path d="M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8z"/></svg> },
-  { name: 'Patrimonio', color: '#3b82f6', bg: 'rgba(59,130,246,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> },
-  { name: 'Carreira', color: '#f43f5e', bg: 'rgba(244,63,94,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> },
-  { name: 'Experiencias', color: '#ec4899', bg: 'rgba(236,72,153,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg> },
+  { name: 'Financas', color: '#0F766E', bg: 'rgba(15,118,110,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0F766E" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
+  { name: 'Tempo', color: '#3CA0B5', bg: 'rgba(60,160,181,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3CA0B5" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
+  { name: 'Futuro', color: '#8B7BD4', bg: 'rgba(139,123,212,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B7BD4" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> },
+  { name: 'Corpo', color: '#D97534', bg: 'rgba(217,117,52,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97534" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
+  { name: 'Mente', color: '#D9962E', bg: 'rgba(217,150,46,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D9962E" strokeWidth="2" strokeLinecap="round"><path d="M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8z"/></svg> },
+  { name: 'Patrimonio', color: '#4F88D4', bg: 'rgba(79,136,212,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth="2" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> },
+  { name: 'Carreira', color: '#DB6478', bg: 'rgba(219,100,120,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#DB6478" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> },
+  { name: 'Experiencias', color: '#C76795', bg: 'rgba(199,103,149,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C76795" strokeWidth="2" strokeLinecap="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg> },
 ]
 
 export default function CadastroPage() {
@@ -267,7 +267,7 @@ export default function CadastroPage() {
         <div className="av-orb" style={{ width: 250, height: 250, background: 'var(--cyan)', top: -80, left: -60, borderRadius: '50%', filter: 'blur(80px)', opacity: .25, position: 'absolute' as const }} />
         <div className="av-orb" style={{ width: 200, height: 200, background: 'var(--green)', bottom: -40, right: -40, borderRadius: '50%', filter: 'blur(80px)', opacity: .2, position: 'absolute' as const }} />
         <div className="auth-visual-content" style={{ textAlign: 'center' }}>
-          <div style={{ fontFamily: "var(--font-syne, 'Syne', sans-serif)", fontWeight: 800, fontSize: 24, marginBottom: 12 }}>8 dimensoes. 1 plataforma.</div>
+          <div style={{ fontFamily: "var(--font-space-grotesk, 'Space Grotesk', sans-serif)", fontWeight: 800, fontSize: 24, marginBottom: 12 }}>8 dimensoes. 1 plataforma.</div>
           <div style={{ fontSize: 14, color: 'var(--t2)', marginBottom: 36, lineHeight: 1.7 }}>Cada dimensao da sua vida tem espaco proprio, mas funciona conectada com as outras.</div>
 
           <div className="av-modules-grid">

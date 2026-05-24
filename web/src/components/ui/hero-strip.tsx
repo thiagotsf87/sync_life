@@ -21,7 +21,7 @@ interface HeroStripProps {
 
 export function HeroStrip({
   items,
-  gradient = ['#10b981', '#0055ff'],
+  gradient = ['#0F766E', '#0B2D34'],
   className,
 }: HeroStripProps) {
   return (
@@ -64,13 +64,13 @@ export function HeroStrip({
                 </p>
               </div>
               {item.subtitle && (
-                <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-1 truncate">
+                <p className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-1 truncate">
                   {item.subtitle}
                 </p>
               )}
               <p
                 className={cn(
-                  'font-[DM_Mono] font-medium leading-none text-[var(--sl-t1)]',
+                  'font-[IBM_Plex_Mono] font-medium leading-none text-[var(--sl-t1)]',
                   item.featured ? 'text-[24px]' : 'text-lg',
                 )}
                 style={item.color ? { color: item.color } : undefined}

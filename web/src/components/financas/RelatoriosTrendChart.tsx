@@ -19,7 +19,7 @@ export function RelatoriosTrendChart({ lineChartData, lineChartCats }: Relatorio
   return (
     <SLCard className="flex flex-col">
       <div className="flex items-center justify-between mb-3 shrink-0">
-        <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)] flex items-center gap-1.5">
+        <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)] flex items-center gap-1.5">
           <TrendingUp size={15} />
           Tendência de Gastos por Categoria
         </p>

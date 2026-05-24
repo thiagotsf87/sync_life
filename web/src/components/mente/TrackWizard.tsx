@@ -140,7 +140,7 @@ export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackW
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
-          <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Nova Trilha</h2>
+          <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Nova Trilha</h2>
           <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] transition-colors">
             <X size={16} className="text-[var(--sl-t2)]" />
           </button>
@@ -248,7 +248,7 @@ export function TrackWizard({ open, onClose, onSave, isLoading = false }: TrackW
                       <GripVertical size={12} className="text-[var(--sl-t3)] shrink-0" />
                       <span className="text-[11px] text-[var(--sl-t3)] w-4 shrink-0">{i + 1}.</span>
                       <span className="text-[13px] text-[var(--sl-t1)] flex-1">{s.title}</span>
-                      <button onClick={() => removeStep(s.id)} className="p-1 rounded hover:bg-[rgba(244,63,94,0.1)]">
+                      <button onClick={() => removeStep(s.id)} className="p-1 rounded hover:bg-[rgba(219,100,120,0.1)]">
                         <Trash2 size={13} className="text-[var(--sl-t3)]" />
                       </button>
                     </div>

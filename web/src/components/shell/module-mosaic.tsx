@@ -46,7 +46,7 @@ export function ModuleMosaic({ modules, className }: ModuleMosaicProps) {
                   {mod.name}
                 </p>
               </div>
-              <span className="font-[DM_Mono] font-medium text-[12px] leading-none ml-auto" style={{ color: mod.color }}>
+              <span className="font-[IBM_Plex_Mono] font-medium text-[12px] leading-none ml-auto" style={{ color: mod.color }}>
                 {mod.score}
               </span>
             </div>

@@ -42,11 +42,11 @@ export function getScoreLabel(score: number): string {
 }
 
 export function getScoreColor(score: number): string {
-  if (score <= 20) return '#f43f5e'
-  if (score <= 40) return '#f97316'
-  if (score <= 60) return '#f59e0b'
-  if (score <= 80) return '#6366f1'
-  return '#10b981'
+  if (score <= 20) return '#DB6478'
+  if (score <= 40) return '#D97534'
+  if (score <= 60) return '#D9962E'
+  if (score <= 80) return '#6B6FD4'
+  return '#0F766E'
 }
 
 // ─── HELPERS ───────────────────────────────────────────────────────────────────

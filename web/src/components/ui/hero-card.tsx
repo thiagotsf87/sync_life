@@ -10,7 +10,7 @@ interface HeroCardProps {
 
 export function HeroCard({
   children,
-  gradientColors = ['#10b981', '#0055ff'],
+  gradientColors = ['#0F766E', '#0B2D34'],
   className,
 }: HeroCardProps) {
   return (

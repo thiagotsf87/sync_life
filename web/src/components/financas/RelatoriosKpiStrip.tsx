@@ -26,11 +26,11 @@ export function RelatoriosKpiStrip({
 
       {/* Receitas */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl px-[17px] py-[15px] relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)] sl-fade-up">
-        <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#10b981]" />
-        <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-[14px] mb-2.5 bg-[rgba(16,185,129,0.12)]">💰</div>
+        <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#0F766E]" />
+        <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-[14px] mb-2.5 bg-[rgba(15,118,110,0.12)]">💰</div>
         <p className="text-[10px] uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-0.5">Receitas Totais</p>
         <p className="text-[9px] text-[var(--sl-t3)] italic mb-1.5">Período: {periodLabel}</p>
-        <p className="font-[DM_Mono] text-[20px] font-medium leading-none mb-1.5 text-[#10b981]">
+        <p className="font-[IBM_Plex_Mono] text-[20px] font-medium leading-none mb-1.5 text-[#0F766E]">
           {fmtR(periodStats.totalRecipes)}
         </p>
         <div className={cn('text-[11px]', getDeltaColor('recipes', recipeDelta))}>
@@ -45,11 +45,11 @@ export function RelatoriosKpiStrip({
 
       {/* Despesas */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl px-[17px] py-[15px] relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-1">
-        <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#f43f5e]" />
-        <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-[14px] mb-2.5 bg-[rgba(244,63,94,0.12)]">💸</div>
+        <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#DB6478]" />
+        <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-[14px] mb-2.5 bg-[rgba(219,100,120,0.12)]">💸</div>
         <p className="text-[10px] uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-0.5">Despesas Totais</p>
         <p className="text-[9px] text-[var(--sl-t3)] italic mb-1.5">Período: {periodLabel}</p>
-        <p className="font-[DM_Mono] text-[20px] font-medium leading-none mb-1.5 text-[#f43f5e]">
+        <p className="font-[IBM_Plex_Mono] text-[20px] font-medium leading-none mb-1.5 text-[#DB6478]">
           {fmtR(periodStats.totalExpenses)}
         </p>
         <div className={cn('text-[11px]', getDeltaColor('expenses', expenseDelta))}>
@@ -67,18 +67,18 @@ export function RelatoriosKpiStrip({
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl px-[17px] py-[15px] relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
         <div
           className="absolute top-0 left-4 right-4 h-0.5 rounded-b"
-          style={{ background: periodStats.totalBalance >= 0 ? '#10b981' : '#f43f5e' }}
+          style={{ background: periodStats.totalBalance >= 0 ? '#0F766E' : '#DB6478' }}
         />
         <div
           className="w-7 h-7 rounded-[8px] flex items-center justify-center text-[14px] mb-2.5"
-          style={{ background: periodStats.totalBalance >= 0 ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.12)' }}>
+          style={{ background: periodStats.totalBalance >= 0 ? 'rgba(15,118,110,0.12)' : 'rgba(219,100,120,0.12)' }}>
           📈
         </div>
         <p className="text-[10px] uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-0.5">Saldo Acumulado</p>
         <p className="text-[9px] text-[var(--sl-t3)] italic mb-1.5">Período: {periodLabel}</p>
         <p
-          className="font-[DM_Mono] text-[20px] font-medium leading-none mb-1.5"
-          style={{ color: periodStats.totalBalance >= 0 ? '#10b981' : '#f43f5e' }}>
+          className="font-[IBM_Plex_Mono] text-[20px] font-medium leading-none mb-1.5"
+          style={{ color: periodStats.totalBalance >= 0 ? '#0F766E' : '#DB6478' }}>
           {fmtR(periodStats.totalBalance)}
         </p>
         <div className={cn('text-[11px]', getDeltaColor('balance', balanceDelta))}>
@@ -93,11 +93,11 @@ export function RelatoriosKpiStrip({
 
       {/* Taxa de Poupança */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl px-[17px] py-[15px] relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-3">
-        <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#f59e0b]" />
-        <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-[14px] mb-2.5 bg-[rgba(245,158,11,0.12)]">💹</div>
+        <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b bg-[#D9962E]" />
+        <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-[14px] mb-2.5 bg-[rgba(217,150,46,0.12)]">💹</div>
         <p className="text-[10px] uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-0.5">Taxa de Poupança</p>
         <p className="text-[9px] text-[var(--sl-t3)] italic mb-1.5">Média mensal</p>
-        <p className="font-[DM_Mono] text-[20px] font-medium leading-none mb-1.5 text-[#f59e0b]">
+        <p className="font-[IBM_Plex_Mono] text-[20px] font-medium leading-none mb-1.5 text-[#D9962E]">
           {periodStats.avgSavingsRate.toFixed(1)}%
         </p>
         <div className={cn('text-[11px]', getDeltaColor('savings', savingsDelta))}>

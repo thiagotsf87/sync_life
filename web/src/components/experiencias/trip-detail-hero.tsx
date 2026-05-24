@@ -49,14 +49,14 @@ export function TripDetailHero({
       {/* Bottom gradient line */}
       <div
         className="absolute bottom-0 left-0 right-0 h-[3px] opacity-60"
-        style={{ background: 'linear-gradient(90deg, #ec4899, #a855f7, #ec4899)' }}
+        style={{ background: 'linear-gradient(90deg, #C76795, #a855f7, #C76795)' }}
       />
 
       {/* Top row */}
       <div className="flex items-start justify-between gap-5">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-[10px] mb-1.5">
-            <h1 className="font-[Syne] font-extrabold text-[24px]">{title}</h1>
+            <h1 className="font-[Space_Grotesk] font-extrabold text-[24px]">{title}</h1>
             <span
               className="px-[10px] py-1 rounded-lg text-[11px] font-semibold"
               style={{ background: `${statusColor}18`, color: statusColor }}
@@ -89,7 +89,7 @@ export function TripDetailHero({
           {onDelete && (
             <button
               onClick={onDelete}
-              className="w-9 h-9 rounded-[10px] border border-[var(--sl-border)] flex items-center justify-center text-[#f43f5e] hover:border-[#f43f5e] transition-colors"
+              className="w-9 h-9 rounded-[10px] border border-[var(--sl-border)] flex items-center justify-center text-[#DB6478] hover:border-[#DB6478] transition-colors"
             >
               <Trash2 size={16} />
             </button>
@@ -108,7 +108,7 @@ export function TripDetailHero({
               {m.label}
             </div>
             <div
-              className="font-[DM_Mono] text-[20px] font-medium"
+              className="font-[IBM_Plex_Mono] text-[20px] font-medium"
               style={m.color ? { color: m.color } : undefined}
             >
               {m.value}

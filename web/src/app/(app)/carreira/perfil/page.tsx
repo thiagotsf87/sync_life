@@ -159,8 +159,8 @@ export default function PerfilCarreiraPage() {
       {/* MODULE HEADER */}
       <ModuleHeader
         icon={User}
-        iconBg="rgba(244,63,94,.08)"
-        iconColor="#f43f5e"
+        iconBg="rgba(219,100,120,.08)"
+        iconColor="#DB6478"
         title="Perfil Profissional"
         subtitle="Gerencie seus dados de carreira e sincronize com outros modulos"
       >
@@ -178,7 +178,7 @@ export default function PerfilCarreiraPage() {
             onClick={handleSave}
             disabled={isSaving}
             className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#f43f5e] text-white hover:brightness-110 disabled:opacity-50 transition-all"
+                       bg-[#DB6478] text-white hover:brightness-110 disabled:opacity-50 transition-all"
           >
             <Save size={15} />
             {isSaving ? 'Salvando...' : 'Salvar Alteracoes'}
@@ -195,16 +195,16 @@ export default function PerfilCarreiraPage() {
           {/* Accent bar */}
           <div
             className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[18px]"
-            style={{ background: 'linear-gradient(90deg, #f43f5e, #a855f7, #06b6d4)' }}
+            style={{ background: 'linear-gradient(90deg, #DB6478, #a855f7, #3CA0B5)' }}
           />
           <div className="flex items-center gap-6">
             {/* Avatar with initials */}
             <div
-              className="w-[72px] h-[72px] rounded-full flex items-center justify-center font-[Syne] font-extrabold text-[24px] shrink-0"
+              className="w-[72px] h-[72px] rounded-full flex items-center justify-center font-[Space_Grotesk] font-extrabold text-[24px] shrink-0"
               style={{
-                background: 'linear-gradient(135deg, rgba(244,63,94,.15), rgba(168,85,247,.12))',
-                color: '#f43f5e',
-                border: '2px solid rgba(244,63,94,.25)',
+                background: 'linear-gradient(135deg, rgba(219,100,120,.15), rgba(168,85,247,.12))',
+                color: '#DB6478',
+                border: '2px solid rgba(219,100,120,.25)',
               }}
             >
               {(() => {
@@ -215,7 +215,7 @@ export default function PerfilCarreiraPage() {
               })()}
             </div>
             <div className="flex-1">
-              <h2 className="font-[Syne] font-extrabold text-[22px] text-[var(--sl-t1)] mb-[3px]">
+              <h2 className="font-[Space_Grotesk] font-extrabold text-[22px] text-[var(--sl-t1)] mb-[3px]">
                 {profile.current_title || 'Sem cargo'}
               </h2>
               <p className="text-[13px] text-[var(--sl-t2)]">
@@ -229,7 +229,7 @@ export default function PerfilCarreiraPage() {
                 {profile.level && (
                   <span
                     className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
-                    style={{ background: 'rgba(244,63,94,.10)', color: '#f43f5e' }}
+                    style={{ background: 'rgba(219,100,120,.10)', color: '#DB6478' }}
                   >
                     {LEVEL_LABELS[profile.level]}
                   </span>
@@ -237,7 +237,7 @@ export default function PerfilCarreiraPage() {
                 {profile.field && (
                   <span
                     className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
-                    style={{ background: 'rgba(59,130,246,.10)', color: '#3b82f6' }}
+                    style={{ background: 'rgba(79,136,212,.10)', color: '#4F88D4' }}
                   >
                     {FIELD_LABELS[profile.field]}
                   </span>
@@ -245,7 +245,7 @@ export default function PerfilCarreiraPage() {
                 {profile.start_date && (
                   <span
                     className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
-                    style={{ background: 'rgba(16,185,129,.10)', color: '#10b981' }}
+                    style={{ background: 'rgba(15,118,110,.10)', color: '#0F766E' }}
                   >
                     {(() => {
                       const start = new Date(profile.start_date!)
@@ -270,14 +270,14 @@ export default function PerfilCarreiraPage() {
             {/* Salary card */}
             {profile.gross_salary && (
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-                <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                  <Briefcase size={16} className="text-[#f43f5e]" />
+                <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                  <Briefcase size={16} className="text-[#DB6478]" />
                   Informacoes do Cargo
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-1">Salario Bruto</p>
-                    <p className="font-[DM_Mono] font-medium text-[18px] text-[#10b981]">
+                    <p className="font-[IBM_Plex_Mono] font-medium text-[18px] text-[#0F766E]">
                       {profile.gross_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </p>
                   </div>
@@ -292,7 +292,7 @@ export default function PerfilCarreiraPage() {
                 </div>
                 {profile.sync_salary_to_finance && (
                   <div className="mt-4 px-4 py-3 bg-[var(--sl-s2)] rounded-xl flex items-center gap-3">
-                    <RefreshCw size={14} className="text-[#f43f5e] shrink-0" />
+                    <RefreshCw size={14} className="text-[#DB6478] shrink-0" />
                     <p className="text-[12px] text-[var(--sl-t2)]">Salario sincronizado com Financas como receita mensal</p>
                   </div>
                 )}
@@ -301,8 +301,8 @@ export default function PerfilCarreiraPage() {
 
             {/* XP badges card */}
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <TrendingUp size={16} className="text-[#f43f5e]" />
+              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <TrendingUp size={16} className="text-[#DB6478]" />
                 Evolucao
               </div>
               <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed">
@@ -310,8 +310,8 @@ export default function PerfilCarreiraPage() {
                 {profile.start_date && ` Desde ${new Date(profile.start_date).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}.`}
               </p>
               <div className="flex gap-2 mt-3 flex-wrap">
-                <span className="text-[11px] font-semibold px-[10px] py-1 rounded-lg" style={{ background: 'rgba(244,63,94,.10)', color: '#f43f5e' }}>Level {CARREIRA_XP.level}</span>
-                <span className="text-[11px] font-semibold px-[10px] py-1 rounded-lg" style={{ background: 'rgba(16,185,129,.10)', color: '#10b981' }}>{history.length} posicoes</span>
+                <span className="text-[11px] font-semibold px-[10px] py-1 rounded-lg" style={{ background: 'rgba(219,100,120,.10)', color: '#DB6478' }}>Level {CARREIRA_XP.level}</span>
+                <span className="text-[11px] font-semibold px-[10px] py-1 rounded-lg" style={{ background: 'rgba(15,118,110,.10)', color: '#0F766E' }}>{history.length} posicoes</span>
               </div>
             </div>
           </div>
@@ -319,8 +319,8 @@ export default function PerfilCarreiraPage() {
           {/* Right column: History sidebar */}
           <div className="flex flex-col gap-5">
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <Clock size={16} className="text-[#f43f5e]" />
+              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <Clock size={16} className="text-[#DB6478]" />
                 Historico Recente
               </div>
               {history.length === 0 ? (
@@ -328,7 +328,7 @@ export default function PerfilCarreiraPage() {
               ) : (
                 <div className="flex flex-col gap-[10px]">
                   {history.slice(0, 4).map((entry, i) => {
-                    const borderColors = ['#10b981', '#a855f7', '#f59e0b', '#3b82f6']
+                    const borderColors = ['#0F766E', '#a855f7', '#D9962E', '#4F88D4']
                     return (
                       <div
                         key={entry.id}
@@ -340,7 +340,7 @@ export default function PerfilCarreiraPage() {
                           {entry.company} &middot; {new Date(entry.start_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}
                         </p>
                         {entry.salary && (
-                          <p className="font-[DM_Mono] text-[13px] mt-1" style={{ color: i === 0 ? '#10b981' : 'var(--sl-t2)' }}>
+                          <p className="font-[IBM_Plex_Mono] text-[13px] mt-1" style={{ color: i === 0 ? '#0F766E' : 'var(--sl-t2)' }}>
                             {Number(entry.salary).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                           </p>
                         )}
@@ -362,8 +362,8 @@ export default function PerfilCarreiraPage() {
           <div className="flex flex-col gap-5">
             {/* Card: Informacoes do Cargo */}
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex flex-col gap-4 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
-              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
-                <Briefcase size={16} className="text-[#f43f5e]" />
+              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <Briefcase size={16} className="text-[#DB6478]" />
                 Informacoes do Cargo
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -397,7 +397,7 @@ export default function PerfilCarreiraPage() {
                     onChange={e => setForm(f => ({ ...f, gross_salary: e.target.value }))}
                     placeholder="0"
                     min="0"
-                    className="w-full px-[15px] py-[11px] rounded-[10px] text-[13px] font-[DM_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
+                    className="w-full px-[15px] py-[11px] rounded-[10px] text-[13px] font-[IBM_Plex_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
                   />
                 </div>
                 <div>
@@ -414,8 +414,8 @@ export default function PerfilCarreiraPage() {
 
             {/* Card: Area de Atuacao */}
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-3">
-              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DB6478" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                 Area de Atuacao
               </div>
               <div className="flex flex-wrap gap-2">
@@ -426,10 +426,10 @@ export default function PerfilCarreiraPage() {
                     className={cn(
                       'inline-flex items-center gap-[5px] px-[14px] py-2 rounded-[10px] text-[12px] font-medium border transition-all',
                       form.field === f
-                        ? 'border-[rgba(244,63,94,.2)] text-[#f43f5e]'
+                        ? 'border-[rgba(219,100,120,.2)] text-[#DB6478]'
                         : 'border-transparent bg-[var(--sl-s2)] text-[var(--sl-t3)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t2)]'
                     )}
-                    style={form.field === f ? { background: 'rgba(244,63,94,.08)' } : undefined}
+                    style={form.field === f ? { background: 'rgba(219,100,120,.08)' } : undefined}
                   >
                     {FIELD_LABELS[f]}
                   </button>
@@ -439,8 +439,8 @@ export default function PerfilCarreiraPage() {
 
             {/* Card: Nivel Profissional (stepper style) */}
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-4">
-              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <TrendingUp size={16} className="text-[#f43f5e]" />
+              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <TrendingUp size={16} className="text-[#DB6478]" />
                 Nivel Profissional
               </div>
               <div className="flex flex-wrap gap-[6px]">
@@ -451,10 +451,10 @@ export default function PerfilCarreiraPage() {
                     className={cn(
                       'inline-flex px-3 py-[7px] rounded-lg text-[11px] font-semibold transition-all',
                       form.level === l
-                        ? 'text-[#f43f5e] border border-[rgba(244,63,94,.25)]'
+                        ? 'text-[#DB6478] border border-[rgba(219,100,120,.25)]'
                         : 'bg-[var(--sl-s2)] text-[var(--sl-t3)] border border-transparent hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t2)]'
                     )}
-                    style={form.level === l ? { background: 'rgba(244,63,94,.12)' } : undefined}
+                    style={form.level === l ? { background: 'rgba(219,100,120,.12)' } : undefined}
                   >
                     {LEVEL_LABELS[l]}
                   </button>
@@ -473,7 +473,7 @@ export default function PerfilCarreiraPage() {
                   onClick={() => setForm(f => ({ ...f, sync_salary_to_finance: !f.sync_salary_to_finance }))}
                   className={cn(
                     'w-10 h-[22px] rounded-[11px] transition-all relative cursor-pointer',
-                    form.sync_salary_to_finance ? 'bg-[#f43f5e]' : 'bg-[var(--sl-s3)]'
+                    form.sync_salary_to_finance ? 'bg-[#DB6478]' : 'bg-[var(--sl-s3)]'
                   )}
                 >
                   <div className={cn(
@@ -496,12 +496,12 @@ export default function PerfilCarreiraPage() {
           {/* Sidebar: career history */}
           <div className="flex flex-col gap-5">
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
-              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <Clock size={16} className="text-[#f43f5e]" />
+              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <Clock size={16} className="text-[#DB6478]" />
                 Historico Recente
                 {history.length > 5 && (
                   <span
-                    className="ml-auto font-sans text-[12px] font-medium text-[#f43f5e] cursor-pointer hover:underline"
+                    className="ml-auto font-sans text-[12px] font-medium text-[#DB6478] cursor-pointer hover:underline"
                     onClick={() => router.push('/carreira/historico')}
                   >
                     Ver tudo &rarr;
@@ -517,7 +517,7 @@ export default function PerfilCarreiraPage() {
               ) : (
                 <div className="flex flex-col gap-[10px]">
                   {history.slice(0, 5).map((entry, i) => {
-                    const borderColors = ['#10b981', '#a855f7', '#f59e0b', '#3b82f6', '#06b6d4']
+                    const borderColors = ['#0F766E', '#a855f7', '#D9962E', '#4F88D4', '#3CA0B5']
                     return (
                       <div
                         key={entry.id}
@@ -536,7 +536,7 @@ export default function PerfilCarreiraPage() {
                         {entry.company && <p className="text-[11px] text-[var(--sl-t3)]">{entry.company}</p>}
                         <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
                           {new Date(entry.start_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}
-                          {entry.salary && <span className="font-[DM_Mono] ml-1">{formatCurrency(String(entry.salary))}</span>}
+                          {entry.salary && <span className="font-[IBM_Plex_Mono] ml-1">{formatCurrency(String(entry.salary))}</span>}
                         </p>
                       </div>
                     )

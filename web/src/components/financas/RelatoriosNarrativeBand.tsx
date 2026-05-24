@@ -22,16 +22,16 @@ export function RelatoriosNarrativeBand({
   onRegenerate,
 }: RelatoriosNarrativeBandProps) {
   return (
-    <div className="flex items-start gap-3.5 bg-gradient-to-br from-[rgba(16,185,129,0.07)] to-[rgba(0,85,255,0.05)] border border-[rgba(16,185,129,0.18)] rounded-2xl px-5 py-4 mb-3">
-      <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-[rgba(16,185,129,0.2)] to-[rgba(0,85,255,0.2)] flex items-center justify-center text-[18px] shrink-0 mt-0.5">
+    <div className="flex items-start gap-3.5 bg-gradient-to-br from-[rgba(15,118,110,0.07)] to-[rgba(0,85,255,0.05)] border border-[rgba(15,118,110,0.18)] rounded-2xl px-5 py-4 mb-3">
+      <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-[rgba(15,118,110,0.2)] to-[rgba(0,85,255,0.2)] flex items-center justify-center text-[18px] shrink-0 mt-0.5">
         🤖
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2 flex-wrap mb-1.5">
-          <h3 className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">
+          <h3 className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">
             Análise do Período: {periodLabel}
           </h3>
-          <span className="px-1.5 py-0.5 rounded-[5px] text-[9px] font-bold bg-[rgba(16,185,129,0.15)] text-[#10b981] uppercase tracking-[0.05em]">
+          <span className="px-1.5 py-0.5 rounded-[5px] text-[9px] font-bold bg-[rgba(15,118,110,0.15)] text-[#0F766E] uppercase tracking-[0.05em]">
             IA Financeira
           </span>
           <button
@@ -46,7 +46,7 @@ export function RelatoriosNarrativeBand({
         {aiNarrative ? (
           <p className="text-[13px] text-[var(--sl-t2)] leading-[1.65] whitespace-pre-wrap">
             {aiNarrative}
-            {aiNarrativeLoading && <Loader2 size={12} className="inline-block ml-1 animate-spin text-[#10b981]" />}
+            {aiNarrativeLoading && <Loader2 size={12} className="inline-block ml-1 animate-spin text-[#0F766E]" />}
           </p>
         ) : (
           <>
@@ -60,8 +60,8 @@ export function RelatoriosNarrativeBand({
                   key={tag.text}
                   className={cn(
                     'px-2.5 py-0.5 rounded-[7px] text-[11px] font-medium',
-                    tag.type === 'pos' ? 'bg-[rgba(16,185,129,0.12)] text-[#10b981]' :
-                    tag.type === 'neg' ? 'bg-[rgba(244,63,94,0.1)] text-[#f43f5e]' :
+                    tag.type === 'pos' ? 'bg-[rgba(15,118,110,0.12)] text-[#0F766E]' :
+                    tag.type === 'neg' ? 'bg-[rgba(219,100,120,0.1)] text-[#DB6478]' :
                     'bg-[var(--sl-s2)] text-[var(--sl-t2)]'
                   )}>
                   {tag.text}

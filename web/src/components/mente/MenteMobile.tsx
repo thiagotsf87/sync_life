@@ -21,10 +21,10 @@ import { MenteBibliotecaTab } from '@/components/mente/mobile/MenteBibliotecaTab
 import { MenteTrackWizardMobile } from '@/components/mente/mobile/MenteTrackWizardMobile'
 import { toast } from 'sonner'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.12)'
-const MENTE_BORDER = 'rgba(234,179,8,0.3)'
-const MENTE_GRAD = 'linear-gradient(135deg, #eab308, #f97316)'
+const MENTE_COLOR = '#D9962E'
+const MENTE_BG = 'rgba(217,150,46,0.12)'
+const MENTE_BORDER = 'rgba(217,150,46,0.3)'
+const MENTE_GRAD = 'linear-gradient(135deg, #D9962E, #D97534)'
 
 type Tab = 'dashboard' | 'trilhas' | 'timer' | 'sessoes' | 'biblioteca'
 
@@ -188,7 +188,7 @@ export function MenteMobile() {
             <p className="text-[12px] font-semibold mb-[2px]" style={{ color: MENTE_COLOR }}>
             ✦ {jornadaLabel('mente', 'module', 'Mente')} · {streak.current_streak > 0 ? `🔥 ${streak.current_streak}d streak` : 'Comece hoje!'}
           </p>
-          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
+          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
             Sua mente hoje
           </h1>
         </div>
@@ -243,9 +243,9 @@ export function MenteMobile() {
               <div className="grid grid-cols-2 gap-2 px-4 pb-3">
                 {[
                   { label: 'Horas esta semana', value: `${weekHours}h`, color: MENTE_COLOR, sub: 'Meta: 10h/semana' },
-                  { label: 'Streak de estudo', value: `${streak.current_streak}dias`, color: '#f59e0b', sub: streak.current_streak > 0 ? `Recorde: ${streak.longest_streak}d` : 'Comece hoje!' },
+                  { label: 'Streak de estudo', value: `${streak.current_streak}dias`, color: '#D9962E', sub: streak.current_streak > 0 ? `Recorde: ${streak.longest_streak}d` : 'Comece hoje!' },
                   { label: 'Trilhas ativas', value: String(activeTracks.length), color: 'var(--sl-t1)', sub: `Limite FREE: 3` },
-                  { label: 'Pomodoros hoje', value: String(todaySessions), color: '#10b981', sub: `${(todaySessions * 25 / 60).toFixed(1)}h de foco puro` },
+                  { label: 'Pomodoros hoje', value: String(todaySessions), color: '#0F766E', sub: `${(todaySessions * 25 / 60).toFixed(1)}h de foco puro` },
                 ].map(({ label, value, color, sub }) => (
                   <div
                     key={label}
@@ -253,7 +253,7 @@ export function MenteMobile() {
                     style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}
                   >
                     <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">{label}</p>
-                    <p className="font-[DM_Mono] text-[20px] font-bold leading-none" style={{ color }}>
+                    <p className="font-[IBM_Plex_Mono] text-[20px] font-bold leading-none" style={{ color }}>
                       {value}
                     </p>
                     <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">{sub}</p>
@@ -268,7 +268,7 @@ export function MenteMobile() {
               >
                 <div className="flex justify-between items-center mb-[10px]">
                   <span className="text-[14px] font-semibold text-[var(--sl-t1)]">🔥 Streak de estudos</span>
-                  <span className="font-[DM_Mono] text-[14px]" style={{ color: '#f59e0b' }}>
+                  <span className="font-[IBM_Plex_Mono] text-[14px]" style={{ color: '#D9962E' }}>
                     {streak.current_streak} dias
                   </span>
                 </div>
@@ -287,7 +287,7 @@ export function MenteMobile() {
                         background: v < 0
                           ? 'transparent'
                           : v === 1
-                          ? 'rgba(234,179,8,0.85)'
+                          ? 'rgba(217,150,46,0.85)'
                           : 'var(--sl-s3)',
                       }}
                     />
@@ -330,7 +330,7 @@ export function MenteMobile() {
                   onClick={() => setActiveTab('timer')}
                   className="w-full flex items-center justify-between p-[14px] rounded-[10px]"
                   style={{
-                    background: 'linear-gradient(135deg,rgba(234,179,8,0.15),rgba(234,179,8,0.04))',
+                    background: 'linear-gradient(135deg,rgba(217,150,46,0.15),rgba(217,150,46,0.04))',
                     border: `1.5px solid ${MENTE_BORDER}`,
                   }}
                 >
@@ -425,13 +425,13 @@ export function MenteMobile() {
               <div
                 className="rounded-[10px] p-[14px] flex items-center gap-3"
                 style={{
-                  background: 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(139,92,246,0.1))',
-                  border: '1.5px solid rgba(245,158,11,0.3)',
+                  background: 'linear-gradient(135deg,rgba(217,150,46,0.15),rgba(139,123,212,0.1))',
+                  border: '1.5px solid rgba(217,150,46,0.3)',
                 }}
               >
                 <span className="text-[24px]">💎</span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[14px] font-semibold" style={{ color: '#f59e0b' }}>
+                  <div className="text-[14px] font-semibold" style={{ color: '#D9962E' }}>
                     Quer mais trilhas?
                   </div>
                   <div className="text-[12px] text-[var(--sl-t2)] mt-[2px]">

@@ -20,19 +20,19 @@ export function LifeSyncScoreCard({ realScore, scoreLabel, lifeDimensions, lifeL
 
   return (
     <div className="flex items-center gap-7 p-[24px_28px] rounded-[20px] mb-5 sl-fade-up relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(0,85,255,0.10))', border: '1px solid rgba(99,102,241,0.20)' }}>
+      style={{ background: 'linear-gradient(135deg, rgba(107,111,212,0.08), rgba(0,85,255,0.10))', border: '1px solid rgba(107,111,212,0.20)' }}>
       <div className="absolute -left-14 -top-14 w-56 h-56 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.12), transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(107,111,212,0.12), transparent 70%)' }} />
 
       <div className="flex-shrink-0 relative z-10">
-        <div className="font-[Syne] font-extrabold text-[80px] leading-none text-sl-grad">
+        <div className="font-[Space_Grotesk] font-extrabold text-[80px] leading-none text-sl-grad">
           {realScore > 0 ? Math.round(realScore) : '\u2014'}
         </div>
         <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mt-0.5">Life Sync Score</div>
       </div>
 
       <div className="flex-1 min-w-0 relative z-10">
-        <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1">
+        <p className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-1">
           {scoreLabel ?? (realScore >= 75 ? 'Excelente equil\u00edbrio!' : realScore >= 50 ? 'Evolu\u00e7\u00e3o consistente' : realScore > 0 ? 'H\u00e1 espa\u00e7o para crescer' : 'Registre dados para calcular')}
         </p>
         <p className="text-[13px] text-[var(--sl-t3)] italic mb-3">
@@ -46,7 +46,7 @@ export function LifeSyncScoreCard({ realScore, scoreLabel, lifeDimensions, lifeL
         </p>
         <div className="h-1.5 rounded-full overflow-hidden mb-3" style={{ background: 'rgba(255,255,255,0.07)' }}>
           <div className="h-full rounded-full transition-[width] duration-[1200ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-            style={{ width: `${scoreBarWidth}%`, background: 'linear-gradient(90deg, #6366f1, #0055ff)' }} />
+            style={{ width: `${scoreBarWidth}%`, background: 'linear-gradient(90deg, #6B6FD4, #0B2D34)' }} />
         </div>
         <div className="grid grid-cols-4 gap-x-5 gap-y-2">
           {lifeLoading
@@ -57,11 +57,11 @@ export function LifeSyncScoreCard({ realScore, scoreLabel, lifeDimensions, lifeL
                 </div>
               ))
             : lifeDimensions.map(d => {
-                const c = d.value >= 75 ? '#10b981' : d.value >= 50 ? '#f59e0b' : '#f43f5e'
+                const c = d.value >= 75 ? '#0F766E' : d.value >= 50 ? '#D9962E' : '#DB6478'
                 return (
                   <div key={d.key} className="flex flex-col gap-0.5">
                     <div className="text-[10px] uppercase tracking-[0.07em] text-[var(--sl-t3)]">{d.icon} {d.label}</div>
-                    <div className="font-[DM_Mono] text-[16px] font-medium" style={{ color: c }}>{d.value}</div>
+                    <div className="font-[IBM_Plex_Mono] text-[16px] font-medium" style={{ color: c }}>{d.value}</div>
                   </div>
                 )
               })
@@ -71,10 +71,10 @@ export function LifeSyncScoreCard({ realScore, scoreLabel, lifeDimensions, lifeL
 
       <div className="flex-shrink-0 flex flex-col gap-2 items-end relative z-10">
         <button className="px-4 py-2 rounded-[10px] text-[12px] font-semibold text-white cursor-pointer transition-opacity hover:opacity-85 whitespace-nowrap"
-          style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)', border: 'none' }}>
+          style={{ background: 'linear-gradient(135deg, #6B6FD4, #0B2D34)', border: 'none' }}>
           Ver an\u00e1lise completa
         </button>
-        <span className="text-[11px]" style={{ color: '#6366f1' }}>\u2191 +3 vs. semana passada</span>
+        <span className="text-[11px]" style={{ color: '#6B6FD4' }}>\u2191 +3 vs. semana passada</span>
       </div>
     </div>
   )

@@ -26,23 +26,23 @@ const STATUS_TABS: { value: FilterStatus; label: string }[] = [
 ]
 
 const CATEGORY_COLORS: Record<string, string> = {
-  technology: '#eab308',
-  languages: '#3b82f6',
+  technology: '#D9962E',
+  languages: '#4F88D4',
   management: '#a855f7',
-  marketing: '#f97316',
-  design: '#ec4899',
-  finance: '#10b981',
-  health: '#f43f5e',
-  exam: '#06b6d4',
-  undergraduate: '#6366f1',
-  postgraduate: '#8b5cf6',
-  certification: '#f59e0b',
-  other: '#64748b',
+  marketing: '#D97534',
+  design: '#C76795',
+  finance: '#0F766E',
+  health: '#DB6478',
+  exam: '#3CA0B5',
+  undergraduate: '#6B6FD4',
+  postgraduate: '#8B7BD4',
+  certification: '#D9962E',
+  other: '#6F7986',
 }
 
 const STATUS_PILL_STYLES: Record<TrackStatus, { bg: string; color: string }> = {
-  in_progress: { bg: 'rgba(234,179,8,.12)', color: '#eab308' },
-  completed: { bg: 'rgba(16,185,129,.12)', color: '#10b981' },
+  in_progress: { bg: 'rgba(217,150,46,.12)', color: '#D9962E' },
+  completed: { bg: 'rgba(15,118,110,.12)', color: '#0F766E' },
   paused: { bg: 'rgba(100,116,139,.12)', color: 'var(--sl-t2)' },
   abandoned: { bg: 'rgba(100,116,139,.12)', color: 'var(--sl-t3)' },
 }
@@ -125,8 +125,8 @@ export default function TrilhasPage() {
       {/* ModuleHeader */}
       <ModuleHeader
         icon={BookOpen}
-        iconBg="rgba(234,179,8,.1)"
-        iconColor="#eab308"
+        iconBg="rgba(217,150,46,.1)"
+        iconColor="#D9962E"
         title="Trilhas de Aprendizado"
         subtitle={`${tracks.length} trilhas criadas \u00B7 ${completedCount} concluida${completedCount !== 1 ? 's' : ''} \u00B7 ${pausedCount} pausada${pausedCount !== 1 ? 's' : ''}`}
       >
@@ -138,7 +138,7 @@ export default function TrilhasPage() {
         <button
           onClick={() => setWizardOpen(true)}
           className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#eab308] text-black hover:brightness-110 transition-all"
+                     bg-[#D9962E] text-black hover:brightness-110 transition-all"
         >
           <Plus size={16} />
           Nova Trilha
@@ -154,7 +154,7 @@ export default function TrilhasPage() {
             className={cn(
               'px-[14px] py-[6px] rounded-lg text-[12px] font-medium transition-all border',
               statusFilter === tab.value
-                ? 'bg-[rgba(234,179,8,.08)] border-[#eab308] text-[#eab308] font-semibold'
+                ? 'bg-[rgba(217,150,46,.08)] border-[#D9962E] text-[#D9962E] font-semibold'
                 : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
             )}
           >
@@ -162,7 +162,7 @@ export default function TrilhasPage() {
           </button>
         ))}
         <div className="ml-auto flex items-center gap-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] px-3.5 py-2 w-[200px]
-                        focus-within:border-[rgba(234,179,8,.4)] transition-colors">
+                        focus-within:border-[rgba(217,150,46,.4)] transition-colors">
           <Search size={16} className="text-[var(--sl-t3)] shrink-0" />
           <input
             type="text"
@@ -187,8 +187,8 @@ export default function TrilhasPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
-          <BookOpen size={32} className="text-[#eab308] mx-auto mb-3 opacity-60" />
-          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+          <BookOpen size={32} className="text-[#D9962E] mx-auto mb-3 opacity-60" />
+          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             {search || statusFilter !== 'all' ? 'Nenhuma trilha encontrada' : 'Crie sua primeira trilha'}
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-4">
@@ -197,7 +197,7 @@ export default function TrilhasPage() {
           {!search && statusFilter === 'all' && (
             <button
               onClick={() => setWizardOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#eab308] text-black hover:brightness-110"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#D9962E] text-black hover:brightness-110"
             >
               <Plus size={15} />
               Criar primeira trilha
@@ -210,7 +210,7 @@ export default function TrilhasPage() {
             const steps = track.steps ?? []
             const completedSteps = steps.filter(s => s.is_completed).length
             const nextStep = steps.sort((a, b) => a.sort_order - b.sort_order).find(s => !s.is_completed)
-            const catColor = CATEGORY_COLORS[track.category] ?? '#eab308'
+            const catColor = CATEGORY_COLORS[track.category] ?? '#D9962E'
             const catLabel = (CATEGORY_LABELS[track.category as TrackCategory] ?? '').replace(/^.+ /, '')
             const statusPill = STATUS_PILL_STYLES[track.status] ?? STATUS_PILL_STYLES.in_progress
             const isCompleted = track.status === 'completed'
@@ -230,7 +230,7 @@ export default function TrilhasPage() {
                 className={cn(
                   'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] cursor-pointer',
                   isCompleted && 'opacity-70',
-                  track.status === 'in_progress' && 'border-[rgba(234,179,8,.2)]'
+                  track.status === 'in_progress' && 'border-[rgba(217,150,46,.2)]'
                 )}
                 style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: '20px' }}
                 onClick={() => router.push(`/mente/trilhas/${track.id}`)}
@@ -245,7 +245,7 @@ export default function TrilhasPage() {
                       <BookOpen size={20} style={{ color: catColor }} />
                     </div>
                     <div>
-                      <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">{track.name}</p>
+                      <p className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)]">{track.name}</p>
                       <div className="flex items-center gap-1.5 mt-[3px]">
                         <span
                           className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[11px] font-semibold"
@@ -263,7 +263,7 @@ export default function TrilhasPage() {
                   </div>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-[11px] text-[var(--sl-t3)]">{subParts.join(' \u00B7 ')}</span>
-                    <span className="font-[DM_Mono] text-[14px] font-semibold" style={{ color: isCompleted ? '#10b981' : '#eab308' }}>
+                    <span className="font-[IBM_Plex_Mono] text-[14px] font-semibold" style={{ color: isCompleted ? '#0F766E' : '#D9962E' }}>
                       {Math.round(track.progress)}%
                     </span>
                   </div>
@@ -272,7 +272,7 @@ export default function TrilhasPage() {
                       className="h-full rounded-full transition-[width] duration-700"
                       style={{
                         width: `${Math.min(track.progress, 100)}%`,
-                        background: isCompleted ? '#10b981' : isPaused ? 'var(--sl-t3)' : '#eab308',
+                        background: isCompleted ? '#0F766E' : isPaused ? 'var(--sl-t3)' : '#D9962E',
                       }}
                     />
                   </div>
@@ -282,8 +282,8 @@ export default function TrilhasPage() {
                 <div className="flex flex-col justify-center items-center border-l border-[var(--sl-border)] pl-5">
                   {isCompleted ? (
                     <>
-                      <Check size={22} className="text-[#10b981]" />
-                      <span className="text-[12px] text-[#10b981] mt-1.5 font-semibold">Concluida!</span>
+                      <Check size={22} className="text-[#0F766E]" />
+                      <span className="text-[12px] text-[#0F766E] mt-1.5 font-semibold">Concluida!</span>
                     </>
                   ) : isPaused ? (
                     <>

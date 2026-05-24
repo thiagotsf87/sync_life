@@ -88,7 +88,7 @@ function IntegrationRow({ from, to, label, description, checked, onChange }: Int
         onClick={() => onChange(!checked)}
         className={cn(
           'relative w-9 h-5 rounded-full border shrink-0 mt-0.5 transition-colors',
-          checked ? 'bg-[#10b981] border-[#10b981]' : 'bg-[var(--sl-s3)] border-[var(--sl-border)]'
+          checked ? 'bg-[#0F766E] border-[#0F766E]' : 'bg-[var(--sl-s3)] border-[var(--sl-border)]'
         )}
       >
         <span
@@ -257,7 +257,7 @@ function IntegracoesPageContent() {
 
   return (
     <div className="max-w-[680px]">
-      <h1 className="font-[Syne] font-extrabold text-xl mb-1 text-sl-grad">
+      <h1 className="font-[Space_Grotesk] font-extrabold text-xl mb-1 text-sl-grad">
         Integrações
       </h1>
       <p className="text-[13px] text-[var(--sl-t3)] mb-6">
@@ -293,13 +293,13 @@ function IntegracoesPageContent() {
                   <button
                     onClick={handleGcalSync}
                     disabled={gcalSyncing}
-                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/20 hover:bg-[#10b981]/20 transition-colors disabled:opacity-50"
+                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#0F766E]/10 text-[#0F766E] border border-[#0F766E]/20 hover:bg-[#0F766E]/20 transition-colors disabled:opacity-50"
                   >
                     {gcalSyncing ? 'Sincronizando...' : 'Sincronizar'}
                   </button>
                   <button
                     onClick={handleGcalDisconnect}
-                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#f43f5e]/10 text-[#f43f5e] border border-[#f43f5e]/20 hover:bg-[#f43f5e]/20 transition-colors"
+                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#DB6478]/10 text-[#DB6478] border border-[#DB6478]/20 hover:bg-[#DB6478]/20 transition-colors"
                   >
                     Desconectar
                   </button>
@@ -308,7 +308,7 @@ function IntegracoesPageContent() {
                 <a
                   href="/api/integrations/google-calendar/auth"
                   className="px-3 py-1.5 rounded-lg text-[11px] font-bold text-white transition-all hover:brightness-110"
-                  style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+                  style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
                 >
                   Conectar
                 </a>

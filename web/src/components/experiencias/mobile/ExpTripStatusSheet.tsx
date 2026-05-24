@@ -14,11 +14,11 @@ interface StatusOption {
 }
 
 const STATUS_OPTIONS: StatusOption[] = [
-  { value: 'planning',  label: 'Planejando',     icon: '🗓️', color: '#f59e0b' },
-  { value: 'reserved',  label: 'Reservado',       icon: '✅', color: '#0055ff' },
-  { value: 'ongoing',   label: 'Em andamento',    icon: '🔥', color: '#10b981' },
-  { value: 'completed', label: 'Concluída',       icon: '🏆', color: '#10b981' },
-  { value: 'cancelled', label: 'Cancelada',       icon: '❌', color: '#f43f5e' },
+  { value: 'planning',  label: 'Planejando',     icon: '🗓️', color: '#D9962E' },
+  { value: 'reserved',  label: 'Reservado',       icon: '✅', color: '#0B2D34' },
+  { value: 'ongoing',   label: 'Em andamento',    icon: '🔥', color: '#0F766E' },
+  { value: 'completed', label: 'Concluída',       icon: '🏆', color: '#0F766E' },
+  { value: 'cancelled', label: 'Cancelada',       icon: '❌', color: '#DB6478' },
 ]
 
 interface ExpTripStatusSheetProps {
@@ -66,7 +66,7 @@ export function ExpTripStatusSheet({
         {/* Handle */}
         <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: 'var(--sl-s3)' }} />
 
-        <p className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-1">
+        <p className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)] mb-1">
           Atualizar Missão
         </p>
         <p className="text-[12px] text-[var(--sl-t3)] mb-4">{tripName}</p>
@@ -84,7 +84,7 @@ export function ExpTripStatusSheet({
                 className="flex items-center gap-3 p-3 rounded-[12px] text-left transition-colors"
                 style={{
                   background: isSelected
-                    ? 'rgba(139,92,246,0.15)'
+                    ? 'rgba(139,123,212,0.15)'
                     : 'var(--sl-s2)',
                   border: `1px solid ${isSelected ? accent : 'var(--sl-border)'}`,
                   opacity: isCurrent ? 0.5 : 1,

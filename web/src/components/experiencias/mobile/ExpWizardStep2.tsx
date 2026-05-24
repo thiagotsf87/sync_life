@@ -43,7 +43,7 @@ export function ExpWizardStep2({
       <div
         className="flex gap-[10px] items-center rounded-[10px] p-3 mb-4"
         style={{
-          background: 'linear-gradient(135deg, var(--sl-s1), rgba(139,92,246,0.04))',
+          background: 'linear-gradient(135deg, var(--sl-s1), rgba(139,123,212,0.04))',
           border: `1px solid ${EXP_PRIMARY_BORDER}`,
         }}
       >
@@ -69,7 +69,7 @@ export function ExpWizardStep2({
               style={
                 selected
                   ? {
-                      background: 'linear-gradient(135deg, var(--sl-s1), rgba(139,92,246,0.04))',
+                      background: 'linear-gradient(135deg, var(--sl-s1), rgba(139,123,212,0.04))',
                       border: `1.5px solid ${accent}`,
                     }
                   : { background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }
@@ -107,7 +107,7 @@ export function ExpWizardStep2({
         >
           −
         </button>
-        <span className="font-[DM_Mono] text-[28px] font-bold text-[var(--sl-t1)]">{travelers}</span>
+        <span className="font-[IBM_Plex_Mono] text-[28px] font-bold text-[var(--sl-t1)]">{travelers}</span>
         <button
           onClick={() => setTravelers(travelers + 1)}
           className="w-9 h-9 rounded-[10px] flex items-center justify-center text-[18px] text-white"

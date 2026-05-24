@@ -20,7 +20,7 @@ export function TripStripRow({
   status,
   statusColor,
   budget,
-  dotColor = '#3b82f6',
+  dotColor = '#4F88D4',
   onClick,
   className,
 }: TripStripRowProps) {
@@ -53,7 +53,7 @@ export function TripStripRow({
           {status}
         </span>
         {budget && (
-          <span className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
+          <span className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
             {budget}
           </span>
         )}

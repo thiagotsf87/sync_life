@@ -59,9 +59,9 @@ export function SyncLifeIcon({ size = 28, animated = true, className }: SyncLife
           <stop offset="100%" stopColor="#03091f" />
         </linearGradient>
         <linearGradient id={`${uid}-curve`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#10b981" />
-          <stop offset="50%" stopColor="#06b6d4" />
-          <stop offset="100%" stopColor="#0055ff" />
+          <stop offset="0%" stopColor="#0F766E" />
+          <stop offset="50%" stopColor="#3CA0B5" />
+          <stop offset="100%" stopColor="#0B2D34" />
         </linearGradient>
         {!isSmall && (
           <filter id={`${uid}-glow`} x="-30%" y="-30%" width="160%" height="160%">
@@ -74,7 +74,7 @@ export function SyncLifeIcon({ size = 28, animated = true, className }: SyncLife
         )}
         {isLarge && (
           <filter id={`${uid}-drop`} x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="#10b981" floodOpacity="0.4" />
+            <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="#0F766E" floodOpacity="0.4" />
           </filter>
         )}
       </defs>
@@ -99,7 +99,7 @@ export function SyncLifeIcon({ size = 28, animated = true, className }: SyncLife
           {/* Particle 1 — emerald */}
           <circle
             r={isSmall ? 10 : 12}
-            fill="#10b981"
+            fill="#0F766E"
             filter={!isSmall ? `url(#${uid}-glow)` : undefined}
           >
             <animateMotion
@@ -113,7 +113,7 @@ export function SyncLifeIcon({ size = 28, animated = true, className }: SyncLife
           {!isSmall && (
             <circle
               r={isLarge ? 10 : 8}
-              fill="#0055ff"
+              fill="#0B2D34"
               filter={`url(#${uid}-glow)`}
             >
               <animateMotion
@@ -127,7 +127,7 @@ export function SyncLifeIcon({ size = 28, animated = true, className }: SyncLife
 
           {/* Center pulse (large only) */}
           {isLarge && (
-            <circle cx="256" cy="256" r="6" fill="#10b981" opacity="0.6">
+            <circle cx="256" cy="256" r="6" fill="#0F766E" opacity="0.6">
               <animate
                 attributeName="r"
                 values="6;14;6"
@@ -184,13 +184,13 @@ export function SyncLifeBrand({ size = 'md', animated, className }: SyncLifeBran
     >
       <SyncLifeIcon size={preset.icon} animated={shouldAnimate} />
       <span
-        className="font-[Syne] font-extrabold leading-none whitespace-nowrap"
+        className="font-[Space_Grotesk] font-extrabold leading-none whitespace-nowrap"
         style={{ fontSize: preset.font }}
       >
         <span className="text-[var(--sl-t1)] [.landing-page_&]:text-white [.auth-left_&]:text-white [.onboarding-page_&]:text-white">Sync</span>
         <span
           style={{
-            background: 'linear-gradient(135deg, #10b981, #0055ff)',
+            background: 'linear-gradient(135deg, #0F766E, #0B2D34)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}

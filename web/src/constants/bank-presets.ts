@@ -17,7 +17,7 @@ export const BANK_PRESETS: BankPreset[] = [
   { bank: 'BTG',             icon: '🔵', color: '#1C3D73', type: 'checking' },
   { bank: 'PicPay',          icon: '🟢', color: '#21C25E', type: 'wallet'   },
   { bank: 'Mercado Pago',    icon: '🔵', color: '#009EE3', type: 'wallet'   },
-  { bank: 'Carteira',        icon: '💵', color: '#10b981', type: 'wallet'   },
+  { bank: 'Carteira',        icon: '💵', color: '#0F766E', type: 'wallet'   },
 ]
 
 export const ACCOUNT_TYPE_LABELS: Record<string, string> = {

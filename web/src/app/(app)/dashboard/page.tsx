@@ -36,9 +36,9 @@ function SparkBars({ values }: { values: number[] }) {
           style={{
             height: `${v}%`,
             background: i === values.length - 1
-              ? 'var(--sl-mod, #6366f1)'
-              : `rgba(99,102,241,${0.15 + i * 0.08})`,
-            boxShadow: i === values.length - 1 ? '0 0 8px rgba(99,102,241,.4)' : undefined,
+              ? 'var(--sl-mod, #6B6FD4)'
+              : `rgba(107,111,212,${0.15 + i * 0.08})`,
+            boxShadow: i === values.length - 1 ? '0 0 8px rgba(107,111,212,.4)' : undefined,
           }}
         />
       ))}
@@ -183,14 +183,14 @@ export default function DashboardPage() {
   const mosaicModules = useMemo(() => {
     const dimMap = new Map(lifeDimensions.map(d => [d.key, d.value]))
     return [
-      { name: 'Finanças', score: dimMap.get('financas') ?? 0, color: '#10b981', icon: DollarSign, metric: `Saldo: ${fmt(balance)}`, progress: dimMap.get('financas') ?? 0 },
-      { name: 'Experiências', score: dimMap.get('experiencias') ?? 0, color: '#ec4899', icon: Plane, metric: nextTrip ? `${nextTrip.destinations?.[0] ?? nextTrip.name} em ${daysUntilNextTrip}d` : `${experienciaTrips.length} viagens`, progress: dimMap.get('experiencias') ?? 0 },
-      { name: 'Mente', score: dimMap.get('mente') ?? 0, color: '#eab308', icon: Brain, metric: 'Meditação e estudos', progress: dimMap.get('mente') ?? 0 },
-      { name: 'Corpo', score: dimMap.get('corpo') ?? 0, color: '#f97316', icon: Activity, metric: `${weekActivityCount} atividades sem.`, progress: dimMap.get('corpo') ?? 0 },
-      { name: 'Patrimônio', score: dimMap.get('patrimonio') ?? 0, color: '#3b82f6', icon: TrendingUp, metric: `${fmt(totalPatrimonio)} · ${patrimonioGainPct >= 0 ? '+' : ''}${patrimonioGainPct}%`, progress: dimMap.get('patrimonio') ?? 0 },
-      { name: 'Tempo', score: dimMap.get('tempo') ?? 0, color: '#06b6d4', icon: Clock, metric: `${events.length} eventos · ${weekDays.filter(d => d.events.length > 0).length}/7 dias`, progress: dimMap.get('tempo') ?? 0 },
-      { name: 'Carreira', score: dimMap.get('carreira') ?? 0, color: '#f43f5e', icon: Briefcase, metric: 'Progresso profissional', progress: dimMap.get('carreira') ?? 0 },
-      { name: 'Futuro', score: dimMap.get('futuro') ?? 0, color: '#0055ff', icon: Target, metric: `${activeGoals.length} metas · ${activeGoals.length > 0 ? Math.round(activeGoals.reduce((s, g) => s + calcProgress(g.current_amount, g.target_amount), 0) / activeGoals.length) : 0}% média`, progress: dimMap.get('futuro') ?? 0 },
+      { name: 'Finanças', score: dimMap.get('financas') ?? 0, color: '#0F766E', icon: DollarSign, metric: `Saldo: ${fmt(balance)}`, progress: dimMap.get('financas') ?? 0 },
+      { name: 'Experiências', score: dimMap.get('experiencias') ?? 0, color: '#C76795', icon: Plane, metric: nextTrip ? `${nextTrip.destinations?.[0] ?? nextTrip.name} em ${daysUntilNextTrip}d` : `${experienciaTrips.length} viagens`, progress: dimMap.get('experiencias') ?? 0 },
+      { name: 'Mente', score: dimMap.get('mente') ?? 0, color: '#D9962E', icon: Brain, metric: 'Meditação e estudos', progress: dimMap.get('mente') ?? 0 },
+      { name: 'Corpo', score: dimMap.get('corpo') ?? 0, color: '#D97534', icon: Activity, metric: `${weekActivityCount} atividades sem.`, progress: dimMap.get('corpo') ?? 0 },
+      { name: 'Patrimônio', score: dimMap.get('patrimonio') ?? 0, color: '#4F88D4', icon: TrendingUp, metric: `${fmt(totalPatrimonio)} · ${patrimonioGainPct >= 0 ? '+' : ''}${patrimonioGainPct}%`, progress: dimMap.get('patrimonio') ?? 0 },
+      { name: 'Tempo', score: dimMap.get('tempo') ?? 0, color: '#3CA0B5', icon: Clock, metric: `${events.length} eventos · ${weekDays.filter(d => d.events.length > 0).length}/7 dias`, progress: dimMap.get('tempo') ?? 0 },
+      { name: 'Carreira', score: dimMap.get('carreira') ?? 0, color: '#DB6478', icon: Briefcase, metric: 'Progresso profissional', progress: dimMap.get('carreira') ?? 0 },
+      { name: 'Futuro', score: dimMap.get('futuro') ?? 0, color: '#8B7BD4', icon: Target, metric: `${activeGoals.length} metas · ${activeGoals.length > 0 ? Math.round(activeGoals.reduce((s, g) => s + calcProgress(g.current_amount, g.target_amount), 0) / activeGoals.length) : 0}% média`, progress: dimMap.get('futuro') ?? 0 },
     ]
   }, [lifeDimensions, balance, nextTrip, daysUntilNextTrip, experienciaTrips.length, weekActivityCount, totalPatrimonio, patrimonioGainPct, events.length, weekDays, activeGoals])
 
@@ -198,19 +198,19 @@ export default function DashboardPage() {
   const mobileModuleScores = useMemo(() => {
     const dims = lifeDimensions
     return [
-      { id: 'financas', emoji: '💰', label: 'Finanças', pct: dims.find(d => d.key === 'financas')?.value ?? 0, color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
-      { id: 'tempo', emoji: '⏳', label: 'Tempo', pct: dims.find(d => d.key === 'tempo')?.value ?? 0, color: '#06b6d4', bg: 'rgba(6,182,212,0.15)' },
-      { id: 'futuro', emoji: '🔮', label: 'Futuro', pct: dims.find(d => d.key === 'futuro')?.value ?? 0, color: '#0055ff', bg: 'rgba(0,85,255,0.15)' },
+      { id: 'financas', emoji: '💰', label: 'Finanças', pct: dims.find(d => d.key === 'financas')?.value ?? 0, color: '#0F766E', bg: 'rgba(15,118,110,0.15)' },
+      { id: 'tempo', emoji: '⏳', label: 'Tempo', pct: dims.find(d => d.key === 'tempo')?.value ?? 0, color: '#3CA0B5', bg: 'rgba(60,160,181,0.15)' },
+      { id: 'futuro', emoji: '🔮', label: 'Futuro', pct: dims.find(d => d.key === 'futuro')?.value ?? 0, color: '#8B7BD4', bg: 'rgba(139,123,212,0.15)' },
     ]
   }, [lifeDimensions])
 
   const mobileAlerts = useMemo(() => {
     const a: { color: string; title: string; text: string }[] = []
     budgets.filter(b => b.pct > 70).forEach(b => {
-      a.push({ color: b.pct > 85 ? '#f43f5e' : '#f59e0b', title: `Orçamento ${b.category?.name ?? 'Categoria'}`, text: `atingiu ${b.pct}% — ${fmt(b.amount - b.gasto)} restantes` })
+      a.push({ color: b.pct > 85 ? '#DB6478' : '#D9962E', title: `Orçamento ${b.category?.name ?? 'Categoria'}`, text: `atingiu ${b.pct}% — ${fmt(b.amount - b.gasto)} restantes` })
     })
     nextRecurrences.slice(0, 2).forEach(r => {
-      a.push({ color: '#10b981', title: r.name, text: `vence ${r.daysLeft === 0 ? 'hoje' : `em ${r.daysLeft} dias`} — ${fmt(r.amount)} agendado` })
+      a.push({ color: '#0F766E', title: r.name, text: `vence ${r.daysLeft === 0 ? 'hoje' : `em ${r.daysLeft} dias`} — ${fmt(r.amount)} agendado` })
     })
     return a.slice(0, 3)
   }, [budgets, nextRecurrences])
@@ -240,8 +240,8 @@ export default function DashboardPage() {
       {/* ① MODULE HEADER */}
       <ModuleHeader
         icon={Globe}
-        iconBg="rgba(99,102,241,.08)"
-        iconColor="#6366f1"
+        iconBg="rgba(107,111,212,.08)"
+        iconColor="#6B6FD4"
         title="Panorama"
         subtitle={`${dateSubtitle} · ${greeting}, ${userName}!`}
       >
@@ -249,7 +249,7 @@ export default function DashboardPage() {
           <ClipboardList size={16} />
           Review Semanal
         </button>
-        <button className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#6366f1] text-white border-none cursor-pointer hover:brightness-110 transition-all">
+        <button className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[var(--sl-em)] text-white border-none cursor-pointer hover:brightness-110 transition-all">
           <Activity size={16} />
           Life Score
         </button>
@@ -269,11 +269,11 @@ export default function DashboardPage() {
       {/* ② HERO SCORE BANNER */}
       <div className="flex items-center gap-7 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] px-8 py-6 mb-7 relative overflow-hidden sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
         {/* Top gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-[2.5px] rounded-b bg-gradient-to-r from-[#10b981] via-[#6366f1] to-[#3b82f6]" />
+        <div className="absolute top-0 left-0 right-0 h-[2.5px] rounded-b bg-gradient-to-r from-[#0F766E] via-[#6B6FD4] to-[#4F88D4]" />
 
         {/* Score */}
         <div className="flex items-baseline gap-2 shrink-0">
-          <span className="font-[DM_Mono] font-medium text-[52px] leading-none text-sl-grad">
+          <span className="font-[Space_Grotesk] font-medium tabular-nums text-[52px] leading-none text-[var(--sl-t1)]">
             {realScore > 0 ? Math.round(realScore) : '—'}
           </span>
           <span className="text-[14px] text-[var(--sl-t3)] font-medium">pontos</span>
@@ -284,7 +284,7 @@ export default function DashboardPage() {
 
         {/* Label + delta */}
         <div className="flex flex-col gap-1">
-          <span className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">Life Sync Score</span>
+          <span className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)]">Life Sync Score</span>
           <span className="text-[12px] text-[var(--sl-t3)]">
             Acompanhe sua evolucao semanal
           </span>
@@ -295,14 +295,14 @@ export default function DashboardPage() {
           <div className="text-right">
             <div className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)]">Evolucao 4 sem</div>
             <div className="text-[11px] text-[var(--sl-t2)] mt-0.5">
-              {realScore > 0 ? <span className="text-[#6366f1] font-semibold">{Math.round(realScore)}</span> : <span className="text-[var(--sl-t3)]">—</span>}
+              {realScore > 0 ? <span className="text-[#6B6FD4] font-semibold font-[Space_Grotesk] tabular-nums">{Math.round(realScore)}</span> : <span className="text-[var(--sl-t3)]">—</span>}
             </div>
           </div>
           <SparkBars values={realScore > 0 ? [0, 0, 0, 0, Math.round(realScore)] : [0, 0, 0, 0, 0]} />
         </div>
 
         {realScore > 0 && (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[rgba(16,185,129,.1)] text-[#10b981] shrink-0">
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[rgba(15,118,110,.1)] text-[#0F766E] shrink-0">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           Acompanhando
         </span>
@@ -322,25 +322,25 @@ export default function DashboardPage() {
           <div className="flex bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex-1 px-5 py-4 border-r border-[var(--sl-border)]">
               <div className="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--sl-t3)] mb-1">Saldo do Mês</div>
-              <div className="font-[DM_Mono] font-medium text-[18px]" style={{ color: balance >= 0 ? '#10b981' : '#f43f5e' }}>{fmt(balance)}</div>
+              <div className="font-[Space_Grotesk] font-medium tabular-nums text-[18px]" style={{ color: balance >= 0 ? '#0F766E' : '#DB6478' }}>{fmt(balance)}</div>
               <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">
-                {balance > 0 && <><svg width="10" height="10" viewBox="0 0 24 24" fill="#10b981" stroke="none" className="inline align-[-1px] mr-0.5"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg></>}
+                {balance > 0 && <><svg width="10" height="10" viewBox="0 0 24 24" fill="#0F766E" stroke="none" className="inline align-[-1px] mr-0.5"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg></>}
                 vs anterior
               </div>
             </div>
             <div className="flex-1 px-5 py-4 border-r border-[var(--sl-border)]">
               <div className="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--sl-t3)] mb-1">Receitas</div>
-              <div className="font-[DM_Mono] font-medium text-[18px] text-[var(--sl-t1)]">{fmt(totalIncome)}</div>
-              <div className="text-[10px] text-[#10b981] mt-0.5">+12%</div>
+              <div className="font-[Space_Grotesk] font-medium tabular-nums text-[18px] text-[var(--sl-t1)]">{fmt(totalIncome)}</div>
+              <div className="text-[10px] text-[#0F766E] mt-0.5">+12%</div>
             </div>
             <div className="flex-1 px-5 py-4 border-r border-[var(--sl-border)]">
               <div className="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--sl-t3)] mb-1">Despesas</div>
-              <div className="font-[DM_Mono] font-medium text-[18px] text-[#f43f5e]">{fmt(totalExpense)}</div>
-              <div className="text-[10px] text-[#10b981] mt-0.5">{totalIncome > 0 ? `${Math.round((totalExpense / totalIncome) * 100)}% da receita` : '—'}</div>
+              <div className="font-[Space_Grotesk] font-medium tabular-nums text-[18px] text-[#DB6478]">{fmt(totalExpense)}</div>
+              <div className="text-[10px] text-[#0F766E] mt-0.5">{totalIncome > 0 ? `${Math.round((totalExpense / totalIncome) * 100)}% da receita` : '—'}</div>
             </div>
             <div className="flex-1 px-5 py-4">
               <div className="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--sl-t3)] mb-1">Poupança</div>
-              <div className="font-[DM_Mono] font-medium text-[18px] text-[#6366f1]">{savingsRate}%</div>
+              <div className="font-[Space_Grotesk] font-medium tabular-nums text-[18px] text-[#6B6FD4]">{savingsRate}%</div>
               <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">Meta: 30%</div>
             </div>
           </div>
@@ -378,37 +378,37 @@ export default function DashboardPage() {
 
           {/* Destaques */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-            <div className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-4 flex items-center gap-[9px]">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <div className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-4 flex items-center gap-[9px]">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B6FD4" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
               Destaques
             </div>
             <div className="flex flex-col gap-2">
               <HighlightRow
                 icon={Activity}
-                iconBg="rgba(249,115,22,.1)"
-                iconColor="#f97316"
+                iconBg="rgba(217,117,52,.1)"
+                iconColor="#D97534"
                 label="Corpo"
                 sub={`${weekActivityCount} atividades · ${weekActivityMinutes}min`}
                 delta={weekActivityCount > 0 ? `${weekActivityCount}x` : '—'}
-                deltaColor="#10b981"
+                deltaColor="#0F766E"
               />
               <HighlightRow
                 icon={TrendingUp}
-                iconBg="rgba(59,130,246,.1)"
-                iconColor="#3b82f6"
+                iconBg="rgba(79,136,212,.1)"
+                iconColor="#4F88D4"
                 label="Patrimônio"
                 sub={fmt(totalPatrimonio)}
                 delta={`${patrimonioGainPct >= 0 ? '+' : ''}${patrimonioGainPct}%`}
-                deltaColor="#10b981"
+                deltaColor="#0F766E"
               />
               <HighlightRow
                 icon={Plane}
-                iconBg="rgba(236,72,153,.1)"
-                iconColor="#ec4899"
+                iconBg="rgba(199,103,149,.1)"
+                iconColor="#C76795"
                 label={nextTrip?.name ?? 'Próxima viagem'}
                 sub={nextTrip ? (nextTrip.destinations?.[0] ?? 'Destino') : 'Nenhuma planejada'}
                 delta={daysUntilNextTrip != null ? `${daysUntilNextTrip}d` : '—'}
-                deltaColor="#ec4899"
+                deltaColor="#C76795"
               />
             </div>
           </div>

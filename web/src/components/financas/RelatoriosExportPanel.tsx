@@ -12,7 +12,7 @@ interface RelatoriosExportPanelProps {
 export function RelatoriosExportPanel({ isPro, exportCSV }: RelatoriosExportPanelProps) {
   const items = [
     {
-      icon: '📊', bg: 'rgba(16,185,129,0.1)',
+      icon: '📊', bg: 'rgba(15,118,110,0.1)',
       label: 'CSV — Transações',
       proOnly: false,
       desc: 'Todas as transações do período em formato planilha.',
@@ -26,7 +26,7 @@ export function RelatoriosExportPanel({ isPro, exportCSV }: RelatoriosExportPane
       action: () => {},
     },
     {
-      icon: '📋', bg: 'rgba(245,158,11,0.1)',
+      icon: '📋', bg: 'rgba(217,150,46,0.1)',
       label: 'Excel (.xlsx)',
       proOnly: true,
       desc: 'Exportação com múltiplas abas: transações, categorias, resumo.',
@@ -36,7 +36,7 @@ export function RelatoriosExportPanel({ isPro, exportCSV }: RelatoriosExportPane
 
   return (
     <SLCard>
-      <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)] mb-3">Exportar Dados</p>
+      <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)] mb-3">Exportar Dados</p>
       <div className="flex flex-col divide-y divide-[var(--sl-border)]">
         {items.map((item, i) => {
           const disabled = item.proOnly && !isPro
@@ -57,7 +57,7 @@ export function RelatoriosExportPanel({ isPro, exportCSV }: RelatoriosExportPane
                 <p className="text-[12px] font-semibold text-[var(--sl-t1)] mb-px flex items-center gap-1 flex-wrap">
                   {item.label}
                   {item.proOnly && !isPro && (
-                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-[5px] text-[9px] font-bold bg-gradient-to-br from-[rgba(16,185,129,0.15)] to-[rgba(0,85,255,0.15)] text-[#10b981] border border-[rgba(16,185,129,0.25)]">
+                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-[5px] text-[9px] font-bold bg-gradient-to-br from-[rgba(15,118,110,0.15)] to-[rgba(0,85,255,0.15)] text-[#0F766E] border border-[rgba(15,118,110,0.25)]">
                       <Lock size={9} /> PRO
                     </span>
                   )}

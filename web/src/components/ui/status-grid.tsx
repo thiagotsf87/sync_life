@@ -31,7 +31,7 @@ export function StatusGrid({ items, className }: StatusGridProps) {
             style={{ background: item.color }}
           />
           <p
-            className="font-[DM_Mono] font-medium text-[24px] leading-none mb-1"
+            className="font-[IBM_Plex_Mono] font-medium text-[24px] leading-none mb-1"
             style={{ color: item.color }}
           >
             {item.count}

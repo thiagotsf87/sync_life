@@ -27,10 +27,10 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  active: '#f59e0b',
-  completed: '#10b981',
+  active: '#D9962E',
+  completed: '#0F766E',
   paused: '#6e90b8',
-  abandoned: '#f43f5e',
+  abandoned: '#DB6478',
 }
 
 interface StepDraft {
@@ -236,8 +236,8 @@ export default function RoadmapPage() {
       {/* MODULE HEADER */}
       <ModuleHeader
         icon={Clock}
-        iconBg="rgba(244,63,94,.08)"
-        iconColor="#f43f5e"
+        iconBg="rgba(219,100,120,.08)"
+        iconColor="#DB6478"
         title="Roadmaps"
         subtitle={roadmaps.length > 0
           ? `${roadmaps.length} roadmap${roadmaps.length > 1 ? 's' : ''} \u00B7 ${activeRoadmaps.length} ativo${activeRoadmaps.length !== 1 ? 's' : ''}`
@@ -246,7 +246,7 @@ export default function RoadmapPage() {
         <button
           onClick={() => setShowModal(true)}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#f43f5e] text-white hover:brightness-110 transition-all"
+                     bg-[#DB6478] text-white hover:brightness-110 transition-all"
         >
           <Plus size={16} />
           Novo Roadmap
@@ -266,11 +266,11 @@ export default function RoadmapPage() {
         </div>
       ) : roadmaps.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
-          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhum roadmap criado</h3>
+          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhum roadmap criado</h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-5">Crie seu plano de carreira com passos concretos.</p>
           <button
             onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f43f5e] text-white hover:brightness-110"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#DB6478] text-white hover:brightness-110"
           >
             <Plus size={15} />
             Criar Roadmap
@@ -297,7 +297,7 @@ export default function RoadmapPage() {
                 className={cn(
                   'bg-[var(--sl-s1)] border rounded-[18px] overflow-hidden transition-colors sl-fade-up',
                   `sl-delay-${Math.min(rmIdx + 1, 5)}`,
-                  rm.status === 'active' ? 'border-[rgba(244,63,94,.18)]' : rm.status === 'completed' ? 'border-[rgba(16,185,129,.15)]' : 'border-[var(--sl-border)]',
+                  rm.status === 'active' ? 'border-[rgba(219,100,120,.18)]' : rm.status === 'completed' ? 'border-[rgba(15,118,110,.15)]' : 'border-[var(--sl-border)]',
                   'hover:border-[var(--sl-border-h)]',
                   rm.status === 'paused' || rm.status === 'abandoned' ? 'opacity-60' : ''
                 )}
@@ -320,7 +320,7 @@ export default function RoadmapPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-[10px] mb-[2px] flex-wrap">
-                      <span className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">{rm.name}</span>
+                      <span className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)]">{rm.name}</span>
                       <span
                         className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
                         style={{ background: color + '15', color }}
@@ -335,7 +335,7 @@ export default function RoadmapPage() {
                     </p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    <div className="font-[DM_Mono] text-[14px] font-medium" style={{ color }}>
+                    <div className="font-[IBM_Plex_Mono] text-[14px] font-medium" style={{ color }}>
                       {Math.round(rm.progress)}%
                     </div>
                     <div className="w-[120px]">
@@ -345,7 +345,7 @@ export default function RoadmapPage() {
                           style={{
                             width: `${Math.min(rm.progress, 100)}%`,
                             background: rm.status === 'active'
-                              ? 'linear-gradient(90deg, #10b981, #f43f5e)'
+                              ? 'linear-gradient(90deg, #0F766E, #DB6478)'
                               : color,
                           }}
                         />
@@ -366,7 +366,7 @@ export default function RoadmapPage() {
                         <HorizontalTimeline
                           steps={timelineSteps}
                           progressPercent={Math.round(rm.progress)}
-                          accentColor={rm.status === 'completed' ? '#10b981' : '#10b981'}
+                          accentColor={rm.status === 'completed' ? '#0F766E' : '#0F766E'}
                         />
                       </div>
                     )}
@@ -397,20 +397,20 @@ export default function RoadmapPage() {
                           <div className="flex gap-5 mt-2">
                             <div>
                               <p className="text-[11px] text-[var(--sl-t3)]">Salario atual</p>
-                              <p className="font-[DM_Mono] text-[16px] text-[var(--sl-t1)] mt-[2px]">
+                              <p className="font-[IBM_Plex_Mono] text-[16px] text-[var(--sl-t1)] mt-[2px]">
                                 {profile.gross_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                               </p>
                             </div>
                             <div className="flex items-center text-[var(--sl-t3)]">&rarr;</div>
                             <div>
                               <p className="text-[11px] text-[var(--sl-t3)]">Salario alvo</p>
-                              <p className="font-[DM_Mono] text-[16px] text-[#10b981] mt-[2px]">
+                              <p className="font-[IBM_Plex_Mono] text-[16px] text-[#0F766E] mt-[2px]">
                                 {rm.target_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                               </p>
                             </div>
                             <div>
                               <p className="text-[11px] text-[var(--sl-t3)]">Aumento</p>
-                              <p className="font-[DM_Mono] text-[16px] text-[#10b981] mt-[2px]">
+                              <p className="font-[IBM_Plex_Mono] text-[16px] text-[#0F766E] mt-[2px]">
                                 +{Math.round(((rm.target_salary - profile.gross_salary) / profile.gross_salary) * 100)}%
                               </p>
                             </div>
@@ -428,7 +428,7 @@ export default function RoadmapPage() {
                     <div className="flex justify-end mt-4">
                       <button
                         onClick={() => handleDelete(rm.id)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[11px] text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,.06)] transition-all"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-[11px] text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[rgba(219,100,120,.06)] transition-all"
                       >
                         <Trash2 size={12} />
                         Excluir roadmap
@@ -450,8 +450,8 @@ export default function RoadmapPage() {
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[580px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Syne] font-extrabold text-[20px] text-[var(--sl-t1)] flex items-center gap-[10px]">
-                <Clock size={20} className="text-[#f43f5e]" />
+              <h2 className="font-[Space_Grotesk] font-extrabold text-[20px] text-[var(--sl-t1)] flex items-center gap-[10px]">
+                <Clock size={20} className="text-[#DB6478]" />
                 Novo Roadmap
               </h2>
               <button onClick={() => setShowModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] transition-colors text-xl leading-none">×</button>
@@ -547,7 +547,7 @@ export default function RoadmapPage() {
                   />
                   <button
                     onClick={addStep}
-                    className="px-3 py-2 rounded-[10px] bg-[#f43f5e]/20 text-[#f43f5e] hover:bg-[#f43f5e]/30 text-[12px] font-semibold transition-colors"
+                    className="px-3 py-2 rounded-[10px] bg-[#DB6478]/20 text-[#DB6478] hover:bg-[#DB6478]/30 text-[12px] font-semibold transition-colors"
                   >
                     <Plus size={14} />
                   </button>
@@ -565,7 +565,7 @@ export default function RoadmapPage() {
                           onChange={e => updateStepTargetDate(step.id, e.target.value)}
                           className="text-[11px] bg-transparent border-none text-[var(--sl-t3)] outline-none"
                         />
-                        <button onClick={() => removeStep(step.id)} className="text-[var(--sl-t3)] hover:text-[#f43f5e] transition-colors">
+                        <button onClick={() => removeStep(step.id)} className="text-[var(--sl-t3)] hover:text-[#DB6478] transition-colors">
                           <Trash2 size={12} />
                         </button>
                       </div>
@@ -585,7 +585,7 @@ export default function RoadmapPage() {
                 <button
                   onClick={handleCreate}
                   disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#f43f5e] text-white hover:brightness-110 disabled:opacity-50 transition-all"
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#DB6478] text-white hover:brightness-110 disabled:opacity-50 transition-all"
                 >
                   {isSaving ? 'Criando...' : 'Criar Roadmap'}
                 </button>

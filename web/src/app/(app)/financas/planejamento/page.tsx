@@ -193,22 +193,22 @@ function EventRow({
     <div className="flex items-center gap-3 py-2.5 -mx-2 px-2 rounded-lg hover:bg-[var(--sl-s2)] transition-colors group">
       <div
         className="w-2 h-2 rounded-full shrink-0"
-        style={{ background: ev.type === 'income' ? '#10b981' : '#f43f5e' }}
+        style={{ background: ev.type === 'income' ? '#0F766E' : '#DB6478' }}
       />
-      <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)] shrink-0 w-[46px]">
+      <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] shrink-0 w-[46px]">
         {fmtDate(ev.planned_date)}
       </span>
       <span className="flex-1 text-[13px] text-[var(--sl-t2)] truncate">
         {ev.categories?.icon ?? (ev.type === 'income' ? '💰' : '📤')} {ev.name}
       </span>
-      <span className={cn('font-[DM_Mono] text-[13px] shrink-0', ev.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+      <span className={cn('font-[IBM_Plex_Mono] text-[13px] shrink-0', ev.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
         {ev.type === 'income' ? '+' : '-'}{fmtR(ev.amount)}
       </span>
       {/* Actions */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         {!ev.is_confirmed && (
           <button onClick={() => onConfirm(ev.id)}
-            className="w-6 h-6 flex items-center justify-center rounded text-[#10b981] hover:bg-[rgba(16,185,129,0.1)] transition-colors"
+            className="w-6 h-6 flex items-center justify-center rounded text-[#0F766E] hover:bg-[rgba(15,118,110,0.1)] transition-colors"
             title="Confirmar evento">
             <CheckCircle2 size={13} />
           </button>
@@ -218,7 +218,7 @@ function EventRow({
           <Pencil size={12} />
         </button>
         <button onClick={() => onDelete(ev.id)}
-          className="w-6 h-6 flex items-center justify-center rounded text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[rgba(244,63,94,0.08)] transition-colors">
+          className="w-6 h-6 flex items-center justify-center rounded text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[rgba(219,100,120,0.08)] transition-colors">
           <Trash2 size={12} />
         </button>
       </div>
@@ -352,8 +352,8 @@ export default function PlanejamentoPage() {
       {/* ① Topbar */}
       <ModuleHeader
         icon={LineChart}
-        iconBg="rgba(16,185,129,.08)"
-        iconColor="#10b981"
+        iconBg="rgba(15,118,110,.08)"
+        iconColor="#0F766E"
         title="Planejamento Futuro"
         className="mb-5"
       >
@@ -371,7 +371,7 @@ export default function PlanejamentoPage() {
         </div>
 
         <button onClick={openCreate}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] bg-[#10b981] text-white text-[12px] font-semibold cursor-pointer hover:opacity-85 transition-opacity">
+          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] bg-[#0F766E] text-white text-[12px] font-semibold cursor-pointer hover:opacity-85 transition-opacity">
           <Plus size={13} strokeWidth={2.5} />
           Novo Evento
         </button>
@@ -379,7 +379,7 @@ export default function PlanejamentoPage() {
 
       {/* Error */}
       {error && (
-        <div className="bg-[rgba(244,63,94,0.06)] border border-[rgba(244,63,94,0.2)] rounded-xl p-4 text-[13px] text-[#f43f5e] mb-5">
+        <div className="bg-[rgba(219,100,120,0.06)] border border-[rgba(219,100,120,0.2)] rounded-xl p-4 text-[13px] text-[#DB6478] mb-5">
           {error}{' '}
           <button onClick={refresh} className="underline">Tentar novamente</button>
         </div>
@@ -392,7 +392,7 @@ export default function PlanejamentoPage() {
           value={fmtR(currentBalance)}
           delta={new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
           deltaType="neutral"
-          accent="#10b981"
+          accent="#0F766E"
         />
         <KpiCard
           label="Saldo em 6 meses"
@@ -406,14 +406,14 @@ export default function PlanejamentoPage() {
           value={fmtR(bal12m)}
           delta={bal12mDelta}
           deltaType={bal12m >= currentBalance ? 'up' : 'down'}
-          accent={bal12m >= currentBalance ? '#10b981' : '#f43f5e'}
+          accent={bal12m >= currentBalance ? '#0F766E' : '#DB6478'}
         />
         <KpiCard
           label="Próximo crítico"
           value={nextCritical ? fmtR(nextCritical.balance) : '—'}
           delta={nextCritical ? `${nextCritical.date} — ${nextCritical.name}` : 'Nenhum alerta'}
           deltaType={nextCritical ? 'down' : 'neutral'}
-          accent={nextCritical ? '#f43f5e' : '#10b981'}
+          accent={nextCritical ? '#DB6478' : '#0F766E'}
         />
       </div>
 
@@ -425,7 +425,7 @@ export default function PlanejamentoPage() {
         {/* Timeline header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div>
-            <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
+            <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
               Curva de Saldo — 6 meses
             </p>
             <p className="text-[11px] text-[var(--sl-t3)]">
@@ -453,17 +453,17 @@ export default function PlanejamentoPage() {
             <div className="h-9 shrink-0 border-b border-[var(--sl-border)] bg-[var(--sl-s1)]" />
             {/* Receitas band */}
             <div className="flex flex-col items-end justify-center px-3 h-[90px] shrink-0 border-b border-[var(--sl-border)]">
-              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[#10b981]">Receitas</span>
+              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[#0F766E]">Receitas</span>
               <span className="text-[13px]">💰</span>
             </div>
             {/* Saldo band */}
             <div className="flex flex-col items-end justify-center px-3 flex-1 min-h-0 border-b border-[var(--sl-border)]">
-              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[#0055ff]">Saldo</span>
+              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[#0B2D34]">Saldo</span>
               <span className="text-[13px]">📈</span>
             </div>
             {/* Despesas band */}
             <div className="flex flex-col items-end justify-center px-3 h-[90px] shrink-0">
-              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[#f43f5e]">Despesas</span>
+              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[#DB6478]">Despesas</span>
               <span className="text-[13px]">📤</span>
             </div>
           </div>
@@ -487,8 +487,8 @@ export default function PlanejamentoPage() {
         {/* Próximos Eventos */}
         <SLCard className="sl-fade-up sl-delay-1">
           <div className="flex items-center justify-between mb-4">
-            <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">📋 Próximos Eventos</p>
-            <button onClick={openCreate} className="text-[11px] text-[#10b981] cursor-pointer hover:opacity-70 transition-opacity">
+            <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">📋 Próximos Eventos</p>
+            <button onClick={openCreate} className="text-[11px] text-[#0F766E] cursor-pointer hover:opacity-70 transition-opacity">
               + Adicionar
             </button>
           </div>
@@ -497,7 +497,7 @@ export default function PlanejamentoPage() {
             <div className="text-center py-8">
               <span className="text-[28px] block mb-2 opacity-50">📋</span>
               <p className="text-[12px] text-[var(--sl-t3)]">Nenhum evento planejado.</p>
-              <button onClick={openCreate} className="text-[12px] text-[#10b981] underline mt-1 cursor-pointer">
+              <button onClick={openCreate} className="text-[12px] text-[#0F766E] underline mt-1 cursor-pointer">
                 Adicionar evento
               </button>
             </div>
@@ -524,7 +524,7 @@ export default function PlanejamentoPage() {
         {/* Projeção de Saldo */}
         <SLCard className="sl-fade-up sl-delay-2">
           <div className="flex items-center justify-between mb-4">
-            <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">📊 Projeção de Saldo</p>
+            <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">📊 Projeção de Saldo</p>
             <span className="text-[11px] font-semibold" style={{ color: SCENARIO_COLORS[scenario] }}>
               ● {SCENARIO_LABELS[scenario]}
             </span>
@@ -536,17 +536,17 @@ export default function PlanejamentoPage() {
           <div className="flex justify-between mt-4">
             <div className="flex flex-col gap-0.5">
               <span className="text-[10px] uppercase tracking-[0.06em] text-[var(--sl-t3)]">Hoje</span>
-              <span className="font-[DM_Mono] text-[15px] text-[#10b981]">{fmtR(currentBalance)}</span>
+              <span className="font-[IBM_Plex_Mono] text-[15px] text-[#0F766E]">{fmtR(currentBalance)}</span>
             </div>
             <div className="flex flex-col gap-0.5 items-center">
               <span className="text-[10px] uppercase tracking-[0.06em] text-[var(--sl-t3)]">6 meses</span>
-              <span className="font-[DM_Mono] text-[15px]" style={{ color: SCENARIO_COLORS[scenario] }}>
+              <span className="font-[IBM_Plex_Mono] text-[15px]" style={{ color: SCENARIO_COLORS[scenario] }}>
                 {fmtR(bal6m)}
               </span>
             </div>
             <div className="flex flex-col gap-0.5 items-end">
               <span className="text-[10px] uppercase tracking-[0.06em] text-[var(--sl-t3)]">12 meses</span>
-              <span className={cn('font-[DM_Mono] text-[15px]', bal12m >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+              <span className={cn('font-[IBM_Plex_Mono] text-[15px]', bal12m >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
                 {fmtR(bal12m)}
               </span>
             </div>
@@ -555,10 +555,10 @@ export default function PlanejamentoPage() {
           {/* Critical warning */}
           {nextCritical && (
             <div className="mt-3 p-2.5 rounded-[9px] text-[12px] text-[var(--sl-t2)]"
-              style={{ background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.15)' }}>
-              ⚠ <strong className="text-[#f59e0b]">{nextCritical.date}</strong> — {nextCritical.name}
+              style={{ background: 'rgba(217,150,46,0.07)', border: '1px solid rgba(217,150,46,0.15)' }}>
+              ⚠ <strong className="text-[#D9962E]">{nextCritical.date}</strong> — {nextCritical.name}
               {' '}— saldo cai para{' '}
-              <strong className="text-[#f59e0b]">{fmtR(nextCritical.balance)}</strong>
+              <strong className="text-[#D9962E]">{fmtR(nextCritical.balance)}</strong>
             </div>
           )}
         </SLCard>

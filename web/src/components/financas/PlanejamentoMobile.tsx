@@ -96,16 +96,16 @@ export function PlanejamentoMobile({
         <div className="flex items-start justify-between mb-3">
           <div>
             <p className="text-[13px] text-[var(--sl-t2)]">Saldo projetado</p>
-            <p className="font-[DM_Mono] text-[22px] font-medium text-[var(--sl-t1)]">
+            <p className="font-[IBM_Plex_Mono] text-[22px] font-medium text-[var(--sl-t1)]">
               {fmtR(projectedBalance)}
             </p>
           </div>
           <span className="inline-flex items-center px-2 py-1 rounded-[12px] text-[11px] font-medium
-                          bg-[rgba(16,185,129,0.12)] text-[#10b981]">
+                          bg-[rgba(15,118,110,0.12)] text-[#0F766E]">
             em {projectedLabel}
           </span>
         </div>
-        <MiniChart data={balanceData} color="#10b981" />
+        <MiniChart data={balanceData} color="#0F766E" />
         <div className="flex justify-between pt-1.5">
           {months.slice(0, 6).map((m, i) => (
             <span key={i} className="text-[10px] text-[var(--sl-t3)]">{m.label}</span>
@@ -123,26 +123,26 @@ export function PlanejamentoMobile({
               onClick={() => setActiveMonth(i)}
               className="flex flex-col items-center gap-[3px] px-3.5 py-2.5 rounded-[12px] shrink-0 transition-all border"
               style={{
-                background: isActive ? 'rgba(16,185,129,0.15)' : 'var(--sl-s1)',
+                background: isActive ? 'rgba(15,118,110,0.15)' : 'var(--sl-s1)',
                 borderColor: isActive
-                  ? 'rgba(16,185,129,0.4)'
+                  ? 'rgba(15,118,110,0.4)'
                   : m.isNegative
-                    ? 'rgba(244,63,94,0.3)'
+                    ? 'rgba(219,100,120,0.3)'
                     : 'var(--sl-border)',
               }}
             >
               <span
                 className="text-[12px] font-medium"
                 style={{
-                  color: isActive ? '#10b981' : m.isNegative ? '#f43f5e' : 'var(--sl-t2)',
+                  color: isActive ? '#0F766E' : m.isNegative ? '#DB6478' : 'var(--sl-t2)',
                 }}
               >
                 {m.label}
               </span>
               <span
-                className="font-[DM_Mono] text-[13px] font-medium"
+                className="font-[IBM_Plex_Mono] text-[13px] font-medium"
                 style={{
-                  color: isActive ? '#10b981' : m.isNegative ? '#f43f5e' : 'var(--sl-t1)',
+                  color: isActive ? '#0F766E' : m.isNegative ? '#DB6478' : 'var(--sl-t1)',
                 }}
               >
                 {m.balance >= 0 ? '+' : ''}{fmtR(m.balance)}
@@ -160,7 +160,7 @@ export function PlanejamentoMobile({
       </div>
 
       {/* Events section — both modes */}
-      <p className="px-1 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+      <p className="px-1 pb-2 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
         Eventos em {months[activeMonth]?.label ?? 'Mar'}
       </p>
 
@@ -177,7 +177,7 @@ export function PlanejamentoMobile({
           >
             <div
               className="w-2 h-2 rounded-full shrink-0"
-              style={{ background: ev.type === 'income' ? '#10b981' : ev.type === 'expense' ? '#f43f5e' : '#0055ff' }}
+              style={{ background: ev.type === 'income' ? '#0F766E' : ev.type === 'expense' ? '#DB6478' : '#0B2D34' }}
             />
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-medium text-[var(--sl-t1)]">
@@ -186,8 +186,8 @@ export function PlanejamentoMobile({
               <p className="text-[11px] text-[var(--sl-t2)]">{ev.date}</p>
             </div>
             <span
-              className="font-[DM_Mono] text-[13px] font-medium shrink-0"
-              style={{ color: ev.type === 'income' ? '#10b981' : '#f43f5e' }}
+              className="font-[IBM_Plex_Mono] text-[13px] font-medium shrink-0"
+              style={{ color: ev.type === 'income' ? '#0F766E' : '#DB6478' }}
             >
               {ev.type === 'income' ? '+' : '-'}{fmtR(Math.abs(ev.amount))}
             </span>

@@ -20,8 +20,8 @@ import { ModuleHeader } from '@/components/ui/module-header'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-const MODULE_COLOR = '#8b5cf6'
-const MODULE_COLOR_DIM = 'rgba(139,92,246,0.08)'
+const MODULE_COLOR = '#8B7BD4'
+const MODULE_COLOR_DIM = 'rgba(139,123,212,0.08)'
 
 const DAY_LABELS = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'] as const
 const DAY_FULL_LABELS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'] as const
@@ -62,9 +62,9 @@ const MOCK_HISTORY: CheckinHistoryItem[] = []
 
 function getStatusPillStyles(status: 'on_track' | 'attention' | 'at_risk') {
   switch (status) {
-    case 'on_track': return { bg: 'rgba(16,185,129,0.10)', color: '#10b981' }
-    case 'attention': return { bg: 'rgba(245,158,11,0.10)', color: '#f59e0b' }
-    case 'at_risk': return { bg: 'rgba(244,63,94,0.10)', color: '#f43f5e' }
+    case 'on_track': return { bg: 'rgba(15,118,110,0.10)', color: '#0F766E' }
+    case 'attention': return { bg: 'rgba(217,150,46,0.10)', color: '#D9962E' }
+    case 'at_risk': return { bg: 'rgba(219,100,120,0.10)', color: '#DB6478' }
   }
 }
 
@@ -77,9 +77,9 @@ function getMoodLabel(value: number): string {
 }
 
 function getMoodColor(value: number): string {
-  if (value <= 3) return '#f43f5e'
-  if (value <= 6) return '#f59e0b'
-  return '#10b981'
+  if (value <= 3) return '#DB6478'
+  if (value <= 6) return '#D9962E'
+  return '#0F766E'
 }
 
 // ─── Date helpers ──────────────────────────────────────────────────────────
@@ -149,8 +149,8 @@ export default function FuturoCheckinPage() {
           id: obj.id,
           title: obj.name,
           icon: <span className="text-[14px]">{obj.icon}</span>,
-          iconBg: idx % 2 === 0 ? 'rgba(244,63,94,0.10)' : 'rgba(16,185,129,0.10)',
-          iconColor: idx % 2 === 0 ? '#f43f5e' : '#10b981',
+          iconBg: idx % 2 === 0 ? 'rgba(219,100,120,0.10)' : 'rgba(15,118,110,0.10)',
+          iconColor: idx % 2 === 0 ? '#DB6478' : '#0F766E',
           status,
           statusLabel,
           inputLabel: isMonetary ? 'Aportei:' : 'Atual:',
@@ -221,7 +221,7 @@ export default function FuturoCheckinPage() {
             <ArrowLeft size={17} className="text-[var(--sl-t2)]" />
           </button>
           <div className="flex-1">
-            <h1 className="font-[Syne] text-[17px] font-bold text-[var(--sl-t1)]">
+            <h1 className="font-[Space_Grotesk] text-[17px] font-bold text-[var(--sl-t1)]">
               Check-in Semanal
             </h1>
             <p className="text-[11px] text-[var(--sl-t3)] mt-[1px]">
@@ -246,13 +246,13 @@ export default function FuturoCheckinPage() {
               onChange={e => setMood(Number(e.target.value))}
               className="w-full h-[6px] rounded-full appearance-none cursor-pointer mb-2"
               style={{
-                background: `linear-gradient(to right, rgba(244,63,94,0.25), rgba(245,158,11,0.25), rgba(16,185,129,0.25))`,
+                background: `linear-gradient(to right, rgba(219,100,120,0.25), rgba(217,150,46,0.25), rgba(15,118,110,0.25))`,
               }}
             />
             <div className="flex justify-between text-[10px] text-[var(--sl-t3)]">
-              <span className="flex items-center gap-1"><Frown size={12} className="text-[#f43f5e]" />Ruim</span>
-              <span className="font-[DM_Mono] font-medium" style={{ color: moodColor }}>{mood}/10</span>
-              <span className="flex items-center gap-1"><Smile size={12} className="text-[#10b981]" />Ótimo</span>
+              <span className="flex items-center gap-1"><Frown size={12} className="text-[#DB6478]" />Ruim</span>
+              <span className="font-[IBM_Plex_Mono] font-medium" style={{ color: moodColor }}>{mood}/10</span>
+              <span className="flex items-center gap-1"><Smile size={12} className="text-[#0F766E]" />Ótimo</span>
             </div>
           </div>
 
@@ -284,7 +284,7 @@ export default function FuturoCheckinPage() {
                           !dayToggles[i] && i !== todayIdx && 'bg-[var(--sl-s3)] text-[var(--sl-t3)]',
                         )}
                         style={{
-                          ...(dayToggles[i] ? { background: '#10b981' } : {}),
+                          ...(dayToggles[i] ? { background: '#0F766E' } : {}),
                           ...(i === todayIdx && !dayToggles[i] ? { borderColor: MODULE_COLOR, color: MODULE_COLOR } : {}),
                         }}
                       >
@@ -301,8 +301,8 @@ export default function FuturoCheckinPage() {
                     onChange={e => handleGoalValueChange(goal.id, e.target.value)}
                     placeholder={goal.inputPlaceholder}
                     className="flex-1 px-3 py-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[9px]
-                               text-[var(--sl-t1)] text-[13px] font-[DM_Mono] outline-none
-                               transition-colors focus:border-[rgba(139,92,246,0.4)]"
+                               text-[var(--sl-t1)] text-[13px] font-[IBM_Plex_Mono] outline-none
+                               transition-colors focus:border-[rgba(139,123,212,0.4)]"
                   />
                   {goal.inputSuffix && (
                     <span className="text-[11px] text-[var(--sl-t3)] shrink-0">{goal.inputSuffix}</span>
@@ -324,7 +324,7 @@ export default function FuturoCheckinPage() {
               rows={3}
               className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] p-3
                          text-[var(--sl-t1)] text-[13px] outline-none resize-vertical min-h-[80px]
-                         placeholder:text-[var(--sl-t3)] transition-colors focus:border-[rgba(139,92,246,0.4)]"
+                         placeholder:text-[var(--sl-t3)] transition-colors focus:border-[rgba(139,123,212,0.4)]"
             />
           </div>
 
@@ -333,7 +333,7 @@ export default function FuturoCheckinPage() {
             onClick={handleSave}
             disabled={saving}
             className="w-full py-3 rounded-[14px] text-[14px] font-semibold text-white disabled:opacity-60 flex items-center justify-center gap-2"
-            style={{ background: 'linear-gradient(135deg, #8b5cf6, #0055ff)' }}
+            style={{ background: 'linear-gradient(135deg, #8B7BD4, #0B2D34)' }}
           >
             <Check size={16} />
             {saving ? 'Salvando...' : 'Salvar Check-in'}
@@ -371,7 +371,7 @@ export default function FuturoCheckinPage() {
 
           <div className="flex items-center gap-3 mb-1">
             <Smile size={18} style={{ color: MODULE_COLOR }} />
-            <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+            <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
               Como você está se sentindo?
             </span>
           </div>
@@ -381,7 +381,7 @@ export default function FuturoCheckinPage() {
             {/* Gradient background */}
             <div
               className="absolute inset-0 rounded-[22px]"
-              style={{ background: 'linear-gradient(90deg, rgba(244,63,94,0.25), rgba(245,158,11,0.25), rgba(16,185,129,0.25))' }}
+              style={{ background: 'linear-gradient(90deg, rgba(219,100,120,0.25), rgba(217,150,46,0.25), rgba(15,118,110,0.25))' }}
             />
             {/* Range input overlaid */}
             <input
@@ -399,10 +399,10 @@ export default function FuturoCheckinPage() {
               style={{ left: `calc(${moodPercentage}% - 17px)` }}
             >
               {mood <= 3
-                ? <Frown size={18} style={{ color: '#f43f5e' }} />
+                ? <Frown size={18} style={{ color: '#DB6478' }} />
                 : mood <= 6
-                  ? <Meh size={18} style={{ color: '#f59e0b' }} />
-                  : <Smile size={18} style={{ color: '#10b981' }} />
+                  ? <Meh size={18} style={{ color: '#D9962E' }} />
+                  : <Smile size={18} style={{ color: '#0F766E' }} />
               }
             </div>
           </div>
@@ -410,15 +410,15 @@ export default function FuturoCheckinPage() {
           {/* Mood labels */}
           <div className="flex justify-between text-[11px] text-[var(--sl-t3)]">
             <span className="flex items-center gap-1">
-              <Frown size={14} className="text-[#f43f5e]" />
+              <Frown size={14} className="text-[#DB6478]" />
               Ruim
             </span>
             <span className="flex items-center gap-1">
-              <Meh size={14} className="text-[#f59e0b]" />
+              <Meh size={14} className="text-[#D9962E]" />
               Neutro
             </span>
             <span className="flex items-center gap-1">
-              <Smile size={14} className="text-[#10b981]" />
+              <Smile size={14} className="text-[#0F766E]" />
               Ótimo
             </span>
           </div>
@@ -471,7 +471,7 @@ export default function FuturoCheckinPage() {
                             !dayToggles[i] && i !== todayIdx && 'bg-[var(--sl-s3)] text-[var(--sl-t3)]',
                           )}
                           style={{
-                            ...(dayToggles[i] ? { background: '#10b981' } : {}),
+                            ...(dayToggles[i] ? { background: '#0F766E' } : {}),
                             ...(i === todayIdx && !dayToggles[i] ? { borderColor: MODULE_COLOR, color: MODULE_COLOR } : {}),
                           }}
                         >
@@ -490,8 +490,8 @@ export default function FuturoCheckinPage() {
                       onChange={e => handleGoalValueChange(goal.id, e.target.value)}
                       placeholder={goal.inputPlaceholder}
                       className="flex-1 px-3 py-[9px] bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[9px]
-                                 text-[var(--sl-t1)] text-[13px] font-[DM_Mono] outline-none
-                                 transition-colors focus:border-[rgba(139,92,246,0.4)]"
+                                 text-[var(--sl-t1)] text-[13px] font-[IBM_Plex_Mono] outline-none
+                                 transition-colors focus:border-[rgba(139,123,212,0.4)]"
                     />
                     {goal.inputSuffix && (
                       <span className="text-[11px] text-[var(--sl-t3)] ml-[6px] shrink-0">{goal.inputSuffix}</span>
@@ -512,7 +512,7 @@ export default function FuturoCheckinPage() {
             {/* Accent bar */}
             <div className="absolute top-0 left-6 right-6 h-[2.5px] rounded-b-sm" style={{ background: MODULE_COLOR }} />
 
-            <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px] mb-4">
+            <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px] mb-4">
               <FileText size={16} style={{ color: MODULE_COLOR }} />
               Notas
             </h3>
@@ -523,15 +523,15 @@ export default function FuturoCheckinPage() {
               placeholder="Alguma observação sobre esta semana?"
               className="w-full px-3 py-3 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px]
                          text-[var(--sl-t1)] text-[13px] outline-none resize-vertical min-h-[80px]
-                         placeholder:text-[var(--sl-t3)] transition-colors focus:border-[rgba(139,92,246,0.4)]"
+                         placeholder:text-[var(--sl-t3)] transition-colors focus:border-[rgba(139,123,212,0.4)]"
             />
 
             {/* Preview inline */}
             <div
               className="mt-4 p-[14px] rounded-[12px]"
               style={{
-                background: 'rgba(139,92,246,0.04)',
-                border: '1px solid rgba(139,92,246,0.15)',
+                background: 'rgba(139,123,212,0.04)',
+                border: '1px solid rgba(139,123,212,0.15)',
               }}
             >
               <div className="text-[12px] font-semibold mb-2" style={{ color: MODULE_COLOR }}>
@@ -548,7 +548,7 @@ export default function FuturoCheckinPage() {
                 </div>
                 <div>
                   <span className="text-[var(--sl-t3)]">Treinos: </span>
-                  <span style={{ color: '#10b981' }}>{trainDaysCount}/4</span>
+                  <span style={{ color: '#0F766E' }}>{trainDaysCount}/4</span>
                 </div>
               </div>
             </div>
@@ -560,8 +560,8 @@ export default function FuturoCheckinPage() {
               className="w-full mt-4 py-3 rounded-[11px] text-[13px] font-semibold text-white
                          flex items-center justify-center gap-2 disabled:opacity-60
                          hover:brightness-110 hover:-translate-y-px transition-all
-                         shadow-[0_6px_20px_rgba(139,92,246,0.15)]"
-              style={{ background: 'linear-gradient(135deg, #8b5cf6, #0055ff)' }}
+                         shadow-[0_6px_20px_rgba(139,123,212,0.15)]"
+              style={{ background: 'linear-gradient(135deg, #8B7BD4, #0B2D34)' }}
             >
               <Check size={16} />
               {saving ? 'Salvando...' : 'Salvar Check-in'}
@@ -573,9 +573,9 @@ export default function FuturoCheckinPage() {
                           transition-colors hover:border-[var(--sl-border-h)]">
             {/* Accent bar gradient */}
             <div className="absolute top-0 left-6 right-6 h-[2.5px] rounded-b-sm"
-              style={{ background: 'linear-gradient(90deg, #8b5cf6, #0055ff)' }} />
+              style={{ background: 'linear-gradient(90deg, #8B7BD4, #0B2D34)' }} />
 
-            <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px] mb-4">
+            <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px] mb-4">
               <Clock size={16} style={{ color: MODULE_COLOR }} />
               Histórico de Check-ins
             </h3>

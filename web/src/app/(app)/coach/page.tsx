@@ -163,18 +163,18 @@ function CoachChat() {
     >
       {/* Topbar */}
       <div className="flex items-center gap-3 mb-5 shrink-0">
-        <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-sl-grad">
+        <h1 className="font-[Space_Grotesk] font-extrabold text-xl flex-1 text-sl-grad">
           Coach IA
         </h1>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#10b981]/10 border border-[#10b981]/20">
-          <Sparkles size={11} className="text-[#10b981]" />
-          <span className="text-[10px] font-bold text-[#10b981]">Cross-Module</span>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0F766E]/10 border border-[#0F766E]/20">
+          <Sparkles size={11} className="text-[#0F766E]" />
+          <span className="text-[10px] font-bold text-[#0F766E]">Cross-Module</span>
         </div>
       </div>
 
       {/* Disclaimer */}
       <div className="shrink-0 mb-4 flex items-start gap-2.5 p-3 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[11px] text-[var(--sl-t3)]">
-        <Sparkles size={13} className="shrink-0 mt-0.5 text-[#f59e0b]" />
+        <Sparkles size={13} className="shrink-0 mt-0.5 text-[#D9962E]" />
         <span>O Coach IA analisa seus dados de todos os módulos — finanças, metas, saúde, patrimônio — para dar recomendações personalizadas. Para questões médicas, consulte um profissional.</span>
       </div>
 
@@ -184,10 +184,10 @@ function CoachChat() {
           <div className="flex flex-col items-center justify-center flex-1 gap-6">
             <div className="flex flex-col items-center gap-3 text-center">
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
-                   style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(0,85,255,0.1))' }}>
-                <Bot size={28} className="text-[#10b981]" />
+                   style={{ background: 'linear-gradient(135deg, rgba(15,118,110,0.15), rgba(0,85,255,0.1))' }}>
+                <Bot size={28} className="text-[#0F766E]" />
               </div>
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                 Coach de Vida SyncLife
               </h2>
               <p className="text-[12px] text-[var(--sl-t2)] max-w-[320px]">
@@ -221,14 +221,14 @@ function CoachChat() {
               >
                 {msg.role === 'assistant' && (
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                       style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(0,85,255,0.1))' }}>
-                    <Bot size={14} className="text-[#10b981]" />
+                       style={{ background: 'linear-gradient(135deg, rgba(15,118,110,0.15), rgba(0,85,255,0.1))' }}>
+                    <Bot size={14} className="text-[#0F766E]" />
                   </div>
                 )}
                 <div className={cn(
                   'max-w-[75%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed',
                   msg.role === 'user'
-                    ? 'bg-[#10b981] text-white rounded-tr-sm'
+                    ? 'bg-[#0F766E] text-white rounded-tr-sm'
                     : 'bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t1)] rounded-tl-sm'
                 )}>
                   {msg.content || (
@@ -240,8 +240,8 @@ function CoachChat() {
                   )}
                 </div>
                 {msg.role === 'user' && (
-                  <div className="w-7 h-7 rounded-lg bg-[#10b981]/15 flex items-center justify-center shrink-0 mt-0.5">
-                    <User size={14} className="text-[#10b981]" />
+                  <div className="w-7 h-7 rounded-lg bg-[#0F766E]/15 flex items-center justify-center shrink-0 mt-0.5">
+                    <User size={14} className="text-[#0F766E]" />
                   </div>
                 )}
               </div>
@@ -269,7 +269,7 @@ function CoachChat() {
           disabled={!input.trim() || isLoading}
           className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0
                      text-white disabled:opacity-40 transition-opacity hover:opacity-90"
-          style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+          style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
         >
           <Send size={14} />
         </button>

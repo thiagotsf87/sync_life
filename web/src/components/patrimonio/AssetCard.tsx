@@ -27,7 +27,7 @@ export function AssetCard({ asset, onDelete, onUpdatePrice }: AssetCardProps) {
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-[DM_Mono] font-bold text-[14px] text-[var(--sl-t1)]">
+            <span className="font-[IBM_Plex_Mono] font-bold text-[14px] text-[var(--sl-t1)]">
               {asset.ticker}
             </span>
             <span
@@ -50,7 +50,7 @@ export function AssetCard({ asset, onDelete, onUpdatePrice }: AssetCardProps) {
           )}
           {onDelete && (
             <button onClick={() => onDelete(asset.id)}
-              className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors"
             >
               <Trash2 size={12} className="text-[var(--sl-t3)]" />
             </button>
@@ -61,26 +61,26 @@ export function AssetCard({ asset, onDelete, onUpdatePrice }: AssetCardProps) {
       <div className="grid grid-cols-2 gap-x-4 gap-y-1">
         <div>
           <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Qtde</p>
-          <p className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">
+          <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">
             {asset.quantity % 1 === 0 ? asset.quantity.toFixed(0) : asset.quantity.toFixed(4)}
           </p>
         </div>
         <div>
           <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">PM</p>
-          <p className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">
+          <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">
             {asset.avg_price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
           </p>
         </div>
         <div>
           <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Investido</p>
-          <p className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">
+          <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">
             {invested.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
           </p>
         </div>
         {currentValue != null ? (
           <div>
             <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Atual</p>
-            <p className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">
+            <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">
               {currentValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </p>
           </div>
@@ -95,10 +95,10 @@ export function AssetCard({ asset, onDelete, onUpdatePrice }: AssetCardProps) {
       {profitLoss != null && profitLossPct != null && (
         <div className={cn(
           'flex items-center gap-1.5 mt-2 pt-2 border-t border-[var(--sl-border)]',
-          profitLoss >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
+          profitLoss >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]'
         )}>
           {profitLoss >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-          <span className="font-[DM_Mono] text-[11px] font-semibold">
+          <span className="font-[IBM_Plex_Mono] text-[11px] font-semibold">
             {profitLoss >= 0 ? '+' : ''}{profitLoss.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
           </span>
           <span className="text-[10px] opacity-80">

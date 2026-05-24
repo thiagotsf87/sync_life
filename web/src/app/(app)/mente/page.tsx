@@ -39,18 +39,18 @@ function getRelativeDate(dateStr: string): string {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  technology: '#eab308',
-  languages: '#3b82f6',
+  technology: '#D9962E',
+  languages: '#4F88D4',
   management: '#a855f7',
-  marketing: '#f97316',
-  design: '#ec4899',
-  finance: '#10b981',
-  health: '#f43f5e',
-  exam: '#06b6d4',
-  undergraduate: '#6366f1',
-  postgraduate: '#8b5cf6',
-  certification: '#f59e0b',
-  other: '#64748b',
+  marketing: '#D97534',
+  design: '#C76795',
+  finance: '#0F766E',
+  health: '#DB6478',
+  exam: '#3CA0B5',
+  undergraduate: '#6B6FD4',
+  postgraduate: '#8B7BD4',
+  certification: '#D9962E',
+  other: '#6F7986',
 }
 
 /* ── page ─────────────────────────────────────────────────────────── */
@@ -117,15 +117,15 @@ export default function MentePage() {
         {/* 1. ModuleHeader */}
         <ModuleHeader
           icon={Brain}
-          iconBg="rgba(234,179,8,.1)"
-          iconColor="#eab308"
+          iconBg="rgba(217,150,46,.1)"
+          iconColor="#D9962E"
           title="Mente"
           subtitle={subtitleParts.join(' \u00B7 ')}
         >
           <button
             onClick={() => router.push('/mente/timer')}
             className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#eab308] text-black hover:brightness-110 transition-all"
+                       bg-[#D9962E] text-black hover:brightness-110 transition-all"
           >
             <Play size={16} />
             Timer
@@ -134,20 +134,20 @@ export default function MentePage() {
 
         {/* 2. MetricsStrip — 5 metrics */}
         <MetricsStrip
-          gradient={['#eab308', '#f97316']}
+          gradient={['#D9962E', '#D97534']}
           className="mb-7"
           items={[
             {
               label: 'Horas esta semana',
               value: `${weekHours}h`,
-              valueColor: '#eab308',
+              valueColor: '#D9962E',
               featured: true,
               note: weekHours > 0 ? `Meta semanal: 15h (${Math.min(Math.round((weekHours / 15) * 100), 100)}%)` : 'Comece a estudar!',
             },
             {
               label: 'Streak',
               value: `${streak.current_streak}d`,
-              valueColor: '#f97316',
+              valueColor: '#D97534',
               icon: Flame,
               note: streak.longest_streak > 0 ? `Recorde: ${streak.longest_streak}d` : 'Comece hoje!',
             },
@@ -159,7 +159,7 @@ export default function MentePage() {
             {
               label: 'Sessoes hoje',
               value: String(todaySessions),
-              valueColor: todaySessions > 0 ? '#10b981' : undefined,
+              valueColor: todaySessions > 0 ? '#0F766E' : undefined,
               note: todaySessions > 0 ? 'Otimo ritmo!' : 'Vamos estudar?',
             },
             {
@@ -176,13 +176,13 @@ export default function MentePage() {
           {/* ── LEFT: Trilhas Ativas ── */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-[9px] mb-[18px]">
-              <BookOpen size={16} className="text-[#eab308]" />
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+              <BookOpen size={16} className="text-[#D9962E]" />
+              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                 Trilhas Ativas
               </h2>
               <button
                 onClick={() => router.push('/mente/trilhas')}
-                className="ml-auto text-[12px] font-medium text-[#eab308] hover:underline"
+                className="ml-auto text-[12px] font-medium text-[#D9962E] hover:underline"
               >
                 Ver todas
               </button>
@@ -201,12 +201,12 @@ export default function MentePage() {
                     ? 'Execute a migration 005 no Supabase para ativar este modulo.'
                     : error}
                 </p>
-                <button onClick={reload} className="text-[12px] text-[#eab308] hover:opacity-80">Tentar novamente</button>
+                <button onClick={reload} className="text-[12px] text-[#D9962E] hover:opacity-80">Tentar novamente</button>
               </div>
             ) : activeTracks.length === 0 ? (
               <div className="text-center py-10">
-                <Brain size={32} className="text-[#eab308] mx-auto mb-3 opacity-60" />
-                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+                <Brain size={32} className="text-[#D9962E] mx-auto mb-3 opacity-60" />
+                <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
                   Nenhuma trilha ativa
                 </h3>
                 <p className="text-[13px] text-[var(--sl-t2)] max-w-sm mx-auto mb-4">
@@ -215,7 +215,7 @@ export default function MentePage() {
                 <button
                   onClick={() => setWizardOpen(true)}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                             bg-[#eab308] text-black hover:brightness-110 transition-all"
+                             bg-[#D9962E] text-black hover:brightness-110 transition-all"
                 >
                   <Plus size={15} />
                   Criar Trilha
@@ -226,7 +226,7 @@ export default function MentePage() {
                 {activeTracks.map((track, idx) => {
                   const steps = track.steps ?? []
                   const completedSteps = steps.filter(s => s.is_completed).length
-                  const catColor = CATEGORY_COLORS[track.category] ?? '#eab308'
+                  const catColor = CATEGORY_COLORS[track.category] ?? '#D9962E'
                   const catLabel = (CATEGORY_LABELS[track.category as TrackCategory] ?? '').replace(/^.+ /, '')
                   const daysLeft = track.target_date
                     ? Math.ceil((new Date(track.target_date).getTime() - Date.now()) / 86400000)
@@ -257,7 +257,7 @@ export default function MentePage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <span className="font-[DM_Mono] text-[15px] font-medium text-[#eab308]">
+                          <span className="font-[IBM_Plex_Mono] text-[15px] font-medium text-[#D9962E]">
                             {Math.round(track.progress)}%
                           </span>
                           {steps.length > 0 && (
@@ -270,7 +270,7 @@ export default function MentePage() {
                           className="h-full rounded-full transition-[width] duration-700"
                           style={{
                             width: `${Math.min(track.progress, 100)}%`,
-                            background: '#eab308',
+                            background: '#D9962E',
                           }}
                         />
                       </div>
@@ -287,13 +287,13 @@ export default function MentePage() {
             {/* Sessoes Recentes */}
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-3 transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-[9px] mb-[18px]">
-                <Clock size={16} className="text-[#eab308]" />
-                <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <Clock size={16} className="text-[#D9962E]" />
+                <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                   Sessoes Recentes
                 </h2>
                 <button
                   onClick={() => router.push('/mente/sessoes')}
-                  className="ml-auto text-[12px] font-medium text-[#eab308] hover:underline"
+                  className="ml-auto text-[12px] font-medium text-[#D9962E] hover:underline"
                 >
                   Ver todas
                 </button>
@@ -304,7 +304,7 @@ export default function MentePage() {
                   Nenhuma sessao esta semana.{' '}
                   <button
                     onClick={() => router.push('/mente/timer')}
-                    className="text-[#eab308] hover:opacity-80"
+                    className="text-[#D9962E] hover:opacity-80"
                   >
                     Iniciar timer
                   </button>
@@ -315,7 +315,7 @@ export default function MentePage() {
                     const trackName = session.track?.name ?? 'Estudo livre'
                     const dateLabel = getRelativeDate(session.recorded_at)
                     // Assign a dot color based on track or fallback
-                    const dotColors = ['#eab308', '#3b82f6', '#a855f7', '#10b981', '#f97316']
+                    const dotColors = ['#D9962E', '#4F88D4', '#a855f7', '#0F766E', '#D97534']
                     const dotColor = dotColors[idx % dotColors.length]
 
                     return (
@@ -330,7 +330,7 @@ export default function MentePage() {
                         <span className="flex-1 text-[12px] font-medium text-[var(--sl-t1)] truncate">
                           {trackName}
                         </span>
-                        <span className="font-[DM_Mono] text-[12px] text-[#eab308]">
+                        <span className="font-[IBM_Plex_Mono] text-[12px] text-[#D9962E]">
                           {session.focus_minutes}m
                         </span>
                         <span className="text-[10px] text-[var(--sl-t3)] w-10 text-right">
@@ -346,12 +346,12 @@ export default function MentePage() {
             {/* Horas por dia chart */}
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-4 transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-[9px] mb-[18px]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9962E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="20" x2="18" y2="10" />
                   <line x1="12" y1="20" x2="12" y2="4" />
                   <line x1="6" y1="20" x2="6" y2="14" />
                 </svg>
-                <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
                   Horas por dia
                 </h2>
               </div>
@@ -387,7 +387,7 @@ export default function MentePage() {
                       />
                       <Bar
                         dataKey="hours"
-                        fill="#eab308"
+                        fill="#D9962E"
                         radius={[4, 4, 0, 0]}
                         maxBarSize={28}
                       />

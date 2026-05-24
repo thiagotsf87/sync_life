@@ -20,7 +20,7 @@ export function UnderlineTabs({
   tabs,
   activeTab,
   onTabChange,
-  accentColor = '#ec4899',
+  accentColor = '#C76795',
   className,
 }: UnderlineTabsProps) {
   return (
