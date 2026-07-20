@@ -17,7 +17,7 @@ interface QuickActionSheetProps {
 }
 
 /** Ações rápidas por módulo — navega para a tela de criação correspondente */
-const MODULE_ACTIONS: Record<string, { label: string; href: string; icon: typeof DollarSign; color: string }[]> = {
+export const MODULE_ACTIONS: Record<string, { label: string; href: string; icon: typeof DollarSign; color: string }[]> = {
   financas: [
     { label: 'Transação rápida', href: '__financas__', icon: DollarSign, color: '#0F766E' },
     { label: 'Transações', href: '/financas/transacoes', icon: DollarSign, color: '#0F766E' },
