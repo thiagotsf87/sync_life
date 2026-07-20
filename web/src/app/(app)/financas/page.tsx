@@ -19,6 +19,7 @@ import { UltimasTransacoes } from '@/components/financas/UltimasTransacoes'
 import { ProjecaoSaldo } from '@/components/financas/ProjecaoSaldo'
 import { ProximasRecorrentes } from '@/components/financas/ProximasRecorrentes'
 import { FinancialInsightCard } from '@/components/financas/FinancialInsightCard'
+import { FinancasCoachSection } from '@/components/financas/FinancasCoachSection'
 import type { MonthlyAgg, CatDataItem, CfDay } from '@/components/financas/helpers'
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
@@ -155,6 +156,11 @@ export default function FinancasDashboardPage() {
     .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
     .replace(/^\w/, c => c.toUpperCase())
 
+  // Período humano p/ Coach OS (ex: "maio 2026") — usado como cache key + body do brief
+  const period = new Date(year, month - 1, 1)
+    .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    .replace(' de ', ' ')
+
   const cfSummary = useMemo(() => {
     const past = transactions.filter(t => !t.is_future)
     const maxInTxn = past.filter(t => t.type === 'income')
@@ -239,6 +245,9 @@ export default function FinancasDashboardPage() {
           Nova Transação
         </button>
       </ModuleHeader>
+
+      {/* 1.5 COACH OS — hero + cross reais */}
+      <FinancasCoachSection period={period} />
 
       {/* 2 KPI STRIP */}
       <KpiStrip
