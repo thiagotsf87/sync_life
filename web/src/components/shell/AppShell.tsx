@@ -17,6 +17,8 @@ import { resolveSystemTheme, isDarkTheme } from '@/types/shell'
 import { setSentryUser } from '@/lib/sentry-helpers'
 import { hydratePreferences } from '@/lib/user-preferences'
 import { QueryProvider } from '@/components/providers/query-provider'
+import { COACH_OS_ENABLED } from '@/lib/flags'
+import { CoachOSOverlays } from '@/components/coach/CoachOSOverlays'
 import type { ThemeId, ResolvedThemeId } from '@/types/shell'
 
 interface AppShellProps {
@@ -141,6 +143,8 @@ export function NewAppShell({
         {/* Mobile bottom bar */}
         <MobileBottomBar userName={userName} />
       </div>
+
+      {COACH_OS_ENABLED && <CoachOSOverlays />}
     </QueryProvider>
   )
 }
