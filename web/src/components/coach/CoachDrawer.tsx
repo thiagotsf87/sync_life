@@ -27,8 +27,8 @@ export function CoachDrawer({ open, onClose, activeModule, pendingPrompt }: Coac
         </SheetHeader>
         <div className="min-h-0 flex-1">
           <CoachChat
-            endpoint="/api/ai/coach"
-            buildBody={(messages) => ({ messages })}
+            endpoint="/api/ai/coach-thread"
+            buildBody={(messages) => ({ messages, moduleId: activeModule })}
             initialPrompt={pendingPrompt}
             suggestedPrompts={[`Como está meu módulo ${mod.label}?`, 'O que devo priorizar esta semana?']}
             placeholder={`Pergunte sobre ${mod.label}`}
