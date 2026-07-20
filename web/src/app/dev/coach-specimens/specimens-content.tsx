@@ -1,6 +1,6 @@
 'use client'
 
-import { KpiStrip, CoachWhisper, ProgressList, Timeline, Donut } from '@/components/coach'
+import { KpiStrip, CoachWhisper, ProgressList, Timeline, Donut, CoachHero, CrossBand } from '@/components/coach'
 import { KbdChip } from '@/components/ui/kbd-chip'
 
 export function SpecimensContent() {
@@ -55,6 +55,13 @@ export function SpecimensContent() {
           { label: 'Outros', share: 18, color: 'var(--sl-mod-fut)' },
         ]}
       />
+
+      <CoachHero moduleId="financas" period="maio 2026"
+        brief={{ eyebrow: 'Coach · Finanças · maio 2026', headline: { text: 'Você poupou 37% este mês', emphasis: '37%' },
+          stats: [{ label: 'Saldo', value: 'R$ 1.840', big: true }, { label: 'Receitas', value: 'R$ 5.000' }, { label: 'Despesas', value: 'R$ 3.160' }, { label: 'Poupança', value: '37%' }],
+          suggestions: [{ id: 's1', label: 'Como economizar mais?', prompt: 'Como economizar mais?', primary: true }, { id: 's2', label: 'Ver orçamento', prompt: 'Mostre meu orçamento' }] }} />
+      <CrossBand segments={[{ moduleId: 'financas', text: 'Seus gastos caíram 12%' }, { moduleId: 'futuro', text: 'e sua reserva chegou a 67%', bold: true }]}
+        action={{ label: 'Ver em Futuro', targetModule: 'futuro', href: '/futuro' }} />
     </div>
   )
 }
