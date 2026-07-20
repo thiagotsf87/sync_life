@@ -22,25 +22,25 @@ describe('StatusPill', () => {
     it('maps success to green', () => {
       const colors = getColors('success')
       expect(colors.text).toBe('#0F766E')
-      expect(colors.bg).toContain('16,185,129')
+      expect(colors.bg).toContain('15,118,110')
     })
 
     it('maps warning to yellow', () => {
       const colors = getColors('warning')
       expect(colors.text).toBe('#D9962E')
-      expect(colors.bg).toContain('245,158,11')
+      expect(colors.bg).toContain('217,150,46')
     })
 
     it('maps danger to red', () => {
       const colors = getColors('danger')
       expect(colors.text).toBe('#DB6478')
-      expect(colors.bg).toContain('244,63,94')
+      expect(colors.bg).toContain('219,100,120')
     })
 
     it('maps info to cyan', () => {
       const colors = getColors('info')
       expect(colors.text).toBe('#3CA0B5')
-      expect(colors.bg).toContain('6,182,212')
+      expect(colors.bg).toContain('60,160,181')
     })
 
     it('maps purple correctly', () => {

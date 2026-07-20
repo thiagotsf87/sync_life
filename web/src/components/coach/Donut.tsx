@@ -21,12 +21,13 @@ export interface DonutProps {
 /** Share chart conic-gradient com centro + legenda. Tooltip/realce no hover (G-01). */
 export function Donut({ title, center, centerSub, slices, className }: DonutProps) {
   const [hover, setHover] = useState<number | null>(null)
+  const deg = (n: number) => Math.round(n * 100) / 100
   let acc = 0
   const stops = slices
     .map((s) => {
       const from = acc
       acc += s.share * 3.6
-      return `${s.color} ${from}deg ${acc}deg`
+      return `${s.color} ${deg(from)}deg ${deg(acc)}deg`
     })
     .join(', ')
   return (

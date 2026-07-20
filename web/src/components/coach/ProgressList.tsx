@@ -1,5 +1,3 @@
-'use client'
-
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -36,7 +34,7 @@ export function ProgressList({ title, sub, rows, className }: ProgressListProps)
         {sub && <span className="text-[11.5px] text-[var(--sl-t3)]">{sub}</span>}
       </div>
       {rows.map((r, i) => {
-        const pct = Math.round((r.current / r.target) * 100)
+        const pct = r.target > 0 ? Math.round((r.current / r.target) * 100) : 0
         const near = r.invert ? pct >= 90 && pct < 100 : false
         const complete = r.invert ? pct < 100 : pct >= 100
         const bar = r.invert

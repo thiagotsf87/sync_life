@@ -18,4 +18,15 @@ describe('ProgressList', () => {
     expect(html).toContain('R$ 12k')
     expect(html).toContain('sl-num')
   })
+
+  it('does not emit NaN width when target is 0', () => {
+    const html = renderToString(
+      <ProgressList
+        title="Sem meta"
+        rows={[{ label: 'Vazio', current: 0, target: 0, color: 'var(--sl-mod-fut)' }]}
+      />,
+    )
+    expect(html).not.toContain('NaN')
+    expect(html).toContain('width:0%')
+  })
 })
