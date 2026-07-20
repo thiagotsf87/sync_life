@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import {
@@ -7,8 +7,8 @@ import {
 } from '@/hooks/use-corpo'
 import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 
-const CORPO_COLOR = '#f97316'
-const CORPO_BG = 'rgba(249,115,22,0.12)'
+const CORPO_COLOR = '#D97534'
+const CORPO_BG = 'rgba(217,117,52,0.12)'
 
 interface CorpoActivityModalProps {
   weightKg: number | null
@@ -86,7 +86,7 @@ export function CorpoActivityModal({ weightKg, onClose, onSave }: CorpoActivityM
           <input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder={`Ex: ${selectedType.label} — pernas`}
+            placeholder={`Ex: ${selectedType.label} · pernas`}
             className="w-full rounded-[10px] px-3 py-3 text-[14px] text-[var(--sl-t1)] outline-none placeholder:text-[var(--sl-t3)]"
             style={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)' }}
           />
@@ -104,7 +104,7 @@ export function CorpoActivityModal({ weightKg, onClose, onSave }: CorpoActivityM
               max={300}
               value={durationMin}
               onChange={(e) => setDurationMin(Number(e.target.value) || 30)}
-              className="w-full rounded-[10px] px-3 py-3 text-[16px] font-[DM_Mono] font-bold text-[var(--sl-t1)] outline-none text-center"
+              className="w-full rounded-[10px] px-3 py-3 text-[16px] sl-num-strong font-bold text-[var(--sl-t1)] outline-none text-center"
               style={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)' }}
             />
           </div>
@@ -138,7 +138,7 @@ export function CorpoActivityModal({ weightKg, onClose, onSave }: CorpoActivityM
             style={{ background: CORPO_BG }}
           >
             <p className="text-[11px] text-[var(--sl-t2)] mb-1">CALORIAS ESTIMADAS</p>
-            <p className="font-[DM_Mono] text-[24px] font-bold" style={{ color: CORPO_COLOR }}>
+            <p className="sl-num-strong text-[24px] font-bold" style={{ color: CORPO_COLOR }}>
               ~{estimatedKcal} kcal
             </p>
             <p className="text-[11px] text-[var(--sl-t3)] mt-1">

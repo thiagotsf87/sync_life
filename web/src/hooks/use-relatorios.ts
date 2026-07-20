@@ -84,7 +84,7 @@ export const PAYMENT_METHOD_LABELS: Record<string, string> = {
   boleto:   'Boleto',
 }
 
-export const CAT_COLORS = ['#10b981','#0055ff','#f59e0b','#f97316','#a855f7','#06b6d4','#f43f5e','#84cc16']
+export const CAT_COLORS = ['#0F766E','#0B2D34','#D9962E','#D97534','#a855f7','#3CA0B5','#DB6478','#84cc16']
 
 export const PAGE_SIZE = 30
 

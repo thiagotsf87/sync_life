@@ -76,7 +76,7 @@ export function SLTimePicker({
         )}
       >
         <Clock size={14} className="text-[var(--sl-t3)] shrink-0" />
-        <span className={cn('flex-1 font-[DM_Mono] text-[13px]', value ? 'text-[var(--sl-t1)]' : 'text-[var(--sl-t3)]')}>
+        <span className={cn('flex-1 font-[IBM_Plex_Mono] text-[13px]', value ? 'text-[var(--sl-t1)]' : 'text-[var(--sl-t3)]')}>
           {value || 'HH:MM'}
         </span>
       </button>
@@ -95,7 +95,7 @@ export function SLTimePicker({
               key={t}
               data-sl-time
               className={cn(
-                'px-3 py-2 text-[13px] font-[DM_Mono] cursor-pointer transition-colors',
+                'px-3 py-2 text-[13px] font-[IBM_Plex_Mono] cursor-pointer transition-colors',
                 t === value
                   ? 'text-[var(--sl-t1)] font-medium bg-[var(--sl-s2)]'
                   : 'text-[var(--sl-t2)] hover:bg-[var(--sl-s2)]',

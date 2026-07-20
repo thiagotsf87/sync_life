@@ -220,7 +220,7 @@ export default function PesoPage() {
               </button>
               <button
                 onClick={() => setShowWeightModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f97316] text-white hover:opacity-90 transition-opacity"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 transition-opacity"
               >
                 <Plus size={16} />
                 Registrar
@@ -248,7 +248,7 @@ export default function PesoPage() {
               ].map(stat => (
                 <div key={stat.label} className="flex items-center justify-between p-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-xl">
                   <span className="text-[11px] text-[var(--sl-t3)]">{stat.label}</span>
-                  <span className="font-[DM_Mono] text-[13px] font-medium" style={{ color: stat.color ?? 'var(--sl-t1)' }}>{stat.value}</span>
+                  <span className="sl-num text-[13px]" style={{ color: stat.color ?? 'var(--sl-t1)' }}>{stat.value}</span>
                 </div>
               ))}
             </div>
@@ -263,11 +263,11 @@ export default function PesoPage() {
                       <p className="text-[12px] text-[var(--sl-t3)] w-24 shrink-0">
                         {new Date(entry.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })}
                       </p>
-                      <p className="font-[DM_Mono] font-medium text-[14px] text-[var(--sl-t1)]">{entry.weight} kg</p>
+                      <p className="sl-num-strong text-[14px] text-[var(--sl-t1)]">{entry.weight} kg</p>
                       <div className="flex-1" />
                       <button
                         onClick={() => handleDeleteEntry(entry.id)}
-                        className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors"
                       >
                         <Trash2 size={12} className="text-[var(--sl-t3)]" />
                       </button>
@@ -286,8 +286,8 @@ export default function PesoPage() {
         {/* 1. ModuleHeader */}
         <ModuleHeader
           icon={Scale}
-          iconBg="rgba(249,115,22,.08)"
-          iconColor="#f97316"
+          iconBg="rgba(217,117,52,.08)"
+          iconColor="#D97534"
           title="Peso & Medidas"
           subtitle="Acompanhe sua evolucao corporal"
         >
@@ -302,8 +302,8 @@ export default function PesoPage() {
           <button
             onClick={() => setShowWeightModal(true)}
             className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#f97316] text-white hover:brightness-110 hover:-translate-y-px
-                       transition-all shadow-[0_6px_20px_rgba(249,115,22,.15)]"
+                       bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px
+                       transition-all shadow-[0_6px_20px_rgba(15,118,110,.15)]"
           >
             <Plus size={16} />
             Registrar Peso
@@ -322,25 +322,25 @@ export default function PesoPage() {
                   label: 'Peso Atual',
                   value: latestEntry ? `${latestEntry.weight}` : '--',
                   note: latestEntry ? 'kg' : undefined,
-                  accent: '#f97316',
+                  accent: '#D97534',
                 },
                 {
                   label: 'IMC',
                   value: imc ? imc.toFixed(1) : '--',
                   note: imcInfo?.label ?? undefined,
-                  accent: '#10b981',
+                  accent: '#0F766E',
                   valueColor: imcInfo?.color ?? undefined,
                 },
                 {
                   label: 'Altura',
                   value: profile?.height_cm ? `${profile.height_cm}` : '--',
                   note: profile?.height_cm ? 'cm' : undefined,
-                  accent: '#06b6d4',
+                  accent: '#3CA0B5',
                 },
                 {
                   label: 'TMB',
                   value: profile?.bmr ? Math.round(profile.bmr).toLocaleString('pt-BR') : '--',
-                  accent: '#f59e0b',
+                  accent: '#D9962E',
                 },
                 {
                   label: 'TDEE',
@@ -351,9 +351,9 @@ export default function PesoPage() {
                   label: 'Velocidade',
                   value: weeklyVelocity !== null ? `${weeklyVelocity > 0 ? '+' : ''}${weeklyVelocity.toFixed(1)}` : '--',
                   note: weeklyVelocity !== null ? 'kg/sem' : undefined,
-                  accent: '#10b981',
+                  accent: '#0F766E',
                   valueColor: weeklyVelocity !== null
-                    ? (weeklyVelocity <= 0 ? '#10b981' : '#f43f5e')
+                    ? (weeklyVelocity <= 0 ? '#0F766E' : '#DB6478')
                     : undefined,
                 },
               ]}
@@ -361,10 +361,10 @@ export default function PesoPage() {
 
             {/* RN-CRP-15: Alerta velocidade insegura */}
             {speedUnsafe && (
-              <div className="bg-[#f43f5e]/10 border border-[#f43f5e]/30 rounded-[18px] p-6 mb-[14px] sl-fade-up">
+              <div className="bg-[#DB6478]/10 border border-[#DB6478]/30 rounded-[18px] p-6 mb-[14px] sl-fade-up">
                 <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed">
                   Velocidade de {weeklyVelocity! > 0 ? 'ganho' : 'perda'} de peso acima de 1 kg/semana
-                  (<strong className="text-[#f43f5e]">{Math.abs(weeklyVelocity!).toFixed(1)} kg/sem</strong>).
+                  (<strong className="text-[#DB6478]">{Math.abs(weeklyVelocity!).toFixed(1)} kg/sem</strong>).
                   A faixa saudavel e de 0,5 a 1 kg/semana. Considere consultar um profissional.
                 </p>
               </div>
@@ -374,7 +374,7 @@ export default function PesoPage() {
             {profile?.weight_goal_kg && latestEntry && goalProgress !== null && (
               <div className="flex items-center gap-[14px] px-5 py-[14px] bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] mb-[14px] sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
                 <div className="text-center min-w-[50px]">
-                  <span className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)] block">{entries.length > 1 ? entries[entries.length - 1].weight : latestEntry.weight}</span>
+                  <span className="sl-num-strong text-[14px] text-[var(--sl-t1)] block">{entries.length > 1 ? entries[entries.length - 1].weight : latestEntry.weight}</span>
                   <span className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">Inicio</span>
                 </div>
                 <div className="flex-1 h-2 bg-[var(--sl-s3)] rounded-full overflow-hidden relative">
@@ -382,15 +382,15 @@ export default function PesoPage() {
                     className="h-full rounded-full"
                     style={{
                       width: `${goalProgress}%`,
-                      background: 'linear-gradient(90deg, #10b981, #0055ff)',
+                      background: 'var(--sl-grad)',
                     }}
                   />
                 </div>
                 <div className="text-center min-w-[50px]">
-                  <span className="font-[DM_Mono] text-[14px] font-medium text-[#10b981] block">{profile.weight_goal_kg}</span>
+                  <span className="sl-num-strong text-[14px] text-[var(--sl-em)] block">{profile.weight_goal_kg}</span>
                   <span className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">Meta</span>
                 </div>
-                <span className="font-[DM_Mono] text-[13px] text-[#f97316] min-w-[80px] text-right">
+                <span className="sl-num text-[13px] text-[#D97534] min-w-[80px] text-right">
                   {goalProgress}%{predictedDate ? ` \u00B7 ${predictedDate.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })}` : ''}
                 </span>
               </div>
@@ -399,7 +399,7 @@ export default function PesoPage() {
             {/* 4. Chart (full-width, protagonist) */}
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 mb-[14px] sl-fade-up sl-delay-3 hover:border-[var(--sl-border-h)] transition-colors">
               <div className="flex items-center gap-[9px] mb-[18px]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
                 </svg>
                 <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
@@ -413,7 +413,7 @@ export default function PesoPage() {
                       className={cn(
                         'px-3 py-1 rounded-[8px] text-[11px] font-semibold border transition-all',
                         chartMonths === m
-                          ? 'border-[#f97316] bg-[rgba(249,115,22,.08)] text-[var(--sl-t1)]'
+                          ? 'border-[#D97534] bg-[rgba(217,117,52,.08)] text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -429,7 +429,7 @@ export default function PesoPage() {
             {entries.some(e => e.waist_cm || e.hip_cm) && (
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 mb-[14px] sl-fade-up hover:border-[var(--sl-border-h)] transition-colors">
                 <div className="flex items-center gap-[9px] mb-[18px]">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97534" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 3v18h18" /><path d="M21 17H7" /><path d="M21 13H7" /><path d="M21 9H7" />
                   </svg>
                   <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
@@ -448,11 +448,20 @@ export default function PesoPage() {
                     <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--sl-t3)' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: 'var(--sl-t3)' }} axisLine={false} tickLine={false} unit="cm" />
                     <Tooltip
-                      contentStyle={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', borderRadius: 10, fontSize: 11 }}
-                      labelStyle={{ color: 'var(--sl-t2)' }}
+                      contentStyle={{
+                        background: 'var(--sl-s-hero, var(--sl-s1))',
+                        border: '1px solid var(--sl-border-h)',
+                        borderRadius: 12,
+                        fontSize: 12,
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
+                        fontFamily: 'Syne, sans-serif',
+                      }}
+                      labelStyle={{ color: 'var(--sl-t2)', fontFamily: 'DM Sans, sans-serif', fontWeight: 600 }}
+                      itemStyle={{ fontFamily: 'Syne, sans-serif', fontVariantNumeric: 'tabular-nums' }}
+                      cursor={{ stroke: 'var(--sl-border-h)', strokeWidth: 1, strokeDasharray: '3 3' }}
                     />
                     <Legend wrapperStyle={{ fontSize: 11, color: 'var(--sl-t3)' }} />
-                    <Line type="monotone" dataKey="cintura" name="Cintura (cm)" stroke="#f59e0b" dot={false} strokeWidth={2} connectNulls />
+                    <Line type="monotone" dataKey="cintura" name="Cintura (cm)" stroke="#D9962E" dot={false} strokeWidth={2} connectNulls />
                     <Line type="monotone" dataKey="quadril" name="Quadril (cm)" stroke="#a855f7" dot={false} strokeWidth={2} connectNulls />
                   </LineChart>
                 </ResponsiveContainer>
@@ -489,25 +498,25 @@ export default function PesoPage() {
                       const delta = getDelta(idx)
                       return (
                         <tr key={entry.id} className="group hover:bg-[var(--sl-s2)] transition-colors">
-                          <td className="font-[DM_Mono] text-[12.5px] text-[var(--sl-t3)] py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
+                          <td className="font-[IBM_Plex_Mono] text-[12.5px] text-[var(--sl-t3)] py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
                             {new Date(entry.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })}
                           </td>
-                          <td className="font-[DM_Mono] text-[12.5px] font-medium text-[var(--sl-t1)] py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
+                          <td className="sl-num text-[12.5px] text-[var(--sl-t1)] py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
                             {entry.weight} kg
                           </td>
-                          <td className="font-[DM_Mono] text-[12.5px] text-[var(--sl-t2)] py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
+                          <td className="sl-num text-[12.5px] text-[var(--sl-t2)] py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
                             {entry.waist_cm ? `${entry.waist_cm} cm` : '--'}
                           </td>
-                          <td className="font-[DM_Mono] text-[12.5px] font-medium py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]" style={{ color: entryImcInfo?.color ?? 'var(--sl-t1)' }}>
+                          <td className="sl-num text-[12.5px] py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]" style={{ color: entryImcInfo?.color ?? 'var(--sl-t1)' }}>
                             {entryImc ? entryImc.toFixed(1) : '--'}
                           </td>
                           <td className="py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
                             {delta !== null && (
                               <span
-                                className="inline-flex px-2 py-[2px] rounded-md font-[DM_Mono] text-[11px] font-medium"
+                                className="inline-flex px-2 py-[2px] rounded-md sl-num text-[11px]"
                                 style={{
-                                  background: delta <= 0 ? 'rgba(16,185,129,.1)' : 'rgba(244,63,94,.1)',
-                                  color: delta <= 0 ? '#10b981' : '#f43f5e',
+                                  background: delta <= 0 ? 'var(--sl-em-soft)' : 'rgba(219,100,120,.1)',
+                                  color: delta <= 0 ? 'var(--sl-em)' : 'var(--sl-danger)',
                                 }}
                               >
                                 {delta > 0 ? '+' : ''}{delta.toFixed(1)}
@@ -517,7 +526,7 @@ export default function PesoPage() {
                           <td className="py-[10px] px-3 border-b border-[rgba(120,165,220,.04)]">
                             <button
                               onClick={() => handleDeleteEntry(entry.id)}
-                              className="text-[var(--sl-t3)] hover:text-[#f43f5e] transition-colors text-[12px]"
+                              className="text-[var(--sl-t3)] hover:text-[#DB6478] transition-colors text-[12px]"
                             >
                               <Trash2 size={13} />
                             </button>
@@ -541,7 +550,7 @@ export default function PesoPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] w-full max-w-[420px]">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
               <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
-                <Scale size={20} className="text-[#f97316]" />
+                <Scale size={20} className="text-[#D97534]" />
                 Registrar Peso
               </h2>
               <button onClick={() => setShowWeightModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">&times;</button>
@@ -553,14 +562,14 @@ export default function PesoPage() {
                   <input type="number" step="0.1" value={weightForm.weight}
                     onChange={e => setWeightForm(f => ({ ...f, weight: e.target.value }))}
                     placeholder="Ex: 75.5" autoFocus
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D97534]"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Data</label>
                   <input type="date" value={weightForm.recorded_at}
                     onChange={e => setWeightForm(f => ({ ...f, recorded_at: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D97534]"
                   />
                 </div>
               </div>
@@ -570,7 +579,7 @@ export default function PesoPage() {
                   <input type="number" step="0.5" value={weightForm.waist_cm}
                     onChange={e => setWeightForm(f => ({ ...f, waist_cm: e.target.value }))}
                     placeholder="Opcional"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D97534]"
                   />
                 </div>
                 <div>
@@ -578,7 +587,7 @@ export default function PesoPage() {
                   <input type="number" step="0.5" value={weightForm.hip_cm}
                     onChange={e => setWeightForm(f => ({ ...f, hip_cm: e.target.value }))}
                     placeholder="Opcional"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D97534]"
                   />
                 </div>
               </div>
@@ -587,7 +596,7 @@ export default function PesoPage() {
                 <input type="text" value={weightForm.notes}
                   onChange={e => setWeightForm(f => ({ ...f, notes: e.target.value }))}
                   placeholder="Opcional..."
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D97534]"
                 />
               </div>
               <div>
@@ -608,7 +617,7 @@ export default function PesoPage() {
                   Cancelar
                 </button>
                 <button onClick={handleAddWeight} disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#f97316] text-white hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 disabled:opacity-50">
                   {isSaving ? 'Salvando...' : 'Registrar'}
                 </button>
               </div>
@@ -625,7 +634,7 @@ export default function PesoPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] w-full max-w-[500px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
               <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
-                <Heart size={20} className="text-[#f97316]" />
+                <Heart size={20} className="text-[#D97534]" />
                 Perfil de Saude
               </h2>
               <button onClick={() => setShowProfileModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">&times;</button>
@@ -637,14 +646,14 @@ export default function PesoPage() {
                   <input type="number" value={profileForm.height_cm}
                     onChange={e => setProfileForm(f => ({ ...f, height_cm: e.target.value }))}
                     placeholder="Ex: 175"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D97534]"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Nascimento</label>
                   <input type="date" value={profileForm.birth_date}
                     onChange={e => setProfileForm(f => ({ ...f, birth_date: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D97534]"
                   />
                 </div>
               </div>
@@ -657,7 +666,7 @@ export default function PesoPage() {
                       className={cn(
                         'flex-1 py-2 rounded-[10px] text-[12px] border transition-all',
                         profileForm.biological_sex === s
-                          ? 'border-[#f97316] bg-[#f97316]/10 text-[var(--sl-t1)]'
+                          ? 'border-[#D97534] bg-[#D97534]/10 text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -675,7 +684,7 @@ export default function PesoPage() {
                       className={cn(
                         'px-3 py-2 rounded-[10px] text-[12px] border transition-all text-left',
                         profileForm.activity_level === l
-                          ? 'border-[#f97316] bg-[#f97316]/10 text-[var(--sl-t1)]'
+                          ? 'border-[#D97534] bg-[#D97534]/10 text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -693,7 +702,7 @@ export default function PesoPage() {
                       className={cn(
                         'flex-1 py-2 rounded-[10px] text-[11px] border transition-all',
                         profileForm.weight_goal_type === g
-                          ? 'border-[#f97316] bg-[#f97316]/10 text-[var(--sl-t1)]'
+                          ? 'border-[#D97534] bg-[#D97534]/10 text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -709,7 +718,7 @@ export default function PesoPage() {
                   <input type="number" step="0.5" value={profileForm.weight_goal_kg}
                     onChange={e => setProfileForm(f => ({ ...f, weight_goal_kg: e.target.value }))}
                     placeholder="Opcional"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D97534]"
                   />
                 </div>
                 <div>
@@ -717,7 +726,7 @@ export default function PesoPage() {
                   <input type="text" value={profileForm.dietary_restrictions}
                     onChange={e => setProfileForm(f => ({ ...f, dietary_restrictions: e.target.value }))}
                     placeholder="Ex: Lactose, Gluten"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#f97316]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#D97534]"
                   />
                 </div>
               </div>
@@ -728,7 +737,7 @@ export default function PesoPage() {
                   Cancelar
                 </button>
                 <button onClick={handleSaveProfile} disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#f97316] text-white hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 disabled:opacity-50">
                   {isSaving ? 'Salvando...' : 'Salvar'}
                 </button>
               </div>

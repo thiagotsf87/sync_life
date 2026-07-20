@@ -252,8 +252,8 @@ export function useCalendario(): UseCalendarioReturn {
         0
       ),
       pendingCount:
-        transactions.filter((t: any) => t.is_future).length +
-        planningEvents.filter((e: any) => !e.is_confirmed).length +
+        transactions.filter((t) => (t as { is_future: boolean }).is_future).length +
+        planningEvents.filter((e) => !(e as { is_confirmed: boolean }).is_confirmed).length +
         projectedDividends.length,
     }
   }, [calendarDays, transactions, planningEvents, projectedDividends])

@@ -31,20 +31,20 @@ export function NextAppointmentHero({
     <div
       className={cn(
         'flex items-center gap-6 px-8 py-7 bg-[var(--sl-s1)]',
-        'border border-[rgba(249,115,22,.2)] rounded-2xl',
+        'border border-[rgba(217,117,52,.2)] rounded-2xl',
         'relative overflow-hidden sl-fade-up',
         className,
       )}
     >
       {/* Top accent bar */}
-      <div className="absolute top-0 left-6 right-6 h-[2.5px] rounded-b bg-[#f97316]" />
+      <div className="absolute top-0 left-6 right-6 h-[2.5px] rounded-b bg-[#D97534]" />
 
       {/* Date */}
       <div className="text-center min-w-[64px]">
-        <div className="text-[11px] font-bold uppercase tracking-[.08em] text-[#f97316]">
+        <div className="text-[11px] font-bold uppercase tracking-[.08em] text-[#D97534]">
           {month}
         </div>
-        <div className="font-[DM_Mono] text-[32px] font-medium leading-none">
+        <div className="sl-num-strong text-[32px] leading-none">
           {day}
         </div>
       </div>
@@ -83,7 +83,7 @@ export function NextAppointmentHero({
       </div>
 
       {/* Countdown pill */}
-      <div className="shrink-0 px-[10px] py-1 rounded-lg text-[11px] font-semibold bg-[rgba(249,115,22,.08)] text-[#f97316]">
+      <div className="shrink-0 px-[10px] py-1 rounded-lg text-[11px] font-semibold bg-[rgba(217,117,52,.08)] text-[#D97534]">
         em {daysUntil} dias
       </div>
     </div>

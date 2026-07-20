@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, Pencil, Trash2, MapPin } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
@@ -86,11 +86,11 @@ function EventListItem({
     )}>
       {/* Time */}
       <div className="w-16 shrink-0 text-right pt-0.5">
-        <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">
-          {event.all_day ? 'Dia todo' : (event.start_time ?? '—')}
+        <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t2)]">
+          {event.all_day ? 'Dia todo' : (event.start_time ?? '--')}
         </span>
         {event.end_time && !event.all_day && (
-          <span className="block font-[DM_Mono] text-[10px] text-[var(--sl-t3)]">
+          <span className="block font-[IBM_Plex_Mono] text-[10px] text-[var(--sl-t3)]">
             {event.end_time}
           </span>
         )}
@@ -108,12 +108,14 @@ function EventListItem({
           {event.title}
         </p>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-[4px]"
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-[4px]"
             style={{ color: cfg.color, background: `${cfg.color}18` }}>
-            {cfg.icon} {cfg.label}
+            <span aria-hidden="true">{cfg.icon}</span> {cfg.label}
           </span>
           {event.location && (
-            <span className="text-[10px] text-[var(--sl-t3)] truncate">📍 {event.location}</span>
+            <span className="inline-flex items-center gap-1 text-[10px] text-[var(--sl-t3)] truncate">
+              <MapPin size={10} /> {event.location}
+            </span>
           )}
         </div>
         {event.description && (
@@ -125,17 +127,19 @@ function EventListItem({
       <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={() => onEdit(event)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors text-[11px]"
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors"
           title="Editar"
+          aria-label="Editar evento"
         >
-          ✏️
+          <Pencil size={12} />
         </button>
         <button
           onClick={() => onDelete(event)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[var(--sl-s2)] transition-colors text-[11px]"
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-danger)] hover:bg-[var(--sl-s2)] transition-colors"
           title="Excluir"
+          aria-label="Excluir evento"
         >
-          🗑️
+          <Trash2 size={12} />
         </button>
       </div>
     </div>
@@ -261,7 +265,7 @@ export default function AgendaDiariaPage() {
       startTime: ev.start_time ?? undefined,
       endTime: ev.end_time ?? undefined,
       location: ev.location ?? undefined,
-      color: cfg?.color ?? '#06b6d4',
+      color: cfg?.color ?? '#3CA0B5',
       tags: cfg ? [{ label: cfg.label, bg: `${cfg.color}15`, color: cfg.color }] : [],
     }
   })
@@ -269,7 +273,7 @@ export default function AgendaDiariaPage() {
   const mobileEventDotColors: Record<string, string> = {}
   events.forEach(ev => {
     if (!mobileEventDotColors[ev.date]) {
-      mobileEventDotColors[ev.date] = EVENT_TYPES[ev.type]?.color ?? '#06b6d4'
+      mobileEventDotColors[ev.date] = EVENT_TYPES[ev.type]?.color ?? '#3CA0B5'
     }
   })
 
@@ -283,7 +287,7 @@ export default function AgendaDiariaPage() {
           <button
             onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
             className="flex h-9 w-9 items-center justify-center rounded-[10px] text-white"
-            style={{ background: '#06b6d4' }}
+            style={{ background: '#3CA0B5' }}
             aria-label="Novo evento"
           >
             <Plus size={16} />
@@ -315,13 +319,13 @@ export default function AgendaDiariaPage() {
               className={cn(
                 'relative px-4 py-2.5 text-[13px] transition-colors',
                 pathname === tab.href
-                  ? 'text-[#06b6d4] font-semibold'
+                  ? 'text-[#3CA0B5] font-semibold'
                   : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
               )}>
               {tab.label}
-              {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#f59e0b] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
+              {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#D9962E] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
               {pathname === tab.href && (
-                <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#06b6d4]" />
+                <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#3CA0B5]" />
               )}
             </Link>
           ))}
@@ -330,8 +334,8 @@ export default function AgendaDiariaPage() {
         {/* ① ModuleHeader */}
         <ModuleHeader
           icon={CalendarIcon}
-          iconBg="rgba(6,182,212,.1)"
-          iconColor="#06b6d4"
+          iconBg="rgba(60,160,181,.1)"
+          iconColor="#3CA0B5"
           title="Agenda Diaria"
           subtitle="Visualize e gerencie os eventos do dia selecionado"
           weekNav={{
@@ -351,7 +355,7 @@ export default function AgendaDiariaPage() {
           <button
             onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: selectedDateStr })}
             className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold text-white transition-all hover:brightness-110 hover:-translate-y-px"
-            style={{ background: '#06b6d4' }}
+            style={{ background: '#3CA0B5' }}
           >
             <Plus size={16} />
             Novo Evento
@@ -362,8 +366,8 @@ export default function AgendaDiariaPage() {
         <JornadaInsight text={
           <span>
             {selectedEvents.length > 0
-              ? <>Você tem <strong className="text-[#06b6d4]">{selectedEvents.length} evento{selectedEvents.length !== 1 ? 's' : ''}</strong> neste dia. Boa produtividade! ✨</>
-              : <>Dia livre! Que tal planejar algo novo? ✨</>
+              ? <>Você tem <strong className="text-[#3CA0B5]">{selectedEvents.length} evento{selectedEvents.length !== 1 ? 's' : ''}</strong> neste dia. Boa produtividade.</>
+              : <>Dia livre. Que tal planejar algo novo?</>
             }
           </span>
         } />
@@ -375,19 +379,19 @@ export default function AgendaDiariaPage() {
             const isToday = ds === today
             const isSelected = i === selectedDay
             const dayEvents = events.filter(e => e.date === ds)
-            const dotColors = [...new Set(dayEvents.slice(0, 3).map(e => EVENT_TYPES[e.type]?.color ?? '#06b6d4'))]
+            const dotColors = [...new Set(dayEvents.slice(0, 3).map(e => EVENT_TYPES[e.type]?.color ?? '#3CA0B5'))]
             return (
               <button key={i} onClick={() => setSelectedDay(i)}
                 className={cn(
                   'flex-1 flex flex-col items-center py-2.5 px-1 rounded-[14px] border transition-all',
-                  isToday ? 'bg-[rgba(6,182,212,0.14)] border-[rgba(6,182,212,0.4)]' : 'bg-[var(--sl-s1)] border-[var(--sl-border)]',
-                  isSelected && !isToday ? 'border-[#f59e0b]' : '',
+                  isToday ? 'bg-[rgba(60,160,181,0.14)] border-[rgba(60,160,181,0.4)]' : 'bg-[var(--sl-s1)] border-[var(--sl-border)]',
+                  isSelected && !isToday ? 'border-[#D9962E]' : '',
                   !isToday && !isSelected ? 'hover:border-[var(--sl-border-h)]' : ''
                 )}>
-                <span className={cn('text-[10px] font-medium', isToday ? 'text-[#06b6d4]' : 'text-[var(--sl-t2)]')}>
+                <span className={cn('text-[10px] font-medium', isToday ? 'text-[#3CA0B5]' : 'text-[var(--sl-t2)]')}>
                   {WEEK_DAYS[i]}
                 </span>
-                <span className={cn('font-[DM_Mono] text-[15px] font-medium', isToday ? 'text-[#06b6d4]' : 'text-[var(--sl-t1)]')}>
+                <span className={cn('font-[IBM_Plex_Mono] text-[15px] font-medium', isToday ? 'text-[#3CA0B5]' : 'text-[var(--sl-t1)]')}>
                   {day.getDate()}
                 </span>
                 <div className="flex gap-[3px] mt-1 min-h-[8px]">
@@ -405,7 +409,7 @@ export default function AgendaDiariaPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
               {selectedDate ? formatDayTitle(selectedDate) : 'Hoje'}
-              {isSelectedToday && <span className="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[rgba(6,182,212,0.15)] text-[#06b6d4]">Hoje</span>}
+              {isSelectedToday && <span className="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[rgba(60,160,181,0.15)] text-[#3CA0B5]">Hoje</span>}
             </h2>
             <span className="text-[11px] text-[var(--sl-t3)]">
               {selectedEvents.length} evento{selectedEvents.length !== 1 ? 's' : ''}
@@ -414,15 +418,15 @@ export default function AgendaDiariaPage() {
 
           {selectedEvents.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-10">
-              <span className="text-3xl">📅</span>
-              <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Dia livre!</p>
+              <CalendarIcon size={32} className="text-[var(--sl-t3)]" />
+              <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Dia livre</p>
               <p className="text-[13px] text-[var(--sl-t3)] text-center">
                 Sua agenda está vazia
               </p>
               <button
                 onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: selectedDateStr })}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[12px] font-semibold text-white transition-all hover:brightness-110"
-                style={{ background: '#06b6d4' }}
+                style={{ background: '#3CA0B5' }}
               >
                 <Plus size={13} />
                 Criar primeiro evento
@@ -446,19 +450,19 @@ export default function AgendaDiariaPage() {
         {tomorrowEvents.length > 0 && (
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]" style={{ opacity: 0.75 }}>
             <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t2)] mb-3">
-              Amanhã — {tomorrowEvents.length} evento{tomorrowEvents.length !== 1 ? 's' : ''}
+              Amanhã · {tomorrowEvents.length} evento{tomorrowEvents.length !== 1 ? 's' : ''}
             </h2>
             <div className="flex flex-col gap-2">
               {tomorrowEvents.slice(0, 4).map(ev => {
                 const cfg = EVENT_TYPES[ev.type]
                 return (
                   <div key={ev.id} className="flex items-center gap-3 py-1">
-                    <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)] w-12 text-right shrink-0">
-                      {ev.all_day ? '—' : (ev.start_time ?? '—')}
+                    <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] w-12 text-right shrink-0">
+                      {ev.all_day ? '--' : (ev.start_time ?? '--')}
                     </span>
                     <div className="w-[2px] self-stretch rounded-full shrink-0" style={{ background: cfg.color }} />
                     <span className="text-[12px] text-[var(--sl-t2)] truncate">{ev.title}</span>
-                    <span className="text-[10px] font-bold ml-auto shrink-0" style={{ color: cfg.color }}>
+                    <span className="text-[10px] font-bold ml-auto shrink-0" style={{ color: cfg.color }} aria-hidden="true">
                       {cfg.icon}
                     </span>
                   </div>

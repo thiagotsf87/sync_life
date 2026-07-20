@@ -31,8 +31,8 @@ describe('ModuleHeader', () => {
     it('validates complete props', () => {
       const result = validateProps({
         icon: () => null,
-        iconBg: 'rgba(236,72,153,.1)',
-        iconColor: '#ec4899',
+        iconBg: 'rgba(199,103,149,.1)',
+        iconColor: '#C76795',
         title: 'Experiencias',
         subtitle: '3 viagens ativas',
       })
@@ -42,8 +42,8 @@ describe('ModuleHeader', () => {
 
     it('rejects props without icon', () => {
       const result = validateProps({
-        iconBg: 'rgba(236,72,153,.1)',
-        iconColor: '#ec4899',
+        iconBg: 'rgba(199,103,149,.1)',
+        iconColor: '#C76795',
         title: 'Test',
       })
       expect(result.valid).toBe(false)
@@ -53,8 +53,8 @@ describe('ModuleHeader', () => {
     it('rejects props without title', () => {
       const result = validateProps({
         icon: () => null,
-        iconBg: 'rgba(236,72,153,.1)',
-        iconColor: '#ec4899',
+        iconBg: 'rgba(199,103,149,.1)',
+        iconColor: '#C76795',
       })
       expect(result.valid).toBe(false)
       expect(result.errors).toContain('title is required')
@@ -63,8 +63,8 @@ describe('ModuleHeader', () => {
     it('accepts props without optional subtitle', () => {
       const result = validateProps({
         icon: () => null,
-        iconBg: 'rgba(236,72,153,.1)',
-        iconColor: '#ec4899',
+        iconBg: 'rgba(199,103,149,.1)',
+        iconColor: '#C76795',
         title: 'Test',
       })
       expect(result.valid).toBe(true)
@@ -73,13 +73,13 @@ describe('ModuleHeader', () => {
 
   describe('color validation', () => {
     it('accepts hex colors', () => {
-      expect(isValidCssColor('#ec4899')).toBe(true)
-      expect(isValidCssColor('#10b981')).toBe(true)
+      expect(isValidCssColor('#C76795')).toBe(true)
+      expect(isValidCssColor('#0F766E')).toBe(true)
     })
 
     it('accepts rgba colors', () => {
-      expect(isValidCssColor('rgba(236,72,153,.1)')).toBe(true)
-      expect(isValidCssColor('rgba(249,115,22,.08)')).toBe(true)
+      expect(isValidCssColor('rgba(199,103,149,.1)')).toBe(true)
+      expect(isValidCssColor('rgba(217,117,52,.08)')).toBe(true)
     })
 
     it('accepts css variables', () => {
@@ -94,9 +94,9 @@ describe('ModuleHeader', () => {
 
   describe('module colors', () => {
     const MODULE_COLORS: Record<string, { bg: string; color: string }> = {
-      corpo: { bg: 'rgba(249,115,22,.08)', color: '#f97316' },
-      experiencias: { bg: 'rgba(236,72,153,.1)', color: '#ec4899' },
-      financas: { bg: 'rgba(16,185,129,.1)', color: '#10b981' },
+      corpo: { bg: 'rgba(217,117,52,.08)', color: '#D97534' },
+      experiencias: { bg: 'rgba(199,103,149,.1)', color: '#C76795' },
+      financas: { bg: 'rgba(15,118,110,.1)', color: '#0F766E' },
     }
 
     it('all module colors are valid', () => {

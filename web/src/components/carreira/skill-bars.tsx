@@ -15,7 +15,7 @@ interface SkillBarsProps {
   className?: string
 }
 
-export function SkillBars({ skills, accentColor = '#f43f5e', className }: SkillBarsProps) {
+export function SkillBars({ skills, accentColor = '#DB6478', className }: SkillBarsProps) {
   return (
     <div className={cn('flex flex-col gap-3', className)}>
       {skills.map((skill, i) => (
@@ -24,7 +24,7 @@ export function SkillBars({ skills, accentColor = '#f43f5e', className }: SkillB
             {skill.name}
           </span>
 
-          {/* Segmented bar — 5 blocks */}
+          {/* Segmented bar · 5 blocks */}
           <div className="flex gap-[3px] flex-1">
             {Array.from({ length: 5 }).map((_, blockIdx) => (
               <div

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Search, Plus } from 'lucide-react'
+import { Search, Plus, Zap } from 'lucide-react'
 import { CARREIRA_PRIMARY, CARREIRA_PRIMARY_LIGHT } from '@/lib/carreira-colors'
 import { jornadaLabel } from '@/lib/jornada-labels'
 import { CarreiraXpBar } from '@/components/carreira/mobile/CarreiraXpBar'
@@ -95,23 +95,23 @@ export function CarreiraMobile({
         </div>
         <div className="flex items-center gap-2">
           {activeTab === 'perfil' && (
-            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.2)] text-[#c4b5fd]">
-              ⚡ Nível 6
+            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,123,212,0.12)] border border-[rgba(139,123,212,0.2)] text-[#c4b5fd]">
+              <Zap size={10} /> <span className="sl-num">Nível 6</span>
             </span>
           )}
           {activeTab === 'roadmap' && (
-            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.2)] text-[#c4b5fd]">
-              ⚡ 55%
+            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,123,212,0.12)] border border-[rgba(139,123,212,0.2)] text-[#c4b5fd]">
+              <Zap size={10} /> <span className="sl-num">55%</span>
             </span>
           )}
           {activeTab === 'habilidades' && (
-            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.2)] text-[#c4b5fd]">
-              ⚡ 14 skills
+            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,123,212,0.12)] border border-[rgba(139,123,212,0.2)] text-[#c4b5fd]">
+              <Zap size={10} /> <span className="sl-num">14 skills</span>
             </span>
           )}
           {activeTab === 'historico' && (
-            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,92,246,0.12)] border border-[rgba(139,92,246,0.2)] text-[#c4b5fd]">
-              ⚡ 480 XP
+            <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold bg-[rgba(139,123,212,0.12)] border border-[rgba(139,123,212,0.2)] text-[#c4b5fd]">
+              <Zap size={10} /> <span className="sl-num">480 XP</span>
             </span>
           )}
           {showAddButton && (

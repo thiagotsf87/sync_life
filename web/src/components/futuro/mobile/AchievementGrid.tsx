@@ -15,8 +15,8 @@ export function AchievementGrid({ achievements, title = '🏅 Conquistas desbloq
     <div
       className="mx-4 mb-3 rounded-[16px] p-[14px_15px]"
       style={{
-        background: `linear-gradient(135deg, rgba(139,92,246,0.12), rgba(236,72,153,0.06))`,
-        border: `1px solid rgba(139,92,246,0.3)`,
+        background: `linear-gradient(135deg, rgba(139,123,212,0.12), rgba(199,103,149,0.06))`,
+        border: `1px solid rgba(139,123,212,0.3)`,
       }}
     >
       <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)] mb-[11px]">{title}</p>
@@ -26,8 +26,8 @@ export function AchievementGrid({ achievements, title = '🏅 Conquistas desbloq
             key={ach.id}
             className="rounded-[10px] p-[10px] text-center"
             style={{
-              background: 'rgba(139,92,246,0.1)',
-              border: '1px solid rgba(139,92,246,0.2)',
+              background: 'rgba(139,123,212,0.1)',
+              border: '1px solid rgba(139,123,212,0.2)',
             }}
           >
             <div className="text-[20px] mb-1">{ach.icon}</div>

@@ -50,7 +50,7 @@ export function RelatoriosTransactionTable({ transactions }: RelatoriosTransacti
             value={tableSearch}
             onChange={e => handleSearchChange(e.target.value)}
             placeholder="Buscar transação..."
-            className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[9px] py-1.5 pl-8 pr-3 text-[var(--sl-t1)] text-[12px] outline-none placeholder:text-[var(--sl-t3)] focus:border-[rgba(16,185,129,0.35)]"
+            className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[9px] py-1.5 pl-8 pr-3 text-[var(--sl-t1)] text-[12px] outline-none placeholder:text-[var(--sl-t3)] focus:border-[rgba(15,118,110,0.35)]"
           />
         </div>
         {[
@@ -64,7 +64,7 @@ export function RelatoriosTransactionTable({ transactions }: RelatoriosTransacti
             className={cn(
               'px-2.5 py-[5px] rounded-[8px] border text-[11px] cursor-pointer transition-all',
               tableFilter === f.key
-                ? 'bg-[rgba(16,185,129,0.14)] text-[#10b981] border-[rgba(16,185,129,0.3)]'
+                ? 'bg-[rgba(15,118,110,0.14)] text-[#0F766E] border-[rgba(15,118,110,0.3)]'
                 : 'border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)]'
             )}>
             {f.label}
@@ -88,7 +88,7 @@ export function RelatoriosTransactionTable({ transactions }: RelatoriosTransacti
           <tbody>
             {paginatedTxs.map(txn => (
               <tr key={txn.id} className="group">
-                <td className="px-2.5 py-[9px] border-b border-[var(--sl-border)] font-[DM_Mono] text-[11px] text-[var(--sl-t3)] group-hover:bg-[var(--sl-s2)]">
+                <td className="px-2.5 py-[9px] border-b border-[var(--sl-border)] font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] group-hover:bg-[var(--sl-s2)] whitespace-nowrap">
                   {formatDate(txn.date)}
                 </td>
                 <td className="px-2.5 py-[9px] border-b border-[var(--sl-border)] text-[var(--sl-t1)] font-medium max-w-[160px] truncate text-[12px] group-hover:bg-[var(--sl-s2)]">
@@ -108,10 +108,10 @@ export function RelatoriosTransactionTable({ transactions }: RelatoriosTransacti
                   {txn.payment_method ? (PAYMENT_METHOD_LABELS[txn.payment_method] ?? txn.payment_method) : '—'}
                 </td>
                 <td className={cn(
-                  'px-2.5 py-[9px] border-b border-[var(--sl-border)] font-[DM_Mono] text-[12px] font-medium text-right group-hover:bg-[var(--sl-s2)]',
-                  txn.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                  'px-2.5 py-[9px] border-b border-[var(--sl-border)] sl-num text-[12px] text-right group-hover:bg-[var(--sl-s2)]',
+                  txn.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]'
                 )}>
-                  {txn.type === 'income' ? '+' : '−'}{fmtR(txn.amount)}
+                  {txn.type === 'income' ? '+' : '− '}{fmtR(txn.amount)}
                 </td>
               </tr>
             ))}
@@ -142,7 +142,7 @@ export function RelatoriosTransactionTable({ transactions }: RelatoriosTransacti
                   className={cn(
                     'px-2.5 py-1 rounded-[7px] border text-[11px] cursor-pointer transition-all',
                     p === page
-                      ? 'bg-[rgba(16,185,129,0.14)] text-[#10b981] border-[rgba(16,185,129,0.3)]'
+                      ? 'bg-[rgba(15,118,110,0.14)] text-[#0F766E] border-[rgba(15,118,110,0.3)]'
                       : 'border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)]'
                   )}>
                   {p}

@@ -69,17 +69,17 @@ export interface EventFormData {
 export type ScenarioKey = 'p' | 'r' | 'o'
 
 export const SCENARIOS = [
-  { key: 'p' as ScenarioKey, label: 'Pessimista', icon: '📉', activeClass: 'bg-[rgba(244,63,94,0.15)] text-[#f43f5e]' },
-  { key: 'r' as ScenarioKey, label: 'Realista',   icon: '📊', activeClass: 'bg-[rgba(16,185,129,0.15)] text-[#10b981]' },
-  { key: 'o' as ScenarioKey, label: 'Otimista',   icon: '🚀', activeClass: 'bg-[rgba(0,85,255,0.15)] text-[#0055ff]' },
+  { key: 'p' as ScenarioKey, label: 'Pessimista', icon: '📉', activeClass: 'bg-[rgba(219,100,120,0.15)] text-[#DB6478]' },
+  { key: 'r' as ScenarioKey, label: 'Realista',   icon: '📊', activeClass: 'bg-[rgba(15,118,110,0.15)] text-[#0F766E]' },
+  { key: 'o' as ScenarioKey, label: 'Otimista',   icon: '🚀', activeClass: 'bg-[rgba(0,85,255,0.15)] text-[#0B2D34]' },
 ]
 
 export const SCENARIO_MULTIPLIERS: Record<ScenarioKey, number> = { p: 0.7, r: 1.0, o: 1.3 }
 
 export const SCENARIO_COLORS: Record<ScenarioKey, string> = {
-  p: '#f43f5e',
-  r: '#10b981',
-  o: '#0055ff',
+  p: '#DB6478',
+  r: '#0F766E',
+  o: '#0B2D34',
 }
 
 export const SCENARIO_LABELS: Record<ScenarioKey, string> = {
@@ -155,7 +155,7 @@ function buildProjection(input: {
         date: new Date(m.year, m.month, rec.day_of_month ?? 1),
         monthIndex: m.index,
         band: rec.type === 'income' ? 'income' : 'expense',
-        dotColor: '#f97316',
+        dotColor: '#D97534',
         source: 'recurring',
       })
     }
@@ -178,7 +178,7 @@ function buildProjection(input: {
       date: evDate,
       monthIndex,
       band: ev.type === 'income' ? 'income' : 'expense',
-      dotColor: '#0055ff',
+      dotColor: '#0B2D34',
       source: 'planning',
     })
   }
@@ -202,7 +202,7 @@ function buildProjection(input: {
         .sort((a, b) => a.amount - b.amount)
       if (monthExpenses[0]) {
         monthExpenses[0].type = 'warn'
-        monthExpenses[0].dotColor = '#f97316'
+        monthExpenses[0].dotColor = '#D97534'
       }
     }
   }

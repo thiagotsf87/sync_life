@@ -64,7 +64,7 @@ export function GoalInline({
         <span className="text-[12px] text-[var(--sl-t2)]">
           {startValue} {unit}
         </span>
-        <span className="font-[DM_Mono] font-medium text-[14px] text-[#10b981]">
+        <span className="font-[IBM_Plex_Mono] font-medium text-[14px] text-[#0F766E]">
           {currentValue} {unit}
         </span>
         <span className="text-[12px] text-[var(--sl-t2)]">
@@ -78,18 +78,18 @@ export function GoalInline({
           className="h-full rounded-full transition-[width] duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)]"
           style={{
             width: `${Math.min(progress, 100)}%`,
-            background: 'linear-gradient(90deg, #10b981, #0055ff)',
+            background: 'linear-gradient(90deg, #0F766E, #0B2D34)',
           }}
         />
         {/* Dot marker */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 w-[14px] h-[14px] rounded-full border-[3px] border-[var(--sl-bg)] bg-[#10b981] shadow-sm transition-[left] duration-1000"
+          className="absolute top-1/2 -translate-y-1/2 w-[14px] h-[14px] rounded-full border-[3px] border-[var(--sl-bg)] bg-[#0F766E] shadow-sm transition-[left] duration-1000"
           style={{ left: `calc(${Math.min(progress, 100)}% - 7px)` }}
         />
       </div>
 
       <div className="text-center mt-2">
-        <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">
+        <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t2)]">
           {progress.toFixed(0)}% concluído
         </span>
       </div>

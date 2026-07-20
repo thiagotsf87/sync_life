@@ -25,8 +25,8 @@ export function RecurrencesWidget({ nextRecurrences }: RecurrencesWidgetProps) {
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-[18px] sl-fade-up hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center gap-2 mb-[14px]">
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(249,115,22,.1)' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round">
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(217,117,52,.1)' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97534" strokeWidth="2" strokeLinecap="round">
             <polyline points="23 4 23 10 17 10"/>
             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
           </svg>
@@ -40,7 +40,7 @@ export function RecurrencesWidget({ nextRecurrences }: RecurrencesWidgetProps) {
             {nextRecurrences.map((r, i) => (
               <div key={r.id} className={cn('flex items-center justify-between py-[5px] text-[12px]', i < nextRecurrences.length - 1 && 'border-b border-[rgba(120,165,220,.04)]')}>
                 <span className="text-[var(--sl-t2)]">{r.name}</span>
-                <span className="font-[DM_Mono] text-[12px]" style={{ color: r.type === 'expense' ? '#f43f5e' : '#10b981' }}>
+                <span className="font-[IBM_Plex_Mono] text-[12px]" style={{ color: r.type === 'expense' ? '#DB6478' : '#0F766E' }}>
                   {r.type === 'expense' ? '- ' : '+ '}{fmt(r.amount)}
                 </span>
               </div>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useXP } from '@/hooks/use-xp'
 import { CARREIRA_GRAD } from '@/lib/carreira-colors'
@@ -9,7 +9,7 @@ export function CarreiraXpBar() {
   if (loading) return null
 
   return (
-    <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[rgba(139,92,246,0.2)] rounded-2xl px-[14px] py-[10px]">
+    <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[rgba(139,123,212,0.2)] rounded-2xl px-[14px] py-[10px]">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-[6px]">
           <span
@@ -20,7 +20,7 @@ export function CarreiraXpBar() {
           </span>
           <span className="text-[11px] text-[var(--sl-t2)]">{levelTitle}</span>
         </div>
-        <span className="text-[11px] font-[DM_Mono] font-medium text-[var(--sl-t2)]">
+        <span className="text-[11px] sl-num-strong font-medium text-[var(--sl-t2)]">
           {totalXP.toLocaleString('pt-BR')} XP
         </span>
       </div>

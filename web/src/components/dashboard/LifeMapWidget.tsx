@@ -24,7 +24,7 @@ export function LifeMapWidget({ lifeDimensions, realScore, lifeLoading }: LifeMa
           </div>
           <button
             onClick={() => router.push('/futuro')}
-            className="text-[11px] text-[#10b981] hover:opacity-70 transition-opacity"
+            className="text-[11px] text-[#0F766E] hover:opacity-70 transition-opacity"
           >
             Ver detalhes →
           </button>

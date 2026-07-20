@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
@@ -24,7 +24,7 @@ export function ExpCelebrationModal({
   useEffect(() => { setMounted(true) }, [])
   if (!open || !mounted) return null
 
-  const CONFETTI_COLORS = ['#ec4899', '#8b5cf6', '#f59e0b', '#10b981', '#0055ff', '#f472b6']
+  const CONFETTI_COLORS = ['#C76795', '#8B7BD4', 'var(--sl-warning)', 'var(--sl-em)', '#0B2D34', '#f472b6']
   const confettiPieces = Array.from({ length: 18 }, (_, i) => ({
     color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
     left: `${(i * 5.5) % 100}%`,
@@ -64,7 +64,7 @@ export function ExpCelebrationModal({
         <div
           className="w-20 h-20 rounded-[24px] flex items-center justify-center text-[40px] mx-auto mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(236,72,153,0.2))',
+            background: 'linear-gradient(135deg, rgba(139,123,212,0.2), rgba(199,103,149,0.2))',
           }}
         >
           🏆
@@ -89,12 +89,12 @@ export function ExpCelebrationModal({
         <div
           className="inline-flex items-center gap-2 px-4 py-[6px] rounded-[20px] mb-4"
           style={{
-            background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(236,72,153,0.15))',
-            border: '1px solid rgba(139,92,246,0.3)',
+            background: 'linear-gradient(135deg, rgba(139,123,212,0.2), rgba(199,103,149,0.15))',
+            border: '1px solid rgba(139,123,212,0.3)',
           }}
         >
           <span className="text-[16px]">⭐</span>
-          <span className="font-[DM_Mono] font-bold text-[16px]" style={{ color: '#c4b5fd' }}>
+          <span className="sl-num-strong font-bold text-[16px]" style={{ color: '#c4b5fd' }}>
             +{xpAwarded} XP
           </span>
         </div>

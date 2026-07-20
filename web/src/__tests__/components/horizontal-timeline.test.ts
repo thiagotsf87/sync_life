@@ -40,23 +40,23 @@ function getLabelClasses(status: TimelineStepStatus): string {
 describe('HorizontalTimeline', () => {
   describe('getNodeStyles', () => {
     it('done node has check icon and accent background', () => {
-      const styles = getNodeStyles('done', '#f43f5e')
+      const styles = getNodeStyles('done', '#DB6478')
       expect(styles.isDone).toBe(true)
       expect(styles.hasCheckIcon).toBe(true)
-      expect(styles.background).toBe('#f43f5e')
+      expect(styles.background).toBe('#DB6478')
       expect(styles.boxShadow).toBeUndefined()
     })
 
     it('current node has dot, accent background, and shadow', () => {
-      const styles = getNodeStyles('current', '#10b981')
+      const styles = getNodeStyles('current', '#0F766E')
       expect(styles.isCurrent).toBe(true)
       expect(styles.hasDotInner).toBe(true)
-      expect(styles.background).toBe('#10b981')
-      expect(styles.boxShadow).toBe('0 0 0 3px #10b98133')
+      expect(styles.background).toBe('#0F766E')
+      expect(styles.boxShadow).toBe('0 0 0 3px #0F766E33')
     })
 
     it('pending node has no icon, no accent', () => {
-      const styles = getNodeStyles('pending', '#f43f5e')
+      const styles = getNodeStyles('pending', '#DB6478')
       expect(styles.isPending).toBe(true)
       expect(styles.hasCheckIcon).toBe(false)
       expect(styles.hasDotInner).toBe(false)

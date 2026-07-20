@@ -3,31 +3,35 @@
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useState } from 'react'
-import { ArrowLeft, Target, ChevronRight, ChevronLeft, Eye } from 'lucide-react'
+import { ArrowLeft, Target, ChevronRight, ChevronLeft, Eye, Calendar, Flag, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useCreateObjective } from '@/hooks/use-futuro'
-import { CATEGORY_LABELS, type ObjectiveCategory, type ObjectivePriority, type CreateObjectiveData } from '@/hooks/use-futuro'
-import { ModuleHeader } from '@/components/ui/module-header'
+import { useCreateObjective, CATEGORY_LABELS, type ObjectiveCategory, type ObjectivePriority } from '@/hooks/use-futuro'
 import { createEventFromObjective } from '@/lib/integrations/agenda'
+import { TextField } from '@/components/ui/text-field'
+import { SectionHeader } from '@/components/ui/section-header'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
+
+// Cor do módulo Futuro (identificação)
+const MOD_FUTURO = '#8B7BD4'
+const MOD_FUTURO_SOFT = 'rgba(139,123,212,0.10)'
 
 const ICONS = ['🎯', '🏠', '✈️', '💰', '💪', '📚', '💼', '❤️', '🌟', '🚀', '🏆', '🧠']
 
 const CATEGORY_OPTIONS: { value: ObjectiveCategory; icon: string; label: string; desc: string }[] = [
-  { value: 'financial', icon: '💰', label: 'Financeiro', desc: 'Poupanca, investimento' },
-  { value: 'educational', icon: '📚', label: 'Educacao', desc: 'Cursos, idiomas' },
-  { value: 'experience', icon: '✈️', label: 'Experiencia', desc: 'Viagens, eventos' },
-  { value: 'health', icon: '💪', label: 'Saude', desc: 'Peso, exercicio' },
-  { value: 'professional', icon: '💼', label: 'Carreira', desc: 'Promocao, habilidade' },
-  { value: 'personal', icon: '🌟', label: 'Pessoal', desc: 'Leitura, meditacao' },
-  { value: 'other', icon: '🎯', label: 'Outro', desc: 'Outros objetivos' },
+  { value: 'financial',    icon: '💰', label: 'Financeiro',   desc: 'Poupança, investimento' },
+  { value: 'educational',  icon: '📚', label: 'Educação',     desc: 'Cursos, idiomas' },
+  { value: 'experience',   icon: '✈️', label: 'Experiência',  desc: 'Viagens, eventos' },
+  { value: 'health',       icon: '💪', label: 'Saúde',        desc: 'Peso, exercício' },
+  { value: 'professional', icon: '💼', label: 'Carreira',     desc: 'Promoção, habilidade' },
+  { value: 'personal',     icon: '🌟', label: 'Pessoal',      desc: 'Leitura, meditação' },
+  { value: 'other',        icon: '🎯', label: 'Outro',        desc: 'Outros objetivos' },
 ]
 
 const PRIORITY_OPTIONS: { value: ObjectivePriority; label: string; color: string; desc: string }[] = [
-  { value: 'high', label: 'Alta', color: '#f43f5e', desc: 'Foco principal agora' },
-  { value: 'medium', label: 'Media', color: '#f59e0b', desc: 'Importante, nao urgente' },
-  { value: 'low', label: 'Baixa', color: '#06b6d4', desc: 'Quando der, futuramente' },
+  { value: 'high',   label: 'Alta',  color: 'var(--sl-danger)',  desc: 'Foco principal agora' },
+  { value: 'medium', label: 'Média', color: 'var(--sl-warning)', desc: 'Importante, não urgente' },
+  { value: 'low',    label: 'Baixa', color: 'var(--sl-info)',    desc: 'Quando der, futuramente' },
 ]
 
 interface FormState {
@@ -62,10 +66,10 @@ export default function NovoObjetivoPage() {
   const [form, setForm] = useState<FormState>(INITIAL_FORM)
 
   const STEPS = [
-    { label: 'Informacoes Basicas' },
-    { label: 'Categoria & Icone' },
-    { label: 'Metas & Prazos' },
-    { label: 'Resumo' },
+    { label: 'Informações básicas', eyebrow: '01 · IDENTIDADE' },
+    { label: 'Categoria & ícone',   eyebrow: '02 · CONTEXTO' },
+    { label: 'Metas & prazos',      eyebrow: '03 · PRAZO' },
+    { label: 'Resumo',              eyebrow: '04 · REVISÃO' },
   ]
 
   const canNext = step === 0 ? form.name.trim().length >= 3 : true
@@ -110,13 +114,9 @@ export default function NovoObjetivoPage() {
     }
   }
 
-  // Calculate monthly needed for preview
-  const monthsLeft = form.target_date
-    ? Math.max(1, Math.ceil((new Date(form.target_date + 'T00:00:00').getTime() - Date.now()) / (30 * 24 * 60 * 60 * 1000)))
-    : 12
   const previewDeadline = form.target_date
     ? new Date(form.target_date + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
-    : '\u2014'
+    : 'Sem prazo'
 
   return (
     <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
@@ -132,22 +132,30 @@ export default function NovoObjetivoPage() {
           <ArrowLeft size={15} />
           Voltar
         </button>
-        <h1 className="font-[Syne] font-extrabold text-[24px] text-[var(--sl-t1)]">Novo Objetivo</h1>
+        <div className="flex items-center gap-3">
+          <div
+            className="w-[40px] h-[40px] rounded-[12px] flex items-center justify-center"
+            style={{ background: MOD_FUTURO_SOFT }}
+          >
+            <Target size={20} style={{ color: MOD_FUTURO }} />
+          </div>
+          <h1 className="font-[Syne] font-extrabold text-[24px] text-[var(--sl-t1)]">Novo objetivo</h1>
+        </div>
       </div>
 
       {/* ── Two-column wizard layout ── */}
-      <div className="grid grid-cols-[1fr_360px] gap-7 items-start sl-fade-up sl-delay-1">
+      <div className="grid grid-cols-[1fr_360px] gap-7 items-start sl-fade-up sl-delay-1 max-lg:grid-cols-1">
 
         {/* LEFT: Form */}
         <div>
-          {/* Step bar — 4px blue */}
+          {/* Step bar */}
           <div className="flex gap-1 mb-6">
             {STEPS.map((s, i) => (
               <div
                 key={i}
                 className={cn(
                   'h-[4px] flex-1 rounded-[2px] transition-colors duration-300',
-                  i <= step ? 'bg-[#0055ff]' : 'bg-[var(--sl-s3)]'
+                  i <= step ? 'bg-[var(--sl-em)]' : 'bg-[var(--sl-s3)]'
                 )}
               />
             ))}
@@ -155,40 +163,34 @@ export default function NovoObjetivoPage() {
 
           {/* Step 0: Info Basica */}
           {step === 0 && (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7">
-              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
-                <Target size={18} className="text-[#0055ff]" />
-                Informacoes Basicas
-              </h2>
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 hover:border-[var(--sl-border-h)] transition-colors">
+              <SectionHeader
+                eyebrow={STEPS[0].eyebrow}
+                title={STEPS[0].label}
+                sub="Dê um nome marcante e conte a história do seu sonho."
+                className="mb-5"
+              />
               <div className="flex flex-col gap-4">
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-[6px] block">
-                    Nome do objetivo
-                  </label>
-                  <input
-                    autoFocus
-                    type="text"
-                    value={form.name}
-                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                    placeholder="Ex: Comprar um apartamento"
-                    maxLength={80}
-                    className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px]
-                               bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                               placeholder:text-[var(--sl-t3)] outline-none focus:border-[rgba(0,85,255,0.5)] transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-[6px] block">
-                    Descricao
-                  </label>
+                <TextField
+                  label="Nome do objetivo"
+                  autoFocus
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Ex: Comprar um apartamento"
+                  maxLength={80}
+                />
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">
+                    Descrição
+                  </span>
                   <textarea
                     value={form.description}
                     onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                     placeholder="Descreva seu objetivo..."
                     rows={3}
-                    className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] resize-y
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[14px] resize-y
                                bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                               placeholder:text-[var(--sl-t3)] outline-none focus:border-[rgba(0,85,255,0.5)] transition-colors"
+                               placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-em)] transition-colors"
                   />
                 </div>
               </div>
@@ -199,11 +201,12 @@ export default function NovoObjetivoPage() {
                   className={cn(
                     'inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold transition-all',
                     canNext
-                      ? 'bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)]'
+                      ? 'text-white hover:opacity-90 hover:-translate-y-px'
                       : 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
                   )}
+                  style={canNext ? { background: 'var(--sl-em)' } : undefined}
                 >
-                  Proximo
+                  Próximo
                   <ChevronRight size={16} />
                 </button>
               </div>
@@ -212,15 +215,16 @@ export default function NovoObjetivoPage() {
 
           {/* Step 1: Categoria & Icone */}
           {step === 1 && (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7">
-              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
-                <Target size={18} className="text-[#0055ff]" />
-                Categoria & Icone
-              </h2>
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 hover:border-[var(--sl-border-h)] transition-colors">
+              <SectionHeader
+                eyebrow={STEPS[1].eyebrow}
+                title={STEPS[1].label}
+                sub="Escolha categoria, ícone e prioridade do objetivo."
+                className="mb-5"
+              />
 
-              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-[10px]">Categoria</p>
-              {/* 3-column grid */}
-              <div className="grid grid-cols-3 gap-[10px] mb-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-[10px]">Categoria</p>
+              <div className="grid grid-cols-3 gap-[10px] mb-5 max-sm:grid-cols-2">
                 {CATEGORY_OPTIONS.map(cat => (
                   <button
                     key={cat.value}
@@ -228,17 +232,17 @@ export default function NovoObjetivoPage() {
                     className={cn(
                       'bg-[var(--sl-s2)] border rounded-[12px] p-[14px] text-center cursor-pointer transition-all',
                       form.category === cat.value
-                        ? 'border-[#0055ff] bg-[rgba(0,85,255,0.08)]'
+                        ? 'border-[var(--sl-em)] bg-[var(--sl-em-soft)]'
                         : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                     )}
                   >
                     <div className="w-9 h-9 rounded-[10px] flex items-center justify-center mx-auto mb-2 text-[18px]"
-                      style={{ background: 'rgba(0,85,255,0.10)' }}>
+                      style={{ background: MOD_FUTURO_SOFT }}>
                       {cat.icon}
                     </div>
                     <div className={cn(
                       'text-[12px] font-semibold',
-                      form.category === cat.value ? 'text-[#0055ff]' : 'text-[var(--sl-t1)]'
+                      form.category === cat.value ? 'text-[var(--sl-em)]' : 'text-[var(--sl-t1)]'
                     )}>
                       {cat.label}
                     </div>
@@ -247,7 +251,7 @@ export default function NovoObjetivoPage() {
                 ))}
               </div>
 
-              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-[10px]">Icone</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-[10px]">Ícone</p>
               <div className="flex flex-wrap gap-2 mb-5">
                 {ICONS.map(icon => (
                   <button
@@ -256,7 +260,7 @@ export default function NovoObjetivoPage() {
                     className={cn(
                       'w-[42px] h-[42px] rounded-[11px] flex items-center justify-center text-xl transition-all border',
                       form.icon === icon
-                        ? 'bg-[rgba(0,85,255,0.10)] border-[#0055ff]'
+                        ? 'bg-[var(--sl-em-soft)] border-[var(--sl-em)]'
                         : 'bg-[var(--sl-s2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                     )}
                   >
@@ -265,8 +269,8 @@ export default function NovoObjetivoPage() {
                 ))}
               </div>
 
-              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-[10px]">Prioridade</p>
-              <div className="flex gap-2">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-[10px]">Prioridade</p>
+              <div className="flex gap-2 max-sm:flex-col">
                 {PRIORITY_OPTIONS.map(p => {
                   const selected = form.priority === p.value
                   return (
@@ -274,19 +278,20 @@ export default function NovoObjetivoPage() {
                       key={p.value}
                       onClick={() => setForm(f => ({ ...f, priority: p.value }))}
                       className={cn(
-                        'px-[14px] py-[6px] rounded-[9px] text-[12px] font-semibold border flex items-center gap-[5px] transition-all',
+                        'flex-1 px-[14px] py-[8px] rounded-[9px] text-[12px] font-semibold border flex items-center gap-[8px] transition-all',
                         selected
                           ? ''
                           : 'border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                       )}
                       style={selected ? {
                         borderColor: p.color,
-                        background: `${p.color}10`,
+                        background: `color-mix(in oklab, ${p.color} 10%, transparent)`,
                         color: p.color,
                       } : undefined}
                     >
-                      <div className="w-[8px] h-[8px] rounded-full" style={{ background: p.color }} />
+                      <Flag size={12} style={{ color: p.color }} />
                       {p.label}
+                      <span className="text-[10px] text-[var(--sl-t3)] font-normal ml-auto max-sm:hidden">{p.desc}</span>
                     </button>
                   )
                 })}
@@ -304,9 +309,10 @@ export default function NovoObjetivoPage() {
                 <button
                   onClick={() => setStep(2)}
                   className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                             bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)] transition-all"
+                             text-white hover:opacity-90 hover:-translate-y-px transition-all"
+                  style={{ background: 'var(--sl-em)' }}
                 >
-                  Proximo
+                  Próximo
                   <ChevronRight size={16} />
                 </button>
               </div>
@@ -315,52 +321,48 @@ export default function NovoObjetivoPage() {
 
           {/* Step 2: Metas & Prazos */}
           {step === 2 && (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7">
-              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
-                <Target size={18} className="text-[#0055ff]" />
-                Metas & Prazos
-              </h2>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-[6px] block">
-                    Data Inicio
-                  </label>
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 hover:border-[var(--sl-border-h)] transition-colors">
+              <SectionHeader
+                eyebrow={STEPS[2].eyebrow}
+                title={STEPS[2].label}
+                sub="Defina início, prazo e se quer sincronizar com a Agenda."
+                className="mb-5"
+              />
+              <div className="grid grid-cols-2 gap-3 mb-4 max-sm:grid-cols-1">
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">
+                    Data início
+                  </span>
                   <input
                     type="date"
                     defaultValue={new Date().toISOString().split('T')[0]}
-                    className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] font-[DM_Mono]
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[14px] font-[IBM_Plex_Mono]
                                bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                               outline-none focus:border-[rgba(0,85,255,0.5)] transition-colors"
+                               outline-none focus:border-[var(--sl-border-em)] transition-colors"
                   />
                 </div>
-                <div>
-                  <label className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-[6px] block">
-                    Data Limite
-                  </label>
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">
+                    Data limite
+                  </span>
                   <input
                     type="date"
                     value={form.target_date}
                     onChange={e => setForm(f => ({ ...f, target_date: e.target.value }))}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] font-[DM_Mono]
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[14px] font-[IBM_Plex_Mono]
                                bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                               outline-none focus:border-[rgba(0,85,255,0.5)] transition-colors"
+                               outline-none focus:border-[var(--sl-border-em)] transition-colors"
                   />
                 </div>
               </div>
               {form.target_date && (
                 <div className="mb-4">
-                  <label className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-[6px] block">
-                    Por que esta data? (opcional)
-                  </label>
-                  <input
-                    type="text"
+                  <TextField
+                    label="Por que esta data? (opcional)"
                     value={form.target_date_reason}
                     onChange={e => setForm(f => ({ ...f, target_date_reason: e.target.value }))}
                     placeholder="Ex: Quero realizar antes dos 35 anos"
-                    className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px]
-                               bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                               placeholder:text-[var(--sl-t3)] outline-none focus:border-[rgba(0,85,255,0.5)] transition-colors"
                   />
                 </div>
               )}
@@ -371,10 +373,11 @@ export default function NovoObjetivoPage() {
                     type="checkbox"
                     checked={form.syncToAgenda}
                     onChange={e => setForm(f => ({ ...f, syncToAgenda: e.target.checked }))}
-                    className="accent-[#0055ff] w-3.5 h-3.5 shrink-0"
+                    className="accent-[var(--sl-em)] w-3.5 h-3.5 shrink-0"
                   />
-                  <span className="text-[12px] text-[var(--sl-t2)]">
-                    Criar lembrete na Agenda no dia do prazo
+                  <span className="text-[12px] text-[var(--sl-t2)] inline-flex items-center gap-1.5">
+                    <Calendar size={12} />
+                    Criar lembrete na agenda no dia do prazo
                   </span>
                 </label>
               )}
@@ -391,9 +394,10 @@ export default function NovoObjetivoPage() {
                 <button
                   onClick={() => setStep(3)}
                   className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                             bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)] transition-all"
+                             text-white hover:opacity-90 hover:-translate-y-px transition-all"
+                  style={{ background: 'var(--sl-em)' }}
                 >
-                  Proximo
+                  Próximo
                   <ChevronRight size={16} />
                 </button>
               </div>
@@ -402,22 +406,24 @@ export default function NovoObjetivoPage() {
 
           {/* Step 3: Resumo */}
           {step === 3 && (
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7">
-              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] mb-5 flex items-center gap-2">
-                <Target size={18} className="text-[#0055ff]" />
-                Resumo do Objetivo
-              </h2>
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 hover:border-[var(--sl-border-h)] transition-colors">
+              <SectionHeader
+                eyebrow={STEPS[3].eyebrow}
+                title={STEPS[3].label}
+                sub="Revise as informações antes de criar."
+                className="mb-5"
+              />
 
               <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[14px] p-5 mb-5">
                 <div className="flex items-center gap-[14px] mb-[14px]">
                   <div className="w-[44px] h-[44px] rounded-[12px] flex items-center justify-center text-[22px]"
-                    style={{ background: 'rgba(0,85,255,0.10)' }}>
+                    style={{ background: MOD_FUTURO_SOFT }}>
                     {form.icon}
                   </div>
                   <div>
                     <div className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">{form.name || 'Sem nome'}</div>
                     <div className="text-[11px] text-[var(--sl-t3)] mt-[2px]">
-                      {CATEGORY_LABELS[form.category]} &middot; Prioridade {PRIORITY_OPTIONS.find(p => p.value === form.priority)?.label}
+                      {CATEGORY_LABELS[form.category]} · Prioridade {PRIORITY_OPTIONS.find(p => p.value === form.priority)?.label}
                     </div>
                   </div>
                 </div>
@@ -428,12 +434,12 @@ export default function NovoObjetivoPage() {
                 )}
                 <div className="flex gap-0 pt-[14px] border-t border-[var(--sl-border)]">
                   <div className="flex-1 text-center">
-                    <div className="text-[14px] font-medium text-[var(--sl-t1)]">{previewDeadline}</div>
-                    <div className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mt-[3px]">Prazo</div>
+                    <div className="sl-num text-[14px] text-[var(--sl-t1)]">{previewDeadline}</div>
+                    <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mt-[3px]">Prazo</div>
                   </div>
                   <div className="flex-1 text-center border-l border-[var(--sl-border)]">
-                    <div className="text-[14px] font-medium text-[var(--sl-t1)]">{form.priority === 'high' ? 'Alta' : form.priority === 'medium' ? 'Media' : 'Baixa'}</div>
-                    <div className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mt-[3px]">Prioridade</div>
+                    <div className="text-[14px] font-medium text-[var(--sl-t1)]">{form.priority === 'high' ? 'Alta' : form.priority === 'medium' ? 'Média' : 'Baixa'}</div>
+                    <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mt-[3px]">Prioridade</div>
                   </div>
                 </div>
               </div>
@@ -453,11 +459,12 @@ export default function NovoObjetivoPage() {
                   className={cn(
                     'inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold transition-all',
                     !isLoading && form.name.trim()
-                      ? 'bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(0,85,255,0.15)]'
+                      ? 'text-white hover:opacity-90 hover:-translate-y-px'
                       : 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
                   )}
+                  style={!isLoading && form.name.trim() ? { background: 'var(--sl-em)' } : undefined}
                 >
-                  {isLoading ? 'Criando...' : 'Criar Objetivo'}
+                  {isLoading ? 'Criando...' : 'Criar objetivo'}
                 </button>
               </div>
             </div>
@@ -465,22 +472,21 @@ export default function NovoObjetivoPage() {
         </div>
 
         {/* RIGHT: Live Preview (sticky) */}
-        <div className="sticky top-9">
+        <div className="sticky top-9 max-lg:static">
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
                           hover:border-[var(--sl-border-h)] transition-colors">
-            <div className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mb-4 flex items-center gap-[6px]">
-              <Eye size={14} className="text-[var(--sl-t3)]" />
-              Preview ao Vivo
+            <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-em)] mb-4 flex items-center gap-[6px]">
+              <Eye size={14} className="text-[var(--sl-em)]" />
+              Preview ao vivo
             </div>
 
             {/* Preview card */}
             <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[14px] p-5 relative overflow-hidden">
-              {/* Accent bar */}
-              <div className="absolute top-0 left-5 right-5 h-[2px] rounded-b-sm bg-[#f59e0b]" />
+              <div className="absolute top-0 left-5 right-5 h-[2px] rounded-b-sm" style={{ background: MOD_FUTURO }} />
 
               <div className="flex items-center gap-3 mb-[14px]">
                 <div className="w-[44px] h-[44px] rounded-[12px] flex items-center justify-center text-[22px]"
-                  style={{ background: 'rgba(0,85,255,0.10)' }}>
+                  style={{ background: MOD_FUTURO_SOFT }}>
                   {form.icon}
                 </div>
                 <div>
@@ -488,7 +494,7 @@ export default function NovoObjetivoPage() {
                     {form.name || 'Nome do objetivo'}
                   </div>
                   <div className="text-[11px] text-[var(--sl-t3)] mt-[2px]">
-                    {CATEGORY_LABELS[form.category]} &middot; Prioridade {PRIORITY_OPTIONS.find(p => p.value === form.priority)?.label}
+                    {CATEGORY_LABELS[form.category]} · Prioridade {PRIORITY_OPTIONS.find(p => p.value === form.priority)?.label}
                   </div>
                 </div>
               </div>
@@ -499,31 +505,31 @@ export default function NovoObjetivoPage() {
                 </div>
               )}
 
-              {/* Preview metrics */}
               <div className="flex gap-0 mt-[14px] pt-[14px] border-t border-[var(--sl-border)]">
                 <div className="flex-1 text-center">
-                  <div className="font-[DM_Mono] text-[15px] font-medium text-[#0055ff]">0%</div>
-                  <div className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mt-[3px]">Progresso</div>
+                  <div className="sl-num-strong text-[15px] text-[var(--sl-em)]">0%</div>
+                  <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mt-[3px]">Progresso</div>
                 </div>
                 <div className="flex-1 text-center border-l border-r border-[var(--sl-border)]">
-                  <div className="text-[14px] font-medium text-[var(--sl-t1)]">{previewDeadline}</div>
-                  <div className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mt-[3px]">Prazo</div>
+                  <div className="sl-num text-[14px] text-[var(--sl-t1)]">{previewDeadline}</div>
+                  <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mt-[3px]">Prazo</div>
                 </div>
                 <div className="flex-1 text-center">
-                  <div className="font-[DM_Mono] text-[15px] font-medium text-[#10b981]">0</div>
-                  <div className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mt-[3px]">Metas</div>
+                  <div className="sl-num-strong text-[15px] text-[var(--sl-em)]">0</div>
+                  <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mt-[3px]">Metas</div>
                 </div>
               </div>
             </div>
 
-            {/* Projection placeholder */}
             <div className="mt-[18px] p-4 bg-[var(--sl-s2)] rounded-[12px]">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-[10px]">Projecao</div>
-              <div className="border border-dashed border-[var(--sl-border)] rounded-[12px] p-5 flex items-center justify-center text-[var(--sl-t3)] text-[12px] min-h-[100px]"
-                style={{ background: 'rgba(120,165,220,0.015)' }}>
+              <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-[10px] flex items-center gap-1.5">
+                <Sparkles size={12} style={{ color: MOD_FUTURO }} />
+                Projeção
+              </div>
+              <div className="border border-dashed border-[var(--sl-border)] rounded-[12px] p-5 flex items-center justify-center text-[var(--sl-t3)] text-[12px] min-h-[100px] text-center">
                 {form.target_date
-                  ? `Projecao ate ${previewDeadline}`
-                  : 'Defina um prazo para ver a projecao'
+                  ? `Projeção até ${previewDeadline}`
+                  : 'Defina um prazo para ver a projeção'
                 }
               </div>
             </div>

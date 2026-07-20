@@ -87,13 +87,13 @@ export const ASSET_CLASS_LABELS: Record<AssetClass, string> = {
 }
 
 export const ASSET_CLASS_COLORS: Record<AssetClass, string> = {
-  stocks_br: '#0055ff',
-  fiis: '#10b981',
-  etfs_br: '#06b6d4',
+  stocks_br: '#0B2D34',
+  fiis: '#0F766E',
+  etfs_br: '#3CA0B5',
   bdrs: '#a855f7',
-  fixed_income: '#f59e0b',
-  crypto: '#f97316',
-  stocks_us: '#3b82f6',
+  fixed_income: '#D9962E',
+  crypto: '#D97534',
+  stocks_us: '#4F88D4',
   reits: '#14b8a6',
   other: '#6e90b8',
 }

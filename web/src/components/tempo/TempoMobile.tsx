@@ -73,7 +73,7 @@ export function TempoMobile({
   return (
     <div className="lg:hidden pb-[calc(68px+16px)]">
       {/* Week strip */}
-      <div className="flex gap-1.5 px-4 pb-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+      <div className="flex gap-1.5 px-4 pb-3 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none' }}>
         {weekDays.map((day, i) => {
           const ds = day.toISOString().split('T')[0]
           const isToday = ds === today
@@ -87,19 +87,19 @@ export function TempoMobile({
               className="flex flex-col items-center py-2.5 px-3 rounded-[14px] shrink-0 transition-all border"
               style={{
                 minWidth: 46,
-                background: isToday && !isSelected ? 'rgba(16,185,129,0.15)' : isSelected ? 'var(--sl-s2)' : 'var(--sl-s1)',
-                borderColor: isToday ? 'rgba(16,185,129,0.4)' : isSelected ? 'var(--sl-border-h)' : 'var(--sl-border)',
+                background: isToday && !isSelected ? 'var(--sl-em-soft)' : isSelected ? 'var(--sl-s2)' : 'var(--sl-s1)',
+                borderColor: isToday ? 'var(--sl-border-em)' : isSelected ? 'var(--sl-border-h)' : 'var(--sl-border)',
               }}
             >
               <span
                 className="text-[10px] font-medium mb-1"
-                style={{ color: isToday ? '#10b981' : 'var(--sl-t2)' }}
+                style={{ color: isToday ? 'var(--sl-em)' : 'var(--sl-t2)' }}
               >
                 {WEEK_DAYS_SHORT[day.getDay()]}
               </span>
               <span
-                className="font-[DM_Mono] text-[16px] font-medium"
-                style={{ color: isToday ? '#10b981' : 'var(--sl-t1)' }}
+                className="sl-num-strong text-[16px]"
+                style={{ color: isToday ? 'var(--sl-em)' : 'var(--sl-t1)' }}
               >
                 {day.getDate()}
               </span>
@@ -133,11 +133,11 @@ export function TempoMobile({
               >
                 {/* Time column */}
                 <div className="text-right shrink-0" style={{ minWidth: 44 }}>
-                  <p className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t2)]">
+                  <p className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t2)]">
                     {ev.startTime ?? '—'}
                   </p>
                   {ev.endTime && (
-                    <p className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t2)]">
+                    <p className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t2)]">
                       {ev.endTime}
                     </p>
                   )}

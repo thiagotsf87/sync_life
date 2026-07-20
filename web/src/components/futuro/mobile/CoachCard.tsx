@@ -14,14 +14,14 @@ export function CoachCard({ label = 'Coach Sync', message, cta, onCtaClick }: Co
     <div
       className="mx-4 mb-3 rounded-[16px] p-[13px_14px] flex gap-[11px]"
       style={{
-        background: `linear-gradient(135deg, rgba(139,92,246,0.12), rgba(0,85,255,0.08))`,
-        border: `1px solid rgba(139,92,246,0.25)`,
+        background: `linear-gradient(135deg, rgba(139,123,212,0.12), rgba(0,85,255,0.08))`,
+        border: `1px solid rgba(139,123,212,0.25)`,
       }}
     >
       {/* Avatar */}
       <div
         className="w-9 h-9 rounded-full flex items-center justify-center text-[17px] shrink-0"
-        style={{ background: `linear-gradient(135deg, #0055ff, ${FUTURO_PRIMARY})` }}
+        style={{ background: `linear-gradient(135deg, #0B2D34, ${FUTURO_PRIMARY})` }}
       >
         🤖
       </div>

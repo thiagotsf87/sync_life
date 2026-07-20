@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
@@ -14,11 +14,11 @@ interface StatusOption {
 }
 
 const STATUS_OPTIONS: StatusOption[] = [
-  { value: 'planning',  label: 'Planejando',     icon: '🗓️', color: '#f59e0b' },
-  { value: 'reserved',  label: 'Reservado',       icon: '✅', color: '#0055ff' },
-  { value: 'ongoing',   label: 'Em andamento',    icon: '🔥', color: '#10b981' },
-  { value: 'completed', label: 'Concluída',       icon: '🏆', color: '#10b981' },
-  { value: 'cancelled', label: 'Cancelada',       icon: '❌', color: '#f43f5e' },
+  { value: 'planning',  label: 'Planejando',     icon: '🗓️', color: 'var(--sl-warning)' },
+  { value: 'reserved',  label: 'Reservado',       icon: '✅', color: '#0B2D34' },
+  { value: 'ongoing',   label: 'Em andamento',    icon: '🔥', color: 'var(--sl-em)' },
+  { value: 'completed', label: 'Concluída',       icon: '🏆', color: 'var(--sl-em)' },
+  { value: 'cancelled', label: 'Cancelada',       icon: '❌', color: 'var(--sl-danger)' },
 ]
 
 interface ExpTripStatusSheetProps {
@@ -84,7 +84,7 @@ export function ExpTripStatusSheet({
                 className="flex items-center gap-3 p-3 rounded-[12px] text-left transition-colors"
                 style={{
                   background: isSelected
-                    ? 'rgba(139,92,246,0.15)'
+                    ? 'rgba(139,123,212,0.15)'
                     : 'var(--sl-s2)',
                   border: `1px solid ${isSelected ? accent : 'var(--sl-border)'}`,
                   opacity: isCurrent ? 0.5 : 1,

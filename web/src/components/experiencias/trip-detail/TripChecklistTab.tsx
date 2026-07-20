@@ -52,7 +52,7 @@ export function TripChecklistTab({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <p className="text-[12px] text-[var(--sl-t2)]">
-          {checklistDone} de {checklist.length} itens concluídos ({checklistPct.toFixed(0)}%)
+          <span className="sl-num">{checklistDone}</span> de <span className="sl-num">{checklist.length}</span> itens concluídos (<span className="sl-num">{checklistPct.toFixed(0)}%</span>)
         </p>
       </div>
 
@@ -69,10 +69,10 @@ export function TripChecklistTab({
                     onClick={() => handleToggle(item.id, item.is_completed)}
                     className={cn(
                       'w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-all',
-                      item.is_completed ? 'bg-[#10b981] border-[#10b981]' : 'border-[var(--sl-border)] hover:border-[#10b981]'
+                      item.is_completed ? 'bg-[var(--sl-em)] border-[var(--sl-em)]' : 'border-[var(--sl-border)] hover:border-[var(--sl-em)]'
                     )}
                   >
-                    {item.is_completed && <Check size={11} className="text-[#03071a]" />}
+                    {item.is_completed && <Check size={11} className="text-white" />}
                   </button>
                   <span className={cn(
                     'flex-1 text-[12px] transition-colors',
@@ -82,7 +82,7 @@ export function TripChecklistTab({
                   </span>
                   <button
                     onClick={async () => { await deleteChecklistItem(item.id); await reload() }}
-                    className="p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[rgba(244,63,94,0.1)]"
+                    className="p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[rgba(219,100,120,0.1)]"
                   >
                     <Trash2 size={11} className="text-[var(--sl-t3)]" />
                   </button>
@@ -103,19 +103,19 @@ export function TripChecklistTab({
             onChange={e => setNewTitle(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') handleAdd() }}
             placeholder="Novo item..."
-            className="flex-1 px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
+            className="flex-1 px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-em)]"
           />
           <select
             value={newCategory}
             onChange={e => setNewCategory(e.target.value as ChecklistCategory)}
-            className="px-2 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]"
+            className="px-2 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-em)]"
           >
             {(Object.keys(CHECKLIST_CATEGORY_LABELS) as ChecklistCategory[]).map(c => (
               <option key={c} value={c}>{CHECKLIST_CATEGORY_LABELS[c]}</option>
             ))}
           </select>
           <button onClick={handleAdd}
-            className="p-2 rounded-[10px] bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20">
+            className="p-2 rounded-[10px] bg-[#C76795]/10 border border-[#C76795] text-[#C76795] hover:bg-[#C76795]/20">
             <Plus size={15} />
           </button>
         </div>

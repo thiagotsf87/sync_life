@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
+
+// Supabase client typing — schema casts are unavoidable for cross-table queries.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SbClient = any
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
 
@@ -78,7 +83,7 @@ export function useBadges() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const sb = createClient() as any
+    const sb = createClient() as SbClient
     sb.from('badges')
       .select('*')
       .eq('is_active', true)
@@ -99,8 +104,8 @@ export function useUserBadges() {
   const [loading, setLoading]       = useState(true)
 
   useEffect(() => {
-    const sb = createClient() as any
-    sb.auth.getUser().then(({ data: { user } }: any) => {
+    const sb = createClient() as SbClient
+    sb.auth.getUser().then(({ data: { user } }: { data: { user: User | null } }) => {
       if (!user) { setLoading(false); return }
       sb.from('user_badges')
         .select('badge_id, unlocked_at, badge:badges(*)')
@@ -124,8 +129,8 @@ export function useLifeScore() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const sb = createClient() as any
-    sb.auth.getUser().then(({ data: { user } }: any) => {
+    const sb = createClient() as SbClient
+    sb.auth.getUser().then(({ data: { user } }: { data: { user: User | null } }) => {
       if (!user) { setLoading(false); return }
       sb.from('life_sync_scores')
         .select('*')
@@ -162,8 +167,8 @@ export function useStreak() {
   const [loading, setLoading] = useState(true)
 
   const refresh = useCallback(() => {
-    const sb = createClient() as any
-    sb.auth.getUser().then(({ data: { user } }: any) => {
+    const sb = createClient() as SbClient
+    sb.auth.getUser().then(({ data: { user } }: { data: { user: User | null } }) => {
       if (!user) { setLoading(false); return }
       sb.from('user_streaks')
         .select('*')
@@ -189,8 +194,8 @@ export function useRanking() {
   const [loading,      setLoading]      = useState(true)
 
   useEffect(() => {
-    const sb = createClient() as any
-    sb.auth.getUser().then(({ data: { user } }: any) => {
+    const sb = createClient() as SbClient
+    sb.auth.getUser().then(({ data: { user } }: { data: { user: User | null } }) => {
       if (!user) { setLoading(false); return }
       // Score = soma dos pontos das badges desbloqueadas
       sb.from('user_badges')

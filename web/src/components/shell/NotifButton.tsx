@@ -2,26 +2,30 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { X, Check, CheckCheck, Bell } from 'lucide-react'
+import {
+  X, Check, CheckCheck, Bell,
+  AlertTriangle, Moon, Stethoscope, PartyPopper, Plane,
+  type LucideIcon,
+} from 'lucide-react'
 import { useNotifications, type AppNotification } from '@/hooks/use-notifications'
 import { cn } from '@/lib/utils'
 
 const MODULE_COLORS: Record<string, string> = {
-  futuro:       '#8b5cf6',
-  corpo:        '#f97316',
-  experiencias: '#ec4899',
-  mente:        '#eab308',
-  patrimonio:   '#3b82f6',
-  carreira:     '#f43f5e',
-  financas:     '#10b981',
+  futuro:       '#8B7BD4',
+  corpo:        '#D97534',
+  experiencias: '#C76795',
+  mente:        '#D9962E',
+  patrimonio:   '#4F88D4',
+  carreira:     '#DB6478',
+  financas:     '#0F766E',
 }
 
-const TYPE_ICON: Record<string, string> = {
-  deadline_risk:       '⚠️',
-  goal_stale:          '💤',
-  followup_due:        '🏥',
-  objective_completed: '🎉',
-  trip_upcoming:       '✈️',
+const TYPE_ICON: Record<string, LucideIcon> = {
+  deadline_risk:       AlertTriangle,
+  goal_stale:          Moon,
+  followup_due:        Stethoscope,
+  objective_completed: PartyPopper,
+  trip_upcoming:       Plane,
 }
 
 function timeAgo(dateStr: string): string {
@@ -47,8 +51,8 @@ function NotifItem({
   onDismiss: (id: string) => void
   onNavigate: (url: string) => void
 }) {
-  const accent = MODULE_COLORS[notif.module ?? ''] ?? '#10b981'
-  const icon = TYPE_ICON[notif.type] ?? '🔔'
+  const accent = MODULE_COLORS[notif.module ?? ''] ?? '#0F766E'
+  const Icon = TYPE_ICON[notif.type] ?? Bell
   const isUnread = !notif.read_at
 
   return (
@@ -72,7 +76,12 @@ function NotifItem({
       )}
 
       {/* Ícone */}
-      <div className="shrink-0 text-lg leading-none mt-0.5">{icon}</div>
+      <div
+        className="shrink-0 mt-0.5 flex items-center justify-center w-7 h-7 rounded-lg"
+        style={{ background: `${accent}1F`, color: accent }}
+      >
+        <Icon size={14} strokeWidth={2} />
+      </div>
 
       {/* Conteúdo */}
       <div className="flex-1 min-w-0">
@@ -142,7 +151,7 @@ export function NotifButton() {
         {unreadCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1
                            flex items-center justify-center rounded-full
-                           bg-[#f43f5e] text-white text-[10px] font-bold leading-none">
+                           bg-[#DB6478] text-white text-[10px] font-bold leading-none">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -165,7 +174,7 @@ export function NotifButton() {
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="flex items-center gap-1 text-[11px] text-[var(--sl-t3)] hover:text-[#10b981] transition-colors"
+                className="flex items-center gap-1 text-[11px] text-[var(--sl-t3)] hover:text-[#0F766E] transition-colors"
               >
                 <CheckCheck size={12} />
                 Marcar todas
@@ -177,7 +186,7 @@ export function NotifButton() {
           <div className="overflow-y-auto flex-1">
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="w-5 h-5 border-2 border-[var(--sl-border)] border-t-[#10b981] rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-[var(--sl-border)] border-t-[#0F766E] rounded-full animate-spin" />
               </div>
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 gap-2">
@@ -200,10 +209,14 @@ export function NotifButton() {
           {/* Rodapé */}
           {notifications.length > 0 && (
             <div className="px-4 py-2.5 border-t border-[var(--sl-border)] shrink-0">
-              <p className="text-[11px] text-[var(--sl-t3)] text-center">
+              <p className="text-[11px] text-[var(--sl-t3)] text-center inline-flex items-center justify-center gap-1 w-full">
                 {unreadCount > 0
                   ? `${unreadCount} não lida${unreadCount !== 1 ? 's' : ''}`
-                  : 'Tudo em dia ✓'}
+                  : (
+                    <>
+                      <Check size={11} className="text-[#0F766E]" /> Tudo em dia
+                    </>
+                  )}
               </p>
             </div>
           )}

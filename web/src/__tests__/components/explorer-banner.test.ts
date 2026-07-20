@@ -38,10 +38,10 @@ function buildExplorerStats(data: {
   memories: number
 }): ExplorerStat[] {
   return [
-    { value: data.countries, label: 'Paises Visitados', color: '#ec4899', progress: { current: data.countries, total: 195 } },
-    { value: data.continents, label: 'Continentes', color: '#06b6d4', progress: { current: data.continents, total: 7 } },
-    { value: data.daysAbroad, label: 'Dias Viajados', color: '#f59e0b', subtext: 'desde 2020' },
-    { value: data.totalTrips, label: 'Total Viagens', color: '#10b981', subtext: `${data.totalTrips - data.memories} concluidas` },
+    { value: data.countries, label: 'Paises Visitados', color: '#C76795', progress: { current: data.countries, total: 195 } },
+    { value: data.continents, label: 'Continentes', color: '#3CA0B5', progress: { current: data.continents, total: 7 } },
+    { value: data.daysAbroad, label: 'Dias Viajados', color: '#D9962E', subtext: 'desde 2020' },
+    { value: data.totalTrips, label: 'Total Viagens', color: '#0F766E', subtext: `${data.totalTrips - data.memories} concluidas` },
     { value: data.memories, label: 'Memorias', color: '#a855f7', subtext: 'Ver passaporte' },
   ]
 }
@@ -99,7 +99,7 @@ describe('ExplorerBanner', () => {
         countries: 5, continents: 2, daysAbroad: 42, totalTrips: 12, memories: 3,
       })
       expect(stats[0].label).toBe('Paises Visitados')
-      expect(stats[0].color).toBe('#ec4899')
+      expect(stats[0].color).toBe('#C76795')
       expect(stats[0].progress).toEqual({ current: 5, total: 195 })
     })
 

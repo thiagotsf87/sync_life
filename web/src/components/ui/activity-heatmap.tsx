@@ -31,7 +31,7 @@ function formatTooltipDate(dateStr: string): string {
 
 export function ActivityHeatmap({
   days,
-  accentColor = '#f97316',
+  accentColor = '#D97534',
   className,
 }: ActivityHeatmapProps) {
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null)

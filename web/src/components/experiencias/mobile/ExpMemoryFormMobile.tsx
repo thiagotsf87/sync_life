@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -6,6 +6,7 @@ import { ChevronLeft } from 'lucide-react'
 import { EXP_PRIMARY, EXP_GRAD, EXP_PRIMARY_LIGHT } from '@/lib/exp-colors'
 import { useCreateTripMemory, useUpdateTripMemory } from '@/hooks/use-experiencias'
 import type { TripMemory, CreateTripMemoryData, Trip } from '@/hooks/use-experiencias'
+import { fmtBRL } from '@/lib/format/currency'
 
 const EMOTION_TAGS = [
   { id: 'incrivel',      label: '🤩 Incrível' },
@@ -68,7 +69,7 @@ function TextArea({
         className="w-full px-[14px] py-3 rounded-[12px] text-[13px] text-[var(--sl-t1)] outline-none resize-none"
         style={{
           background: 'var(--sl-s2)',
-          border: '1.5px solid rgba(139,92,246,0.25)',
+          border: '1.5px solid rgba(139,123,212,0.25)',
           lineHeight: 1.5,
         }}
       />
@@ -207,16 +208,16 @@ export function ExpMemoryFormMobile({
             {budgetPlanned && (
               <div className="flex-1 text-center">
                 <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wide mb-1">Orçado</p>
-                <p className="font-[DM_Mono] text-[14px] font-medium" style={{ color: 'var(--sl-t2)' }}>
-                  R$ {budgetPlanned.toLocaleString('pt-BR')}
+                <p className="sl-num-strong text-[14px] font-medium" style={{ color: 'var(--sl-t2)' }}>
+                  {fmtBRL(budgetPlanned)}
                 </p>
               </div>
             )}
             {budgetActual && (
               <div className="flex-1 text-center">
                 <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wide mb-1">Real</p>
-                <p className="font-[DM_Mono] text-[14px] font-medium" style={{ color: accent }}>
-                  R$ {budgetActual.toLocaleString('pt-BR')}
+                <p className="sl-num-strong text-[14px] font-medium" style={{ color: accent }}>
+                  {fmtBRL(budgetActual)}
                 </p>
               </div>
             )}
@@ -264,7 +265,7 @@ export function ExpMemoryFormMobile({
                 className="text-[11px] font-medium px-3 py-[6px] rounded-[20px] transition-colors"
                 style={{
                   background: active
-                    ? 'rgba(139,92,246,0.2)'
+                    ? 'rgba(139,123,212,0.2)'
                     : 'var(--sl-s2)',
                   border: `1px solid ${active ? accent : 'var(--sl-border)'}`,
                   color: active ? accent : 'var(--sl-t2)',
@@ -280,7 +281,7 @@ export function ExpMemoryFormMobile({
         {error && (
           <div
             className="rounded-[10px] p-3 mb-3 text-[12px]"
-            style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.2)', color: '#f43f5e' }}
+            style={{ background: 'rgba(219,100,120,0.1)', border: '1px solid rgba(219,100,120,0.2)', color: 'var(--sl-danger)' }}
           >
             {error}
           </div>

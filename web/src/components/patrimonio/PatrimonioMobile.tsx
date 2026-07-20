@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus } from 'lucide-react'
+import { Plus, TrendingUp, ClipboardList, Wallet, Building2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { jornadaLabel } from '@/lib/jornada-labels'
+import { fmtBRL } from '@/lib/format/currency'
 import {
   usePatrimonioDashboard,
   usePortfolioAssets,
@@ -12,6 +13,12 @@ import {
   ASSET_CLASS_LABELS,
   ASSET_CLASS_COLORS,
 } from '@/hooks/use-patrimonio'
+
+const PTR_COLOR = '#4F88D4'
+
+function formatCurrency(v: number, opts: { compact?: boolean } = {}) {
+  return fmtBRL(v, { compact: opts.compact ?? Math.abs(v) >= 10000 })
+}
 
 const TABS: { id: 'dashboard' | 'carteira' | 'proventos' | 'evolucao'; label: string; key: string }[] = [
   { id: 'dashboard', label: 'Dashboard', key: 'dashboard' },
@@ -21,10 +28,6 @@ const TABS: { id: 'dashboard' | 'carteira' | 'proventos' | 'evolucao'; label: st
 ]
 
 type TabId = 'dashboard' | 'carteira' | 'proventos' | 'evolucao'
-
-function formatCurrency(v: number) {
-  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 
 interface PatrimonioMobileProps {
   initialTab?: TabId
@@ -78,8 +81,8 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
       {/* Module Header */}
       <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
-          <p className="text-[12px] font-semibold text-[#3b82f6] mb-[2px]">
-            ✦ {jornadaLabel('patrimonio', 'module', 'Patrimônio')}
+          <p className="text-[12px] font-semibold text-[#4F88D4] mb-[2px]">
+            {jornadaLabel('patrimonio', 'module', 'Patrimônio')}
           </p>
           <h1 className="font-[Syne] font-bold text-[20px] text-[var(--sl-t1)]">
             {(() => {
@@ -90,8 +93,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
         </div>
         <button
           onClick={onAddAsset ?? (() => router.push('/patrimonio/carteira'))}
-          className="w-9 h-9 rounded-[10px] flex items-center justify-center text-white"
-          style={{ background: '#3b82f6' }}
+          className="w-9 h-9 rounded-[10px] flex items-center justify-center text-white bg-[var(--sl-em)] hover:bg-[var(--sl-em-strong)] transition-colors"
           aria-label="Adicionar ativo"
         >
           <Plus size={16} />
@@ -106,8 +108,8 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
             onClick={() => setActiveTab(tab.id)}
             className="px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors"
             style={{
-              color: activeTab === tab.id ? '#3b82f6' : 'var(--sl-t3)',
-              borderBottomColor: activeTab === tab.id ? '#3b82f6' : 'transparent',
+              color: activeTab === tab.id ? '#4F88D4' : 'var(--sl-t3)',
+              borderBottomColor: activeTab === tab.id ? '#4F88D4' : 'transparent',
             }}
           >
             {jornadaLabel('patrimonio', tab.key, tab.label)}
@@ -123,23 +125,23 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
           <div>
             {/* Hero Card */}
             <div
-              className="mx-4 mb-3 p-5 rounded-2xl text-center border border-[rgba(59,130,246,0.2)]"
-              style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.04))' }}
+              className="mx-4 mb-3 p-5 rounded-2xl text-center border border-[rgba(79,136,212,0.2)]"
+              style={{ background: 'linear-gradient(135deg, rgba(79,136,212,0.12), rgba(79,136,212,0.04))' }}
             >
               <p className="text-[12px] text-[var(--sl-t2)] mb-1.5">Patrimônio líquido total</p>
-              <p className="font-[DM_Mono] font-extrabold text-[34px] text-[var(--sl-t1)] leading-none mb-2">
+              <p className="sl-num-strong text-[34px] text-[var(--sl-t1)] leading-none mb-2">
                 {formatCurrency(totalCurrent)}
               </p>
               <div className="flex items-center justify-center gap-2">
                 <span className={cn(
                   'text-[11px] font-medium px-2 py-0.5 rounded-full',
                   profitLoss >= 0
-                    ? 'bg-[rgba(16,185,129,0.12)] text-[#10b981]'
-                    : 'bg-[rgba(244,63,94,0.12)] text-[#f43f5e]'
+                    ? 'bg-[rgba(15,118,110,0.12)] text-[var(--sl-em)]'
+                    : 'bg-[rgba(219,100,120,0.12)] text-[var(--sl-danger)]'
                 )}>
                   {profitLoss >= 0 ? '↑' : '↓'} {formatCurrency(Math.abs(profitLoss))}
                 </span>
-                <span className={cn('text-[12px]', profitLossPct >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+                <span className={cn('text-[12px]', profitLossPct >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]')}>
                   {profitLossPct >= 0 ? '+' : ''}{profitLossPct.toFixed(2)}%
                 </span>
               </div>
@@ -148,14 +150,14 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
             {/* KPI Grid */}
             <div className="grid grid-cols-2 gap-2 mx-4 mb-3">
               {[
-                { label: 'Investido', value: formatCurrency(totalInvested), color: '#3b82f6' },
-                { label: 'Proventos 12m', value: formatCurrency(dividends12m), color: '#10b981' },
+                { label: 'Investido', value: formatCurrency(totalInvested), color: '#4F88D4' },
+                { label: 'Proventos 12m', value: formatCurrency(dividends12m), color: '#0F766E' },
                 {
                   label: 'P/L Total',
                   value: `${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(1)}%`,
-                  color: profitLossPct >= 0 ? '#10b981' : '#f43f5e',
+                  color: profitLossPct >= 0 ? '#0F766E' : '#DB6478',
                 },
-                { label: 'Ativos', value: String(dashAssets.length), color: '#f59e0b' },
+                { label: 'Ativos', value: String(dashAssets.length), color: '#D9962E' },
               ].map(kpi => (
                 <div
                   key={kpi.label}
@@ -169,7 +171,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                     {kpi.label}
                   </p>
                   <p
-                    className="font-[DM_Mono] font-bold text-[18px] leading-none"
+                    className="sl-num-strong text-[18px] leading-none"
                     style={{ color: kpi.color }}
                   >
                     {kpi.value}
@@ -187,7 +189,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                     .sort((a, b) => b[1] - a[1])
                     .map(([cls, val]) => {
                       const pct = totalCurrent > 0 ? (val / totalCurrent) * 100 : 0
-                      const color = ASSET_CLASS_COLORS[cls as keyof typeof ASSET_CLASS_COLORS] ?? '#3b82f6'
+                      const color = ASSET_CLASS_COLORS[cls as keyof typeof ASSET_CLASS_COLORS] ?? '#4F88D4'
                       return (
                         <div key={cls} className="flex items-center gap-2">
                           <span className="text-[11px] text-[var(--sl-t2)] w-24 shrink-0">
@@ -199,7 +201,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                               style={{ width: `${pct}%`, background: color }}
                             />
                           </div>
-                          <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t2)] w-8 text-right">
+                          <span className="sl-num text-[11px] text-[var(--sl-t2)] w-8 text-right">
                             {pct.toFixed(0)}%
                           </span>
                         </div>
@@ -223,7 +225,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                     const invested = asset.quantity * asset.avg_price
                     const pl = val - invested
                     const plPct = invested > 0 ? (pl / invested) * 100 : 0
-                    const color = ASSET_CLASS_COLORS[asset.asset_class] ?? '#3b82f6'
+                    const color = ASSET_CLASS_COLORS[asset.asset_class] ?? '#4F88D4'
                     return (
                       <button
                         key={asset.id}
@@ -238,10 +240,10 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
+                          <p className="sl-num text-[13px] font-medium text-[var(--sl-t1)]">
                             {formatCurrency(val)}
                           </p>
-                          <p className={cn('text-[11px]', plPct >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+                          <p className={cn('text-[11px]', plPct >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]')}>
                             {plPct >= 0 ? '+' : ''}{plPct.toFixed(1)}%
                           </p>
                         </div>
@@ -255,7 +257,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
             {/* Empty state */}
             {!loading && dashAssets.length === 0 && (
               <div className="mx-4 p-8 text-center bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl">
-                <p className="text-4xl mb-3">📈</p>
+                <TrendingUp size={36} className="text-[var(--sl-t3)] mx-auto mb-3" />
                 <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
                   Sua carteira está vazia
                 </p>
@@ -264,8 +266,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                 </p>
                 <button
                   onClick={onAddAsset ?? (() => router.push('/patrimonio/carteira'))}
-                  className="px-4 py-2 rounded-[10px] text-[13px] font-semibold text-white"
-                  style={{ background: '#3b82f6' }}
+                  className="px-4 py-2 rounded-[10px] text-[13px] font-semibold text-white bg-[var(--sl-em)] hover:bg-[var(--sl-em-strong)] transition-colors"
                 >
                   + Adicionar Ativo
                 </button>
@@ -284,17 +285,17 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                 <span className={cn(
                   'text-[11px] font-medium px-2 py-0.5 rounded-full',
                   profitLossPct >= 0
-                    ? 'bg-[rgba(16,185,129,0.12)] text-[#10b981]'
-                    : 'bg-[rgba(244,63,94,0.12)] text-[#f43f5e]'
+                    ? 'bg-[rgba(15,118,110,0.12)] text-[var(--sl-em)]'
+                    : 'bg-[rgba(219,100,120,0.12)] text-[var(--sl-danger)]'
                 )}>
                   {profitLossPct >= 0 ? '↑' : '↓'} {Math.abs(profitLossPct).toFixed(2)}%
                 </span>
               </div>
-              <p className="font-[DM_Mono] font-bold text-[22px] text-[var(--sl-t1)]">
+              <p className="sl-num-strong text-[22px] text-[var(--sl-t1)]">
                 {formatCurrency(totalCurrent)}
               </p>
               {profitLoss !== 0 && (
-                <p className={cn('text-[12px] mt-1', profitLoss >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+                <p className={cn('text-[12px] mt-1', profitLoss >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]')}>
                   {profitLoss >= 0 ? '+' : ''}{formatCurrency(profitLoss)} de rendimento total
                 </p>
               )}
@@ -332,10 +333,10 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
+                          <p className="sl-num text-[13px] font-medium text-[var(--sl-t1)]">
                             {formatCurrency(val)}
                           </p>
-                          <p className={cn('text-[11px]', plPct >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+                          <p className={cn('text-[11px]', plPct >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]')}>
                             {plPct >= 0 ? '+' : ''}{plPct.toFixed(1)}%
                           </p>
                         </div>
@@ -348,7 +349,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
 
             {assets.length === 0 && !loading && (
               <div className="mx-4 p-8 text-center bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl">
-                <p className="text-3xl mb-2">📋</p>
+                <ClipboardList size={32} className="text-[var(--sl-t3)] mx-auto mb-2" />
                 <p className="text-[13px] text-[var(--sl-t2)]">Nenhum ativo na carteira</p>
               </div>
             )}
@@ -360,11 +361,11 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
           <div>
             {/* Hero */}
             <div
-              className="mx-4 mb-3 p-5 rounded-2xl text-center border border-[rgba(59,130,246,0.2)]"
-              style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.10), rgba(16,185,129,0.06))' }}
+              className="mx-4 mb-3 p-5 rounded-2xl text-center border border-[rgba(79,136,212,0.2)]"
+              style={{ background: 'linear-gradient(135deg, rgba(79,136,212,0.10), rgba(15,118,110,0.06))' }}
             >
               <p className="text-[12px] text-[var(--sl-t2)] mb-1.5">Proventos acumulados 12m</p>
-              <p className="font-[DM_Mono] font-extrabold text-[30px] text-[#3b82f6] leading-none mb-2">
+              <p className="sl-num-strong text-[30px] text-[#4F88D4] leading-none mb-2">
                 {formatCurrency(dividends12m)}
               </p>
               {dividends12m > 0 && (
@@ -388,12 +389,12 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                         key={div.id}
                         className="flex items-center gap-3 px-5 py-3 border-b border-[var(--sl-border)] last:border-0"
                       >
-                        <div className="w-9 h-9 rounded-[11px] bg-[rgba(59,130,246,0.14)] flex items-center justify-center text-[16px] shrink-0">
-                          🏢
+                        <div className="w-9 h-9 rounded-[11px] bg-[rgba(79,136,212,0.14)] flex items-center justify-center text-[#4F88D4] shrink-0">
+                          <Building2 size={16} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[13px] font-medium text-[var(--sl-t1)]">
-                            {ticker} — Rendimento
+                            {ticker} · Rendimento
                           </p>
                           <p className="text-[11px] text-[var(--sl-t2)]">
                             Pgto: {new Date(div.payment_date).toLocaleDateString('pt-BR', {
@@ -402,7 +403,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                             })}
                           </p>
                         </div>
-                        <p className="font-[DM_Mono] font-bold text-[14px] text-[#10b981] shrink-0">
+                        <p className="sl-num-strong text-[14px] text-[var(--sl-em)] shrink-0">
                           +{formatCurrency(div.total_amount)}
                         </p>
                       </div>
@@ -437,7 +438,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                           })}
                         </p>
                       </div>
-                      <p className="font-[DM_Mono] font-bold text-[13px] text-[#10b981] shrink-0">
+                      <p className="sl-num-strong text-[13px] text-[var(--sl-em)] shrink-0">
                         +{formatCurrency(div.total_amount)}
                       </p>
                     </div>
@@ -445,7 +446,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                 })}
                 {dividends.filter(d => d.status === 'received').length === 0 && (
                   <div className="px-5 py-8 text-center">
-                    <p className="text-3xl mb-2">💰</p>
+                    <Wallet size={32} className="text-[var(--sl-t3)] mx-auto mb-2" />
                     <p className="text-[13px] text-[var(--sl-t2)]">Nenhum provento recebido ainda</p>
                   </div>
                 )}
@@ -461,19 +462,19 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <p className="text-[12px] text-[var(--sl-t2)]">Patrimônio hoje</p>
-                  <p className="font-[DM_Mono] font-bold text-[22px] text-[var(--sl-t1)]">
+                  <p className="sl-num-strong text-[22px] text-[var(--sl-t1)]">
                     {formatCurrency(totalCurrent)}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-[12px] text-[var(--sl-t2)]">P/L Total</p>
                   <p className={cn(
-                    'font-[DM_Mono] font-bold text-[16px]',
-                    profitLoss >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                    'sl-num-strong text-[16px]',
+                    profitLoss >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
                   )}>
                     {profitLoss >= 0 ? '+' : ''}{formatCurrency(profitLoss)}
                   </p>
-                  <p className={cn('text-[11px]', profitLossPct >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+                  <p className={cn('text-[11px]', profitLossPct >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]')}>
                     {profitLossPct >= 0 ? '+' : ''}{profitLossPct.toFixed(1)}%
                   </p>
                 </div>
@@ -495,7 +496,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                         .reduce((s, a) => s + a.quantity * a.avg_price, 0)
                       const pl = val - invested
                       const plPct = invested > 0 ? (pl / invested) * 100 : 0
-                      const color = ASSET_CLASS_COLORS[cls as keyof typeof ASSET_CLASS_COLORS] ?? '#3b82f6'
+                      const color = ASSET_CLASS_COLORS[cls as keyof typeof ASSET_CLASS_COLORS] ?? '#4F88D4'
                       return (
                         <div
                           key={cls}
@@ -510,14 +511,14 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
                           </div>
                           <div className="text-right shrink-0">
                             <p className={cn(
-                              'font-[DM_Mono] text-[13px] font-medium',
-                              plPct >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                              'sl-num text-[13px] font-medium',
+                              plPct >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
                             )}>
                               {plPct >= 0 ? '+' : ''}{formatCurrency(pl)}
                             </p>
                             <p className={cn(
                               'text-[11px]',
-                              plPct >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]'
+                              plPct >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
                             )}>
                               {plPct >= 0 ? '+' : ''}{plPct.toFixed(1)}%
                             </p>
@@ -531,7 +532,7 @@ export function PatrimonioMobile({ initialTab = 'dashboard', onAddAsset }: Patri
 
             {dashAssets.length === 0 && !loading && (
               <div className="mx-4 p-8 text-center bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl">
-                <p className="text-3xl mb-2">📈</p>
+                <TrendingUp size={32} className="text-[var(--sl-t3)] mx-auto mb-2" />
                 <p className="text-[13px] text-[var(--sl-t2)]">Adicione ativos para ver a evolução</p>
               </div>
             )}

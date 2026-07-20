@@ -43,7 +43,7 @@ export function ExpUpgradeModal({
         <div className="text-center mb-4">
           <div
             className="w-16 h-16 rounded-[20px] flex items-center justify-center text-[32px] mx-auto mb-3"
-            style={{ background: 'rgba(139,92,246,0.15)' }}
+            style={{ background: 'rgba(139,123,212,0.15)' }}
           >
             ⚡
           </div>

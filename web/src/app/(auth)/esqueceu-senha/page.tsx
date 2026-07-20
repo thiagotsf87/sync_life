@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { ChevronLeft, Lock, Check, Clock, Mail, ArrowRight } from 'lucide-react'
+import { SyncLifeLockup } from '@/components/SyncLifeLockup'
 
 export default function EsqueceuSenhaPage() {
   const [email, setEmail] = useState('')
@@ -38,8 +39,13 @@ export default function EsqueceuSenhaPage() {
         </Link>
       </div>
 
+      {/* Brand lockup */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+        <SyncLifeLockup height={56} />
+      </div>
+
       {isEmailSent ? (
-        /* ══ Step 2: Email Sent ══ */
+        /* Step 2: Email Sent */
         <div className="recover-card anim">
           <div className="recover-steps">
             <div className="recover-step active" />
@@ -51,21 +57,21 @@ export default function EsqueceuSenhaPage() {
             <div className="check-circle">
               <Check size={28} strokeWidth={2.5} />
             </div>
-            <h1>E-mail enviado!</h1>
+            <h1 className="font-[Syne] tracking-tight">E-mail enviado</h1>
             <div className="subtitle">
-              Enviamos um link de recuperacao para{' '}
-              <strong style={{ color: 'var(--t1)' }}>{email}</strong>.
+              Enviamos um link de recuperação para{' '}
+              <strong style={{ color: 'var(--sl-t1)' }}>{email}</strong>.
               {' '}Verifique sua caixa de entrada e spam.
             </div>
 
             <div className="recover-info-box">
               <div className="recover-info-item">
                 <Clock size={16} />
-                <span>O link expira em <strong style={{ color: 'var(--t1)' }}>30 minutos</strong></span>
+                <span>O link expira em <strong style={{ color: 'var(--sl-t1)' }}>30 minutos</strong></span>
               </div>
               <div className="recover-info-item">
                 <Mail size={16} />
-                <span>Verifique tambem a pasta de spam</span>
+                <span>Verifique também a pasta de spam</span>
               </div>
             </div>
 
@@ -79,7 +85,7 @@ export default function EsqueceuSenhaPage() {
           </div>
         </div>
       ) : (
-        /* ══ Step 1: Enter Email ══ */
+        /* Step 1: Enter Email */
         <div className="recover-card anim">
           <div className="recover-steps">
             <div className="recover-step active" />
@@ -90,7 +96,7 @@ export default function EsqueceuSenhaPage() {
           <div className="recover-icon">
             <Lock size={24} />
           </div>
-          <h1>Esqueceu sua senha?</h1>
+          <h1 className="font-[Syne] tracking-tight">Esqueceu sua senha?</h1>
           <div className="subtitle">
             Informe seu e-mail e enviaremos um link para redefinir sua senha.
           </div>
@@ -117,7 +123,7 @@ export default function EsqueceuSenhaPage() {
               disabled={isLoading}
             >
               {isLoading ? 'Enviando...' : (
-                <>Enviar link de recuperacao <ArrowRight size={16} /></>
+                <>Enviar link de recuperação <ArrowRight size={16} /></>
               )}
             </button>
           </form>

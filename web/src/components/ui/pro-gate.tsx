@@ -39,7 +39,7 @@ export function ProGate({
           {children}
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--sl-bg)]/60 backdrop-blur-sm rounded-2xl">
-          <Crown size={28} className="text-[#f59e0b]" />
+          <Crown size={28} className="text-[#D9962E]" />
           <p className="font-[Syne] font-bold text-sm text-[var(--sl-t1)]">
             {label ?? 'Recurso exclusivo PRO'}
           </p>
@@ -47,8 +47,8 @@ export function ProGate({
             href="/configuracoes/plano"
             className="px-5 py-2 rounded-xl text-white text-[13px] font-bold transition-all hover:brightness-110 hover:-translate-y-px"
             style={{
-              background: 'linear-gradient(135deg, #10b981, #0055ff)',
-              boxShadow: '0 4px 20px rgba(16,185,129,0.25)',
+              background: 'var(--sl-em)',
+              boxShadow: '0 4px 20px rgba(15,118,110,0.25)',
             }}
           >
             Fazer upgrade para Pro
@@ -64,7 +64,7 @@ export function ProGate({
       <Link
         href="/configuracoes/plano"
         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors hover:bg-[var(--sl-s3)]"
-        style={{ color: '#f59e0b' }}
+        style={{ color: '#D9962E' }}
       >
         <Crown size={12} />
         {label ?? 'Exclusivo PRO'}
@@ -77,9 +77,9 @@ export function ProGate({
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-8 flex flex-col items-center gap-4 text-center">
       <div
         className="w-12 h-12 rounded-full flex items-center justify-center"
-        style={{ background: 'rgba(245,158,11,0.12)' }}
+        style={{ background: 'rgba(217,150,46,0.12)' }}
       >
-        <Crown size={22} className="text-[#f59e0b]" />
+        <Crown size={22} className="text-[#D9962E]" />
       </div>
       <div>
         <p className="font-[Syne] font-bold text-base text-[var(--sl-t1)] mb-1">
@@ -93,8 +93,8 @@ export function ProGate({
         href="/configuracoes/plano"
         className="px-6 py-2.5 rounded-xl text-white text-[13px] font-bold transition-all hover:brightness-110 hover:-translate-y-px"
         style={{
-          background: 'linear-gradient(135deg, #10b981, #0055ff)',
-          boxShadow: '0 4px 20px rgba(16,185,129,0.25)',
+          background: 'var(--sl-em)',
+          boxShadow: '0 4px 20px rgba(15,118,110,0.25)',
         }}
       >
         Fazer upgrade para Pro
@@ -137,24 +137,24 @@ export function ProLimitGate({
 
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 flex flex-col items-center gap-3 text-center">
-      <Crown size={24} className="text-[#f59e0b]" />
+      <Crown size={24} className="text-[#D9962E]" />
       <div>
         <p className="font-[Syne] font-bold text-sm text-[var(--sl-t1)] mb-1">
           {label ?? 'Limite atingido'}
         </p>
         <p className="text-[13px] text-[var(--sl-t3)]">
-          <span className="font-[DM_Mono] font-medium text-[var(--sl-t2)]">
+          <span className="font-[IBM_Plex_Mono] font-medium text-[var(--sl-t2)]">
             {currentCount}/{maxLimit === Infinity ? '∞' : maxLimit}
           </span>
-          {' '}— Faça upgrade para Pro e tenha acesso ilimitado.
+          {' · '}Faça upgrade para Pro e tenha acesso ilimitado.
         </p>
       </div>
       <Link
         href="/configuracoes/plano"
         className="px-5 py-2 rounded-xl text-white text-[13px] font-bold transition-all hover:brightness-110 hover:-translate-y-px"
         style={{
-          background: 'linear-gradient(135deg, #10b981, #0055ff)',
-          boxShadow: '0 4px 20px rgba(16,185,129,0.25)',
+          background: 'var(--sl-em)',
+          boxShadow: '0 4px 20px rgba(15,118,110,0.25)',
         }}
       >
         Fazer upgrade para Pro

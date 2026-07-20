@@ -144,7 +144,7 @@ function EventChip({ event, onClick }: { event: EventWithLayout; onClick: (e: Re
           {event.title}
         </span>
         {height > 30 && event.start_time && (
-          <span className="text-[9px] opacity-70 leading-tight font-[DM_Mono]" style={{ color: cfg.color }}>
+          <span className="text-[9px] opacity-70 leading-tight font-[IBM_Plex_Mono]" style={{ color: cfg.color }}>
             {event.start_time}{event.end_time ? `–${event.end_time}` : ''}
           </span>
         )}
@@ -191,7 +191,7 @@ function DayColumn({
   return (
     <div
       className="relative flex-1 border-l border-[var(--sl-border)]"
-      style={isToday ? { background: 'rgba(6,182,212,0.015)' } : {}}
+      style={isToday ? { background: 'rgba(60,160,181,0.015)' } : {}}
     >
       {/* Linhas de grade */}
       {Array.from({ length: TOTAL_HOURS * 2 }, (_, i) => (
@@ -209,7 +209,7 @@ function DayColumn({
       {Array.from({ length: TOTAL_HOURS }, (_, i) => (
         <div
           key={i}
-          className="absolute left-0 right-0 hover:bg-[rgba(6,182,212,0.04)] cursor-pointer transition-colors"
+          className="absolute left-0 right-0 hover:bg-[rgba(60,160,181,0.04)] cursor-pointer transition-colors"
           style={{ top: i * HOUR_HEIGHT, height: HOUR_HEIGHT }}
           onClick={() => onSlotClick(day, START_HOUR + i)}
         />
@@ -221,8 +221,8 @@ function DayColumn({
           className="absolute left-0 right-0 z-20 pointer-events-none flex items-center"
           style={{ top: nowTop }}
         >
-          <div className="w-2 h-2 rounded-full bg-[#f43f5e] shrink-0 -ml-1" />
-          <div className="flex-1 h-[1.5px] bg-[#f43f5e]" />
+          <div className="w-2 h-2 rounded-full bg-[#DB6478] shrink-0 -ml-1" />
+          <div className="flex-1 h-[1.5px] bg-[#DB6478]" />
         </div>
       )}
 
@@ -395,7 +395,7 @@ export default function AgendaSemanalPage() {
             return mins >= 60 ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? mins % 60 + 'min' : ''}` : `${mins}min`
           })()
         : undefined,
-      color: cfg?.color ?? '#06b6d4',
+      color: cfg?.color ?? '#3CA0B5',
       tags: cfg
         ? [{ label: cfg.label, bg: `${cfg.color}15`, color: cfg.color }]
         : [],
@@ -406,7 +406,7 @@ export default function AgendaSemanalPage() {
   events.forEach(ev => {
     if (!mobileEventDotColors[ev.date]) {
       const cfg = EVENT_TYPES[ev.type]
-      mobileEventDotColors[ev.date] = cfg?.color ?? '#06b6d4'
+      mobileEventDotColors[ev.date] = cfg?.color ?? '#3CA0B5'
     }
   })
 
@@ -423,7 +423,7 @@ export default function AgendaSemanalPage() {
               defaultDate: weekDays[selectedDay] ? dateStr(weekDays[selectedDay]) : today,
             })}
             className="flex h-9 w-9 items-center justify-center rounded-[10px] text-white"
-            style={{ background: '#06b6d4' }}
+            style={{ background: '#3CA0B5' }}
             aria-label="Novo evento"
           >
             <Plus size={16} />
@@ -459,13 +459,13 @@ export default function AgendaSemanalPage() {
             className={cn(
               'relative px-4 py-2.5 text-[13px] transition-colors',
               pathname === tab.href
-                ? 'text-[#06b6d4] font-semibold'
+                ? 'text-[#3CA0B5] font-semibold'
                 : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
             )}>
             {tab.label}
-            {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#f59e0b] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
+            {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#D9962E] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
             {pathname === tab.href && (
-              <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#06b6d4]" />
+              <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#3CA0B5]" />
             )}
           </Link>
         ))}
@@ -474,8 +474,8 @@ export default function AgendaSemanalPage() {
       {/* ① ModuleHeader */}
       <ModuleHeader
         icon={CalendarIcon}
-        iconBg="rgba(6,182,212,.1)"
-        iconColor="#06b6d4"
+        iconBg="rgba(60,160,181,.1)"
+        iconColor="#3CA0B5"
         title="Agenda Semanal"
         subtitle="Visao completa da semana com todos os compromissos"
         weekNav={{
@@ -487,7 +487,7 @@ export default function AgendaSemanalPage() {
         <button
           onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold text-white transition-all hover:brightness-110 hover:-translate-y-px"
-          style={{ background: '#06b6d4' }}
+          style={{ background: '#3CA0B5' }}
         >
           <Plus size={16} />
           Novo Evento
@@ -497,21 +497,21 @@ export default function AgendaSemanalPage() {
       {/* ② JornadaInsight */}
       <JornadaInsight text={
         <span>
-          Você tem <strong className="text-[#06b6d4]">{pending} evento{pending !== 1 ? 's' : ''} pendente{pending !== 1 ? 's' : ''}</strong> esta semana.
+          Você tem <strong className="text-[#3CA0B5]">{pending} evento{pending !== 1 ? 's' : ''} pendente{pending !== 1 ? 's' : ''}</strong> esta semana.
           {done > 0 ? ` Já concluiu ${done}.` : ''}{' '}
-          Continue mantendo sua agenda organizada! ✨
+          Continue mantendo sua agenda organizada.
         </span>
       } />
 
       {/* ③ Stats Strip (inline metrics) */}
       <MetricsStrip
-        gradient={['#06b6d4', '#0055ff']}
+        gradient={['#3CA0B5', '#0B2D34']}
         className="mb-5"
         items={[
           { label: 'Eventos', value: String(weekEvents.length), note: 'agendados' },
-          { label: 'Concluidos', value: String(done), valueColor: '#10b981', note: weekEvents.length > 0 ? `${Math.round((done / weekEvents.length) * 100)}% conclusao` : '--' },
-          { label: 'Em Aberto', value: String(pending), valueColor: '#f59e0b', note: pending === 0 ? 'tudo em dia!' : 'pendentes' },
-          { label: 'Horas', value: `${totalHoras.toFixed(1)}h`, valueColor: '#06b6d4', note: 'esta semana' },
+          { label: 'Concluidos', value: String(done), valueColor: '#0F766E', note: weekEvents.length > 0 ? `${Math.round((done / weekEvents.length) * 100)}% conclusao` : '--' },
+          { label: 'Em Aberto', value: String(pending), valueColor: '#D9962E', note: pending === 0 ? 'tudo em dia!' : 'pendentes' },
+          { label: 'Horas', value: `${totalHoras.toFixed(1)}h`, valueColor: '#3CA0B5', note: 'esta semana' },
         ]}
       />
 
@@ -533,10 +533,10 @@ export default function AgendaSemanalPage() {
                   selectedDay === i
                     ? 'text-white'
                     : isToday
-                    ? 'text-[#06b6d4] bg-[rgba(6,182,212,0.1)]'
+                    ? 'text-[#3CA0B5] bg-[rgba(60,160,181,0.1)]'
                     : 'text-[var(--sl-t2)] hover:bg-[var(--sl-s2)]',
                 )}
-                style={selectedDay === i ? { background: '#06b6d4' } : {}}
+                style={selectedDay === i ? { background: '#3CA0B5' } : {}}
               >
                 <span className="text-[9px] font-bold uppercase">{WEEK_DAYS[i]}</span>
                 <span className="text-[14px] font-bold leading-none">{day.getDate()}</span>
@@ -560,7 +560,7 @@ export default function AgendaSemanalPage() {
                     'text-[17px] font-bold leading-none mt-0.5',
                     isToday ? 'w-8 h-8 flex items-center justify-center rounded-full text-white' : 'text-[var(--sl-t1)]',
                   )}
-                  style={isToday ? { background: '#06b6d4' } : {}}
+                  style={isToday ? { background: '#3CA0B5' } : {}}
                 >
                   {day.getDate()}
                 </span>
@@ -603,7 +603,7 @@ export default function AgendaSemanalPage() {
               {Array.from({ length: TOTAL_HOURS }, (_, i) => (
                 <div
                   key={i}
-                  className="absolute right-1.5 text-[9px] text-[var(--sl-t3)] font-[DM_Mono] leading-none"
+                  className="absolute right-1.5 text-[9px] text-[var(--sl-t3)] font-[IBM_Plex_Mono] leading-none"
                   style={{ top: i * HOUR_HEIGHT - 6 }}
                 >
                   {String(START_HOUR + i).padStart(2, '0')}:00
@@ -662,14 +662,14 @@ export default function AgendaSemanalPage() {
           defaultDate: weekDays[selectedDay] ? dateStr(weekDays[selectedDay]) : today,
         })}
         className="fixed bottom-6 right-6 md:hidden w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-white z-30 transition-all hover:brightness-110"
-        style={{ background: '#06b6d4' }}
+        style={{ background: '#3CA0B5' }}
       >
         <Plus size={22} />
       </button>
 
     </div>
 
-      {/* Modais — shared by mobile + desktop */}
+      {/* Modais · shared by mobile + desktop */}
       <EventModal
         open={eventModal.open}
         mode={eventModal.mode}

@@ -1,5 +1,7 @@
 'use client'
 
+import { Trophy, Rocket, Dumbbell, Star, Sprout, Check, Pause } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { RingProgress } from '@/components/ui/ring-progress'
 import {
@@ -33,7 +35,7 @@ function getDaysRemaining(targetDate: string | null): number | null {
 export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
   const pct = calcProgress(goal.current_amount, goal.target_amount)
   const color = calcRingColor(goal)
-  const useGrad = goal.status === 'active' && color === '#10b981'
+  const useGrad = goal.status === 'active' && color === '#0F766E'
   const projected = calcProjectedDate(goal.current_amount, goal.target_amount, goal.monthly_contribution)
   const daysLeft = getDaysRemaining(goal.target_date)
   const remaining = Math.max(0, goal.target_amount - goal.current_amount)
@@ -41,12 +43,12 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
 
   const totalContribs = contributions.reduce((s, c) => s + c.amount, 0)
 
-  function getMotivationalText(): string {
-    if (goal.status === 'completed') return `🏆 Meta concluída! Você conseguiu!`
-    if (pct >= 75) return `🚀 Incrível! Você já passou dos ${pct}% — está quase lá!`
-    if (pct >= 50) return `💪 Metade do caminho percorrido! Continue assim!`
-    if (pct >= 25) return `⭐ Ótimo começo! ${pct}% concluído e acelerando!`
-    return `🌱 Todo grande sonho começa com o primeiro passo. Você já começou!`
+  function getMotivational(): { text: string; icon: LucideIcon } {
+    if (goal.status === 'completed') return { text: 'Meta concluída! Você conseguiu!', icon: Trophy }
+    if (pct >= 75) return { text: `Incrível! Você já passou dos ${pct}% · está quase lá!`, icon: Rocket }
+    if (pct >= 50) return { text: 'Metade do caminho percorrido! Continue assim!', icon: Dumbbell }
+    if (pct >= 25) return { text: `Ótimo começo! ${pct}% concluído e acelerando!`, icon: Star }
+    return { text: 'Todo grande sonho começa com o primeiro passo. Você já começou!', icon: Sprout }
   }
 
   return (
@@ -68,12 +70,16 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
         </div>
         {goal.status !== 'active' && (
           <div className={cn(
-            'px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0',
+            'px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0 inline-flex items-center gap-1',
             goal.status === 'completed'
-              ? 'bg-[rgba(16,185,129,.15)] text-[#10b981]'
-              : 'bg-[rgba(245,158,11,.15)] text-[#f59e0b]',
+              ? 'bg-[rgba(15,118,110,.15)] text-[#0F766E]'
+              : 'bg-[rgba(217,150,46,.15)] text-[#D9962E]',
           )}>
-            {goal.status === 'completed' ? '✓ Concluída' : '⏸ Pausada'}
+            {goal.status === 'completed' ? (
+              <><Check size={11} strokeWidth={3} /> Concluída</>
+            ) : (
+              <><Pause size={11} /> Pausada</>
+            )}
           </div>
         )}
       </div>
@@ -84,13 +90,11 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
           value={pct}
           size={120}
           strokeWidth={9}
-          color={color}
-          gradient={useGrad}
         />
         <div className="grid grid-cols-2 gap-3 flex-1">
-          <StatCell label="Acumulado" value={formatCurrency(goal.current_amount)} color="#10b981" />
+          <StatCell label="Acumulado" value={formatCurrency(goal.current_amount)} color="#0F766E" />
           <StatCell label="Meta total" value={formatCurrency(goal.target_amount)} />
-          <StatCell label="Faltam" value={formatCurrency(remaining)} color={remaining > 0 ? '#f59e0b' : '#10b981'} />
+          <StatCell label="Faltam" value={formatCurrency(remaining)} color={remaining > 0 ? '#D9962E' : '#0F766E'} />
           <StatCell
             label="Aporte mensal"
             value={goal.monthly_contribution > 0 ? formatCurrency(goal.monthly_contribution) : '—'}
@@ -103,9 +107,9 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
         {goal.target_date && (
           <div className="bg-[var(--sl-s2)] rounded-[12px] p-3.5">
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">Prazo</p>
-            <p className="font-[DM_Mono] font-medium text-[14px] text-[var(--sl-t1)]">{formatDate(goal.target_date)}</p>
+            <p className="font-[IBM_Plex_Mono] font-medium text-[14px] text-[var(--sl-t1)]">{formatDate(goal.target_date)}</p>
             {daysLeft !== null && (
-              <p className={cn('text-[12px] mt-0.5', daysLeft < 0 ? 'text-[#f43f5e]' : daysLeft < 60 ? 'text-[#f59e0b]' : 'text-[var(--sl-t3)]')}>
+              <p className={cn('text-[12px] mt-0.5', daysLeft < 0 ? 'text-[#DB6478]' : daysLeft < 60 ? 'text-[#D9962E]' : 'text-[var(--sl-t3)]')}>
                 {daysLeft < 0 ? `Prazo ultrapassado há ${Math.abs(daysLeft)} dias` : `${daysLeft} dias restantes`}
               </p>
             )}
@@ -114,7 +118,7 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
         {projected && goal.monthly_contribution > 0 ? (
           <div className="bg-[var(--sl-s2)] rounded-[12px] p-3.5">
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">Projeção (ritmo atual)</p>
-            <p className="font-[DM_Mono] font-medium text-[14px] text-[var(--sl-t1)]">
+            <p className="font-[IBM_Plex_Mono] font-medium text-[14px] text-[var(--sl-t1)]">
               {projected.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
             </p>
             <p className="text-[12px] text-[var(--sl-t3)] mt-0.5">
@@ -124,7 +128,7 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
         ) : lastContrib ? (
           <div className="bg-[var(--sl-s2)] rounded-[12px] p-3.5">
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">Último aporte</p>
-            <p className="font-[DM_Mono] font-medium text-[14px] text-[#10b981]">
+            <p className="font-[IBM_Plex_Mono] font-medium text-[14px] text-[#0F766E]">
               {formatCurrency(lastContrib.amount)}
             </p>
             <p className="text-[12px] text-[var(--sl-t3)] mt-0.5">{formatDate(lastContrib.date)}</p>
@@ -133,9 +137,15 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
       </div>
 
       {/* Motivational text */}
-      <div className="p-3.5 rounded-[12px] bg-gradient-to-br from-[#10b981]/8 to-[#0055ff]/8 border border-[#10b981]/20">
-        <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed">{getMotivationalText()}</p>
-      </div>
+      {(() => {
+        const m = getMotivational()
+        return (
+          <div className="p-3.5 rounded-[12px] bg-gradient-to-br from-[#0F766E]/8 to-[#0B2D34]/8 border border-[#0F766E]/20 flex items-start gap-2.5">
+            <m.icon size={16} className="text-[#0F766E] shrink-0 mt-0.5" />
+            <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed">{m.text}</p>
+          </div>
+        )
+      })()}
     </div>
   )
 }
@@ -145,7 +155,7 @@ function StatCell({ label, value, color }: { label: string; value: string; color
     <div className="bg-[var(--sl-s2)] rounded-[10px] p-2.5">
       <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">{label}</p>
       <p
-        className="font-[DM_Mono] font-medium text-[14px] leading-tight"
+        className="font-[IBM_Plex_Mono] font-medium text-[14px] leading-tight"
         style={{ color: color ?? 'var(--sl-t1)' }}
       >
         {value}

@@ -26,7 +26,7 @@ export function ProximasRecorrentes({ upcomingOccurrences }: ProximasRecorrentes
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 mb-6 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-3">
         <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Próximas Recorrentes</p>
-        <button onClick={() => router.push('/financas/recorrentes')} className="text-[11px] text-[#10b981] hover:underline">Ver todas</button>
+        <button onClick={() => router.push('/financas/recorrentes')} className="text-[11px] text-[#0F766E] hover:underline">Ver todas</button>
       </div>
       {upcomingOccurrences.length === 0 ? (
         <p className="text-[12px] text-[var(--sl-t3)] text-center py-4">Nenhuma recorrente prevista nos próximos 30 dias</p>
@@ -35,8 +35,8 @@ export function ProximasRecorrentes({ upcomingOccurrences }: ProximasRecorrentes
           {upcomingOccurrences.slice(0, 5).map(o => {
             const isOver = o.daysLeft === 0
             const isDue = o.daysLeft <= 3
-            const statusBg = isOver ? 'rgba(244,63,94,.12)' : isDue ? 'rgba(245,158,11,.12)' : 'rgba(110,144,184,.10)'
-            const statusColor = isOver ? '#f43f5e' : isDue ? '#f59e0b' : 'var(--sl-t3)'
+            const statusBg = isOver ? 'rgba(219,100,120,.12)' : isDue ? 'rgba(217,150,46,.12)' : 'rgba(110,144,184,.10)'
+            const statusColor = isOver ? '#DB6478' : isDue ? '#D9962E' : 'var(--sl-t3)'
             const statusLabel = isOver ? 'hoje' : `${o.day}/${o.monthShort}`
             return (
               <div
@@ -53,7 +53,7 @@ export function ProximasRecorrentes({ upcomingOccurrences }: ProximasRecorrentes
                   </span>
                 </div>
                 <p className="text-[11px] font-semibold text-[var(--sl-t1)] leading-tight">{o.name}</p>
-                <p className={cn('font-[DM_Mono] text-[12px] font-medium', o.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+                <p className={cn('font-[IBM_Plex_Mono] text-[12px] font-medium', o.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
                   R$ {fmtR$(o.amount)}
                 </p>
               </div>

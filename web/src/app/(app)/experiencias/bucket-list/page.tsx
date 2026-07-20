@@ -5,6 +5,7 @@ import { useBucketList } from '@/hooks/use-experiencias'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { ExperienciasMobile } from '@/components/experiencias/ExperienciasMobile'
 import { ExpTabBucketList } from '@/components/experiencias/mobile/ExpTabBucketList'
+import { fmtBRL } from '@/lib/format/currency'
 
 export default function BucketListPage() {
   const { items, loading, reload } = useBucketList()
@@ -24,10 +25,10 @@ export default function BucketListPage() {
         {/* Module Header */}
         <ModuleHeader
           icon={MapPin}
-          iconBg="rgba(236,72,153,.1)"
-          iconColor="#ec4899"
+          iconBg="rgba(199,103,149,.1)"
+          iconColor="#C76795"
           title="Lista de Aventuras"
-          subtitle={items.length > 0 ? `${pending} pendentes \u00B7 ${done} concluidas \u00B7 R$ ${totalCost.toLocaleString('pt-BR')} estimado` : 'Adicione destinos dos seus sonhos'}
+          subtitle={items.length > 0 ? `${pending} pendentes \u00B7 ${done} conclu\u00EDdas \u00B7 ${fmtBRL(totalCost, { compact: true })} estimado` : 'Adicione destinos dos seus sonhos'}
         />
 
         {/* Content */}

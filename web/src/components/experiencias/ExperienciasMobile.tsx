@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, ArrowLeft, Pencil } from 'lucide-react'
 import { EXP_PRIMARY, EXP_PRIMARY_BG } from '@/lib/exp-colors'
 import { jornadaLabel } from '@/lib/jornada-labels'
 import { useXP } from '@/hooks/use-xp'
@@ -114,15 +114,18 @@ export function ExperienciasMobile() {
         <div className="flex items-center gap-3 px-5 pt-[14px] pb-[10px]">
           <button
             onClick={() => setMemoryDetailId(null)}
-            className="text-[18px] text-[var(--sl-t2)] w-6 shrink-0"
-          >←</button>
+            className="w-6 h-6 inline-flex items-center justify-center text-[var(--sl-t2)] shrink-0"
+            aria-label="Voltar"
+          >
+            <ArrowLeft size={18} />
+          </button>
           <span
             className="font-[Syne] text-[16px] font-bold flex-1"
-            style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            style={{ background: 'linear-gradient(135deg, #8B7BD4, #C76795)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
           >
             Diário do Explorador
           </span>
-          <span className="text-[14px]" style={{ color: '#ec4899' }}>✏️</span>
+          <Pencil size={14} style={{ color: EXP_PRIMARY }} />
         </div>
 
         {/* Tabs */}
@@ -147,7 +150,7 @@ export function ExperienciasMobile() {
                 {active && (
                   <span
                     className="absolute bottom-[-1px] left-[10%] w-[80%] h-0.5 rounded-sm"
-                    style={{ background: '#8b5cf6' }}
+                    style={{ background: '#8B7BD4' }}
                   />
                 )}
               </button>
@@ -176,7 +179,7 @@ export function ExperienciasMobile() {
         </div>
         <div className="flex items-center gap-2">
           <span
-            className="text-[10px] px-2 py-[3px] rounded-[20px] font-semibold"
+            className="sl-num text-[10px] px-2 py-[3px] rounded-[20px] font-semibold"
             style={{
               background: EXP_PRIMARY_BG,
               color: EXP_PRIMARY,
@@ -227,8 +230,8 @@ export function ExperienciasMobile() {
           <ExpCoachCard
             message={
               <>{trips.filter(t => ['planning','reserved','ongoing'].includes(t.status)).length > 0
-                ? <><strong>{trips.filter(t => ['planning','reserved','ongoing'].includes(t.status)).length} missões ativas</strong> — continue guardando para a próxima aventura!</>
-                : <>Planeje sua próxima missão épica e desbloqueie novos continentes! 🌎</>
+                ? <><strong>{trips.filter(t => ['planning','reserved','ongoing'].includes(t.status)).length} missões ativas</strong> · continue guardando para a próxima aventura!</>
+                : <>Planeje sua próxima missão épica e desbloqueie novos continentes.</>
               }</>
             }
             cta={trips.find(t => t.status === 'planning')?.name ? `Ver Missão ${trips.find(t => t.status === 'planning')?.name}` : 'Nova Missão'}

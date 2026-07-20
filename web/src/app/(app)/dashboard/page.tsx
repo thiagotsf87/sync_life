@@ -1,7 +1,20 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Globe, ClipboardList, Activity, DollarSign, Clock, Brain, Briefcase, Target, TrendingUp, Plane, FileText } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import {
+  ClipboardList,
+  FileText,
+  Plus,
+  DollarSign,
+  Clock,
+  Brain,
+  Activity,
+  Briefcase,
+  Target,
+  TrendingUp,
+  Plane,
+} from 'lucide-react'
 import { useTransactions } from '@/hooks/use-transactions'
 import { useBudgets } from '@/hooks/use-budgets'
 import { useMetas, calcProgress } from '@/hooks/use-metas'
@@ -14,7 +27,6 @@ import { useExperienciasDashboard } from '@/hooks/use-experiencias'
 import { DashboardMobile } from '@/components/dashboard/DashboardMobile'
 import { useScoreEngine } from '@/hooks/use-score-engine'
 import { fmt, getGreeting } from '@/components/dashboard/dashboard-utils'
-import { ModuleHeader } from '@/components/ui/module-header'
 import { ModuleMosaic } from '@/components/shell/module-mosaic'
 import { BudgetsWidget } from '@/components/dashboard/BudgetsWidget'
 import { InsightCard } from '@/components/dashboard/InsightCard'
@@ -23,52 +35,15 @@ import { WeekAgendaWidget } from '@/components/dashboard/WeekAgendaWidget'
 import { RecurrencesWidget } from '@/components/dashboard/RecurrencesWidget'
 import { ProjectionWidget } from '@/components/dashboard/ProjectionWidget'
 import { AchievementsWidget } from '@/components/dashboard/AchievementsWidget'
+import { HeroScoreMassive } from '@/components/dashboard/HeroScoreMassive'
+import { FinancialStrip } from '@/components/dashboard/FinancialStrip'
+import { HighlightsCard, type HighlightItem } from '@/components/dashboard/HighlightsCard'
 import { useRelatorioCompleto } from '@/hooks/use-relatorio-completo'
-
-// ─── Inline Sparkline bars ─────────────────────────────────────────────────
-function SparkBars({ values }: { values: number[] }) {
-  return (
-    <div className="flex items-end gap-[3px] h-[36px]">
-      {values.map((v, i) => (
-        <i
-          key={i}
-          className="block w-4 rounded-[3px]"
-          style={{
-            height: `${v}%`,
-            background: i === values.length - 1
-              ? 'var(--sl-mod, #6366f1)'
-              : `rgba(99,102,241,${0.15 + i * 0.08})`,
-            boxShadow: i === values.length - 1 ? '0 0 8px rgba(99,102,241,.4)' : undefined,
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-// ─── Highlight Row ──────────────────────────────────────────────────────────
-function HighlightRow({ icon: Icon, iconBg, iconColor, label, sub, delta, deltaColor }: {
-  icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>
-  iconBg: string; iconColor: string; label: string; sub: string
-  delta: string; deltaColor: string
-}) {
-  return (
-    <div className="flex items-center gap-2.5 p-[8px_12px] bg-[var(--sl-s2)] rounded-[10px]">
-      <div className="w-[26px] h-[26px] rounded-[7px] flex items-center justify-center shrink-0" style={{ background: iconBg }}>
-        <Icon size={12} style={{ color: iconColor }} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-[12px] font-semibold text-[var(--sl-t1)]">{label}</div>
-        <div className="text-[10px] text-[var(--sl-t3)]">{sub}</div>
-      </div>
-      <span className="text-[11px] font-medium" style={{ color: deltaColor }}>{delta}</span>
-    </div>
-  )
-}
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
+  const router = useRouter()
   const now = useMemo(() => new Date(), [])
   const month = now.getMonth() + 1
   const year = now.getFullYear()
@@ -88,16 +63,16 @@ export default function DashboardPage() {
     })
   }, [])
 
-  const { transactions, isLoading: loadingTxns } = useTransactions({ month, year, type: 'all' })
+  const { transactions } = useTransactions({ month, year, type: 'all' })
   const { budgets, isLoading: loadingBudgets } = useBudgets({ month, year })
   const { goals, isLoading: loadingGoals } = useMetas({ status: 'active' })
   const { weekStart } = useMemo(() => getWeekRange(now), [now])
   const { events } = useAgenda({ mode: 'week', referenceDate: now })
   const { upcomingOccurrences } = useRecorrentes()
-  const { nextAppointment, weekActivities } = useCorpoDashboard()
+  const { weekActivities } = useCorpoDashboard()
   const { assets: patrimonioAssets } = usePatrimonioDashboard()
   const { trips: experienciaTrips } = useExperienciasDashboard()
-  const { dimensions: lifeDimensions, overallScore: lifeScore, loading: lifeLoading } = useLifeMap()
+  const { dimensions: lifeDimensions, overallScore: lifeScore } = useLifeMap()
   const { result: scoreResult } = useScoreEngine()
   const realScore = scoreResult?.total ?? lifeScore
   const { generate: generatePdf, generating: pdfGenerating } = useRelatorioCompleto()
@@ -179,18 +154,18 @@ export default function DashboardPage() {
   const weekActivityMinutes = useMemo(() =>
     weekActivities.reduce((s, a) => s + a.duration_minutes, 0), [weekActivities])
 
-  // Module mosaic data
+  // Module mosaic data (8 dimensions)
   const mosaicModules = useMemo(() => {
     const dimMap = new Map(lifeDimensions.map(d => [d.key, d.value]))
     return [
-      { name: 'Finanças', score: dimMap.get('financas') ?? 0, color: '#10b981', icon: DollarSign, metric: `Saldo: ${fmt(balance)}`, progress: dimMap.get('financas') ?? 0 },
-      { name: 'Experiências', score: dimMap.get('experiencias') ?? 0, color: '#ec4899', icon: Plane, metric: nextTrip ? `${nextTrip.destinations?.[0] ?? nextTrip.name} em ${daysUntilNextTrip}d` : `${experienciaTrips.length} viagens`, progress: dimMap.get('experiencias') ?? 0 },
-      { name: 'Mente', score: dimMap.get('mente') ?? 0, color: '#eab308', icon: Brain, metric: 'Meditação e estudos', progress: dimMap.get('mente') ?? 0 },
-      { name: 'Corpo', score: dimMap.get('corpo') ?? 0, color: '#f97316', icon: Activity, metric: `${weekActivityCount} atividades sem.`, progress: dimMap.get('corpo') ?? 0 },
-      { name: 'Patrimônio', score: dimMap.get('patrimonio') ?? 0, color: '#3b82f6', icon: TrendingUp, metric: `${fmt(totalPatrimonio)} · ${patrimonioGainPct >= 0 ? '+' : ''}${patrimonioGainPct}%`, progress: dimMap.get('patrimonio') ?? 0 },
-      { name: 'Tempo', score: dimMap.get('tempo') ?? 0, color: '#06b6d4', icon: Clock, metric: `${events.length} eventos · ${weekDays.filter(d => d.events.length > 0).length}/7 dias`, progress: dimMap.get('tempo') ?? 0 },
-      { name: 'Carreira', score: dimMap.get('carreira') ?? 0, color: '#f43f5e', icon: Briefcase, metric: 'Progresso profissional', progress: dimMap.get('carreira') ?? 0 },
-      { name: 'Futuro', score: dimMap.get('futuro') ?? 0, color: '#0055ff', icon: Target, metric: `${activeGoals.length} metas · ${activeGoals.length > 0 ? Math.round(activeGoals.reduce((s, g) => s + calcProgress(g.current_amount, g.target_amount), 0) / activeGoals.length) : 0}% média`, progress: dimMap.get('futuro') ?? 0 },
+      { name: 'Finanças', score: dimMap.get('financas') ?? 0, color: '#0F766E', icon: DollarSign, metric: `Saldo: ${fmt(balance)}`, progress: dimMap.get('financas') ?? 0 },
+      { name: 'Experiências', score: dimMap.get('experiencias') ?? 0, color: '#C76795', icon: Plane, metric: nextTrip ? `${nextTrip.destinations?.[0] ?? nextTrip.name} em ${daysUntilNextTrip}d` : `${experienciaTrips.length} viagens`, progress: dimMap.get('experiencias') ?? 0 },
+      { name: 'Mente', score: dimMap.get('mente') ?? 0, color: '#D9962E', icon: Brain, metric: 'Meditação e estudos', progress: dimMap.get('mente') ?? 0 },
+      { name: 'Corpo', score: dimMap.get('corpo') ?? 0, color: '#D97534', icon: Activity, metric: `${weekActivityCount} atividades sem.`, progress: dimMap.get('corpo') ?? 0 },
+      { name: 'Patrimônio', score: dimMap.get('patrimonio') ?? 0, color: '#4F88D4', icon: TrendingUp, metric: `${fmt(totalPatrimonio)} · ${patrimonioGainPct >= 0 ? '+' : ''}${patrimonioGainPct}%`, progress: dimMap.get('patrimonio') ?? 0 },
+      { name: 'Tempo', score: dimMap.get('tempo') ?? 0, color: '#3CA0B5', icon: Clock, metric: `${events.length} eventos · ${weekDays.filter(d => d.events.length > 0).length}/7 dias`, progress: dimMap.get('tempo') ?? 0 },
+      { name: 'Carreira', score: dimMap.get('carreira') ?? 0, color: '#DB6478', icon: Briefcase, metric: 'Progresso profissional', progress: dimMap.get('carreira') ?? 0 },
+      { name: 'Futuro', score: dimMap.get('futuro') ?? 0, color: '#8B7BD4', icon: Target, metric: `${activeGoals.length} metas · ${activeGoals.length > 0 ? Math.round(activeGoals.reduce((s, g) => s + calcProgress(g.current_amount, g.target_amount), 0) / activeGoals.length) : 0}% média`, progress: dimMap.get('futuro') ?? 0 },
     ]
   }, [lifeDimensions, balance, nextTrip, daysUntilNextTrip, experienciaTrips.length, weekActivityCount, totalPatrimonio, patrimonioGainPct, events.length, weekDays, activeGoals])
 
@@ -198,25 +173,70 @@ export default function DashboardPage() {
   const mobileModuleScores = useMemo(() => {
     const dims = lifeDimensions
     return [
-      { id: 'financas', emoji: '💰', label: 'Finanças', pct: dims.find(d => d.key === 'financas')?.value ?? 0, color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
-      { id: 'tempo', emoji: '⏳', label: 'Tempo', pct: dims.find(d => d.key === 'tempo')?.value ?? 0, color: '#06b6d4', bg: 'rgba(6,182,212,0.15)' },
-      { id: 'futuro', emoji: '🔮', label: 'Futuro', pct: dims.find(d => d.key === 'futuro')?.value ?? 0, color: '#0055ff', bg: 'rgba(0,85,255,0.15)' },
+      { id: 'financas', emoji: '💰', label: 'Finanças', pct: dims.find(d => d.key === 'financas')?.value ?? 0, color: '#0F766E', bg: 'rgba(15,118,110,0.15)' },
+      { id: 'tempo', emoji: '⏳', label: 'Tempo', pct: dims.find(d => d.key === 'tempo')?.value ?? 0, color: '#3CA0B5', bg: 'rgba(60,160,181,0.15)' },
+      { id: 'futuro', emoji: '🔮', label: 'Futuro', pct: dims.find(d => d.key === 'futuro')?.value ?? 0, color: '#8B7BD4', bg: 'rgba(139,123,212,0.15)' },
     ]
   }, [lifeDimensions])
 
   const mobileAlerts = useMemo(() => {
     const a: { color: string; title: string; text: string }[] = []
     budgets.filter(b => b.pct > 70).forEach(b => {
-      a.push({ color: b.pct > 85 ? '#f43f5e' : '#f59e0b', title: `Orçamento ${b.category?.name ?? 'Categoria'}`, text: `atingiu ${b.pct}% — ${fmt(b.amount - b.gasto)} restantes` })
+      a.push({ color: b.pct > 85 ? '#DB6478' : '#D9962E', title: `Orçamento ${b.category?.name ?? 'Categoria'}`, text: `atingiu ${b.pct}% · ${fmt(b.amount - b.gasto)} restantes` })
     })
     nextRecurrences.slice(0, 2).forEach(r => {
-      a.push({ color: '#10b981', title: r.name, text: `vence ${r.daysLeft === 0 ? 'hoje' : `em ${r.daysLeft} dias`} — ${fmt(r.amount)} agendado` })
+      a.push({ color: '#0F766E', title: r.name, text: `vence ${r.daysLeft === 0 ? 'hoje' : `em ${r.daysLeft} dias`} · ${fmt(r.amount)} agendado` })
     })
     return a.slice(0, 3)
   }, [budgets, nextRecurrences])
 
-  const dateSubtitle = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-    .replace(/^\w/, c => c.toUpperCase())
+  // ── TopBar date eyebrow ──
+  const dateEyebrow = useMemo(() => {
+    const weekday = now.toLocaleDateString('pt-BR', { weekday: 'long' })
+    const day = now.getDate()
+    const monthShort = now.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')
+    const yr = now.getFullYear()
+    return `${weekday} · ${day} ${monthShort} ${yr}`.toUpperCase()
+  }, [now])
+
+  // ── Highlights ──
+  const highlightItems = useMemo<HighlightItem[]>(() => {
+    const items: HighlightItem[] = [
+      {
+        icon: Activity,
+        iconColor: '#D97534',
+        label: 'Corpo',
+        sub: weekActivityCount > 0
+          ? `${weekActivityCount} atividades · ${weekActivityMinutes} min`
+          : 'Sem atividades esta semana',
+        delta: weekActivityCount > 0 ? `${weekActivityCount}x` : '—',
+        deltaColor: weekActivityCount > 0 ? 'var(--sl-em)' : 'var(--sl-t3)',
+        up: weekActivityCount > 0,
+      },
+      {
+        icon: TrendingUp,
+        iconColor: '#4F88D4',
+        label: 'Patrimônio',
+        sub: totalPatrimonio > 0
+          ? `${fmt(totalPatrimonio)} investidos`
+          : 'Sem ativos cadastrados',
+        delta: totalPatrimonio > 0 ? `${patrimonioGainPct >= 0 ? '+' : ''}${patrimonioGainPct}%` : '—',
+        deltaColor: patrimonioGainPct >= 0 ? 'var(--sl-em)' : 'var(--sl-danger)',
+        up: totalPatrimonio > 0 && patrimonioGainPct >= 0,
+      },
+      {
+        icon: Plane,
+        iconColor: '#C76795',
+        label: nextTrip?.name ?? 'Próxima viagem',
+        sub: nextTrip
+          ? `${nextTrip.destinations?.[0] ?? 'Destino'} · em ${daysUntilNextTrip} dias`
+          : 'Nenhuma planejada',
+        delta: daysUntilNextTrip != null ? `${daysUntilNextTrip}d` : '—',
+        deltaColor: '#C76795',
+      },
+    ]
+    return items
+  }, [weekActivityCount, weekActivityMinutes, totalPatrimonio, patrimonioGainPct, nextTrip, daysUntilNextTrip])
 
   return (
     <>
@@ -234,121 +254,108 @@ export default function DashboardPage() {
       isEmpty={totalIncome === 0 && totalExpense === 0}
     />
 
-    {/* DESKTOP LAYOUT */}
-    <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
+    {/* DESKTOP LAYOUT — Padrão 1 (Overview com KPIs) */}
+    <div className="hidden lg:block max-w-[1400px] mx-auto px-10 py-9 pb-16">
 
-      {/* ① MODULE HEADER */}
-      <ModuleHeader
-        icon={Globe}
-        iconBg="rgba(99,102,241,.08)"
-        iconColor="#6366f1"
-        title="Panorama"
-        subtitle={`${dateSubtitle} · ${greeting}, ${userName}!`}
-      >
-        <button className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold border border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-all cursor-pointer">
-          <ClipboardList size={16} />
-          Review Semanal
-        </button>
-        <button className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#6366f1] text-white border-none cursor-pointer hover:brightness-110 transition-all">
-          <Activity size={16} />
-          Life Score
-        </button>
-        <button
-          onClick={() => generatePdf(
+      {/* ① TOP BAR — eyebrow data + saudação + ações */}
+      <header className="flex items-end justify-between gap-6 mb-7 sl-fade-up">
+        <div className="flex flex-col gap-1.5">
+          <p className="font-[IBM_Plex_Mono] text-[11px] uppercase tracking-[0.14em] text-[var(--sl-t3)]">
+            {dateEyebrow}
+          </p>
+          <h1
+            className="font-[Syne] font-extrabold text-[32px] leading-[1.1] tracking-tight text-[var(--sl-t1)] m-0"
+          >
+            {greeting ? `${greeting}, ${userName}.` : `Olá, ${userName}.`}
+          </h1>
+        </div>
+        <div className="flex gap-2 items-center shrink-0">
+          <button
+            type="button"
+            onClick={() => router.push('/dashboard/review')}
+            className="inline-flex items-center gap-[7px] px-[14px] py-[9px] rounded-[10px] text-[13px] font-medium border border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors"
+          >
+            <ClipboardList size={14} />
+            Revisão semanal
+          </button>
+          <button
+            type="button"
+            onClick={() => generatePdf(
+              realScore,
+              lifeDimensions.map(d => ({ name: d.label, score: d.value }))
+            )}
+            disabled={pdfGenerating}
+            className="inline-flex items-center gap-[7px] px-[14px] py-[9px] rounded-[10px] text-[13px] font-medium border border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors disabled:opacity-50"
+          >
+            <FileText size={14} />
+            {pdfGenerating ? 'Gerando...' : 'Gerar relatório'}
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push('/financas/transacoes?new=1')}
+            className="inline-flex items-center gap-[7px] px-[16px] py-[9px] rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white border-none hover:bg-[var(--sl-em-strong)] transition-colors"
+          >
+            <Plus size={14} />
+            Nova entrada
+          </button>
+        </div>
+      </header>
+
+      {/* ② HERO MASSIVE (UM hero por tela — G-05) */}
+      <div className="mb-7">
+        <HeroScoreMassive
+          score={realScore}
+          delta={realScore > 0 ? 3 : undefined}
+          evolution={realScore > 0 ? [
+            Math.max(0, realScore - 6),
+            Math.max(0, realScore - 4),
+            Math.max(0, realScore - 5),
+            Math.max(0, realScore - 3),
+            Math.max(0, realScore - 1),
             realScore,
-            lifeDimensions.map(d => ({ name: d.label, score: d.value }))
-          )}
-          disabled={pdfGenerating}
-          className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold border border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-all cursor-pointer disabled:opacity-50"
-        >
-          <FileText size={16} />
-          {pdfGenerating ? 'Gerando...' : 'Gerar Relatório'}
-        </button>
-      </ModuleHeader>
-
-      {/* ② HERO SCORE BANNER */}
-      <div className="flex items-center gap-7 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] px-8 py-6 mb-7 relative overflow-hidden sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
-        {/* Top gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-[2.5px] rounded-b bg-gradient-to-r from-[#10b981] via-[#6366f1] to-[#3b82f6]" />
-
-        {/* Score */}
-        <div className="flex items-baseline gap-2 shrink-0">
-          <span className="font-[DM_Mono] font-medium text-[52px] leading-none text-sl-grad">
-            {realScore > 0 ? Math.round(realScore) : '—'}
-          </span>
-          <span className="text-[14px] text-[var(--sl-t3)] font-medium">pontos</span>
-        </div>
-
-        {/* Divider */}
-        <div className="w-px h-12 bg-[var(--sl-border)] shrink-0" />
-
-        {/* Label + delta */}
-        <div className="flex flex-col gap-1">
-          <span className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">Life Sync Score</span>
-          <span className="text-[12px] text-[var(--sl-t3)]">
-            Acompanhe sua evolucao semanal
-          </span>
-        </div>
-
-        {/* Sparkline + Pill (right) */}
-        <div className="ml-auto flex items-center gap-4 shrink-0">
-          <div className="text-right">
-            <div className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)]">Evolucao 4 sem</div>
-            <div className="text-[11px] text-[var(--sl-t2)] mt-0.5">
-              {realScore > 0 ? <span className="text-[#6366f1] font-semibold">{Math.round(realScore)}</span> : <span className="text-[var(--sl-t3)]">—</span>}
-            </div>
-          </div>
-          <SparkBars values={realScore > 0 ? [0, 0, 0, 0, Math.round(realScore)] : [0, 0, 0, 0, 0]} />
-        </div>
-
-        {realScore > 0 && (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[rgba(16,185,129,.1)] text-[#10b981] shrink-0">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          Acompanhando
-        </span>
-        )}
+          ] : []}
+          rangeLabel="últimas 6 semanas"
+          status={realScore >= 60 ? 'tracking' : realScore >= 40 ? 'attention' : 'risk'}
+          onHowToImprove={() => router.push('/conquistas')}
+        />
       </div>
 
-      {/* ③ MODULE MOSAIC */}
-      <div className="mb-7 sl-fade-up" style={{ animationDelay: '.1s' }}>
+      {/* ③ MOSAIC — 8 dimensões */}
+      <section className="mb-7 sl-fade-up" style={{ animationDelay: '.06s' }}>
+        <div className="flex justify-between items-baseline pl-1 mb-3.5">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">
+            Suas 8 dimensões
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push('/conquistas')}
+            className="text-[12px] text-[var(--sl-t3)] hover:text-[var(--sl-t1)] transition-colors inline-flex items-center gap-1"
+          >
+            Ver detalhes
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
         <ModuleMosaic modules={mosaicModules} />
+      </section>
+
+      {/* ④ KPI STRIP financeiro */}
+      <div className="mb-7 sl-fade-up" style={{ animationDelay: '.12s' }}>
+        <FinancialStrip
+          balance={balance}
+          totalIncome={totalIncome}
+          totalExpense={totalExpense}
+          savingsRate={savingsRate}
+        />
       </div>
 
-      {/* ④ CONTENT GRID */}
-      <div className="grid grid-cols-[1fr_380px] gap-4 mb-7 max-lg:grid-cols-1 sl-fade-up" style={{ animationDelay: '.15s' }}>
-        {/* LEFT */}
-        <div className="flex flex-col gap-3.5">
-          {/* Financial Strip */}
-          <div className="flex bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
-            <div className="flex-1 px-5 py-4 border-r border-[var(--sl-border)]">
-              <div className="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--sl-t3)] mb-1">Saldo do Mês</div>
-              <div className="font-[DM_Mono] font-medium text-[18px]" style={{ color: balance >= 0 ? '#10b981' : '#f43f5e' }}>{fmt(balance)}</div>
-              <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">
-                {balance > 0 && <><svg width="10" height="10" viewBox="0 0 24 24" fill="#10b981" stroke="none" className="inline align-[-1px] mr-0.5"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg></>}
-                vs anterior
-              </div>
-            </div>
-            <div className="flex-1 px-5 py-4 border-r border-[var(--sl-border)]">
-              <div className="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--sl-t3)] mb-1">Receitas</div>
-              <div className="font-[DM_Mono] font-medium text-[18px] text-[var(--sl-t1)]">{fmt(totalIncome)}</div>
-              <div className="text-[10px] text-[#10b981] mt-0.5">+12%</div>
-            </div>
-            <div className="flex-1 px-5 py-4 border-r border-[var(--sl-border)]">
-              <div className="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--sl-t3)] mb-1">Despesas</div>
-              <div className="font-[DM_Mono] font-medium text-[18px] text-[#f43f5e]">{fmt(totalExpense)}</div>
-              <div className="text-[10px] text-[#10b981] mt-0.5">{totalIncome > 0 ? `${Math.round((totalExpense / totalIncome) * 100)}% da receita` : '—'}</div>
-            </div>
-            <div className="flex-1 px-5 py-4">
-              <div className="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--sl-t3)] mb-1">Poupança</div>
-              <div className="font-[DM_Mono] font-medium text-[18px] text-[#6366f1]">{savingsRate}%</div>
-              <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">Meta: 30%</div>
-            </div>
-          </div>
-
-          {/* Budgets */}
+      {/* ⑤ CONTENT GRID — LEFT 1.4fr (lista densa + IA) · RIGHT 1fr (3 cards laterais) */}
+      <section
+        className="grid grid-cols-[1.4fr_1fr] gap-5 mb-7 max-lg:grid-cols-1 sl-fade-up"
+        style={{ animationDelay: '.18s' }}
+      >
+        {/* LEFT — Orçamentos + Consultor IA */}
+        <div className="flex flex-col gap-5">
           <BudgetsWidget budgets={budgets} loading={loadingBudgets} />
-
-          {/* AI Widget */}
           <InsightCard
             monthLabel={monthLabel}
             year={year}
@@ -368,69 +375,27 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* RIGHT — 380px sidebar */}
-        <div className="flex flex-col gap-4">
-          {/* Goals */}
+        {/* RIGHT — Metas + Agenda + Destaques */}
+        <div className="flex flex-col gap-5">
           <GoalsWidget topGoals={topGoals} loading={loadingGoals} />
-
-          {/* Agenda Semanal */}
           <WeekAgendaWidget weekDays={weekDays} events={events} now={now} />
+          <HighlightsCard items={highlightItems} />
+        </div>
+      </section>
 
-          {/* Destaques */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-            <div className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-4 flex items-center gap-[9px]">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-              Destaques
-            </div>
-            <div className="flex flex-col gap-2">
-              <HighlightRow
-                icon={Activity}
-                iconBg="rgba(249,115,22,.1)"
-                iconColor="#f97316"
-                label="Corpo"
-                sub={`${weekActivityCount} atividades · ${weekActivityMinutes}min`}
-                delta={weekActivityCount > 0 ? `${weekActivityCount}x` : '—'}
-                deltaColor="#10b981"
-              />
-              <HighlightRow
-                icon={TrendingUp}
-                iconBg="rgba(59,130,246,.1)"
-                iconColor="#3b82f6"
-                label="Patrimônio"
-                sub={fmt(totalPatrimonio)}
-                delta={`${patrimonioGainPct >= 0 ? '+' : ''}${patrimonioGainPct}%`}
-                deltaColor="#10b981"
-              />
-              <HighlightRow
-                icon={Plane}
-                iconBg="rgba(236,72,153,.1)"
-                iconColor="#ec4899"
-                label={nextTrip?.name ?? 'Próxima viagem'}
-                sub={nextTrip ? (nextTrip.destinations?.[0] ?? 'Destino') : 'Nenhuma planejada'}
-                delta={daysUntilNextTrip != null ? `${daysUntilNextTrip}d` : '—'}
-                deltaColor="#ec4899"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ⑤ WIDGET STRIP */}
-      <div className="flex gap-3 overflow-x-auto pb-2 sl-fade-up" style={{ animationDelay: '.2s' }}>
-        <div className="min-w-[240px] flex-1">
-          <RecurrencesWidget nextRecurrences={nextRecurrences} />
-        </div>
-        <div className="min-w-[240px] flex-1">
-          <ProjectionWidget
-            sparklineData={sparklineData}
-            balance={balance}
-            projectedBalance={projectedBalance}
-            nextRecurrence={nextRecurrences[0]}
-          />
-        </div>
-        <div className="min-w-[240px] flex-1">
-          <AchievementsWidget />
-        </div>
+      {/* ⑥ WIDGET STRIP — Recorrentes / Projeção / Conquistas */}
+      <div
+        className="grid grid-cols-3 gap-4 sl-fade-up max-lg:grid-cols-1"
+        style={{ animationDelay: '.24s' }}
+      >
+        <RecurrencesWidget nextRecurrences={nextRecurrences} />
+        <ProjectionWidget
+          sparklineData={sparklineData}
+          balance={balance}
+          projectedBalance={projectedBalance}
+          nextRecurrence={nextRecurrences[0]}
+        />
+        <AchievementsWidget />
       </div>
 
     </div>

@@ -27,21 +27,21 @@ export interface ModuleConfig {
   defaultNavId: string
 }
 
-export type ThemeId = 'navy-dark' | 'clean-light' | 'mint-garden' | 'obsidian' | 'rosewood' | 'arctic' | 'graphite' | 'twilight' | 'sahara' | 'carbon' | 'blossom' | 'serenity' | 'system'
+export type ThemeId = 'navy-deep' | 'midnight' | 'charcoal' | 'cream' | 'system'
 
 export type ResolvedThemeId = Exclude<ThemeId, 'system'>
 
-export const DARK_THEMES: ResolvedThemeId[] = ['navy-dark', 'obsidian', 'rosewood', 'graphite', 'twilight', 'carbon']
-export const LIGHT_THEMES: ResolvedThemeId[] = ['clean-light', 'mint-garden', 'arctic', 'sahara', 'blossom', 'serenity']
+export const DARK_THEMES: ResolvedThemeId[] = ['navy-deep', 'midnight', 'charcoal']
+export const LIGHT_THEMES: ResolvedThemeId[] = ['cream']
 
 export function isDarkTheme(theme: ResolvedThemeId): boolean {
   return DARK_THEMES.includes(theme)
 }
 
-export function resolveSystemTheme(): 'navy-dark' | 'clean-light' {
-  if (typeof window === 'undefined') return 'navy-dark'
+export function resolveSystemTheme(): 'navy-deep' | 'cream' {
+  if (typeof window === 'undefined') return 'navy-deep'
   return window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'navy-dark' : 'clean-light'
+    ? 'navy-deep' : 'cream'
 }
 
 export interface ShellState {

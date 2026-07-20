@@ -28,7 +28,7 @@ export function ExpWizardStepper({ currentStep }: ExpWizardStepperProps) {
                 className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-semibold"
                 style={
                   isDone
-                    ? { background: '#10b981', color: '#fff' }
+                    ? { background: '#0F766E', color: '#fff' }
                     : isCurrent
                     ? { background: accent, color: '#fff', boxShadow: `0 0 12px ${glow}` }
                     : { background: 'var(--sl-s2)', color: 'var(--sl-t3)', border: '1px solid var(--sl-border)' }
@@ -46,7 +46,7 @@ export function ExpWizardStepper({ currentStep }: ExpWizardStepperProps) {
             {i < STEP_LABELS.length - 1 && (
               <div
                 className="flex-1 h-[2px] mx-1 mb-[14px]"
-                style={{ background: isDone ? '#10b981' : 'var(--sl-border)' }}
+                style={{ background: isDone ? '#0F766E' : 'var(--sl-border)' }}
               />
             )}
           </div>

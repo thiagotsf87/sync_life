@@ -28,7 +28,7 @@ export function ScoreHero({
   title,
   description,
   stats,
-  accentColor = '#f97316',
+  accentColor = '#D97534',
   className,
 }: ScoreHeroProps) {
   const size = 86
@@ -53,7 +53,7 @@ export function ScoreHero({
       {/* Top accent bar — gradient orange → yellow */}
       <div
         className="absolute top-0 left-[22px] right-[22px] h-[2.5px] rounded-b"
-        style={{ background: `linear-gradient(90deg, ${accentColor}, #f59e0b)` }}
+        style={{ background: `linear-gradient(90deg, ${accentColor}, #D9962E)` }}
       />
 
       {/* Radial glow effect */}
@@ -72,8 +72,8 @@ export function ScoreHero({
         >
           <defs>
             <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#10b981" />
-              <stop offset="100%" stopColor="#3b82f6" />
+              <stop offset="0%" stopColor="#0F766E" />
+              <stop offset="100%" stopColor="#4F88D4" />
             </linearGradient>
           </defs>
           <circle
@@ -99,7 +99,7 @@ export function ScoreHero({
         </svg>
         {/* Center text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-[DM_Mono] font-medium text-[22px] leading-none text-[var(--sl-t1)]">
+          <span className="font-[IBM_Plex_Mono] font-medium text-[22px] leading-none text-[var(--sl-t1)]">
             {score}
           </span>
           <span className="text-[9px] text-[var(--sl-t3)] uppercase tracking-[.08em] mt-0.5">
@@ -142,7 +142,7 @@ export function ScoreHero({
                 <div className="w-px h-7 bg-[var(--sl-border)]" />
               )}
               <div className="text-center">
-                <span className="font-[DM_Mono] font-medium text-[18px] text-[var(--sl-t1)]">
+                <span className="font-[IBM_Plex_Mono] font-medium text-[18px] text-[var(--sl-t1)]">
                   {s.value}
                 </span>
                 {s.unit && (

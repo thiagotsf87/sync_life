@@ -4,19 +4,46 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Check } from 'lucide-react'
+import {
+  Check,
+  ArrowRight,
+  ArrowLeft,
+  Wallet,
+  Clock,
+  Target,
+  Activity,
+  Brain,
+  Briefcase,
+} from 'lucide-react'
 import { SyncLifeIcon } from '@/components/shell/icons'
+import { TextField } from '@/components/ui/text-field'
+import { SectionHeader } from '@/components/ui/section-header'
 
-const MODULES = [
-  { value: 'financas', icon: '💰', name: 'Finanças', desc: 'Despesas, orçamento, planejamento', bg: 'rgba(16,185,129,0.15)' },
-  { value: 'tempo',    icon: '⏳', name: 'Tempo',    desc: 'Agenda e compromissos',             bg: 'rgba(6,182,212,0.15)' },
-  { value: 'futuro',   icon: '🔮', name: 'Futuro',   desc: 'Objetivos e metas de vida',         bg: 'rgba(0,85,255,0.15)' },
-  { value: 'corpo',    icon: '🏃', name: 'Corpo',    desc: 'Atividades, peso e saúde',           bg: 'rgba(249,115,22,0.15)' },
-  { value: 'mente',    icon: '🧠', name: 'Mente',    desc: 'Foco, meditação e leitura',          bg: 'rgba(139,92,246,0.15)' },
-  { value: 'carreira', icon: '💼', name: 'Carreira',  desc: 'Evolução profissional',             bg: 'rgba(236,72,153,0.15)' },
+type ModuleId =
+  | 'financas'
+  | 'tempo'
+  | 'futuro'
+  | 'corpo'
+  | 'mente'
+  | 'carreira'
+
+const MODULES: ReadonlyArray<{
+  value: ModuleId
+  Icon: typeof Wallet
+  color: string
+  name: string
+  desc: string
+  bg: string
+}> = [
+  { value: 'financas', Icon: Wallet,    color: '#0F766E', name: 'Finanças', desc: 'Despesas, orçamento, planejamento', bg: 'rgba(15,118,110,0.15)' },
+  { value: 'tempo',    Icon: Clock,     color: '#3CA0B5', name: 'Tempo',    desc: 'Agenda e compromissos',             bg: 'rgba(60,160,181,0.15)' },
+  { value: 'futuro',   Icon: Target,    color: '#0B2D34', name: 'Futuro',   desc: 'Objetivos e metas de vida',         bg: 'rgba(11,45,52,0.18)' },
+  { value: 'corpo',    Icon: Activity,  color: '#D97534', name: 'Corpo',    desc: 'Atividades, peso e saúde',          bg: 'rgba(217,117,52,0.15)' },
+  { value: 'mente',    Icon: Brain,     color: '#D9962E', name: 'Mente',    desc: 'Foco, meditação e leitura',         bg: 'rgba(217,150,46,0.15)' },
+  { value: 'carreira', Icon: Briefcase, color: '#DB6478', name: 'Carreira', desc: 'Evolução profissional',             bg: 'rgba(219,100,120,0.15)' },
 ]
 
-const DEFAULT_SELECTED = ['financas', 'tempo']
+const DEFAULT_SELECTED: ModuleId[] = ['financas', 'tempo']
 
 interface OnboardingMobileProps {
   userName?: string
@@ -31,11 +58,7 @@ function ProgressDots({ current }: { current: number }) {
           className="h-[5px] rounded-full transition-all duration-300"
           style={{
             width: i <= current ? 28 : 16,
-            background: i < current
-              ? '#10b981'
-              : i === current
-                ? 'linear-gradient(90deg, #10b981, #0055ff)'
-                : 'var(--sl-s3)',
+            background: i <= current ? 'var(--sl-em)' : 'var(--sl-s3)',
           }}
         />
       ))}
@@ -47,12 +70,12 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [name, setName] = useState(initialName ?? '')
-  const [selected, setSelected] = useState<string[]>(DEFAULT_SELECTED)
+  const [selected, setSelected] = useState<ModuleId[]>(DEFAULT_SELECTED)
   const [isLoading, setIsLoading] = useState(false)
 
   const displayName = name.trim().split(' ')[0] || ''
 
-  const toggleModule = useCallback((value: string) => {
+  const toggleModule = useCallback((value: ModuleId) => {
     setSelected(prev =>
       prev.includes(value)
         ? prev.filter(v => v !== value)
@@ -77,7 +100,7 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
           onboarding_completed: true,
         })
 
-      toast.success('Bem-vindo ao SyncLife!')
+      toast.success('Bem-vindo ao SyncLife.')
       router.push('/dashboard')
       router.refresh()
     } catch {
@@ -95,15 +118,7 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
           <SyncLifeIcon size={42} animated={false} />
           <span className="font-[Syne] text-[22px] font-extrabold">
             <span className="text-[var(--sl-t1)]">Sync</span>
-            <span
-              style={{
-                background: 'linear-gradient(135deg, #10b981, #0055ff)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Life
-            </span>
+            <span className="text-[var(--sl-em)]">Life</span>
           </span>
         </div>
 
@@ -113,61 +128,62 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
         {/* Step 1: Name + Module selection */}
         {step === 1 && (
           <>
-            <p className="text-[12px] text-[var(--sl-t2)] mb-2">Passo 1 de 2</p>
-            <h1 className="font-[Syne] text-[26px] font-bold text-[var(--sl-t1)] leading-[1.25] mb-2">
-              O que você quer sincronizar?
-            </h1>
-            <p className="text-[14px] text-[var(--sl-t2)] leading-[1.6] mb-6">
-              Selecione o que é mais importante agora. Você pode ativar mais módulos a qualquer momento.
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-2 font-[DM_Sans]">
+              Passo 1 de 2
             </p>
 
-            {/* Name input */}
+            <SectionHeader
+              eyebrow="01 · IDENTIDADE"
+              title="O que você quer sincronizar?"
+              sub="Selecione o que é mais importante agora. Você pode ativar mais módulos a qualquer momento."
+              className="mb-6 [&>h2]:font-[Syne] [&>h2]:text-[26px] [&>h2]:font-bold [&>h2]:leading-[1.25]"
+            />
+
+            {/* Name input via TextField */}
             <div className="mb-6">
-              <label className="text-[12px] font-medium text-[var(--sl-t2)] mb-1.5 block">
-                Seu nome
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
+              <TextField
+                label="Seu nome"
                 placeholder="Como quer ser chamado?"
-                className="w-full h-[48px] px-4 rounded-[12px] bg-[var(--sl-s1)] border border-[var(--sl-border)]
-                           text-[15px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]
-                           focus:outline-none focus:border-[#10b981]/50 transition-colors"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                hint="É assim que vamos te cumprimentar no app."
               />
-              <p className="text-[11px] text-[var(--sl-t3)] mt-1.5">
-                É assim que vamos te cumprimentar no app.
-              </p>
             </div>
+
+            {/* Section eyebrow for modules */}
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--sl-em)] mb-3 font-[Syne]">
+              02 · MÓDULOS
+            </p>
 
             <div className="flex flex-col gap-2.5 mb-7">
               {MODULES.map((mod) => {
                 const isSelected = selected.includes(mod.value)
+                const { Icon } = mod
                 return (
                   <button
                     key={mod.value}
                     onClick={() => toggleModule(mod.value)}
-                    className="flex items-center gap-3.5 p-3.5 rounded-[10px] border transition-all"
+                    className="flex items-center gap-3.5 p-3.5 rounded-[10px] border transition-all text-left"
                     style={{
-                      background: isSelected ? 'rgba(16,185,129,0.15)' : 'var(--sl-s1)',
-                      borderColor: isSelected ? 'rgba(16,185,129,0.5)' : 'var(--sl-border)',
+                      background: isSelected ? 'rgba(15,118,110,0.15)' : 'var(--sl-s1)',
+                      borderColor: isSelected ? 'var(--sl-em)' : 'var(--sl-border)',
                     }}
                   >
                     <div
-                      className="flex h-10 w-10 items-center justify-center rounded-[11px] text-[20px] shrink-0"
+                      className="flex h-10 w-10 items-center justify-center rounded-[11px] shrink-0"
                       style={{ background: mod.bg }}
                     >
-                      {mod.icon}
+                      <Icon size={18} color={mod.color} strokeWidth={1.8} />
                     </div>
                     <div className="flex-1 text-left min-w-0">
-                      <p className="text-[14px] font-semibold text-[var(--sl-t1)]">{mod.name}</p>
-                      <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">{mod.desc}</p>
+                      <p className="text-[14px] font-semibold text-[var(--sl-t1)] font-[DM_Sans]">{mod.name}</p>
+                      <p className="text-[12px] text-[var(--sl-t2)] mt-0.5 font-[DM_Sans]">{mod.desc}</p>
                     </div>
                     <div
                       className="flex h-[22px] w-[22px] items-center justify-center rounded-full border-2 shrink-0"
                       style={{
-                        background: isSelected ? '#10b981' : 'transparent',
-                        borderColor: isSelected ? '#10b981' : 'var(--sl-border-h)',
+                        background: isSelected ? 'var(--sl-em)' : 'transparent',
+                        borderColor: isSelected ? 'var(--sl-em)' : 'var(--sl-border-h)',
                       }}
                     >
                       {isSelected && <Check size={12} strokeWidth={3} color="white" />}
@@ -180,14 +196,16 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
             <button
               onClick={() => setStep(2)}
               disabled={selected.length === 0}
-              className="w-full flex items-center justify-center h-[52px] rounded-[14px]
+              className="w-full flex items-center justify-center gap-2 h-[52px] rounded-[14px]
                          text-[15px] font-semibold text-white transition-all
-                         disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+                         disabled:opacity-40 disabled:cursor-not-allowed font-[DM_Sans]
+                         hover:opacity-90"
+              style={{ background: 'var(--sl-em)' }}
             >
-              Continuar →
+              Continuar
+              <ArrowRight size={16} />
             </button>
-            <p className="text-center text-[12px] text-[var(--sl-t3)] mt-3">
+            <p className="text-center text-[12px] text-[var(--sl-t3)] mt-3 font-[DM_Sans]">
               Você pode ativar mais módulos depois
             </p>
           </>
@@ -196,20 +214,23 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
         {/* Step 2: Summary + Life Score */}
         {step === 2 && (
           <>
-            <p className="text-[12px] text-[var(--sl-t2)] mb-2">Passo 2 de 2</p>
-            <h1 className="font-[Syne] text-[26px] font-bold text-[var(--sl-t1)] leading-[1.25] mb-2">
-              Tudo pronto{displayName ? `, ${displayName}` : ''}!
-            </h1>
-            <p className="text-[14px] text-[var(--sl-t2)] leading-[1.6] mb-6">
-              Vamos acompanhar sua evolução juntos. Cada passo conta!
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-2 font-[DM_Sans]">
+              Passo 2 de 2
             </p>
 
-            {/* Life Sync Score preview */}
+            <SectionHeader
+              eyebrow="03 · PRONTO"
+              title={`Tudo pronto${displayName ? `, ${displayName}` : ''}.`}
+              sub="Vamos acompanhar sua evolução juntos. Cada passo conta."
+              className="mb-6 [&>h2]:font-[Syne] [&>h2]:text-[26px] [&>h2]:font-bold [&>h2]:leading-[1.25]"
+            />
+
+            {/* Life Sync Score preview (RingProgress: exceção G-03) */}
             <div
               className="flex items-center gap-4 p-4 rounded-[14px] mb-5"
               style={{
-                background: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(0,85,255,0.12))',
-                border: '1px solid rgba(16,185,129,0.25)',
+                background: 'var(--sl-s-hero)',
+                border: '1px solid var(--sl-border-em)',
               }}
             >
               <div className="relative w-[52px] h-[52px] shrink-0">
@@ -222,27 +243,22 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
                   />
                   <defs>
                     <linearGradient id="ob-score-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#10b981" />
-                      <stop offset="100%" stopColor="#0055ff" />
+                      <stop offset="0%" stopColor="#0F766E" />
+                      <stop offset="100%" stopColor="#0B2D34" />
                     </linearGradient>
                   </defs>
                 </svg>
                 <span
-                  className="absolute inset-0 flex items-center justify-center font-[Syne] text-[16px] font-extrabold"
-                  style={{
-                    background: 'linear-gradient(135deg, #10b981, #0055ff)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
+                  className="absolute inset-0 flex items-center justify-center font-[Syne] text-[16px] font-extrabold sl-num-strong text-[var(--sl-em)]"
                 >
                   0
                 </span>
               </div>
               <div>
-                <p className="text-[14px] font-semibold text-[var(--sl-t1)]">
+                <p className="text-[14px] font-semibold text-[var(--sl-t1)] font-[DM_Sans]">
                   Seu Life Sync Score
                 </p>
-                <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">
+                <p className="text-[12px] text-[var(--sl-t2)] mt-0.5 font-[DM_Sans]">
                   Começa do zero e cresce com você
                 </p>
               </div>
@@ -250,14 +266,19 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
 
             {/* Summary card */}
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 mb-5">
-              <p className="text-[12px] text-[var(--sl-t2)] mb-3">Seus módulos</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--sl-em)] mb-3 font-[Syne]">
+                Seus módulos
+              </p>
               <div className="flex flex-wrap gap-2">
                 {selected.map(val => {
                   const mod = MODULES.find(m => m.value === val)
+                  if (!mod) return null
+                  const { Icon } = mod
                   return (
                     <span key={val} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[10px]
-                                               bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)]">
-                      {mod?.icon} {mod?.name}
+                                               bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] font-[DM_Sans]">
+                      <Icon size={13} color={mod.color} strokeWidth={2} />
+                      {mod.name}
                     </span>
                   )
                 })}
@@ -266,7 +287,7 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
 
             {/* "O que acontece agora" */}
             <div className="mb-6">
-              <p className="text-[13px] font-semibold text-[var(--sl-t1)] mb-3">
+              <p className="text-[13px] font-semibold text-[var(--sl-t1)] mb-3 font-[DM_Sans]">
                 O que acontece agora:
               </p>
               {[
@@ -275,10 +296,10 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
                 'Tudo configurável depois em Ajustes',
               ].map(item => (
                 <div key={item} className="flex items-start gap-2.5 mb-2">
-                  <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#10b981]/20 shrink-0 mt-0.5">
-                    <Check size={10} strokeWidth={3} color="#10b981" />
+                  <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[var(--sl-em-soft)] shrink-0 mt-0.5">
+                    <Check size={10} strokeWidth={3} color="var(--sl-em)" />
                   </div>
-                  <p className="text-[13px] text-[var(--sl-t2)] leading-[1.5]">{item}</p>
+                  <p className="text-[13px] text-[var(--sl-t2)] leading-[1.5] font-[DM_Sans]">{item}</p>
                 </div>
               ))}
             </div>
@@ -286,18 +307,21 @@ export function OnboardingMobile({ userName: initialName }: OnboardingMobileProp
             <button
               onClick={handleFinish}
               disabled={isLoading}
-              className="w-full flex items-center justify-center h-[52px] rounded-[14px]
+              className="w-full flex items-center justify-center gap-2 h-[52px] rounded-[14px]
                          text-[15px] font-semibold text-white transition-all
-                         disabled:opacity-60"
-              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+                         disabled:opacity-60 font-[DM_Sans]
+                         hover:opacity-90"
+              style={{ background: 'var(--sl-em)' }}
             >
-              {isLoading ? 'Preparando...' : 'Começar minha jornada 🚀'}
+              {isLoading ? 'Preparando...' : 'Começar minha jornada'}
+              {!isLoading && <ArrowRight size={16} />}
             </button>
             <button
               onClick={() => setStep(1)}
-              className="w-full text-center text-[13px] text-[var(--sl-t2)] mt-3 py-2"
+              className="w-full flex items-center justify-center gap-1.5 text-[13px] text-[var(--sl-t2)] mt-3 py-2 font-[DM_Sans] hover:text-[var(--sl-t1)] transition-colors"
             >
-              ← Voltar
+              <ArrowLeft size={13} />
+              Voltar
             </button>
           </>
         )}

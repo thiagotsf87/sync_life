@@ -2,12 +2,10 @@
 
 import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { TrendingUp, TrendingDown, ArrowDownLeft, ArrowUpRight, Wallet, Package } from 'lucide-react'
 import { AIInsightCard } from '@/components/ui/ai-insight-card'
 import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
-
-function fmtR$(n: number): string {
-  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(n))
-}
+import { fmtBRL } from '@/lib/format/currency'
 
 function fmtDate(dateStr: string): string {
   const parts = dateStr.split('-')
@@ -20,10 +18,10 @@ const PAYMENT_LABELS: Record<string, string> = {
 }
 
 function getEnvColor(pct: number): string {
-  if (pct >= 100) return '#f43f5e'
-  if (pct >= 80) return '#f97316'
-  if (pct >= 61) return '#f59e0b'
-  return '#10b981'
+  if (pct >= 100) return '#DB6478'
+  if (pct >= 80) return '#D97534'
+  if (pct >= 61) return '#D9962E'
+  return '#0F766E'
 }
 
 interface BudgetItem {
@@ -67,24 +65,22 @@ export function FinancasMobile({
 
   const balanceDelta = useMemo(() => {
     const diff = balance - (totalIncome * 0.6)
-    return diff >= 0 ? `+R$ ${fmtR$(Math.abs(diff))}` : `-R$ ${fmtR$(Math.abs(diff))}`
+    return (diff >= 0 ? '+' : '– ') + fmtBRL(Math.abs(diff))
   }, [balance, totalIncome])
 
   return (
     <FinancasMobileShell subtitle={mesLabel}>
       <div className="px-4">
-      {/* Balance hero card — Jornada: gradient bg, Foco: plain card */}
-      <div className="mb-3 rounded-[16px] p-5 border bg-[linear-gradient(135deg,rgba(16,185,129,0.12),rgba(0,85,255,0.08))] border-[rgba(16,185,129,0.2)]">
+      {/* Balance hero card — usa --sl-em-soft (G-03: sem gradient) */}
+      <div className="mb-3 rounded-[16px] p-5 border bg-[var(--sl-em-soft)] border-[var(--sl-border-em)]">
         <p className="text-[12px] text-[var(--sl-t2)] mb-1">Saldo disponível</p>
-        <p className="font-[DM_Mono] text-[36px] font-medium text-[var(--sl-t1)] tracking-[-1px] leading-none">
-          R$ {fmtR$(balance)}
+        <p className="sl-num-strong text-[36px] text-[var(--sl-t1)] leading-none">
+          {fmtBRL(balance)}
         </p>
         <div className="flex items-center gap-1.5 mt-2">
             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-[20px] text-[11px] font-medium
-                            bg-[rgba(16,185,129,0.12)] text-[#10b981]">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="11" height="11">
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-              </svg>
+                            bg-[rgba(15,118,110,0.12)] text-[var(--sl-em)]">
+              <TrendingUp size={11} strokeWidth={2} />
               {balanceDelta} vs mês passado
             </span>
           </div>
@@ -94,23 +90,27 @@ export function FinancasMobile({
       <div className="grid grid-cols-2 gap-2.5 mb-3">
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3.5">
           <p className="text-[10px] text-[var(--sl-t2)] mb-1">Receitas</p>
-          <p className="font-[DM_Mono] text-[20px] font-medium text-[#10b981]">R$ {fmtR$(totalIncome)}</p>
-          <p className="text-[11px] text-[var(--sl-t2)] mt-0.5">↑ Salário + Freela</p>
+          <p className="sl-num-strong text-[20px] text-[var(--sl-em)]">{fmtBRL(totalIncome, { compact: totalIncome >= 10000 })}</p>
+          <p className="text-[11px] text-[var(--sl-t2)] mt-0.5 inline-flex items-center gap-1">
+            <ArrowUpRight size={11} /> Salário + Freela
+          </p>
         </div>
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3.5">
           <p className="text-[10px] text-[var(--sl-t2)] mb-1">Despesas</p>
-          <p className="font-[DM_Mono] text-[20px] font-medium text-[#f43f5e]">R$ {fmtR$(totalExpense)}</p>
-          <p className="text-[11px] text-[var(--sl-t2)] mt-0.5">→ {totalIncome > 0 ? Math.round((totalExpense / totalIncome) * 100) : 0}% da renda</p>
+          <p className="sl-num-strong text-[20px] text-[var(--sl-danger)]">{fmtBRL(totalExpense, { compact: totalExpense >= 10000 })}</p>
+          <p className="text-[11px] text-[var(--sl-t2)] mt-0.5 inline-flex items-center gap-1">
+            <ArrowDownLeft size={11} /> {totalIncome > 0 ? Math.round((totalExpense / totalIncome) * 100) : 0}% da renda
+          </p>
         </div>
       </div>
 
       {/* AI Insight */}
       <div className="mb-3">
         <AIInsightCard label="Projeção">
-          Mantendo este ritmo, você termina o mês com <strong>R$ {fmtR$(projectedBalance)}</strong>
+          Mantendo este ritmo, você termina o mês com <strong>{fmtBRL(projectedBalance)}</strong>
           {projectedBalance > balance
-            ? ' — acima do mês passado.'
-            : ' — fique atento aos gastos.'}
+            ? ', acima do mês passado.'
+            : ', fique atento aos gastos.'}
         </AIInsightCard>
       </div>
 
@@ -127,10 +127,13 @@ export function FinancasMobile({
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-[13px] font-medium text-[var(--sl-t1)] flex items-center gap-1.5">
-                {b.category?.icon ?? '📦'} {b.category?.name ?? 'Categoria'}
+                {b.category?.icon
+                  ? <span aria-hidden>{b.category.icon}</span>
+                  : <Package size={13} className="text-[var(--sl-t3)]" />}
+                {b.category?.name ?? 'Categoria'}
               </span>
-              <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">
-                R$ {fmtR$(b.gasto)} / R$ {fmtR$(b.amount)}
+              <span className="sl-num text-[12px] text-[var(--sl-t2)]">
+                {fmtBRL(b.gasto, { compact: true })} / {fmtBRL(b.amount, { compact: true })}
               </span>
             </div>
             <div className="h-1.5 rounded-full overflow-hidden bg-[var(--sl-s3)]">
@@ -162,7 +165,7 @@ export function FinancasMobile({
         </p>
         <button
           onClick={() => router.push('/financas/transacoes')}
-          className="text-[11px] text-[#10b981] font-medium"
+          className="text-[11px] text-[var(--sl-em)] font-medium"
         >
           Ver todas →
         </button>
@@ -185,21 +188,25 @@ export function FinancasMobile({
               >
                 <div
                   className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center text-[18px] shrink-0"
-                  style={{ background: isIncome ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.1)' }}
+                  style={{ background: isIncome ? 'rgba(15,118,110,0.12)' : 'rgba(219,100,120,0.1)' }}
                 >
-                  {t.category?.icon ?? (isIncome ? '💰' : '📤')}
+                  {t.category?.icon
+                    ? <span aria-hidden>{t.category.icon}</span>
+                    : isIncome
+                      ? <Wallet size={16} className="text-[var(--sl-em)]" />
+                      : <ArrowUpRight size={16} className="text-[var(--sl-danger)]" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{t.description}</p>
                   <p className="text-[11px] text-[var(--sl-t3)]">
-                    {fmtDate(t.date)} · {PAYMENT_LABELS[t.payment_method] ?? t.payment_method}
+                    <span className="font-[IBM_Plex_Mono]">{fmtDate(t.date)}</span> · {PAYMENT_LABELS[t.payment_method] ?? t.payment_method}
                   </p>
                 </div>
                 <p
-                  className="font-[DM_Mono] text-[14px] font-medium shrink-0"
-                  style={{ color: isIncome ? '#10b981' : '#f43f5e' }}
+                  className="sl-num text-[14px] shrink-0"
+                  style={{ color: isIncome ? 'var(--sl-em)' : 'var(--sl-danger)' }}
                 >
-                  {isIncome ? '+' : '−'}R$ {fmtR$(t.amount)}
+                  {isIncome ? '+' : '– '}{fmtBRL(t.amount)}
                 </p>
               </div>
             )

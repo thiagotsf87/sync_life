@@ -333,7 +333,7 @@ test.describe('Finanças: Orçamentos', () => {
     })
     for (const bar of bars) {
       if (bar.width <= 70) {
-        expect(bar.bg).toContain('#10b981')
+        expect(bar.bg).toContain('#0F766E')
       }
     }
   })
@@ -515,7 +515,7 @@ test.describe('Finanças: Calendário', () => {
     const main = page.locator('main')
     await expect(main).toBeVisible({ timeout: 8000 })
     // Calendar days with transactions may have colored dots or indicators
-    const indicators = await main.locator('[class*="rounded-full"][class*="w-1"], [class*="bg-\\[#10b981\\]"]').count()
+    const indicators = await main.locator('[class*="rounded-full"][class*="w-1"], [class*="bg-\\[#0F766E\\]"]').count()
     // May or may not have indicators depending on data
     expect(indicators).toBeGreaterThanOrEqual(0)
   })

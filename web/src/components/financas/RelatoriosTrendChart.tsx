@@ -32,11 +32,11 @@ export function RelatoriosTrendChart({ lineChartData, lineChartCats }: Relatorio
               <CartesianGrid stroke="var(--sl-border)" strokeDasharray="0" vertical={false} />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 9, fill: 'var(--sl-t3)', fontFamily: 'DM Mono' }}
+                tick={{ fontSize: 9, fill: 'var(--sl-t3)', fontFamily: 'IBM Plex Mono' }}
                 axisLine={false} tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 9, fill: 'var(--sl-t3)', fontFamily: 'DM Mono' }}
+                tick={{ fontSize: 9, fill: 'var(--sl-t3)', fontFamily: 'IBM Plex Mono' }}
                 axisLine={false} tickLine={false}
                 tickFormatter={v => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
               />

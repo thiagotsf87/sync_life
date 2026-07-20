@@ -2,12 +2,19 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/sonner";
 import { ServiceWorkerRegistration } from "@/components/pwa/sw-register";
 import "./globals.css";
-import { Outfit, Syne, DM_Mono, DM_Sans } from "next/font/google";
+import { Space_Grotesk, IBM_Plex_Mono, DM_Sans, Syne } from "next/font/google";
 
-const outfit = Outfit({
+const syne = Syne({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-outfit",
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-syne",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-space-grotesk",
   display: "swap",
 });
 
@@ -18,17 +25,10 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-const syne = Syne({
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-syne",
-  display: "swap",
-});
-
-const dmMono = DM_Mono({
+const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-dm-mono",
+  variable: "--font-ibm-plex-mono",
   display: "swap",
 });
 
@@ -50,8 +50,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)",  color: "#10b981" },
-    { media: "(prefers-color-scheme: light)", color: "#10b981" },
+    { media: "(prefers-color-scheme: dark)",  color: "#0F766E" },
+    { media: "(prefers-color-scheme: light)", color: "#0F766E" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -68,13 +68,13 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${outfit.variable} ${syne.variable} ${dmMono.variable} ${dmSans.variable}`}
+      className={`${syne.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} ${dmSans.variable}`}
     >
-      <body className={`${outfit.className} antialiased`}>
+      <body className={`${dmSans.className} antialiased`}>
         {/* Anti-FOUC: apply theme before first paint */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var DARK=['navy-dark','obsidian','rosewood','graphite','twilight','carbon'];var t=localStorage.getItem('synclife-theme')||'system';if(t==='system'){t=window.matchMedia('(prefers-color-scheme:dark)').matches?'navy-dark':'clean-light';}var valid=['navy-dark','clean-light','mint-garden','obsidian','rosewood','arctic','graphite','twilight','sahara','carbon','blossom','serenity'];if(valid.indexOf(t)===-1)t='navy-dark';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-scheme',DARK.indexOf(t)!==-1?'dark':'light');localStorage.removeItem('synclife-mode');}catch(e){document.documentElement.setAttribute('data-theme','navy-dark');document.documentElement.setAttribute('data-scheme','dark');}})()`,
+            __html: `(function(){try{var DARK=['navy-deep','midnight','charcoal'];var t=localStorage.getItem('synclife-theme')||'system';if(t==='system'){t=window.matchMedia('(prefers-color-scheme:dark)').matches?'navy-deep':'cream';}var valid=['navy-deep','midnight','charcoal','cream'];if(valid.indexOf(t)===-1)t='navy-deep';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-scheme',DARK.indexOf(t)!==-1?'dark':'light');localStorage.removeItem('synclife-mode');}catch(e){document.documentElement.setAttribute('data-theme','navy-deep');document.documentElement.setAttribute('data-scheme','dark');}})()`,
           }}
         />
         {children}

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 // Colors are passed via props, no color imports needed
 
@@ -25,7 +25,7 @@ export function ContribMonthBand({ month, total, totalColor, entries }: ContribM
       {/* Month header */}
       <div className="flex items-center justify-between px-[14px] py-[11px] border-b border-[var(--sl-border)]">
         <span className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">{month}</span>
-        <span className="font-[DM_Mono] text-[14px] font-medium" style={{ color: totalColor }}>
+        <span className="sl-num-strong text-[14px] font-medium" style={{ color: totalColor }}>
           {total}
         </span>
       </div>
@@ -46,7 +46,7 @@ export function ContribMonthBand({ month, total, totalColor, entries }: ContribM
             <p className="text-[10px] text-[var(--sl-t2)] mt-[1px]">{entry.date}</p>
           </div>
           <span
-            className="font-[DM_Mono] text-[12px] font-medium shrink-0"
+            className="sl-num-strong text-[12px] font-medium shrink-0"
             style={{ color: entry.color }}
           >
             {entry.value}

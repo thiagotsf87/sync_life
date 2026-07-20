@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT, FUTURO_PRIMARY_BG } from '@/lib/futuro-colors'
@@ -28,8 +28,8 @@ export function FuturoArquivoTab({ onResume, onArchive }: FuturoArquivoTabProps)
       <div
         className="mx-4 mb-[14px] p-[13px_15px] rounded-[16px] flex items-center gap-3"
         style={{
-          background: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(16,185,129,0.08))',
-          border: '1px solid rgba(139,92,246,0.25)',
+          background: 'linear-gradient(135deg, rgba(139,123,212,0.12), rgba(15,118,110,0.08))',
+          border: '1px solid rgba(139,123,212,0.25)',
         }}
       >
         <div className="text-[30px]">🏆</div>
@@ -56,7 +56,7 @@ export function FuturoArquivoTab({ onResume, onArchive }: FuturoArquivoTabProps)
               style={{
                 background: isActive ? FUTURO_PRIMARY_BG : 'var(--sl-s2)',
                 border: isActive
-                  ? '1px solid rgba(139,92,246,0.3)'
+                  ? '1px solid rgba(139,123,212,0.3)'
                   : '1px solid var(--sl-border)',
                 color: isActive ? FUTURO_PRIMARY_LIGHT : 'var(--sl-t2)',
               }}
@@ -78,7 +78,7 @@ export function FuturoArquivoTab({ onResume, onArchive }: FuturoArquivoTabProps)
             className="absolute top-0 left-0 right-0 h-[2px]"
             style={{
               background: obj.status === 'completed'
-                ? 'linear-gradient(90deg, #10b981, #10b981)'
+                ? 'linear-gradient(90deg, #0F766E, #0F766E)'
                 : 'var(--sl-t3)',
             }}
           />
@@ -99,7 +99,7 @@ export function FuturoArquivoTab({ onResume, onArchive }: FuturoArquivoTabProps)
             </div>
             <span
               className="text-[10px] font-bold self-start pt-[2px]"
-              style={{ color: obj.status === 'completed' ? '#10b981' : 'var(--sl-t3)' }}
+              style={{ color: obj.status === 'completed' ? 'var(--sl-em)' : 'var(--sl-t3)' }}
             >
               {obj.status === 'completed'
                 ? '✓ Épico'
@@ -113,7 +113,7 @@ export function FuturoArquivoTab({ onResume, onArchive }: FuturoArquivoTabProps)
             {obj.stats.map((stat, i) => (
               <div key={i}>
                 <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-[0.5px] mb-[2px]">{stat.label}</p>
-                <p className="font-[DM_Mono] text-[12px] font-medium" style={{ color: stat.color ?? 'var(--sl-t2)' }}>
+                <p className="sl-num-strong text-[12px] font-medium" style={{ color: stat.color ?? 'var(--sl-t2)' }}>
                   {stat.value}
                 </p>
               </div>
@@ -123,14 +123,14 @@ export function FuturoArquivoTab({ onResume, onArchive }: FuturoArquivoTabProps)
           {/* Progress bar for completed */}
           {obj.status === 'completed' && (
             <div className="mt-2 h-[5px] rounded-full overflow-hidden bg-[var(--sl-s3)]">
-              <div className="h-full rounded-full" style={{ width: '100%', background: 'linear-gradient(90deg, #10b981, #10b981)' }} />
+              <div className="h-full rounded-full" style={{ width: '100%', background: 'linear-gradient(90deg, #0F766E, #0F766E)' }} />
             </div>
           )}
 
           {/* XP badge */}
           {obj.xpEarned && (
             <div className="mt-2">
-              <span className="inline-flex items-center gap-1 px-2 py-[3px] rounded-[10px] text-[10px] font-semibold bg-[rgba(139,92,246,0.12)] text-[#c4b5fd]">
+              <span className="inline-flex items-center gap-1 px-2 py-[3px] rounded-[10px] text-[10px] font-semibold bg-[rgba(139,123,212,0.12)] text-[#c4b5fd]">
                 ✦ +{obj.xpEarned} XP{obj.levelUnlocked ? ` · ${obj.levelUnlocked}` : ' ganhos nesta missão'}
               </span>
             </div>

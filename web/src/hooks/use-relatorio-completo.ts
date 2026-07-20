@@ -3,6 +3,19 @@
 import { useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
+// ─── LOCAL TYPES ───────────────────────────────────────────────────────────────
+
+interface TxnRow { amount: number; type: string; category: { name: string } | null }
+interface GoalRow { name: string; current_amount: number; target_amount: number; status: string }
+interface ActivityRow { duration_minutes: number | null }
+interface AssetRow { quantity: number; avg_price: number; current_price: number | null }
+interface EventStatusRow { id: string; status: string }
+interface StudySessionRow { duration_minutes: number | null }
+interface WeightRow { weight: number }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SbClient = any
+
 export function useRelatorioCompleto() {
   const [generating, setGenerating] = useState(false)
 
@@ -13,7 +26,7 @@ export function useRelatorioCompleto() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Não autenticado')
 
-      const sb = supabase as any
+      const sb = supabase as SbClient
       const now = new Date()
       const month = now.getMonth() + 1
       const year = now.getFullYear()
@@ -33,23 +46,23 @@ export function useRelatorioCompleto() {
         sb.from('study_sessions').select('duration_minutes').eq('user_id', user.id).gte('date', startDate).lte('date', endDate),
         sb.from('weight_entries').select('weight').eq('user_id', user.id).order('date', { ascending: false }).limit(1),
       ]) as [
-        { data: any[] | null; error: unknown },
-        { data: any[] | null; error: unknown },
-        { data: any[] | null; error: unknown },
-        { data: any[] | null; error: unknown },
-        { data: any[] | null; error: unknown },
-        { data: any[] | null; error: unknown },
-        { data: any[] | null; error: unknown },
+        { data: TxnRow[] | null; error: unknown },
+        { data: GoalRow[] | null; error: unknown },
+        { data: ActivityRow[] | null; error: unknown },
+        { data: AssetRow[] | null; error: unknown },
+        { data: EventStatusRow[] | null; error: unknown },
+        { data: StudySessionRow[] | null; error: unknown },
+        { data: WeightRow[] | null; error: unknown },
       ]
 
       // Build financial data
       let financas = undefined
       const txns = txnRes.data ?? []
       if (txns.length > 0) {
-        const totalIncome = txns.filter((t: any) => t.type === 'income').reduce((s: number, t: any) => s + t.amount, 0)
-        const totalExpense = txns.filter((t: any) => t.type === 'expense').reduce((s: number, t: any) => s + t.amount, 0)
+        const totalIncome = txns.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+        const totalExpense = txns.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
         const catMap: Record<string, number> = {}
-        txns.filter((t: any) => t.type === 'expense').forEach((t: any) => {
+        txns.filter((t) => t.type === 'expense').forEach((t) => {
           const name = t.category?.name ?? 'Outros'
           catMap[name] = (catMap[name] ?? 0) + t.amount
         })
@@ -67,9 +80,9 @@ export function useRelatorioCompleto() {
       let futuro = undefined
       if (allGoals.length > 0) {
         futuro = {
-          activeGoals: allGoals.filter((g: any) => g.status === 'active').length,
-          completedGoals: allGoals.filter((g: any) => g.status === 'completed').length,
-          goals: allGoals.filter((g: any) => g.status === 'active').slice(0, 5).map((g: any) => ({
+          activeGoals: allGoals.filter((g) => g.status === 'active').length,
+          completedGoals: allGoals.filter((g) => g.status === 'completed').length,
+          goals: allGoals.filter((g) => g.status === 'active').slice(0, 5).map((g) => ({
             name: g.name, progress: g.current_amount, target: g.target_amount,
           })),
         }
@@ -81,7 +94,7 @@ export function useRelatorioCompleto() {
       if (acts.length > 0) {
         corpo = {
           activities: acts.length,
-          totalMinutes: acts.reduce((s: number, a: any) => s + (a.duration_minutes ?? 0), 0),
+          totalMinutes: acts.reduce((s, a) => s + (a.duration_minutes ?? 0), 0),
           currentWeight: weightsRes.data?.[0]?.weight ?? undefined,
         }
       }
@@ -90,8 +103,8 @@ export function useRelatorioCompleto() {
       const assets = assetsRes.data ?? []
       let patrimonio = undefined
       if (assets.length > 0) {
-        const totalValue = assets.reduce((s: number, a: any) => s + a.quantity * (a.current_price ?? a.avg_price), 0)
-        const totalInvested = assets.reduce((s: number, a: any) => s + a.quantity * a.avg_price, 0)
+        const totalValue = assets.reduce((s, a) => s + a.quantity * (a.current_price ?? a.avg_price), 0)
+        const totalInvested = assets.reduce((s, a) => s + a.quantity * a.avg_price, 0)
         patrimonio = {
           totalValue,
           totalInvested,
@@ -105,7 +118,7 @@ export function useRelatorioCompleto() {
       if (evts.length > 0) {
         tempo = {
           totalEvents: evts.length,
-          completedEvents: evts.filter((e: any) => e.status === 'completed').length,
+          completedEvents: evts.filter((e) => e.status === 'completed').length,
         }
       }
 
@@ -113,7 +126,7 @@ export function useRelatorioCompleto() {
       const sessions = sessionsRes.data ?? []
       let mente = undefined
       if (sessions.length > 0) {
-        const totalMins = sessions.reduce((s: number, ss: any) => s + (ss.duration_minutes ?? 0), 0)
+        const totalMins = sessions.reduce((s, ss) => s + (ss.duration_minutes ?? 0), 0)
         mente = {
           studyHours: Math.round(totalMins / 60),
           activeTracks: 0, // We'd need another query for this

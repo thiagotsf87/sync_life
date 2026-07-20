@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useXP } from '@/hooks/use-xp'
 import { FUTURO_PRIMARY_BORDER, FUTURO_GRAD } from '@/lib/futuro-colors'
@@ -27,7 +27,7 @@ export function XpBar() {
           </span>
           <span className="text-[11px] text-[var(--sl-t2)]">{levelTitle}</span>
         </div>
-        <span className="text-[11px] font-[DM_Mono] font-medium text-[var(--sl-t2)]">
+        <span className="text-[11px] sl-num-strong font-medium text-[var(--sl-t2)]">
           {totalXP.toLocaleString('pt-BR')} XP
         </span>
       </div>
@@ -45,9 +45,9 @@ export function XpBar() {
 
       {/* XP label */}
       <p className="text-[10px] text-[var(--sl-t2)] text-right mt-[3px]">
-        <span className="font-[DM_Mono]">{totalXP.toLocaleString('pt-BR')}</span>
+        <span className="sl-num-strong">{totalXP.toLocaleString('pt-BR')}</span>
         {' / '}
-        <span className="font-[DM_Mono]">{nextLevelXP.toLocaleString('pt-BR')}</span>
+        <span className="sl-num-strong">{nextLevelXP.toLocaleString('pt-BR')}</span>
         {' XP para Nível '}
         {level + 1}
       </p>

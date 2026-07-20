@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus } from 'lucide-react'
+import { Plus, Flame, Play, Sparkles, Timer, Gem } from 'lucide-react'
 import { jornadaLabel } from '@/lib/jornada-labels'
 import {
   useMenteDashboard,
@@ -21,11 +21,9 @@ import { MenteBibliotecaTab } from '@/components/mente/mobile/MenteBibliotecaTab
 import { MenteTrackWizardMobile } from '@/components/mente/mobile/MenteTrackWizardMobile'
 import { toast } from 'sonner'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.12)'
-const MENTE_BORDER = 'rgba(234,179,8,0.3)'
-const MENTE_GRAD = 'linear-gradient(135deg, #eab308, #f97316)'
-
+const MENTE_COLOR = '#D9962E'
+const MENTE_BG = 'rgba(217,150,46,0.12)'
+const MENTE_BORDER = 'rgba(217,150,46,0.3)'
 type Tab = 'dashboard' | 'trilhas' | 'timer' | 'sessoes' | 'biblioteca'
 
 const TABS: { key: Tab; label: string; labelKey: string }[] = [
@@ -185,8 +183,16 @@ export function MenteMobile() {
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
-            <p className="text-[12px] font-semibold mb-[2px]" style={{ color: MENTE_COLOR }}>
-            ✦ {jornadaLabel('mente', 'module', 'Mente')} · {streak.current_streak > 0 ? `🔥 ${streak.current_streak}d streak` : 'Comece hoje!'}
+            <p className="text-[12px] font-semibold mb-[2px] inline-flex items-center gap-1" style={{ color: MENTE_COLOR }}>
+            ✦ {jornadaLabel('mente', 'module', 'Mente')}
+            {streak.current_streak > 0 && (
+              <>
+                <span>·</span>
+                <Flame size={11} />
+                <span className="sl-num">{streak.current_streak}d streak</span>
+              </>
+            )}
+            {streak.current_streak === 0 && <span>· Comece hoje!</span>}
           </p>
           <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
             Sua mente hoje
@@ -243,9 +249,9 @@ export function MenteMobile() {
               <div className="grid grid-cols-2 gap-2 px-4 pb-3">
                 {[
                   { label: 'Horas esta semana', value: `${weekHours}h`, color: MENTE_COLOR, sub: 'Meta: 10h/semana' },
-                  { label: 'Streak de estudo', value: `${streak.current_streak}dias`, color: '#f59e0b', sub: streak.current_streak > 0 ? `Recorde: ${streak.longest_streak}d` : 'Comece hoje!' },
+                  { label: 'Streak de estudo', value: `${streak.current_streak}dias`, color: '#D9962E', sub: streak.current_streak > 0 ? `Recorde: ${streak.longest_streak}d` : 'Comece hoje!' },
                   { label: 'Trilhas ativas', value: String(activeTracks.length), color: 'var(--sl-t1)', sub: `Limite FREE: 3` },
-                  { label: 'Pomodoros hoje', value: String(todaySessions), color: '#10b981', sub: `${(todaySessions * 25 / 60).toFixed(1)}h de foco puro` },
+                  { label: 'Pomodoros hoje', value: String(todaySessions), color: '#0F766E', sub: `${(todaySessions * 25 / 60).toFixed(1)}h de foco puro` },
                 ].map(({ label, value, color, sub }) => (
                   <div
                     key={label}
@@ -253,7 +259,7 @@ export function MenteMobile() {
                     style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}
                   >
                     <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">{label}</p>
-                    <p className="font-[DM_Mono] text-[20px] font-bold leading-none" style={{ color }}>
+                    <p className="sl-num-strong text-[20px] leading-none" style={{ color }}>
                       {value}
                     </p>
                     <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">{sub}</p>
@@ -261,14 +267,16 @@ export function MenteMobile() {
                 ))}
               </div>
 
-              {/* Streak heatmap — 7×4 calendar grid */}
+              {/* Streak heatmap · 7×4 calendar grid */}
               <div
                 className="mx-4 mb-3 rounded-2xl p-4"
                 style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}
               >
                 <div className="flex justify-between items-center mb-[10px]">
-                  <span className="text-[14px] font-semibold text-[var(--sl-t1)]">🔥 Streak de estudos</span>
-                  <span className="font-[DM_Mono] text-[14px]" style={{ color: '#f59e0b' }}>
+                  <span className="text-[14px] font-semibold text-[var(--sl-t1)] inline-flex items-center gap-1.5">
+                    <Flame size={14} style={{ color: MENTE_COLOR }} /> Streak de estudos
+                  </span>
+                  <span className="sl-num text-[14px]" style={{ color: MENTE_COLOR }}>
                     {streak.current_streak} dias
                   </span>
                 </div>
@@ -287,7 +295,7 @@ export function MenteMobile() {
                         background: v < 0
                           ? 'transparent'
                           : v === 1
-                          ? 'rgba(234,179,8,0.85)'
+                          ? 'rgba(217,150,46,0.85)'
                           : 'var(--sl-s3)',
                       }}
                     />
@@ -330,12 +338,12 @@ export function MenteMobile() {
                   onClick={() => setActiveTab('timer')}
                   className="w-full flex items-center justify-between p-[14px] rounded-[10px]"
                   style={{
-                    background: 'linear-gradient(135deg,rgba(234,179,8,0.15),rgba(234,179,8,0.04))',
+                    background: 'linear-gradient(135deg,rgba(217,150,46,0.15),rgba(217,150,46,0.04))',
                     border: `1.5px solid ${MENTE_BORDER}`,
                   }}
                 >
                   <div className="flex items-center gap-[10px]">
-                    <span className="text-[22px]">⏱️</span>
+                    <Timer size={22} style={{ color: MENTE_COLOR }} />
                     <div className="text-left">
                       <div className="text-[14px] font-semibold text-[var(--sl-t1)]">Iniciar sessão de foco</div>
                       <div className="text-[12px] text-[var(--sl-t2)]">
@@ -344,12 +352,10 @@ export function MenteMobile() {
                     </div>
                   </div>
                   <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: MENTE_COLOR }}
+                    className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-white"
+                    style={{ background: 'var(--sl-em)' }}
                   >
-                    <svg viewBox="0 0 24 24" fill="white" width={18} height={18}>
-                      <polygon points="5 3 19 12 5 21 5 3" />
-                    </svg>
+                    <Play size={18} fill="currentColor" strokeWidth={0} />
                   </div>
                 </button>
               </div>
@@ -359,10 +365,10 @@ export function MenteMobile() {
                 className="mx-4 mt-3 mb-2 rounded-2xl p-4 flex items-start gap-[10px]"
                 style={{ background: 'rgba(0,85,255,0.06)', border: '1px solid rgba(0,85,255,0.15)' }}
               >
-                <span className="text-[18px]">🤖</span>
+                <Sparkles size={18} className="text-[var(--sl-info)]" />
                 <div className="text-[13px] text-[var(--sl-t2)] leading-relaxed">
                   {streak.current_streak > 7
-                    ? <>Excelente ritmo! <span style={{ color: MENTE_COLOR }}>🔥 {streak.current_streak} dias</span> de streak. Suas sessões mais longas são de manhã — continue nesse horário!</>
+                    ? <>Excelente ritmo! <span style={{ color: MENTE_COLOR }} className="sl-num">{streak.current_streak} dias</span> de streak. Suas sessões mais longas são de manhã · continue nesse horário!</>
                     : <>Tente estudar <span style={{ color: MENTE_COLOR }}>25 min por dia</span> para construir consistência. Pequenos hábitos criam grandes resultados!</>
                   }
                 </div>
@@ -425,13 +431,13 @@ export function MenteMobile() {
               <div
                 className="rounded-[10px] p-[14px] flex items-center gap-3"
                 style={{
-                  background: 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(139,92,246,0.1))',
-                  border: '1.5px solid rgba(245,158,11,0.3)',
+                  background: 'linear-gradient(135deg,rgba(217,150,46,0.15),rgba(139,123,212,0.1))',
+                  border: '1.5px solid rgba(217,150,46,0.3)',
                 }}
               >
-                <span className="text-[24px]">💎</span>
+                <Gem size={24} style={{ color: MENTE_COLOR }} />
                 <div className="flex-1 min-w-0">
-                  <div className="text-[14px] font-semibold" style={{ color: '#f59e0b' }}>
+                  <div className="text-[14px] font-semibold" style={{ color: MENTE_COLOR }}>
                     Quer mais trilhas?
                   </div>
                   <div className="text-[12px] text-[var(--sl-t2)] mt-[2px]">

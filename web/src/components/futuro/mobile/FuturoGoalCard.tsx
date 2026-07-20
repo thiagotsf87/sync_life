@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { FUTURO_PRIMARY_LIGHT, FUTURO_GRAD, FUTURO_PRIMARY_BG } from '@/lib/futuro-colors'
 import { getObjectiveXpReward } from '@/lib/futuro-xp-mock'
@@ -26,18 +26,18 @@ interface FuturoGoalCardProps {
 }
 
 function getProgressColor(pct: number, isDelayed: boolean): string {
-  if (isDelayed) return '#f59e0b'
-  if (pct >= 60) return '#10b981'
-  if (pct >= 40) return '#f59e0b'
-  return '#f43f5e'
+  if (isDelayed) return 'var(--sl-warning)'
+  if (pct >= 60) return 'var(--sl-em)'
+  if (pct >= 40) return 'var(--sl-warning)'
+  return 'var(--sl-danger)'
 }
 
 function getBorderLeftColor(pct: number, isDelayed: boolean, status?: string): string {
-  if (status === 'completed') return '#10b981'
+  if (status === 'completed') return 'var(--sl-em)'
   if (status === 'paused') return 'var(--sl-t3)'
-  if (isDelayed) return '#f59e0b'
-  if (pct >= 60) return '#10b981'
-  return '#8b5cf6'
+  if (isDelayed) return 'var(--sl-warning)'
+  if (pct >= 60) return 'var(--sl-em)'
+  return '#8B7BD4'
 }
 
 export function FuturoGoalCard({
@@ -63,10 +63,10 @@ export function FuturoGoalCard({
       onClick={onClick}
       className="mx-4 mb-[10px] rounded-[16px] p-[13px_15px] cursor-pointer transition-colors active:bg-[var(--sl-s2)]"
       style={{
-        background: `linear-gradient(135deg, var(--sl-s1), rgba(139,92,246,0.03))`,
+        background: `linear-gradient(135deg, var(--sl-s1), rgba(139,123,212,0.03))`,
         border: isDelayed
-          ? `1px solid rgba(245,158,11,0.3)`
-          : `1px solid rgba(139,92,246,0.22)`,
+          ? `1px solid rgba(217,150,46,0.3)`
+          : `1px solid rgba(139,123,212,0.22)`,
         borderLeft: `3px solid ${borderLeftColor}`,
       }}
     >
@@ -104,7 +104,7 @@ export function FuturoGoalCard({
             </div>
           )}
         </div>
-        <span className="font-[DM_Mono] text-[18px] font-bold shrink-0" style={{ color: pctColor }}>
+        <span className="sl-num-strong text-[18px] font-bold shrink-0" style={{ color: pctColor }}>
           {progressPct}%
         </span>
       </div>
@@ -112,7 +112,7 @@ export function FuturoGoalCard({
       {/* Progress row */}
       <div className="flex items-center justify-between mb-[5px]">
         <span className="text-[11px] text-[var(--sl-t2)]">{progressLabel}</span>
-        <span className="font-[DM_Mono] text-[13px] font-semibold" style={{ color: pctColor }}>
+        <span className="sl-num-strong text-[13px] font-semibold" style={{ color: pctColor }}>
           {progressPct}%
         </span>
       </div>
@@ -138,8 +138,8 @@ export function FuturoGoalCard({
       <div
         className="inline-flex items-center gap-[3px] mt-[7px] px-2 py-[3px] rounded-[10px] text-[10px] font-bold"
         style={{
-          background: 'rgba(139,92,246,0.12)',
-          border: '1px solid rgba(139,92,246,0.2)',
+          background: 'rgba(139,123,212,0.12)',
+          border: '1px solid rgba(139,123,212,0.2)',
           color: FUTURO_PRIMARY_LIGHT,
         }}
       >

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -232,7 +232,7 @@ export function ExpWizardMobile({ open, onClose, onSubmit, onTripCreated }: ExpW
         {saveError && (
           <div
             className="rounded-[10px] p-3 mb-3 text-[12px]"
-            style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.2)', color: '#f43f5e' }}
+            style={{ background: 'rgba(219,100,120,0.1)', border: '1px solid rgba(219,100,120,0.2)', color: 'var(--sl-danger)' }}
           >
             {saveError}
           </div>

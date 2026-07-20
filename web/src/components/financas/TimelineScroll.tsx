@@ -11,11 +11,11 @@ const COL_W = 140
 const MAX_CHIPS = 3
 
 const CHIP_COLORS: Record<string, { bg: string; text: string }> = {
-  income:  { bg: 'rgba(16,185,129,0.12)',  text: '#10b981' },
-  expense: { bg: 'rgba(244,63,94,0.10)',   text: '#f43f5e' },
-  goal:    { bg: 'rgba(0,85,255,0.10)',    text: '#0055ff' },
-  recorr:  { bg: 'rgba(245,158,11,0.09)',  text: '#f59e0b' },
-  warn:    { bg: 'rgba(249,115,22,0.10)',  text: '#f97316' },
+  income:  { bg: 'rgba(15,118,110,0.12)',  text: '#0F766E' },
+  expense: { bg: 'rgba(219,100,120,0.10)',   text: '#DB6478' },
+  goal:    { bg: 'rgba(0,85,255,0.10)',    text: '#0B2D34' },
+  recorr:  { bg: 'rgba(217,150,46,0.09)',  text: '#D9962E' },
+  warn:    { bg: 'rgba(217,117,52,0.10)',  text: '#D97534' },
 }
 
 // ─── SUB-COMPONENTS ───────────────────────────────────────────────────────────
@@ -78,10 +78,10 @@ function TodayLine({ col }: { col: number }) {
       <div className="relative w-0 h-full">
         <div
           className="absolute top-0 bottom-0 w-0"
-          style={{ borderLeft: '1.5px dashed rgba(16,185,129,0.5)' }}
+          style={{ borderLeft: '1.5px dashed rgba(15,118,110,0.5)' }}
         />
         <div
-          className="absolute w-2 h-2 rounded-full bg-[#10b981]"
+          className="absolute w-2 h-2 rounded-full bg-[#0F766E]"
           style={{ top: 4, left: -4 }}
         />
       </div>
@@ -132,7 +132,7 @@ function BalanceCurve({
       {minBal < 0 && (
         <line
           x1={0} y1={zeroY} x2={W} y2={zeroY}
-          stroke="rgba(244,63,94,0.3)" strokeWidth="1" strokeDasharray="4,4"
+          stroke="rgba(219,100,120,0.3)" strokeWidth="1" strokeDasharray="4,4"
         />
       )}
 
@@ -236,12 +236,12 @@ export function TimelineScroll({
               style={{ width: COL_W, flexShrink: 0 }}
               className={cn(
                 'flex items-center px-3.5 h-full border-r border-[var(--sl-border)] gap-1.5',
-                m.index === todayCol && 'text-[#10b981]'
+                m.index === todayCol && 'text-[#0F766E]'
               )}
             >
               <span className="font-[Syne] text-[11px] font-bold tracking-[0.03em]">{m.label}</span>
               {m.index === todayCol && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-[rgba(16,185,129,0.14)] text-[#10b981] font-semibold">
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-[rgba(15,118,110,0.14)] text-[#0F766E] font-semibold">
                   Hoje
                 </span>
               )}
@@ -260,7 +260,7 @@ export function TimelineScroll({
                 style={{ width: COL_W, flexShrink: 0 }}
                 className={cn(
                   'border-r border-[var(--sl-border)] h-full',
-                  m.index === todayCol && 'bg-[rgba(16,185,129,0.025)]'
+                  m.index === todayCol && 'bg-[rgba(15,118,110,0.025)]'
                 )}
               />
             ))}
@@ -272,7 +272,7 @@ export function TimelineScroll({
           {/* Bands */}
           <div className="absolute inset-0 flex flex-col">
             {/* Income band */}
-            <div className="h-[90px] shrink-0 relative border-b border-[var(--sl-border)] bg-[rgba(16,185,129,0.02)]">
+            <div className="h-[90px] shrink-0 relative border-b border-[var(--sl-border)] bg-[rgba(15,118,110,0.02)]">
               <EventChips events={incomeEvents} months={months} />
             </div>
 
@@ -282,7 +282,7 @@ export function TimelineScroll({
             </div>
 
             {/* Expense band */}
-            <div className="h-[90px] shrink-0 relative bg-[rgba(244,63,94,0.02)]">
+            <div className="h-[90px] shrink-0 relative bg-[rgba(219,100,120,0.02)]">
               <EventChips events={expenseEvents} months={months} />
             </div>
           </div>
@@ -295,13 +295,13 @@ export function TimelineScroll({
             >
               <div className="w-full h-full backdrop-blur-sm bg-[var(--sl-bg)]/70 flex flex-col items-center justify-center gap-3">
                 <span className="text-[15px] font-[Syne] font-bold text-[var(--sl-t1)]">
-                  PRO — Projeção 12 meses
+                  PRO · Projeção 12 meses
                 </span>
                 <p className="text-[12px] text-[var(--sl-t2)] text-center max-w-[220px]">
                   Desbloqueie a projeção completa de 12 meses com o plano PRO.
                 </p>
                 <button className="px-4 py-2 rounded-full text-white text-[12px] font-bold"
-                  style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}>
+                  style={{ background: 'var(--sl-em)' }}>
                   Ver PRO
                 </button>
               </div>

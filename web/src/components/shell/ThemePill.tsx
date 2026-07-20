@@ -7,16 +7,11 @@ import { Palette } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const THEME_LABELS: Record<string, string> = {
-  'system': 'Auto',
-  'navy-dark': 'Navy',
-  'clean-light': 'Clean',
-  'mint-garden': 'Mint',
-  'obsidian': 'Obsidian',
-  'rosewood': 'Rose',
-  'arctic': 'Arctic',
-  'graphite': 'Graphite',
-  'twilight': 'Twilight',
-  'sahara': 'Sahara',
+  'navy-deep': 'Navy Deep',
+  'midnight':  'Midnight',
+  'charcoal':  'Charcoal',
+  'cream':     'Cream',
+  'system':    'Sistema',
 }
 
 export function ThemePill() {
@@ -26,7 +21,7 @@ export function ThemePill() {
 
   useEffect(() => { setMounted(true) }, [])
 
-  const label = mounted ? (THEME_LABELS[theme] || 'Auto') : 'Auto'
+  const label = mounted ? (THEME_LABELS[theme] || 'Sistema') : 'Sistema'
 
   return (
     <button

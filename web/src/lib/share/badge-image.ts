@@ -21,8 +21,8 @@ export async function generateBadgeImage(badge: {
 
   // Top accent bar
   const accentGrad = ctx.createLinearGradient(0, 0, W, 0)
-  accentGrad.addColorStop(0, '#10b981')
-  accentGrad.addColorStop(1, '#0055ff')
+  accentGrad.addColorStop(0, '#0F766E')
+  accentGrad.addColorStop(1, '#0B2D34')
   ctx.fillStyle = accentGrad
   ctx.fillRect(0, 0, W, 4)
 
@@ -33,10 +33,10 @@ export async function generateBadgeImage(badge: {
 
   // Rarity pill
   const rarityColors: Record<string, string> = {
-    common: '#64748b',
-    uncommon: '#10b981',
-    rare: '#8b5cf6',
-    legendary: '#f59e0b',
+    common: '#6F7986',
+    uncommon: '#0F766E',
+    rare: '#8B7BD4',
+    legendary: '#D9962E',
   }
   const rarityLabels: Record<string, string> = {
     common: 'COMUM',
@@ -44,7 +44,7 @@ export async function generateBadgeImage(badge: {
     rare: 'RARA',
     legendary: 'LENDÁRIA',
   }
-  const pillColor = rarityColors[badge.rarity] || '#64748b'
+  const pillColor = rarityColors[badge.rarity] || '#6F7986'
   const pillText = rarityLabels[badge.rarity] || 'COMUM'
   ctx.font = 'bold 11px sans-serif'
   const pillW = ctx.measureText(pillText).width + 20

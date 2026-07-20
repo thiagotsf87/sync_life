@@ -29,66 +29,66 @@ interface RankUser {
 
 // Top 20 — ranking global (todos os tempos)
 const GLOBAL_TOP: RankUser[] = [
-  { position: 1,  name: 'Mariana Oliveira',  initials: 'MO', score: 847, badgeCount: 21, streak: 92, avatarColor: '#10b981', trend: 'same', trendValue: 0 },
-  { position: 2,  name: 'Rafael Santos',     initials: 'RS', score: 720, badgeCount: 19, streak: 65, avatarColor: '#0055ff', trend: 'up',   trendValue: 1 },
-  { position: 3,  name: 'Juliana Costa',     initials: 'JC', score: 685, badgeCount: 18, streak: 44, avatarColor: '#f59e0b', trend: 'down', trendValue: 1 },
+  { position: 1,  name: 'Mariana Oliveira',  initials: 'MO', score: 847, badgeCount: 21, streak: 92, avatarColor: '#0F766E', trend: 'same', trendValue: 0 },
+  { position: 2,  name: 'Rafael Santos',     initials: 'RS', score: 720, badgeCount: 19, streak: 65, avatarColor: '#0B2D34', trend: 'up',   trendValue: 1 },
+  { position: 3,  name: 'Juliana Costa',     initials: 'JC', score: 685, badgeCount: 18, streak: 44, avatarColor: '#D9962E', trend: 'down', trendValue: 1 },
   { position: 4,  name: 'Pedro Almeida',     initials: 'PA', score: 630, badgeCount: 17, streak: 38, avatarColor: '#a855f7', trend: 'up',   trendValue: 2 },
-  { position: 5,  name: 'Ana Ferreira',      initials: 'AF', score: 588, badgeCount: 16, streak: 30, avatarColor: '#f97316', trend: 'same', trendValue: 0 },
-  { position: 6,  name: 'Carlos Mendes',     initials: 'CM', score: 542, badgeCount: 15, streak: 25, avatarColor: '#06b6d4', trend: 'up',   trendValue: 3 },
-  { position: 7,  name: 'Beatriz Lima',      initials: 'BL', score: 498, badgeCount: 14, streak: 21, avatarColor: '#ec4899', trend: 'down', trendValue: 2 },
+  { position: 5,  name: 'Ana Ferreira',      initials: 'AF', score: 588, badgeCount: 16, streak: 30, avatarColor: '#D97534', trend: 'same', trendValue: 0 },
+  { position: 6,  name: 'Carlos Mendes',     initials: 'CM', score: 542, badgeCount: 15, streak: 25, avatarColor: '#3CA0B5', trend: 'up',   trendValue: 3 },
+  { position: 7,  name: 'Beatriz Lima',      initials: 'BL', score: 498, badgeCount: 14, streak: 21, avatarColor: '#C76795', trend: 'down', trendValue: 2 },
   { position: 8,  name: 'Lucas Rocha',       initials: 'LR', score: 465, badgeCount: 14, streak: 18, avatarColor: '#14b8a6', trend: 'up',   trendValue: 1 },
   { position: 9,  name: 'Fernanda Souza',    initials: 'FS', score: 432, badgeCount: 13, streak: 15, avatarColor: '#84cc16', trend: 'same', trendValue: 0 },
-  { position: 10, name: 'Gabriel Nunes',     initials: 'GN', score: 410, badgeCount: 13, streak: 14, avatarColor: '#f43f5e', trend: 'down', trendValue: 1 },
-  { position: 11, name: 'Isabela Carvalho',  initials: 'IC', score: 385, badgeCount: 12, streak: 12, avatarColor: '#0055ff', trend: 'up',   trendValue: 2 },
-  { position: 12, name: 'Thiago Pereira',    initials: 'TP', score: 362, badgeCount: 12, streak: 11, avatarColor: '#10b981', trend: 'same', trendValue: 0 },
-  { position: 13, name: 'Larissa Martins',   initials: 'LM', score: 340, badgeCount: 11, streak: 10, avatarColor: '#f59e0b', trend: 'up',   trendValue: 1 },
+  { position: 10, name: 'Gabriel Nunes',     initials: 'GN', score: 410, badgeCount: 13, streak: 14, avatarColor: '#DB6478', trend: 'down', trendValue: 1 },
+  { position: 11, name: 'Isabela Carvalho',  initials: 'IC', score: 385, badgeCount: 12, streak: 12, avatarColor: '#0B2D34', trend: 'up',   trendValue: 2 },
+  { position: 12, name: 'Thiago Pereira',    initials: 'TP', score: 362, badgeCount: 12, streak: 11, avatarColor: '#0F766E', trend: 'same', trendValue: 0 },
+  { position: 13, name: 'Larissa Martins',   initials: 'LM', score: 340, badgeCount: 11, streak: 10, avatarColor: '#D9962E', trend: 'up',   trendValue: 1 },
   { position: 14, name: 'Diego Barbosa',     initials: 'DB', score: 318, badgeCount: 11, streak: 9,  avatarColor: '#a855f7', trend: 'down', trendValue: 3 },
-  { position: 15, name: 'Camila Rodrigues',  initials: 'CR', score: 295, badgeCount: 10, streak: 8,  avatarColor: '#f97316', trend: 'up',   trendValue: 1 },
-  { position: 16, name: 'Henrique Gomes',    initials: 'HG', score: 272, badgeCount: 10, streak: 7,  avatarColor: '#06b6d4', trend: 'same', trendValue: 0 },
-  { position: 17, name: 'Natália Silva',     initials: 'NS', score: 250, badgeCount: 9,  streak: 7,  avatarColor: '#ec4899', trend: 'up',   trendValue: 2 },
+  { position: 15, name: 'Camila Rodrigues',  initials: 'CR', score: 295, badgeCount: 10, streak: 8,  avatarColor: '#D97534', trend: 'up',   trendValue: 1 },
+  { position: 16, name: 'Henrique Gomes',    initials: 'HG', score: 272, badgeCount: 10, streak: 7,  avatarColor: '#3CA0B5', trend: 'same', trendValue: 0 },
+  { position: 17, name: 'Natália Silva',     initials: 'NS', score: 250, badgeCount: 9,  streak: 7,  avatarColor: '#C76795', trend: 'up',   trendValue: 2 },
   { position: 18, name: 'Bruno Castro',      initials: 'BC', score: 228, badgeCount: 9,  streak: 6,  avatarColor: '#14b8a6', trend: 'down', trendValue: 1 },
   { position: 19, name: 'Priscila Torres',   initials: 'PT', score: 215, badgeCount: 8,  streak: 5,  avatarColor: '#84cc16', trend: 'same', trendValue: 0 },
-  { position: 20, name: 'Vítor Nascimento',  initials: 'VN', score: 208, badgeCount: 8,  streak: 5,  avatarColor: '#f43f5e', trend: 'up',   trendValue: 1 },
+  { position: 20, name: 'Vítor Nascimento',  initials: 'VN', score: 208, badgeCount: 8,  streak: 5,  avatarColor: '#DB6478', trend: 'up',   trendValue: 1 },
   // Usuário fora do top 20 — exibido com separador
-  { position: 38, name: 'Você',              initials: 'EU', score: 195, badgeCount: 12, streak: 7,  avatarColor: '#6366f1', trend: 'up',   trendValue: 4, isCurrentUser: true },
+  { position: 38, name: 'Você',              initials: 'EU', score: 195, badgeCount: 12, streak: 7,  avatarColor: '#6B6FD4', trend: 'up',   trendValue: 4, isCurrentUser: true },
 ]
 
 // Top 20 — este mês (usuário aparece na lista em #15)
 const MONTHLY_TOP: RankUser[] = [
-  { position: 1,  name: 'Mariana Oliveira',  initials: 'MO', score: 120, badgeCount: 3, streak: 92, avatarColor: '#10b981', trend: 'same', trendValue: 0 },
-  { position: 2,  name: 'Rafael Santos',     initials: 'RS', score: 110, badgeCount: 3, streak: 65, avatarColor: '#0055ff', trend: 'up',   trendValue: 1 },
-  { position: 3,  name: 'Juliana Costa',     initials: 'JC', score: 95,  badgeCount: 2, streak: 44, avatarColor: '#f59e0b', trend: 'same', trendValue: 0 },
-  { position: 4,  name: 'Gabriel Nunes',     initials: 'GN', score: 90,  badgeCount: 2, streak: 14, avatarColor: '#f43f5e', trend: 'up',   trendValue: 6 },
+  { position: 1,  name: 'Mariana Oliveira',  initials: 'MO', score: 120, badgeCount: 3, streak: 92, avatarColor: '#0F766E', trend: 'same', trendValue: 0 },
+  { position: 2,  name: 'Rafael Santos',     initials: 'RS', score: 110, badgeCount: 3, streak: 65, avatarColor: '#0B2D34', trend: 'up',   trendValue: 1 },
+  { position: 3,  name: 'Juliana Costa',     initials: 'JC', score: 95,  badgeCount: 2, streak: 44, avatarColor: '#D9962E', trend: 'same', trendValue: 0 },
+  { position: 4,  name: 'Gabriel Nunes',     initials: 'GN', score: 90,  badgeCount: 2, streak: 14, avatarColor: '#DB6478', trend: 'up',   trendValue: 6 },
   { position: 5,  name: 'Pedro Almeida',     initials: 'PA', score: 85,  badgeCount: 2, streak: 38, avatarColor: '#a855f7', trend: 'same', trendValue: 0 },
-  { position: 6,  name: 'Natália Silva',     initials: 'NS', score: 80,  badgeCount: 2, streak: 7,  avatarColor: '#ec4899', trend: 'up',   trendValue: 11 },
-  { position: 7,  name: 'Beatriz Lima',      initials: 'BL', score: 75,  badgeCount: 2, streak: 21, avatarColor: '#ec4899', trend: 'up',   trendValue: 0 },
-  { position: 8,  name: 'Carlos Mendes',     initials: 'CM', score: 70,  badgeCount: 2, streak: 25, avatarColor: '#06b6d4', trend: 'down', trendValue: 2 },
-  { position: 9,  name: 'Ana Ferreira',      initials: 'AF', score: 65,  badgeCount: 1, streak: 30, avatarColor: '#f97316', trend: 'same', trendValue: 0 },
+  { position: 6,  name: 'Natália Silva',     initials: 'NS', score: 80,  badgeCount: 2, streak: 7,  avatarColor: '#C76795', trend: 'up',   trendValue: 11 },
+  { position: 7,  name: 'Beatriz Lima',      initials: 'BL', score: 75,  badgeCount: 2, streak: 21, avatarColor: '#C76795', trend: 'up',   trendValue: 0 },
+  { position: 8,  name: 'Carlos Mendes',     initials: 'CM', score: 70,  badgeCount: 2, streak: 25, avatarColor: '#3CA0B5', trend: 'down', trendValue: 2 },
+  { position: 9,  name: 'Ana Ferreira',      initials: 'AF', score: 65,  badgeCount: 1, streak: 30, avatarColor: '#D97534', trend: 'same', trendValue: 0 },
   { position: 10, name: 'Diego Barbosa',     initials: 'DB', score: 60,  badgeCount: 1, streak: 9,  avatarColor: '#a855f7', trend: 'up',   trendValue: 4 },
-  { position: 11, name: 'Isabela Carvalho',  initials: 'IC', score: 55,  badgeCount: 1, streak: 12, avatarColor: '#0055ff', trend: 'up',   trendValue: 0 },
+  { position: 11, name: 'Isabela Carvalho',  initials: 'IC', score: 55,  badgeCount: 1, streak: 12, avatarColor: '#0B2D34', trend: 'up',   trendValue: 0 },
   { position: 12, name: 'Lucas Rocha',       initials: 'LR', score: 50,  badgeCount: 1, streak: 18, avatarColor: '#14b8a6', trend: 'down', trendValue: 3 },
-  { position: 13, name: 'Camila Rodrigues',  initials: 'CR', score: 45,  badgeCount: 1, streak: 8,  avatarColor: '#f97316', trend: 'up',   trendValue: 2 },
+  { position: 13, name: 'Camila Rodrigues',  initials: 'CR', score: 45,  badgeCount: 1, streak: 8,  avatarColor: '#D97534', trend: 'up',   trendValue: 2 },
   { position: 14, name: 'Fernanda Souza',    initials: 'FS', score: 40,  badgeCount: 1, streak: 15, avatarColor: '#84cc16', trend: 'same', trendValue: 0 },
-  { position: 15, name: 'Você',             initials: 'EU', score: 40,  badgeCount: 1, streak: 7,  avatarColor: '#6366f1', trend: 'up',   trendValue: 2, isCurrentUser: true },
-  { position: 16, name: 'Henrique Gomes',   initials: 'HG', score: 35,  badgeCount: 1, streak: 7,  avatarColor: '#06b6d4', trend: 'same', trendValue: 0 },
-  { position: 17, name: 'Thiago Pereira',   initials: 'TP', score: 30,  badgeCount: 0, streak: 11, avatarColor: '#10b981', trend: 'down', trendValue: 5 },
-  { position: 18, name: 'Larissa Martins',  initials: 'LM', score: 25,  badgeCount: 0, streak: 10, avatarColor: '#f59e0b', trend: 'up',   trendValue: 1 },
+  { position: 15, name: 'Você',             initials: 'EU', score: 40,  badgeCount: 1, streak: 7,  avatarColor: '#6B6FD4', trend: 'up',   trendValue: 2, isCurrentUser: true },
+  { position: 16, name: 'Henrique Gomes',   initials: 'HG', score: 35,  badgeCount: 1, streak: 7,  avatarColor: '#3CA0B5', trend: 'same', trendValue: 0 },
+  { position: 17, name: 'Thiago Pereira',   initials: 'TP', score: 30,  badgeCount: 0, streak: 11, avatarColor: '#0F766E', trend: 'down', trendValue: 5 },
+  { position: 18, name: 'Larissa Martins',  initials: 'LM', score: 25,  badgeCount: 0, streak: 10, avatarColor: '#D9962E', trend: 'up',   trendValue: 1 },
   { position: 19, name: 'Bruno Castro',     initials: 'BC', score: 20,  badgeCount: 0, streak: 6,  avatarColor: '#14b8a6', trend: 'down', trendValue: 2 },
   { position: 20, name: 'Priscila Torres',  initials: 'PT', score: 15,  badgeCount: 0, streak: 5,  avatarColor: '#84cc16', trend: 'same', trendValue: 0 },
 ]
 
 // Top 10 — esta semana (usuário em #7)
 const WEEKLY_TOP: RankUser[] = [
-  { position: 1,  name: 'Gabriel Nunes',    initials: 'GN', score: 45, badgeCount: 2, streak: 14, avatarColor: '#f43f5e', trend: 'up',   trendValue: 9 },
-  { position: 2,  name: 'Beatriz Lima',     initials: 'BL', score: 40, badgeCount: 2, streak: 21, avatarColor: '#ec4899', trend: 'up',   trendValue: 5 },
+  { position: 1,  name: 'Gabriel Nunes',    initials: 'GN', score: 45, badgeCount: 2, streak: 14, avatarColor: '#DB6478', trend: 'up',   trendValue: 9 },
+  { position: 2,  name: 'Beatriz Lima',     initials: 'BL', score: 40, badgeCount: 2, streak: 21, avatarColor: '#C76795', trend: 'up',   trendValue: 5 },
   { position: 3,  name: 'Pedro Almeida',    initials: 'PA', score: 35, badgeCount: 1, streak: 38, avatarColor: '#a855f7', trend: 'same', trendValue: 0 },
-  { position: 4,  name: 'Natália Silva',    initials: 'NS', score: 30, badgeCount: 1, streak: 7,  avatarColor: '#ec4899', trend: 'up',   trendValue: 13 },
-  { position: 5,  name: 'Larissa Martins',  initials: 'LM', score: 30, badgeCount: 1, streak: 10, avatarColor: '#f59e0b', trend: 'up',   trendValue: 8 },
-  { position: 6,  name: 'Carlos Mendes',    initials: 'CM', score: 25, badgeCount: 1, streak: 25, avatarColor: '#06b6d4', trend: 'down', trendValue: 3 },
-  { position: 7,  name: 'Você',             initials: 'EU', score: 25, badgeCount: 1, streak: 7,  avatarColor: '#6366f1', trend: 'up',   trendValue: 31, isCurrentUser: true },
-  { position: 8,  name: 'Ana Ferreira',     initials: 'AF', score: 20, badgeCount: 1, streak: 30, avatarColor: '#f97316', trend: 'down', trendValue: 3 },
+  { position: 4,  name: 'Natália Silva',    initials: 'NS', score: 30, badgeCount: 1, streak: 7,  avatarColor: '#C76795', trend: 'up',   trendValue: 13 },
+  { position: 5,  name: 'Larissa Martins',  initials: 'LM', score: 30, badgeCount: 1, streak: 10, avatarColor: '#D9962E', trend: 'up',   trendValue: 8 },
+  { position: 6,  name: 'Carlos Mendes',    initials: 'CM', score: 25, badgeCount: 1, streak: 25, avatarColor: '#3CA0B5', trend: 'down', trendValue: 3 },
+  { position: 7,  name: 'Você',             initials: 'EU', score: 25, badgeCount: 1, streak: 7,  avatarColor: '#6B6FD4', trend: 'up',   trendValue: 31, isCurrentUser: true },
+  { position: 8,  name: 'Ana Ferreira',     initials: 'AF', score: 20, badgeCount: 1, streak: 30, avatarColor: '#D97534', trend: 'down', trendValue: 3 },
   { position: 9,  name: 'Lucas Rocha',      initials: 'LR', score: 20, badgeCount: 1, streak: 18, avatarColor: '#14b8a6', trend: 'down', trendValue: 1 },
-  { position: 10, name: 'Henrique Gomes',   initials: 'HG', score: 15, badgeCount: 0, streak: 7,  avatarColor: '#06b6d4', trend: 'up',   trendValue: 6 },
+  { position: 10, name: 'Henrique Gomes',   initials: 'HG', score: 15, badgeCount: 0, streak: 7,  avatarColor: '#3CA0B5', trend: 'up',   trendValue: 6 },
 ]
 
 // Configurações por aba
@@ -110,9 +110,9 @@ const TAB_CONFIG: Record<RankTab, TabConfig> = {
     userScore:  195,
     scoreLabel: 'pontos totais',
     nextMilestones: [
-      { label: 'Top 25', pts: 208,  needed: 13,  color: '#10b981' },
-      { label: 'Top 10', pts: 410,  needed: 215, color: '#0055ff' },
-      { label: 'Top 5',  pts: 588,  needed: 393, color: '#f59e0b' },
+      { label: 'Top 25', pts: 208,  needed: 13,  color: '#0F766E' },
+      { label: 'Top 10', pts: 410,  needed: 215, color: '#0B2D34' },
+      { label: 'Top 5',  pts: 588,  needed: 393, color: '#D9962E' },
     ],
     evolutionData: [
       { label: 'S-6', pts: 30  },
@@ -131,9 +131,9 @@ const TAB_CONFIG: Record<RankTab, TabConfig> = {
     userScore:  40,
     scoreLabel: 'pontos neste mês',
     nextMilestones: [
-      { label: 'Top 10', pts: 60,  needed: 20,  color: '#10b981' },
-      { label: 'Top 5',  pts: 85,  needed: 45,  color: '#0055ff' },
-      { label: 'Top 3',  pts: 95,  needed: 55,  color: '#f59e0b' },
+      { label: 'Top 10', pts: 60,  needed: 20,  color: '#0F766E' },
+      { label: 'Top 5',  pts: 85,  needed: 45,  color: '#0B2D34' },
+      { label: 'Top 3',  pts: 95,  needed: 55,  color: '#D9962E' },
     ],
     evolutionData: [
       { label: 'S1',   pts: 0  },
@@ -149,9 +149,9 @@ const TAB_CONFIG: Record<RankTab, TabConfig> = {
     userScore:  25,
     scoreLabel: 'pontos esta semana',
     nextMilestones: [
-      { label: 'Top 5', pts: 30,  needed: 5,  color: '#10b981' },
-      { label: 'Top 3', pts: 35,  needed: 10, color: '#f59e0b' },
-      { label: 'Top 1', pts: 45,  needed: 20, color: '#f97316' },
+      { label: 'Top 5', pts: 30,  needed: 5,  color: '#0F766E' },
+      { label: 'Top 3', pts: 35,  needed: 10, color: '#D9962E' },
+      { label: 'Top 1', pts: 45,  needed: 20, color: '#D97534' },
     ],
     evolutionData: [
       { label: 'Seg', pts: 0  },
@@ -174,10 +174,10 @@ const TABS: { id: RankTab; label: string }[] = [
 // Score por categoria (calculado a partir dos 12 badges desbloqueados)
 // common=10pts, uncommon=25pts, rare=50pts, legendary=100pts
 const SCORE_BREAKDOWN = [
-  { cat: 'fin',    label: 'Financeiras',  icon: '💰', color: '#10b981', pts: 70,  unlocked: 4, total: 7,  maxPts: 245 },
-  { cat: 'meta',   label: 'Metas',        icon: '🎯', color: '#0055ff', pts: 60,  unlocked: 3, total: 5,  maxPts: 235 },
-  { cat: 'cons',   label: 'Consistência', icon: '📅', color: '#f59e0b', pts: 45,  unlocked: 3, total: 5,  maxPts: 235 },
-  { cat: 'agenda', label: 'Agenda',       icon: '📆', color: '#06b6d4', pts: 20,  unlocked: 2, total: 4,  maxPts: 185 },
+  { cat: 'fin',    label: 'Financeiras',  icon: '💰', color: '#0F766E', pts: 70,  unlocked: 4, total: 7,  maxPts: 245 },
+  { cat: 'meta',   label: 'Metas',        icon: '🎯', color: '#0B2D34', pts: 60,  unlocked: 3, total: 5,  maxPts: 235 },
+  { cat: 'cons',   label: 'Consistência', icon: '📅', color: '#D9962E', pts: 45,  unlocked: 3, total: 5,  maxPts: 235 },
+  { cat: 'agenda', label: 'Agenda',       icon: '📆', color: '#3CA0B5', pts: 20,  unlocked: 2, total: 4,  maxPts: 185 },
 ]
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -204,13 +204,13 @@ function getTopLabel(pos: number, total: number): string {
 function TrendBadge({ trend, value }: { trend: RankUser['trend']; value: number }) {
   if (trend === 'up')
     return (
-      <span className="flex items-center gap-0.5 text-[#10b981] text-[10px] font-medium">
+      <span className="flex items-center gap-0.5 text-[#0F766E] text-[10px] font-medium">
         <TrendingUp size={10} />+{value}
       </span>
     )
   if (trend === 'down')
     return (
-      <span className="flex items-center gap-0.5 text-[#f43f5e] text-[10px] font-medium">
+      <span className="flex items-center gap-0.5 text-[#DB6478] text-[10px] font-medium">
         <TrendingDown size={10} />-{value}
       </span>
     )
@@ -226,7 +226,7 @@ function LeaderboardRow({ user }: { user: RankUser }) {
       className={cn(
         'flex items-center gap-3 px-4 py-[10px] rounded-xl transition-colors duration-150',
         user.isCurrentUser
-          ? 'bg-[rgba(99,102,241,0.07)] border border-[rgba(99,102,241,0.28)]'
+          ? 'bg-[rgba(107,111,212,0.07)] border border-[rgba(107,111,212,0.28)]'
           : isTop3
             ? 'bg-[var(--sl-s2)]'
             : 'hover:bg-[var(--sl-s2)]',
@@ -238,8 +238,8 @@ function LeaderboardRow({ user }: { user: RankUser }) {
           <span className="text-[17px] leading-none">{medal}</span>
         ) : (
           <span className={cn(
-            'font-[DM_Mono] text-[12px]',
-            user.isCurrentUser ? 'text-[#6366f1] font-bold' : 'text-[var(--sl-t3)]',
+            'font-[IBM_Plex_Mono] text-[12px]',
+            user.isCurrentUser ? 'text-[#6B6FD4] font-bold' : 'text-[var(--sl-t3)]',
           )}>
             #{user.position}
           </span>
@@ -259,12 +259,12 @@ function LeaderboardRow({ user }: { user: RankUser }) {
       <div className="flex-1 min-w-0">
         <p className={cn(
           'text-[13px] font-semibold leading-tight truncate',
-          user.isCurrentUser ? 'text-[#6366f1]' : 'text-[var(--sl-t1)]',
+          user.isCurrentUser ? 'text-[#6B6FD4]' : 'text-[var(--sl-t1)]',
         )}>
           {user.name}
           {user.isCurrentUser && (
             <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-md
-                             bg-[rgba(99,102,241,0.15)] text-[#6366f1] uppercase tracking-wider">
+                             bg-[rgba(107,111,212,0.15)] text-[#6B6FD4] uppercase tracking-wider">
               você
             </span>
           )}
@@ -276,7 +276,7 @@ function LeaderboardRow({ user }: { user: RankUser }) {
 
       {/* Score + trend */}
       <div className="text-right shrink-0">
-        <p className="font-[DM_Mono] font-medium text-[14px] text-[var(--sl-t1)] leading-tight">
+        <p className="font-[IBM_Plex_Mono] font-medium text-[14px] text-[var(--sl-t1)] leading-tight">
           {user.score}
           <span className="text-[10px] text-[var(--sl-t3)] font-normal"> pts</span>
         </p>
@@ -340,19 +340,19 @@ export default function RankingPage() {
       {/* Hero — Sua posição */}
       <div className="mx-4 mb-3 rounded-[16px] p-5 relative overflow-hidden bg-[var(--sl-s1)] border border-[var(--sl-border)]">
         <div className="absolute top-0 left-0 right-0 h-[3px]"
-             style={{ background: 'linear-gradient(90deg, #6366f1, #0055ff)' }} />
+             style={{ background: 'linear-gradient(90deg, #6B6FD4, #0B2D34)' }} />
         <div className="flex items-center gap-3.5 mb-3">
           <div
             className="h-[56px] w-[56px] shrink-0 rounded-full flex items-center justify-center
                        text-white text-[18px] font-extrabold font-[Syne]
-                       shadow-[0_0_20px_rgba(99,102,241,0.3)]"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)' }}
+                       shadow-[0_0_20px_rgba(107,111,212,0.3)]"
+            style={{ background: 'linear-gradient(135deg, #6B6FD4, #0B2D34)' }}
           >
             EU
           </div>
           <div>
             <div className="flex items-baseline gap-1">
-              <span className="font-[DM_Mono] text-[32px] font-medium text-[var(--sl-t1)] leading-none">
+              <span className="font-[IBM_Plex_Mono] text-[32px] font-medium text-[var(--sl-t1)] leading-none">
                 #{cfg.userPos}
               </span>
               <span className="text-[13px] text-[var(--sl-t3)]">de {cfg.total}</span>
@@ -361,9 +361,9 @@ export default function RankingPage() {
               <span
                 className="text-[11px] font-bold px-2.5 py-1 rounded-full"
                 style={{
-                  background: 'linear-gradient(90deg, rgba(99,102,241,0.15), rgba(0,85,255,0.15))',
-                  color: '#6366f1',
-                  border: '1px solid rgba(99,102,241,0.3)',
+                  background: 'linear-gradient(90deg, rgba(107,111,212,0.15), rgba(0,85,255,0.15))',
+                  color: '#6B6FD4',
+                  border: '1px solid rgba(107,111,212,0.3)',
                 }}
               >
                 {topLabel} dos usuários
@@ -379,7 +379,7 @@ export default function RankingPage() {
               <span className="text-[11px] text-[var(--sl-t3)]">
                 Próxima marca — <strong className="text-[var(--sl-t2)]">{nextMilestone.label}</strong>
               </span>
-              <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t2)]">
+              <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t2)]">
                 {cfg.userScore}<span className="text-[var(--sl-t3)]">/{nextMilestone.pts}</span>
               </span>
             </div>
@@ -393,7 +393,7 @@ export default function RankingPage() {
               />
             </div>
             <p className="text-[10px] text-[var(--sl-t3)]">
-              Faltam <span className="font-[DM_Mono] text-[var(--sl-t2)]">{nextMilestone.needed} pts</span> para o {nextMilestone.label}
+              Faltam <span className="font-[IBM_Plex_Mono] text-[var(--sl-t2)]">{nextMilestone.needed} pts</span> para o {nextMilestone.label}
             </p>
           </>
         )}
@@ -401,8 +401,8 @@ export default function RankingPage() {
 
       {/* Motivational — below hero */}
       <div className="mx-4 mb-3 flex items-center gap-3 p-[14px_16px] rounded-[14px]
-                      bg-gradient-to-br from-[#6366f1]/7 to-[#0055ff]/7
-                      border border-[rgba(99,102,241,0.18)]">
+                      bg-gradient-to-br from-[#6B6FD4]/7 to-[#0B2D34]/7
+                      border border-[rgba(107,111,212,0.18)]">
         <span className="text-[22px] shrink-0">🤖</span>
         <span className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">
           Você está no <strong className="text-[var(--sl-t1)]">{topLabel}</strong> com{' '}
@@ -428,7 +428,7 @@ export default function RankingPage() {
                 <span className="text-[14px]">{cat.icon}</span>
                 <span className="text-[11px] font-bold uppercase tracking-[0.5px] text-[var(--sl-t3)]">{cat.label}</span>
               </div>
-              <p className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)] leading-none mb-1">
+              <p className="font-[IBM_Plex_Mono] text-[20px] font-medium text-[var(--sl-t1)] leading-none mb-1">
                 {cat.pts}<span className="text-[10px] text-[var(--sl-t3)] font-normal">pts</span>
               </p>
               <p className="text-[10px] text-[var(--sl-t3)] mb-1.5">{cat.unlocked}/{cat.total} badges</p>
@@ -465,7 +465,7 @@ export default function RankingPage() {
                 className={cn(
                   'flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] mb-1',
                   user.isCurrentUser
-                    ? 'bg-[rgba(99,102,241,0.07)] border border-[rgba(99,102,241,0.25)]'
+                    ? 'bg-[rgba(107,111,212,0.07)] border border-[rgba(107,111,212,0.25)]'
                     : isTop3
                       ? 'bg-[var(--sl-s2)]'
                       : '',
@@ -476,8 +476,8 @@ export default function RankingPage() {
                     <span className="text-[17px] leading-none">{medal}</span>
                   ) : (
                     <span className={cn(
-                      'font-[DM_Mono] text-[12px]',
-                      user.isCurrentUser ? 'text-[#6366f1] font-bold' : 'text-[var(--sl-t3)]',
+                      'font-[IBM_Plex_Mono] text-[12px]',
+                      user.isCurrentUser ? 'text-[#6B6FD4] font-bold' : 'text-[var(--sl-t3)]',
                     )}>
                       #{user.position}
                     </span>
@@ -492,11 +492,11 @@ export default function RankingPage() {
                 <div className="flex-1 min-w-0">
                   <p className={cn(
                     'text-[13px] font-semibold truncate',
-                    user.isCurrentUser ? 'text-[#6366f1]' : 'text-[var(--sl-t1)]',
+                    user.isCurrentUser ? 'text-[#6B6FD4]' : 'text-[var(--sl-t1)]',
                   )}>
                     {user.name}
                     {user.isCurrentUser && (
-                      <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[rgba(99,102,241,0.15)] text-[#6366f1] uppercase tracking-wider">
+                      <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-[rgba(107,111,212,0.15)] text-[#6B6FD4] uppercase tracking-wider">
                         você
                       </span>
                     )}
@@ -506,7 +506,7 @@ export default function RankingPage() {
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
+                  <p className="font-[IBM_Plex_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
                     {user.score}<span className="text-[10px] text-[var(--sl-t3)] font-normal ml-0.5">pts</span>
                   </p>
                   <div className="flex justify-end mt-0.5">
@@ -559,13 +559,13 @@ export default function RankingPage() {
       <div
         className={cn(
           'relative overflow-hidden rounded-[20px] p-6 mb-5 sl-fade-up',
-          'bg-[var(--sl-s1)] border border-[rgba(99,102,241,0.25)] shadow-[0_0_40px_rgba(99,102,241,0.07)]',
+          'bg-[var(--sl-s1)] border border-[rgba(107,111,212,0.25)] shadow-[0_0_40px_rgba(107,111,212,0.07)]',
         )}
       >
         {/* Barra de acento topo */}
         <div
           className="absolute top-0 left-0 right-0 h-[3px]"
-          style={{ background: 'linear-gradient(90deg, #6366f1, #0055ff)' }}
+          style={{ background: 'linear-gradient(90deg, #6B6FD4, #0B2D34)' }}
         />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
@@ -576,15 +576,15 @@ export default function RankingPage() {
             <div
               className="h-[64px] w-[64px] shrink-0 rounded-full flex items-center justify-center
                          text-white text-[22px] font-extrabold font-[Syne]
-                         shadow-[0_0_24px_rgba(99,102,241,0.25)]"
-              style={{ background: 'linear-gradient(135deg, #6366f1, #0055ff)' }}
+                         shadow-[0_0_24px_rgba(107,111,212,0.25)]"
+              style={{ background: 'linear-gradient(135deg, #6B6FD4, #0B2D34)' }}
             >
               EU
             </div>
 
             <div>
               <div className="flex items-baseline gap-1.5 flex-wrap">
-                <span className="font-[DM_Mono] text-[36px] font-medium text-[var(--sl-t1)] leading-none">
+                <span className="font-[IBM_Plex_Mono] text-[36px] font-medium text-[var(--sl-t1)] leading-none">
                   #{cfg.userPos}
                 </span>
                 <span className="text-[14px] text-[var(--sl-t3)]">de {cfg.total}</span>
@@ -593,9 +593,9 @@ export default function RankingPage() {
                 <span
                   className="text-[11px] font-bold px-2.5 py-1 rounded-full"
                   style={{
-                    background: 'linear-gradient(90deg, rgba(99,102,241,0.15), rgba(0,85,255,0.15))',
-                    color: '#6366f1',
-                    border: '1px solid rgba(99,102,241,0.3)',
+                    background: 'linear-gradient(90deg, rgba(107,111,212,0.15), rgba(0,85,255,0.15))',
+                    color: '#6B6FD4',
+                    border: '1px solid rgba(107,111,212,0.3)',
                   }}
                 >
                   {topLabel} dos usuários
@@ -615,7 +615,7 @@ export default function RankingPage() {
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">
               Pontuação total
             </p>
-            <p className="font-[DM_Mono] text-[32px] font-medium text-[var(--sl-t1)] leading-none">
+            <p className="font-[IBM_Plex_Mono] text-[32px] font-medium text-[var(--sl-t1)] leading-none">
               {totalScore}
               <span className="text-[14px] text-[var(--sl-t3)] font-normal ml-1">pts</span>
             </p>
@@ -628,7 +628,7 @@ export default function RankingPage() {
                 <p className="text-[11px] text-[var(--sl-t3)]">
                   Próxima marca — <strong className="text-[var(--sl-t2)]">{nextMilestone.label}</strong>
                 </p>
-                <p className="font-[DM_Mono] text-[11px] text-[var(--sl-t2)]">
+                <p className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t2)]">
                   {cfg.userScore}<span className="text-[var(--sl-t3)]">/{nextMilestone.pts}</span>
                 </p>
               </div>
@@ -642,7 +642,7 @@ export default function RankingPage() {
                 />
               </div>
               <p className="text-[10px] text-[var(--sl-t3)] mt-1">
-                Faltam <span className="font-[DM_Mono] text-[var(--sl-t2)]">{nextMilestone.needed} pts</span> para o {nextMilestone.label}
+                Faltam <span className="font-[IBM_Plex_Mono] text-[var(--sl-t2)]">{nextMilestone.needed} pts</span> para o {nextMilestone.label}
               </p>
             </div>
           )}
@@ -671,7 +671,7 @@ export default function RankingPage() {
                   {cat.label}
                 </span>
               </div>
-              <p className="font-[DM_Mono] text-[22px] font-medium text-[var(--sl-t1)] leading-none mb-1">
+              <p className="font-[IBM_Plex_Mono] text-[22px] font-medium text-[var(--sl-t1)] leading-none mb-1">
                 {cat.pts}
                 <span className="text-[11px] text-[var(--sl-t3)] font-normal ml-0.5">pts</span>
               </p>
@@ -740,8 +740,8 @@ export default function RankingPage() {
                 <AreaChart data={cfg.evolutionData} margin={{ top: 4, right: 4, bottom: 0, left: -28 }}>
                   <defs>
                     <linearGradient id="rankGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%"   stopColor="#6366f1" stopOpacity={0.25} />
-                      <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+                      <stop offset="0%"   stopColor="#6B6FD4" stopOpacity={0.25} />
+                      <stop offset="100%" stopColor="#6B6FD4" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
@@ -769,11 +769,11 @@ export default function RankingPage() {
                   <Area
                     type="monotone"
                     dataKey="pts"
-                    stroke="#6366f1"
+                    stroke="#6B6FD4"
                     strokeWidth={2}
                     fill="url(#rankGrad)"
                     dot={false}
-                    activeDot={{ r: 4, fill: '#6366f1', strokeWidth: 0 }}
+                    activeDot={{ r: 4, fill: '#6B6FD4', strokeWidth: 0 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -794,7 +794,7 @@ export default function RankingPage() {
                       <span className="text-[12px] font-semibold text-[var(--sl-t1)]">
                         {m.label}
                       </span>
-                      <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)]">
+                      <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)]">
                         +{m.needed} pts
                       </span>
                     </div>
@@ -815,13 +815,13 @@ export default function RankingPage() {
             <div className="mt-4 pt-3 border-t border-[var(--sl-border)]">
               <p className="text-[11px] text-[var(--sl-t3)] leading-[1.6]">
                 Desbloqueie mais badges para subir no ranking. Cada badge rara vale
-                {' '}<span className="font-[DM_Mono] text-[var(--sl-t2)]">50 pts</span> e
+                {' '}<span className="font-[IBM_Plex_Mono] text-[var(--sl-t2)]">50 pts</span> e
                 lendária vale{' '}
-                <span className="font-[DM_Mono] text-[var(--sl-t2)]">100 pts</span>.
+                <span className="font-[IBM_Plex_Mono] text-[var(--sl-t2)]">100 pts</span>.
               </p>
               <a
                 href="/conquistas"
-                className="flex items-center gap-1 mt-2 text-[12px] font-semibold text-[#6366f1]
+                className="flex items-center gap-1 mt-2 text-[12px] font-semibold text-[#6B6FD4]
                            hover:opacity-80 transition-opacity"
               >
                 Ver badges <ChevronRight size={13} />
@@ -836,16 +836,16 @@ export default function RankingPage() {
             </p>
             <div className="flex flex-col gap-2">
               {([
-                { label: 'Comum',    pts: 10,  color: '#64748b', pill: 'bg-[rgba(100,116,139,0.12)] text-[#64748b]' },
-                { label: 'Incomum',  pts: 25,  color: '#10b981', pill: 'bg-[rgba(16,185,129,0.12)] text-[#10b981]' },
-                { label: 'Rara',     pts: 50,  color: '#8b5cf6', pill: 'bg-[rgba(139,92,246,0.12)] text-[#8b5cf6]' },
-                { label: 'Lendária', pts: 100, color: '#f59e0b', pill: 'bg-[rgba(245,158,11,0.12)] text-[#f59e0b]' },
+                { label: 'Comum',    pts: 10,  color: '#6F7986', pill: 'bg-[rgba(100,116,139,0.12)] text-[#6F7986]' },
+                { label: 'Incomum',  pts: 25,  color: '#0F766E', pill: 'bg-[rgba(15,118,110,0.12)] text-[#0F766E]' },
+                { label: 'Rara',     pts: 50,  color: '#8B7BD4', pill: 'bg-[rgba(139,123,212,0.12)] text-[#8B7BD4]' },
+                { label: 'Lendária', pts: 100, color: '#D9962E', pill: 'bg-[rgba(217,150,46,0.12)] text-[#D9962E]' },
               ] as const).map((r) => (
                 <div key={r.label} className="flex items-center justify-between">
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${r.pill}`}>
                     {r.label}
                   </span>
-                  <span className="font-[DM_Mono] text-[12px] text-[var(--sl-t2)]">
+                  <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t2)]">
                     +{r.pts} pts
                   </span>
                 </div>
@@ -857,8 +857,8 @@ export default function RankingPage() {
 
       {/* ⑤ JORNADA — frase motivacional ─────────────────────────────────────── */}
       <div className="flex items-center gap-3 p-[14px_18px] rounded-[14px] mt-5
-                      bg-gradient-to-br from-[#6366f1]/7 to-[#0055ff]/7
-                      border border-[#6366f1]/18 sl-fade-up">
+                      bg-gradient-to-br from-[#6B6FD4]/7 to-[#0B2D34]/7
+                      border border-[#6B6FD4]/18 sl-fade-up">
         <span className="text-[22px] shrink-0">🤖</span>
         <span className="text-[13px] text-[var(--sl-t2)] leading-[1.7]">
           Você está no <strong>{topLabel}</strong> do SyncLife com{' '}

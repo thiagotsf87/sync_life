@@ -2,7 +2,6 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { TrendingUp, Trash2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import {
   usePortfolioAssets, usePortfolioTransactions, usePortfolioDividends,
   useDeleteAsset,
@@ -11,10 +10,7 @@ import {
 import { toast } from 'sonner'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { MetricsStrip } from '@/components/ui/metrics-strip'
-
-function formatCurrency(v: number) {
-  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
+import { fmtBRL } from '@/lib/format/currency'
 
 function formatDate(d: string) {
   const [y, m, day] = d.split('-')
@@ -65,15 +61,15 @@ export default function TickerDetailPage() {
     }
   }
 
-  const accentColor = asset ? (ASSET_CLASS_COLORS[asset.asset_class] ?? '#3b82f6') : '#3b82f6'
+  const accentColor = asset ? (ASSET_CLASS_COLORS[asset.asset_class] ?? '#4F88D4') : '#4F88D4'
 
   if (!assetsLoading && !asset) {
     return (
       <div className="max-w-[1160px] mx-auto px-10 py-9 pb-16">
         <ModuleHeader
           icon={TrendingUp}
-          iconBg="rgba(59,130,246,.08)"
-          iconColor="#3b82f6"
+          iconBg="rgba(79,136,212,.08)"
+          iconColor="#4F88D4"
           title={ticker}
           subtitle="Ativo nao encontrado"
         />
@@ -81,7 +77,7 @@ export default function TickerDetailPage() {
           <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Ativo nao encontrado</h2>
           <p className="text-[13px] text-[var(--sl-t2)] mb-4">&quot;{ticker}&quot; nao esta na sua carteira.</p>
           <button onClick={() => router.push('/patrimonio/carteira')}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#3b82f6] text-white hover:opacity-90">
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90">
             Ver Carteira
           </button>
         </div>
@@ -108,15 +104,15 @@ export default function TickerDetailPage() {
             </span>
             {asset.sector && (
               <span className="text-[11px] font-semibold px-2.5 py-[3px] rounded-full"
-                style={{ color: '#f97316', background: 'rgba(249,115,22,.10)' }}>
+                style={{ color: '#D97534', background: 'rgba(217,117,52,.10)' }}>
                 {asset.sector}
               </span>
             )}
             {/* Price display on the right side of header */}
             <div className="text-right">
               <div className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">Cotacao Atual</div>
-              <div className="font-[DM_Mono] text-[28px] font-medium mt-0.5 text-[var(--sl-t1)]">
-                {asset.current_price != null ? formatCurrency(asset.current_price) : '--'}
+              <div className="font-[Syne] sl-num-strong text-[28px] mt-0.5 text-[var(--sl-t1)]">
+                {asset.current_price != null ? fmtBRL(asset.current_price) : '--'}
               </div>
             </div>
           </>
@@ -127,29 +123,29 @@ export default function TickerDetailPage() {
         <div className="h-[80px] rounded-[18px] bg-[var(--sl-s2)] animate-pulse mb-5" />
       ) : asset ? (
         <>
-          {/* MetricsStrip — horizontal strip with internal dividers */}
+          {/* MetricsStrip · horizontal strip with internal dividers */}
           <div className="mb-5 sl-fade-up sl-delay-1">
             <MetricsStrip
               items={[
                 {
                   label: 'Posicao',
-                  value: formatCurrency(currentValue),
+                  value: fmtBRL(currentValue),
                   note: `${asset.quantity.toLocaleString('pt-BR')} cotas`,
                 },
                 {
                   label: 'Preco Medio',
-                  value: formatCurrency(asset.avg_price),
-                  note: `Investido: ${formatCurrency(investedValue)}`,
+                  value: fmtBRL(asset.avg_price),
+                  note: `Investido: ${fmtBRL(investedValue)}`,
                 },
                 {
                   label: 'Resultado',
-                  value: `${profitLoss >= 0 ? '+' : ''}${formatCurrency(profitLoss)}`,
-                  valueColor: profitLoss >= 0 ? '#10b981' : '#f43f5e',
+                  value: `${profitLoss >= 0 ? '+' : ''}${fmtBRL(profitLoss)}`,
+                  valueColor: profitLoss >= 0 ? '#0F766E' : '#DB6478',
                   note: `${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(2)}%`,
                 },
                 {
                   label: 'Proventos 12m',
-                  value: formatCurrency(totalDividends),
+                  value: fmtBRL(totalDividends),
                   note: yoc > 0 ? `YoC: ${yoc.toFixed(1)}% a.a.` : '--',
                 },
               ]}
@@ -160,7 +156,7 @@ export default function TickerDetailPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 mb-3.5
                           transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
             <div className="flex items-center gap-2.5 mb-[18px]">
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
               </svg>
               <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
@@ -169,7 +165,7 @@ export default function TickerDetailPage() {
             </div>
             <div className="border border-dashed border-[var(--sl-border)] rounded-[12px] p-5 flex items-center justify-center text-[var(--sl-t3)] text-[12px] min-h-[240px]"
                  style={{ background: 'rgba(120,165,220,.015)' }}>
-              Grafico Recharts (area: cotacao {ticker} com linha de preco medio {formatCurrency(asset.avg_price)})
+              Grafico Recharts (area: cotacao {ticker} com linha de preco medio {fmtBRL(asset.avg_price)})
             </div>
           </div>
 
@@ -180,7 +176,7 @@ export default function TickerDetailPage() {
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
                             transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-2.5 mb-[18px]">
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
@@ -206,15 +202,15 @@ export default function TickerDetailPage() {
                       <div key={tx.id} className="flex gap-3 py-3 border-b border-[rgba(120,165,220,.04)] last:border-b-0">
                         <div
                           className="w-[3px] rounded-sm shrink-0"
-                          style={{ background: isBuy ? '#10b981' : '#f43f5e' }}
+                          style={{ background: isBuy ? '#0F766E' : '#DB6478' }}
                         />
                         <div className="flex-1 min-w-0">
                           <div className="text-[13px] font-medium text-[var(--sl-t1)]">
-                            {isBuy ? 'Compra' : 'Venda'} — {tx.quantity} cotas @ {formatCurrency(tx.price)}
+                            {isBuy ? 'Compra' : 'Venda'} · {tx.quantity} cotas @ {fmtBRL(tx.price)}
                           </div>
                           <div className="text-[11px] text-[var(--sl-t3)] mt-0.5">
-                            {formatDate(tx.operation_date)} · {formatCurrency(txValue)}
-                            {tx.fees > 0 && ` (+ ${formatCurrency(tx.fees)} taxas)`}
+                            {formatDate(tx.operation_date)} · {fmtBRL(txValue)}
+                            {tx.fees > 0 && ` (+ ${fmtBRL(tx.fees)} taxas)`}
                           </div>
                         </div>
                       </div>
@@ -228,7 +224,7 @@ export default function TickerDetailPage() {
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
                             transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-2.5 mb-[18px]">
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="5" width="20" height="14" rx="2" />
                   <path d="M2 10h20" />
                 </svg>
@@ -240,10 +236,10 @@ export default function TickerDetailPage() {
                     <div className="relative w-10 h-10">
                       <svg width="40" height="40" viewBox="0 0 40 40">
                         <circle cx="20" cy="20" r="16" fill="none" stroke="var(--sl-s3)" strokeWidth="4" />
-                        <circle cx="20" cy="20" r="16" fill="none" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round"
+                        <circle cx="20" cy="20" r="16" fill="none" stroke="#D9962E" strokeWidth="4" strokeLinecap="round"
                           strokeDasharray="100" strokeDashoffset={100 - Math.min(yoc / 15 * 100, 100)} transform="rotate(-90 20 20)" />
                       </svg>
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-[DM_Mono] text-[9px] text-[#f59e0b]">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sl-num text-[9px] text-[#D9962E]">
                         {yoc.toFixed(1)}%
                       </div>
                     </div>
@@ -260,18 +256,18 @@ export default function TickerDetailPage() {
                     <div key={div.id} className="flex gap-3 py-3 border-b border-[rgba(120,165,220,.04)] last:border-b-0">
                       <div
                         className="w-[3px] rounded-sm shrink-0"
-                        style={{ background: div.type === 'jcp' ? '#a855f7' : '#10b981' }}
+                        style={{ background: div.type === 'jcp' ? '#a855f7' : '#0F766E' }}
                       />
                       <div className="flex-1">
                         <div className="text-[13px] font-medium text-[var(--sl-t1)]">
-                          {DIVIDEND_TYPE_LABELS[div.type]}{div.amount_per_unit != null ? ` — ${formatCurrency(div.amount_per_unit)}/acao` : ''}
+                          {DIVIDEND_TYPE_LABELS[div.type]}{div.amount_per_unit != null ? ` · ${fmtBRL(div.amount_per_unit)}/acao` : ''}
                         </div>
                         <div className="text-[11px] text-[var(--sl-t3)] mt-0.5">
                           {formatDate(div.payment_date)}
                         </div>
                       </div>
-                      <div className="font-[DM_Mono] text-[13px] text-[#10b981] shrink-0">
-                        {formatCurrency(div.total_amount)}
+                      <div className="sl-num text-[13px] text-[#0F766E] shrink-0">
+                        {fmtBRL(div.total_amount)}
                       </div>
                     </div>
                   ))}
@@ -283,7 +279,7 @@ export default function TickerDetailPage() {
           {/* Delete button at bottom */}
           <div className="flex justify-end mt-5 sl-fade-up sl-delay-4">
             <button onClick={handleDelete}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-[12px] border border-[#f43f5e]/40 text-[#f43f5e] hover:bg-[#f43f5e]/10 transition-colors">
+              className="flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-[12px] border border-[#DB6478]/40 text-[#DB6478] hover:bg-[#DB6478]/10 transition-colors">
               <Trash2 size={14} /> Remover Ativo
             </button>
           </div>

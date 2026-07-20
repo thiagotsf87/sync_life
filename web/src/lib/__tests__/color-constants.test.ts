@@ -28,8 +28,8 @@ import {
 } from '../carreira-colors'
 
 describe('Experiencias colors', () => {
-  it('EXP_PRIMARY is pink (#ec4899)', () => {
-    expect(EXP_PRIMARY).toBe('#ec4899')
+  it('EXP_PRIMARY is pink (#C76795)', () => {
+    expect(EXP_PRIMARY).toBe('#C76795')
   })
 
   it('EXP_PRIMARY_LIGHT is a lighter pink', () => {
@@ -49,22 +49,22 @@ describe('Experiencias colors', () => {
 
   it('gradient is a linear-gradient', () => {
     expect(EXP_GRAD).toContain('linear-gradient')
-    expect(EXP_GRAD).toContain('#ec4899')
+    expect(EXP_GRAD).toContain('#C76795')
   })
 })
 
 describe('Futuro colors', () => {
-  it('FUTURO_PRIMARY is violet (#8b5cf6)', () => {
-    expect(FUTURO_PRIMARY).toBe('#8b5cf6')
+  it('FUTURO_PRIMARY is violet (#8B7BD4)', () => {
+    expect(FUTURO_PRIMARY).toBe('#8B7BD4')
   })
 
-  it('FUTURO_SECONDARY is blue (#0055ff)', () => {
-    expect(FUTURO_SECONDARY).toBe('#0055ff')
+  it('FUTURO_SECONDARY is blue (#0B2D34)', () => {
+    expect(FUTURO_SECONDARY).toBe('#0B2D34')
   })
 
   it('gradient contains both primary and secondary', () => {
-    expect(FUTURO_GRAD).toContain('#8b5cf6')
-    expect(FUTURO_GRAD).toContain('#0055ff')
+    expect(FUTURO_GRAD).toContain('#8B7BD4')
+    expect(FUTURO_GRAD).toContain('#0B2D34')
   })
 
   it('all constants are strings', () => {
@@ -77,8 +77,8 @@ describe('Futuro colors', () => {
 })
 
 describe('Carreira colors', () => {
-  it('CARREIRA_PRIMARY is rose (#f43f5e)', () => {
-    expect(CARREIRA_PRIMARY).toBe('#f43f5e')
+  it('CARREIRA_PRIMARY is rose (#DB6478)', () => {
+    expect(CARREIRA_PRIMARY).toBe('#DB6478')
   })
 
   it('CARREIRA_PRIMARY_LIGHT is a lighter rose', () => {
@@ -86,7 +86,7 @@ describe('Carreira colors', () => {
   })
 
   it('gradient contains both primary and light', () => {
-    expect(CARREIRA_GRAD).toContain('#f43f5e')
+    expect(CARREIRA_GRAD).toContain('#DB6478')
     expect(CARREIRA_GRAD).toContain('#fb7185')
   })
 

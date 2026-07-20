@@ -1,12 +1,15 @@
 import { describe, it, expect } from 'vitest'
 import { maskCurrency, parseCurrency, amountToMask } from '@/lib/currency'
 
+// maskCurrency is a cents-accumulator: every raw digit is interpreted as cents
+// (the last two digits are always the decimals). This mirrors the canonical
+// contract in src/lib/__tests__/currency.test.ts and what amountToMask relies on.
 describe('maskCurrency', () => {
-  it('formats a simple integer', () => {
-    expect(maskCurrency('1000')).toBe('1.000')
+  it('treats raw digits as cents', () => {
+    expect(maskCurrency('1000')).toBe('10,00')
   })
 
-  it('formats with decimal separator', () => {
+  it('strips separators before masking', () => {
     expect(maskCurrency('1500,50')).toBe('1.500,50')
   })
 
@@ -14,32 +17,32 @@ describe('maskCurrency', () => {
     expect(maskCurrency('')).toBe('')
   })
 
-  it('strips non-numeric characters except comma', () => {
+  it('strips non-numeric characters', () => {
     expect(maskCurrency('R$ 1.234,56')).toBe('1.234,56')
   })
 
-  it('limits decimal to 2 digits', () => {
-    expect(maskCurrency('100,999')).toBe('100,99')
+  it('folds all digits into the cents value', () => {
+    expect(maskCurrency('100,999')).toBe('1.009,99')
   })
 
-  it('removes leading zeros', () => {
-    expect(maskCurrency('00123')).toBe('123')
+  it('drops leading zeros via the cents value', () => {
+    expect(maskCurrency('00123')).toBe('1,23')
   })
 
-  it('handles zero with decimals', () => {
+  it('keeps two decimal places', () => {
     expect(maskCurrency('0,50')).toBe('0,50')
   })
 
-  it('handles just comma', () => {
-    expect(maskCurrency(',5')).toBe('0,5')
+  it('pads a single digit to cents', () => {
+    expect(maskCurrency(',5')).toBe('0,05')
   })
 
   it('formats large numbers with thousands separators', () => {
-    expect(maskCurrency('1234567')).toBe('1.234.567')
+    expect(maskCurrency('1234567')).toBe('12.345,67')
   })
 
-  it('handles multiple commas (keeps first)', () => {
-    expect(maskCurrency('100,50,30')).toBe('100,50')
+  it('ignores separator positions (all digits are cents)', () => {
+    expect(maskCurrency('100,50,30')).toBe('10.050,30')
   })
 })
 

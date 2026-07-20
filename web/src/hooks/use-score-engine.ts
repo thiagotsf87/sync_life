@@ -17,9 +17,30 @@ import type { ModuleKey, ModuleScoreDetail, LifeScoreResult } from '@/lib/score-
 // Re-export types for consumers that import from this hook
 export type { ModuleKey, ModuleScoreDetail, LifeScoreResult } from '@/lib/score-utils'
 
+// ─── LOCAL TYPES ───────────────────────────────────────────────────────────────
+
+// Supabase client typing — schema casts are unavoidable for cross-table queries,
+// so we keep the client untyped at the boundary and type query results below.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SbClient = any
+
+interface AmountRow { amount: number | null }
+interface ObjectiveIdRow { id: string; status?: string }
+interface ObjectiveGoalRow { objective_id: string; current_value: number | null; target_value: number | null }
+interface WaterRow { intake_ml: number; goal_ml: number }
+interface DurationRow { duration_minutes: number | null }
+interface StreakRow { current_streak: number | null }
+interface AssetTxRow { type: string; amount: number | null }
+interface AssetClassRow { asset_class: string }
+interface RoadmapWithStepsRow { steps: { status: string }[] | null }
+interface SkillProfRow { proficiency_level: number | null }
+interface EventStatusRow { status: string }
+interface TripStatusRow { id: string; status: string }
+interface HealthProfileWeeklyRow { weekly_activity_goal: number | null }
+
 // ─── SCORE CALCULATORS PER MODULE ──────────────────────────────────────────────
 
-async function calcFinancasScore(sb: any, userId: string): Promise<ModuleScoreDetail> {
+async function calcFinancasScore(sb: SbClient, userId: string): Promise<ModuleScoreDetail> {
   const start = monthStart()
   const end = monthEnd()
 
@@ -83,9 +104,9 @@ async function calcFinancasScore(sb: any, userId: string): Promise<ModuleScoreDe
     .gte('date', prevMonthStart)
     .lte('date', prevMonthEnd)
 
-  const sumAmounts = (arr: any[] | null) => (arr ?? []).reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
-  const curBalance = sumAmounts(currentIncome) - sumAmounts(currentExpense)
-  const prevBalance = sumAmounts(prevIncome) - sumAmounts(prevExpense)
+  const sumAmounts = (arr: AmountRow[] | null) => (arr ?? []).reduce((s, t) => s + (t.amount ?? 0), 0)
+  const curBalance = sumAmounts(currentIncome as AmountRow[] | null) - sumAmounts(currentExpense as AmountRow[] | null)
+  const prevBalance = sumAmounts(prevIncome as AmountRow[] | null) - sumAmounts(prevExpense as AmountRow[] | null)
 
   let trendScore = 50
   if (prevBalance !== 0) {
@@ -105,25 +126,28 @@ async function calcFinancasScore(sb: any, userId: string): Promise<ModuleScoreDe
   }
 }
 
-async function calcFuturoScore(sb: any, userId: string): Promise<ModuleScoreDetail> {
+async function calcFuturoScore(sb: SbClient, userId: string): Promise<ModuleScoreDetail> {
   const qStart = quarterAgo()
 
   // 1. Objectives with progress this month (50%)
-  const { data: objectives } = await sb
+  const { data: objectivesRaw } = await sb
     .from('objectives')
     .select('id, status')
     .eq('user_id', userId)
     .in('status', ['active', 'completed'])
 
+  const objectives = objectivesRaw as ObjectiveIdRow[] | null
+
   let progressScore = 0
   if (objectives && objectives.length > 0) {
-    const { data: goals } = await sb
+    const { data: goalsRaw } = await sb
       .from('objective_goals')
       .select('objective_id, current_value, target_value')
-      .in('objective_id', objectives.map((o: any) => o.id))
+      .in('objective_id', objectives.map((o) => o.id))
 
+    const goals = goalsRaw as ObjectiveGoalRow[] | null
     if (goals && goals.length > 0) {
-      const withProgress = goals.filter((g: any) => (g.current_value ?? 0) > 0).length
+      const withProgress = goals.filter((g) => (g.current_value ?? 0) > 0).length
       progressScore = (withProgress / goals.length) * 100
     }
   }
@@ -148,17 +172,18 @@ async function calcFuturoScore(sb: any, userId: string): Promise<ModuleScoreDeta
   }
 }
 
-async function calcCorpoScore(sb: any, userId: string): Promise<ModuleScoreDetail> {
+async function calcCorpoScore(sb: SbClient, userId: string): Promise<ModuleScoreDetail> {
   const wStart = weekAgo()
   const mStart = monthStart()
 
   // 1. Activities/week vs goal (30%)
-  const { data: profile } = await sb
+  const { data: profileRaw } = await sb
     .from('health_profiles')
     .select('weekly_activity_goal')
     .eq('user_id', userId)
     .maybeSingle()
 
+  const profile = profileRaw as HealthProfileWeeklyRow | null
   const weeklyGoal = profile?.weekly_activity_goal ?? 3
   const { count: weekActivities } = await sb
     .from('activities')
@@ -189,13 +214,14 @@ async function calcCorpoScore(sb: any, userId: string): Promise<ModuleScoreDetai
 
   // 4. Hydration (20%)
   const today = new Date().toISOString().slice(0, 10)
-  const { data: water } = await sb
+  const { data: waterRaw } = await sb
     .from('daily_water_intake')
     .select('intake_ml, goal_ml')
     .eq('user_id', userId)
     .eq('recorded_date', today)
     .maybeSingle()
 
+  const water = waterRaw as WaterRow | null
   let hydrationScore = 0
   if (water && water.goal_ml > 0) {
     hydrationScore = Math.min(100, (water.intake_ml / water.goal_ml) * 100)
@@ -211,26 +237,28 @@ async function calcCorpoScore(sb: any, userId: string): Promise<ModuleScoreDetai
   }
 }
 
-async function calcMenteScore(sb: any, userId: string): Promise<ModuleScoreDetail> {
+async function calcMenteScore(sb: SbClient, userId: string): Promise<ModuleScoreDetail> {
   const wStart = weekAgo()
 
   // 1. Hours studied vs goal (50%) — 5h/week as default goal
-  const { data: sessions } = await sb
+  const { data: sessionsRaw } = await sb
     .from('focus_sessions')
     .select('duration_minutes')
     .eq('user_id', userId)
     .gte('date', wStart)
 
-  const totalMinutes = (sessions ?? []).reduce((s: number, r: any) => s + (r.duration_minutes ?? 0), 0)
+  const sessions = sessionsRaw as DurationRow[] | null
+  const totalMinutes = (sessions ?? []).reduce((s, r) => s + (r.duration_minutes ?? 0), 0)
   const hoursScore = Math.min(100, (totalMinutes / 300) * 100) // 5h = 300min
 
   // 2. Streak (30%)
-  const { data: streak } = await sb
+  const { data: streakRaw } = await sb
     .from('user_streaks')
     .select('current_streak')
     .eq('user_id', userId)
     .maybeSingle()
 
+  const streak = streakRaw as StreakRow | null
   const streakScore = Math.min(100, ((streak?.current_streak ?? 0) / 30) * 100) // 30-day streak = 100%
 
   // 3. Active tracks (20%)
@@ -252,28 +280,30 @@ async function calcMenteScore(sb: any, userId: string): Promise<ModuleScoreDetai
   }
 }
 
-async function calcPatrimonioScore(sb: any, userId: string): Promise<ModuleScoreDetail> {
+async function calcPatrimonioScore(sb: SbClient, userId: string): Promise<ModuleScoreDetail> {
   // 1. Contributions made vs planned (50%)
   const mStart = monthStart()
-  const { data: assetTx } = await sb
+  const { data: assetTxRaw } = await sb
     .from('asset_transactions')
     .select('type, amount')
     .eq('user_id', userId)
     .gte('date', mStart)
 
+  const assetTx = assetTxRaw as AssetTxRow[] | null
   const totalContrib = (assetTx ?? [])
-    .filter((t: any) => t.type === 'buy' || t.type === 'deposit')
-    .reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
+    .filter((t) => t.type === 'buy' || t.type === 'deposit')
+    .reduce((s, t) => s + (t.amount ?? 0), 0)
 
   const contribScore = Math.min(100, (totalContrib / 1000) * 100) // R$ 1000/month = 100%
 
   // 2. Diversification (50%)
-  const { data: assets } = await sb
+  const { data: assetsRaw } = await sb
     .from('portfolio_assets')
     .select('asset_class')
     .eq('user_id', userId)
 
-  const types = new Set((assets ?? []).map((a: any) => a.asset_class))
+  const assets = assetsRaw as AssetClassRow[] | null
+  const types = new Set((assets ?? []).map((a) => a.asset_class))
   const diversScore = Math.min(100, (types.size / 4) * 100) // 4+ types = 100%
 
   const score = clamp(contribScore * 0.5 + diversScore * 0.5)
@@ -286,29 +316,31 @@ async function calcPatrimonioScore(sb: any, userId: string): Promise<ModuleScore
   }
 }
 
-async function calcCarreiraScore(sb: any, userId: string): Promise<ModuleScoreDetail> {
+async function calcCarreiraScore(sb: SbClient, userId: string): Promise<ModuleScoreDetail> {
   // 1. Roadmap steps in progress (50%) — via career_roadmaps JOIN
-  const { data: roadmaps } = await sb
+  const { data: roadmapsRaw } = await sb
     .from('career_roadmaps')
     .select('steps:roadmap_steps(status)')
     .eq('user_id', userId)
 
-  const allSteps = (roadmaps ?? []).flatMap((r: any) => r.steps ?? [])
+  const roadmaps = roadmapsRaw as RoadmapWithStepsRow[] | null
+  const allSteps = (roadmaps ?? []).flatMap((r) => r.steps ?? [])
   let roadmapScore = 0
   if (allSteps.length > 0) {
-    const inProgress = allSteps.filter((s: any) => s.status === 'in_progress' || s.status === 'completed').length
+    const inProgress = allSteps.filter((s) => s.status === 'in_progress' || s.status === 'completed').length
     roadmapScore = (inProgress / allSteps.length) * 100
   }
 
   // 2. Skills evolving (50%)
-  const { data: skills } = await sb
+  const { data: skillsRaw } = await sb
     .from('skills')
     .select('proficiency_level')
     .eq('user_id', userId)
 
+  const skills = skillsRaw as SkillProfRow[] | null
   let skillsScore = 0
   if (skills && skills.length > 0) {
-    const evolving = skills.filter((s: any) => (s.proficiency_level ?? 0) > 0).length
+    const evolving = skills.filter((s) => (s.proficiency_level ?? 0) > 0).length
     skillsScore = (evolving / skills.length) * 100
   }
 
@@ -322,20 +354,21 @@ async function calcCarreiraScore(sb: any, userId: string): Promise<ModuleScoreDe
   }
 }
 
-async function calcTempoScore(sb: any, userId: string): Promise<ModuleScoreDetail> {
+async function calcTempoScore(sb: SbClient, userId: string): Promise<ModuleScoreDetail> {
   const wStart = weekAgo()
   const mStart = monthStart()
 
   // 1. Events completed % (50%)
-  const { data: events } = await sb
+  const { data: eventsRaw } = await sb
     .from('agenda_events')
     .select('status')
     .eq('user_id', userId)
     .gte('date', wStart)
 
+  const events = eventsRaw as EventStatusRow[] | null
   let completionScore = 50
   if (events && events.length > 0) {
-    const done = events.filter((e: any) => e.status === 'concluido' || e.status === 'completed').length
+    const done = events.filter((e) => e.status === 'concluido' || e.status === 'completed').length
     completionScore = (done / events.length) * 100
   }
 
@@ -358,17 +391,18 @@ async function calcTempoScore(sb: any, userId: string): Promise<ModuleScoreDetai
   }
 }
 
-async function calcExperienciasScore(sb: any, userId: string): Promise<ModuleScoreDetail> {
+async function calcExperienciasScore(sb: SbClient, userId: string): Promise<ModuleScoreDetail> {
   // Experiências is episodic — score based on trip engagement
-  const { data: trips } = await sb
+  const { data: tripsRaw } = await sb
     .from('trips')
     .select('id, status')
     .eq('user_id', userId)
 
+  const trips = tripsRaw as TripStatusRow[] | null
   let tripScore = 0
   if (trips && trips.length > 0) {
-    const planned = trips.filter((t: any) => t.status === 'planning' || t.status === 'confirmed').length
-    const completed = trips.filter((t: any) => t.status === 'completed').length
+    const planned = trips.filter((t) => t.status === 'planning' || t.status === 'confirmed').length
+    const completed = trips.filter((t) => t.status === 'completed').length
     tripScore = Math.min(100, ((planned * 20) + (completed * 40)))
   }
 
@@ -392,7 +426,7 @@ async function calcExperienciasScore(sb: any, userId: string): Promise<ModuleSco
 
 // ─── MODULE SCORE CALCULATORS MAP ──────────────────────────────────────────────
 
-const MODULE_CALCULATORS: Record<ModuleKey, (sb: any, userId: string) => Promise<ModuleScoreDetail>> = {
+const MODULE_CALCULATORS: Record<ModuleKey, (sb: SbClient, userId: string) => Promise<ModuleScoreDetail>> = {
   financas:     calcFinancasScore,
   futuro:       calcFuturoScore,
   corpo:        calcCorpoScore,
@@ -406,7 +440,7 @@ const MODULE_CALCULATORS: Record<ModuleKey, (sb: any, userId: string) => Promise
 // ─── MAIN CALCULATOR ───────────────────────────────────────────────────────────
 
 export async function calculateAllScores(userId: string, activeModules?: ModuleKey[]): Promise<LifeScoreResult> {
-  const sb = createClient() as any
+  const sb = createClient() as SbClient
   const allModules = activeModules ?? (Object.keys(WEIGHTS) as ModuleKey[])
   // Filter to only known modules (guards against stale DB values like 'agenda' → now 'tempo')
   const modules = allModules.filter(m => m in MODULE_CALCULATORS)
@@ -443,7 +477,7 @@ export async function calculateAllScores(userId: string, activeModules?: ModuleK
 // ─── PERSIST SCORE ─────────────────────────────────────────────────────────────
 
 export async function persistLifeScore(userId: string, result: LifeScoreResult): Promise<void> {
-  const sb = createClient() as any
+  const sb = createClient() as SbClient
   const today = new Date().toISOString().slice(0, 10)
 
   // Only columns that exist in life_sync_scores
@@ -487,18 +521,19 @@ export function useScoreEngine() {
   const calculate = useCallback(async () => {
     setLoading(true)
     try {
-      const sb = createClient() as any
+      const sb = createClient() as SbClient
       const { data: { user } } = await sb.auth.getUser()
       if (!user) { setLoading(false); return }
 
       // Get active modules from profile
-      const { data: profile } = await sb
+      const { data: profileRaw } = await sb
         .from('profiles')
         .select('active_modules')
         .eq('id', user.id)
         .single()
 
-      const activeModules = profile?.active_modules as ModuleKey[] | undefined
+      const profile = profileRaw as { active_modules: ModuleKey[] | null } | null
+      const activeModules = profile?.active_modules ?? undefined
 
       const scoreResult = await calculateAllScores(user.id, activeModules)
       setResult(scoreResult)

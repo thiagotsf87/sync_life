@@ -1,6 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { Activity, TrendingUp, Plane, Calendar } from 'lucide-react'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface Appointment {
   specialty: string
@@ -48,29 +50,33 @@ export function V3ModulesRow({
         onClick={() => router.push('/corpo')}
       >
         <div className="flex items-center justify-between mb-3">
-          <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🏥 Corpo</span>
-          <div className="h-0.5 w-6 rounded-full" style={{ background: '#f97316' }} />
+          <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] inline-flex items-center gap-1.5">
+            <Activity size={14} style={{ color: '#D97534' }} />
+            Corpo
+          </span>
+          <div className="h-0.5 w-6 rounded-full" style={{ background: '#D97534' }} />
         </div>
         <div className="flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
             <span className="text-[12px] text-[var(--sl-t2)]">Atividades esta semana</span>
-            <span className="font-[DM_Mono] text-[14px] font-medium" style={{ color: weekActivityCount >= 3 ? '#10b981' : '#f59e0b' }}>
+            <span className="font-[IBM_Plex_Mono] text-[14px] font-medium" style={{ color: weekActivityCount >= 3 ? '#0F766E' : '#D9962E' }}>
               {weekActivityCount} sessões
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[12px] text-[var(--sl-t2)]">Minutos ativos</span>
-            <span className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
+            <span className="font-[IBM_Plex_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
               {weekActivityMinutes} min
             </span>
           </div>
           {nextAppointment ? (
             <div className="flex items-center justify-between pt-1 mt-0.5 border-t border-[var(--sl-border)]">
-              <span className="text-[12px] text-[var(--sl-t2)] truncate max-w-[60%]">
-                📅 {nextAppointment.specialty}
+              <span className="text-[12px] text-[var(--sl-t2)] truncate max-w-[60%] inline-flex items-center gap-1">
+                <Calendar size={12} />
+                {nextAppointment.specialty}
               </span>
               <span className="text-[11px] font-semibold px-2 py-0.5 rounded-[6px]"
-                style={{ background: 'rgba(249,115,22,0.1)', color: '#f97316' }}>
+                style={{ background: 'rgba(217,117,52,0.1)', color: '#D97534' }}>
                 {new Date(nextAppointment.appointment_date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
               </span>
             </div>
@@ -88,28 +94,29 @@ export function V3ModulesRow({
         onClick={() => router.push('/patrimonio')}
       >
         <div className="flex items-center justify-between mb-3">
-          <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📈 Patrimônio</span>
-          <div className="h-0.5 w-6 rounded-full" style={{ background: '#10b981' }} />
+          <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] inline-flex items-center gap-1.5">
+            <TrendingUp size={14} style={{ color: '#0F766E' }} />
+            Patrimônio
+          </span>
+          <div className="h-0.5 w-6 rounded-full" style={{ background: '#0F766E' }} />
         </div>
         <div className="flex flex-col gap-2.5">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Carteira total</p>
-            <p className="font-[DM_Mono] font-medium text-[22px] text-[var(--sl-t1)] leading-none">
-              {totalPatrimonio > 0
-                ? totalPatrimonio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                : '\u2014'}
+            <p className="font-[IBM_Plex_Mono] font-medium text-[22px] text-[var(--sl-t1)] leading-none">
+              {totalPatrimonio > 0 ? fmtBRL(totalPatrimonio) : '\u2014'}
             </p>
           </div>
           <div className="flex items-center justify-between pt-1 mt-0.5 border-t border-[var(--sl-border)]">
             <span className="text-[12px] text-[var(--sl-t2)]">Rentabilidade</span>
-            <span className="font-[DM_Mono] text-[14px] font-medium"
-              style={{ color: patrimonioGainPct >= 0 ? '#10b981' : '#f43f5e' }}>
+            <span className="font-[IBM_Plex_Mono] text-[14px] font-medium"
+              style={{ color: patrimonioGainPct >= 0 ? '#0F766E' : '#DB6478' }}>
               {patrimonioGainPct >= 0 ? '+' : ''}{patrimonioGainPct}%
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[12px] text-[var(--sl-t2)]">Ativos</span>
-            <span className="font-[DM_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
+            <span className="font-[IBM_Plex_Mono] text-[14px] font-medium text-[var(--sl-t1)]">
               {patrimonioAssetsCount}
             </span>
           </div>
@@ -122,8 +129,11 @@ export function V3ModulesRow({
         onClick={() => router.push('/experiencias')}
       >
         <div className="flex items-center justify-between mb-3">
-          <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">✈️ Experiências</span>
-          <div className="h-0.5 w-6 rounded-full" style={{ background: '#06b6d4' }} />
+          <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] inline-flex items-center gap-1.5">
+            <Plane size={14} style={{ color: '#3CA0B5' }} />
+            Experiências
+          </span>
+          <div className="h-0.5 w-6 rounded-full" style={{ background: '#3CA0B5' }} />
         </div>
         <div className="flex flex-col gap-2.5">
           {nextTrip ? (
@@ -139,7 +149,7 @@ export function V3ModulesRow({
                 </span>
                 {daysUntilNextTrip != null && (
                   <span className="text-[11px] font-semibold px-2 py-0.5 rounded-[6px]"
-                    style={{ background: 'rgba(6,182,212,0.10)', color: '#06b6d4' }}>
+                    style={{ background: 'rgba(60,160,181,0.10)', color: '#3CA0B5' }}>
                     {daysUntilNextTrip === 0 ? 'Hoje!' : `em ${daysUntilNextTrip}d`}
                   </span>
                 )}
@@ -149,7 +159,7 @@ export function V3ModulesRow({
             <>
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">Viagens</p>
-                <p className="font-[DM_Mono] font-medium text-[22px] text-[var(--sl-t1)]">{totalTrips}</p>
+                <p className="font-[IBM_Plex_Mono] font-medium text-[22px] text-[var(--sl-t1)]">{totalTrips}</p>
               </div>
               <div className="pt-1 mt-0.5 border-t border-[var(--sl-border)]">
                 <span className="text-[11px] text-[var(--sl-t3)]">Nenhuma viagem planejada</span>

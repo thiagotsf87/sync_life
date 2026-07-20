@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { Check, X, Crown, ExternalLink } from 'lucide-react'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { PLAN_LIMITS } from '@/lib/plan-limits'
+import { SectionHeader } from '@/components/ui/section-header'
 
 const FREE_FEATURES = [
   { text: 'Transações: até 200/mês', included: true },
@@ -38,14 +39,14 @@ const USAGE = [
 ]
 
 function getBarColor(pct: number): string {
-  if (pct > 90) return '#f43f5e'
-  if (pct > 75) return '#f59e0b'
-  return '#10b981'
+  if (pct > 90) return '#DB6478'
+  if (pct > 75) return '#D9962E'
+  return '#0F766E'
 }
 
 function getValueColor(pct: number): string {
-  if (pct > 90) return '#f43f5e'
-  if (pct > 75) return '#f59e0b'
+  if (pct > 90) return '#DB6478'
+  if (pct > 75) return '#D9962E'
   return 'var(--sl-t2)'
 }
 
@@ -123,9 +124,9 @@ export default function PlanoPage() {
         <div
           className="mb-4 px-4 py-3 rounded-xl text-[13px] font-medium border"
           style={{
-            background: toast.type === 'success' ? 'rgba(16,185,129,0.1)' : 'rgba(59,130,246,0.1)',
-            borderColor: toast.type === 'success' ? 'rgba(16,185,129,0.3)' : 'rgba(59,130,246,0.3)',
-            color: toast.type === 'success' ? '#10b981' : '#3b82f6',
+            background: toast.type === 'success' ? 'rgba(15,118,110,0.1)' : 'rgba(79,136,212,0.1)',
+            borderColor: toast.type === 'success' ? 'rgba(15,118,110,0.3)' : 'rgba(79,136,212,0.3)',
+            color: toast.type === 'success' ? '#0F766E' : '#4F88D4',
           }}
         >
           {toast.message}
@@ -134,7 +135,7 @@ export default function PlanoPage() {
 
       {/* Trial info */}
       {isPro && isTrialing && trialEndsAt && (
-        <div className="mb-4 px-4 py-3 rounded-xl text-[13px] font-medium border bg-[rgba(245,158,11,0.08)] border-[rgba(245,158,11,0.25)] text-[#f59e0b]">
+        <div className="mb-4 px-4 py-3 rounded-xl text-[13px] font-medium border bg-[rgba(217,150,46,0.08)] border-[rgba(217,150,46,0.25)] text-[#D9962E]">
           <Crown size={14} className="inline mr-1.5 -mt-0.5" />
           Período de teste gratuito — expira em{' '}
           {new Date(trialEndsAt).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -148,8 +149,8 @@ export default function PlanoPage() {
             onClick={() => setInterval('monthly')}
             className="px-4 py-1.5 rounded-lg text-[12px] font-bold transition-colors"
             style={{
-              background: interval === 'monthly' ? 'rgba(16,185,129,0.15)' : 'transparent',
-              color: interval === 'monthly' ? '#10b981' : 'var(--sl-t3)',
+              background: interval === 'monthly' ? 'rgba(15,118,110,0.15)' : 'transparent',
+              color: interval === 'monthly' ? '#0F766E' : 'var(--sl-t3)',
             }}
           >
             Mensal
@@ -158,12 +159,12 @@ export default function PlanoPage() {
             onClick={() => setInterval('yearly')}
             className="px-4 py-1.5 rounded-lg text-[12px] font-bold transition-colors"
             style={{
-              background: interval === 'yearly' ? 'rgba(16,185,129,0.15)' : 'transparent',
-              color: interval === 'yearly' ? '#10b981' : 'var(--sl-t3)',
+              background: interval === 'yearly' ? 'rgba(15,118,110,0.15)' : 'transparent',
+              color: interval === 'yearly' ? '#0F766E' : 'var(--sl-t3)',
             }}
           >
             Anual
-            <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-[rgba(16,185,129,0.15)] text-[#10b981]">
+            <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-[rgba(15,118,110,0.15)] text-[#0F766E]">
               -25%
             </span>
           </button>
@@ -171,6 +172,12 @@ export default function PlanoPage() {
       )}
 
       {/* Plan grid */}
+      <SectionHeader
+        eyebrow="01 · PLANOS"
+        title="Compare e escolha"
+        sub="Free para sempre, Pro com 7 dias grátis"
+        className="mb-3"
+      />
       <div className="grid grid-cols-2 gap-3 mb-4 max-sm:grid-cols-1">
         {/* FREE card */}
         <div className="bg-[var(--sl-s1)] border-2 border-[var(--sl-border)] rounded-[18px] p-5">
@@ -188,7 +195,7 @@ export default function PlanoPage() {
             {FREE_FEATURES.map(({ text, included }) => (
               <div key={text} className="flex items-start gap-2 text-[12px]">
                 {included ? (
-                  <Check size={13} className="text-[#10b981] shrink-0 mt-0.5" />
+                  <Check size={13} className="text-[#0F766E] shrink-0 mt-0.5" />
                 ) : (
                   <X size={13} className="text-[var(--sl-t3)] shrink-0 mt-0.5" />
                 )}
@@ -212,16 +219,16 @@ export default function PlanoPage() {
         <div
           className="bg-[var(--sl-s1)] border-2 rounded-[18px] p-5 relative"
           style={{
-            borderColor: '#10b981',
-            boxShadow: '0 0 0 1px rgba(16,185,129,0.2), 0 8px 32px rgba(16,185,129,0.12)',
+            borderColor: '#0F766E',
+            boxShadow: '0 0 0 1px rgba(15,118,110,0.2), 0 8px 32px rgba(15,118,110,0.12)',
           }}
         >
-          <div className="absolute top-3.5 right-3.5 text-[9px] font-bold uppercase tracking-[0.06em] px-2 py-0.5 rounded-md bg-[rgba(16,185,129,0.15)] text-[#10b981]">
+          <div className="absolute top-3.5 right-3.5 text-[9px] font-bold uppercase tracking-[0.06em] px-2 py-0.5 rounded-md bg-[rgba(15,118,110,0.15)] text-[#0F766E]">
             Mais popular
           </div>
           <span
             className="inline-block text-[10px] font-bold uppercase tracking-[0.06em] px-2 py-0.5 rounded-md mb-3 text-white"
-            style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.3), rgba(0,85,255,0.3))' }}
+            style={{ background: '#0F766E' }}
           >
             Pro
           </span>
@@ -239,7 +246,7 @@ export default function PlanoPage() {
           <div className="flex flex-col gap-2 mb-5">
             {PRO_FEATURES.map(({ text }) => (
               <div key={text} className="flex items-start gap-2 text-[12px]">
-                <Check size={13} className="text-[#10b981] shrink-0 mt-0.5" />
+                <Check size={13} className="text-[#0F766E] shrink-0 mt-0.5" />
                 <span className="text-[var(--sl-t1)]">{text}</span>
               </div>
             ))}
@@ -268,8 +275,8 @@ export default function PlanoPage() {
                 disabled={checkoutLoading || isLoading}
                 className="w-full py-2.5 rounded-[10px] text-white text-[13px] font-bold transition-all hover:brightness-110 hover:-translate-y-px disabled:opacity-60 disabled:cursor-wait"
                 style={{
-                  background: 'linear-gradient(135deg, #10b981, #0055ff)',
-                  boxShadow: '0 4px 20px rgba(16,185,129,0.25)',
+                  background: '#0F766E',
+                  boxShadow: '0 4px 20px rgba(15,118,110,0.25)',
                 }}
               >
                 {checkoutLoading ? 'Redirecionando...' : 'Fazer upgrade para Pro'}
@@ -285,9 +292,12 @@ export default function PlanoPage() {
       {/* Usage card (FREE users only) */}
       {isFree && (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 transition-colors hover:border-[var(--sl-border-h)]">
-          <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
-            Limites do plano Free
-          </p>
+          <SectionHeader
+            eyebrow="02 · LIMITES DO PLANO FREE"
+            title="Seu uso atual"
+            sub="Acompanhe quanto você já consumiu"
+            className="mb-4"
+          />
           <div className="flex flex-col gap-4">
             {USAGE.map(({ label, limitKey }) => {
               const limit = PLAN_LIMITS.free[limitKey]
@@ -299,7 +309,7 @@ export default function PlanoPage() {
                   <div className="flex justify-between items-center mb-1.5">
                     <span className="text-[12px] text-[var(--sl-t2)]">{label}</span>
                     <span
-                      className="text-[12px] font-[DM_Mono] font-medium"
+                      className="text-[12px] font-[IBM_Plex_Mono] font-medium"
                       style={{ color: getValueColor(pct) }}
                     >
                       {used} / {limit}

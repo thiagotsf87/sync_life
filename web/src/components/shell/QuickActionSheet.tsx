@@ -17,48 +17,48 @@ interface QuickActionSheetProps {
 }
 
 /** Ações rápidas por módulo — navega para a tela de criação correspondente */
-const MODULE_ACTIONS: Record<string, { label: string; href: string; icon: typeof DollarSign; color: string }[]> = {
+export const MODULE_ACTIONS: Record<string, { label: string; href: string; icon: typeof DollarSign; color: string }[]> = {
   financas: [
-    { label: 'Transação rápida', href: '__financas__', icon: DollarSign, color: '#10b981' },
-    { label: 'Transações', href: '/financas/transacoes', icon: DollarSign, color: '#10b981' },
-    { label: 'Recorrentes', href: '/financas/recorrentes', icon: Repeat, color: '#10b981' },
-    { label: 'Orçamentos', href: '/financas/orcamentos', icon: PieChart, color: '#10b981' },
+    { label: 'Transação rápida', href: '__financas__', icon: DollarSign, color: '#0F766E' },
+    { label: 'Transações', href: '/financas/transacoes', icon: DollarSign, color: '#0F766E' },
+    { label: 'Recorrentes', href: '/financas/recorrentes', icon: Repeat, color: '#0F766E' },
+    { label: 'Orçamentos', href: '/financas/orcamentos', icon: PieChart, color: '#0F766E' },
   ],
   tempo: [
-    { label: 'Novo evento', href: '/tempo/novo', icon: CalendarPlus, color: '#06b6d4' },
-    { label: 'Blocos de Foco', href: '/tempo/foco', icon: Timer, color: '#06b6d4' },
+    { label: 'Novo evento', href: '/tempo/novo', icon: CalendarPlus, color: '#3CA0B5' },
+    { label: 'Blocos de Foco', href: '/tempo/foco', icon: Timer, color: '#3CA0B5' },
   ],
   futuro: [
-    { label: 'Novo objetivo', href: '/futuro/novo', icon: Target, color: '#8b5cf6' },
+    { label: 'Novo objetivo', href: '/futuro/novo', icon: Target, color: '#8B7BD4' },
   ],
   corpo: [
-    { label: 'Nova atividade', href: '/corpo/atividades', icon: Dumbbell, color: '#f97316' },
-    { label: 'Registrar peso', href: '/corpo/peso', icon: Dumbbell, color: '#f97316' },
+    { label: 'Nova atividade', href: '/corpo/atividades', icon: Dumbbell, color: '#D97534' },
+    { label: 'Registrar peso', href: '/corpo/peso', icon: Dumbbell, color: '#D97534' },
   ],
   mente: [
-    { label: 'Timer Foco', href: '/mente/timer', icon: Timer, color: '#eab308' },
-    { label: 'Nova trilha', href: '/mente/trilhas', icon: Target, color: '#eab308' },
+    { label: 'Timer Foco', href: '/mente/timer', icon: Timer, color: '#D9962E' },
+    { label: 'Nova trilha', href: '/mente/trilhas', icon: Target, color: '#D9962E' },
   ],
   patrimonio: [
-    { label: 'Novo ativo', href: '/patrimonio/carteira', icon: TrendingUp, color: '#3b82f6' },
+    { label: 'Novo ativo', href: '/patrimonio/carteira', icon: TrendingUp, color: '#4F88D4' },
   ],
   carreira: [
-    { label: 'Nova habilidade', href: '/carreira/habilidades', icon: Briefcase, color: '#f43f5e' },
+    { label: 'Nova habilidade', href: '/carreira/habilidades', icon: Briefcase, color: '#DB6478' },
   ],
   experiencias: [
-    { label: 'Nova viagem', href: '/experiencias/nova', icon: Plane, color: '#ec4899' },
+    { label: 'Nova viagem', href: '/experiencias/nova', icon: Plane, color: '#C76795' },
   ],
   panorama: [
-    { label: 'Transação rápida', href: '__financas__', icon: DollarSign, color: '#10b981' },
-    { label: 'Novo evento', href: '/tempo/novo', icon: CalendarPlus, color: '#06b6d4' },
-    { label: 'Novo objetivo', href: '/futuro/novo', icon: Target, color: '#8b5cf6' },
+    { label: 'Transação rápida', href: '__financas__', icon: DollarSign, color: '#0F766E' },
+    { label: 'Novo evento', href: '/tempo/novo', icon: CalendarPlus, color: '#3CA0B5' },
+    { label: 'Novo objetivo', href: '/futuro/novo', icon: Target, color: '#8B7BD4' },
   ],
   conquistas: [
-    { label: 'Transação rápida', href: '__financas__', icon: DollarSign, color: '#10b981' },
-    { label: 'Novo evento', href: '/tempo/novo', icon: CalendarPlus, color: '#06b6d4' },
+    { label: 'Transação rápida', href: '__financas__', icon: DollarSign, color: '#0F766E' },
+    { label: 'Novo evento', href: '/tempo/novo', icon: CalendarPlus, color: '#3CA0B5' },
   ],
   configuracoes: [
-    { label: 'Transação rápida', href: '__financas__', icon: DollarSign, color: '#10b981' },
+    { label: 'Transação rápida', href: '__financas__', icon: DollarSign, color: '#0F766E' },
   ],
 }
 

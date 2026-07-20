@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils'
 import type { StudyTrack, TrackCategory, TrackStatus } from '@/hooks/use-mente'
 import { CATEGORY_LABELS, STATUS_LABELS } from '@/hooks/use-mente'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface TrackCardProps {
   track: StudyTrack
@@ -11,9 +12,9 @@ interface TrackCardProps {
 }
 
 const STATUS_COLORS: Record<TrackStatus, string> = {
-  in_progress: '#10b981',
-  paused: '#f59e0b',
-  completed: '#0055ff',
+  in_progress: '#0F766E',
+  paused: '#D9962E',
+  completed: '#0B2D34',
   abandoned: '#6e90b8',
 }
 
@@ -50,7 +51,7 @@ export function TrackCard({ track, onClick, compact = false }: TrackCardProps) {
       {/* Accent bar at top */}
       <div
         className="absolute top-0 left-5 right-5 h-0.5 rounded-b"
-        style={{ background: 'linear-gradient(90deg, #a855f7, #0055ff)' }}
+        style={{ background: 'linear-gradient(90deg, #a855f7, #0B2D34)' }}
       />
 
       {/* Header */}
@@ -80,7 +81,7 @@ export function TrackCard({ track, onClick, compact = false }: TrackCardProps) {
           ) : (
             <span className="text-[11px] text-[var(--sl-t3)]">Sem etapas</span>
           )}
-          <span className="font-[DM_Mono] text-[13px] font-bold" style={{ color: statusColor }}>
+          <span className="font-[IBM_Plex_Mono] text-[13px] font-bold" style={{ color: statusColor }}>
             {Math.round(track.progress)}%
           </span>
         </div>
@@ -89,7 +90,7 @@ export function TrackCard({ track, onClick, compact = false }: TrackCardProps) {
             className="h-full rounded-full transition-[width] duration-700"
             style={{
               width: `${Math.min(track.progress, 100)}%`,
-              background: isCompleted ? '#10b981' : 'linear-gradient(90deg, #a855f7, #0055ff)',
+              background: isCompleted ? '#0F766E' : 'linear-gradient(90deg, #a855f7, #0B2D34)',
             }}
           />
         </div>
@@ -104,14 +105,14 @@ export function TrackCard({ track, onClick, compact = false }: TrackCardProps) {
           {daysLeft !== null && (
             <span className={cn(
               'text-[11px]',
-              daysLeft < 0 ? 'text-[#f43f5e]' : daysLeft <= 7 ? 'text-[#f59e0b]' : 'text-[var(--sl-t3)]'
+              daysLeft < 0 ? 'text-[#DB6478]' : daysLeft <= 7 ? 'text-[#D9962E]' : 'text-[var(--sl-t3)]'
             )}>
               📅 {daysLeft < 0 ? `${Math.abs(daysLeft)}d atrasada` : daysLeft === 0 ? 'Hoje' : `${daysLeft}d`}
             </span>
           )}
           {track.cost && (
             <span className="text-[11px] text-[var(--sl-t3)]">
-              💰 {track.cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              💰 {fmtBRL(track.cost)}
             </span>
           )}
         </div>

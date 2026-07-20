@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT, FUTURO_GRAD } from '@/lib/futuro-colors'
 import { FUTURO_ACHIEVEMENTS } from '@/lib/futuro-xp-mock'
 import { CoachCard } from '@/components/futuro/mobile/CoachCard'
 import { AchievementGrid } from '@/components/futuro/mobile/AchievementGrid'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface FuturoCelebracaoMobileProps {
   objectiveName: string
@@ -39,7 +40,7 @@ export function FuturoCelebracaoMobile({
           Missão Concluída!
         </h1>
         <p className="text-[13px] text-[var(--sl-t2)] leading-[1.6]">
-          Thiago, você é incrível! <strong className="text-[#10b981]">R$ {accumulated.toLocaleString('pt-BR')}</strong><br />em {duration} meses de disciplina pura. 🚀
+          Thiago, você é incrível! <strong className="text-[var(--sl-em)]">{fmtBRL(accumulated)}</strong><br />em {duration} meses de disciplina pura. 🚀
         </p>
       </div>
 
@@ -47,8 +48,8 @@ export function FuturoCelebracaoMobile({
       <div
         className="mx-4 mb-3 rounded-[16px] p-[14px_15px] flex items-center gap-[14px]"
         style={{
-          background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(0,85,255,0.12))',
-          border: '1px solid rgba(139,92,246,0.4)',
+          background: 'linear-gradient(135deg, rgba(139,123,212,0.2), rgba(0,85,255,0.12))',
+          border: '1px solid rgba(139,123,212,0.4)',
         }}
       >
         <div className="text-center px-2">
@@ -60,10 +61,10 @@ export function FuturoCelebracaoMobile({
         <div className="flex-1">
           <p className="text-[13px] font-bold text-[var(--sl-t1)] mb-1">🎯 Nível 5 desbloqueado!</p>
           <div className="h-[5px] rounded-full overflow-hidden bg-[var(--sl-s3)] mb-[5px]">
-            <div className="h-full rounded-full" style={{ width: '100%', background: `linear-gradient(90deg, ${FUTURO_PRIMARY}, #ec4899)` }} />
+            <div className="h-full rounded-full" style={{ width: '100%', background: `linear-gradient(90deg, ${FUTURO_PRIMARY}, #C76795)` }} />
           </div>
           <p className="text-[11px] text-[var(--sl-t2)]">
-            Life Score Futuro: <strong className="text-[#10b981]">58 → 70 pts</strong> ↑
+            Life Score Futuro: <strong className="text-[var(--sl-em)]">58 → 70 pts</strong> ↑
           </p>
         </div>
       </div>
@@ -73,7 +74,7 @@ export function FuturoCelebracaoMobile({
 
       {/* Coach celebrating */}
       <CoachCard
-        label="Coach Sync — Parabéns!"
+        label="Coach Sync · Parabéns!"
         message={
           <>Você provou para si mesmo que consegue. Agora quer <strong>acelerar o apartamento</strong> com esses R$ 800/mês? Calculei o impacto.</>
         }

@@ -47,7 +47,7 @@ export function VitalsStrip({ items, className }: VitalsStripProps) {
           <p className="text-[10px] font-bold uppercase tracking-[.09em] text-[var(--sl-t3)] mb-1">
             {item.label}
           </p>
-          <p className="font-[DM_Mono] font-medium text-[24px] text-[var(--sl-t1)] leading-none">
+          <p className="font-[IBM_Plex_Mono] font-medium text-[24px] text-[var(--sl-t1)] leading-none">
             {item.value}
           </p>
           {item.note && (

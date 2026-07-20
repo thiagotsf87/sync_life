@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, Hotel, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { TripAccommodation, BookingStatus } from '@/hooks/use-experiencias'
 import { AccommodationModal } from '@/components/experiencias/trip-detail/AccommodationModal'
@@ -36,9 +36,12 @@ export function TripAccommodationTab({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🏨 Hospedagens</h2>
+        <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] flex items-center gap-2">
+          <Hotel size={14} className="text-[#C76795]" />
+          Hospedagens
+        </h2>
         <button onClick={() => setShowModal(true)}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20">
+          className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#C76795]/10 border border-[#C76795] text-[#C76795] hover:bg-[#C76795]/20">
           <Plus size={13} />
           Adicionar
         </button>
@@ -46,7 +49,9 @@ export function TripAccommodationTab({
 
       {accommodations.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl p-12 text-center">
-          <div className="text-4xl mb-3">🏨</div>
+          <div className="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style={{ background: 'rgba(199,103,149,.1)' }}>
+            <Hotel size={22} className="text-[#C76795]" />
+          </div>
           <p className="text-[13px] text-[var(--sl-t2)]">Adicione hotéis, Airbnb ou pousadas</p>
         </div>
       ) : (
@@ -59,33 +64,33 @@ export function TripAccommodationTab({
                     <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">{a.name}</span>
                     <span className={cn(
                       'text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full',
-                      a.booking_status === 'paid' ? 'text-[#10b981] bg-[#10b981]/10' :
-                      a.booking_status === 'reserved' ? 'text-[#0055ff] bg-[#0055ff]/10' :
-                      'text-[#f59e0b] bg-[#f59e0b]/10'
+                      a.booking_status === 'paid' ? 'text-[#0F766E] bg-[#0F766E]/10' :
+                      a.booking_status === 'reserved' ? 'text-[#0B2D34] bg-[#0B2D34]/10' :
+                      'text-[#D9962E] bg-[#D9962E]/10'
                     )}>
                       {a.booking_status === 'paid' ? 'Pago' : a.booking_status === 'reserved' ? 'Reservado' : 'Estimado'}
                     </span>
                   </div>
-                  {a.address && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">📍 {a.address}</p>}
+                  {a.address && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5 inline-flex items-center gap-1"><MapPin size={10} /> {a.address}</p>}
                   <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
-                    Check-in: {new Date(a.check_in + 'T12:00:00').toLocaleDateString('pt-BR')} →
-                    Check-out: {new Date(a.check_out + 'T12:00:00').toLocaleDateString('pt-BR')}
+                    Check-in: <span className="sl-num">{new Date(a.check_in + 'T12:00:00').toLocaleDateString('pt-BR')}</span> →
+                    Check-out: <span className="sl-num">{new Date(a.check_out + 'T12:00:00').toLocaleDateString('pt-BR')}</span>
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
                   {a.total_cost != null && (
-                    <span className="font-[DM_Mono] text-[12px] text-[#ec4899]">
+                    <span className="sl-num text-[12px] text-[#C76795]">
                       {formatTripAmountCompact(a.total_cost)}
                     </span>
                   )}
                   <button onClick={async () => { await deleteAccommodation(a.id); await reload() }}
-                    className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors">
+                    className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors">
                     <Trash2 size={12} className="text-[var(--sl-t3)]" />
                   </button>
                 </div>
               </div>
               {a.confirmation_code && (
-                <p className="text-[10px] text-[var(--sl-t3)] mt-1.5 font-[DM_Mono]">Confirmação: {a.confirmation_code}</p>
+                <p className="text-[10px] text-[var(--sl-t3)] mt-1.5 font-[IBM_Plex_Mono]">Confirmação: {a.confirmation_code}</p>
               )}
             </div>
           ))}

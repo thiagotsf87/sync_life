@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Trash2, Crown } from 'lucide-react'
+import { Plus, Trash2, Crown, Map as MapIcon, Clock, MapPin, Car } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import jsPDF from 'jspdf'
@@ -151,14 +151,17 @@ export function TripItineraryTab({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🗺️ Roteiro dia a dia</h2>
+        <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] flex items-center gap-2">
+          <MapIcon size={14} className="text-[#C76795]" />
+          Roteiro dia a dia
+        </h2>
         <div className="flex items-center gap-2">
           <button
             onClick={handleExportItineraryPdf}
             className={cn(
               'flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium border',
               isPro
-                ? 'bg-[#10b981]/10 border-[#10b981] text-[#10b981] hover:bg-[#10b981]/20'
+                ? 'bg-[#0F766E]/10 border-[#0F766E] text-[#0F766E] hover:bg-[#0F766E]/20'
                 : 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
             )}
           >
@@ -167,7 +170,7 @@ export function TripItineraryTab({
           </button>
           <button
             onClick={() => openModalForDay(trip.start_date)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#C76795]/10 border border-[#C76795] text-[#C76795] hover:bg-[#C76795]/20"
           >
             <Plus size={13} />
             Atividade
@@ -176,9 +179,12 @@ export function TripItineraryTab({
       </div>
 
       {/* RN-EXP-13: mapa com pins e rota sugerida (via links de mapas) */}
-      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-4">
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-4 hover:border-[var(--sl-border-h)] transition-colors">
         <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
-          <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🗺️ Mapa da viagem</h3>
+          <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] flex items-center gap-2">
+            <MapIcon size={14} className="text-[#C76795]" />
+            Mapa da viagem
+          </h3>
           {(() => {
             const routeLink = getSuggestedRouteLink(itineraryAddresses.map(i => i.address))
             if (!routeLink) return null
@@ -187,7 +193,7 @@ export function TripItineraryTab({
                 href={routeLink}
                 target="_blank"
                 rel="noreferrer"
-                className="text-[11px] font-semibold text-[#ec4899] hover:opacity-80"
+                className="text-[11px] font-semibold text-[#C76795] hover:opacity-80"
               >
                 Abrir rota sugerida →
               </a>
@@ -208,12 +214,12 @@ export function TripItineraryTab({
                 rel="noreferrer"
                 className="flex items-center gap-2 p-2 rounded-[10px] border border-[var(--sl-border)] bg-[var(--sl-s2)] hover:border-[var(--sl-border-h)] transition-colors"
               >
-                <span className="w-5 h-5 rounded-full bg-[#ec4899]/15 border border-[#ec4899]/30 flex items-center justify-center text-[10px] font-bold text-[#ec4899] shrink-0">
+                <span className="w-5 h-5 rounded-full bg-[#C76795]/15 border border-[#C76795]/30 flex items-center justify-center text-[10px] font-bold text-[#C76795] shrink-0 sl-num">
                   {idx + 1}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[11px] text-[var(--sl-t1)] truncate">
-                    {pin.title} {pin.time ? `· ${pin.time.slice(0, 5)}` : ''}
+                    {pin.title} {pin.time ? <>· <span className="font-[IBM_Plex_Mono]">{pin.time.slice(0, 5)}</span></> : ''}
                   </p>
                   <p className="text-[10px] text-[var(--sl-t3)] truncate">{pin.address}</p>
                 </div>
@@ -243,7 +249,7 @@ export function TripItineraryTab({
         return (
           <div key={day} className="mb-5">
             <div className="flex items-center gap-2 mb-2">
-              <div className="text-[11px] font-bold text-[#ec4899] capitalize">{dayLabel}</div>
+              <div className="text-[11px] font-bold text-[#C76795] capitalize">{dayLabel}</div>
               {dayCost > 0 && (
                 <span className="text-[10px] text-[var(--sl-t3)]">
                   · {formatTripAmountCompact(dayCost)}
@@ -251,7 +257,7 @@ export function TripItineraryTab({
               )}
               <button
                 onClick={() => openModalForDay(day)}
-                className="ml-auto text-[10px] text-[#ec4899] hover:opacity-80"
+                className="ml-auto text-[10px] text-[#C76795] hover:opacity-80"
               >
                 + Adicionar
               </button>
@@ -259,7 +265,7 @@ export function TripItineraryTab({
 
             {dayItems.length === 0 ? (
               <div className="bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-xl p-4 text-center">
-                <p className="text-[11px] text-[var(--sl-t3)]">Nenhuma atividade — clique em + Adicionar</p>
+                <p className="text-[11px] text-[var(--sl-t3)]">Nenhuma atividade · clique em + Adicionar</p>
               </div>
             ) : (
               <div className="flex flex-col gap-2">
@@ -280,12 +286,12 @@ export function TripItineraryTab({
                         'flex items-start gap-3 bg-[var(--sl-s1)] border rounded-xl p-3',
                         'transition-colors cursor-move',
                         draggingItineraryId === item.id
-                          ? 'border-[#ec4899] opacity-70'
+                          ? 'border-[#C76795] opacity-70'
                           : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
-                      <div className="w-6 h-6 rounded-full bg-[#ec4899]/10 border border-[#ec4899]/30 flex items-center justify-center shrink-0">
-                        <span className="text-[10px] text-[#ec4899] font-bold">{idx + 1}</span>
+                      <div className="w-6 h-6 rounded-full bg-[#C76795]/10 border border-[#C76795]/30 flex items-center justify-center shrink-0">
+                        <span className="text-[10px] text-[#C76795] font-bold">{idx + 1}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
@@ -294,26 +300,30 @@ export function TripItineraryTab({
                             {ITINERARY_CATEGORY_LABELS[item.category]}
                           </span>
                           {item.estimated_time && (
-                            <span className="text-[10px] text-[var(--sl-t3)]">🕐 {item.estimated_time.slice(0, 5)}</span>
+                            <span className="text-[10px] text-[var(--sl-t3)] inline-flex items-center gap-1">
+                              <Clock size={10} />
+                              <span className="font-[IBM_Plex_Mono]">{item.estimated_time.slice(0, 5)}</span>
+                            </span>
                           )}
                         </div>
-                        {item.address && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">📍 {item.address}</p>}
+                        {item.address && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5 inline-flex items-center gap-1"><MapPin size={10} /> {item.address}</p>}
                         {item.notes && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">{item.notes}</p>}
                         {item.estimated_cost != null && (
-                          <p className="font-[DM_Mono] text-[10px] text-[var(--sl-t2)] mt-0.5">
+                          <p className="sl-num text-[10px] text-[var(--sl-t2)] mt-0.5">
                             {formatTripAmountCompact(item.estimated_cost)}
                           </p>
                         )}
                       </div>
                       <button onClick={async () => { await deleteItineraryItem(item.id); await reload() }}
-                        className="p-1 rounded hover:bg-[rgba(244,63,94,0.1)] transition-colors shrink-0">
+                        className="p-1 rounded hover:bg-[rgba(219,100,120,0.1)] transition-colors shrink-0">
                         <Trash2 size={11} className="text-[var(--sl-t3)]" />
                       </button>
                     </div>
                     {transitEstimates[idx] && (
                       <div className="ml-9 mt-1 mb-1 px-2.5 py-1.5 rounded-lg bg-[var(--sl-s2)] border border-[var(--sl-border)]">
-                        <p className="text-[10px] text-[var(--sl-t3)]">
-                          🚗 Deslocamento estimado (beta): ~{transitEstimates[idx].etaMinutes} min entre
+                        <p className="text-[10px] text-[var(--sl-t3)] inline-flex items-center gap-1 flex-wrap">
+                          <Car size={10} />
+                          Deslocamento estimado (beta): ~<span className="sl-num">{transitEstimates[idx].etaMinutes}</span> min entre
                           {' '}<span className="text-[var(--sl-t2)]">{transitEstimates[idx].fromTitle}</span> e
                           {' '}<span className="text-[var(--sl-t2)]">{transitEstimates[idx].toTitle}</span>
                         </p>

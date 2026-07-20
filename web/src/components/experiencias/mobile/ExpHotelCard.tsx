@@ -18,8 +18,8 @@ export function ExpHotelCard({
   emoji, name, location, dates, nights, pricePerNight, total, status, statusType,
 }: ExpHotelCardProps) {
   const statusStyles = statusType === 'confirmed'
-    ? { bg: 'rgba(16,185,129,0.12)', color: '#10b981' }
-    : { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' }
+    ? { bg: 'rgba(15,118,110,0.12)', color: '#0F766E' }
+    : { bg: 'rgba(217,150,46,0.12)', color: '#D9962E' }
 
   return (
     <div className="mx-4 mb-[10px] rounded-[16px] overflow-hidden"
@@ -46,9 +46,9 @@ export function ExpHotelCard({
           <span>🌙 {nights} noites</span>
         </div>
         <div className="flex justify-between items-center">
-          <p className="font-[DM_Mono] text-[14px] font-semibold text-[var(--sl-t1)]">{pricePerNight}/noite</p>
+          <p className="font-[IBM_Plex_Mono] text-[14px] font-semibold text-[var(--sl-t1)]">{pricePerNight}/noite</p>
           {total && (
-            <p className="font-[DM_Mono] text-[13px]" style={{ color: statusType === 'confirmed' ? '#ec4899' : '#f59e0b' }}>
+            <p className="font-[IBM_Plex_Mono] text-[13px]" style={{ color: statusType === 'confirmed' ? '#C76795' : '#D9962E' }}>
               Total: {total}
             </p>
           )}

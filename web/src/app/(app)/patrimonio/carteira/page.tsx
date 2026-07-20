@@ -16,6 +16,7 @@ import { ModuleHeader } from '@/components/ui/module-header'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 import { createTransactionFromAporte } from '@/lib/integrations/financas'
+import { fmtBRL } from '@/lib/format/currency'
 
 const ASSET_CLASSES: AssetClass[] = [
   'stocks_br', 'fiis', 'etfs_br', 'bdrs', 'fixed_income',
@@ -169,8 +170,6 @@ export default function CarteiraPage() {
   const totalPL = totalCurrent - totalInvested
   const totalPLPct = totalInvested > 0 ? (totalPL / totalInvested) * 100 : 0
 
-  const fmtCurrency = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-
   // Dividend data for proventos column
   const year12Ago = new Date()
   year12Ago.setMonth(year12Ago.getMonth() - 12)
@@ -183,10 +182,10 @@ export default function CarteiraPage() {
       {/* ModuleHeader */}
       <ModuleHeader
         icon={Briefcase}
-        iconBg="rgba(59,130,246,.08)"
-        iconColor="#3b82f6"
+        iconBg="rgba(79,136,212,.08)"
+        iconColor="#4F88D4"
         title="Carteira"
-        subtitle={`${assets.length} ativo${assets.length !== 1 ? 's' : ''} · ${fmtCurrency(totalCurrent)} · ${assets.filter(a => a.current_price != null).length} com cotacao`}
+        subtitle={`${assets.length} ativo${assets.length !== 1 ? 's' : ''} · ${fmtBRL(totalCurrent)} · ${assets.filter(a => a.current_price != null).length} com cotacao`}
       >
         {assets.length > 0 && (
           <button
@@ -215,14 +214,14 @@ export default function CarteiraPage() {
         <button
           onClick={() => setShowModal(true)}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#3b82f6] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(59,130,246,.25)] transition-all"
+                     bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(15,118,110,.25)] transition-all"
         >
           <Plus size={16} strokeWidth={2.5} />
           Nova Operacao
         </button>
       </ModuleHeader>
 
-      {/* Search + Filter (NO KPIs — this is a data view, per prototype) */}
+      {/* Search + Filter (NO KPIs · this is a data view, per prototype) */}
       <div className="flex items-center gap-3 mb-5 flex-wrap sl-fade-up sl-delay-1">
         <div className="relative flex-1 max-w-[320px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--sl-t3)]" />
@@ -234,7 +233,7 @@ export default function CarteiraPage() {
         <div className="flex gap-1 flex-wrap">
           <button onClick={() => setFilterClass('all')}
             className={cn('px-[10px] py-[4px] rounded-[8px] text-[11px] font-semibold border transition-all',
-              filterClass === 'all' ? 'border-[rgba(59,130,246,.3)] bg-[rgba(59,130,246,.08)] text-[#3b82f6]' : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]')}>
+              filterClass === 'all' ? 'border-[rgba(79,136,212,.3)] bg-[rgba(79,136,212,.08)] text-[#4F88D4]' : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]')}>
             Todos
           </button>
           {ASSET_CLASSES.filter(c => assets.some(a => a.asset_class === c)).map(cls => (
@@ -259,10 +258,12 @@ export default function CarteiraPage() {
         </div>
       ) : assets.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
-          <div className="text-4xl mb-3">📈</div>
+          <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center bg-[rgba(79,136,212,.08)]">
+            <Briefcase size={22} className="text-[#4F88D4]" />
+          </div>
           <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
           <button onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#3b82f6] text-white hover:opacity-90 mt-3">
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 mt-3">
             <Plus size={15} />
             Primeiro ativo
           </button>
@@ -303,11 +304,11 @@ export default function CarteiraPage() {
                   onClick={() => router.push(`/patrimonio/carteira/${encodeURIComponent(a.ticker)}`)}
                 >
                   <div className="flex items-center gap-1.5">
-                    <span className="font-[DM_Mono] font-medium text-[13px] text-[var(--sl-t1)]">{a.ticker}</span>
+                    <span className="font-[IBM_Plex_Mono] font-medium text-[13px] text-[var(--sl-t1)]">{a.ticker}</span>
                     {a.current_price != null && (
                       <div
                         className="w-1 h-1 rounded-full"
-                        style={{ background: pl >= 0 ? '#10b981' : '#f43f5e' }}
+                        style={{ background: pl >= 0 ? '#0F766E' : '#DB6478' }}
                       />
                     )}
                   </div>
@@ -317,22 +318,22 @@ export default function CarteiraPage() {
                       {ASSET_CLASS_LABELS[a.asset_class]}{a.sector ? ` · ${a.sector}` : ''}
                     </div>
                   </div>
-                  <span className="font-[DM_Mono] text-[12px] text-right text-[var(--sl-t2)]">
+                  <span className="sl-num text-[12px] text-right text-[var(--sl-t2)]">
                     {a.quantity.toLocaleString('pt-BR')}
                   </span>
-                  <span className="font-[DM_Mono] text-[12px] text-right text-[var(--sl-t1)]">
-                    {fmtCurrency(currentVal)}
+                  <span className="sl-num text-[12px] text-right text-[var(--sl-t1)]">
+                    {fmtBRL(currentVal)}
                   </span>
                   <span
-                    className="font-[DM_Mono] text-[12px] text-right"
-                    style={{ color: pl >= 0 ? '#10b981' : '#f43f5e' }}
+                    className="sl-num text-[12px] text-right"
+                    style={{ color: pl >= 0 ? '#0F766E' : '#DB6478' }}
                   >
                     {pl >= 0 ? '+' : ''}{plPct.toFixed(1)}%
                   </span>
-                  <span className="font-[DM_Mono] text-[12px] text-right text-[var(--sl-t1)]">
+                  <span className="sl-num text-[12px] text-right text-[var(--sl-t1)]">
                     --
                   </span>
-                  <span className="font-[DM_Mono] text-[12px] text-right text-[var(--sl-t2)]">
+                  <span className="sl-num text-[12px] text-right text-[var(--sl-t2)]">
                     {weight.toFixed(0)}%
                   </span>
                 </div>
@@ -343,14 +344,14 @@ export default function CarteiraPage() {
           {/* Summary footer */}
           <div className="flex gap-5 py-4 justify-end sl-fade-up sl-delay-3">
             <span className="text-[11px] text-[var(--sl-t3)]">
-              Total Investido: <span className="font-[DM_Mono] text-[var(--sl-t2)]">{fmtCurrency(totalInvested)}</span>
+              Total Investido: <span className="sl-num text-[var(--sl-t2)]">{fmtBRL(totalInvested)}</span>
             </span>
             <span className="text-[11px] text-[var(--sl-t3)]">
-              Total Posicao: <span className="font-[DM_Mono] text-[var(--sl-t1)]">{fmtCurrency(totalCurrent)}</span>
+              Total Posicao: <span className="sl-num text-[var(--sl-t1)]">{fmtBRL(totalCurrent)}</span>
             </span>
             <span className="text-[11px] text-[var(--sl-t3)]">
-              Resultado: <span className="font-[DM_Mono]" style={{ color: totalPL >= 0 ? '#10b981' : '#f43f5e' }}>
-                {totalPL >= 0 ? '+' : ''}{fmtCurrency(totalPL)} ({totalPL >= 0 ? '+' : ''}{totalPLPct.toFixed(2)}%)
+              Resultado: <span className="sl-num" style={{ color: totalPL >= 0 ? '#0F766E' : '#DB6478' }}>
+                {totalPL >= 0 ? '+' : ''}{fmtBRL(totalPL)} ({totalPL >= 0 ? '+' : ''}{totalPLPct.toFixed(2)}%)
               </span>
             </span>
           </div>
@@ -365,8 +366,8 @@ export default function CarteiraPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[540px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
               <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(59,130,246,.08)' }}>
-                  <Plus size={18} className="text-[#3b82f6]" />
+                <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(79,136,212,.08)' }}>
+                  <Plus size={18} className="text-[#4F88D4]" />
                 </div>
                 Nova Operacao
               </h2>
@@ -380,7 +381,7 @@ export default function CarteiraPage() {
                   <button key={op} onClick={() => setForm(f => ({ ...f, operation: op }))}
                     className={cn('flex-1 py-2 rounded-[10px] text-[13px] font-semibold border transition-all',
                       form.operation === op
-                        ? op === 'buy' ? 'border-[#10b981] bg-[#10b981]/15 text-[#10b981]' : 'border-[#f43f5e] bg-[#f43f5e]/15 text-[#f43f5e]'
+                        ? op === 'buy' ? 'border-[#0F766E] bg-[#0F766E]/15 text-[#0F766E]' : 'border-[#DB6478] bg-[#DB6478]/15 text-[#DB6478]'
                         : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]')}>
                     {op === 'buy' ? 'Compra' : 'Venda'}
                   </button>
@@ -394,7 +395,7 @@ export default function CarteiraPage() {
                   <input type="text" value={form.ticker}
                     onChange={e => setForm(f => ({ ...f, ticker: e.target.value.toUpperCase() }))}
                     placeholder="Ex: PETR4"
-                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] font-[DM_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3b82f6]"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] font-[IBM_Plex_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#4F88D4]"
                   />
                 </div>
                 <div>
@@ -402,7 +403,7 @@ export default function CarteiraPage() {
                   <input type="text" value={form.asset_name}
                     onChange={e => setForm(f => ({ ...f, asset_name: e.target.value }))}
                     placeholder="Petrobras PN"
-                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3b82f6]"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#4F88D4]"
                   />
                 </div>
               </div>
@@ -429,7 +430,7 @@ export default function CarteiraPage() {
                   <input type="number" step="0.00000001" value={form.quantity}
                     onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))}
                     placeholder="0"
-                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3b82f6]"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#4F88D4]"
                   />
                 </div>
                 <div>
@@ -437,7 +438,7 @@ export default function CarteiraPage() {
                   <input type="number" step="0.01" value={form.price}
                     onChange={e => setForm(f => ({ ...f, price: e.target.value }))}
                     placeholder="0,00"
-                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3b82f6]"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#4F88D4]"
                   />
                 </div>
                 <div>
@@ -445,17 +446,17 @@ export default function CarteiraPage() {
                   <input type="number" step="0.01" value={form.fees}
                     onChange={e => setForm(f => ({ ...f, fees: e.target.value }))}
                     placeholder="0,00"
-                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3b82f6]"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#4F88D4]"
                   />
                 </div>
               </div>
 
               {/* Preview */}
               {form.quantity && form.price && (
-                <div className="flex items-center gap-2 p-3 bg-[#3b82f6]/10 border border-[#3b82f6]/30 rounded-xl">
+                <div className="flex items-center gap-2 p-3 bg-[#4F88D4]/10 border border-[#4F88D4]/30 rounded-xl">
                   <p className="text-[12px] text-[var(--sl-t2)]">
-                    Total: <strong className="font-[DM_Mono] text-[var(--sl-t1)]">
-                      {(parseFloat(form.quantity) * parseFloat(form.price)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    Total: <strong className="sl-num-strong text-[var(--sl-t1)]">
+                      {fmtBRL(parseFloat(form.quantity) * parseFloat(form.price))}
                     </strong>
                   </p>
                 </div>
@@ -474,7 +475,7 @@ export default function CarteiraPage() {
                       onClick={() => setForm(f => ({ ...f, syncAporteToFinancas: !f.syncAporteToFinancas }))}
                       className={cn(
                         'w-10 h-6 rounded-full transition-all relative shrink-0',
-                        form.syncAporteToFinancas ? 'bg-[#10b981]' : 'bg-[var(--sl-s3)]'
+                        form.syncAporteToFinancas ? 'bg-[#0F766E]' : 'bg-[var(--sl-s3)]'
                       )}
                     >
                       <div
@@ -495,7 +496,7 @@ export default function CarteiraPage() {
                 <label className="text-[11px] font-semibold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1.5 block">Data da Operacao</label>
                 <input type="date" value={form.operation_date}
                   onChange={e => setForm(f => ({ ...f, operation_date: e.target.value }))}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3b82f6]"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#4F88D4]"
                 />
               </div>
 
@@ -505,7 +506,7 @@ export default function CarteiraPage() {
                   Cancelar
                 </button>
                 <button onClick={handleSave} disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#3b82f6] text-white hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 disabled:opacity-50">
                   {isSaving ? 'Salvando...' : 'Salvar'}
                 </button>
               </div>
@@ -522,7 +523,7 @@ export default function CarteiraPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[340px]">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
               <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
-                Atualizar Cotacao — {showPriceModal.ticker}
+                Atualizar Cotacao · {showPriceModal.ticker}
               </h2>
               <button onClick={() => setShowPriceModal(null)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">x</button>
             </div>
@@ -532,7 +533,7 @@ export default function CarteiraPage() {
                 <input type="number" step="0.01" value={newPrice}
                   onChange={e => setNewPrice(e.target.value)}
                   placeholder="0,00" autoFocus
-                  className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] font-[DM_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3b82f6]"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] text-[13px] font-[IBM_Plex_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#4F88D4]"
                 />
               </div>
               <div className="flex gap-3">
@@ -541,7 +542,7 @@ export default function CarteiraPage() {
                   Cancelar
                 </button>
                 <button onClick={handleUpdatePrice} disabled={isSaving || !newPrice}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#3b82f6] text-white hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 disabled:opacity-50">
                   Atualizar
                 </button>
               </div>

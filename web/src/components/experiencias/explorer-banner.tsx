@@ -27,7 +27,7 @@ export function ExplorerBanner({ stats, className }: ExplorerBannerProps) {
       {/* Top gradient line */}
       <div
         className="absolute top-0 left-0 right-0 h-[2.5px] rounded-t-[18px]"
-        style={{ background: 'linear-gradient(90deg, #ec4899, #a855f7, #06b6d4)' }}
+        style={{ background: 'linear-gradient(90deg, #C76795, #a855f7, #3CA0B5)' }}
       />
 
       <div

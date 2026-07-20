@@ -5,9 +5,27 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { ChevronLeft, ChevronRight, ArrowRight, Info, Check } from 'lucide-react'
+import {
+  ChevronLeft,
+  ArrowRight,
+  Info,
+  Check,
+  Hand,
+  Target,
+  Wallet,
+  LineChart,
+  Activity,
+  Clock,
+  Briefcase,
+  Heart,
+  Plane,
+  Globe,
+  LayoutGrid,
+} from 'lucide-react'
 import { SyncLifeIcon } from '@/components/shell/icons'
 import { OnboardingMobile } from '@/components/onboarding/OnboardingMobile'
+import { TextField } from '@/components/ui/text-field'
+import { SectionHeader } from '@/components/ui/section-header'
 
 // ── Types ────────────────────────────────────────────────
 interface OnboardingState {
@@ -16,56 +34,90 @@ interface OnboardingState {
   dimensions: string[]
 }
 
+type IconName =
+  | 'wallet'
+  | 'chart'
+  | 'pulse'
+  | 'clock'
+  | 'briefcase'
+  | 'target'
+  | 'heart'
+  | 'plane'
+  | 'globe'
+  | 'grid'
+
 // ── Objectives Data ──────────────────────────────────────
-const OBJECTIVES = [
-  { value: 'financas', title: 'Organizar minhas financas', desc: 'Sair do vermelho, controlar gastos, criar orcamento', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: 'dollar' },
-  { value: 'patrimonio', title: 'Construir patrimonio', desc: 'Investir, acompanhar proventos, crescer o patrimonio', color: '#3b82f6', bg: 'rgba(59,130,246,.1)', icon: 'chart' },
-  { value: 'saude', title: 'Cuidar da saude', desc: 'Exercicios, alimentacao, perder peso, ganhar massa', color: '#f97316', bg: 'rgba(249,115,22,.1)', icon: 'pulse' },
-  { value: 'tempo', title: 'Ter mais tempo livre', desc: 'Organizar rotina, parar de procrastinar, blocos de foco', color: '#06b6d4', bg: 'rgba(6,182,212,.1)', icon: 'clock' },
-  { value: 'carreira', title: 'Crescer na carreira', desc: 'Projetos, certificacoes, networking, promocao', color: '#f43f5e', bg: 'rgba(244,63,94,.1)', icon: 'briefcase' },
-  { value: 'sonhos', title: 'Realizar sonhos', desc: 'Casa propria, viagem dos sonhos, aposentadoria antecipada', color: '#0055ff', bg: 'rgba(0,85,255,.1)', icon: 'target' },
-  { value: 'mente', title: 'Equilibrio mental', desc: 'Menos ansiedade, habitos saudaveis, diario e reflexao', color: '#eab308', bg: 'rgba(234,179,8,.1)', icon: 'heart' },
-  { value: 'viagens', title: 'Viajar mais', desc: 'Planejar viagens, roteiros, orcamento de aventuras', color: '#ec4899', bg: 'rgba(236,72,153,.1)', icon: 'plane' },
-  { value: 'equilibrio', title: 'Vida equilibrada', desc: 'Visao holistica, nenhuma area negligenciada', color: '#6366f1', bg: 'rgba(99,102,241,.1)', icon: 'globe' },
+const OBJECTIVES: ReadonlyArray<{
+  value: string
+  title: string
+  desc: string
+  color: string
+  bg: string
+  icon: IconName
+}> = [
+  { value: 'financas', title: 'Organizar minhas finanças', desc: 'Sair do vermelho, controlar gastos, criar orçamento', color: '#0F766E', bg: 'rgba(15,118,110,.1)', icon: 'wallet' },
+  { value: 'patrimonio', title: 'Construir patrimônio', desc: 'Investir, acompanhar proventos, crescer o patrimônio', color: '#4F88D4', bg: 'rgba(79,136,212,.1)', icon: 'chart' },
+  { value: 'saude', title: 'Cuidar da saúde', desc: 'Exercícios, alimentação, perder peso, ganhar massa', color: '#D97534', bg: 'rgba(217,117,52,.1)', icon: 'pulse' },
+  { value: 'tempo', title: 'Ter mais tempo livre', desc: 'Organizar rotina, parar de procrastinar, blocos de foco', color: '#3CA0B5', bg: 'rgba(60,160,181,.1)', icon: 'clock' },
+  { value: 'carreira', title: 'Crescer na carreira', desc: 'Projetos, certificações, networking, promoção', color: '#DB6478', bg: 'rgba(219,100,120,.1)', icon: 'briefcase' },
+  { value: 'sonhos', title: 'Realizar sonhos', desc: 'Casa própria, viagem dos sonhos, aposentadoria antecipada', color: '#0B2D34', bg: 'rgba(11,45,52,.18)', icon: 'target' },
+  { value: 'mente', title: 'Equilíbrio mental', desc: 'Menos ansiedade, hábitos saudáveis, diário e reflexão', color: '#D9962E', bg: 'rgba(217,150,46,.1)', icon: 'heart' },
+  { value: 'viagens', title: 'Viajar mais', desc: 'Planejar viagens, roteiros, orçamento de aventuras', color: '#C76795', bg: 'rgba(199,103,149,.1)', icon: 'plane' },
+  { value: 'equilibrio', title: 'Vida equilibrada', desc: 'Visão holística, nenhuma área negligenciada', color: '#6B6FD4', bg: 'rgba(107,111,212,.1)', icon: 'globe' },
 ]
 
 // ── Dimensions Data ──────────────────────────────────────
-const DIMENSIONS = [
-  { value: 'financas', name: 'Financas', desc: 'Despesas, orcamento, receitas e projecoes', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: 'dollar', recommended: true },
-  { value: 'tempo', name: 'Tempo', desc: 'Agenda, rotina, blocos de foco e Pomodoro', color: '#06b6d4', bg: 'rgba(6,182,212,.1)', icon: 'clock', recommended: true },
-  { value: 'futuro', name: 'Futuro', desc: 'Objetivos de longo prazo, metas e milestones', color: '#0055ff', bg: 'rgba(0,85,255,.1)', icon: 'target' },
-  { value: 'corpo', name: 'Corpo', desc: 'Peso, exercicios, alimentacao e saude fisica', color: '#f97316', bg: 'rgba(249,115,22,.1)', icon: 'pulse' },
-  { value: 'mente', name: 'Mente', desc: 'Humor, habitos, meditacao e bem-estar mental', color: '#eab308', bg: 'rgba(234,179,8,.1)', icon: 'heart' },
-  { value: 'patrimonio', name: 'Patrimonio', desc: 'Investimentos, ativos e proventos', color: '#3b82f6', bg: 'rgba(59,130,246,.1)', icon: 'chart' },
-  { value: 'carreira', name: 'Carreira', desc: 'Projetos, certificacoes e networking', color: '#f43f5e', bg: 'rgba(244,63,94,.1)', icon: 'briefcase' },
-  { value: 'experiencias', name: 'Experiencias', desc: 'Viagens, roteiros e aventuras', color: '#ec4899', bg: 'rgba(236,72,153,.1)', icon: 'plane' },
+const DIMENSIONS: ReadonlyArray<{
+  value: string
+  name: string
+  desc: string
+  color: string
+  bg: string
+  icon: IconName
+  recommended?: boolean
+}> = [
+  { value: 'financas', name: 'Finanças', desc: 'Despesas, orçamento, receitas e projeções', color: '#0F766E', bg: 'rgba(15,118,110,.1)', icon: 'wallet', recommended: true },
+  { value: 'tempo', name: 'Tempo', desc: 'Agenda, rotina, blocos de foco e Pomodoro', color: '#3CA0B5', bg: 'rgba(60,160,181,.1)', icon: 'clock', recommended: true },
+  { value: 'futuro', name: 'Futuro', desc: 'Objetivos de longo prazo, metas e milestones', color: '#0B2D34', bg: 'rgba(11,45,52,.18)', icon: 'target' },
+  { value: 'corpo', name: 'Corpo', desc: 'Peso, exercícios, alimentação e saúde física', color: '#D97534', bg: 'rgba(217,117,52,.1)', icon: 'pulse' },
+  { value: 'mente', name: 'Mente', desc: 'Humor, hábitos, meditação e bem-estar mental', color: '#D9962E', bg: 'rgba(217,150,46,.1)', icon: 'heart' },
+  { value: 'patrimonio', name: 'Patrimônio', desc: 'Investimentos, ativos e proventos', color: '#4F88D4', bg: 'rgba(79,136,212,.1)', icon: 'chart' },
+  { value: 'carreira', name: 'Carreira', desc: 'Projetos, certificações e networking', color: '#DB6478', bg: 'rgba(219,100,120,.1)', icon: 'briefcase' },
+  { value: 'experiencias', name: 'Experiências', desc: 'Viagens, roteiros e aventuras', color: '#C76795', bg: 'rgba(199,103,149,.1)', icon: 'plane' },
 ]
 
 const DEFAULT_DIMENSIONS = ['financas', 'tempo', 'futuro', 'corpo', 'mente']
 
-// ── SVG Icon Component ───────────────────────────────────
-function ObjIcon({ type, color, size = 18 }: { type: string; color: string; size?: number }) {
-  const props = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2, strokeLinecap: 'round' as const }
+// ── Lucide icon resolver ─────────────────────────────────
+function ObjIcon({ type, color, size = 18 }: { type: IconName; color: string; size?: number }) {
+  const common = { size, color, strokeWidth: 1.8 } as const
   switch (type) {
-    case 'dollar': return <svg {...props}><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
-    case 'chart': return <svg {...props}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg>
-    case 'pulse': return <svg {...props}><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>
-    case 'clock': return <svg {...props}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-    case 'briefcase': return <svg {...props}><rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
-    case 'target': return <svg {...props}><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
-    case 'heart': return <svg {...props}><path d="M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8z" /></svg>
-    case 'plane': return <svg {...props}><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" /></svg>
-    case 'globe': return <svg {...props}><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
-    case 'grid': return <svg {...props}><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-    default: return null
+    case 'wallet':    return <Wallet {...common} />
+    case 'chart':     return <LineChart {...common} />
+    case 'pulse':     return <Activity {...common} />
+    case 'clock':     return <Clock {...common} />
+    case 'briefcase': return <Briefcase {...common} />
+    case 'target':    return <Target {...common} />
+    case 'heart':     return <Heart {...common} />
+    case 'plane':     return <Plane {...common} />
+    case 'globe':     return <Globe {...common} />
+    case 'grid':      return <LayoutGrid {...common} />
+    default:          return null
   }
 }
 
 // ── "Start here" suggestions ─────────────────────────────
-const START_ACTIONS = [
-  { title: 'Registre sua primeira transacao', desc: 'Financas \u00b7 30 segundos', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: 'dollar', href: '/financas/transacoes' },
-  { title: 'Crie seu primeiro objetivo', desc: 'Futuro \u00b7 1 minuto', color: '#0055ff', bg: 'rgba(0,85,255,.1)', icon: 'target', href: '/futuro' },
-  { title: 'Configure sua agenda semanal', desc: 'Tempo \u00b7 2 minutos', color: '#06b6d4', bg: 'rgba(6,182,212,.1)', icon: 'clock', href: '/tempo' },
+const START_ACTIONS: ReadonlyArray<{
+  title: string
+  desc: string
+  color: string
+  bg: string
+  icon: IconName
+  href: string
+}> = [
+  { title: 'Registre sua primeira transação', desc: 'Finanças · 30 segundos', color: '#0F766E', bg: 'rgba(15,118,110,.1)', icon: 'wallet', href: '/financas/transacoes' },
+  { title: 'Crie seu primeiro objetivo', desc: 'Futuro · 1 minuto', color: '#0B2D34', bg: 'rgba(11,45,52,.18)', icon: 'target', href: '/futuro' },
+  { title: 'Configure sua agenda semanal', desc: 'Tempo · 2 minutos', color: '#3CA0B5', bg: 'rgba(60,160,181,.1)', icon: 'clock', href: '/tempo' },
 ]
 
 // ── Main Component ────────────────────────────────────────
@@ -126,7 +178,7 @@ export default function OnboardingPage() {
   }, [])
 
   const handleSkip = () => {
-    if (confirm('Pular configuracao? Voce pode refazer isso nas configuracoes a qualquer momento.')) {
+    if (confirm('Pular configuração? Você pode refazer isso nas configurações a qualquer momento.')) {
       setStep(4)
     }
   }
@@ -150,7 +202,7 @@ export default function OnboardingPage() {
         })
 
       if (error) {
-        toast.error('Erro ao salvar configuracoes. Tente novamente.')
+        toast.error('Erro ao salvar configurações. Tente novamente.')
         return
       }
 
@@ -162,7 +214,7 @@ export default function OnboardingPage() {
         })
         .eq('id', user.id)
 
-      toast.success('Tudo configurado! Bem-vindo ao SyncLife.')
+      toast.success('Tudo configurado. Bem-vindo ao SyncLife.')
       router.push('/financas')
       router.refresh()
     } catch {
@@ -183,7 +235,10 @@ export default function OnboardingPage() {
           <div className="onb-header">
             <Link href="/" className="onb-logo">
               <SyncLifeIcon size={20} animated={false} />
-              SyncLife
+              <span className="font-[Syne] font-bold">
+                <span className="text-[var(--sl-t1)]">Sync</span>
+                <span className="text-[var(--sl-em)]">Life</span>
+              </span>
             </Link>
             <div className="onb-progress">
               {[1, 2, 3, 4].map(i => (
@@ -191,8 +246,8 @@ export default function OnboardingPage() {
               ))}
             </div>
             {step < 4 ? (
-              <button className="onb-skip" onClick={handleSkip}>
-                {step === 1 ? 'Pular configuracao' : 'Pular'}
+              <button className="onb-skip font-[DM_Sans]" onClick={handleSkip}>
+                {step === 1 ? 'Pular configuração' : 'Pular'}
               </button>
             ) : (
               <div />
@@ -206,45 +261,36 @@ export default function OnboardingPage() {
               <div className="onb-card">
                 {/* Wave hand icon */}
                 <div className="onb-wave-icon">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="1.8" strokeLinecap="round">
-                    <path d="M18 11V6a2 2 0 0 0-4 0" />
-                    <path d="M14 10V4a2 2 0 0 0-4 0v2" />
-                    <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
-                    <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
-                  </svg>
+                  <Hand size={40} strokeWidth={1.8} color="var(--sl-em)" />
                   {state.nome.trim().length > 0 && (
                     <div className="onb-wave-check">
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><path d="M20 6 9 17l-5-5" /></svg>
+                      <Check size={10} strokeWidth={3} color="#fff" />
                     </div>
                   )}
                 </div>
 
-                <h1>Bem-vindo ao SyncLife!</h1>
-                <div className="subtitle" style={{ maxWidth: 420, margin: '0 auto' }}>
-                  Vamos personalizar sua experiencia em menos de 1 minuto.
-                  <br />Primeiro, como devemos te chamar?
+                <div className="mb-6">
+                  <SectionHeader
+                    eyebrow="01 · NOME"
+                    title="Bem-vindo ao SyncLife"
+                    sub="Vamos personalizar sua experiência em menos de 1 minuto. Primeiro, como devemos te chamar?"
+                    className="items-center text-center [&>h2]:font-[Syne] [&>h2]:text-[32px] [&>h2]:font-bold [&>h2]:tracking-tight [&>p:last-child]:max-w-[420px] [&>p:last-child]:mx-auto [&>p:last-child]:mt-2"
+                  />
                 </div>
 
                 <div className="onb-name-wrap">
-                  <div className="onb-name-input-wrap">
-                    <input
-                      type="text"
-                      className="onb-name-input"
-                      placeholder="Seu nome"
-                      value={state.nome}
-                      onChange={(e) => setState(s => ({ ...s, nome: e.target.value }))}
-                      autoFocus
-                    />
-                    {state.nome.trim().length > 0 && (
-                      <div className="onb-name-check">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6 9 17l-5-5" /></svg>
-                      </div>
-                    )}
-                  </div>
+                  <TextField
+                    label="Seu nome"
+                    placeholder="Digite seu nome"
+                    value={state.nome}
+                    onChange={(e) => setState(s => ({ ...s, nome: e.target.value }))}
+                    autoFocus
+                    suffix={state.nome.trim().length > 0 ? <Check size={14} strokeWidth={2.5} color="var(--sl-em)" /> : null}
+                  />
 
                   {/* "What comes next" info panel */}
                   <div className="onb-info-panel">
-                    <div className="onb-info-panel-title">
+                    <div className="onb-info-panel-title font-[DM_Sans]">
                       <Info size={14} style={{ color: 'var(--cyan)' }} />
                       O que vem a seguir
                     </div>
@@ -260,11 +306,11 @@ export default function OnboardingPage() {
                       </div>
                       <div className="onb-info-step">
                         <div className="onb-info-step-num future">3</div>
-                        <span className="onb-info-step-text future">Areas de foco</span>
+                        <span className="onb-info-step-text future">Áreas de foco</span>
                       </div>
                       <div className="onb-info-step">
                         <div className="onb-info-step-num future">4</div>
-                        <span className="onb-info-step-text future">Pronto!</span>
+                        <span className="onb-info-step-text future">Pronto.</span>
                       </div>
                     </div>
                   </div>
@@ -276,20 +322,15 @@ export default function OnboardingPage() {
             {step === 2 && (
               <div className="onb-card" style={{ maxWidth: 680 }}>
                 <div className="onb-obj-icon">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--elec)" strokeWidth="1.8" strokeLinecap="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <circle cx="12" cy="12" r="6" />
-                    <circle cx="12" cy="12" r="2" />
-                  </svg>
+                  <Target size={32} strokeWidth={1.8} color="var(--sl-em)" />
                 </div>
 
-                <h1>
-                  {displayName ? `${displayName}, quais sao` : 'Quais sao'}
-                  <br />seus objetivos de vida?
-                </h1>
-                <div className="subtitle" style={{ maxWidth: 480, margin: '0 auto' }}>
-                  Selecione tudo o que faz sentido pra voce agora. Isso ajuda o SyncLife a personalizar insights e sugestoes inteligentes.
-                </div>
+                <SectionHeader
+                  eyebrow="02 · OBJETIVOS"
+                  title={displayName ? `${displayName}, quais são seus objetivos de vida?` : 'Quais são seus objetivos de vida?'}
+                  sub="Selecione tudo o que faz sentido pra você agora. Isso ajuda o SyncLife a personalizar insights e sugestões inteligentes."
+                  className="items-center text-center [&>h2]:font-[Syne] [&>h2]:text-[32px] [&>h2]:font-bold [&>h2]:tracking-tight [&>p:last-child]:max-w-[480px] [&>p:last-child]:mx-auto [&>p:last-child]:mt-2"
+                />
 
                 <div className="onb-obj-grid">
                   {OBJECTIVES.map((obj) => {
@@ -302,20 +343,20 @@ export default function OnboardingPage() {
                         onClick={() => toggleObjective(obj.value)}
                       >
                         <div className={`onb-obj-check ${sel ? 'checked' : 'unchecked'}`} style={sel ? { background: obj.color } : undefined}>
-                          {sel && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><path d="M20 6 9 17l-5-5" /></svg>}
+                          {sel && <Check size={10} strokeWidth={3} color="#fff" />}
                         </div>
                         <div className="onb-obj-card-icon" style={{ background: obj.bg }}>
                           <ObjIcon type={obj.icon} color={obj.color} size={18} />
                         </div>
-                        <div className="onb-obj-card-title">{obj.title}</div>
-                        <div className="onb-obj-card-desc">{obj.desc}</div>
+                        <div className="onb-obj-card-title font-[DM_Sans]">{obj.title}</div>
+                        <div className="onb-obj-card-desc font-[DM_Sans]">{obj.desc}</div>
                       </button>
                     )
                   })}
                 </div>
 
-                <div className="onb-obj-count">
-                  <span className="onb-obj-count-num">{state.objectives.length}</span>
+                <div className="onb-obj-count font-[DM_Sans]">
+                  <span className="onb-obj-count-num sl-num-strong">{state.objectives.length}</span>
                   {state.objectives.length === 1 ? 'objetivo selecionado' : 'objetivos selecionados'}
                 </div>
               </div>
@@ -325,13 +366,15 @@ export default function OnboardingPage() {
             {step === 3 && (
               <div className="onb-card" style={{ maxWidth: 720 }}>
                 <div className="onb-dim-icon">
-                  <ObjIcon type="grid" color="var(--green)" size={32} />
+                  <LayoutGrid size={32} strokeWidth={1.8} color="var(--sl-em)" />
                 </div>
 
-                <h1>Em quais dimensoes da vida<br />voce quer focar?</h1>
-                <div className="subtitle" style={{ maxWidth: 520, margin: '0 auto' }}>
-                  Todas as dimensoes ficam disponiveis, mas as selecionadas terao destaque no seu Dashboard e no calculo do Life Sync Score.
-                </div>
+                <SectionHeader
+                  eyebrow="03 · DIMENSÕES"
+                  title="Em quais dimensões da vida você quer focar?"
+                  sub="Todas as dimensões ficam disponíveis, mas as selecionadas terão destaque no seu Dashboard e no cálculo do Life Sync Score."
+                  className="items-center text-center [&>h2]:font-[Syne] [&>h2]:text-[32px] [&>h2]:font-bold [&>h2]:tracking-tight [&>p:last-child]:max-w-[520px] [&>p:last-child]:mx-auto [&>p:last-child]:mt-2"
+                />
 
                 <div className="onb-dim-list">
                   {DIMENSIONS.map((dim) => {
@@ -347,12 +390,12 @@ export default function OnboardingPage() {
                           <ObjIcon type={dim.icon} color={dim.color} size={20} />
                         </div>
                         <div className="onb-dim-card-info">
-                          <div className="onb-dim-card-name">{dim.name}</div>
-                          <div className="onb-dim-card-desc">{dim.desc}</div>
+                          <div className="onb-dim-card-name font-[DM_Sans]">{dim.name}</div>
+                          <div className="onb-dim-card-desc font-[DM_Sans]">{dim.desc}</div>
                         </div>
                         <div className="onb-dim-card-right">
                           {dim.recommended && (
-                            <span className="onb-dim-badge" style={{ background: dim.bg, color: dim.color }}>
+                            <span className="onb-dim-badge font-[DM_Sans]" style={{ background: dim.bg, color: dim.color }}>
                               Recomendado
                             </span>
                           )}
@@ -368,9 +411,9 @@ export default function OnboardingPage() {
                   })}
                 </div>
 
-                <div className="onb-dim-note">
+                <div className="onb-dim-note font-[DM_Sans]">
                   <Info size={14} />
-                  Voce pode ativar ou desativar dimensoes a qualquer momento em Configuracoes
+                  Você pode ativar ou desativar dimensões a qualquer momento em Configurações
                 </div>
               </div>
             )}
@@ -378,35 +421,43 @@ export default function OnboardingPage() {
             {/* ═══ Step 4: Celebration ═══ */}
             {step === 4 && (
               <div className="onb-card">
-                {/* Celebration Ring */}
+                {/* Celebration Ring — RingProgress exception G-03: gradient permitido */}
                 <div className="celeb-ring">
                   <svg width="120" height="120" viewBox="0 0 120 120">
                     <circle cx="60" cy="60" r="50" fill="none" stroke="var(--s3)" strokeWidth="6" />
                     <circle cx="60" cy="60" r="50" fill="none" stroke="url(#celeb-grad)" strokeWidth="6" strokeLinecap="round" strokeDasharray="314" strokeDashoffset="94" transform="rotate(-90 60 60)" />
                     <defs>
                       <linearGradient id="celeb-grad" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stopColor="var(--green)" />
-                        <stop offset="50%" stopColor="var(--cyan)" />
-                        <stop offset="100%" stopColor="var(--blue)" />
+                        <stop offset="0%" stopColor="#0F766E" />
+                        <stop offset="100%" stopColor="#0B2D34" />
                       </linearGradient>
                     </defs>
                   </svg>
                   <div style={{ textAlign: 'center' }}>
-                    <div className="celeb-score">70</div>
-                    <div className="celeb-label">pts</div>
+                    <div className="celeb-score sl-num-strong">70</div>
+                    <div className="celeb-label font-[DM_Sans]">pts</div>
                   </div>
                 </div>
 
-                <h1 style={{ fontSize: 36 }}>
-                  Tudo pronto{displayName ? `, ${displayName}` : ''}!
-                </h1>
-                <div className="subtitle" style={{ maxWidth: 460, margin: '0 auto 8px' }}>
-                  Seu SyncLife esta configurado com{' '}
-                  <strong style={{ color: 'var(--t1)' }}>{state.objectives.length} {state.objectives.length === 1 ? 'objetivo' : 'objetivos'}</strong>
+                <SectionHeader
+                  eyebrow="04 · PRONTO"
+                  title={`Tudo pronto${displayName ? `, ${displayName}` : ''}.`}
+                  className="items-center text-center [&>h2]:font-[Syne] [&>h2]:text-[36px] [&>h2]:font-bold [&>h2]:tracking-tight"
+                />
+
+                <div className="subtitle font-[DM_Sans]" style={{ maxWidth: 460, margin: '12px auto 8px' }}>
+                  Seu SyncLife está configurado com{' '}
+                  <strong style={{ color: 'var(--t1)' }}>
+                    <span className="sl-num">{state.objectives.length}</span> {state.objectives.length === 1 ? 'objetivo' : 'objetivos'}
+                  </strong>
                   {' '}e{' '}
-                  <strong style={{ color: 'var(--t1)' }}>{state.dimensions.length} {state.dimensions.length === 1 ? 'dimensao ativa' : 'dimensoes ativas'}</strong>.
-                  {' '}Seu Life Sync Score comeca em{' '}
-                  <strong style={{ color: 'var(--green)' }}>70 pontos</strong>.
+                  <strong style={{ color: 'var(--t1)' }}>
+                    <span className="sl-num">{state.dimensions.length}</span> {state.dimensions.length === 1 ? 'dimensão ativa' : 'dimensões ativas'}
+                  </strong>.
+                  {' '}Seu Life Sync Score começa em{' '}
+                  <strong style={{ color: 'var(--sl-em)' }}>
+                    <span className="sl-num">70</span> pontos
+                  </strong>.
                 </div>
 
                 {/* Active modules strip */}
@@ -415,7 +466,7 @@ export default function OnboardingPage() {
                     const dim = DIMENSIONS.find(d => d.value === val)
                     if (!dim) return null
                     return (
-                      <div key={val} className="celeb-mod">
+                      <div key={val} className="celeb-mod font-[DM_Sans]">
                         <span className="celeb-mod-dot" style={{ background: dim.color }} />
                         {dim.name}
                       </div>
@@ -427,7 +478,7 @@ export default function OnboardingPage() {
                   {/* Objectives summary */}
                   {state.objectives.length > 0 && (
                     <>
-                      <div className="celeb-objectives-title">Seus objetivos de vida</div>
+                      <div className="celeb-objectives-title font-[DM_Sans]">Seus objetivos de vida</div>
                       <div className="celeb-objectives">
                         {state.objectives.map(val => {
                           const obj = OBJECTIVES.find(o => o.value === val)
@@ -435,17 +486,14 @@ export default function OnboardingPage() {
                           return (
                             <span
                               key={val}
-                              className="celeb-obj-pill"
+                              className="celeb-obj-pill font-[DM_Sans]"
                               style={{
                                 background: obj.bg,
                                 border: `1px solid ${obj.color}33`,
                                 color: obj.color,
                               }}
                             >
-                              {obj.title.replace('Organizar minhas financas', 'Organizar financas')
-                                .replace('Construir patrimonio', 'Construir patrimonio')
-                                .replace('Cuidar da saude', 'Cuidar da saude')
-                                .replace('Ter mais tempo livre', 'Mais tempo livre')}
+                              {obj.title}
                             </span>
                           )
                         })}
@@ -454,7 +502,7 @@ export default function OnboardingPage() {
                   )}
 
                   {/* Start here actions */}
-                  <div className="celeb-actions-title">Comece por aqui</div>
+                  <div className="celeb-actions-title font-[DM_Sans]">Comece por aqui</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {START_ACTIONS.map((action) => (
                       <div key={action.title} className="celeb-action">
@@ -462,10 +510,10 @@ export default function OnboardingPage() {
                           <ObjIcon type={action.icon} color={action.color} size={14} />
                         </div>
                         <div className="celeb-action-info">
-                          <div className="celeb-action-title">{action.title}</div>
-                          <div className="celeb-action-desc">{action.desc}</div>
+                          <div className="celeb-action-title font-[DM_Sans]">{action.title}</div>
+                          <div className="celeb-action-desc font-[DM_Sans]">{action.desc}</div>
                         </div>
-                        <ChevronRight size={14} style={{ color: 'var(--t3)' }} />
+                        <ArrowRight size={14} style={{ color: 'var(--t3)' }} />
                       </div>
                     ))}
                   </div>
@@ -479,25 +527,25 @@ export default function OnboardingPage() {
             {step === 1 ? (
               <div />
             ) : (
-              <button className="onb-nav-back" onClick={() => setStep(step - 1)}>
+              <button className="onb-nav-back font-[DM_Sans]" onClick={() => setStep(step - 1)}>
                 <ChevronLeft size={14} />
                 Voltar
               </button>
             )}
 
             {step < 4 && (
-              <div className="onb-nav-step">Passo {step} de 4</div>
+              <div className="onb-nav-step font-[DM_Sans]">Passo {step} de 4</div>
             )}
             {step === 4 && <div />}
 
             {step < 4 ? (
-              <button className="onb-nav-next" onClick={() => setStep(step + 1)}>
-                Proximo
+              <button className="onb-nav-next font-[DM_Sans]" onClick={() => setStep(step + 1)}>
+                Próximo
                 <ArrowRight size={14} />
               </button>
             ) : (
               <button
-                className="onb-nav-finish"
+                className="onb-nav-finish font-[DM_Sans]"
                 onClick={handleFinish}
                 disabled={isLoading}
               >

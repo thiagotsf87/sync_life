@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { FUTURO_PRIMARY_LIGHT, FUTURO_PRIMARY_BG } from '@/lib/futuro-colors'
@@ -38,38 +38,38 @@ const MOCK_GROUPS: TimelineGroup[] = [
     deadline: 'Dez 2028',
     totalXp: 520,
     milestones: [
-      { id: 'm1', name: 'R$ 10.000 — Primeira marca', date: 'Mar 2024', status: 'done', value: 'R$ 10.000 atingido', xpEarned: 80 },
-      { id: 'm2', name: 'R$ 25.000 — Primeiro quarto', date: 'Nov 2024', status: 'done', value: 'R$ 25.000 atingido', xpEarned: 120 },
-      { id: 'm3', name: 'R$ 40.000 — Metade do caminho', date: 'Projetado: Jun 2026', status: 'current', value: 'R$ 34.800 atual', xpReward: 120 },
-      { id: 'm4', name: 'R$ 80.000 — Meta final', date: 'Projetado: Fev 2029', status: 'future', xpReward: 200 },
+      { id: 'm1', name: 'R$ 10.000 · Primeira marca', date: 'Mar 2024', status: 'done', value: 'R$ 10.000 atingido', xpEarned: 80 },
+      { id: 'm2', name: 'R$ 25.000 · Primeiro quarto', date: 'Nov 2024', status: 'done', value: 'R$ 25.000 atingido', xpEarned: 120 },
+      { id: 'm3', name: 'R$ 40.000 · Metade do caminho', date: 'Projetado: Jun 2026', status: 'current', value: 'R$ 34.800 atual', xpReward: 120 },
+      { id: 'm4', name: 'R$ 80.000 · Meta final', date: 'Projetado: Fev 2029', status: 'future', xpReward: 200 },
     ],
   },
   {
     id: 'europa',
     icon: '✈️',
-    iconBg: 'rgba(6,182,212,0.15)',
+    iconBg: 'rgba(60,160,181,0.15)',
     name: 'Viagem Europa',
     progressPct: 65,
     deadline: 'Jul 2026',
     totalXp: 200,
     milestones: [
-      { id: 'e1', name: 'R$ 3.000 — Passagens garantidas', date: 'Set 2025', status: 'done', xpEarned: 50 },
-      { id: 'e2', name: 'R$ 6.000 — Hospedagem coberta', date: 'Projetado: Abr 2026', status: 'current', value: 'R$ 5.200 atual', xpReward: 50 },
-      { id: 'e3', name: 'R$ 8.000 — Pronto para voar', date: 'Projetado: Jun 2026', status: 'future', xpReward: 100 },
+      { id: 'e1', name: 'R$ 3.000 · Passagens garantidas', date: 'Set 2025', status: 'done', xpEarned: 50 },
+      { id: 'e2', name: 'R$ 6.000 · Hospedagem coberta', date: 'Projetado: Abr 2026', status: 'current', value: 'R$ 5.200 atual', xpReward: 50 },
+      { id: 'e3', name: 'R$ 8.000 · Pronto para voar', date: 'Projetado: Jun 2026', status: 'future', xpReward: 100 },
     ],
   },
   {
     id: 'mba',
     icon: '🎓',
-    iconBg: 'rgba(234,179,8,0.15)',
+    iconBg: 'rgba(217,150,46,0.15)',
     name: 'MBA Internacional',
     progressPct: 40,
     deadline: 'Jan 2027',
     totalXp: 180,
     milestones: [
-      { id: 'mb1', name: 'Módulo 1 — Finanças Corporativas', date: 'Jun 2025', status: 'done', xpEarned: 60 },
-      { id: 'mb2', name: 'Módulo 2 — Marketing Estratégico', date: 'Nov 2025', status: 'done', xpEarned: 60 },
-      { id: 'mb3', name: 'Módulo 3 — Liderança', date: 'Em andamento', status: 'current', xpReward: 60 },
+      { id: 'mb1', name: 'Módulo 1 · Finanças Corporativas', date: 'Jun 2025', status: 'done', xpEarned: 60 },
+      { id: 'mb2', name: 'Módulo 2 · Marketing Estratégico', date: 'Nov 2025', status: 'done', xpEarned: 60 },
+      { id: 'mb3', name: 'Módulo 3 · Liderança', date: 'Em andamento', status: 'current', xpReward: 60 },
     ],
   },
 ]
@@ -103,7 +103,7 @@ export function FuturoTimelineTab() {
               style={{
                 background: isActive ? FUTURO_PRIMARY_BG : 'var(--sl-s2)',
                 border: isActive
-                  ? `1px solid rgba(139,92,246,0.3)`
+                  ? `1px solid rgba(139,123,212,0.3)`
                   : '1px solid var(--sl-border)',
                 color: isActive ? FUTURO_PRIMARY_LIGHT : 'var(--sl-t2)',
               }}
@@ -146,10 +146,10 @@ export function FuturoTimelineTab() {
                 {/* Today marker */}
                 {showTodayBefore && (
                   <div className="flex items-center gap-2 my-2 pl-1">
-                    <span className="text-[9px] font-bold uppercase tracking-[1px] text-[#06b6d4]">
-                      Hoje — Mar 2026
+                    <span className="text-[9px] font-bold uppercase tracking-[1px] text-[var(--sl-info)]">
+                      Hoje · Mar 2026
                     </span>
-                    <div className="flex-1 h-px bg-[#06b6d4] opacity-40" />
+                    <div className="flex-1 h-px bg-[var(--sl-info)] opacity-40" />
                   </div>
                 )}
 
@@ -165,9 +165,9 @@ export function FuturoTimelineTab() {
                     className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-[11px] relative z-[1]"
                     style={
                       ms.status === 'done'
-                        ? { background: 'rgba(16,185,129,0.15)', border: '2px solid rgba(16,185,129,0.4)' }
+                        ? { background: 'rgba(15,118,110,0.15)', border: '2px solid rgba(15,118,110,0.4)' }
                         : ms.status === 'current'
-                          ? { background: 'rgba(139,92,246,0.2)', border: '2px solid rgba(139,92,246,0.5)' }
+                          ? { background: 'rgba(139,123,212,0.2)', border: '2px solid rgba(139,123,212,0.5)' }
                           : { background: 'var(--sl-s2)', border: '2px solid var(--sl-border)' }
                     }
                   >

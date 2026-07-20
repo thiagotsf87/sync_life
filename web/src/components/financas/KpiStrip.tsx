@@ -1,8 +1,7 @@
 'use client'
 
-import { TrendingUp } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { fmtR$ } from '@/components/financas/helpers'
+import { TrendingUp, TrendingDown, PieChart } from 'lucide-react'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface KpiStripProps {
   receitasMes: number
@@ -13,63 +12,100 @@ interface KpiStripProps {
   loading: boolean
 }
 
-export function KpiStrip({ receitasMes, totalGasto, saldoMes, naoAlocado, taxaPoupanca, loading }: KpiStripProps) {
+/**
+ * KpiStrip v3 — 4 cards conforme prototype (FinKpiStrip).
+ * Cada card: ícone em chip · eyebrow uppercase · valor Space Grotesk sl-num-strong · sub-texto.
+ * Card "Taxa de poupança" recebe pill "NO RITMO" quando >= meta (30%).
+ */
+export function KpiStrip({
+  receitasMes,
+  totalGasto,
+  saldoMes,
+  naoAlocado,
+  taxaPoupanca,
+  loading,
+}: KpiStripProps) {
+  const items = [
+    {
+      label: 'Receitas',
+      Icon: TrendingUp,
+      value: loading ? '—' : fmtBRL(receitasMes),
+      sub: 'Maio atual',
+      color: 'var(--sl-em)',
+      iconColor: 'var(--sl-em)',
+    },
+    {
+      label: 'Despesas',
+      Icon: TrendingDown,
+      value: loading ? '—' : fmtBRL(totalGasto),
+      sub: 'Maio atual',
+      color: 'var(--sl-danger)',
+      iconColor: 'var(--sl-danger)',
+    },
+    {
+      label: 'Saldo do mês',
+      Icon: TrendingUp,
+      value: loading ? '—' : fmtBRL(saldoMes),
+      sub: `Receitas menos despesas · Não alocado: ${loading ? '—' : fmtBRL(Math.max(0, naoAlocado))}`,
+      color: 'var(--sl-t1)',
+      iconColor: 'var(--sl-em)',
+    },
+    {
+      label: 'Taxa de poupança',
+      Icon: PieChart,
+      value: loading ? '—' : `${taxaPoupanca}%`,
+      sub: `Meta: 30% · ${taxaPoupanca >= 30 ? 'acima do alvo' : 'abaixo do alvo'}`,
+      color: 'var(--sl-t1)',
+      iconColor: 'var(--sl-em)',
+      okPill: !loading && taxaPoupanca >= 30,
+    },
+  ]
+
   return (
-    <div className="grid grid-cols-4 gap-2.5 mb-3 max-sm:grid-cols-2">
-      {/* Receitas */}
-      <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] px-4 py-4 overflow-hidden hover:border-[var(--sl-border-h)] transition-colors">
-        <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: '#10b981' }} />
-        <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-sm mb-2.5" style={{ background: 'rgba(16,185,129,0.12)' }}>💰</div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Receitas</p>
-        <p className="font-[DM_Mono] text-[21px] font-medium leading-none text-[#10b981] mb-1">
-          {loading ? '—' : `R$ ${fmtR$(receitasMes)}`}
-        </p>
-        <p className="text-[11px] text-[var(--sl-t2)] flex items-center gap-1">
-          <TrendingUp size={11} />Mês atual
-        </p>
-      </div>
-      {/* Despesas */}
-      <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] px-4 py-4 overflow-hidden hover:border-[var(--sl-border-h)] transition-colors">
-        <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: '#f43f5e' }} />
-        <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-sm mb-2.5" style={{ background: 'rgba(244,63,94,0.12)' }}>📤</div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Despesas</p>
-        <p className="font-[DM_Mono] text-[21px] font-medium leading-none text-[#f43f5e] mb-1">
-          {loading ? '—' : `R$ ${fmtR$(totalGasto)}`}
-        </p>
-        <p className="text-[11px] text-[var(--sl-t2)] flex items-center gap-1">
-          <TrendingUp size={11} />Mês atual
-        </p>
-      </div>
-      {/* Saldo */}
-      <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] px-4 py-4 overflow-hidden hover:border-[var(--sl-border-h)] transition-colors">
-        <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: saldoMes >= 0 ? '#10b981' : '#f43f5e' }} />
-        <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-sm mb-2.5" style={{ background: 'rgba(16,185,129,0.12)' }}>💚</div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Saldo do Mês</p>
-        <p className={cn('font-[DM_Mono] text-[21px] font-medium leading-none mb-1', saldoMes >= 0 ? 'text-[var(--sl-t1)]' : 'text-[#f43f5e]')}>
-          {loading ? '—' : `R$ ${fmtR$(saldoMes)}`}
-        </p>
-        <p className="text-[11px] text-[var(--sl-t2)]">Receitas menos despesas</p>
-        <div className="mt-2 px-1.5 py-1 rounded-[6px] bg-[var(--sl-s2)] text-[11px] text-[var(--sl-t3)]">
-          Não alocado: <strong className="text-[#10b981]">{loading ? '—' : `R$ ${fmtR$(Math.max(0, naoAlocado))}`}</strong>
-        </div>
-      </div>
-      {/* Taxa Poupança */}
-      <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] px-4 py-4 overflow-hidden hover:border-[var(--sl-border-h)] transition-colors">
-        <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: '#0055ff' }} />
-        <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-sm mb-2.5" style={{ background: 'rgba(0,85,255,0.12)' }}>📊</div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Taxa de Poupança</p>
-        <p className="font-[DM_Mono] text-[21px] font-medium leading-none mb-1" style={{ color: '#0055ff' }}>
-          {loading ? '—' : `${taxaPoupanca}%`}
-        </p>
-        <p className="text-[11px] text-[var(--sl-t2)]">Do total recebido</p>
-        <div className="mt-2 px-1.5 py-1 rounded-[6px] bg-[var(--sl-s2)] text-[11px] text-[var(--sl-t3)]">
-          Meta: <strong className="text-[var(--sl-t1)]">30%</strong>
-          {' · '}
-          <span className={taxaPoupanca >= 30 ? 'text-[#10b981]' : 'text-[#f59e0b]'}>
-            {taxaPoupanca >= 30 ? '✓ acima' : '⚠ abaixo'}
-          </span>
-        </div>
-      </div>
+    <div className="grid grid-cols-4 gap-3.5 mb-3.5 max-sm:grid-cols-2">
+      {items.map((it) => (
+        <article
+          key={it.label}
+          className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[18px] flex flex-col gap-2.5 hover:border-[var(--sl-border-h)] transition-colors"
+        >
+          <header className="flex items-center justify-between">
+            <div
+              className="w-7 h-7 rounded-[8px] flex items-center justify-center"
+              style={{ background: 'var(--sl-em-soft)', color: it.iconColor }}
+            >
+              <it.Icon size={14} />
+            </div>
+            {it.okPill && (
+              <span
+                className="text-[10px] font-semibold tracking-[0.06em] px-2 py-[3px] rounded-full"
+                style={{
+                  background: 'var(--sl-em-soft)',
+                  color: 'var(--sl-em)',
+                  border: '1px solid var(--sl-border-em)',
+                }}
+              >
+                NO RITMO
+              </span>
+            )}
+          </header>
+
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-1.5">
+              {it.label}
+            </p>
+            <p
+              className="sl-num-strong leading-none"
+              style={{ fontSize: 26, color: it.color }}
+            >
+              {it.value}
+            </p>
+          </div>
+
+          <p className="font-[DM_Sans] text-[11.5px] text-[var(--sl-t3)] leading-snug">
+            {it.sub}
+          </p>
+        </article>
+      ))}
     </div>
   )
 }

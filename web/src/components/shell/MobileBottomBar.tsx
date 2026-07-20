@@ -56,7 +56,7 @@ export function MobileBottomBar({ userName }: MobileBottomBarProps) {
         style={{ color: isActive ? mod.color : 'var(--sl-t3)' }}
       >
         {Icon ? <Icon size={22} /> : null}
-        <span className={cn('text-[10px] font-medium', isActive && 'text-[#10b981]')}>
+        <span className={cn('text-[10px] font-medium', isActive && 'text-[#0F766E]')}>
           {mod.label}
         </span>
       </button>
@@ -101,10 +101,10 @@ export function MobileBottomBar({ userName }: MobileBottomBarProps) {
             'flex flex-1 flex-col items-center justify-center gap-1 py-1.5',
             'transition-colors duration-150 min-w-[52px]',
           )}
-          style={{ color: activeModule === 'panorama' ? '#6366f1' : 'var(--sl-t3)' }}
+          style={{ color: activeModule === 'panorama' ? '#6B6FD4' : 'var(--sl-t3)' }}
         >
           <IconPanorama size={22} />
-          <span className={cn('text-[10px] font-medium', activeModule === 'panorama' && 'text-[#10b981]')}>
+          <span className={cn('text-[10px] font-medium', activeModule === 'panorama' && 'text-[#0F766E]')}>
             Home
           </span>
         </button>
@@ -120,10 +120,10 @@ export function MobileBottomBar({ userName }: MobileBottomBarProps) {
       <button
         onClick={() => setQuickActionOpen(true)}
         className="fixed z-50 lg:hidden flex h-[56px] w-[56px] items-center justify-center rounded-full
-                   shadow-[0_4px_24px_rgba(16,185,129,0.45)]
+                   shadow-[0_4px_24px_rgba(15,118,110,0.45)]
                    transition-transform active:scale-95"
         style={{
-          background: 'linear-gradient(135deg, #10b981, #0055ff)',
+          background: 'var(--sl-em)',
           bottom: 'calc(68px + env(safe-area-inset-bottom, 0px) + 16px)',
           right: 20,
           border: '3px solid var(--sl-bg)',

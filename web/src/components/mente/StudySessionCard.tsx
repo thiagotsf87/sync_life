@@ -23,7 +23,7 @@ export function StudySessionCard({ session, compact = false }: StudySessionCardP
             {dateLabel} às {timeLabel}
           </p>
         </div>
-        <span className="shrink-0 font-[DM_Mono] text-[13px] font-bold text-[#0055ff]">
+        <span className="shrink-0 font-[IBM_Plex_Mono] text-[13px] font-bold text-[#0B2D34]">
           {session.focus_minutes}m
         </span>
       </div>

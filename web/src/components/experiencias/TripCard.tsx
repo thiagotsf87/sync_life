@@ -3,6 +3,7 @@
 import { Trash2, MapPin, Calendar, Users } from 'lucide-react'
 import type { Trip } from '@/hooks/use-experiencias'
 import { TRIP_STATUS_LABELS, TRIP_STATUS_COLORS, TRIP_TYPE_LABELS, calcTripDays } from '@/hooks/use-experiencias'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface TripCardProps {
   trip: Trip
@@ -43,7 +44,7 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
         {onDelete && (
           <button
             onClick={e => { e.stopPropagation(); onDelete(trip.id) }}
-            className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors shrink-0"
+            className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors shrink-0"
           >
             <Trash2 size={12} className="text-[var(--sl-t3)]" />
           </button>
@@ -76,8 +77,8 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
         <div className="mt-3 pt-3 border-t border-[var(--sl-border)]">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-[var(--sl-t3)]">Orçamento</span>
-            <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t1)]">
-              {trip.total_budget.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t1)]">
+              {fmtBRL(trip.total_budget)}
             </span>
           </div>
           {trip.total_spent > 0 && (
@@ -87,12 +88,12 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
                   className="h-full rounded-full"
                   style={{
                     width: `${Math.min((trip.total_spent / trip.total_budget) * 100, 100)}%`,
-                    background: trip.total_spent > trip.total_budget ? '#f43f5e' : '#ec4899',
+                    background: trip.total_spent > trip.total_budget ? '#DB6478' : '#C76795',
                   }}
                 />
               </div>
               <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
-                {trip.total_spent.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} gastos
+                {fmtBRL(trip.total_spent)} gastos
               </p>
             </>
           )}
@@ -102,8 +103,8 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
       {/* Countdown */}
       {isUpcoming && (
         <div className="mt-2 flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#ec4899] animate-pulse" />
-          <span className="text-[11px] text-[#ec4899] font-medium">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#C76795] animate-pulse" />
+          <span className="text-[11px] text-[#C76795] font-medium">
             {daysUntil === 1 ? 'Amanhã!' : `em ${daysUntil} dias`}
           </span>
         </div>

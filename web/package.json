@@ -11,7 +11,8 @@
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:auth": "playwright test e2e/auth.spec.ts",
-    "test:e2e:hml": "cross-env BASE_URL=https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app playwright test"
+    "test:e2e:hml": "cross-env BASE_URL=https://sync-life-git-homologacao-thiago-fortes-projects.vercel.app playwright test",
+    "admin:create": "node scripts/create-admin-user.mjs"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.33",

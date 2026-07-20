@@ -13,18 +13,18 @@
   --t1:  #e4f1ff;
   --t2:  #7b9fc6;
   --t3:  #3c5d84;
-  --em:  #10b981;
-  --el:  #0055ff;
-  --green:  #10b981;
-  --cyan:   #06b6d4;
-  --yellow: #f59e0b;
-  --red:    #f43f5e;
-  --orange: #f97316;
-  --blue:   #3b82f6;
-  --indigo: #6366f1;
-  --pink:   #ec4899;
-  --rose:   #f43f5e;
-  --purple: #a855f7;
+  --em:  #0F766E;
+  --el:  #0B2D34;
+  --green:  #0F766E;
+  --cyan:   #3CA0B5;
+  --yellow: #D9962E;
+  --red:    #DB6478;
+  --orange: #D97534;
+  --blue:   #4F88D4;
+  --indigo: #6B6FD4;
+  --pink:   #C76795;
+  --rose:   #DB6478;
+  --purple: #8B7BD4;
   --card-r: 18px;
 
   font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
@@ -39,7 +39,7 @@
 /* ── Animations ── */
 @keyframes lp-rise { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
 @keyframes lp-float { 0%,100% { transform:translateY(0) } 50% { transform:translateY(-8px) } }
-@keyframes lp-pulse-glow { 0%,100% { box-shadow:0 0 20px rgba(16,185,129,.15) } 50% { box-shadow:0 0 40px rgba(16,185,129,.3) } }
+@keyframes lp-pulse-glow { 0%,100% { box-shadow:0 0 20px rgba(15,118,110,.15) } 50% { box-shadow:0 0 40px rgba(15,118,110,.3) } }
 @keyframes lp-spin-slow { from { transform:rotate(0) } to { transform:rotate(360deg) } }
 @keyframes lp-fade-in { from { opacity:0 } to { opacity:1 } }
 
@@ -71,7 +71,7 @@
 .landing-page .lp-nav { position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(3,7,26,.85); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); height:64px }
 .landing-page .lp-nav-inner { max-width:1160px; margin:0 auto; padding:0 40px; height:100%; display:flex; align-items:center; justify-content:space-between }
 .landing-page .lp-nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none }
-.landing-page .lp-nav-logo-text { font-family:var(--font-syne,'Syne',sans-serif); font-weight:800; font-size:20px; color:var(--t1); letter-spacing:-.02em }
+.landing-page .lp-nav-logo-text { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-weight:800; font-size:20px; color:var(--t1); letter-spacing:-.02em }
 .landing-page .nav-links { display:flex; gap:28px; font-size:13px; color:var(--t2); font-weight:500 }
 .landing-page .nav-links a { text-decoration:none; color:inherit; transition:color .2s }
 .landing-page .nav-links a:hover { color:var(--t1) }
@@ -81,7 +81,7 @@
 .landing-page .btn-primary { padding:8px 20px; border-radius:10px; background:var(--green); color:#fff; font-size:13px; font-weight:600; transition:all .2s; text-decoration:none; display:inline-flex; align-items:center; gap:8px; border:none; cursor:pointer }
 .landing-page .btn-primary:hover { filter:brightness(1.1); transform:translateY(-1px) }
 .landing-page .btn-primary-lg { padding:14px 32px; border-radius:12px; background:var(--green); color:#fff; font-size:15px; font-weight:700; transition:all .2s; display:inline-flex; align-items:center; gap:8px; text-decoration:none; border:none; cursor:pointer }
-.landing-page .btn-primary-lg:hover { filter:brightness(1.1); transform:translateY(-2px); box-shadow:0 8px 32px rgba(16,185,129,.25) }
+.landing-page .btn-primary-lg:hover { filter:brightness(1.1); transform:translateY(-2px); box-shadow:0 8px 32px rgba(15,118,110,.25) }
 .landing-page .btn-ghost-lg { padding:14px 28px; border-radius:12px; border:1px solid var(--border-h); color:var(--t1); font-size:15px; font-weight:600; background:transparent; transition:all .2s; text-decoration:none; display:inline-flex; align-items:center; cursor:pointer }
 .landing-page .btn-ghost-lg:hover { border-color:var(--green); color:var(--green) }
 
@@ -94,12 +94,12 @@
 
 /* ── Hero ── */
 .landing-page .hero { padding:160px 0 80px; position:relative; overflow:hidden }
-.landing-page .hero::before { content:''; position:absolute; top:-200px; right:-200px; width:600px; height:600px; border-radius:50%; background:radial-gradient(circle,rgba(16,185,129,.08) 0%,transparent 70%); pointer-events:none }
-.landing-page .hero::after { content:''; position:absolute; top:100px; left:-300px; width:500px; height:500px; border-radius:50%; background:radial-gradient(circle,rgba(6,182,212,.06) 0%,transparent 70%); pointer-events:none }
+.landing-page .hero::before { content:''; position:absolute; top:-200px; right:-200px; width:600px; height:600px; border-radius:50%; background:radial-gradient(circle,rgba(15,118,110,.08) 0%,transparent 70%); pointer-events:none }
+.landing-page .hero::after { content:''; position:absolute; top:100px; left:-300px; width:500px; height:500px; border-radius:50%; background:radial-gradient(circle,rgba(60,160,181,.06) 0%,transparent 70%); pointer-events:none }
 .landing-page .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center }
-.landing-page .hero-badge { display:inline-flex; align-items:center; gap:8px; padding:6px 14px 6px 8px; border-radius:20px; background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.2); font-size:12px; font-weight:600; color:var(--green); margin-bottom:24px }
+.landing-page .hero-badge { display:inline-flex; align-items:center; gap:8px; padding:6px 14px 6px 8px; border-radius:20px; background:rgba(15,118,110,.08); border:1px solid rgba(15,118,110,.2); font-size:12px; font-weight:600; color:var(--green); margin-bottom:24px }
 .landing-page .hero-badge .pulse { width:8px; height:8px; border-radius:50%; background:var(--green); animation:lp-pulse-glow 2s infinite }
-.landing-page .hero h1 { font-family:var(--font-syne,'Syne',sans-serif); font-size:56px; font-weight:800; letter-spacing:-.03em; line-height:1.08; margin-bottom:20px }
+.landing-page .hero h1 { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-size:56px; font-weight:800; letter-spacing:-.03em; line-height:1.08; margin-bottom:20px }
 .landing-page .hero p.hero-desc { font-size:18px; color:var(--t2); max-width:540px; line-height:1.7; margin-bottom:36px }
 .landing-page .hero-ctas { display:flex; gap:14px; margin-bottom:60px }
 .landing-page .hero-info { display:flex; gap:20px; font-size:12px; color:var(--t3) }
@@ -110,35 +110,35 @@
 .landing-page .dash-preview { background:var(--s1); border:1px solid var(--border); border-radius:20px; padding:24px; position:relative; overflow:hidden; animation: lp-float 6s ease-in-out infinite }
 .landing-page .dash-preview::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--green),var(--cyan),var(--blue),var(--indigo),var(--pink)) }
 .landing-page .dp-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px }
-.landing-page .dp-greeting { font-family:var(--font-syne,'Syne',sans-serif); font-weight:700; font-size:16px }
-.landing-page .dp-date { font-size:11px; color:var(--t3); font-family:var(--font-dm-mono,'DM Mono',monospace) }
-.landing-page .dp-tasks-badge { display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:8px; background:rgba(16,185,129,.08); font-size:11px; font-weight:600; color:var(--green) }
+.landing-page .dp-greeting { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-weight:700; font-size:16px }
+.landing-page .dp-date { font-size:11px; color:var(--t3); font-family:var(--font-dm-mono,'IBM Plex Mono',monospace) }
+.landing-page .dp-tasks-badge { display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:8px; background:rgba(15,118,110,.08); font-size:11px; font-weight:600; color:var(--green) }
 .landing-page .dp-score { display:flex; align-items:center; gap:16px; margin-bottom:20px }
 .landing-page .score-ring { width:72px; height:72px; border-radius:50%; position:relative; display:flex; align-items:center; justify-content:center; flex-shrink:0 }
 .landing-page .score-ring svg { position:absolute; top:0; left:0 }
-.landing-page .score-num { font-family:var(--font-dm-mono,'DM Mono',monospace); font-weight:500; font-size:20px; color:var(--t1) }
+.landing-page .score-num { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-weight:700; font-size:20px; color:var(--t1); font-variant-numeric:tabular-nums }
 .landing-page .score-detail { flex:1 }
 .landing-page .score-label { font-size:11px; color:var(--t3); text-transform:uppercase; letter-spacing:.06em; font-weight:600 }
-.landing-page .score-val { font-family:var(--font-syne,'Syne',sans-serif); font-weight:700; font-size:22px; margin:2px 0 }
+.landing-page .score-val { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-weight:700; font-size:22px; margin:2px 0; font-variant-numeric:tabular-nums }
 .landing-page .score-val-suffix { font-size:14px; color:var(--t3) }
 .landing-page .score-change { font-size:12px; color:var(--green); font-weight:600 }
 .landing-page .dp-modules { display:grid; grid-template-columns:repeat(4,1fr); gap:8px }
 .landing-page .dp-mod { background:var(--s2); border-radius:10px; padding:10px; text-align:center }
 .landing-page .dp-mod-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; margin:0 auto 6px }
 .landing-page .dp-mod-name { font-size:10px; color:var(--t3); font-weight:600 }
-.landing-page .dp-mod-val { font-family:var(--font-dm-mono,'DM Mono',monospace); font-size:12px; font-weight:500; margin-top:2px }
+.landing-page .dp-mod-val { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-size:12px; font-weight:600; margin-top:2px; font-variant-numeric:tabular-nums }
 
 /* ── Stats Band ── */
 .landing-page .stats-band { padding:40px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border) }
 .landing-page .stats-grid { display:flex; justify-content:center; gap:80px }
 .landing-page .stat-item { text-align:center }
-.landing-page .stat-num { font-family:var(--font-syne,'Syne',sans-serif); font-weight:800; font-size:36px; background:linear-gradient(135deg,var(--green),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text }
+.landing-page .stat-num { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-weight:800; font-size:36px; color:var(--green) }
 .landing-page .stat-label { font-size:13px; color:var(--t3); margin-top:4px; font-weight:500 }
 
 /* ── Sections ── */
 .landing-page .section { padding:80px 0 }
 .landing-page .section-tag { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--green); margin-bottom:12px }
-.landing-page .section-title { font-family:var(--font-syne,'Syne',sans-serif); font-size:36px; font-weight:800; letter-spacing:-.02em; margin-bottom:12px; color:var(--t1); line-height:1.15 }
+.landing-page .section-title { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-size:36px; font-weight:800; letter-spacing:-.02em; margin-bottom:12px; color:var(--t1); line-height:1.15 }
 .landing-page .section-desc { font-size:16px; color:var(--t2); max-width:560px; line-height:1.7 }
 
 /* ── Modules Grid ── */
@@ -147,7 +147,7 @@
 .landing-page .mod-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2.5px }
 .landing-page .mod-card:hover { border-color:var(--border-h); transform:translateY(-3px) }
 .landing-page .mod-card-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:14px }
-.landing-page .mod-card h3 { font-family:var(--font-syne,'Syne',sans-serif); font-size:16px; font-weight:700; margin-bottom:6px }
+.landing-page .mod-card h3 { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-size:16px; font-weight:700; margin-bottom:6px }
 .landing-page .mod-card p { font-size:12px; color:var(--t2); line-height:1.6 }
 .landing-page .mod-card .features { margin-top:12px; display:flex; flex-wrap:wrap; gap:6px }
 .landing-page .feat-pill { font-size:10px; font-weight:600; padding:3px 8px; border-radius:6px; background:rgba(120,165,220,.06); color:var(--t3) }
@@ -158,7 +158,7 @@
 .landing-page .score-visual { position:relative; display:flex; justify-content:center; align-items:center; min-height:360px }
 .landing-page .big-ring { width:260px; height:260px; border-radius:50%; position:relative; display:flex; align-items:center; justify-content:center }
 .landing-page .big-ring svg { position:absolute; top:0; left:0 }
-.landing-page .big-ring-num { font-family:var(--font-dm-mono,'DM Mono',monospace); font-weight:500; font-size:48px; color:var(--t1) }
+.landing-page .big-ring-num { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-weight:700; font-size:48px; color:var(--t1); font-variant-numeric:tabular-nums }
 .landing-page .big-ring-label { font-size:12px; color:var(--t3); text-align:center; margin-top:2px }
 .landing-page .ring-modules { position:absolute; width:100%; height:100% }
 .landing-page .ring-mod { position:absolute; display:flex; align-items:center; gap:8px; padding:6px 12px; background:var(--s2); border:1px solid var(--border); border-radius:10px; font-size:11px; font-weight:600; white-space:nowrap }
@@ -174,21 +174,21 @@
 .landing-page .steps-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:44px }
 .landing-page .step-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--card-r); padding:32px 24px; position:relative; overflow:hidden }
 .landing-page .step-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2.5px; background:var(--green) }
-.landing-page .step-num { font-family:var(--font-dm-mono,'DM Mono',monospace); font-size:48px; font-weight:500; color:rgba(16,185,129,.15); position:absolute; top:12px; right:20px }
-.landing-page .step-icon { width:48px; height:48px; border-radius:14px; background:rgba(16,185,129,.08); display:flex; align-items:center; justify-content:center; margin-bottom:16px }
-.landing-page .step-card h3 { font-family:var(--font-syne,'Syne',sans-serif); font-size:18px; font-weight:700; margin-bottom:8px }
+.landing-page .step-num { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-size:48px; font-weight:700; color:rgba(15,118,110,.15); position:absolute; top:12px; right:20px; font-variant-numeric:tabular-nums }
+.landing-page .step-icon { width:48px; height:48px; border-radius:14px; background:rgba(15,118,110,.08); display:flex; align-items:center; justify-content:center; margin-bottom:16px }
+.landing-page .step-card h3 { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-size:18px; font-weight:700; margin-bottom:8px }
 .landing-page .step-card p { font-size:13px; color:var(--t2); line-height:1.7 }
 
 /* ── Beta CTA ── */
 .landing-page .beta-cta { text-align:center; padding:100px 0 }
-.landing-page .beta-cta h2 { font-family:var(--font-syne,'Syne',sans-serif); font-size:42px; font-weight:800; letter-spacing:-.02em; margin-bottom:14px }
+.landing-page .beta-cta h2 { font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-size:42px; font-weight:800; letter-spacing:-.02em; margin-bottom:14px }
 .landing-page .beta-cta p { font-size:16px; color:var(--t2); margin-bottom:36px; max-width:480px; margin-left:auto; margin-right:auto }
-.landing-page .beta-badge { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:20px; background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.15); font-size:13px; font-weight:700; color:var(--green); margin-bottom:24px }
+.landing-page .beta-badge { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:20px; background:rgba(15,118,110,.08); border:1px solid rgba(15,118,110,.15); font-size:13px; font-weight:700; color:var(--green); margin-bottom:24px }
 
 /* ── Footer ── */
 .landing-page .lp-footer { border-top:1px solid var(--border); padding:40px 0; color:var(--t3); font-size:12px }
 .landing-page .footer-inner { display:flex; justify-content:space-between; align-items:center }
-.landing-page .footer-brand { display:flex; align-items:center; gap:8px; font-family:var(--font-syne,'Syne',sans-serif); font-weight:700; font-size:14px; color:var(--t1) }
+.landing-page .footer-brand { display:flex; align-items:center; gap:8px; font-family:var(--font-syne, --font-space-grotesk, 'Syne', 'Space Grotesk', sans-serif); font-weight:700; font-size:14px; color:var(--t1) }
 .landing-page .footer-links { display:flex; gap:24px }
 .landing-page .footer-links a { color:var(--t3); transition:color .2s; text-decoration:none }
 .landing-page .footer-links a:hover { color:var(--t2) }

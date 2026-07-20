@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Plus, X, Check, Trash2, Pencil, Calendar as CalendarIcon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, X, Check, Trash2, Pencil, Calendar as CalendarIcon, Inbox } from 'lucide-react'
 import { TempoMobileShell } from '@/components/tempo/TempoMobileShell'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -101,13 +101,13 @@ function CalendarCell({
         'transition-colors',
         !day.isCurrentMonth && 'opacity-30 cursor-default',
         day.isCurrentMonth && 'hover:bg-[var(--sl-s3)]',
-        isSelected && 'bg-[var(--sl-s3)] ring-1 ring-inset ring-[#06b6d4] z-[2]',
-        isToday && !isSelected && 'bg-[rgba(6,182,212,0.05)]',
+        isSelected && 'bg-[var(--sl-s3)] ring-1 ring-inset ring-[#3CA0B5] z-[2]',
+        isToday && !isSelected && 'bg-[rgba(60,160,181,0.05)]',
       )}
     >
       {/* Today bar */}
       {isToday && (
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#06b6d4] to-[#0055ff]" />
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#3CA0B5] to-[#0B2D34]" />
       )}
 
       <div className="flex items-start justify-between">
@@ -117,7 +117,7 @@ function CalendarCell({
             ? 'w-[22px] h-[22px] flex items-center justify-center rounded-full text-white text-[11px]'
             : 'text-[var(--sl-t2)]',
         )}
-        style={isToday ? { background: '#06b6d4' } : {}}>
+        style={isToday ? { background: '#3CA0B5' } : {}}>
           {day.date.getDate()}
         </span>
       </div>
@@ -193,7 +193,7 @@ function DayDrawer({
           <button
             onClick={onNew}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[8px] text-[11px] font-bold text-white transition-all hover:brightness-110"
-            style={{ background: '#06b6d4' }}
+            style={{ background: '#3CA0B5' }}
           >
             <Plus size={12} />
             Evento
@@ -209,11 +209,11 @@ function DayDrawer({
 
       {events.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-6">
-          <span className="text-2xl">📭</span>
+          <Inbox size={22} className="text-[var(--sl-t3)]" />
           <p className="text-[12px] text-[var(--sl-t3)]">Nenhum evento neste dia</p>
           <button
             onClick={onNew}
-            className="text-[11px] text-[#06b6d4] hover:underline"
+            className="text-[11px] text-[#3CA0B5] hover:underline"
           >
             Adicionar evento
           </button>
@@ -233,13 +233,13 @@ function DayDrawer({
                 )}
                 style={{ borderLeft: `3px solid ${priorityColor}` }}
               >
-                <span className="text-lg shrink-0 mt-0.5">{cfg.icon}</span>
+                <span className="text-lg shrink-0 mt-0.5" aria-hidden="true">{cfg.icon}</span>
                 <div className="flex-1 min-w-0">
                   <p className={cn('text-[13px] font-semibold text-[var(--sl-t1)] truncate', isDone && 'line-through')}>
                     {ev.title}
                   </p>
                   <p className="text-[11px] text-[var(--sl-t3)]">
-                    {ev.all_day ? 'Dia inteiro' : ev.start_time ? `${ev.start_time}${ev.end_time ? `–${ev.end_time}` : ''}` : '—'}
+                    {ev.all_day ? 'Dia inteiro' : ev.start_time ? `${ev.start_time}${ev.end_time ? `–${ev.end_time}` : ''}` : '--'}
                     {' · '}
                     <span style={{ color: cfg.color }}>{cfg.label}</span>
                   </p>
@@ -249,7 +249,7 @@ function DayDrawer({
                     onClick={() => onToggle(ev)}
                     className={cn(
                       'w-6 h-6 flex items-center justify-center rounded-full border-2 transition-all',
-                      isDone ? 'border-[#10b981] bg-[#10b981] text-white' : 'border-[var(--sl-t3)] text-transparent hover:border-[#10b981]',
+                      isDone ? 'border-[#0F766E] bg-[#0F766E] text-white' : 'border-[var(--sl-t3)] text-transparent hover:border-[#0F766E]',
                     )}
                     title={isDone ? 'Reabrir' : 'Concluir'}
                   >
@@ -264,7 +264,7 @@ function DayDrawer({
                   </button>
                   <button
                     onClick={() => onDelete(ev)}
-                    className="w-6 h-6 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[#f43f5e] hover:bg-[var(--sl-s3)] transition-colors"
+                    className="w-6 h-6 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[var(--sl-s3)] transition-colors"
                     title="Excluir"
                   >
                     <Trash2 size={12} />
@@ -438,8 +438,8 @@ export default function AgendaMensalPage() {
                     className={cn(
                       'border-r border-b border-[var(--sl-border)] p-1 min-h-[46px] flex flex-col items-center gap-[3px] cursor-pointer transition-colors',
                       !day.isCurrentMonth && 'opacity-30 cursor-default',
-                      isSelected && 'bg-[rgba(6,182,212,0.12)]',
-                      isToday && !isSelected && 'bg-[rgba(6,182,212,0.05)]',
+                      isSelected && 'bg-[rgba(60,160,181,0.12)]',
+                      isToday && !isSelected && 'bg-[rgba(60,160,181,0.05)]',
                     )}
                   >
                     <span
@@ -447,7 +447,7 @@ export default function AgendaMensalPage() {
                         'text-[11px] font-semibold leading-none mt-1',
                         isToday ? 'w-5 h-5 flex items-center justify-center rounded-full text-white text-[10px]' : 'text-[var(--sl-t2)]',
                       )}
-                      style={isToday ? { background: '#06b6d4' } : {}}
+                      style={isToday ? { background: '#3CA0B5' } : {}}
                     >
                       {day.date.getDate()}
                     </span>
@@ -475,7 +475,7 @@ export default function AgendaMensalPage() {
                 <button
                   onClick={() => handleNewForDate(selectedDate)}
                   className="flex h-7 w-7 items-center justify-center rounded-[8px] text-white"
-                  style={{ background: '#06b6d4' }}
+                  style={{ background: '#3CA0B5' }}
                 >
                   <Plus size={13} />
                 </button>
@@ -491,9 +491,9 @@ export default function AgendaMensalPage() {
                         <div className="w-[3px] self-stretch rounded-full shrink-0" style={{ background: cfg.color }} />
                         <div className="flex-1 min-w-0">
                           <p className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{ev.title}</p>
-                          <p className="text-[11px] text-[var(--sl-t3)]">{ev.all_day ? 'Dia todo' : (ev.start_time ?? '—')}</p>
+                          <p className="text-[11px] text-[var(--sl-t3)]">{ev.all_day ? 'Dia todo' : (ev.start_time ?? '--')}</p>
                         </div>
-                        <span className="text-base shrink-0">{cfg.icon}</span>
+                        <span className="text-base shrink-0" aria-hidden="true">{cfg.icon}</span>
                       </div>
                     )
                   })}
@@ -504,7 +504,7 @@ export default function AgendaMensalPage() {
 
           {!selectedDate && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 flex flex-col items-center gap-2 text-center">
-              <span className="text-2xl">📅</span>
+              <CalendarIcon size={24} className="text-[var(--sl-t3)]" />
               <p className="text-[12px] text-[var(--sl-t2)]">Toque em um dia para ver os eventos</p>
             </div>
           )}
@@ -521,13 +521,13 @@ export default function AgendaMensalPage() {
             className={cn(
               'relative px-4 py-2.5 text-[13px] transition-colors',
               pathname === tab.href
-                ? 'text-[#06b6d4] font-semibold'
+                ? 'text-[#3CA0B5] font-semibold'
                 : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
             )}>
             {tab.label}
-            {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#f59e0b] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
+            {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#D9962E] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
             {pathname === tab.href && (
-              <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#06b6d4]" />
+              <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#3CA0B5]" />
             )}
           </Link>
         ))}
@@ -536,8 +536,8 @@ export default function AgendaMensalPage() {
       {/* ① ModuleHeader */}
       <ModuleHeader
         icon={CalendarIcon}
-        iconBg="rgba(6,182,212,.1)"
-        iconColor="#06b6d4"
+        iconBg="rgba(60,160,181,.1)"
+        iconColor="#3CA0B5"
         title="Agenda Mensal"
         subtitle={`${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()} \u00B7 ${monthEvents.length} eventos \u00B7 ${daysWithEvents} dias com evento \u00B7 ${monthEvents.length > 0 ? Math.round((monthEvents.filter(e => e.status === 'concluido').length / monthEvents.length) * 100) : 0}% concluido`}
         weekNav={{
@@ -549,7 +549,7 @@ export default function AgendaMensalPage() {
         <button
           onClick={() => handleNewForDate(today)}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold text-white transition-all hover:brightness-110 hover:-translate-y-px"
-          style={{ background: '#06b6d4' }}
+          style={{ background: '#3CA0B5' }}
         >
           <Plus size={16} />
           Novo Evento
@@ -604,13 +604,13 @@ export default function AgendaMensalPage() {
             />
           ) : (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex flex-col items-center justify-center gap-2 min-h-[180px]">
-              <span className="text-3xl">📅</span>
+              <CalendarIcon size={28} className="text-[var(--sl-t3)]" />
               <p className="text-[13px] text-[var(--sl-t2)] text-center">
                 Clique em um dia para ver os eventos
               </p>
               <button
                 onClick={() => handleNewForDate(today)}
-                className="text-[12px] text-[#06b6d4] hover:underline mt-1"
+                className="text-[12px] text-[#3CA0B5] hover:underline mt-1"
               >
                 + Novo evento hoje
               </button>
@@ -628,7 +628,7 @@ export default function AgendaMensalPage() {
                     <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cfg.color }} />
                     <span className="text-[12px] text-[var(--sl-t2)] flex-1">{cfg.label}</span>
                     {count > 0 && (
-                      <span className="text-[11px] font-[DM_Mono] font-semibold" style={{ color: cfg.color }}>
+                      <span className="sl-num text-[11px]" style={{ color: cfg.color }}>
                         {count}
                       </span>
                     )}

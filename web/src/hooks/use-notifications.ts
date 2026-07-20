@@ -59,10 +59,14 @@ function readNotifSettings(): NotifSettings {
   }
 }
 
-async function loadUserPlan(sb: any, userId: string): Promise<{ isPro: boolean }> {
+// Supabase client typing — schema casts are unavoidable for cross-table queries.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SbClient = any
+
+async function loadUserPlan(sb: SbClient, userId: string): Promise<{ isPro: boolean }> {
   const [{ data: profile }] = await Promise.all([
     sb.from('profiles').select('plan').eq('id', userId).single(),
-  ])
+  ]) as [{ data: { plan: string | null } | null }]
   return {
     isPro: profile?.plan === 'pro',
   }

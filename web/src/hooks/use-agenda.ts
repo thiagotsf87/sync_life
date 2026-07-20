@@ -12,19 +12,19 @@ export type EventPriority = 'baixa' | 'normal' | 'alta' | 'urgente'
 export type EventStatus = 'pendente' | 'concluido' | 'cancelado'
 
 export const EVENT_TYPES: Record<EventType, { label: string; icon: string; color: string }> = {
-  trabalho:   { label: 'Trabalho',   icon: '💼', color: '#8b5cf6' },
-  meta:       { label: 'Meta',       icon: '🎯', color: '#0055ff' },
-  saude:      { label: 'Saúde',      icon: '💪', color: '#22c55e' },
-  pessoal:    { label: 'Pessoal',    icon: '🌟', color: '#f59e0b' },
-  financeiro: { label: 'Financeiro', icon: '💰', color: '#10b981' },
-  estudo:     { label: 'Estudo',     icon: '📚', color: '#06b6d4' },
+  trabalho:   { label: 'Trabalho',   icon: '💼', color: '#8B7BD4' },
+  meta:       { label: 'Meta',       icon: '🎯', color: '#0B2D34' },
+  saude:      { label: 'Saúde',      icon: '💪', color: '#0F766E' },
+  pessoal:    { label: 'Pessoal',    icon: '🌟', color: '#D9962E' },
+  financeiro: { label: 'Financeiro', icon: '💰', color: '#0F766E' },
+  estudo:     { label: 'Estudo',     icon: '📚', color: '#3CA0B5' },
 }
 
 export const PRIORITY_COLORS: Record<EventPriority, string> = {
   baixa:   '#6e90b8',
-  normal:  '#06b6d4',
-  alta:    '#f59e0b',
-  urgente: '#f43f5e',
+  normal:  '#3CA0B5',
+  alta:    '#D9962E',
+  urgente: '#DB6478',
 }
 
 export interface ChecklistItem {

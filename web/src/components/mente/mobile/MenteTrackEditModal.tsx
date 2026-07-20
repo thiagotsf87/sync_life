@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
@@ -6,8 +6,8 @@ import type { TrackCategory, StudyTrack } from '@/hooks/use-mente'
 import { CATEGORY_LABELS } from '@/hooks/use-mente'
 import { cn } from '@/lib/utils'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.12)'
+const MENTE_COLOR = 'var(--sl-warning)'
+const MENTE_BG = 'rgba(217,150,46,0.12)'
 
 export interface EditTrackData {
   name: string

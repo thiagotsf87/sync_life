@@ -4,17 +4,27 @@ interface SLCardProps {
   children: React.ReactNode
   className?: string
   hover?: boolean
+  hero?: boolean
+  noPadding?: boolean
 }
 
-export function SLCard({ children, className, hover = true }: SLCardProps) {
+export function SLCard({
+  children,
+  className,
+  hover = false,
+  hero = false,
+  noPadding = false,
+}: SLCardProps) {
   return (
-    <div className={cn(
-      'bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6',
-      'sl-fade-up',
-      hover && 'transition-all hover:border-[var(--sl-border-h)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,.15)]',
-      'shadow-sm dark:shadow-none',
-      className
-    )}>
+    <div
+      className={cn(
+        'border border-[var(--sl-border)] rounded-[16px] transition-colors duration-200',
+        hero ? 'bg-[var(--sl-s-hero)]' : 'bg-[var(--sl-s1)]',
+        !noPadding && 'p-6',
+        hover && 'hover:border-[var(--sl-border-h)] cursor-pointer',
+        className
+      )}
+    >
       {children}
     </div>
   )

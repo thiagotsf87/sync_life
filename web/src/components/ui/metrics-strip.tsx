@@ -68,7 +68,7 @@ export function MetricsStrip({ items, gradient, className }: MetricsStripProps) 
             </div>
             <p
               className={cn(
-                'font-[DM_Mono] font-medium leading-none text-[var(--sl-t1)]',
+                'font-[IBM_Plex_Mono] font-medium leading-none text-[var(--sl-t1)]',
                 item.featured ? 'text-[30px]' : 'text-lg',
               )}
               style={item.valueColor ? { color: item.valueColor } : undefined}

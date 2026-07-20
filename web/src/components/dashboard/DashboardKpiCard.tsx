@@ -25,9 +25,9 @@ export function DashboardKpiCard({ label, value, delta, deltaType = 'neutral', a
   }, [barPct])
 
   const deltaColor = {
-    up:      'text-[#10b981]',
-    down:    'text-[#f43f5e]',
-    warn:    'text-[#f59e0b]',
+    up:      'text-[#0F766E]',
+    down:    'text-[#DB6478]',
+    warn:    'text-[#D9962E]',
     neutral: 'text-[var(--sl-t3)]',
   }[deltaType]
 
@@ -42,7 +42,7 @@ export function DashboardKpiCard({ label, value, delta, deltaType = 'neutral', a
         {icon}
       </div>
       <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1.5">{label}</p>
-      <p className="font-[DM_Mono] font-medium text-[26px] text-[var(--sl-t1)] leading-none mb-1.5">{value}</p>
+      <p className="font-[IBM_Plex_Mono] font-medium text-[26px] text-[var(--sl-t1)] leading-none mb-1.5">{value}</p>
       {delta && <p className={cn('text-[12px] flex items-center gap-1', deltaColor)}>{delta}</p>}
       {barPct !== undefined && (
         <div className="mt-2.5 h-1 bg-[var(--sl-s3)] rounded-full overflow-hidden">

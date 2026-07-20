@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus, Activity } from 'lucide-react'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 import { toast } from 'sonner'
 import {
   useAppointments, useSaveAppointment, useDeleteAppointment,
@@ -170,9 +171,9 @@ export default function SaudePage() {
   const daysUntilNext = nextApptDate ? Math.ceil((nextApptDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : null
 
   function getStatusPill(status: string) {
-    if (status === 'scheduled') return { bg: 'rgba(6,182,212,.1)', color: '#06b6d4', label: 'Agendada' }
-    if (status === 'completed') return { bg: 'rgba(16,185,129,.1)', color: '#10b981', label: 'Realizada' }
-    if (status === 'cancelled') return { bg: 'rgba(244,63,94,.1)', color: '#f43f5e', label: 'Cancelada' }
+    if (status === 'scheduled') return { bg: 'rgba(60,160,181,.1)', color: '#3CA0B5', label: 'Agendada' }
+    if (status === 'completed') return { bg: 'rgba(15,118,110,.1)', color: '#0F766E', label: 'Realizada' }
+    if (status === 'cancelled') return { bg: 'rgba(219,100,120,.1)', color: '#DB6478', label: 'Cancelada' }
     return { bg: 'var(--sl-s3)', color: 'var(--sl-t3)', label: status }
   }
 
@@ -182,16 +183,16 @@ export default function SaudePage() {
       {/* 1. ModuleHeader */}
       <ModuleHeader
         icon={Activity}
-        iconBg="rgba(249,115,22,.08)"
-        iconColor="#f97316"
+        iconBg="rgba(217,117,52,.08)"
+        iconColor="#D97534"
         title="Saude Preventiva"
         subtitle="Consultas, exames e acompanhamento medico"
       >
         <button
           onClick={() => setShowModal(true)}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#f97316] text-white hover:brightness-110 hover:-translate-y-px
-                     transition-all shadow-[0_6px_20px_rgba(249,115,22,.15)]"
+                     bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px
+                     transition-all shadow-[0_6px_20px_rgba(15,118,110,.15)]"
         >
           <Plus size={16} />
           Agendar Consulta
@@ -200,13 +201,13 @@ export default function SaudePage() {
 
       {/* 2. Next Appointment Hero */}
       {nextAppointment && (
-        <div className="flex items-center gap-6 px-8 py-7 bg-[var(--sl-s1)] border border-[rgba(249,115,22,.2)] rounded-[18px] mb-7 relative overflow-hidden sl-fade-up sl-delay-1 hover:border-[var(--sl-border-h)] transition-colors">
-          <div className="absolute top-0 left-6 right-6 h-[2.5px] rounded-b bg-[#f97316]" />
+        <div className="flex items-center gap-6 px-8 py-7 bg-[var(--sl-s1)] border border-[rgba(217,117,52,.2)] rounded-[18px] mb-7 relative overflow-hidden sl-fade-up sl-delay-1 hover:border-[var(--sl-border-h)] transition-colors">
+          <div className="absolute top-0 left-6 right-6 h-[2.5px] rounded-b bg-[#D97534]" />
           <div className="text-center min-w-[64px]">
-            <div className="text-[11px] font-bold uppercase tracking-[.08em] text-[#f97316]">
+            <div className="text-[11px] font-bold uppercase tracking-[.08em] text-[#D97534]">
               {nextApptDate?.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '') ?? ''}
             </div>
-            <div className="font-[DM_Mono] text-[32px] font-medium leading-none text-[var(--sl-t1)]">
+            <div className="sl-num-strong text-[32px] leading-none text-[var(--sl-t1)]">
               {nextApptDate ? nextApptDate.getDate().toString().padStart(2, '0') : '--'}
             </div>
           </div>
@@ -229,7 +230,7 @@ export default function SaudePage() {
           </div>
           <span
             className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
-            style={{ background: 'rgba(249,115,22,.08)', color: '#f97316' }}
+            style={{ background: 'rgba(217,117,52,.08)', color: '#D97534' }}
           >
             {daysUntilNext !== null
               ? daysUntilNext === 0 ? 'Hoje'
@@ -243,15 +244,15 @@ export default function SaudePage() {
       {/* 3. Stats Grid (4 columns) */}
       <div className="grid grid-cols-4 gap-[14px] mb-7 max-sm:grid-cols-2 sl-fade-up sl-delay-2">
         {[
-          { label: 'Proximas', value: String(upcomingCount), color: '#f59e0b' },
-          { label: 'Realizadas', value: String(completedCount), color: '#10b981' },
-          { label: 'Total', value: String(appointments.length), color: '#06b6d4' },
-          { label: 'Custo Total', value: totalCost > 0 ? `R$ ${totalCost.toLocaleString('pt-BR')}` : 'R$ 0', color: '#f43f5e' },
+          { label: 'Proximas', value: String(upcomingCount), color: '#D9962E' },
+          { label: 'Realizadas', value: String(completedCount), color: '#0F766E' },
+          { label: 'Total', value: String(appointments.length), color: '#3CA0B5' },
+          { label: 'Custo Total', value: fmtBRL(totalCost), color: '#DB6478' },
         ].map(stat => (
           <div key={stat.label} className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] px-[18px] py-4 overflow-hidden text-center hover:border-[var(--sl-border-h)] transition-colors">
             <div className="absolute top-0 left-4 right-4 h-[2.5px] rounded-b" style={{ background: stat.color }} />
             <p className="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--sl-t3)] mb-1">{stat.label}</p>
-            <p className="font-[DM_Mono] font-medium text-[22px] text-[var(--sl-t1)]">{stat.value}</p>
+            <p className="sl-num-strong text-[22px] text-[var(--sl-t1)]">{stat.value}</p>
           </div>
         ))}
       </div>
@@ -269,7 +270,7 @@ export default function SaudePage() {
             className={cn(
               'px-4 py-[6px] rounded-[8px] text-[12px] font-semibold border transition-all',
               tab === t.id
-                ? 'border-[#f97316] bg-[rgba(249,115,22,.08)] text-[var(--sl-t1)]'
+                ? 'border-[#D97534] bg-[rgba(217,117,52,.08)] text-[var(--sl-t1)]'
                 : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]'
             )}
           >
@@ -297,7 +298,7 @@ export default function SaudePage() {
           {tab === 'upcoming' && (
             <button
               onClick={() => setShowModal(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#f97316] text-white hover:opacity-90 mt-3"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 mt-3"
             >
               <Plus size={15} />
               Agendar
@@ -322,7 +323,7 @@ export default function SaudePage() {
                 const statusPill = getStatusPill(a.status)
                 return (
                   <tr key={a.id} className="group hover:bg-[var(--sl-s2)] transition-colors cursor-pointer">
-                    <td className="font-[DM_Mono] text-[13px] text-[var(--sl-t2)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
+                    <td className="sl-num text-[13px] text-[var(--sl-t2)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
                       {new Date(a.appointment_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })}
                     </td>
                     <td className="text-[13px] font-semibold text-[var(--sl-t1)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
@@ -334,8 +335,8 @@ export default function SaudePage() {
                     <td className="text-[13px] text-[var(--sl-t3)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
                       {a.location ?? '--'}
                     </td>
-                    <td className="font-[DM_Mono] text-[13px] text-[var(--sl-t1)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
-                      {a.cost ? `R$ ${a.cost.toLocaleString('pt-BR')}` : '--'}
+                    <td className="sl-num text-[13px] text-[var(--sl-t1)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
+                      {a.cost ? fmtBRL(a.cost) : '--'}
                     </td>
                     <td className="py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
                       <span
@@ -353,10 +354,10 @@ export default function SaudePage() {
           {totalCost > 0 && (
             <div className="flex items-center justify-between pt-3 px-[14px] border-t border-[var(--sl-border)] mt-1">
               <span className="text-[11px] text-[var(--sl-t3)]">
-                Media: R$ {appointments.length > 0 ? Math.round(totalCost / appointments.filter(a => a.cost).length).toLocaleString('pt-BR') : 0}/consulta
+                Media: <span className="sl-num">{fmtBRL(appointments.filter(a => a.cost).length > 0 ? totalCost / appointments.filter(a => a.cost).length : 0)}</span>/consulta
               </span>
-              <span className="font-[DM_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
-                Total: R$ {totalCost.toLocaleString('pt-BR')}
+              <span className="sl-num-strong text-[13px] text-[var(--sl-t1)]">
+                Total: {fmtBRL(totalCost)}
               </span>
             </div>
           )}
@@ -371,7 +372,7 @@ export default function SaudePage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
               <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
-                <Activity size={20} className="text-[#f97316]" />
+                <Activity size={20} className="text-[#D97534]" />
                 Agendar Consulta
               </h2>
               <button onClick={() => setShowModal(false)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">&times;</button>
@@ -387,7 +388,7 @@ export default function SaudePage() {
                       className={cn(
                         'px-2 py-1.5 rounded-[8px] text-[11px] border transition-all text-left truncate',
                         form.specialty === s
-                          ? 'border-[#06b6d4] bg-[#06b6d4]/10 text-[var(--sl-t1)]'
+                          ? 'border-[#3CA0B5] bg-[#3CA0B5]/10 text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -403,7 +404,7 @@ export default function SaudePage() {
                   <input type="text" value={form.doctor_name}
                     onChange={e => setForm(f => ({ ...f, doctor_name: e.target.value }))}
                     placeholder="Nome do medico"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3CA0B5]"
                   />
                 </div>
                 <div>
@@ -411,7 +412,7 @@ export default function SaudePage() {
                   <input type="text" value={form.location}
                     onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
                     placeholder="Clinica, hospital..."
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3CA0B5]"
                   />
                 </div>
               </div>
@@ -421,7 +422,7 @@ export default function SaudePage() {
                   <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Data e Hora</label>
                   <input type="datetime-local" value={form.appointment_date}
                     onChange={e => setForm(f => ({ ...f, appointment_date: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3CA0B5]"
                   />
                 </div>
                 <div>
@@ -429,7 +430,7 @@ export default function SaudePage() {
                   <input type="number" value={form.cost}
                     onChange={e => setForm(f => ({ ...f, cost: e.target.value }))}
                     placeholder="Opcional"
-                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4]"
+                    className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3CA0B5]"
                   />
                 </div>
               </div>
@@ -443,7 +444,7 @@ export default function SaudePage() {
                       className={cn(
                         'px-3 py-1.5 rounded-[8px] text-[11px] border transition-all',
                         form.follow_up_months === opt.value
-                          ? 'border-[#06b6d4] bg-[#06b6d4]/10 text-[var(--sl-t1)]'
+                          ? 'border-[#3CA0B5] bg-[#3CA0B5]/10 text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -459,7 +460,7 @@ export default function SaudePage() {
                   onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
                   placeholder="Motivo da consulta, sintomas..."
                   rows={2}
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#06b6d4] resize-none"
+                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#3CA0B5] resize-none"
                 />
               </div>
 
@@ -483,7 +484,7 @@ export default function SaudePage() {
                 </div>
                 <button
                   onClick={() => setForm(f => ({ ...f, syncToAgenda: !f.syncToAgenda }))}
-                  className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', form.syncToAgenda ? 'bg-[#06b6d4]' : 'bg-[var(--sl-s3)]')}
+                  className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', form.syncToAgenda ? 'bg-[#3CA0B5]' : 'bg-[var(--sl-s3)]')}
                 >
                   <div className={cn('w-4 h-4 rounded-full bg-white absolute top-1 transition-all', form.syncToAgenda ? 'left-5' : 'left-1')} />
                 </button>
@@ -497,7 +498,7 @@ export default function SaudePage() {
                   </div>
                   <button
                     onClick={() => setForm(f => ({ ...f, syncToFinancas: !f.syncToFinancas }))}
-                    className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', form.syncToFinancas ? 'bg-[#06b6d4]' : 'bg-[var(--sl-s3)]')}
+                    className={cn('w-10 h-6 rounded-full transition-all relative shrink-0', form.syncToFinancas ? 'bg-[#3CA0B5]' : 'bg-[var(--sl-s3)]')}
                   >
                     <div className={cn('w-4 h-4 rounded-full bg-white absolute top-1 transition-all', form.syncToFinancas ? 'left-5' : 'left-1')} />
                   </button>
@@ -510,7 +511,7 @@ export default function SaudePage() {
                   Cancelar
                 </button>
                 <button onClick={handleSave} disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#06b6d4] text-[#03071a] hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 disabled:opacity-50">
                   {isSaving ? 'Agendando...' : 'Agendar'}
                 </button>
               </div>

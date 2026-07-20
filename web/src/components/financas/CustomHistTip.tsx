@@ -18,15 +18,15 @@ export function CustomHistTip({ active, payload, label }: CustomHistTipProps) {
       <p className="font-bold uppercase text-[10px] text-[var(--sl-t3)] mb-1.5">{label}</p>
       <div className="flex justify-between gap-3 mb-0.5">
         <span className="text-[var(--sl-t3)]">Receitas</span>
-        <span className="font-[DM_Mono] text-[#10b981] font-medium">R$ {fmtR$(rec)}</span>
+        <span className="font-[IBM_Plex_Mono] text-[#0F766E] font-medium">R$ {fmtR$(rec)}</span>
       </div>
       <div className="flex justify-between gap-3">
         <span className="text-[var(--sl-t3)]">Despesas</span>
-        <span className="font-[DM_Mono] text-[#f43f5e] font-medium">R$ {fmtR$(des)}</span>
+        <span className="font-[IBM_Plex_Mono] text-[#DB6478] font-medium">R$ {fmtR$(des)}</span>
       </div>
       <div className="flex justify-between gap-3 border-t border-[var(--sl-border)] mt-2 pt-1.5">
         <span className="text-[var(--sl-t3)]">Saldo</span>
-        <span className={cn('font-[DM_Mono] font-medium', rec - des >= 0 ? 'text-[#10b981]' : 'text-[#f43f5e]')}>
+        <span className={cn('font-[IBM_Plex_Mono] font-medium', rec - des >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
           R$ {fmtR$(rec - des)}
         </span>
       </div>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import {
@@ -52,7 +52,7 @@ export function MenteTrackDeleteModal({
             Tem certeza que deseja excluir a trilha &quot;{trackName}&quot;? Esta ação não pode ser desfeita.
             As sessões de estudo vinculadas serão mantidas.
             {hasLinkedSkillOrCost && (
-              <span className="block mt-2 text-[#f59e0b]">
+              <span className="block mt-2 text-[var(--sl-warning)]">
                 ⚠️ Esta trilha pode estar vinculada a habilidades de carreira ou ter custo registrado em Finanças.
               </span>
             )}
@@ -69,7 +69,7 @@ export function MenteTrackDeleteModal({
           <Button
             onClick={handleConfirm}
             disabled={loading}
-            className="flex-1 bg-[#f43f5e] hover:bg-[#e11d48] text-white disabled:opacity-70"
+            className="flex-1 bg-[var(--sl-danger)] hover:bg-[#e11d48] text-white disabled:opacity-70"
           >
             {loading ? 'Excluindo...' : 'Excluir'}
           </Button>

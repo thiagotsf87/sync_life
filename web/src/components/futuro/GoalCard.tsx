@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Edit2, Trash2, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 import type { ObjectiveGoal, GoalModule, GoalIndicatorType } from '@/hooks/use-futuro'
 import { MODULE_LABELS, INDICATOR_LABELS } from '@/hooks/use-futuro'
 
@@ -14,7 +15,7 @@ interface GoalCardProps {
 
 function formatValue(value: number, indicatorType: GoalIndicatorType, targetUnit: string | null): string {
   if (indicatorType === 'monetary') {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    return fmtBRL(value)
   }
   if (indicatorType === 'weight') {
     return `${value.toFixed(1)} kg`
@@ -32,10 +33,10 @@ function formatValue(value: number, indicatorType: GoalIndicatorType, targetUnit
 }
 
 function getProgressColor(progress: number): string {
-  if (progress >= 100) return '#10b981'
-  if (progress >= 70) return '#10b981'
-  if (progress >= 50) return '#f59e0b'
-  return '#06b6d4'
+  if (progress >= 100) return '#0F766E'
+  if (progress >= 70) return '#0F766E'
+  if (progress >= 50) return '#D9962E'
+  return '#3CA0B5'
 }
 
 export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
@@ -94,9 +95,9 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors"
           >
-            <Trash2 size={14} className="text-[var(--sl-t3)] hover:text-[#f43f5e]" />
+            <Trash2 size={14} className="text-[var(--sl-t3)] hover:text-[#DB6478]" />
           </button>
         </div>
       </div>
@@ -112,7 +113,7 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
               </span>
             )}
           </span>
-          <span className="font-[DM_Mono] text-[12px] font-medium" style={{ color: progressColor }}>
+          <span className="font-[IBM_Plex_Mono] text-[12px] font-medium" style={{ color: progressColor }}>
             {progress}%
           </span>
         </div>
@@ -127,7 +128,7 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
         </div>
       </div>
 
-      {/* Update progress inline — RN-FUT-17: UI por tipo de indicador */}
+      {/* Update progress inline · RN-FUT-17: UI por tipo de indicador */}
       {editing && !isCompleted && (
         <div className="mt-2 pt-2 border-t border-[var(--sl-border)]">
           {goal.indicator_type === 'task' ? (
@@ -145,7 +146,7 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
                 'w-full py-2 rounded-[8px] text-[12px] font-semibold transition-colors border',
                 goal.current_value > 0
                   ? 'bg-[var(--sl-s3)] text-[var(--sl-t2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
-                  : 'bg-[#10b981]/10 text-[#10b981] border-[#10b981]/30 hover:bg-[#10b981]/20',
+                  : 'bg-[#0F766E]/10 text-[#0F766E] border-[#0F766E]/30 hover:bg-[#0F766E]/20',
               )}
             >
               {saving ? '...' : goal.current_value > 0 ? '↩ Marcar como pendente' : '✓ Marcar como concluída'}
@@ -155,9 +156,9 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
               {/* Contexto para peso */}
               {goal.indicator_type === 'weight' && goal.initial_value != null && goal.target_value != null && (
                 <p className="text-[10px] text-[var(--sl-t3)]">
-                  Partida: <strong className="font-[DM_Mono]">{goal.initial_value} kg</strong>
+                  Partida: <strong className="font-[IBM_Plex_Mono]">{goal.initial_value} kg</strong>
                   {' → '}
-                  Alvo: <strong className="font-[DM_Mono]">{goal.target_value} kg</strong>
+                  Alvo: <strong className="font-[IBM_Plex_Mono]">{goal.target_value} kg</strong>
                   {' '}
                   <span>({goal.initial_value > goal.target_value ? '📉 perda' : '📈 ganho'})</span>
                 </p>
@@ -165,7 +166,7 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
               {/* Contexto para frequência */}
               {goal.indicator_type === 'frequency' && goal.target_value != null && (
                 <p className="text-[10px] text-[var(--sl-t3)]">
-                  Meta: <strong className="font-[DM_Mono]">{goal.target_value}</strong>
+                  Meta: <strong className="font-[IBM_Plex_Mono]">{goal.target_value}</strong>
                   {goal.target_unit ? ` ${goal.target_unit}` : ' vezes no período'}
                 </p>
               )}
@@ -176,7 +177,7 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
                   onChange={e => setInputValue(e.target.value)}
                   className="flex-1 px-2.5 py-1.5 rounded-[8px] text-[12px] font-medium
                              bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t1)]
-                             outline-none focus:border-[#10b981] transition-colors"
+                             outline-none focus:border-[#0F766E] transition-colors"
                   placeholder={
                     goal.indicator_type === 'weight' ? 'Peso atual (kg)' :
                     goal.indicator_type === 'frequency' ? 'Qtd neste período' :
@@ -191,7 +192,7 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
                   onClick={handleSave}
                   disabled={saving}
                   className="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold
-                             bg-[#10b981] text-[#03071a] hover:opacity-90 transition-opacity disabled:opacity-50"
+                             bg-[#0F766E] text-[#03071a] hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
                   {saving ? '...' : 'Salvar'}
                 </button>
@@ -209,7 +210,7 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
 
       {isCompleted && (
         <div className="flex items-center gap-1 mt-1">
-          <span className="text-[10px] font-bold text-[#10b981]">Meta concluída!</span>
+          <span className="text-[10px] font-bold text-[#0F766E]">Meta concluída!</span>
         </div>
       )}
     </div>

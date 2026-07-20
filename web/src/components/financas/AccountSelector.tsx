@@ -41,11 +41,11 @@ export function AccountSelector({
         className={cn(
           'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors flex items-center gap-2 text-left',
           error
-            ? 'border-[#f43f5e]'
+            ? 'border-[#DB6478]'
             : selectedId
-              ? 'border-[#0055ff]'
+              ? 'border-[#0B2D34]'
               : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-          open && !error && 'border-[#0055ff]'
+          open && !error && 'border-[#0B2D34]'
         )}
       >
         {selected ? (
@@ -83,7 +83,7 @@ export function AccountSelector({
                     'w-full px-3.5 py-2.5 text-left text-[13px] flex items-center gap-2.5 transition-colors',
                     isExcluded && 'opacity-40 cursor-not-allowed',
                     isSelected
-                      ? 'bg-[rgba(0,85,255,.12)] text-[#0055ff] font-semibold'
+                      ? 'bg-[rgba(0,85,255,.12)] text-[#0B2D34] font-semibold'
                       : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
                   )}
                 >
@@ -105,7 +105,7 @@ export function AccountSelector({
               <button
                 type="button"
                 onClick={() => { onCreateAccount(); setOpen(false) }}
-                className="w-full px-3.5 py-2.5 text-left text-[13px] flex items-center gap-2 text-[#0055ff] hover:bg-[var(--sl-s2)] transition-colors"
+                className="w-full px-3.5 py-2.5 text-left text-[13px] flex items-center gap-2 text-[#0B2D34] hover:bg-[var(--sl-s2)] transition-colors"
               >
                 <Plus size={14} />
                 <span className="font-medium">Nova conta</span>
@@ -115,7 +115,7 @@ export function AccountSelector({
         </div>
       )}
 
-      {error && <p className="text-[11px] text-[#f43f5e]">{error}</p>}
+      {error && <p className="text-[11px] text-[#DB6478]">{error}</p>}
     </div>
   )
 }

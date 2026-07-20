@@ -32,9 +32,9 @@ function JornadaScoreRing({ score, size }: { score: number; size: number }) {
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
         <circle fill="none" stroke="var(--sl-s3)" strokeWidth={strokeWidth} cx={size / 2} cy={size / 2} r={r} />
-        <circle fill="none" stroke="#8b5cf6" strokeWidth={strokeWidth} cx={size / 2} cy={size / 2} r={r}
+        <circle fill="none" stroke="#8B7BD4" strokeWidth={strokeWidth} cx={size / 2} cy={size / 2} r={r}
           strokeDasharray={`${purpleArc} ${circumference - purpleArc}`} strokeLinecap="round" />
-        <circle fill="none" stroke="#0055ff" strokeWidth={strokeWidth} cx={size / 2} cy={size / 2} r={r}
+        <circle fill="none" stroke="#0B2D34" strokeWidth={strokeWidth} cx={size / 2} cy={size / 2} r={r}
           strokeDasharray={`${blueArc} ${circumference - blueArc}`} strokeLinecap="round"
           strokeDashoffset={`${-purpleArc}`} />
       </svg>
@@ -60,8 +60,8 @@ export function FuturoScoreBand({
     <div
       className="mx-4 mb-[14px] rounded-[16px] p-4"
       style={{
-        background: `linear-gradient(135deg, rgba(139,92,246,0.14), rgba(0,85,255,0.08))`,
-        border: `1px solid rgba(139,92,246,0.3)`,
+        background: `linear-gradient(135deg, rgba(139,123,212,0.14), rgba(0,85,255,0.08))`,
+        border: `1px solid rgba(139,123,212,0.3)`,
       }}
     >
       <div className="flex gap-[14px] mb-[10px]">

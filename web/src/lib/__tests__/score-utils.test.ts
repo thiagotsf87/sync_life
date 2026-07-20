@@ -92,44 +92,44 @@ describe('getScoreLabel', () => {
 // ─── getScoreColor ─────────────────────────────────────────────────────────────
 
 describe('getScoreColor', () => {
-  it('returns red (#f43f5e) for score 0', () => {
-    expect(getScoreColor(0)).toBe('#f43f5e')
+  it('returns red (#DB6478) for score 0', () => {
+    expect(getScoreColor(0)).toBe('#DB6478')
   })
 
   it('returns red for score 20 (boundary)', () => {
-    expect(getScoreColor(20)).toBe('#f43f5e')
+    expect(getScoreColor(20)).toBe('#DB6478')
   })
 
-  it('returns orange (#f97316) for score 21', () => {
-    expect(getScoreColor(21)).toBe('#f97316')
+  it('returns orange (#D97534) for score 21', () => {
+    expect(getScoreColor(21)).toBe('#D97534')
   })
 
   it('returns orange for score 40 (boundary)', () => {
-    expect(getScoreColor(40)).toBe('#f97316')
+    expect(getScoreColor(40)).toBe('#D97534')
   })
 
-  it('returns yellow (#f59e0b) for score 41', () => {
-    expect(getScoreColor(41)).toBe('#f59e0b')
+  it('returns yellow (#D9962E) for score 41', () => {
+    expect(getScoreColor(41)).toBe('#D9962E')
   })
 
   it('returns yellow for score 60 (boundary)', () => {
-    expect(getScoreColor(60)).toBe('#f59e0b')
+    expect(getScoreColor(60)).toBe('#D9962E')
   })
 
-  it('returns indigo (#6366f1) for score 61', () => {
-    expect(getScoreColor(61)).toBe('#6366f1')
+  it('returns indigo (#6B6FD4) for score 61', () => {
+    expect(getScoreColor(61)).toBe('#6B6FD4')
   })
 
   it('returns indigo for score 80 (boundary)', () => {
-    expect(getScoreColor(80)).toBe('#6366f1')
+    expect(getScoreColor(80)).toBe('#6B6FD4')
   })
 
-  it('returns green (#10b981) for score 81', () => {
-    expect(getScoreColor(81)).toBe('#10b981')
+  it('returns green (#0F766E) for score 81', () => {
+    expect(getScoreColor(81)).toBe('#0F766E')
   })
 
   it('returns green for score 100', () => {
-    expect(getScoreColor(100)).toBe('#10b981')
+    expect(getScoreColor(100)).toBe('#0F766E')
   })
 })
 

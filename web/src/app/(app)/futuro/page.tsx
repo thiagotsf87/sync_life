@@ -2,11 +2,11 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Search, Target, ChevronRight } from 'lucide-react'
+import { Plus, Search, Target, ChevronRight, Sparkles, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
-import { useObjectives, useCreateObjective, useUpdateObjective, useAddGoal, calcObjectiveProgress, calcProgressVelocity, isProgressAtRisk, CATEGORY_LABELS, type ObjectiveStatus, type ObjectiveCategory, type GoalModule, type GoalIndicatorType, type Objective } from '@/hooks/use-futuro'
+import { useObjectives, useCreateObjective, useUpdateObjective, useAddGoal, calcObjectiveProgress, calcProgressVelocity, isProgressAtRisk, type ObjectiveCategory, type GoalModule, type GoalIndicatorType, type Objective } from '@/hooks/use-futuro'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { useLifeMap } from '@/hooks/use-life-map'
 import { checkPlanLimit } from '@/lib/plan-limits'
@@ -15,17 +15,22 @@ import { LifeMapRadar } from '@/components/futuro/LifeMapRadar'
 import { FuturoMobile } from '@/components/futuro/FuturoMobile'
 import { FuturoWizardMobile } from '@/components/futuro/mobile/FuturoWizardMobile'
 import { ModuleHeader } from '@/components/ui/module-header'
+import { KpiCard } from '@/components/ui/kpi-card'
+import { fmtBRL } from '@/lib/format/currency'
+
+// Cor do módulo Futuro (identificação · NÃO accent)
+const MOD_FUTURO = '#8B7BD4'
+const MOD_FUTURO_SOFT = 'rgba(139,123,212,0.10)'
 
 // ─── Filter / Sort types ───────────────────────────────────────────────────────
 
 type StatusFilter = 'all' | 'on_track' | 'attention' | 'at_risk' | 'completed'
-type SortMode = 'priority' | 'progress' | 'deadline'
 
 const STATUS_TABS: { value: StatusFilter; label: string }[] = [
   { value: 'all', label: 'Todos' },
-  { value: 'on_track', label: 'No Ritmo' },
+  { value: 'on_track', label: 'No ritmo' },
   { value: 'attention', label: 'Atenção' },
-  { value: 'at_risk', label: 'Em Risco' },
+  { value: 'at_risk', label: 'Em risco' },
   { value: 'completed', label: 'Concluídos' },
 ]
 
@@ -57,18 +62,18 @@ function getObjectiveHealthStatus(obj: Objective): 'on_track' | 'attention' | 'a
 
 function getStatusPill(status: 'on_track' | 'attention' | 'at_risk' | 'completed'): { label: string; bg: string; color: string } {
   switch (status) {
-    case 'on_track': return { label: 'No Ritmo', bg: 'rgba(16,185,129,0.10)', color: '#10b981' }
-    case 'attention': return { label: 'Atenção', bg: 'rgba(245,158,11,0.10)', color: '#f59e0b' }
-    case 'at_risk': return { label: 'Em Risco', bg: 'rgba(244,63,94,0.10)', color: '#f43f5e' }
-    case 'completed': return { label: 'Concluído', bg: 'rgba(16,185,129,0.10)', color: '#10b981' }
+    case 'on_track': return { label: 'No ritmo', bg: 'rgba(31,166,122,0.10)', color: 'var(--sl-success)' }
+    case 'attention': return { label: 'Atenção', bg: 'rgba(217,150,46,0.10)', color: 'var(--sl-warning)' }
+    case 'at_risk': return { label: 'Em risco', bg: 'rgba(219,100,120,0.10)', color: 'var(--sl-danger)' }
+    case 'completed': return { label: 'Concluído', bg: 'rgba(15,118,110,0.10)', color: 'var(--sl-em)' }
   }
 }
 
 function getProgressColor(progress: number, status: string): string {
-  if (status === 'completed') return '#10b981'
-  if (progress > 85) return '#f43f5e'
-  if (progress > 70) return '#f59e0b'
-  return '#10b981'
+  if (status === 'completed') return 'var(--sl-em)'
+  if (progress > 85) return 'var(--sl-danger)'
+  if (progress > 70) return 'var(--sl-warning)'
+  return 'var(--sl-success)'
 }
 
 function formatDeadline(dateStr: string | null): string {
@@ -81,7 +86,7 @@ function getSubtitle(firstGoal: { current_value: number; target_value: number | 
   const parts: string[] = []
 
   if (firstGoal.indicator_type === 'monetary' && firstGoal.target_value) {
-    parts.push(`R$ ${firstGoal.current_value.toLocaleString('pt-BR')} / R$ ${firstGoal.target_value.toLocaleString('pt-BR')}`)
+    parts.push(`${fmtBRL(firstGoal.current_value)} / ${fmtBRL(firstGoal.target_value)}`)
   } else if (firstGoal.target_value) {
     parts.push(`${firstGoal.current_value} / ${firstGoal.target_value}`)
   }
@@ -90,10 +95,10 @@ function getSubtitle(firstGoal: { current_value: number; target_value: number | 
     parts.push(`Prazo: ${new Date(obj.target_date + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}`)
   }
 
-  return parts.join(' — ')
+  return parts.join(' · ')
 }
 
-// ─── Horizon Ring SVG ────────────────────────────────────────────────────────
+// ─── Horizon Ring SVG (mantém --sl-grad exceção G-03 permitida em meta) ─────
 
 function HorizonRing({ progress }: { progress: number }) {
   const radius = 40
@@ -105,8 +110,8 @@ function HorizonRing({ progress }: { progress: number }) {
       <svg viewBox="0 0 96 96" className="w-[96px] h-[96px]">
         <defs>
           <linearGradient id="hz-ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0055ff" />
-            <stop offset="100%" stopColor="#10b981" />
+            <stop offset="0%" stopColor="#0F766E" />
+            <stop offset="100%" stopColor="#0B2D34" />
           </linearGradient>
         </defs>
         <circle cx="48" cy="48" r={radius} fill="none" stroke="var(--sl-s3)" strokeWidth="7" />
@@ -121,7 +126,7 @@ function HorizonRing({ progress }: { progress: number }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-[DM_Mono] font-medium text-[28px] leading-none text-sl-grad">{progress}%</span>
+        <span className="sl-num-strong text-[28px] leading-none text-[var(--sl-t1)]">{progress}%</span>
         <span className="text-[10px] text-[var(--sl-t3)] mt-0.5">Geral</span>
       </div>
     </div>
@@ -133,7 +138,7 @@ function HorizonRing({ progress }: { progress: number }) {
 export default function FuturoPage() {
   const router = useRouter()
 
-  const { objectives, active, completed, avgProgress, nextDeadline, loading, error, reload } = useObjectives()
+  const { objectives, active, completed, avgProgress, loading, error, reload } = useObjectives()
   const createObjective = useCreateObjective()
   const updateObjective = useUpdateObjective()
   const addGoal = useAddGoal()
@@ -173,7 +178,6 @@ export default function FuturoPage() {
       return true
     })
 
-    // Sort by priority
     list.sort((a, b) => {
       return (PRIORITY_ORDER[a.priority] ?? 2) - (PRIORITY_ORDER[b.priority] ?? 2)
     })
@@ -198,7 +202,6 @@ export default function FuturoPage() {
 
   // ─── Handlers ───────────────────────────────────────────────────────────────
 
-  // ─── Create from mobile wizard (with goals) ───────────────────────────────────
   const handleCreateMobile = useCallback(async (data: {
     name: string
     category: string
@@ -228,7 +231,6 @@ export default function FuturoPage() {
         priority: data.priority ?? 'medium',
         icon: data.icon ?? '🎯',
       })
-      // Add goals sequentially
       for (const g of data.goals) {
         await addGoal(obj.id, {
           name: g.name,
@@ -261,24 +263,24 @@ export default function FuturoPage() {
 
   // ─── Mobile data ──────────────────────────────────────────────────────────
   const MODULE_META: Record<string, { emoji: string; label: string; color: string; bg: string }> = {
-    financas:     { emoji: '💰', label: 'Finanças',     color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
-    tempo:        { emoji: '⏳', label: 'Tempo',        color: '#06b6d4', bg: 'rgba(6,182,212,0.15)' },
-    futuro:       { emoji: '🔮', label: 'Futuro',       color: '#0055ff', bg: 'rgba(0,85,255,0.15)' },
-    corpo:        { emoji: '🏃', label: 'Corpo',        color: '#f97316', bg: 'rgba(249,115,22,0.15)' },
-    mente:        { emoji: '🧠', label: 'Mente',        color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
-    patrimonio:   { emoji: '📈', label: 'Patrimônio',   color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
-    carreira:     { emoji: '💼', label: 'Carreira',     color: '#ec4899', bg: 'rgba(236,72,153,0.15)' },
-    experiencias: { emoji: '✈️', label: 'Experiências', color: '#14b8a6', bg: 'rgba(20,184,166,0.15)' },
+    financas:     { emoji: '💰', label: 'Finanças',     color: '#0F766E', bg: 'rgba(15,118,110,0.15)' },
+    tempo:        { emoji: '⏳', label: 'Tempo',        color: '#3CA0B5', bg: 'rgba(60,160,181,0.15)' },
+    futuro:       { emoji: '🔮', label: 'Futuro',       color: MOD_FUTURO, bg: MOD_FUTURO_SOFT },
+    corpo:        { emoji: '🏃', label: 'Corpo',        color: '#D97534', bg: 'rgba(217,117,52,0.15)' },
+    mente:        { emoji: '🧠', label: 'Mente',        color: '#D9962E', bg: 'rgba(217,150,46,0.15)' },
+    patrimonio:   { emoji: '📈', label: 'Patrimônio',   color: '#4F88D4', bg: 'rgba(79,136,212,0.15)' },
+    carreira:     { emoji: '💼', label: 'Carreira',     color: '#DB6478', bg: 'rgba(219,100,120,0.15)' },
+    experiencias: { emoji: '✈️', label: 'Experiências', color: '#C76795', bg: 'rgba(199,103,149,0.15)' },
   }
 
   const CATEGORY_BG: Record<string, string> = {
-    financial: 'rgba(16,185,129,0.12)',
-    professional: 'rgba(245,158,11,0.12)',
-    health: 'rgba(249,115,22,0.12)',
-    educational: 'rgba(139,92,246,0.12)',
-    experience: 'rgba(20,184,166,0.12)',
-    personal: 'rgba(0,85,255,0.12)',
-    other: 'rgba(100,116,139,0.12)',
+    financial:    'rgba(15,118,110,0.12)',
+    professional: 'rgba(217,150,46,0.12)',
+    health:       'rgba(217,117,52,0.12)',
+    educational:  'rgba(139,123,212,0.12)',
+    experience:   'rgba(199,103,149,0.12)',
+    personal:     'rgba(79,136,212,0.12)',
+    other:        'rgba(111,121,134,0.12)',
   }
 
   const CATEGORY_DISPLAY: Record<string, string> = {
@@ -295,16 +297,13 @@ export default function FuturoPage() {
   const allMobileObjs = [...active, ...completed, ...paused]
 
   const mobileGoals = allMobileObjs.map(obj => {
-    // Extract linked modules from goals
     const linkedModules = (obj.goals ?? [])
       .map(g => g.target_module)
       .filter((m, i, arr) => arr.indexOf(m) === i && MODULE_META[m])
       .map(m => MODULE_META[m])
 
-    // Use first goal's values for progress label
     const firstGoal = (obj.goals ?? [])[0]
 
-    // Check if objective is delayed
     const isDelayed = obj.target_date
       ? new Date(obj.target_date).getTime() < Date.now() && obj.progress < 100
       : false
@@ -312,23 +311,21 @@ export default function FuturoPage() {
       ? Math.max(0, Math.round((Date.now() - new Date(obj.target_date).getTime()) / (30 * 24 * 60 * 60 * 1000)))
       : 0
 
-    // Narrative hint for Jornada mode
     const narrativeHint = isDelayed && behindMonths > 0
       ? `<strong>${behindMonths} meses atrasado.</strong> Cada R$ 200 extra recupera um mês.`
       : obj.progress >= 60
         ? `Mais ${Math.ceil((100 - obj.progress) / 15)} contribuições e você realiza esse sonho!`
         : undefined
 
-    // Format progress label with currency prefix for monetary goals
     const rawLabel = firstGoal?.target_value != null
-      ? `R$ ${firstGoal.current_value.toLocaleString('pt-BR')} / R$ ${firstGoal.target_value.toLocaleString('pt-BR')}`
+      ? `${fmtBRL(firstGoal.current_value)} / ${fmtBRL(firstGoal.target_value)}`
       : `${obj.progress}% concluído`
 
     return {
       id: obj.id,
       name: obj.name,
       icon: obj.icon ?? '🎯',
-      iconBg: CATEGORY_BG[obj.category] ?? 'rgba(0,85,255,0.12)',
+      iconBg: CATEGORY_BG[obj.category] ?? MOD_FUTURO_SOFT,
       deadline: obj.target_date
         ? `📅 ${new Date(obj.target_date + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}`
         : 'Sem prazo',
@@ -336,7 +333,7 @@ export default function FuturoPage() {
       modules: linkedModules,
       progressLabel: rawLabel,
       progressPct: obj.progress,
-      progressColor: obj.progress >= 60 ? '#10b981' : obj.progress >= 40 ? '#f59e0b' : '#f43f5e',
+      progressColor: obj.progress >= 60 ? 'var(--sl-success)' : obj.progress >= 40 ? 'var(--sl-warning)' : 'var(--sl-danger)',
       isDelayed,
       narrativeHint,
       status: obj.status as 'active' | 'completed' | 'paused',
@@ -356,36 +353,19 @@ export default function FuturoPage() {
     }
     const behindGoal = active.find(o => o.progress < 30 && o.target_date)
     if (behindGoal) {
-      return `O objetivo "${behindGoal.name}" está com apenas <span style="color:#f59e0b;">${behindGoal.progress}% de progresso</span>. Ajuste a contribuição mensal.`
+      return `O objetivo "${behindGoal.name}" está com apenas <span style="color:#D9962E;">${behindGoal.progress}% de progresso</span>. Ajuste a contribuição mensal.`
     }
     return undefined
   })()
 
-  // ─── Priority icon color mapping ────────────────────────────────────────────
-  const PRIORITY_ICON_COLOR: Record<string, string> = {
-    high: '#f43f5e',
-    medium: '#f59e0b',
-    low: '#06b6d4',
-  }
-
   const CATEGORY_ICON_BG: Record<string, string> = {
-    financial: 'rgba(16,185,129,0.10)',
-    health: 'rgba(249,115,22,0.10)',
-    professional: 'rgba(245,158,11,0.10)',
-    educational: 'rgba(139,92,246,0.10)',
-    experience: 'rgba(20,184,166,0.10)',
-    personal: 'rgba(0,85,255,0.10)',
-    other: 'rgba(100,116,139,0.10)',
-  }
-
-  const CATEGORY_ICON_COLOR: Record<string, string> = {
-    financial: '#10b981',
-    health: '#f97316',
-    professional: '#f59e0b',
-    educational: '#a855f7',
-    experience: '#14b8a6',
-    personal: '#0055ff',
-    other: '#64748b',
+    financial:    'rgba(15,118,110,0.10)',
+    health:       'rgba(217,117,52,0.10)',
+    professional: 'rgba(217,150,46,0.10)',
+    educational:  'rgba(139,123,212,0.10)',
+    experience:   'rgba(199,103,149,0.10)',
+    personal:     'rgba(79,136,212,0.10)',
+    other:        'rgba(111,121,134,0.10)',
   }
 
   return (
@@ -410,10 +390,10 @@ export default function FuturoPage() {
       {/* ── ModuleHeader ── */}
       <ModuleHeader
         icon={Target}
-        iconBg="rgba(0,85,255,0.08)"
-        iconColor="#0055ff"
+        iconBg={MOD_FUTURO_SOFT}
+        iconColor={MOD_FUTURO}
         title="Futuro"
-        subtitle={`${active.length} objetivos ativos · ${stats.onTrack} no ritmo · Progresso geral ${avgProgress}%`}
+        subtitle={`${active.length} OBJETIVOS ATIVOS · ${stats.onTrack} NO RITMO · PROGRESSO GERAL ${avgProgress}%`}
       >
         {!isPro && (
           <span className="text-[11px] text-[var(--sl-t3)] font-medium">
@@ -422,12 +402,11 @@ export default function FuturoPage() {
         )}
         <button
           onClick={() => router.push('/futuro/novo')}
-          className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#0055ff] text-white hover:brightness-110 hover:-translate-y-px
-                     transition-all shadow-[0_6px_20px_rgba(0,85,255,0.15)]"
+          className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold text-white hover:opacity-90 hover:-translate-y-px transition-all"
+          style={{ background: 'var(--sl-em)' }}
         >
           <Plus size={16} />
-          Novo Objetivo
+          Novo objetivo
         </button>
       </ModuleHeader>
 
@@ -435,17 +414,48 @@ export default function FuturoPage() {
       <JornadaInsight
         text={
           active.length > 0
-            ? <>Você tem <strong className="text-[var(--sl-t1)]">{active.length} objetivos ativos</strong> com progresso médio de <strong className="text-[#10b981]">{avgProgress}%</strong>. {avgProgress >= 50 ? 'Você está no caminho certo!' : 'Vamos adicionar mais metas para acelerar.'}</>
+            ? <>Você tem <strong className="text-[var(--sl-t1)]">{active.length} objetivos ativos</strong> com progresso médio de <strong className="text-[var(--sl-em)]">{avgProgress}%</strong>. {avgProgress >= 50 ? 'Você está no caminho certo!' : 'Vamos adicionar mais metas para acelerar.'}</>
             : <>Crie seu primeiro objetivo para começar a mapear o futuro que você quer construir.</>
         }
       />
 
-      {/* ── Horizon Roadmap Card ── */}
-      <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 mb-7 overflow-hidden sl-fade-up sl-delay-1
+      {/* ── KPI strip (P3 sumario) ── */}
+      <div className="grid grid-cols-4 gap-3 mb-7 max-sm:grid-cols-2 sl-fade-up sl-delay-1">
+        <KpiCard
+          label="Objetivos ativos"
+          value={active.length}
+          delta={`${stats.completed} concluídos`}
+          accent={MOD_FUTURO}
+          icon={Target}
+        />
+        <KpiCard
+          label="No ritmo"
+          value={stats.onTrack}
+          delta={active.length > 0 ? `${Math.round((stats.onTrack / Math.max(active.length, 1)) * 100)}% do total` : 'Sem ativos'}
+          deltaType="up"
+          accent="var(--sl-success)"
+        />
+        <KpiCard
+          label="Atenção"
+          value={stats.attention}
+          delta={stats.attention > 0 ? 'Precisa cuidado' : 'Tudo certo'}
+          deltaType={stats.attention > 0 ? 'warn' : 'neutral'}
+          accent="var(--sl-warning)"
+        />
+        <KpiCard
+          label="Em risco"
+          value={stats.atRisk}
+          delta={stats.atRisk > 0 ? 'Ação urgente' : 'Sem riscos'}
+          deltaType={stats.atRisk > 0 ? 'down' : 'neutral'}
+          accent="var(--sl-danger)"
+        />
+      </div>
+
+      {/* ── Horizon Roadmap Card (hero único G-05) ── */}
+      <div className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 mb-7 overflow-hidden sl-fade-up sl-delay-2
                       hover:border-[var(--sl-border-h)] transition-colors">
-        {/* Accent bar */}
-        <div className="absolute top-0 left-7 right-7 h-[2.5px] rounded-b-sm"
-          style={{ background: 'linear-gradient(90deg, #0055ff, #10b981)' }} />
+        {/* Accent bar — cor do módulo Futuro */}
+        <div className="absolute top-0 left-7 right-7 h-[2.5px] rounded-b-sm" style={{ background: MOD_FUTURO }} />
 
         {/* Head: Ring + Stats */}
         <div className="flex items-center gap-4 mb-6">
@@ -454,17 +464,17 @@ export default function FuturoPage() {
           {/* Stats strip */}
           <div className="flex flex-1">
             {[
-              { value: active.length, label: 'Objetivos', color: '#0055ff' },
-              { value: stats.onTrack, label: 'No Ritmo', color: '#10b981' },
-              { value: stats.attention, label: 'Atenção', color: '#f59e0b' },
-              { value: stats.atRisk, label: 'Em Risco', color: '#f43f5e' },
-              { value: stats.completed, label: 'Concluídos', color: '#10b981' },
+              { value: active.length, label: 'Objetivos', color: 'var(--sl-t1)' },
+              { value: stats.onTrack, label: 'No ritmo', color: 'var(--sl-success)' },
+              { value: stats.attention, label: 'Atenção', color: 'var(--sl-warning)' },
+              { value: stats.atRisk, label: 'Em risco', color: 'var(--sl-danger)' },
+              { value: stats.completed, label: 'Concluídos', color: 'var(--sl-em)' },
             ].map((s, i, arr) => (
               <div key={s.label} className={cn(
                 'flex-1 px-4',
                 i < arr.length - 1 && 'border-r border-[var(--sl-border)]'
               )}>
-                <div className="font-[DM_Mono] font-medium text-[22px] leading-none" style={{ color: s.color }}>
+                <div className="sl-num-strong text-[22px] leading-none" style={{ color: s.color }}>
                   {s.value}
                 </div>
                 <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mt-[5px]">
@@ -481,38 +491,34 @@ export default function FuturoPage() {
             {active.map(obj => {
               const progress = calcObjectiveProgress(obj.goals ?? [])
               const health = getObjectiveHealthStatus(obj)
-              const laneColor = health === 'at_risk' ? '#f43f5e'
-                : health === 'attention' ? '#f59e0b'
-                : '#10b981'
+              const laneColor = health === 'at_risk' ? 'var(--sl-danger)'
+                : health === 'attention' ? 'var(--sl-warning)'
+                : 'var(--sl-em)'
 
               return (
-                <div key={obj.id} className="flex items-center gap-3 py-[7px] border-b border-[rgba(120,165,220,0.04)] last:border-b-0">
-                  {/* Icon */}
+                <div key={obj.id} className="flex items-center gap-3 py-[7px] border-b border-[var(--sl-border)] last:border-b-0">
                   <div
                     className="w-[26px] h-[26px] rounded-lg flex items-center justify-center shrink-0 text-[13px]"
-                    style={{ background: CATEGORY_ICON_BG[obj.category] ?? 'rgba(0,85,255,0.10)' }}
+                    style={{ background: CATEGORY_ICON_BG[obj.category] ?? MOD_FUTURO_SOFT }}
                   >
                     {obj.icon}
                   </div>
-                  {/* Name */}
                   <div className="text-[12px] font-medium w-[140px] shrink-0 truncate text-[var(--sl-t1)]">
                     {obj.name}
                   </div>
-                  {/* Bar */}
+                  {/* Bar — usa --sl-grad (única exceção G-03 permitida em metas) */}
                   <div className="flex-1 h-[6px] bg-[var(--sl-s3)] rounded-[3px] overflow-hidden">
                     <div
                       className="h-full rounded-[3px] transition-[width] duration-800 ease-out"
                       style={{
                         width: `${Math.min(progress, 100)}%`,
-                        background: `linear-gradient(90deg, #0055ff, ${laneColor})`,
+                        background: 'var(--sl-grad)',
                       }}
                     />
                   </div>
-                  {/* Pct */}
-                  <div className="font-[DM_Mono] text-[11px] w-[40px] text-right shrink-0" style={{ color: laneColor }}>
+                  <div className="sl-num text-[11px] w-[40px] text-right shrink-0" style={{ color: laneColor }}>
                     {progress}%
                   </div>
-                  {/* Deadline */}
                   <div className="text-[10px] text-[var(--sl-t3)] w-[80px] text-right shrink-0">
                     {formatDeadline(obj.target_date)}
                   </div>
@@ -524,20 +530,20 @@ export default function FuturoPage() {
       </div>
 
       {/* ── 2-Column: Objectives list + Radar ── */}
-      <div className="grid grid-cols-[1fr_340px] gap-5 sl-fade-up sl-delay-2 max-lg:grid-cols-1">
+      <div className="grid grid-cols-[1fr_340px] gap-5 sl-fade-up sl-delay-3 max-lg:grid-cols-1">
         {/* Left: Objectives list */}
         <div>
           {/* Search + Filter tabs */}
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex gap-0 flex-1">
+          <div className="flex items-center gap-3 mb-5 max-md:flex-col max-md:items-stretch">
+            <div className="flex gap-0 flex-1 overflow-x-auto">
               {STATUS_TABS.map(tab => (
                 <button
                   key={tab.value}
                   onClick={() => setStatusFilter(tab.value)}
                   className={cn(
-                    'px-[14px] py-2 text-[12px] font-semibold border-b-2 transition-all relative',
+                    'px-[14px] py-2 text-[12px] font-semibold border-b-2 transition-all relative whitespace-nowrap',
                     statusFilter === tab.value
-                      ? 'text-[#0055ff] border-[#0055ff]'
+                      ? 'border-[var(--sl-em)] text-[var(--sl-t1)]'
                       : 'text-[var(--sl-t3)] border-transparent hover:text-[var(--sl-t2)]'
                   )}
                 >
@@ -545,7 +551,7 @@ export default function FuturoPage() {
                   <span className={cn(
                     'text-[9px] ml-1 px-[5px] py-px rounded',
                     statusFilter === tab.value
-                      ? 'bg-[rgba(0,85,255,0.18)]'
+                      ? 'bg-[var(--sl-em-soft)] text-[var(--sl-em)]'
                       : 'bg-[var(--sl-s3)]'
                   )}>
                     {tabCounts[tab.value]}
@@ -553,7 +559,7 @@ export default function FuturoPage() {
                 </button>
               ))}
             </div>
-            <div className="relative w-[220px]">
+            <div className="relative w-[220px] max-md:w-full">
               <Search size={14} className="absolute left-[10px] top-1/2 -translate-y-1/2 text-[var(--sl-t3)]" />
               <input
                 type="text"
@@ -563,7 +569,7 @@ export default function FuturoPage() {
                 className="w-full py-[9px] pl-[34px] pr-3 bg-[var(--sl-s2)] border border-[var(--sl-border)]
                            rounded-[10px] text-[var(--sl-t1)] text-[12px] outline-none
                            placeholder:text-[var(--sl-t3)] transition-colors
-                           focus:border-[rgba(0,85,255,0.4)]"
+                           focus:border-[var(--sl-border-em)]"
               />
             </div>
           </div>
@@ -577,7 +583,7 @@ export default function FuturoPage() {
             </div>
           ) : error ? (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 text-center">
-              <div className="text-2xl mb-2">⚠️</div>
+              <AlertCircle size={28} className="mx-auto text-[var(--sl-warning)] mb-2" />
               <p className="text-[13px] text-[var(--sl-t2)] mb-4">
                 {error.includes('does not exist')
                   ? 'Execute a migration 005 no Supabase para ativar este módulo.'
@@ -592,7 +598,7 @@ export default function FuturoPage() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
-              <div className="text-4xl mb-3">🔮</div>
+              <Sparkles size={32} className="mx-auto mb-3" style={{ color: MOD_FUTURO }} />
               <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
                 {search || statusFilter !== 'all' ? 'Nenhum objetivo encontrado' : 'Comece a desenhar seu futuro'}
               </h3>
@@ -604,8 +610,8 @@ export default function FuturoPage() {
               {!search && statusFilter === 'all' && (
                 <button
                   onClick={() => router.push('/futuro/novo')}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                             bg-[#10b981] text-[#03071a] hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold text-white hover:opacity-90 transition-opacity"
+                  style={{ background: 'var(--sl-em)' }}
                 >
                   <Plus size={15} />
                   Criar primeiro objetivo
@@ -621,8 +627,7 @@ export default function FuturoPage() {
                   const pill = getStatusPill(health)
                   const firstGoal = (obj.goals ?? [])[0]
                   const sub = getSubtitle(firstGoal, obj)
-                  const iconColor = CATEGORY_ICON_COLOR[obj.category] ?? '#0055ff'
-                  const iconBg = CATEGORY_ICON_BG[obj.category] ?? 'rgba(0,85,255,0.10)'
+                  const iconBg = CATEGORY_ICON_BG[obj.category] ?? MOD_FUTURO_SOFT
                   const isCompleted = obj.status === 'completed'
 
                   return (
@@ -641,7 +646,6 @@ export default function FuturoPage() {
                         isCompleted && 'opacity-75',
                       )}
                     >
-                      {/* Icon */}
                       <div
                         className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center shrink-0 text-[18px]"
                         style={{ background: iconBg }}
@@ -649,7 +653,6 @@ export default function FuturoPage() {
                         {obj.icon}
                       </div>
 
-                      {/* Details */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 text-[13.5px] font-semibold text-[var(--sl-t1)]">
                           <span className="truncate">{obj.name}</span>
@@ -662,9 +665,9 @@ export default function FuturoPage() {
                           {obj.priority === 'high' && (
                             <span
                               className="inline-flex items-center gap-1 px-[10px] py-[4px] rounded-lg text-[10px] font-semibold shrink-0"
-                              style={{ background: 'rgba(168,85,247,0.10)', color: '#a855f7' }}
+                              style={{ background: MOD_FUTURO_SOFT, color: MOD_FUTURO }}
                             >
-                              Prioridade Alta
+                              Prioridade alta
                             </span>
                           )}
                         </div>
@@ -675,28 +678,26 @@ export default function FuturoPage() {
                         )}
                       </div>
 
-                      {/* Progress bar */}
+                      {/* Progress bar — usa --sl-grad (G-03 exceção meta) */}
                       <div className="w-[140px] shrink-0">
                         <div className="h-[5px] bg-[var(--sl-s3)] rounded-[3px] overflow-hidden">
                           <div
                             className="h-full rounded-[3px] transition-[width] duration-700 ease-out"
                             style={{
                               width: `${Math.min(progress, 100)}%`,
-                              background: 'linear-gradient(90deg, #0055ff, #10b981)',
+                              background: 'var(--sl-grad)',
                             }}
                           />
                         </div>
                       </div>
 
-                      {/* Percentage */}
                       <div
-                        className="font-[DM_Mono] text-[16px] font-medium w-[50px] text-right shrink-0"
+                        className="sl-num-strong text-[16px] w-[50px] text-right shrink-0"
                         style={{ color: getProgressColor(progress, obj.status) }}
                       >
                         {progress}%
                       </div>
 
-                      {/* Arrow */}
                       <ChevronRight size={14} className="text-[var(--sl-t3)] shrink-0" />
                     </div>
                   )
@@ -705,14 +706,14 @@ export default function FuturoPage() {
 
               {/* Completed objectives restore action */}
               {displayed.some(obj => obj.status === 'completed') && (
-                <div className="mt-2 flex justify-end">
+                <div className="mt-2 flex justify-end flex-wrap gap-2">
                   {displayed.filter(obj => obj.status === 'completed').map(obj => (
                     <button
                       key={`restore-${obj.id}`}
                       onClick={(e) => { e.stopPropagation(); handleRestore(obj.id) }}
-                      className="text-[10px] font-semibold text-[var(--sl-t3)] hover:text-[#0055ff]
+                      className="text-[10px] font-semibold text-[var(--sl-t3)] hover:text-[var(--sl-em)]
                                  px-2 py-1 rounded border border-[var(--sl-border)]
-                                 hover:border-[#0055ff]/40 transition-colors mr-2"
+                                 hover:border-[var(--sl-border-em)] transition-colors"
                     >
                       Restaurar &quot;{obj.name}&quot;
                     </button>
@@ -720,7 +721,7 @@ export default function FuturoPage() {
                 </div>
               )}
 
-              {/* Ver todos — RN-FUT-05 */}
+              {/* Ver todos · RN-FUT-05 */}
               {hasMore && (
                 <div className="mt-4 text-center">
                   <button
@@ -735,7 +736,7 @@ export default function FuturoPage() {
           )}
         </div>
 
-        {/* Right: Radar Sidebar — Mapa da Vida */}
+        {/* Right: Radar Sidebar · Mapa da Vida */}
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 self-start
                         hover:border-[var(--sl-border-h)] transition-colors">
           <LifeMapRadar
@@ -749,8 +750,11 @@ export default function FuturoPage() {
             const strongest = [...lifeDimensions].sort((a, b) => b.value - a.value)[0]
             return (
               <div className="mt-4 pt-4 border-t border-[var(--sl-border)]">
-                <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed">
-                  💡 Seu ponto mais forte esta semana é <strong className="text-[var(--sl-t1)]">{strongest.icon} {strongest.fullLabel}</strong> ({strongest.value}%). Foque em <strong style={{ color: '#f59e0b' }}>{weakest.icon} {weakest.fullLabel}</strong> ({weakest.value}%) para equilibrar seu Mapa da Vida.
+                <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed flex items-start gap-1.5">
+                  <Sparkles size={14} className="shrink-0 mt-px" style={{ color: MOD_FUTURO }} />
+                  <span>
+                    Seu ponto mais forte esta semana é <strong className="text-[var(--sl-t1)]">{strongest.icon} {strongest.fullLabel}</strong> ({strongest.value}%). Foque em <strong style={{ color: 'var(--sl-warning)' }}>{weakest.icon} {weakest.fullLabel}</strong> ({weakest.value}%) para equilibrar seu Mapa da Vida.
+                  </span>
                 </p>
               </div>
             )

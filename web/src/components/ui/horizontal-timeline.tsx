@@ -21,7 +21,7 @@ interface HorizontalTimelineProps {
 export function HorizontalTimeline({
   steps,
   progressPercent,
-  accentColor = '#10b981',
+  accentColor = '#0F766E',
   className,
 }: HorizontalTimelineProps) {
   if (steps.length === 0) return null
@@ -34,7 +34,7 @@ export function HorizontalTimeline({
           className="absolute top-0 left-0 h-full rounded-full transition-[width] duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)]"
           style={{
             width: `${Math.min(progressPercent, 100)}%`,
-            background: `linear-gradient(90deg, ${accentColor}, #0055ff)`,
+            background: `linear-gradient(90deg, ${accentColor}, #0B2D34)`,
           }}
         />
         {/* Nodes */}

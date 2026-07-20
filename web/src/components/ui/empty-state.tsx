@@ -15,7 +15,7 @@ export function EmptyState({
   title,
   description,
   action,
-  accent = '#0055ff',
+  accent = '#0B2D34',
   className,
 }: EmptyStateProps) {
   return (
@@ -42,7 +42,7 @@ export function EmptyState({
         <button
           onClick={action.onClick}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                     bg-[#0055ff] text-white hover:opacity-90 transition-opacity"
+                     bg-[#0B2D34] text-white hover:opacity-90 transition-opacity"
         >
           {action.label}
         </button>

@@ -1,6 +1,7 @@
 'use client'
 
-import { Lock } from 'lucide-react'
+import { Lock, FileSpreadsheet, FileText, Table } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SLCard } from '@/components/ui/sl-card'
 
@@ -10,23 +11,23 @@ interface RelatoriosExportPanelProps {
 }
 
 export function RelatoriosExportPanel({ isPro, exportCSV }: RelatoriosExportPanelProps) {
-  const items = [
+  const items: { icon: LucideIcon; bg: string; color: string; label: string; proOnly: boolean; desc: string; action: () => void }[] = [
     {
-      icon: '📊', bg: 'rgba(16,185,129,0.1)',
-      label: 'CSV — Transações',
+      icon: FileSpreadsheet, bg: 'rgba(15,118,110,0.1)', color: '#0F766E',
+      label: 'CSV · Transações',
       proOnly: false,
       desc: 'Todas as transações do período em formato planilha.',
       action: exportCSV,
     },
     {
-      icon: '📄', bg: 'rgba(0,85,255,0.1)',
-      label: 'PDF — Relatório Completo',
+      icon: FileText, bg: 'rgba(0,85,255,0.1)', color: '#0B2D34',
+      label: 'PDF · Relatório Completo',
       proOnly: true,
       desc: 'Relatório formatado com gráficos, sumários e análise.',
       action: () => {},
     },
     {
-      icon: '📋', bg: 'rgba(245,158,11,0.1)',
+      icon: Table, bg: 'rgba(217,150,46,0.1)', color: '#D9962E',
       label: 'Excel (.xlsx)',
       proOnly: true,
       desc: 'Exportação com múltiplas abas: transações, categorias, resumo.',
@@ -40,6 +41,7 @@ export function RelatoriosExportPanel({ isPro, exportCSV }: RelatoriosExportPane
       <div className="flex flex-col divide-y divide-[var(--sl-border)]">
         {items.map((item, i) => {
           const disabled = item.proOnly && !isPro
+          const Icon = item.icon
           return (
             <div
               key={i}
@@ -49,15 +51,15 @@ export function RelatoriosExportPanel({ isPro, exportCSV }: RelatoriosExportPane
               )}
               onClick={!disabled ? item.action : undefined}>
               <div
-                className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center text-[16px] shrink-0"
-                style={{ background: item.bg }}>
-                {item.icon}
+                className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center shrink-0"
+                style={{ background: item.bg, color: item.color }}>
+                <Icon size={16} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] font-semibold text-[var(--sl-t1)] mb-px flex items-center gap-1 flex-wrap">
                   {item.label}
                   {item.proOnly && !isPro && (
-                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-[5px] text-[9px] font-bold bg-gradient-to-br from-[rgba(16,185,129,0.15)] to-[rgba(0,85,255,0.15)] text-[#10b981] border border-[rgba(16,185,129,0.25)]">
+                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-[5px] text-[9px] font-bold bg-gradient-to-br from-[rgba(15,118,110,0.15)] to-[rgba(0,85,255,0.15)] text-[#0F766E] border border-[rgba(15,118,110,0.25)]">
                       <Lock size={9} /> PRO
                     </span>
                   )}

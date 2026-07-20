@@ -43,12 +43,27 @@ export default async function AppLayout({
 
   const userName = profile?.full_name || user.email?.split('@')[0] || 'Usuário'
 
-  const VALID_THEMES = ['navy-dark', 'clean-light', 'mint-garden', 'obsidian', 'rosewood', 'arctic', 'graphite', 'twilight', 'sahara', 'carbon', 'blossom', 'serenity', 'system']
+  const VALID_THEMES = ['navy-deep', 'midnight', 'charcoal', 'cream']
+  const THEME_MIGRATION: Record<string, ThemeId> = {
+    'navy-dark':   'navy-deep',
+    'clean-light': 'cream',
+    'mint-garden': 'cream',
+    'obsidian':    'charcoal',
+    'rosewood':    'navy-deep',
+    'arctic':      'cream',
+    'graphite':    'charcoal',
+    'twilight':    'midnight',
+    'sahara':      'cream',
+    'carbon':      'charcoal',
+    'blossom':     'cream',
+    'serenity':    'cream',
+  }
   const mapTheme = (dbTheme: string | null): ThemeId | undefined => {
     if (!dbTheme) return undefined
     // Migrate old values
-    if (dbTheme === 'dark' || dbTheme === 'light') return 'system'
+    if (dbTheme === 'dark' || dbTheme === 'light') return 'navy-deep'
     if (VALID_THEMES.includes(dbTheme)) return dbTheme as ThemeId
+    if (THEME_MIGRATION[dbTheme]) return THEME_MIGRATION[dbTheme]
     return undefined
   }
 

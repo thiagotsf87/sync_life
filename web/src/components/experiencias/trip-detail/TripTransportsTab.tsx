@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, Plane, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   TRANSPORT_TYPE_LABELS,
@@ -40,9 +40,12 @@ export function TripTransportsTab({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">✈️ Transportes</h2>
+        <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] flex items-center gap-2">
+          <Plane size={14} className="text-[#C76795]" />
+          Transportes
+        </h2>
         <button onClick={() => setShowModal(true)}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#ec4899]/10 border border-[#ec4899] text-[#ec4899] hover:bg-[#ec4899]/20">
+          className="flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[12px] font-medium bg-[#C76795]/10 border border-[#C76795] text-[#C76795] hover:bg-[#C76795]/20">
           <Plus size={13} />
           Adicionar
         </button>
@@ -50,7 +53,9 @@ export function TripTransportsTab({
 
       {transports.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl p-12 text-center">
-          <div className="text-4xl mb-3">✈️</div>
+          <div className="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style={{ background: 'rgba(199,103,149,.1)' }}>
+            <Plane size={22} className="text-[#C76795]" />
+          </div>
           <p className="text-[13px] text-[var(--sl-t2)]">Adicione voos, trens e outros transportes</p>
         </div>
       ) : (
@@ -68,29 +73,30 @@ export function TripTransportsTab({
                     </span>
                     <span className={cn(
                       'text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full',
-                      t.booking_status === 'paid' ? 'text-[#10b981] bg-[#10b981]/10' :
-                      t.booking_status === 'reserved' ? 'text-[#0055ff] bg-[#0055ff]/10' :
-                      'text-[#f59e0b] bg-[#f59e0b]/10'
+                      t.booking_status === 'paid' ? 'text-[#0F766E] bg-[#0F766E]/10' :
+                      t.booking_status === 'reserved' ? 'text-[#0B2D34] bg-[#0B2D34]/10' :
+                      'text-[#D9962E] bg-[#D9962E]/10'
                     )}>
                       {t.booking_status === 'paid' ? 'Pago' : t.booking_status === 'reserved' ? 'Reservado' : 'Estimado'}
                     </span>
                   </div>
                   {t.departure_datetime && (
-                    <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
-                      🕐 {new Date(t.departure_datetime).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
-                      {t.arrival_datetime && ` → ${new Date(t.arrival_datetime).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}`}
+                    <p className="text-[10px] text-[var(--sl-t3)] mt-0.5 inline-flex items-center gap-1">
+                      <Clock size={10} />
+                      <span className="sl-num">{new Date(t.departure_datetime).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                      {t.arrival_datetime && <> → <span className="sl-num">{new Date(t.arrival_datetime).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span></>}
                     </p>
                   )}
                   {t.company && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">{t.company}</p>}
                 </div>
                 <div className="flex items-center gap-2">
                   {t.cost != null && (
-                    <span className="font-[DM_Mono] text-[12px] text-[#ec4899]">
+                    <span className="sl-num text-[12px] text-[#C76795]">
                       {formatTripAmountCompact(t.cost)}
                     </span>
                   )}
                   <button onClick={async () => { await deleteTransport(t.id); await reload() }}
-                    className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors">
+                    className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors">
                     <Trash2 size={12} className="text-[var(--sl-t3)]" />
                   </button>
                 </div>

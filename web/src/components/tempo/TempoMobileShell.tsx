@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname, useRouter } from 'next/navigation'
-import { Search, Crown } from 'lucide-react'
+import { Search, Crown, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { jornadaLabel } from '@/lib/jornada-labels'
 
@@ -53,11 +53,14 @@ export function TempoMobileShell({
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
-          <p className="text-[12px] font-semibold text-[#06b6d4] mb-[2px]">✦ {jornadaLabel('tempo', 'module', 'Tempo')}</p>
+          <p className="font-[Syne] text-[11px] font-bold uppercase tracking-[0.14em] text-[#3CA0B5] mb-[2px] inline-flex items-center gap-1.5">
+            <Sparkles size={11} />
+            {jornadaLabel('tempo', 'module', 'Tempo')}
+          </p>
           <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
             {pageTitle}
           </h1>
-          {subtitle && <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">{subtitle}</p>}
+          {subtitle && <p className="font-[DM_Sans] text-[12px] text-[var(--sl-t2)] mt-0.5">{subtitle}</p>}
         </div>
         {rightAction ?? (
           <button
@@ -71,7 +74,7 @@ export function TempoMobileShell({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0 px-4 border-b border-[var(--sl-border)] mb-3 overflow-x-auto scrollbar-hide">
+      <div className="flex gap-0 px-4 border-b border-[var(--sl-border)] mb-3 overflow-x-auto phone-scroll scrollbar-hide">
         {TABS.map((tab) => {
           const isActive = pathname === tab.href || (tab.href !== '/tempo' && pathname.startsWith(tab.href))
           return (
@@ -80,13 +83,15 @@ export function TempoMobileShell({
               type="button"
               onClick={() => router.push(tab.href)}
               className={cn(
-                'px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors',
-                isActive ? 'text-[var(--sl-t1)] font-semibold border-b-[#06b6d4]' : 'text-[var(--sl-t3)] border-b-transparent'
+                'font-[DM_Sans] px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors',
+                isActive
+                  ? 'text-[var(--sl-t1)] font-semibold border-b-[#3CA0B5]'
+                  : 'text-[var(--sl-t3)] border-b-transparent'
               )}
             >
               {jornadaLabel('tempo', tab.key, tab.label)}
               {tab.pro && (
-                <Crown size={8} className="ml-1 inline text-[#f59e0b] align-super" />
+                <Crown size={9} className="ml-1 inline text-[var(--sl-warning)] align-super" />
               )}
             </button>
           )

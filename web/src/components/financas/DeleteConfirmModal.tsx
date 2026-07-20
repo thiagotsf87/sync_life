@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Loader2, AlertTriangle } from 'lucide-react'
+import { X, Loader2, AlertTriangle, CreditCard } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Transaction } from '@/hooks/use-transactions'
+import { fmtBRL } from '@/lib/format/currency'
 
 const PAYMENT_LABELS: Record<string, string> = {
   pix:      'Pix',
@@ -12,10 +13,6 @@ const PAYMENT_LABELS: Record<string, string> = {
   cash:     'Dinheiro',
   transfer: 'Transferência',
   boleto:   'Boleto',
-}
-
-function fmtR$(n: number): string {
-  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
 }
 
 function formatDate(dateStr: string): string {
@@ -59,8 +56,8 @@ export function DeleteConfirmModal({ open, transaction, onClose, onConfirm }: De
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(244,63,94,.12)]">
-              <AlertTriangle size={16} className="text-[#f43f5e]" />
+            <div className="w-8 h-8 rounded-[9px] flex items-center justify-center" style={{ background: 'rgba(219,100,120,.12)' }}>
+              <AlertTriangle size={16} className="text-[var(--sl-danger)]" />
             </div>
             <h2 className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)]">Excluir transação</h2>
           </div>
@@ -81,7 +78,7 @@ export function DeleteConfirmModal({ open, transaction, onClose, onConfirm }: De
           {/* Resumo da transação */}
           <div className="flex items-center gap-3 px-3.5 py-3 rounded-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)]">
             <div className="w-10 h-10 rounded-[10px] bg-[var(--sl-s3)] flex items-center justify-center text-lg shrink-0">
-              {transaction.category?.icon ?? '💳'}
+              {transaction.category?.icon ?? <CreditCard size={18} className="text-[var(--sl-t3)]" />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-semibold text-[var(--sl-t1)] truncate">{transaction.description}</p>
@@ -90,10 +87,10 @@ export function DeleteConfirmModal({ open, transaction, onClose, onConfirm }: De
               </p>
             </div>
             <p className={cn(
-              'font-[DM_Mono] text-[15px] font-medium shrink-0',
-              transaction.type === 'income' ? 'text-[#10b981]' : 'text-[#f43f5e]'
+              'sl-num-strong text-[15px] shrink-0',
+              transaction.type === 'income' ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
             )}>
-              {transaction.type === 'income' ? '+' : '-'}R$ {fmtR$(transaction.amount)}
+              {transaction.type === 'income' ? '+' : '– '}{fmtBRL(transaction.amount)}
             </p>
           </div>
         </div>
@@ -110,7 +107,7 @@ export function DeleteConfirmModal({ open, transaction, onClose, onConfirm }: De
             onClick={handleConfirm}
             disabled={deleting}
             className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#f43f5e' }}
+            style={{ background: 'var(--sl-danger)' }}
           >
             {deleting && <Loader2 size={14} className="animate-spin" />}
             Excluir

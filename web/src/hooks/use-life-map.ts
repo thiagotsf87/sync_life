@@ -140,7 +140,7 @@ export function useLifeMap(): UseLifeMapReturn {
           fullLabel: 'Finanças',
           icon: '💰',
           value: financeScore(txns),
-          color: '#10b981',
+          color: '#0F766E',
         },
         {
           key: 'futuro',
@@ -148,7 +148,7 @@ export function useLifeMap(): UseLifeMapReturn {
           fullLabel: 'Futuro / Metas',
           icon: '🔮',
           value: futuroScore(objs),
-          color: '#0055ff',
+          color: '#0B2D34',
         },
         {
           key: 'corpo',
@@ -156,7 +156,7 @@ export function useLifeMap(): UseLifeMapReturn {
           fullLabel: 'Saúde / Corpo',
           icon: '🏃',
           value: corpoScore(weekActivityCount),
-          color: '#f97316',
+          color: '#D97534',
         },
         {
           key: 'mente',
@@ -172,7 +172,7 @@ export function useLifeMap(): UseLifeMapReturn {
           fullLabel: 'Carreira',
           icon: '💼',
           value: carreiraScore(roadmapSteps),
-          color: '#f59e0b',
+          color: '#D9962E',
         },
         {
           key: 'patrimonio',
@@ -180,7 +180,7 @@ export function useLifeMap(): UseLifeMapReturn {
           fullLabel: 'Patrimônio',
           icon: '📈',
           value: patrimonioScore(assetCount),
-          color: '#06b6d4',
+          color: '#3CA0B5',
         },
         {
           key: 'experiencias',
@@ -188,7 +188,7 @@ export function useLifeMap(): UseLifeMapReturn {
           fullLabel: 'Experiências',
           icon: '✈️',
           value: experienciasScore(activeTrips.length),
-          color: '#f43f5e',
+          color: '#DB6478',
         },
       ]
 

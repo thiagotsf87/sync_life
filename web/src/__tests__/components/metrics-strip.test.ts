@@ -31,7 +31,7 @@ describe('MetricsStrip', () => {
     it('validates correctly formed items', () => {
       const items: MetricsStripItem[] = [
         { label: 'Total', value: 'R$ 100.000' },
-        { label: 'Resultado', value: '+5%', valueColor: '#10b981' },
+        { label: 'Resultado', value: '+5%', valueColor: '#0F766E' },
         { label: 'Proventos', value: 'R$ 1.200', note: 'últimos 12m' },
       ]
       const result = validateItems(items)
@@ -77,9 +77,9 @@ describe('MetricsStrip', () => {
 
   describe('valueColor application', () => {
     it('applies style when valueColor is provided', () => {
-      const item: MetricsStripItem = { label: 'Test', value: 'R$ 100', valueColor: '#10b981' }
+      const item: MetricsStripItem = { label: 'Test', value: 'R$ 100', valueColor: '#0F766E' }
       const style = item.valueColor ? { color: item.valueColor } : undefined
-      expect(style).toEqual({ color: '#10b981' })
+      expect(style).toEqual({ color: '#0F766E' })
     })
 
     it('returns undefined style when no valueColor', () => {

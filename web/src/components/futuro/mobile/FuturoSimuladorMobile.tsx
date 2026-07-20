@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ChevronLeft } from 'lucide-react'
@@ -17,30 +17,30 @@ const SCENARIOS = [
   {
     id: 'cut',
     icon: '✂️',
-    iconBg: 'rgba(16,185,129,0.12)',
+    iconBg: 'rgba(15,118,110,0.12)',
     name: 'Cortar gastos',
     tag: 'Menor sacrifício',
-    tagColor: '#10b981',
+    tagColor: 'var(--sl-em)',
     description: 'Reduzir Lazer R$ 120 + Assinaturas R$ 80 = R$ 200 extras/mês. Baixíssimo impacto.',
     stats: [
-      { label: 'Novo prazo', value: 'Dez 2028 ✓', color: '#10b981' },
+      { label: 'Novo prazo', value: 'Dez 2028 ✓', color: 'var(--sl-em)' },
       { label: 'Esforço', value: '+R$ 200/mês' },
-      { label: 'Impacto', value: 'Baixo', color: '#10b981' },
+      { label: 'Impacto', value: 'Baixo', color: 'var(--sl-em)' },
     ],
     lifeScoreImpact: 'Life Score Futuro: 58 → 66 pts em 3 meses',
   },
   {
     id: 'income',
     icon: '📈',
-    iconBg: 'rgba(244,63,94,0.12)',
+    iconBg: 'rgba(219,100,120,0.12)',
     name: 'Aumentar renda',
     tag: 'Requer esforço em Carreira',
-    tagColor: '#f43f5e',
+    tagColor: 'var(--sl-danger)',
     description: 'Renda extra de R$ 400/mês. Mais esforço, aceleração maior.',
     stats: [
-      { label: 'Novo prazo', value: 'Nov 2028 ✓', color: '#10b981' },
+      { label: 'Novo prazo', value: 'Nov 2028 ✓', color: 'var(--sl-em)' },
       { label: 'Renda extra', value: '+R$ 400/mês' },
-      { label: 'Impacto', value: 'Médio', color: '#f59e0b' },
+      { label: 'Impacto', value: 'Médio', color: 'var(--sl-warning)' },
     ],
     lifeScoreImpact: 'Life Score Futuro: 58 → 72 pts em 3 meses',
   },
@@ -53,9 +53,9 @@ const SCENARIOS = [
     tagColor: 'var(--sl-t3)',
     description: 'Continuar com R$ 800/mês e aceitar Fev 2029.',
     stats: [
-      { label: 'Novo prazo', value: 'Fev 2029', color: '#f59e0b' },
+      { label: 'Novo prazo', value: 'Fev 2029', color: 'var(--sl-warning)' },
       { label: 'Mudança', value: 'Nenhuma' },
-      { label: 'Impacto', value: 'Zero', color: '#10b981' },
+      { label: 'Impacto', value: 'Zero', color: 'var(--sl-em)' },
     ],
     lifeScoreImpact: 'Life Score Futuro: 58 → 60 pts em 3 meses',
   },
@@ -84,7 +84,7 @@ export function FuturoSimuladorMobile({ objectiveName, open, onClose, onApply }:
 
       {/* Coach intro */}
       <CoachCard
-        label="Coach Sync — Simulador"
+        label="Coach Sync · Simulador"
         message={
           <>Analisei sua vida e <strong>encontrei 3 formas</strong> de recuperar esses 2 meses. Cada caminho tem impacto diferente no seu Life Score.</>
         }

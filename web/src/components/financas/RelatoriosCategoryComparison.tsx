@@ -21,7 +21,7 @@ export function RelatoriosCategoryComparison({ catCompData, maxCatValue }: Relat
         </p>
         <div className="flex items-center gap-2 text-[10px] text-[var(--sl-t3)]">
           <span className="flex items-center gap-1">
-            <span className="w-2 h-[3px] bg-[#10b981] rounded inline-block" />Atual
+            <span className="w-2 h-[3px] bg-[#0F766E] rounded inline-block" />Atual
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2 h-[3px] bg-[var(--sl-s3)] rounded inline-block" />Anterior
@@ -57,13 +57,13 @@ export function RelatoriosCategoryComparison({ catCompData, maxCatValue }: Relat
                 />
               </div>
               <div className="flex flex-col items-end shrink-0 min-w-[62px]">
-                <span className="font-[DM_Mono] text-[11px] font-medium text-[var(--sl-t1)]">
+                <span className="sl-num text-[11px] text-[var(--sl-t1)]">
                   {fmtR(cat.currentTotal)}
                 </span>
                 {cat.delta !== null && (
                   <span className={cn('text-[10px]',
-                    cat.delta > 10 ? 'text-[#f43f5e]' :
-                    cat.delta < -5 ? 'text-[#10b981]' :
+                    cat.delta > 10 ? 'text-[#DB6478]' :
+                    cat.delta < -5 ? 'text-[#0F766E]' :
                     'text-[var(--sl-t3)]'
                   )}>
                     {cat.delta > 0 ? '↑' : '↓'} {Math.abs(cat.delta).toFixed(0)}%

@@ -79,7 +79,7 @@ export function DonutChart({
       {(centerLabel || centerSub) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ transform: 'none' }}>
           {centerLabel && (
-            <span className="font-[DM_Mono] font-medium text-[22px] leading-none text-[var(--sl-t1)]">
+            <span className="font-[IBM_Plex_Mono] font-medium text-[22px] leading-none text-[var(--sl-t1)]">
               {centerLabel}
             </span>
           )}
@@ -109,7 +109,7 @@ export function DonutLegend({ segments, className }: DonutLegendProps) {
             style={{ background: seg.color }}
           />
           <span className="text-[11px] text-[var(--sl-t2)] flex-1">{seg.label}</span>
-          <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)]">
+          <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)]">
             {total > 0 ? Math.round((seg.value / total) * 100) : 0}%
           </span>
         </div>

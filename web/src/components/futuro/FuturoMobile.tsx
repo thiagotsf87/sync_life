@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { X } from 'lucide-react'
-import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT, FUTURO_PRIMARY_BG, FUTURO_GRAD } from '@/lib/futuro-colors'
+import { X, ClipboardList, Target, Rocket, Map } from 'lucide-react'
+import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT, FUTURO_PRIMARY_BG } from '@/lib/futuro-colors'
 import { jornadaLabel } from '@/lib/jornada-labels'
 
 const CHECKIN_KEY = 'sl_futuro_checkin'
@@ -87,7 +87,7 @@ export function FuturoMobile({
 
   // Build goal chips for score band
   const goalChips = goals.slice(0, 3).map(g => {
-    const color = g.progressPct >= 60 ? '#10b981' : g.progressPct >= 40 ? '#f59e0b' : '#f43f5e'
+    const color = g.progressPct >= 60 ? '#0F766E' : g.progressPct >= 40 ? '#D9962E' : '#DB6478'
     return {
       icon: g.icon,
       pct: g.progressPct,
@@ -110,7 +110,7 @@ export function FuturoMobile({
           </h1>
         </div>
         <span
-          className="text-[10px] font-semibold px-2 py-[3px] rounded-[20px]"
+          className="sl-num text-[10px] font-semibold px-2 py-[3px] rounded-[20px]"
           style={{
             background: FUTURO_PRIMARY_BG,
             color: FUTURO_PRIMARY_LIGHT,
@@ -153,14 +153,14 @@ export function FuturoMobile({
               const cx = 100, cy = 100, R = 76
               const toRad = (deg: number) => (deg * Math.PI) / 180
               const dims = [
-                { emoji: '💰', value: 75, color: '#10b981', angle: -90,  anchor: 'middle' as const, lx: 100, ly: 13 },
-                { emoji: '🔮', value: 58, color: '#8b5cf6', angle: -45,  anchor: 'start'  as const, lx: 164, ly: 46 },
-                { emoji: '🏃', value: 45, color: '#f97316', angle: 0,    anchor: 'start'  as const, lx: 168, ly: 103 },
+                { emoji: '💰', value: 75, color: '#0F766E', angle: -90,  anchor: 'middle' as const, lx: 100, ly: 13 },
+                { emoji: '🔮', value: 58, color: '#8B7BD4', angle: -45,  anchor: 'start'  as const, lx: 164, ly: 46 },
+                { emoji: '🏃', value: 45, color: '#D97534', angle: 0,    anchor: 'start'  as const, lx: 168, ly: 103 },
                 { emoji: '🧠', value: 70, color: '#a855f7', angle: 45,   anchor: 'start'  as const, lx: 158, ly: 158 },
-                { emoji: '📈', value: 40, color: '#3b82f6', angle: 90,   anchor: 'middle' as const, lx: 100, ly: 193 },
-                { emoji: '💼', value: 35, color: '#f59e0b', angle: 135,  anchor: 'end'    as const, lx: 36,  ly: 158 },
-                { emoji: '⏳', value: 60, color: '#06b6d4', angle: 180,  anchor: 'end'    as const, lx: 26,  ly: 103 },
-                { emoji: '✈️', value: 80, color: '#ec4899', angle: 225,  anchor: 'end'    as const, lx: 34,  ly: 46 },
+                { emoji: '📈', value: 40, color: '#4F88D4', angle: 90,   anchor: 'middle' as const, lx: 100, ly: 193 },
+                { emoji: '💼', value: 35, color: '#D9962E', angle: 135,  anchor: 'end'    as const, lx: 36,  ly: 158 },
+                { emoji: '⏳', value: 60, color: '#3CA0B5', angle: 180,  anchor: 'end'    as const, lx: 26,  ly: 103 },
+                { emoji: '✈️', value: 80, color: '#C76795', angle: 225,  anchor: 'end'    as const, lx: 34,  ly: 46 },
               ]
               const polygonPoints = dims.map(d => {
                 const a = toRad(d.angle), dist = (d.value / 100) * R
@@ -170,12 +170,12 @@ export function FuturoMobile({
                 <div
                   className="mx-4 mb-3 rounded-[14px] p-[14px] text-center"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(0,85,255,0.06))',
-                    border: '1px solid rgba(139,92,246,0.2)',
+                    background: 'linear-gradient(135deg, rgba(139,123,212,0.1), rgba(0,85,255,0.06))',
+                    border: '1px solid rgba(139,123,212,0.2)',
                   }}
                 >
-                  <p className="font-[Syne] text-[12px] font-bold mb-2" style={{ color: FUTURO_PRIMARY_LIGHT }}>
-                    🗺️ Mapa da Vida
+                  <p className="font-[Syne] text-[12px] font-bold mb-2 inline-flex items-center gap-1.5 justify-center w-full" style={{ color: FUTURO_PRIMARY_LIGHT }}>
+                    <Map size={12} /> Mapa da Vida
                   </p>
                   <svg width="200" height="200" viewBox="0 0 200 200" style={{ margin: '0 auto', display: 'block' }}>
                     {/* Grid circles */}
@@ -188,7 +188,7 @@ export function FuturoMobile({
                       return <line key={i} x1={cx} y1={cy} x2={cx + R * Math.cos(a)} y2={cy + R * Math.sin(a)} stroke="var(--sl-s3)" strokeWidth=".3" />
                     })}
                     {/* Data polygon */}
-                    <polygon points={polygonPoints} fill="rgba(139,92,246,0.15)" stroke={FUTURO_PRIMARY} strokeWidth="1.5" />
+                    <polygon points={polygonPoints} fill="rgba(139,123,212,0.15)" stroke={FUTURO_PRIMARY} strokeWidth="1.5" />
                     {/* Dots + labels */}
                     {dims.map((d, i) => {
                       const a = toRad(d.angle), dist = (d.value / 100) * R
@@ -237,17 +237,17 @@ export function FuturoMobile({
               <div
                 className="mx-4 mb-3 rounded-[14px] p-[12px_14px]"
                 style={{
-                  background: 'rgba(139,92,246,0.08)',
-                  border: '1px solid rgba(139,92,246,0.2)',
+                  background: 'rgba(139,123,212,0.08)',
+                  border: '1px solid rgba(139,123,212,0.2)',
                 }}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-start gap-[10px] flex-1 min-w-0">
                     <div
-                      className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[14px] shrink-0"
-                      style={{ background: 'rgba(139,92,246,0.15)' }}
+                      className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0"
+                      style={{ background: 'rgba(139,123,212,0.15)', color: FUTURO_PRIMARY_LIGHT }}
                     >
-                      📋
+                      <ClipboardList size={14} />
                     </div>
                     <div className="min-w-0">
                       <p className="text-[12px] font-bold text-[var(--sl-t1)]">Check-in Pendente</p>
@@ -265,8 +265,7 @@ export function FuturoMobile({
                 </div>
                 <button
                   onClick={() => router.push('/futuro/checkin')}
-                  className="w-full mt-3 h-[36px] rounded-[10px] text-[12px] font-semibold text-white"
-                  style={{ background: FUTURO_GRAD }}
+                  className="w-full mt-3 h-[36px] rounded-[10px] text-[12px] font-semibold text-white bg-[var(--sl-em)] hover:bg-[var(--sl-em-strong)] transition-colors"
                 >
                   Fazer check-in →
                 </button>
@@ -308,7 +307,7 @@ export function FuturoMobile({
             {/* Empty state */}
             {goals.length === 0 && (
               <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-8 text-center">
-                <div className="text-[36px] mb-2">🎯</div>
+                <Target size={36} className="text-[var(--sl-t3)] mx-auto mb-2" />
                 <p className="text-[13px] text-[var(--sl-t2)]">
                   Crie sua primeira missão para começar.
                 </p>
@@ -319,10 +318,9 @@ export function FuturoMobile({
             <div className="flex gap-[10px] px-4 pt-2">
               <button
                 onClick={onNewGoal}
-                className="flex-1 flex items-center justify-center gap-1.5 h-[46px] rounded-[14px] text-[13px] font-semibold text-white"
-                style={{ background: FUTURO_GRAD }}
+                className="flex-1 flex items-center justify-center gap-1.5 h-[46px] rounded-[14px] text-[13px] font-semibold text-white bg-[var(--sl-em)] hover:bg-[var(--sl-em-strong)] transition-colors"
               >
-                🚀 Nova missão
+                <Rocket size={14} /> Nova missão
               </button>
               <button
                 onClick={() => setActiveTab('arquivo')}
@@ -365,7 +363,7 @@ export function FuturoMobile({
                       style={{
                         background: isActive ? FUTURO_PRIMARY_BG : 'var(--sl-s1)',
                         color: isActive ? FUTURO_PRIMARY : 'var(--sl-t2)',
-                        border: isActive ? `1px solid rgba(139,92,246,0.3)` : '1px solid var(--sl-border)',
+                        border: isActive ? `1px solid rgba(139,123,212,0.3)` : '1px solid var(--sl-border)',
                       }}
                     >
                       {label} ({count})
@@ -402,7 +400,7 @@ export function FuturoMobile({
 
               {filteredGoals.length === 0 && (
                 <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-8 text-center">
-                  <div className="text-[36px] mb-2">🎯</div>
+                  <Target size={36} className="text-[var(--sl-t3)] mx-auto mb-2" />
                   <p className="text-[13px] text-[var(--sl-t2)]">
                     Nenhuma missão neste filtro.
                   </p>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { X, Plus, Trash2 } from 'lucide-react'
@@ -7,6 +7,7 @@ import {
   FUTURO_PRIMARY_LIGHT,
   FUTURO_GRAD,
 } from '@/lib/futuro-colors'
+import { fmtBRL } from '@/lib/format/currency'
 
 // ─── Types & Constants ─────────────────────────────────────────────────────────
 
@@ -20,11 +21,11 @@ interface ObjectiveType {
 }
 
 const OBJECTIVE_TYPES: ObjectiveType[] = [
-  { id: 'financial', icon: '🏠', name: 'Aquisição', description: 'Casa, carro, imóvel', jornadaTag: '💫 Conquista', iconBg: 'rgba(139,92,246,0.12)' },
+  { id: 'financial', icon: '🏠', name: 'Aquisição', description: 'Casa, carro, imóvel', jornadaTag: '💫 Conquista', iconBg: 'rgba(139,123,212,0.12)' },
   { id: 'experience', icon: '✈️', name: 'Experiência', description: 'Viagem, evento', jornadaTag: '🌍 Vivência', iconBg: 'rgba(20,184,166,0.12)' },
-  { id: 'educational', icon: '🎓', name: 'Desenvolvimento', description: 'Estudo, MBA', jornadaTag: '🧠 Evolução', iconBg: 'rgba(139,92,246,0.12)' },
-  { id: 'health', icon: '🛡️', name: 'Segurança', description: 'Reserva', jornadaTag: '🏰 Proteção', iconBg: 'rgba(16,185,129,0.12)' },
-  { id: 'professional', icon: '🚀', name: 'Liberdade', description: 'FIRE', jornadaTag: '🔑 Missão máxima', iconBg: 'rgba(245,158,11,0.12)' },
+  { id: 'educational', icon: '🎓', name: 'Desenvolvimento', description: 'Estudo, MBA', jornadaTag: '🧠 Evolução', iconBg: 'rgba(139,123,212,0.12)' },
+  { id: 'health', icon: '🛡️', name: 'Segurança', description: 'Reserva', jornadaTag: '🏰 Proteção', iconBg: 'rgba(15,118,110,0.12)' },
+  { id: 'professional', icon: '🚀', name: 'Liberdade', description: 'FIRE', jornadaTag: '🔑 Missão máxima', iconBg: 'rgba(217,150,46,0.12)' },
   { id: 'other', icon: '✨', name: 'Outro', description: 'Personalizado', jornadaTag: '⚡ Missão livre', iconBg: 'rgba(110,144,184,0.1)' },
 ]
 
@@ -47,9 +48,9 @@ interface LinkedModule {
 }
 
 const INITIAL_MODULES: LinkedModule[] = [
-  { id: 'financas', icon: '💰', name: 'Finanças', description: 'Cria envelope R$ 800/mês', jornadaDescription: 'Cria envelope automático', iconBg: 'rgba(16,185,129,0.15)', enabled: true },
-  { id: 'patrimonio', icon: '📈', name: 'Patrimônio', description: 'Vincula ao acompanhamento', jornadaDescription: 'Monitora crescimento', iconBg: 'rgba(245,158,11,0.15)', enabled: true },
-  { id: 'carreira', icon: '💼', name: 'Carreira', description: 'Metas de aumento salarial', jornadaDescription: 'Metas de renda para acelerar', iconBg: 'rgba(236,72,153,0.15)', enabled: false },
+  { id: 'financas', icon: '💰', name: 'Finanças', description: 'Cria envelope R$ 800/mês', jornadaDescription: 'Cria envelope automático', iconBg: 'rgba(15,118,110,0.15)', enabled: true },
+  { id: 'patrimonio', icon: '📈', name: 'Patrimônio', description: 'Vincula ao acompanhamento', jornadaDescription: 'Monitora crescimento', iconBg: 'rgba(217,150,46,0.15)', enabled: true },
+  { id: 'carreira', icon: '💼', name: 'Carreira', description: 'Metas de aumento salarial', jornadaDescription: 'Metas de renda para acelerar', iconBg: 'rgba(199,103,149,0.15)', enabled: false },
 ]
 
 export interface GoalInput {
@@ -61,14 +62,14 @@ export interface GoalInput {
 }
 
 const MODULE_OPTIONS = [
-  { id: 'financas', icon: '💰', label: 'Finanças', bg: 'rgba(16,185,129,0.15)', color: '#10b981' },
-  { id: 'corpo', icon: '💪', label: 'Corpo', bg: 'rgba(249,115,22,0.15)', color: '#f97316' },
-  { id: 'mente', icon: '🧠', label: 'Mente', bg: 'rgba(139,92,246,0.15)', color: '#8b5cf6' },
-  { id: 'patrimonio', icon: '📊', label: 'Patrimônio', bg: 'rgba(245,158,11,0.15)', color: '#f59e0b' },
-  { id: 'carreira', icon: '💼', label: 'Carreira', bg: 'rgba(236,72,153,0.15)', color: '#ec4899' },
+  { id: 'financas', icon: '💰', label: 'Finanças', bg: 'rgba(15,118,110,0.15)', color: 'var(--sl-em)' },
+  { id: 'corpo', icon: '💪', label: 'Corpo', bg: 'rgba(217,117,52,0.15)', color: '#D97534' },
+  { id: 'mente', icon: '🧠', label: 'Mente', bg: 'rgba(139,123,212,0.15)', color: '#8B7BD4' },
+  { id: 'patrimonio', icon: '📊', label: 'Patrimônio', bg: 'rgba(217,150,46,0.15)', color: 'var(--sl-warning)' },
+  { id: 'carreira', icon: '💼', label: 'Carreira', bg: 'rgba(199,103,149,0.15)', color: '#C76795' },
   { id: 'experiencias', icon: '✈️', label: 'Experiências', bg: 'rgba(20,184,166,0.15)', color: '#14b8a6' },
-  { id: 'tempo', icon: '⏱️', label: 'Tempo', bg: 'rgba(6,182,212,0.15)', color: '#06b6d4' },
-  { id: 'futuro', icon: '🔮', label: 'Futuro', bg: 'rgba(0,85,255,0.15)', color: '#0055ff' },
+  { id: 'tempo', icon: '⏱️', label: 'Tempo', bg: 'rgba(60,160,181,0.15)', color: 'var(--sl-info)' },
+  { id: 'futuro', icon: '🔮', label: 'Futuro', bg: 'rgba(0,85,255,0.15)', color: '#0B2D34' },
 ]
 
 const INDICATOR_OPTIONS: { value: GoalInput['indicator_type']; label: string }[] = [
@@ -259,8 +260,8 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
             <div
               className="flex items-center gap-2 mb-4 px-[13px] py-2 rounded-[20px]"
               style={{
-                background: 'rgba(139,92,246,0.08)',
-                border: '1px solid rgba(139,92,246,0.2)',
+                background: 'rgba(139,123,212,0.08)',
+                border: '1px solid rgba(139,123,212,0.2)',
               }}
             >
               <span className="text-[14px]">⚡</span>
@@ -280,10 +281,10 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                     className="flex flex-col gap-[7px] p-3 rounded-[10px] text-left transition-colors"
                     style={{
                       background: selected
-                        ? 'rgba(139,92,246,0.08)'
+                        ? 'rgba(139,123,212,0.08)'
                         : 'var(--sl-s1)',
                       border: selected
-                        ? '1px solid rgba(139,92,246,0.5)'
+                        ? '1px solid rgba(139,123,212,0.5)'
                         : '1px solid var(--sl-border)',
                     }}
                   >
@@ -353,7 +354,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                   const num = parseInt(e.target.value.replace(/\D/g, ''), 10)
                   if (!isNaN(num)) setTargetValue(num)
                 }}
-                className="w-full bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] px-[15px] py-3 font-[DM_Mono] text-[14px] text-[var(--sl-t1)] outline-none"
+                className="w-full bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] px-[15px] py-3 sl-num-strong text-[14px] text-[var(--sl-t1)] outline-none"
               />
             </div>
 
@@ -369,7 +370,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                     onClick={() => setIcon(emoji)}
                     className="flex-1 h-[42px] rounded-[12px] flex items-center justify-center text-[20px] transition-colors"
                     style={{
-                      background: icon === emoji ? 'rgba(139,92,246,0.12)' : 'var(--sl-s1)',
+                      background: icon === emoji ? 'rgba(139,123,212,0.12)' : 'var(--sl-s1)',
                       border: icon === emoji ? `2px solid ${accent}` : '1px solid var(--sl-border)',
                     }}
                   >
@@ -421,9 +422,9 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                     onClick={() => setPriority(opt.value)}
                     className="flex-1 flex items-center justify-center gap-[5px] p-[10px] rounded-[10px] text-[12px] font-semibold transition-colors"
                     style={{
-                      background: priority === opt.value ? 'rgba(139,92,246,0.08)' : 'var(--sl-s1)',
+                      background: priority === opt.value ? 'rgba(139,123,212,0.08)' : 'var(--sl-s1)',
                       border: priority === opt.value
-                        ? '1px solid rgba(139,92,246,0.3)'
+                        ? '1px solid rgba(139,123,212,0.3)'
                         : '1px solid var(--sl-border)',
                       color: priority === opt.value ? accent : 'var(--sl-t2)',
                     }}
@@ -445,12 +446,12 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
               <div
                 className="flex items-center gap-2 px-[13px] py-2 rounded-[20px] mb-1"
                 style={{
-                  background: 'rgba(245,158,11,0.08)',
-                  border: '1px solid rgba(245,158,11,0.25)',
+                  background: 'rgba(217,150,46,0.08)',
+                  border: '1px solid rgba(217,150,46,0.25)',
                 }}
               >
                 <span className="text-[12px]">🔒</span>
-                <span className="text-[11px] font-semibold text-[#f59e0b]">
+                <span className="text-[11px] font-semibold text-[var(--sl-warning)]">
                   Limite FREE: 3 metas por objetivo
                 </span>
               </div>
@@ -471,7 +472,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                 >
                   <div
                     className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center text-[16px] shrink-0"
-                    style={{ background: mod?.bg ?? 'rgba(139,92,246,0.12)' }}
+                    style={{ background: mod?.bg ?? 'rgba(139,123,212,0.12)' }}
                   >
                     {mod?.icon ?? '🎯'}
                   </div>
@@ -489,9 +490,9 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                   <button
                     onClick={() => handleRemoveGoal(idx)}
                     className="w-7 h-7 rounded-[8px] flex items-center justify-center shrink-0"
-                    style={{ background: 'rgba(244,63,94,0.1)' }}
+                    style={{ background: 'rgba(219,100,120,0.1)' }}
                   >
-                    <Trash2 size={13} color="#f43f5e" />
+                    <Trash2 size={13} color="var(--sl-danger)" />
                   </button>
                 </div>
               )
@@ -502,8 +503,8 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
               <div
                 className="p-[10px_13px] rounded-[12px]"
                 style={{
-                  background: 'rgba(139,92,246,0.06)',
-                  border: '1px solid rgba(139,92,246,0.15)',
+                  background: 'rgba(139,123,212,0.06)',
+                  border: '1px solid rgba(139,123,212,0.15)',
                 }}
               >
                 <p className="text-[11px] font-semibold text-[var(--sl-t2)] mb-[7px]">
@@ -539,7 +540,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                   Recrutar aliado
                 </p>
                 <div className="flex flex-col gap-[9px]">
-                  {/* Module grid — 4 columns */}
+                  {/* Module grid · 4 columns */}
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[var(--sl-t3)] mb-[7px]">Módulo</p>
                     <div className="grid grid-cols-4 gap-[6px]">
@@ -591,7 +592,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                           value={newGoalTarget}
                           onChange={e => setNewGoalTarget(e.target.value)}
                           placeholder="Ex: 80000"
-                          className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-3 py-2 text-[13px] font-[DM_Mono] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none"
+                          className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-3 py-2 text-[13px] sl-num-strong text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none"
                         />
                       </div>
                       <div>
@@ -601,7 +602,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                           value={newGoalCurrentValue}
                           onChange={e => setNewGoalCurrentValue(e.target.value)}
                           placeholder="Já tenho..."
-                          className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-3 py-2 text-[13px] font-[DM_Mono] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none"
+                          className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-3 py-2 text-[13px] sl-num-strong text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none"
                         />
                       </div>
                     </div>
@@ -675,8 +676,8 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[13px_15px] mb-[13px]">
               <div className="flex justify-between items-center mb-[11px]">
                 <span className="text-[12px] text-[var(--sl-t2)]">Contribuição mensal</span>
-                <span className="font-[DM_Mono] text-[18px] font-medium" style={{ color: accent }}>
-                  R$ {contribution.toLocaleString('pt-BR')}
+                <span className="sl-num-strong text-[18px] font-medium" style={{ color: accent }}>
+                  {fmtBRL(contribution)}
                 </span>
               </div>
               <input
@@ -702,8 +703,8 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
             <div
               className="rounded-[10px] p-[13px] mb-3"
               style={{
-                background: 'rgba(139,92,246,0.08)',
-                border: '1px solid rgba(139,92,246,0.15)',
+                background: 'rgba(139,123,212,0.08)',
+                border: '1px solid rgba(139,123,212,0.15)',
               }}
             >
               <p className="text-[11px] font-bold uppercase tracking-[0.5px] mb-[9px]" style={{ color: accent }}>
@@ -711,19 +712,19 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
               </p>
               <div className="flex justify-between items-center py-[5px] border-b border-[var(--sl-border)]">
                 <span className="text-[12px] text-[var(--sl-t2)]">Prazo projetado</span>
-                <span className="font-[DM_Mono] text-[12px] font-medium text-[#10b981]">Dez 2028 ✓</span>
+                <span className="sl-num-strong text-[12px] font-medium text-[var(--sl-em)]">Dez 2028 ✓</span>
               </div>
               <div className="flex justify-between items-center py-[5px] border-b border-[var(--sl-border)]">
                 <span className="text-[12px] text-[var(--sl-t2)]">Total c/ rendimento</span>
-                <span className="font-[DM_Mono] text-[12px] font-medium" style={{ color: accent }}>R$ 83.200</span>
+                <span className="sl-num-strong text-[12px] font-medium" style={{ color: accent }}>R$ 83.200</span>
               </div>
               <div className="flex justify-between items-center py-[5px] border-b border-[var(--sl-border)]">
                 <span className="text-[12px] text-[var(--sl-t2)]">XP mensal desta missão</span>
-                <span className="font-[DM_Mono] text-[12px] font-medium" style={{ color: FUTURO_PRIMARY_LIGHT }}>+80 XP/mês ⚡</span>
+                <span className="sl-num-strong text-[12px] font-medium" style={{ color: FUTURO_PRIMARY_LIGHT }}>+80 XP/mês ⚡</span>
               </div>
               <div className="flex justify-between items-center py-[5px]">
                 <span className="text-[12px] text-[var(--sl-t2)]">Impacto no Life Score</span>
-                <span className="font-[DM_Mono] text-[12px] font-medium text-[#10b981]">+8 pts Futuro ↑</span>
+                <span className="sl-num-strong text-[12px] font-medium text-[var(--sl-em)]">+8 pts Futuro ↑</span>
               </div>
             </div>
 
@@ -741,7 +742,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                 style={{
                   background: 'var(--sl-s1)',
                   border: mod.enabled
-                    ? '1px solid rgba(139,92,246,0.3)'
+                    ? '1px solid rgba(139,123,212,0.3)'
                     : '1px solid var(--sl-border)',
                 }}
               >

@@ -36,11 +36,11 @@ import { toast } from 'sonner'
 // ─── CONSTANTES ───────────────────────────────────────────────────────────────
 
 const MODULE_COLORS: Record<string, string> = {
-  trabalho:   '#f43f5e',
-  meta:       '#8b5cf6',
-  saude:      '#f97316',
-  pessoal:    '#06b6d4',
-  financeiro: '#10b981',
+  trabalho:   '#DB6478',
+  meta:       '#8B7BD4',
+  saude:      '#D97534',
+  pessoal:    '#3CA0B5',
+  financeiro: '#0F766E',
   estudo:     '#a855f7',
 }
 
@@ -100,7 +100,7 @@ export default function WeeklyReviewPage() {
   const chartData = Object.entries(moduleDistribution).map(([type, count]) => ({
     name: MODULE_LABELS[type] ?? type,
     count,
-    color: MODULE_COLORS[type] ?? '#6366f1',
+    color: MODULE_COLORS[type] ?? '#6B6FD4',
   }))
 
   // Pending tasks
@@ -125,7 +125,7 @@ export default function WeeklyReviewPage() {
         <TempoMobileShell>
           <div className="px-4 pb-[calc(68px+16px)]">
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-8 text-center mt-2">
-              <Crown size={32} className="mx-auto mb-3 text-[#f59e0b]" />
+              <Crown size={32} className="mx-auto mb-3 text-[#D9962E]" />
               <h2 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Recurso PRO</h2>
               <p className="text-[12px] text-[var(--sl-t2)] mb-4 leading-relaxed">
                 Analise sua semana com métricas de foco e distribuição. Disponível no plano PRO.
@@ -133,7 +133,7 @@ export default function WeeklyReviewPage() {
               <button
                 onClick={() => router.push('/configuracoes/plano')}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] font-semibold text-[13px] text-white"
-                style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+                style={{ background: 'var(--sl-em)' }}
               >
                 <Crown size={14} /> Assinar PRO
               </button>
@@ -149,13 +149,13 @@ export default function WeeklyReviewPage() {
                 className={cn(
                   'relative px-4 py-2.5 text-[13px] transition-colors',
                   pathname === tab.href
-                    ? 'text-[#06b6d4] font-semibold'
+                    ? 'text-[#3CA0B5] font-semibold'
                     : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
                 )}>
                 {tab.label}
-                {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#f59e0b] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
+                {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#D9962E] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
                 {pathname === tab.href && (
-                  <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#06b6d4]" />
+                  <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#3CA0B5]" />
                 )}
               </Link>
             ))}
@@ -172,9 +172,9 @@ export default function WeeklyReviewPage() {
             </h1>
           </div>
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center max-w-[480px] mx-auto">
-            <Crown size={40} className="mx-auto mb-4 text-[#f59e0b]" />
+            <Crown size={40} className="mx-auto mb-4 text-[#D9962E]" />
             <h2 className="font-[Syne] font-bold text-lg text-[var(--sl-t1)] mb-2">
-              Review Semanal — Recurso PRO
+              Review Semanal · Recurso PRO
             </h2>
             <p className="text-[13px] text-[var(--sl-t2)] mb-6 leading-relaxed">
               Analise sua semana com distribuição por módulo, tarefas pendentes e métricas de foco. Disponível no plano PRO.
@@ -182,7 +182,7 @@ export default function WeeklyReviewPage() {
             <button
               onClick={() => router.push('/configuracoes/plano')}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] font-semibold text-[13px] text-white hover:opacity-90 transition-opacity"
-              style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+              style={{ background: 'var(--sl-em)' }}
             >
               <Crown size={14} /> Assinar PRO
             </button>
@@ -201,7 +201,7 @@ export default function WeeklyReviewPage() {
             <button
               onClick={handleCompleteReview}
               className="flex items-center gap-1.5 h-9 px-3 rounded-[10px] text-[12px] font-semibold text-[#03071a]"
-              style={{ background: '#06b6d4' }}
+              style={{ background: '#3CA0B5' }}
             >
               <CheckSquare size={13} /> +10 XP
             </button>
@@ -211,7 +211,7 @@ export default function WeeklyReviewPage() {
         <div className="px-4 pb-[calc(68px+16px)]">
           {/* Completion hero */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 mb-4 relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: '#06b6d4' }} />
+            <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: '#3CA0B5' }} />
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-2">
               Semana {weekOfYear} · {formatWeekLabel(weekStart)}
             </p>
@@ -219,7 +219,7 @@ export default function WeeklyReviewPage() {
               <div>
                 <p
                   className="font-[Syne] font-extrabold text-[36px] leading-none"
-                  style={{ color: completionPct >= 75 ? '#10b981' : completionPct >= 50 ? '#f59e0b' : '#f43f5e' }}
+                  style={{ color: completionPct >= 75 ? '#0F766E' : completionPct >= 50 ? '#D9962E' : '#DB6478' }}
                 >
                   {completionPct}%
                 </p>
@@ -228,23 +228,23 @@ export default function WeeklyReviewPage() {
               <div className="flex-1">
                 <div className="flex justify-between text-[11px] mb-1.5">
                   <span className="text-[var(--sl-t3)]">Concluídos</span>
-                  <span className="font-[DM_Mono] font-bold text-[#10b981]">{completedEvents}/{totalEvents}</span>
+                  <span className="font-[IBM_Plex_Mono] font-bold text-[#0F766E]">{completedEvents}/{totalEvents}</span>
                 </div>
                 <div className="bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height: 6 }}>
                   <div
                     className="h-full rounded-full transition-all duration-700"
                     style={{
                       width: `${completionPct}%`,
-                      background: completionPct >= 75 ? '#10b981' : completionPct >= 50 ? '#f59e0b' : '#f43f5e',
+                      background: completionPct >= 75 ? '#0F766E' : completionPct >= 50 ? '#D9962E' : '#DB6478',
                     }}
                   />
                 </div>
               </div>
             </div>
             {completed && (
-              <div className="mt-3 flex items-center gap-2 p-2.5 rounded-xl bg-[#10b981]/10 border border-[#10b981]/20">
+              <div className="mt-3 flex items-center gap-2 p-2.5 rounded-xl bg-[#0F766E]/10 border border-[#0F766E]/20">
                 <span>✅</span>
-                <p className="text-[12px] text-[#10b981] font-semibold">Review concluído! +10 XP adicionados.</p>
+                <p className="text-[12px] text-[#0F766E] font-semibold">Review concluído! +10 XP adicionados.</p>
               </div>
             )}
           </div>
@@ -252,15 +252,15 @@ export default function WeeklyReviewPage() {
           {/* KPI grid 2×2 */}
           <div className="grid grid-cols-2 gap-2.5 mb-4">
             {[
-              { label: 'Total', value: String(totalEvents), accent: '#06b6d4' },
-              { label: 'Concluídos', value: String(completedEvents), accent: '#10b981' },
-              { label: 'Horas Foco', value: `${focusHours}h`, accent: '#f59e0b' },
-              { label: 'Pendentes', value: String(pendingEvents.length), accent: pendingEvents.length > 0 ? '#f43f5e' : '#10b981' },
+              { label: 'Total', value: String(totalEvents), accent: '#3CA0B5' },
+              { label: 'Concluídos', value: String(completedEvents), accent: '#0F766E' },
+              { label: 'Horas Foco', value: `${focusHours}h`, accent: '#D9962E' },
+              { label: 'Pendentes', value: String(pendingEvents.length), accent: pendingEvents.length > 0 ? '#DB6478' : '#0F766E' },
             ].map(kpi => (
               <div key={kpi.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5 relative overflow-hidden">
                 <div className="absolute top-0 left-3 right-3 h-[2px] rounded-b" style={{ background: kpi.accent }} />
                 <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">{kpi.label}</p>
-                <p className="font-[DM_Mono] font-semibold text-[20px] leading-none text-[var(--sl-t1)]">{kpi.value}</p>
+                <p className="font-[IBM_Plex_Mono] font-semibold text-[20px] leading-none text-[var(--sl-t1)]">{kpi.value}</p>
               </div>
             ))}
           </div>
@@ -268,15 +268,15 @@ export default function WeeklyReviewPage() {
           {/* Pending events */}
           {pendingEvents.length > 0 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4">
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-3">
-                📌 Pendentes ({pendingEvents.length})
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-3 inline-flex items-center gap-2">
+                <CheckSquare size={14} className="text-[#3CA0B5]" /> Pendentes ({pendingEvents.length})
               </h2>
               <div className="flex flex-col gap-2">
                 {pendingEvents.slice(0, 5).map(ev => (
                   <div key={ev.id} className="flex items-center gap-3 p-2.5 bg-[var(--sl-s2)] rounded-[10px]">
                     <div
                       className="w-1 self-stretch rounded-full shrink-0"
-                      style={{ background: ev.priority === 'urgente' ? '#f43f5e' : ev.priority === 'alta' ? '#f59e0b' : '#06b6d4' }}
+                      style={{ background: ev.priority === 'urgente' ? '#DB6478' : ev.priority === 'alta' ? '#D9962E' : '#3CA0B5' }}
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-[12px] text-[var(--sl-t1)] font-medium truncate">{ev.title}</p>
@@ -300,13 +300,13 @@ export default function WeeklyReviewPage() {
             className={cn(
               'relative px-4 py-2.5 text-[13px] transition-colors',
               pathname === tab.href
-                ? 'text-[#06b6d4] font-semibold'
+                ? 'text-[#3CA0B5] font-semibold'
                 : 'text-[var(--sl-t2)] hover:text-[var(--sl-t1)]'
             )}>
             {tab.label}
-            {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#f59e0b] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
+            {tab.pro && <span className="ml-1 text-[9px] font-bold bg-[#D9962E] text-[#03071a] px-1 py-0.5 rounded">PRO</span>}
             {pathname === tab.href && (
-              <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#06b6d4]" />
+              <span className="absolute bottom-[-1px] left-2 right-2 h-[3px] rounded-t bg-[#3CA0B5]" />
             )}
           </Link>
         ))}
@@ -315,8 +315,8 @@ export default function WeeklyReviewPage() {
       {/* ① ModuleHeader */}
       <ModuleHeader
         icon={FileText}
-        iconBg="rgba(16,185,129,.1)"
-        iconColor="#10b981"
+        iconBg="rgba(15,118,110,.1)"
+        iconColor="#0F766E"
         title="Review Semanal"
         subtitle={`Semana ${weekOfYear} \u00B7 ${formatWeekLabel(weekStart)}`}
       >
@@ -324,7 +324,7 @@ export default function WeeklyReviewPage() {
           <button
             onClick={handleCompleteReview}
             className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold text-white transition-all hover:brightness-110 hover:-translate-y-px"
-            style={{ background: '#06b6d4' }}
+            style={{ background: '#3CA0B5' }}
           >
             <CheckSquare size={16} />
             Concluir Review (+10 XP)
@@ -334,7 +334,7 @@ export default function WeeklyReviewPage() {
 
       {/* ② Hero: Semana + % conclusão */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 mb-5 relative overflow-hidden sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
-        <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t" style={{ background: '#06b6d4' }} />
+        <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t" style={{ background: '#3CA0B5' }} />
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">
@@ -344,10 +344,10 @@ export default function WeeklyReviewPage() {
               className="font-[Syne] font-extrabold text-3xl"
               style={{
                 color: completionPct >= 75
-                  ? '#10b981'
+                  ? '#0F766E'
                   : completionPct >= 50
-                  ? '#f59e0b'
-                  : '#f43f5e',
+                  ? '#D9962E'
+                  : '#DB6478',
               }}
             >
               {completionPct}%
@@ -357,7 +357,7 @@ export default function WeeklyReviewPage() {
           <div className="flex flex-col gap-2 min-w-[160px]">
             <div className="flex items-center justify-between text-[12px]">
               <span className="text-[var(--sl-t2)]">Concluídos</span>
-              <span className="font-[DM_Mono] font-bold text-[#10b981]">
+              <span className="font-[IBM_Plex_Mono] font-bold text-[#0F766E]">
                 {completedEvents}/{totalEvents}
               </span>
             </div>
@@ -370,19 +370,19 @@ export default function WeeklyReviewPage() {
                 style={{
                   width: `${completionPct}%`,
                   background: completionPct >= 75
-                    ? '#10b981'
+                    ? '#0F766E'
                     : completionPct >= 50
-                    ? '#f59e0b'
-                    : '#f43f5e',
+                    ? '#D9962E'
+                    : '#DB6478',
                 }}
               />
             </div>
           </div>
         </div>
         {completed && (
-          <div className="mt-4 flex items-center gap-2 p-3 rounded-xl bg-[#10b981]/10 border border-[#10b981]/20">
+          <div className="mt-4 flex items-center gap-2 p-3 rounded-xl bg-[#0F766E]/10 border border-[#0F766E]/20">
             <span className="text-[18px]">✅</span>
-            <p className="text-[13px] text-[#10b981] font-semibold">
+            <p className="text-[13px] text-[#0F766E] font-semibold">
               Review concluído! +10 XP adicionados.
             </p>
           </div>
@@ -392,14 +392,14 @@ export default function WeeklyReviewPage() {
       {/* ③ KPI Strip */}
       <div className="grid grid-cols-4 gap-3 mb-5 max-sm:grid-cols-2">
         {[
-          { label: 'Total Eventos', value: String(totalEvents), icon: <Calendar size={14} />, accent: '#06b6d4' },
-          { label: 'Concluídos',    value: String(completedEvents), icon: <CheckSquare size={14} />, accent: '#10b981' },
-          { label: 'Horas Foco',    value: `${focusHours}h`, icon: <Clock size={14} />, accent: '#f59e0b' },
+          { label: 'Total Eventos', value: String(totalEvents), icon: <Calendar size={14} />, accent: '#3CA0B5' },
+          { label: 'Concluídos',    value: String(completedEvents), icon: <CheckSquare size={14} />, accent: '#0F766E' },
+          { label: 'Horas Foco',    value: `${focusHours}h`, icon: <Clock size={14} />, accent: '#D9962E' },
           {
             label: 'Pendentes',
             value: String(pendingEvents.length),
             icon: <BarChart3 size={14} />,
-            accent: pendingEvents.length > 0 ? '#f43f5e' : '#10b981',
+            accent: pendingEvents.length > 0 ? '#DB6478' : '#0F766E',
           },
         ].map(kpi => (
           <div
@@ -413,7 +413,7 @@ export default function WeeklyReviewPage() {
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">
               {kpi.label}
             </p>
-            <p className="font-[DM_Mono] font-medium text-xl text-[var(--sl-t1)]">{kpi.value}</p>
+            <p className="font-[IBM_Plex_Mono] font-medium text-xl text-[var(--sl-t1)]">{kpi.value}</p>
           </div>
         ))}
       </div>
@@ -424,19 +424,19 @@ export default function WeeklyReviewPage() {
           completionPct >= 75 ? (
             <>
               Excelente semana! Você concluiu{' '}
-              <strong className="text-[#10b981]">{completedEvents} de {totalEvents} eventos</strong> e teve{' '}
-              <strong className="text-[#06b6d4]">{focusHours}h</strong> de foco intenso. Continue assim! 🚀
+              <strong className="text-[#0F766E]">{completedEvents} de {totalEvents} eventos</strong> e teve{' '}
+              <strong className="text-[#3CA0B5]">{focusHours}h</strong> de foco intenso. Continue assim! 🚀
             </>
           ) : completionPct >= 50 ? (
             <>
               Boa semana! Concluiu{' '}
-              <strong className="text-[#f59e0b]">{completedEvents} de {totalEvents} eventos</strong>. Ainda há{' '}
+              <strong className="text-[#D9962E]">{completedEvents} de {totalEvents} eventos</strong>. Ainda há{' '}
               <strong className="text-[var(--sl-t1)]">{pendingEvents.length} itens pendentes</strong> que podem ser movidos para a próxima semana.
             </>
           ) : (
             <>
               Semana desafiadora. Foque em concluir{' '}
-              <strong className="text-[#f43f5e]">{pendingEvents.length} itens pendentes</strong>. Lembre: consistência &gt; perfeição. 💪
+              <strong className="text-[#DB6478]">{pendingEvents.length} itens pendentes</strong>. Lembre: consistência &gt; perfeição. 💪
             </>
           )
         }
@@ -451,8 +451,8 @@ export default function WeeklyReviewPage() {
           {/* Module distribution chart */}
           {chartData.length > 0 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-4">
-                📊 Distribuição por Tipo
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-4 inline-flex items-center gap-2">
+                <BarChart3 size={15} className="text-[#3CA0B5]" /> Distribuição por tipo
               </h2>
               <div className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -490,8 +490,8 @@ export default function WeeklyReviewPage() {
           {/* Sessions list */}
           {sessions.length > 0 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
-              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-3">
-                ⏱ Sessões de Foco
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-3 inline-flex items-center gap-2">
+                <Clock size={15} className="text-[#3CA0B5]" /> Sessões de foco
               </h2>
               <div className="flex flex-col gap-2">
                 {sessions.slice(0, 5).map(s => (
@@ -500,10 +500,10 @@ export default function WeeklyReviewPage() {
                     className="flex items-center justify-between p-3 bg-[var(--sl-s2)] rounded-xl"
                   >
                     <div className="flex items-center gap-2">
-                      <Clock size={14} className="text-[#06b6d4]" />
+                      <Clock size={14} className="text-[#3CA0B5]" />
                       <span className="text-[12px] text-[var(--sl-t1)]">{s.date}</span>
                     </div>
-                    <span className="font-[DM_Mono] text-[12px] font-bold text-[#06b6d4]">
+                    <span className="sl-num text-[12px] text-[#3CA0B5]">
                       {s.duration_minutes}min
                     </span>
                   </div>
@@ -516,15 +516,17 @@ export default function WeeklyReviewPage() {
         {/* Right: Pending tasks */}
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 h-fit sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
-              📌 Pendentes ({pendingEvents.length})
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] inline-flex items-center gap-2">
+              <CheckSquare size={15} className="text-[#3CA0B5]" /> Pendentes ({pendingEvents.length})
             </h2>
           </div>
 
           {pendingEvents.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-3xl mb-2">🎉</p>
-              <p className="text-[13px] text-[var(--sl-t2)]">Nenhuma tarefa pendente!</p>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 bg-[rgba(15,118,110,0.12)] text-[var(--sl-em)]">
+                <CheckSquare size={22} />
+              </div>
+              <p className="text-[13px] text-[var(--sl-t2)]">Nenhuma tarefa pendente</p>
             </div>
           ) : (
             <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto">
@@ -537,10 +539,10 @@ export default function WeeklyReviewPage() {
                     className="w-1 self-stretch rounded-full shrink-0"
                     style={{
                       background: event.priority === 'urgente'
-                        ? '#f43f5e'
+                        ? '#DB6478'
                         : event.priority === 'alta'
-                        ? '#f59e0b'
-                        : '#06b6d4',
+                        ? '#D9962E'
+                        : '#3CA0B5',
                     }}
                   />
                   <div className="flex-1 min-w-0">
@@ -556,7 +558,7 @@ export default function WeeklyReviewPage() {
                   </div>
                   <span
                     className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full shrink-0"
-                    style={{ color: '#f59e0b', background: 'rgba(245,158,11,0.1)' }}
+                    style={{ color: '#D9962E', background: 'rgba(217,150,46,0.1)' }}
                   >
                     Mover →
                   </span>

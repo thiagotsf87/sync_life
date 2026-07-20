@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { Bell, Mail, Wallet, AlertTriangle, Calendar, TrendingDown, Trophy, Flame, BarChart3, Moon } from 'lucide-react'
 import { ToggleSwitch } from '@/components/settings/toggle-switch'
+import { SectionHeader } from '@/components/ui/section-header'
 import { createClient } from '@/lib/supabase/client'
 import { saveUserPreferences, setCachedNotifSettings } from '@/lib/user-preferences'
 import { usePushNotifications } from '@/hooks/use-push-notifications'
@@ -28,6 +30,7 @@ type NotifKey = keyof NotifState
 
 function NotifRow({
   icon,
+  iconColor,
   label,
   description,
   checked,
@@ -37,7 +40,8 @@ function NotifRow({
   modeBadge,
   disabled,
 }: {
-  icon: string
+  icon: React.ReactNode
+  iconColor?: string
   label: string
   description: string
   checked: boolean
@@ -53,14 +57,17 @@ function NotifRow({
       style={{ opacity: disabled ? 0.5 : 1 }}
     >
       <div className="flex items-start gap-3 flex-1 min-w-0">
-        <div className="w-8 h-8 rounded-[9px] bg-[var(--sl-s3)] flex items-center justify-center text-base shrink-0 mt-0.5">
+        <div
+          className="w-8 h-8 rounded-[9px] bg-[var(--sl-s3)] flex items-center justify-center shrink-0 mt-0.5"
+          style={{ color: iconColor ?? 'var(--sl-t2)' }}
+        >
           {icon}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-semibold text-[var(--sl-t1)]">
             {label}
             {modeBadge === 'foco' && (
-              <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(16,185,129,0.1)] text-[#10b981] align-middle">
+              <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(15,118,110,0.1)] text-[#0F766E] align-middle">
                 Foco
               </span>
             )}
@@ -71,7 +78,7 @@ function NotifRow({
             )}
             {modeBadge === 'both' && (
               <>
-                <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(16,185,129,0.1)] text-[#10b981] align-middle">
+                <span className="ml-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(15,118,110,0.1)] text-[#0F766E] align-middle">
                   Foco
                 </span>
                 <span className="ml-1 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(0,85,255,0.1)] text-[#6e9fff] align-middle">
@@ -170,19 +177,23 @@ export default function NotificacoesPage() {
 
       {/* Canal de entrega */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
-          Canal de entrega
-        </p>
+        <SectionHeader
+          eyebrow="01 · CANAL DE ENTREGA"
+          title="Como você quer ser avisado"
+          sub="Escolha os meios pelos quais o SyncLife alcança você"
+          className="mb-4"
+        />
         <NotifRow
-          icon="🔔"
+          icon={<Bell size={15} />}
+          iconColor="var(--sl-em)"
           label="Notificações push"
           description={
             !pushNotifs.isSupported
               ? 'Seu navegador não suporta notificações push'
               : pushNotifs.permission === 'denied'
-              ? 'Permissão negada — habilite nas configurações do navegador'
+              ? 'Permissão negada, habilite nas configurações do navegador'
               : pushNotifs.isSubscribed
-              ? 'Ativo — você receberá alertas em tempo real'
+              ? 'Ativo, você receberá alertas em tempo real'
               : 'Alertas direto no navegador (requer permissão)'
           }
           checked={notif.push && pushNotifs.isSubscribed}
@@ -190,7 +201,8 @@ export default function NotificacoesPage() {
           disabled={!pushNotifs.isSupported || pushNotifs.permission === 'denied' || pushNotifs.loading}
         />
         <NotifRow
-          icon="📧"
+          icon={<Mail size={15} />}
+          iconColor="var(--sl-t2)"
           label="E-mail"
           description="Resumos semanais e alertas importantes por e-mail"
           checked={notif.email}
@@ -201,11 +213,15 @@ export default function NotificacoesPage() {
 
       {/* Alertas financeiros */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
-          Alertas financeiros
-        </p>
+        <SectionHeader
+          eyebrow="02 · ALERTAS FINANCEIROS"
+          title="Avisos do módulo Finanças"
+          sub="Orçamentos, vencimentos e projeção de saldo"
+          className="mb-4"
+        />
         <NotifRow
-          icon="💰"
+          icon={<Wallet size={15} />}
+          iconColor="#0F766E"
           label="Orçamento atingindo 75%"
           description="Avise quando um envelope estiver próximo do limite"
           checked={notif.budget75}
@@ -213,7 +229,8 @@ export default function NotificacoesPage() {
           modeBadge="both"
         />
         <NotifRow
-          icon="🚨"
+          icon={<AlertTriangle size={15} />}
+          iconColor="#DB6478"
           label="Orçamento excedido"
           description="Notifique quando um envelope ultrapassar o limite"
           checked={notif.budgetExceeded}
@@ -221,7 +238,8 @@ export default function NotificacoesPage() {
           modeBadge="both"
         />
         <NotifRow
-          icon="📅"
+          icon={<Calendar size={15} />}
+          iconColor="#0F766E"
           label="Evento financeiro amanhã"
           description="Lembrete de vencimentos e recorrências no dia seguinte"
           checked={notif.financialTomorrow}
@@ -229,7 +247,8 @@ export default function NotificacoesPage() {
           modeBadge="both"
         />
         <NotifRow
-          icon="📉"
+          icon={<TrendingDown size={15} />}
+          iconColor="#DB6478"
           label="Saldo projetado negativo"
           description="Alerta quando a projeção mensal ficar no vermelho"
           checked={notif.negativeProjection}
@@ -241,18 +260,23 @@ export default function NotificacoesPage() {
 
       {/* Metas e progresso */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 mb-3 transition-colors hover:border-[var(--sl-border-h)]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
-          Metas e progresso
-        </p>
+        <SectionHeader
+          eyebrow="03 · METAS E PROGRESSO"
+          title="Acompanhamento dos seus objetivos"
+          sub="Saiba quando uma meta avança ou perde tração"
+          className="mb-4"
+        />
         <NotifRow
-          icon="⚠️"
+          icon={<AlertTriangle size={15} />}
+          iconColor="#D9962E"
           label="Meta em risco"
           description="Alerta quando uma meta estiver com progresso abaixo do esperado"
           checked={notif.goalAtRisk}
           onChange={() => toggle('goalAtRisk')}
         />
         <NotifRow
-          icon="🎉"
+          icon={<Trophy size={15} />}
+          iconColor="#0F766E"
           label="Meta concluída"
           description="Comemore quando atingir 100% de uma meta"
           checked={notif.goalComplete}
@@ -263,17 +287,20 @@ export default function NotificacoesPage() {
 
       {/* Jornada exclusivos */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 transition-colors hover:border-[var(--sl-border-h)]">
-        <div className="flex items-center gap-2 mb-4">
-          <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)]">
-            Exclusivos do Modo Jornada
-          </p>
-          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(0,85,255,0.1)] text-[#6e9fff]">
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <SectionHeader
+            eyebrow="04 · EXCLUSIVOS DO MODO JORNADA"
+            title="Lembretes do seu ritual"
+            sub="Apenas quando o Modo Jornada estiver ativo"
+          />
+          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-[rgba(0,85,255,0.1)] text-[#6e9fff] shrink-0 self-start mt-1">
             Jornada
           </span>
         </div>
 
         <NotifRow
-          icon="🔥"
+          icon={<Flame size={15} />}
+          iconColor="#D97534"
           label="Lembrete diário de registro"
           description="Lembrete para registrar seus gastos no horário escolhido"
           checked={notif.dailyReminder}
@@ -287,14 +314,15 @@ export default function NotificacoesPage() {
                   type="time"
                   value={notif.dailyReminderTime}
                   onChange={(e) => setNotif((p) => ({ ...p, dailyReminderTime: e.target.value }))}
-                  className="bg-[var(--sl-s3)] border border-[var(--sl-border)] rounded-[8px] px-2.5 py-1 font-[DM_Mono] text-[12px] text-[var(--sl-t1)] outline-none w-[90px]"
+                  className="bg-[var(--sl-s3)] border border-[var(--sl-border)] rounded-[8px] px-2.5 py-1 font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)] outline-none w-[90px]"
                 />
               </div>
             ) : null
           }
         />
         <NotifRow
-          icon="📊"
+          icon={<BarChart3 size={15} />}
+          iconColor="#3CA0B5"
           label="Review semanal (domingo)"
           description="Resumo da semana com comparações e destaques todo domingo"
           checked={notif.weeklyReview}
@@ -302,7 +330,8 @@ export default function NotificacoesPage() {
           disabled={false}
         />
         <NotifRow
-          icon="🏆"
+          icon={<Trophy size={15} />}
+          iconColor="#D9962E"
           label="Conquistas desbloqueadas"
           description="Notifique quando uma nova conquista for desbloqueada"
           checked={notif.achievements}
@@ -310,7 +339,8 @@ export default function NotificacoesPage() {
           disabled={false}
         />
         <NotifRow
-          icon="😴"
+          icon={<Moon size={15} />}
+          iconColor="#6F7986"
           label="Inatividade de 7 dias"
           description="Lembrete amigável quando você ficar 7 dias sem registrar"
           checked={notif.inactivity}

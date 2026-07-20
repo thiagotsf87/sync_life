@@ -1,7 +1,8 @@
 'use client'
 
-import { Trash2, CheckCircle2, X } from 'lucide-react'
+import { Trash2, CheckCircle2, X, Stethoscope, Paperclip } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 import type { MedicalAppointment } from '@/hooks/use-corpo'
 
 interface AppointmentCardProps {
@@ -12,8 +13,8 @@ interface AppointmentCardProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  scheduled: '#f59e0b',
-  completed: '#10b981',
+  scheduled: '#D9962E',
+  completed: '#0F766E',
   cancelled: '#6e90b8',
 }
 
@@ -38,8 +39,9 @@ export function AppointmentCard({ appointment, onComplete, onCancel, onDelete }:
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-0.5">
-            <p className="text-[13px] font-semibold text-[var(--sl-t1)]">
-              🏥 {appointment.specialty}
+            <p className="text-[13px] font-semibold text-[var(--sl-t1)] flex items-center gap-1.5">
+              <Stethoscope size={13} className="text-[#3CA0B5]" />
+              {appointment.specialty}
             </p>
             <span
               className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full shrink-0"
@@ -61,16 +63,16 @@ export function AppointmentCard({ appointment, onComplete, onCancel, onDelete }:
           {isScheduled && !isPast && onComplete && (
             <button
               onClick={() => onComplete(appointment.id)}
-              className="p-1.5 rounded-lg hover:bg-[rgba(16,185,129,0.1)] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[rgba(15,118,110,0.1)] transition-colors"
               title="Marcar como realizada"
             >
-              <CheckCircle2 size={14} className="text-[#10b981]" />
+              <CheckCircle2 size={14} className="text-[#0F766E]" />
             </button>
           )}
           {isScheduled && onCancel && (
             <button
               onClick={() => onCancel(appointment.id)}
-              className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors"
               title="Cancelar consulta"
             >
               <X size={14} className="text-[var(--sl-t3)]" />
@@ -79,7 +81,7 @@ export function AppointmentCard({ appointment, onComplete, onCancel, onDelete }:
           {onDelete && (
             <button
               onClick={() => onDelete(appointment.id)}
-              className="p-1.5 rounded-lg hover:bg-[rgba(244,63,94,0.1)] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[rgba(219,100,120,0.1)] transition-colors"
             >
               <Trash2 size={12} className="text-[var(--sl-t3)]" />
             </button>
@@ -91,14 +93,14 @@ export function AppointmentCard({ appointment, onComplete, onCancel, onDelete }:
         {isScheduled && !isPast && (
           <span className={cn(
             'text-[11px] font-semibold',
-            daysUntil <= 7 ? 'text-[#f59e0b]' : 'text-[var(--sl-t3)]'
+            daysUntil <= 7 ? 'text-[#D9962E]' : 'text-[var(--sl-t3)]'
           )}>
-            {daysUntil === 0 ? 'Hoje!' : daysUntil === 1 ? 'Amanhã' : `em ${daysUntil} dias`}
+            {daysUntil === 0 ? 'Hoje' : daysUntil === 1 ? 'Amanha' : `em ${daysUntil} dias`}
           </span>
         )}
         {appointment.cost != null && (
-          <span className="font-[DM_Mono] text-[11px] text-[var(--sl-t3)]">
-            {appointment.cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+          <span className="sl-num text-[11px] text-[var(--sl-t3)]">
+            {fmtBRL(appointment.cost)}
           </span>
         )}
       </div>
@@ -113,9 +115,10 @@ export function AppointmentCard({ appointment, onComplete, onCancel, onDelete }:
           href={appointment.attachment_url}
           target="_blank"
           rel="noreferrer"
-          className="inline-block text-[11px] text-[#06b6d4] mt-2 hover:opacity-80"
+          className="inline-flex items-center gap-1 text-[11px] text-[#3CA0B5] mt-2 hover:opacity-80"
         >
-          📎 Ver anexo
+          <Paperclip size={11} />
+          Ver anexo
         </a>
       )}
     </div>

@@ -95,14 +95,14 @@ export function ExpWizardStep3({
       <div
         className="flex gap-[10px] items-center rounded-[10px] p-3 mb-3"
         style={{
-          background: 'linear-gradient(135deg, var(--sl-s1), rgba(139,92,246,0.04))',
+          background: 'linear-gradient(135deg, var(--sl-s1), rgba(139,123,212,0.04))',
           border: `1px solid ${EXP_PRIMARY_BORDER}`,
         }}
       >
         <span className="text-[22px]">🗾</span>
         <div>
           <p className="text-[14px] font-semibold text-[var(--sl-t1)]">
-            {tripName || 'Viagem'} — País #8
+            {tripName || 'Viagem'} · País #8
           </p>
           <p className="text-[12px] text-[var(--sl-t2)]">{destinations.join(' · ')} · {companionLabel}</p>
           <p className="text-[10px] font-bold mt-[2px]" style={{ color: EXP_PRIMARY_LIGHT }}>
@@ -175,7 +175,7 @@ export function ExpWizardStep3({
                   selected
                     ? { background: accent, color: '#fff', borderRadius: '50%', fontWeight: 600 }
                     : inRange
-                    ? { background: 'rgba(139,92,246,0.15)', color: 'var(--sl-t1)' }
+                    ? { background: 'rgba(139,123,212,0.15)', color: 'var(--sl-t1)' }
                     : { color: 'var(--sl-t3)' }
                 }
               >

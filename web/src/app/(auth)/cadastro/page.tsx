@@ -5,8 +5,19 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Eye, EyeOff } from 'lucide-react'
-import { SyncLifeIcon } from '@/components/shell/icons'
+import { SyncLifeLockup } from '@/components/SyncLifeLockup'
+import {
+  Eye,
+  EyeOff,
+  DollarSign,
+  Clock,
+  Target,
+  HeartPulse,
+  Brain,
+  TrendingUp,
+  Briefcase,
+  Plane,
+} from 'lucide-react'
 
 function GoogleIcon() {
   return (
@@ -19,27 +30,39 @@ function GoogleIcon() {
   )
 }
 
-function calculateStrength(password: string): { score: number; label: string; color: string } {
-  if (!password) return { score: 0, label: '', color: '' }
+function AppleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M11.18 0a3.5 3.5 0 0 1-.85 2.55 2.95 2.95 0 0 1-2.37 1.1 3.32 3.32 0 0 1 .85-2.47A3.55 3.55 0 0 1 11.18 0zm3.45 12.05a7.78 7.78 0 0 1-.78 1.4c-.51.74-1 1.48-1.77 1.5-.76.01-1-.45-1.86-.45-.86 0-1.13.43-1.85.46-.74.03-1.31-.8-1.82-1.54-1.05-1.51-1.85-4.27-.77-6.13a2.86 2.86 0 0 1 2.43-1.48c.73-.01 1.42.5 1.86.5.45 0 1.28-.61 2.16-.52a2.94 2.94 0 0 1 2.3 1.25 2.86 2.86 0 0 0-1.37 2.4 2.78 2.78 0 0 0 1.69 2.55c-.04.13-.1.27-.15.4z"/>
+    </svg>
+  )
+}
+
+function calculateStrength(password: string): { score: number; label: string } {
+  if (!password) return { score: 0, label: '' }
   let score = 0
   if (password.length >= 8) score++
   if (password.length >= 12) score++
   if (/[A-Z]/.test(password) && /[0-9]/.test(password)) score++
   if (/[^A-Za-z0-9]/.test(password)) score++
-  const labels = ['', 'Fraca', 'Media', 'Forte', 'Muito forte']
-  const colors = ['', 'var(--red)', 'var(--yellow)', 'var(--green)', 'var(--green)']
-  return { score, label: labels[score] ?? '', color: colors[score] ?? '' }
+  const labels = ['', 'Fraca', 'Média', 'Forte', 'Muito forte']
+  return { score, label: labels[score] ?? '' }
 }
 
-const MODULE_ITEMS = [
-  { name: 'Financas', color: '#10b981', bg: 'rgba(16,185,129,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
-  { name: 'Tempo', color: '#06b6d4', bg: 'rgba(6,182,212,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
-  { name: 'Futuro', color: '#0055ff', bg: 'rgba(0,85,255,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0055ff" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> },
-  { name: 'Corpo', color: '#f97316', bg: 'rgba(249,115,22,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
-  { name: 'Mente', color: '#eab308', bg: 'rgba(234,179,8,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round"><path d="M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s8-6 8-12a8 8 0 0 0-8-8z"/></svg> },
-  { name: 'Patrimonio', color: '#3b82f6', bg: 'rgba(59,130,246,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg> },
-  { name: 'Carreira', color: '#f43f5e', bg: 'rgba(244,63,94,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> },
-  { name: 'Experiencias', color: '#ec4899', bg: 'rgba(236,72,153,.1)', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg> },
+const MODULE_ITEMS: Array<{
+  name: string
+  color: string
+  bg: string
+  Icon: typeof DollarSign
+}> = [
+  { name: 'Finanças',     color: '#0F766E', bg: 'rgba(15,118,110,.1)',  Icon: DollarSign },
+  { name: 'Tempo',        color: '#3CA0B5', bg: 'rgba(60,160,181,.1)',  Icon: Clock },
+  { name: 'Futuro',       color: '#8B7BD4', bg: 'rgba(139,123,212,.1)', Icon: Target },
+  { name: 'Corpo',        color: '#D97534', bg: 'rgba(217,117,52,.1)',  Icon: HeartPulse },
+  { name: 'Mente',        color: '#D9962E', bg: 'rgba(217,150,46,.1)',  Icon: Brain },
+  { name: 'Patrimônio',   color: '#4F88D4', bg: 'rgba(79,136,212,.1)',  Icon: TrendingUp },
+  { name: 'Carreira',     color: '#DB6478', bg: 'rgba(219,100,120,.1)', Icon: Briefcase },
+  { name: 'Experiências', color: '#C76795', bg: 'rgba(199,103,149,.1)', Icon: Plane },
 ]
 
 export default function CadastroPage() {
@@ -63,11 +86,11 @@ export default function CadastroPage() {
       return
     }
     if (password !== confirmPassword) {
-      toast.error('As senhas nao coincidem')
+      toast.error('As senhas não coincidem')
       return
     }
     if (!acceptTerms) {
-      toast.error('Voce precisa aceitar os termos de uso')
+      toast.error('Você precisa aceitar os termos de uso')
       return
     }
 
@@ -112,40 +135,48 @@ export default function CadastroPage() {
     }
   }
 
+  const handleAppleSignUp = () => {
+    toast.info('Cadastro com Apple chega em breve.')
+  }
+
   return (
     <div className="auth-layout">
-      {/* Form Side (LEFT on cadastro — inverted) */}
+      {/* Form Side (LEFT on cadastro) */}
       <div className="auth-form-side">
         {/* Mobile logo */}
         <div className="auth-mobile-logo">
-          <SyncLifeIcon size={40} animated />
-          <div className="auth-mobile-logo-sub">Sua vida em sincronia</div>
+          <SyncLifeLockup height={48} />
         </div>
 
         <div className="auth-form">
-          <Link href="/" className="auth-logo-brand">
-            <SyncLifeIcon size={24} animated={false} />
-            SyncLife
+          <Link href="/" className="auth-logo-brand-link">
+            <SyncLifeLockup height={56} />
           </Link>
 
-          <h1>Crie sua conta</h1>
-          <div className="subtitle">Comece a organizar todas as areas da sua vida</div>
+          <h1>Comece a sincronizar.</h1>
+          <div className="subtitle">14 dias de PRO grátis. Sem cartão de crédito.</div>
 
-          <button type="button" className="btn-google" onClick={handleGoogleSignUp}>
-            <GoogleIcon />
-            Cadastrar com Google
-          </button>
+          <div className="oauth-grid">
+            <button type="button" className="btn-oauth" onClick={handleGoogleSignUp}>
+              <GoogleIcon />
+              <span>Google</span>
+            </button>
+            <button type="button" className="btn-oauth" onClick={handleAppleSignUp}>
+              <AppleIcon />
+              <span>Apple</span>
+            </button>
+          </div>
 
-          <div className="form-divider">ou com e-mail</div>
+          <div className="form-divider">OU COM E-MAIL</div>
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="name">Nome completo</label>
+              <label htmlFor="name">Nome</label>
               <input
                 id="name"
                 type="text"
                 className="form-input"
-                placeholder="Seu nome"
+                placeholder="Como prefere ser chamado"
                 autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -175,7 +206,7 @@ export default function CadastroPage() {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   className="form-input has-right-icon"
-                  placeholder="Minimo 8 caracteres"
+                  placeholder="Mínimo 8 caracteres"
                   autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -231,7 +262,7 @@ export default function CadastroPage() {
                 </button>
               </div>
               {confirmPassword && password !== confirmPassword && (
-                <span className="form-error">As senhas nao coincidem</span>
+                <span className="form-error">As senhas não coincidem</span>
               )}
             </div>
 
@@ -244,42 +275,55 @@ export default function CadastroPage() {
                 onChange={(e) => setAcceptTerms(e.target.checked)}
               />
               <label htmlFor="terms" className="form-checkbox-label">
-                Concordo com os{' '}
+                Li e concordo com os{' '}
                 <a href="#">Termos de uso</a>
-                {' '}e{' '}
-                <a href="#">Politica de privacidade</a>
+                {' '}e a{' '}
+                <a href="#">Política de privacidade</a>.
               </label>
             </div>
 
             <button type="submit" className="btn-submit" disabled={isLoading || !acceptTerms}>
-              {isLoading ? 'Criando conta...' : 'Criar conta'}
+              {isLoading ? 'Criando conta...' : 'Criar conta grátis'}
             </button>
           </form>
 
           <div className="auth-footer">
-            Ja tem conta? <Link href="/login">Entrar</Link>
+            Já tem conta? <Link href="/login">Entrar</Link>
           </div>
         </div>
       </div>
 
       {/* Visual Panel (RIGHT on cadastro) */}
-      <div className="auth-visual">
-        <div className="av-orb" style={{ width: 250, height: 250, background: 'var(--cyan)', top: -80, left: -60, borderRadius: '50%', filter: 'blur(80px)', opacity: .25, position: 'absolute' as const }} />
-        <div className="av-orb" style={{ width: 200, height: 200, background: 'var(--green)', bottom: -40, right: -40, borderRadius: '50%', filter: 'blur(80px)', opacity: .2, position: 'absolute' as const }} />
-        <div className="auth-visual-content" style={{ textAlign: 'center' }}>
-          <div style={{ fontFamily: "var(--font-syne, 'Syne', sans-serif)", fontWeight: 800, fontSize: 24, marginBottom: 12 }}>8 dimensoes. 1 plataforma.</div>
-          <div style={{ fontSize: 14, color: 'var(--t2)', marginBottom: 36, lineHeight: 1.7 }}>Cada dimensao da sua vida tem espaco proprio, mas funciona conectada com as outras.</div>
+      <aside className="auth-visual">
+        <div className="auth-visual-content auth-visual-modules">
+          <div className="auth-eyebrow">Cada dimensão, seu próprio espaço</div>
 
-          <div className="av-modules-grid">
-            {MODULE_ITEMS.map((mod) => (
-              <div key={mod.name} className="av-mod-item">
-                <div className="av-mod-icon" style={{ background: mod.bg }}>{mod.icon}</div>
-                <div className="av-mod-name">{mod.name}</div>
+          <h2 className="auth-headline">
+            8 dimensões.
+            <br />
+            <span style={{ color: 'var(--sl-em)' }}>1 plataforma.</span>
+          </h2>
+
+          <p className="auth-sub">
+            Cada dimensão da sua vida tem espaço próprio, mas funciona conectada com as outras.
+          </p>
+
+          <div className="auth-modules-grid">
+            {MODULE_ITEMS.map(({ name, color, bg, Icon }) => (
+              <div key={name} className="auth-mod-item">
+                <div className="auth-mod-icon" style={{ background: bg }}>
+                  <Icon size={16} color={color} strokeWidth={2} />
+                </div>
+                <div className="auth-mod-name">{name}</div>
               </div>
             ))}
           </div>
         </div>
-      </div>
+
+        <div className="auth-copyright">
+          © 2026 SyncLife · São Paulo
+        </div>
+      </aside>
     </div>
   )
 }

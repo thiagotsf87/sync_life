@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -61,9 +61,9 @@ const COUNTRY_LOOKUP: Record<string, { code: string; continent: string }> = {
 }
 
 const PRIORITY_OPTIONS: { value: BucketPriority; label: string; icon: string; color: string }[] = [
-  { value: 'high',   label: 'Alta',   icon: '🔥', color: '#f43f5e' },
-  { value: 'medium', label: 'Média',  icon: '⚡', color: '#f59e0b' },
-  { value: 'low',    label: 'Baixa',  icon: '💎', color: '#ec4899' },
+  { value: 'high',   label: 'Alta',   icon: '🔥', color: 'var(--sl-danger)' },
+  { value: 'medium', label: 'Média',  icon: '⚡', color: 'var(--sl-warning)' },
+  { value: 'low',    label: 'Baixa',  icon: '💎', color: '#C76795' },
 ]
 
 const TYPE_OPTIONS: { value: BucketTripType; label: string; icon: string }[] = [
@@ -182,7 +182,7 @@ export function ExpBucketItemFormMobile({
               className="w-full pl-10 pr-4 py-3 rounded-[12px] text-[14px] text-[var(--sl-t1)] outline-none"
               style={{
                 background: 'var(--sl-s2)',
-                border: '1.5px solid rgba(139,92,246,0.25)',
+                border: '1.5px solid rgba(139,123,212,0.25)',
               }}
             />
           </div>
@@ -204,7 +204,7 @@ export function ExpBucketItemFormMobile({
             className="w-full px-4 py-3 rounded-[12px] text-[14px] text-[var(--sl-t1)] outline-none"
             style={{
               background: 'var(--sl-s2)',
-              border: '1.5px solid rgba(139,92,246,0.25)',
+              border: '1.5px solid rgba(139,123,212,0.25)',
             }}
           />
         </div>
@@ -250,7 +250,7 @@ export function ExpBucketItemFormMobile({
               className="w-full px-3 py-3 rounded-[12px] text-[14px] text-[var(--sl-t1)] outline-none"
               style={{
                 background: 'var(--sl-s2)',
-                border: '1.5px solid rgba(139,92,246,0.25)',
+                border: '1.5px solid rgba(139,123,212,0.25)',
               }}
             />
           </div>
@@ -267,7 +267,7 @@ export function ExpBucketItemFormMobile({
               className="w-full px-3 py-3 rounded-[12px] text-[14px] text-[var(--sl-t1)] outline-none"
               style={{
                 background: 'var(--sl-s2)',
-                border: '1.5px solid rgba(139,92,246,0.25)',
+                border: '1.5px solid rgba(139,123,212,0.25)',
               }}
             />
           </div>
@@ -287,7 +287,7 @@ export function ExpBucketItemFormMobile({
                 className="flex-1 py-2 rounded-[10px] text-center text-[11px] font-medium transition-colors"
                 style={{
                   background: tripType === opt.value
-                    ? 'rgba(139,92,246,0.15)'
+                    ? 'rgba(139,123,212,0.15)'
                     : 'var(--sl-s2)',
                   border: `1px solid ${tripType === opt.value ? accent : 'var(--sl-border)'}`,
                   color: tripType === opt.value ? accent : 'var(--sl-t2)',
@@ -313,7 +313,7 @@ export function ExpBucketItemFormMobile({
             className="w-full px-4 py-3 rounded-[12px] text-[13px] text-[var(--sl-t1)] outline-none resize-none"
             style={{
               background: 'var(--sl-s2)',
-              border: '1.5px solid rgba(139,92,246,0.25)',
+              border: '1.5px solid rgba(139,123,212,0.25)',
               lineHeight: 1.5,
             }}
           />
@@ -323,7 +323,7 @@ export function ExpBucketItemFormMobile({
         {error && (
           <div
             className="rounded-[10px] p-3 mb-3 text-[12px]"
-            style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.2)', color: '#f43f5e' }}
+            style={{ background: 'rgba(219,100,120,0.1)', border: '1px solid rgba(219,100,120,0.2)', color: 'var(--sl-danger)' }}
           >
             {error}
           </div>

@@ -11,8 +11,8 @@ interface ExpWorldMapProps {
 
 const PIN_COLORS = {
   visited: EXP_PRIMARY,
-  planned: '#f59e0b',
-  bucket: '#f97316',
+  planned: '#D9962E',
+  bucket: '#D97534',
 }
 
 // Continent path data (simplified world map)
@@ -55,7 +55,7 @@ function getContinentStyle(cls: string): React.CSSProperties {
     case 'partial':
       return { fill: accent, opacity: 0.18 }
     case 'planned':
-      return { fill: 'none', stroke: '#f59e0b', strokeWidth: 0.8, strokeDasharray: '3 2', opacity: 0.7 }
+      return { fill: 'none', stroke: '#D9962E', strokeWidth: 0.8, strokeDasharray: '3 2', opacity: 0.7 }
     default:
       return { fill: 'var(--sl-s3)', opacity: 0.6 }
   }
@@ -101,7 +101,7 @@ export function ExpWorldMap({ pins, showLegend, mini }: ExpWorldMapProps) {
       {showLegend && (
         <div className="flex gap-[14px] justify-center mt-[10px] flex-wrap">
           <LegendItem color={EXP_PRIMARY} label="Conquistado" />
-          <LegendItem color="#f59e0b" label="Planejado" dashed />
+          <LegendItem color="#D9962E" label="Planejado" dashed />
           <LegendItem color="var(--sl-s3)" label="Não explorado" />
         </div>
       )}

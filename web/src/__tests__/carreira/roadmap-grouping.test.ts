@@ -32,10 +32,10 @@ const STATUS_LABELS: Record<RoadmapStatus, string> = {
 }
 
 const STATUS_COLORS: Record<RoadmapStatus, string> = {
-  active: '#f59e0b',
-  completed: '#10b981',
+  active: '#D9962E',
+  completed: '#0F766E',
   paused: '#6e90b8',
-  abandoned: '#f43f5e',
+  abandoned: '#DB6478',
 }
 
 function shouldDefaultOpen(status: RoadmapStatus): boolean {
@@ -47,7 +47,7 @@ function shouldDim(status: RoadmapStatus): boolean {
 }
 
 function getAccentColor(status: RoadmapStatus): string | undefined {
-  return status === 'active' ? '#f43f5e' : undefined
+  return status === 'active' ? '#DB6478' : undefined
 }
 
 function mapStepToTimeline(step: RoadmapStep): { label: string; status: 'done' | 'current' | 'pending' } {
@@ -161,7 +161,7 @@ describe('Roadmap Grouping', () => {
 
   describe('getAccentColor', () => {
     it('returns module color for active', () => {
-      expect(getAccentColor('active')).toBe('#f43f5e')
+      expect(getAccentColor('active')).toBe('#DB6478')
     })
 
     it('returns undefined for non-active', () => {
@@ -256,10 +256,10 @@ describe('Roadmap Grouping', () => {
 
   describe('STATUS_COLORS', () => {
     it('has colors for all statuses', () => {
-      expect(STATUS_COLORS.active).toBe('#f59e0b')
-      expect(STATUS_COLORS.completed).toBe('#10b981')
+      expect(STATUS_COLORS.active).toBe('#D9962E')
+      expect(STATUS_COLORS.completed).toBe('#0F766E')
       expect(STATUS_COLORS.paused).toBe('#6e90b8')
-      expect(STATUS_COLORS.abandoned).toBe('#f43f5e')
+      expect(STATUS_COLORS.abandoned).toBe('#DB6478')
     })
   })
 })

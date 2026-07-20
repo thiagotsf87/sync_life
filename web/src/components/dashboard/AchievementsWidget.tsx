@@ -9,8 +9,8 @@ export function AchievementsWidget() {
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-[18px] sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center gap-2 mb-[14px]">
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(234,179,8,.1)' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round">
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(217,150,46,.1)' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D9962E" strokeWidth="2" strokeLinecap="round">
             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>
             <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/>
             <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
@@ -38,13 +38,13 @@ export function AchievementsWidget() {
           </div>
         ))}
       </div>
-      <div className="p-2.5 rounded-[10px]" style={{ background: 'rgba(16,185,129,0.07)', border: '1px solid rgba(16,185,129,0.12)' }}>
-        <div className="text-[11px] font-semibold mb-1" style={{ color: '#10b981' }}>Próxima conquista</div>
+      <div className="p-2.5 rounded-[10px]" style={{ background: 'rgba(15,118,110,0.07)', border: '1px solid rgba(15,118,110,0.12)' }}>
+        <div className="text-[11px] font-semibold mb-1" style={{ color: '#0F766E' }}>Próxima conquista</div>
         <div className="text-[12px] text-[var(--sl-t2)]">
-          🎯 Meta concluída — conclua a <strong>Reserva de Emergência</strong> para desbloquear
+          🎯 Meta concluída · conclua a <strong>Reserva de Emergência</strong> para desbloquear
         </div>
         <div className="mt-2 h-1 rounded-full overflow-hidden bg-[var(--sl-s3)]">
-          <div className="h-full rounded-full" style={{ width: '65%', background: 'linear-gradient(90deg, #10b981, #0055ff)' }} />
+          <div className="h-full rounded-full" style={{ width: '65%', background: 'linear-gradient(90deg, #0F766E, #0B2D34)' }} />
         </div>
       </div>
     </div>

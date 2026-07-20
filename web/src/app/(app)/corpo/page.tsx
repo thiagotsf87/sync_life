@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Droplets, Activity, Scale, Calendar } from 'lucide-react'
+import { Plus, Droplets, Activity, Scale, Calendar, TrendingUp, ChevronUp } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCorpoDashboard, useWaterIntake, useUpdateWater, calcIMC, IMC_LABEL } from '@/hooks/use-corpo'
 import { ModuleHeader } from '@/components/ui/module-header'
@@ -113,16 +113,15 @@ export default function CorpoPage() {
         {/* 1. ModuleHeader */}
         <ModuleHeader
           icon={Activity}
-          iconBg="rgba(249,115,22,.08)"
-          iconColor="#f97316"
+          iconBg="rgba(217,117,52,.08)"
+          iconColor="#D97534"
           title="Corpo"
           subtitle={headerSubtitle}
         >
           <button
             onClick={() => router.push('/corpo/peso')}
             className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#f97316] text-white hover:brightness-110 hover:-translate-y-px
-                       transition-all shadow-[0_6px_20px_rgba(249,115,22,.15)]"
+                       bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px transition-all"
           >
             <Plus size={16} />
             Registrar Peso
@@ -135,7 +134,7 @@ export default function CorpoPage() {
           label="Score Corporal"
           title={corpoScore >= 70 ? 'Corpo em evolucao' : corpoScore >= 40 ? 'Progresso constante' : 'Comece hoje'}
           description={scoreDescription}
-          accentColor="#f97316"
+          accentColor="#D97534"
           stats={[
             {
               label: 'TMB',
@@ -159,34 +158,34 @@ export default function CorpoPage() {
               note: imc && imcInfo
                 ? `${imc > 0 ? (latestWeight?.weight ?? 0) < (profile?.current_weight ?? 999) ? '-' : '' : ''}vs semana`
                 : undefined,
-              accent: '#f97316',
+              accent: '#D97534',
               valueColor: undefined,
             },
             {
               label: 'IMC',
               value: imc ? imc.toFixed(1) : '--',
               note: imcInfo?.label ?? undefined,
-              accent: '#10b981',
+              accent: '#0F766E',
               valueColor: imcInfo?.color ?? undefined,
             },
             {
               label: 'Atividades',
               value: String(weekActivities.length),
               note: weekMinutes > 0 ? `${weekMinutes} min \u00B7 ${Math.round(weekCalories)} kcal` : 'Nenhuma esta semana',
-              accent: '#10b981',
+              accent: '#0F766E',
             },
             {
               label: 'Hidratacao',
               value: `${(waterIntake / 1000).toFixed(1)}`,
               note: `${waterPct}% da meta`,
-              accent: '#06b6d4',
-              valueColor: '#06b6d4',
+              accent: '#3CA0B5',
+              valueColor: '#3CA0B5',
             },
             {
               label: 'Streak',
               value: weekActivities.length > 0 ? `${weekActivities.length}` : '0',
               note: 'dias',
-              accent: '#f59e0b',
+              accent: '#D9962E',
             },
           ]}
         />
@@ -219,26 +218,26 @@ export default function CorpoPage() {
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
-                  <Calendar size={16} className="text-[#f97316]" />
+                  <Calendar size={16} className="text-[#D97534]" />
                   <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                     Mapa de Atividades
                   </h3>
                   <span className="ml-auto text-[11px] text-[var(--sl-t3)]">Ultimas 4 semanas</span>
                 </div>
-                <ActivityHeatmap days={heatmapDays} accentColor="#f97316" />
+                <ActivityHeatmap days={heatmapDays} accentColor="#D97534" />
               </div>
 
               {/* Weight Trend mini */}
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex-1
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
-                  <Scale size={16} className="text-[#f97316]" />
+                  <Scale size={16} className="text-[#D97534]" />
                   <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                     Tendencia
                   </h3>
                   <button
                     onClick={() => router.push('/corpo/peso')}
-                    className="ml-auto text-[12px] font-medium text-[#f97316] hover:opacity-80 transition-opacity"
+                    className="ml-auto text-[12px] font-medium text-[#D97534] hover:opacity-80 transition-opacity"
                   >
                     Detalhes &rarr;
                   </button>
@@ -246,16 +245,14 @@ export default function CorpoPage() {
 
                 {/* Weight value + delta pill */}
                 <div className="flex items-center gap-4 mb-3">
-                  <span className="font-[DM_Mono] font-medium text-[26px] text-[var(--sl-t1)] leading-none">
+                  <span className="sl-num-strong text-[26px] text-[var(--sl-t1)] leading-none">
                     {latestWeight ? latestWeight.weight : '--'}
                     <span className="text-[12px] text-[var(--sl-t3)] ml-1">kg</span>
                   </span>
                   {latestWeight && (
                     <span className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[11px] font-semibold
-                                     bg-[rgba(16,185,129,.1)] text-[#10b981]">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="m6 15 6-6 6 6"/>
-                      </svg>
+                                     bg-[var(--sl-em-soft)] text-[var(--sl-em)]">
+                      <ChevronUp size={12} />
                       Ultimos 30d
                     </span>
                   )}
@@ -266,7 +263,7 @@ export default function CorpoPage() {
                                 flex items-center justify-center text-[var(--sl-t3)] text-[12px] italic p-4"
                      style={{ minHeight: 100 }}
                 >
-                  Recharts: LineChart &mdash; peso ultimos 30 dias
+                  Recharts: LineChart, peso ultimos 30 dias
                 </div>
               </div>
             </div>
@@ -278,7 +275,7 @@ export default function CorpoPage() {
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
-                  <Droplets size={16} className="text-[#06b6d4]" />
+                  <Droplets size={16} className="text-[#3CA0B5]" />
                   <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                     Hidratacao
                   </h3>
@@ -286,13 +283,13 @@ export default function CorpoPage() {
 
                 {/* Hydration value row */}
                 <div className="flex items-center gap-[14px] mb-3">
-                  <span className="font-[DM_Mono] font-medium text-[24px] text-[#06b6d4] leading-none">
+                  <span className="sl-num-strong text-[24px] text-[#3CA0B5] leading-none">
                     {(waterIntake / 1000).toFixed(1)}
                   </span>
                   <span className="text-[12px] text-[var(--sl-t3)]">
                     / {(waterGoal / 1000).toFixed(1)}L
                   </span>
-                  <span className="font-[DM_Mono] text-[12px] text-[#06b6d4] ml-auto">
+                  <span className="sl-num text-[12px] text-[#3CA0B5] ml-auto">
                     {waterPct}%
                   </span>
                 </div>
@@ -304,7 +301,7 @@ export default function CorpoPage() {
                       className="h-full rounded-full transition-[width] duration-500"
                       style={{
                         width: `${waterPct}%`,
-                        background: waterPct >= 100 ? '#10b981' : '#06b6d4',
+                        background: waterPct >= 100 ? '#0F766E' : '#3CA0B5',
                       }}
                     />
                   </div>
@@ -323,7 +320,7 @@ export default function CorpoPage() {
                   <button
                     onClick={() => handleAddWater(500)}
                     className="flex-1 flex items-center justify-center px-2 py-2 rounded-[11px] text-[12px] font-semibold
-                               bg-[#06b6d4] text-white hover:opacity-90 transition-opacity"
+                               bg-[var(--sl-em)] text-white hover:opacity-90 transition-opacity"
                   >
                     +500ml
                   </button>
@@ -334,18 +331,13 @@ export default function CorpoPage() {
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex-1
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect width="18" height="18" x="3" y="4" rx="2"/>
-                    <path d="M16 2v4"/>
-                    <path d="M8 2v4"/>
-                    <path d="M3 10h18"/>
-                  </svg>
+                  <Calendar size={16} className="text-[#a855f7]" />
                   <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                     Proximas Consultas
                   </h3>
                   <button
                     onClick={() => router.push('/corpo/saude')}
-                    className="ml-auto text-[12px] font-medium text-[#f97316] hover:opacity-80 transition-opacity"
+                    className="ml-auto text-[12px] font-medium text-[#D97534] hover:opacity-80 transition-opacity"
                   >
                     Ver todas &rarr;
                   </button>
@@ -358,10 +350,10 @@ export default function CorpoPage() {
                     {/* Appointment row - matching prototype style */}
                     <div className="flex items-center gap-3 p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
                       <div className="text-center min-w-[40px]">
-                        <div className="font-[DM_Mono] text-[18px] font-medium leading-none text-[var(--sl-t1)]">
+                        <div className="sl-num-strong text-[18px] leading-none text-[var(--sl-t1)]">
                           {nextApptDate ? nextApptDate.getDate().toString().padStart(2, '0') : '--'}
                         </div>
-                        <div className="text-[9px] font-bold uppercase tracking-[.08em] text-[#06b6d4] mt-0.5">
+                        <div className="text-[9px] font-bold uppercase tracking-[.08em] text-[#3CA0B5] mt-0.5">
                           {nextApptDate ? nextApptDate.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '') : ''}
                         </div>
                       </div>
@@ -379,14 +371,14 @@ export default function CorpoPage() {
                         className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
                         style={{
                           background: daysUntil !== null && daysUntil <= 7
-                            ? 'rgba(6,182,212,.1)'
+                            ? 'rgba(60,160,181,.1)'
                             : daysUntil !== null && daysUntil <= 21
-                              ? 'rgba(245,158,11,.1)'
+                              ? 'rgba(217,150,46,.1)'
                               : 'var(--sl-s3)',
                           color: daysUntil !== null && daysUntil <= 7
-                            ? '#06b6d4'
+                            ? '#3CA0B5'
                             : daysUntil !== null && daysUntil <= 21
-                              ? '#f59e0b'
+                              ? '#D9962E'
                               : 'var(--sl-t3)',
                         }}
                       >

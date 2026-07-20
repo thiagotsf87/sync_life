@@ -21,10 +21,10 @@ interface FuturoMilestoneTimelineProps {
 function getDotStyle(status: MilestoneStatus) {
   if (status === 'done') {
     return {
-      bg: 'rgba(16,185,129,0.15)',
-      border: 'rgba(16,185,129,0.5)',
+      bg: 'rgba(15,118,110,0.15)',
+      border: 'rgba(15,118,110,0.5)',
       content: '✓',
-      color: '#10b981',
+      color: '#0F766E',
     }
   }
   if (status === 'current') {

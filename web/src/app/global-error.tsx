@@ -26,7 +26,7 @@ export default function GlobalError({
             Ocorreu um erro inesperado. A equipe já foi notificada.
           </p>
           {error.digest && (
-            <p style={{ fontSize: '12px', color: '#64748b', fontFamily: 'monospace' }}>
+            <p style={{ fontSize: '12px', color: '#6F7986', fontFamily: 'monospace' }}>
               ID: {error.digest}
             </p>
           )}
@@ -34,7 +34,7 @@ export default function GlobalError({
             onClick={reset}
             style={{
               padding: '10px 24px', borderRadius: '12px', border: 'none', cursor: 'pointer',
-              background: '#10b981', color: '#fff', fontSize: '14px', fontWeight: 600,
+              background: '#0F766E', color: '#fff', fontSize: '14px', fontWeight: 600,
             }}
           >
             Tentar novamente

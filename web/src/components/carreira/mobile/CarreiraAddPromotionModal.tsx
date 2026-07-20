@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ChevronLeft } from 'lucide-react'
 import { CARREIRA_PRIMARY, CARREIRA_GRAD } from '@/lib/carreira-colors'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface CarreiraAddPromotionModalProps {
   open: boolean
@@ -76,14 +77,14 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
         {/* Celebration banner */}
         <div
           className="mx-4 mb-[14px] rounded-2xl p-4 border text-center"
-          style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.14), rgba(236,72,153,0.08))', borderColor: 'rgba(139,92,246,0.28)' }}
+          style={{ background: 'linear-gradient(135deg, rgba(139,123,212,0.14), rgba(199,103,149,0.08))', borderColor: 'rgba(139,123,212,0.28)' }}
         >
           <div className="text-[36px] mb-[6px]">🎉</div>
           <p className="text-[11px] font-bold text-[#c4b5fd] uppercase tracking-[0.5px] mb-1">
             NOVO CAPÍTULO DESBLOQUEADO
           </p>
           <p
-            className="font-[DM_Mono] text-[28px] font-bold"
+            className="sl-num-strong text-[28px] font-bold"
             style={{ background: grad, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
           >
             +100 XP
@@ -105,7 +106,7 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
             onChange={e => setTitle(e.target.value)}
             placeholder="Ex: Desenvolvedor Sênior"
             className="w-full px-[14px] py-3 bg-[var(--sl-s1)] border rounded-[10px] text-[14px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none mb-[14px]"
-            style={{ borderColor: 'rgba(139,92,246,0.3)' }}
+            style={{ borderColor: 'rgba(139,123,212,0.3)' }}
           />
 
           {/* Empresa */}
@@ -119,7 +120,7 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
             onChange={e => setCompany(e.target.value)}
             placeholder="TechCorp"
             className="w-full px-[14px] py-3 bg-[var(--sl-s1)] border rounded-[10px] text-[14px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none mb-[14px]"
-            style={{ borderColor: 'rgba(139,92,246,0.3)' }}
+            style={{ borderColor: 'rgba(139,123,212,0.3)' }}
           />
 
           {/* Salary + Date row */}
@@ -136,7 +137,7 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
                 placeholder="14.000"
                 min="0"
                 className="w-full px-[14px] py-3 bg-[var(--sl-s1)] border rounded-[10px] text-[14px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none"
-                style={{ borderColor: 'rgba(139,92,246,0.3)' }}
+                style={{ borderColor: 'rgba(139,123,212,0.3)' }}
               />
             </div>
             <div className="flex-1">
@@ -149,7 +150,7 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
                 className="w-full px-[14px] py-3 bg-[var(--sl-s1)] border rounded-[10px] text-[14px] text-[var(--sl-t1)] outline-none"
-                style={{ borderColor: 'rgba(139,92,246,0.3)' }}
+                style={{ borderColor: 'rgba(139,123,212,0.3)' }}
               />
             </div>
           </div>
@@ -158,8 +159,8 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
           <div
             className="rounded-2xl p-[14px] border mb-[14px]"
             style={{
-              background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(236,72,153,0.06))',
-              borderColor: 'rgba(16,185,129,0.2)',
+              background: 'linear-gradient(135deg, rgba(15,118,110,0.08), rgba(199,103,149,0.06))',
+              borderColor: 'rgba(15,118,110,0.2)',
             }}
           >
             <p className="text-[11px] font-bold mb-2"
@@ -168,26 +169,26 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
             </p>
             <div className="flex justify-between mb-[6px]">
               <span className="text-[12px] text-[var(--sl-t2)]">Salário anterior</span>
-              <span className="font-[DM_Mono] text-[13px] text-[var(--sl-t1)] line-through">
-                R$ {currentSalary.toLocaleString('pt-BR')}
+              <span className="sl-num-strong text-[13px] text-[var(--sl-t1)] line-through">
+                {fmtBRL(currentSalary)}
               </span>
             </div>
             <div className="flex justify-between mb-[6px]">
               <span className="text-[12px] text-[var(--sl-t2)]">Novo salário</span>
-              <span className="font-[DM_Mono] text-[13px] font-semibold" style={{ color: accent }}>
-                R$ {newSalary.toLocaleString('pt-BR')}
+              <span className="sl-num-strong text-[13px] font-semibold" style={{ color: accent }}>
+                {fmtBRL(newSalary)}
               </span>
             </div>
             <div className="h-px bg-[var(--sl-border)] my-2" />
             <div className="flex justify-between">
               <span className="text-[12px] font-semibold text-[var(--sl-t1)]">Aumento</span>
-              <span className="font-[DM_Mono] text-[14px] font-bold text-[#10b981]">
-                {diff > 0 ? '+' : ''}{diffPct}% · {diff > 0 ? '+' : ''}R$ {Math.abs(diff).toLocaleString('pt-BR')}/mês
+              <span className="sl-num-strong text-[14px] font-bold text-[var(--sl-em)]">
+                {diff > 0 ? '+' : ''}{diffPct}% · {diff > 0 ? '+' : '– '}{fmtBRL(Math.abs(diff))}/mês
               </span>
             </div>
             {diff > 0 && (
               <p className="text-[10px] text-[#c4b5fd] font-semibold mt-[6px]">
-                ⚡ Impacto anual: +R$ {annualGain.toLocaleString('pt-BR')} · Patrimônio acelera
+                ⚡ Impacto anual: +{fmtBRL(annualGain)} · Patrimônio acelera
               </p>
             )}
           </div>
@@ -211,7 +212,7 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
             <button
               onClick={() => setSyncFinance(!syncFinance)}
               className="w-10 h-[22px] rounded-full relative transition-all"
-              style={{ background: syncFinance ? '#10b981' : 'var(--sl-s3)' }}
+              style={{ background: syncFinance ? 'var(--sl-em)' : 'var(--sl-s3)' }}
             >
               <div className="w-4 h-4 rounded-full bg-white absolute top-[3px] transition-all"
                 style={{ left: syncFinance ? '21px' : '3px' }} />
@@ -226,7 +227,7 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
             disabled={saving || !title.trim() || !salary}
             className="w-full rounded-[14px] text-white font-semibold disabled:opacity-50"
             style={{
-              background: grad,
+              background: 'var(--sl-em)',
               height: '54px',
               fontSize: '16px',
               fontWeight: 700,

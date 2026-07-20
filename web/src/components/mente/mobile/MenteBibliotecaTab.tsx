@@ -6,9 +6,9 @@ import { createClient } from '@/lib/supabase/client'
 import type { StudyResource, ResourceType, ResourceStatus } from '@/hooks/use-mente'
 import { RESOURCE_TYPE_LABELS } from '@/hooks/use-mente'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.14)'
-const MENTE_BORDER = 'rgba(234,179,8,0.3)'
+const MENTE_COLOR = '#D9962E'
+const MENTE_BG = 'rgba(217,150,46,0.14)'
+const MENTE_BORDER = 'rgba(217,150,46,0.3)'
 
 const TYPE_ICONS: Record<ResourceType, string> = {
   book: '📚',
@@ -182,7 +182,7 @@ export function MenteBibliotecaTab() {
                   <button
                     onClick={() => updateStatus(r.id, 'completed')}
                     className="text-[11px] mt-2 px-2 py-[2px] rounded-[6px]"
-                    style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}
+                    style={{ background: 'rgba(15,118,110,0.1)', color: '#0F766E' }}
                   >
                     ✓ Marcar concluído
                   </button>
@@ -263,7 +263,7 @@ export function MenteBibliotecaTab() {
             onClick={() => setShowAddForm(true)}
             className="w-full rounded-[10px] py-[14px] text-[14px] font-medium text-center"
             style={{
-              background: 'rgba(139,92,246,0.06)',
+              background: 'rgba(139,123,212,0.06)',
               border: `1.5px dashed ${MENTE_BORDER}`,
               color: MENTE_COLOR,
             }}

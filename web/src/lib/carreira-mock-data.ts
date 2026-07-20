@@ -191,9 +191,9 @@ export const MOCK_XP = {
 
 // Category colors for skills
 export const SKILL_CATEGORY_COLORS: Record<string, string> = {
-  hard_skill: '#3b82f6',
-  soft_skill: '#10b981',
-  language: '#f59e0b',
+  hard_skill: '#4F88D4',
+  soft_skill: '#0F766E',
+  language: '#D9962E',
   certification: '#a855f7',
 }
 

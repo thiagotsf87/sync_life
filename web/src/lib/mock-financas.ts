@@ -7,16 +7,16 @@ export const USE_MOCK = false
 // ─── CATEGORIAS ──────────────────────────────────────────────────────────────
 
 const CAT = {
-  alimentacao: { id: 'cat-1', name: 'Alimentação', icon: '🛒', color: '#10b981' },
-  moradia:     { id: 'cat-2', name: 'Moradia',     icon: '🏠', color: '#0055ff' },
-  transporte:  { id: 'cat-3', name: 'Transporte',  icon: '🚗', color: '#f59e0b' },
+  alimentacao: { id: 'cat-1', name: 'Alimentação', icon: '🛒', color: '#0F766E' },
+  moradia:     { id: 'cat-2', name: 'Moradia',     icon: '🏠', color: '#0B2D34' },
+  transporte:  { id: 'cat-3', name: 'Transporte',  icon: '🚗', color: '#D9962E' },
   lazer:       { id: 'cat-4', name: 'Lazer',        icon: '🎮', color: '#a855f7' },
-  saude:       { id: 'cat-5', name: 'Saúde',        icon: '🏥', color: '#f97316' },
-  educacao:    { id: 'cat-6', name: 'Educação',     icon: '📚', color: '#06b6d4' },
-  salario:     { id: 'cat-7', name: 'Salário',      icon: '💰', color: '#10b981' },
-  freelance:   { id: 'cat-8', name: 'Freelance',    icon: '💻', color: '#0055ff' },
+  saude:       { id: 'cat-5', name: 'Saúde',        icon: '🏥', color: '#D97534' },
+  educacao:    { id: 'cat-6', name: 'Educação',     icon: '📚', color: '#3CA0B5' },
+  salario:     { id: 'cat-7', name: 'Salário',      icon: '💰', color: '#0F766E' },
+  freelance:   { id: 'cat-8', name: 'Freelance',    icon: '💻', color: '#0B2D34' },
   assinaturas: { id: 'cat-9', name: 'Assinaturas',  icon: '📺', color: '#a855f7' },
-  vestuario:   { id: 'cat-10', name: 'Vestuário',   icon: '👕', color: '#f43f5e' },
+  vestuario:   { id: 'cat-10', name: 'Vestuário',   icon: '👕', color: '#DB6478' },
 } as const
 
 // ─── MOCK: useBudgets ────────────────────────────────────────────────────────

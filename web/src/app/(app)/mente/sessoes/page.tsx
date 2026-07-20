@@ -6,7 +6,7 @@ import { useStudySessions } from '@/hooks/use-mente'
 import { MetricsStrip } from '@/components/ui/metrics-strip'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { useRouter } from 'next/navigation'
-import { Brain, Play, Plus, Search, Clock } from 'lucide-react'
+import { Brain, Play, Search, Clock } from 'lucide-react'
 
 export default function SessoesPage() {
   const router = useRouter()
@@ -60,15 +60,16 @@ export default function SessoesPage() {
       {/* ModuleHeader */}
       <ModuleHeader
         icon={Brain}
-        iconBg="rgba(234,179,8,.1)"
-        iconColor="#eab308"
+        iconBg="rgba(217,150,46,.1)"
+        iconColor="#D9962E"
         title="Historico de Sessoes"
         subtitle={`${sessions.length} sessoes registradas \u00B7 ${(totalMinutes / 60).toFixed(1)}h de estudo acumulado`}
       >
         <button
           onClick={() => router.push('/mente/timer')}
           className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#eab308] text-black hover:brightness-110 transition-all"
+                     text-white hover:opacity-90 transition-all"
+          style={{ background: 'var(--sl-em)' }}
         >
           <Play size={16} />
           Timer
@@ -77,7 +78,7 @@ export default function SessoesPage() {
 
       {/* MetricsStrip */}
       <MetricsStrip
-        gradient={['#eab308', '#f97316']}
+        gradient={['#D9962E', '#D97534']}
         className="mb-7"
         items={[
           {
@@ -87,7 +88,7 @@ export default function SessoesPage() {
           {
             label: 'Horas totais',
             value: `${(totalMinutes / 60).toFixed(1)}h`,
-            valueColor: '#eab308',
+            valueColor: '#D9962E',
           },
           {
             label: 'Esta semana',
@@ -112,14 +113,14 @@ export default function SessoesPage() {
           className={cn(
             'flex items-center gap-[5px] px-[14px] py-[6px] rounded-lg text-[12px] font-medium transition-all border',
             trackFilter === 'all'
-              ? 'bg-[rgba(234,179,8,.08)] border-[#eab308] text-[#eab308] font-semibold'
+              ? 'bg-[rgba(217,150,46,.08)] border-[#D9962E] text-[#D9962E] font-semibold'
               : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
           )}
         >
           Todas
           <span className={cn(
-            'font-[DM_Mono] text-[10px] font-bold px-1.5 py-px rounded-md',
-            trackFilter === 'all' ? 'bg-[rgba(234,179,8,.2)] text-[#eab308]' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
+            'sl-num-strong text-[10px] px-1.5 py-px rounded-md',
+            trackFilter === 'all' ? 'bg-[rgba(217,150,46,.2)] text-[#D9962E]' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
           )}>
             {sessions.length}
           </span>
@@ -129,14 +130,14 @@ export default function SessoesPage() {
           className={cn(
             'flex items-center gap-[5px] px-[14px] py-[6px] rounded-lg text-[12px] font-medium transition-all border',
             trackFilter === 'free'
-              ? 'bg-[rgba(234,179,8,.08)] border-[#eab308] text-[#eab308] font-semibold'
+              ? 'bg-[rgba(217,150,46,.08)] border-[#D9962E] text-[#D9962E] font-semibold'
               : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
           )}
         >
           Estudo livre
           <span className={cn(
-            'font-[DM_Mono] text-[10px] font-bold px-1.5 py-px rounded-md',
-            trackFilter === 'free' ? 'bg-[rgba(234,179,8,.2)] text-[#eab308]' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
+            'sl-num-strong text-[10px] px-1.5 py-px rounded-md',
+            trackFilter === 'free' ? 'bg-[rgba(217,150,46,.2)] text-[#D9962E]' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
           )}>
             {sessions.filter(s => !s.track_id).length}
           </span>
@@ -148,21 +149,21 @@ export default function SessoesPage() {
             className={cn(
               'flex items-center gap-[5px] px-[14px] py-[6px] rounded-lg text-[12px] font-medium transition-all border',
               trackFilter === t.id
-                ? 'bg-[rgba(234,179,8,.08)] border-[#eab308] text-[#eab308] font-semibold'
+                ? 'bg-[rgba(217,150,46,.08)] border-[#D9962E] text-[#D9962E] font-semibold'
                 : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
             )}
           >
             {t.name}
             <span className={cn(
-              'font-[DM_Mono] text-[10px] font-bold px-1.5 py-px rounded-md',
-              trackFilter === t.id ? 'bg-[rgba(234,179,8,.2)] text-[#eab308]' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
+              'sl-num-strong text-[10px] px-1.5 py-px rounded-md',
+              trackFilter === t.id ? 'bg-[rgba(217,150,46,.2)] text-[#D9962E]' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
             )}>
               {sessions.filter(s => s.track_id === t.id).length}
             </span>
           </button>
         ))}
         <div className="ml-auto flex items-center gap-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] px-3.5 py-2 w-[200px]
-                        focus-within:border-[rgba(234,179,8,.4)] transition-colors">
+                        focus-within:border-[rgba(217,150,46,.4)] transition-colors">
           <Search size={16} className="text-[var(--sl-t3)] shrink-0" />
           <input
             type="text"
@@ -189,7 +190,7 @@ export default function SessoesPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
-          <Clock size={32} className="text-[#eab308] mx-auto mb-3 opacity-60" />
+          <Clock size={32} className="text-[#D9962E] mx-auto mb-3 opacity-60" />
           <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             Nenhuma sessao registrada
           </h3>
@@ -199,7 +200,8 @@ export default function SessoesPage() {
           <button
             onClick={() => router.push('/mente/timer')}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                       bg-[#eab308] text-black hover:brightness-110"
+                       text-white hover:opacity-90"
+            style={{ background: 'var(--sl-em)' }}
           >
             Iniciar Timer
           </button>
@@ -230,9 +232,9 @@ export default function SessoesPage() {
                     <td className="py-3 px-3 pl-[22px] align-middle border-b border-[rgba(120,165,220,.04)]">
                       <div
                         className="w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0"
-                        style={{ background: 'rgba(234,179,8,.1)' }}
+                        style={{ background: 'rgba(217,150,46,.1)' }}
                       >
-                        <Clock size={15} style={{ color: '#eab308' }} />
+                        <Clock size={15} style={{ color: '#D9962E' }} />
                       </div>
                     </td>
                     <td className="py-3 px-3 align-middle border-b border-[rgba(120,165,220,.04)]">
@@ -247,10 +249,10 @@ export default function SessoesPage() {
                     <td className="py-3 px-3 align-middle text-[11px] text-[var(--sl-t3)] border-b border-[rgba(120,165,220,.04)]">
                       {timeLabel}
                     </td>
-                    <td className="py-3 px-3 align-middle font-[DM_Mono] font-medium text-[13px] text-[var(--sl-t2)] border-b border-[rgba(120,165,220,.04)]">
+                    <td className="py-3 px-3 align-middle sl-num text-[13px] text-[var(--sl-t2)] border-b border-[rgba(120,165,220,.04)]">
                       {session.cycles_completed}
                     </td>
-                    <td className="py-3 px-3 pr-[22px] align-middle text-right font-[DM_Mono] font-semibold text-[13px] text-[#eab308] border-b border-[rgba(120,165,220,.04)]">
+                    <td className="py-3 px-3 pr-[22px] align-middle text-right sl-num-strong text-[13px] text-[#D9962E] border-b border-[rgba(120,165,220,.04)]">
                       {hours}h {mins.toString().padStart(2, '0')}min
                     </td>
                   </tr>
@@ -265,7 +267,7 @@ export default function SessoesPage() {
             </span>
             <div className="flex items-center gap-4">
               <span className="text-[11px] text-[var(--sl-t3)]">Total exibido:</span>
-              <span className="font-[DM_Mono] text-[14px] font-semibold text-[#eab308]">
+              <span className="sl-num-strong text-[14px] text-[#D9962E]">
                 {displayedHours}h {displayedMins.toString().padStart(2, '0')}min
               </span>
             </div>

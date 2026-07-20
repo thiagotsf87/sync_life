@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { ChevronRight, ChevronLeft, Check, Dumbbell, Utensils, Apple, Pill } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { TextField } from '@/components/ui/text-field'
+import { SelectField } from '@/components/ui/select-field'
 
 interface WizardData {
   // Step 1 — Dados Físicos
@@ -154,70 +156,71 @@ export function CardapioWizard({ initialData, onComplete, onCancel }: Props) {
         {steps.map((s, i) => (
           <div key={i} className="flex items-center gap-2 flex-1">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold transition-colors ${
-              i <= step ? 'bg-[#10b981] text-white' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
+              i <= step ? 'bg-[#0F766E] text-white' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
             }`}>
               {i < step ? <Check size={14} /> : i + 1}
             </div>
             {i < steps.length - 1 && (
-              <div className={`h-px flex-1 ${i < step ? 'bg-[#10b981]' : 'bg-[var(--sl-border)]'}`} />
+              <div className={`h-px flex-1 ${i < step ? 'bg-[#0F766E]' : 'bg-[var(--sl-border)]'}`} />
             )}
           </div>
         ))}
       </div>
       <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-4">{steps[step].label}</p>
 
-      {/* Step 1 — Dados Fisicos */}
+      {/* Step 1 · Dados Fisicos */}
       {step === 0 && (
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
-            <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Peso (kg)</span>
-              <input type="number" value={data.weight} onChange={e => update('weight', +e.target.value)}
-                className="px-3 py-2 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] text-[13px] outline-none focus:border-[#10b981]" />
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Altura (cm)</span>
-              <input type="number" value={data.height} onChange={e => update('height', +e.target.value)}
-                className="px-3 py-2 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] text-[13px] outline-none focus:border-[#10b981]" />
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Idade</span>
-              <input type="number" value={data.age} onChange={e => update('age', +e.target.value)}
-                className="px-3 py-2 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] text-[13px] outline-none focus:border-[#10b981]" />
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Sexo</span>
-              <select value={data.sex} onChange={e => update('sex', e.target.value as 'male' | 'female')}
-                className="px-3 py-2 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] text-[13px] outline-none focus:border-[#10b981]">
-                <option value="male">Masculino</option>
-                <option value="female">Feminino</option>
-              </select>
-            </label>
+            <TextField
+              label="Peso (kg)"
+              type="number"
+              value={data.weight}
+              onChange={e => update('weight', +e.target.value)}
+            />
+            <TextField
+              label="Altura (cm)"
+              type="number"
+              value={data.height}
+              onChange={e => update('height', +e.target.value)}
+            />
+            <TextField
+              label="Idade"
+              type="number"
+              value={data.age}
+              onChange={e => update('age', +e.target.value)}
+            />
+            <SelectField
+              label="Sexo"
+              value={data.sex}
+              onChange={e => update('sex', e.target.value as 'male' | 'female')}
+              options={[
+                { value: 'male', label: 'Masculino' },
+                { value: 'female', label: 'Feminino' },
+              ]}
+            />
           </div>
-          <label className="flex flex-col gap-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Nivel de Atividade</span>
-            <select value={data.activityLevel} onChange={e => update('activityLevel', e.target.value as WizardData['activityLevel'])}
-              className="px-3 py-2 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] text-[13px] outline-none focus:border-[#10b981]">
-              {Object.entries(ACTIVITY_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>{v}</option>
-              ))}
-            </select>
-          </label>
-          <div className="p-3 rounded-xl bg-[rgba(16,185,129,0.06)] border border-[rgba(16,185,129,0.15)]">
+          <SelectField
+            label="Nivel de Atividade"
+            value={data.activityLevel}
+            onChange={e => update('activityLevel', e.target.value as WizardData['activityLevel'])}
+            options={Object.entries(ACTIVITY_LABELS).map(([k, v]) => ({ value: k, label: v }))}
+          />
+          <div className="p-3 rounded-xl bg-[var(--sl-em-soft)] border border-[var(--sl-border-em)]">
             <p className="text-[11px] text-[var(--sl-t3)] mb-1">Calculos (Harris-Benedict)</p>
-            <p className="font-[DM_Mono] text-[14px] text-[#10b981]">TMB: {Math.round(tmb)} kcal · TDEE: {tdee} kcal/dia</p>
+            <p className="sl-num text-[14px] text-[var(--sl-em)]">TMB: {Math.round(tmb)} kcal &middot; TDEE: {tdee} kcal/dia</p>
           </div>
         </div>
       )}
 
-      {/* Step 2 — Tipo de Dieta */}
+      {/* Step 2 · Tipo de Dieta */}
       {step === 1 && (
         <div className="grid grid-cols-2 gap-2">
           {DIET_TYPES.map(d => (
             <button key={d.id} onClick={() => update('dietType', d.id)}
               className={`flex items-center gap-2.5 p-3 rounded-xl border text-left transition-all ${
                 data.dietType === d.id
-                  ? 'border-[#10b981] bg-[rgba(16,185,129,0.08)]'
+                  ? 'border-[#0F766E] bg-[rgba(15,118,110,0.08)]'
                   : 'border-[var(--sl-border)] bg-[var(--sl-s2)] hover:border-[var(--sl-border-h)]'
               }`}>
               <span className="text-[20px]">{d.icon}</span>
@@ -227,7 +230,7 @@ export function CardapioWizard({ initialData, onComplete, onCancel }: Props) {
         </div>
       )}
 
-      {/* Step 3 — Proteinas Preferidas */}
+      {/* Step 3 · Proteinas Preferidas */}
       {step === 2 && (
         <div className="flex flex-col gap-3">
           <p className="text-[12px] text-[var(--sl-t3)]">Selecione suas proteinas favoritas (multipla escolha)</p>
@@ -236,7 +239,7 @@ export function CardapioWizard({ initialData, onComplete, onCancel }: Props) {
               <button key={p.id} onClick={() => toggleArray('preferredProteins', p.id)}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-[12px] font-medium transition-all ${
                   data.preferredProteins.includes(p.id)
-                    ? 'border-[#10b981] bg-[rgba(16,185,129,0.08)] text-[#10b981]'
+                    ? 'border-[#0F766E] bg-[rgba(15,118,110,0.08)] text-[#0F766E]'
                     : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                 }`}>
                 <span>{p.icon}</span> {p.label}
@@ -246,7 +249,7 @@ export function CardapioWizard({ initialData, onComplete, onCancel }: Props) {
         </div>
       )}
 
-      {/* Step 4 — Refeicoes e Suplementos */}
+      {/* Step 4 · Refeicoes e Suplementos */}
       {step === 3 && (
         <div className="flex flex-col gap-4">
           <label className="flex flex-col gap-1">
@@ -256,7 +259,7 @@ export function CardapioWizard({ initialData, onComplete, onCancel }: Props) {
                 <button key={n} onClick={() => update('mealsPerDay', n)}
                   className={`flex-1 py-2 rounded-xl border text-[13px] font-bold transition-all ${
                     data.mealsPerDay === n
-                      ? 'border-[#10b981] bg-[rgba(16,185,129,0.08)] text-[#10b981]'
+                      ? 'border-[#0F766E] bg-[rgba(15,118,110,0.08)] text-[#0F766E]'
                       : 'border-[var(--sl-border)] text-[var(--sl-t2)]'
                   }`}>{n}</button>
               ))}
@@ -264,11 +267,11 @@ export function CardapioWizard({ initialData, onComplete, onCancel }: Props) {
           </label>
           <div className="flex gap-3">
             <label className="flex items-center gap-2 flex-1 p-3 rounded-xl border border-[var(--sl-border)] cursor-pointer">
-              <input type="checkbox" checked={data.preWorkout} onChange={() => update('preWorkout', !data.preWorkout)} className="accent-[#10b981]" />
+              <input type="checkbox" checked={data.preWorkout} onChange={() => update('preWorkout', !data.preWorkout)} className="accent-[#0F766E]" />
               <span className="text-[12px] text-[var(--sl-t1)]">Pre-treino</span>
             </label>
             <label className="flex items-center gap-2 flex-1 p-3 rounded-xl border border-[var(--sl-border)] cursor-pointer">
-              <input type="checkbox" checked={data.postWorkout} onChange={() => update('postWorkout', !data.postWorkout)} className="accent-[#10b981]" />
+              <input type="checkbox" checked={data.postWorkout} onChange={() => update('postWorkout', !data.postWorkout)} className="accent-[#0F766E]" />
               <span className="text-[12px] text-[var(--sl-t1)]">Pos-treino</span>
             </label>
           </div>
@@ -279,7 +282,7 @@ export function CardapioWizard({ initialData, onComplete, onCancel }: Props) {
                 <button key={s.id} onClick={() => toggleArray('supplements', s.id)}
                   className={`px-3 py-1.5 rounded-lg border text-[11px] font-medium transition-all ${
                     data.supplements.includes(s.id)
-                      ? 'border-[#10b981] bg-[rgba(16,185,129,0.08)] text-[#10b981]'
+                      ? 'border-[#0F766E] bg-[rgba(15,118,110,0.08)] text-[#0F766E]'
                       : 'border-[var(--sl-border)] text-[var(--sl-t2)]'
                   }`}>{s.label}</button>
               ))}
@@ -300,13 +303,13 @@ export function CardapioWizard({ initialData, onComplete, onCancel }: Props) {
         {step < 3 ? (
           <button onClick={() => setStep(s => s + 1)}
             className="flex items-center gap-1 px-5 py-2.5 rounded-xl text-[12px] font-bold text-white transition-all hover:brightness-110"
-            style={{ background: '#10b981' }}>
+            style={{ background: '#0F766E' }}>
             Proximo <ChevronRight size={14} />
           </button>
         ) : (
           <button onClick={handleFinish} disabled={saving}
             className="flex items-center gap-1 px-5 py-2.5 rounded-xl text-[12px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-50"
-            style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}>
+            style={{ background: 'var(--sl-em)' }}>
             <Check size={14} /> {saving ? 'Salvando...' : 'Concluir'}
           </button>
         )}

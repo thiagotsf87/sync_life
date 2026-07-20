@@ -3,10 +3,10 @@
 import { RotateCcw, RotateCw, Play, Pause } from 'lucide-react'
 import type { StudyTrack, StudyStreak } from '@/hooks/use-mente'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.14)'
-const MENTE_BORDER = 'rgba(234,179,8,0.3)'
-const MENTE_GRAD = 'linear-gradient(135deg, #eab308, #f97316)'
+const MENTE_COLOR = '#D9962E'
+const MENTE_BG = 'rgba(217,150,46,0.14)'
+const MENTE_BORDER = 'rgba(217,150,46,0.3)'
+const MENTE_GRAD = 'linear-gradient(135deg, #D9962E, #D97534)'
 
 export type TimerPhase = 'focus' | 'short_break' | 'long_break'
 
@@ -131,7 +131,7 @@ export function MenteTimerTab({
 
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <div className="font-[DM_Mono] text-[48px] font-bold text-[var(--sl-t1)] leading-none">
+          <div className="font-[IBM_Plex_Mono] text-[48px] font-bold text-[var(--sl-t1)] leading-none">
             {formatTime(timerSeconds)}
           </div>
           <div className="text-[14px] font-medium mt-[6px]" style={{ color: MENTE_COLOR }}>
@@ -157,7 +157,7 @@ export function MenteTimerTab({
         <button
           onClick={onTogglePlay}
           className="w-[76px] h-[76px] rounded-full flex items-center justify-center"
-          style={{ background: MENTE_COLOR, boxShadow: '0 6px 24px rgba(234,179,8,0.4)' }}
+          style={{ background: MENTE_COLOR, boxShadow: '0 6px 24px rgba(217,150,46,0.4)' }}
           aria-label={timerRunning ? 'Pausar' : 'Iniciar'}
         >
           {timerRunning
@@ -176,7 +176,7 @@ export function MenteTimerTab({
         </button>
       </div>
 
-      {/* Cycle dots — 4 bars */}
+      {/* Cycle dots · 4 bars */}
       <div className="flex justify-center gap-2 mb-6">
         {[0, 1, 2, 3].map((i) => {
           const posInCycle = cycleCount % 4
@@ -190,8 +190,8 @@ export function MenteTimerTab({
                 background: isCompleted
                   ? MENTE_COLOR
                   : isCurrent
-                  ? 'rgba(139,92,246,0.55)'
-                  : 'rgba(139,92,246,0.25)',
+                  ? 'rgba(139,123,212,0.55)'
+                  : 'rgba(139,123,212,0.25)',
               }}
             />
           )
@@ -202,15 +202,15 @@ export function MenteTimerTab({
       <div className="flex gap-2 px-4 mb-4">
         {[
           { value: String(todaySessions), label: 'Pomodoros', color: MENTE_COLOR },
-          { value: `${weekHours}h`, label: 'Foco total', color: '#10b981' },
-          { value: `${streak.current_streak}🔥`, label: 'Streak dias', color: '#f59e0b' },
+          { value: `${weekHours}h`, label: 'Foco total', color: '#0F766E' },
+          { value: `${streak.current_streak}🔥`, label: 'Streak dias', color: '#D9962E' },
         ].map(({ value, label, color }) => (
           <div
             key={label}
             className="flex-1 rounded-[10px] p-3 text-center"
             style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}
           >
-            <div className="font-[DM_Mono] text-[22px] font-bold leading-none" style={{ color }}>
+            <div className="font-[IBM_Plex_Mono] text-[22px] font-bold leading-none" style={{ color }}>
               {value}
             </div>
             <div className="text-[11px] text-[var(--sl-t2)] mt-[2px]">{label}</div>
@@ -221,7 +221,7 @@ export function MenteTimerTab({
       {/* Next break card */}
       <div
         className="mx-4 rounded-2xl p-4"
-        style={{ background: 'rgba(139,92,246,0.07)', border: `1px solid ${MENTE_BORDER}` }}
+        style={{ background: 'rgba(139,123,212,0.07)', border: `1px solid ${MENTE_BORDER}` }}
       >
         <div className="flex items-center gap-[10px]">
           <span className="text-[18px]">☕</span>

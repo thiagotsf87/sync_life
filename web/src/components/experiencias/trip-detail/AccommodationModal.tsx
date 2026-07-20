@@ -87,36 +87,36 @@ export function AccommodationModal({
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl w-full max-w-[480px] max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-[var(--sl-border)]">
-          <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">🏨 Adicionar Hospedagem</h2>
+          <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">Adicionar hospedagem</h2>
           <button onClick={onClose} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl">×</button>
         </div>
         <div className="p-5 flex flex-col gap-3">
           <div>
             <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Nome*</label>
-            <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Hotel, Airbnb, Pousada..." className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
+            <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Hotel, Airbnb, Pousada..." className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]" />
           </div>
           <div>
             <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Endereço</label>
-            <input type="text" value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
+            <input type="text" value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Check-in*</label>
-              <input type="date" value={form.check_in} min={startDate} max={endDate} onChange={e => setForm(f => ({ ...f, check_in: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
+              <input type="date" value={form.check_in} min={startDate} max={endDate} onChange={e => setForm(f => ({ ...f, check_in: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]" />
             </div>
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Check-out*</label>
-              <input type="date" value={form.check_out} min={form.check_in || startDate} max={endDate} onChange={e => setForm(f => ({ ...f, check_out: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
+              <input type="date" value={form.check_out} min={form.check_in || startDate} max={endDate} onChange={e => setForm(f => ({ ...f, check_out: e.target.value }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Custo por noite</label>
-              <input type="number" step="10" value={form.cost_per_night} onChange={e => setForm(f => ({ ...f, cost_per_night: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
+              <input type="number" step="10" value={form.cost_per_night} onChange={e => setForm(f => ({ ...f, cost_per_night: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]" />
             </div>
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Status</label>
-              <select value={form.booking_status} onChange={e => setForm(f => ({ ...f, booking_status: e.target.value as BookingStatus }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]">
+              <select value={form.booking_status} onChange={e => setForm(f => ({ ...f, booking_status: e.target.value as BookingStatus }))} className="w-full px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]">
                 <option value="estimated">Estimado</option>
                 <option value="reserved">Reservado</option>
                 <option value="paid">Pago</option>
@@ -125,11 +125,11 @@ export function AccommodationModal({
           </div>
           <div>
             <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Código de confirmação</label>
-            <input type="text" value={form.confirmation_code} onChange={e => setForm(f => ({ ...f, confirmation_code: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#ec4899]" />
+            <input type="text" value={form.confirmation_code} onChange={e => setForm(f => ({ ...f, confirmation_code: e.target.value }))} placeholder="Opcional" className="w-full px-3 py-2.5 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]" />
           </div>
           <div className="flex gap-2 pt-1">
             <button onClick={onClose} className="flex-1 py-2.5 rounded-[10px] text-[12px] border border-[var(--sl-border)] text-[var(--sl-t2)]">Cancelar</button>
-            <button onClick={handleSave} disabled={isSaving} className="flex-1 py-2.5 rounded-[10px] text-[12px] font-semibold bg-[#ec4899] text-[#03071a] hover:opacity-90 disabled:opacity-50">{isSaving ? 'Salvando...' : 'Adicionar'}</button>
+            <button onClick={handleSave} disabled={isSaving} className="flex-1 py-2.5 rounded-[10px] text-[12px] font-semibold bg-[#C76795] text-[#03071a] hover:opacity-90 disabled:opacity-50">{isSaving ? 'Salvando...' : 'Adicionar'}</button>
           </div>
         </div>
       </div>

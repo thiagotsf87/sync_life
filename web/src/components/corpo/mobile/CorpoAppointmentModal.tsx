@@ -1,11 +1,11 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { SPECIALTIES, type SaveAppointmentData } from '@/hooks/use-corpo'
 import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 
-const CORPO_COLOR = '#f97316'
-const CORPO_BG = 'rgba(249,115,22,0.12)'
+const CORPO_COLOR = '#D97534'
+const CORPO_BG = 'rgba(217,117,52,0.12)'
 
 const FOLLOW_UP_OPTIONS = [
   { label: 'Sem retorno', value: null },
@@ -170,7 +170,7 @@ export function CorpoAppointmentModal({ onClose, onSave }: CorpoAppointmentModal
               value={cost}
               onChange={(e) => setCost(e.target.value)}
               placeholder="0,00"
-              className="w-full rounded-[10px] px-3 py-3 text-[14px] text-[var(--sl-t1)] outline-none text-center font-[DM_Mono]"
+              className="w-full rounded-[10px] px-3 py-3 text-[14px] text-[var(--sl-t1)] outline-none text-center sl-num-strong"
               style={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)' }}
             />
           </div>

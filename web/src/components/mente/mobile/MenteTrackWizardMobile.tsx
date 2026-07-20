@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { X, Plus, Trash2 } from 'lucide-react'
@@ -6,9 +6,9 @@ import type { TrackCategory, CreateTrackData } from '@/hooks/use-mente'
 import { CATEGORY_LABELS } from '@/hooks/use-mente'
 import { useObjectives } from '@/hooks/use-futuro'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.14)'
-const MENTE_BORDER = 'rgba(234,179,8,0.3)'
+const MENTE_COLOR = 'var(--sl-warning)'
+const MENTE_BG = 'rgba(217,150,46,0.14)'
+const MENTE_BORDER = 'rgba(217,150,46,0.3)'
 const FREE_TRACK_LIMIT = 3
 
 interface StepInput {
@@ -115,7 +115,7 @@ export function MenteTrackWizardMobile({
         <div className="flex items-center justify-between px-5 py-4">
           <div>
             <p className="text-[11px] font-medium" style={{ color: MENTE_COLOR }}>
-              🧠 Nova Trilha — Passo {step} de 3
+              🧠 Nova Trilha · Passo {step} de 3
             </p>
             <h2 className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)]">
               {step === 1 ? 'Informações básicas' : step === 2 ? 'Etapas de aprendizado' : 'Prazo e objetivo'}
@@ -146,8 +146,8 @@ export function MenteTrackWizardMobile({
             <div
               className="rounded-2xl p-5 text-center"
               style={{
-                background: 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(139,92,246,0.1))',
-                border: '1.5px solid rgba(245,158,11,0.3)',
+                background: 'linear-gradient(135deg,rgba(217,150,46,0.15),rgba(139,123,212,0.1))',
+                border: '1.5px solid rgba(217,150,46,0.3)',
               }}
             >
               <span className="text-[32px]">💎</span>
@@ -157,14 +157,14 @@ export function MenteTrackWizardMobile({
               <p className="text-[13px] text-[var(--sl-t2)] mb-4">
                 Você tem {existingTrackCount} trilhas ativas. O plano FREE permite até {FREE_TRACK_LIMIT} trilhas simultâneas.
               </p>
-              <p className="text-[13px] font-medium" style={{ color: '#f59e0b' }}>
+              <p className="text-[13px] font-medium" style={{ color: 'var(--sl-warning)' }}>
                 PRO: trilhas ilimitadas + IA personalizada
               </p>
             </div>
           </div>
         ) : (
           <div className="overflow-y-auto px-5" style={{ maxHeight: '60vh' }}>
-            {/* Step 1 — Name + Category */}
+            {/* Step 1 · Name + Category */}
             {step === 1 && (
               <div className="space-y-4 pb-6">
                 <div>
@@ -213,7 +213,7 @@ export function MenteTrackWizardMobile({
               </div>
             )}
 
-            {/* Step 2 — Steps */}
+            {/* Step 2 · Steps */}
             {step === 2 && (
               <div className="pb-6">
                 <p className="text-[12px] text-[var(--sl-t2)] mb-3">
@@ -257,7 +257,7 @@ export function MenteTrackWizardMobile({
               </div>
             )}
 
-            {/* Step 3 — Date + Objective link */}
+            {/* Step 3 · Date + Objective link */}
             {step === 3 && (
               <div className="space-y-4 pb-6">
                 <div>

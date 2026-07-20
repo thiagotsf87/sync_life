@@ -1,8 +1,9 @@
 'use client'
 
-import { CheckCircle2, Circle, Clock, ChevronDown, ChevronUp } from 'lucide-react'
+import { CheckCircle2, Circle, Clock, ChevronDown, ChevronUp, DollarSign } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 import type { CareerRoadmap, RoadmapStep, StepStatus } from '@/hooks/use-carreira'
 
 interface RoadmapTimelineProps {
@@ -18,8 +19,8 @@ const STATUS_NEXT: Record<StepStatus, StepStatus> = {
 
 const STATUS_COLORS: Record<StepStatus, string> = {
   pending: '#6e90b8',
-  in_progress: '#f59e0b',
-  completed: '#10b981',
+  in_progress: '#D9962E',
+  completed: '#0F766E',
 }
 
 export function RoadmapTimeline({ roadmap, onUpdateStep }: RoadmapTimelineProps) {
@@ -43,11 +44,11 @@ export function RoadmapTimeline({ roadmap, onUpdateStep }: RoadmapTimelineProps)
     <div className="flex flex-col gap-0">
       {/* Origin node */}
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-5 h-5 rounded-full bg-[#10b981] flex items-center justify-center shrink-0">
+        <div className="w-5 h-5 rounded-full bg-[#0F766E] flex items-center justify-center shrink-0">
           <div className="w-2 h-2 rounded-full bg-white" />
         </div>
         <div>
-          <p className="text-[12px] font-bold text-[#10b981]">Agora</p>
+          <p className="text-[12px] font-bold text-[#0F766E]">Agora</p>
           <p className="text-[13px] font-semibold text-[var(--sl-t1)]">{roadmap.current_title}</p>
         </div>
       </div>
@@ -69,15 +70,15 @@ export function RoadmapTimeline({ roadmap, onUpdateStep }: RoadmapTimelineProps)
                 disabled={isUpdating || !onUpdateStep}
                 className={cn(
                   'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0',
-                  step.status === 'completed' ? 'border-[#10b981] bg-[#10b981]' : '',
-                  step.status === 'in_progress' ? 'border-[#f59e0b] bg-[#f59e0b]/20' : '',
+                  step.status === 'completed' ? 'border-[#0F766E] bg-[#0F766E]' : '',
+                  step.status === 'in_progress' ? 'border-[#D9962E] bg-[#D9962E]/20' : '',
                   step.status === 'pending' ? 'border-[var(--sl-border)] bg-[var(--sl-s2)]' : '',
                   onUpdateStep && 'cursor-pointer hover:scale-110',
                   isUpdating && 'opacity-50'
                 )}
               >
                 {step.status === 'completed' && <CheckCircle2 size={12} className="text-white" />}
-                {step.status === 'in_progress' && <Clock size={10} className="text-[#f59e0b]" />}
+                {step.status === 'in_progress' && <Clock size={10} className="text-[#D9962E]" />}
                 {step.status === 'pending' && <Circle size={10} className="text-[var(--sl-t3)]" />}
               </button>
               {!isLast && <div className="w-px flex-1 bg-[var(--sl-border)]" style={{ minHeight: '12px' }} />}
@@ -166,22 +167,23 @@ export function RoadmapTimeline({ roadmap, onUpdateStep }: RoadmapTimelineProps)
         <div
           className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
           style={{
-            borderColor: roadmap.status === 'completed' ? '#10b981' : '#0055ff',
-            background: roadmap.status === 'completed' ? '#10b981' : 'transparent',
+            borderColor: roadmap.status === 'completed' ? '#0F766E' : '#0B2D34',
+            background: roadmap.status === 'completed' ? '#0F766E' : 'transparent',
           }}
         >
           <div className="w-2 h-2 rounded-full" style={{
-            background: roadmap.status === 'completed' ? 'white' : '#0055ff',
+            background: roadmap.status === 'completed' ? 'white' : '#0B2D34',
           }} />
         </div>
         <div>
-          <p className="text-[12px] font-bold" style={{ color: roadmap.status === 'completed' ? '#10b981' : '#0055ff' }}>
+          <p className="text-[12px] font-bold" style={{ color: roadmap.status === 'completed' ? '#0F766E' : '#0B2D34' }}>
             Destino
           </p>
           <p className="text-[13px] font-semibold text-[var(--sl-t1)]">{roadmap.target_title}</p>
           {roadmap.target_salary && (
-            <p className="text-[11px] text-[var(--sl-t3)]">
-              💰 {roadmap.target_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            <p className="text-[11px] text-[var(--sl-t3)] flex items-center gap-1">
+              <DollarSign size={11} />
+              <span className="sl-num">{fmtBRL(roadmap.target_salary)}</span>
             </p>
           )}
         </div>

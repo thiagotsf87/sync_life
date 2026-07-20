@@ -3,9 +3,11 @@
 import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
+import { Activity, Plane, BookOpen, TrendingUp, Briefcase, Calendar, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { saveUserPreferences, setCachedIntegrationSettings } from '@/lib/user-preferences'
+import { SectionHeader } from '@/components/ui/section-header'
 
 // RN-CRP-37 / RN-EXP-30 / RN-MNT-24 / RN-PTR-22 / RN-CAR-18:
 // Página central de integrações opt-in entre módulos
@@ -88,7 +90,7 @@ function IntegrationRow({ from, to, label, description, checked, onChange }: Int
         onClick={() => onChange(!checked)}
         className={cn(
           'relative w-9 h-5 rounded-full border shrink-0 mt-0.5 transition-colors',
-          checked ? 'bg-[#10b981] border-[#10b981]' : 'bg-[var(--sl-s3)] border-[var(--sl-border)]'
+          checked ? 'bg-[#0F766E] border-[#0F766E]' : 'bg-[var(--sl-s3)] border-[var(--sl-border)]'
         )}
       >
         <span
@@ -202,87 +204,122 @@ function IntegracoesPageContent() {
     setSettings(prev => ({ ...prev, [key]: val }))
   }
 
-  const groups = [
+  const groups: Array<{
+    name: string
+    icon: React.ReactNode
+    color: string
+    eyebrow: string
+    sub: string
+    items: Array<{ key: keyof IntegrationSettings; from: string; to: string; label: string; description: string }>
+  }> = [
     {
-      label: '🏃 Corpo',
+      name: 'Corpo',
+      icon: <Activity size={16} />,
+      color: '#D97534',
+      eyebrow: '02 · CORPO',
+      sub: 'Consultas, atividades e cardápio',
       items: [
-        { key: 'crp_consulta_agenda' as const, from: 'Corpo', to: 'Agenda', label: 'Consulta médica → Evento na Agenda', description: 'Cria automaticamente um evento de saúde na Agenda ao registrar uma consulta.' },
-        { key: 'crp_atividade_agenda' as const, from: 'Corpo', to: 'Agenda', label: 'Atividade física → Evento na Agenda', description: 'Registra atividades físicas como eventos concluídos na Agenda.' },
-        { key: 'crp_consulta_financas' as const, from: 'Corpo', to: 'Finanças', label: 'Custo de consulta → Transação em Finanças', description: 'Registra automaticamente o custo de consultas médicas como despesa.' },
-        { key: 'crp_cardapio_financas' as const, from: 'Corpo', to: 'Finanças', label: 'Orçamento do cardápio → Transação em Finanças', description: 'Registra o orçamento alimentar semanal como despesa em Finanças.' },
+        { key: 'crp_consulta_agenda', from: 'Corpo', to: 'Agenda', label: 'Consulta médica → Evento na Agenda', description: 'Cria automaticamente um evento de saúde na Agenda ao registrar uma consulta.' },
+        { key: 'crp_atividade_agenda', from: 'Corpo', to: 'Agenda', label: 'Atividade física → Evento na Agenda', description: 'Registra atividades físicas como eventos concluídos na Agenda.' },
+        { key: 'crp_consulta_financas', from: 'Corpo', to: 'Finanças', label: 'Custo de consulta → Transação em Finanças', description: 'Registra automaticamente o custo de consultas médicas como despesa.' },
+        { key: 'crp_cardapio_financas', from: 'Corpo', to: 'Finanças', label: 'Orçamento do cardápio → Transação em Finanças', description: 'Registra o orçamento alimentar semanal como despesa em Finanças.' },
       ],
     },
     {
-      label: '✈️ Experiências',
+      name: 'Experiências',
+      icon: <Plane size={16} />,
+      color: '#C76795',
+      eyebrow: '03 · EXPERIÊNCIAS',
+      sub: 'Viagens criam eventos e despesas',
       items: [
-        { key: 'exp_viagem_agenda' as const, from: 'Experiências', to: 'Agenda', label: 'Viagem → Eventos de Partida/Retorno na Agenda', description: 'Cria dois eventos na Agenda (ida e volta) ao criar uma viagem.' },
-        { key: 'exp_viagem_financas' as const, from: 'Experiências', to: 'Finanças', label: 'Orçamento de viagem → Transação em Finanças', description: 'Registra o orçamento total da viagem como despesa em Finanças.' },
+        { key: 'exp_viagem_agenda', from: 'Experiências', to: 'Agenda', label: 'Viagem → Eventos de Partida/Retorno na Agenda', description: 'Cria dois eventos na Agenda (ida e volta) ao criar uma viagem.' },
+        { key: 'exp_viagem_financas', from: 'Experiências', to: 'Finanças', label: 'Orçamento de viagem → Transação em Finanças', description: 'Registra o orçamento total da viagem como despesa em Finanças.' },
       ],
     },
     {
-      label: '📚 Mente',
+      name: 'Mente',
+      icon: <BookOpen size={16} />,
+      color: '#D9962E',
+      eyebrow: '04 · MENTE',
+      sub: 'Pomodoros e trilhas de estudo',
       items: [
-        { key: 'mnt_pomodoro_agenda' as const, from: 'Mente', to: 'Agenda', label: 'Sessão Pomodoro → Bloco de Estudo na Agenda', description: 'Registra cada sessão Pomodoro concluída como evento de estudo.' },
-        { key: 'mnt_trilha_financas' as const, from: 'Mente', to: 'Finanças', label: 'Custo de trilha → Transação em Finanças', description: 'Registra o custo de cursos/trilhas de estudo como despesa educacional.' },
+        { key: 'mnt_pomodoro_agenda', from: 'Mente', to: 'Agenda', label: 'Sessão Pomodoro → Bloco de Estudo na Agenda', description: 'Registra cada sessão Pomodoro concluída como evento de estudo.' },
+        { key: 'mnt_trilha_financas', from: 'Mente', to: 'Finanças', label: 'Custo de trilha → Transação em Finanças', description: 'Registra o custo de cursos/trilhas de estudo como despesa educacional.' },
       ],
     },
     {
-      label: '📈 Patrimônio',
+      name: 'Patrimônio',
+      icon: <TrendingUp size={16} />,
+      color: '#4F88D4',
+      eyebrow: '05 · PATRIMÔNIO',
+      sub: 'Proventos da carteira',
       items: [
-        { key: 'ptr_provento_financas' as const, from: 'Patrimônio', to: 'Finanças', label: 'Provento recebido → Receita em Finanças', description: 'Registra dividendos e rendimentos como receitas em Finanças.' },
+        { key: 'ptr_provento_financas', from: 'Patrimônio', to: 'Finanças', label: 'Provento recebido → Receita em Finanças', description: 'Registra dividendos e rendimentos como receitas em Finanças.' },
       ],
     },
     {
-      label: '💼 Carreira',
+      name: 'Carreira',
+      icon: <Briefcase size={16} />,
+      color: '#DB6478',
+      eyebrow: '06 · CARREIRA',
+      sub: 'Salário e roadmap profissional',
       items: [
-        { key: 'car_salario_financas' as const, from: 'Carreira', to: 'Finanças', label: 'Atualização de salário → Receita em Finanças', description: 'Sincroniza atualizações de salário no perfil de carreira com a renda mensal em Finanças.' },
-        { key: 'car_roadmap_futuro' as const, from: 'Carreira', to: 'Futuro', label: 'Passo de roadmap concluído → Meta no Futuro', description: 'Ao concluir um passo do roadmap, cria automaticamente uma meta concluída no módulo Futuro.' },
+        { key: 'car_salario_financas', from: 'Carreira', to: 'Finanças', label: 'Atualização de salário → Receita em Finanças', description: 'Sincroniza atualizações de salário no perfil de carreira com a renda mensal em Finanças.' },
+        { key: 'car_roadmap_futuro', from: 'Carreira', to: 'Futuro', label: 'Passo de roadmap concluído → Meta no Futuro', description: 'Ao concluir um passo do roadmap, cria automaticamente uma meta concluída no módulo Futuro.' },
       ],
     },
     {
-      label: '📅 Tempo',
+      name: 'Tempo',
+      icon: <Calendar size={16} />,
+      color: '#3CA0B5',
+      eyebrow: '07 · TEMPO',
+      sub: 'Eventos e tarefas com efeito cruzado',
       items: [
-        { key: 'tmp_evento_financas' as const, from: 'Tempo', to: 'Finanças', label: 'Evento com custo → Transação em Finanças', description: 'Ao criar um evento com custo, registra automaticamente a despesa em Finanças.' },
-        { key: 'tmp_tarefa_futuro' as const, from: 'Tempo', to: 'Futuro', label: 'Tarefa concluída → Progresso em Meta', description: 'Ao marcar uma tarefa vinculada a uma meta como concluída, atualiza o progresso da meta no Futuro.' },
+        { key: 'tmp_evento_financas', from: 'Tempo', to: 'Finanças', label: 'Evento com custo → Transação em Finanças', description: 'Ao criar um evento com custo, registra automaticamente a despesa em Finanças.' },
+        { key: 'tmp_tarefa_futuro', from: 'Tempo', to: 'Futuro', label: 'Tarefa concluída → Progresso em Meta', description: 'Ao marcar uma tarefa vinculada a uma meta como concluída, atualiza o progresso da meta no Futuro.' },
       ],
     },
     {
-      label: '🔮 Futuro',
+      name: 'Futuro',
+      icon: <Sparkles size={16} />,
+      color: '#8B7BD4',
+      eyebrow: '08 · FUTURO',
+      sub: 'Objetivos viram lembretes',
       items: [
-        { key: 'fut_objetivo_agenda' as const, from: 'Futuro', to: 'Agenda', label: 'Prazo de objetivo → Lembrete na Agenda', description: 'Cria um evento lembrete na data de prazo de cada objetivo criado.' },
-        { key: 'fut_viagem_futuro' as const, from: 'Experiências', to: 'Futuro', label: 'Viagem criada → Sugestão de Objetivo no Futuro', description: 'Ao criar uma viagem, sugere criar um objetivo no módulo Futuro para acompanhar o progresso.' },
+        { key: 'fut_objetivo_agenda', from: 'Futuro', to: 'Agenda', label: 'Prazo de objetivo → Lembrete na Agenda', description: 'Cria um evento lembrete na data de prazo de cada objetivo criado.' },
+        { key: 'fut_viagem_futuro', from: 'Experiências', to: 'Futuro', label: 'Viagem criada → Sugestão de Objetivo no Futuro', description: 'Ao criar uma viagem, sugere criar um objetivo no módulo Futuro para acompanhar o progresso.' },
       ],
     },
   ]
 
   return (
     <div className="max-w-[680px]">
-      <h1 className="font-[Syne] font-extrabold text-xl mb-1 text-sl-grad">
+      <h1 className="font-[Syne] font-extrabold text-xl mb-1 text-[var(--sl-t1)]">
         Integrações
       </h1>
       <p className="text-[13px] text-[var(--sl-t3)] mb-6">
-        Configure quais ações em um módulo criam dados automaticamente em outros. Todas as integrações são opt-in e geram dados com a tag <strong className="text-[var(--sl-t2)]">Auto —</strong>.
+        Configure quais ações em um módulo criam dados automaticamente em outros. Todas as integrações são opt-in e geram dados com a tag <strong className="text-[var(--sl-t2)]">Auto.</strong>
       </p>
 
       <div className="flex flex-col gap-3">
         {/* Google Calendar */}
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 hover:border-[var(--sl-border-h)] transition-colors">
-          <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-3">
-            Integracoes Externas
-          </p>
+          <SectionHeader
+            eyebrow="01 · INTEGRAÇÕES EXTERNAS"
+            title="Conecte serviços de terceiros"
+            sub="Sincronização bidirecional com sua conta SyncLife"
+            className="mb-3"
+          />
           <div className="flex items-start justify-between gap-4 py-3">
             <div className="flex items-start gap-3 flex-1 min-w-0">
-              <div className="w-8 h-8 rounded-[9px] bg-[var(--sl-s3)] flex items-center justify-center text-base shrink-0 mt-0.5">
-                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
-                  <path d="M18 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2z" stroke="var(--sl-t2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M16 2v4M8 2v4M4 10h16" stroke="var(--sl-t2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+              <div className="w-8 h-8 rounded-[9px] bg-[var(--sl-s3)] flex items-center justify-center shrink-0 mt-0.5 text-[var(--sl-t2)]">
+                <Calendar size={16} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] font-semibold text-[var(--sl-t1)]">Google Calendar</p>
                 <p className="text-[11px] text-[var(--sl-t3)] leading-snug mt-0.5">
                   {gcalConnected
-                    ? 'Conectado — seus eventos sao sincronizados automaticamente'
+                    ? 'Conectado, seus eventos são sincronizados automaticamente'
                     : 'Sincronize eventos do Google Calendar com sua Agenda SyncLife'}
                 </p>
               </div>
@@ -293,13 +330,13 @@ function IntegracoesPageContent() {
                   <button
                     onClick={handleGcalSync}
                     disabled={gcalSyncing}
-                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/20 hover:bg-[#10b981]/20 transition-colors disabled:opacity-50"
+                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#0F766E]/10 text-[#0F766E] border border-[#0F766E]/20 hover:bg-[#0F766E]/20 transition-colors disabled:opacity-50"
                   >
                     {gcalSyncing ? 'Sincronizando...' : 'Sincronizar'}
                   </button>
                   <button
                     onClick={handleGcalDisconnect}
-                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#f43f5e]/10 text-[#f43f5e] border border-[#f43f5e]/20 hover:bg-[#f43f5e]/20 transition-colors"
+                    className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[#DB6478]/10 text-[#DB6478] border border-[#DB6478]/20 hover:bg-[#DB6478]/20 transition-colors"
                   >
                     Desconectar
                   </button>
@@ -308,7 +345,7 @@ function IntegracoesPageContent() {
                 <a
                   href="/api/integrations/google-calendar/auth"
                   className="px-3 py-1.5 rounded-lg text-[11px] font-bold text-white transition-all hover:brightness-110"
-                  style={{ background: 'linear-gradient(135deg, #10b981, #0055ff)' }}
+                  style={{ background: '#0F766E' }}
                 >
                   Conectar
                 </a>
@@ -318,10 +355,16 @@ function IntegracoesPageContent() {
         </div>
 
         {groups.map(group => (
-          <div key={group.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 hover:border-[var(--sl-border-h)] transition-colors">
-            <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-3">
-              {group.label}
-            </p>
+          <div key={group.name} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 hover:border-[var(--sl-border-h)] transition-colors">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div
+                className="w-7 h-7 rounded-[9px] flex items-center justify-center shrink-0"
+                style={{ background: `${group.color}1A`, color: group.color }}
+              >
+                {group.icon}
+              </div>
+              <SectionHeader eyebrow={group.eyebrow} title={group.name} sub={group.sub} />
+            </div>
             {group.items.map(item => (
               <IntegrationRow
                 key={item.key}
@@ -339,7 +382,7 @@ function IntegracoesPageContent() {
 
       <div className="mt-4 p-4 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-xl">
         <p className="text-[11px] text-[var(--sl-t3)] leading-relaxed">
-          💡 <strong className="text-[var(--sl-t2)]">Como funciona:</strong> ao realizar ações nos módulos (registrar consulta, criar viagem, etc.), os itens marcados como ativos acima serão criados automaticamente. Os dados gerados ficam marcados com <strong className="text-[var(--sl-t2)]">Auto — [Módulo]</strong> para fácil identificação.
+          <strong className="text-[var(--sl-t2)]">Como funciona:</strong> ao realizar ações nos módulos (registrar consulta, criar viagem, etc.), os itens marcados como ativos acima serão criados automaticamente. Os dados gerados ficam marcados com <strong className="text-[var(--sl-t2)]">Auto · [Módulo]</strong> para fácil identificação.
         </p>
       </div>
     </div>

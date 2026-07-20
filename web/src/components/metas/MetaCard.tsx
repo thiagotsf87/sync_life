@@ -1,5 +1,7 @@
 'use client'
 
+import { Trophy, Pause, AlertTriangle, Rocket, Zap, Dumbbell, Check } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { RingProgress } from '@/components/ui/ring-progress'
 import { calcProgress, calcRingColor, calcProjectedDate, type Goal } from '@/hooks/use-metas'
@@ -28,30 +30,30 @@ function getDaysRemaining(targetDate: string | null): number | null {
   return Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 }
 
-function getTip(goal: Goal, pct: number): { text: string; color: string; bg: string } | null {
+function getTip(goal: Goal, pct: number): { text: string; color: string; bg: string; icon: LucideIcon } | null {
   if (goal.status === 'completed') {
-    return { text: '🏆 Meta concluída! Parabéns!', color: '#10b981', bg: 'rgba(16,185,129,.08)' }
+    return { text: 'Meta concluída! Parabéns!', color: '#0F766E', bg: 'rgba(15,118,110,.08)', icon: Trophy }
   }
   if (goal.status === 'paused') {
-    return { text: '⏸️ Meta pausada. Retome quando puder!', color: '#f59e0b', bg: 'rgba(245,158,11,.08)' }
+    return { text: 'Meta pausada. Retome quando puder!', color: '#D9962E', bg: 'rgba(217,150,46,.08)', icon: Pause }
   }
   const days = getDaysRemaining(goal.target_date)
   if (days !== null && days < 0) {
-    return { text: '⚠️ Prazo ultrapassado. Revise sua estratégia.', color: '#f43f5e', bg: 'rgba(244,63,94,.08)' }
+    return { text: 'Prazo ultrapassado. Revise sua estratégia.', color: '#DB6478', bg: 'rgba(219,100,120,.08)', icon: AlertTriangle }
   }
   if (pct >= 75) {
-    return { text: `🚀 ${pct}% concluído! Você está quase lá!`, color: '#10b981', bg: 'rgba(16,185,129,.08)' }
+    return { text: `${pct}% concluído! Você está quase lá!`, color: '#0F766E', bg: 'rgba(15,118,110,.08)', icon: Rocket }
   }
   if (days !== null && days < 60 && pct < 80) {
-    return { text: `⚡ Menos de 2 meses para o prazo. Considere aumentar o aporte.`, color: '#f59e0b', bg: 'rgba(245,158,11,.08)' }
+    return { text: `Menos de 2 meses para o prazo. Considere aumentar o aporte.`, color: '#D9962E', bg: 'rgba(217,150,46,.08)', icon: Zap }
   }
-  return { text: `💪 Continue assim! ${pct}% concluído.`, color: '#10b981', bg: 'rgba(16,185,129,.08)' }
+  return { text: `Continue assim! ${pct}% concluído.`, color: '#0F766E', bg: 'rgba(15,118,110,.08)', icon: Dumbbell }
 }
 
 export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
   const pct = calcProgress(goal.current_amount, goal.target_amount)
   const color = calcRingColor(goal)
-  const useGrad = goal.status === 'active' && color === '#10b981'
+  const useGrad = goal.status === 'active' && color === '#0F766E'
   const projected = calcProjectedDate(goal.current_amount, goal.target_amount, goal.monthly_contribution)
   const daysLeft = getDaysRemaining(goal.target_date)
   const tip = getTip(goal, pct)
@@ -67,15 +69,17 @@ export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
     >
       {/* Status badge */}
       {goal.status === 'completed' && (
-        <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
-          style={{ background: 'rgba(16,185,129,.15)', color: '#10b981' }}>
-          ✓ Concluída
+        <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1"
+          style={{ background: 'rgba(15,118,110,.15)', color: '#0F766E' }}>
+          <Check size={10} strokeWidth={3} />
+          Concluída
         </div>
       )}
       {goal.status === 'paused' && (
-        <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
-          style={{ background: 'rgba(245,158,11,.15)', color: '#f59e0b' }}>
-          ⏸ Pausada
+        <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1"
+          style={{ background: 'rgba(217,150,46,.15)', color: '#D9962E' }}>
+          <Pause size={10} />
+          Pausada
         </div>
       )}
 
@@ -98,19 +102,17 @@ export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
           value={pct}
           size={88}
           strokeWidth={7}
-          color={color}
-          gradient={useGrad}
         />
         <div className="flex flex-col gap-2 flex-1">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)]">Acumulado</p>
-            <p className="font-[DM_Mono] font-medium text-[16px] text-[var(--sl-t1)] leading-tight">
+            <p className="font-[IBM_Plex_Mono] font-medium text-[16px] text-[var(--sl-t1)] leading-tight">
               {formatCurrency(goal.current_amount)}
             </p>
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)]">Meta</p>
-            <p className="font-[DM_Mono] text-[13px] text-[var(--sl-t2)]">
+            <p className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t2)]">
               {formatCurrency(goal.target_amount)}
             </p>
           </div>
@@ -122,9 +124,9 @@ export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
         {goal.target_date && (
           <div className="bg-[var(--sl-s2)] rounded-[10px] p-2.5">
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Prazo</p>
-            <p className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">{formatDate(goal.target_date)}</p>
+            <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">{formatDate(goal.target_date)}</p>
             {daysLeft !== null && (
-              <p className={cn('text-[11px] mt-0.5', daysLeft < 0 ? 'text-[#f43f5e]' : daysLeft < 60 ? 'text-[#f59e0b]' : 'text-[var(--sl-t3)]')}>
+              <p className={cn('text-[11px] mt-0.5', daysLeft < 0 ? 'text-[#DB6478]' : daysLeft < 60 ? 'text-[#D9962E]' : 'text-[var(--sl-t3)]')}>
                 {daysLeft < 0 ? `${Math.abs(daysLeft)}d atrás` : `${daysLeft}d restantes`}
               </p>
             )}
@@ -133,7 +135,7 @@ export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
         {projected && goal.monthly_contribution > 0 && (
           <div className="bg-[var(--sl-s2)] rounded-[10px] p-2.5">
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">Projeção</p>
-            <p className="font-[DM_Mono] text-[12px] text-[var(--sl-t1)]">{formatDate(projected.toISOString().split('T')[0])}</p>
+            <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">{formatDate(projected.toISOString().split('T')[0])}</p>
             <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">
               {formatCurrency(goal.monthly_contribution)}/mês
             </p>
@@ -147,6 +149,7 @@ export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
           className="flex items-start gap-2 p-2.5 rounded-[10px] text-[12px] mb-3"
           style={{ background: tip.bg, border: `1px solid ${tip.color}30` }}
         >
+          <tip.icon size={14} style={{ color: tip.color }} className="shrink-0 mt-0.5" />
           <p style={{ color: tip.color }} className="leading-snug">{tip.text}</p>
         </div>
       )}
@@ -156,7 +159,7 @@ export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
         <button
           onClick={e => { e.stopPropagation(); onAddContribution() }}
           className="w-full py-2 rounded-[10px] text-[12px] font-bold transition-all hover:brightness-110"
-          style={{ background: 'rgba(16,185,129,.12)', color: '#10b981', border: '1px solid rgba(16,185,129,.25)' }}
+          style={{ background: 'rgba(15,118,110,.12)', color: '#0F766E', border: '1px solid rgba(15,118,110,.25)' }}
         >
           + Registrar Aporte
         </button>

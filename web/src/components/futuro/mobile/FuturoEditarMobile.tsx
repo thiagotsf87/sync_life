@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ChevronLeft, Plus } from 'lucide-react'
 import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT } from '@/lib/futuro-colors'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface GoalItem {
   id: string
@@ -33,14 +34,14 @@ interface FuturoEditarMobileProps {
 }
 
 const MODULE_META: Record<string, { icon: string; label: string; bg: string; color: string }> = {
-  financas:     { icon: '💰', label: 'Finanças',     bg: 'rgba(16,185,129,0.15)',  color: '#10b981' },
-  tempo:        { icon: '⏳', label: 'Tempo',        bg: 'rgba(6,182,212,0.15)',   color: '#06b6d4' },
-  corpo:        { icon: '💪', label: 'Corpo',        bg: 'rgba(249,115,22,0.15)',  color: '#f97316' },
-  mente:        { icon: '🧠', label: 'Mente',        bg: 'rgba(139,92,246,0.15)',  color: '#8b5cf6' },
-  patrimonio:   { icon: '📊', label: 'Patrimônio',   bg: 'rgba(245,158,11,0.15)',  color: '#f59e0b' },
-  carreira:     { icon: '💼', label: 'Carreira',     bg: 'rgba(236,72,153,0.15)',  color: '#ec4899' },
+  financas:     { icon: '💰', label: 'Finanças',     bg: 'rgba(15,118,110,0.15)',  color: 'var(--sl-em)' },
+  tempo:        { icon: '⏳', label: 'Tempo',        bg: 'rgba(60,160,181,0.15)',   color: 'var(--sl-info)' },
+  corpo:        { icon: '💪', label: 'Corpo',        bg: 'rgba(217,117,52,0.15)',  color: '#D97534' },
+  mente:        { icon: '🧠', label: 'Mente',        bg: 'rgba(139,123,212,0.15)',  color: '#8B7BD4' },
+  patrimonio:   { icon: '📊', label: 'Patrimônio',   bg: 'rgba(217,150,46,0.15)',  color: 'var(--sl-warning)' },
+  carreira:     { icon: '💼', label: 'Carreira',     bg: 'rgba(199,103,149,0.15)',  color: '#C76795' },
   experiencias: { icon: '✈️', label: 'Experiências', bg: 'rgba(20,184,166,0.15)',  color: '#14b8a6' },
-  futuro:       { icon: '🔮', label: 'Futuro',       bg: 'rgba(0,85,255,0.15)',    color: '#0055ff' },
+  futuro:       { icon: '🔮', label: 'Futuro',       bg: 'rgba(0,85,255,0.15)',    color: '#0B2D34' },
 }
 
 const PRIORITY_OPTIONS = [
@@ -151,9 +152,9 @@ export function FuturoEditarMobile({
                 onClick={() => setPriority(opt.value)}
                 className="flex-1 flex items-center justify-center gap-[5px] p-[10px] rounded-[10px] text-[12px] font-semibold transition-colors"
                 style={{
-                  background: priority === opt.value ? 'rgba(139,92,246,0.08)' : 'var(--sl-s2)',
+                  background: priority === opt.value ? 'rgba(139,123,212,0.08)' : 'var(--sl-s2)',
                   border: priority === opt.value
-                    ? '1px solid rgba(139,92,246,0.3)'
+                    ? '1px solid rgba(139,123,212,0.3)'
                     : '1px solid var(--sl-border)',
                   color: priority === opt.value ? accent : 'var(--sl-t2)',
                 }}
@@ -176,7 +177,7 @@ export function FuturoEditarMobile({
           {goals.length > 0 ? (
             <div className="flex flex-col gap-[8px] mb-[10px]">
               {goals.map(goal => {
-                const mod = MODULE_META[goal.target_module] ?? { icon: '🎯', label: goal.target_module, bg: 'rgba(139,92,246,0.12)', color: '#8b5cf6' }
+                const mod = MODULE_META[goal.target_module] ?? { icon: '🎯', label: goal.target_module, bg: 'rgba(139,123,212,0.12)', color: '#8B7BD4' }
                 return (
                   <div
                     key={goal.id}
@@ -196,7 +197,7 @@ export function FuturoEditarMobile({
                       <p className="text-[12px] font-semibold text-[var(--sl-t1)] truncate">{goal.name}</p>
                       <p className="text-[10px] text-[var(--sl-t2)] mt-[1px]">
                         {mod.label}
-                        {goal.target_value ? ` · ${goal.target_value.toLocaleString('pt-BR')}` : ''}
+                        {goal.target_value ? ` · ${fmtBRL(goal.target_value, { compact: true })}` : ''}
                         {' · +80 XP/marco'}
                       </p>
                     </div>
@@ -211,7 +212,7 @@ export function FuturoEditarMobile({
                       <button
                         onClick={() => onDeleteGoal?.(goal.id)}
                         className="w-[26px] h-[26px] rounded-[8px] flex items-center justify-center text-[13px]"
-                        style={{ background: 'rgba(244,63,94,0.1)' }}
+                        style={{ background: 'rgba(219,100,120,0.1)' }}
                       >
                         🗑
                       </button>
@@ -248,7 +249,7 @@ export function FuturoEditarMobile({
           <div className="mb-[13px]">
             <label className="text-[11px] font-bold uppercase tracking-[0.8px] text-[var(--sl-t2)] mb-1.5 block">Meta total</label>
             <div className="w-full bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] px-[15px] py-3 text-[14px] text-[var(--sl-t1)]">
-              R$ {targetValue.toLocaleString('pt-BR')}
+              {fmtBRL(targetValue)}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-[10px]">
@@ -276,8 +277,8 @@ export function FuturoEditarMobile({
             <p className="font-[Syne] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px]">
               Contribuição Mensal
             </p>
-            <span className="font-[DM_Mono] text-[17px]" style={{ color: accent }}>
-              R$ {contribution.toLocaleString('pt-BR')}
+            <span className="sl-num-strong text-[17px]" style={{ color: accent }}>
+              {fmtBRL(contribution)}
             </span>
           </div>
           <input
@@ -296,15 +297,15 @@ export function FuturoEditarMobile({
           <div
             className="p-[9px_12px] rounded-[10px]"
             style={{
-              background: 'rgba(139,92,246,0.08)',
-              border: '1px solid rgba(139,92,246,0.15)',
+              background: 'rgba(139,123,212,0.08)',
+              border: '1px solid rgba(139,123,212,0.15)',
             }}
           >
             <p className="text-[11px] font-semibold mb-[3px]" style={{ color: accent }}>
-              Com R$ {contribution.toLocaleString('pt-BR')}/mês
+              Com {fmtBRL(contribution)}/mês
             </p>
             <p className="text-[12px] text-[var(--sl-t2)]">
-              Novo prazo: <strong className="text-[#10b981]">Out 2028</strong> — 2 meses antes ✓
+              Novo prazo: <strong className="text-[var(--sl-em)]">Out 2028</strong> · 2 meses antes ✓
               {<> · <span style={{ color: FUTURO_PRIMARY_LIGHT }}>+80 XP/mês</span></>}
             </p>
           </div>
@@ -346,10 +347,10 @@ export function FuturoEditarMobile({
         {/* Danger zone */}
         <button
           onClick={onDelete}
-          className="mx-4 mb-6 w-[calc(100%-32px)] p-3 rounded-[10px] text-center text-[13px] font-bold text-[#f43f5e]"
+          className="mx-4 mb-6 w-[calc(100%-32px)] p-3 rounded-[10px] text-center text-[13px] font-bold text-[var(--sl-danger)]"
           style={{
-            background: 'rgba(244,63,94,0.08)',
-            border: '1px solid rgba(244,63,94,0.2)',
+            background: 'rgba(219,100,120,0.08)',
+            border: '1px solid rgba(219,100,120,0.2)',
           }}
         >
           ⚠️ Excluir missão permanentemente

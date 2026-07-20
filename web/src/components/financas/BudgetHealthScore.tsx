@@ -1,5 +1,7 @@
 'use client'
 
+import { CheckCircle2, Circle, AlertTriangle, AlertOctagon } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // ─── BUDGET HEALTH SCORE ───────────────────────────────────────────────────────
@@ -16,11 +18,11 @@ interface BudgetHealthScoreProps {
 
 type HealthLevel = 'excellent' | 'good' | 'warning' | 'danger'
 
-const HEALTH_CONFIG: Record<HealthLevel, { color: string; label: string; emoji: string }> = {
-  excellent: { color: '#10b981', label: 'Excelente',  emoji: '🟢' },
-  good:      { color: '#06b6d4', label: 'Bom',        emoji: '🔵' },
-  warning:   { color: '#f59e0b', label: 'Atenção',    emoji: '🟡' },
-  danger:    { color: '#f43f5e', label: 'Crítico',     emoji: '🔴' },
+const HEALTH_CONFIG: Record<HealthLevel, { color: string; label: string; icon: LucideIcon }> = {
+  excellent: { color: '#0F766E', label: 'Excelente',  icon: CheckCircle2 },
+  good:      { color: '#3CA0B5', label: 'Bom',        icon: Circle },
+  warning:   { color: '#D9962E', label: 'Atenção',    icon: AlertTriangle },
+  danger:    { color: '#DB6478', label: 'Crítico',     icon: AlertOctagon },
 }
 
 function getHealthLevel(percentages: number[]): HealthLevel {
@@ -84,6 +86,7 @@ interface BudgetHealthCardProps {
 export function BudgetHealthCard({ budgetPercentages, totalBudgets, respected, className }: BudgetHealthCardProps) {
   const level = getHealthLevel(budgetPercentages)
   const config = HEALTH_CONFIG[level]
+  const Icon = config.icon
 
   return (
     <div className={cn(
@@ -98,15 +101,15 @@ export function BudgetHealthCard({ budgetPercentages, totalBudgets, respected, c
         <BudgetHealthScore budgetPercentages={budgetPercentages} />
       </div>
 
-      <div className="flex items-baseline gap-1.5 mb-2">
-        <span className="text-[28px]">{config.emoji}</span>
+      <div className="flex items-center gap-2 mb-2">
+        <Icon size={24} style={{ color: config.color }} strokeWidth={2} />
         <span className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)]">
           {config.label}
         </span>
       </div>
 
       <p className="text-[12px] text-[var(--sl-t2)]">
-        <span className="font-[DM_Mono] font-medium" style={{ color: config.color }}>
+        <span className="font-[IBM_Plex_Mono] font-medium" style={{ color: config.color }}>
           {respected}/{totalBudgets}
         </span>
         {' '}orçamentos respeitados este mês

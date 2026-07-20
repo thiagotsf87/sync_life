@@ -80,7 +80,7 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Score (Jornada only, sidebar open only) */}
+      {/* Mini-card âncora — varia por módulo ativo (sidebar aberta apenas) */}
       {sidebarOpen && <SidebarScore />}
 
       {/* Nav Items */}
@@ -118,9 +118,9 @@ export function Sidebar() {
                   <span
                     className={cn(
                       'ml-auto text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md',
-                      item.badge.variant === 'pro' && 'bg-[#f59e0b]/15 text-[#f59e0b]',
-                      item.badge.variant === 'yellow' && 'bg-[#f59e0b]/15 text-[#f59e0b]',
-                      item.badge.variant === 'red' && 'bg-[#f43f5e]/15 text-[#f43f5e]',
+                      item.badge.variant === 'pro' && 'bg-[#D9962E]/15 text-[#D9962E]',
+                      item.badge.variant === 'yellow' && 'bg-[#D9962E]/15 text-[#D9962E]',
+                      item.badge.variant === 'red' && 'bg-[#DB6478]/15 text-[#DB6478]',
                     )}
                   >
                     {item.badge.text}

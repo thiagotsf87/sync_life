@@ -1,21 +1,21 @@
-'use client'
+﻿'use client'
 
 import type { StudyTrack, TrackCategory } from '@/hooks/use-mente'
 import { CATEGORY_LABELS } from '@/hooks/use-mente'
 
-const MENTE_COLOR = '#eab308'
-const MENTE_BG = 'rgba(234,179,8,0.14)'
+const MENTE_COLOR = 'var(--sl-warning)'
+const MENTE_BG = 'rgba(217,150,46,0.14)'
 
 function getBadgeStyle(progress: number): { bg: string; color: string } {
-  if (progress >= 50) return { bg: 'rgba(234,179,8,0.12)', color: '#eab308' }
-  if (progress >= 25) return { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' }
+  if (progress >= 50) return { bg: 'rgba(217,150,46,0.12)', color: 'var(--sl-warning)' }
+  if (progress >= 25) return { bg: 'rgba(217,150,46,0.12)', color: 'var(--sl-warning)' }
   return { bg: 'rgba(0,85,255,0.12)', color: '#60a5fa' }
 }
 
 function getBarColor(progress: number): string {
   if (progress >= 50) return MENTE_COLOR
-  if (progress >= 25) return '#f59e0b'
-  return '#0055ff'
+  if (progress >= 25) return 'var(--sl-warning)'
+  return '#0B2D34'
 }
 
 const CATEGORY_EMOJI: Record<TrackCategory, string> = {

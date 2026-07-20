@@ -50,7 +50,6 @@ export async function updateSession(request: NextRequest) {
   // Protected routes — require authentication
   const isProtectedRoute =
     pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/transacoes') ||
     pathname.startsWith('/configuracoes') ||
     pathname.startsWith('/financas') ||
     pathname.startsWith('/futuro') ||

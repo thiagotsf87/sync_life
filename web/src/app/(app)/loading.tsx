@@ -39,7 +39,7 @@ export default function AppLoading() {
         </p>
         <Link
           href="/login"
-          className="text-[12px] text-[#f97316] hover:underline"
+          className="text-[12px] text-[#D97534] hover:underline"
         >
           Demorando? Ir para login
         </Link>

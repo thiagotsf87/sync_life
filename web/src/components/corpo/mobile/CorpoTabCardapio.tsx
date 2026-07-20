@@ -6,8 +6,8 @@ import {
   type Meal, type MealSlot, type HealthProfile,
 } from '@/hooks/use-corpo'
 
-const CORPO_COLOR = '#f97316'
-const CORPO_BG = 'rgba(249,115,22,0.12)'
+const CORPO_COLOR = '#D97534'
+const CORPO_BG = 'rgba(217,117,52,0.12)'
 
 const SLOTS: MealSlot[] = ['breakfast', 'lunch', 'snack', 'dinner']
 
@@ -53,7 +53,7 @@ export function CorpoTabCardapio({ meals, profile, onOpenMealModal }: CorpoTabCa
           {/* META */}
           <div className="text-center">
             <p className="text-[11px] text-[var(--sl-t2)] mb-1">META</p>
-            <p className="font-[DM_Mono] text-[18px] font-bold text-[var(--sl-t1)]">{calorieTarget}</p>
+            <p className="font-[IBM_Plex_Mono] text-[18px] font-bold text-[var(--sl-t1)]">{calorieTarget}</p>
             <p className="text-[10px] text-[var(--sl-t3)]">kcal</p>
           </div>
 
@@ -70,7 +70,7 @@ export function CorpoTabCardapio({ meals, profile, onOpenMealModal }: CorpoTabCa
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="font-[DM_Mono] text-[22px] font-bold" style={{ color: CORPO_COLOR }}>{totalConsumed}</p>
+              <p className="font-[IBM_Plex_Mono] text-[22px] font-bold" style={{ color: CORPO_COLOR }}>{totalConsumed}</p>
               <p className="text-[10px] text-[var(--sl-t2)]">kcal</p>
             </div>
           </div>
@@ -78,7 +78,7 @@ export function CorpoTabCardapio({ meals, profile, onOpenMealModal }: CorpoTabCa
           {/* RESTANTE */}
           <div className="text-center">
             <p className="text-[11px] text-[var(--sl-t2)] mb-1">RESTANTE</p>
-            <p className="font-[DM_Mono] text-[18px] font-bold" style={{ color: remaining >= 0 ? '#10b981' : '#f43f5e' }}>
+            <p className="font-[IBM_Plex_Mono] text-[18px] font-bold" style={{ color: remaining >= 0 ? '#0F766E' : '#DB6478' }}>
               {Math.abs(remaining)}
             </p>
             <p className="text-[10px] text-[var(--sl-t3)]">kcal</p>
@@ -90,15 +90,15 @@ export function CorpoTabCardapio({ meals, profile, onOpenMealModal }: CorpoTabCa
           <>
             <p className="text-[11px] text-[var(--sl-t2)] mb-1.5">Macronutrientes</p>
             <div className="flex h-[10px] rounded-full overflow-hidden mb-2">
-              <div style={{ width: `${(totalCarbs / macroSum) * 100}%`, background: '#0055ff' }} />
-              <div style={{ width: `${(totalProtein / macroSum) * 100}%`, background: '#10b981' }} />
-              <div style={{ width: `${(totalFat / macroSum) * 100}%`, background: '#f59e0b' }} />
+              <div style={{ width: `${(totalCarbs / macroSum) * 100}%`, background: '#0B2D34' }} />
+              <div style={{ width: `${(totalProtein / macroSum) * 100}%`, background: '#0F766E' }} />
+              <div style={{ width: `${(totalFat / macroSum) * 100}%`, background: '#D9962E' }} />
             </div>
             <div className="flex gap-3 flex-wrap">
               {[
-                { label: `Carbos ${totalCarbs.toFixed(0)}g`, color: '#0055ff' },
-                { label: `Proteína ${totalProtein.toFixed(0)}g`, color: '#10b981' },
-                { label: `Gordura ${totalFat.toFixed(0)}g`, color: '#f59e0b' },
+                { label: `Carbos ${totalCarbs.toFixed(0)}g`, color: '#0B2D34' },
+                { label: `Proteína ${totalProtein.toFixed(0)}g`, color: '#0F766E' },
+                { label: `Gordura ${totalFat.toFixed(0)}g`, color: '#D9962E' },
               ].map(({ label, color }) => (
                 <div key={label} className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full" style={{ background: color }} />
@@ -143,7 +143,7 @@ export function CorpoTabCardapio({ meals, profile, onOpenMealModal }: CorpoTabCa
                 )}
               </div>
               {meal ? (
-                <p className="font-[DM_Mono] text-[13px] text-[var(--sl-t2)] flex-shrink-0">
+                <p className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t2)] flex-shrink-0">
                   {meal.calories_kcal} kcal
                 </p>
               ) : (
@@ -154,10 +154,10 @@ export function CorpoTabCardapio({ meals, profile, onOpenMealModal }: CorpoTabCa
         })}
       </div>
 
-      {/* AI suggestion — PRO */}
+      {/* AI suggestion · PRO */}
       <div
         className="mx-4 mt-3 rounded-2xl p-4"
-        style={{ background: 'rgba(139,92,246,0.07)', border: '1px solid rgba(139,92,246,0.2)' }}
+        style={{ background: 'rgba(139,123,212,0.07)', border: '1px solid rgba(139,123,212,0.2)' }}
       >
         <div className="flex gap-[10px] mb-2.5">
           <span className="text-[18px]">🤖</span>

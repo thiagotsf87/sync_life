@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useXP } from '@/hooks/use-xp'
 import { EXP_PRIMARY_BORDER, EXP_GRAD } from '@/lib/exp-colors'
@@ -23,7 +23,7 @@ export function ExpXpBar() {
           </span>
           <span className="text-[11px] text-[var(--sl-t2)]">{levelTitle}</span>
         </div>
-        <span className="text-[11px] font-[DM_Mono] font-medium text-[var(--sl-t2)]">
+        <span className="text-[11px] sl-num-strong font-medium text-[var(--sl-t2)]">
           {totalXP.toLocaleString('pt-BR')} XP
         </span>
       </div>

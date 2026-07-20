@@ -40,10 +40,10 @@ export default function MemoriasPage() {
         {/* Module Header */}
         <ModuleHeader
           icon={BookOpen}
-          iconBg="rgba(236,72,153,.1)"
-          iconColor="#ec4899"
-          title="Memorias de Viagem"
-          subtitle="Reviva suas experiencias mais marcantes"
+          iconBg="rgba(199,103,149,.1)"
+          iconColor="#C76795"
+          title="Memórias de Viagem"
+          subtitle="Reviva suas experiências mais marcantes"
         >
           <button
             onClick={() => router.push('/experiencias/passaporte')}
@@ -64,9 +64,9 @@ export default function MemoriasPage() {
         ) : memories.length === 0 && tripsWithoutMemory.length === 0 ? (
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-16 text-center">
             <BookOpen size={40} className="text-[var(--sl-t3)] mx-auto mb-4" />
-            <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Nenhuma memoria registrada</h3>
+            <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Nenhuma memória registrada</h3>
             <p className="text-[13px] text-[var(--sl-t2)] max-w-sm mx-auto">
-              Conclua viagens e registre suas memorias para construir seu diario de aventuras.
+              Conclua viagens e registre suas memórias para construir seu diário de aventuras.
             </p>
           </div>
         ) : (
@@ -75,7 +75,7 @@ export default function MemoriasPage() {
             {/* Vertical line */}
             <div
               className="absolute left-[15px] top-0 bottom-0 w-[2px]"
-              style={{ background: 'linear-gradient(to bottom, #ec4899, #a855f7, transparent)' }}
+              style={{ background: 'linear-gradient(to bottom, #C76795, #a855f7, transparent)' }}
             />
 
             {/* Memory entries */}
@@ -88,7 +88,7 @@ export default function MemoriasPage() {
                 <div key={m.id} className="relative mb-7">
                   {/* Dot on timeline */}
                   <div
-                    className="absolute w-[12px] h-[12px] rounded-full bg-[#ec4899] z-[1]"
+                    className="absolute w-[12px] h-[12px] rounded-full bg-[#C76795] z-[1]"
                     style={{ left: '-33px', top: '8px', border: '3px solid var(--sl-bg)' }}
                   />
 
@@ -118,8 +118,8 @@ export default function MemoriasPage() {
                         <Star
                           key={si}
                           size={14}
-                          fill={si < m.rating ? '#f59e0b' : 'var(--sl-s3)'}
-                          stroke={si < m.rating ? '#f59e0b' : 'var(--sl-t3)'}
+                          fill={si < m.rating ? '#D9962E' : 'var(--sl-s3)'}
+                          stroke={si < m.rating ? '#D9962E' : 'var(--sl-t3)'}
                           strokeWidth={1}
                         />
                       ))}
@@ -142,14 +142,14 @@ export default function MemoriasPage() {
                 <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] border-dashed rounded-[18px] p-8 text-center">
                   <BookOpen size={28} className="text-[var(--sl-t3)] mx-auto mb-3" />
                   <div className="text-[13px] text-[var(--sl-t3)] mb-3">
-                    {t.name} ainda nao tem memoria
+                    {t.name} ainda não tem memória
                   </div>
                   <button
                     onClick={() => setMemoryFormTrip(t)}
                     className="inline-flex items-center gap-[5px] px-4 py-[7px] rounded-[10px] text-[12px] font-semibold border border-[var(--sl-border)] text-[var(--sl-t2)] bg-transparent hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-all"
                   >
                     <Plus size={14} />
-                    Adicionar Memoria
+                    Adicionar memória
                   </button>
                 </div>
               </div>

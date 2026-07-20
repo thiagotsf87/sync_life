@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Trash2 } from 'lucide-react'
+import {
+  ArrowLeft, Trash2,
+  LayoutDashboard, Map as MapIcon, Wallet, CheckSquare, Hotel, Plane, Sparkles,
+} from 'lucide-react'
 import { TripAIChat } from '@/components/experiencias/TripAIChat'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -190,14 +193,14 @@ export default function TripDetailPage() {
 
   // ─── Tabs config ───────────────────────────────────────────────────────────
 
-  const tabs: { id: Tab; label: string; badge?: number }[] = [
-    { id: 'overview', label: '📊 Visão geral' },
-    { id: 'itinerary', label: '🗺️ Roteiro', badge: itinerary.length },
-    { id: 'budget', label: '💰 Orçamento' },
-    { id: 'checklist', label: '✅ Checklist', badge: checklist.filter(c => !c.is_completed).length },
-    { id: 'accommodation', label: '🏨 Hospedagem', badge: accommodations.length },
-    { id: 'transports', label: '✈️ Transporte', badge: transports.length },
-    { id: 'ai', label: '🤖 Assistente IA' },
+  const tabs: { id: Tab; label: string; icon: typeof LayoutDashboard; badge?: number }[] = [
+    { id: 'overview', label: 'Visão geral', icon: LayoutDashboard },
+    { id: 'itinerary', label: 'Roteiro', icon: MapIcon, badge: itinerary.length },
+    { id: 'budget', label: 'Orçamento', icon: Wallet },
+    { id: 'checklist', label: 'Checklist', icon: CheckSquare, badge: checklist.filter(c => !c.is_completed).length },
+    { id: 'accommodation', label: 'Hospedagem', icon: Hotel, badge: accommodations.length },
+    { id: 'transports', label: 'Transporte', icon: Plane, badge: transports.length },
+    { id: 'ai', label: 'Assistente IA', icon: Sparkles },
   ]
 
   const balance = totalEstimated - totalActual
@@ -226,7 +229,7 @@ export default function TripDetailPage() {
         {/* Bottom gradient accent */}
         <div
           className="absolute bottom-0 left-0 right-0 h-[3px]"
-          style={{ background: 'linear-gradient(90deg, #ec4899, #a855f7, #ec4899)', opacity: 0.6 }}
+          style={{ background: 'linear-gradient(90deg, #C76795, #a855f7, #C76795)', opacity: 0.6 }}
         />
 
         {/* Top row: title + actions */}
@@ -247,11 +250,11 @@ export default function TripDetailPage() {
             <div className="flex items-center gap-4 text-[13px] text-[var(--sl-t2)]">
               <span>{trip.destinations.join(' \u2192 ')}</span>
               <span className="text-[var(--sl-t3)]">{'\u00B7'}</span>
-              <span>{new Date(trip.start_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '')} {'\u2014'} {new Date(trip.end_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')}</span>
+              <span className="sl-num">{new Date(trip.start_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '')} \u00B7 {new Date(trip.end_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')}</span>
               <span className="text-[var(--sl-t3)]">{'\u00B7'}</span>
-              <span>{days} dias</span>
+              <span className="sl-num">{days} dias</span>
               <span className="text-[var(--sl-t3)]">{'\u00B7'}</span>
-              <span>{trip.travelers_count} viajante{trip.travelers_count > 1 ? 's' : ''}</span>
+              <span><span className="sl-num">{trip.travelers_count}</span> viajante{trip.travelers_count > 1 ? 's' : ''}</span>
               <span className="text-[var(--sl-t3)]">{'\u00B7'}</span>
               <span>{TRIP_TYPE_LABELS[trip.trip_type]}</span>
             </div>
@@ -273,7 +276,7 @@ export default function TripDetailPage() {
             </select>
             <button
               onClick={handleDeleteTrip}
-              className="w-[36px] h-[36px] rounded-[10px] border border-[var(--sl-border)] flex items-center justify-center text-[#f43f5e] hover:border-[#f43f5e] transition-colors bg-transparent cursor-pointer"
+              className="w-[36px] h-[36px] rounded-[10px] border border-[var(--sl-border)] flex items-center justify-center text-[#DB6478] hover:border-[#DB6478] transition-colors bg-transparent cursor-pointer"
             >
               <Trash2 size={16} />
             </button>
@@ -283,36 +286,36 @@ export default function TripDetailPage() {
         {/* Metrics strip inside hero */}
         <div className="flex items-center gap-0 mt-5 pt-4 border-t border-[var(--sl-border)] pb-6">
           <div className="flex-1 text-center">
-            <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Orcamento</div>
-            <div className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)]">
+            <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Orçamento</div>
+            <div className="sl-num-strong text-[20px] text-[var(--sl-t1)]">
               {formatTripAmount(totalEstimated)}
             </div>
           </div>
           <div className="w-px h-[36px] bg-[var(--sl-border)]" />
           <div className="flex-1 text-center">
             <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Gasto</div>
-            <div className="font-[DM_Mono] text-[20px] font-medium text-[#ec4899]">
+            <div className="sl-num-strong text-[20px] text-[#C76795]">
               {formatTripAmount(totalActual)}
             </div>
           </div>
           <div className="w-px h-[36px] bg-[var(--sl-border)]" />
           <div className="flex-1 text-center">
             <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Saldo</div>
-            <div className="font-[DM_Mono] text-[20px] font-medium text-[#10b981]">
+            <div className="sl-num-strong text-[20px] text-[var(--sl-success)]">
               {formatTripAmount(balance)}
             </div>
           </div>
           <div className="w-px h-[36px] bg-[var(--sl-border)]" />
           <div className="flex-1 text-center">
             <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Atividades</div>
-            <div className="font-[DM_Mono] text-[20px] font-medium text-[var(--sl-t1)]">
+            <div className="sl-num-strong text-[20px] text-[var(--sl-t1)]">
               {itinerary.length}
             </div>
           </div>
           <div className="w-px h-[36px] bg-[var(--sl-border)]" />
           <div className="flex-1 text-center">
             <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-1">Checklist</div>
-            <div className="font-[DM_Mono] text-[20px] font-medium text-[#10b981]">
+            <div className="sl-num-strong text-[20px] text-[var(--sl-success)]">
               {Math.round(checklistPct)}%
             </div>
           </div>
@@ -320,26 +323,30 @@ export default function TripDetailPage() {
       </div>
 
       {/* Underline Tabs */}
-      <div className="flex gap-0 border-b border-[var(--sl-border)] my-6 sl-fade-up sl-delay-3">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              'flex items-center gap-[6px] px-5 py-3 text-[12.5px] font-semibold border-b-2 bg-transparent cursor-pointer transition-all whitespace-nowrap',
-              activeTab === tab.id
-                ? 'text-[var(--sl-t1)] border-b-[#ec4899]'
-                : 'text-[var(--sl-t3)] border-b-transparent hover:text-[var(--sl-t2)]'
-            )}
-          >
-            {tab.label}
-            {tab.badge !== undefined && tab.badge > 0 && (
-              <span className="text-[10px] px-[7px] py-[2px] rounded-[6px] bg-[var(--sl-s3)] text-[var(--sl-t2)]">
-                {tab.badge}
-              </span>
-            )}
-          </button>
-        ))}
+      <div className="flex gap-0 border-b border-[var(--sl-border)] my-6 sl-fade-up sl-delay-3 overflow-x-auto">
+        {tabs.map(tab => {
+          const TabIcon = tab.icon
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                'flex items-center gap-[6px] px-5 py-3 text-[12.5px] font-semibold border-b-2 bg-transparent cursor-pointer transition-all whitespace-nowrap',
+                activeTab === tab.id
+                  ? 'text-[var(--sl-t1)] border-b-[#C76795]'
+                  : 'text-[var(--sl-t3)] border-b-transparent hover:text-[var(--sl-t2)]'
+              )}
+            >
+              <TabIcon size={14} />
+              {tab.label}
+              {tab.badge !== undefined && tab.badge > 0 && (
+                <span className="text-[10px] px-[7px] py-[2px] rounded-[6px] bg-[var(--sl-s3)] text-[var(--sl-t2)] sl-num">
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          )
+        })}
       </div>
 
       {/* Tab content */}

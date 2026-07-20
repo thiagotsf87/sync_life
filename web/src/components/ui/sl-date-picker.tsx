@@ -155,7 +155,7 @@ export function SLDatePicker({
         )}
       >
         <CalendarDays size={14} className="text-[var(--sl-t3)] shrink-0" />
-        <span className={cn('flex-1 font-[DM_Mono] text-[13px]', value ? 'text-[var(--sl-t1)]' : 'text-[var(--sl-t3)]')}>
+        <span className={cn('flex-1 font-[IBM_Plex_Mono] text-[13px]', value ? 'text-[var(--sl-t1)]' : 'text-[var(--sl-t3)]')}>
           {value ? formatDisplay(value) : placeholder}
         </span>
       </button>
@@ -210,8 +210,8 @@ export function SLDatePicker({
                   className={cn(
                     'w-full aspect-square flex items-center justify-center text-[12px] rounded-lg transition-colors',
                     cell.isCurrentMonth ? 'text-[var(--sl-t1)]' : 'text-[var(--sl-t3)] opacity-40',
-                    isSelected && 'bg-[#06b6d4] text-white font-bold',
-                    isToday && !isSelected && 'ring-1 ring-[#06b6d4] font-semibold',
+                    isSelected && 'bg-[#3CA0B5] text-white font-bold',
+                    isToday && !isSelected && 'ring-1 ring-[#3CA0B5] font-semibold',
                     !isSelected && 'hover:bg-[var(--sl-s2)]',
                   )}
                 >

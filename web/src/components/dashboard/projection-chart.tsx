@@ -44,8 +44,8 @@ export function ProjectionChart() {
         <svg className="w-full h-full min-w-0" viewBox="0 0 400 120" preserveAspectRatio="xMidYMid meet">
           <defs>
             <linearGradient id="projection-gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f43f5e" />
-              <stop offset="100%" stopColor="#f43f5e" stopOpacity={0} />
+              <stop offset="0%" stopColor="#DB6478" />
+              <stop offset="100%" stopColor="#DB6478" stopOpacity={0} />
             </linearGradient>
           </defs>
           {/* Grid lines */}
@@ -56,7 +56,7 @@ export function ProjectionChart() {
           <polyline
             points={historicalPoints}
             fill="none"
-            stroke="#f43f5e"
+            stroke="#DB6478"
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -65,7 +65,7 @@ export function ProjectionChart() {
           <polyline
             points={projectionPoints}
             fill="none"
-            stroke="#f43f5e"
+            stroke="#DB6478"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -79,7 +79,7 @@ export function ProjectionChart() {
             opacity={0.2}
           />
           {/* Ponto atual (junção histórico/projeção) */}
-          <circle cx="200" cy="65" r="5" fill="#f43f5e" stroke="#0f172a" strokeWidth="2" />
+          <circle cx="200" cy="65" r="5" fill="#DB6478" stroke="#0f172a" strokeWidth="2" />
         </svg>
         <div className="absolute bottom-0 left-0 right-0 flex justify-between text-[10px] text-slate-500 px-1 gap-1 min-w-0">
           <span className="flex-shrink-0">Nov</span>
