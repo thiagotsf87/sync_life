@@ -1,6 +1,7 @@
 'use client'
 
 import { useShellStore } from '@/stores/shell-store'
+import { CoachPill } from '@/components/coach/CoachPill'
 import { ThemePill } from './ThemePill'
 import { NotifButton } from './NotifButton'
 import { IconChevronRight } from './icons'
@@ -32,6 +33,7 @@ export function TopHeader({ userName: _userName }: TopHeaderProps = {}) {
 
       {/* Right side controls */}
       <div className="flex items-center gap-2">
+        <CoachPill />
         <ThemePill />
         <NotifButton />
       </div>
