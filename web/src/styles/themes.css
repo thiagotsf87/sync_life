@@ -54,6 +54,23 @@
     color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Coach OS: motion ── */
+  --sl-ease:      cubic-bezier(0.22, 1, 0.36, 1);
+  --sl-ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --sl-dur-fast:  160ms;
+  --sl-dur-base:  240ms;
+  --sl-dur-slow:  420ms;
+
+  /* ── Coach OS: overlays (z-scale acima do chrome; ModuleBar usa z-60) ── */
+  --sl-z-backdrop: 100;
+  --sl-z-drawer:   110;
+  --sl-z-palette:  120;
+  --sl-z-cheat:    130;
+  --sl-backdrop:   rgba(8, 12, 18, 0.62);
+
+  /* ── Ruído sutil para hero (G-05) ── */
+  --sl-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.035 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
 /* ── Shadcn tokens mapping (derived from SL tokens, adapts per theme) ── */
@@ -277,3 +294,18 @@
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Coach OS: overlay motion ── */
+@keyframes sl-slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes sl-overlay-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes sl-pop-scale {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.sl-hero-noise { background-image: var(--sl-noise); background-size: 160px 160px; }

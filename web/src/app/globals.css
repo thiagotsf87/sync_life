@@ -87,6 +87,7 @@
   --color-car: #DB6478;
   --color-exp: #C76795;
   --color-cfg: #6F7986;
+  --color-cqs: #D9962E;
 
   /* Fontes SyncLife */
   --font-syne:          var(--font-syne), sans-serif;
@@ -320,6 +321,16 @@ input[type="number"] { -moz-appearance: textfield; }
 @keyframes tl-pulse {
   0%, 100% { box-shadow: 0 0 0 4px rgba(234,179,8,.2); }
   50%      { box-shadow: 0 0 0 8px rgba(234,179,8,.06); }
+}
+
+/* ── Acessibilidade: respeitar redução de movimento (overlays Coach) ── */
+@media (prefers-reduced-motion: reduce) {
+  .sl-fade-up, .sl-fade, .animate-fadeup,
+  [data-sl-overlay] {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 } /* end @layer base — SyncLife utilities */
