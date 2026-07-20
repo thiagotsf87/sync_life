@@ -100,6 +100,13 @@ Tudo em `web/src/components/coach/` (exceto `KbdChip` em `ui/`). Status: **new**
 
 **Contexto do módulo ativo (pipeline já pronto):** `use-active-module.ts` → `getModuleByPath()` (`lib/modules.ts`) → `shell-store.activeModule` → `MODULES[activeModule]`. Único ajuste: `getModuleByPath` mapeia `/coach` e `/conquistas` para `panorama` — resolver via `scope:'cross'` no thread, sem alterar o mapa.
 
+### 4.1 Acessibilidade dos overlays (obrigatório)
+Os três overlays (`⌘K` palette, `⌘J` drawer, `?` cheat) compartilham contrato a11y — `ui/dialog.tsx`/`ui/sheet.tsx` (Radix) já entregam a maior parte, **não reimplementar**:
+- `role=dialog` + `aria-modal` + `aria-labelledby`; **foco preso** dentro do overlay enquanto aberto e **retornado** ao gatilho (Coach pill / elemento focado) ao fechar.
+- **Scroll-lock** no body; `esc` e clique no backdrop fecham (já no `useGlobalKeys`/Radix).
+- Só **um** overlay por vez: `coach-store` fecha os demais ao abrir um (evita empilhar drawer+palette).
+- Navegação por teclado na palette (↑/↓/enter) com `aria-activedescendant`; itens são `role=option`.
+
 ---
 
 ## 5. IA real ("Coach completo")
@@ -120,6 +127,8 @@ Rotas em `api/ai/*/route.ts` já usam AI SDK v6, auth Supabase, `checkRateLimit`
 
 **Client:** `useCoachThread(moduleId)` (encapsula o `getReader()` hoje duplicado) + `useCoachBrief/Whisper/Cross` com cache por módulo+período (TTL mês) + `regenerate()`.
 
+**Estados (reusar do v3, não reinventar):** cada componente alimentado por IA renderiza os 3 estados que os protótipos v3 já têm — **skeleton** durante o fetch, **empty state** quando o contexto não tem dado suficiente, e **erro** (mensagem discreta + `regenerate()`). Regra: nunca mostrar hero/whisper/cross vazio ou meio-carregado; o skeleton do módulo cobre até o `generateObject` resolver.
+
 **Fluxo:** `hooks (Supabase) + MODULE_PERSONA → buildModuleContext (server) → {brief, whisper, cross, thread}`. Modelo: Groq/Gemini free no MVP; Claude = 1 linha/rota.
 
 ---
@@ -135,7 +144,7 @@ Rotas em `api/ai/*/route.ts` já usam AI SDK v6, auth Supabase, `checkRateLimit`
 | **M** | ~34 | detalhes, listas densas, telas com charts |
 | **S** | ~24 | wizards, redirects, sub-telas leves, 7 telas de Configurações |
 
-≈118 pontos (S1·M2·L3). Altamente paralelizável por módulo depois que Fases 1-3 (primitivas + OS + IA) estiverem prontas. Saneamento G incluído onde há dívida (ex: `conquistas/ranking`: emojis→Lucide, mono→`.sl-num`, remover `text-sl-grad` do título).
+≈122 pontos (S1·M2·L3 → 24+68+30). Altamente paralelizável por módulo depois que Fases 1-3 (primitivas + OS + IA) estiverem prontas. Saneamento G incluído onde há dívida (ex: `conquistas/ranking`: emojis→Lucide, mono→`.sl-num`, remover `text-sl-grad` do título).
 
 ---
 
@@ -145,7 +154,7 @@ Rotas em `api/ai/*/route.ts` já usam AI SDK v6, auth Supabase, `checkRateLimit`
 |---|---|---|
 | **0 · Fundação** | tokens §2.2 + `KbdChip` | tokens nos 4 temas; `KbdChip` em dark+cream; `tsc` limpo |
 | **1 · Componentes base** | KpiStrip · CoachWhisper · ProgressList · Timeline · Donut (props/mock) | render dark+cream, valores `.sl-num`, correções G-01/G-02/G-07, sem regressão `tsc` |
-| **2 · Coach OS** | coach-store · useGlobalKeys · CommandPalette · CoachDrawer · CheatSheet · Coach pill · `CoachChat` compartilhado · Coach hero + CrossBand (mock) | ⌘K/⌘J/?/esc em toda árvore; drawer contextual por `activeModule`; z-scale sem colidir com ModuleBar; dark+cream |
+| **2 · Coach OS** | coach-store · useGlobalKeys · CommandPalette · CoachDrawer · CheatSheet · Coach pill · `CoachChat` compartilhado · Coach hero + CrossBand (mock) | ⌘K/⌘J/?/esc em toda árvore; drawer contextual por `activeModule`; z-scale sem colidir com ModuleBar; **foco preso+retornado, scroll-lock e um-overlay-por-vez (§4.1)**; dark+cream |
 | **3 · IA real** | `lib/coach/context.ts` + 4 rotas + hooks + substituir regex de `use-financial-insights` | hero/whisper/cross do módulo-piloto (Finanças) sobre dados reais; Zod in/out; rate-limit+Sentry; cache por módulo+período |
 | **4 · Rollout desktop** | 10 raízes **L** primeiro, depois sub-telas. Ordem: **Finanças → Panorama → Futuro → Patrimônio → Corpo → Tempo → Mente → Carreira → Experiências → Conquistas** | cada módulo passa o checklist v3 (hero único, `.sl-num`, tooltip, cor de barra, CTA `--sl-em`, sem emoji/em-dash, dark+cream) |
 | **5 · Mobile** | portar hero/whisper/cross p/ shells mobile; remover emoji/gradiente residuais; `.phone-scroll` (G-04); trigger no MobileBottomBar | telas mobile visualmente idênticas ao padrão Coach-led (regra mobile inviolável — validar screenshot a screenshot) |
@@ -160,6 +169,7 @@ Rotas em `api/ai/*/route.ts` já usam AI SDK v6, auth Supabase, `checkRateLimit`
 4. **Temas.** Todo componente Coach deve funcionar em `cream` — só tokens `--sl-*`, validar Navy Deep + Cream.
 5. **Performance recharts.** Donut/Timeline/ProgressList são SVG/CSS leves (não recharts); lazy-mount do drawer; `prefers-reduced-motion` corta animação.
 6. **Duplicação de "Coach".** `coach/page.tsx`, `corpo/coach/page.tsx` (cópia), `CoachFab` (órfão), 4 `CoachCard` mobile → unificar num `CoachChat` compartilhado.
+7. **Rollout de 68 telas sem válvula de escape.** Gate a camada Coach OS (overlays + hero + cross) atrás de uma **feature flag** (`coachOsEnabled`, lida no `AppShell`) durante Fases 4–5 — permite merge incremental na branch sem expor telas meio-migradas e dá rollback de 1 linha se a IA regredir em produção. Flag some quando as 10 raízes passarem o checklist.
 
 ---
 
