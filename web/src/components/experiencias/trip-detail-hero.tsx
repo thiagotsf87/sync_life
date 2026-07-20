@@ -56,7 +56,7 @@ export function TripDetailHero({
       <div className="flex items-start justify-between gap-5">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-[10px] mb-1.5">
-            <h1 className="font-[Space_Grotesk] font-extrabold text-[24px]">{title}</h1>
+            <h1 className="font-[Syne] font-extrabold text-[24px]">{title}</h1>
             <span
               className="px-[10px] py-1 rounded-lg text-[11px] font-semibold"
               style={{ background: `${statusColor}18`, color: statusColor }}

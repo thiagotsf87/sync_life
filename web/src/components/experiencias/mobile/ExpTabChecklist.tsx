@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Check } from 'lucide-react'
@@ -85,7 +85,7 @@ export function ExpTabChecklist({ sections: propSections, onToggle }: ExpTabChec
           <span className="text-[12px]" style={{ color: EXP_PRIMARY_LIGHT, fontWeight: 600 }}>
             Preparação da Missão
           </span>
-          <span className="font-[IBM_Plex_Mono] text-[13px] font-semibold" style={{ color: EXP_PRIMARY_LIGHT }}>
+          <span className="sl-num-strong text-[13px] font-semibold" style={{ color: EXP_PRIMARY_LIGHT }}>
             {doneCount}/{totalCount} · +{xpGained} XP ganhos
           </span>
         </div>
@@ -109,10 +109,10 @@ export function ExpTabChecklist({ sections: propSections, onToggle }: ExpTabChec
 
         return (
           <div key={si}>
-            <p className="font-[Space_Grotesk] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 pb-2 mt-2">
+            <p className="font-[Syne] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 pb-2 mt-2">
               {section.icon} {section.title}
-              <span style={{ color: allDone ? '#0F766E' : EXP_PRIMARY_LIGHT }}>
-                {allDone ? ' — ✓ Completo' : ` — +${sectionPendingXp} XP disponíveis`}
+              <span style={{ color: allDone ? 'var(--sl-em)' : EXP_PRIMARY_LIGHT }}>
+                {allDone ? ' · ✓ Completo' : ` · +${sectionPendingXp} XP disponíveis`}
               </span>
             </p>
             <div style={{ background: 'var(--sl-s1)', borderTop: '1px solid var(--sl-border)', borderBottom: '1px solid var(--sl-border)' }}>
@@ -123,7 +123,7 @@ export function ExpTabChecklist({ sections: propSections, onToggle }: ExpTabChec
                     onClick={() => handleToggle(item.id)}
                     className="w-[22px] h-[22px] rounded-[7px] flex items-center justify-center shrink-0"
                     style={item.done
-                      ? { background: '#0F766E', borderColor: '#0F766E', border: '2px solid #0F766E' }
+                      ? { background: 'var(--sl-em)', borderColor: 'var(--sl-em)', border: '2px solid #0F766E' }
                       : { border: '2px solid var(--sl-border-h)' }
                     }
                   >
@@ -133,7 +133,7 @@ export function ExpTabChecklist({ sections: propSections, onToggle }: ExpTabChec
                     {item.text}
                   </span>
                   {item.done ? (
-                    <span className="text-[10px]" style={{ color: '#0F766E' }}>✓ +{xpPerItem} XP</span>
+                    <span className="text-[10px]" style={{ color: 'var(--sl-em)' }}>✓ +{xpPerItem} XP</span>
                   ) : (
                     <span className="inline-flex items-center px-2 py-[1px] rounded-[10px] text-[9px] font-bold"
                       style={{ background: 'rgba(139,123,212,0.12)', border: '1px solid rgba(139,123,212,0.2)', color: EXP_PRIMARY_LIGHT }}>

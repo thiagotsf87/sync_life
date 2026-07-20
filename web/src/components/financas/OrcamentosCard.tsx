@@ -26,7 +26,7 @@ export function OrcamentosCard({ activeBudgets, loadingBudgets, naoAlocado, qtdO
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-3">
-        <p className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">Orçamentos do Mês</p>
+        <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Orçamentos do Mês</p>
         <button onClick={() => router.push('/financas/orcamentos')} className="text-[11px] text-[#0F766E] hover:underline">Ver todos</button>
       </div>
       <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-[var(--sl-s2)] rounded-[9px] border border-[var(--sl-border)]">

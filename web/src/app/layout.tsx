@@ -2,7 +2,14 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/sonner";
 import { ServiceWorkerRegistration } from "@/components/pwa/sw-register";
 import "./globals.css";
-import { Space_Grotesk, IBM_Plex_Mono, DM_Sans } from "next/font/google";
+import { Space_Grotesk, IBM_Plex_Mono, DM_Sans, Syne } from "next/font/google";
+
+const syne = Syne({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-syne",
+  display: "swap",
+});
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -61,7 +68,7 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${spaceGrotesk.variable} ${ibmPlexMono.variable} ${dmSans.variable}`}
+      className={`${syne.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} ${dmSans.variable}`}
     >
       <body className={`${dmSans.className} antialiased`}>
         {/* Anti-FOUC: apply theme before first paint */}

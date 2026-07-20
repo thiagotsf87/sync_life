@@ -13,6 +13,7 @@ import { ExplorerBanner } from '@/components/experiencias/explorer-banner'
 import { TripStripRow } from '@/components/experiencias/trip-strip-row'
 import { StatusGrid } from '@/components/ui/status-grid'
 import { ExperienciasMobile } from '@/components/experiencias/ExperienciasMobile'
+import { fmtBRL } from '@/lib/format/currency'
 
 export default function ExperienciasPage() {
   const router = useRouter()
@@ -64,7 +65,7 @@ export default function ExperienciasPage() {
   }
 
   function formatCurrency(value: number): string {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    return fmtBRL(value)
   }
 
   function getTripSubtitle(t: Trip): string {
@@ -105,7 +106,7 @@ export default function ExperienciasPage() {
         </button>
         <button
           onClick={() => router.push('/experiencias/nova')}
-          className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#C76795] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(199,103,149,.25)] transition-all"
+          className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(15,118,110,.25)] transition-all"
         >
           <Plus size={16} />
           Nova Viagem
@@ -174,14 +175,16 @@ export default function ExperienciasPage() {
         </div>
       ) : trips.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-16 text-center">
-          <div className="text-6xl mb-4">{'\u2708\uFE0F'}</div>
-          <h3 className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Nenhuma viagem planejada</h3>
+          <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'rgba(199,103,149,.1)' }}>
+            <Plane size={28} className="text-[#C76795]" />
+          </div>
+          <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Nenhuma viagem planejada</h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-6 max-w-sm mx-auto">
             Comece planejando sua pr\u00F3xima aventura com roteiro, or\u00E7amento e checklist completo.
           </p>
           <button
             onClick={() => router.push('/experiencias/nova')}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#C76795] text-white hover:opacity-90"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90"
           >
             <Plus size={16} />
             Planejar minha primeira viagem
@@ -208,7 +211,7 @@ export default function ExperienciasPage() {
                 {/* Left: Countdown */}
                 <div className="flex flex-col items-center justify-center min-w-[160px] py-8 px-9 border-r border-[var(--sl-border)] relative"
                   style={{ background: 'linear-gradient(135deg, rgba(199,103,149,.06), rgba(168,85,247,.04))' }}>
-                  <div className="font-[Space_Grotesk] font-extrabold text-[64px] leading-none"
+                  <div className="font-[Syne] font-extrabold text-[64px] leading-none"
                     style={{
                       background: 'linear-gradient(135deg, #C76795, #a855f7)',
                       WebkitBackgroundClip: 'text',
@@ -232,7 +235,7 @@ export default function ExperienciasPage() {
                       Pr\u00F3xima Viagem
                     </span>
                   </div>
-                  <h2 className="font-[Space_Grotesk] font-extrabold text-[22px] text-[var(--sl-t1)] mb-2">
+                  <h2 className="font-[Syne] font-extrabold text-[22px] text-[var(--sl-t1)] mb-2">
                     {nextTrip.name}
                   </h2>
                   <div className="flex items-center gap-4 text-[12.5px] text-[var(--sl-t2)] mb-4">
@@ -265,14 +268,14 @@ export default function ExperienciasPage() {
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-[3px]">
                         Or\u00E7amento
                       </div>
-                      <div className="font-[IBM_Plex_Mono] text-[17px] font-medium text-[var(--sl-t1)]">
-                        {nextTrip.total_budget ? formatCurrency(nextTrip.total_budget) : '--'}
+                      <div className="sl-num-strong text-[17px] text-[var(--sl-t1)]">
+                        {nextTrip.total_budget ? formatCurrency(nextTrip.total_budget) : '\u00B7\u00B7'}
                       </div>
                     </div>
                     <div>
                       <div className="flex justify-between text-[10px] text-[var(--sl-t3)] mb-[5px]">
-                        <span>{formatCurrency(nextTrip.total_spent)} gastos</span>
-                        <span className="text-[#C76795] font-semibold">{nextTripBudgetPct}%</span>
+                        <span className="sl-num">{formatCurrency(nextTrip.total_spent)} gastos</span>
+                        <span className="text-[#C76795] font-semibold sl-num">{nextTripBudgetPct}%</span>
                       </div>
                       <div className="w-full h-[6px] bg-[var(--sl-s3)] rounded-[3px] overflow-hidden">
                         <div
@@ -288,8 +291,8 @@ export default function ExperienciasPage() {
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em] mb-[3px]">
                         Checklist
                       </div>
-                      <div className="font-[IBM_Plex_Mono] text-[17px] font-medium text-[#0F766E]">
-                        {checklistPct != null ? `${checklistPct}%` : '--'}
+                      <div className="sl-num-strong text-[17px] text-[var(--sl-success)]">
+                        {checklistPct != null ? `${checklistPct}%` : '\u00B7\u00B7'}
                       </div>
                     </div>
                   </div>
@@ -299,7 +302,7 @@ export default function ExperienciasPage() {
                 <div className="flex flex-col gap-2 py-7 px-8 border-l border-[var(--sl-border)]">
                   <button
                     onClick={() => router.push(`/experiencias/viagens/${nextTrip.id}`)}
-                    className="flex items-center gap-[7px] px-[22px] py-[9px] rounded-[11px] text-[12px] font-semibold bg-[#C76795] text-white hover:brightness-110 hover:-translate-y-px transition-all w-full justify-center"
+                    className="flex items-center gap-[7px] px-[22px] py-[9px] rounded-[11px] text-[12px] font-semibold bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px transition-all w-full justify-center"
                   >
                     <ArrowRight size={14} />
                     Ver detalhes
@@ -320,7 +323,7 @@ export default function ExperienciasPage() {
           {activeTrips.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-[14px] sl-fade-up sl-delay-3">
-                <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   Viagens Ativas
                 </h2>
                 {trips.length > 5 && (
@@ -353,7 +356,7 @@ export default function ExperienciasPage() {
 
           {/* Status Grid */}
           <div>
-            <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-4">
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-4">
               Status das Viagens
             </h2>
             <StatusGrid

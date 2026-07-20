@@ -23,7 +23,7 @@ const FEATURE_COPY = {
     icon: Palette,
     title: 'Temas Premium',
     description: 'Personalize o SyncLife com temas exclusivos criados para uma experiência única.',
-    features: ['Obsidian — luxo discreto', 'Rosewood — elegância quente', 'Arctic — minimalismo escandinavo', 'Graphite — neutro universal', 'Twilight — criativo inovador', 'Sahara — acolhedor orgânico'],
+    features: ['Midnight, atmosfera noturna', 'Charcoal, neutro elegante', 'Cream, luz natural'],
   },
 }
 
@@ -66,15 +66,16 @@ export function UpgradeModal({ open, onClose, feature = 'jornada', themeName }: 
           <X size={16} />
         </button>
 
-        {/* Icon */}
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-          style={{ background: 'linear-gradient(135deg, rgba(15,118,110,0.15), rgba(0,85,255,0.15))' }}
+        {/* Icon — sólido --sl-em soft (G-03) */}
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+          style={{ background: 'rgba(15,118,110,0.15)' }}
         >
-          <Icon size={24} className="text-[#0F766E]" />
+          <Icon size={24} className="text-[var(--sl-em)]" />
         </div>
 
         {/* Title */}
-        <h3 className="font-[Space_Grotesk] font-extrabold text-lg text-[var(--sl-t1)] mb-1">
+        <h3 className="font-[Syne] font-extrabold text-lg text-[var(--sl-t1)] mb-1">
           {themeName ? `Tema ${themeName}` : copy.title}
         </h3>
 
@@ -88,7 +89,7 @@ export function UpgradeModal({ open, onClose, feature = 'jornada', themeName }: 
           {copy.features.map((feat) => (
             <div key={feat} className="flex items-center gap-2.5">
               <div className="w-5 h-5 rounded-full bg-[rgba(15,118,110,0.12)] flex items-center justify-center shrink-0">
-                <Crown size={10} className="text-[#0F766E]" />
+                <Crown size={10} className="text-[var(--sl-em)]" />
               </div>
               <span className="text-[12px] text-[var(--sl-t2)]">{feat}</span>
             </div>
@@ -97,13 +98,13 @@ export function UpgradeModal({ open, onClose, feature = 'jornada', themeName }: 
 
         {/* PRO badge */}
         <div className="flex items-center gap-2 mb-5 px-3 py-2.5 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)]">
-          <Crown size={14} className="text-[#D9962E]" />
+          <Crown size={14} className="text-[var(--sl-warning)]" />
           <span className="text-[12px] font-semibold text-[var(--sl-t1)]">
-            Disponivel no plano PRO
+            Disponível no plano PRO
           </span>
         </div>
 
-        {/* Actions */}
+        {/* Actions — CTA sólido --sl-em (G-03) */}
         <div className="flex gap-2">
           <button
             onClick={onClose}
@@ -116,10 +117,10 @@ export function UpgradeModal({ open, onClose, feature = 'jornada', themeName }: 
               onClose()
               router.push('/configuracoes/plano')
             }}
-            className="flex-1 px-4 py-2.5 rounded-xl text-white text-[13px] font-bold transition-all hover:brightness-110"
-            style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
+            className="flex-1 px-4 py-2.5 rounded-xl text-white text-[13px] font-bold font-[Syne] transition-all hover:brightness-110"
+            style={{ background: 'var(--sl-em)' }}
           >
-            Ver planos
+            Assinar PRO
           </button>
         </div>
       </div>

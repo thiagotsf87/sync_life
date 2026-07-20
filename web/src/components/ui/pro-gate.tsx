@@ -40,14 +40,14 @@ export function ProGate({
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--sl-bg)]/60 backdrop-blur-sm rounded-2xl">
           <Crown size={28} className="text-[#D9962E]" />
-          <p className="font-[Space_Grotesk] font-bold text-sm text-[var(--sl-t1)]">
+          <p className="font-[Syne] font-bold text-sm text-[var(--sl-t1)]">
             {label ?? 'Recurso exclusivo PRO'}
           </p>
           <Link
             href="/configuracoes/plano"
             className="px-5 py-2 rounded-xl text-white text-[13px] font-bold transition-all hover:brightness-110 hover:-translate-y-px"
             style={{
-              background: 'linear-gradient(135deg, #0F766E, #0B2D34)',
+              background: 'var(--sl-em)',
               boxShadow: '0 4px 20px rgba(15,118,110,0.25)',
             }}
           >
@@ -82,7 +82,7 @@ export function ProGate({
         <Crown size={22} className="text-[#D9962E]" />
       </div>
       <div>
-        <p className="font-[Space_Grotesk] font-bold text-base text-[var(--sl-t1)] mb-1">
+        <p className="font-[Syne] font-bold text-base text-[var(--sl-t1)] mb-1">
           {label ?? 'Recurso exclusivo PRO'}
         </p>
         <p className="text-[13px] text-[var(--sl-t3)] max-w-[340px]">
@@ -93,7 +93,7 @@ export function ProGate({
         href="/configuracoes/plano"
         className="px-6 py-2.5 rounded-xl text-white text-[13px] font-bold transition-all hover:brightness-110 hover:-translate-y-px"
         style={{
-          background: 'linear-gradient(135deg, #0F766E, #0B2D34)',
+          background: 'var(--sl-em)',
           boxShadow: '0 4px 20px rgba(15,118,110,0.25)',
         }}
       >
@@ -139,21 +139,21 @@ export function ProLimitGate({
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-6 flex flex-col items-center gap-3 text-center">
       <Crown size={24} className="text-[#D9962E]" />
       <div>
-        <p className="font-[Space_Grotesk] font-bold text-sm text-[var(--sl-t1)] mb-1">
+        <p className="font-[Syne] font-bold text-sm text-[var(--sl-t1)] mb-1">
           {label ?? 'Limite atingido'}
         </p>
         <p className="text-[13px] text-[var(--sl-t3)]">
           <span className="font-[IBM_Plex_Mono] font-medium text-[var(--sl-t2)]">
             {currentCount}/{maxLimit === Infinity ? '∞' : maxLimit}
           </span>
-          {' '}— Faça upgrade para Pro e tenha acesso ilimitado.
+          {' · '}Faça upgrade para Pro e tenha acesso ilimitado.
         </p>
       </div>
       <Link
         href="/configuracoes/plano"
         className="px-5 py-2 rounded-xl text-white text-[13px] font-bold transition-all hover:brightness-110 hover:-translate-y-px"
         style={{
-          background: 'linear-gradient(135deg, #0F766E, #0B2D34)',
+          background: 'var(--sl-em)',
           boxShadow: '0 4px 20px rgba(15,118,110,0.25)',
         }}
       >

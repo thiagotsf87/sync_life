@@ -6,7 +6,7 @@ import { useStudySessions } from '@/hooks/use-mente'
 import { MetricsStrip } from '@/components/ui/metrics-strip'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { useRouter } from 'next/navigation'
-import { Brain, Play, Plus, Search, Clock } from 'lucide-react'
+import { Brain, Play, Search, Clock } from 'lucide-react'
 
 export default function SessoesPage() {
   const router = useRouter()
@@ -68,7 +68,8 @@ export default function SessoesPage() {
         <button
           onClick={() => router.push('/mente/timer')}
           className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#D9962E] text-black hover:brightness-110 transition-all"
+                     text-white hover:opacity-90 transition-all"
+          style={{ background: 'var(--sl-em)' }}
         >
           <Play size={16} />
           Timer
@@ -118,7 +119,7 @@ export default function SessoesPage() {
         >
           Todas
           <span className={cn(
-            'font-[IBM_Plex_Mono] text-[10px] font-bold px-1.5 py-px rounded-md',
+            'sl-num-strong text-[10px] px-1.5 py-px rounded-md',
             trackFilter === 'all' ? 'bg-[rgba(217,150,46,.2)] text-[#D9962E]' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
           )}>
             {sessions.length}
@@ -135,7 +136,7 @@ export default function SessoesPage() {
         >
           Estudo livre
           <span className={cn(
-            'font-[IBM_Plex_Mono] text-[10px] font-bold px-1.5 py-px rounded-md',
+            'sl-num-strong text-[10px] px-1.5 py-px rounded-md',
             trackFilter === 'free' ? 'bg-[rgba(217,150,46,.2)] text-[#D9962E]' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
           )}>
             {sessions.filter(s => !s.track_id).length}
@@ -154,7 +155,7 @@ export default function SessoesPage() {
           >
             {t.name}
             <span className={cn(
-              'font-[IBM_Plex_Mono] text-[10px] font-bold px-1.5 py-px rounded-md',
+              'sl-num-strong text-[10px] px-1.5 py-px rounded-md',
               trackFilter === t.id ? 'bg-[rgba(217,150,46,.2)] text-[#D9962E]' : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]'
             )}>
               {sessions.filter(s => s.track_id === t.id).length}
@@ -190,7 +191,7 @@ export default function SessoesPage() {
       ) : filtered.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
           <Clock size={32} className="text-[#D9962E] mx-auto mb-3 opacity-60" />
-          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             Nenhuma sessao registrada
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-4">
@@ -199,7 +200,8 @@ export default function SessoesPage() {
           <button
             onClick={() => router.push('/mente/timer')}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                       bg-[#D9962E] text-black hover:brightness-110"
+                       text-white hover:opacity-90"
+            style={{ background: 'var(--sl-em)' }}
           >
             Iniciar Timer
           </button>
@@ -247,10 +249,10 @@ export default function SessoesPage() {
                     <td className="py-3 px-3 align-middle text-[11px] text-[var(--sl-t3)] border-b border-[rgba(120,165,220,.04)]">
                       {timeLabel}
                     </td>
-                    <td className="py-3 px-3 align-middle font-[IBM_Plex_Mono] font-medium text-[13px] text-[var(--sl-t2)] border-b border-[rgba(120,165,220,.04)]">
+                    <td className="py-3 px-3 align-middle sl-num text-[13px] text-[var(--sl-t2)] border-b border-[rgba(120,165,220,.04)]">
                       {session.cycles_completed}
                     </td>
-                    <td className="py-3 px-3 pr-[22px] align-middle text-right font-[IBM_Plex_Mono] font-semibold text-[13px] text-[#D9962E] border-b border-[rgba(120,165,220,.04)]">
+                    <td className="py-3 px-3 pr-[22px] align-middle text-right sl-num-strong text-[13px] text-[#D9962E] border-b border-[rgba(120,165,220,.04)]">
                       {hours}h {mins.toString().padStart(2, '0')}min
                     </td>
                   </tr>
@@ -265,7 +267,7 @@ export default function SessoesPage() {
             </span>
             <div className="flex items-center gap-4">
               <span className="text-[11px] text-[var(--sl-t3)]">Total exibido:</span>
-              <span className="font-[IBM_Plex_Mono] text-[14px] font-semibold text-[#D9962E]">
+              <span className="sl-num-strong text-[14px] text-[#D9962E]">
                 {displayedHours}h {displayedMins.toString().padStart(2, '0')}min
               </span>
             </div>

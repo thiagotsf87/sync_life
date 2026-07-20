@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { X, ChevronDown, Check } from 'lucide-react'
+import { X, ChevronDown, Check, Plus, Calendar, Landmark, Package, ArrowRightLeft, Delete } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useCategories } from '@/hooks/use-categories'
 import { useAccounts } from '@/hooks/use-accounts'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -19,9 +20,9 @@ const TYPE_LABELS: Record<EntryType, string> = {
 }
 
 const TYPE_STYLES: Record<EntryType, { bg: string; border: string; color: string }> = {
-  expense:  { bg: 'rgba(219,100,120,0.15)',  border: 'rgba(219,100,120,0.4)',  color: '#DB6478' },
-  income:   { bg: 'rgba(15,118,110,0.15)', border: 'rgba(15,118,110,0.4)', color: '#0F766E' },
-  transfer: { bg: 'rgba(0,85,255,0.15)',   border: 'rgba(0,85,255,0.4)',   color: '#0B2D34' },
+  expense:  { bg: 'rgba(219,100,120,0.15)', border: 'rgba(219,100,120,0.4)',  color: 'var(--sl-danger)' },
+  income:   { bg: 'rgba(15,118,110,0.15)',  border: 'rgba(15,118,110,0.4)',   color: 'var(--sl-em)' },
+  transfer: { bg: 'rgba(11,45,52,0.15)',    border: 'rgba(11,45,52,0.4)',     color: 'var(--sl-el)' },
 }
 
 const PAYMENT_LABELS: Record<PaymentMethod, string> = {
@@ -29,7 +30,8 @@ const PAYMENT_LABELS: Record<PaymentMethod, string> = {
   cash: 'Dinheiro', transfer: 'Transferência', boleto: 'Boleto',
 }
 
-const NUMPAD_KEYS = ['1','2','3','4','5','6','7','8','9','.,','0','⌫'] as const
+type NumKey = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0' | '.,' | 'del'
+const NUMPAD_KEYS: NumKey[] = ['1','2','3','4','5','6','7','8','9','.,','0','del']
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -131,11 +133,11 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
 
   const numericValue = digitsToValue(rawDigits)
 
-  function handleKey(key: typeof NUMPAD_KEYS[number]) {
-    if (key === '⌫') {
+  function handleKey(key: NumKey) {
+    if (key === 'del') {
       setRawDigits(d => d.slice(0, -1))
     } else if (key === '.,') {
-      // Decimal point is implied — no-op
+      // Decimal point is implied, no-op
     } else {
       setRawDigits(d => {
         if (d.length >= 10) return d // max 99.999.999,99
@@ -229,22 +231,20 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
     }
   }, [numericValue, selectedCat, saving, date, description, paymentMethod, type, resetState, onSuccess, isTransfer, accountFromId, accountToId, transferAutoDesc])
 
-  const typeStyle = TYPE_STYLES[type]
-
   return (
     <>
-      {/* ── FAB Button ─────────────────────────────────────────────── */}
+      {/* FAB Button */}
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Registrar transação rápida"
         className="fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full flex items-center justify-center text-white shadow-xl active:scale-95 transition-transform"
         style={{
-          background: 'linear-gradient(135deg,#0F766E,#0B2D34)',
+          background: 'var(--sl-em)',
           boxShadow: '0 4px 20px rgba(15,118,110,0.4)',
         }}
       >
-        <span className="text-[28px] font-[300] leading-none">+</span>
+        <Plus size={26} strokeWidth={2.2} />
       </button>
 
       {/* ── Fullscreen Overlay ─────────────────────────────────────── */}
@@ -255,7 +255,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[var(--sl-border)] shrink-0">
-            <p className="font-[Space_Grotesk] text-[17px] font-bold text-[var(--sl-t1)]">Registrar</p>
+            <p className="font-[Syne] text-[17px] font-bold text-[var(--sl-t1)]">Registrar</p>
             <button
               type="button"
               onClick={resetState}
@@ -291,16 +291,15 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
           {/* Amount display */}
           <div className="text-center px-5 pb-3 shrink-0">
             <div
-              className="leading-none"
+              className="leading-none font-[Syne] tabular-nums"
               style={{
-                fontFamily: "'DM Mono', monospace",
-                fontWeight: 500,
+                fontWeight: 700,
                 color: 'var(--sl-t1)',
-                letterSpacing: -2,
+                letterSpacing: '-0.03em',
               }}
             >
-              <span style={{ fontSize: 24, color: 'var(--sl-t2)', fontFamily: 'inherit' }}>R$</span>
-              <span style={{ fontSize: 52 }}>{rawDigits ? digitsToDisplay(rawDigits) : '0,00'}</span>
+              <span className="text-[24px] text-[var(--sl-t2)] font-[Syne] font-semibold mr-1">R$</span>
+              <span className="text-[52px]">{rawDigits ? digitsToDisplay(rawDigits) : '0,00'}</span>
             </div>
           </div>
 
@@ -315,24 +314,26 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
                   className={cn(
                     'flex items-center gap-1.5 px-3 py-1.5 rounded-[20px] text-[13px] transition-colors active:bg-[var(--sl-s3)]',
                     accountFrom
-                      ? 'bg-[var(--sl-s2)] border border-[rgba(0,85,255,0.35)] text-[var(--sl-t1)]'
+                      ? 'bg-[var(--sl-s2)] border border-[rgba(11,45,52,0.35)] text-[var(--sl-t1)]'
                       : 'bg-[var(--sl-s2)] border border-[var(--sl-border-h)] text-[var(--sl-t3)]'
                   )}
                 >
-                  <span>{accountFrom ? `${accountFrom.icon} ${accountFrom.name}` : '🏦 Origem'}</span>
+                  <Landmark size={13} />
+                  <span>{accountFrom ? accountFrom.name : 'Origem'}</span>
                 </button>
-                <span className="text-[var(--sl-t3)] text-[14px]">→</span>
+                <ArrowRightLeft size={14} className="text-[var(--sl-t3)]" />
                 <button
                   type="button"
                   onClick={() => setShowAccountPicker(showAccountPicker === 'to' ? null : 'to')}
                   className={cn(
                     'flex items-center gap-1.5 px-3 py-1.5 rounded-[20px] text-[13px] transition-colors active:bg-[var(--sl-s3)]',
                     accountTo
-                      ? 'bg-[var(--sl-s2)] border border-[rgba(0,85,255,0.35)] text-[var(--sl-t1)]'
+                      ? 'bg-[var(--sl-s2)] border border-[rgba(11,45,52,0.35)] text-[var(--sl-t1)]'
                       : 'bg-[var(--sl-s2)] border border-[var(--sl-border-h)] text-[var(--sl-t3)]'
                   )}
                 >
-                  <span>{accountTo ? `${accountTo.icon} ${accountTo.name}` : '🏦 Destino'}</span>
+                  <Landmark size={13} />
+                  <span>{accountTo ? accountTo.name : 'Destino'}</span>
                 </button>
               </div>
 
@@ -360,11 +361,11 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
                               'flex items-center gap-1 px-2.5 py-1 rounded-[10px] text-[12px] transition-colors',
                               isExcluded && 'opacity-40 cursor-not-allowed',
                               isSelected
-                                ? 'bg-[rgba(0,85,255,0.12)] text-[#0B2D34] border border-[rgba(0,85,255,0.3)]'
+                                ? 'bg-[rgba(11,45,52,0.12)] text-[var(--sl-el)] border border-[rgba(11,45,52,0.3)]'
                                 : 'bg-[var(--sl-s2)] text-[var(--sl-t2)] border border-[var(--sl-border)]'
                             )}
                           >
-                            {acc.icon} {acc.name}
+                            {acc.name}
                           </button>
                         )
                       })
@@ -381,10 +382,17 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
                   onClick={() => setShowCatPicker(p => !p)}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-[20px] bg-[var(--sl-s2)] border border-[var(--sl-border-h)] text-[13px] text-[var(--sl-t1)] transition-colors active:bg-[var(--sl-s3)]"
                 >
-                  <span>{selectedCat ? `${selectedCat.icon} ${selectedCat.name}` : '📦 Selecionar'}</span>
+                  {selectedCat ? (
+                    <span>{selectedCat.icon} {selectedCat.name}</span>
+                  ) : (
+                    <>
+                      <Package size={13} />
+                      <span>Selecionar</span>
+                    </>
+                  )}
                   {suggestedCat && !selectedCategoryId && (
                     <span
-                      className="text-[10px] px-1.5 py-0.5 rounded-[6px] font-medium text-[#0F766E]"
+                      className="text-[10px] px-1.5 py-0.5 rounded-[6px] font-bold uppercase tracking-[0.1em] text-[var(--sl-em)]"
                       style={{ background: 'rgba(15,118,110,0.15)' }}
                     >
                       IA
@@ -426,7 +434,8 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
           {/* Date Picker */}
           <div className="text-center pb-1.5 shrink-0">
             <label className="inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] text-[13px] text-[var(--sl-t2)] cursor-pointer hover:border-[var(--sl-border-h)] transition-colors">
-              📅 {formatDisplayDate(date)}
+              <Calendar size={13} />
+              {formatDisplayDate(date)}
               <input
                 type="date"
                 value={date}
@@ -446,7 +455,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
               size={14}
               className={cn('transition-transform duration-200', expanded && 'rotate-180')}
             />
-            {expanded ? 'Ocultar detalhes' : '▼ Adicionar detalhes (descrição, conta)'}
+            {expanded ? 'Ocultar detalhes' : 'Adicionar detalhes (descrição, conta)'}
           </button>
 
           {/* Expanded Fields */}
@@ -457,7 +466,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
                 placeholder="Descrição (opcional)"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                className="px-3 py-2.5 rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors"
+                className="px-3 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[14px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-em)] transition-colors"
               />
               <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                 {(Object.keys(PAYMENT_LABELS) as PaymentMethod[]).map(m => (
@@ -468,7 +477,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
                     className={cn(
                       'px-2.5 py-1.5 rounded-[10px] text-[11px] whitespace-nowrap shrink-0 transition-colors border',
                       paymentMethod === m
-                        ? 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.3)] text-[#0F766E]'
+                        ? 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.3)] text-[var(--sl-em)]'
                         : 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t2)]'
                     )}
                   >
@@ -481,7 +490,7 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
 
           {/* Error */}
           {error && (
-            <p className="text-[12px] text-[#DB6478] text-center px-5 pb-1 shrink-0">{error}</p>
+            <p className="text-[12px] text-[var(--sl-danger)] text-center px-5 pb-1 shrink-0">{error}</p>
           )}
 
           {/* Numpad */}
@@ -492,24 +501,27 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
             <div className="grid grid-cols-3 gap-1.5" style={{ flex: '1 1 auto' }}>
               {NUMPAD_KEYS.map(k => {
                 const isDecimal = k === '.,'
-                const isDelete = k === '⌫'
+                const isDelete = k === 'del'
                 return (
                   <button
                     key={k}
                     type="button"
                     onClick={() => handleKey(k)}
-                    className="rounded-[12px] flex items-center justify-center active:scale-95 transition-transform select-none"
+                    className={cn(
+                      'rounded-[12px] flex items-center justify-center active:scale-95 transition-transform select-none font-[Syne] tabular-nums',
+                      isDecimal && 'text-[var(--sl-em)]',
+                      isDelete && 'text-[var(--sl-t2)]',
+                      !isDecimal && !isDelete && 'text-[var(--sl-t1)]',
+                    )}
                     style={{
                       height: 54,
                       background: isDecimal ? 'rgba(15,118,110,0.12)' : 'var(--sl-s2)',
                       border: `1px solid ${isDecimal ? 'rgba(15,118,110,0.3)' : 'var(--sl-border)'}`,
-                      color: isDecimal ? '#0F766E' : isDelete ? 'var(--sl-t2)' : 'var(--sl-t1)',
-                      fontFamily: isDelete ? 'inherit' : "'DM Mono', monospace",
-                      fontSize: isDelete ? 18 : 22,
+                      fontSize: 22,
                       fontWeight: 600,
                     }}
                   >
-                    {k}
+                    {isDelete ? <Delete size={20} strokeWidth={1.8} /> : k}
                   </button>
                 )
               })}
@@ -520,10 +532,10 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
               type="button"
               onClick={success ? undefined : handleConfirm}
               disabled={saving || numericValue <= 0 || (isTransfer ? (!accountFromId || !accountToId) : !selectedCat)}
-              className="w-full rounded-[16px] flex items-center justify-center gap-2 font-[Space_Grotesk] text-[15px] font-bold text-white transition-all disabled:opacity-50 active:brightness-90 shrink-0"
+              className="w-full rounded-[16px] flex items-center justify-center gap-2 font-[Syne] text-[15px] font-bold text-white transition-all disabled:opacity-50 active:brightness-90 shrink-0"
               style={{
                 height: 52,
-                background: success ? '#0F766E' : isTransfer ? '#0B2D34' : 'linear-gradient(135deg,#0F766E,#0B2D34)',
+                background: success ? 'var(--sl-em)' : isTransfer ? 'var(--sl-el)' : 'var(--sl-em)',
               }}
             >
               {success ? (
@@ -531,9 +543,9 @@ export function QuickEntryFAB({ onSuccess }: QuickEntryFABProps) {
               ) : saving ? (
                 'Salvando...'
               ) : isTransfer ? (
-                `🔄 Transferir — R$ ${numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                <><ArrowRightLeft size={16} /> Transferir, {fmtBRL(numericValue)}</>
               ) : (
-                `✓ Confirmar — R$ ${numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                <><Check size={16} /> Confirmar, {fmtBRL(numericValue)}</>
               )}
             </button>
           </div>

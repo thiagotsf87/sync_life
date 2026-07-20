@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo } from 'react'
 import { calcIMC, IMC_LABEL, type HealthProfile } from '@/hooks/use-corpo'
@@ -86,12 +86,12 @@ export function CorpoWeightModal({ profile, onClose, onSave }: CorpoWeightModalP
             value={weightStr}
             onChange={(e) => setWeightStr(e.target.value)}
             placeholder="0,0"
-            className="w-full text-center bg-transparent outline-none font-[IBM_Plex_Mono] text-[48px] font-bold"
+            className="w-full text-center bg-transparent outline-none sl-num-strong text-[48px] font-bold"
             style={{ color: CORPO_COLOR }}
           />
           {imcInfo && (
             <p className="text-[12px] mt-2" style={{ color: imcInfo.color }}>
-              IMC calculado: {imcInfo.imc.toFixed(1)} — {imcInfo.label}
+              IMC calculado: {imcInfo.imc.toFixed(1)} · {imcInfo.label}
             </p>
           )}
           {weightNum && !profile?.height_cm && (
@@ -127,7 +127,7 @@ export function CorpoWeightModal({ profile, onClose, onSave }: CorpoWeightModalP
             </p>
             <div
               className="w-full rounded-[10px] px-3 py-3 text-[14px] text-center"
-              style={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', color: muscleMass ? '#0F766E' : 'var(--sl-t3)' }}
+              style={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', color: muscleMass ? 'var(--sl-em)' : 'var(--sl-t3)' }}
             >
               {muscleMass ? `${muscleMass} kg` : '—'}
             </div>
@@ -177,7 +177,7 @@ export function CorpoWeightModal({ profile, onClose, onSave }: CorpoWeightModalP
         <button
           onClick={handleSave}
           disabled={saving || !weightNum || weightNum < 20}
-          className="w-full py-[14px] rounded-[10px] font-[Space_Grotesk] text-[15px] font-bold text-black disabled:opacity-50"
+          className="w-full py-[14px] rounded-[10px] font-[Syne] text-[15px] font-bold text-black disabled:opacity-50"
           style={{ background: CORPO_COLOR }}
         >
           {saving ? 'Registrando…' : 'Registrar Pesagem ⚖️'}

@@ -1,12 +1,13 @@
 // ─── Dashboard shared helpers ──────────────────────────────────────────────
 
+import { fmtBRL } from '@/lib/format/currency'
+
 export function fmt(val: number) {
-  return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return fmtBRL(val)
 }
 
 export function fmtShort(val: number) {
-  if (Math.abs(val) >= 1000) return `R$ ${(val / 1000).toFixed(1).replace('.', ',')}k`
-  return fmt(val)
+  return fmtBRL(val, { compact: true })
 }
 
 export function getBudgetColor(pct: number): string {

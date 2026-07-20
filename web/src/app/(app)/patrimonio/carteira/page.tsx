@@ -16,6 +16,7 @@ import { ModuleHeader } from '@/components/ui/module-header'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 import { createTransactionFromAporte } from '@/lib/integrations/financas'
+import { fmtBRL } from '@/lib/format/currency'
 
 const ASSET_CLASSES: AssetClass[] = [
   'stocks_br', 'fiis', 'etfs_br', 'bdrs', 'fixed_income',
@@ -169,8 +170,6 @@ export default function CarteiraPage() {
   const totalPL = totalCurrent - totalInvested
   const totalPLPct = totalInvested > 0 ? (totalPL / totalInvested) * 100 : 0
 
-  const fmtCurrency = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-
   // Dividend data for proventos column
   const year12Ago = new Date()
   year12Ago.setMonth(year12Ago.getMonth() - 12)
@@ -186,7 +185,7 @@ export default function CarteiraPage() {
         iconBg="rgba(79,136,212,.08)"
         iconColor="#4F88D4"
         title="Carteira"
-        subtitle={`${assets.length} ativo${assets.length !== 1 ? 's' : ''} · ${fmtCurrency(totalCurrent)} · ${assets.filter(a => a.current_price != null).length} com cotacao`}
+        subtitle={`${assets.length} ativo${assets.length !== 1 ? 's' : ''} · ${fmtBRL(totalCurrent)} · ${assets.filter(a => a.current_price != null).length} com cotacao`}
       >
         {assets.length > 0 && (
           <button
@@ -215,14 +214,14 @@ export default function CarteiraPage() {
         <button
           onClick={() => setShowModal(true)}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#4F88D4] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(79,136,212,.25)] transition-all"
+                     bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(15,118,110,.25)] transition-all"
         >
           <Plus size={16} strokeWidth={2.5} />
           Nova Operacao
         </button>
       </ModuleHeader>
 
-      {/* Search + Filter (NO KPIs — this is a data view, per prototype) */}
+      {/* Search + Filter (NO KPIs · this is a data view, per prototype) */}
       <div className="flex items-center gap-3 mb-5 flex-wrap sl-fade-up sl-delay-1">
         <div className="relative flex-1 max-w-[320px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--sl-t3)]" />
@@ -259,10 +258,12 @@ export default function CarteiraPage() {
         </div>
       ) : assets.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
-          <div className="text-4xl mb-3">📈</div>
-          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
+          <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center bg-[rgba(79,136,212,.08)]">
+            <Briefcase size={22} className="text-[#4F88D4]" />
+          </div>
+          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
           <button onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#4F88D4] text-white hover:opacity-90 mt-3">
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 mt-3">
             <Plus size={15} />
             Primeiro ativo
           </button>
@@ -317,22 +318,22 @@ export default function CarteiraPage() {
                       {ASSET_CLASS_LABELS[a.asset_class]}{a.sector ? ` · ${a.sector}` : ''}
                     </div>
                   </div>
-                  <span className="font-[IBM_Plex_Mono] text-[12px] text-right text-[var(--sl-t2)]">
+                  <span className="sl-num text-[12px] text-right text-[var(--sl-t2)]">
                     {a.quantity.toLocaleString('pt-BR')}
                   </span>
-                  <span className="font-[IBM_Plex_Mono] text-[12px] text-right text-[var(--sl-t1)]">
-                    {fmtCurrency(currentVal)}
+                  <span className="sl-num text-[12px] text-right text-[var(--sl-t1)]">
+                    {fmtBRL(currentVal)}
                   </span>
                   <span
-                    className="font-[IBM_Plex_Mono] text-[12px] text-right"
+                    className="sl-num text-[12px] text-right"
                     style={{ color: pl >= 0 ? '#0F766E' : '#DB6478' }}
                   >
                     {pl >= 0 ? '+' : ''}{plPct.toFixed(1)}%
                   </span>
-                  <span className="font-[IBM_Plex_Mono] text-[12px] text-right text-[var(--sl-t1)]">
+                  <span className="sl-num text-[12px] text-right text-[var(--sl-t1)]">
                     --
                   </span>
-                  <span className="font-[IBM_Plex_Mono] text-[12px] text-right text-[var(--sl-t2)]">
+                  <span className="sl-num text-[12px] text-right text-[var(--sl-t2)]">
                     {weight.toFixed(0)}%
                   </span>
                 </div>
@@ -343,14 +344,14 @@ export default function CarteiraPage() {
           {/* Summary footer */}
           <div className="flex gap-5 py-4 justify-end sl-fade-up sl-delay-3">
             <span className="text-[11px] text-[var(--sl-t3)]">
-              Total Investido: <span className="font-[IBM_Plex_Mono] text-[var(--sl-t2)]">{fmtCurrency(totalInvested)}</span>
+              Total Investido: <span className="sl-num text-[var(--sl-t2)]">{fmtBRL(totalInvested)}</span>
             </span>
             <span className="text-[11px] text-[var(--sl-t3)]">
-              Total Posicao: <span className="font-[IBM_Plex_Mono] text-[var(--sl-t1)]">{fmtCurrency(totalCurrent)}</span>
+              Total Posicao: <span className="sl-num text-[var(--sl-t1)]">{fmtBRL(totalCurrent)}</span>
             </span>
             <span className="text-[11px] text-[var(--sl-t3)]">
-              Resultado: <span className="font-[IBM_Plex_Mono]" style={{ color: totalPL >= 0 ? '#0F766E' : '#DB6478' }}>
-                {totalPL >= 0 ? '+' : ''}{fmtCurrency(totalPL)} ({totalPL >= 0 ? '+' : ''}{totalPLPct.toFixed(2)}%)
+              Resultado: <span className="sl-num" style={{ color: totalPL >= 0 ? '#0F766E' : '#DB6478' }}>
+                {totalPL >= 0 ? '+' : ''}{fmtBRL(totalPL)} ({totalPL >= 0 ? '+' : ''}{totalPLPct.toFixed(2)}%)
               </span>
             </span>
           </div>
@@ -364,7 +365,7 @@ export default function CarteiraPage() {
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[540px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2.5">
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(79,136,212,.08)' }}>
                   <Plus size={18} className="text-[#4F88D4]" />
                 </div>
@@ -454,8 +455,8 @@ export default function CarteiraPage() {
               {form.quantity && form.price && (
                 <div className="flex items-center gap-2 p-3 bg-[#4F88D4]/10 border border-[#4F88D4]/30 rounded-xl">
                   <p className="text-[12px] text-[var(--sl-t2)]">
-                    Total: <strong className="font-[IBM_Plex_Mono] text-[var(--sl-t1)]">
-                      {(parseFloat(form.quantity) * parseFloat(form.price)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    Total: <strong className="sl-num-strong text-[var(--sl-t1)]">
+                      {fmtBRL(parseFloat(form.quantity) * parseFloat(form.price))}
                     </strong>
                   </p>
                 </div>
@@ -505,7 +506,7 @@ export default function CarteiraPage() {
                   Cancelar
                 </button>
                 <button onClick={handleSave} disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#4F88D4] text-white hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 disabled:opacity-50">
                   {isSaving ? 'Salvando...' : 'Salvar'}
                 </button>
               </div>
@@ -521,8 +522,8 @@ export default function CarteiraPage() {
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[340px]">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
-                Atualizar Cotacao — {showPriceModal.ticker}
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                Atualizar Cotacao · {showPriceModal.ticker}
               </h2>
               <button onClick={() => setShowPriceModal(null)} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">x</button>
             </div>
@@ -541,7 +542,7 @@ export default function CarteiraPage() {
                   Cancelar
                 </button>
                 <button onClick={handleUpdatePrice} disabled={isSaving || !newPrice}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#4F88D4] text-white hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 disabled:opacity-50">
                   Atualizar
                 </button>
               </div>

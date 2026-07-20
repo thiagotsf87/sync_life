@@ -10,6 +10,7 @@ import { MetricsStrip } from '@/components/ui/metrics-strip'
 import { TrackWizard } from '@/components/mente/TrackWizard'
 import { MenteMobile } from '@/components/mente/MenteMobile'
 import { toast } from 'sonner'
+import { fmtBRL } from '@/lib/format/currency'
 import {
   BarChart,
   Bar,
@@ -125,14 +126,15 @@ export default function MentePage() {
           <button
             onClick={() => router.push('/mente/timer')}
             className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#D9962E] text-black hover:brightness-110 transition-all"
+                       text-white hover:opacity-90 transition-all"
+            style={{ background: 'var(--sl-em)' }}
           >
             <Play size={16} />
             Timer
           </button>
         </ModuleHeader>
 
-        {/* 2. MetricsStrip — 5 metrics */}
+        {/* 2. MetricsStrip · 5 metrics */}
         <MetricsStrip
           gradient={['#D9962E', '#D97534']}
           className="mb-7"
@@ -177,7 +179,7 @@ export default function MentePage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-[9px] mb-[18px]">
               <BookOpen size={16} className="text-[#D9962E]" />
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                 Trilhas Ativas
               </h2>
               <button
@@ -206,7 +208,7 @@ export default function MentePage() {
             ) : activeTracks.length === 0 ? (
               <div className="text-center py-10">
                 <Brain size={32} className="text-[#D9962E] mx-auto mb-3 opacity-60" />
-                <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
                   Nenhuma trilha ativa
                 </h3>
                 <p className="text-[13px] text-[var(--sl-t2)] max-w-sm mx-auto mb-4">
@@ -215,7 +217,8 @@ export default function MentePage() {
                 <button
                   onClick={() => setWizardOpen(true)}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                             bg-[#D9962E] text-black hover:brightness-110 transition-all"
+                             text-white hover:opacity-90 transition-all"
+                  style={{ background: 'var(--sl-em)' }}
                 >
                   <Plus size={15} />
                   Criar Trilha
@@ -234,7 +237,7 @@ export default function MentePage() {
 
                   const subParts: string[] = [catLabel]
                   if (track.total_hours > 0) subParts.push(`${track.total_hours.toFixed(1)}h`)
-                  if (track.cost) subParts.push(track.cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
+                  if (track.cost) subParts.push(fmtBRL(track.cost))
                   if (daysLeft !== null && daysLeft > 0) subParts.push(`${daysLeft}d restantes`)
 
                   return (
@@ -257,7 +260,7 @@ export default function MentePage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <span className="font-[IBM_Plex_Mono] text-[15px] font-medium text-[#D9962E]">
+                          <span className="sl-num-strong text-[15px] text-[#D9962E]">
                             {Math.round(track.progress)}%
                           </span>
                           {steps.length > 0 && (
@@ -288,7 +291,7 @@ export default function MentePage() {
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-3 transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-[9px] mb-[18px]">
                 <Clock size={16} className="text-[#D9962E]" />
-                <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   Sessoes Recentes
                 </h2>
                 <button
@@ -330,7 +333,7 @@ export default function MentePage() {
                         <span className="flex-1 text-[12px] font-medium text-[var(--sl-t1)] truncate">
                           {trackName}
                         </span>
-                        <span className="font-[IBM_Plex_Mono] text-[12px] text-[#D9962E]">
+                        <span className="sl-num text-[12px] text-[#D9962E]">
                           {session.focus_minutes}m
                         </span>
                         <span className="text-[10px] text-[var(--sl-t3)] w-10 text-right">
@@ -351,7 +354,7 @@ export default function MentePage() {
                   <line x1="12" y1="20" x2="12" y2="4" />
                   <line x1="6" y1="20" x2="6" y2="14" />
                 </svg>
-                <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   Horas por dia
                 </h2>
               </div>

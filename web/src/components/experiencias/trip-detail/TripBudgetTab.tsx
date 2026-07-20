@@ -29,26 +29,26 @@ export function TripBudgetTab({
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 hover:border-[var(--sl-border-h)] transition-colors">
           <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Estimado</p>
-          <p className="font-[IBM_Plex_Mono] text-xl text-[var(--sl-t1)]">{formatTripAmount(totalEstimated)}</p>
+          <p className="sl-num-strong text-xl text-[var(--sl-t1)]">{formatTripAmount(totalEstimated)}</p>
         </div>
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 hover:border-[var(--sl-border-h)] transition-colors">
           <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Gasto</p>
-          <p className="font-[IBM_Plex_Mono] text-xl" style={{ color: totalActual > totalEstimated ? '#DB6478' : '#0F766E' }}>
+          <p className="sl-num-strong text-xl" style={{ color: totalActual > totalEstimated ? 'var(--sl-danger)' : 'var(--sl-success)' }}>
             {formatTripAmount(totalActual)}
           </p>
         </div>
-        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
+        <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 hover:border-[var(--sl-border-h)] transition-colors">
           <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Saldo</p>
-          <p className="font-[IBM_Plex_Mono] text-xl" style={{ color: totalEstimated - totalActual >= 0 ? '#C76795' : '#DB6478' }}>
+          <p className="sl-num-strong text-xl" style={{ color: totalEstimated - totalActual >= 0 ? '#C76795' : 'var(--sl-danger)' }}>
             {formatTripAmount(totalEstimated - totalActual)}
           </p>
         </div>
       </div>
 
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-        <h3 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)] mb-4">Por categoria</h3>
+        <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-4">Por categoria</h3>
         <div className="flex flex-col gap-4">
           {budget.map(b => (
             <div key={b.id}>
@@ -63,7 +63,7 @@ export function TripBudgetTab({
                     step="50"
                     defaultValue={b.estimated_amount}
                     onBlur={e => handleUpdateBudget(b.id, 'estimated_amount', e.target.value)}
-                    className="w-full px-2.5 py-2 rounded-[8px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]"
+                    className="w-full px-2.5 py-2 rounded-[8px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-em)]"
                   />
                 </div>
                 <div>
@@ -73,7 +73,7 @@ export function TripBudgetTab({
                     step="10"
                     defaultValue={b.actual_amount}
                     onBlur={e => handleUpdateBudget(b.id, 'actual_amount', e.target.value)}
-                    className="w-full px-2.5 py-2 rounded-[8px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]"
+                    className="w-full px-2.5 py-2 rounded-[8px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-em)]"
                   />
                 </div>
               </div>
@@ -83,7 +83,7 @@ export function TripBudgetTab({
                     className="h-full rounded-full"
                     style={{
                       width: `${Math.min((b.actual_amount / b.estimated_amount) * 100, 100)}%`,
-                      background: b.actual_amount > b.estimated_amount ? '#DB6478' : '#C76795',
+                      background: b.actual_amount > b.estimated_amount ? 'var(--sl-danger)' : '#C76795',
                     }}
                   />
                 </div>

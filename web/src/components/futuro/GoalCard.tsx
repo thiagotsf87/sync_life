@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Edit2, Trash2, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 import type { ObjectiveGoal, GoalModule, GoalIndicatorType } from '@/hooks/use-futuro'
 import { MODULE_LABELS, INDICATOR_LABELS } from '@/hooks/use-futuro'
 
@@ -14,7 +15,7 @@ interface GoalCardProps {
 
 function formatValue(value: number, indicatorType: GoalIndicatorType, targetUnit: string | null): string {
   if (indicatorType === 'monetary') {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    return fmtBRL(value)
   }
   if (indicatorType === 'weight') {
     return `${value.toFixed(1)} kg`
@@ -127,7 +128,7 @@ export function GoalCard({ goal, onUpdateProgress, onDelete }: GoalCardProps) {
         </div>
       </div>
 
-      {/* Update progress inline — RN-FUT-17: UI por tipo de indicador */}
+      {/* Update progress inline · RN-FUT-17: UI por tipo de indicador */}
       {editing && !isCompleted && (
         <div className="mt-2 pt-2 border-t border-[var(--sl-border)]">
           {goal.indicator_type === 'task' ? (

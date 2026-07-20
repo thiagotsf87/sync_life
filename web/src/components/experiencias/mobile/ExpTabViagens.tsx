@@ -6,6 +6,7 @@ import { TRIP_STATUS_LABELS, calcTripDays } from '@/hooks/use-experiencias'
 import { ExpTripStatusSheet } from '@/components/experiencias/mobile/ExpTripStatusSheet'
 import { ExpCelebrationModal } from '@/components/experiencias/mobile/ExpCelebrationModal'
 import { ExpUpgradeModal } from '@/components/experiencias/mobile/ExpUpgradeModal'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface ExpTabViagensProps {
   trips: Trip[]
@@ -171,7 +172,7 @@ export function ExpTabViagens({
                   {trip.start_date} · {calcTripDays(trip.start_date, trip.end_date)} dias
                 </p>
               </div>
-              {/* Status badge — tap to change */}
+              {/* Status badge · tap to change */}
               <button
                 onClick={() => setStatusSheetTrip(trip)}
                 className="text-[10px] font-semibold px-[10px] py-[3px] rounded-[20px] shrink-0"
@@ -188,7 +189,7 @@ export function ExpTabViagens({
               </span>
               {trip.total_budget && trip.total_budget > 0 && (
                 <span className="text-[10px] text-[var(--sl-t3)]">
-                  💰 R$ {trip.total_budget.toLocaleString('pt-BR')}
+                  💰 {fmtBRL(trip.total_budget)}
                 </span>
               )}
               {budgetPct !== null && (
@@ -207,7 +208,7 @@ export function ExpTabViagens({
                   📸 Sem diário
                 </button>
               )}
-              {/* 🔮 Futuro linked badge — RN-EXP-02 */}
+              {/* 🔮 Futuro linked badge · RN-EXP-02 */}
               {trip.objective_id && (
                 <span
                   className="text-[10px] px-2 py-[2px] rounded-[10px]"

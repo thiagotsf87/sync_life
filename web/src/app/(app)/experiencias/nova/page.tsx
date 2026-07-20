@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Plus, X, Check, Plane } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { ExperienciasMobile } from '@/components/experiencias/ExperienciasMobile'
+import { SectionHeader } from '@/components/ui/section-header'
 import {
   useTrips, useCreateTrip,
   TRIP_TYPE_LABELS, DEFAULT_CHECKLIST_ITEMS,
@@ -90,9 +91,9 @@ function buildAutoChecklist(tripType: TripType, days: number): { title: string; 
 }
 
 const STEPS = [
-  { label: 'Destino', desc: 'Onde voce vai?' },
-  { label: 'Datas e Viajantes', desc: 'Quando e com quem' },
-  { label: 'Orcamento', desc: 'Defina limites' },
+  { label: 'Destino', desc: 'Onde você vai?' },
+  { label: 'Datas e viajantes', desc: 'Quando e com quem' },
+  { label: 'Orçamento', desc: 'Defina limites' },
   { label: 'Resumo', desc: 'Revisar e criar' },
 ]
 
@@ -231,10 +232,10 @@ export default function NovaViagemPage() {
           <Plane size={22} className="stroke-2" style={{ color: '#C76795' }} />
         </div>
         <div className="flex-1 min-w-0">
-          <h1 className="font-[Space_Grotesk] font-extrabold text-[26px] leading-[1.15] text-[var(--sl-t1)]">
+          <h1 className="font-[Syne] font-extrabold text-[26px] leading-[1.15] text-[var(--sl-t1)]">
             Nova Viagem
           </h1>
-          <p className="text-[13px] text-[var(--sl-t2)] mt-[3px]">Planeje sua proxima aventura</p>
+          <p className="text-[13px] text-[var(--sl-t2)] mt-[3px]">Planeje sua próxima aventura</p>
         </div>
       </div>
 
@@ -253,7 +254,7 @@ export default function NovaViagemPage() {
                   <div
                     className={cn(
                       'absolute left-[15px] top-[42px] bottom-0 w-[2px]',
-                      isDone ? 'bg-[#0F766E]' : 'bg-[var(--sl-s3)]'
+                      isDone ? 'bg-[var(--sl-em)]' : 'bg-[var(--sl-s3)]'
                     )}
                   />
                 )}
@@ -262,9 +263,9 @@ export default function NovaViagemPage() {
                 <div
                   className={cn(
                     'w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0 z-[1] transition-all',
-                    'font-[IBM_Plex_Mono] text-[13px] font-medium',
+                    'font-[Syne] font-semibold text-[13px]',
                     isDone
-                      ? 'bg-[#0F766E] border-2 border-[#0F766E] text-white'
+                      ? 'bg-[var(--sl-em)] border-2 border-[var(--sl-em)] text-white'
                       : isActive
                         ? 'bg-[rgba(199,103,149,.08)] border-2 border-[#C76795] text-[#C76795]'
                         : 'bg-[var(--sl-bg)] border-2 border-[var(--sl-s3)] text-[var(--sl-t3)]'
@@ -278,7 +279,7 @@ export default function NovaViagemPage() {
                   <div className={cn(
                     'text-[13px] font-semibold transition-colors',
                     isDone
-                      ? 'text-[#0F766E]'
+                      ? 'text-[var(--sl-em)]'
                       : isActive
                         ? 'text-[var(--sl-t1)]'
                         : 'text-[var(--sl-t3)]'
@@ -299,10 +300,8 @@ export default function NovaViagemPage() {
             {/* Step 0 -- Destino */}
             {step === 0 && (
               <div className="flex flex-col gap-5">
-                <div>
-                  <div className="font-[Space_Grotesk] font-bold text-[17px] text-[var(--sl-t1)] mb-[6px]">Destino</div>
-                  <div className="text-[12px] text-[var(--sl-t3)] mb-6">Para onde voce vai?</div>
-                </div>
+                <SectionHeader eyebrow="01 · DESTINO" title="Para onde você vai?" sub="Defina o nome e os destinos da viagem" />
+
 
                 <div>
                   <label className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-[6px] block">
@@ -360,11 +359,11 @@ export default function NovaViagemPage() {
                     className={cn(
                       'inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold transition-all',
                       canNextStep()
-                        ? 'bg-[#C76795] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(199,103,149,.15)]'
+                        ? 'bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(15,118,110,.18)]'
                         : 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
                     )}
                   >
-                    Proximo
+                    Próximo
                     <ArrowRight size={14} />
                   </button>
                 </div>
@@ -374,10 +373,8 @@ export default function NovaViagemPage() {
             {/* Step 1 -- Datas e Viajantes */}
             {step === 1 && (
               <div className="flex flex-col gap-5">
-                <div>
-                  <div className="font-[Space_Grotesk] font-bold text-[17px] text-[var(--sl-t1)] mb-[6px]">Datas e Viajantes</div>
-                  <div className="text-[12px] text-[var(--sl-t3)] mb-6">Defina o periodo e quem vai junto</div>
-                </div>
+                <SectionHeader eyebrow="02 · DATAS E VIAJANTES" title="Quando e com quem?" sub="Defina o período e quem vai junto" />
+
 
                 <div className="grid grid-cols-2 gap-[14px]">
                   <div>
@@ -386,7 +383,7 @@ export default function NovaViagemPage() {
                       type="date"
                       value={data.start_date}
                       onChange={e => setData(d => ({ ...d, start_date: e.target.value }))}
-                      className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] font-[IBM_Plex_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[rgba(199,103,149,.5)] transition-colors"
+                      className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] sl-num bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[rgba(199,103,149,.5)] transition-colors"
                     />
                   </div>
                   <div>
@@ -396,7 +393,7 @@ export default function NovaViagemPage() {
                       value={data.end_date}
                       min={data.start_date}
                       onChange={e => setData(d => ({ ...d, end_date: e.target.value }))}
-                      className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] font-[IBM_Plex_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[rgba(199,103,149,.5)] transition-colors"
+                      className="w-full px-[14px] py-[10px] rounded-[10px] text-[13px] sl-num bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[rgba(199,103,149,.5)] transition-colors"
                     />
                   </div>
                 </div>
@@ -455,11 +452,11 @@ export default function NovaViagemPage() {
                     className={cn(
                       'inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold transition-all',
                       canNextStep()
-                        ? 'bg-[#C76795] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(199,103,149,.15)]'
+                        ? 'bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(15,118,110,.18)]'
                         : 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
                     )}
                   >
-                    Proximo
+                    Próximo
                     <ArrowRight size={14} />
                   </button>
                 </div>
@@ -469,10 +466,8 @@ export default function NovaViagemPage() {
             {/* Step 2 -- Orcamento */}
             {step === 2 && (
               <div className="flex flex-col gap-5">
-                <div>
-                  <div className="font-[Space_Grotesk] font-bold text-[17px] text-[var(--sl-t1)] mb-[6px]">Orcamento</div>
-                  <div className="text-[12px] text-[var(--sl-t3)] mb-6">Defina um orcamento total para a viagem. Voce pode ajustar depois no detalhe da viagem.</div>
-                </div>
+                <SectionHeader eyebrow="03 · ORÇAMENTO" title="Quanto pretende gastar?" sub="Defina um orçamento total. Você pode ajustar depois no detalhe da viagem." />
+
 
                 <div className="grid grid-cols-[1fr_auto] gap-3">
                   <div>
@@ -501,11 +496,11 @@ export default function NovaViagemPage() {
                 {data.total_budget && parseFloat(data.total_budget) > 0 && stepDays > 0 && (
                   <div className="p-4 bg-[var(--sl-s2)] rounded-xl">
                     <p className="text-[11px] text-[var(--sl-t3)] mb-1">Estimativa por dia</p>
-                    <p className="font-[IBM_Plex_Mono] font-bold text-lg text-[#C76795]">
+                    <p className="sl-num-strong text-lg text-[#C76795]">
                       {formatMoneyWithBrl(parseFloat(data.total_budget) / stepDays, data.currency)}
                     </p>
                     <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
-                      por viajante: {formatMoneyWithBrl(parseFloat(data.total_budget) / stepDays / data.travelers_count, data.currency)}/dia
+                      por viajante: <span className="sl-num">{formatMoneyWithBrl(parseFloat(data.total_budget) / stepDays / data.travelers_count, data.currency)}</span>/dia
                     </p>
                   </div>
                 )}
@@ -572,9 +567,9 @@ export default function NovaViagemPage() {
                   <button
                     onClick={() => setStep(3)}
                     className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                               bg-[#C76795] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(199,103,149,.15)] transition-all"
+                               bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(15,118,110,.18)] transition-all"
                   >
-                    Proximo
+                    Próximo
                     <ArrowRight size={14} />
                   </button>
                 </div>
@@ -584,16 +579,14 @@ export default function NovaViagemPage() {
             {/* Step 3 -- Resumo */}
             {step === 3 && (
               <div className="flex flex-col gap-5">
-                <div>
-                  <div className="font-[Space_Grotesk] font-bold text-[17px] text-[var(--sl-t1)] mb-[6px]">Confirmar viagem</div>
-                  <div className="text-[12px] text-[var(--sl-t3)] mb-6">Revise os dados e crie sua viagem</div>
-                </div>
+                <SectionHeader eyebrow="04 · CONFIRMAR" title="Revise e crie sua viagem" sub="Confira os dados antes de finalizar" />
+
 
                 {/* Summary card */}
                 <div className="bg-[var(--sl-s2)] rounded-xl p-4 flex flex-col gap-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-[Space_Grotesk] font-bold text-[14px] text-[var(--sl-t1)]">{data.name}</h3>
+                      <h3 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">{data.name}</h3>
                       <p className="text-[12px] text-[var(--sl-t3)]">{data.destinations.join(' \u2192 ')}</p>
                     </div>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#C76795]/20 text-[#C76795]">
@@ -610,17 +603,17 @@ export default function NovaViagemPage() {
                       </p>
                     </div>
                     <div>
-                      <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Duracao</p>
-                      <p className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t1)]">{stepDays} {stepDays === 1 ? 'dia' : 'dias'}</p>
+                      <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Duração</p>
+                      <p className="sl-num text-[11px] text-[var(--sl-t1)]">{stepDays} {stepDays === 1 ? 'dia' : 'dias'}</p>
                     </div>
                     <div>
                       <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Viajantes</p>
-                      <p className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t1)]">{data.travelers_count}</p>
+                      <p className="sl-num text-[11px] text-[var(--sl-t1)]">{data.travelers_count}</p>
                     </div>
                     {data.total_budget && (
                       <div>
-                        <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Orcamento</p>
-                        <p className="font-[IBM_Plex_Mono] text-[11px] text-[#C76795]">
+                        <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Orçamento</p>
+                        <p className="sl-num text-[11px] text-[#C76795]">
                           {formatMoneyWithBrl(parseFloat(data.total_budget), data.currency)}
                         </p>
                       </div>
@@ -661,7 +654,7 @@ export default function NovaViagemPage() {
                     className={cn(
                       'inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold transition-all',
                       !isSaving
-                        ? 'bg-[#C76795] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(199,103,149,.15)]'
+                        ? 'bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px shadow-[0_6px_20px_rgba(15,118,110,.18)]'
                         : 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
                     )}
                   >

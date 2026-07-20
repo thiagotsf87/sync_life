@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { EXP_PRIMARY, EXP_PRIMARY_LIGHT, EXP_PRIMARY_BG, EXP_PRIMARY_BORDER, EXP_GRAD } from '@/lib/exp-colors'
+import { fmtBRL } from '@/lib/format/currency'
 
 export interface WizardObjective {
   id: string
@@ -104,10 +105,10 @@ export function ExpWizardStep4({
             💰 MISSÃO FINANCEIRA
           </p>
           <p className="font-[IBM_Plex_Mono] text-[22px] font-bold" style={{ color: accent }}>
-            R$ {perDay.toLocaleString('pt-BR')}/dia
+            {fmtBRL(perDay)}/dia
           </p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-1">
-            por viajante: R$ {perDayPerPerson.toLocaleString('pt-BR')}/dia · {tripDays} dias
+            por viajante: {fmtBRL(perDayPerPerson)}/dia · {tripDays} dias
           </p>
           <p className="text-[10px] font-bold mt-[6px]" style={{ color: EXP_PRIMARY_LIGHT }}>
             ⚡ Cada aporte = +10 XP
@@ -158,7 +159,7 @@ export function ExpWizardStep4({
         </div>
       </div>
 
-      {/* Objective selector — shown when Futuro toggle is on */}
+      {/* Objective selector · shown when Futuro toggle is on */}
       {syncFuturo && (
         <div className="mb-4">
           <p className="text-[11px] font-bold uppercase tracking-[0.5px] mb-[8px]"

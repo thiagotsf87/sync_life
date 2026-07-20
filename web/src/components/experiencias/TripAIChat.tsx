@@ -309,12 +309,12 @@ export function TripAIChat({ tripId, trip, itinerary, onItineraryAdded }: TripAI
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
         <div className="flex items-start gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}>
+            style={{ background: 'var(--sl-em)' }}>
             <Bot size={18} className="text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">
-              🤖 Assistente de Viagem — SyncLife Travel
+            <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">
+              Assistente de Viagem · SyncLife Travel
             </p>
             <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">
               Roteiros, dicas locais, hospedagem, transporte e orçamento na moeda da viagem
@@ -332,25 +332,25 @@ export function TripAIChat({ tripId, trip, itinerary, onItineraryAdded }: TripAI
         </div>
 
         {parsedBudget && (parsedBudget.daily_estimate || parsedBudget.total_estimate) && (
-          <div className="mt-3 p-3 rounded-xl border border-[#0F766E]/30 bg-[#0F766E]/10">
+          <div className="mt-3 p-3 rounded-xl border border-[var(--sl-em)]/30 bg-[var(--sl-em)]/10">
             <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">
               Estimativa IA de custo (beta)
             </p>
             <div className="flex items-center gap-3 flex-wrap">
               {typeof parsedBudget.daily_estimate === 'number' && (
                 <p className="text-[11px] text-[var(--sl-t2)]">
-                  Por dia: <span className="font-[IBM_Plex_Mono] text-[var(--sl-t1)]">{formatMoneyWithBrl(parsedBudget.daily_estimate, trip.currency)}</span>
+                  Por dia: <span className="sl-num text-[var(--sl-t1)]">{formatMoneyWithBrl(parsedBudget.daily_estimate, trip.currency)}</span>
                 </p>
               )}
               {typeof parsedBudget.total_estimate === 'number' && (
                 <p className="text-[11px] text-[var(--sl-t2)]">
-                  Total: <span className="font-[IBM_Plex_Mono] text-[var(--sl-t1)]">{formatMoneyWithBrl(parsedBudget.total_estimate, trip.currency)}</span>
+                  Total: <span className="sl-num text-[var(--sl-t1)]">{formatMoneyWithBrl(parsedBudget.total_estimate, trip.currency)}</span>
                 </p>
               )}
             </div>
             {parsedBudget.assumptions && parsedBudget.assumptions.length > 0 && (
               <p className="text-[10px] text-[var(--sl-t3)] mt-1.5">
-                {parsedBudget.assumptions.join(' • ')}
+                {parsedBudget.assumptions.join(' · ')}
               </p>
             )}
           </div>
@@ -376,7 +376,7 @@ export function TripAIChat({ tripId, trip, itinerary, onItineraryAdded }: TripAI
                 <Sparkles size={24} className="text-[#0F766E]" />
               </div>
               <div className="text-center">
-                <p className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)] mb-1">
+                <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-1">
                   O que você quer saber sobre {trip.destinations[0] ?? 'esta viagem'}?
                 </p>
                 <p className="text-[11px] text-[var(--sl-t3)]">Pergunte qualquer coisa ou escolha uma sugestão abaixo</p>
@@ -406,7 +406,7 @@ export function TripAIChat({ tripId, trip, itinerary, onItineraryAdded }: TripAI
                 >
                   {msg.role === 'assistant' && (
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                      style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}>
+                      style={{ background: 'var(--sl-em)' }}>
                       <Bot size={14} className="text-white" />
                     </div>
                   )}
@@ -437,9 +437,9 @@ export function TripAIChat({ tripId, trip, itinerary, onItineraryAdded }: TripAI
                               + Adicionar ao roteiro: {suggestion.title ?? 'Atividade sugerida'}
                             </p>
                             <p className="text-[10px] text-[var(--sl-t3)]">
-                              Dia +{Math.max(0, Math.floor(suggestion.day_offset ?? 0))}
-                              {suggestion.estimated_time ? ` · ${suggestion.estimated_time}` : ''}
-                              {typeof suggestion.estimated_cost === 'number' ? ` · ${formatMoneyWithBrl(suggestion.estimated_cost, trip.currency)}` : ''}
+                              Dia +<span className="sl-num">{Math.max(0, Math.floor(suggestion.day_offset ?? 0))}</span>
+                              {suggestion.estimated_time ? <> · <span className="font-[IBM_Plex_Mono]">{suggestion.estimated_time}</span></> : ''}
+                              {typeof suggestion.estimated_cost === 'number' ? <> · <span className="sl-num">{formatMoneyWithBrl(suggestion.estimated_cost, trip.currency)}</span></> : ''}
                             </p>
                           </button>
                         ))}
@@ -471,7 +471,7 @@ export function TripAIChat({ tripId, trip, itinerary, onItineraryAdded }: TripAI
                 onClick={() => handleSend()}
                 disabled={isLoading || !input.trim()}
                 className="w-9 h-9 rounded-[12px] flex items-center justify-center shrink-0 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
+                style={{ background: 'var(--sl-em)' }}
               >
                 <Send size={15} className="text-white" />
               </button>

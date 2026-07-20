@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ChevronLeft, Plus } from 'lucide-react'
 import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT } from '@/lib/futuro-colors'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface GoalItem {
   id: string
@@ -33,11 +34,11 @@ interface FuturoEditarMobileProps {
 }
 
 const MODULE_META: Record<string, { icon: string; label: string; bg: string; color: string }> = {
-  financas:     { icon: '💰', label: 'Finanças',     bg: 'rgba(15,118,110,0.15)',  color: '#0F766E' },
-  tempo:        { icon: '⏳', label: 'Tempo',        bg: 'rgba(60,160,181,0.15)',   color: '#3CA0B5' },
+  financas:     { icon: '💰', label: 'Finanças',     bg: 'rgba(15,118,110,0.15)',  color: 'var(--sl-em)' },
+  tempo:        { icon: '⏳', label: 'Tempo',        bg: 'rgba(60,160,181,0.15)',   color: 'var(--sl-info)' },
   corpo:        { icon: '💪', label: 'Corpo',        bg: 'rgba(217,117,52,0.15)',  color: '#D97534' },
   mente:        { icon: '🧠', label: 'Mente',        bg: 'rgba(139,123,212,0.15)',  color: '#8B7BD4' },
-  patrimonio:   { icon: '📊', label: 'Patrimônio',   bg: 'rgba(217,150,46,0.15)',  color: '#D9962E' },
+  patrimonio:   { icon: '📊', label: 'Patrimônio',   bg: 'rgba(217,150,46,0.15)',  color: 'var(--sl-warning)' },
   carreira:     { icon: '💼', label: 'Carreira',     bg: 'rgba(199,103,149,0.15)',  color: '#C76795' },
   experiencias: { icon: '✈️', label: 'Experiências', bg: 'rgba(20,184,166,0.15)',  color: '#14b8a6' },
   futuro:       { icon: '🔮', label: 'Futuro',       bg: 'rgba(0,85,255,0.15)',    color: '#0B2D34' },
@@ -94,7 +95,7 @@ export function FuturoEditarMobile({
           <ChevronLeft size={15} strokeWidth={2.5} />
           {objectiveName}
         </button>
-        <span className="font-[Space_Grotesk] text-[15px] font-bold text-[var(--sl-t1)]">
+        <span className="font-[Syne] text-[15px] font-bold text-[var(--sl-t1)]">
           Editar Missão
         </span>
         <button
@@ -110,7 +111,7 @@ export function FuturoEditarMobile({
       <div className="flex-1">
         {/* Identification */}
         <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[13px_15px]">
-          <p className="font-[Space_Grotesk] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] mb-[11px]">
+          <p className="font-[Syne] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] mb-[11px]">
             Identificação
           </p>
           <div className="mb-[13px]">
@@ -141,7 +142,7 @@ export function FuturoEditarMobile({
 
         {/* Priority selector */}
         <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[13px_15px]">
-          <p className="font-[Space_Grotesk] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] mb-[11px]">
+          <p className="font-[Syne] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] mb-[11px]">
             Nível da missão
           </p>
           <div className="flex gap-[8px]">
@@ -168,7 +169,7 @@ export function FuturoEditarMobile({
         {/* Goals list */}
         <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[13px_15px]">
           <div className="flex items-center justify-between mb-[11px]">
-            <p className="font-[Space_Grotesk] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px]">
+            <p className="font-[Syne] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px]">
               {`Aliados (${goals.length})`}
             </p>
           </div>
@@ -196,7 +197,7 @@ export function FuturoEditarMobile({
                       <p className="text-[12px] font-semibold text-[var(--sl-t1)] truncate">{goal.name}</p>
                       <p className="text-[10px] text-[var(--sl-t2)] mt-[1px]">
                         {mod.label}
-                        {goal.target_value ? ` · ${goal.target_value.toLocaleString('pt-BR')}` : ''}
+                        {goal.target_value ? ` · ${fmtBRL(goal.target_value, { compact: true })}` : ''}
                         {' · +80 XP/marco'}
                       </p>
                     </div>
@@ -242,13 +243,13 @@ export function FuturoEditarMobile({
 
         {/* Values & Deadline */}
         <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[13px_15px]">
-          <p className="font-[Space_Grotesk] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] mb-[11px]">
+          <p className="font-[Syne] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] mb-[11px]">
             Valores e Prazo
           </p>
           <div className="mb-[13px]">
             <label className="text-[11px] font-bold uppercase tracking-[0.8px] text-[var(--sl-t2)] mb-1.5 block">Meta total</label>
             <div className="w-full bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] px-[15px] py-3 text-[14px] text-[var(--sl-t1)]">
-              R$ {targetValue.toLocaleString('pt-BR')}
+              {fmtBRL(targetValue)}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-[10px]">
@@ -273,11 +274,11 @@ export function FuturoEditarMobile({
         {/* Contribution slider */}
         <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[13px_15px]">
           <div className="flex items-center justify-between mb-[10px]">
-            <p className="font-[Space_Grotesk] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px]">
+            <p className="font-[Syne] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px]">
               Contribuição Mensal
             </p>
-            <span className="font-[IBM_Plex_Mono] text-[17px]" style={{ color: accent }}>
-              R$ {contribution.toLocaleString('pt-BR')}
+            <span className="sl-num-strong text-[17px]" style={{ color: accent }}>
+              {fmtBRL(contribution)}
             </span>
           </div>
           <input
@@ -301,10 +302,10 @@ export function FuturoEditarMobile({
             }}
           >
             <p className="text-[11px] font-semibold mb-[3px]" style={{ color: accent }}>
-              Com R$ {contribution.toLocaleString('pt-BR')}/mês
+              Com {fmtBRL(contribution)}/mês
             </p>
             <p className="text-[12px] text-[var(--sl-t2)]">
-              Novo prazo: <strong className="text-[#0F766E]">Out 2028</strong> — 2 meses antes ✓
+              Novo prazo: <strong className="text-[var(--sl-em)]">Out 2028</strong> · 2 meses antes ✓
               {<> · <span style={{ color: FUTURO_PRIMARY_LIGHT }}>+80 XP/mês</span></>}
             </p>
           </div>
@@ -312,7 +313,7 @@ export function FuturoEditarMobile({
 
         {/* Notifications */}
         <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[13px_15px]">
-          <p className="font-[Space_Grotesk] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] mb-[11px]">
+          <p className="font-[Syne] text-[11px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] mb-[11px]">
             Notificações
           </p>
           {([
@@ -346,7 +347,7 @@ export function FuturoEditarMobile({
         {/* Danger zone */}
         <button
           onClick={onDelete}
-          className="mx-4 mb-6 w-[calc(100%-32px)] p-3 rounded-[10px] text-center text-[13px] font-bold text-[#DB6478]"
+          className="mx-4 mb-6 w-[calc(100%-32px)] p-3 rounded-[10px] text-center text-[13px] font-bold text-[var(--sl-danger)]"
           style={{
             background: 'rgba(219,100,120,0.08)',
             border: '1px solid rgba(219,100,120,0.2)',

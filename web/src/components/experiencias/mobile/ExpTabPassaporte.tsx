@@ -1,4 +1,4 @@
-import { EXP_PRIMARY } from '@/lib/exp-colors'
+﻿import { EXP_PRIMARY } from '@/lib/exp-colors'
 import { ExpWorldMap } from '@/components/experiencias/mobile/ExpWorldMap'
 import type { PassportData } from '@/hooks/use-experiencias'
 import {
@@ -77,7 +77,7 @@ export function ExpTabPassaporte({ passport, loading }: ExpTabPassaporteProps) {
             className="rounded-[12px] py-[10px] px-2 text-center"
             style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}
           >
-            <p className="font-[IBM_Plex_Mono] text-[20px] font-medium leading-none" style={{ color: accentLight }}>
+            <p className="sl-num-strong text-[20px] font-medium leading-none" style={{ color: accentLight }}>
               {s.val}
             </p>
             <p className="text-[10px] text-[var(--sl-t3)] mt-[3px]">{s.label}</p>
@@ -91,7 +91,7 @@ export function ExpTabPassaporte({ passport, loading }: ExpTabPassaporteProps) {
       </div>
 
       {/* Continent Progress */}
-      <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
+      <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
         Progresso por Continente
       </p>
       <div
@@ -109,8 +109,8 @@ export function ExpTabPassaporte({ passport, loading }: ExpTabPassaporteProps) {
               <p className="text-[12px] font-semibold text-[var(--sl-t1)]">{c.name}</p>
               <p className="text-[10px] text-[var(--sl-t3)] mt-[2px]">
                 {c.visited} de {c.total}
-                {c.note ? ` — ${c.note}` : ' países'}
-                {c.xp > 0 ? ` — +${c.xp} XP` : ''}
+                {c.note ? ` · ${c.note}` : ' países'}
+                {c.xp > 0 ? ` · +${c.xp} XP` : ''}
               </p>
             </div>
             <div className="w-[50px] h-1 rounded-[3px] overflow-hidden" style={{ background: 'var(--sl-s3)' }}>
@@ -127,7 +127,7 @@ export function ExpTabPassaporte({ passport, loading }: ExpTabPassaporteProps) {
       </div>
 
       {/* Badges */}
-      <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
+      <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
         Badges
       </p>
       <div className="grid grid-cols-2 gap-2 mb-[14px]">
@@ -152,7 +152,7 @@ export function ExpTabPassaporte({ passport, loading }: ExpTabPassaporteProps) {
       </div>
 
       {/* Countries list */}
-      <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
+      <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
         Países Conquistados
       </p>
       <div

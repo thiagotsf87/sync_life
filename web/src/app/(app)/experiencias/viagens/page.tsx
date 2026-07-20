@@ -13,6 +13,7 @@ import {
 } from '@/hooks/use-experiencias'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { ExperienciasMobile } from '@/components/experiencias/ExperienciasMobile'
+import { fmtBRL } from '@/lib/format/currency'
 
 type FilterStatus = TripStatus | 'all'
 
@@ -59,12 +60,12 @@ export default function ViagensPage() {
   }
 
   function formatCurrency(value: number): string {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    return fmtBRL(value)
   }
 
   return (
     <>
-    {/* Mobile — usa aba Viagens do ExperienciasMobile */}
+    {/* Mobile · usa aba Viagens do ExperienciasMobile */}
     <ExperienciasMobile />
 
     {/* Desktop */}
@@ -80,7 +81,7 @@ export default function ViagensPage() {
       >
         <button
           onClick={() => router.push('/experiencias/nova')}
-          className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#C76795] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(199,103,149,.25)] transition-all"
+          className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(15,118,110,.25)] transition-all"
         >
           <Plus size={16} />
           Nova Viagem
@@ -115,7 +116,7 @@ export default function ViagensPage() {
               )}
             >
               {f.label}
-              <span className="font-[IBM_Plex_Mono] text-[10px] text-[var(--sl-t3)]">({count})</span>
+              <span className="sl-num text-[10px] text-[var(--sl-t3)]">({count})</span>
             </button>
           )
         })}
@@ -134,19 +135,21 @@ export default function ViagensPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
-          <div className="text-5xl mb-3">{'\u2708\uFE0F'}</div>
-          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+          <div className="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style={{ background: 'rgba(199,103,149,.1)' }}>
+            <Plane size={24} className="text-[#C76795]" />
+          </div>
+          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             {filterStatus === 'all' ? 'Nenhuma viagem ainda' : `Nenhuma viagem ${TRIP_STATUS_LABELS[filterStatus as TripStatus]?.toLowerCase()}`}
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-5">
             {filterStatus === 'all'
-              ? 'Comece planejando sua proxima aventura!'
+              ? 'Comece planejando sua pr\u00F3xima aventura.'
               : 'Altere o filtro para ver outras viagens.'}
           </p>
           {filterStatus === 'all' && (
             <button
               onClick={() => router.push('/experiencias/nova')}
-              className="inline-flex items-center gap-1.5 px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[#C76795] text-white hover:brightness-110"
+              className="inline-flex items-center gap-1.5 px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:brightness-110"
             >
               <Plus size={15} />
               Planejar viagem
@@ -195,10 +198,10 @@ export default function ViagensPage() {
                       {t.destinations[0] ?? '--'}
                     </td>
                     <td className="bg-[var(--sl-s1)] px-4 py-4 text-[13px] border-t border-b border-[var(--sl-border)] group-hover:bg-[var(--sl-s2)] transition-colors">
-                      <span className={cn('font-[IBM_Plex_Mono] text-[12px]', isCancelled && 'text-[var(--sl-t3)]')}>
-                        {formatDate(t.start_date)} {'\u2014'} {formatDate(t.end_date)}
+                      <span className={cn('sl-num text-[12px]', isCancelled && 'text-[var(--sl-t3)]')}>
+                        {formatDate(t.start_date)} \u00b7 {formatDate(t.end_date)}
                       </span>
-                      <div className="text-[11.5px] text-[var(--sl-t3)] mt-0.5">{days} dias</div>
+                      <div className="text-[11.5px] text-[var(--sl-t3)] mt-0.5 sl-num">{days} dias</div>
                     </td>
                     <td className="bg-[var(--sl-s1)] px-4 py-4 text-[13px] border-t border-b border-[var(--sl-border)] group-hover:bg-[var(--sl-s2)] transition-colors">
                       <span
@@ -212,8 +215,8 @@ export default function ViagensPage() {
                       </span>
                     </td>
                     <td className="bg-[var(--sl-s1)] px-4 py-4 text-[13px] border-t border-b border-r border-[var(--sl-border)] rounded-r-[14px] text-right group-hover:bg-[var(--sl-s2)] transition-colors">
-                      <span className={cn('font-[IBM_Plex_Mono] font-medium', (isCancelled || !t.total_budget) ? 'text-[var(--sl-t3)]' : isCompleted ? 'text-[var(--sl-t2)]' : '')}>
-                        {t.total_budget ? formatCurrency(t.total_budget) : '\u2014'}
+                      <span className={cn('sl-num', (isCancelled || !t.total_budget) ? 'text-[var(--sl-t3)]' : isCompleted ? 'text-[var(--sl-t2)]' : '')}>
+                        {t.total_budget ? formatCurrency(t.total_budget) : '\u00b7\u00b7'}
                       </span>
                     </td>
                   </tr>
@@ -226,18 +229,18 @@ export default function ViagensPage() {
           <div className="flex items-center justify-between px-5 py-[14px] bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[12px] mt-[14px] sl-fade-up sl-delay-4">
             <div className="flex items-center gap-[6px] text-[12px] text-[var(--sl-t2)]">
               <List size={14} className="text-[var(--sl-t3)]" />
-              <span>{filtered.length} viagens exibidas de {trips.length}</span>
+              <span><span className="sl-num">{filtered.length}</span> viagens exibidas de <span className="sl-num">{trips.length}</span></span>
             </div>
             <div className="flex gap-5">
               <div className="flex items-center gap-[6px] text-[12px] text-[var(--sl-t2)]">
-                <span>Orcamento total:</span>
-                <span className="font-[IBM_Plex_Mono] font-medium text-[var(--sl-t1)]">
+                <span>Orçamento total:</span>
+                <span className="sl-num text-[var(--sl-t1)]">
                   {formatCurrency(filtered.reduce((s, t) => s + (t.total_budget ?? 0), 0))}
                 </span>
               </div>
               <div className="flex items-center gap-[6px] text-[12px] text-[var(--sl-t2)]">
                 <span>Dias viajados:</span>
-                <span className="font-[IBM_Plex_Mono] font-medium text-[var(--sl-t1)]">
+                <span className="sl-num text-[var(--sl-t1)]">
                   {filtered.reduce((s, t) => s + calcTripDays(t.start_date, t.end_date), 0)}
                 </span>
               </div>

@@ -59,7 +59,7 @@ export function ExpDetailMobile({ trip, checklistPct }: ExpDetailMobileProps) {
           <p className="text-[12px] font-medium" style={{ color: EXP_PRIMARY_LIGHT }}>
             ✈️ {trip.name}
           </p>
-          <p className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)]">
+          <p className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)]">
             {tabTitles[activeTab]}
           </p>
         </div>

@@ -32,7 +32,7 @@ export function CategoryChart({ data, totalCategories }: CategoryChartProps) {
         </button>
       </div>
 
-      {/* Gráfico à esquerda, legenda à direita — sem espaço vazio à esquerda */}
+      {/* Gráfico à esquerda, legenda à direita · sem espaço vazio à esquerda */}
       <div className="flex flex-col lg:flex-row flex-wrap lg:flex-nowrap items-center lg:items-stretch justify-start gap-8 lg:gap-10 min-h-0 min-w-0 w-full overflow-hidden">
         {/* Coluna do donut: alinhada ao início (esquerda), ocupa até 45% para o gráfico preencher */}
         <div className="flex flex-shrink-0 lg:w-[45%] min-w-0 justify-start items-center">
@@ -95,7 +95,7 @@ export function CategoryChart({ data, totalCategories }: CategoryChartProps) {
         </div>
         </div>
 
-        {/* Legenda — ocupa o restante à direita */}
+        {/* Legenda · ocupa o restante à direita */}
         <div className="flex-1 min-w-0 w-full lg:w-auto space-y-1 flex flex-col justify-center">
           {data.map((item) => (
             <div

@@ -16,7 +16,7 @@ export function RelatoriosBarChart({ barChartData }: RelatoriosBarChartProps) {
   return (
     <SLCard>
       <div className="flex items-center justify-between mb-3">
-        <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">
+        <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">
           Receitas vs Despesas por Mês
         </p>
       </div>
@@ -27,7 +27,7 @@ export function RelatoriosBarChart({ barChartData }: RelatoriosBarChartProps) {
               <CartesianGrid stroke="var(--sl-border)" strokeDasharray="0" vertical={false} />
               <XAxis
                 dataKey="month"
-                tick={{ fontSize: 10, fill: 'var(--sl-t3)', fontFamily: 'DM Mono' }}
+                tick={{ fontSize: 10, fill: 'var(--sl-t3)', fontFamily: 'IBM Plex Mono' }}
                 axisLine={false} tickLine={false}
               />
               <YAxis hide />

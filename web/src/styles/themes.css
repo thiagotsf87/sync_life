@@ -19,18 +19,18 @@
   --sl-grad:      linear-gradient(135deg, #0F766E 0%, #0B2D34 100%);
 
   /* Status */
-  --sl-success:    #0F766E;
+  --sl-success:    #1FA67A;
   --sl-warning:    #D9962E;
   --sl-danger:     #DB6478;
   --sl-info:       #3CA0B5;
-  --sl-success-bg: rgba(15, 118, 110, 0.10);
+  --sl-success-bg: rgba(31, 166, 122, 0.10);
   --sl-warning-bg: rgba(217, 150, 46, 0.10);
   --sl-danger-bg:  rgba(219, 100, 120, 0.10);
   --sl-info-bg:    rgba(60, 160, 181, 0.10);
 
   /* Module colors (dessaturated ~15-20% vs v2) */
   --sl-mod-pan: #6B6FD4;
-  --sl-mod-fin: #0F766E;
+  --sl-mod-fin: #1FA67A;
   --sl-mod-tmp: #3CA0B5;
   --sl-mod-fut: #8B7BD4;
   --sl-mod-crp: #D97534;
@@ -110,7 +110,7 @@
 
   --sl-border:    rgba(255, 255, 255, 0.06);
   --sl-border-h:  rgba(255, 255, 255, 0.12);
-  --sl-border-em: rgba(15, 118, 110, 0.28);
+  --sl-border-em: rgba(31, 166, 122, 0.28);
 
   /* Shell backgrounds */
   --sl-module-bar-bg: #080C10;
@@ -121,7 +121,7 @@
 
   /* Module glows */
   --pan-glow:  rgba(107, 111, 212, 0.14);
-  --fin-glow:  rgba(15, 118, 110, 0.14);
+  --fin-glow:  rgba(31, 166, 122, 0.14);
   --tmp-glow:  rgba(60, 160, 181, 0.14);
   --fut-glow:  rgba(139, 123, 212, 0.14);
   --crp-glow:  rgba(217, 117, 52, 0.14);
@@ -152,7 +152,7 @@
 
   --sl-border:    rgba(255, 255, 255, 0.06);
   --sl-border-h:  rgba(255, 255, 255, 0.12);
-  --sl-border-em: rgba(15, 118, 110, 0.28);
+  --sl-border-em: rgba(31, 166, 122, 0.28);
 
   /* Shell backgrounds */
   --sl-module-bar-bg: #0A0818;
@@ -163,7 +163,7 @@
 
   /* Module glows */
   --pan-glow:  rgba(107, 111, 212, 0.14);
-  --fin-glow:  rgba(15, 118, 110, 0.14);
+  --fin-glow:  rgba(31, 166, 122, 0.14);
   --tmp-glow:  rgba(60, 160, 181, 0.14);
   --fut-glow:  rgba(139, 123, 212, 0.14);
   --crp-glow:  rgba(217, 117, 52, 0.14);
@@ -194,7 +194,7 @@
 
   --sl-border:    rgba(255, 255, 255, 0.06);
   --sl-border-h:  rgba(255, 255, 255, 0.12);
-  --sl-border-em: rgba(15, 118, 110, 0.28);
+  --sl-border-em: rgba(31, 166, 122, 0.28);
 
   /* Shell backgrounds */
   --sl-module-bar-bg: #111111;
@@ -205,7 +205,7 @@
 
   /* Module glows */
   --pan-glow:  rgba(107, 111, 212, 0.14);
-  --fin-glow:  rgba(15, 118, 110, 0.14);
+  --fin-glow:  rgba(31, 166, 122, 0.14);
   --tmp-glow:  rgba(60, 160, 181, 0.14);
   --fut-glow:  rgba(139, 123, 212, 0.14);
   --crp-glow:  rgba(217, 117, 52, 0.14);
@@ -236,7 +236,7 @@
 
   --sl-border:    rgba(0, 0, 0, 0.08);
   --sl-border-h:  rgba(0, 0, 0, 0.16);
-  --sl-border-em: rgba(15, 118, 110, 0.20);
+  --sl-border-em: rgba(31, 166, 122, 0.20);
 
   /* Shell backgrounds */
   --sl-module-bar-bg: #0B2D34;
@@ -247,7 +247,7 @@
 
   /* Module glows */
   --pan-glow:  rgba(107, 111, 212, 0.10);
-  --fin-glow:  rgba(15, 118, 110, 0.10);
+  --fin-glow:  rgba(31, 166, 122, 0.10);
   --tmp-glow:  rgba(60, 160, 181, 0.10);
   --fut-glow:  rgba(139, 123, 212, 0.10);
   --crp-glow:  rgba(217, 117, 52, 0.10);

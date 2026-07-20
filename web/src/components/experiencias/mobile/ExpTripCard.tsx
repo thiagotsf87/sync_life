@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { cn } from '@/lib/utils'
 import {
@@ -41,7 +41,7 @@ export function ExpTripCard({
           <p className="text-[10px] font-bold mb-[2px]" style={{ color: EXP_PRIMARY_LIGHT }}>
             ✦ MISSÃO DE VIVÊNCIA
           </p>
-          <p className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)]">
+          <p className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)]">
             {name} {flag}
           </p>
           <p className="text-[11px] text-[var(--sl-t2)]">
@@ -74,7 +74,7 @@ export function ExpTripCard({
             <span className="text-[12px] text-[var(--sl-t2)]">
               Missão financeira
             </span>
-            <div className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t1)] mt-[2px]">
+            <div className="sl-num-strong text-[14px] text-[var(--sl-t1)] mt-[2px]">
               {budgetCurrent}{' '}
               <span className="text-[11px] text-[var(--sl-t3)]">de {budgetTotal}</span>
             </div>

@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Loader2 } from 'lucide-react'
+import { X, Loader2, Target } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { TextField } from '@/components/ui/text-field'
+import { SelectField } from '@/components/ui/select-field'
 import type { FocusSession, FocusSessionFormData } from '@/hooks/use-focus-sessions'
 
 function todayStr(): string {
@@ -11,18 +13,11 @@ function todayStr(): string {
 
 const QUICK_DURATIONS = [25, 45, 60, 90]
 
-const inputCls = cn(
-  'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)]',
-  'text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none',
-  'focus:border-[#3CA0B5] transition-colors',
-)
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">{label}</label>
+    <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">
       {children}
-    </div>
+    </span>
   )
 }
 
@@ -128,6 +123,16 @@ export function FocusSessionModal({
 
   const effectiveDuration = getEffectiveDuration()
 
+  const goalSelectOptions = [
+    { value: '', label: 'Nenhuma' },
+    ...goals.map(g => ({ value: g.id, label: `${g.icon} ${g.name}` })),
+  ]
+
+  const eventSelectOptions = [
+    { value: '', label: 'Nenhum' },
+    ...events.map(ev => ({ value: ev.id, label: `${ev.title} (${ev.date})` })),
+  ]
+
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center p-4"
@@ -141,15 +146,17 @@ export function FocusSessionModal({
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(60,160,181,0.12)]">
-              <span className="text-sm">🎯</span>
+              <Target size={15} className="text-[#3CA0B5]" />
             </div>
-            <h2 className="font-[Space_Grotesk] font-extrabold text-[16px] text-[var(--sl-t1)]">
-              {mode === 'create' ? 'Nova Sessão de Foco' : 'Editar Sessão'}
+            <h2 className="font-[Syne] font-extrabold text-[16px] text-[var(--sl-t1)]">
+              {mode === 'create' ? 'Nova sessão de foco' : 'Editar sessão'}
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors"
+            aria-label="Fechar"
           >
             <X size={16} />
           </button>
@@ -159,12 +166,14 @@ export function FocusSessionModal({
         <div className="px-5 py-5 flex flex-col gap-5">
 
           {/* Duração */}
-          <Field label="Duração">
+          <div className="flex flex-col gap-1.5">
+            <FieldLabel>Duração</FieldLabel>
             <div className="flex flex-col gap-2">
               <div className="flex gap-2 flex-wrap">
                 {QUICK_DURATIONS.map(min => (
                   <button
                     key={min}
+                    type="button"
                     onClick={() => { set('duration_minutes', min); set('customDuration', '') }}
                     className={cn(
                       'px-4 py-2.5 rounded-[10px] border text-[13px] font-bold transition-all',
@@ -173,11 +182,12 @@ export function FocusSessionModal({
                         : 'border-[var(--sl-border)] bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]',
                     )}
                   >
-                    <span className="font-[IBM_Plex_Mono]">{min}</span>
+                    <span className="sl-num-strong">{min}</span>
                     <span className="text-[10px] ml-1 opacity-70">min</span>
                   </button>
                 ))}
                 <button
+                  type="button"
                   onClick={() => { set('duration_minutes', 0); set('customDuration', '') }}
                   className={cn(
                     'px-4 py-2.5 rounded-[10px] border text-[13px] font-bold transition-all',
@@ -190,13 +200,13 @@ export function FocusSessionModal({
                 </button>
               </div>
               {form.duration_minutes === 0 && (
-                <input
+                <TextField
                   type="number"
                   min={1}
                   value={form.customDuration}
                   onChange={e => set('customDuration', e.target.value)}
                   placeholder="Minutos (ex: 120)"
-                  className={cn(inputCls, 'font-[IBM_Plex_Mono]')}
+                  className="sl-num"
                   autoFocus
                 />
               )}
@@ -208,86 +218,77 @@ export function FocusSessionModal({
                   : `${effectiveDuration} minutos`}
               </p>
             )}
-          </Field>
+          </div>
 
           {/* Data + Hora */}
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Data">
-              <input
-                type="date"
-                value={form.date}
-                onChange={e => set('date', e.target.value)}
-                className={cn(inputCls, 'font-[IBM_Plex_Mono]')}
-              />
-            </Field>
-            <Field label="Hora início (opcional)">
-              <input
-                type="time"
-                value={form.start_time}
-                onChange={e => set('start_time', e.target.value)}
-                className={cn(inputCls, 'font-[IBM_Plex_Mono]')}
-              />
-            </Field>
+            <TextField
+              label="Data"
+              type="date"
+              value={form.date}
+              onChange={e => set('date', e.target.value)}
+              className="sl-num"
+            />
+            <TextField
+              label="Hora início (opcional)"
+              type="time"
+              value={form.start_time}
+              onChange={e => set('start_time', e.target.value)}
+              className="sl-num"
+            />
           </div>
 
           {/* Meta vinculada */}
           {goals.length > 0 && (
-            <Field label="Meta vinculada (opcional)">
-              <select
-                value={form.goal_id}
-                onChange={e => set('goal_id', e.target.value)}
-                className={cn(inputCls, 'cursor-pointer')}
-              >
-                <option value="">Nenhuma</option>
-                {goals.map(g => (
-                  <option key={g.id} value={g.id}>{g.icon} {g.name}</option>
-                ))}
-              </select>
-            </Field>
+            <SelectField
+              label="Meta vinculada (opcional)"
+              value={form.goal_id}
+              onChange={e => set('goal_id', e.target.value)}
+              options={goalSelectOptions}
+            />
           )}
 
           {/* Evento vinculado */}
           {events.length > 0 && (
-            <Field label="Evento vinculado (opcional)">
-              <select
-                value={form.event_id}
-                onChange={e => set('event_id', e.target.value)}
-                className={cn(inputCls, 'cursor-pointer')}
-              >
-                <option value="">Nenhum</option>
-                {events.map(ev => (
-                  <option key={ev.id} value={ev.id}>{ev.title} ({ev.date})</option>
-                ))}
-              </select>
-            </Field>
+            <SelectField
+              label="Evento vinculado (opcional)"
+              value={form.event_id}
+              onChange={e => set('event_id', e.target.value)}
+              options={eventSelectOptions}
+            />
           )}
 
           {/* Notas */}
-          <Field label="Notas (opcional)">
-            <textarea
-              value={form.notes}
-              onChange={e => set('notes', e.target.value)}
-              placeholder="O que foi trabalhado nesta sessão?"
-              rows={3}
-              className={cn(inputCls, 'resize-none')}
-            />
-          </Field>
+          <label className="flex flex-col gap-1.5">
+            <FieldLabel>Notas (opcional)</FieldLabel>
+            <div className="flex items-start gap-2 bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] px-3.5 py-2.5 focus-within:border-[var(--sl-border-em)] transition-colors">
+              <textarea
+                value={form.notes}
+                onChange={e => set('notes', e.target.value)}
+                placeholder="O que foi trabalhado nesta sessão?"
+                rows={3}
+                className="flex-1 bg-transparent outline-none text-[14px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] resize-none"
+              />
+            </div>
+          </label>
 
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 px-5 pb-5">
           <button
+            type="button"
             onClick={onClose}
             className="px-4 py-2 rounded-[10px] border border-[var(--sl-border)] text-[13px] font-semibold text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-colors"
           >
             Cancelar
           </button>
           <button
+            type="button"
             onClick={handleSave}
             disabled={saving || effectiveDuration <= 0}
             className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#0F766E' }}
+            style={{ background: 'var(--sl-em)' }}
           >
             {saving && <Loader2 size={14} className="animate-spin" />}
             {mode === 'create' ? 'Registrar sessão' : 'Salvar'}

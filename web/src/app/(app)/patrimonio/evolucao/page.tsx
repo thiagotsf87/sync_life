@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { usePortfolioAssets, usePortfolioDividends, ASSET_CLASS_LABELS, ASSET_CLASS_COLORS } from '@/hooks/use-patrimonio'
@@ -9,6 +8,7 @@ import { JornadaInsight } from '@/components/ui/jornada-insight'
 import { PatrimonioMobile } from '@/components/patrimonio/PatrimonioMobile'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { MetricsStrip } from '@/components/ui/metrics-strip'
+import { fmtBRL } from '@/lib/format/currency'
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
   CartesianGrid, Tooltip as ReTooltip,
@@ -17,8 +17,6 @@ import {
 type Period = '3m' | '6m' | '1a' | 'all'
 
 export default function EvolucaoPage() {
-  const router = useRouter()
-
   const [period, setPeriod] = useState<Period>('6m')
 
   const { assets, loading: assetsLoading } = usePortfolioAssets()
@@ -87,9 +85,6 @@ export default function EvolucaoPage() {
     })
     .sort((a, b) => b.pct - a.pct)
 
-  const formatCurrency = (v: number) =>
-    v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-
   return (
     <>
       <PatrimonioMobile initialTab="evolucao" />
@@ -119,26 +114,26 @@ export default function EvolucaoPage() {
         </div>
       </ModuleHeader>
 
-      {/* MetricsStrip — inline horizontal strip with internal dividers */}
+      {/* MetricsStrip · inline horizontal strip with internal dividers */}
       <div className="mb-3.5 sl-fade-up sl-delay-1">
         <MetricsStrip
           items={[
             {
               label: 'Atual',
-              value: formatCurrency(totalCurrent),
+              value: fmtBRL(totalCurrent),
             },
             {
               label: 'Investido',
-              value: formatCurrency(totalInvested),
+              value: fmtBRL(totalInvested),
             },
             {
               label: 'Resultado',
-              value: `${profitLoss >= 0 ? '+' : ''}${formatCurrency(profitLoss)}`,
+              value: `${profitLoss >= 0 ? '+' : ''}${fmtBRL(profitLoss)}`,
               valueColor: profitLoss >= 0 ? '#0F766E' : '#DB6478',
             },
             {
               label: 'c/ Proventos',
-              value: formatCurrency(totalWithDividends),
+              value: fmtBRL(totalWithDividends),
               valueColor: '#D9962E',
             },
             {
@@ -155,9 +150,9 @@ export default function EvolucaoPage() {
         text={
           profitLoss !== 0
             ? <>Seu patrimonio <strong style={{ color: profitLoss >= 0 ? '#0F766E' : '#DB6478' }}>
-                {profitLoss >= 0 ? 'cresceu' : 'recuou'} {formatCurrency(Math.abs(profitLoss))}
+                {profitLoss >= 0 ? 'cresceu' : 'recuou'} {fmtBRL(Math.abs(profitLoss))}
               </strong> ({profitLossPct >= 0 ? '+' : ''}{profitLossPct.toFixed(2)}%) em relacao ao custo medio.
-              {totalDividends > 0 && <> Com proventos, o retorno total chega a <strong className="text-[#D9962E]">{formatCurrency(profitLoss + totalDividends)}</strong>.</>}
+              {totalDividends > 0 && <> Com proventos, o retorno total chega a <strong className="text-[#D9962E]">{fmtBRL(profitLoss + totalDividends)}</strong>.</>}
             </>
             : <>Acompanhe a evolucao do seu patrimonio ao longo do tempo. Adicione cotacoes atuais nos seus ativos para ver o resultado real.</>
         }
@@ -167,7 +162,7 @@ export default function EvolucaoPage() {
         <div className="h-80 rounded-[18px] bg-[var(--sl-s2)] animate-pulse" />
       ) : assets.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
-          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
+          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Carteira vazia</h3>
           <p className="text-[13px] text-[var(--sl-t2)]">Adicione ativos para visualizar a evolucao.</p>
         </div>
       ) : (
@@ -201,7 +196,7 @@ export default function EvolucaoPage() {
                     contentStyle={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', borderRadius: '12px', fontSize: '11px' }}
                     labelStyle={{ color: 'var(--sl-t1)', marginBottom: 4 }}
                     formatter={(v: number | undefined, name: string | undefined) => [
-                      (v ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+                      fmtBRL(v ?? 0),
                       name === 'current' ? 'Valor atual' : name === 'invested' ? 'Investido' : 'c/ proventos',
                     ]}
                   />
@@ -241,7 +236,7 @@ export default function EvolucaoPage() {
                   <line x1="12" y1="20" x2="12" y2="4" />
                   <line x1="6" y1="20" x2="6" y2="14" />
                 </svg>
-                <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   Performance por Ativo
                 </span>
               </div>
@@ -251,7 +246,7 @@ export default function EvolucaoPage() {
                 <div className="flex flex-col gap-2">
                   {performers.slice(0, 10).map(a => (
                     <div key={a.id} className="flex items-center gap-3">
-                      <span className="font-[IBM_Plex_Mono] font-bold text-[12px] text-[var(--sl-t1)] w-20 shrink-0">{a.ticker}</span>
+                      <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)] w-20 shrink-0">{a.ticker}</span>
                       <div className="flex-1 bg-[var(--sl-s3)] rounded-full overflow-hidden" style={{ height: '4px' }}>
                         <div
                           className="h-full rounded-full"
@@ -262,13 +257,13 @@ export default function EvolucaoPage() {
                         />
                       </div>
                       <span
-                        className="font-[IBM_Plex_Mono] text-[11px] font-bold w-16 text-right shrink-0"
+                        className="sl-num text-[11px] font-semibold w-16 text-right shrink-0"
                         style={{ color: a.pct >= 0 ? '#0F766E' : '#DB6478' }}
                       >
                         {a.pct >= 0 ? '+' : ''}{a.pct.toFixed(2)}%
                       </span>
-                      <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] w-24 text-right shrink-0">
-                        {a.pnl >= 0 ? '+' : ''}{formatCurrency(a.pnl)}
+                      <span className="sl-num text-[11px] text-[var(--sl-t3)] w-24 text-right shrink-0">
+                        {a.pnl >= 0 ? '+' : ''}{fmtBRL(a.pnl)}
                       </span>
                     </div>
                   ))}
@@ -284,7 +279,7 @@ export default function EvolucaoPage() {
                   <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
                   <path d="M22 12A10 10 0 0 0 12 2v10z" />
                 </svg>
-                <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   Distribuicao
                 </span>
               </div>
@@ -312,7 +307,7 @@ export default function EvolucaoPage() {
                         <span className="flex-1 text-[var(--sl-t2)]">
                           {ASSET_CLASS_LABELS[cls as keyof typeof ASSET_CLASS_LABELS] ?? cls}
                         </span>
-                        <span className="font-[IBM_Plex_Mono] text-[10px] text-[var(--sl-t3)]">{pct.toFixed(0)}%</span>
+                        <span className="sl-num text-[10px] text-[var(--sl-t3)]">{pct.toFixed(0)}%</span>
                       </div>
                     )
                   })}

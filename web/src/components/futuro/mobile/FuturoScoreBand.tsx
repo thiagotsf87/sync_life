@@ -39,7 +39,7 @@ function JornadaScoreRing({ score, size }: { score: number; size: number }) {
           strokeDashoffset={`${-purpleArc}`} />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-[Space_Grotesk] text-[24px] font-extrabold leading-none text-[var(--sl-t1)]">
+        <span className="font-[Syne] text-[24px] font-extrabold leading-none text-[var(--sl-t1)]">
           {score}
         </span>
         <span className="text-[9px]" style={{ color: FUTURO_PRIMARY_LIGHT }}>pontos</span>
@@ -67,7 +67,7 @@ export function FuturoScoreBand({
       <div className="flex gap-[14px] mb-[10px]">
         <JornadaScoreRing score={score} size={76} />
         <div className="flex-1">
-          <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)] mb-[5px]">Sua jornada</p>
+          <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)] mb-[5px]">Sua jornada</p>
           {narrativeText && (
             <p className="text-[12px] text-[var(--sl-t2)] leading-[1.55] italic [&_em]:text-[var(--sl-t1)] [&_em]:not-italic [&_em]:font-semibold">
               {narrativeText}

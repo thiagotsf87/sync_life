@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT, FUTURO_PRIMARY_BG } from '@/lib/futuro-colors'
@@ -34,7 +34,7 @@ export function FuturoArquivoTab({ onResume, onArchive }: FuturoArquivoTabProps)
       >
         <div className="text-[30px]">🏆</div>
         <div>
-          <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
+          <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
             {completedCount} missões épicas concluídas
           </p>
           <p className="text-[12px] text-[var(--sl-t2)] mt-[3px]">
@@ -92,14 +92,14 @@ export function FuturoArquivoTab({ onResume, onArchive }: FuturoArquivoTabProps)
               {obj.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">
+              <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">
                 {obj.jornadaName}
               </p>
               <p className="text-[11px] text-[var(--sl-t2)] mt-[1px]">{obj.dateRange}</p>
             </div>
             <span
               className="text-[10px] font-bold self-start pt-[2px]"
-              style={{ color: obj.status === 'completed' ? '#0F766E' : 'var(--sl-t3)' }}
+              style={{ color: obj.status === 'completed' ? 'var(--sl-em)' : 'var(--sl-t3)' }}
             >
               {obj.status === 'completed'
                 ? '✓ Épico'
@@ -113,7 +113,7 @@ export function FuturoArquivoTab({ onResume, onArchive }: FuturoArquivoTabProps)
             {obj.stats.map((stat, i) => (
               <div key={i}>
                 <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-[0.5px] mb-[2px]">{stat.label}</p>
-                <p className="font-[IBM_Plex_Mono] text-[12px] font-medium" style={{ color: stat.color ?? 'var(--sl-t2)' }}>
+                <p className="sl-num-strong text-[12px] font-medium" style={{ color: stat.color ?? 'var(--sl-t2)' }}>
                   {stat.value}
                 </p>
               </div>

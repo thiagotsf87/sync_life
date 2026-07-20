@@ -28,7 +28,7 @@ export function GoalsWidget({ topGoals, loading }: GoalsWidgetProps) {
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-[18px]">
-        <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
+        <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B6FD4" strokeWidth="2" strokeLinecap="round">
             <circle cx="12" cy="12" r="10"/>
             <circle cx="12" cy="12" r="6"/>

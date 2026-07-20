@@ -1,7 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { fmtR$ } from '@/components/financas/helpers'
+import { ArrowRight } from 'lucide-react'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface HealthBandProps {
   receitasMes: number
@@ -11,46 +12,137 @@ interface HealthBandProps {
   qtdOk: number
   qtdAlert: number
   qtdOver: number
+  alertCat?: { name: string; pct: number; spent: number; limit: number } | null
 }
 
-export function HealthBand({ receitasMes, totalGasto, saldoMes, taxaPoupanca, qtdOk, qtdAlert, qtdOver }: HealthBandProps) {
+/**
+ * SaudeAlerta v3 — alerta horizontal compacto.
+ * Border-left warning · eyebrow vertical "SAÚDE FIN." · mensagem · CTA "Ver análise →".
+ * Cor da borda muda conforme severidade: over → danger, alert → warning, ok → em.
+ */
+export function HealthBand({
+  receitasMes,
+  totalGasto,
+  saldoMes,
+  taxaPoupanca,
+  qtdOk,
+  qtdAlert,
+  qtdOver,
+  alertCat,
+}: HealthBandProps) {
   const router = useRouter()
+
+  const severity: 'danger' | 'warning' | 'ok' =
+    qtdOver > 0 ? 'danger' : qtdAlert > 0 || taxaPoupanca < 30 ? 'warning' : 'ok'
+
+  const accentColor =
+    severity === 'danger' ? 'var(--sl-danger)' :
+    severity === 'warning' ? 'var(--sl-warning)' :
+    'var(--sl-em)'
+
+  // Build message — sem em-dash, usa vírgula/dois-pontos
+  const { title, message } = buildMessage({
+    receitasMes,
+    totalGasto,
+    saldoMes,
+    taxaPoupanca,
+    qtdOk,
+    qtdAlert,
+    qtdOver,
+    alertCat,
+  })
 
   return (
     <div
-      className="flex items-center gap-4 rounded-[14px] px-4 py-3 mb-3"
-      style={{ background: 'linear-gradient(135deg,rgba(15,118,110,.07),rgba(0,85,255,.07))', border: '1px solid rgba(15,118,110,.18)' }}
+      className="flex items-center gap-[18px] px-5 py-[14px] bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] mb-3.5"
+      style={{ borderLeft: `2px solid ${accentColor}` }}
     >
-      <div className="shrink-0 text-center">
-        <p className="font-[Space_Grotesk] font-extrabold text-[42px] leading-none" style={{ background: 'linear-gradient(135deg,#0F766E,#0B2D34)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          {taxaPoupanca > 0 ? Math.min(Math.round(50 + taxaPoupanca), 99) : '—'}
-        </p>
-        <p className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] mt-0.5">Saúde Fin.</p>
+      <div
+        className="text-[9.5px] font-bold uppercase tracking-[0.14em] shrink-0"
+        style={{ color: accentColor }}
+      >
+        SAÚDE FIN.
       </div>
-      <div className="w-px h-11 bg-[var(--sl-border)] shrink-0" />
-      <div className="flex-1 min-w-0">
-        <p className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)] mb-0.5">
-          {saldoMes > 0 ? 'Mês positivo até aqui! 🎉' : 'Atenção ao saldo mensal'}
-        </p>
-        <p className="text-[12px] text-[var(--sl-t3)] italic leading-snug">
-          {receitasMes > 0
-            ? `Receitas de R$ ${fmtR$(receitasMes)} com R$ ${fmtR$(totalGasto)} em despesas. ${taxaPoupanca >= 30 ? 'Poupança acima da meta!' : 'Mantenha as despesas sob controle.'}`
-            : 'Nenhuma transação registrada este mês ainda.'}
-        </p>
-        <div className="flex gap-1.5 flex-wrap mt-2">
-          {qtdOk > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(15,118,110,0.12)] text-[#0F766E]">✓ {qtdOk} orçamento{qtdOk > 1 ? 's' : ''} no ritmo</span>}
-          {taxaPoupanca >= 30 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(15,118,110,0.12)] text-[#0F766E]">✓ Poupança acima da meta</span>}
-          {qtdAlert > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(217,150,46,0.12)] text-[#D9962E]">⚠ {qtdAlert} em atenção</span>}
-          {qtdOver > 0 && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(219,100,120,0.12)] text-[#DB6478]">⚠ {qtdOver} estourado{qtdOver > 1 ? 's' : ''}</span>}
+      <div className="w-px h-8 bg-[var(--sl-border)] shrink-0" />
+      <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+        <div className="text-[13px] font-semibold text-[var(--sl-t1)] truncate">
+          {title}
+        </div>
+        <div className="text-[12px] text-[var(--sl-t3)]">
+          {message}
         </div>
       </div>
       <button
         onClick={() => router.push('/financas/relatorios')}
-        className="shrink-0 px-3 py-1.5 rounded-[9px] border-none text-white text-[11px] font-bold"
-        style={{ background: 'linear-gradient(135deg,#0F766E,#0B2D34)' }}
+        className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-transparent border border-[var(--sl-border)] rounded-full text-[var(--sl-t1)] text-[12px] font-semibold hover:border-[var(--sl-border-h)] transition-colors"
       >
-        Ver análise
+        Ver análise <ArrowRight size={11} />
       </button>
     </div>
   )
+}
+
+function buildMessage(p: {
+  receitasMes: number
+  totalGasto: number
+  saldoMes: number
+  taxaPoupanca: number
+  qtdOk: number
+  qtdAlert: number
+  qtdOver: number
+  alertCat?: { name: string; pct: number; spent: number; limit: number } | null
+}): { title: string; message: React.ReactNode } {
+  if (p.qtdOver > 0) {
+    return {
+      title: `${p.qtdOver} orçamento${p.qtdOver > 1 ? 's' : ''} estourado${p.qtdOver > 1 ? 's' : ''}`,
+      message: (
+        <>
+          Revise as despesas para fechar o mês equilibrado.
+        </>
+      ),
+    }
+  }
+  if (p.alertCat) {
+    return {
+      title: `${p.alertCat.name} em atenção`,
+      message: (
+        <>
+          Você usou{' '}
+          <span style={{ color: 'var(--sl-warning)', fontWeight: 600 }}>
+            {p.alertCat.pct}%
+          </span>{' '}
+          do orçamento de {p.alertCat.name} ({fmtBRL(p.alertCat.spent)} de {fmtBRL(p.alertCat.limit)}).
+        </>
+      ),
+    }
+  }
+  if (p.qtdAlert > 0) {
+    return {
+      title: `${p.qtdAlert} orçamento${p.qtdAlert > 1 ? 's' : ''} em atenção`,
+      message: <>Acompanhe os gastos da semana para evitar estouros.</>,
+    }
+  }
+  if (p.receitasMes === 0 && p.totalGasto === 0) {
+    return {
+      title: 'Sem transações neste mês',
+      message: <>Registre suas entradas e saídas para ver a saúde financeira.</>,
+    }
+  }
+  return {
+    title: p.saldoMes > 0 ? 'Mês positivo até aqui' : 'Atenção ao saldo mensal',
+    message: (
+      <>
+        Receitas de{' '}
+        <span className="sl-num" style={{ color: 'var(--sl-em)', fontWeight: 600 }}>
+          {fmtBRL(p.receitasMes)}
+        </span>{' '}
+        com{' '}
+        <span className="sl-num" style={{ color: 'var(--sl-danger)', fontWeight: 600 }}>
+          {fmtBRL(p.totalGasto)}
+        </span>{' '}
+        em despesas.{' '}
+        {p.taxaPoupanca >= 30 ? 'Poupança acima da meta.' : 'Mantenha as despesas sob controle.'}
+      </>
+    ),
+  }
 }

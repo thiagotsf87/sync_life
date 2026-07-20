@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
@@ -24,7 +24,7 @@ export function ExpCelebrationModal({
   useEffect(() => { setMounted(true) }, [])
   if (!open || !mounted) return null
 
-  const CONFETTI_COLORS = ['#C76795', '#8B7BD4', '#D9962E', '#0F766E', '#0B2D34', '#f472b6']
+  const CONFETTI_COLORS = ['#C76795', '#8B7BD4', 'var(--sl-warning)', 'var(--sl-em)', '#0B2D34', '#f472b6']
   const confettiPieces = Array.from({ length: 18 }, (_, i) => ({
     color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
     left: `${(i * 5.5) % 100}%`,
@@ -71,7 +71,7 @@ export function ExpCelebrationModal({
         </div>
 
         {/* Title */}
-        <h3 className="font-[Space_Grotesk] text-[22px] font-extrabold mb-2">
+        <h3 className="font-[Syne] text-[22px] font-extrabold mb-2">
           <span style={{
             background: EXP_GRAD,
             WebkitBackgroundClip: 'text',
@@ -94,7 +94,7 @@ export function ExpCelebrationModal({
           }}
         >
           <span className="text-[16px]">⭐</span>
-          <span className="font-[IBM_Plex_Mono] font-bold text-[16px]" style={{ color: '#c4b5fd' }}>
+          <span className="sl-num-strong font-bold text-[16px]" style={{ color: '#c4b5fd' }}>
             +{xpAwarded} XP
           </span>
         </div>

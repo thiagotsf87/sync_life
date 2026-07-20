@@ -3,7 +3,16 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { User, Palette, Bell, Tags, Link2, Crown, Landmark } from 'lucide-react'
+import {
+  Settings,
+  User,
+  Palette,
+  Tags,
+  Bell,
+  Link2,
+  Crown,
+  Landmark,
+} from 'lucide-react'
 import { useUserPlan } from '@/hooks/use-user-plan'
 
 interface CfgNavItem {
@@ -14,88 +23,90 @@ interface CfgNavItem {
   badgeKey?: 'plan'
 }
 
-const CFG_GROUPS: { label: string; items: CfgNavItem[] }[] = [
-  {
-    label: 'Conta',
-    items: [
-      { id: 'perfil',    label: 'Perfil',      Icon: User,     href: '/configuracoes' },
-      { id: 'aparencia', label: 'Aparência',   Icon: Palette,  href: '/configuracoes/aparencia' },
-    ],
-  },
-  {
-    label: 'Preferências',
-    items: [
-      { id: 'notif', label: 'Notificações', Icon: Bell, href: '/configuracoes/notificacoes' },
-      { id: 'cat', label: 'Categorias', Icon: Tags, href: '/configuracoes/categorias' },
-      { id: 'contas', label: 'Contas', Icon: Landmark, href: '/configuracoes/contas' },
-      { id: 'integracoes', label: 'Integrações', Icon: Link2, href: '/configuracoes/integracoes' },
-    ],
-  },
-  {
-    label: 'Plano',
-    items: [
-      { id: 'plano', label: 'Meu Plano', Icon: Crown, href: '/configuracoes/plano', badgeKey: 'plan' },
-    ],
-  },
+const CFG_ITEMS: CfgNavItem[] = [
+  { id: 'perfil',       label: 'Perfil',        Icon: User,     href: '/configuracoes' },
+  { id: 'aparencia',    label: 'Aparência',     Icon: Palette,  href: '/configuracoes/aparencia' },
+  { id: 'categorias',   label: 'Categorias',    Icon: Tags,     href: '/configuracoes/categorias' },
+  { id: 'contas',       label: 'Contas',        Icon: Landmark, href: '/configuracoes/contas' },
+  { id: 'notificacoes', label: 'Notificações',  Icon: Bell,     href: '/configuracoes/notificacoes' },
+  { id: 'integracoes',  label: 'Integrações',   Icon: Link2,    href: '/configuracoes/integracoes' },
+  { id: 'plano',        label: 'Plano',         Icon: Crown,    href: '/configuracoes/plano', badgeKey: 'plan' },
 ]
 
 export default function ConfiguracoesLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { isPro } = useUserPlan()
-
-  const planBadge = isPro ? 'Pro' : 'Free'
+  const planBadge = isPro ? 'PRO' : 'FREE'
 
   return (
-    <div className="flex gap-7">
-      {/* cfg-menu — secondary nav, desktop only */}
-      <aside className="hidden lg:flex w-[200px] shrink-0 flex-col gap-0.5 sticky top-0 self-start">
-        {CFG_GROUPS.map((group) => (
-          <div key={group.label}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--sl-t3)] px-3 pt-3 pb-1.5 first:pt-0">
-              {group.label}
-            </p>
-            {group.items.map(({ id, label, Icon, href, badgeKey }) => {
-              const isActive =
-                href === '/configuracoes'
-                  ? pathname === '/configuracoes'
-                  : pathname.startsWith(href)
-              const badge = badgeKey === 'plan' ? planBadge : undefined
-              return (
-                <Link
-                  key={id}
-                  href={href}
+    <div className="flex gap-6">
+      {/* cfg sub-nav (sidebar 240px) */}
+      <aside
+        className="hidden lg:flex w-[240px] shrink-0 flex-col gap-4 sticky top-0 self-start py-5"
+        style={{ background: 'var(--sl-bg)' }}
+      >
+        {/* Sidebar header */}
+        <div className="flex items-center gap-2.5 px-1.5">
+          <Settings size={16} className="text-[var(--sl-t2)]" />
+          <span className="font-[Space_Grotesk] text-[15px] font-semibold text-[var(--sl-t1)]">
+            Configurações
+          </span>
+        </div>
+
+        {/* Nav items (single flat list) */}
+        <nav className="flex flex-col gap-0.5">
+          {CFG_ITEMS.map(({ id, label, Icon, href, badgeKey }) => {
+            const isActive =
+              href === '/configuracoes'
+                ? pathname === '/configuracoes'
+                : pathname.startsWith(href)
+            const badge = badgeKey === 'plan' ? planBadge : undefined
+            return (
+              <Link
+                key={id}
+                href={href}
+                className={cn(
+                  'flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] transition-colors',
+                  isActive
+                    ? 'bg-[var(--sl-s2)] text-[var(--sl-t1)] font-semibold'
+                    : 'text-[var(--sl-t2)] font-medium hover:bg-[var(--sl-s2)]/40 hover:text-[var(--sl-t1)]',
+                )}
+              >
+                <Icon
+                  size={14}
                   className={cn(
-                    'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-colors',
-                    isActive
-                      ? 'bg-[rgba(100,116,139,0.14)] text-[var(--sl-t1)] font-semibold'
-                      : 'text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)]',
+                    'shrink-0',
+                    isActive ? 'text-[var(--sl-em)]' : 'text-[var(--sl-t3)]',
                   )}
-                >
-                  <Icon size={15} className="shrink-0 opacity-80" />
-                  <span className="flex-1">{label}</span>
-                  {badge && (
-                    <span
-                      className={cn(
-                        'text-[9px] font-bold px-1.5 py-0.5 rounded-md',
-                        badge === 'Pro'
-                          ? 'bg-[rgba(15,118,110,0.15)] text-[#0F766E]'
-                          : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]',
-                      )}
-                    >
-                      {badge}
-                    </span>
-                  )}
-                </Link>
-              )
-            })}
-          </div>
-        ))}
+                />
+                <span className="flex-1">{label}</span>
+                {badge && (
+                  <span
+                    className={cn(
+                      'text-[9px] font-bold px-1.5 py-0.5 rounded-md',
+                      badge === 'PRO'
+                        ? 'bg-[rgba(15,118,110,0.15)] text-[var(--sl-em)]'
+                        : 'bg-[var(--sl-s3)] text-[var(--sl-t3)]',
+                    )}
+                  >
+                    {badge}
+                  </span>
+                )}
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* Version footer */}
+        <div
+          className="mt-auto pt-3 px-1.5 text-[11px] text-[var(--sl-t4)] border-t border-[var(--sl-border)]"
+        >
+          SyncLife · v0.9.4
+        </div>
       </aside>
 
       {/* cfg-content */}
-      <div className="flex-1 min-w-0">
-        {children}
-      </div>
+      <div className="flex-1 min-w-0">{children}</div>
     </div>
   )
 }

@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { Check, X, Crown, ExternalLink } from 'lucide-react'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { PLAN_LIMITS } from '@/lib/plan-limits'
+import { SectionHeader } from '@/components/ui/section-header'
 
 const FREE_FEATURES = [
   { text: 'Transações: até 200/mês', included: true },
@@ -113,7 +114,7 @@ export default function PlanoPage() {
 
   return (
     <div className="max-w-[680px]">
-      <h1 className="font-[Space_Grotesk] font-extrabold text-xl text-[var(--sl-t1)] mb-1">Meu Plano</h1>
+      <h1 className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)] mb-1">Meu Plano</h1>
       <p className="text-[13px] text-[var(--sl-t3)] mb-6">
         Gerencie sua assinatura e veja os limites do seu plano atual.
       </p>
@@ -171,6 +172,12 @@ export default function PlanoPage() {
       )}
 
       {/* Plan grid */}
+      <SectionHeader
+        eyebrow="01 · PLANOS"
+        title="Compare e escolha"
+        sub="Free para sempre, Pro com 7 dias grátis"
+        className="mb-3"
+      />
       <div className="grid grid-cols-2 gap-3 mb-4 max-sm:grid-cols-1">
         {/* FREE card */}
         <div className="bg-[var(--sl-s1)] border-2 border-[var(--sl-border)] rounded-[18px] p-5">
@@ -178,7 +185,7 @@ export default function PlanoPage() {
             Free
           </span>
           <div className="mb-3">
-            <p className="font-[Space_Grotesk] font-extrabold text-3xl text-[var(--sl-t1)] leading-none">
+            <p className="font-[Syne] font-extrabold text-3xl text-[var(--sl-t1)] leading-none">
               <sup className="text-base font-semibold align-super">R$</sup>0
               <sub className="text-[13px] font-normal text-[var(--sl-t3)] align-baseline">/mês</sub>
             </p>
@@ -221,12 +228,12 @@ export default function PlanoPage() {
           </div>
           <span
             className="inline-block text-[10px] font-bold uppercase tracking-[0.06em] px-2 py-0.5 rounded-md mb-3 text-white"
-            style={{ background: 'linear-gradient(135deg, rgba(15,118,110,0.3), rgba(0,85,255,0.3))' }}
+            style={{ background: '#0F766E' }}
           >
             Pro
           </span>
           <div className="mb-3">
-            <p className="font-[Space_Grotesk] font-extrabold text-3xl text-[var(--sl-t1)] leading-none">
+            <p className="font-[Syne] font-extrabold text-3xl text-[var(--sl-t1)] leading-none">
               <sup className="text-base font-semibold align-super">R$</sup>
               {interval === 'yearly' ? '14' : '19'}
               <span className="text-xl">,{interval === 'yearly' ? '90' : '90'}</span>
@@ -268,7 +275,7 @@ export default function PlanoPage() {
                 disabled={checkoutLoading || isLoading}
                 className="w-full py-2.5 rounded-[10px] text-white text-[13px] font-bold transition-all hover:brightness-110 hover:-translate-y-px disabled:opacity-60 disabled:cursor-wait"
                 style={{
-                  background: 'linear-gradient(135deg, #0F766E, #0B2D34)',
+                  background: '#0F766E',
                   boxShadow: '0 4px 20px rgba(15,118,110,0.25)',
                 }}
               >
@@ -285,9 +292,12 @@ export default function PlanoPage() {
       {/* Usage card (FREE users only) */}
       {isFree && (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 transition-colors hover:border-[var(--sl-border-h)]">
-          <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-4">
-            Limites do plano Free
-          </p>
+          <SectionHeader
+            eyebrow="02 · LIMITES DO PLANO FREE"
+            title="Seu uso atual"
+            sub="Acompanhe quanto você já consumiu"
+            className="mb-4"
+          />
           <div className="flex flex-col gap-4">
             {USAGE.map(({ label, limitKey }) => {
               const limit = PLAN_LIMITS.free[limitKey]

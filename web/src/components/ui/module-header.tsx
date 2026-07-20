@@ -39,7 +39,7 @@ export function ModuleHeader({
         <Icon size={22} className="stroke-2" style={{ color: iconColor }} />
       </div>
       <div className="flex-1 min-w-0">
-        <h1 className="font-[Space_Grotesk] font-bold text-[26px] leading-[1.15] tracking-tight text-[var(--sl-t1)]">
+        <h1 className="font-[Syne] font-bold text-[26px] leading-[1.15] tracking-tight text-[var(--sl-t1)]">
           {title}
         </h1>
         {subtitle && (

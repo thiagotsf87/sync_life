@@ -112,7 +112,7 @@ export function ScoreHero({
       <div className="flex-1 min-w-0">
         {title ? (
           <>
-            <p className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-[3px]">
+            <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-[3px]">
               {title}
             </p>
             {description && (

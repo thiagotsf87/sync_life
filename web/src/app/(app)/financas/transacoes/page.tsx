@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import {
   ArrowLeftRight, Plus, Search, ChevronLeft, ChevronRight, AlertTriangle,
-  Pencil, Trash2, X, SlidersHorizontal,
+  Pencil, Trash2, X, Wallet, TrendingDown, CreditCard, Repeat,
 } from 'lucide-react'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
@@ -17,6 +17,7 @@ import {
 import { TransacaoModal } from '@/components/financas/TransacaoModal'
 import { DeleteConfirmModal } from '@/components/financas/DeleteConfirmModal'
 import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
+import { fmtBRL } from '@/lib/format/currency'
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
@@ -35,10 +36,6 @@ const MONTH_NAMES = [
 ]
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
-
-function fmtR$(n: number): string {
-  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
-}
 
 function formatDate(dateStr: string): string {
   const [y, m, d] = dateStr.split('-')
@@ -147,7 +144,7 @@ function Pagination({
                 className={cn(
                   'w-7 h-7 rounded-[8px] border font-[IBM_Plex_Mono] text-[12px] transition-colors',
                   p === page
-                    ? 'bg-[#0F766E] text-[#03071a] border-transparent font-bold'
+                    ? 'bg-[var(--sl-em)] text-white border-transparent font-bold'
                     : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)]'
                 )}
               >
@@ -194,16 +191,16 @@ function TransactionRow({
         {/* Descrição */}
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-9 h-9 rounded-[10px] bg-[var(--sl-s3)] flex items-center justify-center text-base shrink-0">
-            {tx.category?.icon ?? '💳'}
+            {tx.category?.icon ?? <CreditCard size={16} className="text-[var(--sl-t3)]" />}
           </div>
           <div className="min-w-0">
             <p className="text-[13px] text-[var(--sl-t1)] truncate font-medium">{tx.description}</p>
             <div className="flex items-center gap-1.5 flex-wrap">
               {isTransfer && (
                 <>
-                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                    style={{ background: 'rgba(0,85,255,.12)', color: '#0B2D34', border: '1px solid rgba(0,85,255,.25)' }}>
-                    🔄 Transf.
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                    style={{ background: 'rgba(11,45,52,.08)', color: 'var(--sl-el)', border: '1px solid rgba(11,45,52,.25)' }}>
+                    <ArrowLeftRight size={10} /> Transf.
                   </span>
                   {tx.account_from && (
                     <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-[6px]"
@@ -223,9 +220,9 @@ function TransactionRow({
                 </>
               )}
               {tx.recurring_transaction_id && (
-                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
                   style={{ background: 'rgba(139,123,212,.12)', color: '#a78bfa', border: '1px solid rgba(139,123,212,.25)' }}>
-                  🔄 Recorrente
+                  <Repeat size={10} /> Recorrente
                 </span>
               )}
               {tx.is_future && (
@@ -253,7 +250,7 @@ function TransactionRow({
               <span className="text-[12px] text-[var(--sl-t2)] truncate">{tx.category.name}</span>
             </div>
           ) : (
-            <span className="text-[11px] text-[var(--sl-t3)]">—</span>
+            <span className="text-[11px] text-[var(--sl-t3)]">·</span>
           )}
         </div>
 
@@ -266,23 +263,23 @@ function TransactionRow({
 
         {/* Valor */}
         <div className={cn(
-          'font-[IBM_Plex_Mono] text-[14px] font-medium self-center text-right',
-          isTransfer ? 'text-[#0B2D34]' : isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]'
+          'sl-num text-[14px] self-center text-right',
+          isTransfer ? 'text-[var(--sl-el)]' : isIncome ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
         )}>
-          {isTransfer ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
+          {isTransfer ? '' : isIncome ? '+' : '– '}{fmtBRL(tx.amount)}
         </div>
 
         {/* Ações */}
         <div className="flex items-center justify-end gap-1 self-center opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(tx)}
-            className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#0F766E] hover:bg-[rgba(15,118,110,.08)] transition-colors"
+            className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[var(--sl-em)] hover:bg-[rgba(15,118,110,.08)] transition-colors"
           >
             <Pencil size={13} />
           </button>
           <button
             onClick={() => onDelete(tx)}
-            className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[rgba(219,100,120,.08)] transition-colors"
+            className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[var(--sl-danger)] hover:bg-[rgba(219,100,120,.08)] transition-colors"
           >
             <Trash2 size={13} />
           </button>
@@ -299,7 +296,7 @@ function TransactionRow({
       >
         <div className="flex items-center gap-2.5 mb-1">
           <div className="w-9 h-9 rounded-[10px] bg-[var(--sl-s3)] flex items-center justify-center text-base shrink-0">
-            {tx.category?.icon ?? '💳'}
+            {tx.category?.icon ?? <CreditCard size={16} className="text-[var(--sl-t3)]" />}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{tx.description}</p>
@@ -309,14 +306,14 @@ function TransactionRow({
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
             <p className={cn(
-              'font-[IBM_Plex_Mono] text-[15px] font-medium',
-              isTransfer ? 'text-[#0B2D34]' : isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]'
+              'sl-num text-[15px]',
+              isTransfer ? 'text-[var(--sl-el)]' : isIncome ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
             )}>
-              {isTransfer ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
+              {isTransfer ? '' : isIncome ? '+' : '– '}{fmtBRL(tx.amount)}
             </p>
             <button
               onClick={e => { e.stopPropagation(); onDelete(tx) }}
-              className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[rgba(219,100,120,.08)] transition-colors"
+              className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[var(--sl-danger)] hover:bg-[rgba(219,100,120,.08)] transition-colors"
             >
               <Trash2 size={13} />
             </button>
@@ -452,7 +449,7 @@ export default function TransacoesPage() {
               <button
                 onClick={openCreate}
                 className="flex h-9 w-9 items-center justify-center rounded-[10px] text-white"
-                style={{ background: '#0F766E' }}
+                style={{ background: 'var(--sl-em)' }}
               >
                 <Plus size={16} />
               </button>
@@ -461,7 +458,7 @@ export default function TransacoesPage() {
         >
         {/* Mobile search bar (toggle) */}
         {mobileSearch && (
-          <div className="flex items-center gap-2 mb-2 px-3 py-2.5 rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] focus-within:border-[#0F766E] transition-colors">
+          <div className="flex items-center gap-2 mb-2 px-3 py-2.5 rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] focus-within:border-[var(--sl-em)] transition-colors">
             <Search size={14} className="text-[var(--sl-t3)] shrink-0" />
             <input
               type="text"
@@ -488,7 +485,7 @@ export default function TransacoesPage() {
           >
             <ChevronLeft size={16} />
           </button>
-          <span className="font-[Space_Grotesk] text-[14px] font-semibold text-[var(--sl-t1)] min-w-[120px] text-center">
+          <span className="font-[Syne] text-[14px] font-semibold text-[var(--sl-t1)] min-w-[120px] text-center">
             {MONTH_NAMES[month - 1]} {year}
           </span>
           <button
@@ -521,7 +518,7 @@ export default function TransacoesPage() {
                 className={cn(
                   'px-3.5 py-[7px] rounded-[20px] border text-[12px] font-medium shrink-0 transition-all',
                   isActive
-                    ? 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.35)] text-[#0F766E]'
+                    ? 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.35)] text-[var(--sl-em)]'
                     : 'bg-[var(--sl-s1)] border-[var(--sl-border)] text-[var(--sl-t2)]'
                 )}
               >
@@ -536,12 +533,12 @@ export default function TransacoesPage() {
           <div className="flex-1 rounded-[10px] px-3 py-2.5"
             style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.2)' }}>
             <p className="text-[11px] text-[var(--sl-t2)]">Receitas</p>
-            <p className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#0F766E]">+R$ {fmtR$(totalReceitas)}</p>
+            <p className="sl-num-strong text-[16px] text-[var(--sl-em)]">+{fmtBRL(totalReceitas)}</p>
           </div>
           <div className="flex-1 rounded-[10px] px-3 py-2.5"
             style={{ background: 'rgba(219,100,120,0.08)', border: '1px solid rgba(219,100,120,0.2)' }}>
             <p className="text-[11px] text-[var(--sl-t2)]">Despesas</p>
-            <p className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#DB6478]">-R$ {fmtR$(totalDespesas)}</p>
+            <p className="sl-num-strong text-[16px] text-[var(--sl-danger)]">– {fmtBRL(totalDespesas)}</p>
           </div>
         </div>
         </FinancasMobileShell>
@@ -553,15 +550,15 @@ export default function TransacoesPage() {
         <ModuleHeader
           icon={ArrowLeftRight}
           iconBg="rgba(15,118,110,.08)"
-          iconColor="#0F766E"
+          iconColor="var(--sl-em)"
           title="Transações"
           subtitle={`${isLoading ? '…' : total} itens`}
           className="mb-5"
         >
           <button
             onClick={openCreate}
-            className="flex items-center gap-1.5 text-[#03071a] font-bold text-[13px] px-5 py-2.5 rounded-full border-none shadow-[0_4px_16px_rgba(15,118,110,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
-            style={{ background: '#0F766E' }}
+            className="flex items-center gap-1.5 text-white font-bold text-[13px] px-5 py-2.5 rounded-full border-none shadow-[0_4px_16px_rgba(15,118,110,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
+            style={{ background: 'var(--sl-em)' }}
           >
             <Plus size={14} />
             Nova Transação
@@ -571,10 +568,10 @@ export default function TransacoesPage() {
         {/* ② Insight Jornada */}
         <JornadaInsight text={
           <>
-            Este mês você registrou <strong>R$ {fmtR$(totalReceitas)}</strong> em receitas
-            e <strong className="text-[#DB6478]">R$ {fmtR$(totalDespesas)}</strong> em despesas.
+            Este mês você registrou <strong className="sl-num">{fmtBRL(totalReceitas)}</strong> em receitas
+            e <strong className="sl-num text-[var(--sl-danger)]">{fmtBRL(totalDespesas)}</strong> em despesas.
             {poupancaPct > 0 && (
-              <> Taxa de poupança: <span className="text-[#0F766E]">{poupancaPct}%</span>.</>
+              <> Taxa de poupança: <span className="text-[var(--sl-em)]">{poupancaPct}%</span>.</>
             )}
             {maiorCategoria && <> Maior gasto: <strong>{maiorCategoria}</strong>.</>}
           </>
@@ -585,7 +582,7 @@ export default function TransacoesPage() {
           {/* Linha 1: busca + seletor de mês */}
           <div className="flex items-center gap-3 mb-3 flex-wrap">
             {/* Busca */}
-            <div className="flex items-center gap-2 flex-1 min-w-[180px] px-3 py-2 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] focus-within:border-[#0F766E] transition-colors">
+            <div className="flex items-center gap-2 flex-1 min-w-[180px] px-3 py-2 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] focus-within:border-[var(--sl-em)] transition-colors">
               <Search size={14} className="text-[var(--sl-t3)] shrink-0" />
               <input
                 type="text"
@@ -618,7 +615,7 @@ export default function TransacoesPage() {
               {(month !== now.getMonth() + 1 || year !== now.getFullYear()) && (
                 <button
                   onClick={() => { setMonth(now.getMonth() + 1); setYear(now.getFullYear()); setPage(1) }}
-                  className="ml-1 text-[11px] text-[#0F766E] hover:underline"
+                  className="ml-1 text-[11px] text-[var(--sl-em)] hover:underline"
                 >
                   Hoje
                 </button>
@@ -643,10 +640,10 @@ export default function TransacoesPage() {
                 className={cn(
                   'px-3 py-1.5 rounded-full border text-[12px] font-semibold transition-all',
                   typeFilter === chip.value
-                    ? chip.value === 'all' ? 'bg-[#0F766E] text-[#03071a] border-transparent font-bold'
-                      : chip.value === 'income' ? 'bg-[rgba(15,118,110,.10)] text-[#0F766E] border-[rgba(15,118,110,.30)]'
-                      : chip.value === 'expense' ? 'bg-[rgba(219,100,120,.08)] text-[#DB6478] border-[rgba(219,100,120,.25)]'
-                      : chip.value === 'transfer' ? 'bg-[rgba(0,85,255,.10)] text-[#0B2D34] border-[rgba(0,85,255,.30)]'
+                    ? chip.value === 'all' ? 'bg-[var(--sl-em)] text-white border-transparent font-bold'
+                      : chip.value === 'income' ? 'bg-[rgba(15,118,110,.10)] text-[var(--sl-em)] border-[rgba(15,118,110,.30)]'
+                      : chip.value === 'expense' ? 'bg-[rgba(219,100,120,.08)] text-[var(--sl-danger)] border-[rgba(219,100,120,.25)]'
+                      : chip.value === 'transfer' ? 'bg-[rgba(0,85,255,.10)] text-[var(--sl-el)] border-[rgba(0,85,255,.30)]'
                       : 'bg-[rgba(139,123,212,.12)] text-[#a78bfa] border-[rgba(139,123,212,.30)]'
                     : 'bg-[var(--sl-s2)] text-[var(--sl-t2)] border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                 )}
@@ -690,18 +687,18 @@ export default function TransacoesPage() {
           <TableSkeleton />
         ) : error ? (
           <div className="py-12 text-center px-6">
-            <AlertTriangle size={32} className="text-[#DB6478] mx-auto mb-3" />
+            <AlertTriangle size={32} className="text-[var(--sl-danger)] mx-auto mb-3" />
             <p className="text-[13px] text-[var(--sl-t2)] mb-1">
               Erro ao carregar transações.{' '}
-              <button onClick={refresh} className="text-[#0F766E] hover:underline">Tentar novamente</button>
+              <button onClick={refresh} className="text-[var(--sl-em)] hover:underline">Tentar novamente</button>
             </p>
           </div>
         ) : transactions.length === 0 ? (
           <div className="py-16 text-center px-4">
-            <span className="text-5xl block mb-3 opacity-60">
-              {typeFilter === 'income' ? '💰' : typeFilter === 'expense' ? '📤' : '💳'}
-            </span>
-            <h3 className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-1.5">
+            <div className="mb-3 opacity-60 flex justify-center">
+              {typeFilter === 'income' ? <Wallet size={44} className="text-[var(--sl-t3)]" /> : typeFilter === 'expense' ? <TrendingDown size={44} className="text-[var(--sl-t3)]" /> : <CreditCard size={44} className="text-[var(--sl-t3)]" />}
+            </div>
+            <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1.5">
               {search ? 'Nenhum resultado encontrado' : 'Nenhuma transação'}
             </h3>
             <p className="text-[13px] text-[var(--sl-t2)]">
@@ -711,7 +708,7 @@ export default function TransacoesPage() {
         ) : groupedByDate ? (
           groupedByDate.map(group => (
             <div key={group.date}>
-              <p className="px-1 pb-2 pt-1 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+              <p className="px-1 pb-2 pt-1 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
                 {formatDate(group.date)}
               </p>
               <div className="mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[12px] overflow-hidden">
@@ -728,29 +725,29 @@ export default function TransacoesPage() {
                       )}
                     >
                       <div className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center text-[18px] shrink-0"
-                        style={{ background: isTx ? 'rgba(0,85,255,0.08)' : tx.category?.color ? `${tx.category.color}15` : 'var(--sl-s3)' }}>
-                        {isTx ? '🔄' : tx.category?.icon ?? '💳'}
+                        style={{ background: isTx ? 'rgba(11,45,52,0.08)' : tx.category?.color ? `${tx.category.color}15` : 'var(--sl-s3)' }}>
+                        {isTx ? <ArrowLeftRight size={16} className="text-[var(--sl-el)]" /> : (tx.category?.icon ?? <CreditCard size={16} className="text-[var(--sl-t3)]" />)}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{tx.description}</p>
-                        <p className="text-[12px] text-[var(--sl-t2)] mt-[1px]">
+                        <p className="text-[12px] text-[var(--sl-t2)] mt-[1px] inline-flex items-center gap-1 flex-wrap">
                           {isTx ? (
                             <>
-                              {'🔄 '}
+                              <ArrowLeftRight size={11} />
                               {tx.account_from && tx.account_to
-                                ? <>{tx.account_from.icon} {tx.account_from.name} → {tx.account_to.icon} {tx.account_to.name}</>
-                                : 'Transferência'}
+                                ? <span>{tx.account_from.icon} {tx.account_from.name} → {tx.account_to.icon} {tx.account_to.name}</span>
+                                : <span>Transferência</span>}
                             </>
-                          ) : tx.recurring_transaction_id ? '🔄 Recorrente · ' : ''}
+                          ) : tx.recurring_transaction_id ? <><Repeat size={11} /> <span>Recorrente · </span></> : ''}
                           {!isTx && (tx.category?.name ?? 'Sem categoria')}
                         </p>
                       </div>
                       <div className="text-right shrink-0">
                         <p className={cn(
-                          'font-[IBM_Plex_Mono] text-[14px] font-medium',
-                          isTx ? 'text-[#0B2D34]' : isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]'
+                          'sl-num text-[14px]',
+                          isTx ? 'text-[var(--sl-el)]' : isIncome ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
                         )}>
-                          {isTx ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
+                          {isTx ? '' : isIncome ? '+' : '– '}{fmtBRL(tx.amount)}
                         </p>
                         <p className="text-[11px] text-[var(--sl-t2)] mt-[1px]">
                           {tx.date.split('-')[2]}/{tx.date.split('-')[1]}
@@ -777,28 +774,28 @@ export default function TransacoesPage() {
                   )}
                 >
                   <div className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center text-[18px] shrink-0"
-                    style={{ background: isTx ? 'rgba(0,85,255,0.08)' : tx.category?.color ? `${tx.category.color}15` : 'var(--sl-s3)' }}>
-                    {isTx ? '🔄' : tx.category?.icon ?? '💳'}
+                    style={{ background: isTx ? 'rgba(11,45,52,0.08)' : tx.category?.color ? `${tx.category.color}15` : 'var(--sl-s3)' }}>
+                    {isTx ? <ArrowLeftRight size={16} className="text-[var(--sl-el)]" /> : (tx.category?.icon ?? <CreditCard size={16} className="text-[var(--sl-t3)]" />)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{tx.description}</p>
-                    <p className="text-[12px] text-[var(--sl-t2)] mt-[1px]">
+                    <p className="text-[12px] text-[var(--sl-t2)] mt-[1px] inline-flex items-center gap-1 flex-wrap">
                       {isTx ? (
                         <>
-                          {'🔄 '}
+                          <ArrowLeftRight size={11} />
                           {tx.account_from && tx.account_to
-                            ? <>{tx.account_from.icon} {tx.account_from.name} → {tx.account_to.icon} {tx.account_to.name}</>
-                            : 'Transferência'}
+                            ? <span>{tx.account_from.icon} {tx.account_from.name} → {tx.account_to.icon} {tx.account_to.name}</span>
+                            : <span>Transferência</span>}
                         </>
                       ) : (tx.category?.name ?? 'Sem categoria')}
                     </p>
                   </div>
                   <div className="text-right shrink-0">
                     <p className={cn(
-                      'font-[IBM_Plex_Mono] text-[14px] font-medium',
-                      isTx ? 'text-[#0B2D34]' : isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]'
+                      'sl-num text-[14px]',
+                      isTx ? 'text-[var(--sl-el)]' : isIncome ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
                     )}>
-                      {isTx ? '' : isIncome ? '+' : '-'}R$ {fmtR$(tx.amount)}
+                      {isTx ? '' : isIncome ? '+' : '– '}{fmtBRL(tx.amount)}
                     </p>
                   </div>
                 </div>
@@ -848,10 +845,10 @@ export default function TransacoesPage() {
             <TableSkeleton />
           ) : error ? (
             <div className="py-12 text-center px-6">
-              <AlertTriangle size={32} className="text-[#DB6478] mx-auto mb-3" />
+              <AlertTriangle size={32} className="text-[var(--sl-danger)] mx-auto mb-3" />
               <p className="text-[13px] text-[var(--sl-t2)] mb-1">
                 Erro ao carregar transações.{' '}
-                <button onClick={refresh} className="text-[#0F766E] hover:underline">Tentar novamente</button>
+                <button onClick={refresh} className="text-[var(--sl-em)] hover:underline">Tentar novamente</button>
               </p>
               <p className="text-[11px] text-[var(--sl-t3)] font-[IBM_Plex_Mono] mt-2 max-w-md mx-auto break-all">
                 {error.message}
@@ -859,10 +856,10 @@ export default function TransacoesPage() {
             </div>
           ) : transactions.length === 0 ? (
             <div className="py-16 text-center">
-              <span className="text-5xl block mb-3 opacity-60">
-                {typeFilter === 'income' ? '💰' : typeFilter === 'expense' ? '📤' : '💳'}
-              </span>
-              <h3 className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-1.5">
+              <div className="mb-3 opacity-60 flex justify-center">
+                {typeFilter === 'income' ? <Wallet size={44} className="text-[var(--sl-t3)]" /> : typeFilter === 'expense' ? <TrendingDown size={44} className="text-[var(--sl-t3)]" /> : <CreditCard size={44} className="text-[var(--sl-t3)]" />}
+              </div>
+              <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1.5">
                 {search ? 'Nenhum resultado encontrado' : 'Nenhuma transação neste período'}
               </h3>
               <p className="text-[13px] text-[var(--sl-t2)]">
@@ -879,10 +876,10 @@ export default function TransacoesPage() {
                 <div className="flex items-center justify-between px-5 py-2.5 bg-[var(--sl-s2)] border-b border-[var(--sl-border)] sticky top-0">
                   <p className="text-[11px] font-semibold text-[var(--sl-t2)]">{formatDate(group.date)}</p>
                   <p className={cn(
-                    'font-[IBM_Plex_Mono] text-[12px] font-medium',
-                    group.runningBalance >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]'
+                    'sl-num text-[12px]',
+                    group.runningBalance >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
                   )}>
-                    Saldo: {group.runningBalance >= 0 ? '' : '-'}R$ {fmtR$(Math.abs(group.runningBalance))}
+                    Saldo: <span className="sl-num">{group.runningBalance >= 0 ? '' : '– '}{fmtBRL(Math.abs(group.runningBalance))}</span>
                   </p>
                 </div>
                 {group.transactions.map(tx => (

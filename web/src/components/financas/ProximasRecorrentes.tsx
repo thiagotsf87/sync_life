@@ -25,7 +25,7 @@ export function ProximasRecorrentes({ upcomingOccurrences }: ProximasRecorrentes
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 mb-6 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-3">
-        <p className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">Próximas Recorrentes</p>
+        <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Próximas Recorrentes</p>
         <button onClick={() => router.push('/financas/recorrentes')} className="text-[11px] text-[#0F766E] hover:underline">Ver todas</button>
       </div>
       {upcomingOccurrences.length === 0 ? (

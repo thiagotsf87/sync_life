@@ -17,6 +17,7 @@ import type { TrackStatus, TrackCategory, StudyTrackStep } from '@/hooks/use-men
 import { MenteTrackEditModal, type EditTrackData } from '@/components/mente/mobile/MenteTrackEditModal'
 import { MenteTrackDeleteModal } from '@/components/mente/mobile/MenteTrackDeleteModal'
 import { ModuleHeader } from '@/components/ui/module-header'
+import { fmtBRL } from '@/lib/format/currency'
 
 const MENTE_COLOR = '#D9962E'
 
@@ -321,7 +322,7 @@ export default function TrilhaDetalhePage() {
         >
           <ArrowLeft size={20} className="text-[var(--sl-t2)]" />
         </button>
-        <h1 className="flex-1 min-w-0 font-[Space_Grotesk] font-extrabold text-base sm:text-lg truncate text-center text-[var(--sl-t1)]">
+        <h1 className="flex-1 min-w-0 font-[Syne] font-extrabold text-base sm:text-lg truncate text-center text-[var(--sl-t1)]">
           {effectiveTrack?.name ?? track.name}
         </h1>
         <div className="relative shrink-0" ref={menuRef}>
@@ -334,7 +335,7 @@ export default function TrilhaDetalhePage() {
         </div>
       </div>
 
-      {/* HERO card — gradient accent bar + 36px values */}
+      {/* HERO card · gradient accent bar + 36px values */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 mb-[14px] relative overflow-hidden sl-fade-up sl-delay-1 transition-colors hover:border-[var(--sl-border-h)]">
         {/* Gradient accent bar */}
         <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: 'linear-gradient(90deg, #D9962E, #D97534)' }} />
@@ -379,22 +380,24 @@ export default function TrilhaDetalhePage() {
           {/* Right: 36px values */}
           <div className="flex gap-7 text-center max-sm:justify-around">
             <div>
-              <p className="font-[IBM_Plex_Mono] font-bold leading-none text-[#D9962E]" style={{ fontSize: '36px' }}>
+              <p className="sl-num-strong leading-none text-[#D9962E]" style={{ fontSize: '36px' }}>
                 {effectiveProgress}%
               </p>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--sl-t3)] mt-1">Progresso</p>
             </div>
             <div className="w-px bg-[var(--sl-border)]" />
             <div>
-              <p className="font-[IBM_Plex_Mono] font-bold leading-none text-[var(--sl-t1)]" style={{ fontSize: '36px' }}>
+              <p className="sl-num-strong leading-none text-[var(--sl-t1)]" style={{ fontSize: '36px' }}>
                 {track.total_hours}h
               </p>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--sl-t3)] mt-1">Estudadas</p>
             </div>
             <div className="w-px bg-[var(--sl-border)]" />
             <div>
-              <p className="font-[IBM_Plex_Mono] font-bold leading-none text-[var(--sl-t1)]" style={{ fontSize: '36px' }}>
-                {(effectiveTrack?.cost ?? track.cost) != null ? `R$ ${(effectiveTrack?.cost ?? track.cost)!.toFixed(0)}` : '\u2014'}
+              <p className="sl-num-strong leading-none text-[var(--sl-t1)]" style={{ fontSize: '36px' }}>
+                {(effectiveTrack?.cost ?? track.cost) != null
+                  ? fmtBRL((effectiveTrack?.cost ?? track.cost)!, { compact: true })
+                  : '\u2013'}
               </p>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--sl-t3)] mt-1">Investido</p>
             </div>
@@ -412,7 +415,7 @@ export default function TrilhaDetalhePage() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9962E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                 Etapas da Trilha
               </h2>
             </div>
@@ -542,7 +545,7 @@ export default function TrilhaDetalhePage() {
                 <line x1="12" y1="20" x2="12" y2="4" />
                 <line x1="6" y1="20" x2="6" y2="14" />
               </svg>
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                 Horas de Estudo
               </h2>
             </div>
@@ -556,7 +559,7 @@ export default function TrilhaDetalhePage() {
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-4 transition-colors hover:border-[var(--sl-border-h)]">
               <div className="flex items-center gap-[9px] mb-3">
                 <BookOpen size={16} className="text-[#D9962E]" />
-                <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   Notas
                 </h2>
               </div>

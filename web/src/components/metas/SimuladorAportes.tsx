@@ -107,7 +107,7 @@ export function SimuladorAportes({ goals }: SimuladorAportesProps) {
 
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up">
-      <h3 className="font-[Space_Grotesk] font-extrabold text-[14px] text-[var(--sl-t1)] mb-4">
+      <h3 className="font-[Syne] font-extrabold text-[14px] text-[var(--sl-t1)] mb-4">
         🧮 Simulador de Aportes
       </h3>
 

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { CARREIRA_PRIMARY, CARREIRA_GRAD } from '@/lib/carreira-colors'
 import type { CareerHistoryEntry } from '@/hooks/use-carreira'
@@ -42,16 +42,16 @@ export function CarreiraTabHistorico({ history, onAddPromotion }: CarreiraTabHis
           ✦ SUA EVOLUÇÃO
         </p>
         <div className="flex justify-center items-baseline gap-2 mb-1">
-          <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] line-through">R$ 3.600</span>
+          <span className="sl-num-strong text-[14px] text-[var(--sl-t3)] line-through">R$ 3.600</span>
           <span className="text-[18px] text-[var(--sl-t3)]">→</span>
           <span
-            className="font-[IBM_Plex_Mono] text-[26px] font-bold"
+            className="sl-num-strong text-[26px] font-bold"
             style={{ background: grad, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
           >
             R$ 9.200
           </span>
         </div>
-        <p className="text-[12px] text-[#0F766E] font-semibold">
+        <p className="text-[12px] text-[var(--sl-em)] font-semibold">
           +156% em 5 anos · 2 promoções conquistadas
         </p>
         <p className="text-[10px] text-[#c4b5fd] mt-[6px]">
@@ -60,7 +60,7 @@ export function CarreiraTabHistorico({ history, onAddPromotion }: CarreiraTabHis
       </div>
 
       {/* Salary evolution */}
-      <p className="font-[Space_Grotesk] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-1">
+      <p className="font-[Syne] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-1">
         EVOLUÇÃO SALARIAL
       </p>
       <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
@@ -85,7 +85,7 @@ export function CarreiraTabHistorico({ history, onAddPromotion }: CarreiraTabHis
       </div>
 
       {/* Conquistas */}
-      <p className="font-[Space_Grotesk] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-1">
+      <p className="font-[Syne] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-1">
         CONQUISTAS DO HERÓI
       </p>
       <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
@@ -118,9 +118,9 @@ export function CarreiraTabHistorico({ history, onAddPromotion }: CarreiraTabHis
               Promoção a Junior
             </p>
             <p className="text-[12px] text-[var(--sl-t2)] mt-[1px]">TechCorp · Jan 2021 · +50%</p>
-            <p className="text-[10px] text-[#0F766E] font-semibold mt-[2px]">✅ +80 XP · Badge "Primeira Promoção"</p>
+            <p className="text-[10px] text-[var(--sl-em)] font-semibold mt-[2px]">✅ +80 XP · Badge "Primeira Promoção"</p>
           </div>
-          <span className="inline-flex px-2 py-[3px] rounded-[10px] text-[10px] font-semibold bg-[rgba(15,118,110,0.12)] text-[#0F766E]">
+          <span className="inline-flex px-2 py-[3px] rounded-[10px] text-[10px] font-semibold bg-[rgba(15,118,110,0.12)] text-[var(--sl-em)]">
             Conquistado
           </span>
         </div>
@@ -132,7 +132,7 @@ export function CarreiraTabHistorico({ history, onAddPromotion }: CarreiraTabHis
           <div className="flex-1 min-w-0">
             <p className="text-[14px] font-medium text-[var(--sl-t1)]">Primeiro emprego → R$ 3.600</p>
             <p className="text-[12px] text-[var(--sl-t2)] mt-[1px]">StartupXYZ · Jan 2020</p>
-            <p className="text-[10px] text-[#0F766E] font-semibold mt-[2px]">✅ +50 XP · Badge "Início da Jornada"</p>
+            <p className="text-[10px] text-[var(--sl-em)] font-semibold mt-[2px]">✅ +50 XP · Badge "Início da Jornada"</p>
           </div>
         </div>
       </div>
@@ -157,28 +157,28 @@ export function CarreiraTabHistorico({ history, onAddPromotion }: CarreiraTabHis
       </div>
 
       {/* Métricas */}
-      <p className="font-[Space_Grotesk] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-2">
+      <p className="font-[Syne] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-2">
         MÉTRICAS
       </p>
       <div className="grid grid-cols-2 gap-2 px-4 mb-3">
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3">
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">Tempo de carreira</p>
-          <p className="font-[IBM_Plex_Mono] text-[19px] font-bold text-[var(--sl-t1)]">5 anos</p>
+          <p className="sl-num-strong text-[19px] font-bold text-[var(--sl-t1)]">5 anos</p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">Desde Jan 2020</p>
         </div>
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3">
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">Promoções</p>
-          <p className="font-[IBM_Plex_Mono] text-[19px] font-bold text-[#0F766E]">2</p>
+          <p className="sl-num-strong text-[19px] font-bold text-[var(--sl-em)]">2</p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">Média: 2.5 anos/promoção</p>
         </div>
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3">
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">Crescimento médio</p>
-          <p className="font-[IBM_Plex_Mono] text-[19px] font-bold" style={{ color: accent }}>+51%</p>
+          <p className="sl-num-strong text-[19px] font-bold" style={{ color: accent }}>+51%</p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">Por promoção</p>
         </div>
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3">
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">Projeção sênior</p>
-          <p className="font-[IBM_Plex_Mono] text-[15px] font-bold text-[#D9962E]">R$ 14k</p>
+          <p className="sl-num-strong text-[15px] font-bold text-[var(--sl-warning)]">R$ 14k</p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">+52% do atual</p>
         </div>
       </div>

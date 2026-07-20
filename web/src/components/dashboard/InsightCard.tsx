@@ -133,7 +133,7 @@ export function InsightCard({
       <div className="relative z-[1] px-7 py-6">
         <div className="flex items-center gap-2 mb-3">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B6FD4" strokeWidth="2" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span className="font-[Space_Grotesk] font-bold text-[14px] text-[var(--sl-t1)]">Insight Inteligente</span>
+          <span className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">Insight Inteligente</span>
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold" style={{ background: 'rgba(107,111,212,.12)', color: '#6B6FD4' }}>IA</span>
         </div>
         <p className="text-[13px] text-[var(--sl-t2)] leading-[1.65]">

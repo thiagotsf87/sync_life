@@ -19,7 +19,7 @@ export function AchievementGrid({ achievements, title = '🏅 Conquistas desbloq
         border: `1px solid rgba(139,123,212,0.3)`,
       }}
     >
-      <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)] mb-[11px]">{title}</p>
+      <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)] mb-[11px]">{title}</p>
       <div className="grid grid-cols-2 gap-2">
         {achievements.map(ach => (
           <div

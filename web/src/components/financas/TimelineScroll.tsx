@@ -239,7 +239,7 @@ export function TimelineScroll({
                 m.index === todayCol && 'text-[#0F766E]'
               )}
             >
-              <span className="font-[Space_Grotesk] text-[11px] font-bold tracking-[0.03em]">{m.label}</span>
+              <span className="font-[Syne] text-[11px] font-bold tracking-[0.03em]">{m.label}</span>
               {m.index === todayCol && (
                 <span className="text-[9px] px-1.5 py-0.5 rounded bg-[rgba(15,118,110,0.14)] text-[#0F766E] font-semibold">
                   Hoje
@@ -294,14 +294,14 @@ export function TimelineScroll({
               style={{ left: freeLimit * COL_W, right: 0 }}
             >
               <div className="w-full h-full backdrop-blur-sm bg-[var(--sl-bg)]/70 flex flex-col items-center justify-center gap-3">
-                <span className="text-[15px] font-[Space_Grotesk] font-bold text-[var(--sl-t1)]">
-                  PRO — Projeção 12 meses
+                <span className="text-[15px] font-[Syne] font-bold text-[var(--sl-t1)]">
+                  PRO · Projeção 12 meses
                 </span>
                 <p className="text-[12px] text-[var(--sl-t2)] text-center max-w-[220px]">
                   Desbloqueie a projeção completa de 12 meses com o plano PRO.
                 </p>
                 <button className="px-4 py-2 rounded-full text-white text-[12px] font-bold"
-                  style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}>
+                  style={{ background: 'var(--sl-em)' }}>
                   Ver PRO
                 </button>
               </div>

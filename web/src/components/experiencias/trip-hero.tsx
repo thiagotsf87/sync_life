@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { Clock, MapPin, Users, ChevronRight, CheckSquare } from 'lucide-react'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface TripHeroProps {
   countdownDays: number
@@ -64,7 +65,7 @@ export function TripHero({
           style={{ background: 'linear-gradient(135deg, rgba(199,103,149,.06), rgba(168,85,247,.04))' }}
         >
           <div
-            className="font-[Space_Grotesk] font-extrabold text-[64px] leading-none"
+            className="font-[Syne] font-extrabold text-[64px] leading-none"
             style={{
               background: 'linear-gradient(135deg, #C76795, #a855f7)',
               WebkitBackgroundClip: 'text',
@@ -87,7 +88,7 @@ export function TripHero({
               Proxima Viagem
             </span>
           </div>
-          <div className="font-[Space_Grotesk] font-extrabold text-[22px] mb-2">{name}</div>
+          <div className="font-[Syne] font-extrabold text-[22px] mb-2">{name}</div>
           <div className="flex items-center gap-4 text-[12.5px] text-[var(--sl-t2)] mb-4">
             <span className="flex items-center gap-[5px]">
               <Clock size={14} className="text-[#C76795]" />
@@ -116,12 +117,12 @@ export function TripHero({
                 Orcamento
               </div>
               <div className="font-[IBM_Plex_Mono] text-[17px] font-medium">
-                R$ {budget.toLocaleString('pt-BR')}
+                {fmtBRL(budget)}
               </div>
             </div>
             <div>
               <div className="flex justify-between text-[10px] text-[var(--sl-t3)] mb-[5px]">
-                <span>R$ {spent.toLocaleString('pt-BR')} gastos</span>
+                <span>{fmtBRL(spent)} gastos</span>
                 <span className="text-[#C76795] font-semibold">{pct}%</span>
               </div>
               <div className="w-full h-1.5 bg-[var(--sl-s3)] rounded-[3px] overflow-hidden">

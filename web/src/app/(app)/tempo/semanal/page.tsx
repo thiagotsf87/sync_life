@@ -499,7 +499,7 @@ export default function AgendaSemanalPage() {
         <span>
           Você tem <strong className="text-[#3CA0B5]">{pending} evento{pending !== 1 ? 's' : ''} pendente{pending !== 1 ? 's' : ''}</strong> esta semana.
           {done > 0 ? ` Já concluiu ${done}.` : ''}{' '}
-          Continue mantendo sua agenda organizada! ✨
+          Continue mantendo sua agenda organizada.
         </span>
       } />
 
@@ -669,7 +669,7 @@ export default function AgendaSemanalPage() {
 
     </div>
 
-      {/* Modais — shared by mobile + desktop */}
+      {/* Modais · shared by mobile + desktop */}
       <EventModal
         open={eventModal.open}
         mode={eventModal.mode}

@@ -78,7 +78,7 @@ export function RingProgress({
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
         <span
           className={cn(
-            'font-[Space_Grotesk] font-bold leading-none tabular-nums text-[var(--sl-em)]',
+            'font-[Syne] font-bold leading-none tabular-nums text-[var(--sl-em)]',
             size > 90 ? 'text-2xl' : 'text-lg'
           )}
         >

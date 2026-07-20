@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ChevronLeft } from 'lucide-react'
 import { CARREIRA_PRIMARY, CARREIRA_GRAD } from '@/lib/carreira-colors'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface CarreiraAddPromotionModalProps {
   open: boolean
@@ -68,7 +69,7 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
             <p className="text-[12px] font-medium" style={{ color: '#c4b5fd' }}>
               ✦ Conquista Desbloqueada!
             </p>
-            <p className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)]">Nova Promoção</p>
+            <p className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)]">Nova Promoção</p>
           </div>
           <button onClick={onClose} className="text-[13px] text-[var(--sl-t3)]">Cancelar</button>
         </div>
@@ -83,7 +84,7 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
             NOVO CAPÍTULO DESBLOQUEADO
           </p>
           <p
-            className="font-[IBM_Plex_Mono] text-[28px] font-bold"
+            className="sl-num-strong text-[28px] font-bold"
             style={{ background: grad, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
           >
             +100 XP
@@ -168,26 +169,26 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
             </p>
             <div className="flex justify-between mb-[6px]">
               <span className="text-[12px] text-[var(--sl-t2)]">Salário anterior</span>
-              <span className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t1)] line-through">
-                R$ {currentSalary.toLocaleString('pt-BR')}
+              <span className="sl-num-strong text-[13px] text-[var(--sl-t1)] line-through">
+                {fmtBRL(currentSalary)}
               </span>
             </div>
             <div className="flex justify-between mb-[6px]">
               <span className="text-[12px] text-[var(--sl-t2)]">Novo salário</span>
-              <span className="font-[IBM_Plex_Mono] text-[13px] font-semibold" style={{ color: accent }}>
-                R$ {newSalary.toLocaleString('pt-BR')}
+              <span className="sl-num-strong text-[13px] font-semibold" style={{ color: accent }}>
+                {fmtBRL(newSalary)}
               </span>
             </div>
             <div className="h-px bg-[var(--sl-border)] my-2" />
             <div className="flex justify-between">
               <span className="text-[12px] font-semibold text-[var(--sl-t1)]">Aumento</span>
-              <span className="font-[IBM_Plex_Mono] text-[14px] font-bold text-[#0F766E]">
-                {diff > 0 ? '+' : ''}{diffPct}% · {diff > 0 ? '+' : ''}R$ {Math.abs(diff).toLocaleString('pt-BR')}/mês
+              <span className="sl-num-strong text-[14px] font-bold text-[var(--sl-em)]">
+                {diff > 0 ? '+' : ''}{diffPct}% · {diff > 0 ? '+' : '– '}{fmtBRL(Math.abs(diff))}/mês
               </span>
             </div>
             {diff > 0 && (
               <p className="text-[10px] text-[#c4b5fd] font-semibold mt-[6px]">
-                ⚡ Impacto anual: +R$ {annualGain.toLocaleString('pt-BR')} · Patrimônio acelera
+                ⚡ Impacto anual: +{fmtBRL(annualGain)} · Patrimônio acelera
               </p>
             )}
           </div>
@@ -211,7 +212,7 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
             <button
               onClick={() => setSyncFinance(!syncFinance)}
               className="w-10 h-[22px] rounded-full relative transition-all"
-              style={{ background: syncFinance ? '#0F766E' : 'var(--sl-s3)' }}
+              style={{ background: syncFinance ? 'var(--sl-em)' : 'var(--sl-s3)' }}
             >
               <div className="w-4 h-4 rounded-full bg-white absolute top-[3px] transition-all"
                 style={{ left: syncFinance ? '21px' : '3px' }} />
@@ -226,7 +227,7 @@ export function CarreiraAddPromotionModal({ open, onClose, onSave, currentSalary
             disabled={saving || !title.trim() || !salary}
             className="w-full rounded-[14px] text-white font-semibold disabled:opacity-50"
             style={{
-              background: grad,
+              background: 'var(--sl-em)',
               height: '54px',
               fontSize: '16px',
               fontWeight: 700,

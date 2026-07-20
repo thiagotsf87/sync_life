@@ -1,7 +1,7 @@
 # SyncLife — Design System v3
 
 > **Fonte única de verdade** para implementação visual do SyncLife.
-> **Última atualização:** mar/2026 · **Status:** pronto pra implementação na branch `redesign/visual-refresh-v3`
+> **Última atualização:** mai/2026 · **Status:** migração v2 → v3 concluída na branch `redesign/visual-refresh-v3`
 
 ---
 
@@ -43,13 +43,15 @@ Todos os valores ficam em `tokens-v3.css`. Use **sempre via variável CSS**, nun
 
 | Token | Hex | Uso |
 |---|---|---|
-| `--sl-em` | `#0F766E` | **Accent primário** (CTAs, focus, key data) |
+| `--sl-em` | `#0F766E` | **Accent primário de marca** (CTAs, focus, key data). Distinto de `--sl-success` |
 | `--sl-em-soft` | `rgba(15,118,110,0.12)` | Backgrounds de accent (chips, badges) |
 | `--sl-em-strong` | `#138A80` | Hover de accent |
 | `--sl-el` | `#0B2D34` | Azul Petróleo profundo (text accent em light, glow em dark) |
 | `--sl-mist` | `#96D1C6` | Verde Névoa — toques sutis (borders no light theme) |
 | `--sl-gold` | `#D9C89A` | Areia Dourada — marcos especiais, estrela do logo, conquistas raras |
 | `--sl-grad` | `linear-gradient(135deg, #0F766E, #0B2D34)` | **APENAS** em logo e ring de metas |
+
+> **Importante:** `--sl-em` (`#0F766E`, petróleo profundo) é o **accent de marca** (CTAs, focus, brand). `--sl-success` (`#1FA67A`, esmeralda viva) é a **cor de status positivo**. Eles são **distintos**, não conflate. CTAs sempre `--sl-em`, indicadores "ok" sempre `--sl-success`.
 
 ### 2.2 Cores por módulo (identificação, não accent)
 
@@ -73,7 +75,7 @@ Todos os valores ficam em `tokens-v3.css`. Use **sempre via variável CSS**, nun
 
 | Token | Hex | Uso |
 |---|---|---|
-| `--sl-success` | `#0F766E` | Receitas, ≤70% orçamento, on track |
+| `--sl-success` | `#1FA67A` | Receitas, ≤70% orçamento, on track (verde vivo, distinto de `--sl-em` brand) |
 | `--sl-warning` | `#D9962E` | 70-85% orçamento, atenção |
 | `--sl-danger` | `#DB6478` | Despesas, >85% orçamento, erros |
 | `--sl-info` | `#3CA0B5` | Agenda, neutralidade |
@@ -82,9 +84,9 @@ Cada um tem variação `-bg` (opacity 10%) para backgrounds de chips.
 
 ### 2.4 Superfícies por tema
 
-**4 temas oficiais (reduzido de 12)**. Controlados via `data-theme` no `<html>`.
+**4 temas oficiais (reduzido de 12)**. Controlados via `data-theme` no `<html>`. Os 8 temas antigos (Obsidian, Rosewood, Graphite, Twilight, Mint Garden, Arctic, Sahara, Blossom, Serenity) foram **removidos** na v3 — legacy IDs são mapeados em `(app)/layout.tsx`.
 
-| Token | Navy (default) | Midnight | Carbon | Cream (light) |
+| Token | Navy Deep (default) | Midnight | Charcoal | Cream (light) |
 |---|---|---|---|---|
 | `--sl-bg` | `#0B0F14` | `#0F0B1F` | `#181818` | `#F5F2EC` |
 | `--sl-s1` (card) | `#131922` | `#161232` | `#222222` | `#FFFFFF` |
@@ -134,11 +136,11 @@ Cada um tem variação `-bg` (opacity 10%) para backgrounds de chips.
 
 | Família | Papel | Pesos |
 |---|---|---|
-| **Space Grotesk** | Display — títulos, scores, KPIs, números | 500, 600, 700 |
-| **DM Sans** | Body — textos, labels, botões | 400, 500, 600 |
-| **IBM Plex Mono** | Mono — timestamps, IDs, código | 400, 500 |
+| **Syne** | Display — títulos, scores, KPIs, números (Space Grotesk fallback) | 500, 600, 700, 800 |
+| **DM Sans** | Body — textos, labels, botões (unificado desktop + mobile) | 400, 500, 600 |
+| **IBM Plex Mono** | Mono — APENAS timestamps, IDs, código (zero sem corte) | 400, 500 |
 
-> ⚠️ **Substituições do app v2**: Syne → Space Grotesk · Outfit → DM Sans · DM Mono → IBM Plex Mono (zero sem corte).
+> ⚠️ **Substituições do app v2**: Outfit → DM Sans · DM Mono → IBM Plex Mono · Syne mantida como display primary com Space Grotesk como fallback (ambas carregadas via `next/font/google`).
 
 ### 3.2 Escala
 
@@ -158,11 +160,12 @@ Cada um tem variação `-bg` (opacity 10%) para backgrounds de chips.
 ### 3.3 Classes utilitárias
 
 ```css
-.sl-num         /* Space Grotesk 500 + tabular-nums (use em todo valor) */
-.sl-num-strong  /* Space Grotesk 600 + tabular-nums (KPIs, hero) */
+.sl-num         /* Syne 500 + tabular-nums + letter-spacing -0.015em (valores em listas) */
+.sl-num-strong  /* Syne 600 + tabular-nums + letter-spacing -0.02em (KPIs, hero) */
+.font-display   /* Syne — alias para títulos */
 ```
 
-**Regra G-02:** todo valor monetário/percentual usa `.sl-num` ou `.sl-num-strong`, NUNCA mono.
+**Regra G-02:** todo valor monetário/percentual/contagem usa `.sl-num` ou `.sl-num-strong` (Syne + tabular-nums), **NUNCA** mono. IBM Plex Mono fica restrito a timestamps/IDs/código.
 
 ### 3.4 Máscara de valores
 
@@ -174,13 +177,15 @@ Cada um tem variação `-bg` (opacity 10%) para backgrounds de chips.
 | Negativo | `– R$ X,XX` (en-dash + espaço) | `– R$ 320,00` |
 | Delta | `+X%` ou `-X%` em cor | `+12%` (verde), `-5%` (vermelho) |
 
-Helper de referência:
-```js
-const fmtBRL = (n, { compact = false } = {}) => {
-  if (compact && Math.abs(n) >= 1000)
-    return 'R$ ' + (n / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'k';
-  return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-};
+Helper canônico em `@/lib/format/currency.ts` (importar **sempre**, não recriar local):
+```ts
+import { fmtBRL, fmtPct, fmtDelta } from '@/lib/format/currency'
+
+fmtBRL(1840)                 // "R$ 1.840,00"
+fmtBRL(24500, { compact: true }) // "R$ 24,5k"
+fmtPct(8.2, 1)               // "8,2%"
+fmtDelta(12, 'pct')          // "+12,0%"
+fmtDelta(-320, 'brl')        // "– R$ 320,00"
 ```
 
 ---
@@ -254,12 +259,17 @@ Card de métrica com label + valor + delta.
 
 ### 5.2 Form primitives
 
-| Componente | Props principais | Onde foi prototipado |
+Todos implementados em `@/components/ui/`. Use sempre os componentes do design system, não rolar inputs raw.
+
+| Componente | Props principais | Status |
 |---|---|---|
-| `<TextField>` | `label, value, placeholder, hint, type, readOnly, prefix, suffix` | Configurações |
-| `<SelectField>` | `label, value, options` | Configurações |
-| `<ToggleRow>` | `label, sub, defaultOn` | Configurações |
-| `<AuthField>` | (variante simplificada de TextField pra Login/Cadastro) | Auth |
+| `<TextField>` | `label, hint, error, type, placeholder, prefix, suffix, value, onChange` (forwardRef) | ✅ Implementado |
+| `<SelectField>` | `label, value, onChange, options: {value, label}[], hint, error` (ChevronDown overlay) | ✅ Implementado |
+| `<ToggleRow>` | `label, sub, defaultOn` ou `checked + onChange`. Reusa `<ToggleSwitch>` | ✅ Implementado |
+| `<SectionHeader>` | `eyebrow, title, sub` — eyebrow numerada uppercase em `--sl-em` (G-09) | ✅ Implementado |
+| `<SaveBar>` | `hasChanges, onSave, onDiscard, saving` — pill sticky no bottom (G-08) | ✅ Implementado |
+| `<DangerZone>` | Card com borda `--sl-danger` translúcida + ações destrutivas | ✅ Implementado |
+| `<AuthField>` | Variante simplificada de TextField pra Login/Cadastro | ✅ Implementado |
 
 **Regras gerais de form:**
 - Background do input: `--sl-s2`
@@ -327,13 +337,16 @@ Linha SVG + área com gradient sob a linha. Tooltip ao hover (G-01).
 
 | Componente | Uso |
 |---|---|
-| `<HeroScore>` | Card hero com score em fonte gigante + sparkline + pill (Panorama) |
-| `<HeroLevel>` | Variação com ring SVG + nível + XP (Conquistas) |
-| `<ProfileHero>` | Hero com avatar gradient + nome + meta info (Configurações) |
-| `<ConsultorIA>` | Card com 4 insight tiles + chat input (Finanças, Dashboard) |
+| `<HeroScoreMassive>` | Hero único do Dashboard: score `clamp(80,11vw,120px)` em Syne + sparkline + pill (`@/components/dashboard/`) |
+| `<HeroLevel>` | Ring SVG 150px com `--sl-grad` (exceção G-03) + nível Syne 64px + side rail (Conquistas) |
+| `<ProfileHero>` | Hero Config com avatar gradient 88px + dot online + PRO/FREE badge + nome Syne |
+| `<AiConsultant>` (= ConsultorIA) | Card hero com 4 insight tiles 2×2 + ask input (Finanças) |
 | `<SaveBar>` | Pill sticky no rodapé "Você tem N alterações" + Descartar/Salvar |
 | `<DangerZone>` | Card com borda vermelha + 2 ações destrutivas (Configurações) |
 | `<BottomSheet>` | Sheet mobile com handle + content (Captura, Picker) |
+| `<SyncLifeLockup>` | Logo lockup: mark PNG + texto "Sync" + "Life" (auth/marketing). Props: `height, withTagline` |
+| `<SparklineCurve>` | SVG curve (Catmull-Rom→Bezier) + área gradient + dot final |
+| `<FinancialStrip>` | KPI strip 4 cols com divisores: Saldo / Receitas / Despesas / Poupança |
 
 ---
 
@@ -579,10 +592,10 @@ Mapping de tokens antigos para novos. Use isso na branch `redesign/visual-refres
 
 | v2 | v3 |
 |---|---|
-| Syne (display) | **Space Grotesk** (display) |
+| Syne (display) | **Syne** mantida (Space Grotesk como fallback) |
 | Outfit (body desktop) | **DM Sans** (body unificado) |
 | DM Sans (body mobile) | **DM Sans** (mesmo) |
-| DM Mono (mono) | **IBM Plex Mono** (zero sem corte) |
+| DM Mono (mono) | **IBM Plex Mono** (zero sem corte) — restrita a timestamps/IDs/código |
 
 ### 10.3 Iconografia
 
@@ -643,5 +656,5 @@ Itens identificados na avaliação UX (mar/2026) que ficaram fora do escopo dos 
 
 ---
 
-**SyncLife Design System v3 · mar/2026**
-*Atualizar este documento ao criar novos padrões ou alterar tokens.*
+**SyncLife Design System v3 · mai/2026**
+*Atualizar este documento ao criar novos padrões ou alterar tokens. Mantém paridade com `CLAUDE.md` (raiz) que é o handbook de implementação.*

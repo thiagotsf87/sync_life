@@ -30,7 +30,7 @@ export function EmptyState({
       >
         <Icon size={48} style={{ color: accent }} strokeWidth={1.5} />
       </div>
-      <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+      <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
         {title}
       </h3>
       {description && (

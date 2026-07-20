@@ -87,7 +87,7 @@ export function AccommodationModal({
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl w-full max-w-[480px] max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-[var(--sl-border)]">
-          <h2 className="font-[Space_Grotesk] font-bold text-[14px] text-[var(--sl-t1)]">🏨 Adicionar Hospedagem</h2>
+          <h2 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)]">Adicionar hospedagem</h2>
           <button onClick={onClose} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl">×</button>
         </div>
         <div className="p-5 flex flex-col gap-3">

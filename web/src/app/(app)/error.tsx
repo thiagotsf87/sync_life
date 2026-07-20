@@ -22,7 +22,7 @@ export default function AppError({
         <AlertTriangle className="h-8 w-8 text-[#DB6478]" />
       </div>
       <div className="flex flex-col gap-2">
-        <h2 className="font-[Space_Grotesk] text-xl font-extrabold text-[var(--sl-t1)]">
+        <h2 className="font-[Syne] text-xl font-extrabold text-[var(--sl-t1)]">
           Algo deu errado
         </h2>
         <p className="max-w-md text-sm text-[var(--sl-t2)]">

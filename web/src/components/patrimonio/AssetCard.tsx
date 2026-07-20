@@ -1,7 +1,8 @@
 'use client'
 
-import { Trash2, TrendingUp, TrendingDown } from 'lucide-react'
+import { Trash2, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 import type { PortfolioAsset } from '@/hooks/use-patrimonio'
 import { ASSET_CLASS_LABELS, ASSET_CLASS_COLORS } from '@/hooks/use-patrimonio'
 
@@ -42,10 +43,10 @@ export function AssetCard({ asset, onDelete, onUpdatePrice }: AssetCardProps) {
         <div className="flex items-center gap-1 shrink-0">
           {onUpdatePrice && (
             <button onClick={() => onUpdatePrice(asset.id)}
-              className="p-1.5 rounded-lg hover:bg-[var(--sl-s3)] transition-colors text-[10px] font-semibold text-[var(--sl-t3)] hover:text-[var(--sl-t1)]"
+              className="p-1.5 rounded-lg hover:bg-[var(--sl-s3)] transition-colors text-[var(--sl-t3)] hover:text-[var(--sl-t1)]"
               title="Atualizar cotação"
             >
-              💲
+              <RefreshCw size={12} />
             </button>
           )}
           {onDelete && (
@@ -68,20 +69,20 @@ export function AssetCard({ asset, onDelete, onUpdatePrice }: AssetCardProps) {
         <div>
           <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">PM</p>
           <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">
-            {asset.avg_price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            {fmtBRL(asset.avg_price)}
           </p>
         </div>
         <div>
           <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Investido</p>
           <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">
-            {invested.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            {fmtBRL(invested)}
           </p>
         </div>
         {currentValue != null ? (
           <div>
             <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-wider">Atual</p>
             <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">
-              {currentValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              {fmtBRL(currentValue)}
             </p>
           </div>
         ) : (
@@ -99,7 +100,7 @@ export function AssetCard({ asset, onDelete, onUpdatePrice }: AssetCardProps) {
         )}>
           {profitLoss >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
           <span className="font-[IBM_Plex_Mono] text-[11px] font-semibold">
-            {profitLoss >= 0 ? '+' : ''}{profitLoss.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            {profitLoss >= 0 ? '+' : '– '}{fmtBRL(Math.abs(profitLoss))}
           </span>
           <span className="text-[10px] opacity-80">
             ({profitLossPct >= 0 ? '+' : ''}{profitLossPct.toFixed(2)}%)

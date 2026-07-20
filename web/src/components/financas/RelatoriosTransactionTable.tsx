@@ -88,7 +88,7 @@ export function RelatoriosTransactionTable({ transactions }: RelatoriosTransacti
           <tbody>
             {paginatedTxs.map(txn => (
               <tr key={txn.id} className="group">
-                <td className="px-2.5 py-[9px] border-b border-[var(--sl-border)] font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] group-hover:bg-[var(--sl-s2)]">
+                <td className="px-2.5 py-[9px] border-b border-[var(--sl-border)] font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] group-hover:bg-[var(--sl-s2)] whitespace-nowrap">
                   {formatDate(txn.date)}
                 </td>
                 <td className="px-2.5 py-[9px] border-b border-[var(--sl-border)] text-[var(--sl-t1)] font-medium max-w-[160px] truncate text-[12px] group-hover:bg-[var(--sl-s2)]">
@@ -108,10 +108,10 @@ export function RelatoriosTransactionTable({ transactions }: RelatoriosTransacti
                   {txn.payment_method ? (PAYMENT_METHOD_LABELS[txn.payment_method] ?? txn.payment_method) : '—'}
                 </td>
                 <td className={cn(
-                  'px-2.5 py-[9px] border-b border-[var(--sl-border)] font-[IBM_Plex_Mono] text-[12px] font-medium text-right group-hover:bg-[var(--sl-s2)]',
+                  'px-2.5 py-[9px] border-b border-[var(--sl-border)] sl-num text-[12px] text-right group-hover:bg-[var(--sl-s2)]',
                   txn.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]'
                 )}>
-                  {txn.type === 'income' ? '+' : '−'}{fmtR(txn.amount)}
+                  {txn.type === 'income' ? '+' : '− '}{fmtR(txn.amount)}
                 </td>
               </tr>
             ))}

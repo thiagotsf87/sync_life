@@ -59,7 +59,7 @@ web/
 | Módulo | Rota base | Cor v3 | Cor v2 (antiga) |
 |--------|-----------|--------|-----------------|
 | Panorama | `/dashboard` | `#6B6FD4` | `#6366f1` |
-| Finanças | `/financas` | `#0F766E` (= accent) | `#10b981` |
+| Finanças | `/financas` | `#1FA67A` (= success) | `#10b981` |
 | Futuro | `/futuro` | `#8B7BD4` | `#8b5cf6` |
 | Tempo | `/tempo` | `#3CA0B5` | `#06b6d4` |
 | Corpo | `/corpo` | `#D97534` | `#f97316` |
@@ -82,7 +82,7 @@ web/
 4. **Imports absolutos** com `@/` — nunca `../../`.
 5. **shadcn/ui primeiro** — antes de criar um componente do zero, verificar se existe em `@/components/ui/`.
 6. **Fontes (v3):**
-   - **Space Grotesk** — display: títulos, scores, KPIs, **todos os números de valor** (peso 500/600/700)
+   - **Syne** — display: títulos, scores, KPIs, **todos os números de valor** (peso 500/600/700/800). Space Grotesk é fallback.
    - **DM Sans** — body unificado (desktop e mobile, sem mudar entre devices)
    - **IBM Plex Mono** — APENAS para timestamps, IDs, código (zero sem corte, ao contrário do DM Mono)
 7. **Zod em API routes** — todo body de POST deve ser validado com Zod schema antes de processar.
@@ -150,12 +150,14 @@ Temas controlados via `data-theme` no `<html>`. Selecionado via Zustand store e 
 
 ```tsx
 const STATUS = {
-  success: '#0F766E',  // = accent — receitas, ≤70% orçamento, on track
+  success: '#1FA67A',  // verde vivo — receitas, Finanças, ≤70% orçamento, on track (distinto do accent --sl-em #0F766E)
   warning: '#D9962E',  // âmbar — 70-85% orçamento, atenção
   danger:  '#DB6478',  // coral-vermelho — despesas, >85%, erros
   info:    '#3CA0B5',  // ciano — agenda, neutralidade
 }
 ```
+
+> **Importante:** `--sl-em` (`#0F766E`, petróleo profundo) é o **accent de marca** (CTAs, foco, brand). `--sl-success` (`#1FA67A`, esmeralda viva) é a **cor de status positivo**. Eles são **distintos**, não conflate.
 
 Cada um tem variação `-bg` (opacity 10%) para backgrounds de chips.
 
@@ -175,10 +177,10 @@ function getProgressColor(pct: number): string {
 
 ```tsx
 // Display — títulos, KPIs, scores, valores numéricos
-<h1 className="font-[Space_Grotesk] font-bold text-3xl tracking-tight">Dashboard</h1>
+<h1 className="font-[Syne] font-bold text-3xl tracking-tight">Dashboard</h1>
 
-// Valores numéricos (moeda, %, contagens) — Space Grotesk + tabular-nums
-<span className="font-[Space_Grotesk] font-medium tabular-nums text-xl text-[var(--sl-em)]">
+// Valores numéricos (moeda, %, contagens) — Syne + tabular-nums (via .sl-num/.sl-num-strong)
+<span className="sl-num-strong text-xl text-[var(--sl-em)]">
   R$ 1.840,00
 </span>
 
@@ -199,8 +201,9 @@ function getProgressColor(pct: number): string {
 #### Classes utilitárias
 
 ```css
-.sl-num         /* Space Grotesk 500 + tabular-nums (valores em listas) */
-.sl-num-strong  /* Space Grotesk 600 + tabular-nums (KPIs, hero) */
+.sl-num         /* Syne 500 + tabular-nums + letter-spacing -0.015em (valores em listas) */
+.sl-num-strong  /* Syne 600 + tabular-nums + letter-spacing -0.02em (KPIs, hero) */
+.font-display   /* Syne — alias para títulos quando não usar font-[Syne] inline */
 ```
 
 **Regra G-02:** todo valor monetário/percentual/contagem usa `.sl-num` ou `.sl-num-strong`, **nunca** mono.
@@ -328,7 +331,7 @@ CTA final + Footer 5 colunas
 | Regra | Resumo |
 |---|---|
 | **G-01** Tooltips obrigatórias | Todo gráfico (barras, linhas, donut, sparkline interativa) DEVE ter tooltip ao hover usando `<ChartTooltip>` |
-| **G-02** Mono apenas timestamps/IDs | IBM Plex Mono restrito a hora, código, IDs. Valores numéricos = Space Grotesk + tabular-nums |
+| **G-02** Mono apenas timestamps/IDs | IBM Plex Mono restrito a hora, código, IDs. Valores numéricos = Syne + tabular-nums (`.sl-num`/`.sl-num-strong`) |
 | **G-03** Gradient só em logo + ring | `--sl-grad` proibido em botões, backgrounds, scores, eyebrows |
 | **G-04** Scroll invisível em mobile | Containers em bezel mobile recebem `.phone-scroll` (scrollbar hidden) |
 | **G-05** UM hero por tela | Cada tela tem 1 card hero (rounded-2xl, padding maior, ruído sutil opcional). Resto secundário |
@@ -340,32 +343,72 @@ CTA final + Footer 5 colunas
 
 ---
 
-## Componentes base v3 (em `@/components/ui/`)
+## Componentes base v3 (em `@/components/`)
 
-### Layout & estrutura
+### Layout & estrutura (em `@/components/ui/`)
 
 | Componente | Uso |
 |---|---|
 | `<SLCard>` | Container base. bg `--sl-s1`, border `--sl-border`, radius 16px. Props: `hover`, `hero`, `noPadding` |
 | `<KpiCard>` | Métrica com eyebrow + valor `.sl-num-strong` + delta. Props: `label`, `value`, `delta`, `deltaType`, `accent`, `icon` |
-| `<HeroScore>` | Hero com score em fonte gigante + sparkline + pill (Panorama) |
-| `<HeroLevel>` | Hero variant com ring SVG + nível + XP (Conquistas) |
-| `<ProfileHero>` | Hero com avatar gradient + nome + meta info (Configurações) |
-| `<ConsultorIA>` | Card com 4 insight tiles + chat input (Finanças, Dashboard) |
-| `<SaveBar>` | Pill sticky no rodapé com Descartar/Salvar |
+| `<SaveBar>` | Pill sticky no rodapé com Descartar/Salvar. Props: `hasChanges, onSave, onDiscard, saving` (G-08) |
 | `<DangerZone>` | Card com borda `--sl-danger` translúcida + ações destrutivas |
 | `<BottomSheet>` | Sheet mobile com handle + content |
+| `<SectionHeader>` | Eyebrow numerada uppercase em `--sl-em` + título + sub. Props: `eyebrow, title, sub` (G-09) |
 
-### Form primitives
+### Brand (em `@/components/`)
+
+| Componente | Uso |
+|---|---|
+| `<SyncLifeLockup>` | Logo lockup: mark PNG + texto "Sync" (`--sl-t1`) + "Life" (`--sl-em`) + tagline opcional. Props: `height, withTagline`. Usado em auth e marketing. |
+
+### Form primitives (em `@/components/ui/`)
 
 | Componente | Props principais |
 |---|---|
-| `<TextField>` | `label, value, placeholder, hint, type, readOnly, prefix, suffix` |
-| `<SelectField>` | `label, value, options` |
-| `<ToggleRow>` | `label, sub, defaultOn` |
-| `<SectionHeader>` | `eyebrow, title, sub` (eyebrow uppercase letterspaced em `--sl-em`) |
+| `<TextField>` | `label, hint, error, type, placeholder, prefix, suffix, value, onChange` (forwardRef) |
+| `<SelectField>` | `label, value, onChange, options: {value, label}[], hint, error` (com ChevronDown overlay) |
+| `<ToggleRow>` | `label, sub, defaultOn` ou `checked + onChange`. Reusa `<ToggleSwitch>` |
 
-### Indicadores
+### Dashboard (em `@/components/dashboard/`)
+
+| Componente | Uso |
+|---|---|
+| `<HeroScoreMassive>` | Hero único do Dashboard: score `clamp(80,11vw,120px)` em Syne + sparkline + pill status + "Como melhorar →" |
+| `<SparklineCurve>` | SVG curve (Catmull-Rom→Bezier) + área gradient + dot final |
+| `<FinancialStrip>` | KPI strip 4 cols com divisores: Saldo / Receitas / Despesas / Poupança |
+| `<HighlightsCard>` | Card lateral com Corpo + Patrimônio + Próxima viagem |
+
+### Finanças (em `@/components/financas/`)
+
+| Componente | Uso |
+|---|---|
+| `<KpiStrip>` | 4 cards Receitas/Despesas/Saldo/Poupança em valores `.sl-num-strong` |
+| `<HealthBand>` | Alerta horizontal com border-left status + eyebrow vertical + CTA "Ver análise →" |
+| `<AiConsultant>` (= ConsultorIA) | Card hero com header + 4 insight tiles 2×2 (border-left status colorido) + input ask |
+| `<HistoricoChart>` | Grid 1.4fr/1fr: BarChart Receitas vs Despesas + Donut Gastos por categoria com lista lateral |
+| `<FluxoCaixaSection>` | Eyebrow "FLUXO DE CAIXA" + H3 "Saldo dia a dia" + timeline scroll horizontal |
+
+### Conquistas (em `@/components/conquistas/`)
+
+| Componente | Uso |
+|---|---|
+| `<HeroLevel>` | Ring SVG 150px com `--sl-grad` (exceção G-03) + nível em Syne 64px + side rail (Top X% + SuperPaws) |
+| `<ConqKpiStrip>` | 4 KPIs: Badges / Streak / Economizado (fmtBRL) / SuperPaws |
+| `<RecentBadges>` | 3 cards horizontais com ícone tinted + RarityPill + data |
+| `<CategoryProgress>` | Lista 7 categorias com barra horizontal colorida + `X/Y` badges |
+| `<FriendsRanking>` | Top 5 com avatar inicial + nível + SuperPaws. "Você" destacado |
+| `<BadgeCollection>` | Grid 6 cols xl / 4 md / 2 sm + filtros pill por categoria + toggle "Mostrar bloqueadas" |
+| `<BadgeCard>` | Card individual. Locked = `opacity-40 grayscale + <X>` (G-07, NUNCA 🔒) |
+| `<RarityPill>` | `comum/rara/epica/lendaria` com cores: t3 / info / mod-fut / gold |
+
+### Configurações (em `@/components/`)
+
+| Componente | Uso |
+|---|---|
+| `<ProfileHero>` | Hero com avatar gradient 88px + dot online + PRO/FREE badge + nome Syne + meta info + "Ver perfil público →" |
+
+### Indicadores (em `@/components/ui/`)
 
 | Componente | Uso |
 |---|---|
@@ -374,24 +417,29 @@ CTA final + Footer 5 colunas
 | `<Sparkline>` | Linha SVG + área com gradient + tooltip ao hover (G-01) |
 | `<ChartTooltip>` | Padrão de tooltip. bg `--sl-s-hero`, shadow longo. Conteúdo: título → linhas key/value → divisor opcional |
 
-### Chips, pills, badges
+### Chips, pills, badges (em `@/components/ui/`)
 
 | Componente | Uso |
 |---|---|
 | `<StatusTag>` | `success/warning/danger/info/cyan/orange/gray` |
 | `<DomainChip>` | Pill com dot colorido + nome do módulo |
-| `<RarityPill>` | `comum/rara/épica/lendária` (Conquistas) |
 | `<KbdChip>` | Atalho de teclado (`⌘K`, `↵`, `esc`) — IBM Plex Mono |
 | `<StreakBadge>` | Ícone Flame + N dias |
 
-### Layout shells
+### Layout shells (em `@/components/shell/`)
 
 | Componente | Uso |
 |---|---|
-| `<ModuleRail>` | Sidebar esquerda 60px. Item ativo: `border-left 2px` na cor do módulo |
-| `<SubNav>` | Sidebar interna 240px com mini-card KPI âncora no topo + sub-rotas |
-| `<TopBar>` | Header desktop com data eyebrow + saudação h1 + ações |
-| `<MobileTabBar>` | Pill flutuante com 5 tabs e center `+` primary elevado |
+| `<ModuleBar>` | Rail esquerda 60-72px. Item ativo: `border-left 2-3px` na cor do módulo + dot/glow |
+| `<Sidebar>` | Sidebar interna 228px com `<SidebarScore>` no topo + sub-rotas do módulo ativo |
+| `<SidebarScore>` | Mini-card âncora **per-módulo** (detecta `activeModule` via `useShellStore`). Renderiza eyebrow + value + delta + progress bar via hooks reais: `useScoreEngine`, `useBudgets`, `useXP`. Retorna `null` em Configurações. |
+| `<TopHeader>` | Header desktop **enxuto** (h-48px). Theme pill + notif bell + toggle sidebar. **Sem saudação** — saudação fica em cada `page.tsx`. |
+| `<MobileBottomBar>` | Pill flutuante mobile com 5 tabs + center `+` FAB sólido `var(--sl-em)` (G-03) |
+
+### Auth (em `@/components/SyncLifeLockup.tsx` + `app/(auth)/`)
+
+- **Auth layout** força tema dark via `data-theme="navy-deep" data-scheme="dark"` no wrapper `.auth-page`. Isso ignora a preferência de tema do user porque o protótipo de auth foi feito dark-only.
+- Use `<SyncLifeLockup height={120} withTagline />` no painel visual e `<SyncLifeLockup height={56} />` no formulário (centralizado via `.auth-logo-brand-link { display: flex; justify-content: center }`).
 
 ---
 
@@ -413,7 +461,7 @@ export default function NomeDaTela() {
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-1.5">
             FINANÇAS · MAIO 2026
           </p>
-          <h1 className="font-[Space_Grotesk] font-bold text-3xl tracking-tight text-[var(--sl-t1)]">
+          <h1 className="font-[Syne] font-bold text-3xl tracking-tight text-[var(--sl-t1)]">
             Visão geral
           </h1>
         </div>
@@ -508,50 +556,28 @@ Todas as APIs de IA exigem autenticação Supabase e verificam env vars.
 
 ---
 
-## Migração v2 → v3 (checklist)
+## Migração v2 → v3 (concluída — Mai 2026)
 
-Use a branch `redesign/visual-refresh-v3` para migrar. Em ordem:
+Branch `redesign/visual-refresh-v3`. Migração estrutural completa nas 7 telas-base (Landing, Login, Cadastro, Dashboard, Finanças, Conquistas, Configurações) + Mobile Dashboard.
 
-### 1. Tokens
-- [ ] Substituir `synclife-tokens.css` por `tokens-v3.css`
-- [ ] Find/replace cores antigas → novas (ver `DESIGN-SYSTEM-v3.md` §10.1)
-- [ ] Remover classes `body.jornada` e `body.light.jornada` do código (legado)
+**Resumo das mudanças aplicadas:**
+- Tokens: `synclife-tokens.css` removido; `globals.css` + `themes.css` espelham `tokens-v3.css`. Cores migradas (paleta v2 → dessaturada v3, vide tabela §"Módulos"). `--sl-em #0F766E` (brand) distinto de `--sl-success #1FA67A`.
+- Tipografia: Syne carregada via `next/font/google` como primária para display/números. DM Sans body unificado. IBM Plex Mono restrito a timestamps/IDs. DM Mono e Outfit removidos.
+- Temas: 12 → 4 (`navy-deep` default, `midnight`, `charcoal`, `cream`). Map de migração legacy em `(app)/layout.tsx`. Auth força `navy-deep`.
+- Iconografia: ~150 emojis migrados para Lucide React. Logo via `<SyncLifeLockup>` (mark PNG + texto). G-07 aplicado em chrome.
+- Componentes: criados `<TextField>`, `<SelectField>`, `<ToggleRow>`, `<SectionHeader>`, `<SaveBar>`, `<DangerZone>`, `<SyncLifeLockup>`, família Conquistas (`HeroLevel`, `BadgeCollection`, etc.), família Dashboard (`HeroScoreMassive`, `SparklineCurve`, `FinancialStrip`, `HighlightsCard`).
+- Sidebar: `<SidebarScore>` refatorado para mostrar dado real per-módulo (não mais hardcoded "74").
+- TopHeader: saudação removida (page header é o único). Altura reduzida.
+- Botões: sem gradient (G-03). `--sl-em` sólido nos CTAs.
+- DB: migration `026_profile_v3_columns.sql` adiciona `preferred_name`, `phone`, `bio`, `language`, `date_format`, `week_start` em `profiles`.
 
-### 2. Tipografia
-- [ ] `font-[Syne]` → `font-[Space_Grotesk]`
-- [ ] `font-[DM_Mono]` em **valores** → `font-[Space_Grotesk]` + `tabular-nums` (classe `.sl-num` ou `.sl-num-strong`)
-- [ ] `font-[DM_Mono]` em **timestamps/IDs** → `font-[IBM_Plex_Mono]`
-- [ ] `font-[Outfit]` no desktop → `font-[DM_Sans]` (unificar com mobile)
+**Pendências não-bloqueantes:**
+- Mobile screens fora de Dashboard (FinancasMobile, ConquistasMobile etc.) ainda seguem padrão antigo — protótipo só tem `mobile/Mobile.jsx`.
+- ~35 arquivos mobile genéricos podem ter emojis residuais — sweep futuro.
+- ~70 ocorrências de `toLocaleString` manual fora de Finanças — substituir por `fmtBRL`.
+- ~87 `any` types em hooks (use-score-engine, use-relatorio-completo, use-badge-engine).
 
-### 3. Temas
-- [ ] Reduzir `themes.css` de 12 → 4 temas: `navy-deep`, `midnight`, `charcoal`, `cream`
-- [ ] Atualizar `ThemeId` em `types/shell.ts`
-- [ ] Migrar profile dos usuários: temas antigos → mapear para `navy-deep` (default)
-
-### 4. Iconografia
-- [ ] Substituir TODOS os emojis (🐷🎯📅🏥📚) por Lucide React imports
-- [ ] Atualizar mapping de ícones por módulo em `lib/icons.ts`
-- [ ] Aplicar logo PNG v3 (mark + lockup) — copiar de `assets/logo-*.png`
-
-### 5. Componentes
-- [ ] Migrar `.card` legado → `<SLCard>`
-- [ ] Migrar `.kpi-card` legado → `<KpiCard>`
-- [ ] Adicionar novos: `<TextField>`, `<SelectField>`, `<ToggleRow>`, `<SectionHeader>`, `<SaveBar>`, `<DangerZone>`, `<RarityPill>`, `<ChartTooltip>`
-- [ ] Refatorar todos os gráficos para incluir `<ChartTooltip>` (G-01)
-
-### 6. Botões
-- [ ] Remover gradient esmeralda→azul de TODOS os botões primary (regra G-03)
-- [ ] Aplicar `--sl-em` sólido como bg de `.btn-primary`
-
-### 7. Telas (ordem sugerida)
-1. Dashboard (Panorama) — `/dashboard`
-2. Finanças visão geral — `/financas`
-3. Conquistas — `/conquistas`
-4. Configurações — `/configuracoes`
-5. Login + Cadastro — `/(auth)/login`, `/(auth)/cadastro`
-6. Landing — `/`
-7. Mobile (todas as telas)
-8. Demais 38 telas (seguindo padrões §6 do DESIGN-SYSTEM-v3.md)
+Para detalhes completos do que foi mudado em cada arquivo, ver `memory/project_v3_migration.md`.
 
 ---
 
@@ -561,7 +587,7 @@ Use a branch `redesign/visual-refresh-v3` para migrar. Em ordem:
 - [ ] Visual correto em **4 temas** (testar Navy Deep + Cream no mínimo)
 - [ ] Segue um dos 6 padrões de composição (§6 DESIGN-SYSTEM-v3.md)
 - [ ] Hero único na tela (G-05)
-- [ ] Valores monetários e % em `font-[Space_Grotesk]` + `tabular-nums` (NUNCA Mono)
+- [ ] Valores monetários e % em `font-[Syne]` + `tabular-nums` (use `.sl-num` ou `.sl-num-strong`, NUNCA Mono)
 - [ ] Moeda formatada com `fmtBRL()` — `R$ 1.840,00`
 - [ ] Tooltip em todo gráfico (G-01)
 - [ ] Cor de barra segue regra: <=70% verde, 70-85% amarelo, >85% vermelho, metas gradient
@@ -596,4 +622,4 @@ Use a branch `redesign/visual-refresh-v3` para migrar. Em ordem:
     ]
   }
 }
-*SyncLife CLAUDE.md v3 — atualizado Mai 2026. Migração v2 → v3: paleta Petróleo, 4 temas, Space Grotesk display, IBM Plex Mono restrito, sem emoji em chrome, sem em-dash, 6 padrões de composição, regras G-01 a G-10.*
+*SyncLife CLAUDE.md v3 — atualizado Mai 2026. Migração v2 → v3 concluída: paleta Petróleo (`--sl-em #0F766E` brand, `--sl-success #1FA67A`), 4 temas, **Syne** display (Space Grotesk fallback), IBM Plex Mono restrito, sem emoji em chrome, sem em-dash, 6 padrões de composição, regras G-01 a G-10.*

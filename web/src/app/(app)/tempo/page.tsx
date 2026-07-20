@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { usePathname } from 'next/navigation'
-import { Plus, Clock, Calendar, CheckSquare, Play, BarChart3, ChevronsRight, RefreshCw, TrendingUp } from 'lucide-react'
+import { Plus, Clock, Calendar, CheckSquare, Play, BarChart3, ChevronsRight, RefreshCw, TrendingUp, Inbox, PieChart as PieChartIcon } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useAgenda, EVENT_TYPES, getWeekRange, type AgendaEvent } from '@/hooks/use-agenda'
@@ -136,7 +136,7 @@ function DayTimelineItem({ event, isPast }: { event: AgendaEvent; isPast?: boole
             className="inline-flex items-center gap-1 px-2.5 py-[3px] rounded-lg text-[11px] font-semibold"
             style={{ color: cfg.color, background: `${cfg.color}15` }}
           >
-            {cfg.icon} {cfg.label}
+            <span aria-hidden="true">{cfg.icon}</span> {cfg.label}
           </span>
           {event.start_time && event.end_time && (
             <span className="text-[10px] text-[var(--sl-t3)]">
@@ -176,7 +176,7 @@ function ModuleDistributionBar({
           style={{ width: `${pct}%`, background: color }}
         />
       </div>
-      <span className="font-[IBM_Plex_Mono] text-[11px] font-semibold w-10 text-right shrink-0"
+      <span className="sl-num text-[11px] w-10 text-right shrink-0"
         style={{ color }}>
         {hours.toFixed(1)}h
       </span>
@@ -380,10 +380,10 @@ export default function TempoDashboardPage() {
               { label: 'Conclusao', value: `${weekConclusaoPct}%`, sub: `${weekDone}/${weekEvents.length} eventos`, accent: '#0F766E' },
               { label: 'Proximo', value: proxEvento ? (proxEvento.start_time ?? 'Dia todo') : '--', sub: proxEvento?.title ?? 'sem eventos', accent: '#D9962E' },
             ].map(kpi => (
-              <div key={kpi.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5 relative overflow-hidden">
+              <div key={kpi.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-3.5 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
                 <div className="absolute top-0 left-3 right-3 h-[2px] rounded-b" style={{ background: kpi.accent }} />
                 <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">{kpi.label}</p>
-                <p className="font-[IBM_Plex_Mono] font-semibold text-[20px] leading-none text-[var(--sl-t1)] truncate">{kpi.value}</p>
+                <p className="sl-num-strong text-[20px] leading-none text-[var(--sl-t1)] truncate">{kpi.value}</p>
                 <p className="text-[11px] text-[var(--sl-t3)] mt-1 truncate">{kpi.sub}</p>
               </div>
             ))}
@@ -392,7 +392,7 @@ export default function TempoDashboardPage() {
           {/* Proximos eventos */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 mb-3">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">Proximos</h2>
+              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Proximos</h2>
               <Link href="/tempo/agenda" className="text-[11px] text-[#3CA0B5]">Agenda</Link>
             </div>
             {upcomingEvents.length === 0 ? (
@@ -407,7 +407,7 @@ export default function TempoDashboardPage() {
           {/* Tempo por area */}
           {typeHoursSorted.length > 0 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4">
-              <h2 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)] mb-3">Tempo por area</h2>
+              <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] mb-3">Tempo por area</h2>
               <div className="flex flex-col gap-2.5">
                 {typeHoursSorted.map(([label, { hours, color }]) => (
                   <ModuleDistributionBar key={label} label={label} hours={hours} maxHours={maxTypeHours} color={color} />
@@ -503,7 +503,7 @@ export default function TempoDashboardPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-2 mb-[18px]">
               <Clock size={16} className="text-[#3CA0B5]" />
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Cronograma do Dia</h2>
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Cronograma do Dia</h2>
               <span
                 className="ml-auto text-[10px] font-semibold px-2.5 py-[3px] rounded-[7px]"
                 style={{ background: 'rgba(60,160,181,.08)', color: '#3CA0B5' }}
@@ -514,7 +514,7 @@ export default function TempoDashboardPage() {
 
             {todayTimeline.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-10">
-                <span className="text-3xl">📭</span>
+                <Inbox size={28} className="text-[var(--sl-t3)]" />
                 <p className="text-[13px] text-[var(--sl-t2)] text-center">Nenhum evento hoje</p>
                 <button
                   onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
@@ -561,7 +561,7 @@ export default function TempoDashboardPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-2 mb-[18px]">
               <BarChart3 size={16} className="text-[#3CA0B5]" />
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Tempo por Area</h2>
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Tempo por Area</h2>
               {typeHoursSorted.length > 0 && typeHoursSorted[typeHoursSorted.length - 1] && (
                 <span
                   className="ml-auto text-[10px] font-semibold px-2.5 py-[3px] rounded-[7px] inline-flex items-center gap-1"
@@ -577,7 +577,7 @@ export default function TempoDashboardPage() {
 
             {typeHoursSorted.length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-8">
-                <span className="text-2xl">📊</span>
+                <PieChartIcon size={24} className="text-[var(--sl-t3)]" />
                 <p className="text-[12px] text-[var(--sl-t3)] text-center">
                   Nenhum evento com horario definido esta semana
                 </p>
@@ -606,7 +606,7 @@ export default function TempoDashboardPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-2 mb-[18px]">
               <BarChart3 size={16} className="text-[#3CA0B5]" />
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Horas por Dia -- Esta Semana</h2>
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Horas por dia, esta semana</h2>
             </div>
 
             {/* Simple bar visualization */}
@@ -617,7 +617,7 @@ export default function TempoDashboardPage() {
                 const isToday = d.date === today
                 return (
                   <div key={d.day} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="font-[IBM_Plex_Mono] text-[9px] text-[var(--sl-t3)]">{d.hours > 0 ? `${d.hours.toFixed(1)}h` : ''}</span>
+                    <span className="sl-num text-[9px] text-[var(--sl-t3)]">{d.hours > 0 ? `${d.hours.toFixed(1)}h` : ''}</span>
                     <div
                       className="w-full rounded-t-md transition-all duration-700"
                       style={{
@@ -642,22 +642,22 @@ export default function TempoDashboardPage() {
             <div className="grid grid-cols-4 gap-2.5">
               <div className="bg-[var(--sl-s2)] rounded-[11px] p-3">
                 <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1">Dia Cheio</p>
-                <p className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#DB6478]">{busiestDay?.day ?? '--'}</p>
+                <p className="sl-num-strong text-[16px] text-[#DB6478]">{busiestDay?.day ?? '--'}</p>
                 <p className="text-[10px] text-[var(--sl-t3)] mt-[3px]">{busiestDay ? formatDuration(busiestDay.hours) : '--'}</p>
               </div>
               <div className="bg-[var(--sl-s2)] rounded-[11px] p-3">
                 <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1">Dia Livre</p>
-                <p className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#0F766E]">{freestDay?.day ?? '--'}</p>
+                <p className="sl-num-strong text-[16px] text-[#0F766E]">{freestDay?.day ?? '--'}</p>
                 <p className="text-[10px] text-[var(--sl-t3)] mt-[3px]">{freestDay?.hours === 0 ? '0h \u00B7 livre' : formatDuration(freestDay?.hours ?? 0)}</p>
               </div>
               <div className="bg-[var(--sl-s2)] rounded-[11px] p-3">
                 <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1">Media/Dia</p>
-                <p className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#3CA0B5]">{avgHoursPerDay.toFixed(1)}h</p>
+                <p className="sl-num-strong text-[16px] text-[#3CA0B5]">{avgHoursPerDay.toFixed(1)}h</p>
                 <p className="text-[10px] text-[var(--sl-t3)] mt-[3px]">{weekHoras.toFixed(0)}h / 7</p>
               </div>
               <div className="bg-[var(--sl-s2)] rounded-[11px] p-3">
                 <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-1">Conclusao</p>
-                <p className="font-[IBM_Plex_Mono] text-[16px] font-medium text-[#a855f7]">{weekConclusaoPct}%</p>
+                <p className="sl-num-strong text-[16px] text-[#a855f7]">{weekConclusaoPct}%</p>
                 <p className="text-[10px] text-[var(--sl-t3)] mt-[3px]">{weekDone} de {weekEvents.length}</p>
               </div>
             </div>
@@ -667,7 +667,7 @@ export default function TempoDashboardPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-2 mb-[18px]">
               <ChevronsRight size={16} className="text-[#3CA0B5]" />
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Proximos 7 Dias</h2>
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Proximos 7 Dias</h2>
               <Link href="/tempo/agenda" className="ml-auto text-[12px] font-medium text-[#3CA0B5] hover:underline">
                 Ver agenda
               </Link>
@@ -675,7 +675,7 @@ export default function TempoDashboardPage() {
 
             {upcomingEvents.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-8">
-                <span className="text-2xl">📭</span>
+                <Inbox size={24} className="text-[var(--sl-t3)]" />
                 <p className="text-[12px] text-[var(--sl-t3)] text-center">Nenhum evento proximo</p>
                 <button
                   onClick={() => setEventModal({ open: true, mode: 'create', defaultDate: today })}
@@ -702,7 +702,7 @@ export default function TempoDashboardPage() {
                         className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center shrink-0"
                         style={{ background: `${cfg.color}12` }}
                       >
-                        <span className="text-sm">{cfg.icon}</span>
+                        <span className="text-sm" aria-hidden="true">{cfg.icon}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{ev.title}</p>
@@ -711,7 +711,7 @@ export default function TempoDashboardPage() {
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="font-[IBM_Plex_Mono] text-[13.5px] font-medium" style={{ color: cfg.color }}>
+                        <p className="sl-num text-[13.5px]" style={{ color: cfg.color }}>
                           {dur > 0 ? formatDuration(dur) : (ev.all_day ? 'Dia' : '--')}
                         </p>
                         <p className="text-[10px] text-[var(--sl-t3)]">{cfg.label}</p>
@@ -729,7 +729,7 @@ export default function TempoDashboardPage() {
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-2 mb-[18px]">
               <TrendingUp size={16} className="text-[#3CA0B5]" />
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Resumo da Semana</h2>
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Resumo da Semana</h2>
               <Link href="/tempo/review" className="ml-auto text-[12px] font-medium text-[#3CA0B5] hover:underline">
                 Ver review
               </Link>
@@ -739,7 +739,7 @@ export default function TempoDashboardPage() {
             <div className="bg-[var(--sl-s2)] rounded-[13px] p-[18px_20px] mb-4 flex items-center gap-5 flex-wrap">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">Horas Semana Atual</p>
-                <p className="font-[IBM_Plex_Mono] text-[26px] font-medium mt-1 leading-none text-[var(--sl-t1)]">
+                <p className="sl-num-strong text-[26px] mt-1 leading-none text-[var(--sl-t1)]">
                   {weekHoras.toFixed(1)}<span className="text-[14px] text-[var(--sl-t2)]">h</span>
                 </p>
                 <p className="text-[11px] text-[var(--sl-t3)] mt-[3px]">
@@ -749,17 +749,17 @@ export default function TempoDashboardPage() {
               <div className="ml-auto flex gap-6">
                 <div className="text-center">
                   <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-[3px]">Conclusao</p>
-                  <p className="font-[IBM_Plex_Mono] text-[15px]" style={{ color: weekConclusaoPct >= 70 ? '#0F766E' : '#D9962E' }}>
+                  <p className="sl-num text-[15px]" style={{ color: weekConclusaoPct >= 70 ? '#0F766E' : '#D9962E' }}>
                     {weekConclusaoPct}%
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-[3px]">Pendentes</p>
-                  <p className="font-[IBM_Plex_Mono] text-[15px] text-[#DB6478]">{weekPending}</p>
+                  <p className="sl-num text-[15px] text-[#DB6478]">{weekPending}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)] mb-[3px]">Areas</p>
-                  <p className="font-[IBM_Plex_Mono] text-[15px] text-[#3CA0B5]">{typeHoursSorted.length}</p>
+                  <p className="sl-num text-[15px] text-[#3CA0B5]">{typeHoursSorted.length}</p>
                 </div>
               </div>
             </div>
@@ -785,7 +785,7 @@ export default function TempoDashboardPage() {
                   >
                     <p className="text-[10px] font-semibold text-[var(--sl-t3)] uppercase tracking-[.06em]">{d.day}</p>
                     <p
-                      className="font-[IBM_Plex_Mono] text-[18px] font-medium mt-[5px]"
+                      className="sl-num-strong text-[18px] mt-[5px]"
                       style={{
                         color: isBusiest ? '#DB6478' : (isFreest && d.hours === 0) ? '#0F766E' : isCurrentDay ? '#3CA0B5' : 'var(--sl-t1)',
                       }}
@@ -821,7 +821,7 @@ export default function TempoDashboardPage() {
           <div className="sl-fade-up sl-delay-5">
             <div className="flex items-center gap-2 mb-4">
               <RefreshCw size={16} className="text-[#3CA0B5]" />
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Eventos Recorrentes</h2>
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Eventos Recorrentes</h2>
               <span className="ml-auto text-[12px] font-medium text-[#3CA0B5] cursor-pointer hover:underline">Ver todos</span>
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2">
@@ -841,7 +841,7 @@ export default function TempoDashboardPage() {
                           className="w-[30px] h-[30px] rounded-[9px] flex items-center justify-center"
                           style={{ background: `${cfg.color}15` }}
                         >
-                          <span className="text-xs">{cfg.icon}</span>
+                          <span className="text-xs" aria-hidden="true">{cfg.icon}</span>
                         </div>
                         <span className="ml-auto text-[10px] font-semibold px-2 py-[2px] rounded-md bg-[var(--sl-s3)] text-[var(--sl-t3)]">
                           {ev.recurrence}

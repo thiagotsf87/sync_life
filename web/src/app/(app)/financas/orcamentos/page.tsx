@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { cn } from '@/lib/utils'
-import { Target, Plus, ChevronLeft, ChevronRight, AlertTriangle, Pencil, Trash2, Copy, X } from 'lucide-react'
+import { Target, Plus, ChevronLeft, ChevronRight, AlertTriangle, Pencil, Trash2, Copy, X, Briefcase, Lightbulb, CheckCircle, AlertCircle, Sparkles } from 'lucide-react'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
 import { JornadaInsight } from '@/components/ui/jornada-insight'
@@ -12,6 +12,7 @@ import { useBudgets, type BudgetWithSpend, type Budget } from '@/hooks/use-budge
 import { EnvelopeModal } from '@/components/financas/EnvelopeModal'
 import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
 import { ProLimitGate } from '@/components/ui/pro-gate'
+import { fmtBRL } from '@/lib/format/currency'
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -20,15 +21,11 @@ const MONTH_NAMES = [
   'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro',
 ]
 
-function fmtR$(n: number): string {
-  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
-}
-
 function getEnvColor(pct: number): string {
-  if (pct >= 100) return '#DB6478'
-  if (pct >= 80)  return '#D97534'
-  if (pct >= 61)  return '#D9962E'
-  return '#0F766E'
+  if (pct >= 100) return 'var(--sl-danger)'
+  if (pct >= 80)  return 'var(--sl-warning)'
+  if (pct >= 61)  return 'var(--sl-warning)'
+  return 'var(--sl-em)'
 }
 
 function getEnvelopeBadge(pct: number, alertThreshold: number): 'ok' | 'alert' | 'over' | null {
@@ -67,9 +64,9 @@ function EnvelopeCard({
     <div className={cn(
       'bg-[var(--sl-s1)] border rounded-[14px] px-5 py-4 transition-all relative overflow-hidden group',
       envelope.pct >= 100
-        ? 'border-l-[3px] border-l-[#DB6478] border-[var(--sl-border)]'
+        ? 'border-l-[3px] border-l-[var(--sl-danger)] border-[var(--sl-border)]'
         : envelope.pct >= 75
-        ? 'border-l-[3px] border-l-[#D9962E] border-[var(--sl-border)]'
+        ? 'border-l-[3px] border-l-[var(--sl-warning)] border-[var(--sl-border)]'
         : 'border-[var(--sl-border)]',
       'hover:border-[var(--sl-border-h)] hover:shadow-[0_2px_12px_rgba(0,0,0,.08)]'
     )}>
@@ -79,7 +76,7 @@ function EnvelopeCard({
           className="w-9 h-9 rounded-[10px] flex items-center justify-center text-[18px] shrink-0"
           style={{ background: `${color}20` }}
         >
-          {envelope.category?.icon ?? '💼'}
+          {envelope.category?.icon ?? <Briefcase size={18} className="text-[var(--sl-t2)]" />}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5 flex-wrap">
@@ -87,17 +84,17 @@ function EnvelopeCard({
               {envelope.category?.name ?? 'Categoria'}
             </span>
             {badge === 'over' && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(219,100,120,.12)] text-[#DB6478] border border-[rgba(219,100,120,.20)]">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(219,100,120,.12)] text-[var(--sl-danger)] border border-[rgba(219,100,120,.20)]">
                 Estourado
               </span>
             )}
             {badge === 'alert' && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(217,150,46,.12)] text-[#D9962E] border border-[rgba(217,150,46,.20)]">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(217,150,46,.12)] text-[var(--sl-warning)] border border-[rgba(217,150,46,.20)]">
                 Atenção
               </span>
             )}
             {badge === 'ok' && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(15,118,110,.10)] text-[#0F766E] border border-[rgba(15,118,110,.18)]">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[rgba(15,118,110,.10)] text-[var(--sl-em)] border border-[rgba(15,118,110,.18)]">
                 OK
               </span>
             )}
@@ -107,14 +104,14 @@ function EnvelopeCard({
               </span>
             )}
           </div>
-          <p className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t3)]">
-            <span className="text-[var(--sl-t1)] text-[13px] font-medium">R$ {fmtR$(envelope.gasto)}</span>
-            {' '}/ R$ {fmtR$(envelope.amount)}
+          <p className="sl-num text-[12px] text-[var(--sl-t3)]">
+            <span className="text-[var(--sl-t1)] text-[13px] font-medium">{fmtBRL(envelope.gasto)}</span>
+            {' / '}{fmtBRL(envelope.amount)}
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <span
-            className="font-[IBM_Plex_Mono] text-[14px] font-bold min-w-[40px] text-right"
+            className="sl-num-strong text-[14px] min-w-[40px] text-right"
             style={{ color }}
           >
             {envelope.pct}%
@@ -122,13 +119,13 @@ function EnvelopeCard({
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => onEdit(envelope)}
-                className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#0F766E] hover:bg-[rgba(15,118,110,.08)] transition-colors"
+                className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[var(--sl-em)] hover:bg-[rgba(15,118,110,.08)] transition-colors"
               >
                 <Pencil size={13} />
               </button>
               <button
                 onClick={() => onDelete(envelope.id)}
-                className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[rgba(219,100,120,.08)] transition-colors"
+                className="w-7 h-7 rounded-[7px] flex items-center justify-center text-[var(--sl-t3)] hover:text-[var(--sl-danger)] hover:bg-[rgba(219,100,120,.08)] transition-colors"
               >
                 <Trash2 size={13} />
               </button>
@@ -150,8 +147,8 @@ function EnvelopeCard({
       <div className="flex items-center justify-between">
         <span className="text-[12px] text-[var(--sl-t2)]">
           {envelope.pct >= 100
-            ? <span className="text-[#DB6478]">Estourou em R$ {fmtR$(envelope.gasto - envelope.amount)}</span>
-            : <>Restam <strong className="text-[var(--sl-t1)]">R$ {fmtR$(remaining)}</strong></>
+            ? <span className="text-[var(--sl-danger)]">Estourou em <span className="sl-num">{fmtBRL(envelope.gasto - envelope.amount)}</span></span>
+            : <>Restam <strong className="sl-num text-[var(--sl-t1)]">{fmtBRL(remaining)}</strong></>
           }
         </span>
         <span className="text-[11px] text-[var(--sl-t3)]">
@@ -235,7 +232,7 @@ function CopyModal({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="relative w-full max-w-[440px] bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
-          <h2 className="font-[Space_Grotesk] font-extrabold text-[15px] text-[var(--sl-t1)]">
+          <h2 className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)]">
             Copiar de {MONTH_NAMES[prevM - 1]} {prevY}
           </h2>
           <button onClick={onClose}
@@ -251,11 +248,11 @@ function CopyModal({
                 type="checkbox"
                 checked={selected.has(b.id)}
                 onChange={() => toggle(b.id)}
-                className="w-4 h-4 accent-[#0F766E] shrink-0"
+                className="w-4 h-4 accent-[var(--sl-em)] shrink-0"
               />
-              <span className="text-lg">{b.category?.icon ?? '💼'}</span>
+              <span className="text-lg inline-flex items-center">{b.category?.icon ?? <Briefcase size={18} className="text-[var(--sl-t2)]" />}</span>
               <span className="flex-1 text-[13px] font-semibold text-[var(--sl-t1)]">{b.category?.name ?? 'Categoria'}</span>
-              <span className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t2)]">R$ {fmtR$(b.amount)}</span>
+              <span className="sl-num text-[13px] text-[var(--sl-t2)]">{fmtBRL(b.amount)}</span>
             </label>
           ))}
         </div>
@@ -267,8 +264,8 @@ function CopyModal({
           <button
             onClick={handleConfirm}
             disabled={loading || selected.size === 0}
-            className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-[#03071a] transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#0F766E' }}
+            className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
+            style={{ background: 'var(--sl-em)' }}
           >
             Copiar {selected.size} envelope{selected.size !== 1 ? 's' : ''}
           </button>
@@ -391,7 +388,7 @@ export default function OrcamentosPage() {
         {/* Month selector */}
         <div className="flex items-center justify-between mb-3">
           <button onClick={prevMonthNav} className="text-[13px] text-[var(--sl-t2)] p-2"><ChevronLeft size={16} /></button>
-          <span className="font-[Space_Grotesk] font-semibold text-[var(--sl-t1)]">{MONTH_NAMES[month - 1]} {year}</span>
+          <span className="font-[Syne] font-semibold text-[var(--sl-t1)]">{MONTH_NAMES[month - 1]} {year}</span>
           <button onClick={nextMonthNav} className="text-[13px] text-[var(--sl-t2)] p-2"><ChevronRight size={16} /></button>
         </div>
 
@@ -413,8 +410,8 @@ export default function OrcamentosPage() {
                   ))}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-0">
-                  <span className="font-[IBM_Plex_Mono] text-[15px] font-bold text-[var(--sl-t1)]">R$ {fmtR$(totalGasto)}</span>
-                  <span className="text-[10px] text-[var(--sl-t2)]">de R$ {fmtR$(totalOrcado)}</span>
+                  <span className="sl-num-strong text-[15px] text-[var(--sl-t1)]">{fmtBRL(totalGasto)}</span>
+                  <span className="text-[10px] text-[var(--sl-t2)]">de <span className="sl-num">{fmtBRL(totalOrcado)}</span></span>
                 </div>
               </div>
               {/* Legenda: categoria + cor + valor */}
@@ -427,8 +424,8 @@ export default function OrcamentosPage() {
                       <span className="text-[var(--sl-t1)] truncate flex-1 min-w-0">
                         {seg.env.category?.name ?? 'Categoria'}
                       </span>
-                      <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t2)] shrink-0">
-                        R$ {fmtR$(seg.env.gasto)} ({seg.env.pct}%)
+                      <span className="sl-num text-[11px] text-[var(--sl-t2)] shrink-0">
+                        {fmtBRL(seg.env.gasto)} ({seg.env.pct}%)
                       </span>
                     </div>
                   ))}
@@ -443,9 +440,9 @@ export default function OrcamentosPage() {
                     ))}
                   </div>
                   <div className="flex items-center gap-3 mt-1.5 text-[10px] text-[var(--sl-t3)]">
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#0F766E]" />{qtdOk} ok</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#D9962E]" />{qtdAlert} atenção</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#DB6478]" />{qtdOver} estourado{qtdOver !== 1 ? 's' : ''}</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--sl-em)]" />{qtdOk} ok</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--sl-warning)]" />{qtdAlert} atenção</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--sl-danger)]" />{qtdOver} estourado{qtdOver !== 1 ? 's' : ''}</span>
                   </div>
                 </div>
               </div>
@@ -458,34 +455,34 @@ export default function OrcamentosPage() {
           <EnvelopeSkeleton />
         ) : error ? (
           <div className="py-6 text-center text-[13px] text-[var(--sl-t2)]">
-            Erro ao carregar. <button onClick={refresh} className="text-[#0F766E] underline">Tentar novamente</button>
+            Erro ao carregar. <button onClick={refresh} className="text-[var(--sl-em)] underline">Tentar novamente</button>
           </div>
         ) : budgets.length === 0 ? (
           <div className="text-center py-10 px-4 bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl">
-            <span className="text-[36px] block mb-2 opacity-70">💼</span>
-            <h3 className="font-[Space_Grotesk] text-[15px] font-bold text-[var(--sl-t1)] mb-1">Nenhum orçamento</h3>
+            <Briefcase size={36} className="text-[var(--sl-t3)] mx-auto mb-2 opacity-70" />
+            <h3 className="font-[Syne] text-[15px] font-bold text-[var(--sl-t1)] mb-1">Nenhum orçamento</h3>
             <p className="text-[12px] text-[var(--sl-t2)] mb-3">Crie envelopes para controlar seus gastos.</p>
-            <button onClick={openCreate} className="inline-flex items-center gap-1.5 font-bold text-[12px] px-4 py-2 rounded-full text-[#03071a]" style={{ background: '#0F766E' }}>
+            <button onClick={openCreate} className="inline-flex items-center gap-1.5 font-bold text-[12px] px-4 py-2 rounded-full text-white" style={{ background: 'var(--sl-em)' }}>
               <Plus size={13} /> Criar primeiro
             </button>
           </div>
         ) : (
           <>
-            <div className="font-[Space_Grotesk] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-1">Envelopes</div>
+            <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-1">Envelopes</div>
             <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
               {activeBudgets.map(env => {
                 const color = getEnvColor(env.pct)
                 return (
                   <div key={env.id} className="flex items-center gap-[10px] px-5 py-[10px] border-b border-[var(--sl-border)] last:border-b-0">
-                    <div className="text-[20px] w-8 text-center shrink-0">{env.category?.icon ?? '💼'}</div>
+                    <div className="text-[20px] w-8 text-center shrink-0 inline-flex items-center justify-center">{env.category?.icon ?? <Briefcase size={18} className="text-[var(--sl-t2)]" />}</div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{env.category?.name ?? 'Categoria'}</div>
                       <div className="mt-1 h-[4px] bg-[var(--sl-s3)] rounded-[3px] overflow-hidden">
                         <div className="h-full rounded-[3px]" style={{ width: `${Math.min(env.pct, 100)}%`, background: color }} />
                       </div>
-                      <div className="text-[11px] text-[var(--sl-t2)] mt-1">R$ {fmtR$(env.gasto)} / R$ {fmtR$(env.amount)}</div>
+                      <div className="sl-num text-[11px] text-[var(--sl-t2)] mt-1">{fmtBRL(env.gasto)} / {fmtBRL(env.amount)}</div>
                     </div>
-                    <div className="font-[IBM_Plex_Mono] text-[13px] font-semibold shrink-0" style={{ color }}>{env.pct}%</div>
+                    <div className="sl-num-strong text-[13px] shrink-0" style={{ color }}>{env.pct}%</div>
                   </div>
                 )
               })}
@@ -499,15 +496,15 @@ export default function OrcamentosPage() {
             <div className="px-4 py-3 rounded-[10px] flex justify-between items-center"
               style={{ background: 'rgba(15,118,110,0.06)', border: '1px solid rgba(15,118,110,0.15)' }}>
               <span className="text-[13px] text-[var(--sl-t2)]">Não alocado</span>
-              <span className="font-[IBM_Plex_Mono] text-[14px] font-semibold text-[#0F766E]">R$ {fmtR$(naoAlocado)}</span>
+              <span className="sl-num-strong text-[14px] text-[var(--sl-em)]">{fmtBRL(naoAlocado)}</span>
             </div>
           </div>
         )}
 
         {/* AI Insight card */}
         {!isLoading && activeBudgets.length > 0 && (
-          <div className="rounded-2xl p-4 mt-3 flex gap-[10px] items-start" style={{ background: 'rgba(0,85,255,0.07)', border: '1px solid rgba(0,85,255,0.2)' }}>
-            <span className="text-[20px]">🤖</span>
+          <div className="rounded-2xl p-4 mt-3 flex gap-[10px] items-start" style={{ background: 'rgba(15,118,110,0.06)', border: '1px solid rgba(15,118,110,0.18)' }}>
+            <Sparkles size={18} className="text-[var(--sl-em)] shrink-0 mt-0.5" />
             <div>
               <div className="text-[13px] font-semibold text-[var(--sl-t1)] mb-1">Alerta de orçamento</div>
               <div className="text-[12px] text-[var(--sl-t2)] leading-[1.5]">
@@ -531,7 +528,7 @@ export default function OrcamentosPage() {
         <ModuleHeader
           icon={Target}
           iconBg="rgba(15,118,110,.08)"
-          iconColor="#0F766E"
+          iconColor="var(--sl-em)"
           title="Orçamentos"
           className="mb-7"
         >
@@ -560,8 +557,8 @@ export default function OrcamentosPage() {
           <ProLimitGate module="financas" feature="maxBudgets" currentCount={budgets.length} label={`Limite FREE: ${budgets.length}/5 envelopes`}>
             <button
               onClick={openCreate}
-              className="flex items-center gap-1.5 text-[#03071a] font-bold text-[13px] px-[18px] py-[9px] rounded-full border-none shadow-[0_4px_16px_rgba(15,118,110,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
-              style={{ background: '#0F766E' }}
+              className="flex items-center gap-1.5 text-white font-bold text-[13px] px-[18px] py-[9px] rounded-full border-none shadow-[0_4px_16px_rgba(15,118,110,.25)] hover:-translate-y-px hover:brightness-105 transition-all"
+              style={{ background: 'var(--sl-em)' }}
             >
               <Plus size={14} />
               Novo Envelope
@@ -571,15 +568,15 @@ export default function OrcamentosPage() {
 
       {/* ② KPIs */}
       <div className="grid grid-cols-4 gap-3 mb-6 max-sm:grid-cols-2">
-        <KpiCard label="Total Orçado" value={`R$ ${fmtR$(totalOrcado)}`} accent="#0B2D34"
+        <KpiCard label="Total Orçado" value={fmtBRL(totalOrcado)} accent="var(--sl-el)"
           delta={`${qtdTotal} envelope${qtdTotal !== 1 ? 's' : ''}`} deltaType="neutral" />
-        <KpiCard label="Total Gasto" value={`R$ ${fmtR$(totalGasto)}`} accent="#DB6478"
+        <KpiCard label="Total Gasto" value={fmtBRL(totalGasto)} accent="var(--sl-danger)"
           delta={`${pctGasto}% do orçado`}
           deltaType={pctGasto > 85 ? 'down' : pctGasto > 60 ? 'warn' : 'neutral'} />
-        <KpiCard label="Disponível" value={`R$ ${fmtR$(Math.max(0, totalOrcado - totalGasto))}`} accent="#0F766E"
+        <KpiCard label="Disponível" value={fmtBRL(Math.max(0, totalOrcado - totalGasto))} accent="var(--sl-em)"
           delta={pctGasto < 60 ? 'Dentro do limite' : pctGasto < 85 ? 'Atenção' : 'Limite próximo'}
           deltaType={pctGasto < 60 ? 'up' : pctGasto < 85 ? 'warn' : 'down'} />
-        <KpiCard label="Envelopes OK" value={`${qtdOk} / ${qtdTotal}`} accent="#0F766E"
+        <KpiCard label="Envelopes OK" value={`${qtdOk} / ${qtdTotal}`} accent="var(--sl-em)"
           delta={`${qtdAlert} em atenção · ${qtdOver} estourado${qtdOver !== 1 ? 's' : ''}`}
           deltaType={qtdOver > 0 ? 'down' : qtdAlert > 0 ? 'warn' : 'up'} />
       </div>
@@ -596,9 +593,9 @@ export default function OrcamentosPage() {
             ))}
           </div>
           <div className="flex items-center gap-3 text-[10px] text-[var(--sl-t3)] ml-auto shrink-0">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#0F766E]" />{qtdOk}</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#D9962E]" />{qtdAlert}</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#DB6478]" />{qtdOver}</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--sl-em)]" />{qtdOk}</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--sl-warning)]" />{qtdAlert}</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--sl-danger)]" />{qtdOver}</span>
           </div>
         </div>
       )}
@@ -607,17 +604,17 @@ export default function OrcamentosPage() {
       {monthlyIncome > 0 && showBanner && (
         <div className="relative overflow-hidden flex items-start gap-3.5 rounded-[14px] px-5 py-4 mb-6"
           style={{ background: 'rgba(15,118,110,.05)', border: '1px solid rgba(15,118,110,.15)' }}>
-          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#0F766E] to-transparent" />
-          <span className="text-[22px] shrink-0 mt-0.5">💡</span>
+          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[var(--sl-em)] to-transparent" />
+          <Lightbulb size={22} className="text-[var(--sl-em)] shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
             <p className="text-[13px] font-bold text-[var(--sl-t1)] mb-0.5">
               Sugestão 50-30-20 baseada na sua renda
             </p>
             <p className="text-[12px] text-[var(--sl-t2)] leading-[1.55]">
-              Com renda de <strong>R$ {fmtR$(monthlyIncome)}</strong>: destine{' '}
-              <strong>R$ {fmtR$(monthlyIncome * 0.5)}</strong> para necessidades (50%),{' '}
-              <strong>R$ {fmtR$(monthlyIncome * 0.3)}</strong> para desejos (30%) e{' '}
-              <strong>R$ {fmtR$(monthlyIncome * 0.2)}</strong> para poupança (20%).
+              Com renda de <strong className="sl-num">{fmtBRL(monthlyIncome)}</strong>: destine{' '}
+              <strong className="sl-num">{fmtBRL(monthlyIncome * 0.5)}</strong> para necessidades (50%),{' '}
+              <strong className="sl-num">{fmtBRL(monthlyIncome * 0.3)}</strong> para desejos (30%) e{' '}
+              <strong className="sl-num">{fmtBRL(monthlyIncome * 0.2)}</strong> para poupança (20%).
             </p>
           </div>
           <button onClick={dismissBanner}
@@ -630,11 +627,11 @@ export default function OrcamentosPage() {
       {/* ④ Insight Jornada */}
       <JornadaInsight text={
         qtdOver > 0
-          ? <><strong className="text-[#DB6478]">{qtdOver} envelope{qtdOver > 1 ? 's' : ''} estourado{qtdOver > 1 ? 's' : ''}</strong>!{' '}
+          ? <><strong className="text-[var(--sl-danger)]">{qtdOver} envelope{qtdOver > 1 ? 's' : ''} estourado{qtdOver > 1 ? 's' : ''}</strong>!{' '}
               Revise seus gastos em <strong>{maiorCategoria}</strong>.</>
           : pctGasto < 60
-          ? <>Seus gastos estão em <span className="text-[#0F766E]">{pctGasto}%</span> do orçamento. Ótimo controle!</>
-          : <>Orçamento em <span className="text-[#D9962E]">{pctGasto}%</span> utilizado. Atenção em <strong>{maiorCategoria}</strong>.</>
+          ? <>Seus gastos estão em <span className="text-[var(--sl-em)]">{pctGasto}%</span> do orçamento. Ótimo controle!</>
+          : <>Orçamento em <span className="text-[var(--sl-warning)]">{pctGasto}%</span> utilizado. Atenção em <strong>{maiorCategoria}</strong>.</>
       } />
 
       {/* ⑤ Não Alocado */}
@@ -643,23 +640,23 @@ export default function OrcamentosPage() {
           style={{ borderColor: naoAlocado >= 0 ? 'rgba(15,118,110,.30)' : 'rgba(219,100,120,.30)' }}>
           <div className="w-10 h-10 rounded-[12px] flex items-center justify-center text-[20px] shrink-0"
             style={{ background: naoAlocado >= 0 ? 'rgba(15,118,110,.10)' : 'rgba(219,100,120,.10)' }}>
-            {naoAlocado >= 0 ? '🟢' : '🔴'}
+            {naoAlocado >= 0 ? <CheckCircle size={20} className="text-[var(--sl-em)]" /> : <AlertCircle size={20} className="text-[var(--sl-danger)]" />}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[11px] text-[var(--sl-t3)] uppercase tracking-[.06em] mb-0.5">Não Alocado</p>
-            <p className={cn('font-[IBM_Plex_Mono] text-[20px] font-medium', naoAlocado >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
-              R$ {fmtR$(Math.abs(naoAlocado))}
+            <p className={cn('sl-num-strong text-[20px]', naoAlocado >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]')}>
+              {fmtBRL(Math.abs(naoAlocado))}
             </p>
             <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">
               {naoAlocado >= 0
-                ? `Receitas do mês (R$ ${fmtR$(receitasMes)}) menos total orçado (R$ ${fmtR$(totalOrcado)})`
-                : <span className="text-[#DB6478]">⚠ Orçamento maior que a renda do mês</span>
+                ? `Receitas do mês (${fmtBRL(receitasMes)}) menos total orçado (${fmtBRL(totalOrcado)})`
+                : <span className="text-[var(--sl-danger)] inline-flex items-center gap-1"><AlertTriangle size={11} /> Orçamento maior que a renda do mês</span>
               }
             </p>
           </div>
           {naoAlocado > 0 && (
             <button onClick={openCreate}
-              className="text-[12px] font-semibold px-3.5 py-1.5 rounded-full border text-[#0F766E] hover:bg-[rgba(15,118,110,.08)] transition-all shrink-0"
+              className="text-[12px] font-semibold px-3.5 py-1.5 rounded-full border text-[var(--sl-em)] hover:bg-[rgba(15,118,110,.08)] transition-all shrink-0"
               style={{ borderColor: 'rgba(15,118,110,.25)' }}>
               + Criar envelope
             </button>
@@ -672,16 +669,16 @@ export default function OrcamentosPage() {
         <EnvelopeSkeleton />
       ) : error ? (
         <div className="py-10 text-center">
-          <AlertTriangle size={28} className="text-[#DB6478] mx-auto mb-2.5" />
+          <AlertTriangle size={28} className="text-[var(--sl-danger)] mx-auto mb-2.5" />
           <p className="text-[13px] text-[var(--sl-t2)]">
             Erro ao carregar orçamentos.{' '}
-            <button onClick={refresh} className="text-[#0F766E] hover:underline">Tentar novamente</button>
+            <button onClick={refresh} className="text-[var(--sl-em)] hover:underline">Tentar novamente</button>
           </p>
         </div>
       ) : budgets.length === 0 ? (
         <div className="text-center py-12 bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-[14px]">
-          <span className="text-[40px] block mb-3 opacity-70">💼</span>
-          <h3 className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-1.5">
+          <Briefcase size={40} className="text-[var(--sl-t3)] mx-auto mb-3 opacity-70" />
+          <h3 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1.5">
             Nenhum orçamento definido
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-4">
@@ -689,8 +686,8 @@ export default function OrcamentosPage() {
           </p>
           <button
             onClick={openCreate}
-            className="inline-flex items-center gap-1.5 font-bold text-[13px] px-4 py-2 rounded-full text-[#03071a]"
-            style={{ background: '#0F766E' }}
+            className="inline-flex items-center gap-1.5 font-bold text-[13px] px-4 py-2 rounded-full text-white"
+            style={{ background: 'var(--sl-em)' }}
           >
             <Plus size={14} />
             Criar primeiro envelope
@@ -701,7 +698,7 @@ export default function OrcamentosPage() {
           {activeBudgets.length > 0 && (
             <div className="mb-5">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t2)] uppercase tracking-[.06em]">
+                <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t2)] uppercase tracking-[.06em]">
                   Envelopes Ativos
                 </h2>
                 <span className="text-[11px] text-[var(--sl-t3)] bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-full px-2 py-0.5">
@@ -719,7 +716,7 @@ export default function OrcamentosPage() {
           {inactiveBudgets.length > 0 && (
             <div className="mt-5">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t2)] uppercase tracking-[.06em]">
+                <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t2)] uppercase tracking-[.06em]">
                   Envelopes Inativos
                 </h2>
                 <span className="text-[11px] text-[var(--sl-t3)] italic">Sem gastos neste mês</span>

@@ -1,10 +1,11 @@
 'use client'
 
 import { Fragment, useState } from 'react'
-import { Calendar, ChevronLeft, ChevronRight, X, Plus, Info } from 'lucide-react'
+import { Calendar, ChevronLeft, ChevronRight, X, Plus, Info, Wallet, TrendingDown, BarChart3 } from 'lucide-react'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 import { useCategories } from '@/hooks/use-categories'
 import { useCalendario, type CalendarDayData, type CalendarTransaction } from '@/hooks/use-calendario'
 import { SLCard } from '@/components/ui/sl-card'
@@ -16,8 +17,7 @@ import { useTransactions, type TransacaoFormData } from '@/hooks/use-transaction
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
-const fmtR = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const fmtR = (v: number) => fmtBRL(v)
 
 const fmtRShort = (v: number) => {
   const abs = Math.abs(v)
@@ -29,9 +29,9 @@ const fmtRShort = (v: number) => {
 const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
 
 const DOT_COLORS: Record<string, string> = {
-  income:     '#0F766E',
-  expense:    '#DB6478',
-  recorrente: '#60a5fa',
+  income:     'var(--sl-em)',
+  expense:    'var(--sl-danger)',
+  recorrente: 'var(--sl-info)',
   planned:    '#a855f7',
 }
 
@@ -59,19 +59,19 @@ function CalendarDay({
         'transition-colors',
         !day.isCurrentMonth ? 'opacity-35 cursor-default' : 'cursor-pointer',
         day.isCurrentMonth && 'hover:bg-[var(--sl-s3)]',
-        isSelected && 'bg-[var(--sl-s3)] ring-1 ring-inset ring-[#0F766E] z-[2]',
+        isSelected && 'bg-[var(--sl-s3)] ring-1 ring-inset ring-[var(--sl-em)] z-[2]',
         day.isToday && !isSelected && 'bg-[rgba(15,118,110,0.05)]',
         !day.isFuture && day.balance > 0 && !isSelected && !day.isToday && 'bg-[rgba(15,118,110,0.03)]',
       )}
     >
       {/* Today top bar */}
       {day.isToday && (
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#0F766E] to-[#0B2D34]" />
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[var(--sl-em)] to-[var(--sl-el)]" />
       )}
 
       {/* Future tag */}
       {day.isFuture && day.isCurrentMonth && day.transactions.length > 0 && (
-        <span className="absolute top-[5px] right-[5px] text-[8px] font-bold px-1 py-px rounded-[3px] bg-[rgba(96,165,250,0.1)] text-[#60a5fa] whitespace-nowrap hidden max-md:hidden sm:block">
+        <span className="absolute top-[5px] right-[5px] text-[8px] font-bold px-1 py-px rounded-[3px] bg-[rgba(96,165,250,0.1)] text-[var(--sl-info)] whitespace-nowrap hidden max-md:hidden sm:block">
           futuro
         </span>
       )}
@@ -81,15 +81,15 @@ function CalendarDay({
         <span className={cn(
           'text-[12px] max-md:text-[11px] font-semibold leading-none',
           day.isToday
-            ? 'text-[#0F766E] bg-[rgba(15,118,110,0.15)] rounded-full w-[22px] h-[22px] flex items-center justify-center'
+            ? 'text-[var(--sl-em)] bg-[rgba(15,118,110,0.15)] rounded-full w-[22px] h-[22px] flex items-center justify-center'
             : 'text-[var(--sl-t2)]'
         )}>
           {day.day}
         </span>
         {day.isCurrentMonth && day.balance !== 0 && (
           <span className={cn(
-            'font-[IBM_Plex_Mono] text-[9px] font-medium leading-none max-md:hidden',
-            day.balance > 0 ? 'text-[#0F766E]' : 'text-[#DB6478]'
+            'sl-num text-[9px] leading-none max-md:hidden',
+            day.balance > 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
           )}>
             {fmtRShort(day.balance)}
           </span>
@@ -142,21 +142,21 @@ function DrawerSection({
             'w-[30px] h-[30px] rounded-[8px] flex items-center justify-center text-[14px] shrink-0',
             txn.type === 'income' ? 'bg-[rgba(15,118,110,0.12)]' : 'bg-[rgba(219,100,120,0.1)]'
           )}>
-            {txn.icon ?? (txn.type === 'income' ? '💰' : '📤')}
+            {txn.icon ?? (txn.type === 'income' ? <Wallet size={14} className="text-[var(--sl-em)]" /> : <TrendingDown size={14} className="text-[var(--sl-danger)]" />)}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[12px] font-medium text-[var(--sl-t1)] truncate">{txn.description}</p>
-            <p className="text-[10px] text-[var(--sl-t3)]">{txn.categoryName ?? '—'}</p>
+            <p className="text-[10px] text-[var(--sl-t3)]">{txn.categoryName ?? '·'}</p>
           </div>
           <div className="flex flex-col items-end shrink-0">
             <span className={cn(
-              'font-[IBM_Plex_Mono] text-[13px] font-medium',
-              txn.is_future ? 'text-[#60a5fa]' : txn.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]'
+              'sl-num text-[13px]',
+              txn.is_future ? 'text-[var(--sl-info)]' : txn.type === 'income' ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
             )}>
               {txn.type === 'income' ? '+' : '−'}{fmtR(txn.amount)}
             </span>
             {txn.is_future && (
-              <span className="text-[8px] font-bold px-1.5 py-px rounded-[3px] bg-[rgba(96,165,250,0.12)] text-[#60a5fa] mt-0.5">
+              <span className="text-[8px] font-bold px-1.5 py-px rounded-[3px] bg-[rgba(96,165,250,0.12)] text-[var(--sl-info)] mt-0.5">
                 previsto
               </span>
             )}
@@ -313,7 +313,7 @@ export default function CalendarioFinanceiroPage() {
         {/* Month nav */}
         <div className="flex items-center justify-between mb-2">
           <button onClick={prevMonth} className="p-2 text-[var(--sl-t2)]"><ChevronLeft size={18} /></button>
-          <span className="font-[Space_Grotesk] font-bold text-[var(--sl-t1)]">{MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
+          <span className="font-[Syne] font-bold text-[var(--sl-t1)]">{MONTH_NAMES[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
           <button onClick={nextMonth} className="p-2 text-[var(--sl-t2)]"><ChevronRight size={18} /></button>
         </div>
 
@@ -344,11 +344,11 @@ export default function CalendarioFinanceiroPage() {
                     isToday && 'font-bold',
                     isSelected && !isToday && 'bg-[var(--sl-s2)]',
                   )}
-                  style={isToday ? { background: '#3CA0B5', color: '#fff' } : { color: 'var(--sl-t2)' }}
+                  style={isToday ? { background: 'var(--sl-info)', color: '#fff' } : { color: 'var(--sl-t2)' }}
                 >
                   {day.day}
                   {hasEvent && !isToday && (
-                    <span className="absolute bottom-[3px] w-1 h-1 rounded-full bg-[#0F766E]" />
+                    <span className="absolute bottom-[3px] w-1 h-1 rounded-full bg-[var(--sl-em)]" />
                   )}
                 </button>
               )
@@ -359,36 +359,36 @@ export default function CalendarioFinanceiroPage() {
         {/* Legend */}
         <div className="flex items-center gap-3 px-4 mb-3">
           <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
-            <span className="w-2 h-2 rounded-full bg-[#0F766E]" /> Receita
+            <span className="w-2 h-2 rounded-full bg-[var(--sl-em)]" /> Receita
           </span>
           <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
-            <span className="w-2 h-2 rounded-full bg-[#DB6478]" /> Despesa
+            <span className="w-2 h-2 rounded-full bg-[var(--sl-danger)]" /> Despesa
           </span>
           <span className="flex items-center gap-1 text-[10px] text-[var(--sl-t3)]">
-            <span className="w-2 h-2 rounded-full bg-[#3CA0B5]" /> Hoje
+            <span className="w-2 h-2 rounded-full bg-[var(--sl-info)]" /> Hoje
           </span>
         </div>
 
         {/* Selected day events */}
         {mobileSelectedDay && mobileSelectedDay.transactions.length > 0 && (
           <>
-            <div className="font-[Space_Grotesk] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-4 pb-2">
-              {mobileSelectedDay.isToday ? 'Hoje' : mobileSelectedDay.day} — {MONTH_NAMES[currentDate.getMonth()].slice(0, 3).toUpperCase()}
+            <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-4 pb-2">
+              {mobileSelectedDay.isToday ? 'Hoje' : mobileSelectedDay.day} · {MONTH_NAMES[currentDate.getMonth()].slice(0, 3).toUpperCase()}
             </div>
             <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
               {mobileSelectedDay.transactions.map(txn => (
                 <div key={txn.id} className="flex items-center gap-3 px-4 py-3 border-b border-[var(--sl-border)] last:border-b-0">
                   <div
                     className="w-[4px] h-[40px] rounded-sm shrink-0"
-                    style={{ background: txn.type === 'income' ? '#0F766E' : '#DB6478' }}
+                    style={{ background: txn.type === 'income' ? 'var(--sl-em)' : 'var(--sl-danger)' }}
                   />
                   <div className="flex-1 min-w-0">
                     <div className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{txn.description}</div>
-                    <div className="text-[12px] text-[var(--sl-t2)]">{txn.categoryName ?? '—'}</div>
+                    <div className="text-[12px] text-[var(--sl-t2)]">{txn.categoryName ?? '·'}</div>
                   </div>
                   <div className={cn(
-                    'font-[IBM_Plex_Mono] text-[14px] font-medium shrink-0',
-                    txn.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]'
+                    'sl-num text-[14px] shrink-0',
+                    txn.type === 'income' ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
                   )}>
                     {txn.type === 'income' ? '+' : '-'}{fmtR(txn.amount)}
                   </div>
@@ -405,45 +405,45 @@ export default function CalendarioFinanceiroPage() {
         {/* Destaques do mês */}
         {!loading && currentMonthPastDays.length > 0 && (
           <>
-            <p className="font-[Space_Grotesk] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-4 pb-2 mt-3">
+            <p className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-4 pb-2 mt-3">
               Destaques do Mês
             </p>
             <div className="grid grid-cols-2 gap-2 px-4 pb-1">
               {[
                 {
                   label: 'Maior entrada',
-                  value: maiorEntradaInfo ? fmtR(maiorEntradaInfo.txn.amount) : '—',
+                  value: maiorEntradaInfo ? fmtR(maiorEntradaInfo.txn.amount) : '·',
                   sub: maiorEntradaInfo
                     ? `Dia ${maiorEntradaInfo.day.day} · ${maiorEntradaInfo.txn.description.slice(0, 14)}`
                     : 'Sem receitas',
-                  color: '#0F766E',
+                  color: 'var(--sl-em)',
                 },
                 {
                   label: 'Maior saída/dia',
-                  value: maiorSaidaInfo ? fmtR(maiorSaidaInfo.txn.amount) : '—',
+                  value: maiorSaidaInfo ? fmtR(maiorSaidaInfo.txn.amount) : '·',
                   sub: maiorSaidaInfo
                     ? `Dia ${maiorSaidaInfo.day.day} · ${maiorSaidaInfo.txn.description.slice(0, 14)}`
                     : 'Sem despesas',
-                  color: '#DB6478',
+                  color: 'var(--sl-danger)',
                 },
                 {
                   label: 'Saldo mais baixo',
-                  value: saldoBaixoDay ? fmtRShort(saldoBaixoDay.balance) : '—',
-                  sub: saldoBaixoDay ? `Dia ${saldoBaixoDay.day}` : '—',
-                  color: saldoBaixoDay && saldoBaixoDay.balance < 0 ? '#DB6478' : '#D9962E',
+                  value: saldoBaixoDay ? fmtRShort(saldoBaixoDay.balance) : '·',
+                  sub: saldoBaixoDay ? `Dia ${saldoBaixoDay.day}` : '·',
+                  color: saldoBaixoDay && saldoBaixoDay.balance < 0 ? 'var(--sl-danger)' : 'var(--sl-warning)',
                 },
                 {
                   label: 'Saldo hoje',
                   value: fmtR(saldoHoje),
                   sub: todayData
                     ? `${todayData.day} ${MONTH_NAMES[currentDate.getMonth()].slice(0, 3)}`
-                    : '—',
-                  color: '#0B2D34',
+                    : '·',
+                  color: 'var(--sl-el)',
                 },
               ].map(item => (
                 <div key={item.label} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] px-3 py-2.5">
                   <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-1">{item.label}</p>
-                  <p className="font-[IBM_Plex_Mono] text-[14px] font-medium leading-none" style={{ color: item.color }}>{item.value}</p>
+                  <p className="sl-num text-[14px] leading-none" style={{ color: item.color }}>{item.value}</p>
                   <p className="text-[10px] text-[var(--sl-t3)] mt-1 truncate">{item.sub}</p>
                 </div>
               ))}
@@ -461,7 +461,7 @@ export default function CalendarioFinanceiroPage() {
         <ModuleHeader
           icon={Calendar}
           iconBg="rgba(15,118,110,.08)"
-          iconColor="#0F766E"
+          iconColor="var(--sl-em)"
           title="Calendário Financeiro"
           subtitle="Visualize e planeje suas finanças dia a dia."
           className="mb-4"
@@ -480,11 +480,11 @@ export default function CalendarioFinanceiroPage() {
             </button>
           </div>
           <button onClick={() => setCurrentDate(new Date())}
-            className="px-3.5 py-1.5 rounded-[9px] border border-[var(--sl-border)] bg-[var(--sl-s1)] text-[var(--sl-t2)] text-[12px] cursor-pointer hover:border-[#0F766E] hover:text-[#0F766E] transition-all">
+            className="px-3.5 py-1.5 rounded-[9px] border border-[var(--sl-border)] bg-[var(--sl-s1)] text-[var(--sl-t2)] text-[12px] cursor-pointer hover:border-[var(--sl-em)] hover:text-[var(--sl-em)] transition-all">
             Hoje
           </button>
           <button onClick={() => openAddModal(null)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[9px] bg-[#0F766E] text-white text-[12px] font-bold cursor-pointer hover:opacity-85 transition-opacity">
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[9px] bg-[var(--sl-em)] text-white text-[12px] font-bold cursor-pointer hover:opacity-85 transition-opacity">
             <Plus size={13} />
             Adicionar
           </button>
@@ -492,15 +492,15 @@ export default function CalendarioFinanceiroPage() {
 
       {/* ② Jornada Projection Card */}
       <div className="flex items-center gap-3 p-[11px] px-[14px] rounded-[11px] border border-[rgba(15,118,110,0.2)] bg-gradient-to-br from-[rgba(15,118,110,0.07)] to-[rgba(0,85,255,0.05)] mb-4">
-        <span className="text-[22px] shrink-0">📊</span>
+        <BarChart3 size={22} className="text-[var(--sl-em)] shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-[12px] font-semibold text-[var(--sl-t1)] mb-0.5">Projeção do mês</p>
-          <p className="font-[IBM_Plex_Mono] text-[18px] font-medium text-[#0F766E] leading-none">
+          <p className="sl-num-strong text-[18px] text-[var(--sl-em)] leading-none">
             {fmtR(monthProjectedBalance)}
           </p>
           <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">saldo projetado no final do mês</p>
         </div>
-        <span className="px-2.5 py-1 rounded-full bg-[rgba(15,118,110,0.12)] border border-[rgba(15,118,110,0.2)] text-[10px] font-bold text-[#0F766E] shrink-0 whitespace-nowrap">
+        <span className="px-2.5 py-1 rounded-full bg-[rgba(15,118,110,0.12)] border border-[rgba(15,118,110,0.2)] text-[10px] font-bold text-[var(--sl-em)] shrink-0 whitespace-nowrap">
           {monthStats.pendingCount} pendente{monthStats.pendingCount !== 1 ? 's' : ''}
         </span>
       </div>
@@ -508,9 +508,9 @@ export default function CalendarioFinanceiroPage() {
       {/* ③ Legend strip */}
       <div className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] mb-4 flex-wrap">
         {[
-          { type: 'income',     label: 'Receita',    color: '#0F766E' },
-          { type: 'expense',    label: 'Despesa',    color: '#DB6478' },
-          { type: 'recorrente', label: 'Recorrente', color: '#60a5fa' },
+          { type: 'income',     label: 'Receita',    color: 'var(--sl-em)' },
+          { type: 'expense',    label: 'Despesa',    color: 'var(--sl-danger)' },
+          { type: 'recorrente', label: 'Recorrente', color: 'var(--sl-info)' },
           { type: 'planned',    label: 'Planejado',  color: '#a855f7' },
         ].map(l => (
           <span key={l.type} className="flex items-center gap-1.5 text-[11px] text-[var(--sl-t2)]">
@@ -525,15 +525,15 @@ export default function CalendarioFinanceiroPage() {
       {/* ④ Week Summary */}
       <div className="grid grid-cols-4 gap-2.5 mb-4 max-sm:grid-cols-2">
         {[
-          { label: 'Receitas semana',  value: fmtR(weekRecipes),  color: '#0F766E' },
-          { label: 'Despesas semana',  value: fmtR(weekExpenses), color: '#DB6478' },
-          { label: 'Saldo semana',     value: fmtR(weekBalance),  color: weekBalance >= 0 ? '#0F766E' : '#DB6478' },
-          { label: 'Pendentes',        value: String(weekPending), color: '#60a5fa', delta: `${weekPending} futuros` },
+          { label: 'Receitas semana',  value: fmtR(weekRecipes),  color: 'var(--sl-em)' },
+          { label: 'Despesas semana',  value: fmtR(weekExpenses), color: 'var(--sl-danger)' },
+          { label: 'Saldo semana',     value: fmtR(weekBalance),  color: weekBalance >= 0 ? 'var(--sl-em)' : 'var(--sl-danger)' },
+          { label: 'Pendentes',        value: String(weekPending), color: 'var(--sl-info)', delta: `${weekPending} futuros` },
         ].map(c => (
           <div key={c.label} className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 overflow-hidden transition-colors hover:border-[var(--sl-border-h)] sl-fade-up">
             <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: c.color }} />
             <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">{c.label}</p>
-            <p className="font-[IBM_Plex_Mono] font-medium text-xl leading-none" style={{ color: c.color }}>{c.value}</p>
+            <p className="sl-num-strong text-xl leading-none" style={{ color: c.color }}>{c.value}</p>
             {c.delta && <p className="text-[11px] mt-1 text-[var(--sl-t3)]">{c.delta}</p>}
           </div>
         ))}
@@ -541,7 +541,7 @@ export default function CalendarioFinanceiroPage() {
 
       {/* Error */}
       {error && (
-        <div className="bg-[rgba(219,100,120,0.06)] border border-[rgba(219,100,120,0.2)] rounded-xl p-4 text-[13px] text-[#DB6478] mb-4">
+        <div className="bg-[rgba(219,100,120,0.06)] border border-[rgba(219,100,120,0.2)] rounded-xl p-4 text-[13px] text-[var(--sl-danger)] mb-4">
           Erro ao carregar calendário.{' '}
           <button onClick={refresh} className="underline">Tentar novamente</button>
         </div>
@@ -560,7 +560,7 @@ export default function CalendarioFinanceiroPage() {
               {DAY_HEADERS.map((d, i) => (
                 <div key={d} className={cn(
                   'py-2 px-1 text-center text-[10px] font-bold uppercase tracking-[0.07em]',
-                  i === 0 ? 'text-[#DB6478] opacity-70' : 'text-[var(--sl-t3)]'
+                  i === 0 ? 'text-[var(--sl-danger)] opacity-70' : 'text-[var(--sl-t3)]'
                 )}>
                   {d}
                 </div>
@@ -586,8 +586,8 @@ export default function CalendarioFinanceiroPage() {
                         Semana {Math.floor(index / 7) + 1}
                       </span>
                       <span className={cn(
-                        'font-[IBM_Plex_Mono] text-[10px] font-medium',
-                        (weekBalances[Math.floor(index / 7)] ?? 0) >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]'
+                        'sl-num text-[10px]',
+                        (weekBalances[Math.floor(index / 7)] ?? 0) >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
                       )}>
                         {(weekBalances[Math.floor(index / 7)] ?? 0) >= 0 ? '+' : ''}
                         {fmtR(weekBalances[Math.floor(index / 7)] ?? 0)}
@@ -619,11 +619,11 @@ export default function CalendarioFinanceiroPage() {
                 {/* Mobile handle */}
                 <div className="hidden max-md:block w-10 h-1 bg-[var(--sl-t3)] rounded mx-auto mb-3 opacity-40" />
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-[Space_Grotesk] text-[15px] font-extrabold text-[var(--sl-t1)] capitalize">
+                  <h3 className="font-[Syne] text-[15px] font-extrabold text-[var(--sl-t1)] capitalize">
                     {formatDayFull(selectedDay.date)}
                   </h3>
                   <button onClick={() => setSelectedDay(null)}
-                    className="w-7 h-7 rounded-lg border border-[var(--sl-border)] bg-[var(--sl-s2)] cursor-pointer text-[var(--sl-t2)] flex items-center justify-center hover:border-[#DB6478] hover:text-[#DB6478] transition-all">
+                    className="w-7 h-7 rounded-lg border border-[var(--sl-border)] bg-[var(--sl-s2)] cursor-pointer text-[var(--sl-t2)] flex items-center justify-center hover:border-[var(--sl-danger)] hover:text-[var(--sl-danger)] transition-all">
                     <X size={14} />
                   </button>
                 </div>
@@ -631,13 +631,13 @@ export default function CalendarioFinanceiroPage() {
                 {/* 3 mini cards */}
                 <div className="flex gap-2">
                   {[
-                    { label: 'Receitas', value: fmtR(dayRecipes),  cls: 'text-[#0F766E]' },
-                    { label: 'Despesas', value: fmtR(dayExpenses), cls: 'text-[#DB6478]' },
-                    { label: 'Saldo',    value: fmtR(dayBalance),  cls: dayBalance >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]' },
+                    { label: 'Receitas', value: fmtR(dayRecipes),  cls: 'text-[var(--sl-em)]' },
+                    { label: 'Despesas', value: fmtR(dayExpenses), cls: 'text-[var(--sl-danger)]' },
+                    { label: 'Saldo',    value: fmtR(dayBalance),  cls: dayBalance >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]' },
                   ].map(c => (
                     <div key={c.label} className="flex-1 px-[11px] py-[9px] rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-center">
                       <p className="text-[9px] uppercase tracking-[0.06em] text-[var(--sl-t3)] mb-0.5">{c.label}</p>
-                      <p className={cn('font-[IBM_Plex_Mono] text-[13px] font-medium', c.cls)}>{c.value}</p>
+                      <p className={cn('sl-num text-[13px]', c.cls)}>{c.value}</p>
                     </div>
                   ))}
                 </div>
@@ -660,13 +660,13 @@ export default function CalendarioFinanceiroPage() {
 
                 {dayTransactions.length === 0 && (
                   <div className="text-center py-8">
-                    <span className="text-[28px] block mb-2 opacity-50">📅</span>
+                    <Calendar size={28} className="text-[var(--sl-t3)] mx-auto mb-2 opacity-50" />
                     <p className="text-[12px] text-[var(--sl-t3)]">Nenhuma transação neste dia.</p>
                   </div>
                 )}
 
                 <button onClick={() => openAddModal(selectedDay.dateString)}
-                  className="w-full py-2.5 rounded-[10px] border border-dashed border-[var(--sl-border-h)] bg-transparent cursor-pointer text-[var(--sl-t2)] text-[12px] flex items-center justify-center gap-1.5 hover:border-[#0F766E] hover:text-[#0F766E] hover:bg-[rgba(15,118,110,0.04)] transition-all mt-2">
+                  className="w-full py-2.5 rounded-[10px] border border-dashed border-[var(--sl-border-h)] bg-transparent cursor-pointer text-[var(--sl-t2)] text-[12px] flex items-center justify-center gap-1.5 hover:border-[var(--sl-em)] hover:text-[var(--sl-em)] hover:bg-[rgba(15,118,110,0.04)] transition-all mt-2">
                   <Plus size={14} />
                   Adicionar transação neste dia
                 </button>
@@ -676,12 +676,12 @@ export default function CalendarioFinanceiroPage() {
               <div className="px-[18px] py-3.5 border-t border-[var(--sl-border)] shrink-0">
                 <div className="flex items-center justify-between px-3.5 py-[11px] rounded-[11px] bg-gradient-to-br from-[rgba(15,118,110,0.07)] to-[rgba(0,85,255,0.05)] border border-[rgba(15,118,110,0.15)]">
                   <span className="text-[11px] text-[var(--sl-t2)]">Saldo acumulado até aqui</span>
-                  <span className={cn('font-[IBM_Plex_Mono] text-[16px] font-medium', cumulativeBalance >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
+                  <span className={cn('sl-num-strong text-[16px]', cumulativeBalance >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]')}>
                     {fmtR(cumulativeBalance)}
                   </span>
                 </div>
                 {selectedDay.isFuture && dayTransactions.some(t => t.is_future) && (
-                  <div className="flex items-start gap-1.5 mt-2.5 p-3 rounded-[9px] bg-[rgba(96,165,250,0.06)] border border-[rgba(96,165,250,0.2)] text-[11px] text-[#60a5fa] leading-relaxed">
+                  <div className="flex items-start gap-1.5 mt-2.5 p-3 rounded-[9px] bg-[rgba(96,165,250,0.06)] border border-[rgba(96,165,250,0.2)] text-[11px] text-[var(--sl-info)] leading-relaxed">
                     <Info size={13} className="shrink-0 mt-px" />
                     Valores futuros são projeções baseadas em recorrentes e eventos planejados.
                   </div>
@@ -708,16 +708,16 @@ export default function CalendarioFinanceiroPage() {
           fabOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-2 pointer-events-none'
         )}>
           {[
-            { icon: '📥', label: 'Nova Receita',  action: () => openAddModal(null) },
-            { icon: '📤', label: 'Nova Despesa',  action: () => openAddModal(null) },
-            { icon: '📅', label: 'Evento futuro', action: () => { setPlanModalOpen(true); setFabOpen(false) } },
+            { Icon: Wallet,       color: 'var(--sl-em)', label: 'Nova Receita',  action: () => openAddModal(null) },
+            { Icon: TrendingDown, color: 'var(--sl-danger)', label: 'Nova Despesa',  action: () => openAddModal(null) },
+            { Icon: Calendar,     color: 'var(--sl-info)', label: 'Evento futuro', action: () => { setPlanModalOpen(true); setFabOpen(false) } },
           ].map(item => (
             <div key={item.label} className="flex items-center gap-1.5 cursor-pointer" onClick={item.action}>
               <span className="bg-[var(--sl-s1)] border border-[var(--sl-border-h)] rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-[var(--sl-t1)] shadow-[0_4px_12px_rgba(0,0,0,0.2)] whitespace-nowrap">
                 {item.label}
               </span>
-              <span className="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border-h)]">
-                {item.icon}
+              <span className="w-[30px] h-[30px] rounded-full flex items-center justify-center bg-[var(--sl-s2)] border border-[var(--sl-border-h)]" style={{ color: item.color }}>
+                <item.Icon size={14} />
               </span>
             </div>
           ))}
@@ -727,12 +727,12 @@ export default function CalendarioFinanceiroPage() {
         <button
           onClick={() => setFabOpen(v => !v)}
           className={cn(
-            'w-[46px] h-[46px] rounded-full text-white text-[22px] cursor-pointer shadow-[0_5px_20px_rgba(15,118,110,0.4)] transition-transform duration-200 flex items-center justify-center font-light',
+            'w-[46px] h-[46px] rounded-full text-white cursor-pointer shadow-[0_5px_20px_rgba(15,118,110,0.4)] transition-transform duration-200 flex items-center justify-center',
             fabOpen && 'rotate-45'
           )}
-          style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
+          style={{ background: 'var(--sl-em)' }}
         >
-          +
+          <Plus size={20} />
         </button>
       </div>
 

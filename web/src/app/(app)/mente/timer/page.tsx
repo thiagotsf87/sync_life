@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Flame, Clock, BookOpen, Brain, ChevronLeft } from 'lucide-react'
+import { Flame, Clock, ChevronLeft } from 'lucide-react'
 import { MobileFormHeader } from '@/components/ui/mobile-form-header'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
@@ -60,7 +60,6 @@ export default function TimerPage() {
     : null
 
   // Subtitle for ModuleHeader
-  const selectedTrackName = activeTracks.find(t => t.id === null)?.name
   const subtitleParts: string[] = ['Foco profundo']
   if (activeTracks.length > 0) subtitleParts.push(activeTracks[0].name)
 
@@ -168,7 +167,7 @@ export default function TimerPage() {
               <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">Streak</p>
               <div className="flex items-center gap-1">
                 <Flame size={16} className="text-[#D97534] shrink-0" />
-                <span className="font-[IBM_Plex_Mono] font-bold text-lg text-[var(--sl-t1)]">
+                <span className="sl-num-strong text-lg text-[var(--sl-t1)]">
                   {streak.current_streak}d
                 </span>
               </div>
@@ -182,7 +181,7 @@ export default function TimerPage() {
                             transition-colors hover:border-[var(--sl-border-h)]">
               <div className="absolute top-0 left-4 right-4 h-[2.5px] rounded-b" style={{ background: '#D9962E' }} />
               <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">Semana</p>
-              <span className="font-[IBM_Plex_Mono] font-bold text-lg text-[var(--sl-t1)]">
+              <span className="sl-num-strong text-lg text-[var(--sl-t1)]">
                 {weekHours.toFixed(1)}h
               </span>
               <p className="text-[10px] text-[var(--sl-t3)] mt-[3px]">
@@ -195,8 +194,8 @@ export default function TimerPage() {
                             transition-colors hover:border-[var(--sl-border-h)]">
               <div className="absolute top-0 left-4 right-4 h-[2.5px] rounded-b" style={{ background: '#0B2D34' }} />
               <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-1">Top trilha</p>
-              <span className="font-[IBM_Plex_Mono] font-bold text-lg text-[var(--sl-t1)]">
-                {topTrack ? `${(topTrack.total_hours ?? 0).toFixed(0)}h` : '\u2014'}
+              <span className="sl-num-strong text-lg text-[var(--sl-t1)]">
+                {topTrack ? `${(topTrack.total_hours ?? 0).toFixed(0)}h` : '\u2013'}
               </span>
               <p className="text-[10px] text-[var(--sl-t3)] mt-[3px] truncate">
                 {topTrack?.name ?? 'Sem trilhas'}
@@ -204,11 +203,11 @@ export default function TimerPage() {
             </div>
           </div>
 
-          {/* Session history — horizontal scroll per prototype */}
+          {/* Session history · horizontal scroll per prototype */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[18px] transition-colors hover:border-[var(--sl-border-h)]">
             <div className="flex items-center gap-[9px] mb-[14px]">
               <Clock size={16} className="text-[#D9962E]" />
-              <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Historico de Sessoes</h3>
+              <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Historico de Sessoes</h3>
             </div>
 
             {recentSessions.length === 0 ? (
@@ -234,11 +233,11 @@ export default function TimerPage() {
                       <p className="text-[12px] font-medium text-[var(--sl-t1)] mb-1 truncate">
                         {session.track?.name ?? 'Estudo livre'}
                       </p>
-                      <p className="font-[IBM_Plex_Mono] text-[18px] font-bold text-[#D9962E]">
+                      <p className="sl-num-strong text-[18px] text-[#D9962E]">
                         {hours}h {mins.toString().padStart(2, '0')}m
                       </p>
                       <p className="text-[10px] text-[var(--sl-t3)] mt-1">
-                        {session.cycles_completed} ciclo{session.cycles_completed !== 1 ? 's' : ''} \u00B7 {dateLabel} {timeLabel}
+                        {session.cycles_completed} ciclo{session.cycles_completed !== 1 ? 's' : ''} \u00B7 {dateLabel} <span className="font-[IBM_Plex_Mono]">{timeLabel}</span>
                       </p>
                     </div>
                   )
@@ -258,7 +257,7 @@ export default function TimerPage() {
             >
               <div className="flex items-center justify-center gap-2 mb-1.5">
                 <Flame size={22} className="text-[#D97534]" />
-                <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   {streak.current_streak} dias de foco!
                 </span>
               </div>
@@ -269,9 +268,9 @@ export default function TimerPage() {
           )}
 
           {/* XP Jornada */}
-          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-4">
+          <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-4 transition-colors hover:border-[var(--sl-border-h)]">
             <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">XP Jornada</p>
-            <p className="font-[Space_Grotesk] font-extrabold text-2xl text-sl-grad">{jornadaXp}</p>
+            <p className="sl-num-strong text-2xl text-[var(--sl-em)]">{jornadaXp}</p>
             <p className="text-[11px] text-[var(--sl-t2)] mt-1">Ganhe XP ao concluir sessoes de foco.</p>
           </div>
         </div>

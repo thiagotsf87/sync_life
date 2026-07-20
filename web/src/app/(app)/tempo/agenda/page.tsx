@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon, Pencil, Trash2, MapPin } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
@@ -87,7 +87,7 @@ function EventListItem({
       {/* Time */}
       <div className="w-16 shrink-0 text-right pt-0.5">
         <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t2)]">
-          {event.all_day ? 'Dia todo' : (event.start_time ?? '—')}
+          {event.all_day ? 'Dia todo' : (event.start_time ?? '--')}
         </span>
         {event.end_time && !event.all_day && (
           <span className="block font-[IBM_Plex_Mono] text-[10px] text-[var(--sl-t3)]">
@@ -108,12 +108,14 @@ function EventListItem({
           {event.title}
         </p>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-[4px]"
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-[4px]"
             style={{ color: cfg.color, background: `${cfg.color}18` }}>
-            {cfg.icon} {cfg.label}
+            <span aria-hidden="true">{cfg.icon}</span> {cfg.label}
           </span>
           {event.location && (
-            <span className="text-[10px] text-[var(--sl-t3)] truncate">📍 {event.location}</span>
+            <span className="inline-flex items-center gap-1 text-[10px] text-[var(--sl-t3)] truncate">
+              <MapPin size={10} /> {event.location}
+            </span>
           )}
         </div>
         {event.description && (
@@ -125,17 +127,19 @@ function EventListItem({
       <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={() => onEdit(event)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors text-[11px]"
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-t1)] hover:bg-[var(--sl-s2)] transition-colors"
           title="Editar"
+          aria-label="Editar evento"
         >
-          ✏️
+          <Pencil size={12} />
         </button>
         <button
           onClick={() => onDelete(event)}
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[var(--sl-s2)] transition-colors text-[11px]"
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--sl-t3)] hover:text-[var(--sl-danger)] hover:bg-[var(--sl-s2)] transition-colors"
           title="Excluir"
+          aria-label="Excluir evento"
         >
-          🗑️
+          <Trash2 size={12} />
         </button>
       </div>
     </div>
@@ -362,8 +366,8 @@ export default function AgendaDiariaPage() {
         <JornadaInsight text={
           <span>
             {selectedEvents.length > 0
-              ? <>Você tem <strong className="text-[#3CA0B5]">{selectedEvents.length} evento{selectedEvents.length !== 1 ? 's' : ''}</strong> neste dia. Boa produtividade! ✨</>
-              : <>Dia livre! Que tal planejar algo novo? ✨</>
+              ? <>Você tem <strong className="text-[#3CA0B5]">{selectedEvents.length} evento{selectedEvents.length !== 1 ? 's' : ''}</strong> neste dia. Boa produtividade.</>
+              : <>Dia livre. Que tal planejar algo novo?</>
             }
           </span>
         } />
@@ -403,7 +407,7 @@ export default function AgendaDiariaPage() {
         {/* ④ Event List for selected day */}
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 mb-4 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
               {selectedDate ? formatDayTitle(selectedDate) : 'Hoje'}
               {isSelectedToday && <span className="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[rgba(60,160,181,0.15)] text-[#3CA0B5]">Hoje</span>}
             </h2>
@@ -414,8 +418,8 @@ export default function AgendaDiariaPage() {
 
           {selectedEvents.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-10">
-              <span className="text-3xl">📅</span>
-              <p className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Dia livre!</p>
+              <CalendarIcon size={32} className="text-[var(--sl-t3)]" />
+              <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Dia livre</p>
               <p className="text-[13px] text-[var(--sl-t3)] text-center">
                 Sua agenda está vazia
               </p>
@@ -445,8 +449,8 @@ export default function AgendaDiariaPage() {
         {/* ⑤ Tomorrow Preview */}
         {tomorrowEvents.length > 0 && (
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]" style={{ opacity: 0.75 }}>
-            <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t2)] mb-3">
-              Amanhã — {tomorrowEvents.length} evento{tomorrowEvents.length !== 1 ? 's' : ''}
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t2)] mb-3">
+              Amanhã · {tomorrowEvents.length} evento{tomorrowEvents.length !== 1 ? 's' : ''}
             </h2>
             <div className="flex flex-col gap-2">
               {tomorrowEvents.slice(0, 4).map(ev => {
@@ -454,11 +458,11 @@ export default function AgendaDiariaPage() {
                 return (
                   <div key={ev.id} className="flex items-center gap-3 py-1">
                     <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] w-12 text-right shrink-0">
-                      {ev.all_day ? '—' : (ev.start_time ?? '—')}
+                      {ev.all_day ? '--' : (ev.start_time ?? '--')}
                     </span>
                     <div className="w-[2px] self-stretch rounded-full shrink-0" style={{ background: cfg.color }} />
                     <span className="text-[12px] text-[var(--sl-t2)] truncate">{ev.title}</span>
-                    <span className="text-[10px] font-bold ml-auto shrink-0" style={{ color: cfg.color }}>
+                    <span className="text-[10px] font-bold ml-auto shrink-0" style={{ color: cfg.color }} aria-hidden="true">
                       {cfg.icon}
                     </span>
                   </div>

@@ -36,7 +36,7 @@ export function WeekAgendaWidget({ weekDays, events, now }: WeekAgendaWidgetProp
   return (
     <div className="flex-1 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-3 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-[14px]">
-        <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
+        <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B6FD4" strokeWidth="2" strokeLinecap="round">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
             <line x1="16" y1="2" x2="16" y2="6"/>

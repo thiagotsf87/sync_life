@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Plus, Trash2, CreditCard } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -16,6 +15,7 @@ import { PatrimonioMobile } from '@/components/patrimonio/PatrimonioMobile'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { MetricsStrip } from '@/components/ui/metrics-strip'
 import { createTransactionFromProvento } from '@/lib/integrations/financas'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface DividendForm {
   asset_id: string
@@ -40,8 +40,6 @@ const EMPTY_FORM: DividendForm = {
 }
 
 export default function ProventosPage() {
-  const router = useRouter()
-
   const { dividends, loading, error, reload } = usePortfolioDividends()
   const { assets } = usePortfolioAssets()
   const addDividend = useAddDividend()
@@ -116,8 +114,6 @@ export default function ProventosPage() {
   const assetEntries = Object.entries(byAsset).sort(([, a], [, b]) => b - a).slice(0, 5)
 
   const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
-
-  const fmtCurrency = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
   // Determine which month is selected for detail view (default = current month or first with data)
   const [selectedMonth, setSelectedMonth] = useState(currentMonth)
@@ -202,7 +198,7 @@ export default function ProventosPage() {
         iconBg="rgba(217,150,46,.10)"
         iconColor="#D9962E"
         title="Proventos"
-        subtitle={`${filterYear} · ${fmtCurrency(totalYear)} acumulados · ${paymentCount} pagamentos`}
+        subtitle={`${filterYear} · ${fmtBRL(totalYear)} acumulados · ${paymentCount} pagamentos`}
       >
         <div className="flex bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[10px] p-[3px] gap-0.5">
           {availableYears.slice(0, 5).map(y => (
@@ -219,25 +215,25 @@ export default function ProventosPage() {
         <button
           onClick={() => setShowModal(true)}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#4F88D4] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(79,136,212,.25)] transition-all"
+                     bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(15,118,110,.25)] transition-all"
         >
           <Plus size={16} strokeWidth={2.5} />
           Registrar
         </button>
       </ModuleHeader>
 
-      {/* MetricsStrip — inline horizontal strip */}
+      {/* MetricsStrip · inline horizontal strip */}
       <div className="mb-5 sl-fade-up sl-delay-1">
         <MetricsStrip
           items={[
             {
               label: `Total ${filterYear}`,
-              value: fmtCurrency(totalYear),
+              value: fmtBRL(totalYear),
               valueColor: '#0F766E',
             },
             {
               label: 'Media/Mes',
-              value: fmtCurrency(monthlyAvg),
+              value: fmtBRL(monthlyAvg),
             },
             {
               label: 'Pagamentos',
@@ -256,8 +252,8 @@ export default function ProventosPage() {
       <JornadaInsight
         text={
           monthlyAvg > 0
-            ? <>Voce recebe em media <strong className="text-[#0F766E]">{fmtCurrency(monthlyAvg)}</strong> por mes em proventos.
-              {monthlyAvg >= 5000 && <> Sua renda passiva ja cobre despesas significativas — continue reinvestindo!</>}
+            ? <>Voce recebe em media <strong className="text-[#0F766E]">{fmtBRL(monthlyAvg)}</strong> por mes em proventos.
+              {monthlyAvg >= 5000 && <> Sua renda passiva ja cobre despesas significativas · continue reinvestindo!</>}
             </>
             : <>Registre seus proventos para acompanhar sua renda passiva e evolucao para a independencia financeira.</>
         }
@@ -306,10 +302,10 @@ export default function ProventosPage() {
                     {months[month - 1]}{isCurrent ? ' \u25cf' : ''}
                   </div>
                   <div className={cn(
-                    'font-[IBM_Plex_Mono] text-[18px] font-medium',
+                    'font-[Syne] sl-num-strong text-[18px]',
                     isProjection ? 'text-[var(--sl-t3)]' : total > 0 ? 'text-[#0F766E]' : 'text-[var(--sl-t3)]'
                   )}>
-                    {isProjection ? fmtCurrency(monthlyAvg) : fmtCurrency(total)}
+                    {isProjection ? fmtBRL(monthlyAvg) : fmtBRL(total)}
                   </div>
                   <div className={cn(
                     'text-[10px] mt-1',
@@ -332,8 +328,8 @@ export default function ProventosPage() {
                   <line x1="12" y1="1" x2="12" y2="23" />
                   <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
-                <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
-                  {months[selectedMonth - 1]} {filterYear} — Detalhamento
+                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
+                  {months[selectedMonth - 1]} {filterYear} · Detalhamento
                 </span>
               </div>
 
@@ -342,7 +338,7 @@ export default function ProventosPage() {
                   <p className="text-[13px] text-[var(--sl-t2)] mb-3">Nenhum provento em {months[selectedMonth - 1]} {filterYear}</p>
                   <button
                     onClick={() => setShowModal(true)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#4F88D4] text-white hover:opacity-90"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90"
                   >
                     <Plus size={15} />
                     Registrar Provento
@@ -360,16 +356,16 @@ export default function ProventosPage() {
                         />
                         <div className="flex-1 min-w-0">
                           <div className="text-[13px] font-medium text-[var(--sl-t1)]">
-                            {asset?.ticker ?? '???'} — {DIVIDEND_TYPE_LABELS[d.type]}
+                            {asset?.ticker ?? '???'} · {DIVIDEND_TYPE_LABELS[d.type]}
                           </div>
                           <div className="text-[11px] text-[var(--sl-t3)] mt-0.5">
                             {new Date(d.payment_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
-                            {d.amount_per_unit != null && ` · ${fmtCurrency(d.amount_per_unit)}/cota`}
+                            {d.amount_per_unit != null && ` · ${fmtBRL(d.amount_per_unit)}/cota`}
                             {asset && ` · ${asset.quantity.toLocaleString('pt-BR')} cotas`}
                           </div>
                         </div>
-                        <div className="font-[IBM_Plex_Mono] text-[13px] text-[#0F766E] shrink-0">
-                          {fmtCurrency(d.total_amount)}
+                        <div className="sl-num text-[13px] text-[#0F766E] shrink-0">
+                          {fmtBRL(d.total_amount)}
                         </div>
                         {d.status === 'announced' && (
                           <button
@@ -396,7 +392,7 @@ export default function ProventosPage() {
               {/* Top Pagadores */}
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[18px]
                               transition-colors hover:border-[var(--sl-border-h)]">
-                <div className="font-[Space_Grotesk] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">
+                <div className="font-[Syne] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">
                   Top Pagadores
                 </div>
                 {assetEntries.length === 0 ? (
@@ -406,7 +402,7 @@ export default function ProventosPage() {
                     {assetEntries.map(([ticker, total]) => (
                       <div key={ticker} className="flex justify-between">
                         <span className="font-[IBM_Plex_Mono] text-[12px] text-[var(--sl-t1)]">{ticker}</span>
-                        <span className="font-[IBM_Plex_Mono] text-[12px] text-[#0F766E]">{fmtCurrency(total)}</span>
+                        <span className="sl-num text-[12px] text-[#0F766E]">{fmtBRL(total)}</span>
                       </div>
                     ))}
                   </div>
@@ -417,7 +413,7 @@ export default function ProventosPage() {
               {yocByAsset.length > 0 && (
                 <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[18px]
                                 transition-colors hover:border-[var(--sl-border-h)]">
-                  <div className="font-[Space_Grotesk] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">
+                  <div className="font-[Syne] text-[10px] font-bold uppercase tracking-[.1em] text-[var(--sl-t3)] mb-3">
                     Melhor YoC
                   </div>
                   <div className="flex flex-col gap-2">
@@ -425,7 +421,7 @@ export default function ProventosPage() {
                       <div key={ticker}>
                         <div className="flex justify-between text-[11px] mb-[3px]">
                           <span className="font-[IBM_Plex_Mono] text-[var(--sl-t1)]">{ticker}</span>
-                          <span className="font-[IBM_Plex_Mono] text-[#0F766E]">{yoc.toFixed(1)}%</span>
+                          <span className="sl-num text-[#0F766E]">{yoc.toFixed(1)}%</span>
                         </div>
                         <div className="h-[3px] bg-[var(--sl-s3)] rounded-sm overflow-hidden">
                           <div
@@ -450,7 +446,7 @@ export default function ProventosPage() {
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[480px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2.5">
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{ background: 'rgba(217,150,46,.10)' }}>
                   <CreditCard size={18} className="text-[#D9962E]" />
                 </div>
@@ -474,7 +470,7 @@ export default function ProventosPage() {
                     <option value="">Selecione...</option>
                     {assets.map(a => (
                       <option key={a.id} value={a.id}>
-                        {a.ticker} — {ASSET_CLASS_LABELS[a.asset_class]}
+                        {a.ticker} · {ASSET_CLASS_LABELS[a.asset_class]}
                       </option>
                     ))}
                   </select>
@@ -563,7 +559,7 @@ export default function ProventosPage() {
                   Cancelar
                 </button>
                 <button onClick={handleSave} disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#4F88D4] text-white hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 disabled:opacity-50">
                   {isSaving ? 'Registrando...' : 'Registrar'}
                 </button>
               </div>

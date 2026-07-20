@@ -63,7 +63,7 @@ export function Sidebar() {
         </div>
         <span
           className={cn(
-            'sl-sb-title font-[Space_Grotesk] font-bold text-sm text-[var(--sl-t1)] whitespace-nowrap',
+            'sl-sb-title font-[Syne] font-bold text-sm text-[var(--sl-t1)] whitespace-nowrap',
             'transition-all duration-[240ms]',
             !sidebarOpen && 'opacity-0 w-0 overflow-hidden',
           )}
@@ -80,7 +80,7 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Score (Jornada only, sidebar open only) */}
+      {/* Mini-card âncora — varia por módulo ativo (sidebar aberta apenas) */}
       {sidebarOpen && <SidebarScore />}
 
       {/* Nav Items */}

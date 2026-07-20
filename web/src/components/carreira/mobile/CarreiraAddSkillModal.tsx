@@ -60,7 +60,7 @@ export function CarreiraAddSkillModal({ open, onClose, onSave }: CarreiraAddSkil
             <p className="text-[12px] font-medium" style={{ color: '#c4b5fd' }}>
               ✦ Novo Poder
             </p>
-            <p className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)]">Nova Habilidade</p>
+            <p className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)]">Nova Habilidade</p>
           </div>
           <button onClick={onClose} className="text-[13px] text-[var(--sl-t3)]">Cancelar</button>
         </div>
@@ -181,7 +181,7 @@ export function CarreiraAddSkillModal({ open, onClose, onSave }: CarreiraAddSkil
             onClick={handleSave}
             disabled={saving || !name.trim()}
             className="w-full h-[50px] rounded-[14px] text-[15px] font-semibold text-white disabled:opacity-50"
-            style={{ background: grad }}
+            style={{ background: 'var(--sl-em)' }}
           >
             Adicionar ao Arsenal · +10 XP
           </button>

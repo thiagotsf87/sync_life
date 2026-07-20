@@ -104,7 +104,7 @@ export function QuickActionSheet({ open, onOpenChange, activeModule, onOpenQuick
 
         <div className="px-5 pb-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)]">
+            <h2 className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)]">
               Ação rápida
             </h2>
             <button

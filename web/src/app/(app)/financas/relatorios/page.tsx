@@ -168,7 +168,7 @@ export default function RelatoriosPage() {
         <ModuleHeader
           icon={BarChart3}
           iconBg="rgba(15,118,110,.08)"
-          iconColor="#0F766E"
+          iconColor="var(--sl-em)"
           title="Relatórios"
           subtitle={`${periodLabel} · ${periodStats.monthCount} ${periodStats.monthCount === 1 ? 'mês' : 'meses'} · ${periodStats.txCount} transações`}
           className="mb-4"
@@ -180,11 +180,11 @@ export default function RelatoriosPage() {
             Exportar CSV
           </button>
           <button
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[9px] border border-[rgba(15,118,110,0.25)] bg-gradient-to-br from-[rgba(15,118,110,0.1)] to-[rgba(0,85,255,0.08)] text-[#0F766E] text-[12px] font-semibold cursor-pointer transition-all opacity-60">
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[9px] border border-[rgba(15,118,110,0.25)] bg-gradient-to-br from-[rgba(15,118,110,0.1)] to-[rgba(0,85,255,0.08)] text-[var(--sl-em)] text-[12px] font-semibold cursor-pointer transition-all opacity-60">
             <FileText size={13} />
             PDF
             {!isPro && (
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-[5px] text-[9px] font-bold bg-gradient-to-br from-[rgba(15,118,110,0.15)] to-[rgba(0,85,255,0.15)] text-[#0F766E] border border-[rgba(15,118,110,0.25)] ml-0.5">
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-[5px] text-[9px] font-bold bg-gradient-to-br from-[rgba(15,118,110,0.15)] to-[rgba(0,85,255,0.15)] text-[var(--sl-em)] border border-[rgba(15,118,110,0.25)] ml-0.5">
                 <Lock size={9} /> PRO
               </span>
             )}
@@ -194,13 +194,13 @@ export default function RelatoriosPage() {
       {/* ── Upgrade Banner (FREE) ───────────────────────────────── */}
       {!isPro && (
         <div className="flex items-center gap-3 bg-gradient-to-r from-[rgba(217,150,46,0.08)] to-[rgba(217,117,52,0.06)] border border-[rgba(217,150,46,0.2)] rounded-[10px] px-3.5 py-2.5 mb-3.5">
-          <span className="text-[16px] shrink-0">🔒</span>
+          <Lock size={16} className="text-[var(--sl-warning)] shrink-0" />
           <p className="flex-1 text-[12px] text-[var(--sl-t2)] leading-relaxed">
             Você está no plano <strong className="text-[var(--sl-t1)]">Gratuito</strong>. Acesse qualquer período,
             exportação PDF/Excel e análise narrativa de IA com o <strong className="text-[var(--sl-t1)]">Plano PRO</strong>.
           </p>
-          <button className="px-3.5 py-1.5 rounded-[8px] border-none bg-gradient-to-br from-[#D9962E] to-[#D97534] text-white text-[11px] font-bold cursor-pointer shrink-0 whitespace-nowrap">
-            Upgrade PRO — R$29/mês
+          <button className="px-3.5 py-1.5 rounded-[8px] border-none bg-gradient-to-br from-[var(--sl-warning)] to-[var(--sl-warning)] text-white text-[11px] font-bold cursor-pointer shrink-0 whitespace-nowrap">
+            Upgrade PRO · R$29/mês
           </button>
         </div>
       )}
@@ -218,12 +218,12 @@ export default function RelatoriosPage() {
             className={cn(
               'flex items-center gap-1.5 px-3 py-[5px] rounded-[8px] border text-[12px] cursor-pointer transition-all whitespace-nowrap',
               period === opt.key
-                ? 'bg-[rgba(15,118,110,0.14)] text-[#0F766E] border-[rgba(15,118,110,0.3)] font-semibold'
+                ? 'bg-[rgba(15,118,110,0.14)] text-[var(--sl-em)] border-[rgba(15,118,110,0.3)] font-semibold'
                 : 'border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t1)]'
             )}>
             {opt.label}
             {opt.proOnly && !isPro && (
-              <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded bg-gradient-to-br from-[rgba(15,118,110,0.15)] to-[rgba(0,85,255,0.15)] text-[#0F766E] border border-[rgba(15,118,110,0.25)]">
+              <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded bg-gradient-to-br from-[rgba(15,118,110,0.15)] to-[rgba(0,85,255,0.15)] text-[var(--sl-em)] border border-[rgba(15,118,110,0.25)]">
                 <Lock size={8} /> PRO
               </span>
             )}
@@ -256,7 +256,7 @@ export default function RelatoriosPage() {
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="flex items-center gap-1.5 px-4 py-1.5 rounded-[9px] border-none bg-[#0F766E] text-white text-[12px] font-bold cursor-pointer shrink-0 disabled:opacity-60 hover:bg-[#0da876] transition-colors">
+          className="flex items-center gap-1.5 px-4 py-1.5 rounded-[9px] border-none bg-[var(--sl-em)] text-white text-[12px] font-bold cursor-pointer shrink-0 disabled:opacity-60 hover:brightness-110 transition-all">
           <BarChart2 size={13} />
           {loading ? 'Carregando...' : 'Gerar relatório'}
         </button>
@@ -264,7 +264,7 @@ export default function RelatoriosPage() {
 
       {/* ── Error ───────────────────────────────────────────────── */}
       {error && (
-        <div className="bg-[rgba(219,100,120,0.06)] border border-[rgba(219,100,120,0.2)] rounded-xl p-4 text-[13px] text-[#DB6478] mb-4">
+        <div className="bg-[rgba(219,100,120,0.06)] border border-[rgba(219,100,120,0.2)] rounded-xl p-4 text-[13px] text-[var(--sl-danger)] mb-4">
           Erro ao carregar dados.{' '}
           <button onClick={handleGenerate} className="underline">Tentar novamente</button>
         </div>
@@ -296,8 +296,8 @@ export default function RelatoriosPage() {
       {/* ── Empty state ─────────────────────────────────────────── */}
       {!loading && transactions.length === 0 && (
         <div className="bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl p-12 text-center mb-4">
-          <span className="text-[40px] block mb-3 opacity-70">📊</span>
-          <h3 className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)] mb-1.5">
+          <BarChart3 size={40} className="text-[var(--sl-t3)] mx-auto mb-3 opacity-70" />
+          <h3 className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-1.5">
             Nenhuma transação no período
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)]">

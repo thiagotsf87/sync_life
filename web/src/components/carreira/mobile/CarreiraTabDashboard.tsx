@@ -1,6 +1,7 @@
-'use client'
+﻿'use client'
 
 import { CARREIRA_PRIMARY, CARREIRA_PRIMARY_BG, CARREIRA_PRIMARY_BORDER, CARREIRA_GRAD } from '@/lib/carreira-colors'
+import { fmtBRL } from '@/lib/format/currency'
 import type { ProfessionalProfile, CareerRoadmap, Skill } from '@/hooks/use-carreira'
 import { LEVEL_LABELS } from '@/hooks/use-carreira'
 
@@ -22,9 +23,7 @@ export function CarreiraTabDashboard({
   const border = CARREIRA_PRIMARY_BORDER
   const grad = CARREIRA_GRAD
 
-  const salaryLabel = profile?.gross_salary
-    ? `R$ ${profile.gross_salary.toLocaleString('pt-BR')}`
-    : '—'
+  const salaryLabel = profile?.gross_salary ? fmtBRL(profile.gross_salary) : '—'
   const roadmapPct = activeRoadmap ? Math.round(activeRoadmap.progress) : 0
   const completedSteps = activeRoadmap?.steps?.filter(s => s.status === 'completed') ?? []
   const inProgressSteps = activeRoadmap?.steps?.filter(s => s.status === 'in_progress') ?? []
@@ -71,21 +70,21 @@ export function CarreiraTabDashboard({
       <div className="grid grid-cols-2 gap-2 px-4 mb-3">
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3">
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">Salário atual</p>
-          <p className="font-[IBM_Plex_Mono] text-[19px] font-bold" style={{ color: accent }}>{salaryLabel}</p>
+          <p className="sl-num-strong text-[19px] font-bold" style={{ color: accent }}>{salaryLabel}</p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">
             <span className="text-[#c4b5fd]">Meta: R$ 14k · +52%</span>
           </p>
         </div>
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3">
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">Próxima revisão</p>
-          <p className="font-[IBM_Plex_Mono] text-[16px] font-bold text-[var(--sl-t1)]">Jun 2026</p>
+          <p className="sl-num-strong text-[16px] font-bold text-[var(--sl-t1)]">Jun 2026</p>
           <p className="text-[11px] mt-[2px]">
             <span className="text-[#c4b5fd]">⚡ +100 XP se promovido</span>
           </p>
         </div>
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-3">
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">Habilidades</p>
-          <p className="font-[IBM_Plex_Mono] text-[19px] font-bold text-[var(--sl-t1)]">{skills.length || 14}</p>
+          <p className="sl-num-strong text-[19px] font-bold text-[var(--sl-t1)]">{skills.length || 14}</p>
           <p className="text-[11px] mt-[2px]">
             <span className="text-[#c4b5fd]">6 dominadas · +XP cada</span>
           </p>
@@ -94,7 +93,7 @@ export function CarreiraTabDashboard({
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">
             Jornada do Herói
           </p>
-          <p className="font-[IBM_Plex_Mono] text-[19px] font-bold" style={{ color: '#8B7BD4' }}>{roadmapPct}%</p>
+          <p className="sl-num-strong text-[19px] font-bold" style={{ color: '#8B7BD4' }}>{roadmapPct}%</p>
           <p className="text-[11px] mt-[2px]">
             <span className="text-[#c4b5fd]">Rumo ao Sênior</span>
           </p>
@@ -102,7 +101,7 @@ export function CarreiraTabDashboard({
       </div>
 
       {/* Simulador de promoção */}
-      <p className="font-[Space_Grotesk] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-1">
+      <p className="font-[Syne] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-1">
         SIMULADOR DE PROMOÇÃO
       </p>
       <div
@@ -110,27 +109,27 @@ export function CarreiraTabDashboard({
         style={{ background: 'linear-gradient(135deg, rgba(199,103,149,0.08), rgba(139,123,212,0.06))', borderColor: 'rgba(199,103,149,0.2)' }}
       >
         <p className="text-[11px] font-bold text-[#c4b5fd] uppercase tracking-[0.5px] mb-[10px]">
-          💰 Impacto Financeiro — Sênior
+          💰 Impacto Financeiro · Sênior
         </p>
         <div className="flex justify-between mb-[10px]">
           <div>
             <p className="text-[11px] text-[var(--sl-t2)]">Salário atual</p>
-            <p className="font-[IBM_Plex_Mono] text-[18px] text-[var(--sl-t1)] mt-[2px]">{salaryLabel}</p>
+            <p className="sl-num-strong text-[18px] text-[var(--sl-t1)] mt-[2px]">{salaryLabel}</p>
           </div>
           <div className="flex items-center text-[20px] text-[var(--sl-t3)]">→</div>
           <div className="text-right">
             <p className="text-[11px] text-[#c4b5fd]">Projeção sênior</p>
-            <p className="font-[IBM_Plex_Mono] text-[18px] mt-[2px]" style={{ color: accent }}>R$ 14.000</p>
+            <p className="sl-num-strong text-[18px] mt-[2px]" style={{ color: accent }}>R$ 14.000</p>
           </div>
         </div>
         <div className="flex gap-2">
           <div className="flex-1 p-2 bg-[var(--sl-s2)] rounded-lg text-center">
             <p className="text-[10px] text-[var(--sl-t3)]">Ganho anual</p>
-            <p className="font-[IBM_Plex_Mono] text-[14px] text-[#0F766E] mt-[2px]">+R$ 57.600</p>
+            <p className="sl-num-strong text-[14px] text-[var(--sl-em)] mt-[2px]">+R$ 57.600</p>
           </div>
           <div className="flex-1 p-2 bg-[var(--sl-s2)] rounded-lg text-center">
             <p className="text-[10px] text-[var(--sl-t3)]">Impacto Patrimônio</p>
-            <p className="font-[IBM_Plex_Mono] text-[14px] text-[#8B7BD4] mt-[2px]">+R$ 4.800/mês</p>
+            <p className="sl-num-strong text-[14px] text-[#8B7BD4] mt-[2px]">+R$ 4.800/mês</p>
           </div>
         </div>
         <p className="text-[10px] text-[#c4b5fd] font-semibold mt-2">
@@ -139,7 +138,7 @@ export function CarreiraTabDashboard({
       </div>
 
       {/* Milestone */}
-      <p className="font-[Space_Grotesk] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-1">
+      <p className="font-[Syne] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-1">
         PRÓXIMO MILESTONE
       </p>
       <div
@@ -164,7 +163,7 @@ export function CarreiraTabDashboard({
         </div>
         <div className="flex gap-[6px] flex-wrap">
           {completedSteps.slice(0, 2).map(s => (
-            <span key={s.id} className="text-[11px] px-2 py-[3px] rounded-lg bg-[rgba(15,118,110,0.1)] text-[#0F766E]">
+            <span key={s.id} className="text-[11px] px-2 py-[3px] rounded-lg bg-[rgba(15,118,110,0.1)] text-[var(--sl-em)]">
               ✓ {s.title}
             </span>
           ))}
@@ -180,8 +179,8 @@ export function CarreiraTabDashboard({
           ))}
           {(!activeRoadmap || (activeRoadmap.steps?.length ?? 0) === 0) && (
             <>
-              <span className="text-[11px] px-2 py-[3px] rounded-lg bg-[rgba(15,118,110,0.1)] text-[#0F766E]">✓ React avançado</span>
-              <span className="text-[11px] px-2 py-[3px] rounded-lg bg-[rgba(15,118,110,0.1)] text-[#0F766E]">✓ Liderança técnica</span>
+              <span className="text-[11px] px-2 py-[3px] rounded-lg bg-[rgba(15,118,110,0.1)] text-[var(--sl-em)]">✓ React avançado</span>
+              <span className="text-[11px] px-2 py-[3px] rounded-lg bg-[rgba(15,118,110,0.1)] text-[var(--sl-em)]">✓ Liderança técnica</span>
               <span className="text-[11px] px-2 py-[3px] rounded-lg bg-[rgba(199,103,149,0.1)] text-[#C76795]">⟳ Node.js avançado</span>
               <span className="text-[11px] px-2 py-[3px] rounded-lg bg-[rgba(100,100,100,0.1)] text-[var(--sl-t3)]">○ Arquitetura</span>
             </>
@@ -206,7 +205,7 @@ export function CarreiraTabDashboard({
           { icon: '👤', label: 'Perfil', tab: 'perfil', color: accent },
           { icon: '🗺', label: 'Roadmap', tab: 'roadmap', color: '#0B2D34' },
           { icon: '⭐', label: 'Habilidades', tab: 'habilidades', color: '#8B7BD4' },
-          { icon: '📜', label: 'Histórico', tab: 'historico', color: '#0F766E' },
+          { icon: '📜', label: 'Histórico', tab: 'historico', color: 'var(--sl-em)' },
         ].map(a => (
           <button
             key={a.tab}

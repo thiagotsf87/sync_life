@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Loader2, AlertTriangle } from 'lucide-react'
+import { X, Loader2, AlertTriangle, Calendar as CalendarIcon } from 'lucide-react'
 import { EVENT_TYPES, type AgendaEvent } from '@/hooks/use-agenda'
 
 function formatDate(dateStr: string): string {
@@ -50,7 +50,7 @@ export function DeleteEventModal({ open, event, onClose, onConfirm }: DeleteEven
             <div className="w-8 h-8 rounded-[9px] flex items-center justify-center bg-[rgba(219,100,120,.12)]">
               <AlertTriangle size={16} className="text-[#DB6478]" />
             </div>
-            <h2 className="font-[Space_Grotesk] font-extrabold text-[15px] text-[var(--sl-t1)]">Excluir evento</h2>
+            <h2 className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)]">Excluir evento</h2>
           </div>
           <button
             onClick={onClose}
@@ -68,14 +68,14 @@ export function DeleteEventModal({ open, event, onClose, onConfirm }: DeleteEven
 
           <div className="flex items-center gap-3 px-3.5 py-3 rounded-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)]">
             <div
-              className="w-10 h-10 rounded-[10px] flex items-center justify-center text-lg shrink-0"
-              style={{ background: `${cfg.color}18` }}
+              className="w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0"
+              style={{ background: `${cfg.color}18`, color: cfg.color }}
             >
-              {cfg.icon}
+              <CalendarIcon size={16} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-semibold text-[var(--sl-t1)] truncate">{event.title}</p>
-              <p className="text-[11px] text-[var(--sl-t3)]">
+              <p className="text-[11px] text-[var(--sl-t3)] sl-num">
                 {formatDate(event.date)}
                 {!event.all_day && event.start_time && ` · ${event.start_time}`}
                 {!event.all_day && event.start_time && event.end_time && `–${event.end_time}`}

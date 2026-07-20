@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<title>SyncLife · Finanças — Visão Geral (v3)</title>
+<link rel="stylesheet" href="../dashboard-v2/tokens.css"/>
+<style>html, body, #root { height: 100%; }</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="../dashboard-v2/tweaks-panel.jsx"></script>
+<script type="text/babel" src="../dashboard-v2/icons.jsx"></script>
+<script type="text/babel">
+  // fmtBRL helper compartilhado
+  window.fmtBRL = (n, opts = {}) => {
+    const { compact = false } = opts;
+    if (compact && Math.abs(n) >= 1000) {
+      return 'R$ ' + (n / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'k';
+    }
+    return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+  const fmtBRL = window.fmtBRL;
+</script>
+<script type="text/babel" src="shell-fin.jsx"></script>
+<script type="text/babel" src="widgets-fin.jsx"></script>
+<script type="text/babel" src="Financas.jsx"></script>
+
+<script type="text/babel">
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<Financas/>);
+</script>
+</body>
+</html>

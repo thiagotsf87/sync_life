@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Check } from 'lucide-react'
 import { CARREIRA_PRIMARY, CARREIRA_PRIMARY_BORDER, CARREIRA_GRAD } from '@/lib/carreira-colors'
@@ -58,9 +58,9 @@ export function CarreiraTabRoadmap({ activeRoadmap }: CarreiraTabRoadmapProps) {
         style={{ background: 'linear-gradient(135deg, rgba(139,123,212,0.14), rgba(199,103,149,0.08))', borderColor: 'rgba(139,123,212,0.28)' }}
       >
         <p className="text-[11px] font-bold text-[#c4b5fd] uppercase tracking-[0.5px] mb-[6px]">
-          ✦ JORNADA DO HERÓI — ATO 2
+          ✦ JORNADA DO HERÓI · ATO 2
         </p>
-        <p className="font-[Space_Grotesk] text-[18px] font-extrabold text-[var(--sl-t1)] mb-1">
+        <p className="font-[Syne] text-[18px] font-extrabold text-[var(--sl-t1)] mb-1">
           De Pleno a Sênior
         </p>
         <p className="text-[12px] text-[var(--sl-t2)]">
@@ -81,7 +81,7 @@ export function CarreiraTabRoadmap({ activeRoadmap }: CarreiraTabRoadmapProps) {
               {/* Left: dot + line */}
               <div className="flex flex-col items-center">
                 {step.status === 'done' ? (
-                  <div className="w-8 h-8 rounded-full bg-[#0F766E] flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[var(--sl-em)] flex items-center justify-center shrink-0">
                     <Check size={14} className="text-white" strokeWidth={3} />
                   </div>
                 ) : step.status === 'current' ? (
@@ -117,7 +117,7 @@ export function CarreiraTabRoadmap({ activeRoadmap }: CarreiraTabRoadmapProps) {
                     className="w-[2px] flex-1 mt-1"
                     style={{
                       minHeight: step.status === 'current' || step.status === 'next' ? '80px' : '50px',
-                      background: step.status === 'done' ? '#0F766E'
+                      background: step.status === 'done' ? 'var(--sl-em)'
                         : step.status === 'current'
                           ? 'linear-gradient(180deg, rgba(139,123,212,0.4), var(--sl-border))'
                           : 'var(--sl-border)',
@@ -132,18 +132,18 @@ export function CarreiraTabRoadmap({ activeRoadmap }: CarreiraTabRoadmapProps) {
                   <span
                     className="text-[14px] font-semibold"
                     style={{
-                      color: step.status === 'done' ? '#0F766E'
+                      color: step.status === 'done' ? 'var(--sl-em)'
                         : step.status === 'current' ? '#c4b5fd'
-                        : step.status === 'vision' ? '#D9962E'
+                        : step.status === 'vision' ? 'var(--sl-warning)'
                         : step.status === 'next' ? 'var(--sl-t1)'
                         : 'var(--sl-t3)',
                       fontWeight: step.status === 'current' ? 700 : 600,
                     }}
                   >
-                    {step.status === 'vision' ? `Ato Final — ${step.label}` : `Ato ${idx + 1} — ${step.label.split(' ').pop()}`}
+                    {step.status === 'vision' ? `Ato Final · ${step.label}` : `Ato ${idx + 1} · ${step.label.split(' ').pop()}`}
                   </span>
                   {step.status === 'done' && (
-                    <span className="inline-flex px-2 py-[3px] rounded-[10px] text-[10px] font-semibold bg-[rgba(15,118,110,0.12)] text-[#0F766E]">
+                    <span className="inline-flex px-2 py-[3px] rounded-[10px] text-[10px] font-semibold bg-[rgba(15,118,110,0.12)] text-[var(--sl-em)]">
                       ✓ Conquistado
                     </span>
                   )}
@@ -183,7 +183,7 @@ export function CarreiraTabRoadmap({ activeRoadmap }: CarreiraTabRoadmapProps) {
                             background: sk.status === 'done' ? 'rgba(15,118,110,0.1)'
                               : sk.status === 'in_progress' ? 'rgba(139,123,212,0.1)'
                               : 'rgba(100,100,100,0.1)',
-                            color: sk.status === 'done' ? '#0F766E'
+                            color: sk.status === 'done' ? 'var(--sl-em)'
                               : sk.status === 'in_progress' ? '#c4b5fd'
                               : 'var(--sl-t3)',
                           }}
@@ -196,7 +196,7 @@ export function CarreiraTabRoadmap({ activeRoadmap }: CarreiraTabRoadmapProps) {
                 )}
 
                 {(step.status === 'done' || step.status === 'future') && step.xp && (
-                  <p className="text-[10px] mt-[3px] font-semibold" style={{ color: step.status === 'done' ? '#0F766E' : 'var(--sl-t3)' }}>
+                  <p className="text-[10px] mt-[3px] font-semibold" style={{ color: step.status === 'done' ? 'var(--sl-em)' : 'var(--sl-t3)' }}>
                     {step.status === 'done' ? '✅' : '⚡'} {step.xp} · Badge "{step.badge}"
                   </p>
                 )}

@@ -44,7 +44,7 @@ export function NextAppointmentHero({
         <div className="text-[11px] font-bold uppercase tracking-[.08em] text-[#D97534]">
           {month}
         </div>
-        <div className="font-[IBM_Plex_Mono] text-[32px] font-medium leading-none">
+        <div className="sl-num-strong text-[32px] leading-none">
           {day}
         </div>
       </div>

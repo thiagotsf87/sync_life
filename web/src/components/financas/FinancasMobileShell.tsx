@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname, useRouter } from 'next/navigation'
-import { Search } from 'lucide-react'
+import { Search, Sparkles, Crown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { jornadaLabel } from '@/lib/jornada-labels'
 
@@ -58,11 +58,14 @@ export function FinancasMobileShell({
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-[14px] pb-3">
         <div>
-          <p className="text-[12px] font-semibold text-[#0F766E] mb-[2px]">✦ {jornadaLabel('financas', 'module', 'Finanças')}</p>
-          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
+          <p className="font-[Syne] text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-em)] mb-[2px] inline-flex items-center gap-1.5">
+            <Sparkles size={11} />
+            {jornadaLabel('financas', 'module', 'Finanças')}
+          </p>
+          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
             {pageTitle}
           </h1>
-          {subtitle && <p className="text-[12px] text-[var(--sl-t2)] mt-0.5">{subtitle}</p>}
+          {subtitle && <p className="font-[DM_Sans] text-[12px] text-[var(--sl-t2)] mt-0.5">{subtitle}</p>}
         </div>
         {rightAction ?? (
           <button
@@ -76,7 +79,7 @@ export function FinancasMobileShell({
       </div>
 
       {/* Tabs below title */}
-      <div className="flex gap-0 px-4 border-b border-[var(--sl-border)] mb-3 overflow-x-auto scrollbar-hide">
+      <div className="flex gap-0 px-4 border-b border-[var(--sl-border)] mb-3 overflow-x-auto phone-scroll scrollbar-hide">
         {TABS.map((tab) => {
           const isActive = pathname === tab.href || (tab.href !== '/financas' && pathname.startsWith(tab.href))
           return (
@@ -85,13 +88,15 @@ export function FinancasMobileShell({
               type="button"
               onClick={() => router.push(tab.href)}
               className={cn(
-                'px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors',
-                isActive ? 'text-[var(--sl-t1)] font-semibold border-b-[#0F766E]' : 'text-[var(--sl-t3)] border-b-transparent'
+                'font-[DM_Sans] px-3 py-2 text-[12px] font-medium whitespace-nowrap border-b-2 shrink-0 transition-colors',
+                isActive
+                  ? 'text-[var(--sl-t1)] font-semibold border-b-[var(--sl-em)]'
+                  : 'text-[var(--sl-t3)] border-b-transparent'
               )}
             >
               {jornadaLabel('financas', tab.key, tab.label)}
               {tab.href === '/financas/planejamento' && (
-                <span className="ml-1 text-[8px] font-bold text-[#D9962E] align-super">PRO</span>
+                <Crown size={9} className="ml-1 inline text-[var(--sl-warning)] align-super" />
               )}
             </button>
           )

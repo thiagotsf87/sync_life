@@ -1,5 +1,7 @@
 'use client'
 
+import { Trophy, Pause, AlertTriangle, Rocket, Zap, Dumbbell, Check } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { RingProgress } from '@/components/ui/ring-progress'
 import { calcProgress, calcRingColor, calcProjectedDate, type Goal } from '@/hooks/use-metas'
@@ -28,24 +30,24 @@ function getDaysRemaining(targetDate: string | null): number | null {
   return Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 }
 
-function getTip(goal: Goal, pct: number): { text: string; color: string; bg: string } | null {
+function getTip(goal: Goal, pct: number): { text: string; color: string; bg: string; icon: LucideIcon } | null {
   if (goal.status === 'completed') {
-    return { text: '🏆 Meta concluída! Parabéns!', color: '#0F766E', bg: 'rgba(15,118,110,.08)' }
+    return { text: 'Meta concluída! Parabéns!', color: '#0F766E', bg: 'rgba(15,118,110,.08)', icon: Trophy }
   }
   if (goal.status === 'paused') {
-    return { text: '⏸️ Meta pausada. Retome quando puder!', color: '#D9962E', bg: 'rgba(217,150,46,.08)' }
+    return { text: 'Meta pausada. Retome quando puder!', color: '#D9962E', bg: 'rgba(217,150,46,.08)', icon: Pause }
   }
   const days = getDaysRemaining(goal.target_date)
   if (days !== null && days < 0) {
-    return { text: '⚠️ Prazo ultrapassado. Revise sua estratégia.', color: '#DB6478', bg: 'rgba(219,100,120,.08)' }
+    return { text: 'Prazo ultrapassado. Revise sua estratégia.', color: '#DB6478', bg: 'rgba(219,100,120,.08)', icon: AlertTriangle }
   }
   if (pct >= 75) {
-    return { text: `🚀 ${pct}% concluído! Você está quase lá!`, color: '#0F766E', bg: 'rgba(15,118,110,.08)' }
+    return { text: `${pct}% concluído! Você está quase lá!`, color: '#0F766E', bg: 'rgba(15,118,110,.08)', icon: Rocket }
   }
   if (days !== null && days < 60 && pct < 80) {
-    return { text: `⚡ Menos de 2 meses para o prazo. Considere aumentar o aporte.`, color: '#D9962E', bg: 'rgba(217,150,46,.08)' }
+    return { text: `Menos de 2 meses para o prazo. Considere aumentar o aporte.`, color: '#D9962E', bg: 'rgba(217,150,46,.08)', icon: Zap }
   }
-  return { text: `💪 Continue assim! ${pct}% concluído.`, color: '#0F766E', bg: 'rgba(15,118,110,.08)' }
+  return { text: `Continue assim! ${pct}% concluído.`, color: '#0F766E', bg: 'rgba(15,118,110,.08)', icon: Dumbbell }
 }
 
 export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
@@ -67,15 +69,17 @@ export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
     >
       {/* Status badge */}
       {goal.status === 'completed' && (
-        <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+        <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1"
           style={{ background: 'rgba(15,118,110,.15)', color: '#0F766E' }}>
-          ✓ Concluída
+          <Check size={10} strokeWidth={3} />
+          Concluída
         </div>
       )}
       {goal.status === 'paused' && (
-        <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+        <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1"
           style={{ background: 'rgba(217,150,46,.15)', color: '#D9962E' }}>
-          ⏸ Pausada
+          <Pause size={10} />
+          Pausada
         </div>
       )}
 
@@ -83,7 +87,7 @@ export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
       <div className="flex items-start gap-3 mb-4">
         <div className="text-3xl shrink-0 leading-none mt-0.5">{goal.icon}</div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-[Space_Grotesk] font-extrabold text-[15px] text-[var(--sl-t1)] leading-tight truncate">
+          <h3 className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)] leading-tight truncate">
             {goal.name}
           </h3>
           {goal.description && (
@@ -145,6 +149,7 @@ export function MetaCard({ goal, onClick, onAddContribution }: MetaCardProps) {
           className="flex items-start gap-2 p-2.5 rounded-[10px] text-[12px] mb-3"
           style={{ background: tip.bg, border: `1px solid ${tip.color}30` }}
         >
+          <tip.icon size={14} style={{ color: tip.color }} className="shrink-0 mt-0.5" />
           <p style={{ color: tip.color }} className="leading-snug">{tip.text}</p>
         </div>
       )}

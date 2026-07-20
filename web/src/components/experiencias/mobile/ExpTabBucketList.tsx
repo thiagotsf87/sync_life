@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
@@ -9,6 +9,7 @@ import { useDeleteBucketItem, useTransformToTrip } from '@/hooks/use-experiencia
 import type { BucketListItem } from '@/hooks/use-experiencias'
 import type { MapPin } from '@/lib/exp-mock-data'
 import { BUCKET_PINS } from '@/lib/exp-mock-data'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface ExpTabBucketListProps {
   items: BucketListItem[]
@@ -20,8 +21,8 @@ interface ExpTabBucketListProps {
 type BucketFilter = 'all' | 'visited' | 'pending'
 
 const PRIORITY_STYLE: Record<string, { bg: string; color: string; label: string; jornada: string }> = {
-  high:   { bg: 'rgba(219,100,120,0.15)',   color: '#DB6478', label: 'Alta',  jornada: '🔥' },
-  medium: { bg: 'rgba(217,150,46,0.15)',  color: '#D9962E', label: 'Média', jornada: '⚡' },
+  high:   { bg: 'rgba(219,100,120,0.15)',   color: 'var(--sl-danger)', label: 'Alta',  jornada: '🔥' },
+  medium: { bg: 'rgba(217,150,46,0.15)',  color: 'var(--sl-warning)', label: 'Média', jornada: '⚡' },
   low:    { bg: 'rgba(199,103,149,0.15)',  color: '#C76795', label: 'Baixa', jornada: '💎' },
 }
 
@@ -94,11 +95,11 @@ export function ExpTabBucketList({
 
       {/* Add button row */}
       <div className="flex justify-between items-center mb-[14px]">
-        <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">
+        <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">
           Lista de Aventuras
           {items.length >= FREE_LIMIT && (
             <span className="ml-2 text-[9px] px-[6px] py-[2px] rounded-[6px]"
-              style={{ background: 'rgba(217,150,46,0.15)', color: '#D9962E' }}>
+              style={{ background: 'rgba(217,150,46,0.15)', color: 'var(--sl-warning)' }}>
               LIMITE
             </span>
           )}
@@ -188,7 +189,7 @@ export function ExpTabBucketList({
                   {ps.jornada}
                 </span>
               ) : (
-                <span className="text-[10px] font-semibold" style={{ color: '#0F766E' }}>
+                <span className="text-[10px] font-semibold" style={{ color: 'var(--sl-em)' }}>
                   ✅
                 </span>
               )}
@@ -198,7 +199,7 @@ export function ExpTabBucketList({
             <div className="flex gap-3 mb-2 flex-wrap">
               {item.estimated_budget && (
                 <span className="text-[10px] text-[var(--sl-t3)]">
-                  💰 R$ {item.estimated_budget.toLocaleString('pt-BR')}
+                  💰 {fmtBRL(item.estimated_budget)}
                 </span>
               )}
               {item.target_year && (
@@ -243,8 +244,8 @@ export function ExpTabBucketList({
           style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}
         >
           <p className="text-[11px] text-[var(--sl-t3)] mb-1">Custo total estimado</p>
-          <p className="font-[IBM_Plex_Mono] text-[22px] font-medium" style={{ color: accentLight }}>
-            R$ {totalCost.toLocaleString('pt-BR')}
+          <p className="sl-num-strong text-[22px] font-medium" style={{ color: accentLight }}>
+            {fmtBRL(totalCost)}
           </p>
           <p className="text-[10px] text-[var(--sl-t3)] mt-[2px]">
             {items.length} aventuras · {visited} conquistadas · {pending} pendentes

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { X, Plus, Trash2 } from 'lucide-react'
@@ -7,6 +7,7 @@ import {
   FUTURO_PRIMARY_LIGHT,
   FUTURO_GRAD,
 } from '@/lib/futuro-colors'
+import { fmtBRL } from '@/lib/format/currency'
 
 // ─── Types & Constants ─────────────────────────────────────────────────────────
 
@@ -61,13 +62,13 @@ export interface GoalInput {
 }
 
 const MODULE_OPTIONS = [
-  { id: 'financas', icon: '💰', label: 'Finanças', bg: 'rgba(15,118,110,0.15)', color: '#0F766E' },
+  { id: 'financas', icon: '💰', label: 'Finanças', bg: 'rgba(15,118,110,0.15)', color: 'var(--sl-em)' },
   { id: 'corpo', icon: '💪', label: 'Corpo', bg: 'rgba(217,117,52,0.15)', color: '#D97534' },
   { id: 'mente', icon: '🧠', label: 'Mente', bg: 'rgba(139,123,212,0.15)', color: '#8B7BD4' },
-  { id: 'patrimonio', icon: '📊', label: 'Patrimônio', bg: 'rgba(217,150,46,0.15)', color: '#D9962E' },
+  { id: 'patrimonio', icon: '📊', label: 'Patrimônio', bg: 'rgba(217,150,46,0.15)', color: 'var(--sl-warning)' },
   { id: 'carreira', icon: '💼', label: 'Carreira', bg: 'rgba(199,103,149,0.15)', color: '#C76795' },
   { id: 'experiencias', icon: '✈️', label: 'Experiências', bg: 'rgba(20,184,166,0.15)', color: '#14b8a6' },
-  { id: 'tempo', icon: '⏱️', label: 'Tempo', bg: 'rgba(60,160,181,0.15)', color: '#3CA0B5' },
+  { id: 'tempo', icon: '⏱️', label: 'Tempo', bg: 'rgba(60,160,181,0.15)', color: 'var(--sl-info)' },
   { id: 'futuro', icon: '🔮', label: 'Futuro', bg: 'rgba(0,85,255,0.15)', color: '#0B2D34' },
 ]
 
@@ -241,7 +242,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
         <p className="text-[11px] font-bold uppercase tracking-[0.8px] mb-1.5" style={{ color: accent }}>
           {stepLabel}
         </p>
-        <h2 className="font-[Space_Grotesk] text-[21px] font-extrabold text-[var(--sl-t1)] leading-[1.25] mb-2">
+        <h2 className="font-[Syne] text-[21px] font-extrabold text-[var(--sl-t1)] leading-[1.25] mb-2">
           {stepTitle()}
         </h2>
         <p className="text-[13px] text-[var(--sl-t2)] leading-[1.6]">
@@ -353,7 +354,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                   const num = parseInt(e.target.value.replace(/\D/g, ''), 10)
                   if (!isNaN(num)) setTargetValue(num)
                 }}
-                className="w-full bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] px-[15px] py-3 font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t1)] outline-none"
+                className="w-full bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] px-[15px] py-3 sl-num-strong text-[14px] text-[var(--sl-t1)] outline-none"
               />
             </div>
 
@@ -450,7 +451,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                 }}
               >
                 <span className="text-[12px]">🔒</span>
-                <span className="text-[11px] font-semibold text-[#D9962E]">
+                <span className="text-[11px] font-semibold text-[var(--sl-warning)]">
                   Limite FREE: 3 metas por objetivo
                 </span>
               </div>
@@ -491,7 +492,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                     className="w-7 h-7 rounded-[8px] flex items-center justify-center shrink-0"
                     style={{ background: 'rgba(219,100,120,0.1)' }}
                   >
-                    <Trash2 size={13} color="#DB6478" />
+                    <Trash2 size={13} color="var(--sl-danger)" />
                   </button>
                 </div>
               )
@@ -539,7 +540,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                   Recrutar aliado
                 </p>
                 <div className="flex flex-col gap-[9px]">
-                  {/* Module grid — 4 columns */}
+                  {/* Module grid · 4 columns */}
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.5px] text-[var(--sl-t3)] mb-[7px]">Módulo</p>
                     <div className="grid grid-cols-4 gap-[6px]">
@@ -591,7 +592,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                           value={newGoalTarget}
                           onChange={e => setNewGoalTarget(e.target.value)}
                           placeholder="Ex: 80000"
-                          className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-3 py-2 text-[13px] font-[IBM_Plex_Mono] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none"
+                          className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-3 py-2 text-[13px] sl-num-strong text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none"
                         />
                       </div>
                       <div>
@@ -601,7 +602,7 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
                           value={newGoalCurrentValue}
                           onChange={e => setNewGoalCurrentValue(e.target.value)}
                           placeholder="Já tenho..."
-                          className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-3 py-2 text-[13px] font-[IBM_Plex_Mono] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none"
+                          className="w-full bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[8px] px-3 py-2 text-[13px] sl-num-strong text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none"
                         />
                       </div>
                     </div>
@@ -675,8 +676,8 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-[13px_15px] mb-[13px]">
               <div className="flex justify-between items-center mb-[11px]">
                 <span className="text-[12px] text-[var(--sl-t2)]">Contribuição mensal</span>
-                <span className="font-[IBM_Plex_Mono] text-[18px] font-medium" style={{ color: accent }}>
-                  R$ {contribution.toLocaleString('pt-BR')}
+                <span className="sl-num-strong text-[18px] font-medium" style={{ color: accent }}>
+                  {fmtBRL(contribution)}
                 </span>
               </div>
               <input
@@ -711,19 +712,19 @@ export function FuturoWizardMobile({ open, onClose, onSave, isLoading }: FuturoW
               </p>
               <div className="flex justify-between items-center py-[5px] border-b border-[var(--sl-border)]">
                 <span className="text-[12px] text-[var(--sl-t2)]">Prazo projetado</span>
-                <span className="font-[IBM_Plex_Mono] text-[12px] font-medium text-[#0F766E]">Dez 2028 ✓</span>
+                <span className="sl-num-strong text-[12px] font-medium text-[var(--sl-em)]">Dez 2028 ✓</span>
               </div>
               <div className="flex justify-between items-center py-[5px] border-b border-[var(--sl-border)]">
                 <span className="text-[12px] text-[var(--sl-t2)]">Total c/ rendimento</span>
-                <span className="font-[IBM_Plex_Mono] text-[12px] font-medium" style={{ color: accent }}>R$ 83.200</span>
+                <span className="sl-num-strong text-[12px] font-medium" style={{ color: accent }}>R$ 83.200</span>
               </div>
               <div className="flex justify-between items-center py-[5px] border-b border-[var(--sl-border)]">
                 <span className="text-[12px] text-[var(--sl-t2)]">XP mensal desta missão</span>
-                <span className="font-[IBM_Plex_Mono] text-[12px] font-medium" style={{ color: FUTURO_PRIMARY_LIGHT }}>+80 XP/mês ⚡</span>
+                <span className="sl-num-strong text-[12px] font-medium" style={{ color: FUTURO_PRIMARY_LIGHT }}>+80 XP/mês ⚡</span>
               </div>
               <div className="flex justify-between items-center py-[5px]">
                 <span className="text-[12px] text-[var(--sl-t2)]">Impacto no Life Score</span>
-                <span className="font-[IBM_Plex_Mono] text-[12px] font-medium text-[#0F766E]">+8 pts Futuro ↑</span>
+                <span className="sl-num-strong text-[12px] font-medium text-[var(--sl-em)]">+8 pts Futuro ↑</span>
               </div>
             </div>
 

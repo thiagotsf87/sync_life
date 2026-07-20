@@ -1,6 +1,7 @@
-import { ChevronLeft } from 'lucide-react'
+﻿import { ChevronLeft } from 'lucide-react'
 import { EXP_PRIMARY } from '@/lib/exp-colors'
 import { MEMORY_DETAIL_PORTUGAL } from '@/lib/exp-mock-data'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface ExpMemoryDetailMobileProps {
   onBack: () => void
@@ -41,8 +42,8 @@ export function ExpMemoryDetailMobile({ onBack }: ExpMemoryDetailMobileProps) {
         >
           <span className="text-[30px] mr-[10px]">{detail.flag}</span>
           <div>
-            <p className="font-[Space_Grotesk] text-[16px] font-bold text-white">
-              ✅ {detail.name.split(' — ')[0]} Conquistado
+            <p className="font-[Syne] text-[16px] font-bold text-white">
+              ✅ {detail.name.split(' · ')[0]} Conquistado
             </p>
             <p className="text-[11px] text-white/70 mt-[2px]">
               {detail.dates} · +50 XP
@@ -92,7 +93,7 @@ export function ExpMemoryDetailMobile({ onBack }: ExpMemoryDetailMobileProps) {
 
       {/* Tags */}
       <div className="mb-[14px]">
-        <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
+        <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)] mb-[10px]">
           Emoções da Aventura
         </p>
         <div className="flex flex-wrap gap-[6px]">
@@ -128,14 +129,14 @@ export function ExpMemoryDetailMobile({ onBack }: ExpMemoryDetailMobileProps) {
         </p>
         <div className="flex justify-between items-center py-[6px]">
           <span className="text-[11px] text-[var(--sl-t2)]">Orçado</span>
-          <span className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
-            R$ {detail.budgetPlanned.toLocaleString('pt-BR')}
+          <span className="sl-num-strong text-[13px] font-medium text-[var(--sl-t1)]">
+            {fmtBRL(detail.budgetPlanned)}
           </span>
         </div>
         <div className="flex justify-between items-center py-[6px]">
           <span className="text-[11px] text-[var(--sl-t2)]">Real gasto</span>
-          <span className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
-            R$ {detail.budgetReal.toLocaleString('pt-BR')}
+          <span className="sl-num-strong text-[13px] font-medium text-[var(--sl-t1)]">
+            {fmtBRL(detail.budgetReal)}
           </span>
         </div>
         <div className="h-px my-[6px]" style={{ background: 'var(--sl-border)' }} />
@@ -143,8 +144,8 @@ export function ExpMemoryDetailMobile({ onBack }: ExpMemoryDetailMobileProps) {
           <span className="text-[11px] text-[var(--sl-t2)]">
             Economia 🎉
           </span>
-          <span className="font-[IBM_Plex_Mono] text-[13px] font-medium" style={{ color: economy >= 0 ? '#0F766E' : '#DB6478' }}>
-            R$ {Math.abs(economy).toLocaleString('pt-BR')} ({economyPct}%)
+          <span className="sl-num-strong text-[13px] font-medium" style={{ color: economy >= 0 ? 'var(--sl-em)' : 'var(--sl-danger)' }}>
+            {fmtBRL(Math.abs(economy))} ({economyPct}%)
           </span>
         </div>
       </div>

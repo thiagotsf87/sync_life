@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Send, Bot, User, Sparkles } from 'lucide-react'
@@ -153,7 +153,7 @@ export function CorpoTabCoach({ profile, weekActivities, latestWeight, isPro = f
           }}
         >
           <p className="text-[40px] mb-3">🤖</p>
-          <p className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)] mb-2">Coach IA — PRO</p>
+          <p className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)] mb-2">Coach IA · PRO</p>
           <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed mb-5">
             Análise semanal personalizada, plano de ação baseado nos seus dados e desafios com XP.
           </p>
@@ -174,10 +174,10 @@ export function CorpoTabCoach({ profile, weekActivities, latestWeight, isPro = f
             ))}
           </div>
           <div
-            className="w-full py-3 rounded-[10px] font-[Space_Grotesk] text-[14px] font-bold"
+            className="w-full py-3 rounded-[10px] font-[Syne] text-[14px] font-bold"
             style={{ background: 'linear-gradient(135deg,#D97534,#a855f7)', color: '#fff' }}
           >
-            💎 Assinar PRO — R$ 29/mês
+            💎 Assinar PRO · R$ 29/mês
           </div>
         </div>
 
@@ -216,19 +216,19 @@ export function CorpoTabCoach({ profile, weekActivities, latestWeight, isPro = f
         <div className="flex gap-[10px] mb-3">
           <span className="text-[28px]">🤖</span>
           <div>
-            <p className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)]">Análise da Semana</p>
+            <p className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)]">Análise da Semana</p>
             <p className="text-[12px] text-[var(--sl-t2)]">Baseado nos seus dados reais</p>
           </div>
         </div>
         <p className="text-[13px] text-[var(--sl-t1)] leading-relaxed">
           {actCount > 0
             ? <>Você fez <strong style={{ color: CORPO_COLOR }}>{actCount} treino{actCount > 1 ? 's' : ''}</strong> esta semana,
-              queimando <strong style={{ color: '#DB6478' }}>{Math.round(weekKcal)} kcal</strong>.
+              queimando <strong style={{ color: 'var(--sl-danger)' }}>{Math.round(weekKcal)} kcal</strong>.
               {goalKg && currentKg && currentKg > goalKg
                 ? <> Continue e atinja <strong style={{ color: CORPO_COLOR }}>{goalKg}kg</strong> em breve.</>
                 : <> Ótimo ritmo! Continue assim.</>
               }</>
-            : <>Nenhuma atividade esta semana. Comece com 20 min de caminhada — pequenos passos fazem grande diferença!</>
+            : <>Nenhuma atividade esta semana. Comece com 20 min de caminhada · pequenos passos fazem grande diferença!</>
           }
         </p>
       </div>
@@ -285,7 +285,7 @@ export function CorpoTabCoach({ profile, weekActivities, latestWeight, isPro = f
       <div className="mx-4">
         {/* Disclaimer */}
         <div className="flex items-start gap-2 p-3 mb-3 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[10px] text-[var(--sl-t3)]">
-          <Sparkles size={12} className="shrink-0 mt-0.5 text-[#D9962E]" />
+          <Sparkles size={12} className="shrink-0 mt-0.5 text-[var(--sl-warning)]" />
           <span>Orientações gerais de saúde. Para diagnósticos, consulte um profissional.</span>
         </div>
 
@@ -297,7 +297,7 @@ export function CorpoTabCoach({ profile, weekActivities, latestWeight, isPro = f
                 🤖
               </div>
               <div className="text-left">
-                <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">Pergunte ao Coach</p>
+                <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">Pergunte ao Coach</p>
                 <p className="text-[10px] text-[var(--sl-t2)]">
                   {profile ? 'Conheço seu perfil de saúde' : 'Alimentação, exercícios, sono'}
                 </p>
@@ -330,7 +330,7 @@ export function CorpoTabCoach({ profile, weekActivities, latestWeight, isPro = f
                 )}
                 <div className={`max-w-[80%] rounded-2xl px-3 py-2.5 text-[12px] leading-relaxed ${
                   msg.role === 'user'
-                    ? 'bg-[#0F766E] text-white rounded-tr-sm'
+                    ? 'bg-[var(--sl-em)] text-white rounded-tr-sm'
                     : 'bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t1)] rounded-tl-sm'
                 }`}>
                   {msg.content || (
@@ -342,8 +342,8 @@ export function CorpoTabCoach({ profile, weekActivities, latestWeight, isPro = f
                   )}
                 </div>
                 {msg.role === 'user' && (
-                  <div className="w-6 h-6 rounded-lg bg-[#0F766E]/15 flex items-center justify-center shrink-0 mt-0.5">
-                    <User size={12} className="text-[#0F766E]" />
+                  <div className="w-6 h-6 rounded-lg bg-[var(--sl-em)]/15 flex items-center justify-center shrink-0 mt-0.5">
+                    <User size={12} className="text-[var(--sl-em)]" />
                   </div>
                 )}
               </div>
@@ -367,7 +367,7 @@ export function CorpoTabCoach({ profile, weekActivities, latestWeight, isPro = f
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || isLoading}
             className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0
-                       bg-[#0F766E] text-white disabled:opacity-40 transition-opacity hover:opacity-90"
+                       bg-[var(--sl-em)] text-white disabled:opacity-40 transition-opacity hover:opacity-90"
           >
             <Send size={14} />
           </button>

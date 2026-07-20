@@ -14,6 +14,7 @@ import { TrackWizard } from '@/components/mente/TrackWizard'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
+import { fmtBRL } from '@/lib/format/currency'
 
 type FilterStatus = 'all' | TrackStatus
 
@@ -138,7 +139,8 @@ export default function TrilhasPage() {
         <button
           onClick={() => setWizardOpen(true)}
           className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#D9962E] text-black hover:brightness-110 transition-all"
+                     text-white hover:opacity-90 transition-all"
+          style={{ background: 'var(--sl-em)' }}
         >
           <Plus size={16} />
           Nova Trilha
@@ -188,7 +190,7 @@ export default function TrilhasPage() {
       ) : filtered.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
           <BookOpen size={32} className="text-[#D9962E] mx-auto mb-3 opacity-60" />
-          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             {search || statusFilter !== 'all' ? 'Nenhuma trilha encontrada' : 'Crie sua primeira trilha'}
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-4">
@@ -197,7 +199,8 @@ export default function TrilhasPage() {
           {!search && statusFilter === 'all' && (
             <button
               onClick={() => setWizardOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#D9962E] text-black hover:brightness-110"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold text-white hover:opacity-90"
+              style={{ background: 'var(--sl-em)' }}
             >
               <Plus size={15} />
               Criar primeira trilha
@@ -222,7 +225,7 @@ export default function TrilhasPage() {
             const subParts: string[] = []
             if (steps.length > 0) subParts.push(`${completedSteps} de ${steps.length} etapas`)
             if (track.total_hours > 0) subParts.push(`${track.total_hours.toFixed(1)}h`)
-            if (track.cost) subParts.push(track.cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
+            if (track.cost) subParts.push(fmtBRL(track.cost))
 
             return (
               <div
@@ -245,7 +248,7 @@ export default function TrilhasPage() {
                       <BookOpen size={20} style={{ color: catColor }} />
                     </div>
                     <div>
-                      <p className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)]">{track.name}</p>
+                      <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">{track.name}</p>
                       <div className="flex items-center gap-1.5 mt-[3px]">
                         <span
                           className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[11px] font-semibold"
@@ -263,7 +266,7 @@ export default function TrilhasPage() {
                   </div>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-[11px] text-[var(--sl-t3)]">{subParts.join(' \u00B7 ')}</span>
-                    <span className="font-[IBM_Plex_Mono] text-[14px] font-semibold" style={{ color: isCompleted ? '#0F766E' : '#D9962E' }}>
+                    <span className="sl-num-strong text-[14px]" style={{ color: isCompleted ? 'var(--sl-em)' : '#D9962E' }}>
                       {Math.round(track.progress)}%
                     </span>
                   </div>

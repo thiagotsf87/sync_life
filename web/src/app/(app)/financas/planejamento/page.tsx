@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { LineChart, Plus, Pencil, Trash2, CheckCircle2 } from 'lucide-react'
+import { LineChart, Plus, Pencil, Trash2, CheckCircle2, Wallet, TrendingDown, TrendingUp, BarChart3, AlertTriangle, ClipboardList, Rocket } from 'lucide-react'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { useCategories } from '@/hooks/use-categories'
 import { SLCard } from '@/components/ui/sl-card'
@@ -27,8 +28,7 @@ import { PlanejamentoMobile } from '@/components/financas/PlanejamentoMobile'
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
-const fmtR = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const fmtR = (v: number) => fmtBRL(v)
 
 const fmtDate = (iso: string) => {
   const d = new Date(iso + 'T00:00:00')
@@ -193,22 +193,27 @@ function EventRow({
     <div className="flex items-center gap-3 py-2.5 -mx-2 px-2 rounded-lg hover:bg-[var(--sl-s2)] transition-colors group">
       <div
         className="w-2 h-2 rounded-full shrink-0"
-        style={{ background: ev.type === 'income' ? '#0F766E' : '#DB6478' }}
+        style={{ background: ev.type === 'income' ? 'var(--sl-em)' : 'var(--sl-danger)' }}
       />
       <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t3)] shrink-0 w-[46px]">
         {fmtDate(ev.planned_date)}
       </span>
-      <span className="flex-1 text-[13px] text-[var(--sl-t2)] truncate">
-        {ev.categories?.icon ?? (ev.type === 'income' ? '💰' : '📤')} {ev.name}
+      <span className="flex-1 text-[13px] text-[var(--sl-t2)] truncate inline-flex items-center gap-1.5">
+        {ev.categories?.icon
+          ? <span>{ev.categories.icon}</span>
+          : ev.type === 'income'
+            ? <Wallet size={13} className="text-[var(--sl-em)] shrink-0" />
+            : <TrendingDown size={13} className="text-[var(--sl-danger)] shrink-0" />}
+        {ev.name}
       </span>
-      <span className={cn('font-[IBM_Plex_Mono] text-[13px] shrink-0', ev.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
+      <span className={cn('sl-num text-[13px] shrink-0', ev.type === 'income' ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]')}>
         {ev.type === 'income' ? '+' : '-'}{fmtR(ev.amount)}
       </span>
       {/* Actions */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         {!ev.is_confirmed && (
           <button onClick={() => onConfirm(ev.id)}
-            className="w-6 h-6 flex items-center justify-center rounded text-[#0F766E] hover:bg-[rgba(15,118,110,0.1)] transition-colors"
+            className="w-6 h-6 flex items-center justify-center rounded text-[var(--sl-em)] hover:bg-[rgba(15,118,110,0.1)] transition-colors"
             title="Confirmar evento">
             <CheckCircle2 size={13} />
           </button>
@@ -218,7 +223,7 @@ function EventRow({
           <Pencil size={12} />
         </button>
         <button onClick={() => onDelete(ev.id)}
-          className="w-6 h-6 flex items-center justify-center rounded text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[rgba(219,100,120,0.08)] transition-colors">
+          className="w-6 h-6 flex items-center justify-center rounded text-[var(--sl-t3)] hover:text-[var(--sl-danger)] hover:bg-[rgba(219,100,120,0.08)] transition-colors">
           <Trash2 size={12} />
         </button>
       </div>
@@ -253,23 +258,23 @@ export default function PlanejamentoPage() {
   const month6Label = months[6]?.label ?? ''
   const month12Label = months[12]?.label ?? ''
 
-  const bal6mDelta  = `${month6Label} — ${SCENARIO_LABELS[scenario]}`
-  const bal12mDelta = `${month12Label} — ${SCENARIO_LABELS[scenario]}`
+  const bal6mDelta  = `${month6Label} · ${SCENARIO_LABELS[scenario]}`
+  const bal12mDelta = `${month12Label} · ${SCENARIO_LABELS[scenario]}`
 
   // ── Insight text ──────────────────────────────────────────────────────────
   const insightText = (() => {
     const b12 = fmtR(bal12m)
     const m12 = month12Label
-    if (scenario === 'o') return `No cenário otimista, você pode alcançar ${b12} em ${m12}. Mantenha o ritmo de economia! 🚀`
+    if (scenario === 'o') return `No cenário otimista, você pode alcançar ${b12} em ${m12}. Mantenha o ritmo de economia.`
     if (scenario === 'p') {
       const isNeg = bal12m < 0
       return isNeg
-        ? `No cenário pessimista, saldo pode ficar negativo. Reforce sua reserva de emergência. ⚠️`
-        : `No cenário pessimista, o crescimento é mais lento — previsto ${b12} em ${m12}.`
+        ? `No cenário pessimista, saldo pode ficar negativo. Reforce sua reserva de emergência.`
+        : `No cenário pessimista, o crescimento é mais lento, previsto ${b12} em ${m12}.`
     }
     return nextCritical
       ? `No cenário realista, saldo chega a ${b12} em ${m12}. Atenção: queda expressiva prevista em ${nextCritical.date}.`
-      : `No cenário realista, você projeta ${b12} em ${m12}. Continue no ritmo! 📊`
+      : `No cenário realista, você projeta ${b12} em ${m12}. Continue no ritmo.`
   })()
 
   // ── Handlers ──────────────────────────────────────────────────────────────
@@ -323,7 +328,7 @@ export default function PlanejamentoPage() {
     date: fmtDate(ev.planned_date),
     amount: ev.amount,
     type: ev.type as 'income' | 'expense',
-    icon: ev.categories?.icon,
+    // G-07: skip DB emoji icons; PlanejamentoMobile renders lucide ArrowUpCircle/ArrowDownCircle fallback
   }))
 
   const mobileInsight = (() => {
@@ -342,7 +347,7 @@ export default function PlanejamentoPage() {
       months={mobileMonths}
       events={mobileEvents}
       insightText={mobileInsight}
-      insightIcon={nextCritical ? '⚠️' : '📊'}
+      insightIcon={nextCritical ? <AlertTriangle size={16} /> : <BarChart3 size={16} />}
       insightLabel={nextCritical ? `Atenção em ${nextCritical.date}` : 'Projeção'}
       balanceData={balanceData.slice(0, 7)}
       onAddEvent={openCreate}
@@ -353,25 +358,28 @@ export default function PlanejamentoPage() {
       <ModuleHeader
         icon={LineChart}
         iconBg="rgba(15,118,110,.08)"
-        iconColor="#0F766E"
+        iconColor="var(--sl-em)"
         title="Planejamento Futuro"
         className="mb-5"
       >
         {/* Scenario group */}
         <div className="flex bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[20px] p-0.5 gap-0.5">
-          {SCENARIOS.map(sc => (
-            <button key={sc.key} onClick={() => setScenario(sc.key as ScenarioKey)}
-              className={cn(
-                'px-[14px] py-[5px] rounded-[16px] text-[12px] font-medium cursor-pointer transition-all whitespace-nowrap',
-                scenario === sc.key ? sc.activeClass : 'bg-transparent text-[var(--sl-t3)] hover:text-[var(--sl-t2)]'
-              )}>
-              {sc.icon} {sc.label}
-            </button>
-          ))}
+          {SCENARIOS.map(sc => {
+            const SI = sc.key === 'p' ? TrendingDown : sc.key === 'o' ? Rocket : BarChart3
+            return (
+              <button key={sc.key} onClick={() => setScenario(sc.key as ScenarioKey)}
+                className={cn(
+                  'inline-flex items-center gap-1.5 px-[14px] py-[5px] rounded-[16px] text-[12px] font-medium cursor-pointer transition-all whitespace-nowrap',
+                  scenario === sc.key ? sc.activeClass : 'bg-transparent text-[var(--sl-t3)] hover:text-[var(--sl-t2)]'
+                )}>
+                <SI size={12} /> {sc.label}
+              </button>
+            )
+          })}
         </div>
 
         <button onClick={openCreate}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] bg-[#0F766E] text-white text-[12px] font-semibold cursor-pointer hover:opacity-85 transition-opacity">
+          className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] bg-[var(--sl-em)] text-white text-[12px] font-semibold cursor-pointer hover:opacity-85 transition-opacity">
           <Plus size={13} strokeWidth={2.5} />
           Novo Evento
         </button>
@@ -379,7 +387,7 @@ export default function PlanejamentoPage() {
 
       {/* Error */}
       {error && (
-        <div className="bg-[rgba(219,100,120,0.06)] border border-[rgba(219,100,120,0.2)] rounded-xl p-4 text-[13px] text-[#DB6478] mb-5">
+        <div className="bg-[rgba(219,100,120,0.06)] border border-[rgba(219,100,120,0.2)] rounded-xl p-4 text-[13px] text-[var(--sl-danger)] mb-5">
           {error}{' '}
           <button onClick={refresh} className="underline">Tentar novamente</button>
         </div>
@@ -392,7 +400,7 @@ export default function PlanejamentoPage() {
           value={fmtR(currentBalance)}
           delta={new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
           deltaType="neutral"
-          accent="#0F766E"
+          accent="var(--sl-em)"
         />
         <KpiCard
           label="Saldo em 6 meses"
@@ -406,14 +414,14 @@ export default function PlanejamentoPage() {
           value={fmtR(bal12m)}
           delta={bal12mDelta}
           deltaType={bal12m >= currentBalance ? 'up' : 'down'}
-          accent={bal12m >= currentBalance ? '#0F766E' : '#DB6478'}
+          accent={bal12m >= currentBalance ? 'var(--sl-em)' : 'var(--sl-danger)'}
         />
         <KpiCard
           label="Próximo crítico"
           value={nextCritical ? fmtR(nextCritical.balance) : '—'}
-          delta={nextCritical ? `${nextCritical.date} — ${nextCritical.name}` : 'Nenhum alerta'}
+          delta={nextCritical ? `${nextCritical.date} · ${nextCritical.name}` : 'Nenhum alerta'}
           deltaType={nextCritical ? 'down' : 'neutral'}
-          accent={nextCritical ? '#DB6478' : '#0F766E'}
+          accent={nextCritical ? 'var(--sl-danger)' : 'var(--sl-em)'}
         />
       </div>
 
@@ -425,8 +433,8 @@ export default function PlanejamentoPage() {
         {/* Timeline header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div>
-            <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
-              Curva de Saldo — 6 meses
+            <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
+              Curva de Saldo · 6 meses
             </p>
             <p className="text-[11px] text-[var(--sl-t3)]">
               Projeção {SCENARIO_LABELS[scenario]} · {months[0]?.label} → {months[6]?.label}
@@ -453,18 +461,18 @@ export default function PlanejamentoPage() {
             <div className="h-9 shrink-0 border-b border-[var(--sl-border)] bg-[var(--sl-s1)]" />
             {/* Receitas band */}
             <div className="flex flex-col items-end justify-center px-3 h-[90px] shrink-0 border-b border-[var(--sl-border)]">
-              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[#0F766E]">Receitas</span>
-              <span className="text-[13px]">💰</span>
+              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[var(--sl-em)]">Receitas</span>
+              <Wallet size={13} className="text-[var(--sl-em)]" />
             </div>
             {/* Saldo band */}
             <div className="flex flex-col items-end justify-center px-3 flex-1 min-h-0 border-b border-[var(--sl-border)]">
-              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[#0B2D34]">Saldo</span>
-              <span className="text-[13px]">📈</span>
+              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[var(--sl-el)]">Saldo</span>
+              <TrendingUp size={13} className="text-[var(--sl-el)]" />
             </div>
             {/* Despesas band */}
             <div className="flex flex-col items-end justify-center px-3 h-[90px] shrink-0">
-              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[#DB6478]">Despesas</span>
-              <span className="text-[13px]">📤</span>
+              <span className="text-[9px] font-bold uppercase tracking-[0.08em] text-right text-[var(--sl-danger)]">Despesas</span>
+              <TrendingDown size={13} className="text-[var(--sl-danger)]" />
             </div>
           </div>
 
@@ -487,17 +495,20 @@ export default function PlanejamentoPage() {
         {/* Próximos Eventos */}
         <SLCard className="sl-fade-up sl-delay-1">
           <div className="flex items-center justify-between mb-4">
-            <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">📋 Próximos Eventos</p>
-            <button onClick={openCreate} className="text-[11px] text-[#0F766E] cursor-pointer hover:opacity-70 transition-opacity">
+            <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)] inline-flex items-center gap-1.5">
+              <ClipboardList size={14} />
+              Próximos Eventos
+            </p>
+            <button onClick={openCreate} className="text-[11px] text-[var(--sl-em)] cursor-pointer hover:opacity-70 transition-opacity">
               + Adicionar
             </button>
           </div>
 
           {planningEvents.length === 0 ? (
             <div className="text-center py-8">
-              <span className="text-[28px] block mb-2 opacity-50">📋</span>
+              <ClipboardList size={28} className="text-[var(--sl-t3)] mx-auto mb-2 opacity-50" />
               <p className="text-[12px] text-[var(--sl-t3)]">Nenhum evento planejado.</p>
-              <button onClick={openCreate} className="text-[12px] text-[#0F766E] underline mt-1 cursor-pointer">
+              <button onClick={openCreate} className="text-[12px] text-[var(--sl-em)] underline mt-1 cursor-pointer">
                 Adicionar evento
               </button>
             </div>
@@ -524,7 +535,10 @@ export default function PlanejamentoPage() {
         {/* Projeção de Saldo */}
         <SLCard className="sl-fade-up sl-delay-2">
           <div className="flex items-center justify-between mb-4">
-            <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">📊 Projeção de Saldo</p>
+            <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)] inline-flex items-center gap-1.5">
+              <BarChart3 size={14} />
+              Projeção de Saldo
+            </p>
             <span className="text-[11px] font-semibold" style={{ color: SCENARIO_COLORS[scenario] }}>
               ● {SCENARIO_LABELS[scenario]}
             </span>
@@ -536,17 +550,17 @@ export default function PlanejamentoPage() {
           <div className="flex justify-between mt-4">
             <div className="flex flex-col gap-0.5">
               <span className="text-[10px] uppercase tracking-[0.06em] text-[var(--sl-t3)]">Hoje</span>
-              <span className="font-[IBM_Plex_Mono] text-[15px] text-[#0F766E]">{fmtR(currentBalance)}</span>
+              <span className="sl-num-strong text-[15px] text-[var(--sl-em)]">{fmtR(currentBalance)}</span>
             </div>
             <div className="flex flex-col gap-0.5 items-center">
               <span className="text-[10px] uppercase tracking-[0.06em] text-[var(--sl-t3)]">6 meses</span>
-              <span className="font-[IBM_Plex_Mono] text-[15px]" style={{ color: SCENARIO_COLORS[scenario] }}>
+              <span className="sl-num-strong text-[15px]" style={{ color: SCENARIO_COLORS[scenario] }}>
                 {fmtR(bal6m)}
               </span>
             </div>
             <div className="flex flex-col gap-0.5 items-end">
               <span className="text-[10px] uppercase tracking-[0.06em] text-[var(--sl-t3)]">12 meses</span>
-              <span className={cn('font-[IBM_Plex_Mono] text-[15px]', bal12m >= 0 ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
+              <span className={cn('sl-num-strong text-[15px]', bal12m >= 0 ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]')}>
                 {fmtR(bal12m)}
               </span>
             </div>
@@ -556,9 +570,9 @@ export default function PlanejamentoPage() {
           {nextCritical && (
             <div className="mt-3 p-2.5 rounded-[9px] text-[12px] text-[var(--sl-t2)]"
               style={{ background: 'rgba(217,150,46,0.07)', border: '1px solid rgba(217,150,46,0.15)' }}>
-              ⚠ <strong className="text-[#D9962E]">{nextCritical.date}</strong> — {nextCritical.name}
-              {' '}— saldo cai para{' '}
-              <strong className="text-[#D9962E]">{fmtR(nextCritical.balance)}</strong>
+              <AlertTriangle size={12} className="inline mr-1 -mt-0.5 text-[var(--sl-warning)]" /> <strong className="text-[var(--sl-warning)]">{nextCritical.date}</strong> · {nextCritical.name}
+              {' · '}saldo cai para{' '}
+              <strong className="text-[var(--sl-warning)]">{fmtR(nextCritical.balance)}</strong>
             </div>
           )}
         </SLCard>

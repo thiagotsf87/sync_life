@@ -1,21 +1,25 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, Loader2, ChevronDown, Calendar, ArrowDown } from 'lucide-react'
+import {
+  X, Loader2, ChevronDown, Calendar, ArrowDown, ChevronLeft, ChevronRight,
+  Zap, CreditCard, Banknote, Wallet, Building2, FileText,
+  ArrowDownToLine, ArrowUpFromLine, ArrowLeftRight,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Category } from '@/hooks/use-categories'
 import type { Transaction, TransacaoFormData } from '@/hooks/use-transactions'
 import { AccountSelector } from './AccountSelector'
 import { useAccounts } from '@/hooks/use-accounts'
 
-const PAYMENT_OPTIONS = [
-  { value: 'pix',      label: 'Pix',           icon: '⚡' },
-  { value: 'credit',   label: 'Crédito',        icon: '💳' },
-  { value: 'debit',    label: 'Débito',          icon: '💸' },
-  { value: 'cash',     label: 'Dinheiro',        icon: '💵' },
-  { value: 'transfer', label: 'Transferência',   icon: '🏦' },
-  { value: 'boleto',   label: 'Boleto',          icon: '📄' },
-] as const
+const PAYMENT_OPTIONS: { value: TransacaoFormData['payment_method']; label: string; Icon: React.ComponentType<{ size?: number; className?: string }> }[] = [
+  { value: 'pix',      label: 'Pix',           Icon: Zap },
+  { value: 'credit',   label: 'Crédito',        Icon: CreditCard },
+  { value: 'debit',    label: 'Débito',          Icon: Wallet },
+  { value: 'cash',     label: 'Dinheiro',        Icon: Banknote },
+  { value: 'transfer', label: 'Transferência',   Icon: Building2 },
+  { value: 'boleto',   label: 'Boleto',          Icon: FileText },
+]
 
 // ── Currency mask ──────────────────────────────────────────────────────────
 function maskCurrency(raw: string): string {
@@ -237,6 +241,9 @@ export function TransacaoModal({
     }
   }
 
+  const selectedPayment = PAYMENT_OPTIONS.find(p => p.value === paymentMethod)
+  const SelectedPaymentIcon = selectedPayment?.Icon ?? Zap
+
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center p-4"
@@ -250,10 +257,10 @@ export function TransacaoModal({
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)] shrink-0">
-          <h2 className="font-[Space_Grotesk] font-extrabold text-[16px] text-[var(--sl-t1)]">
+          <h2 className="font-[Syne] font-extrabold text-[16px] text-[var(--sl-t1)]">
             {isTransfer
-              ? (mode === 'create' ? 'Nova Transferência' : 'Editar Transferência')
-              : (mode === 'create' ? 'Nova Transação' : 'Editar Transação')}
+              ? (mode === 'create' ? 'Nova transferência' : 'Editar transferência')
+              : (mode === 'create' ? 'Nova transação' : 'Editar transação')}
           </h2>
           <button
             onClick={onClose}
@@ -270,8 +277,8 @@ export function TransacaoModal({
           {mode === 'edit' && transaction?.recurring_transaction_id && (
             <div className="flex items-start gap-2 px-3 py-2.5 rounded-[10px] text-[12px]"
               style={{ background: 'rgba(139,123,212,.08)', border: '1px solid rgba(139,123,212,.20)' }}>
-              <span className="text-base shrink-0">🔄</span>
-              <p className="text-[#a78bfa] leading-snug">
+              <ArrowLeftRight size={14} className="shrink-0 mt-0.5" style={{ color: '#a78bfa' }} />
+              <p style={{ color: '#a78bfa' }} className="leading-snug">
                 Esta é uma ocorrência gerada automaticamente. A edição altera apenas este lançamento, não a série.
               </p>
             </div>
@@ -280,11 +287,12 @@ export function TransacaoModal({
           {/* Toggle tipo */}
           <div className="grid grid-cols-3 gap-2">
             {([
-              { value: 'expense' as const, label: 'Despesa', icon: '📤', color: '#DB6478' },
-              { value: 'income' as const, label: 'Receita', icon: '💰', color: '#0F766E' },
-              { value: 'transfer' as const, label: 'Transfer.', icon: '🔄', color: '#0B2D34' },
+              { value: 'expense' as const, label: 'Despesa', Icon: ArrowUpFromLine, color: 'var(--sl-danger)' },
+              { value: 'income' as const, label: 'Receita', Icon: ArrowDownToLine, color: 'var(--sl-em)' },
+              { value: 'transfer' as const, label: 'Transfer.', Icon: ArrowLeftRight, color: 'var(--sl-el)' },
             ]).map(t => {
               const isActive = type === t.value
+              const Icon = t.Icon
               return (
                 <button
                   key={t.value}
@@ -292,12 +300,12 @@ export function TransacaoModal({
                   className={cn(
                     'py-3 rounded-[12px] border-[1.5px] bg-[var(--sl-s2)] cursor-pointer flex items-center justify-center gap-2 transition-all',
                     isActive
-                      ? `border-[${t.color}]`
+                      ? ''
                       : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]'
                   )}
-                  style={isActive ? { borderColor: t.color, background: `${t.color}12` } : undefined}
+                  style={isActive ? { borderColor: t.color, background: 'var(--sl-s3)' } : undefined}
                 >
-                  <span className="text-xl">{t.icon}</span>
+                  <Icon size={18} style={isActive ? { color: t.color } : undefined} className={!isActive ? 'text-[var(--sl-t3)]' : undefined} />
                   <span className={cn(
                     'text-[14px] font-semibold',
                     isActive ? '' : 'text-[var(--sl-t2)]'
@@ -327,8 +335,8 @@ export function TransacaoModal({
               {/* Arrow indicator */}
               <div className="flex items-center justify-center -my-1">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center"
-                  style={{ background: 'rgba(0,85,255,0.08)', border: '1px solid rgba(0,85,255,0.2)' }}>
-                  <ArrowDown size={14} className="text-[#0B2D34]" />
+                  style={{ background: 'rgba(11,45,52,0.08)', border: '1px solid rgba(11,45,52,0.2)' }}>
+                  <ArrowDown size={14} className="text-[var(--sl-el)]" />
                 </div>
               </div>
 
@@ -344,43 +352,43 @@ export function TransacaoModal({
               {/* Auto-description preview */}
               {autoDescription && (
                 <div className="flex items-center gap-2 px-3 py-2 rounded-[10px] text-[12px]"
-                  style={{ background: 'rgba(0,85,255,0.05)', border: '1px solid rgba(0,85,255,0.15)' }}>
-                  <span className="text-[#0B2D34]">🔄</span>
+                  style={{ background: 'rgba(11,45,52,0.05)', border: '1px solid rgba(11,45,52,0.15)' }}>
+                  <ArrowLeftRight size={12} className="text-[var(--sl-el)]" />
                   <span className="text-[var(--sl-t2)]">Descrição: <strong className="text-[var(--sl-t1)]">{autoDescription}</strong></span>
                 </div>
               )}
 
               {/* Valor */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Valor</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Valor</label>
                 <div className={cn(
                   'flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
-                  errors.amount ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus-within:border-[#0B2D34]'
+                  errors.amount ? 'border-[var(--sl-danger)]' : 'border-[var(--sl-border)] focus-within:border-[var(--sl-el)]'
                 )}>
-                  <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+                  <span className="sl-num text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
                   <input
                     type="text"
                     inputMode="numeric"
                     value={amountStr}
                     onChange={e => setAmountStr(maskCurrency(e.target.value))}
                     placeholder="0,00"
-                    className="flex-1 bg-transparent outline-none font-[IBM_Plex_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                    className="flex-1 bg-transparent outline-none sl-num-strong text-[16px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
                   />
                 </div>
-                {errors.amount && <p className="text-[11px] text-[#DB6478]">{errors.amount}</p>}
+                {errors.amount && <p className="text-[11px] text-[var(--sl-danger)]">{errors.amount}</p>}
               </div>
 
               {/* Data (full width for transfer) */}
               <div className="flex flex-col gap-1.5 relative" ref={datePickerRef}>
-                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Data</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Data</label>
                 <input type="hidden" value={date} readOnly />
                 <button
                   type="button"
                   onClick={() => setDatePickerOpen(o => !o)}
                   className={cn(
-                    'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[IBM_Plex_Mono] flex items-center justify-between gap-2 text-left',
-                    errors.date ? 'border-[#DB6478]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-                    datePickerOpen && 'border-[#0B2D34]'
+                    'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors sl-num flex items-center justify-between gap-2 text-left',
+                    errors.date ? 'border-[var(--sl-danger)]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                    datePickerOpen && 'border-[var(--sl-el)]'
                   )}
                 >
                   <span>{formatDateDisplay(date)}</span>
@@ -393,13 +401,13 @@ export function TransacaoModal({
                   >
                     <div className="flex items-center justify-between mb-2">
                       <button type="button" onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
-                        ‹
+                        <ChevronLeft size={14} />
                       </button>
                       <span className="text-[13px] font-semibold text-[var(--sl-t1)]">
                         {MONTHS_PT[calView.month]} {calView.year}
                       </span>
                       <button type="button" onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
-                        ›
+                        <ChevronRight size={14} />
                       </button>
                     </div>
                     <div className="grid grid-cols-7 gap-0.5 text-[10px] text-[var(--sl-t3)] mb-1">
@@ -416,7 +424,7 @@ export function TransacaoModal({
                             'w-8 h-8 rounded-[8px] text-[12px] font-medium transition-colors',
                             !d && 'invisible',
                             d && selY === calView.year && selM === calView.month && selD === d
-                              ? 'bg-[#0B2D34] text-white'
+                              ? 'bg-[var(--sl-el)] text-white'
                               : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
                           )}
                         >
@@ -426,40 +434,40 @@ export function TransacaoModal({
                     </div>
                   </div>
                 )}
-                {errors.date && <p className="text-[11px] text-[#DB6478]">{errors.date}</p>}
+                {errors.date && <p className="text-[11px] text-[var(--sl-danger)]">{errors.date}</p>}
               </div>
 
               {/* Descrição (optional override) */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Descrição (opcional)</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Descrição (opcional)</label>
                 <input
                   type="text"
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder={autoDescription || 'Descrição da transferência...'}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0B2D34] transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-el)] transition-colors"
                 />
               </div>
 
               {/* Notas */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Observações (opcional)</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Observações (opcional)</label>
                 <textarea
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   placeholder="Adicione uma observação..."
                   rows={2}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0B2D34] transition-colors resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-el)] transition-colors resize-none"
                 />
               </div>
             </>
           ) : (
             <>
-              {/* ═══ INCOME / EXPENSE FORM (unchanged) ═══ */}
+              {/* ═══ INCOME / EXPENSE FORM ═══ */}
 
               {/* Descrição */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Descrição</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Descrição</label>
                 <input
                   type="text"
                   value={description}
@@ -467,35 +475,35 @@ export function TransacaoModal({
                   placeholder="Ex: Supermercado, Salário, Netflix..."
                   className={cn(
                     'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none transition-colors',
-                    errors.description ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus:border-[#0F766E]'
+                    errors.description ? 'border-[var(--sl-danger)]' : 'border-[var(--sl-border)] focus:border-[var(--sl-em)]'
                   )}
                 />
-                {errors.description && <p className="text-[11px] text-[#DB6478]">{errors.description}</p>}
+                {errors.description && <p className="text-[11px] text-[var(--sl-danger)]">{errors.description}</p>}
               </div>
 
               {/* Valor */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Valor</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Valor</label>
                 <div className={cn(
                   'flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
-                  errors.amount ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus-within:border-[#0F766E]'
+                  errors.amount ? 'border-[var(--sl-danger)]' : 'border-[var(--sl-border)] focus-within:border-[var(--sl-em)]'
                 )}>
-                  <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+                  <span className="sl-num text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
                   <input
                     type="text"
                     inputMode="numeric"
                     value={amountStr}
                     onChange={e => setAmountStr(maskCurrency(e.target.value))}
                     placeholder="0,00"
-                    className="flex-1 bg-transparent outline-none font-[IBM_Plex_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                    className="flex-1 bg-transparent outline-none sl-num-strong text-[16px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
                   />
                 </div>
-                {errors.amount && <p className="text-[11px] text-[#DB6478]">{errors.amount}</p>}
+                {errors.amount && <p className="text-[11px] text-[var(--sl-danger)]">{errors.amount}</p>}
               </div>
 
               {/* Grid de categorias */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Categoria</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Categoria</label>
                 {filteredCategories.length === 0 ? (
                   <p className="text-[12px] text-[var(--sl-t3)] py-2">Nenhuma categoria disponível.</p>
                 ) : (
@@ -507,14 +515,14 @@ export function TransacaoModal({
                         className={cn(
                           'py-2.5 px-1.5 rounded-[11px] border-[1.5px] bg-[var(--sl-s2)] cursor-pointer text-center transition-all hover:border-[var(--sl-border-h)] hover:-translate-y-px',
                           categoryId === cat.id
-                            ? 'border-[#0F766E] bg-[rgba(15,118,110,.08)]'
+                            ? 'border-[var(--sl-em)] bg-[var(--sl-em-soft)]'
                             : 'border-[var(--sl-border)]'
                         )}
                       >
                         <span className="text-[20px] block mb-1">{cat.icon}</span>
                         <span className={cn(
                           'text-[11px] leading-tight block truncate',
-                          categoryId === cat.id ? 'text-[#0F766E] font-semibold' : 'text-[var(--sl-t2)]'
+                          categoryId === cat.id ? 'text-[var(--sl-em)] font-semibold' : 'text-[var(--sl-t2)]'
                         )}>
                           {cat.name}
                         </span>
@@ -522,22 +530,22 @@ export function TransacaoModal({
                     ))}
                   </div>
                 )}
-                {errors.category && <p className="text-[11px] text-[#DB6478]">{errors.category}</p>}
+                {errors.category && <p className="text-[11px] text-[var(--sl-danger)]">{errors.category}</p>}
               </div>
 
               {/* Data + Método */}
               <div className="grid grid-cols-2 gap-3">
                 {/* Data — custom date picker */}
                 <div className="flex flex-col gap-1.5 relative" ref={datePickerRef}>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Data</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Data</label>
                   <input type="hidden" value={date} readOnly />
                   <button
                     type="button"
                     onClick={() => setDatePickerOpen(o => !o)}
                     className={cn(
-                      'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors font-[IBM_Plex_Mono] flex items-center justify-between gap-2 text-left',
-                      errors.date ? 'border-[#DB6478]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-                      datePickerOpen && 'border-[#0F766E]'
+                      'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors sl-num flex items-center justify-between gap-2 text-left',
+                      errors.date ? 'border-[var(--sl-danger)]' : 'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
+                      datePickerOpen && 'border-[var(--sl-em)]'
                     )}
                   >
                     <span>{formatDateDisplay(date)}</span>
@@ -550,13 +558,13 @@ export function TransacaoModal({
                     >
                       <div className="flex items-center justify-between mb-2">
                         <button type="button" onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
-                          ‹
+                          <ChevronLeft size={14} />
                         </button>
                         <span className="text-[13px] font-semibold text-[var(--sl-t1)]">
                           {MONTHS_PT[calView.month]} {calView.year}
                         </span>
                         <button type="button" onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]">
-                          ›
+                          <ChevronRight size={14} />
                         </button>
                       </div>
                       <div className="grid grid-cols-7 gap-0.5 text-[10px] text-[var(--sl-t3)] mb-1">
@@ -573,7 +581,7 @@ export function TransacaoModal({
                               'w-8 h-8 rounded-[8px] text-[12px] font-medium transition-colors',
                               !d && 'invisible',
                               d && selY === calView.year && selM === calView.month && selD === d
-                                ? 'bg-[#0F766E] text-[#03071a]'
+                                ? 'bg-[var(--sl-em)] text-white'
                                 : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
                             )}
                           >
@@ -583,22 +591,25 @@ export function TransacaoModal({
                       </div>
                     </div>
                   )}
-                  {errors.date && <p className="text-[11px] text-[#DB6478]">{errors.date}</p>}
+                  {errors.date && <p className="text-[11px] text-[var(--sl-danger)]">{errors.date}</p>}
                 </div>
 
                 {/* Método — custom dropdown */}
                 <div className="flex flex-col gap-1.5 relative" ref={metodoRef}>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Método</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Método</label>
                   <button
                     type="button"
                     onClick={() => setMetodoOpen(o => !o)}
                     className={cn(
                       'w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border text-[13px] text-[var(--sl-t1)] outline-none transition-colors flex items-center justify-between gap-2 text-left',
                       'border-[var(--sl-border)] hover:border-[var(--sl-border-h)]',
-                      metodoOpen && 'border-[#0F766E]'
+                      metodoOpen && 'border-[var(--sl-em)]'
                     )}
                   >
-                    <span>{PAYMENT_OPTIONS.find(p => p.value === paymentMethod)?.icon} {PAYMENT_OPTIONS.find(p => p.value === paymentMethod)?.label}</span>
+                    <span className="flex items-center gap-2">
+                      <SelectedPaymentIcon size={14} className="text-[var(--sl-t3)]" />
+                      {selectedPayment?.label}
+                    </span>
                     <ChevronDown size={14} className={cn('text-[var(--sl-t3)] shrink-0 transition-transform', metodoOpen && 'rotate-180')} />
                   </button>
                   {metodoOpen && (
@@ -606,22 +617,25 @@ export function TransacaoModal({
                       className="absolute z-[70] top-full left-0 right-0 mt-1 py-1 rounded-[10px] max-h-[200px] overflow-y-auto"
                       style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
                     >
-                      {PAYMENT_OPTIONS.map(p => (
-                        <button
-                          key={p.value}
-                          type="button"
-                          onClick={() => { setPaymentMethod(p.value as TransacaoFormData['payment_method']); setMetodoOpen(false) }}
-                          className={cn(
-                            'w-full px-3.5 py-2.5 text-left text-[13px] flex items-center gap-2 transition-colors',
-                            paymentMethod === p.value
-                              ? 'bg-[rgba(15,118,110,.12)] text-[#0F766E] font-semibold'
-                              : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
-                          )}
-                        >
-                          <span>{p.icon}</span>
-                          <span>{p.label}</span>
-                        </button>
-                      ))}
+                      {PAYMENT_OPTIONS.map(p => {
+                        const POIcon = p.Icon
+                        return (
+                          <button
+                            key={p.value}
+                            type="button"
+                            onClick={() => { setPaymentMethod(p.value); setMetodoOpen(false) }}
+                            className={cn(
+                              'w-full px-3.5 py-2.5 text-left text-[13px] flex items-center gap-2 transition-colors',
+                              paymentMethod === p.value
+                                ? 'bg-[var(--sl-em-soft)] text-[var(--sl-em)] font-semibold'
+                                : 'text-[var(--sl-t1)] hover:bg-[var(--sl-s2)]'
+                            )}
+                          >
+                            <POIcon size={14} />
+                            <span>{p.label}</span>
+                          </button>
+                        )
+                      })}
                     </div>
                   )}
                 </div>
@@ -629,13 +643,13 @@ export function TransacaoModal({
 
               {/* Notas */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Observações (opcional)</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Observações (opcional)</label>
                 <textarea
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   placeholder="Adicione uma observação..."
                   rows={2}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-em)] transition-colors resize-none"
                 />
               </div>
             </>
@@ -654,12 +668,12 @@ export function TransacaoModal({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-[#03071a] transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: isTransfer ? '#0B2D34' : '#0F766E' }}
+            className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
+            style={{ background: isTransfer ? 'var(--sl-el)' : 'var(--sl-em)' }}
           >
             {saving && <Loader2 size={14} className="animate-spin" />}
             {isTransfer
-              ? (mode === 'create' ? '🔄 Transferir' : '🔄 Salvar transferência')
+              ? (mode === 'create' ? 'Transferir' : 'Salvar transferência')
               : (mode === 'create' ? 'Adicionar' : 'Salvar alterações')}
           </button>
         </div>

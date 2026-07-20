@@ -1,8 +1,14 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import {
+  Coffee, Car, Home, Gamepad2, Pill, BookOpen,
+  Calendar, ChevronDown, Check, Delete,
+  type LucideIcon,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { MobileFormHeader } from '@/components/ui/mobile-form-header'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface QuickEntrySheetProps {
   open: boolean
@@ -13,26 +19,26 @@ type EntryType = 'despesa' | 'receita' | 'transferencia'
 
 const TYPE_STYLES: Record<EntryType, { active: string; color: string }> = {
   despesa: {
-    active: 'bg-[rgba(219,100,120,0.15)] border-[rgba(219,100,120,0.4)] text-[#DB6478]',
-    color: '#DB6478',
+    active: 'bg-[rgba(219,100,120,0.15)] border-[rgba(219,100,120,0.4)] text-[var(--sl-danger)]',
+    color: 'var(--sl-danger)',
   },
   receita: {
-    active: 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.4)] text-[#0F766E]',
-    color: '#0F766E',
+    active: 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.4)] text-[var(--sl-em)]',
+    color: 'var(--sl-em)',
   },
   transferencia: {
-    active: 'bg-[rgba(0,85,255,0.15)] border-[rgba(0,85,255,0.4)] text-[#0B2D34]',
-    color: '#0B2D34',
+    active: 'bg-[rgba(11,45,52,0.15)] border-[rgba(11,45,52,0.4)] text-[var(--sl-el)]',
+    color: 'var(--sl-el)',
   },
 }
 
-const CATEGORIES = [
-  { emoji: '☕', label: 'Alimentação' },
-  { emoji: '🚗', label: 'Transporte' },
-  { emoji: '🏠', label: 'Moradia' },
-  { emoji: '🎮', label: 'Lazer' },
-  { emoji: '💊', label: 'Saúde' },
-  { emoji: '📚', label: 'Educação' },
+const CATEGORIES: { Icon: LucideIcon; label: string }[] = [
+  { Icon: Coffee, label: 'Alimentação' },
+  { Icon: Car, label: 'Transporte' },
+  { Icon: Home, label: 'Moradia' },
+  { Icon: Gamepad2, label: 'Lazer' },
+  { Icon: Pill, label: 'Saúde' },
+  { Icon: BookOpen, label: 'Educação' },
 ]
 
 export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
@@ -107,18 +113,18 @@ export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
         </div>
 
         {/* Amount */}
-        <div className="font-[IBM_Plex_Mono] text-[52px] font-medium text-[var(--sl-t1)] tracking-[-2px]">
-          <span className="text-[24px] text-[var(--sl-t2)] mr-1">R$</span>
+        <div className="font-[Syne] tabular-nums text-[52px] font-bold text-[var(--sl-t1)] tracking-[-0.03em]">
+          <span className="text-[24px] text-[var(--sl-t2)] font-semibold mr-1">R$</span>
           {formatAmount(amount)}
         </div>
 
         {/* Category suggestion */}
         <div className="mt-4 flex items-center gap-2">
           <div className="flex items-center gap-1.5 bg-[var(--sl-s2)] border border-[var(--sl-border-h)] rounded-[20px] px-3 py-1.5">
-            <span className="text-[13px] text-[var(--sl-t1)]">
-              {category.emoji} {category.label}
+            <span className="inline-flex items-center gap-1.5 text-[13px] text-[var(--sl-t1)]">
+              <category.Icon size={13} className="text-[var(--sl-t2)]" /> {category.label}
             </span>
-            <span className="text-[10px] bg-[rgba(15,118,110,0.15)] text-[#0F766E] px-1.5 py-0.5 rounded-lg">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] bg-[rgba(15,118,110,0.15)] text-[var(--sl-em)] px-1.5 py-0.5 rounded-lg">
               IA
             </span>
           </div>
@@ -126,16 +132,16 @@ export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
         </div>
 
         {/* Date */}
-        <div className="mt-3 px-3.5 py-2 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] text-[13px] text-[var(--sl-t2)]">
-          📅 Hoje, {dateStr}
+        <div className="mt-3 px-3.5 py-2 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] text-[13px] text-[var(--sl-t2)] inline-flex items-center gap-1.5">
+          <Calendar size={13} /> Hoje, {dateStr}
         </div>
 
         {/* Details toggle */}
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="mt-2 text-[12px] text-[var(--sl-t2)] py-2"
+          className="mt-2 text-[12px] text-[var(--sl-t2)] py-2 inline-flex items-center gap-1"
         >
-          ▼ Adicionar detalhes (descrição, tags, conta)
+          <ChevronDown size={12} /> Adicionar detalhes (descrição, tags, conta)
         </button>
 
         {/* Category selector (shown when showDetails=true) */}
@@ -146,13 +152,13 @@ export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
                 key={cat.label}
                 onClick={() => setCategory(cat)}
                 className={cn(
-                  'px-3 py-1.5 rounded-[20px] text-[12px] border transition-colors',
+                  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[20px] text-[12px] border transition-colors',
                   category.label === cat.label
-                    ? 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.35)] text-[#0F766E]'
+                    ? 'bg-[rgba(15,118,110,0.15)] border-[rgba(15,118,110,0.35)] text-[var(--sl-em)]'
                     : 'bg-[var(--sl-s1)] border-[var(--sl-border)] text-[var(--sl-t2)]',
                 )}
               >
-                {cat.emoji} {cat.label}
+                <cat.Icon size={12} /> {cat.label}
               </button>
             ))}
           </div>
@@ -172,22 +178,22 @@ export function QuickEntrySheet({ open, onOpenChange }: QuickEntrySheetProps) {
                 key === 'del'
                   ? 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t1)] text-[16px]'
                   : key === '.,'
-                    ? 'bg-[rgba(15,118,110,0.15)] border-[var(--sl-border)] text-[#0F766E] text-[14px] font-semibold'
-                    : 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t1)] text-[22px] font-normal font-[IBM_Plex_Mono]',
+                    ? 'bg-[rgba(15,118,110,0.15)] border-[var(--sl-border)] text-[var(--sl-em)] text-[14px] font-semibold font-[Syne]'
+                    : 'bg-[var(--sl-s2)] border-[var(--sl-border)] text-[var(--sl-t1)] text-[22px] font-semibold font-[Syne] tabular-nums',
               )}
             >
-              {key === 'del' ? '⌫' : key}
+              {key === 'del' ? <Delete size={18} strokeWidth={1.8} /> : key}
             </button>
           ))}
-          {/* Confirm button — spans all 3 columns */}
+          {/* Confirm button, spans all 3 columns */}
           <button
             onClick={() => handleKey('confirm')}
-            className="col-span-3 h-[52px] rounded-[16px] mt-1 flex items-center justify-center
-                        text-white text-[15px] font-semibold border-none
+            className="col-span-3 h-[52px] rounded-[16px] mt-1 inline-flex items-center justify-center gap-2
+                        text-white text-[15px] font-semibold font-[Syne] border-none
                         active:scale-[0.98] transition-transform"
-            style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
+            style={{ background: 'var(--sl-em)' }}
           >
-            ✓ Confirmar — R$ {formatAmount(amount)}
+            <Check size={16} strokeWidth={2.4} /> Confirmar, {fmtBRL(parseInt(amount || '0', 10) / 100)}
           </button>
         </div>
       </div>

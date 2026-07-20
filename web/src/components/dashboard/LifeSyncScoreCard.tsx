@@ -25,14 +25,14 @@ export function LifeSyncScoreCard({ realScore, scoreLabel, lifeDimensions, lifeL
         style={{ background: 'radial-gradient(circle, rgba(107,111,212,0.12), transparent 70%)' }} />
 
       <div className="flex-shrink-0 relative z-10">
-        <div className="font-[Space_Grotesk] font-extrabold text-[80px] leading-none text-sl-grad">
+        <div className="font-[Syne] font-extrabold text-[80px] leading-none text-sl-grad">
           {realScore > 0 ? Math.round(realScore) : '\u2014'}
         </div>
         <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mt-0.5">Life Sync Score</div>
       </div>
 
       <div className="flex-1 min-w-0 relative z-10">
-        <p className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-1">
+        <p className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-1">
           {scoreLabel ?? (realScore >= 75 ? 'Excelente equil\u00edbrio!' : realScore >= 50 ? 'Evolu\u00e7\u00e3o consistente' : realScore > 0 ? 'H\u00e1 espa\u00e7o para crescer' : 'Registre dados para calcular')}
         </p>
         <p className="text-[13px] text-[var(--sl-t3)] italic mb-3">

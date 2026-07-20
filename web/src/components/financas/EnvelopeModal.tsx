@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Loader2 } from 'lucide-react'
+import { X, Loader2, Check, Lightbulb } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Category } from '@/hooks/use-categories'
 import type { Budget, EnvelopeFormData } from '@/hooks/use-budgets'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface EnvelopeModalProps {
   open: boolean
@@ -22,10 +23,6 @@ const MONTH_NAMES = [
   'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
   'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro',
 ]
-
-function fmtR$(n: number): string {
-  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
-}
 
 export function EnvelopeModal({
   open, mode, envelope, categories, monthlyIncome, month, year, onClose, onSave,
@@ -103,8 +100,8 @@ export function EnvelopeModal({
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)] shrink-0">
-          <h2 className="font-[Space_Grotesk] font-extrabold text-[16px] text-[var(--sl-t1)]">
-            {mode === 'create' ? 'Novo Envelope' : 'Editar Envelope'}
+          <h2 className="font-[Syne] font-extrabold text-[16px] text-[var(--sl-t1)]">
+            {mode === 'create' ? 'Novo envelope' : 'Editar envelope'}
           </h2>
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-[var(--sl-t3)] font-[IBM_Plex_Mono]">
@@ -122,7 +119,7 @@ export function EnvelopeModal({
 
           {/* Categoria */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Categoria</label>
+            <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Categoria</label>
             <div className="grid grid-cols-4 gap-2">
               {expenseCategories.map(cat => (
                 <button
@@ -133,50 +130,51 @@ export function EnvelopeModal({
                     'py-2.5 px-1.5 rounded-[11px] border-[1.5px] bg-[var(--sl-s2)] text-center transition-all',
                     mode === 'edit' ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:border-[var(--sl-border-h)] hover:-translate-y-px',
                     categoryId === cat.id
-                      ? 'border-[#0F766E] bg-[rgba(15,118,110,.08)]'
+                      ? 'border-[var(--sl-em)] bg-[var(--sl-em-soft)]'
                       : 'border-[var(--sl-border)]'
                   )}
                 >
                   <span className="text-[20px] block mb-1">{cat.icon}</span>
                   <span className={cn(
                     'text-[11px] leading-tight block truncate',
-                    categoryId === cat.id ? 'text-[#0F766E] font-semibold' : 'text-[var(--sl-t2)]'
+                    categoryId === cat.id ? 'text-[var(--sl-em)] font-semibold' : 'text-[var(--sl-t2)]'
                   )}>
                     {cat.name}
                   </span>
                 </button>
               ))}
             </div>
-            {errors.category && <p className="text-[11px] text-[#DB6478]">{errors.category}</p>}
+            {errors.category && <p className="text-[11px] text-[var(--sl-danger)]">{errors.category}</p>}
           </div>
 
           {/* Limite */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Limite mensal</label>
+            <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Limite mensal</label>
             <div className={cn(
               'flex items-center gap-2 px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border transition-colors',
-              errors.amount ? 'border-[#DB6478]' : 'border-[var(--sl-border)] focus-within:border-[#0F766E]'
+              errors.amount ? 'border-[var(--sl-danger)]' : 'border-[var(--sl-border)] focus-within:border-[var(--sl-em)]'
             )}>
-              <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
+              <span className="sl-num text-[14px] text-[var(--sl-t3)] shrink-0">R$</span>
               <input
                 type="text"
                 inputMode="decimal"
                 value={amountStr}
                 onChange={e => setAmountStr(e.target.value.replace(/[^0-9.,]/g, ''))}
                 placeholder="0,00"
-                className="flex-1 bg-transparent outline-none font-[IBM_Plex_Mono] text-[16px] font-medium text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
+                className="flex-1 bg-transparent outline-none sl-num-strong text-[16px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
               />
             </div>
-            {errors.amount && <p className="text-[11px] text-[#DB6478]">{errors.amount}</p>}
+            {errors.amount && <p className="text-[11px] text-[var(--sl-danger)]">{errors.amount}</p>}
             {/* Sugestão 50-30-20 */}
             {monthlyIncome > 0 && selectedCategory && (
-              <p className="text-[11px] text-[var(--sl-t3)] px-1">
-                💡 Sugestão 50-30-20 para {selectedCategory.name}:{' '}
+              <p className="text-[11px] text-[var(--sl-t3)] px-1 flex items-center gap-1">
+                <Lightbulb size={11} className="text-[var(--sl-warning)]" />
+                Sugestão 50-30-20 para {selectedCategory.name}:{' '}
                 <button
                   onClick={() => setAmountStr(String(Math.round(monthlyIncome * 0.15)))}
-                  className="text-[#0F766E] hover:underline font-semibold"
+                  className="text-[var(--sl-em)] hover:underline font-semibold"
                 >
-                  R$ {fmtR$(monthlyIncome * 0.15)}
+                  {fmtBRL(monthlyIncome * 0.15)}
                 </button>
               </p>
             )}
@@ -185,19 +183,19 @@ export function EnvelopeModal({
           {/* Alert Threshold */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">
+              <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">
                 Alertar quando atingir
               </label>
-              <span className="font-[IBM_Plex_Mono] text-[13px] font-bold text-[#D9962E]">{alertThreshold}%</span>
+              <span className="sl-num-strong text-[13px] text-[var(--sl-warning)]">{alertThreshold}%</span>
             </div>
             <input
               type="range"
               min={50} max={100} step={5}
               value={alertThreshold}
               onChange={e => setAlertThreshold(Number(e.target.value))}
-              className="w-full accent-[#D9962E]"
+              className="w-full accent-[var(--sl-warning)]"
             />
-            <div className="flex justify-between text-[10px] text-[var(--sl-t3)] font-[IBM_Plex_Mono]">
+            <div className="flex justify-between text-[10px] text-[var(--sl-t3)] sl-num">
               <span>50%</span><span>70%</span><span>90%</span><span>100%</span>
             </div>
           </div>
@@ -207,16 +205,16 @@ export function EnvelopeModal({
             className={cn(
               'flex items-start gap-3 px-4 py-3 rounded-[11px] border cursor-pointer transition-all',
               rollover
-                ? 'border-[rgba(15,118,110,.30)] bg-[rgba(15,118,110,.05)]'
+                ? 'border-[var(--sl-border-em)] bg-[var(--sl-em-soft)]'
                 : 'border-[var(--sl-border)] bg-[var(--sl-s2)]'
             )}
             onClick={() => setRollover(r => !r)}
           >
             <div className={cn(
               'w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors',
-              rollover ? 'bg-[#0F766E] border-[#0F766E]' : 'border-[var(--sl-border)]'
+              rollover ? 'bg-[var(--sl-em)] border-[var(--sl-em)]' : 'border-[var(--sl-border)]'
             )}>
-              {rollover && <span className="text-white text-xs font-bold">✓</span>}
+              {rollover && <Check size={12} strokeWidth={3} className="text-white" />}
             </div>
             <div>
               <p className="text-[13px] font-semibold text-[var(--sl-t1)]">Carregar saldo não gasto</p>
@@ -228,13 +226,13 @@ export function EnvelopeModal({
 
           {/* Notas */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--sl-t3)]">Observações (opcional)</label>
+            <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Observações (opcional)</label>
             <textarea
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="Adicione uma observação..."
               rows={2}
-              className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#0F766E] transition-colors resize-none"
+              className="w-full px-3.5 py-2.5 rounded-[10px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-em)] transition-colors resize-none"
             />
           </div>
 
@@ -249,8 +247,8 @@ export function EnvelopeModal({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-[#03071a] transition-all hover:brightness-110 disabled:opacity-60"
-            style={{ background: '#0F766E' }}
+            className="flex items-center gap-2 px-5 py-2 rounded-[10px] text-[13px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
+            style={{ background: 'var(--sl-em)' }}
           >
             {saving && <Loader2 size={14} className="animate-spin" />}
             {mode === 'create' ? 'Criar envelope' : 'Salvar'}

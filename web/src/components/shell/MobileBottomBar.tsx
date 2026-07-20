@@ -123,7 +123,7 @@ export function MobileBottomBar({ userName }: MobileBottomBarProps) {
                    shadow-[0_4px_24px_rgba(15,118,110,0.45)]
                    transition-transform active:scale-95"
         style={{
-          background: 'linear-gradient(135deg, #0F766E, #0B2D34)',
+          background: 'var(--sl-em)',
           bottom: 'calc(68px + env(safe-area-inset-bottom, 0px) + 16px)',
           right: 20,
           border: '3px solid var(--sl-bg)',

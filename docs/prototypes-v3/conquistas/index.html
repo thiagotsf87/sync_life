@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<title>SyncLife · Conquistas (v3)</title>
+<link rel="stylesheet" href="../dashboard-v2/tokens.css"/>
+<style>html, body, #root { height: 100%; }</style>
+</head>
+<body style="font-family: &quot;DM Sans&quot;">
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="../dashboard-v2/tweaks-panel.jsx"></script>
+<script type="text/babel" src="../dashboard-v2/icons.jsx"></script>
+<script type="text/babel">
+  window.fmtBRL = (n, opts = {}) => {
+    const { compact = false } = opts;
+    if (compact && Math.abs(n) >= 1000) {
+      return 'R$ ' + (n / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'k';
+    }
+    return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+  const fmtBRL = window.fmtBRL;
+  // useTokens reaproveitado do Finanças shell
+  window.useTokens = (t) => {
+    React.useEffect(() => {
+      const root = document.documentElement;
+      const accents = {
+        'esmeralda':{ em:'#1FA67A', emSoft:'rgba(31,166,122,0.10)', emStrong:'#28C18B', borderEm:'rgba(31,166,122,0.28)' },
+        'petrol':   { em: '#0F766E', emSoft: 'rgba(15,118,110,0.12)', emStrong: '#138A80', borderEm: 'rgba(15,118,110,0.32)' },
+        'coral':    { em:'#E07A5F', emSoft:'rgba(224,122,95,0.10)', emStrong:'#E68B73', borderEm:'rgba(224,122,95,0.28)' },
+        'amber':    { em:'#D97534', emSoft:'rgba(217,117,52,0.10)', emStrong:'#E08847', borderEm:'rgba(217,117,52,0.28)' },
+        'plum':     { em:'#A06585', emSoft:'rgba(160,101,133,0.10)', emStrong:'#B17698', borderEm:'rgba(160,101,133,0.28)' },
+      };
+      const a = accents[t.accent] || accents.petrol;
+      root.style.setProperty('--sl-em', a.em);
+      root.style.setProperty('--sl-em-soft', a.emSoft);
+      root.style.setProperty('--sl-em-strong', a.emStrong);
+      root.style.setProperty('--sl-border-em', a.borderEm);
+
+      const bgs = {
+        'navy-deep': { bg:'#0B0F14', s1:'#131922', s2:'#1A2230', s3:'#232C3B', sHero:'#161D28', t1:'#E7ECF1', t2:'#A7B0BC', t3:'#6F7986', t4:'#4A535F', border:'rgba(255,255,255,0.06)', borderH:'rgba(255,255,255,0.12)' },
+        'midnight':  { bg:'#0F0B1F', s1:'#161232', s2:'#1F1B40', s3:'#2A2552', sHero:'#1A1638', t1:'#E7ECF1', t2:'#A7B0BC', t3:'#6F7986', t4:'#4A535F', border:'rgba(255,255,255,0.06)', borderH:'rgba(255,255,255,0.12)' },
+        'charcoal':  { bg:'#181818', s1:'#222222', s2:'#2B2B2B', s3:'#363636', sHero:'#252525', t1:'#E7ECF1', t2:'#A7B0BC', t3:'#6F7986', t4:'#4A535F', border:'rgba(255,255,255,0.06)', borderH:'rgba(255,255,255,0.12)' },
+        'cream':     { bg:'#F5F2EC', s1:'#FFFFFF', s2:'#EFEBE2', s3:'#E5DFD2', sHero:'#FAF7F1', t1:'#1A2230', t2:'#4F5663', t3:'#818A95', t4:'#B4BAC2', border:'rgba(0,0,0,0.08)', borderH:'rgba(0,0,0,0.16)' },
+      };
+      const b = bgs[t.background] || bgs['navy-deep'];
+      Object.entries(b).forEach(([k, v]) => {
+        const map = { bg:'--sl-bg', s1:'--sl-s1', s2:'--sl-s2', s3:'--sl-s3', sHero:'--sl-s-hero',
+          t1:'--sl-t1', t2:'--sl-t2', t3:'--sl-t3', t4:'--sl-t4', border:'--sl-border', borderH:'--sl-border-h' };
+        if (map[k]) root.style.setProperty(map[k], v);
+      });
+    }, [t.accent, t.background]);
+  };
+  const useTokens = window.useTokens;
+</script>
+<script type="text/babel" src="shell-conq.jsx"></script>
+<script type="text/babel" src="widgets-conq.jsx"></script>
+<script type="text/babel" src="Conquistas.jsx"></script>
+
+<script type="text/babel">
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<Conquistas/>);
+</script>
+</body>
+</html>

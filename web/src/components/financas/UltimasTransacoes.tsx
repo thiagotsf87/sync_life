@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, ArrowDownRight, ArrowUpRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { fmtR$, fmtDate, PAYMENT_LABELS } from '@/components/financas/helpers'
 
@@ -26,7 +26,7 @@ export function UltimasTransacoes({ transactions, loading }: UltimasTransacoesPr
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-3">
-        <p className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">Últimas Transações</p>
+        <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Últimas Transações</p>
         <button onClick={() => router.push('/financas/transacoes')} className="text-[11px] text-[#0F766E] hover:underline flex items-center gap-1">
           Ver todas <ExternalLink size={9} />
         </button>
@@ -44,15 +44,15 @@ export function UltimasTransacoes({ transactions, loading }: UltimasTransacoesPr
                 key={t.id}
                 className="flex items-center gap-2.5 py-2 border-b border-[var(--sl-border)] last:border-b-0 cursor-pointer rounded-[8px] hover:bg-[var(--sl-s2)] hover:px-2 hover:-mx-2 transition-all"
               >
-                <div className="w-[29px] h-[29px] rounded-[8px] flex items-center justify-center text-[13px] shrink-0 bg-[var(--sl-s3)]">
-                  {t.category?.icon ?? (isIncome ? '💰' : '📤')}
+                <div className="w-[29px] h-[29px] rounded-[8px] flex items-center justify-center text-[13px] shrink-0 bg-[var(--sl-s3)]" style={{ color: isIncome ? '#0F766E' : '#DB6478' }}>
+                  {t.category?.icon ?? (isIncome ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[12px] text-[var(--sl-t1)] truncate">{t.description}</p>
                   <p className="text-[10px] text-[var(--sl-t3)]">{fmtDate(t.date)} · {PAYMENT_LABELS[t.payment_method] ?? t.payment_method}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className={cn('font-[IBM_Plex_Mono] text-[12px] font-medium', isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
+                  <p className={cn('sl-num text-[12px]', isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]')}>
                     {isIncome ? '+' : ''}R$ {fmtR$(t.amount)}
                   </p>
                   <p className="text-[10px] text-[var(--sl-t3)]">{t.category?.name ?? (isIncome ? 'Receita' : 'Despesa')}</p>

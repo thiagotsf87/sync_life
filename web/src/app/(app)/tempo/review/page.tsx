@@ -126,14 +126,14 @@ export default function WeeklyReviewPage() {
           <div className="px-4 pb-[calc(68px+16px)]">
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-8 text-center mt-2">
               <Crown size={32} className="mx-auto mb-3 text-[#D9962E]" />
-              <h2 className="font-[Space_Grotesk] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Recurso PRO</h2>
+              <h2 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)] mb-2">Recurso PRO</h2>
               <p className="text-[12px] text-[var(--sl-t2)] mb-4 leading-relaxed">
                 Analise sua semana com métricas de foco e distribuição. Disponível no plano PRO.
               </p>
               <button
                 onClick={() => router.push('/configuracoes/plano')}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] font-semibold text-[13px] text-white"
-                style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
+                style={{ background: 'var(--sl-em)' }}
               >
                 <Crown size={14} /> Assinar PRO
               </button>
@@ -167,14 +167,14 @@ export default function WeeklyReviewPage() {
             >
               <ArrowLeft size={16} /> Tempo
             </button>
-            <h1 className="font-[Space_Grotesk] font-extrabold text-xl flex-1 text-[var(--sl-t1)]">
+            <h1 className="font-[Syne] font-extrabold text-xl flex-1 text-[var(--sl-t1)]">
               📋 Review Semanal
             </h1>
           </div>
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center max-w-[480px] mx-auto">
             <Crown size={40} className="mx-auto mb-4 text-[#D9962E]" />
-            <h2 className="font-[Space_Grotesk] font-bold text-lg text-[var(--sl-t1)] mb-2">
-              Review Semanal — Recurso PRO
+            <h2 className="font-[Syne] font-bold text-lg text-[var(--sl-t1)] mb-2">
+              Review Semanal · Recurso PRO
             </h2>
             <p className="text-[13px] text-[var(--sl-t2)] mb-6 leading-relaxed">
               Analise sua semana com distribuição por módulo, tarefas pendentes e métricas de foco. Disponível no plano PRO.
@@ -182,7 +182,7 @@ export default function WeeklyReviewPage() {
             <button
               onClick={() => router.push('/configuracoes/plano')}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] font-semibold text-[13px] text-white hover:opacity-90 transition-opacity"
-              style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
+              style={{ background: 'var(--sl-em)' }}
             >
               <Crown size={14} /> Assinar PRO
             </button>
@@ -218,7 +218,7 @@ export default function WeeklyReviewPage() {
             <div className="flex items-center gap-4">
               <div>
                 <p
-                  className="font-[Space_Grotesk] font-extrabold text-[36px] leading-none"
+                  className="font-[Syne] font-extrabold text-[36px] leading-none"
                   style={{ color: completionPct >= 75 ? '#0F766E' : completionPct >= 50 ? '#D9962E' : '#DB6478' }}
                 >
                   {completionPct}%
@@ -268,8 +268,8 @@ export default function WeeklyReviewPage() {
           {/* Pending events */}
           {pendingEvents.length > 0 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4">
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-3">
-                📌 Pendentes ({pendingEvents.length})
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-3 inline-flex items-center gap-2">
+                <CheckSquare size={14} className="text-[#3CA0B5]" /> Pendentes ({pendingEvents.length})
               </h2>
               <div className="flex flex-col gap-2">
                 {pendingEvents.slice(0, 5).map(ev => (
@@ -341,7 +341,7 @@ export default function WeeklyReviewPage() {
               Semana {weekOfYear} · {formatWeekLabel(weekStart)}
             </p>
             <h2
-              className="font-[Space_Grotesk] font-extrabold text-3xl"
+              className="font-[Syne] font-extrabold text-3xl"
               style={{
                 color: completionPct >= 75
                   ? '#0F766E'
@@ -451,8 +451,8 @@ export default function WeeklyReviewPage() {
           {/* Module distribution chart */}
           {chartData.length > 0 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-4">
-                📊 Distribuição por Tipo
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-4 inline-flex items-center gap-2">
+                <BarChart3 size={15} className="text-[#3CA0B5]" /> Distribuição por tipo
               </h2>
               <div className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -490,8 +490,8 @@ export default function WeeklyReviewPage() {
           {/* Sessions list */}
           {sessions.length > 0 && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-3">
-                ⏱ Sessões de Foco
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-3 inline-flex items-center gap-2">
+                <Clock size={15} className="text-[#3CA0B5]" /> Sessões de foco
               </h2>
               <div className="flex flex-col gap-2">
                 {sessions.slice(0, 5).map(s => (
@@ -503,7 +503,7 @@ export default function WeeklyReviewPage() {
                       <Clock size={14} className="text-[#3CA0B5]" />
                       <span className="text-[12px] text-[var(--sl-t1)]">{s.date}</span>
                     </div>
-                    <span className="font-[IBM_Plex_Mono] text-[12px] font-bold text-[#3CA0B5]">
+                    <span className="sl-num text-[12px] text-[#3CA0B5]">
                       {s.duration_minutes}min
                     </span>
                   </div>
@@ -516,15 +516,17 @@ export default function WeeklyReviewPage() {
         {/* Right: Pending tasks */}
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 h-fit sl-fade-up transition-colors hover:border-[var(--sl-border-h)]">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
-              📌 Pendentes ({pendingEvents.length})
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] inline-flex items-center gap-2">
+              <CheckSquare size={15} className="text-[#3CA0B5]" /> Pendentes ({pendingEvents.length})
             </h2>
           </div>
 
           {pendingEvents.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-3xl mb-2">🎉</p>
-              <p className="text-[13px] text-[var(--sl-t2)]">Nenhuma tarefa pendente!</p>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 bg-[rgba(15,118,110,0.12)] text-[var(--sl-em)]">
+                <CheckSquare size={22} />
+              </div>
+              <p className="text-[13px] text-[var(--sl-t2)]">Nenhuma tarefa pendente</p>
             </div>
           ) : (
             <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto">

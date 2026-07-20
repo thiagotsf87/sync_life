@@ -105,7 +105,7 @@ export default function PassaportePage() {
                     </div>
                     <div>
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em]">Continentes</div>
-                      <div className="font-[IBM_Plex_Mono] text-[22px] font-medium mt-[2px]">
+                      <div className="sl-num-strong text-[22px] mt-[2px]">
                         {passport?.continents ?? 0} <span className="text-[13px] text-[var(--sl-t3)]">/ 7</span>
                       </div>
                     </div>
@@ -123,7 +123,7 @@ export default function PassaportePage() {
                     </div>
                     <div>
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em]">Total Viagens</div>
-                      <div className="font-[IBM_Plex_Mono] text-[22px] font-medium mt-[2px]">{trips.length}</div>
+                      <div className="sl-num-strong text-[22px] mt-[2px]">{trips.length}</div>
                     </div>
                   </div>
                   <div className="text-[12px] text-[var(--sl-t3)]">
@@ -139,7 +139,7 @@ export default function PassaportePage() {
                     </div>
                     <div>
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em]">Dias no Exterior</div>
-                      <div className="font-[IBM_Plex_Mono] text-[22px] font-medium mt-[2px]">{totalDays}</div>
+                      <div className="sl-num-strong text-[22px] mt-[2px]">{totalDays}</div>
                     </div>
                   </div>
                   <div className="text-[12px] text-[var(--sl-t3)]">Media: {avgDays} dias/viagem</div>
@@ -153,7 +153,7 @@ export default function PassaportePage() {
                     </div>
                     <div>
                       <div className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-[.08em]">Memorias</div>
-                      <div className="font-[IBM_Plex_Mono] text-[22px] font-medium mt-[2px]">{memoriesCount}</div>
+                      <div className="sl-num-strong text-[22px] mt-[2px]">{memoriesCount}</div>
                     </div>
                   </div>
                   <div className="text-[12px] text-[var(--sl-t3)]">de {completedTrips.length} viagens concluidas</div>
@@ -162,7 +162,7 @@ export default function PassaportePage() {
             </div>
 
             {/* Continents Section */}
-            <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-3">Continentes</h2>
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-3">Continentes</h2>
             <div className="grid grid-cols-7 gap-[10px] mb-7 sl-fade-up sl-delay-3">
               {(passport?.continentProgress ?? []).map(cont => {
                 const isVisited = cont.visited > 0
@@ -184,7 +184,7 @@ export default function PassaportePage() {
                     </div>
                     <div className="font-semibold text-[12.5px] mb-[2px]">{cont.name}</div>
                     <div className={`text-[11px] font-semibold ${isVisited ? 'text-[#C76795]' : 'text-[var(--sl-t3)]'}`}>
-                      {isVisited ? `${cont.visited} paises` : '\u2014'}
+                      {isVisited ? <><span className="sl-num">{cont.visited}</span> pa\u00edses</> : '\u00b7\u00b7'}
                     </div>
                   </div>
                 )
@@ -194,15 +194,15 @@ export default function PassaportePage() {
                 <div className="w-[40px] h-[40px] rounded-[12px] flex items-center justify-center mx-auto mb-[10px]" style={{ background: 'var(--sl-s2)' }}>
                   <Globe size={20} className="text-[var(--sl-t3)]" />
                 </div>
-                <div className="font-semibold text-[12.5px] text-[var(--sl-t3)] mb-[2px]">Antartica</div>
-                <div className="text-[11px] text-[var(--sl-t3)]">{'\u2014'}</div>
+                <div className="font-semibold text-[12.5px] text-[var(--sl-t3)] mb-[2px]">Ant\u00e1rtida</div>
+                <div className="text-[11px] text-[var(--sl-t3)]">\u00b7\u00b7</div>
               </div>
             </div>
 
             {/* Countries Visited */}
             {passport && passport.countriesList.length > 0 && (
               <>
-                <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-4">Paises Visitados</h2>
+                <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[14px] sl-fade-up sl-delay-4">Paises Visitados</h2>
                 <div className="flex flex-wrap gap-2 sl-fade-up sl-delay-4">
                   {passport.countriesList.map(c => (
                     <div
@@ -213,7 +213,7 @@ export default function PassaportePage() {
                       <div>
                         <div className="font-semibold">{c.name}</div>
                         <div className="text-[11px] text-[var(--sl-t3)]">
-                          {c.visits} viagem{c.visits > 1 ? 'ns' : ''}
+                          <span className="sl-num">{c.visits}</span> viagem{c.visits > 1 ? 'ns' : ''}
                         </div>
                       </div>
                     </div>

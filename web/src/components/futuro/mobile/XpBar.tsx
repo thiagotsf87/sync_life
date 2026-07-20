@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useXP } from '@/hooks/use-xp'
 import { FUTURO_PRIMARY_BORDER, FUTURO_GRAD } from '@/lib/futuro-colors'
@@ -20,14 +20,14 @@ export function XpBar() {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
           <span
-            className="font-[Space_Grotesk] text-[10px] font-extrabold text-white px-2 py-[2px] rounded-lg"
+            className="font-[Syne] text-[10px] font-extrabold text-white px-2 py-[2px] rounded-lg"
             style={{ background: FUTURO_GRAD }}
           >
             Nível {level}
           </span>
           <span className="text-[11px] text-[var(--sl-t2)]">{levelTitle}</span>
         </div>
-        <span className="text-[11px] font-[IBM_Plex_Mono] font-medium text-[var(--sl-t2)]">
+        <span className="text-[11px] sl-num-strong font-medium text-[var(--sl-t2)]">
           {totalXP.toLocaleString('pt-BR')} XP
         </span>
       </div>
@@ -45,9 +45,9 @@ export function XpBar() {
 
       {/* XP label */}
       <p className="text-[10px] text-[var(--sl-t2)] text-right mt-[3px]">
-        <span className="font-[IBM_Plex_Mono]">{totalXP.toLocaleString('pt-BR')}</span>
+        <span className="sl-num-strong">{totalXP.toLocaleString('pt-BR')}</span>
         {' / '}
-        <span className="font-[IBM_Plex_Mono]">{nextLevelXP.toLocaleString('pt-BR')}</span>
+        <span className="sl-num-strong">{nextLevelXP.toLocaleString('pt-BR')}</span>
         {' XP para Nível '}
         {level + 1}
       </p>

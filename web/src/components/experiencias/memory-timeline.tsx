@@ -43,7 +43,7 @@ export function MemoryTimeline({
             <div className="text-[11px] text-[var(--sl-t3)] font-semibold uppercase tracking-[.08em] mb-2">
               {mem.date}
             </div>
-            <div className="font-[Space_Grotesk] font-bold text-[16px] mb-1">
+            <div className="font-[Syne] font-bold text-[16px] mb-1">
               {mem.title}
             </div>
             <div className="flex items-center gap-1.5 text-[12px] text-[var(--sl-t2)] mb-[10px]">

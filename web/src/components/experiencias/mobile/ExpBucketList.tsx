@@ -29,7 +29,7 @@ const BADGE_STYLES: Record<string, { bg: string; color: string }> = {
 export function ExpBucketList({ title, items }: ExpBucketListProps) {
   return (
     <div>
-      <p className="font-[Space_Grotesk] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 pb-2 mt-1">
+      <p className="font-[Syne] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 pb-2 mt-1">
         {title}
       </p>
       <div style={{ background: 'var(--sl-s1)', borderTop: '1px solid var(--sl-border)', borderBottom: '1px solid var(--sl-border)' }}>

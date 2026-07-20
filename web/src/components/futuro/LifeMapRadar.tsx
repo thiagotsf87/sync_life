@@ -105,7 +105,7 @@ export function LifeMapRadar({
           )}
         </div>
         <div className="text-right">
-          <p className="font-[Space_Grotesk] font-extrabold text-2xl leading-none" style={{ color: overallColor }}>
+          <p className="font-[Syne] font-extrabold text-2xl leading-none" style={{ color: overallColor }}>
             {overallScore}
           </p>
           <p className="text-[9px] uppercase tracking-widest text-[var(--sl-t3)]">score geral</p>
@@ -144,7 +144,7 @@ export function LifeMapRadar({
         </ResponsiveContainer>
       </div>
 
-      {/* Score badges — only in full (non-compact) mode */}
+      {/* Score badges · only in full (non-compact) mode */}
       {!compact && (
         <div className="grid grid-cols-2 gap-2 max-sm:grid-cols-1">
           {dimensions.map(dim => (

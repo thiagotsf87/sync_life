@@ -22,13 +22,13 @@ export function ProjecaoSaldo({ saldoMes, totalGasto, naoAlocado, taxaPoupanca, 
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-5 mb-3 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-4">
-        <p className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">Projeção de Saldo — Timeline</p>
+        <p className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Projeção de Saldo · Timeline</p>
         <button onClick={() => router.push('/financas/planejamento')} className="text-[11px] text-[#0F766E] hover:underline flex items-center gap-1">
           Ver planejamento <ExternalLink size={9} />
         </button>
       </div>
 
-      <div className="flex items-center gap-4 px-4 py-3 rounded-[12px] mb-4" style={{ background: 'linear-gradient(135deg,rgba(15,118,110,.08),rgba(0,85,255,.06))', border: '1px solid rgba(15,118,110,.18)' }}>
+      <div className="flex items-center gap-4 px-4 py-3 rounded-[12px] mb-4" style={{ background: 'var(--sl-em-soft)', border: '1px solid var(--sl-border-em)' }}>
         <div className="flex-1">
           <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-t3)] mb-1">Saldo do mês (acumulado)</p>
           <p className="font-[IBM_Plex_Mono] text-[28px] font-medium text-[var(--sl-t1)] leading-none">
@@ -55,7 +55,7 @@ export function ProjecaoSaldo({ saldoMes, totalGasto, naoAlocado, taxaPoupanca, 
       {/* Timeline */}
       <div className="relative">
         <div className="absolute top-[18px] left-[10%] right-[10%] h-0.5 bg-[var(--sl-s3)] rounded">
-          <div className="h-full rounded" style={{ width: '20%', background: 'linear-gradient(90deg,#0F766E,#0B2D34)' }} />
+          <div className="h-full rounded" style={{ width: '20%', background: 'var(--sl-em)' }} />
         </div>
         <div className="flex gap-2">
           {PROJ_MESES.map(m => (

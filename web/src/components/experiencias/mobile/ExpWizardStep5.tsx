@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 
 import { EXP_PRIMARY, EXP_PRIMARY_LIGHT, EXP_PRIMARY_BORDER, EXP_GRAD } from '@/lib/exp-colors'
 import { TRIP_XP } from '@/lib/exp-xp-mock'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface ExpWizardStep5Props {
   tripName: string
@@ -26,7 +27,7 @@ const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', '
 
 function formatRange(start: Date | null, end: Date | null): string {
   if (!start || !end) return '—'
-  return `${start.getDate()} — ${end.getDate()} ${MONTHS[end.getMonth()]} ${end.getFullYear()}`
+  return `${start.getDate()} · ${end.getDate()} ${MONTHS[end.getMonth()]} ${end.getFullYear()}`
 }
 
 function calcDays(start: Date | null, end: Date | null): number {
@@ -55,7 +56,7 @@ export function ExpWizardStep5({
         <p className="text-[11px] font-bold uppercase tracking-[0.5px] mb-[6px]" style={{ color: EXP_PRIMARY_LIGHT }}>
           ⚡ XP TOTAL DESTA MISSÃO
         </p>
-        <p className="font-[IBM_Plex_Mono] text-[36px] font-bold" style={{
+        <p className="sl-num-strong text-[36px] font-bold" style={{
           background: EXP_GRAD,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -79,7 +80,7 @@ export function ExpWizardStep5({
           border: `1px solid ${EXP_PRIMARY_BORDER}`,
         }}
       >
-        <p className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)] mb-3">
+        <p className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)] mb-3">
           🗾 Missão {tripName}
         </p>
         <div className="flex flex-col gap-[10px]">
@@ -107,8 +108,8 @@ export function ExpWizardStep5({
           <div className="h-[1px]" style={{ background: 'var(--sl-border)' }} />
           <div className="flex justify-between">
             <span className="text-[12px] text-[var(--sl-t2)]">Missão financeira</span>
-            <span className="font-[IBM_Plex_Mono] text-[13px] font-semibold text-[var(--sl-t1)]">
-              R$ {budget.toLocaleString('pt-BR')}
+            <span className="sl-num-strong text-[13px] font-semibold text-[var(--sl-t1)]">
+              {fmtBRL(budget)}
             </span>
           </div>
         </div>
@@ -123,7 +124,7 @@ export function ExpWizardStep5({
         <div className="flex gap-[6px] flex-wrap">
           {syncFinance && (
             <span className="inline-flex items-center gap-[3px] px-2 py-[3px] rounded-[10px] text-[10px] font-semibold"
-              style={{ background: 'rgba(15,118,110,0.12)', color: '#0F766E' }}>
+              style={{ background: 'rgba(15,118,110,0.12)', color: 'var(--sl-em)' }}>
               ✓ Finanças · +10 XP/aporte
             </span>
           )}

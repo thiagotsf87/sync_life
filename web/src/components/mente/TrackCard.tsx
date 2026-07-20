@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils'
 import type { StudyTrack, TrackCategory, TrackStatus } from '@/hooks/use-mente'
 import { CATEGORY_LABELS, STATUS_LABELS } from '@/hooks/use-mente'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface TrackCardProps {
   track: StudyTrack
@@ -57,7 +58,7 @@ export function TrackCard({ track, onClick, compact = false }: TrackCardProps) {
       <div className="flex items-start gap-3 mb-3">
         <span className="text-2xl shrink-0">{getCategoryEmoji(track.category as TrackCategory)}</span>
         <div className="flex-1 min-w-0">
-          <p className="font-[Space_Grotesk] font-bold text-[14px] text-[var(--sl-t1)] leading-tight truncate">
+          <p className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] leading-tight truncate">
             {track.name}
           </p>
           <div className="flex items-center gap-2 mt-0.5">
@@ -111,7 +112,7 @@ export function TrackCard({ track, onClick, compact = false }: TrackCardProps) {
           )}
           {track.cost && (
             <span className="text-[11px] text-[var(--sl-t3)]">
-              💰 {track.cost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              💰 {fmtBRL(track.cost)}
             </span>
           )}
         </div>

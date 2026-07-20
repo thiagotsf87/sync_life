@@ -79,7 +79,7 @@ export function HealthAIRow({
 
           {/* Pills */}
           <div className="flex-1 min-w-0">
-            <p className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">{title}</p>
+            <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">{title}</p>
             <div className="flex flex-wrap gap-1.5">
               {pills.map((pill, i) => {
                 const s = PILL_STYLES[pill.type]

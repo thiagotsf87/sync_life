@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { Send, Bot, User, Sparkles } from 'lucide-react'
+import { Send, Bot, User, Sparkles, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useHealthProfile } from '@/hooks/use-corpo'
 import { useTransactions } from '@/hooks/use-transactions'
@@ -161,21 +161,26 @@ function CoachChat() {
       className="max-w-[900px] mx-auto px-6 py-7 pb-4 flex flex-col overflow-hidden"
       style={{ height: 'calc(100dvh - 180px)', minHeight: 400 }}
     >
-      {/* Topbar */}
-      <div className="flex items-center gap-3 mb-5 shrink-0">
-        <h1 className="font-[Space_Grotesk] font-extrabold text-xl flex-1 text-sl-grad">
-          Coach IA
-        </h1>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0F766E]/10 border border-[#0F766E]/20">
-          <Sparkles size={11} className="text-[#0F766E]" />
-          <span className="text-[10px] font-bold text-[#0F766E]">Cross-Module</span>
+      {/* TopBar */}
+      <header className="flex items-end justify-between gap-6 mb-5 shrink-0">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-1.5">
+            COACH IA · CROSS-MODULE
+          </p>
+          <h1 className="font-[Syne] font-bold text-3xl tracking-tight text-[var(--sl-t1)]">
+            Coach de Vida
+          </h1>
         </div>
-      </div>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--sl-em-soft)] border border-[var(--sl-border-em)]">
+          <Sparkles size={11} className="text-[var(--sl-em)]" />
+          <span className="text-[10px] font-bold text-[var(--sl-em)]">Cross-Module</span>
+        </div>
+      </header>
 
       {/* Disclaimer */}
-      <div className="shrink-0 mb-4 flex items-start gap-2.5 p-3 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[11px] text-[var(--sl-t3)]">
-        <Sparkles size={13} className="shrink-0 mt-0.5 text-[#D9962E]" />
-        <span>O Coach IA analisa seus dados de todos os módulos — finanças, metas, saúde, patrimônio — para dar recomendações personalizadas. Para questões médicas, consulte um profissional.</span>
+      <div className="shrink-0 mb-4 flex items-start gap-2.5 p-3 rounded-xl bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[12px] text-[var(--sl-t3)] font-[DM_Sans]">
+        <AlertCircle size={13} className="shrink-0 mt-0.5 text-[var(--sl-warning)]" />
+        <span>O Coach IA analisa seus dados de todos os módulos: finanças, metas, saúde, patrimônio. Para questões médicas, consulte um profissional.</span>
       </div>
 
       {/* Messages area */}
@@ -183,25 +188,24 @@ function CoachChat() {
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center flex-1 gap-6">
             <div className="flex flex-col items-center gap-3 text-center">
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
-                   style={{ background: 'linear-gradient(135deg, rgba(15,118,110,0.15), rgba(0,85,255,0.1))' }}>
-                <Bot size={28} className="text-[#0F766E]" />
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-[var(--sl-em-soft)] border border-[var(--sl-border-em)]">
+                <Bot size={28} className="text-[var(--sl-em)]" />
               </div>
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+              <h2 className="font-[Syne] font-bold text-[16px] text-[var(--sl-t1)]">
                 Coach de Vida SyncLife
               </h2>
-              <p className="text-[12px] text-[var(--sl-t2)] max-w-[320px]">
+              <p className="font-[DM_Sans] text-[13px] text-[var(--sl-t2)] max-w-[340px]">
                 Analiso seus dados de finanças, metas, saúde e patrimônio para orientações personalizadas.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 w-full max-w-[500px]">
+            <div className="grid grid-cols-2 gap-2 w-full max-w-[520px] max-sm:grid-cols-1">
               {SUGGESTED_PROMPTS.map((prompt) => (
                 <button
                   key={prompt}
                   onClick={() => sendMessage(prompt)}
                   className="text-left p-3 rounded-xl bg-[var(--sl-s1)] border border-[var(--sl-border)]
-                             text-[11px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]
+                             font-[DM_Sans] text-[12px] text-[var(--sl-t2)] hover:text-[var(--sl-t1)]
                              hover:border-[var(--sl-border-h)] transition-colors"
                 >
                   {prompt}
@@ -220,15 +224,14 @@ function CoachChat() {
                 )}
               >
                 {msg.role === 'assistant' && (
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                       style={{ background: 'linear-gradient(135deg, rgba(15,118,110,0.15), rgba(0,85,255,0.1))' }}>
-                    <Bot size={14} className="text-[#0F766E]" />
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 bg-[var(--sl-em-soft)] border border-[var(--sl-border-em)]">
+                    <Bot size={14} className="text-[var(--sl-em)]" />
                   </div>
                 )}
                 <div className={cn(
-                  'max-w-[75%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed',
+                  'max-w-[75%] rounded-2xl px-4 py-3 font-[DM_Sans] text-[13px] leading-relaxed',
                   msg.role === 'user'
-                    ? 'bg-[#0F766E] text-white rounded-tr-sm'
+                    ? 'bg-[var(--sl-em)] text-white rounded-tr-sm'
                     : 'bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t1)] rounded-tl-sm'
                 )}>
                   {msg.content || (
@@ -240,8 +243,8 @@ function CoachChat() {
                   )}
                 </div>
                 {msg.role === 'user' && (
-                  <div className="w-7 h-7 rounded-lg bg-[#0F766E]/15 flex items-center justify-center shrink-0 mt-0.5">
-                    <User size={14} className="text-[#0F766E]" />
+                  <div className="w-7 h-7 rounded-lg bg-[var(--sl-em-soft)] flex items-center justify-center shrink-0 mt-0.5">
+                    <User size={14} className="text-[var(--sl-em)]" />
                   </div>
                 )}
               </div>
@@ -252,7 +255,7 @@ function CoachChat() {
       </div>
 
       {/* Input */}
-      <div className="shrink-0 flex items-end gap-3 p-3 rounded-2xl bg-[var(--sl-s1)] border border-[var(--sl-border)]">
+      <div className="shrink-0 flex items-end gap-3 p-3 rounded-2xl bg-[var(--sl-s1)] border border-[var(--sl-border)] hover:border-[var(--sl-border-h)] transition-colors">
         <textarea
           ref={inputRef}
           value={input}
@@ -260,7 +263,7 @@ function CoachChat() {
           onKeyDown={handleKeyDown}
           placeholder="Pergunte sobre finanças, metas, saúde, carreira..."
           rows={1}
-          className="flex-1 resize-none bg-transparent text-[13px] text-[var(--sl-t1)]
+          className="flex-1 resize-none bg-transparent font-[DM_Sans] text-[13px] text-[var(--sl-t1)]
                      placeholder:text-[var(--sl-t3)] outline-none max-h-[120px] overflow-y-auto"
           style={{ lineHeight: '1.5' }}
         />
@@ -268,8 +271,7 @@ function CoachChat() {
           onClick={() => sendMessage(input)}
           disabled={!input.trim() || isLoading}
           className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0
-                     text-white disabled:opacity-40 transition-opacity hover:opacity-90"
-          style={{ background: 'linear-gradient(135deg, #0F766E, #0B2D34)' }}
+                     text-white disabled:opacity-40 transition-opacity hover:opacity-90 bg-[var(--sl-em)]"
         >
           <Send size={14} />
         </button>

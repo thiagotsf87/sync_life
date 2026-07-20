@@ -11,7 +11,7 @@ import {
 import { toast } from 'sonner'
 import { jornadaLabel } from '@/lib/jornada-labels'
 
-import { Plus } from 'lucide-react'
+import { Plus, Activity } from 'lucide-react'
 import { CorpoTabDashboard } from './mobile/CorpoTabDashboard'
 import { CorpoTabAtividades } from './mobile/CorpoTabAtividades'
 import { CorpoTabPeso } from './mobile/CorpoTabPeso'
@@ -110,8 +110,8 @@ export function CorpoMobile() {
         {/* Header skeleton */}
         <div className="flex items-center justify-between px-5 pt-14 pb-3">
           <div className="flex items-center gap-2">
-            <span className="text-[20px]">🏃</span>
-            <span className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">Corpo</span>
+            <Activity size={20} className="text-[var(--sl-t2)]" />
+            <span className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">Corpo</span>
           </div>
           <div className="h-7 w-20 rounded-full bg-[var(--sl-s2)] animate-pulse" />
         </div>
@@ -200,7 +200,7 @@ export function CorpoMobile() {
           <p className="text-[12px] font-semibold mb-[2px]" style={{ color: CORPO_COLOR }}>
             ✦ {jornadaLabel('corpo', 'module', 'Corpo')}
           </p>
-          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
+          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
             Seu corpo hoje
           </h1>
         </div>

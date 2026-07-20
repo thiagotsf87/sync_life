@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { Loader2 } from 'lucide-react'
+import { useState, useCallback, useMemo } from 'react'
+import { Loader2, Sparkles, Send, Search } from 'lucide-react'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface AiConsultantProps {
   mesAno: string
@@ -22,6 +23,73 @@ export function AiConsultant({
   const [aiQuery, setAiQuery] = useState('')
   const [aiResponse, setAiResponse] = useState('')
   const [aiLoading, setAiLoading] = useState(false)
+
+  const saldoProjetado = useMemo(() => {
+    const saldo = receitasMes - totalGasto
+    // simple projection: assume same daily burn rate for remaining days
+    if (todayD <= 0) return saldo
+    const dailyExp = totalGasto / Math.max(todayD, 1)
+    const remainingExp = dailyExp * daysLeftInMonth
+    return saldo - remainingExp
+  }, [receitasMes, totalGasto, daysLeftInMonth, todayD])
+
+  // Find category in alert (>70%) for personalized insight, fallback to Lazer mock
+  const alertBudget = activeBudgets.find(b => b.pct > 70 && b.pct < 100)
+  const overBudget = activeBudgets.find(b => b.pct >= 100)
+
+  const insights = useMemo(() => {
+    const alertaText = overBudget
+      ? <>
+          <strong className="text-[var(--sl-t1)]">{overBudget.category?.name ?? 'Categoria'} estourou</strong> o limite ({overBudget.pct}%). Revise as próximas semanas.
+        </>
+      : alertBudget
+        ? <>
+            <strong className="text-[var(--sl-t1)]">{alertBudget.category?.name ?? 'Categoria'} atingiu {alertBudget.pct}%</strong> do limite, reduza esta semana para não estourar.
+          </>
+        : <>
+            <strong className="text-[var(--sl-t1)]">Lazer atingiu 78%</strong> do limite de R$ 800, reduza cerca de R$ 60 essa semana para não estourar.
+          </>
+
+    return [
+      {
+        id: 'alerta',
+        eyebrow: 'ALERTA',
+        color: 'var(--sl-warning)',
+        text: alertaText,
+      },
+      {
+        id: 'acao',
+        eyebrow: 'AÇÃO RECOMENDADA',
+        color: 'var(--sl-em)',
+        text: (
+          <>
+            Reserve <strong className="text-[var(--sl-t1)]">{fmtBRL(220)}</strong> hoje na meta Reserva de emergência. Mantém ritmo +18% sobre o mês passado.
+          </>
+        ),
+      },
+      {
+        id: 'conquista',
+        eyebrow: 'CONQUISTA',
+        color: 'var(--sl-success)',
+        text: (
+          <>
+            Você já economizou <strong className="text-[var(--sl-t1)]">{fmtBRL(320)}</strong> a mais que o mês passado. 3º mês consecutivo positivo.
+          </>
+        ),
+      },
+      {
+        id: 'previsao',
+        eyebrow: 'PREVISÃO',
+        color: 'var(--sl-info)',
+        text: (
+          <>
+            Se seguir o ritmo atual, fecha o mês com{' '}
+            <strong className="text-[var(--sl-t1)]">{fmtBRL(Math.max(0, saldoProjetado))}</strong> de saldo.
+          </>
+        ),
+      },
+    ]
+  }, [alertBudget, overBudget, saldoProjetado])
 
   const handleAiAsk = useCallback(async () => {
     const q = aiQuery.trim()
@@ -98,79 +166,68 @@ export function AiConsultant({
 
   return (
     <div
-      className="relative overflow-hidden rounded-[14px] px-5 py-[18px] mb-3"
-      style={{ background: 'linear-gradient(135deg,rgba(15,118,110,.10),rgba(0,85,255,.10))', border: '1px solid rgba(15,118,110,.28)' }}
+      className="relative overflow-hidden rounded-[22px] px-6 py-5 mb-3 bg-[var(--sl-s-hero)] border border-[var(--sl-border)]"
     >
       <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(15,118,110,.14),transparent 70%)' }} />
-      <div className="absolute -bottom-10 left-1/3 w-44 h-44 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(0,85,255,.10),transparent 70%)' }} />
 
       <div className="flex items-center gap-3 mb-4 relative">
-        <div className="w-[38px] h-[38px] rounded-[12px] flex items-center justify-center text-lg shrink-0" style={{ background: 'linear-gradient(135deg,#0F766E,#0B2D34)', boxShadow: '0 4px 16px rgba(15,118,110,.35)' }}>
-          💡
+        <div className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 border border-[var(--sl-border-em)]" style={{ background: 'var(--sl-em-soft)', color: 'var(--sl-em)' }}>
+          <Sparkles size={18} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-[Space_Grotesk] font-extrabold text-[15px] text-[var(--sl-t1)] tracking-tight">Consultor Financeiro IA</p>
-          <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Análise personalizada · {mesAno} · atualizado agora</p>
+          <p className="font-[Space_Grotesk] font-semibold text-[18px] text-[var(--sl-t1)] tracking-tight leading-tight">Consultor financeiro IA</p>
+          <p className="text-[11.5px] text-[var(--sl-t3)] mt-0.5">Análise personalizada · {mesAno} · atualizado agora</p>
         </div>
-        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-bold text-[#0F766E] shrink-0" style={{ background: 'rgba(15,118,110,.12)', border: '1px solid rgba(15,118,110,.20)' }}>
-          <div className="w-1.5 h-1.5 rounded-full bg-[#0F766E] animate-pulse" />
-          4 insights hoje
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold text-[var(--sl-em)] shrink-0 border border-[var(--sl-border-em)]" style={{ background: 'var(--sl-em-soft)' }}>
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--sl-em)] animate-pulse" />
+          Atualizado há 4 min
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mb-4 max-sm:grid-cols-1 relative">
-        {[
-          { type: 'urgent', ico: '🔥', tag: 'Alerta', border: 'rgba(219,100,120,.25)', bg: 'rgba(219,100,120,.04)', tagColor: '#DB6478', text: <><strong>Lazer atingiu 82%</strong> do orçamento. Com {daysLeftInMonth} dias restantes, risco de estouro.</> },
-          { type: 'action', ico: '🎯', tag: 'Ação recomendada', border: 'rgba(0,85,255,.20)', bg: 'rgba(0,85,255,.04)', tagColor: '#0B2D34', text: <>Meta <strong>Reserva de emergência</strong> está abaixo do ritmo. Considere um aporte extra este mês.</> },
-          { type: 'positive', ico: '🌟', tag: 'Conquista', border: 'rgba(15,118,110,.20)', bg: 'rgba(15,118,110,.04)', tagColor: '#0F766E', text: <>Taxa de poupança em <strong>{taxaPoupanca}%</strong>{taxaPoupanca >= 30 ? ' — acima da meta de 30%! Continue!' : ' — tente chegar a 30% este mês.'}</> },
-          { type: 'heads-up', ico: '📅', tag: 'Previsão', border: 'rgba(217,150,46,.20)', bg: 'rgba(217,150,46,.04)', tagColor: '#D9962E', text: <>Faltam <strong>{daysLeftInMonth} dias</strong> no mês. Revise seus orçamentos e planeje os gastos restantes.</> },
-        ].map(ins => (
+      {/* 4 insight tiles — grid 2x2 (G-03 compliant: borderLeft accent, no gradient) */}
+      <div className="grid grid-cols-2 gap-3 mb-4 max-sm:grid-cols-1">
+        {insights.map((insight) => (
           <div
-            key={ins.type}
-            className="flex gap-2.5 px-3 py-3 rounded-[11px] cursor-default group relative overflow-hidden transition-all duration-200"
-            style={{ border: `1px solid ${ins.border}`, background: ins.bg }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = `0 2px 16px ${ins.border}` }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}
+            key={insight.id}
+            className="rounded-[12px] p-3.5 bg-[var(--sl-s1)] border border-[var(--sl-border)]"
+            style={{ borderLeft: `2px solid ${insight.color}` }}
           >
-            <span className="text-[20px] shrink-0 leading-none mt-0.5">{ins.ico}</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-[9px] font-bold uppercase tracking-[0.08em] mb-1" style={{ color: ins.tagColor }}>{ins.tag}</p>
-              <p className="text-[12px] text-[var(--sl-t2)] leading-snug">{ins.text}</p>
+            <p className="text-[9.5px] font-bold uppercase tracking-[0.12em] mb-1.5" style={{ color: insight.color }}>
+              {insight.eyebrow}
+            </p>
+            <div className="text-[12px] text-[var(--sl-t2)] leading-snug">
+              {insight.text}
             </div>
-            <div className="absolute bottom-0 left-[10%] right-[10%] h-0.5 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: ins.tagColor, boxShadow: `0 0 8px ${ins.tagColor}` }} />
           </div>
         ))}
       </div>
 
-      <div
-        className="flex items-center gap-2 px-3 py-2.5 rounded-[12px] relative"
-        style={{ background: 'rgba(255,255,255,.04)', border: '1px solid rgba(15,118,110,.15)' }}
-      >
-        <span className="text-sm opacity-70">💬</span>
+      <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-[12px] relative bg-[var(--sl-s1)] border border-[var(--sl-border)]">
+        <Search size={14} className="text-[var(--sl-t3)] shrink-0" />
         <input
           type="text"
           value={aiQuery}
           onChange={e => setAiQuery(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') handleAiAsk() }}
-          placeholder='Pergunte algo... ex: "Quanto gastei em lazer este mês?"'
+          placeholder='Pergunte algo, ex: "Quanto posso gastar em Lazer essa semana?"'
           className="flex-1 bg-transparent border-none outline-none text-[13px] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)]"
         />
         <button
           onClick={handleAiAsk}
           disabled={aiLoading || !aiQuery.trim()}
-          className="shrink-0 px-3 py-1.5 rounded-[8px] border-none text-white text-[12px] font-bold transition-opacity hover:opacity-85 disabled:opacity-50"
-          style={{ background: 'linear-gradient(135deg,#0F766E,#0B2D34)' }}
+          className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[8px] border-none text-[#0B0F14] text-[12px] font-semibold transition-opacity hover:opacity-85 disabled:opacity-50"
+          style={{ background: 'var(--sl-em)' }}
         >
-          {aiLoading ? <Loader2 size={14} className="animate-spin" /> : 'Perguntar'}
+          {aiLoading ? <Loader2 size={12} className="animate-spin" /> : <>Perguntar <Send size={11} /></>}
         </button>
       </div>
 
       {/* AI Response */}
       {aiResponse && (
-        <div className="mt-3 px-4 py-3 rounded-[12px] relative" style={{ background: 'rgba(255,255,255,.03)', border: '1px solid rgba(15,118,110,.12)' }}>
+        <div className="mt-3 px-4 py-3 rounded-[12px] relative bg-[var(--sl-s1)] border border-[var(--sl-border)]">
           <div className="flex items-center gap-1.5 mb-2">
-            <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[#0F766E]">Resposta da IA</span>
-            {aiLoading && <Loader2 size={10} className="animate-spin text-[#0F766E]" />}
+            <span className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--sl-em)]">Resposta da IA</span>
+            {aiLoading && <Loader2 size={10} className="animate-spin text-[var(--sl-em)]" />}
           </div>
           <p className="text-[12px] text-[var(--sl-t2)] leading-relaxed whitespace-pre-wrap">{aiResponse}</p>
         </div>

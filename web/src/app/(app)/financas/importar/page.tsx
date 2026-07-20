@@ -11,10 +11,9 @@ import { SLSelect } from '@/components/ui/sl-select'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { fmtBRL } from '@/lib/format/currency'
 
-function fmtCurrency(v: number): string {
-  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
+const fmtCurrency = (v: number) => fmtBRL(v)
 
 function fmtDate(dateStr: string): string {
   const [y, m, d] = dateStr.split('-')
@@ -123,7 +122,7 @@ export default function ImportarPage() {
       <ModuleHeader
         icon={Upload}
         iconBg="rgba(15,118,110,.08)"
-        iconColor="#0F766E"
+        iconColor="var(--sl-em)"
         title="Importar Extrato"
         subtitle="PDF, CSV (Nubank, Inter, Itaú, Bradesco) ou OFX/QFX"
         className="mb-5"
@@ -142,11 +141,11 @@ export default function ImportarPage() {
           const isPast = i < currentPos
           return (
             <div key={label} className="flex items-center gap-2">
-              {i > 0 && <div className={cn('w-8 h-px', isPast ? 'bg-[#0F766E]' : 'bg-[var(--sl-border)]')} />}
+              {i > 0 && <div className={cn('w-8 h-px', isPast ? 'bg-[var(--sl-em)]' : 'bg-[var(--sl-border)]')} />}
               <div className={cn(
                 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium',
-                isCurrent && 'bg-[rgba(15,118,110,0.12)] text-[#0F766E] font-bold',
-                isPast && !isCurrent && 'text-[#0F766E]',
+                isCurrent && 'bg-[rgba(15,118,110,0.12)] text-[var(--sl-em)] font-bold',
+                isPast && !isCurrent && 'text-[var(--sl-em)]',
                 !isCurrent && !isPast && 'text-[var(--sl-t3)]',
               )}>
                 {isPast && !isCurrent ? <CheckCircle2 size={12} /> : null}
@@ -158,7 +157,7 @@ export default function ImportarPage() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-[rgba(219,100,120,0.06)] border border-[rgba(219,100,120,0.2)] text-[13px] text-[#DB6478]">
+        <div className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-[rgba(219,100,120,0.06)] border border-[rgba(219,100,120,0.2)] text-[13px] text-[var(--sl-danger)]">
           <AlertTriangle size={14} />
           {error}
         </div>
@@ -168,12 +167,12 @@ export default function ImportarPage() {
       {step === 'upload' && (
         <SLCard>
           <div
-            className="border-2 border-dashed border-[var(--sl-border)] rounded-2xl p-12 text-center transition-colors hover:border-[#0F766E]/40 hover:bg-[rgba(15,118,110,0.03)]"
+            className="border-2 border-dashed border-[var(--sl-border)] rounded-2xl p-12 text-center transition-colors hover:border-[var(--sl-em)]/40 hover:bg-[rgba(15,118,110,0.03)]"
             onDrop={handleFileDrop}
             onDragOver={e => e.preventDefault()}
           >
             <Upload size={40} className="mx-auto mb-3 text-[var(--sl-t3)]" />
-            <p className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)] mb-1">
+            <p className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-1">
               Arraste seu arquivo aqui
             </p>
             <p className="text-[12px] text-[var(--sl-t3)] mb-4">
@@ -187,7 +186,7 @@ export default function ImportarPage() {
                 onChange={handleFileSelect}
                 className="sr-only"
               />
-              <span className="inline-block px-6 py-3 rounded-xl bg-[#0F766E] text-white text-[14px] font-bold hover:bg-[#0da876] transition-colors select-none">
+              <span className="inline-block px-6 py-3 rounded-xl bg-[var(--sl-em)] text-white text-[14px] font-bold hover:brightness-110 transition-colors select-none">
                 Selecionar arquivo
               </span>
             </label>
@@ -213,9 +212,9 @@ export default function ImportarPage() {
       {step === 'mapping' && (
         <SLCard>
           <div className="flex items-center gap-2 mb-4">
-            <FileSpreadsheet size={18} className="text-[#0F766E]" />
-            <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
-              Mapear Colunas — {fileName}
+            <FileSpreadsheet size={18} className="text-[var(--sl-em)]" />
+            <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
+              Mapear Colunas · {fileName}
             </p>
           </div>
           <p className="text-[12px] text-[var(--sl-t3)] mb-4">
@@ -257,7 +256,7 @@ export default function ImportarPage() {
             <button
               onClick={applyMapping}
               disabled={!columnMapping?.date || !columnMapping?.description || !columnMapping?.amount}
-              className="px-4 py-2 rounded-lg bg-[#0F766E] text-white text-[12px] font-bold disabled:opacity-40 hover:bg-[#0da876] transition-colors"
+              className="px-4 py-2 rounded-lg bg-[var(--sl-em)] text-white text-[12px] font-bold disabled:opacity-40 hover:brightness-110 transition-colors"
             >
               Continuar
             </button>
@@ -270,12 +269,12 @@ export default function ImportarPage() {
         <>
           <SLCard className="mb-4">
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-              <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
-                Revisão — {parsedData.length} transações encontradas
+              <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
+                Revisão · {parsedData.length} transações encontradas
               </p>
               <div className="flex items-center gap-2 text-[11px] flex-wrap">
                 {duplicateIndices.size > 0 && (
-                  <span className="px-2 py-0.5 rounded-md bg-[rgba(217,150,46,0.12)] text-[#D9962E] font-medium">
+                  <span className="px-2 py-0.5 rounded-md bg-[rgba(217,150,46,0.12)] text-[var(--sl-warning)] font-medium">
                     {duplicateIndices.size} possíveis duplicatas
                   </span>
                 )}
@@ -301,7 +300,7 @@ export default function ImportarPage() {
                         checked={toImportCount === parsedData.length}
                         ref={el => { if (el) el.indeterminate = toImportCount > 0 && toImportCount < parsedData.length }}
                         onChange={(e) => toggleAll(!e.target.checked)}
-                        className="accent-[#0F766E] mr-1 align-middle"
+                        className="accent-[var(--sl-em)] mr-1 align-middle"
                       />
                       Importar
                     </th>
@@ -329,7 +328,7 @@ export default function ImportarPage() {
                             type="checkbox"
                             checked={!isSkipped}
                             onChange={() => toggleSkip(i)}
-                            className="accent-[#0F766E]"
+                            className="accent-[var(--sl-em)]"
                           />
                         </td>
                         <td className="py-1.5 px-2 font-[IBM_Plex_Mono] text-[var(--sl-t2)] whitespace-nowrap">
@@ -338,14 +337,14 @@ export default function ImportarPage() {
                         <td className="py-1.5 px-2 text-[var(--sl-t1)] max-w-[260px] truncate">
                           {tx.description}
                           {isDupe && (
-                            <span className="ml-1.5 text-[9px] font-bold px-1 py-0.5 rounded bg-[rgba(217,150,46,0.15)] text-[#D9962E]">
+                            <span className="ml-1.5 text-[9px] font-bold px-1 py-0.5 rounded bg-[rgba(217,150,46,0.15)] text-[var(--sl-warning)]">
                               DUPLICATA?
                             </span>
                           )}
                         </td>
                         <td className={cn(
-                          'py-1.5 px-2 text-right font-[IBM_Plex_Mono] font-medium',
-                          tx.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]',
+                          'py-1.5 px-2 text-right sl-num',
+                          tx.type === 'income' ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]',
                         )}>
                           {tx.type === 'expense' ? '-' : '+'}{fmtCurrency(tx.amount)}
                         </td>
@@ -353,8 +352,8 @@ export default function ImportarPage() {
                           <span className={cn(
                             'px-1.5 py-0.5 rounded text-[9px] font-bold',
                             tx.type === 'income'
-                              ? 'bg-[rgba(15,118,110,0.1)] text-[#0F766E]'
-                              : 'bg-[rgba(219,100,120,0.1)] text-[#DB6478]',
+                              ? 'bg-[rgba(15,118,110,0.1)] text-[var(--sl-em)]'
+                              : 'bg-[rgba(219,100,120,0.1)] text-[var(--sl-danger)]',
                           )}>
                             {tx.type === 'income' ? 'RECEITA' : 'DESPESA'}
                           </span>
@@ -379,7 +378,7 @@ export default function ImportarPage() {
               <button
                 onClick={handleImport}
                 disabled={toImportCount === 0}
-                className="px-5 py-2 rounded-lg bg-[#0F766E] text-white text-[12px] font-bold disabled:opacity-40 hover:bg-[#0da876] transition-colors"
+                className="px-5 py-2 rounded-lg bg-[var(--sl-em)] text-white text-[12px] font-bold disabled:opacity-40 hover:brightness-110 transition-colors"
               >
                 Importar {toImportCount} transações
               </button>
@@ -393,8 +392,8 @@ export default function ImportarPage() {
         <>
           <SLCard className="mb-4">
             <div className="flex items-center gap-2 mb-1">
-              <Tag size={16} className="text-[#D9962E]" />
-              <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
+              <Tag size={16} className="text-[var(--sl-warning)]" />
+              <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
                 Classificar Transações
               </p>
             </div>
@@ -418,7 +417,7 @@ export default function ImportarPage() {
                 />
                 <button
                   onClick={() => setShowNewCatForm('bulk')}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--sl-border)] text-[11px] font-medium text-[var(--sl-t2)] hover:border-[#0F766E] hover:text-[#0F766E] transition-colors"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--sl-border)] text-[11px] font-medium text-[var(--sl-t2)] hover:border-[var(--sl-em)] hover:text-[var(--sl-em)] transition-colors"
                 >
                   <Plus size={12} />
                   Nova categoria
@@ -466,8 +465,8 @@ export default function ImportarPage() {
                           {tx.description}
                         </td>
                         <td className={cn(
-                          'py-2 px-2 text-right font-[IBM_Plex_Mono] font-medium whitespace-nowrap',
-                          tx.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]',
+                          'py-2 px-2 text-right sl-num whitespace-nowrap',
+                          tx.type === 'income' ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]',
                         )}>
                           {tx.type === 'expense' ? '-' : '+'}{fmtCurrency(tx.amount)}
                         </td>
@@ -489,7 +488,7 @@ export default function ImportarPage() {
                             />
                             <button
                               onClick={() => setShowNewCatForm(idx)}
-                              className="w-7 h-7 shrink-0 rounded-lg border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t3)] hover:border-[#0F766E] hover:text-[#0F766E] transition-colors"
+                              className="w-7 h-7 shrink-0 rounded-lg border border-[var(--sl-border)] flex items-center justify-center text-[var(--sl-t3)] hover:border-[var(--sl-em)] hover:text-[var(--sl-em)] transition-colors"
                               title="Nova categoria"
                             >
                               <Plus size={12} />
@@ -521,8 +520,8 @@ export default function ImportarPage() {
             {/* Categorized count feedback */}
             {uncategorizedIndices.length === 0 && (
               <div className="flex items-center gap-2 mt-4 p-3 rounded-xl bg-[rgba(15,118,110,0.06)] border border-[rgba(15,118,110,0.15)]">
-                <CheckCircle2 size={14} className="text-[#0F766E]" />
-                <span className="text-[12px] text-[#0F766E] font-medium">
+                <CheckCircle2 size={14} className="text-[var(--sl-em)]" />
+                <span className="text-[12px] text-[var(--sl-em)] font-medium">
                   Todas as transações foram classificadas!
                 </span>
               </div>
@@ -548,7 +547,7 @@ export default function ImportarPage() {
                 <button
                   onClick={handleConfirmImport}
                   disabled={uncategorizedIndices.length > 0}
-                  className="px-5 py-2 rounded-lg bg-[#0F766E] text-white text-[12px] font-bold disabled:opacity-40 hover:bg-[#0da876] transition-colors"
+                  className="px-5 py-2 rounded-lg bg-[var(--sl-em)] text-white text-[12px] font-bold disabled:opacity-40 hover:brightness-110 transition-colors"
                 >
                   Importar {toImportCount} transações
                 </button>
@@ -562,14 +561,14 @@ export default function ImportarPage() {
       {step === 'importing' && (
         <SLCard className="mb-4">
           <div className="flex items-center gap-3 mb-2">
-            <Loader2 size={16} className="animate-spin text-[#0F766E]" />
+            <Loader2 size={16} className="animate-spin text-[var(--sl-em)]" />
             <p className="text-[13px] font-semibold text-[var(--sl-t1)]">
               Importando... {importProgress}/{importTotal}
             </p>
           </div>
           <div className="w-full bg-[var(--sl-s3)] rounded-full h-1.5">
             <div
-              className="h-full rounded-full bg-[#0F766E] transition-[width] duration-300"
+              className="h-full rounded-full bg-[var(--sl-em)] transition-[width] duration-300"
               style={{ width: `${importTotal > 0 ? (importProgress / importTotal) * 100 : 0}%` }}
             />
           </div>
@@ -580,8 +579,8 @@ export default function ImportarPage() {
       {step === 'done' && (
         <SLCard>
           <div className="text-center py-8">
-            <CheckCircle2 size={48} className="mx-auto mb-3 text-[#0F766E]" />
-            <h2 className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)] mb-1">
+            <CheckCircle2 size={48} className="mx-auto mb-3 text-[var(--sl-em)]" />
+            <h2 className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)] mb-1">
               Importação concluída!
             </h2>
             <p className="text-[13px] text-[var(--sl-t2)] mb-5">
@@ -596,7 +595,7 @@ export default function ImportarPage() {
               </button>
               <Link
                 href="/financas/transacoes"
-                className="px-4 py-2 rounded-lg bg-[#0F766E] text-white text-[12px] font-bold hover:bg-[#0da876] transition-colors"
+                className="px-4 py-2 rounded-lg bg-[var(--sl-em)] text-white text-[12px] font-bold hover:brightness-110 transition-colors"
               >
                 Ver transações
               </Link>
@@ -608,7 +607,7 @@ export default function ImportarPage() {
       {/* ═══ Import History ═══ */}
       {batches.length > 0 && (
         <div className="mt-8">
-          <h2 className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)] mb-3">
+          <h2 className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-3">
             Histórico de Importações
           </h2>
           <div className="flex flex-col gap-3">
@@ -616,28 +615,28 @@ export default function ImportarPage() {
               <SLCard key={batch.notes} className="!p-4">
                 <div className="flex items-start gap-3">
                   <div className="w-9 h-9 rounded-xl bg-[rgba(15,118,110,0.08)] flex items-center justify-center shrink-0">
-                    <FileText size={16} className="text-[#0F766E]" />
+                    <FileText size={16} className="text-[var(--sl-em)]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-semibold text-[var(--sl-t1)] truncate">
                       {batch.fileName}
                     </p>
                     <div className="flex items-center gap-3 mt-1 text-[11px] text-[var(--sl-t3)]">
-                      <span className="font-[IBM_Plex_Mono]">{batch.count} transações</span>
+                      <span className="sl-num">{batch.count} transações</span>
                       <span className="flex items-center gap-1">
                         <Calendar size={10} />
                         {fmtDate(batch.dateRange.min)}
-                        {batch.dateRange.min !== batch.dateRange.max && ` — ${fmtDate(batch.dateRange.max)}`}
+                        {batch.dateRange.min !== batch.dateRange.max && ` · ${fmtDate(batch.dateRange.max)}`}
                       </span>
                     </div>
                     <div className="flex items-center gap-3 mt-1 text-[11px]">
                       {batch.totalIncome > 0 && (
-                        <span className="text-[#0F766E] font-[IBM_Plex_Mono] font-medium">
+                        <span className="text-[var(--sl-em)] sl-num">
                           +{fmtCurrency(batch.totalIncome)}
                         </span>
                       )}
                       {batch.totalExpense > 0 && (
-                        <span className="text-[#DB6478] font-[IBM_Plex_Mono] font-medium">
+                        <span className="text-[var(--sl-danger)] sl-num">
                           -{fmtCurrency(batch.totalExpense)}
                         </span>
                       )}
@@ -657,7 +656,7 @@ export default function ImportarPage() {
                       <button
                         onClick={() => handleDeleteBatch(batch.notes)}
                         disabled={deleting}
-                        className="px-2.5 py-1.5 rounded-lg bg-[#DB6478] text-white text-[11px] font-bold hover:bg-[#e11d48] transition-colors disabled:opacity-40 flex items-center gap-1"
+                        className="px-2.5 py-1.5 rounded-lg bg-[var(--sl-danger)] text-white text-[11px] font-bold hover:brightness-110 transition-all disabled:opacity-40 flex items-center gap-1"
                       >
                         {deleting ? (
                           <Loader2 size={12} className="animate-spin" />
@@ -670,7 +669,7 @@ export default function ImportarPage() {
                   ) : (
                     <button
                       onClick={() => setConfirmDelete(batch.notes)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sl-t3)] hover:text-[#DB6478] hover:bg-[rgba(219,100,120,0.06)] transition-colors shrink-0"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--sl-t3)] hover:text-[var(--sl-danger)] hover:bg-[rgba(219,100,120,0.06)] transition-colors shrink-0"
                       aria-label={`Excluir importação ${batch.fileName}`}
                     >
                       <Trash2 size={15} />

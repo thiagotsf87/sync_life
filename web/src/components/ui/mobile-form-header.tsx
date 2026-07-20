@@ -71,7 +71,7 @@ export function MobileFormHeader({
       {/* Linha 2: título + ação à direita (sem nome do módulo) */}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
+          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
             {title}
           </h1>
           {subtitle && (

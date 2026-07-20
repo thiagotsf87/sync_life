@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Info } from 'lucide-react'
+import { Info, AlertTriangle, ArrowDownCircle, ArrowUpCircle } from 'lucide-react'
 import { AIInsightCard } from '@/components/ui/ai-insight-card'
 import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
-
-const fmtR = (v: number) =>
-  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 })
+import { fmtBRL } from '@/lib/format/currency'
 
 interface MonthPill {
   label: string
@@ -20,7 +18,7 @@ interface PlannedEvent {
   date: string
   amount: number
   type: 'income' | 'expense'
-  icon?: string
+  icon?: React.ReactNode
 }
 
 interface PlanejamentoMobileProps {
@@ -29,7 +27,7 @@ interface PlanejamentoMobileProps {
   months: MonthPill[]
   events: PlannedEvent[]
   insightText: string
-  insightIcon?: string
+  insightIcon?: React.ReactNode
   insightLabel?: string
   balanceData: { balance: number }[]
   onAddEvent: () => void
@@ -74,7 +72,7 @@ export function PlanejamentoMobile({
   months,
   events,
   insightText,
-  insightIcon = '⚠️',
+  insightIcon,
   insightLabel = 'Atenção',
   balanceData,
   onAddEvent,
@@ -86,35 +84,39 @@ export function PlanejamentoMobile({
       title="Planejamento"
       subtitle="Projeção 6 meses"
       rightAction={
-        <button className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]">
+        <button
+          type="button"
+          aria-label="Informações"
+          className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--sl-s1)] border border-[var(--sl-border)] text-[var(--sl-t2)]"
+        >
           <Info size={16} />
         </button>
       }
     >
-      {/* Chart card — both modes */}
-      <div className="mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-4 overflow-hidden">
+      {/* Chart card */}
+      <div className="mb-3 mx-4 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-4 overflow-hidden">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <p className="text-[13px] text-[var(--sl-t2)]">Saldo projetado</p>
-            <p className="font-[IBM_Plex_Mono] text-[22px] font-medium text-[var(--sl-t1)]">
-              {fmtR(projectedBalance)}
+            <p className="font-[DM_Sans] text-[13px] text-[var(--sl-t2)]">Saldo projetado</p>
+            <p className="sl-num-strong font-[Syne] text-[22px] text-[var(--sl-t1)]">
+              {fmtBRL(projectedBalance, { compact: true })}
             </p>
           </div>
-          <span className="inline-flex items-center px-2 py-1 rounded-[12px] text-[11px] font-medium
-                          bg-[rgba(15,118,110,0.12)] text-[#0F766E]">
+          <span className="inline-flex items-center px-2 py-1 rounded-[12px] font-[DM_Sans] text-[11px] font-medium
+                          bg-[var(--sl-em-soft)] text-[var(--sl-em)]">
             em {projectedLabel}
           </span>
         </div>
-        <MiniChart data={balanceData} color="#0F766E" />
+        <MiniChart data={balanceData} color="var(--sl-em)" />
         <div className="flex justify-between pt-1.5">
           {months.slice(0, 6).map((m, i) => (
-            <span key={i} className="text-[10px] text-[var(--sl-t3)]">{m.label}</span>
+            <span key={i} className="font-[DM_Sans] text-[10px] text-[var(--sl-t3)]">{m.label}</span>
           ))}
         </div>
       </div>
 
-      {/* Month pills scroller — both modes */}
-      <div className="flex gap-2 pb-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+      {/* Month pills scroller */}
+      <div className="flex gap-2 px-4 pb-3 overflow-x-auto phone-scroll scrollbar-hide">
         {months.map((m, i) => {
           const isActive = activeMonth === i
           return (
@@ -123,29 +125,29 @@ export function PlanejamentoMobile({
               onClick={() => setActiveMonth(i)}
               className="flex flex-col items-center gap-[3px] px-3.5 py-2.5 rounded-[12px] shrink-0 transition-all border"
               style={{
-                background: isActive ? 'rgba(15,118,110,0.15)' : 'var(--sl-s1)',
+                background: isActive ? 'var(--sl-em-soft)' : 'var(--sl-s1)',
                 borderColor: isActive
-                  ? 'rgba(15,118,110,0.4)'
+                  ? 'var(--sl-border-em)'
                   : m.isNegative
                     ? 'rgba(219,100,120,0.3)'
                     : 'var(--sl-border)',
               }}
             >
               <span
-                className="text-[12px] font-medium"
+                className="font-[DM_Sans] text-[12px] font-medium"
                 style={{
-                  color: isActive ? '#0F766E' : m.isNegative ? '#DB6478' : 'var(--sl-t2)',
+                  color: isActive ? 'var(--sl-em)' : m.isNegative ? 'var(--sl-danger)' : 'var(--sl-t2)',
                 }}
               >
                 {m.label}
               </span>
               <span
-                className="font-[IBM_Plex_Mono] text-[13px] font-medium"
+                className="sl-num font-[Syne] text-[13px] font-semibold"
                 style={{
-                  color: isActive ? '#0F766E' : m.isNegative ? '#DB6478' : 'var(--sl-t1)',
+                  color: isActive ? 'var(--sl-em)' : m.isNegative ? 'var(--sl-danger)' : 'var(--sl-t1)',
                 }}
               >
-                {m.balance >= 0 ? '+' : ''}{fmtR(m.balance)}
+                {m.balance >= 0 ? '+' : ''}{fmtBRL(m.balance, { compact: true })}
               </span>
             </button>
           )
@@ -153,55 +155,72 @@ export function PlanejamentoMobile({
       </div>
 
       {/* AI Insight */}
-      <div className="mb-3">
-        <AIInsightCard icon={insightIcon} label={insightLabel}>
+      <div className="mb-3 mx-4">
+        <AIInsightCard icon={insightIcon ?? <AlertTriangle size={16} />} label={insightLabel}>
           <span dangerouslySetInnerHTML={{ __html: insightText }} />
         </AIInsightCard>
       </div>
 
-      {/* Events section — both modes */}
-      <p className="px-1 pb-2 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+      {/* Events section */}
+      <p className="px-5 pb-2 font-[Syne] text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-em)]">
         Eventos em {months[activeMonth]?.label ?? 'Mar'}
       </p>
 
       {events.length === 0 ? (
-        <div className="mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-6 text-center">
-          <p className="text-[12px] text-[var(--sl-t3)]">Nenhum evento planejado.</p>
+        <div className="mb-3 mx-4 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] p-6 text-center">
+          <p className="font-[DM_Sans] text-[12px] text-[var(--sl-t3)]">Nenhum evento planejado.</p>
         </div>
       ) : (
-        events.map((ev) => (
-          <div
-            key={ev.id}
-            className="mb-2 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] py-[11px] px-[14px]
-                       flex items-center gap-2.5"
-          >
-            <div
-              className="w-2 h-2 rounded-full shrink-0"
-              style={{ background: ev.type === 'income' ? '#0F766E' : ev.type === 'expense' ? '#DB6478' : '#0B2D34' }}
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-medium text-[var(--sl-t1)]">
-                {ev.icon ?? (ev.type === 'income' ? '💰' : '📤')} {ev.name}
-              </p>
-              <p className="text-[11px] text-[var(--sl-t2)]">{ev.date}</p>
-            </div>
-            <span
-              className="font-[IBM_Plex_Mono] text-[13px] font-medium shrink-0"
-              style={{ color: ev.type === 'income' ? '#0F766E' : '#DB6478' }}
-            >
-              {ev.type === 'income' ? '+' : '-'}{fmtR(Math.abs(ev.amount))}
-            </span>
-          </div>
-        ))
+        <div className="px-4">
+          {events.map((ev) => {
+            const FallbackIcon = ev.type === 'income' ? ArrowUpCircle : ArrowDownCircle
+            return (
+              <div
+                key={ev.id}
+                className="mb-2 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[10px] py-[11px] px-[14px]
+                           flex items-center gap-2.5"
+              >
+                <div
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{ background: ev.type === 'income' ? 'var(--sl-em)' : 'var(--sl-danger)' }}
+                />
+                <div className="flex-1 min-w-0 flex items-center gap-2">
+                  <span
+                    className="inline-flex items-center justify-center w-6 h-6 rounded-[7px] shrink-0"
+                    style={{
+                      background: ev.type === 'income' ? 'var(--sl-em-soft)' : 'rgba(219,100,120,0.12)',
+                      color: ev.type === 'income' ? 'var(--sl-em)' : 'var(--sl-danger)',
+                    }}
+                  >
+                    {ev.icon ?? <FallbackIcon size={13} />}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-[DM_Sans] text-[13px] font-medium text-[var(--sl-t1)] truncate">
+                      {ev.name}
+                    </p>
+                    <p className="font-[DM_Sans] text-[11px] text-[var(--sl-t2)]">{ev.date}</p>
+                  </div>
+                </div>
+                <span
+                  className="sl-num font-[Syne] text-[13px] font-semibold shrink-0"
+                  style={{ color: ev.type === 'income' ? 'var(--sl-em)' : 'var(--sl-danger)' }}
+                >
+                  {ev.type === 'income' ? '+' : '– '}{fmtBRL(Math.abs(ev.amount), { compact: true })}
+                </span>
+              </div>
+            )
+          })}
+        </div>
       )}
 
       {/* Add event button */}
-      <div className="pt-2 pb-6">
+      <div className="px-4 pt-2 pb-6">
         <button
           onClick={onAddEvent}
-          className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-[20px]
-                     bg-[var(--sl-s2)] border border-[var(--sl-border-h)] text-[var(--sl-t1)]
-                     text-[13px] font-medium transition-colors active:bg-[var(--sl-s3)]"
+          className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-[12px]
+                     font-[DM_Sans] text-[13px] font-semibold text-white transition-colors
+                     active:opacity-90"
+          style={{ background: 'var(--sl-em)' }}
         >
           + Adicionar evento pontual
         </button>

@@ -15,7 +15,7 @@ export function RelatoriosCategoryComparison({ catCompData, maxCatValue }: Relat
   return (
     <SLCard>
       <div className="flex items-center justify-between mb-3">
-        <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)] flex items-center gap-1.5">
+        <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)] flex items-center gap-1.5">
           <BarChart2 size={15} />
           Categorias vs Anterior
         </p>
@@ -57,7 +57,7 @@ export function RelatoriosCategoryComparison({ catCompData, maxCatValue }: Relat
                 />
               </div>
               <div className="flex flex-col items-end shrink-0 min-w-[62px]">
-                <span className="font-[IBM_Plex_Mono] text-[11px] font-medium text-[var(--sl-t1)]">
+                <span className="sl-num text-[11px] text-[var(--sl-t1)]">
                   {fmtR(cat.currentTotal)}
                 </span>
                 {cat.delta !== null && (

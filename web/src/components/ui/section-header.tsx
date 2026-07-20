@@ -12,14 +12,14 @@ export function SectionHeader({ eyebrow, title, sub, className }: SectionHeaderP
     <div className={cn('flex flex-col', className)}>
       {eyebrow && (
         <p
-          className="font-[Space_Grotesk] font-semibold uppercase tracking-[0.14em] mb-1.5"
+          className="font-[Syne] font-semibold uppercase tracking-[0.14em] mb-1.5"
           style={{ fontSize: '10px', color: 'var(--sl-em)' }}
         >
           {eyebrow}
         </p>
       )}
       <h2
-        className="font-[Space_Grotesk] font-semibold text-[18px] leading-snug text-[var(--sl-t1)]"
+        className="font-[Syne] font-semibold text-[18px] leading-snug text-[var(--sl-t1)]"
       >
         {title}
       </h2>

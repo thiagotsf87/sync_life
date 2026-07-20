@@ -41,7 +41,7 @@ export function AchievementsWidget() {
       <div className="p-2.5 rounded-[10px]" style={{ background: 'rgba(15,118,110,0.07)', border: '1px solid rgba(15,118,110,0.12)' }}>
         <div className="text-[11px] font-semibold mb-1" style={{ color: '#0F766E' }}>Próxima conquista</div>
         <div className="text-[12px] text-[var(--sl-t2)]">
-          🎯 Meta concluída — conclua a <strong>Reserva de Emergência</strong> para desbloquear
+          🎯 Meta concluída · conclua a <strong>Reserva de Emergência</strong> para desbloquear
         </div>
         <div className="mt-2 h-1 rounded-full overflow-hidden bg-[var(--sl-s3)]">
           <div className="h-full rounded-full" style={{ width: '65%', background: 'linear-gradient(90deg, #0F766E, #0B2D34)' }} />

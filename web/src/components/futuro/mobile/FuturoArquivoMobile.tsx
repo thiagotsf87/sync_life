@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT } from '@/lib/futuro-colors'
@@ -32,7 +32,7 @@ export function FuturoArquivoMobile({ open, onClose, onResume, onArchive }: Futu
     <div className="fixed inset-0 z-50 bg-[var(--sl-bg)] flex flex-col overflow-y-auto lg:hidden">
       {/* Title */}
       <div className="px-5 pt-3 pb-3">
-        <h1 className="font-[Space_Grotesk] text-[17px] font-bold text-[var(--sl-t1)]">
+        <h1 className="font-[Syne] text-[17px] font-bold text-[var(--sl-t1)]">
           Arquivo de Missões
         </h1>
       </div>
@@ -47,7 +47,7 @@ export function FuturoArquivoMobile({ open, onClose, onResume, onArchive }: Futu
       >
         <div className="text-[30px]">🏆</div>
         <div>
-          <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
+          <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
             Você completou {completedCount} missões épicas
           </p>
           <p className="text-[12px] text-[var(--sl-t2)] mt-[3px]">
@@ -108,14 +108,14 @@ export function FuturoArquivoMobile({ open, onClose, onResume, onArchive }: Futu
                 {obj.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t1)]">
+                <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t1)]">
                   {obj.status === 'completed' ? `Missão Concluída: ${obj.name.split(' ').slice(-1)}` : obj.name}
                 </p>
                 <p className="text-[11px] text-[var(--sl-t2)] mt-[1px]">{obj.dateRange}</p>
               </div>
               <span
                 className="text-[10px] font-bold self-start pt-[2px]"
-                style={{ color: obj.status === 'completed' ? '#0F766E' : 'var(--sl-t3)' }}
+                style={{ color: obj.status === 'completed' ? 'var(--sl-em)' : 'var(--sl-t3)' }}
               >
                 {obj.status === 'completed'
                   ? '✓ Épico'
@@ -129,7 +129,7 @@ export function FuturoArquivoMobile({ open, onClose, onResume, onArchive }: Futu
               {obj.stats.map((stat, i) => (
                 <div key={i}>
                   <p className="text-[9px] text-[var(--sl-t3)] uppercase tracking-[0.5px] mb-[2px]">{stat.label}</p>
-                  <p className="font-[IBM_Plex_Mono] text-[12px] font-medium" style={{ color: stat.color ?? 'var(--sl-t2)' }}>
+                  <p className="sl-num-strong text-[12px] font-medium" style={{ color: stat.color ?? 'var(--sl-t2)' }}>
                     {stat.value}
                   </p>
                 </div>

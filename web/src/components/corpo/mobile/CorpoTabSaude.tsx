@@ -60,7 +60,7 @@ export function CorpoTabSaude({ appointments, onOpenModal }: CorpoTabSaudeProps)
             const badge = getBadge(days)
             const isFirst = idx === 0
             return isFirst ? (
-              /* Primeiro appointment — card expandido com 3 mini-cards */
+              /* Primeiro appointment · card expandido com 3 mini-cards */
               <div
                 key={appt.id}
                 className="mx-4 mb-3 rounded-2xl p-4"
@@ -74,7 +74,7 @@ export function CorpoTabSaude({ appointments, onOpenModal }: CorpoTabSaudeProps)
                     <p className="text-[15px] font-semibold text-[var(--sl-t1)]">{appt.specialty}</p>
                     {appt.doctor_name && (
                       <p className="text-[12px] text-[var(--sl-t2)]">
-                        {appt.doctor_name}{appt.location && ` — ${appt.location}`}
+                        {appt.doctor_name}{appt.location && ` · ${appt.location}`}
                       </p>
                     )}
                   </div>
@@ -107,7 +107,7 @@ export function CorpoTabSaude({ appointments, onOpenModal }: CorpoTabSaudeProps)
                 </div>
               </div>
             ) : (
-              /* Demais appointments — linha compacta */
+              /* Demais appointments · linha compacta */
               <div
                 key={appt.id}
                 className="mx-4 mb-2 rounded-2xl px-4 py-3 flex items-center gap-3"

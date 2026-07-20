@@ -99,7 +99,7 @@ export function AddContributionModal({ open, goal, onClose, onSave }: AddContrib
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
           <div className="flex items-center gap-2">
             <span className="text-xl">{goal.icon}</span>
-            <h2 className="font-[Space_Grotesk] font-extrabold text-[15px] text-[var(--sl-t1)]">
+            <h2 className="font-[Syne] font-extrabold text-[15px] text-[var(--sl-t1)]">
               Registrar Aporte
             </h2>
           </div>

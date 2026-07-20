@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -61,8 +61,8 @@ const COUNTRY_LOOKUP: Record<string, { code: string; continent: string }> = {
 }
 
 const PRIORITY_OPTIONS: { value: BucketPriority; label: string; icon: string; color: string }[] = [
-  { value: 'high',   label: 'Alta',   icon: '🔥', color: '#DB6478' },
-  { value: 'medium', label: 'Média',  icon: '⚡', color: '#D9962E' },
+  { value: 'high',   label: 'Alta',   icon: '🔥', color: 'var(--sl-danger)' },
+  { value: 'medium', label: 'Média',  icon: '⚡', color: 'var(--sl-warning)' },
   { value: 'low',    label: 'Baixa',  icon: '💎', color: '#C76795' },
 ]
 
@@ -158,7 +158,7 @@ export function ExpBucketItemFormMobile({
           <p className="text-[11px] font-medium" style={{ color: EXP_PRIMARY_LIGHT }}>
             🗺️ Bucket List
           </p>
-          <p className="font-[Space_Grotesk] text-[15px] font-bold text-[var(--sl-t1)]">
+          <p className="font-[Syne] text-[15px] font-bold text-[var(--sl-t1)]">
             Adicionar Destino
           </p>
         </div>
@@ -323,7 +323,7 @@ export function ExpBucketItemFormMobile({
         {error && (
           <div
             className="rounded-[10px] p-3 mb-3 text-[12px]"
-            style={{ background: 'rgba(219,100,120,0.1)', border: '1px solid rgba(219,100,120,0.2)', color: '#DB6478' }}
+            style={{ background: 'rgba(219,100,120,0.1)', border: '1px solid rgba(219,100,120,0.2)', color: 'var(--sl-danger)' }}
           >
             {error}
           </div>

@@ -184,7 +184,7 @@ export function SyncLifeBrand({ size = 'md', animated, className }: SyncLifeBran
     >
       <SyncLifeIcon size={preset.icon} animated={shouldAnimate} />
       <span
-        className="font-[Space_Grotesk] font-extrabold leading-none whitespace-nowrap"
+        className="font-[Syne] font-extrabold leading-none whitespace-nowrap"
         style={{ fontSize: preset.font }}
       >
         <span className="text-[var(--sl-t1)] [.landing-page_&]:text-white [.auth-left_&]:text-white [.onboarding-page_&]:text-white">Sync</span>

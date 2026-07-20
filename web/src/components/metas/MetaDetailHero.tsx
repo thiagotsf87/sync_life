@@ -1,5 +1,7 @@
 'use client'
 
+import { Trophy, Rocket, Dumbbell, Star, Sprout, Check, Pause } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { RingProgress } from '@/components/ui/ring-progress'
 import {
@@ -41,12 +43,12 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
 
   const totalContribs = contributions.reduce((s, c) => s + c.amount, 0)
 
-  function getMotivationalText(): string {
-    if (goal.status === 'completed') return `🏆 Meta concluída! Você conseguiu!`
-    if (pct >= 75) return `🚀 Incrível! Você já passou dos ${pct}% — está quase lá!`
-    if (pct >= 50) return `💪 Metade do caminho percorrido! Continue assim!`
-    if (pct >= 25) return `⭐ Ótimo começo! ${pct}% concluído e acelerando!`
-    return `🌱 Todo grande sonho começa com o primeiro passo. Você já começou!`
+  function getMotivational(): { text: string; icon: LucideIcon } {
+    if (goal.status === 'completed') return { text: 'Meta concluída! Você conseguiu!', icon: Trophy }
+    if (pct >= 75) return { text: `Incrível! Você já passou dos ${pct}% · está quase lá!`, icon: Rocket }
+    if (pct >= 50) return { text: 'Metade do caminho percorrido! Continue assim!', icon: Dumbbell }
+    if (pct >= 25) return { text: `Ótimo começo! ${pct}% concluído e acelerando!`, icon: Star }
+    return { text: 'Todo grande sonho começa com o primeiro passo. Você já começou!', icon: Sprout }
   }
 
   return (
@@ -57,7 +59,7 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
         <span className="text-4xl">{goal.icon}</span>
         <div className="flex-1">
           <h2 className={cn(
-            'font-[Space_Grotesk] font-extrabold text-xl leading-tight',
+            'font-[Syne] font-extrabold text-xl leading-tight',
             'text-sl-grad',
           )}>
             {goal.name}
@@ -68,12 +70,16 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
         </div>
         {goal.status !== 'active' && (
           <div className={cn(
-            'px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0',
+            'px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0 inline-flex items-center gap-1',
             goal.status === 'completed'
               ? 'bg-[rgba(15,118,110,.15)] text-[#0F766E]'
               : 'bg-[rgba(217,150,46,.15)] text-[#D9962E]',
           )}>
-            {goal.status === 'completed' ? '✓ Concluída' : '⏸ Pausada'}
+            {goal.status === 'completed' ? (
+              <><Check size={11} strokeWidth={3} /> Concluída</>
+            ) : (
+              <><Pause size={11} /> Pausada</>
+            )}
           </div>
         )}
       </div>
@@ -131,9 +137,15 @@ export function MetaDetailHero({ goal, contributions }: MetaDetailHeroProps) {
       </div>
 
       {/* Motivational text */}
-      <div className="p-3.5 rounded-[12px] bg-gradient-to-br from-[#0F766E]/8 to-[#0B2D34]/8 border border-[#0F766E]/20">
-        <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed">{getMotivationalText()}</p>
-      </div>
+      {(() => {
+        const m = getMotivational()
+        return (
+          <div className="p-3.5 rounded-[12px] bg-gradient-to-br from-[#0F766E]/8 to-[#0B2D34]/8 border border-[#0F766E]/20 flex items-start gap-2.5">
+            <m.icon size={16} className="text-[#0F766E] shrink-0 mt-0.5" />
+            <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed">{m.text}</p>
+          </div>
+        )
+      })()}
     </div>
   )
 }

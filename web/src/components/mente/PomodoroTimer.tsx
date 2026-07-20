@@ -39,7 +39,7 @@ const PHASE_COLORS: Record<TimerPhase, string> = {
   idle: '#D9962E',
   focusing: '#D9962E',
   short_break: '#0F766E',
-  long_break: '#a855f7',
+  long_break: '#3CA0B5',
   paused: '#D9962E',
 }
 
@@ -168,7 +168,7 @@ export function PomodoroTimer({
             ? 'Ciclo concluído. Faça uma pausa e depois retome.'
             : 'Pausa concluída. Volte para o foco.',
         })
-      } catch { /* browser bloqueou notificações — sem impacto */ }
+      } catch { /* browser bloqueou notificações · sem impacto */ }
     }
   }, [remainingSeconds]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -354,14 +354,14 @@ export function PomodoroTimer({
 
       {/* Track selector */}
       <div className="w-full">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">
+        <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-1.5 block">
           Trilha (opcional)
         </label>
         <select
           value={selectedTrackId ?? ''}
           onChange={e => setSelectedTrackId(e.target.value || null)}
           disabled={isRunning || sessionStarted}
-          className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#a855f7] transition-colors disabled:opacity-50"
+          className="w-full px-3.5 py-2.5 rounded-[10px] text-[14px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-em)] transition-colors disabled:opacity-50"
         >
           <option value="">Estudo livre (sem trilha)</option>
           {tracks.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -387,7 +387,7 @@ export function PomodoroTimer({
         )}
       </div>
 
-      {/* SVG ring — 260px, gradient yellow->orange */}
+      {/* SVG ring · 260px, gradient yellow->orange */}
       <div className="relative">
         <svg
           width="260"
@@ -437,7 +437,7 @@ export function PomodoroTimer({
         </div>
       </div>
 
-      {/* Controls — prototype: 50px side, 64px center */}
+      {/* Controls · prototype: 50px side, 64px center */}
       <div className="flex items-center justify-center gap-[18px]">
         <button
           onClick={handleFinish}
@@ -479,12 +479,12 @@ export function PomodoroTimer({
       {sessionStarted && (
         <div className="w-full grid grid-cols-3 gap-2">
           {[
-            { label: 'Foco', value: `${Math.floor(totalFocusSeconds / 60)}m`, color: '#0B2D34' },
-            { label: 'Ciclos', value: String(cyclesCompleted), color: '#0F766E' },
-            { label: 'Pausa', value: `${Math.floor(totalBreakSeconds / 60)}m`, color: '#a855f7' },
+            { label: 'Foco', value: `${Math.floor(totalFocusSeconds / 60)}m`, color: '#D9962E' },
+            { label: 'Ciclos', value: String(cyclesCompleted), color: 'var(--sl-em)' },
+            { label: 'Pausa', value: `${Math.floor(totalBreakSeconds / 60)}m`, color: '#3CA0B5' },
           ].map(({ label, value, color: c }) => (
             <div key={label} className="bg-[var(--sl-s2)] rounded-xl p-3 text-center">
-              <p className="font-[IBM_Plex_Mono] text-[16px] font-bold" style={{ color: c }}>{value}</p>
+              <p className="sl-num-strong text-[16px]" style={{ color: c }}>{value}</p>
               <p className="text-[9px] uppercase tracking-wider text-[var(--sl-t3)] mt-0.5">{label}</p>
             </div>
           ))}
@@ -509,7 +509,7 @@ export function PomodoroTimer({
                 className={cn(
                   'py-2 rounded-[10px] border text-[11px] transition-all',
                   ambientMode === opt.id
-                    ? 'border-[#a855f7] bg-[#a855f7]/10 text-[var(--sl-t1)]'
+                    ? 'border-[var(--sl-em)] bg-[var(--sl-em-soft)] text-[var(--sl-t1)]'
                     : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[var(--sl-border-h)]'
                 )}
               >
@@ -545,7 +545,7 @@ export function PomodoroTimer({
                   disabled={isRunning}
                   className="w-6 h-6 rounded-full bg-[var(--sl-s3)] text-[var(--sl-t2)] text-sm flex items-center justify-center hover:bg-[var(--sl-border)] disabled:opacity-40"
                 >-</button>
-                <span className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t1)] w-7 text-center">
+                <span className="sl-num text-[13px] text-[var(--sl-t1)] w-7 text-center">
                   {config[key]}
                 </span>
                 <button

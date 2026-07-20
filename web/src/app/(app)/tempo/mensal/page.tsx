@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Plus, X, Check, Trash2, Pencil, Calendar as CalendarIcon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, X, Check, Trash2, Pencil, Calendar as CalendarIcon, Inbox } from 'lucide-react'
 import { TempoMobileShell } from '@/components/tempo/TempoMobileShell'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -186,7 +186,7 @@ function DayDrawer({
     <div className="bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-[18px] p-6 flex flex-col gap-3">
 
       <div className="flex items-center justify-between">
-        <h3 className="font-[Space_Grotesk] font-extrabold text-[14px] text-[var(--sl-t1)]">
+        <h3 className="font-[Syne] font-extrabold text-[14px] text-[var(--sl-t1)]">
           {formattedDate}
         </h3>
         <div className="flex items-center gap-1">
@@ -209,7 +209,7 @@ function DayDrawer({
 
       {events.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-6">
-          <span className="text-2xl">📭</span>
+          <Inbox size={22} className="text-[var(--sl-t3)]" />
           <p className="text-[12px] text-[var(--sl-t3)]">Nenhum evento neste dia</p>
           <button
             onClick={onNew}
@@ -233,13 +233,13 @@ function DayDrawer({
                 )}
                 style={{ borderLeft: `3px solid ${priorityColor}` }}
               >
-                <span className="text-lg shrink-0 mt-0.5">{cfg.icon}</span>
+                <span className="text-lg shrink-0 mt-0.5" aria-hidden="true">{cfg.icon}</span>
                 <div className="flex-1 min-w-0">
                   <p className={cn('text-[13px] font-semibold text-[var(--sl-t1)] truncate', isDone && 'line-through')}>
                     {ev.title}
                   </p>
                   <p className="text-[11px] text-[var(--sl-t3)]">
-                    {ev.all_day ? 'Dia inteiro' : ev.start_time ? `${ev.start_time}${ev.end_time ? `–${ev.end_time}` : ''}` : '—'}
+                    {ev.all_day ? 'Dia inteiro' : ev.start_time ? `${ev.start_time}${ev.end_time ? `–${ev.end_time}` : ''}` : '--'}
                     {' · '}
                     <span style={{ color: cfg.color }}>{cfg.label}</span>
                   </p>
@@ -491,9 +491,9 @@ export default function AgendaMensalPage() {
                         <div className="w-[3px] self-stretch rounded-full shrink-0" style={{ background: cfg.color }} />
                         <div className="flex-1 min-w-0">
                           <p className="text-[13px] font-medium text-[var(--sl-t1)] truncate">{ev.title}</p>
-                          <p className="text-[11px] text-[var(--sl-t3)]">{ev.all_day ? 'Dia todo' : (ev.start_time ?? '—')}</p>
+                          <p className="text-[11px] text-[var(--sl-t3)]">{ev.all_day ? 'Dia todo' : (ev.start_time ?? '--')}</p>
                         </div>
-                        <span className="text-base shrink-0">{cfg.icon}</span>
+                        <span className="text-base shrink-0" aria-hidden="true">{cfg.icon}</span>
                       </div>
                     )
                   })}
@@ -504,7 +504,7 @@ export default function AgendaMensalPage() {
 
           {!selectedDate && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[14px] p-4 flex flex-col items-center gap-2 text-center">
-              <span className="text-2xl">📅</span>
+              <CalendarIcon size={24} className="text-[var(--sl-t3)]" />
               <p className="text-[12px] text-[var(--sl-t2)]">Toque em um dia para ver os eventos</p>
             </div>
           )}
@@ -604,7 +604,7 @@ export default function AgendaMensalPage() {
             />
           ) : (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex flex-col items-center justify-center gap-2 min-h-[180px]">
-              <span className="text-3xl">📅</span>
+              <CalendarIcon size={28} className="text-[var(--sl-t3)]" />
               <p className="text-[13px] text-[var(--sl-t2)] text-center">
                 Clique em um dia para ver os eventos
               </p>
@@ -628,7 +628,7 @@ export default function AgendaMensalPage() {
                     <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cfg.color }} />
                     <span className="text-[12px] text-[var(--sl-t2)] flex-1">{cfg.label}</span>
                     {count > 0 && (
-                      <span className="text-[11px] font-[IBM_Plex_Mono] font-semibold" style={{ color: cfg.color }}>
+                      <span className="sl-num text-[11px]" style={{ color: cfg.color }}>
                         {count}
                       </span>
                     )}

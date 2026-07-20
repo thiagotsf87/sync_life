@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Trash2, Crown } from 'lucide-react'
+import { Plus, Trash2, Crown, Map as MapIcon, Clock, MapPin, Car } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import jsPDF from 'jspdf'
@@ -151,7 +151,10 @@ export function TripItineraryTab({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">🗺️ Roteiro dia a dia</h2>
+        <h2 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] flex items-center gap-2">
+          <MapIcon size={14} className="text-[#C76795]" />
+          Roteiro dia a dia
+        </h2>
         <div className="flex items-center gap-2">
           <button
             onClick={handleExportItineraryPdf}
@@ -176,9 +179,12 @@ export function TripItineraryTab({
       </div>
 
       {/* RN-EXP-13: mapa com pins e rota sugerida (via links de mapas) */}
-      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-4">
+      <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4 mb-4 hover:border-[var(--sl-border-h)] transition-colors">
         <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
-          <h3 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">🗺️ Mapa da viagem</h3>
+          <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)] flex items-center gap-2">
+            <MapIcon size={14} className="text-[#C76795]" />
+            Mapa da viagem
+          </h3>
           {(() => {
             const routeLink = getSuggestedRouteLink(itineraryAddresses.map(i => i.address))
             if (!routeLink) return null
@@ -208,12 +214,12 @@ export function TripItineraryTab({
                 rel="noreferrer"
                 className="flex items-center gap-2 p-2 rounded-[10px] border border-[var(--sl-border)] bg-[var(--sl-s2)] hover:border-[var(--sl-border-h)] transition-colors"
               >
-                <span className="w-5 h-5 rounded-full bg-[#C76795]/15 border border-[#C76795]/30 flex items-center justify-center text-[10px] font-bold text-[#C76795] shrink-0">
+                <span className="w-5 h-5 rounded-full bg-[#C76795]/15 border border-[#C76795]/30 flex items-center justify-center text-[10px] font-bold text-[#C76795] shrink-0 sl-num">
                   {idx + 1}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[11px] text-[var(--sl-t1)] truncate">
-                    {pin.title} {pin.time ? `· ${pin.time.slice(0, 5)}` : ''}
+                    {pin.title} {pin.time ? <>· <span className="font-[IBM_Plex_Mono]">{pin.time.slice(0, 5)}</span></> : ''}
                   </p>
                   <p className="text-[10px] text-[var(--sl-t3)] truncate">{pin.address}</p>
                 </div>
@@ -259,7 +265,7 @@ export function TripItineraryTab({
 
             {dayItems.length === 0 ? (
               <div className="bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-xl p-4 text-center">
-                <p className="text-[11px] text-[var(--sl-t3)]">Nenhuma atividade — clique em + Adicionar</p>
+                <p className="text-[11px] text-[var(--sl-t3)]">Nenhuma atividade · clique em + Adicionar</p>
               </div>
             ) : (
               <div className="flex flex-col gap-2">
@@ -294,13 +300,16 @@ export function TripItineraryTab({
                             {ITINERARY_CATEGORY_LABELS[item.category]}
                           </span>
                           {item.estimated_time && (
-                            <span className="text-[10px] text-[var(--sl-t3)]">🕐 {item.estimated_time.slice(0, 5)}</span>
+                            <span className="text-[10px] text-[var(--sl-t3)] inline-flex items-center gap-1">
+                              <Clock size={10} />
+                              <span className="font-[IBM_Plex_Mono]">{item.estimated_time.slice(0, 5)}</span>
+                            </span>
                           )}
                         </div>
-                        {item.address && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">📍 {item.address}</p>}
+                        {item.address && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5 inline-flex items-center gap-1"><MapPin size={10} /> {item.address}</p>}
                         {item.notes && <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">{item.notes}</p>}
                         {item.estimated_cost != null && (
-                          <p className="font-[IBM_Plex_Mono] text-[10px] text-[var(--sl-t2)] mt-0.5">
+                          <p className="sl-num text-[10px] text-[var(--sl-t2)] mt-0.5">
                             {formatTripAmountCompact(item.estimated_cost)}
                           </p>
                         )}
@@ -312,8 +321,9 @@ export function TripItineraryTab({
                     </div>
                     {transitEstimates[idx] && (
                       <div className="ml-9 mt-1 mb-1 px-2.5 py-1.5 rounded-lg bg-[var(--sl-s2)] border border-[var(--sl-border)]">
-                        <p className="text-[10px] text-[var(--sl-t3)]">
-                          🚗 Deslocamento estimado (beta): ~{transitEstimates[idx].etaMinutes} min entre
+                        <p className="text-[10px] text-[var(--sl-t3)] inline-flex items-center gap-1 flex-wrap">
+                          <Car size={10} />
+                          Deslocamento estimado (beta): ~<span className="sl-num">{transitEstimates[idx].etaMinutes}</span> min entre
                           {' '}<span className="text-[var(--sl-t2)]">{transitEstimates[idx].fromTitle}</span> e
                           {' '}<span className="text-[var(--sl-t2)]">{transitEstimates[idx].toTitle}</span>
                         </p>

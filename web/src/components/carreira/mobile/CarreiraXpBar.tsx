@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useXP } from '@/hooks/use-xp'
 import { CARREIRA_GRAD } from '@/lib/carreira-colors'
@@ -13,14 +13,14 @@ export function CarreiraXpBar() {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-[6px]">
           <span
-            className="font-[Space_Grotesk] text-[10px] font-extrabold text-white px-2 py-[2px] rounded-lg"
+            className="font-[Syne] text-[10px] font-extrabold text-white px-2 py-[2px] rounded-lg"
             style={{ background: CARREIRA_GRAD }}
           >
             Nível {level}
           </span>
           <span className="text-[11px] text-[var(--sl-t2)]">{levelTitle}</span>
         </div>
-        <span className="text-[11px] font-[IBM_Plex_Mono] font-medium text-[var(--sl-t2)]">
+        <span className="text-[11px] sl-num-strong font-medium text-[var(--sl-t2)]">
           {totalXP.toLocaleString('pt-BR')} XP
         </span>
       </div>

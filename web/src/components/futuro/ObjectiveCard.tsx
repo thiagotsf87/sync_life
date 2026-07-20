@@ -115,7 +115,7 @@ export function ObjectiveCard({ objective, onClick, onRestore }: ObjectiveCardPr
         <div className="flex items-center gap-2">
           <span className="text-xl shrink-0">{objective.icon}</span>
           <div>
-            <h3 className="font-[Space_Grotesk] font-bold text-[14px] text-[var(--sl-t1)] leading-tight">
+            <h3 className="font-[Syne] font-bold text-[14px] text-[var(--sl-t1)] leading-tight">
               {objective.name}
             </h3>
             <span className="text-[10px] uppercase tracking-wider font-semibold text-[var(--sl-t3)]">

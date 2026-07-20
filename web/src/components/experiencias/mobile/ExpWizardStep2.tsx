@@ -16,10 +16,10 @@ interface ExpWizardStep2Props {
 }
 
 const COMPANIONS: { value: CompanionType; icon: string; label: string; sub: string; xpBonus?: string }[] = [
-  { value: 'solo', icon: '🧳', label: 'Solo — Desbravador', sub: 'A maior aventura é consigo mesmo', xpBonus: '⚡ +20 XP bônus coragem' },
-  { value: 'couple', icon: '💑', label: 'Casal — Romântica', sub: 'Aventura a dois' },
-  { value: 'family', icon: '👨‍👩‍👧‍👦', label: 'Família — Expedição', sub: 'Memórias em grupo' },
-  { value: 'friends', icon: '👫', label: 'Amigos — Tribo', sub: 'Squad de aventura' },
+  { value: 'solo', icon: '🧳', label: 'Solo · Desbravador', sub: 'A maior aventura é consigo mesmo', xpBonus: '⚡ +20 XP bônus coragem' },
+  { value: 'couple', icon: '💑', label: 'Casal · Romântica', sub: 'Aventura a dois' },
+  { value: 'family', icon: '👨‍👩‍👧‍👦', label: 'Família · Expedição', sub: 'Memórias em grupo' },
+  { value: 'friends', icon: '👫', label: 'Amigos · Tribo', sub: 'Squad de aventura' },
 ]
 
 export function ExpWizardStep2({
@@ -35,7 +35,7 @@ export function ExpWizardStep2({
       >
         <span className="text-[14px]">🤝</span>
         <span className="text-[12px] font-semibold" style={{ color: EXP_PRIMARY_LIGHT }}>
-          Viagens solo dão <strong className="text-[var(--sl-t1)]">+20 XP extra</strong> — coragem recompensada!
+          Viagens solo dão <strong className="text-[var(--sl-t1)]">+20 XP extra</strong> · coragem recompensada!
         </span>
       </div>
 

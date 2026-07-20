@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { FUTURO_PRIMARY_LIGHT, FUTURO_GRAD, FUTURO_PRIMARY_BG } from '@/lib/futuro-colors'
 import { getObjectiveXpReward } from '@/lib/futuro-xp-mock'
@@ -26,17 +26,17 @@ interface FuturoGoalCardProps {
 }
 
 function getProgressColor(pct: number, isDelayed: boolean): string {
-  if (isDelayed) return '#D9962E'
-  if (pct >= 60) return '#0F766E'
-  if (pct >= 40) return '#D9962E'
-  return '#DB6478'
+  if (isDelayed) return 'var(--sl-warning)'
+  if (pct >= 60) return 'var(--sl-em)'
+  if (pct >= 40) return 'var(--sl-warning)'
+  return 'var(--sl-danger)'
 }
 
 function getBorderLeftColor(pct: number, isDelayed: boolean, status?: string): string {
-  if (status === 'completed') return '#0F766E'
+  if (status === 'completed') return 'var(--sl-em)'
   if (status === 'paused') return 'var(--sl-t3)'
-  if (isDelayed) return '#D9962E'
-  if (pct >= 60) return '#0F766E'
+  if (isDelayed) return 'var(--sl-warning)'
+  if (pct >= 60) return 'var(--sl-em)'
   return '#8B7BD4'
 }
 
@@ -79,7 +79,7 @@ export function FuturoGoalCard({
           {icon}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
+          <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
             {`Missão: ${name.replace('Missão: ', '')}`}
           </p>
           <p className="text-[11px] text-[var(--sl-t2)] mt-[2px]">
@@ -104,7 +104,7 @@ export function FuturoGoalCard({
             </div>
           )}
         </div>
-        <span className="font-[IBM_Plex_Mono] text-[18px] font-bold shrink-0" style={{ color: pctColor }}>
+        <span className="sl-num-strong text-[18px] font-bold shrink-0" style={{ color: pctColor }}>
           {progressPct}%
         </span>
       </div>
@@ -112,7 +112,7 @@ export function FuturoGoalCard({
       {/* Progress row */}
       <div className="flex items-center justify-between mb-[5px]">
         <span className="text-[11px] text-[var(--sl-t2)]">{progressLabel}</span>
-        <span className="font-[IBM_Plex_Mono] text-[13px] font-semibold" style={{ color: pctColor }}>
+        <span className="sl-num-strong text-[13px] font-semibold" style={{ color: pctColor }}>
           {progressPct}%
         </span>
       </div>

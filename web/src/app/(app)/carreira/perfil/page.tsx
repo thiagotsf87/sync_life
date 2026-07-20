@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Briefcase, Save, User, Clock, RefreshCw, TrendingUp } from 'lucide-react'
+import { Briefcase, User, Clock, RefreshCw, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import {
@@ -13,8 +13,14 @@ import {
 import { createTransactionFromSalario } from '@/lib/integrations/financas'
 import { CarreiraMobile } from '@/components/carreira/CarreiraMobile'
 import { ModuleHeader } from '@/components/ui/module-header'
+import { SectionHeader } from '@/components/ui/section-header'
+import { SaveBar } from '@/components/ui/save-bar'
+import { TextField } from '@/components/ui/text-field'
+import { ToggleRow } from '@/components/ui/toggle-row'
+import { fmtBRL } from '@/lib/format/currency'
 import { CARREIRA_XP } from '@/lib/carreira-xp-mock'
 
+const CARREIRA = '#DB6478'
 const FIELDS: ProfessionalField[] = ['technology', 'finance', 'health', 'education', 'law', 'engineering', 'marketing', 'sales', 'hr', 'design', 'management', 'other']
 const LEVELS: CareerLevel[] = ['intern', 'junior', 'mid', 'senior', 'specialist', 'coordinator', 'manager', 'director', 'c_level', 'freelancer', 'entrepreneur']
 
@@ -25,6 +31,26 @@ const CHANGE_TYPE_LABELS = {
   company_change: 'Mudança de empresa',
   salary_change: 'Ajuste salarial',
   other: 'Outro',
+}
+
+type FormState = {
+  current_title: string
+  current_company: string
+  field: ProfessionalField | ''
+  level: CareerLevel | ''
+  gross_salary: string
+  start_date: string
+  sync_salary_to_finance: boolean
+}
+
+const EMPTY: FormState = {
+  current_title: '',
+  current_company: '',
+  field: '',
+  level: '',
+  gross_salary: '',
+  start_date: '',
+  sync_salary_to_finance: false,
 }
 
 export default function PerfilCarreiraPage() {
@@ -41,19 +67,12 @@ export default function PerfilCarreiraPage() {
 
   const [isSaving, setIsSaving] = useState(false)
   const [editMode, setEditMode] = useState(false)
-  const [form, setForm] = useState({
-    current_title: '',
-    current_company: '',
-    field: '' as ProfessionalField | '',
-    level: '' as CareerLevel | '',
-    gross_salary: '',
-    start_date: '',
-    sync_salary_to_finance: false,
-  })
+  const [form, setForm] = useState<FormState>(EMPTY)
+  const [baseline, setBaseline] = useState<FormState>(EMPTY)
 
   useEffect(() => {
     if (profile) {
-      setForm({
+      const next: FormState = {
         current_title: profile.current_title ?? '',
         current_company: profile.current_company ?? '',
         field: profile.field ?? '',
@@ -61,9 +80,18 @@ export default function PerfilCarreiraPage() {
         gross_salary: profile.gross_salary ? String(profile.gross_salary) : '',
         start_date: profile.start_date ?? '',
         sync_salary_to_finance: profile.sync_salary_to_finance,
-      })
+      }
+      setForm(next)
+      setBaseline(next)
+    } else {
+      setForm(EMPTY)
+      setBaseline(EMPTY)
     }
   }, [profile])
+
+  const isDirty = useMemo(() => {
+    return JSON.stringify(form) !== JSON.stringify(baseline)
+  }, [form, baseline])
 
   async function handleSave() {
     setIsSaving(true)
@@ -78,7 +106,6 @@ export default function PerfilCarreiraPage() {
         sync_salary_to_finance: form.sync_salary_to_finance,
       }, profile?.id)
 
-      // Register history if salary changed
       if (profile && form.gross_salary && parseFloat(form.gross_salary) !== profile.gross_salary) {
         await addHistory({
           title: form.current_title || profile.current_title || '',
@@ -93,7 +120,6 @@ export default function PerfilCarreiraPage() {
         })
       }
 
-      // RN-CAR-01: sincronizar salário com Finanças
       if (form.sync_salary_to_finance && form.gross_salary) {
         await createTransactionFromSalario({
           title: form.current_title,
@@ -101,7 +127,7 @@ export default function PerfilCarreiraPage() {
           competenceDate: new Date().toISOString().split('T')[0],
         })
       }
-      // RN-CAR-20: promoção efetivada → calcular impacto
+
       if (profile?.gross_salary && form.gross_salary) {
         const oldSalary = profile.gross_salary
         const newSalary = parseFloat(form.gross_salary)
@@ -109,17 +135,17 @@ export default function PerfilCarreiraPage() {
           const monthlyGain = newSalary - oldSalary
           const gain2y = monthlyGain * 24
           toast.success(
-            `💼 +${monthlyGain.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/mês`,
+            `+${fmtBRL(monthlyGain)}/mês`,
             {
-              description: `Se viesse 2 anos antes, seriam +${gain2y.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} a mais acumulados.`,
+              description: `Se viesse 2 anos antes, seriam +${fmtBRL(gain2y)} a mais acumulados.`,
               duration: 8000,
             }
           )
         } else {
-          toast.success('Perfil salvo!')
+          toast.success('Perfil salvo')
         }
       } else {
-        toast.success('Perfil salvo!')
+        toast.success('Perfil salvo')
       }
       await reload()
       setEditMode(false)
@@ -128,6 +154,11 @@ export default function PerfilCarreiraPage() {
     } finally {
       setIsSaving(false)
     }
+  }
+
+  function handleDiscard() {
+    setForm(baseline)
+    if (profile) setEditMode(false)
   }
 
   return (
@@ -154,56 +185,44 @@ export default function PerfilCarreiraPage() {
       }}
       onReload={async () => { await reload() }}
     />
-    <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-16">
+    <div className="hidden lg:block max-w-[1160px] mx-auto px-10 py-9 pb-24">
 
       {/* MODULE HEADER */}
       <ModuleHeader
         icon={User}
         iconBg="rgba(219,100,120,.08)"
-        iconColor="#DB6478"
-        title="Perfil Profissional"
+        iconColor={CARREIRA}
+        title="Perfil profissional"
         subtitle="Gerencie seus dados de carreira e sincronize com outros modulos"
       >
-        {!editMode && profile ? (
+        {!editMode && profile && (
           <button
             onClick={() => setEditMode(true)}
             className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px]
                        font-semibold border border-[var(--sl-border)] bg-transparent text-[var(--sl-t2)]
                        hover:border-[var(--sl-border-h)] hover:text-[var(--sl-t1)] transition-all"
           >
-            Editar Perfil
-          </button>
-        ) : (
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#DB6478] text-white hover:brightness-110 disabled:opacity-50 transition-all"
-          >
-            <Save size={15} />
-            {isSaving ? 'Salvando...' : 'Salvar Alteracoes'}
+            Editar perfil
           </button>
         )}
       </ModuleHeader>
 
-      {/* Display view — when profile exists and not in edit mode */}
+      {/* DISPLAY VIEW: profile read-only */}
       {!editMode && profile && (<>
-        {/* Profile Hero Card */}
-        <div
-          className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-7 overflow-hidden mb-7 sl-fade-up sl-delay-1"
-        >
+        {/* Profile Hero Card (G-05: unico hero) */}
+        <div className="relative bg-[var(--sl-s-hero)] border border-[var(--sl-border)] rounded-[18px] p-7 overflow-hidden mb-7 sl-fade-up sl-delay-1">
           {/* Accent bar */}
           <div
             className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[18px]"
-            style={{ background: 'linear-gradient(90deg, #DB6478, #a855f7, #3CA0B5)' }}
+            style={{ background: CARREIRA }}
           />
           <div className="flex items-center gap-6">
             {/* Avatar with initials */}
             <div
-              className="w-[72px] h-[72px] rounded-full flex items-center justify-center font-[Space_Grotesk] font-extrabold text-[24px] shrink-0"
+              className="w-[72px] h-[72px] rounded-full flex items-center justify-center font-[Syne] font-extrabold text-[24px] shrink-0"
               style={{
-                background: 'linear-gradient(135deg, rgba(219,100,120,.15), rgba(168,85,247,.12))',
-                color: '#DB6478',
+                background: 'rgba(219,100,120,.12)',
+                color: CARREIRA,
                 border: '2px solid rgba(219,100,120,.25)',
               }}
             >
@@ -215,7 +234,7 @@ export default function PerfilCarreiraPage() {
               })()}
             </div>
             <div className="flex-1">
-              <h2 className="font-[Space_Grotesk] font-extrabold text-[22px] text-[var(--sl-t1)] mb-[3px]">
+              <h2 className="font-[Syne] font-extrabold text-[22px] text-[var(--sl-t1)] mb-[3px]">
                 {profile.current_title || 'Sem cargo'}
               </h2>
               <p className="text-[13px] text-[var(--sl-t2)]">
@@ -223,13 +242,13 @@ export default function PerfilCarreiraPage() {
                   profile.level ? LEVEL_LABELS[profile.level] : null,
                   profile.current_company,
                   profile.field ? FIELD_LABELS[profile.field] : null,
-                ].filter(Boolean).join(' \u00B7 ')}
+                ].filter(Boolean).join(' · ')}
               </p>
               <div className="flex gap-[6px] mt-2 flex-wrap">
                 {profile.level && (
                   <span
                     className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
-                    style={{ background: 'rgba(219,100,120,.10)', color: '#DB6478' }}
+                    style={{ background: 'rgba(219,100,120,.10)', color: CARREIRA }}
                   >
                     {LEVEL_LABELS[profile.level]}
                   </span>
@@ -237,7 +256,7 @@ export default function PerfilCarreiraPage() {
                 {profile.field && (
                   <span
                     className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
-                    style={{ background: 'rgba(79,136,212,.10)', color: '#4F88D4' }}
+                    style={{ background: 'rgba(79,136,212,.10)', color: 'var(--sl-info)' }}
                   >
                     {FIELD_LABELS[profile.field]}
                   </span>
@@ -245,7 +264,7 @@ export default function PerfilCarreiraPage() {
                 {profile.start_date && (
                   <span
                     className="inline-flex items-center px-[10px] py-1 rounded-lg text-[11px] font-semibold"
-                    style={{ background: 'rgba(15,118,110,.10)', color: '#0F766E' }}
+                    style={{ background: 'rgba(15,118,110,.10)', color: 'var(--sl-em)' }}
                   >
                     {(() => {
                       const start = new Date(profile.start_date!)
@@ -265,25 +284,25 @@ export default function PerfilCarreiraPage() {
 
         <div className="grid grid-cols-[1fr_340px] gap-5 max-lg:grid-cols-1 sl-fade-up sl-delay-2">
 
-          {/* Left column: Info cards (read-only display) */}
+          {/* Left column: Info cards */}
           <div className="flex flex-col gap-5">
             {/* Salary card */}
             {profile.gross_salary && (
-              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-                <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                  <Briefcase size={16} className="text-[#DB6478]" />
-                  Informacoes do Cargo
+              <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
+                <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                  <Briefcase size={16} style={{ color: CARREIRA }} />
+                  Informações do cargo
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-1">Salario Bruto</p>
-                    <p className="font-[IBM_Plex_Mono] font-medium text-[18px] text-[#0F766E]">
-                      {profile.gross_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-1">Salário bruto</p>
+                    <p className="sl-num-strong text-[18px]" style={{ color: 'var(--sl-em)' }}>
+                      {fmtBRL(profile.gross_salary)}
                     </p>
                   </div>
                   {profile.start_date && (
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-1">Data de Inicio</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-1">Data de início</p>
                       <p className="text-[14px] font-medium text-[var(--sl-t1)]">
                         {new Date(profile.start_date).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
                       </p>
@@ -292,43 +311,52 @@ export default function PerfilCarreiraPage() {
                 </div>
                 {profile.sync_salary_to_finance && (
                   <div className="mt-4 px-4 py-3 bg-[var(--sl-s2)] rounded-xl flex items-center gap-3">
-                    <RefreshCw size={14} className="text-[#DB6478] shrink-0" />
-                    <p className="text-[12px] text-[var(--sl-t2)]">Salario sincronizado com Financas como receita mensal</p>
+                    <RefreshCw size={14} style={{ color: CARREIRA }} className="shrink-0" />
+                    <p className="text-[12px] text-[var(--sl-t2)]">Salário sincronizado com Finanças como receita mensal</p>
                   </div>
                 )}
               </div>
             )}
 
             {/* XP badges card */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <TrendingUp size={16} className="text-[#DB6478]" />
-                Evolucao
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
+              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <TrendingUp size={16} style={{ color: CARREIRA }} />
+                Evolução
               </div>
               <p className="text-[13px] text-[var(--sl-t2)] leading-relaxed">
-                {profile.current_title || 'Profissional'} em evolucao constante.
+                {profile.current_title || 'Profissional'} em evolução constante.
                 {profile.start_date && ` Desde ${new Date(profile.start_date).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}.`}
               </p>
               <div className="flex gap-2 mt-3 flex-wrap">
-                <span className="text-[11px] font-semibold px-[10px] py-1 rounded-lg" style={{ background: 'rgba(219,100,120,.10)', color: '#DB6478' }}>Level {CARREIRA_XP.level}</span>
-                <span className="text-[11px] font-semibold px-[10px] py-1 rounded-lg" style={{ background: 'rgba(15,118,110,.10)', color: '#0F766E' }}>{history.length} posicoes</span>
+                <span className="text-[11px] font-semibold px-[10px] py-1 rounded-lg" style={{ background: 'rgba(219,100,120,.10)', color: CARREIRA }}>Level {CARREIRA_XP.level}</span>
+                <span className="text-[11px] font-semibold px-[10px] py-1 rounded-lg" style={{ background: 'rgba(15,118,110,.10)', color: 'var(--sl-em)' }}>{history.length} posições</span>
               </div>
             </div>
           </div>
 
           {/* Right column: History sidebar */}
           <div className="flex flex-col gap-5">
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <Clock size={16} className="text-[#DB6478]" />
-                Historico Recente
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
+              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <Clock size={16} style={{ color: CARREIRA }} />
+                Histórico recente
+                {history.length > 4 && (
+                  <span
+                    className="ml-auto font-sans text-[12px] font-medium cursor-pointer hover:underline"
+                    style={{ color: CARREIRA }}
+                    onClick={() => router.push('/carreira/historico')}
+                  >
+                    Ver tudo &rarr;
+                  </span>
+                )}
               </div>
               {history.length === 0 ? (
-                <p className="text-[12px] text-[var(--sl-t3)]">Sem historico ainda.</p>
+                <p className="text-[12px] text-[var(--sl-t3)]">Sem histórico ainda.</p>
               ) : (
                 <div className="flex flex-col gap-[10px]">
                   {history.slice(0, 4).map((entry, i) => {
-                    const borderColors = ['#0F766E', '#a855f7', '#D9962E', '#4F88D4']
+                    const borderColors = ['#0F766E', '#8B7BD4', '#D9962E', '#4F88D4']
                     return (
                       <div
                         key={entry.id}
@@ -337,11 +365,11 @@ export default function PerfilCarreiraPage() {
                       >
                         <p className="text-[12px] font-semibold text-[var(--sl-t1)]">{entry.title}</p>
                         <p className="text-[11px] text-[var(--sl-t3)]">
-                          {entry.company} &middot; {new Date(entry.start_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}
+                          {entry.company} · {new Date(entry.start_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}
                         </p>
                         {entry.salary && (
-                          <p className="font-[IBM_Plex_Mono] text-[13px] mt-1" style={{ color: i === 0 ? '#0F766E' : 'var(--sl-t2)' }}>
-                            {Number(entry.salary).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                          <p className="sl-num text-[13px] mt-1" style={{ color: i === 0 ? 'var(--sl-em)' : 'var(--sl-t2)' }}>
+                            {fmtBRL(Number(entry.salary))}
                           </p>
                         )}
                       </div>
@@ -354,70 +382,59 @@ export default function PerfilCarreiraPage() {
         </div>
       </>)}
 
-      {/* Edit form — when no profile yet or in edit mode */}
+      {/* EDIT FORM: cards numerados (G-09) + SaveBar (G-08) */}
       {(editMode || !profile) && (
         <div className="grid grid-cols-[1fr_340px] gap-5 max-lg:grid-cols-1">
 
-          {/* Form */}
+          {/* Form column */}
           <div className="flex flex-col gap-5">
-            {/* Card: Informacoes do Cargo */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex flex-col gap-4 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
-              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
-                <Briefcase size={16} className="text-[#DB6478]" />
-                Informacoes do Cargo
+            {/* Card 01 · Informações do cargo */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-6 flex flex-col gap-4 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
+              <SectionHeader
+                eyebrow="01 · IDENTIDADE"
+                title="Informações do cargo"
+                sub="Dados básicos sobre sua posição atual"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <TextField
+                  label="Cargo"
+                  value={form.current_title}
+                  onChange={e => setForm(f => ({ ...f, current_title: e.target.value }))}
+                  placeholder="Ex: Desenvolvedor Sênior"
+                />
+                <TextField
+                  label="Empresa"
+                  value={form.current_company}
+                  onChange={e => setForm(f => ({ ...f, current_company: e.target.value }))}
+                  placeholder="Nome da empresa"
+                />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10.5px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-[7px] block">Cargo</label>
-                  <input
-                    type="text"
-                    value={form.current_title}
-                    onChange={e => setForm(f => ({ ...f, current_title: e.target.value }))}
-                    placeholder="Ex: Desenvolvedor Senior"
-                    className="w-full px-[15px] py-[11px] rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10.5px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-[7px] block">Empresa</label>
-                  <input
-                    type="text"
-                    value={form.current_company}
-                    onChange={e => setForm(f => ({ ...f, current_company: e.target.value }))}
-                    placeholder="Nome da empresa"
-                    className="w-full px-[15px] py-[11px] rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10.5px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-[7px] block">Salario Bruto</label>
-                  <input
-                    type="number"
-                    value={form.gross_salary}
-                    onChange={e => setForm(f => ({ ...f, gross_salary: e.target.value }))}
-                    placeholder="0"
-                    min="0"
-                    className="w-full px-[15px] py-[11px] rounded-[10px] text-[13px] font-[IBM_Plex_Mono] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10.5px] font-bold uppercase tracking-[.07em] text-[var(--sl-t3)] mb-[7px] block">Data de Inicio</label>
-                  <input
-                    type="date"
-                    value={form.start_date}
-                    onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
-                    className="w-full px-[15px] py-[11px] rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-h)] transition-colors"
-                  />
-                </div>
+                <TextField
+                  label="Salário bruto"
+                  type="number"
+                  value={form.gross_salary}
+                  onChange={e => setForm(f => ({ ...f, gross_salary: e.target.value }))}
+                  placeholder="0"
+                  min="0"
+                />
+                <TextField
+                  label="Data de início"
+                  type="date"
+                  value={form.start_date}
+                  onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
+                />
               </div>
             </div>
 
-            {/* Card: Area de Atuacao */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-3">
-              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DB6478" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                Area de Atuacao
-              </div>
+            {/* Card 02 · Área de atuação */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-3">
+              <SectionHeader
+                eyebrow="02 · ÁREA"
+                title="Área de atuação"
+                sub="Em qual setor profissional você atua"
+                className="mb-[18px]"
+              />
               <div className="flex flex-wrap gap-2">
                 {FIELDS.map(f => (
                   <button
@@ -426,10 +443,14 @@ export default function PerfilCarreiraPage() {
                     className={cn(
                       'inline-flex items-center gap-[5px] px-[14px] py-2 rounded-[10px] text-[12px] font-medium border transition-all',
                       form.field === f
-                        ? 'border-[rgba(219,100,120,.2)] text-[#DB6478]'
+                        ? ''
                         : 'border-transparent bg-[var(--sl-s2)] text-[var(--sl-t3)] hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t2)]'
                     )}
-                    style={form.field === f ? { background: 'rgba(219,100,120,.08)' } : undefined}
+                    style={form.field === f ? {
+                      background: 'rgba(219,100,120,.08)',
+                      borderColor: 'rgba(219,100,120,.2)',
+                      color: CARREIRA,
+                    } : undefined}
                   >
                     {FIELD_LABELS[f]}
                   </button>
@@ -437,24 +458,30 @@ export default function PerfilCarreiraPage() {
               </div>
             </div>
 
-            {/* Card: Nivel Profissional (stepper style) */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-4">
-              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <TrendingUp size={16} className="text-[#DB6478]" />
-                Nivel Profissional
-              </div>
+            {/* Card 03 · Nível profissional */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-4">
+              <SectionHeader
+                eyebrow="03 · SENIORIDADE"
+                title="Nível profissional"
+                sub="Sua senioridade atual no mercado"
+                className="mb-[18px]"
+              />
               <div className="flex flex-wrap gap-[6px]">
                 {LEVELS.map(l => (
                   <button
                     key={l}
                     onClick={() => setForm(f => ({ ...f, level: l }))}
                     className={cn(
-                      'inline-flex px-3 py-[7px] rounded-lg text-[11px] font-semibold transition-all',
+                      'inline-flex px-3 py-[7px] rounded-lg text-[11px] font-semibold transition-all border',
                       form.level === l
-                        ? 'text-[#DB6478] border border-[rgba(219,100,120,.25)]'
-                        : 'bg-[var(--sl-s2)] text-[var(--sl-t3)] border border-transparent hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t2)]'
+                        ? ''
+                        : 'bg-[var(--sl-s2)] text-[var(--sl-t3)] border-transparent hover:bg-[var(--sl-s3)] hover:text-[var(--sl-t2)]'
                     )}
-                    style={form.level === l ? { background: 'rgba(219,100,120,.12)' } : undefined}
+                    style={form.level === l ? {
+                      background: 'rgba(219,100,120,.12)',
+                      borderColor: 'rgba(219,100,120,.25)',
+                      color: CARREIRA,
+                    } : undefined}
                   >
                     {LEVEL_LABELS[l]}
                   </button>
@@ -462,46 +489,33 @@ export default function PerfilCarreiraPage() {
               </div>
             </div>
 
-            {/* Sync + Cancel buttons */}
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
-              <div className="flex items-center justify-between p-[14px_16px] bg-[var(--sl-s2)] rounded-xl mb-3">
-                <div className="flex-1">
-                  <p className="text-[12px] font-semibold text-[var(--sl-t1)]">Sync com Financas</p>
-                  <p className="text-[11px] text-[var(--sl-t3)]">Salario como receita mensal</p>
-                </div>
-                <button
-                  onClick={() => setForm(f => ({ ...f, sync_salary_to_finance: !f.sync_salary_to_finance }))}
-                  className={cn(
-                    'w-10 h-[22px] rounded-[11px] transition-all relative cursor-pointer',
-                    form.sync_salary_to_finance ? 'bg-[#DB6478]' : 'bg-[var(--sl-s3)]'
-                  )}
-                >
-                  <div className={cn(
-                    'w-[18px] h-[18px] rounded-full bg-white absolute top-[2px] transition-all',
-                    form.sync_salary_to_finance ? 'right-[2px]' : 'left-[2px]'
-                  )} />
-                </button>
-              </div>
-              {editMode && (
-                <button
-                  onClick={() => setEditMode(false)}
-                  className="w-full py-2.5 rounded-[10px] text-[13px] border border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)] transition-colors"
-                >
-                  Cancelar
-                </button>
-              )}
+            {/* Card 04 · Integrações */}
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-6 transition-colors hover:border-[var(--sl-border-h)]">
+              <SectionHeader
+                eyebrow="04 · INTEGRAÇÕES"
+                title="Sincronização cross-module"
+                sub="Compartilhe dados de carreira com outros módulos"
+                className="mb-[18px]"
+              />
+              <ToggleRow
+                label="Sync com Finanças"
+                sub="Salário como receita mensal recorrente"
+                checked={form.sync_salary_to_finance}
+                onChange={(v) => setForm(f => ({ ...f, sync_salary_to_finance: v }))}
+              />
             </div>
           </div>
 
           {/* Sidebar: career history */}
           <div className="flex flex-col gap-5">
-            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
-              <div className="flex items-center gap-[9px] font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
-                <Clock size={16} className="text-[#DB6478]" />
-                Historico Recente
+            <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-6 transition-colors hover:border-[var(--sl-border-h)] sl-fade-up sl-delay-2">
+              <div className="flex items-center gap-[9px] font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-[18px]">
+                <Clock size={16} style={{ color: CARREIRA }} />
+                Histórico recente
                 {history.length > 5 && (
                   <span
-                    className="ml-auto font-sans text-[12px] font-medium text-[#DB6478] cursor-pointer hover:underline"
+                    className="ml-auto font-sans text-[12px] font-medium cursor-pointer hover:underline"
+                    style={{ color: CARREIRA }}
                     onClick={() => router.push('/carreira/historico')}
                   >
                     Ver tudo &rarr;
@@ -513,11 +527,11 @@ export default function PerfilCarreiraPage() {
                   {[1, 2, 3].map(i => <div key={i} className="h-14 rounded-lg bg-[var(--sl-s2)] animate-pulse" />)}
                 </div>
               ) : history.length === 0 ? (
-                <p className="text-[12px] text-[var(--sl-t3)]">Nenhum historico ainda.</p>
+                <p className="text-[12px] text-[var(--sl-t3)]">Nenhum histórico ainda.</p>
               ) : (
                 <div className="flex flex-col gap-[10px]">
                   {history.slice(0, 5).map((entry, i) => {
-                    const borderColors = ['#0F766E', '#a855f7', '#D9962E', '#4F88D4', '#3CA0B5']
+                    const borderColors = ['#0F766E', '#8B7BD4', '#D9962E', '#4F88D4', '#3CA0B5']
                     return (
                       <div
                         key={entry.id}
@@ -536,7 +550,7 @@ export default function PerfilCarreiraPage() {
                         {entry.company && <p className="text-[11px] text-[var(--sl-t3)]">{entry.company}</p>}
                         <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
                           {new Date(entry.start_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}
-                          {entry.salary && <span className="font-[IBM_Plex_Mono] ml-1">{formatCurrency(String(entry.salary))}</span>}
+                          {entry.salary && <span className="sl-num ml-1">{fmtBRL(Number(entry.salary))}</span>}
                         </p>
                       </div>
                     )
@@ -547,12 +561,15 @@ export default function PerfilCarreiraPage() {
           </div>
         </div>
       )}
+
+      {/* SaveBar sticky (G-08) · so aparece com mudancas */}
+      <SaveBar
+        hasChanges={(editMode || !profile) && isDirty}
+        onSave={handleSave}
+        onDiscard={handleDiscard}
+        saving={isSaving}
+      />
     </div>
     </>
   )
-
-  function formatCurrency(v: string) {
-    return v ? parseFloat(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'
-  }
 }
-

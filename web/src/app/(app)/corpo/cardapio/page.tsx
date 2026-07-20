@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Sparkles, RefreshCw, Lock, Unlock, History, Utensils, Settings } from 'lucide-react'
+import { Sparkles, RefreshCw, Lock, Unlock, History, Utensils, Settings, Clock, SlidersHorizontal } from 'lucide-react'
 import { CardapioWizard } from '@/components/corpo/CardapioWizard'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { cn } from '@/lib/utils'
@@ -280,7 +280,7 @@ export default function CardapioPage() {
             {profile.tdee && (
               <div>
                 <p className="text-[10px] text-[var(--sl-t3)] font-bold uppercase tracking-wider">TDEE</p>
-                <p className="font-[IBM_Plex_Mono] text-[14px] font-medium text-[var(--sl-t1)]">{Math.round(profile.tdee)} kcal</p>
+                <p className="sl-num text-[14px] text-[var(--sl-t1)]">{Math.round(profile.tdee)} kcal</p>
               </div>
             )}
             {profile.weight_goal_type && (
@@ -330,7 +330,7 @@ export default function CardapioPage() {
                   )}
                 >
                   <span className="block">{day}</span>
-                  <span className="block font-[IBM_Plex_Mono] text-[10px] font-medium text-[#D9962E] mt-[2px]">
+                  <span className="block sl-num text-[10px] text-[#D9962E] mt-[2px]">
                     {dayCals.toLocaleString('pt-BR')}
                   </span>
                 </button>
@@ -360,7 +360,7 @@ export default function CardapioPage() {
           {!plan ? (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-8 text-center sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
               <div className="text-5xl mb-4"><Utensils size={48} className="mx-auto text-[#D97534] opacity-60" /></div>
-              <h2 className="font-[Space_Grotesk] font-bold text-[17px] text-[var(--sl-t1)] mb-2">
+              <h2 className="font-[Syne] font-bold text-[17px] text-[var(--sl-t1)] mb-2">
                 Gere seu Cardapio Semanal
               </h2>
               <p className="text-[13px] text-[var(--sl-t2)] mb-6 max-w-sm mx-auto">
@@ -373,7 +373,7 @@ export default function CardapioPage() {
                 onClick={handleGenerate}
                 disabled={generating}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-[12px] text-[14px] font-semibold
-                           bg-gradient-to-r from-[#D9962E] to-[#D97534] text-[#03071a] hover:opacity-90
+                           bg-[var(--sl-em)] text-white hover:opacity-90
                            disabled:opacity-60 transition-opacity"
               >
                 {generating ? (
@@ -389,10 +389,10 @@ export default function CardapioPage() {
               {/* Card title */}
               <div className="flex items-center gap-[9px] mb-5">
                 <Utensils size={16} className="text-[#D9962E]" />
-                <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   {DAYS_FULL[selectedDay]}
                 </h3>
-                <span className="font-[IBM_Plex_Mono] text-[12px] text-[#D9962E] ml-auto">
+                <span className="sl-num text-[12px] text-[#D9962E] ml-auto">
                   {dayTotalCalories.toLocaleString('pt-BR')} kcal
                 </span>
               </div>
@@ -407,7 +407,7 @@ export default function CardapioPage() {
                         <p className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">
                           {MEAL_TYPE_LABELS[idx] ?? 'Lanche'}
                         </p>
-                        <p className="font-[IBM_Plex_Mono] text-[11px] text-[#D9962E] mt-[2px]">{meal.calories} kcal</p>
+                        <p className="sl-num text-[11px] text-[#D9962E] mt-[2px]">{meal.calories} kcal</p>
                       </div>
                       {/* Meal body */}
                       <div className="flex-1">
@@ -457,15 +457,13 @@ export default function CardapioPage() {
           {plan && dayPlan && (
             <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 hover:border-[var(--sl-border-h)] transition-colors">
               <div className="flex items-center gap-[9px] mb-[18px]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9962E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-                </svg>
-                <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <Clock size={16} className="text-[#D9962E]" />
+                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   Resumo Diario
                 </h3>
               </div>
               <div className="text-center mb-[14px]">
-                <span className="font-[IBM_Plex_Mono] text-[28px] font-medium text-[#D9962E]">{dayTotalCalories.toLocaleString('pt-BR')}</span>
+                <span className="sl-num-strong text-[28px] text-[#D9962E]">{dayTotalCalories.toLocaleString('pt-BR')}</span>
                 <span className="text-[12px] text-[var(--sl-t3)]"> kcal</span>
               </div>
               <div className="flex flex-col gap-[10px]">
@@ -477,7 +475,7 @@ export default function CardapioPage() {
                   <div key={macro.label}>
                     <div className="flex justify-between mb-1">
                       <span className="text-[11px]" style={{ color: macro.color }}>{macro.label}</span>
-                      <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t1)]">{macro.value}</span>
+                      <span className="sl-num text-[11px] text-[var(--sl-t1)]">{macro.value}</span>
                     </div>
                     <div className="h-[6px] bg-[var(--sl-s3)] rounded-full overflow-hidden">
                       <div
@@ -494,10 +492,8 @@ export default function CardapioPage() {
           {/* Preferences */}
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 hover:border-[var(--sl-border-h)] transition-colors">
             <div className="flex items-center gap-[9px] mb-[18px]">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sl-t2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3" /><path d="M12 1v6" /><path d="M12 17v6" /><path d="m4.22 4.22 4.24 4.24" /><path d="m15.54 15.54 4.24 4.24" /><path d="M1 12h6" /><path d="M17 12h6" /><path d="m4.22 19.78 4.24-4.24" /><path d="m15.54 8.46 4.24-4.24" />
-              </svg>
-              <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+              <SlidersHorizontal size={16} className="text-[var(--sl-t2)]" />
+              <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                 Preferencias
               </h3>
             </div>
@@ -537,8 +533,8 @@ export default function CardapioPage() {
             onClick={handleGenerate}
             disabled={generating}
             className="w-full inline-flex items-center justify-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#D97534] text-white hover:brightness-110 hover:-translate-y-px
-                       transition-all shadow-[0_6px_20px_rgba(217,117,52,.15)] disabled:opacity-50"
+                       bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px
+                       transition-all shadow-[0_6px_20px_rgba(15,118,110,.15)] disabled:opacity-50"
           >
             <RefreshCw size={16} className={generating ? 'animate-spin' : ''} />
             {generating ? 'Gerando...' : 'Regenerar Cardapio'}
@@ -551,7 +547,7 @@ export default function CardapioPage() {
                 onClick={() => setShowHistory(h => !h)}
                 className="flex items-center justify-between w-full"
               >
-                <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2">
+                <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-2">
                   <History size={13} />
                   Historico ({planHistory.length})
                 </h3>

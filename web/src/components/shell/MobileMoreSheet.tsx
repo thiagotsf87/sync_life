@@ -2,7 +2,11 @@
 
 import { useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Bot, LogOut, Pin, Settings } from 'lucide-react'
+import {
+  Bot, LogOut, Pin, Settings,
+  Wallet, Clock, Compass, Activity, Brain, TrendingUp, Briefcase, Plane,
+  type LucideIcon,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { MODULES } from '@/lib/modules'
 import { useShellStore } from '@/stores/shell-store'
@@ -17,16 +21,24 @@ interface MobileMoreSheetProps {
   userName?: string
 }
 
-const PINNABLE_MODULES = [
-  { id: 'financas', emoji: '💰', label: 'Finanças', color: '#0F766E', bg: 'rgba(15,118,110,0.15)' },
-  { id: 'tempo', emoji: '⏳', label: 'Tempo', color: '#3CA0B5', bg: 'rgba(60,160,181,0.15)' },
-  { id: 'futuro', emoji: '🔮', label: 'Futuro', color: '#0B2D34', bg: 'rgba(0,85,255,0.15)' },
-  { id: 'corpo', emoji: '🏃', label: 'Corpo', color: '#D97534', bg: 'rgba(217,117,52,0.15)' },
-  { id: 'mente', emoji: '🧠', label: 'Mente', color: '#8B7BD4', bg: 'rgba(139,123,212,0.15)' },
-  { id: 'patrimonio', emoji: '📈', label: 'Patrimônio', color: '#D9962E', bg: 'rgba(217,150,46,0.15)' },
-  { id: 'carreira', emoji: '💼', label: 'Carreira', color: '#C76795', bg: 'rgba(199,103,149,0.15)' },
-  { id: 'experiencias', emoji: '✈️', label: 'Experiências', color: '#14b8a6', bg: 'rgba(20,184,166,0.15)' },
-] as const
+type PinnableModule = {
+  id: string
+  Icon: LucideIcon
+  label: string
+  color: string
+  bg: string
+}
+
+const PINNABLE_MODULES: PinnableModule[] = [
+  { id: 'financas',     Icon: Wallet,     label: 'Finanças',     color: '#0F766E', bg: 'rgba(15,118,110,0.15)' },
+  { id: 'tempo',        Icon: Clock,      label: 'Tempo',        color: '#3CA0B5', bg: 'rgba(60,160,181,0.15)' },
+  { id: 'futuro',       Icon: Compass,    label: 'Futuro',       color: '#8B7BD4', bg: 'rgba(139,123,212,0.15)' },
+  { id: 'corpo',        Icon: Activity,   label: 'Corpo',        color: '#D97534', bg: 'rgba(217,117,52,0.15)' },
+  { id: 'mente',        Icon: Brain,      label: 'Mente',        color: '#D9962E', bg: 'rgba(217,150,46,0.15)' },
+  { id: 'patrimonio',   Icon: TrendingUp, label: 'Patrimônio',   color: '#4F88D4', bg: 'rgba(79,136,212,0.15)' },
+  { id: 'carreira',     Icon: Briefcase,  label: 'Carreira',     color: '#DB6478', bg: 'rgba(219,100,120,0.15)' },
+  { id: 'experiencias', Icon: Plane,      label: 'Experiências', color: '#C76795', bg: 'rgba(199,103,149,0.15)' },
+]
 
 export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreSheetProps) {
   const router = useRouter()
@@ -87,17 +99,18 @@ export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreShee
           <div className="h-1 w-10 rounded-full bg-[var(--sl-s3)]" />
         </div>
 
-        <h2 className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)] mb-1">
+        <h2 className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)] mb-1">
           Todos os Módulos
         </h2>
         <p className="text-[12px] text-[var(--sl-t3)] mb-4">
           Toque para abrir. Fixar para manter na barra (até 3).
         </p>
 
-        {/* Grid 2×4 — módulos fixáveis */}
+        {/* Grid 2x4, módulos fixáveis */}
         <div className="grid grid-cols-4 gap-2">
           {PINNABLE_MODULES.map((mod) => {
             const isPinned = pinned.includes(mod.id)
+            const ModIcon = mod.Icon
             return (
               <div
                 key={mod.id}
@@ -115,14 +128,14 @@ export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreShee
               >
                 <div className="relative">
                   <div
-                    className="flex h-[40px] w-[40px] items-center justify-center rounded-[12px] text-[20px]"
-                    style={{ background: mod.bg }}
+                    className="flex h-[40px] w-[40px] items-center justify-center rounded-[12px]"
+                    style={{ background: mod.bg, color: mod.color }}
                   >
-                    {mod.emoji}
+                    <ModIcon size={20} strokeWidth={1.8} />
                   </div>
                   {isPinned && (
                     <span
-                      className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0F766E]"
+                      className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--sl-em)]"
                       title="Fixado na barra"
                     >
                       <Pin size={10} className="text-white" strokeWidth={2.5} />
@@ -139,7 +152,7 @@ export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreShee
                     'text-[10px] font-medium px-2 py-1 rounded-lg transition-colors',
                     'min-h-[24px] flex items-center justify-center',
                     isPinned
-                      ? 'bg-[#0F766E]/20 text-[#0F766E]'
+                      ? 'bg-[var(--sl-em)]/20 text-[var(--sl-em)]'
                       : 'text-[var(--sl-t3)] hover:bg-[var(--sl-s3)]',
                   )}
                 >
@@ -155,13 +168,12 @@ export function MobileMoreSheet({ open, onOpenChange, userName }: MobileMoreShee
           <button
             onClick={() => { router.push('/coach'); onOpenChange(false) }}
             className="flex items-center gap-3 w-full px-4 py-3 rounded-[12px]
-                       text-[14px] transition-colors
+                       text-[14px] transition-colors text-[var(--sl-em)]
                        hover:bg-[var(--sl-s2)] active:bg-[var(--sl-s3)]"
-            style={{ color: '#0F766E' }}
           >
             <Bot size={18} strokeWidth={1.8} />
             <span className="font-semibold">Coach IA</span>
-            <span className="ml-auto text-[10px] font-bold text-[#D9962E] bg-[rgba(217,150,46,0.15)] px-1.5 py-0.5 rounded-md">PRO</span>
+            <span className="ml-auto text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--sl-warning)] bg-[rgba(217,150,46,0.15)] px-1.5 py-0.5 rounded-md">PRO</span>
           </button>
           <button
             onClick={() => handleNavigate('configuracoes')}

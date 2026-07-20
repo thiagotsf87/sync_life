@@ -1,6 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface CarreiraSimuladorModalProps {
   currentTitle?: string
@@ -27,7 +28,7 @@ export function CarreiraSimuladorModal({ currentTitle, currentSalary, onClose }:
         <div className="flex items-center justify-between p-5 border-b border-[var(--sl-border)]">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5" style={{ color: '#c4b5fd' }}>✦ SIMULADOR</p>
-            <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Projeção de Promoção</h2>
+            <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Projeção de Promoção</h2>
           </div>
           <button onClick={onClose} className="text-[var(--sl-t3)] hover:text-[var(--sl-t1)] text-xl leading-none">×</button>
         </div>
@@ -51,15 +52,15 @@ export function CarreiraSimuladorModal({ currentTitle, currentSalary, onClose }:
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Salário Atual (R$)</label>
-              <div className="px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t2)] font-[IBM_Plex_Mono]">
-                {curr > 0 ? curr.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '—'}
+              <div className="px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t2)] sl-num-strong">
+                {curr > 0 ? fmtBRL(curr) : '—'}
               </div>
             </div>
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Salário Esperado (R$)</label>
               <input type="number" value={targetSalary} onChange={e => setTargetSalary(e.target.value)}
                 placeholder="Ex: 15000" min="0"
-                className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#8B7BD4] font-[IBM_Plex_Mono]" />
+                className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#8B7BD4] sl-num-strong" />
             </div>
           </div>
 
@@ -86,12 +87,12 @@ export function CarreiraSimuladorModal({ currentTitle, currentSalary, onClose }:
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <p className="text-[10px] text-[var(--sl-t3)] mb-0.5">Aumento</p>
-                  <p className="font-[IBM_Plex_Mono] font-bold text-[15px] text-[#0F766E]">+{increase.toFixed(1)}%</p>
+                  <p className="sl-num-strong font-bold text-[15px] text-[var(--sl-em)]">+{increase.toFixed(1)}%</p>
                 </div>
                 <div>
                   <p className="text-[10px] text-[var(--sl-t3)] mb-0.5">+R$/mês</p>
-                  <p className="font-[IBM_Plex_Mono] font-bold text-[15px] text-[#0F766E]">
-                    +{monthlyIncrease.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  <p className="sl-num-strong font-bold text-[15px] text-[var(--sl-em)]">
+                    +{fmtBRL(monthlyIncrease)}
                   </p>
                 </div>
               </div>
@@ -105,7 +106,7 @@ export function CarreiraSimuladorModal({ currentTitle, currentSalary, onClose }:
 
           <button onClick={onClose}
             className="w-full py-2.5 rounded-[10px] text-[13px] font-semibold transition-opacity"
-            style={{ background: 'linear-gradient(135deg, #8B7BD4, #C76795)', color: 'white' }}>
+            style={{ background: 'var(--sl-em)', color: 'white' }}>
             Fechar
           </button>
         </div>

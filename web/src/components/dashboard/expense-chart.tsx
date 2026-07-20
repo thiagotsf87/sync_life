@@ -88,10 +88,10 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
         </div>
       </div>
 
-      {/* Bar chart — sem h-64 no container externo para labels X não serem cortadas pelo overflow-y forçado */}
+      {/* Bar chart · sem h-64 no container externo para labels X não serem cortadas pelo overflow-y forçado */}
       <div className="relative min-w-0 overflow-x-auto lg:overflow-hidden">
         <div className="relative w-full min-w-[480px]">
-          {/* Área do gráfico — altura fixa */}
+          {/* Área do gráfico · altura fixa */}
           <div className="relative h-56">
             {/* Y-axis labels */}
             <div className="absolute left-0 top-0 bottom-6 w-12 flex flex-col justify-between text-xs text-slate-500 flex-shrink-0">
@@ -100,7 +100,7 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
               ))}
             </div>
 
-            {/* Linhas de referência horizontais — alinhadas com os labels do eixo Y */}
+            {/* Linhas de referência horizontais · alinhadas com os labels do eixo Y */}
             <div className="absolute left-14 right-2 top-0 bottom-6 flex flex-col justify-between pointer-events-none">
               <div className="border-t border-slate-700/20" />
               <div className="border-t border-dashed border-slate-700/40" />
@@ -109,7 +109,7 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
               <div /> {/* linha do zero já coberta pelo border-b das barras */}
             </div>
 
-            {/* Tooltip — único, renderizado dentro da área do gráfico para evitar clipping */}
+            {/* Tooltip · único, renderizado dentro da área do gráfico para evitar clipping */}
             {hoveredItem && (
               <div
                 className={`absolute top-1 z-20 bg-slate-800/95 backdrop-blur-sm border border-slate-700 rounded-xl px-3 py-2.5 pointer-events-none shadow-xl text-xs transition-none ${
@@ -197,7 +197,7 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
             </div>
           </div>
 
-          {/* Labels do eixo X — fora do h-56 para não ser cortado pelo overflow forçado */}
+          {/* Labels do eixo X · fora do h-56 para não ser cortado pelo overflow forçado */}
           <div className="ml-14 flex gap-1.5 mt-2 pr-2">
             {data.map((item, index) => (
               <span

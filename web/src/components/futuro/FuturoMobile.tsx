@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { X } from 'lucide-react'
-import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT, FUTURO_PRIMARY_BG, FUTURO_GRAD } from '@/lib/futuro-colors'
+import { X, ClipboardList, Target, Rocket, Map } from 'lucide-react'
+import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT, FUTURO_PRIMARY_BG } from '@/lib/futuro-colors'
 import { jornadaLabel } from '@/lib/jornada-labels'
 
 const CHECKIN_KEY = 'sl_futuro_checkin'
@@ -105,12 +105,12 @@ export function FuturoMobile({
           <p className="text-[12px] font-semibold mb-[2px]" style={{ color: FUTURO_PRIMARY_LIGHT }}>
             ✦ {jornadaLabel('futuro', 'module', 'Futuro')}
           </p>
-          <h1 className="font-[Space_Grotesk] text-[20px] font-bold text-[var(--sl-t1)]">
+          <h1 className="font-[Syne] text-[20px] font-bold text-[var(--sl-t1)]">
             Arquiteto do Futuro
           </h1>
         </div>
         <span
-          className="text-[10px] font-semibold px-2 py-[3px] rounded-[20px]"
+          className="sl-num text-[10px] font-semibold px-2 py-[3px] rounded-[20px]"
           style={{
             background: FUTURO_PRIMARY_BG,
             color: FUTURO_PRIMARY_LIGHT,
@@ -174,8 +174,8 @@ export function FuturoMobile({
                     border: '1px solid rgba(139,123,212,0.2)',
                   }}
                 >
-                  <p className="font-[Space_Grotesk] text-[12px] font-bold mb-2" style={{ color: FUTURO_PRIMARY_LIGHT }}>
-                    🗺️ Mapa da Vida
+                  <p className="font-[Syne] text-[12px] font-bold mb-2 inline-flex items-center gap-1.5 justify-center w-full" style={{ color: FUTURO_PRIMARY_LIGHT }}>
+                    <Map size={12} /> Mapa da Vida
                   </p>
                   <svg width="200" height="200" viewBox="0 0 200 200" style={{ margin: '0 auto', display: 'block' }}>
                     {/* Grid circles */}
@@ -244,10 +244,10 @@ export function FuturoMobile({
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-start gap-[10px] flex-1 min-w-0">
                     <div
-                      className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[14px] shrink-0"
-                      style={{ background: 'rgba(139,123,212,0.15)' }}
+                      className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0"
+                      style={{ background: 'rgba(139,123,212,0.15)', color: FUTURO_PRIMARY_LIGHT }}
                     >
-                      📋
+                      <ClipboardList size={14} />
                     </div>
                     <div className="min-w-0">
                       <p className="text-[12px] font-bold text-[var(--sl-t1)]">Check-in Pendente</p>
@@ -265,8 +265,7 @@ export function FuturoMobile({
                 </div>
                 <button
                   onClick={() => router.push('/futuro/checkin')}
-                  className="w-full mt-3 h-[36px] rounded-[10px] text-[12px] font-semibold text-white"
-                  style={{ background: FUTURO_GRAD }}
+                  className="w-full mt-3 h-[36px] rounded-[10px] text-[12px] font-semibold text-white bg-[var(--sl-em)] hover:bg-[var(--sl-em-strong)] transition-colors"
                 >
                   Fazer check-in →
                 </button>
@@ -275,7 +274,7 @@ export function FuturoMobile({
 
             {/* Section title */}
             <div className="flex items-center justify-between px-5 mb-1">
-              <p className="font-[Space_Grotesk] text-[14px] font-bold text-[var(--sl-t1)]">
+              <p className="font-[Syne] text-[14px] font-bold text-[var(--sl-t1)]">
                 Missões Ativas
               </p>
               <button
@@ -308,7 +307,7 @@ export function FuturoMobile({
             {/* Empty state */}
             {goals.length === 0 && (
               <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-8 text-center">
-                <div className="text-[36px] mb-2">🎯</div>
+                <Target size={36} className="text-[var(--sl-t3)] mx-auto mb-2" />
                 <p className="text-[13px] text-[var(--sl-t2)]">
                   Crie sua primeira missão para começar.
                 </p>
@@ -319,10 +318,9 @@ export function FuturoMobile({
             <div className="flex gap-[10px] px-4 pt-2">
               <button
                 onClick={onNewGoal}
-                className="flex-1 flex items-center justify-center gap-1.5 h-[46px] rounded-[14px] text-[13px] font-semibold text-white"
-                style={{ background: FUTURO_GRAD }}
+                className="flex-1 flex items-center justify-center gap-1.5 h-[46px] rounded-[14px] text-[13px] font-semibold text-white bg-[var(--sl-em)] hover:bg-[var(--sl-em-strong)] transition-colors"
               >
-                🚀 Nova missão
+                <Rocket size={14} /> Nova missão
               </button>
               <button
                 onClick={() => setActiveTab('arquivo')}
@@ -402,7 +400,7 @@ export function FuturoMobile({
 
               {filteredGoals.length === 0 && (
                 <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[16px] p-8 text-center">
-                  <div className="text-[36px] mb-2">🎯</div>
+                  <Target size={36} className="text-[var(--sl-t3)] mx-auto mb-2" />
                   <p className="text-[13px] text-[var(--sl-t2)]">
                     Nenhuma missão neste filtro.
                   </p>

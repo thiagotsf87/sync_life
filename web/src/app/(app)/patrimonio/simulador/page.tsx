@@ -6,10 +6,11 @@ import { Target, Crown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   calcMonthsToIF, buildIFProjection,
-  usePortfolioAssets, usePortfolioDividends,
+  usePortfolioAssets,
 } from '@/hooks/use-patrimonio'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { useUserPlan } from '@/hooks/use-user-plan'
+import { fmtBRL } from '@/lib/format/currency'
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip as ReTooltip, ReferenceLine,
@@ -20,15 +21,10 @@ export default function SimuladorPage() {
 
   const { isPro } = useUserPlan()
   const { assets } = usePortfolioAssets()
-  const { dividends } = usePortfolioDividends()
 
   // Calculate current portfolio value from assets
   const currentPortfolioValue = assets.reduce((s, a) =>
     s + (a.current_price != null ? a.quantity * a.current_price : a.quantity * a.avg_price), 0)
-  const dividends12m = (() => {
-    const year12Ago = new Date(); year12Ago.setMonth(year12Ago.getMonth() - 12)
-    return dividends.filter(d => d.status === 'received' && new Date(d.payment_date) >= year12Ago).reduce((s, d) => s + d.total_amount, 0)
-  })()
 
   // Slider state — numeric values for sliders
   const [pvSlider, setPvSlider] = useState(currentPortfolioValue > 0 ? Math.round(currentPortfolioValue) : 100000)
@@ -62,9 +58,6 @@ export default function SimuladorPage() {
   const arrojadoDate = new Date()
   arrojadoDate.setMonth(arrojadoDate.getMonth() + arrojado.months)
 
-  const formatCurrency = (v: number) =>
-    v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-
   const formatYears = (m: number) => {
     if (m === 0) return 'Ja atingiu!'
     const years = Math.floor(m / 12)
@@ -87,8 +80,8 @@ export default function SimuladorPage() {
         />
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center max-w-[480px] mx-auto">
           <Crown size={40} className="mx-auto mb-4 text-[#D9962E]" />
-          <h2 className="font-[Space_Grotesk] font-bold text-lg text-[var(--sl-t1)] mb-2">
-            Simulador IF — Recurso PRO
+          <h2 className="font-[Syne] font-bold text-lg text-[var(--sl-t1)] mb-2">
+            Simulador IF · Recurso PRO
           </h2>
           <p className="text-[13px] text-[var(--sl-t2)] mb-6 leading-relaxed">
             Projete quanto tempo falta para a independencia financeira com 3 cenarios, grafico de evolucao e integracao com sua carteira real.
@@ -96,7 +89,7 @@ export default function SimuladorPage() {
           <button
             onClick={() => router.push('/configuracoes/plano')}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] font-semibold text-[13px]
-                       bg-gradient-to-r from-[#0F766E] to-[#0B2D34] text-white hover:opacity-90 transition-opacity"
+                       bg-[var(--sl-em)] text-white hover:bg-[var(--sl-em-strong)] transition-colors"
           >
             <Crown size={14} />
             Assinar PRO
@@ -129,16 +122,16 @@ export default function SimuladorPage() {
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4 1.65 1.65 0 0 0 13.91 21v.09a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9" />
             </svg>
-            <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+            <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
               Parametros
             </span>
           </div>
 
-          {/* Patrimonio Atual — Slider */}
+          {/* Patrimonio Atual · Slider */}
           <div className="mb-5">
             <div className="flex justify-between mb-1">
               <label className="text-[11px] font-semibold text-[var(--sl-t2)]">Patrimonio Atual</label>
-              <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t1)]">{formatCurrency(pvSlider)}</span>
+              <span className="sl-num text-[14px] text-[var(--sl-t1)]">{fmtBRL(pvSlider)}</span>
             </div>
             <div className="relative w-full h-[6px] bg-[var(--sl-s3)] rounded-[3px] my-2">
               <div
@@ -161,11 +154,11 @@ export default function SimuladorPage() {
             </div>
           </div>
 
-          {/* Aporte Mensal — Slider */}
+          {/* Aporte Mensal · Slider */}
           <div className="mb-5">
             <div className="flex justify-between mb-1">
               <label className="text-[11px] font-semibold text-[var(--sl-t2)]">Aporte Mensal</label>
-              <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t1)]">{formatCurrency(pmtSlider)}</span>
+              <span className="sl-num text-[14px] text-[var(--sl-t1)]">{fmtBRL(pmtSlider)}</span>
             </div>
             <div className="relative w-full h-[6px] bg-[var(--sl-s3)] rounded-[3px] my-2">
               <div
@@ -188,11 +181,11 @@ export default function SimuladorPage() {
             </div>
           </div>
 
-          {/* Rentabilidade Anual — Slider */}
+          {/* Rentabilidade Anual · Slider */}
           <div className="mb-5">
             <div className="flex justify-between mb-1">
               <label className="text-[11px] font-semibold text-[var(--sl-t2)]">Rentabilidade Anual</label>
-              <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t1)]">{rateSlider.toFixed(1)}% a.a.</span>
+              <span className="sl-num text-[14px] text-[var(--sl-t1)]">{rateSlider.toFixed(1)}% a.a.</span>
             </div>
             <div className="relative w-full h-[6px] bg-[var(--sl-s3)] rounded-[3px] my-2">
               <div
@@ -215,11 +208,11 @@ export default function SimuladorPage() {
             </div>
           </div>
 
-          {/* Renda Passiva Desejada — Slider */}
+          {/* Renda Passiva Desejada · Slider */}
           <div className="mb-5">
             <div className="flex justify-between mb-1">
               <label className="text-[11px] font-semibold text-[var(--sl-t2)]">Renda Passiva Desejada</label>
-              <span className="font-[IBM_Plex_Mono] text-[14px] text-[var(--sl-t1)]">{formatCurrency(incomeSlider)}/mes</span>
+              <span className="sl-num text-[14px] text-[var(--sl-t1)]">{fmtBRL(incomeSlider)}/mes</span>
             </div>
             <div className="relative w-full h-[6px] bg-[var(--sl-s3)] rounded-[3px] my-2">
               <div
@@ -246,13 +239,13 @@ export default function SimuladorPage() {
           <div className="p-4 rounded-[14px] mt-2"
                style={{ background: 'rgba(79,136,212,.04)', border: '1px solid rgba(79,136,212,.12)' }}>
             <div className="text-[10px] font-bold uppercase tracking-[.06em] text-[#4F88D4] mb-1.5">
-              Resultado — Cenario Moderado
+              Resultado · Cenario Moderado
             </div>
-            <div className="font-[IBM_Plex_Mono] text-[28px] font-medium text-[#4F88D4]">
+            <div className="font-[Syne] sl-num-strong text-[28px] text-[#4F88D4]">
               {formatYears(months)}
             </div>
             <div className="text-[12px] text-[var(--sl-t2)] mt-1">
-              Meta: {targetDate.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })} · {formatCurrency(targetPortfolio)}
+              Meta: {targetDate.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })} · {fmtBRL(targetPortfolio)}
             </div>
           </div>
         </div>
@@ -266,7 +259,7 @@ export default function SimuladorPage() {
               'flex-1 py-[18px] px-4 text-center border border-[var(--sl-border)] border-r-0 rounded-l-[14px] transition-colors'
             )}>
               <div className="text-[10px] font-bold uppercase text-[#DB6478] mb-1">Conservador</div>
-              <div className="font-[IBM_Plex_Mono] text-[18px] font-medium text-[var(--sl-t1)]">
+              <div className="font-[Syne] sl-num-strong text-[18px] text-[var(--sl-t1)]">
                 {formatYears(conservador.months)}
               </div>
               <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">
@@ -278,7 +271,7 @@ export default function SimuladorPage() {
               'border-[rgba(79,136,212,.3)] bg-[rgba(79,136,212,.03)]'
             )}>
               <div className="text-[10px] font-bold uppercase text-[#4F88D4] mb-1">Moderado</div>
-              <div className="font-[IBM_Plex_Mono] text-[18px] font-medium text-[#4F88D4]">
+              <div className="font-[Syne] sl-num-strong text-[18px] text-[#4F88D4]">
                 {formatYears(moderado.months)}
               </div>
               <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">
@@ -289,7 +282,7 @@ export default function SimuladorPage() {
               'flex-1 py-[18px] px-4 text-center border border-[var(--sl-border)] border-l-0 rounded-r-[14px] transition-colors'
             )}>
               <div className="text-[10px] font-bold uppercase text-[#0F766E] mb-1">Arrojado</div>
-              <div className="font-[IBM_Plex_Mono] text-[18px] font-medium text-[var(--sl-t1)]">
+              <div className="font-[Syne] sl-num-strong text-[18px] text-[var(--sl-t1)]">
                 {formatYears(arrojado.months)}
               </div>
               <div className="text-[10px] text-[var(--sl-t3)] mt-0.5">
@@ -305,7 +298,7 @@ export default function SimuladorPage() {
               <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
               </svg>
-              <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+              <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                 Projecao Patrimonial
               </span>
             </div>
@@ -337,7 +330,7 @@ export default function SimuladorPage() {
                     contentStyle={{ background: 'var(--sl-s2)', border: '1px solid var(--sl-border)', borderRadius: '12px', fontSize: '11px' }}
                     labelFormatter={(v: unknown) => `Mes ${v} (${formatYears(Number(v))})`}
                     formatter={(v: number | undefined, name: string | undefined) => [
-                      formatCurrency(v ?? 0),
+                      fmtBRL(v ?? 0),
                       name === 'pessimistic' ? 'Conservador' : name === 'base' ? 'Moderado' : 'Arrojado',
                     ]}
                   />
@@ -386,7 +379,7 @@ export default function SimuladorPage() {
         <div className="flex items-center gap-2.5">
           <div className="w-2 h-2 rounded-full bg-[#D9962E] shrink-0" />
           <p className="text-[13px] text-[var(--sl-t2)]">
-            Com aporte de <b className="font-[IBM_Plex_Mono] text-[var(--sl-t1)]">{formatCurrency(pmt)}/mes</b> e rentabilidade de <b className="font-[IBM_Plex_Mono] text-[var(--sl-t1)]">{rate.toFixed(1)}% a.a.</b>, voce alcanca a independencia financeira (renda passiva de <b className="font-[IBM_Plex_Mono] text-[#0F766E]">{formatCurrency(desiredIncome)}/mes</b>) em <b className="font-[IBM_Plex_Mono] text-[#4F88D4]">{formatYears(months)}</b>.
+            Com aporte de <b className="sl-num text-[var(--sl-t1)]">{fmtBRL(pmt)}/mes</b> e rentabilidade de <b className="sl-num text-[var(--sl-t1)]">{rate.toFixed(1)}% a.a.</b>, voce alcanca a independencia financeira (renda passiva de <b className="sl-num text-[#0F766E]">{fmtBRL(desiredIncome)}/mes</b>) em <b className="sl-num text-[#4F88D4]">{formatYears(months)}</b>.
           </p>
         </div>
       </div>

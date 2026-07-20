@@ -68,7 +68,15 @@ export function useFinancialInsights({ month, year }: { month: number; year: num
       const startDate = `${year}-${String(month).padStart(2, '0')}-01`
       const endDate = new Date(year, month, 0).toISOString().split('T')[0]
 
-      const { data: txns } = await (supabase as any)
+      interface InsightTxn {
+        amount: number
+        type: string
+        description: string | null
+        category: { name: string; icon: string | null } | null
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: txnsRaw } = await (supabase as any)
         .from('transactions')
         .select('amount, type, description, category:categories(name, icon)')
         .eq('user_id', user.id)
@@ -76,18 +84,19 @@ export function useFinancialInsights({ month, year }: { month: number; year: num
         .lte('date', endDate)
         .eq('is_future', false)
 
+      const txns = txnsRaw as InsightTxn[] | null
       if (!txns || txns.length === 0) {
         setInsights([{ text: 'Adicione transações este mês para receber insights da IA.', type: 'tip' }])
         setLoading(false)
         return
       }
 
-      const totalIncome = txns.filter((t: any) => t.type === 'income').reduce((s: number, t: any) => s + t.amount, 0)
-      const totalExpense = txns.filter((t: any) => t.type === 'expense').reduce((s: number, t: any) => s + t.amount, 0)
+      const totalIncome = txns.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0)
+      const totalExpense = txns.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0)
 
       // Group by category
       const catMap: Record<string, number> = {}
-      txns.filter((t: any) => t.type === 'expense').forEach((t: any) => {
+      txns.filter((t) => t.type === 'expense').forEach((t) => {
         const name = t.category?.name ?? 'Outros'
         catMap[name] = (catMap[name] ?? 0) + t.amount
       })

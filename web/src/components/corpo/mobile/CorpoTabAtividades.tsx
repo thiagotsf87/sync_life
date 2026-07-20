@@ -174,7 +174,7 @@ export function CorpoTabAtividades({ activities, weekActivities, onOpenModal }: 
                 <div className="flex-1 min-w-0">
                   <p className="text-[14px] font-medium text-[var(--sl-t1)] truncate">
                     {getActivityLabel(a.type)}
-                    {a.notes ? ` — ${a.notes}` : ''}
+                    {a.notes ? ` · ${a.notes}` : ''}
                   </p>
                   <p className="text-[12px] text-[var(--sl-t2)] mt-[1px]">
                     {formatRelDate(a.recorded_at)} · {a.duration_minutes} min

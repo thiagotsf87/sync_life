@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Droplets, Activity, Scale, Calendar } from 'lucide-react'
+import { Plus, Droplets, Activity, Scale, Calendar, TrendingUp, ChevronUp } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCorpoDashboard, useWaterIntake, useUpdateWater, calcIMC, IMC_LABEL } from '@/hooks/use-corpo'
 import { ModuleHeader } from '@/components/ui/module-header'
@@ -121,8 +121,7 @@ export default function CorpoPage() {
           <button
             onClick={() => router.push('/corpo/peso')}
             className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#D97534] text-white hover:brightness-110 hover:-translate-y-px
-                       transition-all shadow-[0_6px_20px_rgba(217,117,52,.15)]"
+                       bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px transition-all"
           >
             <Plus size={16} />
             Registrar Peso
@@ -220,7 +219,7 @@ export default function CorpoPage() {
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
                   <Calendar size={16} className="text-[#D97534]" />
-                  <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                  <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                     Mapa de Atividades
                   </h3>
                   <span className="ml-auto text-[11px] text-[var(--sl-t3)]">Ultimas 4 semanas</span>
@@ -233,7 +232,7 @@ export default function CorpoPage() {
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
                   <Scale size={16} className="text-[#D97534]" />
-                  <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                  <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                     Tendencia
                   </h3>
                   <button
@@ -246,16 +245,14 @@ export default function CorpoPage() {
 
                 {/* Weight value + delta pill */}
                 <div className="flex items-center gap-4 mb-3">
-                  <span className="font-[IBM_Plex_Mono] font-medium text-[26px] text-[var(--sl-t1)] leading-none">
+                  <span className="sl-num-strong text-[26px] text-[var(--sl-t1)] leading-none">
                     {latestWeight ? latestWeight.weight : '--'}
                     <span className="text-[12px] text-[var(--sl-t3)] ml-1">kg</span>
                   </span>
                   {latestWeight && (
                     <span className="inline-flex items-center gap-1 px-[10px] py-1 rounded-lg text-[11px] font-semibold
-                                     bg-[rgba(15,118,110,.1)] text-[#0F766E]">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="m6 15 6-6 6 6"/>
-                      </svg>
+                                     bg-[var(--sl-em-soft)] text-[var(--sl-em)]">
+                      <ChevronUp size={12} />
                       Ultimos 30d
                     </span>
                   )}
@@ -266,7 +263,7 @@ export default function CorpoPage() {
                                 flex items-center justify-center text-[var(--sl-t3)] text-[12px] italic p-4"
                      style={{ minHeight: 100 }}
                 >
-                  Recharts: LineChart &mdash; peso ultimos 30 dias
+                  Recharts: LineChart, peso ultimos 30 dias
                 </div>
               </div>
             </div>
@@ -279,20 +276,20 @@ export default function CorpoPage() {
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
                   <Droplets size={16} className="text-[#3CA0B5]" />
-                  <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                  <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                     Hidratacao
                   </h3>
                 </div>
 
                 {/* Hydration value row */}
                 <div className="flex items-center gap-[14px] mb-3">
-                  <span className="font-[IBM_Plex_Mono] font-medium text-[24px] text-[#3CA0B5] leading-none">
+                  <span className="sl-num-strong text-[24px] text-[#3CA0B5] leading-none">
                     {(waterIntake / 1000).toFixed(1)}
                   </span>
                   <span className="text-[12px] text-[var(--sl-t3)]">
                     / {(waterGoal / 1000).toFixed(1)}L
                   </span>
-                  <span className="font-[IBM_Plex_Mono] text-[12px] text-[#3CA0B5] ml-auto">
+                  <span className="sl-num text-[12px] text-[#3CA0B5] ml-auto">
                     {waterPct}%
                   </span>
                 </div>
@@ -323,7 +320,7 @@ export default function CorpoPage() {
                   <button
                     onClick={() => handleAddWater(500)}
                     className="flex-1 flex items-center justify-center px-2 py-2 rounded-[11px] text-[12px] font-semibold
-                               bg-[#3CA0B5] text-white hover:opacity-90 transition-opacity"
+                               bg-[var(--sl-em)] text-white hover:opacity-90 transition-opacity"
                   >
                     +500ml
                   </button>
@@ -334,13 +331,8 @@ export default function CorpoPage() {
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 flex-1
                               hover:border-[var(--sl-border-h)] transition-colors sl-fade-up">
                 <div className="flex items-center gap-[9px] mb-[18px]">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect width="18" height="18" x="3" y="4" rx="2"/>
-                    <path d="M16 2v4"/>
-                    <path d="M8 2v4"/>
-                    <path d="M3 10h18"/>
-                  </svg>
-                  <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                  <Calendar size={16} className="text-[#a855f7]" />
+                  <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                     Proximas Consultas
                   </h3>
                   <button
@@ -358,7 +350,7 @@ export default function CorpoPage() {
                     {/* Appointment row - matching prototype style */}
                     <div className="flex items-center gap-3 p-3 bg-[var(--sl-s2)] rounded-xl border border-[var(--sl-border)]">
                       <div className="text-center min-w-[40px]">
-                        <div className="font-[IBM_Plex_Mono] text-[18px] font-medium leading-none text-[var(--sl-t1)]">
+                        <div className="sl-num-strong text-[18px] leading-none text-[var(--sl-t1)]">
                           {nextApptDate ? nextApptDate.getDate().toString().padStart(2, '0') : '--'}
                         </div>
                         <div className="text-[9px] font-bold uppercase tracking-[.08em] text-[#3CA0B5] mt-0.5">

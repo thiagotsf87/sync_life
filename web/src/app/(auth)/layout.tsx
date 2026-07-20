@@ -6,7 +6,7 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="auth-page">
+    <div className="auth-page" data-theme="navy-deep" data-scheme="dark">
       {children}
     </div>
   )

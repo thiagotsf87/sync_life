@@ -204,8 +204,8 @@ export default function FinancasDashboardPage() {
         icon={TrendingUp}
         iconBg="rgba(15,118,110,.08)"
         iconColor="#0F766E"
-        title="Visão Geral"
-        subtitle={`${mesAno} · semana ${weekOfMonth} de ${totalWeeks} · ${daysLeftInMonth} dias restantes`}
+        title="Visão geral"
+        subtitle={`FINANÇAS · ${mesAno.toUpperCase()} · SEMANA ${weekOfMonth} DE ${totalWeeks} · ${daysLeftInMonth} DIAS RESTANTES`}
         className="mb-4"
       >
         <div className="flex items-center gap-1">
@@ -259,6 +259,12 @@ export default function FinancasDashboardPage() {
         qtdOk={qtdOk}
         qtdAlert={qtdAlert}
         qtdOver={qtdOver}
+        alertCat={alertCat ? {
+          name: alertCat.category?.name ?? 'Categoria',
+          pct: alertCat.pct,
+          spent: alertCat.gasto,
+          limit: alertCat.amount,
+        } : null}
       />
 
       {/* 4 AI CONSULTANT */}

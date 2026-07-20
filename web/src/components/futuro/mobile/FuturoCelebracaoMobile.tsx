@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { FUTURO_PRIMARY, FUTURO_PRIMARY_LIGHT, FUTURO_GRAD } from '@/lib/futuro-colors'
 import { FUTURO_ACHIEVEMENTS } from '@/lib/futuro-xp-mock'
 import { CoachCard } from '@/components/futuro/mobile/CoachCard'
 import { AchievementGrid } from '@/components/futuro/mobile/AchievementGrid'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface FuturoCelebracaoMobileProps {
   objectiveName: string
@@ -35,11 +36,11 @@ export function FuturoCelebracaoMobile({
       {/* Hero */}
       <div className="text-center pt-[26px] px-5 pb-[18px]">
         <div className="text-[54px] mb-[10px]">🏆</div>
-        <h1 className="font-[Space_Grotesk] text-[24px] font-extrabold text-[var(--sl-t1)] leading-[1.2] mb-[7px]">
+        <h1 className="font-[Syne] text-[24px] font-extrabold text-[var(--sl-t1)] leading-[1.2] mb-[7px]">
           Missão Concluída!
         </h1>
         <p className="text-[13px] text-[var(--sl-t2)] leading-[1.6]">
-          Thiago, você é incrível! <strong className="text-[#0F766E]">R$ {accumulated.toLocaleString('pt-BR')}</strong><br />em {duration} meses de disciplina pura. 🚀
+          Thiago, você é incrível! <strong className="text-[var(--sl-em)]">{fmtBRL(accumulated)}</strong><br />em {duration} meses de disciplina pura. 🚀
         </p>
       </div>
 
@@ -52,7 +53,7 @@ export function FuturoCelebracaoMobile({
         }}
       >
         <div className="text-center px-2">
-          <p className="font-[Space_Grotesk] text-[28px] font-extrabold leading-none" style={{ color: FUTURO_PRIMARY }}>
+          <p className="font-[Syne] text-[28px] font-extrabold leading-none" style={{ color: FUTURO_PRIMARY }}>
             +350
           </p>
           <p className="text-[10px] mt-[2px]" style={{ color: FUTURO_PRIMARY_LIGHT }}>XP GANHOS</p>
@@ -63,7 +64,7 @@ export function FuturoCelebracaoMobile({
             <div className="h-full rounded-full" style={{ width: '100%', background: `linear-gradient(90deg, ${FUTURO_PRIMARY}, #C76795)` }} />
           </div>
           <p className="text-[11px] text-[var(--sl-t2)]">
-            Life Score Futuro: <strong className="text-[#0F766E]">58 → 70 pts</strong> ↑
+            Life Score Futuro: <strong className="text-[var(--sl-em)]">58 → 70 pts</strong> ↑
           </p>
         </div>
       </div>
@@ -73,7 +74,7 @@ export function FuturoCelebracaoMobile({
 
       {/* Coach celebrating */}
       <CoachCard
-        label="Coach Sync — Parabéns!"
+        label="Coach Sync · Parabéns!"
         message={
           <>Você provou para si mesmo que consegue. Agora quer <strong>acelerar o apartamento</strong> com esses R$ 800/mês? Calculei o impacto.</>
         }

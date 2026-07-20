@@ -9,10 +9,16 @@ import type { XPAction } from '@/lib/xp-utils'
 export { getLevelFromXP, getLevelTitle, LEVEL_TITLES, XP_VALUES } from '@/lib/xp-utils'
 export type { XPAction } from '@/lib/xp-utils'
 
+// Supabase client typing — schema casts are unavoidable for cross-table queries.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SbClient = any
+
+interface PointsRow { points: number | null }
+
 // ─── ADD XP FUNCTION ───────────────────────────────────────────────────────────
 
 export async function addXP(userId: string, action: XPAction, bonusPoints?: number): Promise<number> {
-  const sb = createClient() as any
+  const sb = createClient() as SbClient
   const points = bonusPoints ?? XP_VALUES[action]
 
   if (points <= 0) return 0
@@ -31,13 +37,14 @@ export async function addXP(userId: string, action: XPAction, bonusPoints?: numb
 // ─── GET TOTAL XP ──────────────────────────────────────────────────────────────
 
 export async function getTotalXP(userId: string): Promise<number> {
-  const sb = createClient() as any
+  const sb = createClient() as SbClient
   const { data } = await sb
     .from('user_xp_log')
     .select('points')
     .eq('user_id', userId)
 
-  return (data ?? []).reduce((sum: number, row: any) => sum + (row.points ?? 0), 0)
+  const rows = data as PointsRow[] | null
+  return (rows ?? []).reduce((sum, row) => sum + (row.points ?? 0), 0)
 }
 
 // ─── HOOK ──────────────────────────────────────────────────────────────────────
@@ -50,7 +57,7 @@ export function useXP() {
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      const sb = createClient() as any
+      const sb = createClient() as SbClient
       const { data: { user } } = await sb.auth.getUser()
       if (!user) { setLoading(false); return }
 
@@ -60,7 +67,8 @@ export function useXP() {
         .select('points')
         .eq('user_id', user.id)
 
-      const total = (allXP ?? []).reduce((sum: number, row: any) => sum + (row.points ?? 0), 0)
+      const allRows = allXP as PointsRow[] | null
+      const total = (allRows ?? []).reduce((sum, row) => sum + (row.points ?? 0), 0)
       setTotalXP(total)
 
       // Today's XP
@@ -71,7 +79,8 @@ export function useXP() {
         .eq('user_id', user.id)
         .gte('created_at', `${today}T00:00:00`)
 
-      const dayTotal = (todayData ?? []).reduce((sum: number, row: any) => sum + (row.points ?? 0), 0)
+      const todayRows = todayData as PointsRow[] | null
+      const dayTotal = (todayRows ?? []).reduce((sum, row) => sum + (row.points ?? 0), 0)
       setTodayXP(dayTotal)
     } catch {
       // Silent fail
@@ -85,7 +94,7 @@ export function useXP() {
   const levelInfo = getLevelFromXP(totalXP)
 
   const award = useCallback(async (action: XPAction, bonusPoints?: number): Promise<number> => {
-    const sb = createClient() as any
+    const sb = createClient() as SbClient
     const { data: { user } } = await sb.auth.getUser()
     if (!user) return 0
 

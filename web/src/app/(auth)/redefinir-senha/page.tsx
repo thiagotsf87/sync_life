@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { ChevronLeft, Eye, EyeOff } from 'lucide-react'
+import { ChevronLeft, Eye, EyeOff, KeyRound } from 'lucide-react'
+import { SyncLifeLockup } from '@/components/SyncLifeLockup'
 
 function calculateStrength(password: string): { score: number; label: string; color: string } {
   if (!password) return { score: 0, label: '', color: '' }
@@ -15,7 +16,7 @@ function calculateStrength(password: string): { score: number; label: string; co
   if (/[A-Z]/.test(password) && /[0-9]/.test(password)) score++
   if (/[^A-Za-z0-9]/.test(password)) score++
   const labels = ['', 'Fraca', 'Média', 'Forte', 'Muito forte']
-  const colors = ['', '#DB6478', '#D9962E', '#0F766E', '#0F766E']
+  const colors = ['', 'var(--sl-danger)', 'var(--sl-warning)', 'var(--sl-em)', 'var(--sl-em)']
   return { score, label: labels[score] ?? '', color: colors[score] ?? '' }
 }
 
@@ -49,7 +50,7 @@ export default function RedefinirSenhaPage() {
         toast.error(error.message)
         return
       }
-      toast.success('Senha redefinida com sucesso!')
+      toast.success('Senha redefinida com sucesso')
       router.push('/dashboard')
     } catch {
       toast.error('Erro ao redefinir senha. Tente novamente.')
@@ -59,41 +60,45 @@ export default function RedefinirSenhaPage() {
   }
 
   return (
-    <div className="auth-recover-layout">
+    <div className="recover-layout">
       {/* Back to login */}
-      <div className="absolute left-10 top-6">
-        <Link href="/login" className="auth-btn-ghost">
+      <div className="recover-back">
+        <Link href="/login" className="btn-ghost-recover">
           <ChevronLeft size={14} />
           Voltar ao login
         </Link>
       </div>
 
-      <div className="auth-recover-card">
-        <div className="auth-recover-steps">
-          <div className="auth-recover-step active" />
-          <div className="auth-recover-step active" />
-          <div className="auth-recover-step active" />
+      {/* Brand lockup */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+        <SyncLifeLockup height={56} />
+      </div>
+
+      <div className="recover-card anim">
+        <div className="recover-steps">
+          <div className="recover-step active" />
+          <div className="recover-step active" />
+          <div className="recover-step active" />
         </div>
 
-        <div className="auth-recover-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0F766E" strokeWidth={2} strokeLinecap="round">
-            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-          </svg>
+        <div className="recover-icon">
+          <KeyRound size={22} />
         </div>
 
-        <h1 className="font-[Space_Grotesk] text-[22px] font-extrabold mb-2">Nova senha</h1>
-        <p className="text-sm text-[var(--auth-t2)] mb-6 leading-relaxed">
+        <h1 className="font-[Syne] tracking-tight">Nova senha</h1>
+        <div className="subtitle">
           Escolha uma senha forte para proteger sua conta.
-        </p>
+        </div>
 
         <form onSubmit={handleSubmit}>
           {/* New Password */}
-          <div className="auth-field">
-            <label>Nova senha</label>
-            <div className="relative">
+          <div className="form-group">
+            <label htmlFor="new-password">Nova senha</label>
+            <div className="input-wrap">
               <input
+                id="new-password"
                 type={showPassword ? 'text' : 'password'}
-                className="auth-input pr-10"
+                className="form-input has-right-icon"
                 placeholder="Mínimo 8 caracteres"
                 autoComplete="new-password"
                 value={password}
@@ -103,36 +108,52 @@ export default function RedefinirSenhaPage() {
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--auth-t3)] hover:text-[var(--auth-t2)]"
+                className="input-icon-right"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
             {password.length > 0 && (
-              <>
-                <div className="auth-pwd-bars">
+              <div style={{ marginTop: 8 }}>
+                <div style={{ display: 'flex', gap: 4 }}>
                   {[1, 2, 3, 4].map((i) => (
                     <div
                       key={i}
-                      className={`auth-pwd-bar${i <= strength.score ? ' active' : ''}${i <= strength.score && strength.score >= 3 ? ' strong' : ''}`}
+                      style={{
+                        flex: 1,
+                        height: 3,
+                        borderRadius: 2,
+                        background: i <= strength.score ? strength.color : 'var(--sl-s3)',
+                        transition: 'background 0.2s',
+                      }}
                     />
                   ))}
                 </div>
-                <div className="auth-pwd-label" style={{ color: strength.color }}>
+                <p
+                  className="font-[DM_Sans]"
+                  style={{
+                    fontSize: 11,
+                    marginTop: 6,
+                    color: strength.color || 'var(--sl-t3)',
+                    fontWeight: 600,
+                  }}
+                >
                   {strength.label}
-                </div>
-              </>
+                </p>
+              </div>
             )}
           </div>
 
           {/* Confirm Password */}
-          <div className="auth-field">
-            <label>Confirmar nova senha</label>
-            <div className="relative">
+          <div className="form-group">
+            <label htmlFor="confirm-password">Confirmar nova senha</label>
+            <div className="input-wrap">
               <input
+                id="confirm-password"
                 type={showConfirm ? 'text' : 'password'}
-                className="auth-input pr-10"
+                className="form-input has-right-icon"
                 placeholder="Repita a nova senha"
                 autoComplete="new-password"
                 value={confirmPassword}
@@ -141,18 +162,29 @@ export default function RedefinirSenhaPage() {
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--auth-t3)] hover:text-[var(--auth-t2)]"
+                className="input-icon-right"
                 onClick={() => setShowConfirm(!showConfirm)}
+                aria-label={showConfirm ? 'Ocultar senha' : 'Mostrar senha'}
               >
                 {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
             {confirmPassword && password !== confirmPassword && (
-              <p className="mt-1 text-[11px] text-[#DB6478]">As senhas não coincidem</p>
+              <p
+                className="font-[DM_Sans]"
+                style={{ marginTop: 6, fontSize: 11, color: 'var(--sl-danger)' }}
+              >
+                As senhas não coincidem
+              </p>
             )}
           </div>
 
-          <button type="submit" className="auth-btn-submit mt-2" disabled={isLoading}>
+          <button
+            type="submit"
+            className="btn-submit"
+            style={{ marginTop: 8 }}
+            disabled={isLoading}
+          >
             {isLoading ? 'Redefinindo...' : 'Redefinir senha'}
           </button>
         </form>

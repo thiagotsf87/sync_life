@@ -62,7 +62,7 @@ export function BudgetsWidget({ budgets, loading }: BudgetsWidgetProps) {
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 sl-fade-up sl-delay-2 hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-[18px]">
-        <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
+        <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] flex items-center gap-[9px]">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B6FD4" strokeWidth="2" strokeLinecap="round">
             <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
             <path d="M22 12A10 10 0 0 0 12 2v10z"/>

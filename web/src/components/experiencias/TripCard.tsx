@@ -3,6 +3,7 @@
 import { Trash2, MapPin, Calendar, Users } from 'lucide-react'
 import type { Trip } from '@/hooks/use-experiencias'
 import { TRIP_STATUS_LABELS, TRIP_STATUS_COLORS, TRIP_TYPE_LABELS, calcTripDays } from '@/hooks/use-experiencias'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface TripCardProps {
   trip: Trip
@@ -27,7 +28,7 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
-            <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] truncate">{trip.name}</h3>
+            <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] truncate">{trip.name}</h3>
             <span
               className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full shrink-0"
               style={{ color: statusColor, background: statusColor + '20' }}
@@ -77,7 +78,7 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] text-[var(--sl-t3)]">Orçamento</span>
             <span className="font-[IBM_Plex_Mono] text-[11px] text-[var(--sl-t1)]">
-              {trip.total_budget.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              {fmtBRL(trip.total_budget)}
             </span>
           </div>
           {trip.total_spent > 0 && (
@@ -92,7 +93,7 @@ export function TripCard({ trip, onClick, onDelete }: TripCardProps) {
                 />
               </div>
               <p className="text-[10px] text-[var(--sl-t3)] mt-0.5">
-                {trip.total_spent.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} gastos
+                {fmtBRL(trip.total_spent)} gastos
               </p>
             </>
           )}

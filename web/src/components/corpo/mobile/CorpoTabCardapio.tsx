@@ -154,7 +154,7 @@ export function CorpoTabCardapio({ meals, profile, onOpenMealModal }: CorpoTabCa
         })}
       </div>
 
-      {/* AI suggestion — PRO */}
+      {/* AI suggestion · PRO */}
       <div
         className="mx-4 mt-3 rounded-2xl p-4"
         style={{ background: 'rgba(139,123,212,0.07)', border: '1px solid rgba(139,123,212,0.2)' }}

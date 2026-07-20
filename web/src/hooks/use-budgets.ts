@@ -144,7 +144,7 @@ export function useBudgets({ month, year }: { month: number; year: number }): Us
 
       const recTotal = (receitasRes.data ?? []).reduce((s: number, r: { amount: number }) => s + r.amount, 0)
       const allExpenses = (spendsRes.data ?? []).reduce((s: number, t: { amount: number }) => s + t.amount, 0)
-      const income = (profileRes.data as any)?.monthly_income ?? 0
+      const income = (profileRes.data as { monthly_income: number | null } | null)?.monthly_income ?? 0
 
       // Prev month budgets for rollover calc
       const prevBudgetsData = (prevBudgetsRes.data ?? []) as unknown as Budget[]
@@ -309,7 +309,7 @@ export function useBudgets({ month, year }: { month: number; year: number }): Us
       .eq('year', year)
       .in('category_id', sourceBudgets.map(b => b.category_id))
 
-    const existingCatIds = new Set((existing ?? []).map((e: any) => e.category_id))
+    const existingCatIds = new Set(((existing ?? []) as { category_id: string }[]).map((e) => e.category_id))
 
     const toInsert = sourceBudgets
       .filter(b => !existingCatIds.has(b.category_id))

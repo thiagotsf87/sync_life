@@ -47,7 +47,7 @@ export function ExpUpgradeModal({
           >
             ⚡
           </div>
-          <h3 className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)] mb-2">
+          <h3 className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)] mb-2">
             Limite de Explorador
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] leading-[1.5]">

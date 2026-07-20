@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ChevronRight } from 'lucide-react'
@@ -29,9 +29,9 @@ const MOCK_SKILLS: SkillMock[] = [
 ]
 
 function getSkillColor(pct: number): string {
-  if (pct >= 70) return '#0F766E'
-  if (pct >= 40) return '#D9962E'
-  return '#DB6478'
+  if (pct >= 70) return 'var(--sl-em)'
+  if (pct >= 40) return 'var(--sl-warning)'
+  return 'var(--sl-danger)'
 }
 
 interface CarreiraTabHabilidadesProps {
@@ -53,7 +53,7 @@ export function CarreiraTabHabilidades({ skills, onAddSkill }: CarreiraTabHabili
   const filtered = filter === 'all' ? MOCK_SKILLS : MOCK_SKILLS.filter(s => s.category === filter)
 
   const groupedCategories = ([
-    { key: 'hard_skill' as SkillCategory, title: 'TÉCNICAS', jTitle: 'TÉCNICAS — +45 XP disponíveis', skills: filtered.filter(s => s.category === 'hard_skill') },
+    { key: 'hard_skill' as SkillCategory, title: 'TÉCNICAS', jTitle: 'TÉCNICAS · +45 XP disponíveis', skills: filtered.filter(s => s.category === 'hard_skill') },
     { key: 'soft_skill' as SkillCategory, title: 'SOFT SKILLS', skills: filtered.filter(s => s.category === 'soft_skill') },
     { key: 'language' as SkillCategory, title: 'IDIOMAS', skills: filtered.filter(s => s.category === 'language') },
   ] as { key: SkillCategory; title: string; jTitle?: string; skills: SkillMock[] }[]).filter(g => g.skills.length > 0)
@@ -87,7 +87,7 @@ export function CarreiraTabHabilidades({ skills, onAddSkill }: CarreiraTabHabili
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">
             Arsenal total
           </p>
-          <p className="font-[IBM_Plex_Mono] text-[19px] font-bold" style={{ color: accent }}>14</p>
+          <p className="sl-num-strong text-[19px] font-bold" style={{ color: accent }}>14</p>
           <p className="text-[11px] mt-[2px]">
             <span className="text-[#c4b5fd]">6 dominadas · +30 XP cada</span>
           </p>
@@ -96,7 +96,7 @@ export function CarreiraTabHabilidades({ skills, onAddSkill }: CarreiraTabHabili
           <p className="text-[10px] text-[var(--sl-t2)] uppercase tracking-[0.4px] mb-1">
             Em treinamento
           </p>
-          <p className="font-[IBM_Plex_Mono] text-[19px] font-bold text-[#D9962E]">8</p>
+          <p className="sl-num-strong text-[19px] font-bold text-[var(--sl-warning)]">8</p>
           <p className="text-[11px] mt-[2px]">
             <span className="text-[#c4b5fd]">⚡ +15 XP ao dominar cada</span>
           </p>
@@ -116,10 +116,10 @@ export function CarreiraTabHabilidades({ skills, onAddSkill }: CarreiraTabHabili
           <div className="absolute w-[60px] h-[60px] rounded-full border border-dashed border-[rgba(139,123,212,0.1)]" />
           <div className="absolute top-[-8px] text-[9px] font-semibold" style={{ color: accent }}>React 88%</div>
           <div className="absolute right-[-14px] top-[40%] text-[9px] font-semibold" style={{ color: accent }}>TS 76%</div>
-          <div className="absolute bottom-[-8px] text-[9px] font-semibold text-[#D9962E]">Node 58%</div>
-          <div className="absolute left-[-14px] top-[40%] text-[9px] font-semibold text-[#D9962E]">Lead 55%</div>
-          <div className="absolute top-[20%] right-[10px] text-[9px] font-semibold text-[#0F766E]">SQL 70%</div>
-          <div className="absolute bottom-[20%] left-[10px] text-[9px] font-semibold text-[#DB6478]">Arq 32%</div>
+          <div className="absolute bottom-[-8px] text-[9px] font-semibold text-[var(--sl-warning)]">Node 58%</div>
+          <div className="absolute left-[-14px] top-[40%] text-[9px] font-semibold text-[var(--sl-warning)]">Lead 55%</div>
+          <div className="absolute top-[20%] right-[10px] text-[9px] font-semibold text-[var(--sl-em)]">SQL 70%</div>
+          <div className="absolute bottom-[20%] left-[10px] text-[9px] font-semibold text-[var(--sl-danger)]">Arq 32%</div>
           <div
             className="w-[100px] h-[100px] rounded-full opacity-70"
             style={{ background: 'linear-gradient(135deg, rgba(199,103,149,0.2), rgba(139,123,212,0.15))' }}
@@ -133,14 +133,14 @@ export function CarreiraTabHabilidades({ skills, onAddSkill }: CarreiraTabHabili
       {/* Skills by category */}
       {groupedCategories.map(group => (
         <div key={group.key}>
-          <p className="font-[Space_Grotesk] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-1">
+          <p className="font-[Syne] text-[12px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-5 mb-2 mt-1">
             {group.jTitle ? (
-              <>{group.title} — <span className="text-[#c4b5fd]">+45 XP disponíveis</span></>
+              <>{group.title} · <span className="text-[#c4b5fd]">+45 XP disponíveis</span></>
             ) : group.title}
           </p>
           <div className="mx-4 mb-3 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-4">
             {group.skills.map((sk, i) => {
-              const barColor = sk.pct >= 70 ? accent : sk.pct >= 40 ? '#D9962E' : '#DB6478'
+              const barColor = sk.pct >= 70 ? accent : sk.pct >= 40 ? 'var(--sl-warning)' : 'var(--sl-danger)'
               const textColor = getSkillColor(sk.pct)
               return (
                 <div key={sk.name} className={`flex items-center gap-[10px] ${i < group.skills.length - 1 ? 'mb-[10px]' : ''}`}>
@@ -148,7 +148,7 @@ export function CarreiraTabHabilidades({ skills, onAddSkill }: CarreiraTabHabili
                   <div className="flex-1 h-2 bg-[var(--sl-s3)] rounded overflow-hidden">
                     <div className="h-full rounded" style={{ width: `${sk.pct}%`, background: barColor }} />
                   </div>
-                  <span className="font-[IBM_Plex_Mono] text-[11px] w-9 text-right shrink-0" style={{ color: textColor }}>
+                  <span className="sl-num-strong text-[11px] w-9 text-right shrink-0" style={{ color: textColor }}>
                     {sk.label || `${sk.pct}%`}
                   </span>
                 </div>
@@ -174,7 +174,7 @@ export function CarreiraTabHabilidades({ skills, onAddSkill }: CarreiraTabHabili
         <div className="flex-1 min-w-0">
           <p className="text-[10px] font-bold text-[#c4b5fd] uppercase tracking-[0.5px] mb-[3px]">Coach Skills</p>
           <p className="text-[12px] text-[var(--sl-t2)] leading-[1.55]">
-            Seu ponto forte é <strong className="text-[var(--sl-t1)]">Frontend</strong> (88%). Para Sênior, invista em <strong className="text-[var(--sl-t1)]">Arquitetura</strong> (32%) — trilha no Mente está disponível e vale <strong className="text-[var(--sl-t1)]">+15 XP</strong>.
+            Seu ponto forte é <strong className="text-[var(--sl-t1)]">Frontend</strong> (88%). Para Sênior, invista em <strong className="text-[var(--sl-t1)]">Arquitetura</strong> (32%) · trilha no Mente está disponível e vale <strong className="text-[var(--sl-t1)]">+15 XP</strong>.
           </p>
           <button className="inline-flex items-center gap-1 mt-[6px] text-[11px] font-bold text-[#c4b5fd]">
             Iniciar trilha Arquitetura →

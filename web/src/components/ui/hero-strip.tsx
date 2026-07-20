@@ -64,7 +64,7 @@ export function HeroStrip({
                 </p>
               </div>
               {item.subtitle && (
-                <p className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-1 truncate">
+                <p className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-1 truncate">
                   {item.subtitle}
                 </p>
               )}

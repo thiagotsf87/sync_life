@@ -1,8 +1,9 @@
 'use client'
 
-import { CheckCircle2, Circle, Clock, ChevronDown, ChevronUp } from 'lucide-react'
+import { CheckCircle2, Circle, Clock, ChevronDown, ChevronUp, DollarSign } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 import type { CareerRoadmap, RoadmapStep, StepStatus } from '@/hooks/use-carreira'
 
 interface RoadmapTimelineProps {
@@ -180,8 +181,9 @@ export function RoadmapTimeline({ roadmap, onUpdateStep }: RoadmapTimelineProps)
           </p>
           <p className="text-[13px] font-semibold text-[var(--sl-t1)]">{roadmap.target_title}</p>
           {roadmap.target_salary && (
-            <p className="text-[11px] text-[var(--sl-t3)]">
-              💰 {roadmap.target_salary.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            <p className="text-[11px] text-[var(--sl-t3)] flex items-center gap-1">
+              <DollarSign size={11} />
+              <span className="sl-num">{fmtBRL(roadmap.target_salary)}</span>
             </p>
           )}
         </div>

@@ -52,7 +52,7 @@ export function TripChecklistTab({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <p className="text-[12px] text-[var(--sl-t2)]">
-          {checklistDone} de {checklist.length} itens concluídos ({checklistPct.toFixed(0)}%)
+          <span className="sl-num">{checklistDone}</span> de <span className="sl-num">{checklist.length}</span> itens concluídos (<span className="sl-num">{checklistPct.toFixed(0)}%</span>)
         </p>
       </div>
 
@@ -61,7 +61,7 @@ export function TripChecklistTab({
         if (catItems.length === 0) return null
         return (
           <div key={cat} className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-            <h3 className="font-[Space_Grotesk] font-bold text-[12px] text-[var(--sl-t1)] mb-3">{CHECKLIST_CATEGORY_LABELS[cat]}</h3>
+            <h3 className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-3">{CHECKLIST_CATEGORY_LABELS[cat]}</h3>
             <div className="flex flex-col gap-2">
               {catItems.map(item => (
                 <div key={item.id} className="flex items-center gap-2 group">
@@ -69,10 +69,10 @@ export function TripChecklistTab({
                     onClick={() => handleToggle(item.id, item.is_completed)}
                     className={cn(
                       'w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-all',
-                      item.is_completed ? 'bg-[#0F766E] border-[#0F766E]' : 'border-[var(--sl-border)] hover:border-[#0F766E]'
+                      item.is_completed ? 'bg-[var(--sl-em)] border-[var(--sl-em)]' : 'border-[var(--sl-border)] hover:border-[var(--sl-em)]'
                     )}
                   >
-                    {item.is_completed && <Check size={11} className="text-[#03071a]" />}
+                    {item.is_completed && <Check size={11} className="text-white" />}
                   </button>
                   <span className={cn(
                     'flex-1 text-[12px] transition-colors',
@@ -95,7 +95,7 @@ export function TripChecklistTab({
 
       {/* Add item */}
       <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5">
-        <h3 className="font-[Space_Grotesk] font-bold text-[12px] text-[var(--sl-t1)] mb-3">+ Adicionar item</h3>
+        <h3 className="font-[Syne] font-bold text-[12px] text-[var(--sl-t1)] mb-3">+ Adicionar item</h3>
         <div className="flex gap-2">
           <input
             type="text"
@@ -103,12 +103,12 @@ export function TripChecklistTab({
             onChange={e => setNewTitle(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') handleAdd() }}
             placeholder="Novo item..."
-            className="flex-1 px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]"
+            className="flex-1 px-3 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-em)]"
           />
           <select
             value={newCategory}
             onChange={e => setNewCategory(e.target.value as ChecklistCategory)}
-            className="px-2 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[#C76795]"
+            className="px-2 py-2 rounded-[10px] text-[12px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] outline-none focus:border-[var(--sl-border-em)]"
           >
             {(Object.keys(CHECKLIST_CATEGORY_LABELS) as ChecklistCategory[]).map(c => (
               <option key={c} value={c}>{CHECKLIST_CATEGORY_LABELS[c]}</option>

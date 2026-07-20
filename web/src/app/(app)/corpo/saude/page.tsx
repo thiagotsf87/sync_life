@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus, Activity } from 'lucide-react'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { cn } from '@/lib/utils'
+import { fmtBRL } from '@/lib/format/currency'
 import { toast } from 'sonner'
 import {
   useAppointments, useSaveAppointment, useDeleteAppointment,
@@ -190,8 +191,8 @@ export default function SaudePage() {
         <button
           onClick={() => setShowModal(true)}
           className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                     bg-[#D97534] text-white hover:brightness-110 hover:-translate-y-px
-                     transition-all shadow-[0_6px_20px_rgba(217,117,52,.15)]"
+                     bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px
+                     transition-all shadow-[0_6px_20px_rgba(15,118,110,.15)]"
         >
           <Plus size={16} />
           Agendar Consulta
@@ -206,7 +207,7 @@ export default function SaudePage() {
             <div className="text-[11px] font-bold uppercase tracking-[.08em] text-[#D97534]">
               {nextApptDate?.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '') ?? ''}
             </div>
-            <div className="font-[IBM_Plex_Mono] text-[32px] font-medium leading-none text-[var(--sl-t1)]">
+            <div className="sl-num-strong text-[32px] leading-none text-[var(--sl-t1)]">
               {nextApptDate ? nextApptDate.getDate().toString().padStart(2, '0') : '--'}
             </div>
           </div>
@@ -246,12 +247,12 @@ export default function SaudePage() {
           { label: 'Proximas', value: String(upcomingCount), color: '#D9962E' },
           { label: 'Realizadas', value: String(completedCount), color: '#0F766E' },
           { label: 'Total', value: String(appointments.length), color: '#3CA0B5' },
-          { label: 'Custo Total', value: totalCost > 0 ? `R$ ${totalCost.toLocaleString('pt-BR')}` : 'R$ 0', color: '#DB6478' },
+          { label: 'Custo Total', value: fmtBRL(totalCost), color: '#DB6478' },
         ].map(stat => (
           <div key={stat.label} className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] px-[18px] py-4 overflow-hidden text-center hover:border-[var(--sl-border-h)] transition-colors">
             <div className="absolute top-0 left-4 right-4 h-[2.5px] rounded-b" style={{ background: stat.color }} />
             <p className="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--sl-t3)] mb-1">{stat.label}</p>
-            <p className="font-[IBM_Plex_Mono] font-medium text-[22px] text-[var(--sl-t1)]">{stat.value}</p>
+            <p className="sl-num-strong text-[22px] text-[var(--sl-t1)]">{stat.value}</p>
           </div>
         ))}
       </div>
@@ -291,13 +292,13 @@ export default function SaudePage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center sl-fade-up sl-delay-4">
-          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             {tab === 'upcoming' ? 'Nenhuma consulta agendada' : 'Nenhuma consulta'}
           </h3>
           {tab === 'upcoming' && (
             <button
               onClick={() => setShowModal(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#D97534] text-white hover:opacity-90 mt-3"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 mt-3"
             >
               <Plus size={15} />
               Agendar
@@ -322,7 +323,7 @@ export default function SaudePage() {
                 const statusPill = getStatusPill(a.status)
                 return (
                   <tr key={a.id} className="group hover:bg-[var(--sl-s2)] transition-colors cursor-pointer">
-                    <td className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t2)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
+                    <td className="sl-num text-[13px] text-[var(--sl-t2)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
                       {new Date(a.appointment_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })}
                     </td>
                     <td className="text-[13px] font-semibold text-[var(--sl-t1)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
@@ -334,8 +335,8 @@ export default function SaudePage() {
                     <td className="text-[13px] text-[var(--sl-t3)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
                       {a.location ?? '--'}
                     </td>
-                    <td className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t1)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
-                      {a.cost ? `R$ ${a.cost.toLocaleString('pt-BR')}` : '--'}
+                    <td className="sl-num text-[13px] text-[var(--sl-t1)] py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
+                      {a.cost ? fmtBRL(a.cost) : '--'}
                     </td>
                     <td className="py-[14px] px-[14px] border-b border-[rgba(120,165,220,.04)]">
                       <span
@@ -353,10 +354,10 @@ export default function SaudePage() {
           {totalCost > 0 && (
             <div className="flex items-center justify-between pt-3 px-[14px] border-t border-[var(--sl-border)] mt-1">
               <span className="text-[11px] text-[var(--sl-t3)]">
-                Media: R$ {appointments.length > 0 ? Math.round(totalCost / appointments.filter(a => a.cost).length).toLocaleString('pt-BR') : 0}/consulta
+                Media: <span className="sl-num">{fmtBRL(appointments.filter(a => a.cost).length > 0 ? totalCost / appointments.filter(a => a.cost).length : 0)}</span>/consulta
               </span>
-              <span className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t1)]">
-                Total: R$ {totalCost.toLocaleString('pt-BR')}
+              <span className="sl-num-strong text-[13px] text-[var(--sl-t1)]">
+                Total: {fmtBRL(totalCost)}
               </span>
             </div>
           )}
@@ -370,7 +371,7 @@ export default function SaudePage() {
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Space_Grotesk] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
+              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
                 <Activity size={20} className="text-[#D97534]" />
                 Agendar Consulta
               </h2>
@@ -510,7 +511,7 @@ export default function SaudePage() {
                   Cancelar
                 </button>
                 <button onClick={handleSave} disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#3CA0B5] text-[#03071a] hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 disabled:opacity-50">
                   {isSaving ? 'Agendando...' : 'Agendar'}
                 </button>
               </div>

@@ -188,7 +188,7 @@ export function MenteSessoesTab({ sessions, weekHours, streak }: MenteSessoesTab
               <div className="flex-1 min-w-0">
                 <div className="text-[14px] font-medium text-[var(--sl-t1)] truncate">
                   {session.track?.name ?? 'Sessão livre'}
-                  {session.session_notes ? ` — ${session.session_notes}` : ''}
+                  {session.session_notes ? ` · ${session.session_notes}` : ''}
                 </div>
                 <div className="text-[12px] text-[var(--sl-t2)] mt-[1px]">
                   {formatRelativeDate(session.recorded_at)} · {session.cycles_completed} pomodoros

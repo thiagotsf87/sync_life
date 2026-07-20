@@ -16,8 +16,8 @@ function InsightContent({ month, year }: { month: number; year: number }) {
 
   return (
     <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 relative overflow-hidden transition-colors hover:border-[var(--sl-border-h)] sl-fade-up">
-      {/* Top accent */}
-      <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(90deg, #0F766E, #0B2D34)' }} />
+      {/* Top accent — G-03: cor sólida em vez de gradient */}
+      <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'var(--sl-em)' }} />
 
       {/* Header */}
       <div className="flex items-center gap-2.5 mb-4">
@@ -26,7 +26,7 @@ function InsightContent({ month, year }: { month: number; year: number }) {
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">Insights Financeiros</span>
+            <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">Insights Financeiros</span>
             <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[rgba(15,118,110,0.1)] text-[#0F766E]">IA</span>
           </div>
         </div>

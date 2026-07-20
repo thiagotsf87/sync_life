@@ -2,7 +2,6 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { TrendingUp, Trash2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import {
   usePortfolioAssets, usePortfolioTransactions, usePortfolioDividends,
   useDeleteAsset,
@@ -11,10 +10,7 @@ import {
 import { toast } from 'sonner'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { MetricsStrip } from '@/components/ui/metrics-strip'
-
-function formatCurrency(v: number) {
-  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
+import { fmtBRL } from '@/lib/format/currency'
 
 function formatDate(d: string) {
   const [y, m, day] = d.split('-')
@@ -78,10 +74,10 @@ export default function TickerDetailPage() {
           subtitle="Ativo nao encontrado"
         />
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
-          <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Ativo nao encontrado</h2>
+          <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Ativo nao encontrado</h2>
           <p className="text-[13px] text-[var(--sl-t2)] mb-4">&quot;{ticker}&quot; nao esta na sua carteira.</p>
           <button onClick={() => router.push('/patrimonio/carteira')}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#4F88D4] text-white hover:opacity-90">
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90">
             Ver Carteira
           </button>
         </div>
@@ -115,8 +111,8 @@ export default function TickerDetailPage() {
             {/* Price display on the right side of header */}
             <div className="text-right">
               <div className="text-[10px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">Cotacao Atual</div>
-              <div className="font-[IBM_Plex_Mono] text-[28px] font-medium mt-0.5 text-[var(--sl-t1)]">
-                {asset.current_price != null ? formatCurrency(asset.current_price) : '--'}
+              <div className="font-[Syne] sl-num-strong text-[28px] mt-0.5 text-[var(--sl-t1)]">
+                {asset.current_price != null ? fmtBRL(asset.current_price) : '--'}
               </div>
             </div>
           </>
@@ -127,29 +123,29 @@ export default function TickerDetailPage() {
         <div className="h-[80px] rounded-[18px] bg-[var(--sl-s2)] animate-pulse mb-5" />
       ) : asset ? (
         <>
-          {/* MetricsStrip — horizontal strip with internal dividers */}
+          {/* MetricsStrip · horizontal strip with internal dividers */}
           <div className="mb-5 sl-fade-up sl-delay-1">
             <MetricsStrip
               items={[
                 {
                   label: 'Posicao',
-                  value: formatCurrency(currentValue),
+                  value: fmtBRL(currentValue),
                   note: `${asset.quantity.toLocaleString('pt-BR')} cotas`,
                 },
                 {
                   label: 'Preco Medio',
-                  value: formatCurrency(asset.avg_price),
-                  note: `Investido: ${formatCurrency(investedValue)}`,
+                  value: fmtBRL(asset.avg_price),
+                  note: `Investido: ${fmtBRL(investedValue)}`,
                 },
                 {
                   label: 'Resultado',
-                  value: `${profitLoss >= 0 ? '+' : ''}${formatCurrency(profitLoss)}`,
+                  value: `${profitLoss >= 0 ? '+' : ''}${fmtBRL(profitLoss)}`,
                   valueColor: profitLoss >= 0 ? '#0F766E' : '#DB6478',
                   note: `${profitLossPct >= 0 ? '+' : ''}${profitLossPct.toFixed(2)}%`,
                 },
                 {
                   label: 'Proventos 12m',
-                  value: formatCurrency(totalDividends),
+                  value: fmtBRL(totalDividends),
                   note: yoc > 0 ? `YoC: ${yoc.toFixed(1)}% a.a.` : '--',
                 },
               ]}
@@ -163,13 +159,13 @@ export default function TickerDetailPage() {
               <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#4F88D4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
               </svg>
-              <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+              <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                 Historico de Cotacao
               </span>
             </div>
             <div className="border border-dashed border-[var(--sl-border)] rounded-[12px] p-5 flex items-center justify-center text-[var(--sl-t3)] text-[12px] min-h-[240px]"
                  style={{ background: 'rgba(120,165,220,.015)' }}>
-              Grafico Recharts (area: cotacao {ticker} com linha de preco medio {formatCurrency(asset.avg_price)})
+              Grafico Recharts (area: cotacao {ticker} com linha de preco medio {fmtBRL(asset.avg_price)})
             </div>
           </div>
 
@@ -184,7 +180,7 @@ export default function TickerDetailPage() {
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
-                <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   Historico de Operacoes
                 </span>
               </div>
@@ -210,11 +206,11 @@ export default function TickerDetailPage() {
                         />
                         <div className="flex-1 min-w-0">
                           <div className="text-[13px] font-medium text-[var(--sl-t1)]">
-                            {isBuy ? 'Compra' : 'Venda'} — {tx.quantity} cotas @ {formatCurrency(tx.price)}
+                            {isBuy ? 'Compra' : 'Venda'} · {tx.quantity} cotas @ {fmtBRL(tx.price)}
                           </div>
                           <div className="text-[11px] text-[var(--sl-t3)] mt-0.5">
-                            {formatDate(tx.operation_date)} · {formatCurrency(txValue)}
-                            {tx.fees > 0 && ` (+ ${formatCurrency(tx.fees)} taxas)`}
+                            {formatDate(tx.operation_date)} · {fmtBRL(txValue)}
+                            {tx.fees > 0 && ` (+ ${fmtBRL(tx.fees)} taxas)`}
                           </div>
                         </div>
                       </div>
@@ -232,7 +228,7 @@ export default function TickerDetailPage() {
                   <rect x="2" y="5" width="20" height="14" rx="2" />
                   <path d="M2 10h20" />
                 </svg>
-                <span className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">
+                <span className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">
                   Proventos Recebidos
                 </span>
                 {yoc > 0 && (
@@ -243,7 +239,7 @@ export default function TickerDetailPage() {
                         <circle cx="20" cy="20" r="16" fill="none" stroke="#D9962E" strokeWidth="4" strokeLinecap="round"
                           strokeDasharray="100" strokeDashoffset={100 - Math.min(yoc / 15 * 100, 100)} transform="rotate(-90 20 20)" />
                       </svg>
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-[IBM_Plex_Mono] text-[9px] text-[#D9962E]">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sl-num text-[9px] text-[#D9962E]">
                         {yoc.toFixed(1)}%
                       </div>
                     </div>
@@ -264,14 +260,14 @@ export default function TickerDetailPage() {
                       />
                       <div className="flex-1">
                         <div className="text-[13px] font-medium text-[var(--sl-t1)]">
-                          {DIVIDEND_TYPE_LABELS[div.type]}{div.amount_per_unit != null ? ` — ${formatCurrency(div.amount_per_unit)}/acao` : ''}
+                          {DIVIDEND_TYPE_LABELS[div.type]}{div.amount_per_unit != null ? ` · ${fmtBRL(div.amount_per_unit)}/acao` : ''}
                         </div>
                         <div className="text-[11px] text-[var(--sl-t3)] mt-0.5">
                           {formatDate(div.payment_date)}
                         </div>
                       </div>
-                      <div className="font-[IBM_Plex_Mono] text-[13px] text-[#0F766E] shrink-0">
-                        {formatCurrency(div.total_amount)}
+                      <div className="sl-num text-[13px] text-[#0F766E] shrink-0">
+                        {fmtBRL(div.total_amount)}
                       </div>
                     </div>
                   ))}

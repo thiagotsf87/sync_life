@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import {
   Repeat, Plus, Calendar, Clock, Pencil, Pause, Play, Trash2, AlertTriangle, MoreVertical,
+  Wallet, TrendingDown, Briefcase, Star, Sparkles,
 } from 'lucide-react'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { toast } from 'sonner'
@@ -18,6 +19,7 @@ import {
 } from '@/hooks/use-recorrentes'
 import { RecorrenteModal } from '@/components/financas/RecorrenteModal'
 import { FinancasMobileShell } from '@/components/financas/FinancasMobileShell'
+import { fmtBRL } from '@/lib/format/currency'
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
@@ -42,10 +44,6 @@ const FREQ_SECTION_LABELS: Record<Frequency, string> = {
 const FREQUENCY_GROUPS: Frequency[] = ['monthly', 'biweekly', 'weekly', 'quarterly', 'annual']
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
-
-function fmtR$(n: number): string {
-  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
-}
 
 function getDayOfMonthLabel(rec: RecurrenteWithCategory): string {
   if (rec.frequency === 'weekly') return 'Toda semana'
@@ -108,7 +106,7 @@ function DeleteRecorrenteModal({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="relative w-full max-w-[420px] bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl shadow-2xl p-5">
         <p className="text-[10px] font-bold uppercase tracking-[0.05em] text-[var(--sl-t2)] mb-1.5">Atenção</p>
-        <h2 className="font-[Space_Grotesk] text-[20px] font-extrabold text-[var(--sl-t1)] mb-2">Excluir recorrente</h2>
+        <h2 className="font-[Syne] text-[20px] font-extrabold text-[var(--sl-t1)] mb-2">Excluir recorrente</h2>
         <p className="text-[13px] text-[var(--sl-t2)] mb-5 leading-relaxed">
           Escolha o que deseja fazer com <strong>&ldquo;{rec.name}&rdquo;</strong>:
         </p>
@@ -116,7 +114,7 @@ function DeleteRecorrenteModal({
           className="flex items-start gap-3 p-[14px] border-[1.5px] border-[var(--sl-border)] rounded-xl cursor-pointer bg-[var(--sl-s2)] hover:border-[rgba(219,100,120,0.35)] hover:bg-[rgba(219,100,120,0.04)] transition-all mb-4"
           onClick={handleConfirm}
         >
-          <span className="text-[22px] shrink-0 mt-0.5">🗑️</span>
+          <Trash2 size={22} className="text-[var(--sl-danger)] shrink-0 mt-0.5" />
           <div>
             <div className="text-[13px] font-semibold text-[var(--sl-t1)] mb-0.5">
               Excluir toda a série{loading ? ' …' : ''}
@@ -160,7 +158,7 @@ function RecorrenteCard({
           'w-10 h-10 rounded-[11px] flex items-center justify-center text-xl shrink-0',
           isIncome ? 'bg-[rgba(15,118,110,0.12)]' : 'bg-[rgba(219,100,120,0.1)]'
         )}>
-          {rec.categories?.icon ?? (isIncome ? '💰' : '📤')}
+          {rec.categories?.icon ?? (isIncome ? <Wallet size={18} className="text-[var(--sl-em)]" /> : <TrendingDown size={18} className="text-[var(--sl-danger)]" />)}
         </div>
 
         {/* Body */}
@@ -175,8 +173,8 @@ function RecorrenteCard({
             <span className={cn(
               'text-[10px] font-bold px-[7px] py-[2px] rounded-full shrink-0',
               isIncome
-                ? 'bg-[rgba(15,118,110,0.1)] text-[#0F766E] border border-[rgba(15,118,110,0.2)]'
-                : 'bg-[rgba(219,100,120,0.1)] text-[#DB6478] border border-[rgba(219,100,120,0.2)]'
+                ? 'bg-[rgba(15,118,110,0.1)] text-[var(--sl-em)] border border-[rgba(15,118,110,0.2)]'
+                : 'bg-[rgba(219,100,120,0.1)] text-[var(--sl-danger)] border border-[rgba(219,100,120,0.2)]'
             )}>
               {isIncome ? 'Receita' : 'Despesa'}
             </span>
@@ -206,11 +204,11 @@ function RecorrenteCard({
         {/* Valor + Ações */}
         <div className="flex items-center gap-3 shrink-0">
           <span className={cn(
-            'font-[IBM_Plex_Mono] text-[16px] font-medium whitespace-nowrap',
+            'sl-num text-[16px] whitespace-nowrap',
             isPaused && 'opacity-50',
-            isIncome ? 'text-[#0F766E]' : 'text-[#DB6478]'
+            isIncome ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
           )}>
-            {isIncome ? '+ ' : '− '}R$ {fmtR$(rec.amount)}
+            {isIncome ? '+ ' : '– '}{fmtBRL(rec.amount)}
           </span>
 
           {/* Desktop actions */}
@@ -224,14 +222,14 @@ function RecorrenteCard({
               className={cn(
                 'flex items-center gap-1 border rounded-lg px-2.5 py-1 text-[11px] transition-all',
                 isPaused
-                  ? 'border-[rgba(15,118,110,0.3)] text-[#0F766E] hover:bg-[rgba(15,118,110,0.06)]'
-                  : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[rgba(217,150,46,0.4)] hover:text-[#D9962E]'
+                  ? 'border-[rgba(15,118,110,0.3)] text-[var(--sl-em)] hover:bg-[rgba(15,118,110,0.06)]'
+                  : 'border-[var(--sl-border)] text-[var(--sl-t3)] hover:border-[rgba(217,150,46,0.4)] hover:text-[var(--sl-warning)]'
               )}>
               {isPaused ? <Play size={12} /> : <Pause size={12} />}
               {isPaused ? 'Retomar' : 'Pausar'}
             </button>
             <button onClick={() => onDelete(rec)}
-              className="flex items-center gap-1 border border-[var(--sl-border)] rounded-lg px-2.5 py-1 text-[11px] text-[var(--sl-t3)] hover:border-[rgba(219,100,120,0.4)] hover:text-[#DB6478] transition-all">
+              className="flex items-center gap-1 border border-[var(--sl-border)] rounded-lg px-2.5 py-1 text-[11px] text-[var(--sl-t3)] hover:border-[rgba(219,100,120,0.4)] hover:text-[var(--sl-danger)] transition-all">
               <Trash2 size={12} />
               Excluir
             </button>
@@ -250,15 +248,15 @@ function RecorrenteCard({
         isPaused && 'opacity-50'
       )}>
         <span className="text-[11px] text-[var(--sl-t3)]">
-          {isPaused ? 'Pausada — não vai gerar lançamentos' : 'Próximo lançamento'}
+          {isPaused ? 'Pausada, não vai gerar lançamentos' : 'Próximo lançamento'}
         </span>
         {!isPaused && nextOcc && (
           <div className="flex items-center gap-2">
             <span className="text-[12px] text-[var(--sl-t2)] font-medium font-[IBM_Plex_Mono]">
               {String(nextOcc.day).padStart(2, '0')}/{nextOcc.monthShort}
             </span>
-            <span className={cn('text-[11px]', nextOcc.daysLeft <= 7 ? 'text-[#D9962E]' : 'text-[var(--sl-t3)]')}>
-              em {nextOcc.daysLeft} dia{nextOcc.daysLeft !== 1 ? 's' : ''}{nextOcc.daysLeft <= 7 ? ' ⚠' : ''}
+            <span className={cn('text-[11px]', nextOcc.daysLeft <= 7 ? 'text-[var(--sl-warning)]' : 'text-[var(--sl-t3)]')}>
+              em {nextOcc.daysLeft} dia{nextOcc.daysLeft !== 1 ? 's' : ''}{nextOcc.daysLeft <= 7 ? <AlertTriangle size={11} className="inline ml-1 -mt-0.5" /> : null}
             </span>
           </div>
         )}
@@ -354,15 +352,15 @@ export default function RecorrentesPage() {
         <div className="grid grid-cols-3 gap-2 mb-3">
           <div className="rounded-[10px] p-2.5" style={{ background: 'rgba(15,118,110,0.08)', border: '1px solid rgba(15,118,110,0.2)' }}>
             <div className="text-[9px] text-[var(--sl-t2)] uppercase font-semibold mb-1">Rec. Receitas</div>
-            <div className="font-[IBM_Plex_Mono] text-[15px] font-bold text-[#0F766E] leading-none">R$ {fmtR$(totalIncomeMonthly)}</div>
+            <div className="sl-num-strong text-[15px] text-[var(--sl-em)] leading-none">{fmtBRL(totalIncomeMonthly)}</div>
           </div>
           <div className="rounded-[10px] p-2.5" style={{ background: 'rgba(219,100,120,0.08)', border: '1px solid rgba(219,100,120,0.2)' }}>
             <div className="text-[9px] text-[var(--sl-t2)] uppercase font-semibold mb-1">Rec. Despesas</div>
-            <div className="font-[IBM_Plex_Mono] text-[15px] font-bold text-[#DB6478] leading-none">R$ {fmtR$(totalExpenseMonthly)}</div>
+            <div className="sl-num-strong text-[15px] text-[var(--sl-danger)] leading-none">{fmtBRL(totalExpenseMonthly)}</div>
           </div>
           <div className="rounded-[10px] p-2.5 bg-[var(--sl-s1)] border border-[var(--sl-border)]">
             <div className="text-[9px] text-[var(--sl-t2)] uppercase font-semibold mb-1">% Comprom.</div>
-            <div className="font-[IBM_Plex_Mono] text-[15px] font-bold leading-none" style={{ color: expensePct >= 60 ? '#D9962E' : '#0F766E' }}>{expensePct}%</div>
+            <div className="sl-num-strong text-[15px] leading-none" style={{ color: expensePct >= 60 ? 'var(--sl-warning)' : 'var(--sl-em)' }}>{expensePct}%</div>
           </div>
         </div>
 
@@ -370,10 +368,10 @@ export default function RecorrentesPage() {
         {!loading && recorrentes.length > 0 && (
           <div className="rounded-2xl p-3 mb-3 flex gap-2.5 items-start"
             style={{ background: 'rgba(15,118,110,0.05)', border: '1px solid rgba(15,118,110,0.15)' }}>
-            <span className="text-[16px]">✨</span>
+            <Sparkles size={16} className="text-[var(--sl-em)] shrink-0 mt-0.5" />
             <div className="text-[12px] text-[var(--sl-t2)] leading-[1.5]">
               {expensePct}% da renda comprometida com recorrentes
-              {expensePct < 50 ? ' — isso é saudável.' : expensePct < 70 ? ' — fique de olho.' : ' — considere reduzir despesas fixas.'}
+              {expensePct < 50 ? ', isso é saudável.' : expensePct < 70 ? ', fique de olho.' : ', considere reduzir despesas fixas.'}
               {nextOcc && (
                 <> Próximo: <strong className="text-[var(--sl-t1)]">{nextOcc.name}</strong> dia {nextOcc.day}.</>
               )}
@@ -385,15 +383,15 @@ export default function RecorrentesPage() {
         {loading ? (
           <RecorrenteSkeleton />
         ) : error ? (
-          <div className="rounded-xl p-4 text-[13px] text-[#DB6478]" style={{ background: 'rgba(219,100,120,0.06)', border: '1px solid rgba(219,100,120,0.2)' }}>
+          <div className="rounded-xl p-4 text-[13px] text-[var(--sl-danger)]" style={{ background: 'rgba(219,100,120,0.06)', border: '1px solid rgba(219,100,120,0.2)' }}>
             Erro ao carregar.{' '}<button onClick={refresh} className="underline">Tentar novamente</button>
           </div>
         ) : recorrentes.length === 0 ? (
           <div className="text-center py-10 px-4 bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl">
-            <span className="text-[36px] block mb-2 opacity-70">🔄</span>
-            <h3 className="font-[Space_Grotesk] text-[15px] font-bold text-[var(--sl-t1)] mb-1">Nenhuma recorrente</h3>
+            <Repeat size={36} className="text-[var(--sl-t3)] mx-auto mb-2 opacity-70" />
+            <h3 className="font-[Syne] text-[15px] font-bold text-[var(--sl-t1)] mb-1">Nenhuma recorrente</h3>
             <p className="text-[12px] text-[var(--sl-t2)] mb-3">Cadastre despesas fixas e receitas regulares.</p>
-            <button onClick={openCreate} className="inline-flex items-center gap-1.5 font-bold text-[12px] px-4 py-2 rounded-full text-[#03071a]" style={{ background: '#0F766E' }}>
+            <button onClick={openCreate} className="inline-flex items-center gap-1.5 font-bold text-[12px] px-4 py-2 rounded-full text-white" style={{ background: 'var(--sl-em)' }}>
               <Plus size={13} /> Criar primeira
             </button>
           </div>
@@ -402,28 +400,28 @@ export default function RecorrentesPage() {
             {/* Receitas section */}
             {incomeRecs.length > 0 && (
               <>
-                <div className="font-[Space_Grotesk] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-3">Receitas</div>
+                <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-3">Receitas</div>
                 <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
                   {incomeRecs.map(rec => {
                     const next = calcNextOccurrence(rec)
                     return (
                       <div key={rec.id} className="flex items-center gap-3 px-4 py-3 border-b border-[var(--sl-border)] last:border-b-0">
                         <div className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center text-[18px] shrink-0" style={{ background: 'rgba(15,118,110,0.15)' }}>
-                          {rec.categories?.icon ?? '💼'}
+                          {rec.categories?.icon ?? <Briefcase size={18} className="text-[var(--sl-em)]" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{rec.name}</div>
                           <div className="text-[12px] text-[var(--sl-t2)]">{getDayOfMonthLabel(rec)} · {FREQ_LABELS[rec.frequency]}</div>
                           {next && (
                             <div className="mt-1">
-                              <span className="inline-flex items-center gap-1 text-[10px] px-[7px] py-[2px] rounded-[10px]" style={{ background: 'rgba(60,160,181,0.1)', color: '#3CA0B5' }}>
-                                🔄 Próximo: {next.day} {next.monthShort}
+                              <span className="inline-flex items-center gap-1 text-[10px] px-[7px] py-[2px] rounded-[10px]" style={{ background: 'rgba(60,160,181,0.1)', color: 'var(--sl-info)' }}>
+                                <Repeat size={10} /> Próximo: {next.day} {next.monthShort}
                               </span>
                             </div>
                           )}
                         </div>
                         <div className="text-right shrink-0">
-                          <div className="font-[IBM_Plex_Mono] text-[14px] font-medium text-[#0F766E]">+R$ {fmtR$(rec.amount)}</div>
+                          <div className="sl-num text-[14px] text-[var(--sl-em)]">+{fmtBRL(rec.amount)}</div>
                         </div>
                       </div>
                     )
@@ -435,28 +433,28 @@ export default function RecorrentesPage() {
             {/* Despesas section */}
             {expenseRecs.length > 0 && (
               <>
-                <div className="font-[Space_Grotesk] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-4">Despesas Fixas</div>
+                <div className="font-[Syne] text-[13px] font-semibold text-[var(--sl-t2)] uppercase tracking-[0.5px] px-1 pb-2 mt-4">Despesas Fixas</div>
                 <div className="bg-[var(--sl-s1)] border-t border-b border-[var(--sl-border)]">
                   {expenseRecs.map(rec => {
                     const next = calcNextOccurrence(rec)
                     return (
                       <div key={rec.id} className="flex items-center gap-3 px-4 py-3 border-b border-[var(--sl-border)] last:border-b-0">
                         <div className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center text-[18px] shrink-0" style={{ background: 'rgba(219,100,120,0.1)' }}>
-                          {rec.categories?.icon ?? '📤'}
+                          {rec.categories?.icon ?? <TrendingDown size={18} className="text-[var(--sl-danger)]" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-[14px] font-medium text-[var(--sl-t1)] truncate">{rec.name}</div>
                           <div className="text-[12px] text-[var(--sl-t2)]">{getDayOfMonthLabel(rec)} · {FREQ_LABELS[rec.frequency]}</div>
                           {next && (
                             <div className="mt-1">
-                              <span className="inline-flex items-center gap-1 text-[10px] px-[7px] py-[2px] rounded-[10px]" style={{ background: 'rgba(60,160,181,0.1)', color: '#3CA0B5' }}>
-                                🔄 Próximo: {next.day} {next.monthShort}
+                              <span className="inline-flex items-center gap-1 text-[10px] px-[7px] py-[2px] rounded-[10px]" style={{ background: 'rgba(60,160,181,0.1)', color: 'var(--sl-info)' }}>
+                                <Repeat size={10} /> Próximo: {next.day} {next.monthShort}
                               </span>
                             </div>
                           )}
                         </div>
                         <div className="text-right shrink-0">
-                          <div className="font-[IBM_Plex_Mono] text-[14px] font-medium text-[#DB6478]">-R$ {fmtR$(rec.amount)}</div>
+                          <div className="sl-num text-[14px] text-[var(--sl-danger)]">– {fmtBRL(rec.amount)}</div>
                         </div>
                       </div>
                     )
@@ -476,15 +474,15 @@ export default function RecorrentesPage() {
         <ModuleHeader
           icon={Repeat}
           iconBg="rgba(15,118,110,.08)"
-          iconColor="#0F766E"
+          iconColor="var(--sl-em)"
           title="Recorrentes"
           subtitle="Despesas e receitas que acontecem automaticamente todo período."
           className="mb-6"
         >
           <button
             onClick={openCreate}
-            className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full border-none cursor-pointer shadow-[0_4px_16px_rgba(15,118,110,0.25)] hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(15,118,110,0.35)] transition-all shrink-0 text-[#03071a]"
-            style={{ background: '#0F766E' }}
+            className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full border-none cursor-pointer shadow-[0_4px_16px_rgba(15,118,110,0.25)] hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(15,118,110,0.35)] transition-all shrink-0 text-white"
+            style={{ background: 'var(--sl-em)' }}
           >
             <Plus size={14} strokeWidth={2.5} />
             Nova recorrente
@@ -495,7 +493,7 @@ export default function RecorrentesPage() {
         {isFree && activeCount >= 4 && (
           <div className="flex items-center gap-3 rounded-xl px-[18px] py-[14px] mb-5"
             style={{ background: 'rgba(139,123,212,0.06)', border: '1px solid rgba(139,123,212,0.2)' }}>
-            <span className="text-xl shrink-0">⭐</span>
+            <Star size={20} className="text-[#8B7BD4] shrink-0" fill="currentColor" />
             <div className="flex-1">
               <div className="text-[13px] font-semibold text-[var(--sl-t1)] mb-0.5">
                 Você está usando {activeCount} de {FREE_PLAN_LIMIT} recorrentes do plano Free
@@ -514,22 +512,22 @@ export default function RecorrentesPage() {
         {/* ③ KPIs */}
         <div className="grid grid-cols-4 gap-3 mb-6">
           <KpiCard label="Saída mensal"
-            value={`− R$ ${fmtR$(totalExpenseMonthly)}`}
+            value={`– ${fmtBRL(totalExpenseMonthly)}`}
             delta={`${recorrentes.filter(r => r.type === 'expense' && !r.is_paused).length} despesas ativas`}
-            accent="#DB6478" deltaType="down" />
+            accent="var(--sl-danger)" deltaType="down" />
           <KpiCard label="Entrada mensal"
-            value={`+ R$ ${fmtR$(totalIncomeMonthly)}`}
+            value={`+ ${fmtBRL(totalIncomeMonthly)}`}
             delta={`${recorrentes.filter(r => r.type === 'income' && !r.is_paused).length} receitas ativas`}
-            accent="#0F766E" deltaType="up" />
+            accent="var(--sl-em)" deltaType="up" />
           <KpiCard label="Impacto líquido"
-            value={`${netMonthly >= 0 ? '+ ' : '− '}R$ ${fmtR$(Math.abs(netMonthly))}`}
+            value={`${netMonthly >= 0 ? '+ ' : '– '}${fmtBRL(Math.abs(netMonthly))}`}
             delta="por mês"
-            accent={netMonthly >= 0 ? '#0F766E' : '#DB6478'}
+            accent={netMonthly >= 0 ? 'var(--sl-em)' : 'var(--sl-danger)'}
             deltaType={netMonthly >= 0 ? 'up' : 'down'} />
           <KpiCard label="Custo anual"
-            value={`R$ ${fmtR$(totalExpenseAnnual)}`}
+            value={fmtBRL(totalExpenseAnnual)}
             delta="só em despesas fixas"
-            accent="#D9962E" deltaType="warn" />
+            accent="var(--sl-warning)" deltaType="warn" />
         </div>
 
         {/* ④ Insight Jornada */}
@@ -537,7 +535,7 @@ export default function RecorrentesPage() {
           <>
             Suas despesas recorrentes representam{' '}
             <strong>{expensePct}% da sua renda mensal</strong>
-            {expensePct <= 20 ? ' — isso é saudável.' : expensePct <= 35 ? ' — atenção ao orçamento.' : ' — acima do recomendado.'}
+            {expensePct <= 20 ? ', isso é saudável.' : expensePct <= 35 ? ', atenção ao orçamento.' : ', acima do recomendado.'}
             {nextOcc && (
               <> O próximo lançamento é <strong>{nextOcc.name} dia {nextOcc.day}</strong>, em {nextOcc.daysLeft} dia{nextOcc.daysLeft !== 1 ? 's' : ''}.</>
             )}
@@ -547,14 +545,14 @@ export default function RecorrentesPage() {
         {/* ⑤ Próximas ocorrências */}
         {upcomingOccurrences.length > 0 && (
           <SLCard className="mb-7">
-            <p className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.06em] mb-4">
-              📅 Próximas ocorrências — 30 dias
+            <p className="font-[Syne] text-[13px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.06em] mb-4">
+              Próximas ocorrências · 30 dias
             </p>
             <div className="flex flex-col divide-y divide-[var(--sl-border)]">
               {upcomingOccurrences.map(occ => (
                 <div key={occ.id} className="flex items-center gap-3 py-[9px]">
                   <div className="w-11 shrink-0 text-center">
-                    <div className="font-[IBM_Plex_Mono] text-[18px] font-bold text-[var(--sl-t1)] leading-none">
+                    <div className="sl-num-strong text-[18px] text-[var(--sl-t1)] leading-none">
                       {String(occ.day).padStart(2, '0')}
                     </div>
                     <div className="text-[10px] text-[var(--sl-t3)] uppercase tracking-[0.05em]">
@@ -567,10 +565,10 @@ export default function RecorrentesPage() {
                     <div className="text-[11px] text-[var(--sl-t3)]">{FREQ_LABELS[occ.frequency]}</div>
                   </div>
                   <span className={cn(
-                    'font-[IBM_Plex_Mono] text-[13px] font-medium whitespace-nowrap',
-                    occ.type === 'income' ? 'text-[#0F766E]' : 'text-[#DB6478]'
+                    'sl-num text-[13px] whitespace-nowrap',
+                    occ.type === 'income' ? 'text-[var(--sl-em)]' : 'text-[var(--sl-danger)]'
                   )}>
-                    {occ.type === 'income' ? '+ ' : '− '}R$ {fmtR$(occ.amount)}
+                    {occ.type === 'income' ? '+ ' : '– '}{fmtBRL(occ.amount)}
                   </span>
                 </div>
               ))}
@@ -582,23 +580,23 @@ export default function RecorrentesPage() {
         {loading ? (
           <RecorrenteSkeleton />
         ) : error ? (
-          <div className="rounded-xl p-4 text-[13px] text-[#DB6478]"
+          <div className="rounded-xl p-4 text-[13px] text-[var(--sl-danger)]"
             style={{ background: 'rgba(219,100,120,0.06)', border: '1px solid rgba(219,100,120,0.2)' }}>
             Erro ao carregar recorrentes.{' '}
             <button onClick={refresh} className="underline">Tentar novamente</button>
           </div>
         ) : recorrentes.length === 0 ? (
           <div className="text-center py-12 px-6 bg-[var(--sl-s1)] border border-dashed border-[var(--sl-border)] rounded-2xl">
-            <span className="text-[40px] block mb-3 opacity-70">🔄</span>
-            <h3 className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)] mb-1.5">
+            <Repeat size={40} className="text-[var(--sl-t3)] mx-auto mb-3 opacity-70" />
+            <h3 className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-1.5">
               Nenhuma recorrente cadastrada
             </h3>
             <p className="text-[13px] text-[var(--sl-t2)] mb-4">
               Cadastre suas despesas fixas e receitas regulares para nunca perder um lançamento.
             </p>
             <button onClick={openCreate}
-              className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full text-[#03071a]"
-              style={{ background: '#0F766E' }}>
+              className="inline-flex items-center gap-2 font-bold text-[13px] px-5 py-2.5 rounded-full text-white"
+              style={{ background: 'var(--sl-em)' }}>
               <Plus size={14} />
               Criar primeira recorrente
             </button>
@@ -616,7 +614,7 @@ export default function RecorrentesPage() {
               <section key={freq} className="mb-7">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="font-[Space_Grotesk] text-[13px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.06em]">
+                    <span className="font-[Syne] text-[13px] font-bold text-[var(--sl-t2)] uppercase tracking-[0.06em]">
                       {FREQ_SECTION_LABELS[freq]}
                     </span>
                     <span className="text-[11px] text-[var(--sl-t3)] bg-[var(--sl-s2)] border border-[var(--sl-border)] rounded-full px-2 py-0.5">
@@ -624,8 +622,8 @@ export default function RecorrentesPage() {
                     </span>
                   </div>
                   {totalMonthly > 0 && (
-                    <span className="font-[IBM_Plex_Mono] text-[13px] text-[var(--sl-t2)]">
-                      − R$ {fmtR$(totalMonthly)} / mês
+                    <span className="sl-num text-[13px] text-[var(--sl-t2)]">
+                      – {fmtBRL(totalMonthly)} / mês
                     </span>
                   )}
                 </div>

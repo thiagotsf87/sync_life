@@ -344,7 +344,7 @@ export default function RankingPage() {
         <div className="flex items-center gap-3.5 mb-3">
           <div
             className="h-[56px] w-[56px] shrink-0 rounded-full flex items-center justify-center
-                       text-white text-[18px] font-extrabold font-[Space_Grotesk]
+                       text-white text-[18px] font-extrabold font-[Syne]
                        shadow-[0_0_20px_rgba(107,111,212,0.3)]"
             style={{ background: 'linear-gradient(135deg, #6B6FD4, #0B2D34)' }}
           >
@@ -412,7 +412,7 @@ export default function RankingPage() {
       </div>
 
       {/* Score breakdown */}
-      <p className="px-5 pb-2 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+      <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
         Pontos por categoria
       </p>
       <div className="grid grid-cols-2 gap-2 px-4 mb-3">
@@ -441,7 +441,7 @@ export default function RankingPage() {
       </div>
 
       {/* Leaderboard */}
-      <p className="px-5 pb-2 font-[Space_Grotesk] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
+      <p className="px-5 pb-2 font-[Syne] text-[13px] font-semibold uppercase tracking-[0.5px] text-[var(--sl-t2)]">
         🏅 Leaderboard
       </p>
       <div className="px-4 mb-3">
@@ -528,7 +528,7 @@ export default function RankingPage() {
       {/* ① TOPBAR ──────────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <div>
-          <h1 className="font-[Space_Grotesk] font-extrabold text-2xl leading-tight text-sl-grad">
+          <h1 className="font-[Syne] font-extrabold text-2xl leading-tight text-sl-grad">
             🏆 Ranking Global
           </h1>
           <p className="text-[13px] text-[var(--sl-t3)] mt-0.5">
@@ -575,7 +575,7 @@ export default function RankingPage() {
             {/* Avatar grande */}
             <div
               className="h-[64px] w-[64px] shrink-0 rounded-full flex items-center justify-center
-                         text-white text-[22px] font-extrabold font-[Space_Grotesk]
+                         text-white text-[22px] font-extrabold font-[Syne]
                          shadow-[0_0_24px_rgba(107,111,212,0.25)]"
               style={{ background: 'linear-gradient(135deg, #6B6FD4, #0B2D34)' }}
             >

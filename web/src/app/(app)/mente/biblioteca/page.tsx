@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Plus, X, Search, Brain, Link2, Video, BookOpen, FileText, StickyNote, Paperclip } from 'lucide-react'
+import { Plus, X, Search, Link2, Video, BookOpen, FileText, StickyNote, Paperclip } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import {
@@ -11,6 +11,7 @@ import {
 } from '@/hooks/use-mente'
 import { RESOURCE_TYPE_LABELS, RESOURCE_STATUS_LABELS } from '@/hooks/use-mente'
 import { ModuleHeader } from '@/components/ui/module-header'
+import { TextField } from '@/components/ui/text-field'
 import { useUserPlan } from '@/hooks/use-user-plan'
 import { checkPlanLimit } from '@/lib/plan-limits'
 
@@ -137,7 +138,8 @@ export default function BibliotecaPage() {
           <button
             onClick={() => setAddOpen(true)}
             className="flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#D9962E] text-black hover:brightness-110 transition-all"
+                       text-white hover:opacity-90 transition-all"
+            style={{ background: 'var(--sl-em)' }}
           >
             <Plus size={16} />
             Adicionar Recurso
@@ -196,7 +198,7 @@ export default function BibliotecaPage() {
       {!selectedTrackId ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
           <BookOpen size={32} className="text-[#D9962E] mx-auto mb-3 opacity-60" />
-          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             Selecione uma trilha
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)]">
@@ -210,7 +212,7 @@ export default function BibliotecaPage() {
       ) : filtered.length === 0 ? (
         <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-10 text-center">
           <BookOpen size={32} className="text-[#D9962E] mx-auto mb-3 opacity-60" />
-          <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
+          <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">
             {statusFilter !== 'all' ? 'Nenhum recurso com este status' : 'Nenhum recurso ainda'}
           </h3>
           <p className="text-[13px] text-[var(--sl-t2)] mb-4">
@@ -219,7 +221,8 @@ export default function BibliotecaPage() {
           <button
             onClick={() => setAddOpen(true)}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold
-                       bg-[#D9962E] text-black hover:brightness-110"
+                       text-white hover:opacity-90"
+            style={{ background: 'var(--sl-em)' }}
           >
             <Plus size={15} />
             Adicionar Recurso
@@ -291,7 +294,7 @@ export default function BibliotecaPage() {
           <div className="w-full max-w-[420px] bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[20px] overflow-hidden shadow-2xl">
 
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)]">Novo Recurso</h2>
+              <h2 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)]">Novo Recurso</h2>
               <button onClick={() => setAddOpen(false)} className="p-1.5 rounded-lg hover:bg-[var(--sl-s2)]">
                 <X size={16} className="text-[var(--sl-t2)]" />
               </button>
@@ -299,21 +302,17 @@ export default function BibliotecaPage() {
 
             <div className="px-5 py-4 flex flex-col gap-3">
               {/* Title */}
-              <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Titulo *</label>
-                <input
-                  autoFocus
-                  type="text"
-                  value={form.title}
-                  onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                  placeholder="Nome do recurso..."
-                  className="w-full px-3 py-2.5 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#D9962E] transition-colors"
-                />
-              </div>
+              <TextField
+                label="TITULO *"
+                autoFocus
+                value={form.title}
+                onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                placeholder="Nome do recurso..."
+              />
 
               {/* Type */}
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Tipo</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-1.5 block">Tipo</label>
                 <div className="grid grid-cols-3 gap-1.5">
                   {RESOURCE_TYPES.map(t => (
                     <button
@@ -322,7 +321,7 @@ export default function BibliotecaPage() {
                       className={cn(
                         'px-2 py-1.5 rounded-[8px] text-[11px] border transition-all',
                         form.type === t
-                          ? 'border-[#D9962E] bg-[#D9962E]/10 text-[var(--sl-t1)]'
+                          ? 'border-[var(--sl-em)] bg-[var(--sl-em-soft)] text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)] hover:border-[var(--sl-border-h)]'
                       )}
                     >
@@ -334,21 +333,18 @@ export default function BibliotecaPage() {
 
               {/* URL */}
               {form.type !== 'note' && (
-                <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">URL (opcional)</label>
-                  <input
-                    type="url"
-                    value={form.url ?? ''}
-                    onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
-                    placeholder="https://..."
-                    className="w-full px-3 py-2 rounded-[10px] text-[13px] bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#D9962E] transition-colors"
-                  />
-                </div>
+                <TextField
+                  label="URL (OPCIONAL)"
+                  type="url"
+                  value={form.url ?? ''}
+                  onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
+                  placeholder="https://..."
+                />
               )}
 
               {/* Status */}
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Status</label>
+                <label className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)] mb-1.5 block">Status</label>
                 <div className="flex gap-1.5">
                   {RESOURCE_STATUSES.map(s => (
                     <button
@@ -357,7 +353,7 @@ export default function BibliotecaPage() {
                       className={cn(
                         'flex-1 py-1.5 rounded-[8px] text-[11px] border transition-all',
                         form.status === s
-                          ? 'border-[#D9962E] bg-[#D9962E]/10 text-[var(--sl-t1)]'
+                          ? 'border-[var(--sl-em)] bg-[var(--sl-em-soft)] text-[var(--sl-t1)]'
                           : 'border-[var(--sl-border)] text-[var(--sl-t2)]'
                       )}
                     >
@@ -368,16 +364,16 @@ export default function BibliotecaPage() {
               </div>
 
               {/* Notes */}
-              <div>
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1 block">Nota pessoal (opcional)</label>
+              <label className="flex flex-col gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sl-t3)]">Nota pessoal (opcional)</span>
                 <textarea
                   value={form.personal_notes ?? ''}
                   onChange={e => setForm(f => ({ ...f, personal_notes: e.target.value }))}
                   placeholder="Suas anotacoes sobre o recurso..."
                   rows={2}
-                  className="w-full px-3 py-2 rounded-[10px] text-[13px] resize-none bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[#D9962E] transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] text-[14px] resize-none bg-[var(--sl-s2)] border border-[var(--sl-border)] text-[var(--sl-t1)] placeholder:text-[var(--sl-t3)] outline-none focus:border-[var(--sl-border-em)] transition-colors"
                 />
-              </div>
+              </label>
             </div>
 
             <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-[var(--sl-border)]">
@@ -394,8 +390,13 @@ export default function BibliotecaPage() {
                   'px-5 py-2 rounded-[10px] text-[13px] font-semibold transition-all',
                   !form.title.trim() || isAdding
                     ? 'bg-[var(--sl-s3)] text-[var(--sl-t3)] cursor-not-allowed'
-                    : 'bg-[#D9962E] text-black hover:brightness-110'
+                    : 'text-white hover:opacity-90'
                 )}
+                style={
+                  !form.title.trim() || isAdding
+                    ? undefined
+                    : { background: 'var(--sl-em)' }
+                }
               >
                 {isAdding ? 'Adicionando...' : 'Adicionar'}
               </button>

@@ -19,7 +19,7 @@ export function LifeMapWidget({ lifeDimensions, realScore, lifeLoading }: LifeMa
                       hover:border-[var(--sl-border-h)] transition-colors">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">🗺️ Mapa da Vida</h3>
+            <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">🗺️ Mapa da Vida</h3>
             <p className="text-[11px] text-[var(--sl-t3)] mt-0.5">Equilíbrio entre todas as dimensões da sua vida</p>
           </div>
           <button

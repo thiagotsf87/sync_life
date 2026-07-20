@@ -164,7 +164,7 @@ export default function AtividadesPage() {
           rightAction={
             <button
               onClick={() => setShowModal(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#0F766E] text-[#03071a] hover:opacity-90 transition-opacity"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 transition-opacity"
             >
               <Plus size={16} />
               Registrar
@@ -182,7 +182,7 @@ export default function AtividadesPage() {
             <div key={stat.label} className="relative bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-6 overflow-hidden">
               <div className="absolute top-0 left-4 right-4 h-0.5 rounded-b" style={{ background: stat.color }} />
               <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--sl-t3)] mb-0.5">{stat.label}</p>
-              <p className="font-[IBM_Plex_Mono] font-medium text-xl text-[var(--sl-t1)]">{stat.value}</p>
+              <p className="sl-num-strong text-xl text-[var(--sl-t1)]">{stat.value}</p>
             </div>
           ))}
         </div>
@@ -190,7 +190,7 @@ export default function AtividadesPage() {
         {currentStreak > 0 && (
           <div className="mb-5 bg-gradient-to-br from-[#D97534]/10 to-[#D9962E]/10 border border-[#D97534]/30 rounded-[18px] p-6">
             <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1">Conquista de consistencia</p>
-            <p className="font-[Space_Grotesk] font-extrabold text-xl text-[var(--sl-t1)]">{currentStreak} dias seguidos</p>
+            <p className="font-[Syne] font-extrabold text-xl text-[var(--sl-t1)]">{currentStreak} dias seguidos</p>
             <p className="text-[12px] text-[var(--sl-t2)] mt-1">Continue para desbloquear marcos de 7, 14 e 30 dias.</p>
           </div>
         )}
@@ -202,11 +202,11 @@ export default function AtividadesPage() {
           </div>
         ) : activities.length === 0 ? (
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center">
-            <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhuma atividade registrada</h3>
+            <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhuma atividade registrada</h3>
             <p className="text-[13px] text-[var(--sl-t2)] mb-5">Registre seus treinos e acompanhe seu progresso.</p>
             <button
               onClick={() => setShowModal(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#0F766E] text-[#03071a] hover:opacity-90"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90"
             >
               <Plus size={15} />
               Primeira atividade
@@ -233,8 +233,8 @@ export default function AtividadesPage() {
           <button
             onClick={() => setShowModal(true)}
             className="inline-flex items-center gap-[7px] px-[22px] py-[10px] rounded-[11px] text-[13px] font-semibold
-                       bg-[#D97534] text-white hover:brightness-110 hover:-translate-y-px
-                       transition-all shadow-[0_6px_20px_rgba(217,117,52,.15)]"
+                       bg-[var(--sl-em)] text-white hover:brightness-110 hover:-translate-y-px
+                       transition-all shadow-[0_6px_20px_rgba(15,118,110,.15)]"
           >
             <Plus size={16} />
             Registrar Atividade
@@ -248,7 +248,7 @@ export default function AtividadesPage() {
               <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
             </svg>
             <div>
-              <div className="font-[Space_Grotesk] text-[36px] font-extrabold leading-none text-[var(--sl-t1)]">{currentStreak}</div>
+              <div className="font-[Syne] text-[36px] font-extrabold leading-none text-[var(--sl-t1)]">{currentStreak}</div>
               <div className="text-[12px] text-[var(--sl-t2)]">dias consecutivos de atividade</div>
             </div>
             <div className="flex gap-[6px] ml-auto">
@@ -289,11 +289,11 @@ export default function AtividadesPage() {
           </div>
         ) : activities.length === 0 ? (
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-12 text-center sl-fade-up sl-delay-2">
-            <h3 className="font-[Space_Grotesk] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhuma atividade registrada</h3>
+            <h3 className="font-[Syne] font-bold text-[15px] text-[var(--sl-t1)] mb-2">Nenhuma atividade registrada</h3>
             <p className="text-[13px] text-[var(--sl-t2)] mb-5">Registre seus treinos e acompanhe seu progresso.</p>
             <button
               onClick={() => setShowModal(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[#D97534] text-white hover:opacity-90"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90"
             >
               <Plus size={15} />
               Primeira atividade
@@ -329,15 +329,15 @@ export default function AtividadesPage() {
                     </div>
                     <div className="flex gap-5 items-center">
                       <div className="text-center">
-                        <span className="font-[IBM_Plex_Mono] text-[15px] font-medium text-[var(--sl-t1)] block">{a.duration_minutes}</span>
+                        <span className="sl-num-strong text-[15px] text-[var(--sl-t1)] block">{a.duration_minutes}</span>
                         <span className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">min</span>
                       </div>
                       <div className="text-center">
-                        <span className="font-[IBM_Plex_Mono] text-[15px] font-medium text-[var(--sl-t1)] block">{a.distance_km ?? '--'}</span>
+                        <span className="sl-num-strong text-[15px] text-[var(--sl-t1)] block">{a.distance_km ?? '--'}</span>
                         <span className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">km</span>
                       </div>
                       <div className="text-center">
-                        <span className="font-[IBM_Plex_Mono] text-[15px] font-medium text-[var(--sl-t1)] block">{a.calories_burned ? Math.round(a.calories_burned) : '--'}</span>
+                        <span className="sl-num-strong text-[15px] text-[var(--sl-t1)] block">{a.calories_burned ? Math.round(a.calories_burned) : '--'}</span>
                         <span className="text-[9px] font-bold uppercase tracking-[.06em] text-[var(--sl-t3)]">kcal</span>
                       </div>
                       <div className="flex gap-[3px] items-center">
@@ -362,7 +362,7 @@ export default function AtividadesPage() {
 
               {/* Weekly Summary */}
               <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[22px] hover:border-[var(--sl-border-h)] transition-colors">
-                <h3 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t3)] uppercase tracking-[.06em] mb-4">
+                <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t3)] uppercase tracking-[.06em] mb-4">
                   Resumo Semanal
                 </h3>
                 <div className="flex flex-col">
@@ -377,7 +377,7 @@ export default function AtividadesPage() {
                   ].map((row, i) => (
                     <div key={i} className="flex justify-between py-2 border-b border-[rgba(120,165,220,.04)] last:border-b-0">
                       <span className="text-[12px] text-[var(--sl-t3)]">{row.label}</span>
-                      <span className="font-[IBM_Plex_Mono] text-[13px] font-medium" style={{ color: row.color ?? 'var(--sl-t1)' }}>{row.value}</span>
+                      <span className="sl-num text-[13px]" style={{ color: row.color ?? 'var(--sl-t1)' }}>{row.value}</span>
                     </div>
                   ))}
                 </div>
@@ -386,7 +386,7 @@ export default function AtividadesPage() {
               {/* By Type */}
               {Object.keys(typeBreakdown).length > 0 && (
                 <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[22px] hover:border-[var(--sl-border-h)] transition-colors">
-                  <h3 className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t3)] uppercase tracking-[.06em] mb-4">
+                  <h3 className="font-[Syne] font-bold text-[13px] text-[var(--sl-t3)] uppercase tracking-[.06em] mb-4">
                     Por Tipo
                   </h3>
                   <div className="flex flex-col">
@@ -396,7 +396,7 @@ export default function AtividadesPage() {
                           <span className="w-2 h-2 rounded-sm" style={{ background: typeColors[i % typeColors.length] }} />
                           {label}
                         </span>
-                        <span className="font-[IBM_Plex_Mono] text-[13px] font-medium text-[var(--sl-t1)]">{minutes} min</span>
+                        <span className="sl-num text-[13px] text-[var(--sl-t1)]">{minutes} min</span>
                       </div>
                     ))}
                   </div>
@@ -414,7 +414,7 @@ export default function AtividadesPage() {
         >
           <div className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] w-full max-w-[500px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-[var(--sl-border)]">
-              <h2 className="font-[Space_Grotesk] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
+              <h2 className="font-[Syne] font-bold text-[18px] text-[var(--sl-t1)] flex items-center gap-[10px]">
                 <BarChart3 size={20} className="text-[#D97534]" />
                 Registrar Atividade
               </h2>
@@ -464,7 +464,7 @@ export default function AtividadesPage() {
               {/* Intensity */}
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--sl-t3)] mb-1.5 block">
-                  Intensidade — {['', 'Muito leve', 'Leve', 'Moderada', 'Intensa', 'Maxima'][form.intensity]}
+                  Intensidade · {['', 'Muito leve', 'Leve', 'Moderada', 'Intensa', 'Maxima'][form.intensity]}
                 </label>
                 <div className="flex gap-2">
                   {[1, 2, 3, 4, 5].map(i => (
@@ -538,7 +538,7 @@ export default function AtividadesPage() {
                   Cancelar
                 </button>
                 <button onClick={handleSave} disabled={isSaving}
-                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[#0F766E] text-[#03071a] hover:opacity-90 disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-[10px] text-[13px] font-semibold bg-[var(--sl-em)] text-white hover:opacity-90 disabled:opacity-50">
                   {isSaving ? 'Registrando...' : 'Registrar'}
                 </button>
               </div>

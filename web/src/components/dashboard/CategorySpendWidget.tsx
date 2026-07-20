@@ -21,7 +21,7 @@ export function CategorySpendWidget({ categorySpend, maxCatSpend, totalExpense, 
   return (
     <div className="flex-1 bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-2xl p-5 sl-fade-up sl-delay-3 shadow-sm dark:shadow-none hover:border-[var(--sl-border-h)] transition-colors">
       <div className="flex items-center justify-between mb-[18px]">
-        <span className="font-[Space_Grotesk] font-bold text-[13px] text-[var(--sl-t1)]">📊 Gastos por Categoria</span>
+        <span className="font-[Syne] font-bold text-[13px] text-[var(--sl-t1)]">📊 Gastos por Categoria</span>
         <button className="text-[11px] text-[#0F766E] hover:opacity-70 transition-opacity"
           onClick={() => router.push('/financas/relatorios')}>Relatório →</button>
       </div>

@@ -45,7 +45,7 @@ export function ExplorerBanner({ stats, className }: ExplorerBannerProps) {
             onClick={stat.onClick}
           >
             <div
-              className="font-[Space_Grotesk] font-extrabold text-[32px] leading-none mb-1"
+              className="font-[Syne] font-extrabold text-[32px] leading-none mb-1"
               style={{ color: stat.color }}
             >
               {stat.value}

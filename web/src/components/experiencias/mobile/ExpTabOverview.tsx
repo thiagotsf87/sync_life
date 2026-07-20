@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 
 import { EXP_PRIMARY, EXP_PRIMARY_LIGHT, EXP_GRAD } from '@/lib/exp-colors'
 import { TRIP_STATUS_LABELS, TRIP_STATUS_COLORS, calcTripDays } from '@/hooks/use-experiencias'
+import { fmtBRL } from '@/lib/format/currency'
 
 interface ExpTabOverviewProps {
   trip: {
@@ -36,12 +37,12 @@ export function ExpTabOverview({ trip, checklistPct }: ExpTabOverviewProps) {
       >
         <div className="flex justify-between items-start mb-3">
           <div>
-            <p className="font-[Space_Grotesk] text-[18px] font-bold text-[var(--sl-t1)]">{trip.name}</p>
+            <p className="font-[Syne] text-[18px] font-bold text-[var(--sl-t1)]">{trip.name}</p>
             <p className="text-[12px] text-[var(--sl-t2)] mt-1">{trip.destinations.join(' · ')}</p>
           </div>
           <span
             className="inline-flex items-center px-2 py-[3px] rounded-[10px] text-[10px] font-semibold"
-            style={{ background: `${TRIP_STATUS_COLORS[trip.status as keyof typeof TRIP_STATUS_COLORS] ?? '#D9962E'}1e`, color: TRIP_STATUS_COLORS[trip.status as keyof typeof TRIP_STATUS_COLORS] ?? '#D9962E' }}
+            style={{ background: `${TRIP_STATUS_COLORS[trip.status as keyof typeof TRIP_STATUS_COLORS] ?? 'var(--sl-warning)'}1e`, color: TRIP_STATUS_COLORS[trip.status as keyof typeof TRIP_STATUS_COLORS] ?? 'var(--sl-warning)' }}
           >
             {TRIP_STATUS_LABELS[trip.status as keyof typeof TRIP_STATUS_LABELS] ?? trip.status}
           </span>
@@ -49,7 +50,7 @@ export function ExpTabOverview({ trip, checklistPct }: ExpTabOverviewProps) {
         <div className="grid grid-cols-3 gap-3">
           <div>
             <p className="text-[10px] text-[var(--sl-t2)] uppercase">Duração</p>
-            <p className="font-[IBM_Plex_Mono] text-[15px] font-bold text-[var(--sl-t1)]">{days} dias</p>
+            <p className="sl-num-strong text-[15px] font-bold text-[var(--sl-t1)]">{days} dias</p>
           </div>
           <div>
             <p className="text-[10px] text-[var(--sl-t2)] uppercase">Viajantes</p>
@@ -57,7 +58,7 @@ export function ExpTabOverview({ trip, checklistPct }: ExpTabOverviewProps) {
           </div>
           <div>
             <p className="text-[10px] text-[var(--sl-t2)] uppercase">Checklist</p>
-            <p className="font-[IBM_Plex_Mono] text-[15px] font-bold" style={{ color: checklistPct >= 80 ? '#0F766E' : '#D9962E' }}>{checklistPct}%</p>
+            <p className="sl-num-strong text-[15px] font-bold" style={{ color: checklistPct >= 80 ? 'var(--sl-em)' : 'var(--sl-warning)' }}>{checklistPct}%</p>
           </div>
         </div>
       </div>
@@ -67,11 +68,11 @@ export function ExpTabOverview({ trip, checklistPct }: ExpTabOverviewProps) {
         style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
         <p className="text-[12px] text-[var(--sl-t2)] mb-2">Orçamento</p>
         <div className="flex justify-between items-end mb-2">
-          <p className="font-[IBM_Plex_Mono] text-[22px] font-bold text-[var(--sl-t1)]">
-            R$ {trip.total_spent.toLocaleString('pt-BR')}
+          <p className="sl-num-strong text-[22px] font-bold text-[var(--sl-t1)]">
+            {fmtBRL(trip.total_spent)}
           </p>
           <p className="text-[12px] text-[var(--sl-t2)]">
-            de R$ {(trip.total_budget ?? 0).toLocaleString('pt-BR')}
+            de {fmtBRL(trip.total_budget ?? 0)}
           </p>
         </div>
         <div className="h-[8px] rounded-[4px] overflow-hidden mb-2" style={{ background: 'var(--sl-s3)' }}>
@@ -82,7 +83,7 @@ export function ExpTabOverview({ trip, checklistPct }: ExpTabOverviewProps) {
         </div>
         <div className="flex justify-between text-[12px]">
           <span style={{ color: EXP_PRIMARY_LIGHT }}>{budgetPct}% guardado</span>
-          {remaining > 0 && <span style={{ color: '#D9962E' }}>Faltam R$ {remaining.toLocaleString('pt-BR')}</span>}
+          {remaining > 0 && <span style={{ color: 'var(--sl-warning)' }}>Faltam {fmtBRL(remaining)}</span>}
         </div>
       </div>
 
@@ -91,7 +92,7 @@ export function ExpTabOverview({ trip, checklistPct }: ExpTabOverviewProps) {
         style={{ background: 'var(--sl-s1)', border: '1px solid var(--sl-border)' }}>
         <div className="flex flex-col gap-[10px]">
           {[
-            { label: 'Período', value: `${new Date(trip.start_date).toLocaleDateString('pt-BR')} — ${new Date(trip.end_date).toLocaleDateString('pt-BR')}` },
+            { label: 'Período', value: `${new Date(trip.start_date).toLocaleDateString('pt-BR')} · ${new Date(trip.end_date).toLocaleDateString('pt-BR')}` },
             { label: 'Tipo', value: trip.trip_type || '—' },
             { label: 'Viajantes', value: `${trip.travelers_count}` },
           ].map((row, i) => (

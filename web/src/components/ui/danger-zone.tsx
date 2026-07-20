@@ -20,7 +20,7 @@ export function DangerZone({
       }}
     >
       <p
-        className="font-[Space_Grotesk] font-semibold uppercase tracking-[0.14em] mb-4"
+        className="font-[Syne] font-semibold uppercase tracking-[0.14em] mb-4"
         style={{ fontSize: '10px', color: 'var(--sl-danger)' }}
       >
         {title}

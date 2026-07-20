@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { Badge, UserBadge } from '@/hooks/use-panorama'
+import type { Badge } from '@/hooks/use-panorama'
 
 // ─── TYPES ─────────────────────────────────────────────────────────────────────
 
@@ -14,10 +14,37 @@ export interface BadgeCheckResult {
   targetValue: number
 }
 
+// Supabase client typing — schema casts are unavoidable for cross-table queries.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SbClient = any
+
 interface BadgeEvalContext {
   userId: string
-  sb: any
+  sb: SbClient
 }
+
+// Local row types for query results
+interface AmountRow { amount: number | null }
+interface GoalProgressRow { current_value: number; target_value: number }
+interface HealthProfileWeeklyRow { weekly_activity_goal: number | null }
+interface HealthProfileWeightRow { weight_goal_kg: number | null }
+interface WeightRow { weight: number }
+interface WaterRow { intake_ml: number; goal_ml: number }
+interface DurationRow { duration_minutes: number | null }
+interface StreakRow { current_streak: number | null; longest_streak: number | null }
+interface LifeSyncRow {
+  financas_score: number | null
+  futuro_score: number | null
+  corpo_score: number | null
+  mente_score: number | null
+  patrimonio_score: number | null
+  carreira_score: number | null
+  tempo_score: number | null
+  experiencias_score: number | null
+}
+interface CareerCompleteRow { current_position: string | null; years_experience: number | null }
+interface UserBadgeIdRow { badge_id: string }
+interface UserBadgeUnlockRow { badge_id: string; unlocked_at: string }
 
 // ─── BADGE EVALUATION FUNCTIONS ────────────────────────────────────────────────
 
@@ -73,10 +100,10 @@ const evaluators: Record<string, BadgeEvaluator> = {
       const [incRes, expRes] = await Promise.all([
         sb.from('transactions').select('amount').eq('user_id', userId).eq('type', 'income').gte('date', mStart).lte('date', mEnd),
         sb.from('transactions').select('amount').eq('user_id', userId).eq('type', 'expense').gte('date', mStart).lte('date', mEnd),
-      ]) as [{ data: any[] | null }, { data: any[] | null }]
+      ]) as [{ data: AmountRow[] | null }, { data: AmountRow[] | null }]
 
-      const income = (incRes.data ?? []).reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
-      const expense = (expRes.data ?? []).reduce((s: number, t: any) => s + (t.amount ?? 0), 0)
+      const income = (incRes.data ?? []).reduce((s, t) => s + (t.amount ?? 0), 0)
+      const expense = (expRes.data ?? []).reduce((s, t) => s + (t.amount ?? 0), 0)
 
       if (income > expense && income > 0) {
         consecutiveMonths++
@@ -95,7 +122,7 @@ const evaluators: Record<string, BadgeEvaluator> = {
 
   emergency_reserve: async ({ sb, userId }) => {
     // Check if user has a goal of type 'emergency_reserve' that is completed
-    const { data: goals } = await sb
+    const { data: goalsRaw } = await sb
       .from('objective_goals')
       .select('current_value, target_value')
       .eq('goal_type', 'monetary')
@@ -103,10 +130,11 @@ const evaluators: Record<string, BadgeEvaluator> = {
         sb.from('objectives').select('id').eq('user_id', userId).eq('category', 'emergency')
       )
 
+    const goals = goalsRaw as GoalProgressRow[] | null
     if (!goals || goals.length === 0) return { met: false, progress: 0, current: 0, target: 1 }
-    const best = goals.reduce((best: any, g: any) => {
+    const best = goals.reduce<{ pct: number }>((acc, g) => {
       const pct = g.target_value > 0 ? (g.current_value / g.target_value) : 0
-      return pct > (best.pct ?? 0) ? { ...g, pct } : best
+      return pct > acc.pct ? { pct } : acc
     }, { pct: 0 })
     return { met: best.pct >= 1, progress: Math.min(100, best.pct * 100), current: Math.round(best.pct * 100), target: 100 }
   },
@@ -144,7 +172,7 @@ const evaluators: Record<string, BadgeEvaluator> = {
 
   goal_progress: async ({ sb, userId }, criteria) => {
     const targetPct = (criteria?.pct as number) ?? 50
-    const { data: goals } = await sb
+    const { data: goalsRaw } = await sb
       .from('objective_goals')
       .select('current_value, target_value, objective_id')
       .gt('target_value', 0)
@@ -152,9 +180,10 @@ const evaluators: Record<string, BadgeEvaluator> = {
         sb.from('objectives').select('id').eq('user_id', userId)
       )
 
+    const goals = goalsRaw as GoalProgressRow[] | null
     if (!goals || goals.length === 0) return { met: false, progress: 0, current: 0, target: targetPct }
-    const anyReached = goals.some((g: any) => ((g.current_value / g.target_value) * 100) >= targetPct)
-    const bestPct = Math.max(...goals.map((g: any) => (g.current_value / g.target_value) * 100))
+    const anyReached = goals.some((g) => ((g.current_value / g.target_value) * 100) >= targetPct)
+    const bestPct = Math.max(...goals.map((g) => (g.current_value / g.target_value) * 100))
     return { met: anyReached, progress: Math.min(100, (bestPct / targetPct) * 100), current: Math.round(bestPct), target: targetPct }
   },
 
@@ -182,12 +211,13 @@ const evaluators: Record<string, BadgeEvaluator> = {
 
   weekly_activity_goal: async ({ sb, userId }, criteria) => {
     const targetWeeks = (criteria?.weeks as number) ?? 1
-    const { data: profile } = await sb
+    const { data: profileRaw } = await sb
       .from('health_profiles')
       .select('weekly_activity_goal')
       .eq('user_id', userId)
       .maybeSingle()
 
+    const profile = profileRaw as HealthProfileWeeklyRow | null
     const weeklyGoal = profile?.weekly_activity_goal ?? 3
     const weekStart = new Date()
     weekStart.setDate(weekStart.getDate() - 7)
@@ -212,21 +242,23 @@ const evaluators: Record<string, BadgeEvaluator> = {
   },
 
   weight_goal: async ({ sb, userId }) => {
-    const { data: profile } = await sb
+    const { data: profileRaw } = await sb
       .from('health_profiles')
       .select('weight_goal_kg')
       .eq('user_id', userId)
       .maybeSingle()
 
+    const profile = profileRaw as HealthProfileWeightRow | null
     if (!profile?.weight_goal_kg) return { met: false, progress: 0, current: 0, target: 1 }
 
-    const { data: latest } = await sb
+    const { data: latestRaw } = await sb
       .from('weight_entries')
       .select('weight')
       .eq('user_id', userId)
       .order('recorded_at', { ascending: false })
       .limit(1)
 
+    const latest = latestRaw as WeightRow[] | null
     if (!latest || latest.length === 0) return { met: false, progress: 0, current: 0, target: profile.weight_goal_kg }
 
     const current = latest[0].weight
@@ -246,13 +278,14 @@ const evaluators: Record<string, BadgeEvaluator> = {
       d.setDate(d.getDate() - i)
       const dateStr = d.toISOString().slice(0, 10)
 
-      const { data: water } = await sb
+      const { data: waterRaw } = await sb
         .from('daily_water_intake')
         .select('intake_ml, goal_ml')
         .eq('user_id', userId)
         .eq('recorded_date', dateStr)
         .maybeSingle()
 
+      const water = waterRaw as WaterRow | null
       if (water && water.goal_ml > 0 && water.intake_ml >= water.goal_ml) {
         consecutive++
       } else {
@@ -296,11 +329,12 @@ const evaluators: Record<string, BadgeEvaluator> = {
 
   focus_hours: async ({ sb, userId }, criteria) => {
     const targetHours = (criteria?.hours as number) ?? 10
-    const { data: sessions } = await sb
+    const { data: sessionsRaw } = await sb
       .from('focus_sessions')
       .select('duration_minutes')
       .eq('user_id', userId)
-    const totalHours = (sessions ?? []).reduce((s: number, r: any) => s + (r.duration_minutes ?? 0), 0) / 60
+    const sessions = sessionsRaw as DurationRow[] | null
+    const totalHours = (sessions ?? []).reduce((s, r) => s + (r.duration_minutes ?? 0), 0) / 60
     return { met: totalHours >= targetHours, progress: Math.min(100, (totalHours / targetHours) * 100), current: Math.round(totalHours * 10) / 10, target: targetHours }
   },
 
@@ -318,12 +352,13 @@ const evaluators: Record<string, BadgeEvaluator> = {
 
   streak: async ({ sb, userId }, criteria) => {
     const targetDays = (criteria?.days as number) ?? 7
-    const { data: streak } = await sb
+    const { data: streakRaw } = await sb
       .from('user_streaks')
       .select('current_streak, longest_streak')
       .eq('user_id', userId)
       .maybeSingle()
 
+    const streak = streakRaw as StreakRow | null
     const best = Math.max(streak?.current_streak ?? 0, streak?.longest_streak ?? 0)
     return { met: best >= targetDays, progress: Math.min(100, (best / targetDays) * 100), current: best, target: targetDays }
   },
@@ -359,20 +394,21 @@ const evaluators: Record<string, BadgeEvaluator> = {
 
   all_modules_score: async ({ sb, userId }, criteria) => {
     const minScore = (criteria?.min_score as number) ?? 50
-    const { data: latest } = await sb
+    const { data: latestRaw } = await sb
       .from('life_sync_scores')
       .select('*')
       .eq('user_id', userId)
       .order('recorded_date', { ascending: false })
       .limit(1)
 
+    const latest = latestRaw as LifeSyncRow[] | null
     if (!latest || latest.length === 0) return { met: false, progress: 0, current: 0, target: minScore }
 
     const scores = [
       latest[0].financas_score, latest[0].futuro_score, latest[0].corpo_score,
       latest[0].mente_score, latest[0].patrimonio_score, latest[0].carreira_score,
       latest[0].tempo_score, latest[0].experiencias_score,
-    ].filter((s: any) => s != null) as number[]
+    ].filter((s): s is number => s != null)
 
     if (scores.length === 0) return { met: false, progress: 0, current: 0, target: minScore }
 
@@ -384,12 +420,13 @@ const evaluators: Record<string, BadgeEvaluator> = {
   // ── Career / Experiências ──────────────────────────────────────────────────
 
   career_profile_complete: async ({ sb, userId }) => {
-    const { data: profile } = await sb
+    const { data: profileRaw } = await sb
       .from('career_profiles')
       .select('current_position, years_experience')
       .eq('user_id', userId)
       .maybeSingle()
 
+    const profile = profileRaw as CareerCompleteRow | null
     const complete = !!(profile?.current_position && profile?.years_experience != null)
     return { met: complete, progress: complete ? 100 : 50, current: complete ? 1 : 0, target: 1 }
   },
@@ -438,17 +475,17 @@ async function evaluateBadge(ctx: BadgeEvalContext, badge: Badge): Promise<Badge
 // ─── CHECK AND UNLOCK NEW BADGES ───────────────────────────────────────────────
 
 export async function checkAndUnlockBadges(userId: string): Promise<BadgeCheckResult[]> {
-  const sb = createClient() as any
+  const sb = createClient() as SbClient
   const ctx: BadgeEvalContext = { userId, sb }
 
   // Get all badges and user's unlocked badges
   const [badgesRes, unlockedRes] = await Promise.all([
     sb.from('badges').select('*').eq('is_active', true).order('sort_order'),
     sb.from('user_badges').select('badge_id').eq('user_id', userId),
-  ]) as [{ data: Badge[] | null }, { data: { badge_id: string }[] | null }]
+  ]) as [{ data: Badge[] | null }, { data: UserBadgeIdRow[] | null }]
 
   const allBadges = badgesRes.data ?? []
-  const unlockedIds = new Set((unlockedRes.data ?? []).map((ub: any) => ub.badge_id))
+  const unlockedIds = new Set((unlockedRes.data ?? []).map((ub) => ub.badge_id))
 
   // Only check badges not yet unlocked
   const toCheck = allBadges.filter(b => !unlockedIds.has(b.id))
@@ -479,16 +516,16 @@ export async function checkAndUnlockBadges(userId: string): Promise<BadgeCheckRe
 // ─── GET ALL BADGE PROGRESS (without unlocking) ───────────────────────────────
 
 export async function getAllBadgeProgress(userId: string): Promise<BadgeCheckResult[]> {
-  const sb = createClient() as any
+  const sb = createClient() as SbClient
   const ctx: BadgeEvalContext = { userId, sb }
 
   const [badgesRes, unlockedRes] = await Promise.all([
     sb.from('badges').select('*').eq('is_active', true).order('sort_order'),
     sb.from('user_badges').select('badge_id, unlocked_at').eq('user_id', userId),
-  ]) as [{ data: Badge[] | null }, { data: { badge_id: string; unlocked_at: string }[] | null }]
+  ]) as [{ data: Badge[] | null }, { data: UserBadgeUnlockRow[] | null }]
 
   const allBadges = badgesRes.data ?? []
-  const unlockedIds = new Set((unlockedRes.data ?? []).map((ub: any) => ub.badge_id))
+  const unlockedIds = new Set((unlockedRes.data ?? []).map((ub) => ub.badge_id))
 
   const results: BadgeCheckResult[] = []
 
@@ -514,7 +551,7 @@ export function useBadgeEngine() {
   const check = useCallback(async () => {
     setLoading(true)
     try {
-      const sb = createClient() as any
+      const sb = createClient() as SbClient
       const { data: { user } } = await sb.auth.getUser()
       if (!user) { setLoading(false); return }
 

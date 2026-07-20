@@ -78,7 +78,7 @@
 
   /* Módulos (paleta v3 dessaturada) */
   --color-pan: #6B6FD4;
-  --color-fin: #0F766E;
+  --color-fin: #1FA67A;
   --color-tmp: #3CA0B5;
   --color-fut: #8B7BD4;
   --color-crp: #D97534;
@@ -89,6 +89,7 @@
   --color-cfg: #6F7986;
 
   /* Fontes SyncLife */
+  --font-syne:          var(--font-syne), sans-serif;
   --font-space-grotesk: var(--font-space-grotesk), sans-serif;
   --font-dm-sans:       var(--font-dm-sans), sans-serif;
   --font-ibm-plex-mono: var(--font-ibm-plex-mono), monospace;
@@ -134,16 +135,21 @@
 }
 
 .sl-num {
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-syne), var(--font-space-grotesk), sans-serif;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.015em;
 }
 .sl-num-strong {
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-syne), var(--font-space-grotesk), sans-serif;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
+}
+
+/* Classe de display oficial — títulos, scores, KPIs */
+.font-display {
+  font-family: var(--font-syne), var(--font-space-grotesk), sans-serif;
 }
 
 .sl-progress-bg {

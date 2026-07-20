@@ -176,7 +176,7 @@ export function MenteTimerTab({
         </button>
       </div>
 
-      {/* Cycle dots — 4 bars */}
+      {/* Cycle dots · 4 bars */}
       <div className="flex justify-center gap-2 mb-6">
         {[0, 1, 2, 3].map((i) => {
           const posInCycle = cycleCount % 4

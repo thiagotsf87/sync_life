@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
@@ -14,11 +14,11 @@ interface StatusOption {
 }
 
 const STATUS_OPTIONS: StatusOption[] = [
-  { value: 'planning',  label: 'Planejando',     icon: '🗓️', color: '#D9962E' },
+  { value: 'planning',  label: 'Planejando',     icon: '🗓️', color: 'var(--sl-warning)' },
   { value: 'reserved',  label: 'Reservado',       icon: '✅', color: '#0B2D34' },
-  { value: 'ongoing',   label: 'Em andamento',    icon: '🔥', color: '#0F766E' },
-  { value: 'completed', label: 'Concluída',       icon: '🏆', color: '#0F766E' },
-  { value: 'cancelled', label: 'Cancelada',       icon: '❌', color: '#DB6478' },
+  { value: 'ongoing',   label: 'Em andamento',    icon: '🔥', color: 'var(--sl-em)' },
+  { value: 'completed', label: 'Concluída',       icon: '🏆', color: 'var(--sl-em)' },
+  { value: 'cancelled', label: 'Cancelada',       icon: '❌', color: 'var(--sl-danger)' },
 ]
 
 interface ExpTripStatusSheetProps {
@@ -66,7 +66,7 @@ export function ExpTripStatusSheet({
         {/* Handle */}
         <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: 'var(--sl-s3)' }} />
 
-        <p className="font-[Space_Grotesk] text-[16px] font-bold text-[var(--sl-t1)] mb-1">
+        <p className="font-[Syne] text-[16px] font-bold text-[var(--sl-t1)] mb-1">
           Atualizar Missão
         </p>
         <p className="text-[12px] text-[var(--sl-t3)] mb-4">{tripName}</p>
