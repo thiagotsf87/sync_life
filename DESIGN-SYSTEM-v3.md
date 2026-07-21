@@ -12,7 +12,7 @@
 3. [Tipografia](#3-tipografia)
 4. [Iconografia](#4-iconografia)
 5. [Componentes base](#5-componentes-base)
-6. [Anatomia v3.1 — 4 padrões](#6-anatomia-v31--4-padrões)
+6. [Anatomia v3.1 — 6 princípios + 4 padrões](#6-anatomia-v31--6-princípios--4-padrões)
 7. [Matriz de telas](#7-matriz-das-45-telas)
 8. [Regras de copy](#8-regras-de-copy)
 9. [Regras visuais](#9-regras-visuais)
