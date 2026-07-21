@@ -30,10 +30,13 @@ export function CoachHero({ moduleId, brief, className }: CoachHeroProps) {
   const mod = MODULES[moduleId] ?? MODULES.panorama
   const openDrawerWithPrompt = useCoachStore((s) => s.openDrawerWithPrompt)
   const { headline } = brief
-  const parts = headline.emphasis ? headline.text.split(headline.emphasis) : [headline.text]
-  // 1 stat ancora (P-02): o marcado big, senao o de indice 1 (saldo), senao o 0.
-  const stats: MicroStat[] = brief.stats.map((s) => ({ label: s.label, value: s.value, big: s.big }))
-  if (!stats.some((s) => s.big) && stats.length) (stats[Math.min(1, stats.length - 1)] as MicroStat).big = true
+  // Emphasis por indexOf: so a 1a ocorrencia vira span; se ausente do texto, renderiza tudo plain.
+  const emphasis = headline.emphasis
+  const emIdx = emphasis ? headline.text.indexOf(emphasis) : -1
+  // Exatamente 1 stat ancora (P-02): a 1a marcada big; senao a de indice 1 (saldo), senao a 0.
+  const firstBig = brief.stats.findIndex((s) => s.big)
+  const bigIndex = firstBig >= 0 ? firstBig : Math.min(1, brief.stats.length - 1)
+  const stats: MicroStat[] = brief.stats.map((s, i) => ({ label: s.label, value: s.value, big: i === bigIndex }))
 
   return (
     <section
@@ -57,11 +60,15 @@ export function CoachHero({ moduleId, brief, className }: CoachHeroProps) {
         </div>
 
         <h2 className="max-w-[22ch] font-syne text-[clamp(24px,3.4vw,38px)] font-medium leading-[1.15] tracking-tight text-[var(--sl-t1)]">
-          {parts[0]}
-          {headline.emphasis && (
-            <span className="font-semibold" style={{ color: mod.color }}>{headline.emphasis}</span>
+          {emphasis && emIdx >= 0 ? (
+            <>
+              {headline.text.slice(0, emIdx)}
+              <span className="font-semibold" style={{ color: mod.color }}>{emphasis}</span>
+              {headline.text.slice(emIdx + emphasis.length)}
+            </>
+          ) : (
+            headline.text
           )}
-          {parts[1] ?? ''}
         </h2>
 
         {/* Pilulas de acao (P-05): 1a primaria = proxima acao, resto ghost */}

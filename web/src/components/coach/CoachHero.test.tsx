@@ -25,5 +25,21 @@ describe('CoachHero', () => {
     expect(html).toContain('Cortar R$ 100 de Lazer') // pilula primaria
     expect(html).toContain('Ver projecao')      // pilula secundaria
     expect(html).toContain('sl-num-strong')     // MicroStatRail
+    expect(html).toContain('grid-cols-[1fr_280px]') // layout Variante B
+  })
+
+  it('renderiza o texto inteiro plain quando o emphasis nao ocorre no headline', () => {
+    const html = renderToString(
+      <CoachHero moduleId="financas" period="maio 2026"
+        brief={{
+          eyebrow: 'Coach · Financas · maio 2026',
+          headline: { text: 'Voce fecha maio no azul', emphasis: '9.999' },
+          stats: [{ label: 'Saldo', value: 'R$ 1.840' }],
+          suggestions: [{ id: 's1', label: 'Ver detalhes', prompt: 'Detalhes', primary: true }],
+        }} />,
+    )
+    const clean = html.replace(/<!-- -->/g, '')
+    expect(clean).toContain('Voce fecha maio no azul') // texto integral, sem quebra
+    expect(clean).not.toContain('9.999')               // sem span de emphasis pendurado
   })
 })
