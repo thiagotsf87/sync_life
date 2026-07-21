@@ -8,7 +8,7 @@ export interface MicroStat {
   delta?: string
   /** Item ancora da dobra (P-02): valor 30px em cor --sl-em. */
   big?: boolean
-  /** Cor do delta; default t3 (neutro). Use 'em' para positivo. */
+  /** Cor do delta; default 'em' (positivo). Use 'muted' para neutro. */
   deltaTone?: 'em' | 'muted'
 }
 

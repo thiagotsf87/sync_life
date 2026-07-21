@@ -15,6 +15,7 @@ describe('MicroStatRail', () => {
     expect(html).toContain('Receitas')
     expect(html).toContain('R$ 1.840')
     expect(html).toContain('sl-num-strong')
+    expect(html).toContain('text-[30px]')
     expect(html.replace(/<!-- -->/g, '')).toContain('+12%')
   })
 })
