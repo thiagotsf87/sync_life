@@ -232,18 +232,18 @@ export const fmtBRL = (n: number, { compact = false } = {}) => {
 
 ## Anatomia v3.1 — 4 padrões de composição
 
-> Fonte de verdade: Anatomia v3.1 (projeto de design e19451). Os 6 padroes antigos foram consolidados em 4. Veja `DESIGN-SYSTEM-v3.md` §6 para os 6 principios completos e §7 para a matriz que mapeia cada uma das 45 telas ao padrão correto.
+> Fonte de verdade: Anatomia v3.1 (projeto de design e19451). Os 6 padrões antigos foram consolidados em 4. Veja `DESIGN-SYSTEM-v3.md` §6 para os 6 princípios completos e §7 para a matriz que mapeia cada uma das 45 telas ao padrão correto.
 
 ### 6 princípios (resumo)
 P-01 IA é o sistema, não um card · P-02 Um número grande por dobra · P-03 Container só quando agrupa · P-04 Módulos conversam · P-05 Próxima ação visível · P-06 Densidade por estado.
 
 ### 4 padrões
-| Padrao | Pitch | Ordem vertical | Quando | Anti |
+| Padrão | Pitch | Ordem vertical | Quando | Anti |
 |---|---|---|---|---|
-| **P-A Coach-led** | A IA conduz, o resto e evidencia | Coach Hero (280-360px) -> Proxima acao -> Evidencia primaria (1.6fr/1fr, KPIs aqui) -> Cross elo -> Detalhe opcional | Financas, Tempo, Patrimonio, Carreira, Mente | Nao para gamificacao/CRUD; nao inflar com 4 KPI cards |
-| **P-B Hero Score** | Um numero grande, tudo orbita | Hero Score (360-480px) -> Proximos eventos IA -> Mosaic 3xN -> Cross elo | Panorama, Conquistas, perfil publico | Nao em modulos densos; nunca 2 hero score |
-| **P-C List+Capture** | Lista + captura inline | TopBar filtros -> captura inline -> lista densa -> IA lateral opcional | Transacoes, Tarefas, Habitos, Ativos, Eventos | Nada de KPI strip no topo; sem paginacao 1-2-3 |
-| **P-D Form Flow** | Editar confortavel, salvar obvio | TopBar -> hero opcional -> secoes numeradas -> DangerZone -> SaveBar sticky | Configuracoes, Onboarding, criacao | Nao jogar tudo numa pagina; >12 campos sem agrupar = bug |
+| **P-A Coach-led** | A IA conduz, o resto é evidência | Coach Hero (280-360px) → Próxima ação → Evidência primária (1.6fr/1fr, KPIs aqui) → Cross elo → Detalhe opcional | Finanças, Tempo, Patrimônio, Carreira, Mente | Não para gamificação/CRUD; não inflar com 4 KPI cards |
+| **P-B Hero Score** | Um número grande, tudo orbita | Hero Score (360-480px) → Próximos eventos IA → Mosaic 3xN → Cross elo | Panorama, Conquistas, perfil público | Não em módulos densos; nunca 2 hero score |
+| **P-C List+Capture** | Lista + captura inline | TopBar filtros → captura inline → lista densa → IA lateral opcional | Transações, Tarefas, Hábitos, Ativos, Eventos | Nada de KPI strip no topo; sem paginação 1-2-3 |
+| **P-D Form Flow** | Editar confortável, salvar óbvio | TopBar → hero opcional → seções numeradas → DangerZone → SaveBar sticky | Configurações, Onboarding, criação | Não jogar tudo numa página; >12 campos sem agrupar = bug |
 
 Breakpoints P-A: >=1280 cheio; 960-1280 lateral some, KPIs viram strip; <960 empilha, Coach vira pill.
 

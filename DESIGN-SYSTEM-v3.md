@@ -355,20 +355,20 @@ Linha SVG + área com gradient sob a linha. Tooltip ao hover (G-01).
 > Fonte: Anatomia v3.1 (projeto de design `e19451`, `prototypes/financas-anatomia/`). Substitui os 6 padrões prosados da v3.
 
 ### 6 princípios
-- **P-01 IA é o sistema, não um card.** O Coach narra a vida, conversa, sugere acoes e faz a transicao entre modulos. Nunca 4 tiles estaticos num hero.
-- **P-02 Um numero grande por dobra.** Cada dobra tem 1 KPI dominante (30-64px). Os demais sao secundarios.
-- **P-03 Container so quando agrupa.** Borda + radius + bg = sinal de agrupamento. Bloco solitario nao tem card. Reduzir bordas pela metade.
-- **P-04 Modulos conversam.** Toda tela mostra >=1 elo cross-module. A IA costura.
-- **P-05 Proxima acao visivel.** Toda tela responde "o que eu faco agora?" em ate 1 scroll.
-- **P-06 Densidade por estado.** Saudavel = resumo curto, IA discreta. Alerta = mais detalhe, IA expande.
+- **P-01 IA é o sistema, não um card.** O Coach narra a vida, conversa, sugere ações e faz a transição entre módulos. Nunca 4 tiles estáticos num hero.
+- **P-02 Um número grande por dobra.** Cada dobra tem 1 KPI dominante (30-64px). Os demais são secundários.
+- **P-03 Container só quando agrupa.** Borda + radius + bg = sinal de agrupamento. Bloco solitário não tem card. Reduzir bordas pela metade.
+- **P-04 Módulos conversam.** Toda tela mostra >=1 elo cross-module. A IA costura.
+- **P-05 Próxima ação visível.** Toda tela responde "o que eu faço agora?" em até 1 scroll.
+- **P-06 Densidade por estado.** Saudável = resumo curto, IA discreta. Alerta = mais detalhe, IA expande.
 
 ### 4 padrões
-| Padrao | Pitch | Ordem vertical | Quando | Anti |
+| Padrão | Pitch | Ordem vertical | Quando | Anti |
 |---|---|---|---|---|
-| **P-A Coach-led** | A IA conduz, o resto e evidencia | Coach Hero (280-360px) -> Proxima acao -> Evidencia primaria (1.6fr/1fr, KPIs aqui) -> Cross elo -> Detalhe opcional | Financas, Tempo, Patrimonio, Carreira, Mente | Nao para gamificacao/CRUD; nao inflar com 4 KPI cards |
-| **P-B Hero Score** | Um numero grande, tudo orbita | Hero Score (360-480px) -> Proximos eventos IA -> Mosaic 3xN -> Cross elo | Panorama, Conquistas, perfil publico | Nao em modulos densos; nunca 2 hero score |
-| **P-C List+Capture** | Lista + captura inline | TopBar filtros -> captura inline -> lista densa -> IA lateral opcional | Transacoes, Tarefas, Habitos, Ativos, Eventos | Nada de KPI strip no topo; sem paginacao 1-2-3 |
-| **P-D Form Flow** | Editar confortavel, salvar obvio | TopBar -> hero opcional -> secoes numeradas -> DangerZone -> SaveBar sticky | Configuracoes, Onboarding, criacao | Nao jogar tudo numa pagina; >12 campos sem agrupar = bug |
+| **P-A Coach-led** | A IA conduz, o resto é evidência | Coach Hero (280-360px) → Próxima ação → Evidência primária (1.6fr/1fr, KPIs aqui) → Cross elo → Detalhe opcional | Finanças, Tempo, Patrimônio, Carreira, Mente | Não para gamificação/CRUD; não inflar com 4 KPI cards |
+| **P-B Hero Score** | Um número grande, tudo orbita | Hero Score (360-480px) → Próximos eventos IA → Mosaic 3xN → Cross elo | Panorama, Conquistas, perfil público | Não em módulos densos; nunca 2 hero score |
+| **P-C List+Capture** | Lista + captura inline | TopBar filtros → captura inline → lista densa → IA lateral opcional | Transações, Tarefas, Hábitos, Ativos, Eventos | Nada de KPI strip no topo; sem paginação 1-2-3 |
+| **P-D Form Flow** | Editar confortável, salvar óbvio | TopBar → hero opcional → seções numeradas → DangerZone → SaveBar sticky | Configurações, Onboarding, criação | Não jogar tudo numa página; >12 campos sem agrupar = bug |
 
 Breakpoints P-A: >=1280 cheio; 960-1280 lateral some, KPIs viram strip; <960 empilha, Coach vira pill.
 
