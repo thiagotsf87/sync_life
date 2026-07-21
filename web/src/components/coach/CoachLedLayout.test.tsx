@@ -23,5 +23,6 @@ describe('CoachLedLayout', () => {
     const html = renderToString(<CoachLedLayout hero={<div>H</div>} evidence={<div>E</div>} />)
     expect(html).toContain('H')
     expect(html).toContain('E')
+    expect(html).not.toContain('<aside')
   })
 })
