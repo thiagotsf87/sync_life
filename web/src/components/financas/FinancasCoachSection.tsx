@@ -1,33 +1,97 @@
 'use client'
 
+import type { ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 import { COACH_OS_ENABLED } from '@/lib/flags'
 import { CoachHero, type CoachBrief } from '@/components/coach/CoachHero'
 import { CrossBand, type CrossSegment } from '@/components/coach/CrossBand'
-import { useCoachBrief, useCoachCross } from '@/hooks/use-coach'
+import { CoachLedLayout } from '@/components/coach/CoachLedLayout'
+import { CoachAgenda, type CoachAgendaItem } from '@/components/coach/CoachAgenda'
+import { CoachWhisper } from '@/components/coach/CoachWhisper'
+import { useCoachBrief, useCoachCross, useCoachWhisper } from '@/hooks/use-coach'
 import type { ModuleId } from '@/types/shell'
 
-export function FinancasCoachSection({ period }: { period: string }) {
+/** Payload de /api/ai/coach-cross (os hooks não são genéricos: `data` chega como unknown). */
+interface CrossData {
+  segments: CrossSegment[]
+  action: { label: string; targetModule: ModuleId; href: string }
+}
+
+/** Payload de /api/ai/coach-whisper (WhisperSchema da rota). */
+interface WhisperData {
+  lead: string
+  recommendation: string
+  action?: { label: string; href: string }
+  variant: 'soft' | 'solid'
+}
+
+export interface FinancasCoachSectionProps {
+  period: string
+  /** Evidência primária real (chart do fluxo de caixa). */
+  evidence: ReactNode
+  /** Detalhe full-width real (histórico). */
+  detail?: ReactNode
+  /** Itens da agenda lateral (próximas recorrentes/eventos). */
+  agenda: CoachAgendaItem[]
+}
+
+/** Composição P-A (Coach-led) do módulo Finanças. Anatomia v3.1 Variante B. */
+export function FinancasCoachSection({ period, evidence, detail, agenda }: FinancasCoachSectionProps) {
+  const router = useRouter()
   const brief = useCoachBrief('financas', period)
   const cross = useCoachCross('financas', period)
-  if (!COACH_OS_ENABLED) return null
-  return (
-    <div className="mb-5 flex flex-col gap-4">
-      {brief.loading && <div className="h-40 animate-pulse rounded-2xl bg-[var(--sl-s2)]" />}
-      {brief.error && (
-        <button
-          onClick={brief.regenerate}
-          className="rounded-2xl border border-[var(--sl-border)] p-4 text-left text-[13px] text-[var(--sl-t3)]"
-        >
-          {brief.error} Tentar de novo.
-        </button>
-      )}
-      {!!brief.data && <CoachHero moduleId="financas" period={period} brief={brief.data as CoachBrief} />}
-      {!!cross.data && (
-        <CrossBand
-          segments={(cross.data as { segments: CrossSegment[] }).segments}
-          action={(cross.data as { action: { label: string; targetModule: ModuleId; href: string } }).action}
+  const whisper = useCoachWhisper('financas', period)
+
+  const aside = <CoachAgenda title="Próximos 7 dias" items={agenda} emptyLabel="Nenhuma recorrente próxima." />
+
+  if (!COACH_OS_ENABLED) {
+    // Rollback do Coach OS não pode sumir com a evidência real do módulo:
+    // mantém o scaffold com fluxo/agenda/histórico, sem hero/cross/whisper.
+    return <CoachLedLayout className="mb-3.5" hero={null} evidence={evidence} aside={aside} detail={detail} />
+  }
+
+  const hero = brief.data ? (
+    <CoachHero moduleId="financas" period={period} brief={brief.data as CoachBrief} />
+  ) : brief.error ? (
+    <button
+      onClick={brief.regenerate}
+      className="rounded-2xl border border-[var(--sl-border)] p-4 text-left text-[13px] text-[var(--sl-t3)]"
+    >
+      {brief.error} Tentar de novo.
+    </button>
+  ) : (
+    <div className="h-40 animate-pulse rounded-2xl bg-[var(--sl-s2)]" />
+  )
+
+  const crossData = cross.data ? (cross.data as CrossData) : null
+  const crossBand = crossData ? <CrossBand segments={crossData.segments} action={crossData.action} /> : undefined
+
+  const w = whisper.data ? (whisper.data as WhisperData) : null
+  const whisperAction = w?.action
+  // [&>article]:mb-0 neutraliza o mb-3.5 interno do FluxoCaixaSection; o gap-3 rege o espaçamento.
+  const evidenceWithWhisper = (
+    <div className="flex flex-col gap-3 [&>article]:mb-0">
+      {evidence}
+      {w && (
+        <CoachWhisper
+          bold={w.lead}
+          text={w.recommendation}
+          action={whisperAction?.label}
+          onAction={whisperAction ? () => router.push(whisperAction.href) : undefined}
+          variant={w.variant}
         />
       )}
     </div>
+  )
+
+  return (
+    <CoachLedLayout
+      className="mb-3.5"
+      hero={hero}
+      crossBand={crossBand}
+      evidence={evidenceWithWhisper}
+      aside={aside}
+      detail={detail}
+    />
   )
 }

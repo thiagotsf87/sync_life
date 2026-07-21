@@ -9,17 +9,14 @@ import { useRecorrentes } from '@/hooks/use-recorrentes'
 import { TrendingUp, CalendarDays, Plus, ChevronLeft, ChevronRight, CreditCard, RefreshCw, Wallet } from 'lucide-react'
 import { ModuleHeader } from '@/components/ui/module-header'
 import { FinancasMobile } from '@/components/financas/FinancasMobile'
-import { KpiStrip } from '@/components/financas/KpiStrip'
-import { HealthBand } from '@/components/financas/HealthBand'
-import { AiConsultant } from '@/components/financas/AiConsultant'
 import { HistoricoChart } from '@/components/financas/HistoricoChart'
 import { FluxoCaixaSection } from '@/components/financas/FluxoCaixaSection'
 import { OrcamentosCard } from '@/components/financas/OrcamentosCard'
 import { UltimasTransacoes } from '@/components/financas/UltimasTransacoes'
 import { ProjecaoSaldo } from '@/components/financas/ProjecaoSaldo'
-import { ProximasRecorrentes } from '@/components/financas/ProximasRecorrentes'
-import { FinancialInsightCard } from '@/components/financas/FinancialInsightCard'
 import { FinancasCoachSection } from '@/components/financas/FinancasCoachSection'
+import type { CoachAgendaItem } from '@/components/coach'
+import { fmtBRL } from '@/lib/format/currency'
 import type { MonthlyAgg, CatDataItem, CfDay } from '@/components/financas/helpers'
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
@@ -144,7 +141,20 @@ export default function FinancasDashboardPage() {
 
   const latestTxns = transactions.slice(0, 7)
 
-  const pendingRecCount = upcomingOccurrences.filter(o => o.type === 'expense' && o.daysLeft <= 7).length
+  // Agenda lateral do P-A (CoachAgenda): recorrentes dos próximos 7 dias.
+  // `o.date` já é um Date local (calcNextOccurrence), sem parse UTC de string.
+  const agenda: CoachAgendaItem[] = upcomingOccurrences
+    .filter(o => o.daysLeft <= 7)
+    .slice(0, 5)
+    .map(o => ({
+      id: o.id,
+      day: String(o.day),
+      weekday: o.date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', ''),
+      label: o.name,
+      amount: (o.type === 'income' ? '+ ' : '– ') + fmtBRL(o.amount, { compact: true }),
+      positive: o.type === 'income',
+      moduleColor: 'var(--sl-em)',
+    }))
 
   const daysLeftInMonth = daysInMonth - todayD
   const weekOfMonth = Math.ceil(todayD / 7)
@@ -246,72 +256,30 @@ export default function FinancasDashboardPage() {
         </button>
       </ModuleHeader>
 
-      {/* 1.5 COACH OS — hero + cross reais */}
-      <FinancasCoachSection period={period} />
-
-      {/* 2 KPI STRIP */}
-      <KpiStrip
-        receitasMes={receitasMes}
-        totalGasto={totalDespesas}
-        saldoMes={saldoMes}
-        naoAlocado={naoAlocado}
-        taxaPoupanca={taxaPoupanca}
-        loading={loadingBudgets}
+      {/* 2 COACH-LED (P-A Variante B): hero + cross + evidência (fluxo + whisper) + agenda + detalhe (histórico) */}
+      <FinancasCoachSection
+        period={period}
+        evidence={
+          <FluxoCaixaSection
+            cfDays={cfDays}
+            cfSummary={cfSummary}
+            saldoMes={saldoMes}
+            todayD={todayD}
+            month={month}
+          />
+        }
+        detail={
+          <HistoricoChart
+            histData={histData}
+            catData={catData}
+            totalGasto={totalGasto}
+            alertCat={alertCat ?? null}
+          />
+        }
+        agenda={agenda}
       />
 
-      {/* 3 HEALTH BAND */}
-      <HealthBand
-        receitasMes={receitasMes}
-        totalGasto={totalDespesas}
-        saldoMes={saldoMes}
-        taxaPoupanca={taxaPoupanca}
-        qtdOk={qtdOk}
-        qtdAlert={qtdAlert}
-        qtdOver={qtdOver}
-        alertCat={alertCat ? {
-          name: alertCat.category?.name ?? 'Categoria',
-          pct: alertCat.pct,
-          spent: alertCat.gasto,
-          limit: alertCat.amount,
-        } : null}
-      />
-
-      {/* 4 AI CONSULTANT */}
-      <AiConsultant
-        mesAno={mesAno}
-        receitasMes={receitasMes}
-        totalGasto={totalDespesas}
-        taxaPoupanca={taxaPoupanca}
-        daysLeftInMonth={daysLeftInMonth}
-        daysInMonth={daysInMonth}
-        todayD={todayD}
-        activeBudgets={activeBudgets}
-        pendingRecCount={pendingRecCount}
-      />
-
-      {/* 4.5 AI INSIGHTS */}
-      <div className="mb-3.5">
-        <FinancialInsightCard month={month} year={year} />
-      </div>
-
-      {/* 5 TOP GRID: Historico + Gastos por Categoria */}
-      <HistoricoChart
-        histData={histData}
-        catData={catData}
-        totalGasto={totalGasto}
-        alertCat={alertCat ?? null}
-      />
-
-      {/* 6 FLUXO DE CAIXA */}
-      <FluxoCaixaSection
-        cfDays={cfDays}
-        cfSummary={cfSummary}
-        saldoMes={saldoMes}
-        todayD={todayD}
-        month={month}
-      />
-
-      {/* 7 MID GRID: Orcamentos + Ultimas Transacoes */}
+      {/* 3 MID GRID: Orcamentos + Ultimas Transacoes */}
       <div className="grid grid-cols-2 gap-3.5 mb-3.5 max-lg:grid-cols-1">
         <OrcamentosCard
           activeBudgets={activeBudgets}
@@ -327,7 +295,7 @@ export default function FinancasDashboardPage() {
         />
       </div>
 
-      {/* 8 PROJECAO DE SALDO */}
+      {/* 4 PROJECAO DE SALDO */}
       <ProjecaoSaldo
         saldoMes={saldoMes}
         totalGasto={totalDespesas}
@@ -339,10 +307,7 @@ export default function FinancasDashboardPage() {
         loading={loadingBudgets}
       />
 
-      {/* 9 PROXIMAS RECORRENTES */}
-      <ProximasRecorrentes upcomingOccurrences={upcomingOccurrences} />
-
-      {/* 10 FAB */}
+      {/* 5 FAB */}
       <div ref={fabRef} className="fixed bottom-5 right-5 flex flex-col items-end gap-2 z-50">
         {fabOpen && (
           <div className="flex flex-col items-end gap-1.5 mb-1">
