@@ -230,99 +230,22 @@ export const fmtBRL = (n: number, { compact = false } = {}) => {
 
 ---
 
-## 6 Padrões de composição (anatomia de tela v3)
+## Anatomia v3.1 — 4 padrões de composição
 
-Toda tela do SyncLife cai em um destes 6 padrões. Veja `DESIGN-SYSTEM-v3.md` §7 para a matriz que mapeia cada uma das 45 telas ao padrão correto.
+> Fonte de verdade: Anatomia v3.1 (projeto de design e19451). Os 6 padroes antigos foram consolidados em 4. Veja `DESIGN-SYSTEM-v3.md` §6 para os 6 principios completos e §7 para a matriz que mapeia cada uma das 45 telas ao padrão correto.
 
-### Padrão 1 — Overview com KPIs (ex: Dashboard, Corpo)
+### 6 princípios (resumo)
+P-01 IA é o sistema, não um card · P-02 Um número grande por dobra · P-03 Container só quando agrupa · P-04 Módulos conversam · P-05 Próxima ação visível · P-06 Densidade por estado.
 
-```
-TopBar (saudação + ações)
-↓
-Hero (1 elemento focal — score gigante + sparkline)
-↓
-Mosaic (grid 4×N módulos)
-↓
-KPI strip (4 cols)
-↓
-Grid 1.4fr / 1fr (LEFT: lista densa + IA · RIGHT: 2-3 cards laterais)
-```
+### 4 padrões
+| Padrao | Pitch | Ordem vertical | Quando | Anti |
+|---|---|---|---|---|
+| **P-A Coach-led** | A IA conduz, o resto e evidencia | Coach Hero (280-360px) -> Proxima acao -> Evidencia primaria (1.6fr/1fr, KPIs aqui) -> Cross elo -> Detalhe opcional | Financas, Tempo, Patrimonio, Carreira, Mente | Nao para gamificacao/CRUD; nao inflar com 4 KPI cards |
+| **P-B Hero Score** | Um numero grande, tudo orbita | Hero Score (360-480px) -> Proximos eventos IA -> Mosaic 3xN -> Cross elo | Panorama, Conquistas, perfil publico | Nao em modulos densos; nunca 2 hero score |
+| **P-C List+Capture** | Lista + captura inline | TopBar filtros -> captura inline -> lista densa -> IA lateral opcional | Transacoes, Tarefas, Habitos, Ativos, Eventos | Nada de KPI strip no topo; sem paginacao 1-2-3 |
+| **P-D Form Flow** | Editar confortavel, salvar obvio | TopBar -> hero opcional -> secoes numeradas -> DangerZone -> SaveBar sticky | Configuracoes, Onboarding, criacao | Nao jogar tudo numa pagina; >12 campos sem agrupar = bug |
 
-### Padrão 2 — Módulo denso com IA (ex: Finanças, Tempo, Patrimônio)
-
-```
-TopBar com navegador de período + CTA "+ Nova X"
-↓
-4 KPI cards (com pill de status)
-↓
-Saúde do módulo (alerta horizontal com eyebrow vertical)
-↓
-Consultor IA (card hero com 4 insight tiles + ask input)
-↓
-2 charts side-by-side (1.4fr / 1fr)
-↓
-Chart full-width (timeline dia-a-dia)
-```
-
-### Padrão 3 — Lista + filtros (ex: Transações, Atividades, Viagens)
-
-```
-Header + filtros (pill group + date range)
-↓
-Tabela ou lista de cards
-↓
-Paginação ou scroll infinito
-```
-
-### Padrão 4 — Form-heavy (ex: Configurações, Onboarding, Nova viagem)
-
-```
-TopBar
-↓
-Hero opcional (profile, contexto)
-↓
-Cards numerados (01 · IDENTIDADE, 02 · LOCALIDADE…)
-  - SectionHeader (eyebrow + título + sub)
-  - Form fields em grid 1fr ou 1fr/1fr
-↓
-DangerZone (se aplicável)
-↓
-SaveBar sticky no bottom (G-09)
-```
-
-### Padrão 5 — Emocional/gamificação (ex: Conquistas, Ranking)
-
-```
-HeroLevel (ring + nível + próximo desbloqueio)
-↓
-4 KPI cards de gamificação
-↓
-Recém-conquistadas (3 cards horizontais)
-↓
-Progresso + Ranking lado a lado
-↓
-Coleção full-width (grid 6 cols com filtros pill toggle)
-```
-
-### Padrão 6 — Marketing/público (ex: Landing, Pricing, Login)
-
-```
-TopNav sticky com blur
-↓
-Hero (headline gigante + sub + CTAs + mockup 3D)
-↓
-Social proof (logos, números)
-↓
-Seções de feature em grid (cards)
-↓
-Card hero featured
-↓
-Pricing (2-3 planos)
-↓
-FAQ (acordeão)
-↓
-CTA final + Footer 5 colunas
-```
+Breakpoints P-A: >=1280 cheio; 960-1280 lateral some, KPIs viram strip; <960 empilha, Coach vira pill.
 
 ---
 
@@ -585,7 +508,7 @@ Para detalhes completos do que foi mudado em cada arquivo, ver `memory/project_v
 
 - [ ] TypeScript sem erros (`tsc --noEmit`)
 - [ ] Visual correto em **4 temas** (testar Navy Deep + Cream no mínimo)
-- [ ] Segue um dos 6 padrões de composição (§6 DESIGN-SYSTEM-v3.md)
+- [ ] Segue um dos 4 padrões da Anatomia v3.1 (P-A/P-B/P-C/P-D, §6 DESIGN-SYSTEM-v3.md)
 - [ ] Hero único na tela (G-05)
 - [ ] Valores monetários e % em `font-[Syne]` + `tabular-nums` (use `.sl-num` ou `.sl-num-strong`, NUNCA Mono)
 - [ ] Moeda formatada com `fmtBRL()` — `R$ 1.840,00`
@@ -605,7 +528,7 @@ Para detalhes completos do que foi mudado em cada arquivo, ver `memory/project_v
 
 ## Referências
 
-- **`DESIGN-SYSTEM-v3.md`** — documento completo (tokens, type, 15+ componentes, 6 padrões, matriz das 45 telas, regras G-01 a G-10, migração)
+- **`DESIGN-SYSTEM-v3.md`** — documento completo (tokens, type, 15+ componentes, Anatomia v3.1 com 4 padrões, matriz das 45 telas, regras G-01 a G-10, migração)
 - **`tokens-v3.css`** — todos os tokens prontos pra import
 - `prototypes/` — 7 protótipos React standalone (dashboard, finanças, conquistas, configurações, mobile, landing, auth) que servem de blueprint
 - `web/src/app/globals.css` — Tailwind + tokens-v3.css imported
@@ -622,4 +545,4 @@ Para detalhes completos do que foi mudado em cada arquivo, ver `memory/project_v
     ]
   }
 }
-*SyncLife CLAUDE.md v3 — atualizado Mai 2026. Migração v2 → v3 concluída: paleta Petróleo (`--sl-em #0F766E` brand, `--sl-success #1FA67A`), 4 temas, **Syne** display (Space Grotesk fallback), IBM Plex Mono restrito, sem emoji em chrome, sem em-dash, 6 padrões de composição, regras G-01 a G-10.*
+*SyncLife CLAUDE.md v3 — atualizado Mai 2026. Migração v2 → v3 concluída: paleta Petróleo (`--sl-em #0F766E` brand, `--sl-success #1FA67A`), 4 temas, **Syne** display (Space Grotesk fallback), IBM Plex Mono restrito, sem emoji em chrome, sem em-dash, Anatomia v3.1 (4 padrões), regras G-01 a G-10.*

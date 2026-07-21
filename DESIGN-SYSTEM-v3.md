@@ -12,7 +12,7 @@
 3. [Tipografia](#3-tipografia)
 4. [Iconografia](#4-iconografia)
 5. [Componentes base](#5-componentes-base)
-6. [Padrões de composição](#6-padrões-de-composição)
+6. [Anatomia v3.1 — 4 padrões](#6-anatomia-v31--4-padrões)
 7. [Matriz de telas](#7-matriz-das-45-telas)
 8. [Regras de copy](#8-regras-de-copy)
 9. [Regras visuais](#9-regras-visuais)
@@ -350,102 +350,27 @@ Linha SVG + área com gradient sob a linha. Tooltip ao hover (G-01).
 
 ---
 
-## 6. Padrões de composição
+## 6. Anatomia v3.1 — 6 princípios + 4 padrões
 
-Toda tela do SyncLife cai em **um destes 6 padrões**. Use o protótipo correspondente como blueprint.
+> Fonte: Anatomia v3.1 (projeto de design `e19451`, `prototypes/financas-anatomia/`). Substitui os 6 padrões prosados da v3.
 
-### 6.1 `Overview com KPIs` (blueprint: Dashboard)
-```
-┌─ TopBar ─────────────────────────────┐
-│ ┌─ Hero (1 elemento focal) ────────┐ │
-│ │ Score/level + sparkline + pill   │ │
-│ └──────────────────────────────────┘ │
-│ ┌─ Mosaic (grid 4×N módulos/áreas)─┐ │
-│ ├─ KPI strip (4 cols)             ─┤ │
-│ ├─ Grid 1.4fr / 1fr (LEFT + RIGHT)─┤ │
-│ │   LEFT: lista densa + IA         │ │
-│ │   RIGHT: 2-3 cards laterais      │ │
-└──┴──────────────────────────────────┘
-```
-**Aplica em:** Panorama, Corpo dashboard, Patrimônio dashboard, Mente dashboard
+### 6 princípios
+- **P-01 IA é o sistema, não um card.** O Coach narra a vida, conversa, sugere acoes e faz a transicao entre modulos. Nunca 4 tiles estaticos num hero.
+- **P-02 Um numero grande por dobra.** Cada dobra tem 1 KPI dominante (30-64px). Os demais sao secundarios.
+- **P-03 Container so quando agrupa.** Borda + radius + bg = sinal de agrupamento. Bloco solitario nao tem card. Reduzir bordas pela metade.
+- **P-04 Modulos conversam.** Toda tela mostra >=1 elo cross-module. A IA costura.
+- **P-05 Proxima acao visivel.** Toda tela responde "o que eu faco agora?" em ate 1 scroll.
+- **P-06 Densidade por estado.** Saudavel = resumo curto, IA discreta. Alerta = mais detalhe, IA expande.
 
-### 6.2 `Módulo denso com IA` (blueprint: Finanças)
-```
-TopBar com navegador de período + CTA "+ Nova X"
-↓
-4 KPI cards (com pill de status quando relevante)
-↓
-Saúde do módulo (alerta horizontal com eyebrow)
-↓
-Consultor IA (card hero com 4 insight tiles + ask input)
-↓
-2 charts side-by-side (1.4fr / 1fr)
-↓
-Chart full-width (timeline dia-a-dia)
-```
-**Aplica em:** Visão geral de Finanças, Tempo, Patrimônio, Experiências
+### 4 padrões
+| Padrao | Pitch | Ordem vertical | Quando | Anti |
+|---|---|---|---|---|
+| **P-A Coach-led** | A IA conduz, o resto e evidencia | Coach Hero (280-360px) -> Proxima acao -> Evidencia primaria (1.6fr/1fr, KPIs aqui) -> Cross elo -> Detalhe opcional | Financas, Tempo, Patrimonio, Carreira, Mente | Nao para gamificacao/CRUD; nao inflar com 4 KPI cards |
+| **P-B Hero Score** | Um numero grande, tudo orbita | Hero Score (360-480px) -> Proximos eventos IA -> Mosaic 3xN -> Cross elo | Panorama, Conquistas, perfil publico | Nao em modulos densos; nunca 2 hero score |
+| **P-C List+Capture** | Lista + captura inline | TopBar filtros -> captura inline -> lista densa -> IA lateral opcional | Transacoes, Tarefas, Habitos, Ativos, Eventos | Nada de KPI strip no topo; sem paginacao 1-2-3 |
+| **P-D Form Flow** | Editar confortavel, salvar obvio | TopBar -> hero opcional -> secoes numeradas -> DangerZone -> SaveBar sticky | Configuracoes, Onboarding, criacao | Nao jogar tudo numa pagina; >12 campos sem agrupar = bug |
 
-### 6.3 `Lista + filtros` (variação de Finanças)
-```
-Header + filtros (pill group + date range)
-↓
-Tabela ou lista de cards
-↓
-Paginação ou scroll infinito
-```
-**Aplica em:** Transações, Recorrentes, Orçamentos, Calendário, Atividades, Viagens, Memórias, Habilidades, Histórico
-
-### 6.4 `Form-heavy` (blueprint: Configurações)
-```
-TopBar
-↓
-Hero opcional (profile, contexto)
-↓
-Cards numerados (01 · IDENTIDADE, 02 · ...)
-  - SectionHeader (eyebrow + título + sub)
-  - Form fields em grid 1fr ou 1fr/1fr
-↓
-DangerZone (se aplicável)
-↓
-SaveBar sticky no bottom
-```
-**Aplica em:** Configurações (todas as sub), Nova viagem, Cardápio Wizard, Onboarding, Edição de meta
-
-### 6.5 `Emocional/gamificação` (blueprint: Conquistas)
-```
-HeroLevel (ring + nível + próximo desbloqueio)
-↓
-4 KPI cards de gamificação
-↓
-Recém-conquistadas (3 cards horizontais)
-↓
-Progresso/Ranking (2 cols)
-↓
-Coleção full-width (grid 6 cols com filtros)
-```
-**Aplica em:** Conquistas, Ranking, Coach IA, Review semanal
-
-### 6.6 `Marketing/público` (blueprint: Landing + Auth)
-```
-TopNav sticky com blur
-↓
-Hero (headline gigante + sub + CTAs + mockup 3D)
-↓
-Social proof (logos, números)
-↓
-Seções de feature em grid (cards)
-↓
-Card hero featured (ex: IA section)
-↓
-Pricing (2-3 planos)
-↓
-FAQ (acordeão)
-↓
-CTA final
-↓
-Footer (5 colunas)
-```
-**Aplica em:** Landing, Pricing, Forgot password, Onboarding inicial
+Breakpoints P-A: >=1280 cheio; 960-1280 lateral some, KPIs viram strip; <960 empilha, Coach vira pill.
 
 ---
 
