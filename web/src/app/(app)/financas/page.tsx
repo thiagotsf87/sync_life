@@ -153,7 +153,6 @@ export default function FinancasDashboardPage() {
       label: o.name,
       amount: (o.type === 'income' ? '+ ' : '– ') + fmtBRL(o.amount, { compact: true }),
       positive: o.type === 'income',
-      moduleColor: 'var(--sl-em)',
     }))
 
   const daysLeftInMonth = daysInMonth - todayD

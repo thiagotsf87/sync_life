@@ -23,7 +23,7 @@ interface HistoricoChartProps {
  */
 export function HistoricoChart({ histData, catData, totalGasto, alertCat }: HistoricoChartProps) {
   return (
-    <div className="grid gap-3.5 mb-3.5 max-lg:grid-cols-1" style={{ gridTemplateColumns: '1.4fr 1fr' }}>
+    <div className="grid gap-3.5 max-lg:grid-cols-1" style={{ gridTemplateColumns: '1.4fr 1fr' }}>
       {/* Histórico — Receitas vs Despesas */}
       <article className="bg-[var(--sl-s1)] border border-[var(--sl-border)] rounded-[18px] p-[22px] hover:border-[var(--sl-border-h)] transition-colors">
         <header className="flex justify-between items-baseline mb-4">

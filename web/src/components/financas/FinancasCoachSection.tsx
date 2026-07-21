@@ -44,30 +44,9 @@ export function FinancasCoachSection({ period, evidence, detail, agenda }: Finan
 
   const aside = <CoachAgenda title="Próximos 7 dias" items={agenda} emptyLabel="Nenhuma recorrente próxima." />
 
-  if (!COACH_OS_ENABLED) {
-    // Rollback do Coach OS não pode sumir com a evidência real do módulo:
-    // mantém o scaffold com fluxo/agenda/histórico, sem hero/cross/whisper.
-    return <CoachLedLayout className="mb-3.5" hero={null} evidence={evidence} aside={aside} detail={detail} />
-  }
-
-  const hero = brief.data ? (
-    <CoachHero moduleId="financas" period={period} brief={brief.data as CoachBrief} />
-  ) : brief.error ? (
-    <button
-      onClick={brief.regenerate}
-      className="rounded-2xl border border-[var(--sl-border)] p-4 text-left text-[13px] text-[var(--sl-t3)]"
-    >
-      {brief.error} Tentar de novo.
-    </button>
-  ) : (
-    <div className="h-40 animate-pulse rounded-2xl bg-[var(--sl-s2)]" />
-  )
-
-  const crossData = cross.data ? (cross.data as CrossData) : null
-  const crossBand = crossData ? <CrossBand segments={crossData.segments} action={crossData.action} /> : undefined
-
   const w = whisper.data ? (whisper.data as WhisperData) : null
-  const whisperAction = w?.action
+  // Só navega em href relativo (path interno); href externo/inválido vindo da IA vira whisper sem ação.
+  const whisperAction = w?.action && w.action.href.startsWith('/') ? w.action : undefined
   // [&>article]:mb-0 neutraliza o mb-3.5 interno do FluxoCaixaSection; o gap-3 rege o espaçamento.
   const evidenceWithWhisper = (
     <div className="flex flex-col gap-3 [&>article]:mb-0">
@@ -83,6 +62,30 @@ export function FinancasCoachSection({ period, evidence, detail, agenda }: Finan
       )}
     </div>
   )
+
+  if (!COACH_OS_ENABLED) {
+    // Rollback do Coach OS não pode sumir com a evidência real do módulo:
+    // mantém o scaffold com fluxo/agenda/histórico, sem hero/cross/whisper
+    // (com a flag off os hooks não buscam nada, então o whisper nunca aparece aqui).
+    return <CoachLedLayout className="mb-3.5" hero={null} evidence={evidenceWithWhisper} aside={aside} detail={detail} />
+  }
+
+  const hero = brief.data ? (
+    <CoachHero moduleId="financas" period={period} brief={brief.data as CoachBrief} />
+  ) : brief.error ? (
+    <button
+      type="button"
+      onClick={brief.regenerate}
+      className="rounded-2xl border border-[var(--sl-border)] p-4 text-left text-[13px] text-[var(--sl-t3)]"
+    >
+      {brief.error} Tentar de novo.
+    </button>
+  ) : (
+    <div className="h-40 animate-pulse rounded-2xl bg-[var(--sl-s2)]" />
+  )
+
+  const crossData = cross.data ? (cross.data as CrossData) : null
+  const crossBand = crossData ? <CrossBand segments={crossData.segments} action={crossData.action} /> : undefined
 
   return (
     <CoachLedLayout
