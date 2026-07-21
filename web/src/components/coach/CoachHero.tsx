@@ -37,6 +37,10 @@ export function CoachHero({ moduleId, brief, className }: CoachHeroProps) {
   const firstBig = brief.stats.findIndex((s) => s.big)
   const bigIndex = firstBig >= 0 ? firstBig : Math.min(1, brief.stats.length - 1)
   const stats: MicroStat[] = brief.stats.map((s, i) => ({ label: s.label, value: s.value, big: i === bigIndex }))
+  // P-05: sempre ha uma proxima acao — se o modelo nao marcar nenhuma primary, a 1a pilula assume.
+  const suggestions = brief.suggestions.some((s) => s.primary)
+    ? brief.suggestions
+    : brief.suggestions.map((s, i) => (i === 0 ? { ...s, primary: true } : s))
 
   return (
     <section
@@ -73,7 +77,7 @@ export function CoachHero({ moduleId, brief, className }: CoachHeroProps) {
 
         {/* Pilulas de acao (P-05): 1a primaria = proxima acao, resto ghost */}
         <div className="mt-6 flex flex-wrap gap-2">
-          {brief.suggestions.map((s) => (
+          {suggestions.map((s) => (
             <button key={s.id} type="button" onClick={() => openDrawerWithPrompt(s.prompt)}
               className={cn(
                 'inline-flex items-center gap-2 rounded-full text-[13px] font-medium',

@@ -42,4 +42,22 @@ describe('CoachHero', () => {
     expect(clean).toContain('Voce fecha maio no azul') // texto integral, sem quebra
     expect(clean).not.toContain('9.999')               // sem span de emphasis pendurado
   })
+
+  it('promove a 1a pilula a primaria quando o modelo nao marca nenhuma (P-05)', () => {
+    const html = renderToString(
+      <CoachHero moduleId="financas" period="maio 2026"
+        brief={{
+          eyebrow: 'Coach · Financas · maio 2026',
+          headline: { text: 'Voce fecha maio no azul' },
+          stats: [{ label: 'Saldo', value: 'R$ 1.840' }],
+          suggestions: [
+            { id: 's1', label: 'Rever orcamento', prompt: 'Como rever o orcamento?' },
+            { id: 's2', label: 'Ver projecao', prompt: 'Projecao ate dez' },
+          ],
+        }} />,
+    )
+    expect(html).toContain('bg-[var(--sl-em)]') // pilula solida de proxima acao garantida
+    expect(html).toContain('Rever orcamento')
+    expect(html).toContain('Ver projecao')
+  })
 })

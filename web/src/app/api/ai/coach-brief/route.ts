@@ -18,6 +18,31 @@ const BriefSchema = z.object({
 })
 const InputSchema = z.object({ moduleId: z.string(), period: z.string() })
 
+type Brief = z.infer<typeof BriefSchema>
+
+/** Remove caracteres de controle ASCII (viram tofu no client; acentos ficam) e colapsa espaços repetidos. */
+// eslint-disable-next-line no-control-regex
+const clean = (s: string) => s.replace(/[\x00-\x1F\x7F]/g, '').replace(/ {2,}/g, ' ').trim()
+
+/**
+ * Saneia o output do modelo e garante o contrato do hero: emphasis ⊂ headline.text.
+ * Se o emphasis não ocorrer no texto, anexa ao fim para a frase não renderizar truncada.
+ * TODO(backlog): aplicar o mesmo saneamento em coach-cross/coach-whisper.
+ */
+function sanitizeBrief(brief: Brief): Brief {
+  const text = clean(brief.headline.text)
+  const emphasis = brief.headline.emphasis ? clean(brief.headline.emphasis) || undefined : undefined
+  return {
+    eyebrow: clean(brief.eyebrow),
+    headline: {
+      text: emphasis && !text.includes(emphasis) ? text.trimEnd() + ' ' + emphasis : text,
+      ...(emphasis ? { emphasis } : {}),
+    },
+    stats: brief.stats.map(s => ({ ...s, label: clean(s.label), value: clean(s.value) })),
+    suggestions: brief.suggestions.map(s => ({ ...s, label: clean(s.label) })),
+  }
+}
+
 export async function POST(req: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -35,9 +60,10 @@ export async function POST(req: Request) {
     const prompt = `${persona.system}\nMódulo: ${persona.label}. Período: ${parsed.data.period}.\n` +
       `Gere um brief para o hero deste módulo com base SOMENTE nestes dados reais:\n${JSON.stringify(context, null, 2)}\n` +
       `eyebrow = "Coach · ${persona.label} · ${parsed.data.period}". headline com um fato e o trecho numérico em "emphasis". ` +
+      `headline.emphasis DEVE ser um trecho exato contido em headline.text. ` +
       `stats: até 4 KPIs (o principal com big:true). suggestions: até 3 perguntas úteis.`
     const { object } = await generateObject({ model, schema: BriefSchema, prompt })
-    return NextResponse.json(object)
+    return NextResponse.json(sanitizeBrief(object))
   } catch (error) {
     captureApiError('ai/coach-brief', error)
     return NextResponse.json({ error: 'Erro ao gerar o brief.' }, { status: 500 })
