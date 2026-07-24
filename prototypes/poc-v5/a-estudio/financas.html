@@ -293,7 +293,7 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hi
 
     var crossLine = document.getElementById('cross-line');
     if (crossLine && SL_MOCK.coach && SL_MOCK.coach.cross) {
-      crossLine.innerHTML = '<span style="color:var(--eletrico)">R$ 380 a mais</span> nos meses com foco protegido.';
+      crossLine.innerHTML = SL_MOCK.coach.cross.replace('R$ 380 a mais', '<span style="color:var(--eletrico)">R$ 380 a mais</span>');
     }
 
     if (SL_MOCK.financas) {
