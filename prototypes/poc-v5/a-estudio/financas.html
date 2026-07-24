@@ -38,11 +38,14 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hi
 .tx-row + .tx-row{border-top:1px solid var(--line)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:1240px){
+  .hero-grid{grid-template-columns:1fr!important}
+  .hero-stats{flex-direction:row!important}
+}
 @media (max-width:980px){
   body{grid-template-columns:1fr!important}
   aside{display:none!important}
   #topbar{flex-direction:column!important;align-items:flex-start!important;gap:16px}
-  .hero-grid{grid-template-columns:1fr!important}
   .tx-row{grid-template-columns:56px 1fr 90px!important}
   .tx-row .tx-cat{display:none}
 }
@@ -93,7 +96,7 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hi
         </svg>
       </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:22px">
+    <div class="hero-stats" style="display:flex;flex-direction:column;gap:22px">
       <div class="e-card" style="flex:1;display:flex;flex-direction:column;justify-content:center;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:22px">
         <p style="display:flex;align-items:center;gap:8px;font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase"><span style="width:7px;height:7px;border-radius:50%;background:var(--eletrico);display:inline-block;flex-shrink:0"></span>Entraram</p>
         <p id="v-receitas" style="font:700 26px var(--grotesk);letter-spacing:-.02em;color:var(--t1);margin-top:10px">R$ 5.000,00</p>
@@ -212,12 +215,49 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hi
 
   <section class="e-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:26px;margin-bottom:40px">
     <p class="eyebrow" style="color:var(--t3)">Orçamentos · julho</p>
-    <div id="orcamentos" style="margin-top:18px;display:flex;flex-direction:column;gap:16px"></div>
+    <div id="orcamentos" style="margin-top:18px;display:flex;flex-direction:column;gap:16px">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="color:var(--t1);font:500 14px var(--inter)">Moradia</span>
+          <span style="color:var(--t3);font:500 12px var(--inter)">
+            <span style="font:700 12px var(--grotesk);color:var(--t2)">R$ 1.240,00</span> de
+            <span style="font:700 12px var(--grotesk);color:var(--t2)">R$ 1.800,00</span>
+          </span>
+        </div>
+        <div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:69%;background:var(--eletrico);border-radius:99px"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="color:var(--t1);font:500 14px var(--inter)">Mercado</span>
+          <span style="color:var(--t3);font:500 12px var(--inter)">
+            <span style="font:700 12px var(--grotesk);color:var(--t2)">R$ 520,00</span> de
+            <span style="font:700 12px var(--grotesk);color:var(--t2)">R$ 650,00</span>
+          </span>
+        </div>
+        <div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:80%;background:var(--t2);border-radius:99px"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="color:var(--t1);font:500 14px var(--inter)">Lazer</span>
+          <span style="color:var(--t3);font:500 12px var(--inter)">
+            <span style="font:700 12px var(--grotesk);color:var(--t2)">R$ 410,00</span> de
+            <span style="font:700 12px var(--grotesk);color:var(--t2)">R$ 420,00</span>
+          </span>
+        </div>
+        <div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:98%;background:var(--coral);border-radius:99px"></div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section style="padding:0 0 40px">
     <div class="cross-band" style="border:1px solid var(--line);border-radius:16px;padding:20px 26px;display:flex;justify-content:space-between;align-items:center;gap:20px">
-      <p style="font:500 16px var(--grotesk);letter-spacing:-.01em"><span style="color:var(--eletrico)">R$ 380 a mais</span> nos meses com foco protegido.</p>
+      <p id="cross-line" style="font:500 16px var(--grotesk);letter-spacing:-.01em"><span style="color:var(--eletrico)">R$ 380 a mais</span> nos meses com foco protegido.</p>
       <a href="#" style="color:var(--t3);font:500 13px var(--inter);text-decoration:none;white-space:nowrap">Ver em Tempo →</a>
     </div>
   </section>
@@ -250,6 +290,11 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hi
 
     var coachLine = document.getElementById('coach-line');
     if (coachLine && SL_MOCK.coach) coachLine.textContent = SL_MOCK.coach.financasA;
+
+    var crossLine = document.getElementById('cross-line');
+    if (crossLine && SL_MOCK.coach && SL_MOCK.coach.cross) {
+      crossLine.innerHTML = '<span style="color:var(--eletrico)">R$ 380 a mais</span> nos meses com foco protegido.';
+    }
 
     if (SL_MOCK.financas) {
       var vSaldo = document.getElementById('v-saldo');
