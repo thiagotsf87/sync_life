@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SyncLife · Direção A "Estúdio"</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#151313; --s1:#201d1d; --s2:#2a2727; --line:rgba(255,255,255,.07);
+  --t1:#f4f4f4; --t2:#b8b8b8; --t3:#817f7f;
+  --roxo:#6840ff; --eletrico:#a1ff62; --coral:#f84131;
+  --ease:cubic-bezier(.625,.05,0,1); --grotesk:"Space Grotesk",sans-serif; --inter:Inter,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hidden}
+.wrap{max-width:1280px;margin:0 auto;padding:0 5vw}
+section{padding:110px 0;position:relative}
+.eyebrow{font:700 11px var(--grotesk);letter-spacing:.22em;color:var(--eletrico);text-transform:uppercase}
+h1,h2{font-family:var(--grotesk);font-weight:500;letter-spacing:-.045em;line-height:1.02}
+.btn{display:inline-block;background:var(--roxo);color:#fff;font:600 15px var(--inter);padding:16px 30px;border-radius:999px;text-decoration:none;transition:transform .35s var(--ease),background .35s}
+.btn:hover{transform:scale(1.05);background:#7d5bff}
+.btn-ghost{display:inline-block;color:var(--t2);font:500 15px var(--inter);padding:16px 26px;border:1px solid var(--line);border-radius:999px;text-decoration:none;margin-left:10px}
+.panel{background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:28px;transition:border-color .35s var(--ease),transform .35s var(--ease)}
+.panel:hover{border-color:rgba(255,255,255,.16);transform:translateY(-4px)}
+.panel .num{font:700 13px var(--grotesk);color:var(--roxo);letter-spacing:.08em}
+.panel h3{font-family:var(--grotesk);font-weight:500;font-size:20px;letter-spacing:-.02em;margin:16px 0 10px}
+.panel p{color:var(--t2);font-size:14px;line-height:1.6}
+.panel-mini{margin-top:22px;background:var(--s2);border-radius:14px;padding:16px;min-height:74px;display:flex;align-items:center}
+.pill-mock{display:inline-flex;align-items:center;gap:8px;background:var(--roxo);color:#fff;font:600 13px var(--inter);padding:11px 18px;border-radius:999px}
+.bar-track{width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;width:78%;background:var(--eletrico);border-radius:99px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:900px){.hero-grid,.panels{grid-template-columns:1fr!important}}
+</style>
+</head>
+<body>
+<nav style="position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:20px 5vw;background:linear-gradient(#151313f2,#15131300)">
+  <div style="font:700 19px var(--grotesk)">Sync<span style="color:var(--roxo)">Life</span></div>
+  <a class="btn" style="padding:11px 22px;font-size:13px" href="#cta">Criar minha conta</a>
+</nav>
+
+<section id="hero" style="min-height:100vh;display:flex;align-items:center;padding-top:80px">
+  <div class="wrap hero-grid" style="display:grid;grid-template-columns:1.05fr 1fr;gap:3vw;align-items:center;width:100%">
+    <div>
+      <p class="eyebrow" data-reveal>SyncLife · sistema operacional da vida</p>
+      <h1 style="font-size:clamp(3rem,6vw,5.4rem);margin:20px 0 26px" data-reveal>Sua vida inteira,<br>num só <em style="font-style:normal;color:var(--roxo)">ritmo</em>.</h1>
+      <p style="color:var(--t2);font-size:16px;line-height:1.65;max-width:44ch" data-reveal>Finanças, corpo, mente, tempo. O SyncLife lê as onze frentes da sua vida e te devolve um único movimento por dia.</p>
+      <div style="margin-top:34px" data-reveal><a class="btn" href="#cta">Criar minha conta</a><a class="btn-ghost" href="#como">Ver o produto</a></div>
+    </div>
+    <div id="hero-3d" style="position:relative;height:560px">
+      <div class="fallback-3d" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center">
+        <div style="width:340px;height:340px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center">
+          <div style="width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8b6bff,var(--roxo))"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0;overflow:hidden">
+  <div class="mq" style="display:inline-block;white-space:nowrap;font:500 12px var(--grotesk);letter-spacing:.3em;color:var(--t3)"></div>
+</div>
+
+<section id="como"><div class="wrap">
+  <p class="eyebrow" data-reveal>Como funciona</p>
+  <h2 style="font-size:clamp(2rem,3.6vw,3.2rem);margin:18px 0 54px" data-reveal>Três movimentos, todo dia.</h2>
+  <div class="panels" style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px">
+
+    <div class="panel" data-reveal>
+      <div class="num">01</div>
+      <h3>O coach lê</h3>
+      <p>Todo dia, o SyncLife cruza suas onze frentes e encontra o padrão que você não teria tempo de ver sozinho.</p>
+      <div class="panel-mini">
+        <svg width="100%" height="42" viewBox="0 0 220 42" preserveAspectRatio="none" style="overflow:visible">
+          <polyline points="0,34 22,30 44,32 66,24 88,26 110,18 132,20 154,12 176,14 198,6 220,8" fill="none" stroke="var(--eletrico)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="220" cy="8" r="3.5" fill="var(--eletrico)"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="panel" data-reveal>
+      <div class="num">02</div>
+      <h3>Você decide</h3>
+      <p>Uma sugestão por vez, no lugar certo. Aceitar leva um toque, ignorar não custa nada.</p>
+      <div class="panel-mini">
+        <span class="pill-mock">Aportar R$ 300 →</span>
+      </div>
+    </div>
+
+    <div class="panel" data-reveal>
+      <div class="num">03</div>
+      <h3>O score responde</h3>
+      <p>Cada escolha pequena vira número. O Life Sync Score sobe junto com você, sem depender de disciplina perfeita.</p>
+      <div class="panel-mini" style="display:block">
+        <div style="font:700 22px var(--grotesk);letter-spacing:-.02em;margin-bottom:10px">72 <span style="color:var(--t3);font-weight:500">→</span> 78</div>
+        <div class="bar-track"><div class="bar-fill"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div></section>
+
+<section id="score-sec" style="text-align:center"><div class="wrap">
+  <p class="eyebrow" data-reveal>Life Sync Score</p>
+  <div id="score-counter" style="font:700 clamp(9rem,22vw,19rem)/1 var(--grotesk);letter-spacing:-.06em" data-reveal>78</div>
+  <p style="color:var(--t2);font-size:17px" data-reveal>Um número que respira com você.</p>
+</div></section>
+
+<section><div class="wrap" style="max-width:900px">
+  <p class="eyebrow" data-reveal>Módulos que conversam</p>
+  <h2 style="font-size:clamp(1.8rem,3.4vw,3rem);margin-top:18px" data-reveal>Semanas com foco protegido renderam <span style="color:var(--eletrico)">R$ 380 a mais</span> em aportes.</h2>
+</div></section>
+
+<section id="cta" style="text-align:center"><div class="wrap">
+  <h2 style="font-size:clamp(2.4rem,5vw,4.2rem)" data-reveal>Comece hoje. De graça.</h2>
+  <div style="margin-top:30px" data-reveal><a class="btn" href="#">Criar minha conta</a></div>
+</div></section>
+
+<footer style="border-top:1px solid var(--line);padding:26px 5vw;display:flex;justify-content:space-between;font:500 12px var(--grotesk);letter-spacing:.18em;color:var(--t3)">
+  <span>SYNCLIFE © 2026</span><span>POC DS V5 · DIREÇÃO A</span>
+</footer>
+
+<script src="../shared/mock-data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+  var mods = window.SL_MOCK.modulos.map(function(m){ return m.n + ' ' + m.nome.toUpperCase(); }).join('  ✦  ');
+  var mq = document.querySelector('.mq'); mq.textContent = mods + '  ✦  ' + mods + '  ✦  ';
+  mq.animate([{transform:'translateX(0)'},{transform:'translateX(-50%)'}],{duration:30000,iterations:Infinity});
+
+  if (window.Lenis) { var lenis = new Lenis(); (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })(0);
+    if (window.ScrollTrigger) lenis.on('scroll', ScrollTrigger.update); }
+
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('[data-reveal]').forEach(function(el){
+      var nearBottom = !!el.closest('#cta');
+      gsap.from(el, { y: 44, opacity: 0, duration: .9, ease: 'expo.out',
+        scrollTrigger: { trigger: el, start: nearBottom ? 'top 96%' : 'top 82%' } });
+    });
+    var obj = { v: 0 }, el = document.getElementById('score-counter');
+    gsap.to(obj, { v: window.SL_MOCK.score.value, duration: 1.6, ease: 'power2.out', snap: { v: 1 },
+      onUpdate: function(){ el.textContent = Math.round(obj.v); },
+      scrollTrigger: { trigger: '#score-sec', start: 'top 70%' } });
+  }
+</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script type="module">
+import('three').then(function(THREE){
+  var host = document.getElementById('hero-3d');
+  var scene = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(45, host.clientWidth/host.clientHeight, .1, 100); cam.position.z = 9;
+  var renderer = new THREE.WebGLRenderer({ alpha:true, antialias:true });
+  renderer.setSize(host.clientWidth, host.clientHeight); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  host.appendChild(renderer.domElement);
+  var group = new THREE.Group(); scene.add(group);
+  var core = new THREE.Mesh(new THREE.SphereGeometry(.95,48,48),
+    new THREE.MeshStandardMaterial({ color:0x6840ff, emissive:0x6840ff, emissiveIntensity:.65, roughness:.35 }));
+  group.add(core);
+  scene.add(new THREE.AmbientLight(0xffffff,.25));
+  var pl = new THREE.PointLight(0x8b6bff, 60, 30); pl.position.set(0,0,0); scene.add(pl);
+  var dl = new THREE.DirectionalLight(0xffffff,.8); dl.position.set(4,6,8); scene.add(dl);
+  var tilts=[.2,-.35,.5,-.15,.4,-.55,.1,.62,-.28,.33,-.48], speeds=[.24,.2,.17,.28,.15,.22,.19,.13,.26,.16,.21];
+  var moons = [];
+  for (var i=0;i<11;i++){
+    var r = 2.0 + i*.42;
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(r,.004,8,120),
+      new THREE.MeshBasicMaterial({ color:0xffffff, transparent:true, opacity:.14 }));
+    ring.rotation.x = Math.PI/2 + tilts[i]; group.add(ring);
+    var color = i===0 ? 0xa1ff62 : (i===4 ? 0xf84131 : 0xf4f4f4);
+    var m = new THREE.Mesh(new THREE.SphereGeometry(i===0?.16:.11,24,24),
+      new THREE.MeshStandardMaterial({ color:color, emissive:color, emissiveIntensity:.35, roughness:.5 }));
+    m.userData = { r:r, tilt:tilts[i], speed:speeds[i], phase:i*.7 }; group.add(m); moons.push(m);
+  }
+  var drag=false, px=0, py=0, vx=0, vy=0;
+  host.addEventListener('pointerdown', function(e){ drag=true; px=e.clientX; py=e.clientY; });
+  addEventListener('pointermove', function(e){ if(!drag) return; vx=(e.clientX-px)*.005; vy=(e.clientY-py)*.005; px=e.clientX; py=e.clientY; });
+  addEventListener('pointerup', function(){ drag=false; });
+  var running = true;
+  new IntersectionObserver(function(en){ running = en[0].isIntersecting; }).observe(host);
+  var t = 0;
+  (function loop(){
+    requestAnimationFrame(loop); if (!running) return;
+    t += .016;
+    group.rotation.y += .0015 + vx; group.rotation.x += vy; vx*=.92; vy*=.92;
+    group.rotation.x = Math.max(-.6, Math.min(.6, group.rotation.x));
+    moons.forEach(function(m){
+      var a = t*m.userData.speed + m.userData.phase, r = m.userData.r;
+      var x = Math.cos(a)*r, z = Math.sin(a)*r, y = Math.sin(a)*r*Math.sin(m.userData.tilt);
+      m.position.set(x, y*.6, z*Math.cos(m.userData.tilt));
+    });
+    renderer.render(scene, cam);
+  })();
+  addEventListener('resize', function(){
+    cam.aspect = host.clientWidth/host.clientHeight; cam.updateProjectionMatrix();
+    renderer.setSize(host.clientWidth, host.clientHeight);
+  });
+}).catch(function(){
+  document.querySelector('#hero-3d .fallback-3d').style.display = 'flex';
+});
+</script>
+</body></html>
