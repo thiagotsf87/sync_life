@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SyncLife · Dashboard · r3 Estúdio</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#151313; --s1:#201d1d; --s2:#2a2727; --line:rgba(255,255,255,.07);
+  --t1:#f4f4f4; --t2:#b8b8b8; --t3:#817f7f;
+  --roxo:#6840ff; --eletrico:#a1ff62; --coral:#f84131;
+  --ease:cubic-bezier(.625,.05,0,1); --gro:"Space Grotesk",sans-serif; --int:Inter,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:var(--int);overflow-x:hidden}
+.eyeb{font:700 10px var(--gro);letter-spacing:.2em;color:var(--t3);text-transform:uppercase}
+#indice-btn{transition:color .3s var(--ease),border-color .3s var(--ease)}
+#indice-btn:hover{color:var(--t1);border-color:rgba(255,255,255,.18)}
+#indice-list a{display:flex;gap:12px;align-items:baseline;padding:6px 4px;border-radius:8px;cursor:pointer;text-decoration:none}
+#indice-list a .n{font:700 12px var(--gro);color:var(--t3);transition:color .25s var(--ease)}
+#indice-list a .nm{font:500 14px var(--int);color:var(--t1)}
+#indice-list a:hover .n{color:var(--roxo)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:1200px){#placa{top:40px!important}}
+@media (max-width:880px){
+  main{grid-template-columns:1fr!important;min-height:0!important}
+  #col-rubricas{border-right:none!important;padding-right:0!important}
+  #col-numero{border-left:none!important;padding-left:0!important}
+  #placa{position:static!important;margin:26px 0}
+  #modulos-rubrica{position:static!important;margin-top:20px}
+  #tira{width:100%!important}
+}
+</style>
+</head>
+<body>
+
+<header style="display:flex;justify-content:space-between;align-items:center;padding:20px 4vw;border-bottom:1px solid var(--line)">
+  <div style="font:700 17px var(--gro)">Sync<span style="color:var(--roxo)">Life</span></div>
+  <div style="display:flex;gap:18px;align-items:center">
+    <span style="font:700 10px var(--gro);letter-spacing:.18em;color:var(--t3)">QUARTA, 23 JULHO</span>
+    <button id="indice-btn" aria-haspopup="dialog" style="background:none;border:1px solid var(--line);border-radius:999px;color:var(--t2);font:600 12px var(--int);padding:9px 18px;cursor:pointer">Módulos ⌘K</button>
+  </div>
+</header>
+
+<main id="mesa" style="max-width:1280px;margin:0 auto;padding:40px 4vw 80px;display:grid;grid-template-columns:170px 1fr 250px;min-height:calc(100vh - 130px)">
+
+  <!-- coluna 1 · rubricas da margem -->
+  <div id="col-rubricas" style="border-right:1px solid var(--line);padding:6px 18px 0 0;display:flex;flex-direction:column;gap:30px">
+    <div class="anim">
+      <p class="eyeb" style="margin-bottom:10px">Hoje</p>
+      <div id="agenda" style="display:flex;flex-direction:column;gap:12px;font-size:12px;line-height:1.5;color:var(--t2)"><div><span style="font:700 10px var(--gro);color:var(--t3)">09:00</span><br>Revisão de aportes</div><div><span style="font:700 10px var(--gro);color:var(--t3)">12:30</span><br>Treino B, inferior</div><div><span style="font:700 10px var(--gro);color:var(--t3)">19:00</span><br>Aula de espanhol</div></div>
+    </div>
+    <div id="fluxo" class="anim" data-depth="2" style="background:#191616;border:1px solid var(--line);border-radius:10px;padding:12px 14px;transform:rotate(-1.4deg);box-shadow:0 10px 26px #00000066">
+      <p class="eyeb" style="margin-bottom:6px">Fluxo</p>
+      <p style="font:700 13px var(--gro)"><span style="color:var(--eletrico)">↑</span> <span id="fluxo-in">R$ 5.000</span></p>
+      <p style="font:700 13px var(--gro);margin-top:2px"><span style="color:var(--coral)">↓</span> <span id="fluxo-out">R$ 3.160</span></p>
+    </div>
+  </div>
+
+  <!-- coluna 2 · a matéria -->
+  <div style="padding:6px 40px 0;position:relative">
+    <p class="eyeb anim">Panorama · quarta, 23 julho</p>
+    <h1 class="anim" style="font:500 clamp(1.7rem,2.8vw,2.5rem)/1.15 var(--gro);letter-spacing:-.03em;margin:14px 0 18px">A manhã protegida pagou<br>o seu futuro <em style="font-style:normal;color:var(--roxo)">de novo</em>.</h1>
+    <p id="materia" class="anim" style="color:var(--t2);font-size:15px;line-height:1.8;max-width:58ch">Julho está <strong style="color:var(--t1)">4 pontos</strong> acima de junho. O <span style="color:var(--eletrico)">aporte antecipado</span> rendeu antes da média e sobraram <strong style="color:var(--t1)">R$ 1.840</strong> livres no mês. Semanas com foco protegido renderam <span style="color:var(--eletrico)">R$ 380 a mais</span> em aportes.</p>
+
+    <div id="tira" data-depth="3" style="position:relative;margin:26px 0 22px;width:calc(100% + 60px);background:#191616;border:1px solid var(--line);border-radius:12px;padding:14px 20px;transform:rotate(.8deg);display:flex;align-items:center;gap:22px;box-shadow:0 14px 36px #00000066;z-index:2">
+      <div><p class="eyeb">Livres</p><p style="font:700 22px var(--gro);letter-spacing:-.03em;white-space:nowrap">R$ 1.840</p></div>
+      <svg width="100%" height="38" viewBox="0 0 300 38" preserveAspectRatio="none" style="flex:1;min-width:0" aria-hidden="true"><path d="M0 30 C 40 27, 62 15, 99 19 S 159 32, 195 22 S 260 6, 300 9" fill="none" stroke="#a1ff62" stroke-width="2" stroke-linecap="round"/><circle cx="300" cy="9" r="3.5" fill="#a1ff62"/></svg>
+      <div><p class="eyeb">Poupança</p><p style="font:700 17px var(--gro);color:var(--eletrico)">37%</p></div>
+    </div>
+
+    <div id="bilhete" data-depth="5" style="display:inline-block;background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--roxo);border-radius:12px;padding:16px 20px;transform:rotate(-.9deg);box-shadow:0 16px 40px #00000077;max-width:430px">
+      <p class="eyeb" style="color:var(--roxo)">Coach · 07:12</p>
+      <p style="color:var(--t2);font-size:13px;line-height:1.6;margin-top:6px">Só falta o lazer: estourou <strong style="color:var(--coral)">R$ 8</strong>. Um café a menos resolve.</p>
+      <span style="display:inline-block;background:var(--roxo);color:#fff;font:600 11px var(--int);padding:8px 16px;border-radius:999px;margin-top:10px;cursor:pointer">Resolver agora</span>
+    </div>
+  </div>
+
+  <!-- coluna 3 · a margem do número -->
+  <div id="col-numero" style="border-left:1px solid var(--line);padding:6px 0 0 22px;position:relative">
+    <div id="placa" data-depth="4" style="position:absolute;top:64px;left:-34px;width:250px;background:linear-gradient(150deg,#241f1f,#1a1717);border:1px solid var(--line);border-radius:20px;padding:26px;transform:rotate(-1.6deg);box-shadow:0 24px 60px #00000077;z-index:3">
+      <p class="eyeb">Life Sync Score</p>
+      <p style="font:700 92px/1 var(--gro);letter-spacing:-.06em;margin-top:6px"><span id="score">78</span></p>
+      <span id="score-delta" style="display:inline-block;background:var(--eletrico);color:#151313;font:700 11px var(--gro);padding:3px 10px;border-radius:999px;margin-top:10px">+4 este mês</span>
+    </div>
+    <div id="modulos-rubrica" class="anim" style="position:absolute;bottom:0;left:22px;right:0">
+      <p class="eyeb" style="margin-bottom:8px">Módulos</p>
+      <p style="font:500 11px var(--gro);color:var(--t3);line-height:2">01 Finanças · 37%<br>02 Tempo · 12h<br>03 Corpo · 3/4</p>
+    </div>
+  </div>
+
+</main>
+
+<div id="indice" role="dialog" aria-label="Índice de módulos" style="display:none;position:fixed;inset:0;background:#0d0c0bee;z-index:50;backdrop-filter:blur(6px)">
+  <div style="max-width:520px;margin:10vh auto;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:30px 34px">
+    <p style="font:700 10px var(--gro);letter-spacing:.2em;color:var(--t3);margin-bottom:16px">ÍNDICE · 11 MÓDULOS</p>
+    <nav id="indice-list" style="display:grid;grid-template-columns:1fr 1fr;gap:6px 24px"><a><span class="n">01</span><span class="nm">Finanças</span></a><a><span class="n">02</span><span class="nm">Tempo</span></a><a><span class="n">03</span><span class="nm">Corpo</span></a><a><span class="n">04</span><span class="nm">Mente</span></a><a><span class="n">05</span><span class="nm">Patrimônio</span></a><a><span class="n">06</span><span class="nm">Carreira</span></a><a><span class="n">07</span><span class="nm">Experiências</span></a><a><span class="n">08</span><span class="nm">Conquistas</span></a><a><span class="n">09</span><span class="nm">Futuro</span></a><a><span class="n">10</span><span class="nm">Panorama</span></a><a><span class="n">11</span><span class="nm">Configurações</span></a></nav>
+    <p style="color:var(--t3);font-size:11px;margin-top:18px">esc pra fechar</p>
+  </div>
+</div>
+
+<script src="../shared/mock-data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NB = ' ';
+  function nb(s) { return s.replace(/R\$\s/g, 'R$' + NB); }
+
+  if (window.SL_MOCK) {
+    var m = window.SL_MOCK;
+
+    var ag = document.getElementById('agenda');
+    if (ag) {
+      ag.innerHTML = m.agenda.map(function (a) {
+        return '<div><span style="font:700 10px var(--gro);color:var(--t3)">' + a.hora + '</span><br>' + a.titulo + '</div>';
+      }).join('');
+    }
+
+    var fin = document.getElementById('fluxo-in');
+    var fout = document.getElementById('fluxo-out');
+    if (fin) fin.textContent = nb(m.fmtBRL0(m.financas.receitas));
+    if (fout) fout.textContent = nb(m.fmtBRL0(m.financas.despesas));
+
+    var mat = document.getElementById('materia');
+    if (mat) {
+      var txt = m.coach.briefing.split('.')[0] + '. O aporte antecipado rendeu antes da média e sobraram '
+        + m.fmtBRL0(m.financas.saldoLivre) + ' livres no mês. ' + m.coach.cross;
+      txt = nb(txt)
+        .replace('4 pontos', '<strong style="color:var(--t1)">4 pontos</strong>')
+        .replace('aporte antecipado', '<span style="color:var(--eletrico)">aporte antecipado</span>')
+        .replace('R$' + NB + '1.840', '<strong style="color:var(--t1)">R$' + NB + '1.840</strong>')
+        .replace('R$' + NB + '380 a mais', '<span style="color:var(--eletrico)">R$' + NB + '380 a mais</span>');
+      mat.innerHTML = txt;
+    }
+
+    var sc = document.getElementById('score');
+    if (sc) sc.textContent = m.score.value;
+    var sd = document.getElementById('score-delta');
+    if (sd) sd.textContent = '+' + m.score.delta + ' este mês';
+
+    var list = document.getElementById('indice-list');
+    if (list) {
+      list.innerHTML = m.modulos.map(function (md) {
+        return '<a><span class="n">' + md.n + '</span><span class="nm">' + md.nome + '</span></a>';
+      }).join('');
+    }
+  }
+
+  var ind = document.getElementById('indice');
+  document.getElementById('indice-btn').addEventListener('click', function () { ind.style.display = 'block'; });
+  ind.addEventListener('click', function (e) { if (e.target === ind) ind.style.display = 'none'; });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape') ind.style.display = 'none'; });
+
+  if (window.gsap && !reduce) {
+    var tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+    tl.from('.anim', { y: 24, opacity: 0, duration: .8, stagger: .08 })
+      .from('#placa', { y: -26, opacity: 0, duration: .9 }, '-=.55')
+      .from('#tira', { x: -40, opacity: 0, duration: .8 }, '-=.6')
+      .from('#bilhete', { scale: .94, opacity: 0, duration: .7, ease: 'back.out(2)' }, '-=.5');
+  }
+
+  if (!reduce) {
+    var mesa = document.getElementById('mesa');
+    var objetos = document.querySelectorAll('[data-depth]');
+    mesa.addEventListener('mousemove', function (e) {
+      var r = mesa.getBoundingClientRect();
+      var nx = (e.clientX - r.left) / r.width - .5;
+      var ny = (e.clientY - r.top) / r.height - .5;
+      objetos.forEach(function (el) {
+        var d = parseFloat(el.getAttribute('data-depth')) || 0;
+        el.style.translate = (nx * d) + 'px ' + (ny * d) + 'px';
+      });
+    });
+    mesa.addEventListener('mouseleave', function () {
+      objetos.forEach(function (el) { el.style.translate = '0px 0px'; });
+    });
+  }
+})();
+</script>
+</body>
+</html>
