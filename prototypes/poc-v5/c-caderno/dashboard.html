@@ -158,12 +158,12 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
           <div class="agenda-row" style="display:flex;align-items:center;gap:12px">
             <span style="font:700 13px var(--pop);color:var(--marrom);min-width:44px">12:30</span>
             <span style="font:400 14px var(--pop);color:var(--marrom);flex:1">Treino B, inferior</span>
-            <span style="display:inline-block;border:1.5px solid var(--marrom);border-radius:999px;font:600 10px var(--pop);text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;background:var(--lima);color:var(--marrom);white-space:nowrap">Corpo</span>
+            <span style="display:inline-block;border:1.5px solid var(--marrom);border-radius:999px;font:600 10px var(--pop);text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;background:var(--amarelo);color:var(--marrom);white-space:nowrap">Corpo</span>
           </div>
           <div class="agenda-row" style="display:flex;align-items:center;gap:12px">
             <span style="font:700 13px var(--pop);color:var(--marrom);min-width:44px">19:00</span>
             <span style="font:400 14px var(--pop);color:var(--marrom);flex:1">Aula de espanhol</span>
-            <span style="display:inline-block;border:1.5px solid var(--marrom);border-radius:999px;font:600 10px var(--pop);text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;background:var(--amarelo);color:var(--marrom);white-space:nowrap">Mente</span>
+            <span style="display:inline-block;border:1.5px solid var(--marrom);border-radius:999px;font:600 10px var(--pop);text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;background:var(--cream);color:var(--marrom);white-space:nowrap">Mente</span>
           </div>
         </div>
       </div>
@@ -192,7 +192,7 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
 
 <div style="background:var(--verde);color:var(--cream);padding:26px 5vw;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:60px;border-top:2px solid var(--marrom)">
   <p id="manchete-cross" class="anton" style="font-size:clamp(1.4rem,3vw,2.2rem);margin:0;max-width:70ch">R$ 380 a mais nos meses com foco protegido</p>
-  <a href="/tempo" style="font:600 13px var(--pop);color:var(--cream);text-decoration:underline;white-space:nowrap;flex-shrink:0">Ver em Tempo →</a>
+  <a href="#" style="font:600 13px var(--pop);color:var(--cream);text-decoration:underline;white-space:nowrap;flex-shrink:0">Ver em Tempo →</a>
 </div>
 
 <footer style="background:var(--verde);color:var(--cream);padding:22px 5vw;font:600 12px var(--pop);letter-spacing:.14em;display:flex;justify-content:space-between">
@@ -207,9 +207,14 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
   if (window.SL_MOCK) {
     var M = window.SL_MOCK;
 
+    var etiqColors = ['var(--rosa)', 'var(--lima)', 'var(--amarelo)', 'var(--cream)'];
+    var corModulo = {};
+    if (M.modulos) {
+      M.modulos.forEach(function (m, i) { corModulo[m.nome] = etiqColors[i % etiqColors.length]; });
+    }
+
     var etiquetasEl = document.getElementById('etiquetas');
     if (etiquetasEl && M.modulos) {
-      var etiqColors = ['var(--rosa)', 'var(--lima)', 'var(--amarelo)', 'var(--cream)'];
       var etiqHtml = '';
       M.modulos.forEach(function (m, i) {
         var active = m.nome === 'Panorama';
@@ -266,9 +271,8 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
 
     var agendaEl = document.getElementById('agenda');
     if (agendaEl && M.agenda) {
-      var agendaColors = ['var(--rosa)', 'var(--lima)', 'var(--amarelo)', 'var(--cream)'];
-      agendaEl.innerHTML = M.agenda.map(function (a, i) {
-        var bg = agendaColors[i % agendaColors.length];
+      agendaEl.innerHTML = M.agenda.map(function (a) {
+        var bg = corModulo[a.modulo] || 'var(--cream)';
         return '<div class="agenda-row" style="display:flex;align-items:center;gap:12px">'
           + '<span style="font:700 13px var(--pop);color:var(--marrom);min-width:44px">' + a.hora + '</span>'
           + '<span style="font:400 14px var(--pop);color:var(--marrom);flex:1">' + a.titulo + '</span>'
