@@ -13,6 +13,7 @@ web/build/
 
 # Testes / debug artefatos
 .playwright-mcp/
+.superpowers/
 web/test-results/
 web/playwright-report/
 *.png
