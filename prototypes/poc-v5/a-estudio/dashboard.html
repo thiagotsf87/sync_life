@@ -15,7 +15,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:auto}
-body{background:var(--bg);color:var(--t1);font-family:var(--inter)}
+body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hidden}
 .eyebrow{font:700 11px var(--grotesk);letter-spacing:.22em;color:var(--eletrico);text-transform:uppercase}
 
 .btn{display:inline-block;background:var(--roxo);color:#fff;font:600 15px var(--inter);padding:16px 30px;border-radius:999px;text-decoration:none;transition:transform .35s var(--ease),background .35s}
@@ -27,7 +27,7 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter)}
 #rail a.active{background:var(--s1);color:var(--t1)}
 #rail a.active .num{color:var(--roxo)}
 
-.stack-card{position:absolute;top:50%;left:50%;width:230px;border-radius:20px;padding:20px}
+.stack-card{position:absolute;width:210px;border-radius:20px;padding:14px}
 
 .e-card{transition:border-color .35s var(--ease),transform .35s var(--ease)}
 .e-card:hover{border-color:rgba(255,255,255,.16);transform:translateY(-3px)}
@@ -53,7 +53,7 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter)}
   <nav id="rail"></nav>
 </aside>
 
-<main style="padding:34px 44px;max-width:1240px">
+<main style="padding:34px 44px;max-width:1240px;margin:0 auto;width:100%">
 
   <header id="hero" style="display:grid;grid-template-columns:1.1fr 1fr;gap:3vw;align-items:center;margin-bottom:42px">
     <div>
@@ -67,23 +67,23 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter)}
     <div class="scene" style="perspective:1100px">
       <div class="stack" id="stack" style="position:relative;width:320px;height:300px;margin:0 auto;transform-style:preserve-3d;transition:transform .4s var(--ease)">
 
-        <div class="stack-card" style="background:var(--s2);border:1px solid rgba(248,65,49,.35);transform:translate(calc(-50% - 68px),calc(-50% + 44px)) rotate(-5deg) translateZ(-50px);z-index:1;box-shadow:0 18px 34px -22px rgba(0,0,0,.7)">
+        <div class="stack-card" style="background:var(--s2);border:1px solid rgba(248,65,49,.35);left:20px;bottom:0;transform:rotate(-5deg) translateZ(-50px);z-index:1;box-shadow:0 18px 34px -22px rgba(0,0,0,.7)">
           <p style="font:700 10px var(--grotesk);letter-spacing:.16em;color:var(--t3);text-transform:uppercase">Despesas</p>
-          <p style="font:700 22px var(--grotesk);letter-spacing:-.02em;margin-top:10px;color:var(--t1)">R$ 3.160,00</p>
-          <div style="width:100%;height:5px;background:var(--bg);border-radius:99px;overflow:hidden;margin-top:14px">
+          <p id="v-despesas" style="font:700 20px var(--grotesk);letter-spacing:-.02em;margin-top:6px;color:var(--t1)">R$ 3.160,00</p>
+          <div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden;margin-top:10px">
             <div style="height:100%;width:63%;background:var(--coral);border-radius:99px"></div>
           </div>
         </div>
 
-        <div class="stack-card" style="background:var(--s1);border:1px solid var(--line);transform:translate(calc(-50% + 70px),calc(-50% + 52px)) rotate(4deg) translateZ(10px);z-index:2;box-shadow:0 22px 40px -22px rgba(0,0,0,.65)">
-          <p style="font:700 10px var(--grotesk);letter-spacing:.16em;color:var(--t3);text-transform:uppercase">Poupança · 37%</p>
-          <div id="spark" style="margin-top:12px"></div>
+        <div class="stack-card" style="background:var(--s1);border:1px solid var(--line);top:0;right:0;transform:rotate(4deg) translateZ(10px);z-index:2;box-shadow:0 22px 40px -22px rgba(0,0,0,.65)">
+          <p id="v-poupanca" style="font:700 10px var(--grotesk);letter-spacing:.16em;color:var(--t3);text-transform:uppercase">Poupança · 37%</p>
+          <div id="spark" style="margin-top:8px"></div>
         </div>
 
-        <div class="stack-card" style="background:var(--roxo);color:#fff;transform:translate(-50%,calc(-50% - 62px)) translateZ(60px);z-index:3;box-shadow:0 20px 38px -20px rgba(104,64,255,.4)">
+        <div class="stack-card" style="background:var(--roxo);color:#fff;top:50%;left:6px;transform:translateY(-50%) translateZ(60px);z-index:3;box-shadow:0 20px 38px -20px rgba(104,64,255,.4)">
           <p style="font:700 10px var(--grotesk);letter-spacing:.16em;color:rgba(255,255,255,.75);text-transform:uppercase">Saldo livre</p>
-          <p style="font:700 28px var(--grotesk);letter-spacing:-.02em;margin-top:10px">R$ 1.840,00</p>
-          <span style="display:inline-block;margin-top:14px;background:var(--eletrico);color:#151313;font:700 12px var(--grotesk);padding:4px 11px;border-radius:999px">+12%</span>
+          <p id="v-saldo" style="font:700 24px var(--grotesk);letter-spacing:-.02em;margin-top:6px">R$ 1.840,00</p>
+          <span style="display:inline-block;margin-top:8px;background:var(--eletrico);color:#151313;font:700 12px var(--grotesk);padding:3px 10px;border-radius:999px">+12%</span>
         </div>
 
       </div>
@@ -144,6 +144,15 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter)}
     var coachLine = document.getElementById('coach-line');
     if (coachLine && SL_MOCK.coach) coachLine.textContent = SL_MOCK.coach.dashboardA;
 
+    if (SL_MOCK.financas) {
+      var vSaldo = document.getElementById('v-saldo');
+      if (vSaldo) vSaldo.textContent = SL_MOCK.fmtBRL(SL_MOCK.financas.saldoLivre);
+      var vDespesas = document.getElementById('v-despesas');
+      if (vDespesas) vDespesas.textContent = SL_MOCK.fmtBRL(SL_MOCK.financas.despesas);
+      var vPoupanca = document.getElementById('v-poupanca');
+      if (vPoupanca) vPoupanca.textContent = 'Poupança · ' + SL_MOCK.financas.poupancaPct + '%';
+    }
+
     var orcEl = document.getElementById('orcamentos');
     if (orcEl && SL_MOCK.orcamentos) {
       orcEl.innerHTML = SL_MOCK.orcamentos.map(function(o){
@@ -182,7 +191,7 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter)}
     var sparkEl = document.getElementById('spark');
     if (sparkEl && SL_MOCK.financas && SL_MOCK.financas.sparkSaldo) {
       var values = SL_MOCK.financas.sparkSaldo;
-      var w = 190, h = 56, pad = 4;
+      var w = 190, h = 44, pad = 4;
       var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
       var range = (max - min) || 1;
       var stepX = (w - pad * 2) / (values.length - 1);
