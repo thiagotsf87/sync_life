@@ -40,7 +40,7 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     </div>
     <div style="margin-top:34px;display:flex;gap:14px;flex-wrap:wrap" data-reveal>
       <span class="stk" id="stk-saldo" style="background:var(--rosa);transform:rotate(-5deg)">R$ 1.840 livres</span>
-      <span class="stk" id="stk-score" style="background:var(--lima);transform:rotate(2.5deg)">+4 pts no score</span>
+      <span class="stk" id="stk-score" style="background:var(--lima);transform:rotate(2.5deg)">Score 78, +4 no mês</span>
       <span class="stk" id="stk-poupanca" style="background:var(--amarelo);transform:rotate(-2deg)">37% poupado</span>
     </div>
   </div>
@@ -135,7 +135,7 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     var stkScore = document.getElementById('stk-score');
     var stkPoupanca = document.getElementById('stk-poupanca');
     if (stkSaldo) stkSaldo.textContent = M.fmtBRL0(M.financas.saldoLivre) + ' livres';
-    if (stkScore) stkScore.textContent = '+' + M.score.delta + ' pts no score';
+    if (stkScore) stkScore.textContent = 'Score ' + M.score.value + ', +' + M.score.delta + ' no mês';
     if (stkPoupanca) stkPoupanca.textContent = M.financas.poupancaPct + '% poupado';
 
     var coachLine = document.getElementById('coach-line');
