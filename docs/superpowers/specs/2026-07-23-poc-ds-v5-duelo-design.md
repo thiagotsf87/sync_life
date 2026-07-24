@@ -24,6 +24,7 @@ Objetivo declarado: algo moderno e inovador, com animações e componentes 3D co
 6. **Abordagem em duas rodadas (Abordagem 1):**
    - Rodada 1: Landing + Dashboard nas duas direções (4 protótipos), usuário declara a vencedora.
    - Rodada 2: Finanças + Coach apenas na vencedora (+2 protótipos).
+7. **Atualização (2026-07-24):** após ver a rodada 1, o usuário optou por estender o duelo: **Finanças + Coach nas DUAS direções** (4 protótipos na rodada 2, 8 no total). A decisão A vs C fica para depois das 8 telas. Plano da rodada 2: `docs/superpowers/plans/2026-07-24-poc-ds-v5-rodada2.md`.
 
 ## 3. Direção A: "Estúdio" (Osmo dark)
 
