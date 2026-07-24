@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SyncLife · Landing · r3 Estúdio</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#151313; --s1:#201d1d; --s2:#2a2727; --line:rgba(255,255,255,.07);
+  --t1:#f4f4f4; --t2:#b8b8b8; --t3:#817f7f;
+  --roxo:#6840ff; --eletrico:#a1ff62; --coral:#f84131;
+  --ease:cubic-bezier(.625,.05,0,1); --gro:"Space Grotesk",sans-serif; --int:Inter,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--t1);font-family:var(--int);overflow-x:hidden}
+.wrap{max-width:1280px;margin:0 auto}
+.scene{position:relative;padding:110px 5vw}
+.eyeb{font:700 11px var(--gro);letter-spacing:.22em;color:var(--eletrico);text-transform:uppercase}
+.peyeb{font:700 10px var(--gro);letter-spacing:.2em;color:var(--t3);text-transform:uppercase}
+h1,h2{font-family:var(--gro);font-weight:500;letter-spacing:-.045em;line-height:1.05}
+.btn{display:inline-block;background:var(--roxo);color:#fff;font:600 15px var(--int);padding:16px 30px;border-radius:999px;text-decoration:none;transition:transform .35s var(--ease),background .35s}
+.btn:hover{transform:scale(1.05);background:#7d5bff}
+.btn-ghost{display:inline-block;color:var(--t2);font:500 15px var(--int);padding:16px 26px;border:1px solid var(--line);border-radius:999px;text-decoration:none;margin-left:10px;transition:border-color .35s var(--ease),color .35s var(--ease)}
+.btn-ghost:hover{border-color:var(--t1);color:var(--t1)}
+.stat{display:flex;gap:10px;align-items:flex-start}
+.dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex:none}
+.slab{font:700 10px var(--gro);letter-spacing:.18em;color:var(--t3);text-transform:uppercase;margin-bottom:6px}
+.sval{font:700 20px var(--gro);letter-spacing:-.02em}
+.mod-label{font:500 22px var(--gro);color:var(--t3);letter-spacing:-.01em}
+.mod-label+.mod-label{margin-top:38vh}
+.mask{display:block;overflow:hidden}
+.line{display:block;line-height:1.12}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr!important}
+  #orbital{height:420px!important}
+  .page-demo{grid-template-columns:1fr!important;padding:24px!important}
+  .mod-label+.mod-label{margin-top:24vh}
+}
+</style>
+</head>
+<body>
+
+<nav style="position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:20px 5vw;background:linear-gradient(#151313f2,#15131300)">
+  <div style="font:700 19px var(--gro)">Sync<span style="color:var(--roxo)">Life</span></div>
+  <a class="btn" style="padding:11px 22px;font-size:13px" href="#s6">Criar minha conta</a>
+</nav>
+
+<!-- cena 1 · abertura -->
+<section class="scene" id="s1" style="min-height:100vh;display:flex;align-items:center;padding-top:120px">
+  <div class="wrap hero-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:3vw;align-items:center;width:100%">
+    <div>
+      <p class="eyeb" data-reveal>SyncLife · sistema operacional da vida</p>
+      <h1 data-reveal style="font-size:clamp(3rem,6vw,5.4rem);margin:20px 0 26px">Sua vida inteira,<br>num só <em style="font-style:normal;color:var(--roxo)">ritmo</em>.</h1>
+      <p data-reveal style="color:var(--t2);font-size:16px;line-height:1.65;max-width:44ch">Finanças, corpo, mente, tempo. O SyncLife lê as onze frentes da sua vida e te devolve um único movimento por dia.</p>
+      <div data-reveal style="margin-top:34px"><a class="btn" href="#s6">Criar minha conta</a><a class="btn-ghost" href="#s4">Ver o produto</a></div>
+      <div data-reveal style="margin-top:36px;display:flex;gap:30px;padding-top:20px;border-top:1px solid var(--line)">
+        <div class="stat"><span class="dot" style="background:var(--eletrico)"></span><div><p class="slab">Livres</p><p class="sval" id="stat-livre">R$ 1.840</p></div></div>
+        <div class="stat"><span class="dot" style="background:var(--roxo)"></span><div><p class="slab">Score</p><p class="sval" id="stat-score" style="color:var(--eletrico)">+4 pts</p></div></div>
+        <div class="stat"><span class="dot" style="background:var(--eletrico)"></span><div><p class="slab">Poupança</p><p class="sval" id="stat-poupanca">37%</p></div></div>
+      </div>
+    </div>
+    <div id="orbital" style="position:relative;height:600px;touch-action:pan-y" aria-hidden="true">
+      <div class="fallback-3d" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center">
+        <div style="width:340px;height:340px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center">
+          <div style="width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8b6bff,var(--roxo))"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- cena 2 · as onze frentes -->
+<section class="scene" id="s2" style="min-height:100vh">
+  <div class="wrap">
+    <p class="eyeb" data-reveal>As onze frentes</p>
+    <div class="labels" style="margin-top:14vh;max-width:560px">
+      <p class="mod-label" data-reveal>01 Finanças · 37% poupado</p>
+      <p class="mod-label" data-reveal>02 Tempo · 12h de foco</p>
+      <p class="mod-label" data-reveal>03 Corpo · 3 treinos</p>
+      <p class="mod-label" data-reveal>04 Mente · 2 aulas</p>
+      <p class="mod-label" data-reveal>05 Patrimônio · aporte feito</p>
+    </div>
+  </div>
+</section>
+
+<!-- cena 3 · o número -->
+<section class="scene" id="s3" style="min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+  <p class="eyeb" data-reveal>Life Sync Score</p>
+  <div id="score-counter" data-reveal style="font:700 clamp(9rem,20vw,17rem)/1 var(--gro);letter-spacing:-.06em">78</div>
+  <p data-reveal style="color:var(--t2);font-size:17px">Um número que respira com você.</p>
+</section>
+
+<!-- divisor · marquee de módulos -->
+<div aria-hidden="true" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0;overflow:hidden">
+  <div class="mq" style="display:inline-block;white-space:nowrap;font:500 12px var(--gro);letter-spacing:.3em;color:var(--t3)">01 FINANÇAS  ✦  02 TEMPO  ✦  03 CORPO  ✦  04 MENTE  ✦  05 PATRIMÔNIO  ✦  06 CARREIRA  ✦  07 EXPERIÊNCIAS  ✦  08 CONQUISTAS  ✦  09 FUTURO  ✦  10 PANORAMA  ✦  11 CONFIGURAÇÕES  ✦  01 FINANÇAS  ✦  02 TEMPO  ✦  03 CORPO  ✦  04 MENTE  ✦  05 PATRIMÔNIO  ✦  06 CARREIRA  ✦  07 EXPERIÊNCIAS  ✦  08 CONQUISTAS  ✦  09 FUTURO  ✦  10 PANORAMA  ✦  11 CONFIGURAÇÕES  ✦  </div>
+</div>
+
+<!-- cena 4 · o produto -->
+<section class="scene" id="s4" style="min-height:100vh">
+  <div class="wrap">
+    <p class="eyeb" data-reveal>O produto · Panorama</p>
+    <h2 data-reveal style="font-size:clamp(1.8rem,3.4vw,3rem);margin-top:18px">O seu dia, já diagramado.</h2>
+    <div class="page-demo" data-reveal style="max-width:900px;margin:40px auto 0;background:#171414;border:1px solid var(--line);border-radius:24px;padding:36px 40px;display:grid;grid-template-columns:1fr 240px;gap:34px">
+      <div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px">
+        <span style="font:700 13px var(--gro)">Sync<span style="color:var(--roxo)">Life</span></span>
+        <span style="font:700 9px var(--gro);letter-spacing:.18em;color:var(--t3)">QUARTA, 23 JULHO</span>
+      </div>
+      <div>
+        <div class="piece-materia" data-depth="1">
+          <p class="peyeb">Panorama · quarta, 23 julho</p>
+          <h3 style="font:500 22px/1.2 var(--gro);letter-spacing:-.03em;margin:10px 0 12px">A manhã protegida pagou o seu futuro <em style="font-style:normal;color:var(--roxo)">de novo</em>.</h3>
+          <p style="color:var(--t2);font-size:13px;line-height:1.7;max-width:52ch">Julho está <strong style="color:var(--t1)">4 pontos</strong> acima de junho. O <span style="color:var(--eletrico)">aporte antecipado</span> rendeu antes da média e sobraram <strong style="color:var(--t1)">R$ 1.840</strong> livres no mês.</p>
+        </div>
+        <div class="piece-tira" data-depth="3" style="background:#191616;border:1px solid var(--line);border-radius:10px;padding:12px 16px;transform:rotate(.8deg);display:flex;align-items:center;gap:16px;box-shadow:0 14px 36px #00000066;margin:22px 0 18px">
+          <div><p class="peyeb">Livres</p><p style="font:700 17px var(--gro);letter-spacing:-.03em;white-space:nowrap" id="demo-livre">R$ 1.840</p></div>
+          <svg width="100%" height="30" viewBox="0 0 300 38" preserveAspectRatio="none" style="flex:1;min-width:0" aria-hidden="true"><path d="M0 30 C 40 27, 62 15, 99 19 S 159 32, 195 22 S 260 6, 300 9" fill="none" stroke="#a1ff62" stroke-width="2" stroke-linecap="round"/><circle cx="300" cy="9" r="3.5" fill="#a1ff62"/></svg>
+          <div><p class="peyeb">Poupança</p><p style="font:700 14px var(--gro);color:var(--eletrico)" id="demo-poup">37%</p></div>
+        </div>
+        <div class="piece-bilhete" data-depth="5" style="display:inline-block;background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--roxo);border-radius:10px;padding:12px 16px;transform:rotate(-.9deg);box-shadow:0 16px 40px #00000077;max-width:340px">
+          <p class="peyeb" style="color:var(--roxo)">Coach · 07:12</p>
+          <p style="color:var(--t2);font-size:12px;line-height:1.6;margin-top:5px">Só falta o lazer: estourou <strong style="color:var(--coral)">R$ 8</strong>. Um café a menos resolve.</p>
+          <span style="display:inline-block;background:var(--roxo);color:#fff;font:600 10px var(--int);padding:6px 12px;border-radius:999px;margin-top:8px">Resolver agora</span>
+        </div>
+      </div>
+      <div>
+        <div class="piece-placa" data-depth="4" style="background:linear-gradient(150deg,#241f1f,#1a1717);border:1px solid var(--line);border-radius:16px;padding:20px;transform:rotate(-1.6deg);box-shadow:0 24px 60px #00000077">
+          <p class="peyeb">Life Sync Score</p>
+          <p style="font:700 64px/1 var(--gro);letter-spacing:-.06em;margin-top:4px" id="demo-score">78</p>
+          <span id="demo-delta" style="display:inline-block;background:var(--eletrico);color:#151313;font:700 10px var(--gro);padding:3px 9px;border-radius:999px;margin-top:8px">+4 este mês</span>
+        </div>
+        <div style="margin-top:18px;padding-left:6px">
+          <p class="peyeb" style="margin-bottom:6px">Módulos</p>
+          <p style="font:500 11px var(--gro);color:var(--t3);line-height:2">01 Finanças · 37%<br>02 Tempo · 12h<br>03 Corpo · 3/4</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- cena 5 · módulos que conversam -->
+<section class="scene" id="s5" style="min-height:70vh;display:flex;align-items:center">
+  <div class="wrap" style="width:100%">
+    <p class="eyeb" data-reveal>Módulos que conversam</p>
+    <h2 id="cross-phrase" data-reveal style="font-size:clamp(2.2rem,5vw,4.2rem);margin-top:22px">
+      <span class="mask"><span class="line">Semanas com foco protegido</span></span>
+      <span class="mask"><span class="line">renderam <em style="font-style:normal;color:var(--eletrico)">R$ 380 a mais</em></span></span>
+      <span class="mask"><span class="line">em aportes.</span></span>
+    </h2>
+  </div>
+</section>
+
+<!-- cena 6 · fechamento -->
+<section class="scene" id="s6" style="text-align:center;padding-bottom:26px">
+  <div class="wrap">
+    <h2 data-reveal style="font-size:clamp(2.4rem,5vw,4.2rem)">Comece hoje. De graça.</h2>
+    <div data-reveal style="margin-top:30px"><a class="btn" href="#">Criar minha conta</a></div>
+    <div style="margin-top:110px;border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;font:500 12px var(--gro);letter-spacing:.18em;color:var(--t3)">
+      <span>SYNCLIFE © 2026</span><span>POC DS V5 · R3 ESTÚDIO</span>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NB = ' ';
+  function nb(s) { return s.replace(/R\$\s/g, 'R$' + NB); }
+
+  if (window.SL_MOCK) {
+    var m = window.SL_MOCK, el;
+    el = document.getElementById('stat-livre'); if (el) el.textContent = nb(m.fmtBRL0(m.financas.saldoLivre));
+    el = document.getElementById('stat-score'); if (el) el.textContent = '+' + m.score.delta + ' pts';
+    el = document.getElementById('stat-poupanca'); if (el) el.textContent = m.financas.poupancaPct + '%';
+    el = document.getElementById('score-counter'); if (el) el.textContent = m.score.value;
+    el = document.getElementById('demo-score'); if (el) el.textContent = m.score.value;
+    el = document.getElementById('demo-delta'); if (el) el.textContent = '+' + m.score.delta + ' este mês';
+    el = document.getElementById('demo-livre'); if (el) el.textContent = nb(m.fmtBRL0(m.financas.saldoLivre));
+    el = document.getElementById('demo-poup'); if (el) el.textContent = m.financas.poupancaPct + '%';
+    var mq0 = document.querySelector('.mq');
+    if (mq0) {
+      var mods = m.modulos.map(function (md) { return md.n + ' ' + md.nome.toUpperCase(); }).join('  ✦  ');
+      mq0.textContent = mods + '  ✦  ' + mods + '  ✦  ';
+    }
+  }
+
+  var mq = document.querySelector('.mq');
+  if (mq && !reduce) mq.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-50%)' }], { duration: 30000, iterations: Infinity });
+
+  // Reveals simples só sem Lenis: a coreografia da Task 15 entra no branch window.Lenis (evita animação dupla).
+  if (window.gsap && window.ScrollTrigger && !window.Lenis && !reduce) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('[data-reveal]').forEach(function (el2) {
+      var nearBottom = !!el2.closest('#s6');
+      gsap.from(el2, { y: 44, opacity: 0, duration: .9, ease: 'expo.out',
+        scrollTrigger: { trigger: el2, start: nearBottom ? 'top 96%' : 'top 82%' } });
+    });
+  }
+
+  if (!reduce) {
+    var demo = document.querySelector('.page-demo');
+    if (demo) {
+      var pecas = demo.querySelectorAll('[data-depth]');
+      demo.addEventListener('mousemove', function (e) {
+        var r = demo.getBoundingClientRect();
+        var nx = (e.clientX - r.left) / r.width - .5;
+        var ny = (e.clientY - r.top) / r.height - .5;
+        pecas.forEach(function (p) {
+          var d = parseFloat(p.getAttribute('data-depth')) || 0;
+          p.style.translate = (nx * d * 2.4) + 'px ' + (ny * d * 2.4) + 'px';
+        });
+      });
+      demo.addEventListener('mouseleave', function () {
+        pecas.forEach(function (p) { p.style.translate = '0px 0px'; });
+      });
+    }
+  }
+})();
+</script>
+<script type="importmap">{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}</script>
+<script type="module">
+Promise.all([
+  import('three'),
+  import('three/addons/postprocessing/EffectComposer.js'),
+  import('three/addons/postprocessing/RenderPass.js'),
+  import('three/addons/postprocessing/UnrealBloomPass.js'),
+  import('three/addons/environments/RoomEnvironment.js'),
+  import('three/addons/postprocessing/OutputPass.js'),
+]).then(function (mods) {
+  var THREE = mods[0], EffectComposer = mods[1].EffectComposer, RenderPass = mods[2].RenderPass,
+      UnrealBloomPass = mods[3].UnrealBloomPass, RoomEnvironment = mods[4].RoomEnvironment,
+      OutputPass = mods[5].OutputPass;
+  var host = document.getElementById('orbital');
+  var W = host.clientWidth, H = host.clientHeight;
+  var scene = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(42, W/H, .1, 100); cam.position.set(0, 0, 9);
+  var renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(W, H); renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setClearColor(0x151313, 1); // opaque page color: avoids the alpha+bloom trap
+  scene.background = new THREE.Color(0x151313); // clear color puro chega linear no composer e vira cinza; background segue o pipeline correto
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1;
+  host.appendChild(renderer.domElement);
+  var pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), .04).texture;
+
+  var group = new THREE.Group(); scene.add(group);
+  var core = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), new THREE.MeshPhysicalMaterial({
+    color: 0x6840ff, emissive: 0x5b34e8, emissiveIntensity: 1.35,
+    roughness: .22, metalness: .15, clearcoat: .7, clearcoatRoughness: .25,
+  }));
+  group.add(core);
+  scene.add(new THREE.AmbientLight(0xffffff, .18));
+  var dl = new THREE.DirectionalLight(0xfff6e8, 1.4); dl.position.set(5, 7, 6); scene.add(dl);
+
+  var tilts = [.2,-.35,.5,-.15,.4,-.55,.1,.62,-.28,.33,-.48], speeds = [.22,.18,.15,.26,.13,.2,.17,.11,.24,.14,.19];
+  var moons = [];
+  for (var i = 0; i < 11; i++) {
+    var r = 2.1 + i * .4;
+    var curve = new THREE.EllipseCurve(0, 0, r, r), pts = curve.getPoints(140);
+    var g = new THREE.BufferGeometry().setFromPoints(pts);
+    var ring = new THREE.Line(g, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .1 + .04 * (i % 2) }));
+    ring.rotation.x = Math.PI / 2 + tilts[i]; group.add(ring);
+    var accent = i === 0 ? 0xa1ff62 : (i === 4 ? 0xf84131 : 0xcfcaca);
+    var m = new THREE.Mesh(new THREE.SphereGeometry(i === 0 ? .17 : .12, 32, 32), new THREE.MeshStandardMaterial({
+      color: accent, metalness: .55, roughness: .3,
+      emissive: (i === 0 || i === 4) ? accent : 0x000000, emissiveIntensity: (i === 0 || i === 4) ? .8 : 0,
+    }));
+    m.userData = { r: r, tilt: tilts[i], speed: speeds[i], phase: i * .7 };
+    group.add(m); moons.push(m);
+  }
+
+  var composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, cam));
+  var bloom = new UnrealBloomPass(new THREE.Vector2(W, H), .85, .75, .72);
+  composer.addPass(bloom);
+  composer.addPass(new OutputPass()); // sem OutputPass o composer entrega buffer linear (fundo cinza lavado)
+
+  // API consumed by the scroll choreography (Task 15). Without GSAP, defaults keep the scene alive.
+  var state = { focus: -1, dive: 0 }; // focus: highlighted moon index; dive: 0..1 plunge into the core
+  window.__orbital = {
+    state: state, group: group, cam: cam, bloom: bloom, moons: moons,
+    setFocus: function (i) { state.focus = i; },
+    setDive: function (p) { state.dive = Math.max(0, Math.min(1, p)); },
+  };
+
+  var drag = false, px = 0, vx = 0, vy = 0, py = 0;
+  host.addEventListener('pointerdown', function (e) { drag = true; px = e.clientX; py = e.clientY; });
+  addEventListener('pointermove', function (e) { if (!drag) return; vx = (e.clientX - px) * .004; vy = (e.clientY - py) * .004; px = e.clientX; py = e.clientY; });
+  addEventListener('pointerup', function () { drag = false; });
+
+  var running = true;
+  new IntersectionObserver(function (en) { running = en[en.length - 1].isIntersecting; }).observe(host);
+  var reduce2 = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t = 0, last = 0;
+  function frame(ts) {
+    requestAnimationFrame(frame);
+    if (!running) return;
+    var dt = Math.min(((ts || 0) - last) / 1000, .05); last = ts || 0;
+    if (!reduce2) t += dt;
+    group.rotation.y += (reduce2 ? 0 : .07 * dt) + vx; group.rotation.x += vy; vx *= .92; vy *= .92;
+    group.rotation.x = Math.max(-.6, Math.min(.6, group.rotation.x));
+    moons.forEach(function (m, i) {
+      var a = t * m.userData.speed + m.userData.phase, r = m.userData.r;
+      m.position.set(Math.cos(a) * r, -Math.sin(a) * r * Math.sin(m.userData.tilt), Math.sin(a) * r * Math.cos(m.userData.tilt));
+      var em = m.material.emissiveIntensity;
+      var target = (state.focus === i) ? 2.2 : ((i === 0 || i === 4) ? .8 : 0);
+      m.material.emissiveIntensity = em + (target - em) * .08;
+      if (state.focus === i) m.material.emissive.setHex(0xa1ff62);
+    });
+    cam.position.z = 9 - state.dive * 7.6;                 // plunge: 9 → 1.4
+    core.material.emissiveIntensity = 1.35 + state.dive * 2.2;
+    bloom.strength = .85 + state.dive * .9;
+    host.style.opacity = String(1 - Math.max(0, state.dive - .8) * 5); // fade in the last 20%
+    composer.render();
+  }
+  if (reduce2) { composer.render(); } else { frame(0); }
+  addEventListener('resize', function () {
+    var w = host.clientWidth, h = host.clientHeight;
+    cam.aspect = w / h; cam.updateProjectionMatrix(); renderer.setSize(w, h); composer.setSize(w, h);
+    if (reduce2) composer.render();
+  });
+}).catch(function () { document.querySelector('#orbital .fallback-3d').style.display = 'flex'; });
+</script>
+</body>
+</html>
