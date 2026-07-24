@@ -63,6 +63,16 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hi
         <span id="score" style="font:700 96px/1 var(--grotesk);letter-spacing:-.05em">78</span>
         <span style="background:var(--eletrico);color:#151313;font:700 13px var(--grotesk);padding:5px 12px;border-radius:999px">+4</span>
       </div>
+      <div style="display:flex;gap:24px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
+        <div>
+          <p style="display:flex;align-items:center;gap:6px;font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase"><span style="width:7px;height:7px;border-radius:50%;background:var(--eletrico);display:inline-block;flex-shrink:0"></span>Entraram</p>
+          <p id="stat-receitas" style="font:700 18px var(--grotesk);letter-spacing:-.02em;color:var(--t1);margin-top:4px">R$ 5.000,00</p>
+        </div>
+        <div>
+          <p style="display:flex;align-items:center;gap:6px;font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase"><span style="width:7px;height:7px;border-radius:50%;background:var(--coral);display:inline-block;flex-shrink:0"></span>Saíram</p>
+          <p id="stat-despesas" style="font:700 18px var(--grotesk);letter-spacing:-.02em;color:var(--t1);margin-top:4px">R$ 3.160,00</p>
+        </div>
+      </div>
     </div>
     <div class="scene" style="perspective:1100px">
       <div class="stack" id="stack" style="position:relative;width:320px;height:300px;margin:0 auto;transform-style:preserve-3d;transition:transform .4s var(--ease)">
@@ -151,6 +161,10 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hi
       if (vDespesas) vDespesas.textContent = SL_MOCK.fmtBRL(SL_MOCK.financas.despesas);
       var vPoupanca = document.getElementById('v-poupanca');
       if (vPoupanca) vPoupanca.textContent = 'Poupança · ' + SL_MOCK.financas.poupancaPct + '%';
+      var statReceitas = document.getElementById('stat-receitas');
+      if (statReceitas) statReceitas.textContent = SL_MOCK.fmtBRL(SL_MOCK.financas.receitas);
+      var statDespesas = document.getElementById('stat-despesas');
+      if (statDespesas) statDespesas.textContent = SL_MOCK.fmtBRL(SL_MOCK.financas.despesas);
     }
 
     var orcEl = document.getElementById('orcamentos');
