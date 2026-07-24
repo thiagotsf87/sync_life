@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SyncLife · Dashboard · Direção A "Estúdio"</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#151313; --s1:#201d1d; --s2:#2a2727; --line:rgba(255,255,255,.07);
+  --t1:#f4f4f4; --t2:#b8b8b8; --t3:#817f7f;
+  --roxo:#6840ff; --eletrico:#a1ff62; --coral:#f84131;
+  --ease:cubic-bezier(.625,.05,0,1); --grotesk:"Space Grotesk",sans-serif; --inter:Inter,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--t1);font-family:var(--inter)}
+.eyebrow{font:700 11px var(--grotesk);letter-spacing:.22em;color:var(--eletrico);text-transform:uppercase}
+
+.btn{display:inline-block;background:var(--roxo);color:#fff;font:600 15px var(--inter);padding:16px 30px;border-radius:999px;text-decoration:none;transition:transform .35s var(--ease),background .35s}
+.btn:hover{transform:scale(1.05);background:#7d5bff}
+
+#rail a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;color:var(--t3);font:500 13px var(--inter);text-decoration:none;transition:background .25s var(--ease),color .25s var(--ease);margin-bottom:2px}
+#rail a:hover{color:var(--t1);background:var(--s2)}
+#rail a .num{font:500 13px var(--grotesk);color:var(--t3);width:20px;display:inline-block;transition:color .25s var(--ease)}
+#rail a.active{background:var(--s1);color:var(--t1)}
+#rail a.active .num{color:var(--roxo)}
+
+.stack-card{position:absolute;top:50%;left:50%;width:230px;border-radius:20px;padding:20px}
+
+.e-card{transition:border-color .35s var(--ease),transform .35s var(--ease)}
+.e-card:hover{border-color:rgba(255,255,255,.16);transform:translateY(-3px)}
+
+.cross-band{transition:border-color .35s var(--ease)}
+.cross-band:hover{border-color:rgba(255,255,255,.18)}
+.cross-band a{transition:color .25s var(--ease)}
+.cross-band a:hover{color:var(--t1)}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:980px){
+  body{grid-template-columns:1fr!important}
+  aside{display:none!important}
+  header{grid-template-columns:1fr!important}
+  header .scene{margin-top:28px}
+}
+</style>
+</head>
+<body style="display:grid;grid-template-columns:236px 1fr;min-height:100vh">
+
+<aside style="border-right:1px solid var(--line);padding:26px 18px;position:sticky;top:0;height:100vh">
+  <div style="font:700 17px var(--grotesk);margin-bottom:34px">Sync<span style="color:var(--roxo)">Life</span></div>
+  <nav id="rail"></nav>
+</aside>
+
+<main style="padding:34px 44px;max-width:1240px">
+
+  <header id="hero" style="display:grid;grid-template-columns:1.1fr 1fr;gap:3vw;align-items:center;margin-bottom:42px">
+    <div>
+      <p class="eyebrow">Quarta, 23 julho</p>
+      <h1 style="font:500 clamp(1.9rem,3vw,2.7rem)/1.08 var(--grotesk);letter-spacing:-.03em;margin:12px 0 8px;color:var(--t1)">Sua semana rendeu<br>mais que a média.</h1>
+      <div style="display:flex;align-items:baseline;gap:14px;margin-top:18px">
+        <span id="score" style="font:700 96px/1 var(--grotesk);letter-spacing:-.05em">78</span>
+        <span style="background:var(--eletrico);color:#151313;font:700 13px var(--grotesk);padding:5px 12px;border-radius:999px">+4</span>
+      </div>
+    </div>
+    <div class="scene" style="perspective:1100px">
+      <div class="stack" id="stack" style="position:relative;width:320px;height:300px;margin:0 auto;transform-style:preserve-3d;transition:transform .4s var(--ease)">
+
+        <div class="stack-card" style="background:var(--s2);border:1px solid rgba(248,65,49,.35);transform:translate(calc(-50% - 68px),calc(-50% + 44px)) rotate(-5deg) translateZ(-50px);z-index:1;box-shadow:0 18px 34px -22px rgba(0,0,0,.7)">
+          <p style="font:700 10px var(--grotesk);letter-spacing:.16em;color:var(--t3);text-transform:uppercase">Despesas</p>
+          <p style="font:700 22px var(--grotesk);letter-spacing:-.02em;margin-top:10px;color:var(--t1)">R$ 3.160,00</p>
+          <div style="width:100%;height:5px;background:var(--bg);border-radius:99px;overflow:hidden;margin-top:14px">
+            <div style="height:100%;width:63%;background:var(--coral);border-radius:99px"></div>
+          </div>
+        </div>
+
+        <div class="stack-card" style="background:var(--s1);border:1px solid var(--line);transform:translate(calc(-50% + 70px),calc(-50% + 52px)) rotate(4deg) translateZ(10px);z-index:2;box-shadow:0 22px 40px -22px rgba(0,0,0,.65)">
+          <p style="font:700 10px var(--grotesk);letter-spacing:.16em;color:var(--t3);text-transform:uppercase">Poupança · 37%</p>
+          <div id="spark" style="margin-top:12px"></div>
+        </div>
+
+        <div class="stack-card" style="background:var(--roxo);color:#fff;transform:translate(-50%,calc(-50% - 62px)) translateZ(60px);z-index:3;box-shadow:0 20px 38px -20px rgba(104,64,255,.4)">
+          <p style="font:700 10px var(--grotesk);letter-spacing:.16em;color:rgba(255,255,255,.75);text-transform:uppercase">Saldo livre</p>
+          <p style="font:700 28px var(--grotesk);letter-spacing:-.02em;margin-top:10px">R$ 1.840,00</p>
+          <span style="display:inline-block;margin-top:14px;background:var(--eletrico);color:#151313;font:700 12px var(--grotesk);padding:4px 11px;border-radius:999px">+12%</span>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <section style="padding:0;margin-bottom:40px">
+    <div style="background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--roxo);border-radius:16px;padding:22px 26px;display:flex;justify-content:space-between;align-items:center;gap:24px">
+      <p id="coach-line" style="color:var(--t2);font-size:15px;line-height:1.6;max-width:70ch"></p>
+      <a class="btn" style="white-space:nowrap;padding:12px 22px;font-size:13px" href="#">Falar com o coach</a>
+    </div>
+  </section>
+
+  <section style="padding:0;margin-bottom:40px;display:grid;grid-template-columns:1.5fr 1fr;gap:22px">
+    <div class="e-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:26px">
+      <p class="eyebrow" style="color:var(--t3)">Orçamentos · julho</p>
+      <div id="orcamentos" style="margin-top:18px;display:flex;flex-direction:column;gap:16px"></div>
+    </div>
+    <div class="e-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:26px">
+      <p class="eyebrow" style="color:var(--t3)">Hoje</p>
+      <div id="agenda" style="margin-top:18px;display:flex;flex-direction:column;gap:14px"></div>
+    </div>
+  </section>
+
+  <section style="padding:0 0 40px">
+    <div class="cross-band" style="border:1px solid var(--line);border-radius:16px;padding:20px 26px;display:flex;justify-content:space-between;align-items:center;gap:20px">
+      <p style="font:500 16px var(--grotesk);letter-spacing:-.01em"><span style="color:var(--eletrico)">R$ 380 a mais</span> nos meses com foco protegido.</p>
+      <a href="#" style="color:var(--t3);font:500 13px var(--inter);text-decoration:none;white-space:nowrap">Ver em Tempo →</a>
+    </div>
+  </section>
+
+</main>
+
+<script src="../shared/mock-data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function corBarra(pct){
+    if (pct > 85) return 'var(--coral)';
+    if (pct > 70) return 'var(--t2)';
+    return 'var(--eletrico)';
+  }
+
+  var rail = document.getElementById('rail');
+
+  if (window.SL_MOCK) {
+
+    if (rail) {
+      rail.innerHTML = SL_MOCK.modulos.map(function(m){
+        var active = m.n === '10';
+        return '<a href="#"' + (active ? ' class="active"' : '') + '>' +
+          '<span class="num">' + m.n + '</span><span>' + m.nome + '</span></a>';
+      }).join('');
+    }
+
+    var coachLine = document.getElementById('coach-line');
+    if (coachLine && SL_MOCK.coach) coachLine.textContent = SL_MOCK.coach.dashboardA;
+
+    var orcEl = document.getElementById('orcamentos');
+    if (orcEl && SL_MOCK.orcamentos) {
+      orcEl.innerHTML = SL_MOCK.orcamentos.map(function(o){
+        var pct = Math.round(o.gasto / o.limite * 100);
+        return '<div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">' +
+            '<span style="color:var(--t1);font:500 14px var(--inter)">' + o.nome + '</span>' +
+            '<span style="color:var(--t3);font:500 12px var(--inter)">' +
+              '<span style="font:700 12px var(--grotesk);color:var(--t2)">' + SL_MOCK.fmtBRL(o.gasto) + '</span> de ' +
+              '<span style="font:700 12px var(--grotesk);color:var(--t2)">' + SL_MOCK.fmtBRL(o.limite) + '</span>' +
+            '</span>' +
+          '</div>' +
+          '<div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">' +
+            '<div style="height:100%;width:' + pct + '%;background:' + corBarra(pct) + ';border-radius:99px"></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    var agEl = document.getElementById('agenda');
+    if (agEl && SL_MOCK.agenda) {
+      var modMap = {};
+      (SL_MOCK.modulos || []).forEach(function(m){ modMap[m.nome] = m.n; });
+      agEl.innerHTML = SL_MOCK.agenda.map(function(a){
+        var n = modMap[a.modulo] || '';
+        return '<div style="display:flex;align-items:baseline;gap:14px">' +
+          '<span style="font:700 13px var(--grotesk);color:var(--t3);width:44px;flex-shrink:0">' + a.hora + '</span>' +
+          '<div>' +
+            '<p style="color:var(--t1);font:500 14px var(--inter);margin-bottom:4px">' + a.titulo + '</p>' +
+            '<p style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase">' + n + ' ' + a.modulo.toUpperCase() + '</p>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    var sparkEl = document.getElementById('spark');
+    if (sparkEl && SL_MOCK.financas && SL_MOCK.financas.sparkSaldo) {
+      var values = SL_MOCK.financas.sparkSaldo;
+      var w = 190, h = 56, pad = 4;
+      var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+      var range = (max - min) || 1;
+      var stepX = (w - pad * 2) / (values.length - 1);
+      var pts = values.map(function(v, i){
+        var x = pad + i * stepX;
+        var y = pad + (1 - (v - min) / range) * (h - pad * 2);
+        return x.toFixed(1) + ',' + y.toFixed(1);
+      });
+      var last = pts[pts.length - 1].split(',');
+      sparkEl.innerHTML = '<svg width="100%" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" style="overflow:visible">' +
+          '<polyline points="' + pts.join(' ') + '" fill="none" stroke="var(--eletrico)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="4" fill="var(--eletrico)"/>' +
+        '</svg>';
+    }
+  }
+
+  var hero = document.getElementById('hero');
+  var stack = document.getElementById('stack');
+  if (hero && stack && !reduce) {
+    hero.addEventListener('mousemove', function(e){
+      var rect = hero.getBoundingClientRect();
+      var nx = (e.clientX - rect.left) / rect.width - 0.5;
+      var ny = (e.clientY - rect.top) / rect.height - 0.5;
+      stack.style.transform = 'rotateY(' + (nx * 16) + 'deg) rotateX(' + (-ny * 12) + 'deg)';
+    });
+    hero.addEventListener('mouseleave', function(){
+      stack.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    });
+  }
+
+  if (window.gsap && !reduce) {
+    if (rail) gsap.from('#rail a', { opacity: 0, x: -8, duration: .5, stagger: .03, ease: 'power2.out' });
+    gsap.from('#hero > div:first-child > *', { y: 20, opacity: 0, duration: .7, stagger: .08, ease: 'expo.out' });
+    gsap.from('#stack', { opacity: 0, scale: .92, duration: .9, ease: 'expo.out', delay: .15 });
+    gsap.from('main > section', { y: 16, opacity: 0, duration: .6, stagger: .12, ease: 'power2.out', delay: .3 });
+  }
+})();
+</script>
+</body>
+</html>
