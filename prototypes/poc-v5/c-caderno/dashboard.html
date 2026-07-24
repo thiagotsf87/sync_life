@@ -42,7 +42,14 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--rosa);color:var(--marrom)">01 · Finanças</span>
     <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--lima);color:var(--marrom)">02 · Tempo</span>
     <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--amarelo);color:var(--marrom)">03 · Corpo</span>
+    <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--cream);color:var(--marrom)">04 · Mente</span>
+    <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--rosa);color:var(--marrom)">05 · Patrimônio</span>
+    <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--lima);color:var(--marrom)">06 · Carreira</span>
+    <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--amarelo);color:var(--marrom)">07 · Experiências</span>
+    <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--cream);color:var(--marrom)">08 · Conquistas</span>
+    <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--rosa);color:var(--marrom)">09 · Futuro</span>
     <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--verde);color:var(--cream)">10 · Panorama</span>
+    <span style="display:inline-block;border:2px solid var(--marrom);border-radius:999px;font:600 12px var(--pop);padding:7px 14px;background:var(--amarelo);color:var(--marrom)">11 · Configurações</span>
   </nav>
 </header>
 
@@ -73,7 +80,7 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     <span class="stk" style="background:var(--rosa);position:absolute;right:-14px;top:-18px;transform:rotate(6deg)">novo</span>
   </section>
 
-  <section class="kpi-sec" style="display:grid;grid-template-columns:1fr 1.4fr;gap:36px;margin-bottom:44px">
+  <section class="kpi-sec" style="display:grid;grid-template-columns:1fr 1.4fr;gap:36px;margin-bottom:44px;align-items:start">
     <div id="kpis" style="display:flex;flex-direction:column;gap:20px;align-items:flex-start">
       <div class="kpi-stk" style="background:var(--rosa);border:2px solid var(--marrom);border-radius:12px;padding:16px 24px;box-shadow:4px 4px 0 var(--marrom);transform:rotate(-4deg)">
         <div class="anton" style="font-size:30px;color:var(--marrom)">R$ 1.840</div>
@@ -92,49 +99,71 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
         <div style="font:600 11px var(--pop);text-transform:uppercase;letter-spacing:.1em;color:var(--marrom);margin-top:4px">Poupança</div>
       </div>
     </div>
-    <div style="border:2px solid var(--marrom);border-radius:14px;padding:24px;background:#fff">
-      <h2 class="anton" style="font-size:22px;margin-bottom:16px">Orçamentos de julho</h2>
-      <div id="orcamentos" style="display:flex;flex-direction:column;gap:14px">
-        <div class="orc-row" style="display:flex;align-items:center;gap:14px">
-          <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--marrom);background:var(--lima);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="var(--marrom)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
-              <span style="font:600 14px var(--pop);color:var(--marrom)">Moradia</span>
-              <span style="font:400 12px var(--pop);color:var(--marrom)">R$ 1.240,00 de R$ 1.800,00</span>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="border:2px solid var(--marrom);border-radius:14px;padding:24px;background:#fff">
+        <h2 class="anton" style="font-size:22px;margin-bottom:16px">Orçamentos de julho</h2>
+        <div id="orcamentos" style="display:flex;flex-direction:column;gap:14px">
+          <div class="orc-row" style="display:flex;align-items:center;gap:14px">
+            <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--marrom);background:var(--lima);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 6,11 12,3" stroke="var(--marrom)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <div style="height:8px;border:1px solid var(--marrom);border-radius:999px;margin-top:6px;overflow:hidden;background:#fff">
-              <div style="height:100%;width:69%;background:var(--lima)"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <span style="font:600 14px var(--pop);color:var(--marrom)">Moradia</span>
+                <span style="font:400 12px var(--pop);color:var(--marrom)">R$ 1.240,00 de R$ 1.800,00</span>
+              </div>
+              <div style="height:8px;border:1px solid var(--marrom);border-radius:999px;margin-top:6px;overflow:hidden;background:#fff">
+                <div style="height:100%;width:69%;background:var(--lima)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="orc-row" style="display:flex;align-items:center;gap:14px">
+            <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--marrom);background:var(--amarelo);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span style="font:700 14px var(--pop);color:var(--marrom);line-height:1">!</span>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <span style="font:600 14px var(--pop);color:var(--marrom)">Mercado</span>
+                <span style="font:400 12px var(--pop);color:var(--marrom)">R$ 520,00 de R$ 650,00</span>
+              </div>
+              <div style="height:8px;border:1px solid var(--marrom);border-radius:999px;margin-top:6px;overflow:hidden;background:#fff">
+                <div style="height:100%;width:80%;background:var(--amarelo)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="orc-row" style="display:flex;align-items:center;gap:14px">
+            <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--marrom);background:var(--laranja);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2,2 L12,12 M12,2 L2,12" stroke="var(--cream)" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <span style="font:600 14px var(--pop);color:var(--marrom)">Lazer</span>
+                <span style="font:400 12px var(--pop);color:var(--marrom)">R$ 410,00 de R$ 420,00</span>
+              </div>
+              <div style="height:8px;border:1px solid var(--marrom);border-radius:999px;margin-top:6px;overflow:hidden;background:#fff">
+                <div style="height:100%;width:98%;background:var(--laranja)"></div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="orc-row" style="display:flex;align-items:center;gap:14px">
-          <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--marrom);background:var(--amarelo);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <span style="font:700 14px var(--pop);color:var(--marrom);line-height:1">!</span>
+      </div>
+      <div style="border:2px solid var(--marrom);border-radius:14px;padding:24px;background:#fff">
+        <h2 class="anton" style="font-size:22px;margin-bottom:16px">Programa de hoje</h2>
+        <div id="agenda" style="display:flex;flex-direction:column;gap:14px">
+          <div class="agenda-row" style="display:flex;align-items:center;gap:12px">
+            <span style="font:700 13px var(--pop);color:var(--marrom);min-width:44px">09:00</span>
+            <span style="font:400 14px var(--pop);color:var(--marrom);flex:1">Revisão de aportes</span>
+            <span style="display:inline-block;border:1.5px solid var(--marrom);border-radius:999px;font:600 10px var(--pop);text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;background:var(--rosa);color:var(--marrom);white-space:nowrap">Finanças</span>
           </div>
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
-              <span style="font:600 14px var(--pop);color:var(--marrom)">Mercado</span>
-              <span style="font:400 12px var(--pop);color:var(--marrom)">R$ 520,00 de R$ 650,00</span>
-            </div>
-            <div style="height:8px;border:1px solid var(--marrom);border-radius:999px;margin-top:6px;overflow:hidden;background:#fff">
-              <div style="height:100%;width:80%;background:var(--amarelo)"></div>
-            </div>
+          <div class="agenda-row" style="display:flex;align-items:center;gap:12px">
+            <span style="font:700 13px var(--pop);color:var(--marrom);min-width:44px">12:30</span>
+            <span style="font:400 14px var(--pop);color:var(--marrom);flex:1">Treino B, inferior</span>
+            <span style="display:inline-block;border:1.5px solid var(--marrom);border-radius:999px;font:600 10px var(--pop);text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;background:var(--lima);color:var(--marrom);white-space:nowrap">Corpo</span>
           </div>
-        </div>
-        <div class="orc-row" style="display:flex;align-items:center;gap:14px">
-          <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--marrom);background:var(--laranja);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2,2 L12,12 M12,2 L2,12" stroke="var(--cream)" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
-              <span style="font:600 14px var(--pop);color:var(--marrom)">Lazer</span>
-              <span style="font:400 12px var(--pop);color:var(--marrom)">R$ 410,00 de R$ 420,00</span>
-            </div>
-            <div style="height:8px;border:1px solid var(--marrom);border-radius:999px;margin-top:6px;overflow:hidden;background:#fff">
-              <div style="height:100%;width:98%;background:var(--laranja)"></div>
-            </div>
+          <div class="agenda-row" style="display:flex;align-items:center;gap:12px">
+            <span style="font:700 13px var(--pop);color:var(--marrom);min-width:44px">19:00</span>
+            <span style="font:400 14px var(--pop);color:var(--marrom);flex:1">Aula de espanhol</span>
+            <span style="display:inline-block;border:1.5px solid var(--marrom);border-radius:999px;font:600 10px var(--pop);text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;background:var(--amarelo);color:var(--marrom);white-space:nowrap">Mente</span>
           </div>
         </div>
       </div>
@@ -145,7 +174,7 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     <h2 class="anton" style="font-size:22px;margin-bottom:18px">O mês em barras</h2>
     <div id="chart" style="display:flex;align-items:flex-end;gap:18px;height:260px;padding-top:20px">
       <div class="bar" style="display:flex;flex-direction:column;align-items:center;width:90px;position:relative">
-        <span class="tip" style="position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%) rotate(-3deg);opacity:0;background:var(--cream);border:2px solid var(--marrom);box-shadow:3px 3px 0 var(--marrom);border-radius:4px;font:600 12px var(--pop);color:var(--marrom);padding:8px 12px;white-space:nowrap">R$ 5.000,00 · mês de julho</span>
+        <span class="tip" style="position:absolute;bottom:calc(100% + 12px);left:0;transform:rotate(-3deg);opacity:0;background:var(--cream);border:2px solid var(--marrom);box-shadow:3px 3px 0 var(--marrom);border-radius:4px;font:600 12px var(--pop);color:var(--marrom);padding:8px 12px;white-space:nowrap">R$ 5.000,00 · mês de julho</span>
         <span class="anton bar-value" style="font-size:16px;color:var(--verde);margin-bottom:8px">R$ 5.000</span>
         <div class="bar-rect" style="width:90px;height:150px;background:var(--lima);border:2px solid var(--marrom);border-radius:6px 6px 0 0;transform-origin:bottom"></div>
         <span style="font:400 12px var(--pop);color:var(--marrom);margin-top:8px">Receitas</span>
@@ -161,7 +190,12 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
 
 </main>
 
-<footer style="background:var(--verde);color:var(--cream);padding:22px 5vw;font:600 12px var(--pop);letter-spacing:.14em;display:flex;justify-content:space-between;margin-top:60px">
+<div style="background:var(--verde);color:var(--cream);padding:26px 5vw;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:60px;border-top:2px solid var(--marrom)">
+  <p id="manchete-cross" class="anton" style="font-size:clamp(1.4rem,3vw,2.2rem);margin:0;max-width:70ch">R$ 380 a mais nos meses com foco protegido</p>
+  <a href="/tempo" style="font:600 13px var(--pop);color:var(--cream);text-decoration:underline;white-space:nowrap;flex-shrink:0">Ver em Tempo →</a>
+</div>
+
+<footer style="background:var(--verde);color:var(--cream);padding:22px 5vw;font:600 12px var(--pop);letter-spacing:.14em;display:flex;justify-content:space-between">
   <span>SYNCLIFE © 2026</span><span>POC DS V5 · DIREÇÃO C</span>
 </footer>
 
@@ -230,6 +264,19 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
       }).join('');
     }
 
+    var agendaEl = document.getElementById('agenda');
+    if (agendaEl && M.agenda) {
+      var agendaColors = ['var(--rosa)', 'var(--lima)', 'var(--amarelo)', 'var(--cream)'];
+      agendaEl.innerHTML = M.agenda.map(function (a, i) {
+        var bg = agendaColors[i % agendaColors.length];
+        return '<div class="agenda-row" style="display:flex;align-items:center;gap:12px">'
+          + '<span style="font:700 13px var(--pop);color:var(--marrom);min-width:44px">' + a.hora + '</span>'
+          + '<span style="font:400 14px var(--pop);color:var(--marrom);flex:1">' + a.titulo + '</span>'
+          + '<span style="display:inline-block;border:1.5px solid var(--marrom);border-radius:999px;font:600 10px var(--pop);text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;background:' + bg + ';color:var(--marrom);white-space:nowrap">' + a.modulo + '</span>'
+          + '</div>';
+      }).join('');
+    }
+
     var chartEl = document.getElementById('chart');
     if (chartEl) {
       var track = 150;
@@ -238,10 +285,11 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
         { val: M.financas.receitas, bg: 'var(--lima)', label: 'Receitas' },
         { val: M.financas.despesas, bg: 'var(--laranja)', label: 'Despesas' },
       ];
-      chartEl.innerHTML = bars.map(function (b) {
+      chartEl.innerHTML = bars.map(function (b, i) {
         var h = Math.round(track * (b.val / maxVal));
+        var tipPos = i === 0 ? 'left:0;transform:rotate(-3deg)' : 'left:50%;transform:translateX(-50%) rotate(-3deg)';
         return '<div class="bar" style="display:flex;flex-direction:column;align-items:center;width:90px;position:relative">'
-          + '<span class="tip" style="position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%) rotate(-3deg);opacity:0;background:var(--cream);border:2px solid var(--marrom);box-shadow:3px 3px 0 var(--marrom);border-radius:4px;font:600 12px var(--pop);color:var(--marrom);padding:8px 12px;white-space:nowrap">' + M.fmtBRL(b.val) + ' · mês de julho</span>'
+          + '<span class="tip" style="position:absolute;bottom:calc(100% + 12px);' + tipPos + ';opacity:0;background:var(--cream);border:2px solid var(--marrom);box-shadow:3px 3px 0 var(--marrom);border-radius:4px;font:600 12px var(--pop);color:var(--marrom);padding:8px 12px;white-space:nowrap">' + M.fmtBRL(b.val) + ' · mês de julho</span>'
           + '<span class="anton bar-value" style="font-size:16px;color:var(--verde);margin-bottom:8px">' + M.fmtBRL0(b.val) + '</span>'
           + '<div class="bar-rect" style="width:90px;height:' + h + 'px;background:' + b.bg + ';border:2px solid var(--marrom);border-radius:6px 6px 0 0;transform-origin:bottom"></div>'
           + '<span style="font:400 12px var(--pop);color:var(--marrom);margin-top:8px">' + b.label + '</span>'
@@ -251,6 +299,8 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
 
     var coachLine = document.getElementById('coach-line');
     if (coachLine) coachLine.textContent = M.coach.dashboardC.replace(/R\$ /g, 'R$ ');
+    var mancheteEl = document.getElementById('manchete-cross');
+    if (mancheteEl && M.coach.cross) mancheteEl.textContent = M.coach.cross;
   }
 
   if (window.gsap && !reduce) {
