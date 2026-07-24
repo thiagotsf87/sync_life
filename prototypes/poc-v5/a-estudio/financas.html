@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SyncLife · Finanças · Direção A "Estúdio"</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#151313; --s1:#201d1d; --s2:#2a2727; --line:rgba(255,255,255,.07);
+  --t1:#f4f4f4; --t2:#b8b8b8; --t3:#817f7f;
+  --roxo:#6840ff; --eletrico:#a1ff62; --coral:#f84131;
+  --ease:cubic-bezier(.625,.05,0,1); --grotesk:"Space Grotesk",sans-serif; --inter:Inter,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hidden}
+.eyebrow{font:700 11px var(--grotesk);letter-spacing:.22em;color:var(--eletrico);text-transform:uppercase}
+
+.btn{display:inline-block;background:var(--roxo);color:#fff;font:600 15px var(--inter);padding:16px 30px;border-radius:999px;text-decoration:none;transition:transform .35s var(--ease),background .35s}
+.btn:hover{transform:scale(1.05);background:#7d5bff}
+
+#rail a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;color:var(--t3);font:500 13px var(--inter);text-decoration:none;transition:background .25s var(--ease),color .25s var(--ease);margin-bottom:2px}
+#rail a:hover{color:var(--t1);background:var(--s2)}
+#rail a .num{font:500 13px var(--grotesk);color:var(--t3);width:20px;display:inline-block;transition:color .25s var(--ease)}
+#rail a.active{background:var(--s1);color:var(--t1)}
+#rail a.active .num{color:var(--roxo)}
+
+.e-card{transition:border-color .35s var(--ease),transform .35s var(--ease)}
+.e-card:hover{border-color:rgba(255,255,255,.16);transform:translateY(-3px)}
+
+.cross-band{transition:border-color .35s var(--ease)}
+.cross-band:hover{border-color:rgba(255,255,255,.18)}
+.cross-band a{transition:color .25s var(--ease)}
+.cross-band a:hover{color:var(--t1)}
+
+.tx-row + .tx-row{border-top:1px solid var(--line)}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:980px){
+  body{grid-template-columns:1fr!important}
+  aside{display:none!important}
+  #topbar{flex-direction:column!important;align-items:flex-start!important;gap:16px}
+  .hero-grid{grid-template-columns:1fr!important}
+  .tx-row{grid-template-columns:56px 1fr 90px!important}
+  .tx-row .tx-cat{display:none}
+}
+</style>
+</head>
+<body style="display:grid;grid-template-columns:236px 1fr;min-height:100vh">
+
+<aside style="border-right:1px solid var(--line);padding:26px 18px;position:sticky;top:0;height:100vh">
+  <div style="font:700 17px var(--grotesk);margin-bottom:34px">Sync<span style="color:var(--roxo)">Life</span></div>
+  <nav id="rail"></nav>
+</aside>
+
+<main style="padding:34px 44px;max-width:1240px;margin:0 auto;width:100%">
+
+  <header id="topbar" style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:34px">
+    <div>
+      <p class="eyebrow">01 · Finanças · julho</p>
+      <h1 style="font:500 clamp(1.9rem,3vw,2.7rem)/1.08 var(--grotesk);letter-spacing:-.03em;color:var(--t1);margin-top:12px">O mês sob controle.</h1>
+    </div>
+    <a class="btn" href="#">+ Nova transação</a>
+  </header>
+
+  <section style="padding:0;margin-bottom:40px">
+    <div style="background:var(--s1);border:1px solid var(--line);border-left:3px solid var(--roxo);border-radius:16px;padding:22px 26px;display:flex;justify-content:space-between;align-items:center;gap:24px">
+      <p id="coach-line" style="color:var(--t2);font-size:15px;line-height:1.6;max-width:70ch">Receitas cresceram 8% e o lazer estourou R$ 8. Se segurar o lazer essa semana, o mês fecha com 39% poupado.</p>
+      <a class="btn" style="white-space:nowrap;padding:12px 22px;font-size:13px" href="#">Falar com o coach</a>
+    </div>
+  </section>
+
+  <section class="hero-grid" style="padding:0;margin-bottom:40px;display:grid;grid-template-columns:1.2fr 1fr;gap:22px">
+    <div class="e-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:26px">
+      <p class="eyebrow" style="color:var(--t3)">Saldo livre</p>
+      <div style="display:flex;align-items:baseline;gap:14px;margin-top:10px">
+        <span id="v-saldo" style="font:700 clamp(2.6rem,6vw,64px)/1 var(--grotesk);letter-spacing:-.04em;color:var(--t1)">R$ 1.840,00</span>
+        <span style="background:var(--eletrico);color:#151313;font:700 13px var(--grotesk);padding:5px 12px;border-radius:999px">+12%</span>
+      </div>
+      <div id="spark" style="margin-top:22px">
+        <svg width="100%" height="120" viewBox="0 0 1000 120" preserveAspectRatio="none" style="overflow:visible">
+          <defs>
+            <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--eletrico)" stop-opacity=".18"/>
+              <stop offset="100%" stop-color="var(--eletrico)" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M8.0,112.0 L97.5,94.7 L186.9,103.3 L276.4,83.1 L365.8,65.8 L455.3,77.3 L544.7,57.1 L634.2,42.7 L723.6,51.3 L813.1,28.2 L902.5,19.6 L992.0,8.0 L992.0,112.0 L8.0,112.0 Z" fill="url(#sparkFill)" stroke="none"/>
+          <path d="M8.0,112.0 L97.5,94.7 L186.9,103.3 L276.4,83.1 L365.8,65.8 L455.3,77.3 L544.7,57.1 L634.2,42.7 L723.6,51.3 L813.1,28.2 L902.5,19.6 L992.0,8.0" fill="none" stroke="var(--eletrico)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="992.0" cy="8.0" r="4" fill="var(--eletrico)"/>
+        </svg>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div class="e-card" style="flex:1;display:flex;flex-direction:column;justify-content:center;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:22px">
+        <p style="display:flex;align-items:center;gap:8px;font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase"><span style="width:7px;height:7px;border-radius:50%;background:var(--eletrico);display:inline-block;flex-shrink:0"></span>Entraram</p>
+        <p id="v-receitas" style="font:700 26px var(--grotesk);letter-spacing:-.02em;color:var(--t1);margin-top:10px">R$ 5.000,00</p>
+      </div>
+      <div class="e-card" style="flex:1;display:flex;flex-direction:column;justify-content:center;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:22px">
+        <p style="display:flex;align-items:center;gap:8px;font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase"><span style="width:7px;height:7px;border-radius:50%;background:var(--coral);display:inline-block;flex-shrink:0"></span>Saíram</p>
+        <p id="v-despesas" style="font:700 26px var(--grotesk);letter-spacing:-.02em;color:var(--t1);margin-top:10px">R$ 3.160,00</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="e-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:26px;margin-bottom:40px">
+    <p class="eyebrow" style="color:var(--t3)">Para onde foi · top 5</p>
+    <div id="categorias" style="margin-top:18px;display:flex;flex-direction:column;gap:16px">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="color:var(--t1);font:500 14px var(--inter)">Moradia</span>
+          <span style="font:700 14px var(--grotesk);color:var(--t2)">R$ 1.240,00</span>
+        </div>
+        <div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:100%;background:var(--t2);border-radius:99px"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="color:var(--t1);font:500 14px var(--inter)">Mercado</span>
+          <span style="font:700 14px var(--grotesk);color:var(--t2)">R$ 520,00</span>
+        </div>
+        <div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:42%;background:var(--t2);border-radius:99px"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="color:var(--t1);font:500 14px var(--inter)">Lazer</span>
+          <span style="font:700 14px var(--grotesk);color:var(--t2)">R$ 410,00</span>
+        </div>
+        <div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:33%;background:var(--coral);border-radius:99px"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="color:var(--t1);font:500 14px var(--inter)">Transporte</span>
+          <span style="font:700 14px var(--grotesk);color:var(--t2)">R$ 310,00</span>
+        </div>
+        <div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:25%;background:var(--t2);border-radius:99px"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="color:var(--t1);font:500 14px var(--inter)">Saúde</span>
+          <span style="font:700 14px var(--grotesk);color:var(--t2)">R$ 180,00</span>
+        </div>
+        <div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:15%;background:var(--t2);border-radius:99px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="e-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:26px;margin-bottom:40px">
+    <p class="eyebrow" style="color:var(--t3)">Últimos lançamentos</p>
+    <div id="transacoes" style="margin-top:14px">
+      <div class="tx-row" style="display:grid;grid-template-columns:64px 1fr auto 110px;gap:16px;align-items:center;padding:12px 0">
+        <span style="font:500 12px var(--grotesk);color:var(--t3)">23 jul</span>
+        <span style="color:var(--t1);font:500 14px var(--inter)">Mercado Central</span>
+        <span class="tx-cat" style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase">Mercado</span>
+        <span style="font:600 15px var(--grotesk);color:var(--t1);text-align:right">– R$ 182,40</span>
+      </div>
+      <div class="tx-row" style="display:grid;grid-template-columns:64px 1fr auto 110px;gap:16px;align-items:center;padding:12px 0">
+        <span style="font:500 12px var(--grotesk);color:var(--t3)">22 jul</span>
+        <span style="color:var(--t1);font:500 14px var(--inter)">Freela landing page</span>
+        <span class="tx-cat" style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase">Renda extra</span>
+        <span style="font:600 15px var(--grotesk);color:var(--eletrico);text-align:right">+ R$ 850,00</span>
+      </div>
+      <div class="tx-row" style="display:grid;grid-template-columns:64px 1fr auto 110px;gap:16px;align-items:center;padding:12px 0">
+        <span style="font:500 12px var(--grotesk);color:var(--t3)">22 jul</span>
+        <span style="color:var(--t1);font:500 14px var(--inter)">Aporte CDB</span>
+        <span class="tx-cat" style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase">Investimento</span>
+        <span style="font:600 15px var(--grotesk);color:var(--t1);text-align:right">– R$ 300,00</span>
+      </div>
+      <div class="tx-row" style="display:grid;grid-template-columns:64px 1fr auto 110px;gap:16px;align-items:center;padding:12px 0">
+        <span style="font:500 12px var(--grotesk);color:var(--t3)">21 jul</span>
+        <span style="color:var(--t1);font:500 14px var(--inter)">Farmácia</span>
+        <span class="tx-cat" style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase">Saúde</span>
+        <span style="font:600 15px var(--grotesk);color:var(--t1);text-align:right">– R$ 64,90</span>
+      </div>
+      <div class="tx-row" style="display:grid;grid-template-columns:64px 1fr auto 110px;gap:16px;align-items:center;padding:12px 0">
+        <span style="font:500 12px var(--grotesk);color:var(--t3)">20 jul</span>
+        <span style="color:var(--t1);font:500 14px var(--inter)">Salário</span>
+        <span class="tx-cat" style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase">Renda</span>
+        <span style="font:600 15px var(--grotesk);color:var(--eletrico);text-align:right">+ R$ 4.150,00</span>
+      </div>
+      <div class="tx-row" style="display:grid;grid-template-columns:64px 1fr auto 110px;gap:16px;align-items:center;padding:12px 0">
+        <span style="font:500 12px var(--grotesk);color:var(--t3)">19 jul</span>
+        <span style="color:var(--t1);font:500 14px var(--inter)">Restaurante japonês</span>
+        <span class="tx-cat" style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase">Lazer</span>
+        <span style="font:600 15px var(--grotesk);color:var(--t1);text-align:right">– R$ 128,00</span>
+      </div>
+      <div class="tx-row" style="display:grid;grid-template-columns:64px 1fr auto 110px;gap:16px;align-items:center;padding:12px 0">
+        <span style="font:500 12px var(--grotesk);color:var(--t3)">18 jul</span>
+        <span style="color:var(--t1);font:500 14px var(--inter)">Uber</span>
+        <span class="tx-cat" style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase">Transporte</span>
+        <span style="font:600 15px var(--grotesk);color:var(--t1);text-align:right">– R$ 24,90</span>
+      </div>
+      <div class="tx-row" style="display:grid;grid-template-columns:64px 1fr auto 110px;gap:16px;align-items:center;padding:12px 0">
+        <span style="font:500 12px var(--grotesk);color:var(--t3)">18 jul</span>
+        <span style="color:var(--t1);font:500 14px var(--inter)">Livraria</span>
+        <span class="tx-cat" style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase">Lazer</span>
+        <span style="font:600 15px var(--grotesk);color:var(--t1);text-align:right">– R$ 59,90</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="e-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:26px;margin-bottom:40px">
+    <p class="eyebrow" style="color:var(--t3)">Orçamentos · julho</p>
+    <div id="orcamentos" style="margin-top:18px;display:flex;flex-direction:column;gap:16px"></div>
+  </section>
+
+  <section style="padding:0 0 40px">
+    <div class="cross-band" style="border:1px solid var(--line);border-radius:16px;padding:20px 26px;display:flex;justify-content:space-between;align-items:center;gap:20px">
+      <p style="font:500 16px var(--grotesk);letter-spacing:-.01em"><span style="color:var(--eletrico)">R$ 380 a mais</span> nos meses com foco protegido.</p>
+      <a href="#" style="color:var(--t3);font:500 13px var(--inter);text-decoration:none;white-space:nowrap">Ver em Tempo →</a>
+    </div>
+  </section>
+
+</main>
+
+<script src="../shared/mock-data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function corBarra(pct){
+    if (pct > 85) return 'var(--coral)';
+    if (pct > 70) return 'var(--t2)';
+    return 'var(--eletrico)';
+  }
+
+  var rail = document.getElementById('rail');
+
+  if (window.SL_MOCK) {
+
+    if (rail) {
+      rail.innerHTML = SL_MOCK.modulos.map(function(m){
+        var active = m.n === '01';
+        return '<a href="#"' + (active ? ' class="active"' : '') + '>' +
+          '<span class="num">' + m.n + '</span><span>' + m.nome + '</span></a>';
+      }).join('');
+    }
+
+    var coachLine = document.getElementById('coach-line');
+    if (coachLine && SL_MOCK.coach) coachLine.textContent = SL_MOCK.coach.financasA;
+
+    if (SL_MOCK.financas) {
+      var vSaldo = document.getElementById('v-saldo');
+      if (vSaldo) vSaldo.textContent = SL_MOCK.fmtBRL(SL_MOCK.financas.saldoLivre);
+      var vReceitas = document.getElementById('v-receitas');
+      if (vReceitas) vReceitas.textContent = SL_MOCK.fmtBRL(SL_MOCK.financas.receitas);
+      var vDespesas = document.getElementById('v-despesas');
+      if (vDespesas) vDespesas.textContent = SL_MOCK.fmtBRL(SL_MOCK.financas.despesas);
+    }
+
+    var catEl = document.getElementById('categorias');
+    if (catEl && SL_MOCK.gastosPorCategoria) {
+      var maxCat = Math.max.apply(null, SL_MOCK.gastosPorCategoria.map(function(c){ return c.valor; }));
+      catEl.innerHTML = SL_MOCK.gastosPorCategoria.map(function(c){
+        var pct = Math.round(c.valor / maxCat * 100);
+        var cor = c.nome === 'Lazer' ? 'var(--coral)' : 'var(--t2)';
+        return '<div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">' +
+            '<span style="color:var(--t1);font:500 14px var(--inter)">' + c.nome + '</span>' +
+            '<span style="font:700 14px var(--grotesk);color:var(--t2)">' + SL_MOCK.fmtBRL(c.valor) + '</span>' +
+          '</div>' +
+          '<div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">' +
+            '<div style="height:100%;width:' + pct + '%;background:' + cor + ';border-radius:99px"></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    var txEl = document.getElementById('transacoes');
+    if (txEl && SL_MOCK.transacoes) {
+      txEl.innerHTML = SL_MOCK.transacoes.map(function(t){
+        var positivo = t.valor > 0;
+        var valorTxt = (positivo ? '+ ' : '– ') + SL_MOCK.fmtBRL(Math.abs(t.valor));
+        var cor = positivo ? 'var(--eletrico)' : 'var(--t1)';
+        return '<div class="tx-row" style="display:grid;grid-template-columns:64px 1fr auto 110px;gap:16px;align-items:center;padding:12px 0">' +
+          '<span style="font:500 12px var(--grotesk);color:var(--t3)">' + t.d + '</span>' +
+          '<span style="color:var(--t1);font:500 14px var(--inter)">' + t.desc + '</span>' +
+          '<span class="tx-cat" style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase">' + t.cat + '</span>' +
+          '<span style="font:600 15px var(--grotesk);color:' + cor + ';text-align:right">' + valorTxt + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    var orcEl = document.getElementById('orcamentos');
+    if (orcEl && SL_MOCK.orcamentos) {
+      orcEl.innerHTML = SL_MOCK.orcamentos.map(function(o){
+        var pct = Math.round(o.gasto / o.limite * 100);
+        return '<div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">' +
+            '<span style="color:var(--t1);font:500 14px var(--inter)">' + o.nome + '</span>' +
+            '<span style="color:var(--t3);font:500 12px var(--inter)">' +
+              '<span style="font:700 12px var(--grotesk);color:var(--t2)">' + SL_MOCK.fmtBRL(o.gasto) + '</span> de ' +
+              '<span style="font:700 12px var(--grotesk);color:var(--t2)">' + SL_MOCK.fmtBRL(o.limite) + '</span>' +
+            '</span>' +
+          '</div>' +
+          '<div style="width:100%;height:6px;background:var(--s2);border-radius:99px;overflow:hidden">' +
+            '<div style="height:100%;width:' + pct + '%;background:' + corBarra(pct) + ';border-radius:99px"></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    var sparkEl = document.getElementById('spark');
+    if (sparkEl && SL_MOCK.financas && SL_MOCK.financas.sparkSaldo) {
+      var values = SL_MOCK.financas.sparkSaldo;
+      var w = 1000, h = 120, pad = 8;
+      var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+      var range = (max - min) || 1;
+      var stepX = (w - pad * 2) / (values.length - 1);
+      var pts = values.map(function(v, i){
+        var x = pad + i * stepX;
+        var y = pad + (1 - (v - min) / range) * (h - pad * 2);
+        return x.toFixed(1) + ',' + y.toFixed(1);
+      });
+      var first = pts[0].split(',');
+      var last = pts[pts.length - 1].split(',');
+      var baseline = (h - pad).toFixed(1);
+      var linePath = 'M' + pts.join(' L');
+      var areaPath = linePath + ' L' + last[0] + ',' + baseline + ' L' + first[0] + ',' + baseline + ' Z';
+      sparkEl.innerHTML = '<svg width="100%" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" style="overflow:visible">' +
+          '<defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">' +
+            '<stop offset="0%" stop-color="var(--eletrico)" stop-opacity=".18"/>' +
+            '<stop offset="100%" stop-color="var(--eletrico)" stop-opacity="0"/>' +
+          '</linearGradient></defs>' +
+          '<path d="' + areaPath + '" fill="url(#sparkFill)" stroke="none"/>' +
+          '<path d="' + linePath + '" fill="none" stroke="var(--eletrico)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="4" fill="var(--eletrico)"/>' +
+        '</svg>';
+    }
+  }
+
+  if (window.gsap && !reduce) {
+    if (rail) gsap.from('#rail a', { opacity: 0, x: -8, duration: .5, stagger: .03, ease: 'power2.out' });
+    gsap.from('main > *', { y: 24, opacity: 0, duration: .7, stagger: .08, ease: 'expo.out' });
+  }
+})();
+</script>
+</body>
+</html>
