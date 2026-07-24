@@ -25,6 +25,7 @@ Objetivo declarado: algo moderno e inovador, com animações e componentes 3D co
    - Rodada 1: Landing + Dashboard nas duas direções (4 protótipos), usuário declara a vencedora.
    - Rodada 2: Finanças + Coach apenas na vencedora (+2 protótipos).
 7. **Atualização (2026-07-24):** após ver a rodada 1, o usuário optou por estender o duelo: **Finanças + Coach nas DUAS direções** (4 protótipos na rodada 2, 8 no total). A decisão A vs C fica para depois das 8 telas. Plano da rodada 2: `docs/superpowers/plans/2026-07-24-poc-ds-v5-rodada2.md`.
+8. **VEREDITO (2026-07-24, pós 8 telas):** **Direção A "Estúdio" vence a linguagem visual** (paleta, tipografia, formas, tom). Ressalvas do usuário que definem a rodada 3, na linguagem A: (a) anatomia reprovada nas duas direções: landing "genérica" (fórmula hero + seções) e telas de app com "cara de dashboard comum", densidade/hierarquia sem guiar o olho; (b) faltou motion de nível referência (scroll-storytelling, transições, coreografia de hover); (c) vocabulário 3D "muito pobre e mal construído" (o orbital precisa ser refeito com craft real). A direção C é descartada.
 
 ## 3. Direção A: "Estúdio" (Osmo dark)
 
