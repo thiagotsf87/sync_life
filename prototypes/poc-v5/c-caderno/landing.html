@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SyncLife · Direção C "Caderno"</title>
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#fffdf7; --verde:#09543d; --marrom:#461e10; --rosa:#ffa9e9; --lima:#ccf337; --amarelo:#ffc200; --laranja:#f45c24;
+  --anton:Anton,Impact,sans-serif; --pop:Poppins,sans-serif;
+  --pop-ease:cubic-bezier(.17,.67,.3,1.33);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--cream);color:var(--verde);font-family:var(--pop);overflow-x:hidden}
+.wrap{max-width:1280px;margin:0 auto;padding:0 5vw}
+h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;letter-spacing:-.01em;overflow-wrap:break-word}
+.stamp{display:inline-block;background:var(--verde);color:var(--cream);font:600 15px var(--pop);padding:16px 32px;border-radius:999px;text-decoration:none;box-shadow:4px 4px 0 var(--marrom);transition:transform .18s,box-shadow .18s}
+.stamp:hover{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--marrom)}
+.stk{display:inline-block;font:600 14px var(--pop);padding:11px 19px;border-radius:999px;border:2px solid var(--marrom);box-shadow:3px 3px 0 var(--marrom)}
+.outline{color:transparent;-webkit-text-stroke:2.5px var(--verde)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:900px){.hero-grid{grid-template-columns:1fr!important}}
+.hero-grid>div{min-width:0}
+</style>
+</head>
+<body>
+
+<nav style="display:flex;justify-content:space-between;align-items:center;padding:26px 5vw">
+  <div class="anton" style="font-size:22px;color:var(--verde)">SyncLife</div>
+  <a class="stamp" style="padding:12px 24px;font-size:13px" href="#cta">Começar agora</a>
+</nav>
+
+<section id="hero" class="wrap hero-grid" style="display:grid;grid-template-columns:1.35fr 1fr;gap:4vw;min-height:92vh;align-items:center;padding-top:20px;padding-bottom:20px">
+  <div>
+    <h1 style="font-size:clamp(4rem,10vw,9.5rem)" data-reveal><span style="color:var(--marrom)">Sua vida</span><br>em <span class="outline">plena</span><br>sincronia</h1>
+    <p style="font-family:var(--pop);font-size:16px;line-height:1.6;color:var(--marrom);max-width:46ch;margin-top:24px" data-reveal>Nada de dashboard frio. O SyncLife é um caderno vivo: o coach escreve, você decide, os números viram história.</p>
+    <div style="margin-top:30px" data-reveal>
+      <a class="stamp" href="#cta">Começar agora →</a>
+    </div>
+    <div style="margin-top:34px;display:flex;gap:14px;flex-wrap:wrap" data-reveal>
+      <span class="stk" id="stk-saldo" style="background:var(--rosa);transform:rotate(-5deg)">R$ 1.840 livres</span>
+      <span class="stk" id="stk-score" style="background:var(--lima);transform:rotate(2.5deg)">+4 pts no score</span>
+      <span class="stk" id="stk-poupanca" style="background:var(--amarelo);transform:rotate(-2deg)">37% poupado</span>
+    </div>
+  </div>
+
+  <div id="hero-3d" style="position:relative;height:520px;touch-action:none">
+    <div class="fallback-3d" style="display:none;position:absolute;inset:0">
+      <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:300px;height:300px">
+        <div style="position:absolute;left:50%;top:50%;width:64px;height:300px;margin-left:-32px;margin-top:-150px;border-radius:999px;background:var(--verde);transform:rotate(0deg)"></div>
+        <div style="position:absolute;left:50%;top:50%;width:64px;height:300px;margin-left:-32px;margin-top:-150px;border-radius:999px;background:var(--verde);transform:rotate(30deg)"></div>
+        <div style="position:absolute;left:50%;top:50%;width:64px;height:300px;margin-left:-32px;margin-top:-150px;border-radius:999px;background:var(--verde);transform:rotate(60deg)"></div>
+        <div style="position:absolute;left:50%;top:50%;width:64px;height:300px;margin-left:-32px;margin-top:-150px;border-radius:999px;background:var(--verde);transform:rotate(90deg)"></div>
+        <div style="position:absolute;left:50%;top:50%;width:64px;height:300px;margin-left:-32px;margin-top:-150px;border-radius:999px;background:var(--verde);transform:rotate(120deg)"></div>
+        <div style="position:absolute;left:50%;top:50%;width:64px;height:300px;margin-left:-32px;margin-top:-150px;border-radius:999px;background:var(--verde);transform:rotate(150deg)"></div>
+        <div class="anton" style="position:absolute;left:50%;top:50%;width:110px;height:110px;margin-left:-55px;margin-top:-55px;border-radius:50%;background:var(--amarelo);border:4px solid var(--marrom);display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--marrom)">78</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="background:var(--verde);padding:12px 0;overflow:hidden;width:100%">
+  <div class="mq anton" style="display:inline-block;white-space:nowrap;font-size:16px;letter-spacing:.06em;color:var(--cream)"></div>
+</div>
+
+<section style="background:var(--verde);color:var(--cream);padding:110px 0;position:relative;overflow:hidden">
+  <div class="wrap" style="position:relative">
+    <div class="anton" aria-hidden="true" style="position:absolute;top:-34px;right:0;font-size:120px;opacity:.18;color:var(--cream);line-height:1;pointer-events:none">01</div>
+    <h2 style="font-size:clamp(2.4rem,5vw,4rem);max-width:16ch;position:relative" data-reveal>Dinheiro que rende história</h2>
+    <p style="font-family:var(--pop);font-size:16px;line-height:1.7;color:var(--cream);opacity:.85;max-width:52ch;margin-top:22px;position:relative" data-reveal>Finanças e Patrimônio leem cada entrada, cada saída e cada aporte do seu mês e escrevem o resumo antes de você perguntar. Nada de planilha, só a história em ordem.</p>
+    <div style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;position:relative" data-reveal>
+      <span class="stk" style="background:var(--amarelo);color:var(--marrom)">R$ 5.000 entraram</span>
+      <span class="stk" style="background:var(--rosa);color:var(--marrom)">37% ficou</span>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--cream);color:var(--verde);padding:110px 0;border-top:2px solid var(--marrom);position:relative;overflow:hidden">
+  <div class="wrap" style="position:relative">
+    <div class="anton" aria-hidden="true" style="position:absolute;top:-34px;right:0;font-size:120px;opacity:.1;color:var(--verde);line-height:1;pointer-events:none">02</div>
+    <h2 style="font-size:clamp(2.4rem,5vw,4rem);max-width:16ch;position:relative" data-reveal>Corpo e mente no mesmo caderno</h2>
+    <p style="font-family:var(--pop);font-size:16px;line-height:1.7;color:var(--marrom);opacity:.85;max-width:52ch;margin-top:22px;position:relative" data-reveal>Corpo, Mente e Tempo dividem a mesma página. Um treino perdido, uma noite maldormida ou uma agenda lotada aparecem juntos, no mesmo caderno, para você enxergar o padrão.</p>
+    <div style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;position:relative" data-reveal>
+      <span class="stk" style="background:var(--lima)">3 treinos essa semana</span>
+      <span class="stk" style="background:var(--amarelo)">12h de foco</span>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--marrom);color:var(--cream);padding:110px 0;position:relative;overflow:hidden">
+  <div class="wrap" style="position:relative">
+    <div class="anton" aria-hidden="true" style="position:absolute;top:-34px;right:0;font-size:120px;opacity:.18;color:var(--cream);line-height:1;pointer-events:none">03</div>
+    <h2 style="font-size:clamp(2.4rem,5vw,4rem);max-width:16ch;position:relative" data-reveal>O futuro se escreve agora</h2>
+    <p style="font-family:var(--pop);font-size:16px;line-height:1.7;color:var(--cream);opacity:.85;max-width:52ch;margin-top:22px;position:relative" data-reveal>Futuro, Carreira e Experiências guardam o que ainda não aconteceu. Metas, promoções e viagens ganham prazo, contexto e um empurrão do coach quando o ritmo cai.</p>
+    <div style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;position:relative" data-reveal>
+      <span class="stk" style="background:var(--rosa);color:var(--marrom)">2 metas no prazo</span>
+      <span class="stk" style="background:var(--lima);color:var(--marrom)">1 viagem marcada</span>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--cream);padding:110px 0">
+  <div class="wrap" style="max-width:760px;margin:0 auto;position:relative">
+    <span class="stk" style="position:absolute;top:-18px;right:12px;background:var(--rosa);transform:rotate(6deg);z-index:2" data-reveal>novo</span>
+    <div style="background:#fff;border:2px solid var(--marrom);border-radius:4px;padding:26px 30px;box-shadow:5px 5px 0 var(--marrom);position:relative" data-reveal>
+      <span aria-hidden="true" style="position:absolute;top:-2px;right:-2px;width:0;height:0;border-top:26px solid var(--cream);border-left:26px solid transparent"></span>
+      <p id="coach-line" style="font-family:var(--pop);font-size:18px;line-height:1.65;color:var(--marrom)">Seu mês está 4 pontos melhor que junho. O segredo foi proteger as manhãs. Hoje só falta olhar o lazer: estourou R$ 8.</p>
+      <p style="font:600 12px var(--pop);letter-spacing:.12em;margin-top:14px;color:var(--verde);text-transform:uppercase">SEU COACH · HOJE ÀS 07:12</p>
+    </div>
+  </div>
+</section>
+
+<section id="cta" style="text-align:center;padding:110px 0">
+  <div class="wrap">
+    <h2 style="font-size:clamp(2.6rem,6vw,5rem);color:var(--verde)" data-reveal>Comece pela primeira página.</h2>
+    <div style="margin-top:30px" data-reveal><a class="stamp" href="#">Criar minha conta</a></div>
+  </div>
+</section>
+
+<footer style="background:var(--verde);color:var(--cream);display:flex;justify-content:space-between;align-items:center;padding:26px 5vw;font:600 12px var(--pop);letter-spacing:.14em">
+  <span>SYNCLIFE © 2026</span><span>POC DS V5 · DIREÇÃO C</span>
+</footer>
+
+<script src="../shared/mock-data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (window.SL_MOCK) {
+    var M = window.SL_MOCK;
+    var stkSaldo = document.getElementById('stk-saldo');
+    var stkScore = document.getElementById('stk-score');
+    var stkPoupanca = document.getElementById('stk-poupanca');
+    if (stkSaldo) stkSaldo.textContent = M.fmtBRL0(M.financas.saldoLivre) + ' livres';
+    if (stkScore) stkScore.textContent = '+' + M.score.delta + ' pts no score';
+    if (stkPoupanca) stkPoupanca.textContent = M.financas.poupancaPct + '% poupado';
+
+    var coachLine = document.getElementById('coach-line');
+    if (coachLine) coachLine.textContent = M.coach.dashboardC;
+
+    var mqColors = ['var(--rosa)', 'var(--lima)', 'var(--amarelo)'];
+    var mq = document.querySelector('.mq');
+    if (mq) {
+      var buildLoop = function () {
+        var html = '';
+        M.modulos.forEach(function (m, i) {
+          html += '<span style="color:var(--cream)">' + m.nome.toUpperCase() + '</span> '
+            + '<span style="color:' + mqColors[i % mqColors.length] + '">✦</span> ';
+        });
+        return html;
+      };
+      mq.innerHTML = buildLoop() + buildLoop();
+      if (!reduce) mq.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-50%)' }], { duration: 26000, iterations: Infinity });
+    }
+  }
+
+  if (!reduce && window.Lenis) {
+    var lenis = new Lenis();
+    (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(0);
+    if (window.ScrollTrigger) lenis.on('scroll', ScrollTrigger.update);
+  }
+
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    if (!reduce) {
+      gsap.utils.toArray('[data-reveal]').forEach(function (el) {
+        var nearBottom = !!el.closest('#cta');
+        gsap.from(el, {
+          y: 36, scale: .92, opacity: 0, duration: .8, ease: 'back.out(2)',
+          scrollTrigger: { trigger: el, start: nearBottom ? 'top 96%' : 'top 82%' }
+        });
+      });
+    }
+  }
+</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script type="module">
+import('three').then(function(THREE){
+  var host = document.getElementById('hero-3d');
+  var scene = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(40, host.clientWidth/host.clientHeight, .1, 50); cam.position.z = 7;
+  var renderer = new THREE.WebGLRenderer({ alpha:true, antialias:true });
+  renderer.setSize(host.clientWidth, host.clientHeight); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  host.appendChild(renderer.domElement);
+  scene.add(new THREE.HemisphereLight(0xfffdf7, 0x461e10, 1.4));
+  var dl = new THREE.DirectionalLight(0xffffff, 1.1); dl.position.set(3,5,6); scene.add(dl);
+  function petala(){
+    var w=.21,h=1.55,r=.21,s=new THREE.Shape();
+    s.absarc(0,h-r,r,0,Math.PI,false); s.lineTo(-w,r); s.absarc(0,r,r,Math.PI,Math.PI*2,false); s.lineTo(w,h-r);
+    return new THREE.ExtrudeGeometry(s,{depth:.34,bevelEnabled:true,bevelThickness:.06,bevelSize:.06,bevelSegments:3,curveSegments:24});
+  }
+  var flor = new THREE.Group();
+  var matV = new THREE.MeshToonMaterial({ color:0x09543d });
+  for (var i=0;i<8;i++){ var p = new THREE.Mesh(petala(), matV); p.rotation.z = i*Math.PI/4; flor.add(p); }
+  var core = new THREE.Mesh(new THREE.CylinderGeometry(.55,.55,.5,32), new THREE.MeshToonMaterial({ color:0xffc200 }));
+  core.rotation.x = Math.PI/2; flor.add(core);
+  flor.rotation.x = .25; scene.add(flor);
+  var moeda = new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.09,32), new THREE.MeshToonMaterial({ color:0xffa9e9 }));
+  moeda.position.set(2.1,1.4,.5); moeda.rotation.z = .5; scene.add(moeda);
+  var pilula = new THREE.Mesh(new THREE.CapsuleGeometry(.18,.5,8,16), new THREE.MeshToonMaterial({ color:0xccf337 }));
+  pilula.position.set(-2.2,-1.2,.3); pilula.rotation.z = -.6; scene.add(pilula);
+  host.addEventListener('pointerdown', function(){
+    if (window.gsap && !reduce) gsap.fromTo(flor.scale, {x:.85,y:.85,z:.85}, {x:1,y:1,z:1,duration:.7,ease:'back.out(3)'});
+  });
+  var running = true; new IntersectionObserver(function(en){ running = en[en.length-1].isIntersecting; }).observe(host);
+  var t = 0, last = 0;
+  (function loop(ts){ requestAnimationFrame(loop); if(!running) return;
+    var dt = Math.min(((ts||0)-last)/1000, .05); last = ts||0;
+    if (!reduce) { t += dt;
+      flor.rotation.z += .36*dt; flor.position.y = Math.sin(t*.8)*.12;
+      moeda.rotation.y += 1.2*dt; moeda.position.y = 1.4 + Math.sin(t*1.1)*.15;
+      pilula.rotation.y -= .9*dt; pilula.position.y = -1.2 + Math.sin(t*.9+2)*.12; }
+    renderer.render(scene, cam);
+  })(0);
+  addEventListener('resize', function(){ cam.aspect = host.clientWidth/host.clientHeight; cam.updateProjectionMatrix(); renderer.setSize(host.clientWidth, host.clientHeight); });
+}).catch(function(){ document.querySelector('#hero-3d .fallback-3d').style.display = 'block'; });
+</script>
+</body>
+</html>
