@@ -70,7 +70,7 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hi
     <div style="display:flex;gap:28px;padding-top:18px;margin-top:26px;border-top:1px solid var(--line)">
       <div>
         <p style="display:flex;align-items:center;font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase;margin-bottom:6px"><span style="width:7px;height:7px;border-radius:50%;background:var(--eletrico);display:inline-block;margin-right:6px"></span>Score</p>
-        <p style="font:700 20px var(--grotesk);letter-spacing:-.02em;color:var(--eletrico)">+4</p>
+        <p id="stat-score" style="font:700 20px var(--grotesk);letter-spacing:-.02em;color:var(--eletrico)">+4</p>
       </div>
       <div>
         <p style="display:flex;align-items:center;font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase;margin-bottom:6px"><span style="width:7px;height:7px;border-radius:50%;background:var(--coral);display:inline-block;margin-right:6px"></span>Lazer</p>
@@ -149,7 +149,7 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hi
 
   <section id="ask-section">
     <form onsubmit="return false" style="display:flex;gap:10px">
-      <input id="ask-input" type="text" placeholder="Pergunte qualquer coisa sobre o seu mês">
+      <input id="ask-input" type="text" placeholder="Pergunte qualquer coisa sobre o seu mês" aria-label="Pergunte ao coach">
       <button class="btn" type="submit" style="border:none;cursor:pointer;font-family:var(--inter)">Enviar</button>
       <span style="font:500 11px var(--grotesk);color:var(--t3);border:1px solid var(--line);border-radius:8px;padding:8px 10px;align-self:center">⌘J</span>
     </form>
@@ -173,6 +173,9 @@ body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hi
         return '<a href="#"><span class="num">' + m.n + '</span><span>' + m.nome + '</span></a>';
       }).join('');
     }
+
+    var statScoreEl = document.getElementById('stat-score');
+    if (statScoreEl && M.score) statScoreEl.textContent = '+' + M.score.delta;
 
     var briefingEl = document.getElementById('briefing');
     if (briefingEl && M.coach && M.coach.briefing) {
