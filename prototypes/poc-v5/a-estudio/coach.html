@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SyncLife · Coach · Direção A "Estúdio"</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#151313; --s1:#201d1d; --s2:#2a2727; --line:rgba(255,255,255,.07);
+  --t1:#f4f4f4; --t2:#b8b8b8; --t3:#817f7f;
+  --roxo:#6840ff; --eletrico:#a1ff62; --coral:#f84131;
+  --ease:cubic-bezier(.625,.05,0,1); --grotesk:"Space Grotesk",sans-serif; --inter:Inter,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--t1);font-family:var(--inter);overflow-x:hidden}
+.eyebrow{font:700 11px var(--grotesk);letter-spacing:.22em;color:var(--eletrico);text-transform:uppercase}
+
+.btn{display:inline-block;background:var(--roxo);color:#fff;font:600 15px var(--inter);padding:16px 30px;border-radius:999px;text-decoration:none;transition:transform .35s var(--ease),background .35s}
+.btn:hover{transform:scale(1.05);background:#7d5bff}
+
+.btn-ghost{display:inline-block;color:var(--t3);font:500 13px var(--inter);padding:10px 18px;border:1px solid var(--line);border-radius:999px;text-decoration:none;transition:border-color .3s var(--ease),color .3s var(--ease)}
+.btn-ghost:hover{border-color:var(--t1);color:var(--t1)}
+
+#rail a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;color:var(--t3);font:500 13px var(--inter);text-decoration:none;transition:background .25s var(--ease),color .25s var(--ease);margin-bottom:2px}
+#rail a:hover{color:var(--t1);background:var(--s2)}
+#rail a .num{font:500 13px var(--grotesk);color:var(--t3);width:20px;display:inline-block;transition:color .25s var(--ease)}
+#rail a.active{background:var(--s1);color:var(--t1)}
+#rail a.active .num{color:var(--roxo)}
+
+.acao-card{transition:border-color .35s var(--ease),transform .35s var(--ease)}
+.acao-card:hover{border-color:rgba(255,255,255,.16);transform:translateY(-2px)}
+
+.whisper-row + .whisper-row{border-top:1px solid var(--line)}
+
+#ask-input{flex:1;background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:14px 22px;color:var(--t1);font:400 14px var(--inter);transition:border-color .25s var(--ease)}
+#ask-input:focus{outline:none;border-color:rgba(104,64,255,.5)}
+#ask-input::placeholder{color:var(--t3)}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:980px){
+  body{grid-template-columns:1fr!important}
+  aside{display:none!important}
+}
+@media (max-width:640px){
+  .acao-card{flex-wrap:wrap}
+  .acao-card .acao-actions{width:100%;justify-content:flex-start;margin-top:8px}
+}
+</style>
+</head>
+<body style="display:grid;grid-template-columns:236px 1fr;min-height:100vh">
+
+<aside style="border-right:1px solid var(--line);padding:26px 18px;position:sticky;top:0;height:100vh">
+  <div style="font:700 17px var(--grotesk);margin-bottom:34px">Sync<span style="color:var(--roxo)">Life</span></div>
+  <nav id="rail"></nav>
+</aside>
+
+<main style="padding:34px 44px;max-width:900px;margin:0 auto;width:100%">
+
+  <header id="topbar" style="margin-bottom:38px">
+    <p class="eyebrow">Coach · quarta, 23 julho</p>
+    <h1 style="font:500 clamp(1.9rem,3vw,2.7rem)/1.08 var(--grotesk);letter-spacing:-.03em;color:var(--t1);margin-top:12px">O briefing de hoje.</h1>
+  </header>
+
+  <section id="briefing-section" style="margin-bottom:44px">
+    <p id="briefing" style="color:var(--t2);font:400 18px/1.75 var(--inter);max-width:62ch">Julho está <strong style="color:var(--t1);font-weight:600">4 pontos</strong> acima de junho. As manhãs protegidas seguraram o foco, o <span style="color:var(--eletrico)">aporte antecipado</span> rendeu antes da média e o único ponto solto é o orçamento de lazer, que passou do limite por <strong style="color:var(--t1);font-weight:600">R$&nbsp;8</strong>. Um ajuste pequeno hoje evita um corte grande na semana que vem.</p>
+
+    <div style="display:flex;gap:28px;padding-top:18px;margin-top:26px;border-top:1px solid var(--line)">
+      <div>
+        <p style="font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase;margin-bottom:6px">Score</p>
+        <p style="font:700 20px var(--grotesk);letter-spacing:-.02em;color:var(--eletrico)">+4</p>
+      </div>
+      <div>
+        <p style="font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase;margin-bottom:6px">Lazer</p>
+        <p style="font:700 20px var(--grotesk);letter-spacing:-.02em;color:var(--coral)">+R$ 8</p>
+      </div>
+      <div>
+        <p style="font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase;margin-bottom:6px">Foco</p>
+        <p style="font:700 20px var(--grotesk);letter-spacing:-.02em;color:var(--t1)">12h</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="acoes-section" style="margin-bottom:44px">
+    <p class="eyebrow" style="color:var(--t3)">Próximos movimentos</p>
+    <div id="acoes" style="margin-top:18px;display:flex;flex-direction:column;gap:14px">
+
+      <div class="acao-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:22px 26px;display:flex;align-items:center;gap:18px">
+        <span style="font:700 18px var(--grotesk);color:var(--roxo);width:34px;flex-shrink:0">01</span>
+        <div style="flex:1">
+          <p style="color:var(--t1);font:600 16px var(--inter)">Revisar o orçamento de lazer</p>
+          <p style="color:var(--t3);font-size:13px;margin-top:4px">impacto: fecha o mês em 39% poupado</p>
+          <p style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase;margin-top:6px">Finanças</p>
+        </div>
+        <div class="acao-actions" style="display:flex;gap:10px;flex-shrink:0">
+          <a class="btn" style="padding:10px 18px;font-size:13px" href="#" onclick="return false">Fazer agora</a>
+          <a class="btn-ghost" href="#" onclick="return false">Depois</a>
+        </div>
+      </div>
+
+      <div class="acao-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:22px 26px;display:flex;align-items:center;gap:18px">
+        <span style="font:700 18px var(--grotesk);color:var(--roxo);width:34px;flex-shrink:0">02</span>
+        <div style="flex:1">
+          <p style="color:var(--t1);font:600 16px var(--inter)">Confirmar o treino de amanhã</p>
+          <p style="color:var(--t3);font-size:13px;margin-top:4px">impacto: mantém a sequência de 3 semanas</p>
+          <p style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase;margin-top:6px">Corpo</p>
+        </div>
+        <div class="acao-actions" style="display:flex;gap:10px;flex-shrink:0">
+          <a class="btn" style="padding:10px 18px;font-size:13px" href="#" onclick="return false">Fazer agora</a>
+          <a class="btn-ghost" href="#" onclick="return false">Depois</a>
+        </div>
+      </div>
+
+      <div class="acao-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:22px 26px;display:flex;align-items:center;gap:18px">
+        <span style="font:700 18px var(--grotesk);color:var(--roxo);width:34px;flex-shrink:0">03</span>
+        <div style="flex:1">
+          <p style="color:var(--t1);font:600 16px var(--inter)">Bloquear 2h de foco na sexta</p>
+          <p style="color:var(--t3);font-size:13px;margin-top:4px">impacto: historicamente vale R$ 380 em aportes</p>
+          <p style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase;margin-top:6px">Tempo</p>
+        </div>
+        <div class="acao-actions" style="display:flex;gap:10px;flex-shrink:0">
+          <a class="btn" style="padding:10px 18px;font-size:13px" href="#" onclick="return false">Fazer agora</a>
+          <a class="btn-ghost" href="#" onclick="return false">Depois</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="whispers-section" style="margin-bottom:44px">
+    <p class="eyebrow" style="color:var(--t3)">Histórico</p>
+    <div id="whispers" style="margin-top:18px">
+      <div class="whisper-row" style="display:flex;gap:16px;padding:12px 0;align-items:baseline">
+        <span style="font:500 12px var(--grotesk);color:var(--t3);width:56px;flex-shrink:0">07:12</span>
+        <span style="color:var(--t2);font-size:14px">Briefing do dia enviado.</span>
+      </div>
+      <div class="whisper-row" style="display:flex;gap:16px;padding:12px 0;align-items:baseline">
+        <span style="font:500 12px var(--grotesk);color:var(--t3);width:56px;flex-shrink:0">ontem</span>
+        <span style="color:var(--t2);font-size:14px">Aporte de R$ 300 confirmado, 2 dias antes do planejado.</span>
+      </div>
+      <div class="whisper-row" style="display:flex;gap:16px;padding:12px 0;align-items:baseline">
+        <span style="font:500 12px var(--grotesk);color:var(--t3);width:56px;flex-shrink:0">seg</span>
+        <span style="color:var(--t2);font-size:14px">Semana começou com as manhãs livres de reunião. Bom sinal.</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="ask-section">
+    <form onsubmit="return false" style="display:flex;gap:10px">
+      <input id="ask-input" type="text" placeholder="Pergunte qualquer coisa sobre o seu mês">
+      <button class="btn" type="submit" style="border:none;cursor:pointer;font-family:var(--inter)">Enviar</button>
+      <span style="font:500 11px var(--grotesk);color:var(--t3);border:1px solid var(--line);border-radius:8px;padding:8px 10px;align-self:center">⌘J</span>
+    </form>
+  </section>
+
+</main>
+
+<script src="../shared/mock-data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var rail = document.getElementById('rail');
+
+  if (window.SL_MOCK) {
+    var M = window.SL_MOCK;
+
+    if (rail && M.modulos) {
+      rail.innerHTML = M.modulos.map(function(m){
+        return '<a href="#"><span class="num">' + m.n + '</span><span>' + m.nome + '</span></a>';
+      }).join('');
+    }
+
+    var briefingEl = document.getElementById('briefing');
+    if (briefingEl && M.coach && M.coach.briefing) {
+      var s = M.coach.briefing.replace(/R\$ /g, 'R$ ');
+      s = s.replace('4 pontos', '<strong style="color:var(--t1);font-weight:600">4 pontos</strong>');
+      s = s.replace('aporte antecipado', '<span style="color:var(--eletrico)">aporte antecipado</span>');
+      s = s.replace('R$ 8', '<strong style="color:var(--t1);font-weight:600">R$ 8</strong>');
+      briefingEl.innerHTML = s;
+    }
+
+    var acoesEl = document.getElementById('acoes');
+    if (acoesEl && M.coach && M.coach.acoes) {
+      acoesEl.innerHTML = M.coach.acoes.map(function(a, i){
+        var num = '0' + (i + 1);
+        return '<div class="acao-card" style="background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:22px 26px;display:flex;align-items:center;gap:18px">' +
+          '<span style="font:700 18px var(--grotesk);color:var(--roxo);width:34px;flex-shrink:0">' + num + '</span>' +
+          '<div style="flex:1">' +
+            '<p style="color:var(--t1);font:600 16px var(--inter)">' + a.titulo + '</p>' +
+            '<p style="color:var(--t3);font-size:13px;margin-top:4px">impacto: ' + a.impacto + '</p>' +
+            '<p style="font:700 10px var(--grotesk);letter-spacing:.14em;color:var(--t3);text-transform:uppercase;margin-top:6px">' + a.modulo + '</p>' +
+          '</div>' +
+          '<div class="acao-actions" style="display:flex;gap:10px;flex-shrink:0">' +
+            '<a class="btn" style="padding:10px 18px;font-size:13px" href="#" onclick="return false">Fazer agora</a>' +
+            '<a class="btn-ghost" href="#" onclick="return false">Depois</a>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    var whispersEl = document.getElementById('whispers');
+    if (whispersEl && M.coach && M.coach.whispers) {
+      whispersEl.innerHTML = M.coach.whispers.map(function(w){
+        return '<div class="whisper-row" style="display:flex;gap:16px;padding:12px 0;align-items:baseline">' +
+          '<span style="font:500 12px var(--grotesk);color:var(--t3);width:56px;flex-shrink:0">' + w.hora + '</span>' +
+          '<span style="color:var(--t2);font-size:14px">' + w.texto + '</span>' +
+        '</div>';
+      }).join('');
+    }
+  }
+
+  if (window.gsap && !reduce) {
+    if (rail) gsap.from('#rail a', { opacity: 0, x: -8, duration: .5, stagger: .03, ease: 'power2.out' });
+    gsap.from('main > *', { y: 24, opacity: 0, duration: .7, stagger: .1, ease: 'expo.out' });
+  }
+})();
+</script>
+</body>
+</html>
