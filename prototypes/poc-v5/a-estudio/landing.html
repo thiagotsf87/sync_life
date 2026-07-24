@@ -50,6 +50,20 @@ h1,h2{font-family:var(--grotesk);font-weight:500;letter-spacing:-.045em;line-hei
       <h1 style="font-size:clamp(3rem,6vw,5.4rem);margin:20px 0 26px" data-reveal>Sua vida inteira,<br>num só <em style="font-style:normal;color:var(--roxo)">ritmo</em>.</h1>
       <p style="color:var(--t2);font-size:16px;line-height:1.65;max-width:44ch" data-reveal>Finanças, corpo, mente, tempo. O SyncLife lê as onze frentes da sua vida e te devolve um único movimento por dia.</p>
       <div style="margin-top:34px" data-reveal><a class="btn" href="#cta">Criar minha conta</a><a class="btn-ghost" href="#como">Ver o produto</a></div>
+      <div id="hero-stats" style="margin-top:34px;display:flex;gap:28px;padding-top:18px;border-top:1px solid var(--line)" data-reveal>
+        <div>
+          <p style="font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase;margin-bottom:6px">Livres no mês</p>
+          <p id="stat-livre" style="font:700 20px var(--grotesk);letter-spacing:-.02em;color:var(--t1)">R$ 1.840</p>
+        </div>
+        <div>
+          <p style="font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase;margin-bottom:6px">Score</p>
+          <p id="stat-score" style="font:700 20px var(--grotesk);letter-spacing:-.02em;color:var(--eletrico)">+4 pts</p>
+        </div>
+        <div>
+          <p style="font:700 10px var(--grotesk);letter-spacing:.18em;color:var(--t3);text-transform:uppercase;margin-bottom:6px">Poupança</p>
+          <p id="stat-poupanca" style="font:700 20px var(--grotesk);letter-spacing:-.02em;color:var(--t1)">37%</p>
+        </div>
+      </div>
     </div>
     <div id="hero-3d" aria-hidden="true" style="position:relative;height:560px;touch-action:none">
       <div class="fallback-3d" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center">
@@ -135,6 +149,10 @@ h1,h2{font-family:var(--grotesk);font-weight:500;letter-spacing:-.045em;line-hei
     var mods = window.SL_MOCK.modulos.map(function(m){ return m.n + ' ' + m.nome.toUpperCase(); }).join('  ✦  ');
     var mq = document.querySelector('.mq'); mq.textContent = mods + '  ✦  ' + mods + '  ✦  ';
     if (!reduce) mq.animate([{transform:'translateX(0)'},{transform:'translateX(-50%)'}],{duration:30000,iterations:Infinity});
+
+    document.getElementById('stat-livre').textContent = window.SL_MOCK.fmtBRL0(window.SL_MOCK.financas.saldoLivre);
+    document.getElementById('stat-score').textContent = '+' + window.SL_MOCK.score.delta + ' pts';
+    document.getElementById('stat-poupanca').textContent = window.SL_MOCK.financas.poupancaPct + '%';
   }
 
   if (!reduce && window.Lenis) { var lenis = new Lenis(); (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })(0);
