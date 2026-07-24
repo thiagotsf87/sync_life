@@ -45,7 +45,7 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     </div>
   </div>
 
-  <div id="hero-3d" style="position:relative;height:520px;touch-action:none">
+  <div id="hero-3d" style="position:relative;height:520px;touch-action:pan-y">
     <div class="fallback-3d" style="display:none;position:absolute;inset:0">
       <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:300px;height:300px">
         <div style="position:absolute;left:50%;top:50%;width:64px;height:300px;margin-left:-32px;margin-top:-150px;border-radius:999px;background:var(--verde);transform:rotate(0deg)"></div>
@@ -61,7 +61,7 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
 </section>
 
 <div style="background:var(--verde);padding:12px 0;overflow:hidden;width:100%">
-  <div class="mq anton" style="display:inline-block;white-space:nowrap;font-size:16px;letter-spacing:.06em;color:var(--cream)"></div>
+  <div class="mq anton" style="display:inline-block;white-space:nowrap;font-size:16px;letter-spacing:.06em;color:var(--cream)">FINANÇAS ✦ TEMPO ✦ CORPO ✦ MENTE ✦ PATRIMÔNIO ✦ CARREIRA ✦ EXPERIÊNCIAS ✦ CONQUISTAS ✦ FUTURO ✦ PANORAMA ✦ CONFIGURAÇÕES ✦ </div>
 </div>
 
 <section style="background:var(--verde);color:var(--cream);padding:110px 0;position:relative;overflow:hidden">
@@ -70,8 +70,8 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     <h2 style="font-size:clamp(2.4rem,5vw,4rem);max-width:16ch;position:relative" data-reveal>Dinheiro que rende história</h2>
     <p style="font-family:var(--pop);font-size:16px;line-height:1.7;color:var(--cream);opacity:.85;max-width:52ch;margin-top:22px;position:relative" data-reveal>Finanças e Patrimônio leem cada entrada, cada saída e cada aporte do seu mês e escrevem o resumo antes de você perguntar. Nada de planilha, só a história em ordem.</p>
     <div style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;position:relative" data-reveal>
-      <span class="stk" style="background:var(--amarelo);color:var(--marrom)">R$ 5.000 entraram</span>
-      <span class="stk" style="background:var(--rosa);color:var(--marrom)">37% ficou</span>
+      <span class="stk" style="background:var(--amarelo);color:var(--marrom);transform:rotate(-3deg)">R$ 5.000 entraram</span>
+      <span class="stk" style="background:var(--rosa);color:var(--marrom);transform:rotate(2.5deg)">37% ficou</span>
     </div>
   </div>
 </section>
@@ -82,8 +82,8 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     <h2 style="font-size:clamp(2.4rem,5vw,4rem);max-width:16ch;position:relative" data-reveal>Corpo e mente no mesmo caderno</h2>
     <p style="font-family:var(--pop);font-size:16px;line-height:1.7;color:var(--marrom);opacity:.85;max-width:52ch;margin-top:22px;position:relative" data-reveal>Corpo, Mente e Tempo dividem a mesma página. Um treino perdido, uma noite maldormida ou uma agenda lotada aparecem juntos, no mesmo caderno, para você enxergar o padrão.</p>
     <div style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;position:relative" data-reveal>
-      <span class="stk" style="background:var(--lima)">3 treinos essa semana</span>
-      <span class="stk" style="background:var(--amarelo)">12h de foco</span>
+      <span class="stk" style="background:var(--lima);transform:rotate(-2deg)">3 treinos essa semana</span>
+      <span class="stk" style="background:var(--amarelo);transform:rotate(3deg)">12h de foco</span>
     </div>
   </div>
 </section>
@@ -94,8 +94,8 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     <h2 style="font-size:clamp(2.4rem,5vw,4rem);max-width:16ch;position:relative" data-reveal>O futuro se escreve agora</h2>
     <p style="font-family:var(--pop);font-size:16px;line-height:1.7;color:var(--cream);opacity:.85;max-width:52ch;margin-top:22px;position:relative" data-reveal>Futuro, Carreira e Experiências guardam o que ainda não aconteceu. Metas, promoções e viagens ganham prazo, contexto e um empurrão do coach quando o ritmo cai.</p>
     <div style="margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;position:relative" data-reveal>
-      <span class="stk" style="background:var(--rosa);color:var(--marrom)">2 metas no prazo</span>
-      <span class="stk" style="background:var(--lima);color:var(--marrom)">1 viagem marcada</span>
+      <span class="stk" style="background:var(--rosa);color:var(--marrom);transform:rotate(-2.5deg);box-shadow:3px 3px 0 rgba(0,0,0,.4)">2 metas no prazo</span>
+      <span class="stk" style="background:var(--lima);color:var(--marrom);transform:rotate(2deg);box-shadow:3px 3px 0 rgba(0,0,0,.4)">1 viagem marcada</span>
     </div>
   </div>
 </section>
@@ -139,7 +139,7 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     if (stkPoupanca) stkPoupanca.textContent = M.financas.poupancaPct + '% poupado';
 
     var coachLine = document.getElementById('coach-line');
-    if (coachLine) coachLine.textContent = M.coach.dashboardC;
+    if (coachLine) coachLine.textContent = M.coach.dashboardC.replace(/R\$ /g, 'R$ ');
 
     var mqColors = ['var(--rosa)', 'var(--lima)', 'var(--amarelo)'];
     var mq = document.querySelector('.mq');
@@ -152,8 +152,8 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
         });
         return html;
       };
-      mq.innerHTML = buildLoop() + buildLoop();
-      if (!reduce) mq.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-50%)' }], { duration: 26000, iterations: Infinity });
+      mq.innerHTML = buildLoop() + buildLoop() + buildLoop() + buildLoop();
+      if (!reduce) mq.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-25%)' }], { duration: 26000, iterations: Infinity });
     }
   }
 
@@ -163,16 +163,25 @@ h1,h2,.anton{font-family:var(--anton);text-transform:uppercase;line-height:.93;l
     if (window.ScrollTrigger) lenis.on('scroll', ScrollTrigger.update);
   }
 
-  if (window.gsap && window.ScrollTrigger) {
-    gsap.registerPlugin(ScrollTrigger);
-    if (!reduce) {
-      gsap.utils.toArray('[data-reveal]').forEach(function (el) {
-        var nearBottom = !!el.closest('#cta');
-        gsap.from(el, {
-          y: 36, scale: .92, opacity: 0, duration: .8, ease: 'back.out(2)',
-          scrollTrigger: { trigger: el, start: nearBottom ? 'top 96%' : 'top 82%' }
-        });
+  if (window.gsap) {
+    var heroReveals = gsap.utils.toArray('#hero [data-reveal]');
+    if (!reduce && heroReveals.length) {
+      gsap.timeline().from(heroReveals, {
+        y: 36, scale: .92, opacity: 0, duration: .8, ease: 'back.out(2)', stagger: .12
       });
+    }
+    if (window.ScrollTrigger) {
+      gsap.registerPlugin(ScrollTrigger);
+      if (!reduce) {
+        gsap.utils.toArray('[data-reveal]').forEach(function (el) {
+          if (el.closest('#hero')) return;
+          var nearBottom = !!el.closest('#cta');
+          gsap.from(el, {
+            y: 36, scale: .92, opacity: 0, duration: .8, ease: 'back.out(2)',
+            scrollTrigger: { trigger: el, start: nearBottom ? 'top 96%' : 'top 82%' }
+          });
+        });
+      }
     }
   }
 </script>
@@ -194,28 +203,44 @@ import('three').then(function(THREE){
   }
   var flor = new THREE.Group();
   var matV = new THREE.MeshToonMaterial({ color:0x09543d });
-  for (var i=0;i<8;i++){ var p = new THREE.Mesh(petala(), matV); p.rotation.z = i*Math.PI/4; flor.add(p); }
+  var petalaGeo = petala();
+  for (var i=0;i<8;i++){ var p = new THREE.Mesh(petalaGeo, matV); p.rotation.z = i*Math.PI/4; flor.add(p); }
   var core = new THREE.Mesh(new THREE.CylinderGeometry(.55,.55,.5,32), new THREE.MeshToonMaterial({ color:0xffc200 }));
-  core.rotation.x = Math.PI/2; flor.add(core);
+  core.rotation.x = Math.PI/2; core.position.z = .45; flor.add(core);
   flor.rotation.x = .25; scene.add(flor);
   var moeda = new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.09,32), new THREE.MeshToonMaterial({ color:0xffa9e9 }));
-  moeda.position.set(2.1,1.4,.5); moeda.rotation.z = .5; scene.add(moeda);
+  moeda.position.set(1.8,1.4,.5); moeda.rotation.z = .5; scene.add(moeda);
   var pilula = new THREE.Mesh(new THREE.CapsuleGeometry(.18,.5,8,16), new THREE.MeshToonMaterial({ color:0xccf337 }));
-  pilula.position.set(-2.2,-1.2,.3); pilula.rotation.z = -.6; scene.add(pilula);
+  pilula.position.set(-1.9,-1.2,.3); pilula.rotation.z = -.6; scene.add(pilula);
+  function clampSatellites(){
+    var hw = Math.tan(cam.fov*Math.PI/360)*6.5*cam.aspect;
+    moeda.position.x = Math.min(1.8, hw-.45);
+    pilula.position.x = Math.max(-1.9, -(hw-.45));
+  }
+  clampSatellites();
   host.addEventListener('pointerdown', function(){
     if (window.gsap && !reduce) gsap.fromTo(flor.scale, {x:.85,y:.85,z:.85}, {x:1,y:1,z:1,duration:.7,ease:'back.out(3)'});
   });
-  var running = true; new IntersectionObserver(function(en){ running = en[en.length-1].isIntersecting; }).observe(host);
-  var t = 0, last = 0;
-  (function loop(ts){ requestAnimationFrame(loop); if(!running) return;
-    var dt = Math.min(((ts||0)-last)/1000, .05); last = ts||0;
-    if (!reduce) { t += dt;
+  function renderFrame(){ renderer.render(scene, cam); }
+  if (reduce) {
+    renderFrame();
+  } else {
+    var running = true; new IntersectionObserver(function(en){ running = en[en.length-1].isIntersecting; }).observe(host);
+    var t = 0, last = 0;
+    (function loop(ts){ requestAnimationFrame(loop); if(!running) return;
+      var dt = Math.min(((ts||0)-last)/1000, .05); last = ts||0;
+      t += dt;
       flor.rotation.z += .36*dt; flor.position.y = Math.sin(t*.8)*.12;
       moeda.rotation.y += 1.2*dt; moeda.position.y = 1.4 + Math.sin(t*1.1)*.15;
-      pilula.rotation.y -= .9*dt; pilula.position.y = -1.2 + Math.sin(t*.9+2)*.12; }
-    renderer.render(scene, cam);
-  })(0);
-  addEventListener('resize', function(){ cam.aspect = host.clientWidth/host.clientHeight; cam.updateProjectionMatrix(); renderer.setSize(host.clientWidth, host.clientHeight); });
+      pilula.rotation.y -= .9*dt; pilula.position.y = -1.2 + Math.sin(t*.9+2)*.12;
+      renderFrame();
+    })(0);
+  }
+  addEventListener('resize', function(){
+    cam.aspect = host.clientWidth/host.clientHeight; cam.updateProjectionMatrix(); renderer.setSize(host.clientWidth, host.clientHeight);
+    clampSatellites();
+    if (reduce) renderFrame();
+  });
 }).catch(function(){ document.querySelector('#hero-3d .fallback-3d').style.display = 'block'; });
 </script>
 </body>
