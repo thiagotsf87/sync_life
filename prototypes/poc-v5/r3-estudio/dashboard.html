@@ -171,7 +171,7 @@ body{background:var(--bg);color:var(--t1);font-family:var(--int);overflow-x:hidd
       var ny = (e.clientY - r.top) / r.height - .5;
       objetos.forEach(function (el) {
         var d = parseFloat(el.getAttribute('data-depth')) || 0;
-        el.style.translate = (nx * d) + 'px ' + (ny * d) + 'px';
+        el.style.translate = (nx * d * 2.4) + 'px ' + (ny * d * 2.4) + 'px';
       });
     });
     mesa.addEventListener('mouseleave', function () {
