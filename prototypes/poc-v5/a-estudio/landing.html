@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SyncLife · Direção A "Estúdio"</title>
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -21,7 +22,8 @@ section{padding:110px 0;position:relative}
 h1,h2{font-family:var(--grotesk);font-weight:500;letter-spacing:-.045em;line-height:1.02}
 .btn{display:inline-block;background:var(--roxo);color:#fff;font:600 15px var(--inter);padding:16px 30px;border-radius:999px;text-decoration:none;transition:transform .35s var(--ease),background .35s}
 .btn:hover{transform:scale(1.05);background:#7d5bff}
-.btn-ghost{display:inline-block;color:var(--t2);font:500 15px var(--inter);padding:16px 26px;border:1px solid var(--line);border-radius:999px;text-decoration:none;margin-left:10px}
+.btn-ghost{display:inline-block;color:var(--t2);font:500 15px var(--inter);padding:16px 26px;border:1px solid var(--line);border-radius:999px;text-decoration:none;margin-left:10px;transition:border-color .35s var(--ease),color .35s var(--ease)}
+.btn-ghost:hover{border-color:var(--t1);color:var(--t1)}
 .panel{background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:28px;transition:border-color .35s var(--ease),transform .35s var(--ease)}
 .panel:hover{border-color:rgba(255,255,255,.16);transform:translateY(-4px)}
 .panel .num{font:700 13px var(--grotesk);color:var(--roxo);letter-spacing:.08em}
@@ -49,7 +51,7 @@ h1,h2{font-family:var(--grotesk);font-weight:500;letter-spacing:-.045em;line-hei
       <p style="color:var(--t2);font-size:16px;line-height:1.65;max-width:44ch" data-reveal>Finanças, corpo, mente, tempo. O SyncLife lê as onze frentes da sua vida e te devolve um único movimento por dia.</p>
       <div style="margin-top:34px" data-reveal><a class="btn" href="#cta">Criar minha conta</a><a class="btn-ghost" href="#como">Ver o produto</a></div>
     </div>
-    <div id="hero-3d" style="position:relative;height:560px">
+    <div id="hero-3d" style="position:relative;height:560px;touch-action:none">
       <div class="fallback-3d" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center">
         <div style="width:340px;height:340px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center">
           <div style="width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8b6bff,var(--roxo))"></div>
@@ -127,24 +129,37 @@ h1,h2{font-family:var(--grotesk);font-weight:500;letter-spacing:-.045em;line-hei
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
 <script>
-  var mods = window.SL_MOCK.modulos.map(function(m){ return m.n + ' ' + m.nome.toUpperCase(); }).join('  ✦  ');
-  var mq = document.querySelector('.mq'); mq.textContent = mods + '  ✦  ' + mods + '  ✦  ';
-  mq.animate([{transform:'translateX(0)'},{transform:'translateX(-50%)'}],{duration:30000,iterations:Infinity});
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (window.Lenis) { var lenis = new Lenis(); (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })(0);
+  if (window.SL_MOCK) {
+    var mods = window.SL_MOCK.modulos.map(function(m){ return m.n + ' ' + m.nome.toUpperCase(); }).join('  ✦  ');
+    var mq = document.querySelector('.mq'); mq.textContent = mods + '  ✦  ' + mods + '  ✦  ';
+    if (!reduce) mq.animate([{transform:'translateX(0)'},{transform:'translateX(-50%)'}],{duration:30000,iterations:Infinity});
+  }
+
+  if (!reduce && window.Lenis) { var lenis = new Lenis(); (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })(0);
     if (window.ScrollTrigger) lenis.on('scroll', ScrollTrigger.update); }
 
   if (window.gsap && window.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
-    gsap.utils.toArray('[data-reveal]').forEach(function(el){
-      var nearBottom = !!el.closest('#cta');
-      gsap.from(el, { y: 44, opacity: 0, duration: .9, ease: 'expo.out',
-        scrollTrigger: { trigger: el, start: nearBottom ? 'top 96%' : 'top 82%' } });
-    });
-    var obj = { v: 0 }, el = document.getElementById('score-counter');
-    gsap.to(obj, { v: window.SL_MOCK.score.value, duration: 1.6, ease: 'power2.out', snap: { v: 1 },
-      onUpdate: function(){ el.textContent = Math.round(obj.v); },
-      scrollTrigger: { trigger: '#score-sec', start: 'top 70%' } });
+    if (!reduce) {
+      gsap.utils.toArray('[data-reveal]').forEach(function(el){
+        var nearBottom = !!el.closest('#cta');
+        gsap.from(el, { y: 44, opacity: 0, duration: .9, ease: 'expo.out',
+          scrollTrigger: { trigger: el, start: nearBottom ? 'top 96%' : 'top 82%' } });
+      });
+    }
+    var scoreEl = document.getElementById('score-counter');
+    var target = (window.SL_MOCK && window.SL_MOCK.score.value) || 78;
+    if (reduce) {
+      scoreEl.textContent = target;
+    } else {
+      scoreEl.textContent = '0';
+      var obj = { v: 0 };
+      gsap.to(obj, { v: target, duration: 1.6, ease: 'power2.out', snap: { v: 1 },
+        onUpdate: function(){ scoreEl.textContent = Math.round(obj.v); },
+        scrollTrigger: { trigger: '#score-sec', start: 'top 82%' } });
+    }
   }
 </script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
@@ -180,20 +195,21 @@ import('three').then(function(THREE){
   addEventListener('pointermove', function(e){ if(!drag) return; vx=(e.clientX-px)*.005; vy=(e.clientY-py)*.005; px=e.clientX; py=e.clientY; });
   addEventListener('pointerup', function(){ drag=false; });
   var running = true;
-  new IntersectionObserver(function(en){ running = en[0].isIntersecting; }).observe(host);
-  var t = 0;
-  (function loop(){
-    requestAnimationFrame(loop); if (!running) return;
-    t += .016;
-    group.rotation.y += .0015 + vx; group.rotation.x += vy; vx*=.92; vy*=.92;
+  new IntersectionObserver(function(en){ running = en[en.length-1].isIntersecting; }).observe(host);
+  var t = 0, last = 0;
+  (function loop(ts){
+    requestAnimationFrame(loop);
+    var dt = Math.min((ts - last) / 1000, .05); last = ts;
+    if (!running) return;
+    if (!reduce) { t += dt; group.rotation.y += .09*dt; }
+    group.rotation.y += vx; group.rotation.x += vy; vx*=.92; vy*=.92;
     group.rotation.x = Math.max(-.6, Math.min(.6, group.rotation.x));
     moons.forEach(function(m){
       var a = t*m.userData.speed + m.userData.phase, r = m.userData.r;
-      var x = Math.cos(a)*r, z = Math.sin(a)*r, y = Math.sin(a)*r*Math.sin(m.userData.tilt);
-      m.position.set(x, y*.6, z*Math.cos(m.userData.tilt));
+      m.position.set(Math.cos(a)*r, -Math.sin(a)*r*Math.sin(m.userData.tilt), Math.sin(a)*r*Math.cos(m.userData.tilt));
     });
     renderer.render(scene, cam);
-  })();
+  })(0);
   addEventListener('resize', function(){
     cam.aspect = host.clientWidth/host.clientHeight; cam.updateProjectionMatrix();
     renderer.setSize(host.clientWidth, host.clientHeight);
