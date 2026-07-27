@@ -232,21 +232,27 @@ h1,h2{font-family:var(--gro);font-weight:500;letter-spacing:-.045em;line-height:
       pin: '#orbital', pinSpacing: false,
     });
     var labels = gsap.utils.toArray('#s2 .mod-label');
+    var s3El = document.getElementById('s3');
     function setActive(el2) {
       labels.forEach(function (o) { o.style.color = 'var(--t3)'; });
       if (el2) el2.style.color = 'var(--t1)';
     }
-    labels.forEach(function (el2, i) {
-      ScrollTrigger.create({
-        trigger: el2, start: 'top 60%', end: 'bottom 40%',
-        onEnter: function () { if (window.__orbital) window.__orbital.setFocus(i); setActive(el2); },
-        onEnterBack: function () { if (window.__orbital) window.__orbital.setFocus(i); setActive(el2); },
-        // reset no proprio trigger do 1o rotulo: um unico trigger dispara os callbacks
-        // em ordem correta mesmo num salto de scroll (trigger separado nao garante ordem)
-        onLeaveBack: i === 0 ? function () { if (window.__orbital) window.__orbital.setFocus(-1); setActive(null); } : undefined,
-      });
+    // Foco recalculado da geometria ATUAL num lugar so (nada de estado espalhado em
+    // callbacks por rotulo): deterministico mesmo quando um salto de scroll (Home,
+    // drag da barra, fling do Lenis) atravessa varios rotulos num unico tick.
+    // Regra: cena 3 a vista (top < 80%) solta o foco; senao vale o rotulo mais fundo acima de 60%.
+    function syncFocus() {
+      var idx = -1;
+      if (s3El.getBoundingClientRect().top >= innerHeight * .8) {
+        labels.forEach(function (el2, i) { if (el2.getBoundingClientRect().top < innerHeight * .6) idx = i; });
+      }
+      if (window.__orbital) window.__orbital.setFocus(idx);
+      setActive(idx >= 0 ? labels[idx] : null);
+    }
+    ScrollTrigger.create({
+      trigger: '#s2', start: 'top bottom', end: 'bottom top',
+      onUpdate: syncFocus, onLeave: syncFocus, onLeaveBack: syncFocus,
     });
-    ScrollTrigger.create({ trigger: '#s3', start: 'top 80%', onEnter: function () { if (window.__orbital) window.__orbital.setFocus(-1); } });
 
     // CENA 3: mergulho no nucleo com scrub + counter atrelado ao scroll
     var dive = { p: 0, v: 0 };
@@ -258,7 +264,7 @@ h1,h2{font-family:var(--gro);font-weight:500;letter-spacing:-.045em;line-height:
     var scoreEl = document.getElementById('score-counter');
     if (scoreEl) {
       gsap.fromTo(dive, { v: 0 }, {
-        v: (window.SL_MOCK && window.SL_MOCK.score.value) || 78, ease: 'none',
+        v: (window.SL_MOCK && window.SL_MOCK.score && window.SL_MOCK.score.value) || 78, ease: 'none',
         scrollTrigger: { trigger: '#s3', start: 'top 70%', end: 'top 15%', scrub: .6 },
         onUpdate: function () { scoreEl.textContent = Math.round(dive.v); },
       });
