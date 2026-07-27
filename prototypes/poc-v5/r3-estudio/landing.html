@@ -194,13 +194,87 @@ h1,h2{font-family:var(--gro);font-weight:500;letter-spacing:-.045em;line-height:
   var mq = document.querySelector('.mq');
   if (mq && !reduce) mq.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-25%)' }], { duration: 30000, iterations: Infinity });
 
-  // Reveals simples só sem Lenis: a coreografia da Task 15 entra no branch window.Lenis (evita animação dupla).
+  // Reveals simples APENAS sem Lenis (CDN off): com Lenis presente, a choreography
+  // abaixo assume as cenas 2-5 e os reveals genericos (evita animacao dupla).
   if (window.gsap && window.ScrollTrigger && !window.Lenis && !reduce) {
     gsap.registerPlugin(ScrollTrigger);
     gsap.utils.toArray('[data-reveal]').forEach(function (el2) {
       var nearBottom = !!el2.closest('#s6');
       gsap.from(el2, { y: 44, opacity: 0, duration: .9, ease: 'expo.out',
         scrollTrigger: { trigger: el2, start: nearBottom ? 'top 96%' : 'top 82%' } });
+    });
+  }
+
+  // Choreography de scroll (Task 15): Lenis + ScrollTrigger.
+  // reduce === true pula tudo isto: sem Lenis, sem pin, sem scrub; cenas empilhadas e visiveis.
+  if (!reduce && window.Lenis && window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    var lenis = new Lenis();
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
+
+    // Reveals genericos so nos elementos que a choreography NAO anima diretamente
+    // (mod-labels, score-counter, page-demo e cross-phrase tem coreografia propria).
+    gsap.utils.toArray('[data-reveal]').forEach(function (el2) {
+      if (el2.classList.contains('mod-label') || el2.classList.contains('page-demo')) return;
+      if (el2.id === 'score-counter' || el2.id === 'cross-phrase') return;
+      var nearBottom = !!el2.closest('#s6');
+      gsap.from(el2, { y: 44, opacity: 0, duration: .9, ease: 'expo.out',
+        scrollTrigger: { trigger: el2, start: nearBottom ? 'top 96%' : 'top 82%' } });
+    });
+
+    // CENA 2: o canvas (#orbital) fica pinado enquanto os rotulos de #s2 rolam ao lado.
+    // Decisao do plano: pinar #orbital com trigger #s1 e endTrigger #s2 (pinSpacing false);
+    // mover o canvas pra dentro de #s2 via position:fixed manual seria fragil.
+    ScrollTrigger.create({
+      trigger: '#s1', start: 'top top', endTrigger: '#s2', end: 'bottom bottom',
+      pin: '#orbital', pinSpacing: false,
+    });
+    var labels = gsap.utils.toArray('#s2 .mod-label');
+    function setActive(el2) {
+      labels.forEach(function (o) { o.style.color = 'var(--t3)'; });
+      if (el2) el2.style.color = 'var(--t1)';
+    }
+    labels.forEach(function (el2, i) {
+      ScrollTrigger.create({
+        trigger: el2, start: 'top 60%', end: 'bottom 40%',
+        onEnter: function () { if (window.__orbital) window.__orbital.setFocus(i); setActive(el2); },
+        onEnterBack: function () { if (window.__orbital) window.__orbital.setFocus(i); setActive(el2); },
+        // reset no proprio trigger do 1o rotulo: um unico trigger dispara os callbacks
+        // em ordem correta mesmo num salto de scroll (trigger separado nao garante ordem)
+        onLeaveBack: i === 0 ? function () { if (window.__orbital) window.__orbital.setFocus(-1); setActive(null); } : undefined,
+      });
+    });
+    ScrollTrigger.create({ trigger: '#s3', start: 'top 80%', onEnter: function () { if (window.__orbital) window.__orbital.setFocus(-1); } });
+
+    // CENA 3: mergulho no nucleo com scrub + counter atrelado ao scroll
+    var dive = { p: 0, v: 0 };
+    gsap.to(dive, {
+      p: 1, ease: 'none',
+      scrollTrigger: { trigger: '#s3', start: 'top bottom', end: 'top 20%', scrub: .6 },
+      onUpdate: function () { if (window.__orbital) window.__orbital.setDive(dive.p); },
+    });
+    var scoreEl = document.getElementById('score-counter');
+    if (scoreEl) {
+      gsap.fromTo(dive, { v: 0 }, {
+        v: (window.SL_MOCK && window.SL_MOCK.score.value) || 78, ease: 'none',
+        scrollTrigger: { trigger: '#s3', start: 'top 70%', end: 'top 15%', scrub: .6 },
+        onUpdate: function () { scoreEl.textContent = Math.round(dive.v); },
+      });
+    }
+
+    // CENA 4: montagem da pagina peca por peca (scrub)
+    var tl4 = gsap.timeline({ scrollTrigger: { trigger: '#s4', start: 'top 70%', end: 'top 10%', scrub: .8 } });
+    tl4.from('#s4 .piece-placa',   { y: -60, opacity: 0 })
+       .from('#s4 .piece-tira',    { x: -80, opacity: 0 }, '-=.3')
+       .from('#s4 .piece-bilhete', { scale: .9, opacity: 0 }, '-=.2')
+       .from('#s4 .piece-materia', { y: 40, opacity: 0 }, '-=.3');
+
+    // CENA 5: linhas entram por mascara (overflow hidden nos .mask)
+    gsap.utils.toArray('#s5 .line').forEach(function (l, i) {
+      gsap.from(l, { yPercent: 110, duration: .8, ease: 'expo.out',
+        scrollTrigger: { trigger: '#s5', start: 'top 70%' }, delay: i * .12 });
     });
   }
 
