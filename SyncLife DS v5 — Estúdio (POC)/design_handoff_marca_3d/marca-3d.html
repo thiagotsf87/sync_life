@@ -1,0 +1,450 @@
+<!-- @dsCard group="Marca" name="Bússola 3D · cromo líquido (padrão)" subtitle="Instrumento renderizado: vidro fumê, titânio escovado, cromo líquido + ícones" viewport="1280x900" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · A marca 3D · Bússola instrumento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#151313;--s1:#201d1d;--s2:#2a2727;--line:rgba(255,255,255,.08);--line-h:rgba(255,255,255,.18);--t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;--paper:#f4f4f4;--ink:#151313;--ink2:#4f4c4c;--pline:rgba(21,19,19,.14);--roxo:#6840ff;--roxo-h:#7a55ff;--ele:#a1ff62;--coral:#f84131;--gro:'Space Grotesk',sans-serif;--ease:cubic-bezier(.625,.05,0,1);--rot:0deg}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--t1);font:400 15px/1.6 Inter,sans-serif}
+::selection{background:var(--roxo);color:#fff}
+a{color:var(--roxo);text-decoration:none}a:hover{color:var(--roxo-h)}
+.grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,56px)}
+.eyebrow{font:700 10.5px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--t3)}
+.eyebrow b{color:var(--roxo)}
+.num{font-family:var(--gro);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.hand{font:700 19px/1.25 'Caveat',cursive;color:var(--coral);letter-spacing:.01em}
+.hand.rx{color:var(--roxo)}
+h1{font:500 clamp(34px,4.8vw,60px)/1.02 var(--gro);letter-spacing:-.045em}
+h2{font:500 clamp(26px,3vw,38px)/1.06 var(--gro);letter-spacing:-.04em}
+h3{font:500 20px/1.2 var(--gro);letter-spacing:-.03em}
+.lead{color:var(--t2);max-width:62ch;font-size:15.5px;line-height:1.72}
+.sec{padding:clamp(56px,7vw,96px) 0;border-top:1px solid var(--line)}
+.sechead{display:flex;flex-direction:column;gap:14px;margin-bottom:clamp(32px,4vw,54px)}
+
+/* ============ A BÚSSOLA — corpo comum ============ */
+.bs{position:relative;width:var(--sz,280px);height:var(--sz,280px);border-radius:50%;flex:none;isolation:isolate}
+.rim{position:absolute;inset:0;border-radius:50%}
+.dial{position:absolute;inset:8.5%;border-radius:50%;perspective:640px;overflow:hidden}
+.tk{position:absolute;inset:0;width:100%;height:100%}
+.tk .mn{stroke:var(--mn,rgba(255,255,255,.16));stroke-width:2.4;stroke-linecap:round}
+.tk .d{stroke:var(--tkd,rgba(0,0,0,.55));stroke-width:5.4;stroke-linecap:round}
+.tk .l{stroke:var(--tkl,rgba(255,255,255,.22));stroke-width:5.4;stroke-linecap:round}
+.tk .t.on .d{stroke:var(--lit-d,rgba(20,40,0,.5))}
+.tk .t.on .l{stroke:var(--lit,#a1ff62)}
+.tk .t.on{filter:drop-shadow(0 0 6px var(--lit-g,rgba(161,255,98,.55)))}
+.nd{position:absolute;inset:0;transform:rotate(var(--rot))}
+.anim .nd{transition:transform .52s var(--ease)}
+.nh,.sh{position:absolute;left:50%;width:var(--nw,11.5%);transform:translateX(-50%)}
+.nh{top:8%;height:42%;clip-path:polygon(50% 0,100% 100%,0 100%);background:linear-gradient(102deg,var(--n1,#9c7dff) 0 47%,var(--n2,#5730e0) 47% 100%)}
+.sh{top:50%;height:42%;clip-path:polygon(0 0,100% 0,50% 100%);background:linear-gradient(102deg,var(--s1n,#4a4544) 0 47%,var(--s2n,#1e1b1b) 47% 100%)}
+.nsh{position:absolute;inset:0;transform:rotate(var(--rot)) translate(3%,4%);filter:blur(6px);opacity:.5}
+.anim .nsh{transition:transform .52s var(--ease)}
+.nsh i{position:absolute;left:50%;top:8%;width:var(--nw,11.5%);height:84%;transform:translateX(-50%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:#000}
+.pv{position:absolute;left:50%;top:50%;width:12.5%;height:12.5%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.9),var(--pv1,#312d2d) 52%,var(--pv2,#0e0d0d));box-shadow:0 2px 4px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.14)}
+.gl{position:absolute;inset:0;border-radius:50%;pointer-events:none}
+.sw{position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(112deg,transparent 32%,rgba(255,255,255,.3) 46%,rgba(255,255,255,.06) 53%,transparent 66%);transform:translateX(-125%);opacity:0}
+@keyframes sweep{0%{transform:translateX(-125%);opacity:0}18%{opacity:1}100%{transform:translateX(125%);opacity:0}}
+.anim .bs:hover .sw{animation:sweep 1.15s var(--ease)}
+.bs.busy .nd,.bs.busy .nsh{transform:rotate(var(--rot)) rotateX(16deg)}
+/* --- legibilidade em tamanho pequeno: o material cede, o contraste manda --- */
+.bs.s-sm{--nw:16.5%}
+.bs.s-xs{--nw:22%}
+.s-sm .dial{inset:11.5%}
+.s-xs .dial{inset:16%}
+.s-sm .tk .d,.s-sm .tk .l{stroke-width:9.5}
+.s-xs .tk .d,.s-xs .tk .l{stroke-width:14}
+.s-sm .pv{width:17%;height:17%}
+.s-xs .pv{width:23%;height:23%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.s-sm .nsh,.s-sm .sw{display:none}
+.s-sm .nh{filter:none}
+.s-sm .tk .t.on{filter:none}
+.s-sm .tk .t.on .l{stroke:var(--lit-s,var(--lit))}
+.d1.s-sm{--tkl:rgba(255,255,255,.66);--n1:#a184ff;--n2:#6134f5}
+.d1.s-sm .dial{background:radial-gradient(120% 120% at 30% 18%,#241f2e,#0d0b10 74%);box-shadow:inset 0 1.5px 4px rgba(0,0,0,.85),inset 0 -1px 0 rgba(255,255,255,.2)}
+.d2.s-sm{--tkl:rgba(255,255,255,.74);--s1n:#7d766f;--s2n:#302c2a}
+.d2.s-sm .dial{background:radial-gradient(120% 120% at 32% 16%,#413b35,#1c1917 76%);box-shadow:inset 0 1.5px 4px rgba(0,0,0,.85),inset 0 -1px 0 rgba(255,255,255,.24)}
+.dl.s-sm{--tkl:rgba(21,19,19,.76);--s1n:#aca7a2;--s2n:#78736e;--lit-s:#5a2fe6}
+.dl.s-sm .dial{background:radial-gradient(120% 120% at 32% 18%,#ffffff,#e4e0db 78%);box-shadow:inset 0 1.5px 4px rgba(21,19,19,.28),inset 0 -1px 0 #fff}
+/* cromo pequeno: aro cromado de alto contraste + mostrador escuro pra agulha aparecer */
+.d3.s-sm{--mn:rgba(255,255,255,.6);--tkd:rgba(0,0,0,.8);--tkl:#ffffff;--lit-s:#b8ff7a;--n1:#ac90ff;--n2:#5d33ea;--s1n:#cdc8c2;--s2n:#3b3735;--pv1:#e8e4e0;--pv2:#4a4644}
+.d3.s-sm .rim{background:conic-gradient(from 200deg,#fbfaf8 0 5%,#57524e 14%,#0b0a0a 26%,#918c86 39%,#f2efeb 50%,#6b6663 61%,#100f0f 75%,#b9b4ae 89%,#fbfaf8 100%);box-shadow:0 0 0 1px rgba(255,255,255,.6),inset 0 1.5px 0 #fff,inset 0 -1.5px 2px rgba(0,0,0,.8),0 6px 14px -4px rgba(0,0,0,.95)}
+.d3.s-sm .dial{background:radial-gradient(120% 120% at 32% 16%,#2c2927,#0e0d0d 72%);box-shadow:inset 0 2px 5px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,255,255,.4)}
+.d3.s-sm .gl{background:linear-gradient(150deg,rgba(255,255,255,.55) 0 9%,transparent 26%)}
+.d3.s-xs .gl{display:none}
+
+/* --- D1 · vidro fumê --- */
+.d1{--mn:rgba(255,255,255,.2);--tkd:rgba(0,0,0,.5);--tkl:rgba(255,255,255,.3);--pv1:#3a3540;--pv2:#100e14}
+.d1 .rim{background:radial-gradient(115% 115% at 28% 16%,#3b3746 0%,#241f2b 34%,#161318 68%,#0d0b0f 100%);box-shadow:0 0 0 1px rgba(255,255,255,.1),inset 0 1.5px 0 rgba(255,255,255,.4),inset 0 -2px 3px rgba(0,0,0,.8),0 34px 70px -26px rgba(0,0,0,.95),0 0 60px -18px rgba(104,64,255,.4)}
+.d1 .dial{background:radial-gradient(120% 120% at 30% 18%,rgba(255,255,255,.14),rgba(255,255,255,.02) 42%,rgba(0,0,0,.5) 100%),#191620;box-shadow:inset 0 3px 10px rgba(0,0,0,.75),inset 0 -1px 0 rgba(255,255,255,.14)}
+.d1 .nh{filter:drop-shadow(0 0 10px rgba(104,64,255,.75))}
+.d1 .gl{background:radial-gradient(60% 42% at 26% 14%,rgba(255,255,255,.3),transparent 70%),radial-gradient(40% 26% at 74% 92%,rgba(161,255,98,.1),transparent 72%)}
+
+/* --- D2 · titânio escovado --- */
+.d2{--mn:rgba(255,255,255,.24);--tkd:rgba(0,0,0,.62);--tkl:rgba(255,255,255,.34);--pv1:#514a44;--pv2:#171412;--s1n:#5c554f;--s2n:#242120}
+.d2 .rim{background:repeating-conic-gradient(from 0deg,#312d29 0deg .9deg,#4b453f 1.5deg,#312d29 2.4deg),radial-gradient(circle,#3a352f,#221f1c);box-shadow:0 0 0 1px rgba(255,255,255,.14),inset 0 2px 0 rgba(255,255,255,.42),inset 0 -2px 2px rgba(0,0,0,.85),0 30px 64px -24px rgba(0,0,0,.9)}
+.d2 .dial{background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.03) 0deg .7deg,rgba(0,0,0,.05) 1.4deg),radial-gradient(120% 120% at 32% 16%,#4a443e,#2b2724 52%,#191614);box-shadow:inset 0 4px 12px rgba(0,0,0,.8),inset 0 -1px 0 rgba(255,255,255,.2)}
+.d2 .gl{background:linear-gradient(128deg,rgba(255,255,255,.24) 0 16%,transparent 40%),radial-gradient(50% 34% at 22% 12%,rgba(255,255,255,.2),transparent 72%)}
+
+/* --- D3 · cromo líquido --- */
+.d3{--mn:rgba(255,255,255,.42);--tkd:rgba(0,0,0,.5);--tkl:rgba(255,255,255,.7);--pv1:#8d8781;--pv2:#100f0f;--s1n:#8e8882;--s2n:#2b2827}
+.d3 .rim{background:conic-gradient(from 196deg,#f3f0ec 0%,#8c8781 9%,#2a2725 20%,#0f0e0e 29%,#5d5854 40%,#d9d4ce 50%,#f7f5f2 55%,#7d7873 66%,#1a1817 78%,#454140 88%,#cdc8c2 96%,#f3f0ec 100%);box-shadow:0 0 0 1px rgba(255,255,255,.2),inset 0 2px 0 rgba(255,255,255,.7),inset 0 -3px 4px rgba(0,0,0,.7),0 30px 66px -22px rgba(0,0,0,.9)}
+.d3 .dial{background:conic-gradient(from 200deg,#2b2827 0%,#0f0e0e 22%,#6b6763 44%,#cfcac4 50%,#5e5a57 58%,#131211 80%,#2b2827 100%);box-shadow:inset 0 4px 14px rgba(0,0,0,.85),inset 0 -1px 0 rgba(255,255,255,.4)}
+.d3 .nh{filter:drop-shadow(0 2px 4px rgba(0,0,0,.7))}
+.d3 .gl{background:linear-gradient(150deg,rgba(255,255,255,.4) 0 12%,transparent 34%),radial-gradient(46% 30% at 74% 88%,rgba(255,255,255,.18),transparent 74%)}
+
+/* --- claro (cerâmica) --- */
+.dl{--mn:rgba(21,19,19,.3);--tkd:rgba(255,255,255,.85);--tkl:rgba(21,19,19,.5);--lit:#6840ff;--lit-d:rgba(255,255,255,.7);--lit-g:rgba(104,64,255,.4);--pv1:#dedad6;--pv2:#8b8681;--s1n:#c9c4bf;--s2n:#8d8883}
+.dl .rim{background:radial-gradient(115% 115% at 28% 14%,#ffffff,#eae7e3 42%,#cbc7c2 78%,#b4b0ab 100%);box-shadow:0 0 0 1px rgba(21,19,19,.1),inset 0 2px 0 rgba(255,255,255,1),inset 0 -2px 3px rgba(21,19,19,.28),0 26px 56px -24px rgba(21,19,19,.55)}
+.dl .dial{background:radial-gradient(120% 120% at 32% 18%,#ffffff,#efece8 48%,#d6d2cd);box-shadow:inset 0 3px 9px rgba(21,19,19,.22),inset 0 -1px 0 #fff}
+.dl .gl{background:radial-gradient(56% 38% at 26% 12%,rgba(255,255,255,.9),transparent 70%)}
+
+/* ============ direções ============ */
+.dirs{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.6vw,40px)}
+.dir{display:flex;flex-direction:column;gap:18px}
+.dirstage{aspect-ratio:1/1;display:grid;place-items:center;border:1px solid var(--line);border-radius:2px;background:radial-gradient(120% 120% at 50% 30%,#1c1919,#121010);transition:border-color .3s var(--ease)}
+.dir:hover .dirstage{border-color:var(--line-h)}
+.dirstage.lt{background:radial-gradient(120% 120% at 50% 30%,#fbfaf9,#e8e5e1)}
+.dirmeta{display:flex;flex-direction:column;gap:8px}
+.dirmeta .ix{font:700 11px var(--gro);letter-spacing:.16em;color:var(--roxo)}
+.dirmeta .ix.alt{color:var(--t3)}
+.pad{display:inline-flex;align-items:center;font:700 9.5px var(--gro);letter-spacing:.18em;color:#151313;background:var(--ele);padding:4px 7px;border-radius:2px;margin-left:8px;vertical-align:2px}
+.dirmeta p{font-size:13.5px;color:var(--t2);line-height:1.6}
+.dirmeta .mat{font:400 11.5px Inter;color:var(--t3);padding-top:8px;border-top:1px solid var(--line)}
+
+/* ============ comportamento ============ */
+.beh{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,64px);align-items:center}
+.behstage{display:grid;place-items:center;padding:clamp(20px,3vw,44px) 0}
+.areas{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--line)}
+.ab{display:flex;align-items:center;gap:12px;padding:13px 10px 13px 2px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--t2);font:500 15px var(--gro);letter-spacing:-.02em;cursor:pointer;text-align:left;transition:padding-left .3s var(--ease),color .3s var(--ease)}
+.ab:hover{padding-left:10px;color:var(--t1)}
+.ab .n{font:700 11px var(--gro);letter-spacing:.1em;color:var(--t3);transition:color .3s var(--ease)}
+.ab[aria-pressed=true]{color:var(--t1)}
+.ab[aria-pressed=true] .n{color:var(--roxo)}
+.focoline{margin-top:22px;color:var(--t2);font-size:14.5px}
+.focoline b{color:var(--t1);font-weight:500}
+.hand-arrow{overflow:visible}
+.hand-arrow path{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round}
+
+/* ============ escala ============ */
+.ladder{display:flex;flex-direction:column;gap:22px}
+.lrow{display:flex;align-items:flex-end;gap:clamp(18px,3vw,44px);flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--line)}
+.lrow:last-child{border-bottom:0}
+.lrow .tag{width:132px;flex:none;font:700 10.5px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+.szb{display:flex;flex-direction:column;align-items:center;gap:10px}
+.szb .lb{font:400 10.5px Inter;color:var(--t3)}
+.szb .box{display:grid;place-items:center;height:96px}
+
+/* ============ aplicações ============ */
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:clamp(20px,2.6vw,36px)}
+.app{display:flex;flex-direction:column;gap:14px}
+.appbox{border:1px solid var(--line);border-radius:2px;padding:26px;display:grid;place-items:center;min-height:190px;background:#171414}
+.appbox.lt{background:#efece8}
+.cap{font:400 11.5px Inter;color:var(--t3)}
+.tile{display:grid;place-items:center;border-radius:22.5%}
+.tile.dk{background:radial-gradient(120% 120% at 30% 20%,#26222b,#100e11);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 18px 34px -14px rgba(0,0,0,.9)}
+.tile.lt{background:radial-gradient(120% 120% at 30% 20%,#ffffff,#e7e4e0);box-shadow:inset 0 1px 0 #fff,0 16px 30px -14px rgba(21,19,19,.45)}
+.tile.rx{background:radial-gradient(120% 120% at 28% 18%,#8a68ff,#5a2fe6 58%,#3d17b8);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.42),0 18px 34px -14px rgba(61,23,184,.7)}
+.iosrow{display:flex;align-items:flex-end;gap:20px}
+.tabmock{width:100%;max-width:270px;background:#1b1918;border:1px solid var(--line);border-radius:9px 9px 3px 3px;overflow:hidden}
+.tabbar{display:flex;align-items:center;gap:9px;padding:9px 12px;border-bottom:1px solid var(--line);font:400 11.5px Inter;color:var(--t2)}
+.tabbar .x{margin-left:auto;color:var(--t3)}
+.tabbody{height:66px;background:linear-gradient(180deg,#151313,#111010)}
+.lockup{display:flex;align-items:center;gap:11px}
+.wm{font:700 clamp(21px,2.4vw,30px) var(--gro);letter-spacing:-.03em;color:var(--t1)}
+.wm em{font-style:normal;color:var(--roxo)}
+.lockup.lt .wm{color:var(--ink)}
+.splash{width:100%;aspect-ratio:9/16;max-height:290px;border-radius:14px;border:1px solid var(--line);background:radial-gradient(90% 60% at 50% 38%,#221e28,#131111 70%);display:grid;place-items:center;gap:18px;align-content:center}
+
+/* ============ ícones ============ */
+.igrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:760px){.igrid{grid-template-columns:repeat(2,1fr)}}
+.icell{background:var(--bg);padding:22px 16px;display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center;transition:background .3s var(--ease)}
+.icell:hover{background:#1a1717}
+.icell .nm{font:500 12.5px var(--gro);letter-spacing:-.01em;color:var(--t2)}
+.icell .ix{font:700 10px var(--gro);letter-spacing:.14em;color:var(--t3)}
+.ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;background:radial-gradient(120% 120% at 30% 18%,#2c2927,#0f0e0e 74%);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),inset 0 -1.5px 2px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.16),0 10px 20px -10px rgba(0,0,0,.95)}
+.aic{flex:none}
+.aic .tk .d,.aic .tk .l{stroke-width:7}
+.aic .tk .t.on .l{stroke-width:8.5}
+.aic .gly{position:absolute;left:-20%;top:-20%;width:140%;height:140%;overflow:visible}
+.aic .gly .eng,.aic .gly .top,.aic .gly .acc{stroke-width:2}
+.gly .eng{stroke:rgba(0,0,0,.75);fill:none;stroke-linecap:round;stroke-linejoin:round}
+.gly .top{stroke:rgba(255,255,255,.9);fill:none;stroke-linecap:round;stroke-linejoin:round}
+.gly .acc{stroke:#9d7dff;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.gly .accf{fill:#9d7dff;stroke:none}
+.gly .ring{display:none}
+.ic svg{display:block;overflow:visible}
+.ic .eng{stroke:rgba(0,0,0,.6);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ic .top{stroke:rgba(255,255,255,.82);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ic .acc{stroke:var(--roxo);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ic .accf{fill:var(--roxo);stroke:none}
+.ic .ring{stroke:rgba(255,255,255,.14);fill:none;stroke-width:1.4}
+.uigrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:14px}
+.ucell{display:flex;flex-direction:column;align-items:center;gap:10px}
+.ucell .nm{font:400 10.5px Inter;color:var(--t3)}
+.ic.sm{width:44px;height:44px;border-radius:13px}
+
+/* ============ nota DS ============ */
+.folha{background:var(--paper);color:var(--ink);padding:clamp(34px,4.4vw,60px) 0;margin-top:clamp(56px,7vw,96px)}
+.folha .eyebrow{color:var(--ink2)}
+.folha h2{margin:14px 0 22px}
+.rules{display:grid;gap:0;border-top:1px solid var(--pline);max-width:860px}
+.rule{display:grid;grid-template-columns:76px 1fr;gap:18px;padding:15px 0;border-bottom:1px solid var(--pline);font-size:14px;color:var(--ink2)}
+.rule .k{font:700 11px var(--gro);letter-spacing:.14em;color:var(--ink)}
+.rule b{color:var(--ink);font-weight:600}
+.foot{padding:40px 0 70px;color:var(--t3);font-size:12px}
+@media(max-width:900px){.dirs{grid-template-columns:1fr;gap:44px}.beh{grid-template-columns:1fr}.areas{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<template id="tplbs"><div class="rim"></div><div class="dial"><div class="nsh" aria-hidden="true"><i></i></div><svg class="tk" viewBox="0 0 200 200" aria-hidden="true"></svg><div class="nd"><span class="nh"></span><span class="sh"></span></div><div class="pv"></div></div><div class="gl"></div><div class="sw"></div></template>
+
+<header class="wrap" style="padding-top:clamp(56px,7vw,104px);padding-bottom:clamp(40px,5vw,70px)">
+  <p class="eyebrow"><b>Marca · rodada 7</b> · a bússola como instrumento</p>
+  <h1 style="margin:18px 0 20px;max-width:22ch">A bússola deixa de ser um desenho e passa a ser um objeto.</h1>
+  <p class="lead">Mesmo conceito, outra matéria: aro torneado, mostrador rebaixado, marcações gravadas e agulha com faceta que pega luz. O símbolo continua legível em 16px porque a geometria não mudou, só ganhou volume, sombra e material. <b style="color:var(--t1);font-weight:500">Padrão definido: cromo líquido</b>. As outras duas ficam registradas como exploração.</p>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:26px">
+    <svg class="hand-arrow" width="42" height="24" viewBox="0 0 42 24" aria-hidden="true" style="color:var(--roxo)"><path d="M40 4 C28 20, 15 22, 3 15 M9 21 L3 15 L10 11"></path></svg>
+    <span class="hand rx" style="transform:rotate(-2deg)">passe o mouse: a luz varre a peça</span>
+  </div>
+</header>
+
+<section class="sec wrap">
+  <div class="sechead">
+    <p class="eyebrow">01 · as três direções</p>
+    <h2>Cromo líquido é o padrão</h2>
+  </div>
+  <div class="dirs">
+    <div class="dir">
+      <div class="dirstage"><div class="bs d1" data-bs style="--sz:min(280px,72%)"></div></div>
+      <div class="dirmeta">
+        <span class="ix alt">A · VIDRO FUMÊ · explorada</span>
+        <h3>Instrumento de vidro</h3>
+        <p>Cristal escuro sobre aro polido. A agulha acende por dentro, como se o roxo fosse luz e não pintura. É a direção mais próxima do v5 atual: escuro, sóbrio, o acento é a única coisa viva.</p>
+        <span class="mat">Vidro fumê · aro cromado escuro · glow roxo interno</span>
+      </div>
+    </div>
+    <div class="dir">
+      <div class="dirstage"><div class="bs d2" data-bs style="--sz:min(280px,72%)"></div></div>
+      <div class="dirmeta">
+        <span class="ix alt">B · TITÂNIO ESCOVADO · explorada</span>
+        <h3>Instrumento medido</h3>
+        <p>Metal escovado anisotrópico, bisel usinado, marcações gravadas com brilho na quina inferior. Lê como ferramenta de precisão, não como app. A agulha é anodizada, não iluminada.</p>
+        <span class="mat">Titânio grafite escovado · gravação em baixo relevo · agulha anodizada</span>
+      </div>
+    </div>
+    <div class="dir">
+      <div class="dirstage"><div class="bs d3" data-bs style="--sz:min(280px,72%)"></div></div>
+      <div class="dirmeta">
+        <span class="ix">C · CROMO LÍQUIDO<span class="pad">PADRÃO</span></span>
+        <h3>Instrumento espelho</h3>
+        <p>Cromo com horizonte refletido: a peça reflete o ambiente, então muda de leitura em cada fundo. Máximo impacto em splash e loja, o mais exigente de todos em contraste com a UI escura.</p>
+        <span class="mat">Cromo espelhado · reflexo de horizonte · agulha em cromo roxo · <b style="color:var(--ele);font-weight:400">material oficial da marca</b></span>
+      </div>
+    </div>
+  </div>
+  <div class="dirs" style="margin-top:clamp(22px,3vw,40px)">
+    <div class="dir">
+      <div class="dirstage lt"><div class="bs dl" data-bs style="--sz:min(200px,60%)"></div></div>
+      <div class="dirmeta"><span class="ix" style="color:var(--t3)">VERSÃO CLARA</span><p>Cerâmica off-white para bandas claras e impressão: mesma peça, luz de cima, marcação acesa em roxo (o elétrico é detalhe do escuro).</p></div>
+    </div>
+    <div class="dir" style="grid-column:span 2">
+      <div class="dirstage" style="aspect-ratio:auto;padding:clamp(24px,3vw,42px);place-items:start center;display:grid;align-content:center;gap:26px">
+        <p class="lead" style="max-width:46ch;font-size:14.5px">A construção é a mesma em todas: <b style="color:var(--t1);font-weight:500">aro</b> (torneado, luz na quina superior) · <b style="color:var(--t1);font-weight:500">mostrador rebaixado</b> (sombra interna de 3px) · <b style="color:var(--t1);font-weight:500">24 marcações</b>, sendo 8 maiores nas áreas · <b style="color:var(--t1);font-weight:500">agulha facetada</b> em dois planos · <b style="color:var(--t1);font-weight:500">pivô usinado</b>. Nada é ilustração: é iluminação.</p>
+        <div style="display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap"><div class="bs d1" data-bs style="--sz:104px"></div><div class="bs d2" data-bs style="--sz:104px"></div><div class="bs d3" data-bs style="--sz:104px"></div><div class="bs dl" data-bs style="--sz:104px"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec wrap">
+  <div class="sechead">
+    <p class="eyebrow">02 · comportamento</p>
+    <h2>Só a agulha se move</h2>
+    <p class="lead">O corpo nunca gira. A agulha busca a área em foco do dia, inclina em perspectiva durante o trajeto e assenta com overshoot. A marcação de destino acende. Escolha uma área:</p>
+  </div>
+  <div class="beh">
+    <div class="behstage"><div class="bs d3" data-bs id="hero" style="--sz:min(360px,78vw)"></div></div>
+    <div>
+      <div class="areas" id="areas"></div>
+      <p class="focoline" id="focoline" aria-live="polite">Hoje o norte é <b>01 · Finanças</b>: segurar o lazer até sexta.</p>
+      <div style="display:flex;align-items:center;gap:9px;margin-top:20px">
+        <svg class="hand-arrow" width="42" height="24" viewBox="0 0 42 24" aria-hidden="true" style="color:var(--coral)"><path d="M40 4 C28 20, 15 22, 3 15 M9 21 L3 15 L10 11"></path></svg>
+        <span class="hand" style="transform:rotate(-2deg)">o corpo é fixo, o instrumento é que lê</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec wrap">
+  <div class="sechead">
+    <p class="eyebrow">03 · escala e degradação</p>
+    <h2>De 320 a 16 pixels</h2>
+    <p class="lead">Ordem de perda: reflexo → marcações menores → aro → núcleo. Abaixo de 24px a peça vira relevo simples com a agulha; o material desaparece antes da geometria.</p>
+  </div>
+  <div class="ladder" id="ladder"></div>
+</section>
+
+<section class="sec wrap">
+  <div class="sechead">
+    <p class="eyebrow">04 · aplicações</p>
+    <h2>Ícone, favicon, lockup, splash</h2>
+  </div>
+  <div class="apps">
+    <div class="app">
+      <div class="appbox"><div class="iosrow"><div class="tile dk" style="width:104px;height:104px"><div class="bs d3" data-bs style="--sz:72px"></div></div><div class="tile rx" style="width:72px;height:72px"><div class="bs dl" data-bs style="--sz:50px"></div></div></div></div>
+      <span class="cap">iOS · tile escuro e tile roxo (squircle 22.5%)</span>
+    </div>
+    <div class="app">
+      <div class="appbox lt"><div class="iosrow"><div class="tile lt" style="width:104px;height:104px;border-radius:50%"><div class="bs d2" data-bs style="--sz:76px"></div></div><div class="tile dk" style="width:72px;height:72px;border-radius:50%"><div class="bs d3" data-bs style="--sz:52px"></div></div></div></div>
+      <span class="cap">Android · maskable circular, claro e escuro</span>
+    </div>
+    <div class="app">
+      <div class="appbox"><div class="tabmock"><div class="tabbar"><div class="bs d3" data-bs style="--sz:15px"></div><span>SyncLife · Edição do dia</span><span class="x">×</span></div><div class="tabbody"></div></div></div>
+      <span class="cap">Favicon 16px · núcleo em relevo</span>
+    </div>
+    <div class="app">
+      <div class="appbox"><div style="display:flex;flex-direction:column;gap:22px;align-items:flex-start"><div class="lockup"><div class="bs d3" data-bs style="--sz:30px"></div><span class="wm">Sync<em>Life</em></span></div><div class="lockup"><div class="bs d3" data-bs style="--sz:22px"></div><span class="wm" style="font-size:21px">Sync<em>Life</em></span></div></div></div>
+      <span class="cap">Lockup · bússola à esquerda, gap 11px</span>
+    </div>
+    <div class="app">
+      <div class="appbox lt"><div class="lockup lt"><div class="bs dl" data-bs style="--sz:30px"></div><span class="wm">Sync<em>Life</em></span></div></div>
+      <span class="cap">Lockup claro · cerâmica + ink</span>
+    </div>
+    <div class="app">
+      <div class="appbox" style="padding:18px"><div class="splash"><div class="bs d3" data-bs style="--sz:96px"></div><span class="wm" style="font-size:20px">Sync<em>Life</em></span></div></div>
+      <span class="cap">Splash · a peça respira, a agulha aponta o norte</span>
+    </div>
+  </div>
+</section>
+
+<section class="sec wrap">
+  <div class="sechead">
+    <p class="eyebrow">05 · as 8 áreas <b>· revoga E-09</b></p>
+    <h2>Ícones de área com rumo</h2>
+    <p class="lead">Cada área ganha ícone, mas não uma cor. O ícone <b style="color:var(--t1);font-weight:500">é a própria bússola em cromo</b>: aro espelhado, mostrador escuro, a <b style="color:var(--t1);font-weight:500">marcação acesa no rumo da área</b> (45° por área) e, no lugar da agulha, a <b style="color:var(--t1);font-weight:500">primitiva geométrica</b> daquela área no centro. O número continua ao lado: ícone e índice contam a mesma coisa.</p>
+  </div>
+  <div class="igrid" id="areaicons"></div>
+</section>
+
+<section class="sec wrap">
+  <div class="sechead">
+    <p class="eyebrow">06 · ícones de ui</p>
+    <h2>Gravados no mesmo metal</h2>
+    <p class="lead">Traço de 2.6 sobre gravação escura de 1px abaixo: o ícone parece usinado na superfície em vez de desenhado sobre ela. Roxo só onde a ação é primária.</p>
+  </div>
+  <div class="uigrid" id="uiicons"></div>
+</section>
+
+<div class="folha">
+  <div class="wrap">
+    <p class="eyebrow">O que isso muda no DS v5</p>
+    <h2>Quatro regras precisam ser reescritas</h2>
+    <div class="rules">
+      <div class="rule"><span class="k">§5.1</span><span><b>Material oficial: cromo líquido.</b> Aro espelhado com horizonte refletido, mostrador escuro, agulha em cromo roxo. Vidro fumê e titânio ficam registrados como exploração, não como variantes de uso. Versão clara = cerâmica off-white (impressão e mono).</span></div>
+      <div class="rule"><span class="k">E-09</span><span><b>Revogada em parte.</b> Módulo passa a ter ícone além do índice. O que continua proibido é <b>cor de módulo</b>: o ícone é do mesmo material para todas as 8 áreas, muda a geometria e o rumo, nunca a cor.</span></div>
+      <div class="rule"><span class="k">E-06</span><span><b>Exceção de marca.</b> Gradiente segue proibido em superfícies de seção, mas a marca e os ícones passam a usar gradiente <b>como iluminação</b> (aro, bisel, faceta). Nenhum gradiente decorativo, nenhuma cor nova: só roxo, elétrico e neutros.</span></div>
+      <div class="rule"><span class="k">§5.2</span><span><b>Construção atualizada.</b> As 5 peças ganham material: aro torneado, mostrador rebaixado, 24 marcações (8 maiores), agulha facetada em 2 planos, pivô usinado. O pivô deixa de ser "furo na cor do fundo" e passa a ser cabeça de eixo.</span></div>
+      <div class="rule"><span class="k">§5.3</span><span><b>Degradação por material.</b> Nova ordem: reflexo → marcações menores → aro → núcleo. Abaixo de 24px o material cai e sobra o relevo com a agulha roxa.</span></div>
+    </div>
+    <p style="margin-top:26px;font-size:14px;color:var(--ink2);max-width:70ch">Padrão fechado no cromo líquido. Próximo passo: exportar o SVG mestre com a grade, os PNG/ICO de ícone, a versão mono, e aplicar marca e ícones de área nas 4 telas do v5.</p>
+  </div>
+</div>
+
+<footer class="wrap foot">SyncLife · marca 3D, rodada 7 · padrão: cromo líquido · 2026-07-28</footer>
+
+<script>
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduce)document.documentElement.classList.add('anim');
+
+var AREAS=[['01','Finanças','disc'],['02','Futuro','ring'],['03','Tempo','clock'],['04','Corpo','pill'],['05','Mente','dots'],['06','Patrimônio','square'],['07','Carreira','chev'],['08','Experiências','diamond']];
+
+function buildTicks(svg){var h='',j,i;
+ for(j=0;j<24;j++){if(j%3===0)continue;h+='<g transform="rotate('+j*15+' 100 100)"><line class="mn" x1="100" y1="17" x2="100" y2="25"></line></g>'}
+ for(i=0;i<8;i++){h+='<g class="t" data-i="'+i+'" transform="rotate('+i*45+' 100 100)"><line class="d" x1="100" y1="13" x2="100" y2="31.6"></line><line class="l" x1="100" y1="14.3" x2="100" y2="30.4"></line></g>'}
+ svg.innerHTML=h}
+
+var tpl=document.getElementById('tplbs');
+function mount(el){el.appendChild(tpl.content.cloneNode(true));var svg=el.querySelector('.tk');buildTicks(svg);var sz=el.getBoundingClientRect().width;if(!sz)return;
+ if(sz<=22)el.classList.add('s-sm','s-xs');else if(sz<=54)el.classList.add('s-sm');
+ if(sz<54)el.querySelectorAll('.mn').forEach(function(n){n.remove()});
+ el.querySelectorAll('.t').forEach(function(g){var i=+g.dataset.i;if(sz<=22?i!==0:(sz<34&&i%2))g.remove()})}
+document.querySelectorAll('[data-bs]').forEach(mount);
+
+/* escala */
+var LAD=[['Cromo líquido · padrão','d3'],['Cerâmica clara','dl'],['Vidro fumê · explorada','d1'],['Titânio escovado · explorada','d2']];
+var SIZES=[96,64,48,32,24,16];
+var lad=document.getElementById('ladder');
+LAD.forEach(function(r){var row=document.createElement('div');row.className='lrow';var h='<span class="tag">'+r[0]+'</span>';SIZES.forEach(function(s){h+='<div class="szb"><div class="box"'+(r[1]==='dl'?' style="background:#efece8;width:'+(s+34)+'px;border-radius:2px"':'')+'><div class="bs '+r[1]+'" data-bs style="--sz:'+s+'px"></div></div><span class="lb num">'+s+'</span></div>'});row.innerHTML=h;lad.appendChild(row);row.querySelectorAll('[data-bs]').forEach(mount)});
+
+/* áreas — controle da agulha */
+var areasEl=document.getElementById('areas'),foco=document.getElementById('focoline'),cur=0;
+var FRASES=['segurar o lazer até sexta.','a reserva cobre 4,2 meses agora.','2h de foco livres hoje à tarde.','3 treinos na semana, meta batida.','sono em queda: 6h12 de média.','patrimônio +2,1% no mês.','revisão de metas em 3 dias.','uma experiência nova por mês.'];
+AREAS.forEach(function(a,i){var b=document.createElement('button');b.className='ab';b.type='button';b.setAttribute('aria-pressed',i===0?'true':'false');b.innerHTML='<span class="n num">'+a[0]+'</span>'+a[1];b.onclick=function(){point(i)};areasEl.appendChild(b)});
+
+function litTick(i){document.querySelectorAll('.tk .t').forEach(function(g){g.classList.toggle('on',+g.dataset.i===i)})}
+function point(i){cur=i;
+ document.querySelectorAll('.ab').forEach(function(b,k){b.setAttribute('aria-pressed',k===i?'true':'false')});
+ foco.innerHTML='Hoje o norte é <b>'+AREAS[i][0]+' · '+AREAS[i][1]+'</b>: '+FRASES[i];
+ var tgt=i*45,root=document.documentElement;
+ if(reduce){root.style.setProperty('--rot',tgt+'deg');litTick(i);return}
+ document.querySelectorAll('.bs').forEach(function(b){b.classList.add('busy')});
+ root.style.setProperty('--rot',(tgt+9)+'deg');
+ setTimeout(function(){root.style.setProperty('--rot',tgt+'deg');document.querySelectorAll('.bs').forEach(function(b){b.classList.remove('busy')})},330);
+ setTimeout(function(){litTick(i)},260)}
+litTick(0);
+
+/* ícones de área */
+function prim(kind){switch(kind){
+ case 'disc':return '<circle class="accf" cx="28" cy="28" r="7"></circle>';
+ case 'ring':return '<circle class="eng" cx="28" cy="28.9" r="7.4"></circle><circle class="acc" cx="28" cy="28" r="7.4"></circle>';
+ case 'clock':return '<circle class="eng" cx="28" cy="28.9" r="7.6"></circle><circle class="top" cx="28" cy="28" r="7.6"></circle><path class="acc" d="M28 24.2 V28 h3.4"></path>';
+ case 'pill':return '<rect class="eng" x="24.2" y="21.9" width="7.6" height="14" rx="3.8"></rect><rect class="top" x="24.2" y="21" width="7.6" height="14" rx="3.8"></rect><path class="acc" d="M24.6 30.4 h6.8"></path>';
+ case 'dots':return '<circle class="top" cx="20.9" cy="33.4" r="3.5"></circle><circle class="top" cx="28" cy="28" r="3.5"></circle><circle class="accf" cx="35.1" cy="22.6" r="3.8"></circle>';
+ case 'square':return '<rect class="eng" x="21.4" y="22.4" width="13.2" height="13.2" rx="2.4"></rect><rect class="top" x="21.4" y="21.4" width="13.2" height="13.2" rx="2.4"></rect>';
+ case 'chev':return '<path class="eng" d="M21.4 31.6 L28 25.4 L34.6 31.6"></path><path class="acc" d="M21.4 30.6 L28 24.4 L34.6 30.6"></path>';
+ default:return '<path class="eng" d="M28 21.6 L34.6 28.9 L28 36.2 L21.4 28.9 Z"></path><path class="top" d="M28 20.6 L34.6 28 L28 35.4 L21.4 28 Z"></path>'}}
+var ai=document.getElementById('areaicons');
+AREAS.forEach(function(a,i){var c=document.createElement('div');c.className='icell';
+ var bs=document.createElement('div');bs.className='bs d3 s-sm aic';bs.style.setProperty('--sz','72px');
+ bs.innerHTML='<div class="rim"></div><div class="dial"><svg class="tk" viewBox="0 0 200 200" aria-hidden="true"></svg><svg class="gly" viewBox="0 0 56 56" aria-hidden="true">'+prim(a[2])+'</svg></div><div class="gl"></div>';
+ var svg=bs.querySelector('.tk');buildTicks(svg);
+ svg.querySelectorAll('.mn').forEach(function(n){n.remove()});
+ svg.querySelectorAll('.t').forEach(function(g){if(+g.dataset.i===i)g.classList.add('on')});
+ c.appendChild(bs);
+ c.insertAdjacentHTML('beforeend','<span class="nm">'+a[1]+'</span><span class="ix num">'+a[0]+'</span>');
+ ai.appendChild(c)});
+
+/* ícones de ui */
+var UI=[['adicionar','<path class="eng" d="M22 28.9 h12 M28 22.9 v12"></path><path class="acc" d="M22 28 h12 M28 22 v12"></path>'],
+['confirmar','<path class="eng" d="M21.4 28.9 L26 33.4 L34.6 24"></path><path class="top" d="M21.4 28 L26 32.5 L34.6 23"></path>'],
+['fechar','<path class="eng" d="M22.4 22.9 L33.6 34.1 M33.6 22.9 L22.4 34.1"></path><path class="top" d="M22.4 22 L33.6 33.2 M33.6 22 L22.4 33.2"></path>'],
+['avançar','<path class="eng" d="M25 21.9 L31.6 28.9 L25 35.9"></path><path class="top" d="M25 21 L31.6 28 L25 35"></path>'],
+['abrir fora','<path class="eng" d="M22.4 33.7 L33 23.1 M25.4 22.9 h8 v8"></path><path class="acc" d="M22.4 32.8 L33 22.2 M25.4 22 h8 v8"></path>'],
+['buscar','<circle class="eng" cx="26.6" cy="27.5" r="5.6"></circle><path class="eng" d="M30.8 31.7 L35 35.9"></path><circle class="top" cx="26.6" cy="26.6" r="5.6"></circle><path class="top" d="M30.8 30.8 L35 35"></path>'],
+['agenda','<rect class="eng" x="21.4" y="23.3" width="13.2" height="12" rx="2"></rect><path class="eng" d="M21.4 27.7 h13.2 M25.4 21.9 v2.6 M30.6 21.9 v2.6"></path><rect class="top" x="21.4" y="22.4" width="13.2" height="12" rx="2"></rect><path class="top" d="M21.4 26.8 h13.2 M25.4 21 v2.6 M30.6 21 v2.6"></path>'],
+['dados','<path class="eng" d="M22.6 34.4 v-5 M28 34.4 v-11 M33.4 34.4 v-7.6"></path><path class="top" d="M22.6 33.5 v-5 M28 33.5 v-11"></path><path class="acc" d="M33.4 33.5 v-7.6"></path>'],
+['ajustes','<path class="eng" d="M21.4 25.3 h13.2 M21.4 31.7 h13.2"></path><path class="top" d="M21.4 24.4 h13.2 M21.4 30.8 h13.2"></path><circle class="accf" cx="30.4" cy="24.4" r="2.5"></circle><circle class="accf" cx="24.6" cy="30.8" r="2.5"></circle>'],
+['perfil','<circle class="eng" cx="28" cy="25.4" r="4.2"></circle><path class="eng" d="M20.8 35.9 a7.4 6 0 0 1 14.4 0"></path><circle class="top" cx="28" cy="24.5" r="4.2"></circle><path class="top" d="M20.8 35 a7.4 6 0 0 1 14.4 0"></path>'],
+['carteira','<rect class="eng" x="20.8" y="23.9" width="14.4" height="10.6" rx="2.4"></rect><path class="eng" d="M28.6 29.2 h6.6"></path><rect class="top" x="20.8" y="23" width="14.4" height="10.6" rx="2.4"></rect><path class="acc" d="M28.6 28.3 h6.6"></path>'],
+['ia','<path class="eng" d="M28 20.9 L30.2 26.7 L36 28.9 L30.2 31.1 L28 36.9 L25.8 31.1 L20 28.9 L25.8 26.7 Z"></path><path class="accf" d="M28 20 L30.2 25.8 L36 28 L30.2 30.2 L28 36 L25.8 30.2 L20 28 L25.8 25.8 Z"></path>']];
+var ug=document.getElementById('uiicons');
+UI.forEach(function(u){var c=document.createElement('div');c.className='ucell';c.innerHTML='<div class="ic sm"><svg width="44" height="44" viewBox="0 0 56 56" aria-hidden="true">'+u[1]+'</svg></div><span class="nm">'+u[0]+'</span>';ug.appendChild(c)});
+
+/* reveal suave */
+if(!reduce&&'IntersectionObserver' in window){
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.style.opacity=1;e.target.style.transform='none';io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -30px 0px'});
+ document.querySelectorAll('.sec .sechead, .dir, .lrow, .app').forEach(function(n){n.style.opacity=0;n.style.transform='translateY(16px)';n.style.transition='opacity .65s var(--ease), transform .65s var(--ease)';io.observe(n)})}
+</script>
+</body>
+</html>

@@ -9,7 +9,7 @@
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca (lockup) | ✅ pronto | ⏳ **aguardando usuário** | – | – |
+| 00 | Landing v2 + marca 3D | ✅ rodada 4 pronta | ⏳ **aguardando usuário** (marca 3D já aprovada: é entrega dele) | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -29,7 +29,7 @@
 
 ## 2026-07-28 · Sessão 4 — Onda 0, rodada 4: seção "As oito áreas" (referência em imagem)
 
-**Pedido do usuário** (referência: `as oito areas.png` na raiz): substituir o bloco da bússola do hero pela seção "As oito áreas · o índice da sua vida"; a lista interage APENAS com a bússola (hover → agulha aponta); a bússola deve ser o **cromo** da imagem (não a cerâmica branca); o arco de miniaturas volta a ser independente (só drag/inércia).
+**Pedido do usuário** (referência: `docs/handoff/refs/2026-07-28-as-oito-areas.png`): substituir o bloco da bússola do hero pela seção "As oito áreas · o índice da sua vida"; a lista interage APENAS com a bússola (hover → agulha aponta); a bússola deve ser o **cromo** da imagem (não a cerâmica branca); o arco de miniaturas volta a ser independente (só drag/inércia).
 
 **Feito:**
 - Bloco `hero-bussola` (bússola + chips + focoline) **removido** das duas landings.
