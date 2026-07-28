@@ -20,6 +20,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
+  html.lenis, html.lenis body{scroll-behavior:auto}
   @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
   body{background:var(--bg);color:var(--t1);font:400 15px/1.6 var(--int);-webkit-font-smoothing:antialiased}
   ::selection{background:var(--roxo);color:#fff}
@@ -27,13 +28,6 @@
   .num{font-family:var(--gro);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
   .grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.045;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
-
-  /* ─── glifo da sincronia: anel aberto + faísca (marca nova, CSS puro, escala por font-size) ─── */
-  .glyph{display:inline-block;width:.72em;height:.72em;border:.11em solid var(--roxo);border-radius:50%;
-    border-top-color:transparent;position:relative;transform:rotate(-45deg);vertical-align:-.06em;flex-shrink:0}
-  .glyph::after{content:"";position:absolute;top:-.22em;left:50%;margin-left:-.11em;width:.22em;height:.22em;border-radius:50%;background:var(--ele)}
-  .anim .glyph.spin{animation:glyphspin 16s linear infinite}
-  @keyframes glyphspin{from{transform:rotate(-45deg)}to{transform:rotate(315deg)}}
 
   /* caligrafia do coach */
   .hand{font:700 clamp(17px,1.6vw,21px)/1.25 'Caveat',cursive;color:var(--coral);letter-spacing:.01em}
@@ -105,20 +99,90 @@
   .drag-cue{display:inline-flex;align-items:center;gap:8px;font:600 11px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
   .anim .drag-cue svg{animation:nudge 2.2s var(--ease) infinite}
   @keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
-  .strip{display:flex;gap:12px;overflow-x:auto;padding:2px 4vw 26px;margin:0 -0vw;cursor:grab;scrollbar-width:none;-ms-overflow-style:none}
+  /* ─── faixa de telas em leque: as áreas em uso ─── */
+  .strip{display:flex;gap:18px;overflow-x:auto;padding:34px 4vw 44px;cursor:grab;scrollbar-width:none;-ms-overflow-style:none}
   .strip::-webkit-scrollbar{display:none}
-  .strip.dragging{cursor:grabbing;scroll-snap-type:none}
-  .mcard{flex:0 0 316px;background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:24px 24px 20px;
-    display:flex;flex-direction:column;min-height:230px;transition:border-color .35s var(--ease),background .35s var(--ease)}
-  .mcard:hover{border-color:var(--line-h);background:#242020}
-  .mcard .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
-  .mcard .idx{font:700 13px var(--gro);color:var(--t3)}
-  .mcard:hover .idx{color:var(--roxo)}
-  .mcard h3{font:500 24px var(--gro);letter-spacing:-.03em;margin-bottom:8px}
-  .mcard p{font:400 12.5px/1.6 var(--int);color:var(--t3);flex:1}
-  .mcard .spec{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
-  .mcard .spec .k{font:600 10px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
-  .mcard .spec .v{font:700 17px var(--gro);letter-spacing:-.02em}
+  .strip.dragging{cursor:grabbing}
+  .scard{flex:0 0 300px;background:#1b1918;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    transform:rotate(calc(var(--r,0deg) + var(--tilt,0deg))) translateY(var(--y,0px));
+    box-shadow:0 24px 50px -22px rgba(0,0,0,.65);
+    transition:transform .5s var(--ease),border-color .35s var(--ease)}
+  .scard:hover{transform:rotate(0deg) translateY(calc(var(--y,0px) - 12px));border-color:var(--line-h)}
+  .scard .tb{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:#161414}
+  .scard .tb i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12)}
+  .scard .tb .nm{font:600 11.5px var(--int);color:var(--t2);margin-left:4px}
+  .scard .tb .ix{margin-left:auto;font:700 10px var(--gro);color:var(--t3)}
+  .scard .ui{position:relative;padding:16px;height:196px;display:flex;flex-direction:column;gap:11px;
+    background:radial-gradient(220px 120px at 85% 0%,rgba(104,64,255,.07),transparent 70%)}
+  .ui .lbl{font:700 9px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+  .ui .big{font:700 26px/1 var(--gro);letter-spacing:-.03em}
+  .ui .sub{font:400 11px var(--int);color:var(--t3)}
+  /* barras que preenchem sozinhas */
+  .ubar{display:grid;grid-template-columns:74px 1fr 44px;gap:9px;align-items:center}
+  .ubar .k{font:400 11px var(--int);color:var(--t2)}
+  .ubar .t{height:4px;border-radius:2px;background:#2e2a2a;overflow:hidden}
+  .ubar .f{display:block;height:100%;border-radius:2px;background:var(--t3);width:var(--w)}
+  .ubar.hot .f{background:var(--coral)}
+  .ubar .v{font:500 10.5px var(--gro);color:var(--t3);text-align:right}
+  .ubar.hot .v{color:var(--coral)}
+  .anim .ubar .f{animation:uifill 7s var(--ease) infinite;animation-delay:var(--d,0s)}
+  @keyframes uifill{0%{width:6%}34%{width:var(--w)}86%{width:var(--w)}100%{width:6%}}
+  /* botão + cursor fantasma clicando */
+  .ubtn{position:absolute;top:14px;right:14px;font:600 10.5px var(--int);color:#fff;background:var(--roxo);border-radius:999px;padding:6px 11px}
+  .anim .ubtn{animation:upress 7s var(--ease) infinite}
+  @keyframes upress{0%,54%,66%,100%{transform:scale(1)}58%,62%{transform:scale(.9);background:var(--roxo-h)}}
+  .ucur{display:none}
+  .anim .ucur{display:block;position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 6px rgba(0,0,0,.5);z-index:3;animation:umove 7s var(--ease) infinite}
+  @keyframes umove{0%,28%{transform:translate(30px,150px);opacity:0}40%{opacity:1}56%{transform:translate(236px,14px)}
+    58%{transform:translate(236px,14px) scale(.8)}62%{transform:translate(236px,14px) scale(1)}80%{opacity:1}92%,100%{transform:translate(30px,150px);opacity:0}}
+  /* chat digitando */
+  .ubub{max-width:88%;padding:8px 11px;font:400 11px/1.5 var(--int);border-radius:11px}
+  .ubub strong{color:var(--t1)}
+  .ubub.u{align-self:flex-end;background:rgba(104,64,255,.16);border:1px solid rgba(104,64,255,.4);color:#cfc4ff;border-bottom-right-radius:3px}
+  .ubub.a{align-self:flex-start;background:#242020;border:1px solid var(--line);color:var(--t2);border-bottom-left-radius:3px}
+  .utyping{align-self:flex-start;display:flex;gap:4px;padding:9px 12px;background:#242020;border:1px solid var(--line);border-radius:11px;border-bottom-left-radius:3px}
+  .utyping i{width:5px;height:5px;border-radius:50%;background:var(--t3)}
+  .anim .utyping{animation:utypshow 8s step-end infinite}
+  .anim .utyping i{animation:utypdot 1s var(--ease) infinite;animation-delay:calc(var(--i)*.18s)}
+  @keyframes utypdot{0%,100%{transform:none;opacity:.5}50%{transform:translateY(-3px);opacity:1}}
+  @keyframes utypshow{0%,18%{opacity:0}20%,48%{opacity:1}50%,100%{opacity:0}}
+  .uans{opacity:1}
+  .anim .uans{animation:uans 8s var(--ease) infinite}
+  @keyframes uans{0%,49%{opacity:0;transform:translateY(6px)}56%,94%{opacity:1;transform:none}100%{opacity:0}}
+  /* anel de progresso */
+  .uringw{display:flex;align-items:center;gap:14px}
+  .uring circle.fg{stroke:var(--ele);stroke-dasharray:163;stroke-dashoffset:49;stroke-linecap:round;fill:none}
+  .anim .uring circle.fg{animation:uring 7s var(--ease) infinite}
+  @keyframes uring{0%{stroke-dashoffset:163}38%{stroke-dashoffset:49}88%{stroke-dashoffset:49}100%{stroke-dashoffset:163}}
+  /* sparkline que se desenha */
+  .uspark path.ln{stroke-dasharray:290;stroke-dashoffset:0}
+  .anim .uspark path.ln{animation:uspark 7.5s var(--ease) infinite}
+  @keyframes uspark{0%{stroke-dashoffset:290}42%{stroke-dashoffset:0}90%{stroke-dashoffset:0}100%{stroke-dashoffset:290}}
+  /* bloco de agenda deslizando + check */
+  .urow{display:flex;align-items:center;gap:9px;font:400 11px var(--int);color:var(--t2)}
+  .urow time{font:500 10px var(--gro);color:var(--t3);width:34px;flex-shrink:0}
+  .ublock{flex:1;height:20px;border-radius:6px;background:rgba(104,64,255,.2);border:1px solid rgba(104,64,255,.45);
+    display:flex;align-items:center;padding:0 8px;font:500 10px var(--int);color:#cfc4ff}
+  .anim .ublock{animation:ublock 7s var(--ease) infinite}
+  @keyframes ublock{0%,20%{transform:translateX(-14px);opacity:0}32%,90%{transform:none;opacity:1}100%{opacity:0}}
+  .ucheck{width:13px;height:13px;border-radius:4px;border:1.5px solid var(--t3);position:relative;flex-shrink:0}
+  .ucheck svg{position:absolute;inset:1px;color:var(--ele)}
+  .ucheck svg path{stroke-dasharray:16;stroke-dashoffset:0}
+  .anim .ucheck svg path{animation:ucheck 7s var(--ease) infinite}
+  @keyframes ucheck{0%,40%{stroke-dashoffset:16}52%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:16}}
+  .anim .ustrike{animation:ustrike 7s var(--ease) infinite}
+  @keyframes ustrike{0%,50%{color:var(--t2)}58%,92%{color:var(--t3);text-decoration:line-through}100%{color:var(--t2)}}
+  /* pulso do countdown */
+  .anim .upulse{animation:upulse 3.4s var(--ease) infinite}
+  @keyframes upulse{0%,100%{transform:none}50%{transform:scale(1.05)}}
+
+  /* atmosfera do hero */
+  .hero{position:relative}
+  .atmo{position:absolute;inset:-6% -12% -2%;z-index:-1;pointer-events:none;
+    background:radial-gradient(680px 480px at 80% 4%,rgba(104,64,255,.14),transparent 64%),
+      radial-gradient(520px 420px at 4% 62%,rgba(161,255,98,.05),transparent 62%)}
+  .hero .guide{position:absolute;left:50%;top:-40px;bottom:0;width:1px;background:var(--line);z-index:-1}
 
   /* press */
   .press{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:30px 0}
@@ -268,7 +332,7 @@
     .prow{grid-template-columns:1.2fr 1fr 1fr}
     .prow > div{padding:12px 8px}
     .foot-grid{grid-template-columns:1fr}
-    .mcard{flex-basis:270px}
+    .scard{flex-basis:270px}
   }
 </style>
 </head>
@@ -277,7 +341,7 @@
 
 <div class="navwrap">
   <nav>
-    <a class="brand" href="#"><span class="glyph spin" aria-hidden="true"></span>Sync<em>Life</em></a>
+    <a class="brand" href="#">Sync<em>Life</em></a>
     <div class="nav-links">
       <a href="#produto">Produto</a>
       <a href="#precos">Preços</a>
@@ -296,10 +360,12 @@
 
 <!-- HERO: manchete de dobra inteira, sem mockup -->
 <header class="hero">
+  <div class="atmo" aria-hidden="true"></div>
+  <div class="guide" aria-hidden="true"></div>
   <div class="wrap">
     <span class="pill-novo boot b1"><span class="dot"></span>Novo · Coach IA em todos os planos</span>
     <h1>
-      <span class="boot b2" style="display:flex;align-items:center;gap:.14em">Sua vida inteira<span class="glyph spin" aria-hidden="true" style="margin-left:.04em"></span></span>
+      <span class="boot b2" style="display:block">Sua vida inteira,</span>
       <span class="l2 boot b3"><em>em sincronia.</em>
         <span class="badge78" role="img" aria-label="Life Sync Score 74, mais 3 hoje">
           <span class="b-n num">74</span>
@@ -332,15 +398,85 @@
       </span>
     </div>
   </div>
-  <div class="strip boot b5" id="strip" tabindex="0" aria-label="As oito áreas do SyncLife, faixa com rolagem horizontal">
-    <div class="mcard"><div class="r1"><span class="idx num">01</span></div><h3>Finanças</h3><p>Receitas, despesas, orçamentos, recorrentes, fluxo de caixa e consultor IA dedicado.</p><div class="spec"><span class="k">Saldo do mês</span><span class="v num">R$&nbsp;1.840</span></div></div>
-    <div class="mcard"><div class="r1"><span class="idx num">02</span></div><h3>Futuro</h3><p>Metas de curto e longo prazo com aportes, anéis de progresso e milestones.</p><div class="spec"><span class="k">Viagem Itália</span><span class="v num">68%</span></div></div>
-    <div class="mcard"><div class="r1"><span class="idx num">03</span></div><h3>Tempo</h3><p>Agenda, blocos de foco, Pomodoro e revisão semanal automática.</p><div class="spec"><span class="k">Foco hoje</span><span class="v num">42 min</span></div></div>
-    <div class="mcard"><div class="r1"><span class="idx num">04</span></div><h3>Corpo</h3><p>Atividades, peso, cardápio gerado por IA e coach de saúde.</p><div class="spec"><span class="k">Treinos</span><span class="v num">3 / 7</span></div></div>
-    <div class="mcard"><div class="r1"><span class="idx num">05</span></div><h3>Mente</h3><p>Trilhas de aprendizado, sessões de leitura e biblioteca pessoal.</p><div class="spec"><span class="k">Leituras</span><span class="v num">2 na semana</span></div></div>
-    <div class="mcard"><div class="r1"><span class="idx num">06</span></div><h3>Patrimônio</h3><p>Carteira de investimentos, proventos, evolução e simulador de IF.</p><div class="spec"><span class="k">Carteira</span><span class="v num">R$&nbsp;48,2k</span></div></div>
-    <div class="mcard"><div class="r1"><span class="idx num">07</span></div><h3>Carreira</h3><p>Perfil profissional, habilidades, roadmap e histórico documentado.</p><div class="spec"><span class="k">Roadmap</span><span class="v num">3 / 5 marcos</span></div></div>
-    <div class="mcard"><div class="r1"><span class="idx num">08</span></div><h3>Experiências</h3><p>Viagens, bucket list, passaporte digital e assistente de planejamento IA.</p><div class="spec"><span class="k">Próxima viagem</span><span class="v num">92 dias</span></div></div>
+  <div class="strip boot b5" id="strip" tabindex="0" aria-label="As oito áreas do SyncLife em uso, faixa com rolagem horizontal">
+    <div class="scard" style="--r:-4deg;--y:22px">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Finanças</span><span class="ix num">01</span></div>
+      <div class="ui">
+        <span class="ubtn">+ Nova</span>
+        <span class="ucur" aria-hidden="true"></span>
+        <div><div class="lbl">Saldo do mês</div><div class="big num">R$&nbsp;1.840</div></div>
+        <div class="ubar" style="--w:80%;--d:.2s"><span class="k">Alimentação</span><span class="t"><span class="f"></span></span><span class="v num">80%</span></div>
+        <div class="ubar hot" style="--w:98%;--d:.5s"><span class="k">Lazer</span><span class="t"><span class="f"></span></span><span class="v num">98%</span></div>
+        <div class="ubar" style="--w:70%;--d:.8s"><span class="k">Transporte</span><span class="t"><span class="f"></span></span><span class="v num">70%</span></div>
+      </div>
+    </div>
+    <div class="scard" style="--r:2deg;--y:4px">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Coach IA</span><span class="ix num">02</span></div>
+      <div class="ui">
+        <div class="ubub u">Quanto gastei em lazer?</div>
+        <div class="utyping" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+        <div class="ubub a uans"><strong class="num">R$&nbsp;410</strong>, 82% do orçamento. Com 8 dias restantes, vale segurar as saídas.</div>
+      </div>
+    </div>
+    <div class="scard" style="--r:-2deg;--y:12px">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Tempo</span><span class="ix num">03</span></div>
+      <div class="ui">
+        <div><div class="lbl">Hoje</div><div class="big num">42 min <span class="sub">de foco</span></div></div>
+        <div class="urow"><time class="num">07:30</time>Fisioterapia</div>
+        <div class="urow"><time class="num">09:00</time><span class="ublock">Bloco de foco · projeto</span></div>
+        <div class="urow"><span class="ucheck"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5 L4.6 9 L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ustrike">Revisão semanal</span></div>
+      </div>
+    </div>
+    <div class="scard" style="--r:3deg;--y:26px">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Corpo</span><span class="ix num">04</span></div>
+      <div class="ui">
+        <div class="lbl">Treinos da semana</div>
+        <div class="uringw">
+          <svg class="uring" width="72" height="72" viewBox="0 0 72 72" aria-hidden="true">
+            <circle cx="36" cy="36" r="26" stroke="#2e2a2a" stroke-width="7" fill="none"/>
+            <circle class="fg" cx="36" cy="36" r="26" stroke-width="7" transform="rotate(-90 36 36)"/>
+          </svg>
+          <div><div class="big num">3/7</div><div class="sub">2 corridas · 1 força</div></div>
+        </div>
+        <div class="sub">Cardápio de amanhã gerado pelo coach.</div>
+      </div>
+    </div>
+    <div class="scard" style="--r:-3deg;--y:8px">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Futuro</span><span class="ix num">05</span></div>
+      <div class="ui">
+        <div><div class="lbl">Viagem Itália</div><div class="big num">68%</div></div>
+        <div class="ubar" style="--w:68%;--d:.3s;grid-template-columns:1fr 60px"><span class="t"><span class="f" style="background:var(--roxo)"></span></span><span class="v num">R$&nbsp;8.600</span></div>
+        <div class="sub">Aporte de R$&nbsp;580 agendado pra sexta. No ritmo, você chega uma semana antes do prazo.</div>
+      </div>
+    </div>
+    <div class="scard" style="--r:2.5deg;--y:18px">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Patrimônio</span><span class="ix num">06</span></div>
+      <div class="ui">
+        <div><div class="lbl">Carteira</div><div class="big num">R$&nbsp;48,2k <span class="sub" style="color:var(--ele)">+7%</span></div></div>
+        <svg class="uspark" width="100%" height="54" viewBox="0 0 240 54" preserveAspectRatio="none" aria-hidden="true">
+          <path class="ln" d="M0,44 C24,40 40,30 62,32 C84,34 100,22 124,20 C148,18 166,24 190,14 C210,6 226,8 240,4" fill="none" stroke="#a1ff62" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div class="sub">Proventos de julho reinvestidos.</div>
+      </div>
+    </div>
+    <div class="scard" style="--r:-1.5deg;--y:6px">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Mente</span><span class="ix num">07</span></div>
+      <div class="ui">
+        <div><div class="lbl">Esta semana</div><div class="big num">2 <span class="sub">sessões de leitura</span></div></div>
+        <div class="ubar" style="--w:40%;--d:.2s"><span class="k">Livro atual</span><span class="t"><span class="f"></span></span><span class="v num">40%</span></div>
+        <div class="ubar" style="--w:65%;--d:.55s"><span class="k">Curso de UX</span><span class="t"><span class="f"></span></span><span class="v num">65%</span></div>
+        <div class="sub">Trilha sugerida: 20 min por dia.</div>
+      </div>
+    </div>
+    <div class="scard" style="--r:4deg;--y:28px">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Experiências</span><span class="ix num">08</span></div>
+      <div class="ui">
+        <div class="lbl">Próxima viagem</div>
+        <div class="big num upulse" style="font-size:40px">92 <span class="sub">dias pra Itália</span></div>
+        <div class="urow"><span class="sub">Roma · Florença · Positano</span></div>
+        <div class="ubar" style="--w:68%;--d:.4s;grid-template-columns:1fr 70px"><span class="t"><span class="f" style="background:var(--roxo)"></span></span><span class="v num">planejado</span></div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -550,8 +686,11 @@
   }
 
   // scroll com peso (Lenis; guard independente, página funciona sem)
+  // html.lenis desliga o scroll-behavior:smooth do CSS: com os dois ativos o browser
+  // re-suaviza cada frame do Lenis e o wheel ganha um delay enorme
   if (!reduce && window.Lenis) {
-    var lenis = new Lenis();
+    document.documentElement.classList.add('lenis');
+    var lenis = new Lenis({ lerp: .16, wheelMultiplier: 1.05 });
     function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
   }
@@ -573,14 +712,14 @@
       var now = performance.now(), dt = now - lastT;
       if (dt > 0) { vel = (e.clientX - lastX) / dt * 16; lastX = e.clientX; lastT = now; }
       if (!reduce) {
-        var tilt = Math.max(-3.5, Math.min(3.5, -vel * .35));
-        strip.querySelectorAll('.mcard').forEach(function (c) { c.style.transform = 'rotate(' + tilt.toFixed(2) + 'deg)'; });
+        var tilt = Math.max(-3, Math.min(3, -vel * .3));
+        strip.style.setProperty('--tilt', tilt.toFixed(2) + 'deg');
       }
     });
     addEventListener('pointerup', function () {
       if (!down) return;
       down = false; strip.classList.remove('dragging');
-      strip.querySelectorAll('.mcard').forEach(function (c) { c.style.transform = ''; });
+      strip.style.removeProperty('--tilt');
       if (!reduce && Math.abs(vel) > 1) {
         (function momentum() {
           strip.scrollLeft -= vel; vel *= .94;
