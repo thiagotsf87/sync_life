@@ -59,6 +59,17 @@
 .bs.d3 .nh{filter:drop-shadow(0 2px 4px rgba(0,0,0,.7))}
 .bs.d3 .gl{background:linear-gradient(150deg,rgba(255,255,255,.4) 0 12%,transparent 34%),radial-gradient(46% 30% at 74% 88%,rgba(255,255,255,.18),transparent 74%)}
 
+/* --- ícones das 8 áreas (spec §05): a bússola em cromo pequeno, sem agulha,
+       marcação do rumo acesa + primitiva geométrica gravada no centro --- */
+.bs.aic .tk .d,.bs.aic .tk .l{stroke-width:7}
+.bs.aic .tk .t.on .l{stroke-width:8.5}
+.bs.aic .gly{position:absolute;left:-20%;top:-20%;width:140%;height:140%;overflow:visible}
+.bs.aic .gly .eng,.bs.aic .gly .top,.bs.aic .gly .acc{stroke-width:2}
+.bs .gly .eng{stroke:rgba(0,0,0,.75);fill:none;stroke-linecap:round;stroke-linejoin:round}
+.bs .gly .top{stroke:rgba(255,255,255,.9);fill:none;stroke-linecap:round;stroke-linejoin:round}
+.bs .gly .acc{stroke:#9d7dff;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.bs .gly .accf{fill:#9d7dff;stroke:none}
+
 /* --- claro (cerâmica) — bandas claras, impressão, mono --- */
 .bs.dl{--mn:rgba(21,19,19,.3);--tkd:rgba(255,255,255,.85);--tkl:rgba(21,19,19,.5);--lit:#6840ff;--lit-d:rgba(255,255,255,.7);--lit-g:rgba(104,64,255,.4);--pv1:#dedad6;--pv2:#8b8681;--s1n:#c9c4bf;--s2n:#8d8883}
 .bs.dl .rim{background:radial-gradient(115% 115% at 28% 14%,#ffffff,#eae7e3 42%,#cbc7c2 78%,#b4b0ab 100%);box-shadow:0 0 0 1px rgba(21,19,19,.1),inset 0 2px 0 rgba(255,255,255,1),inset 0 -2px 3px rgba(21,19,19,.28),0 26px 56px -24px rgba(21,19,19,.55)}

@@ -27,6 +27,24 @@
 
 ---
 
+## 2026-07-28 · Sessão 4 — Onda 0, rodada 4: seção "As oito áreas" (referência em imagem)
+
+**Pedido do usuário** (referência: `as oito areas.png` na raiz): substituir o bloco da bússola do hero pela seção "As oito áreas · o índice da sua vida"; a lista interage APENAS com a bússola (hover → agulha aponta); a bússola deve ser o **cromo** da imagem (não a cerâmica branca); o arco de miniaturas volta a ser independente (só drag/inércia).
+
+**Feito:**
+- Bloco `hero-bussola` (bússola + chips + focoline) **removido** das duas landings.
+- Nova seção `#areas` conforme a imagem: eyebrow "As oito áreas · o índice da sua vida", headline "Cada área tem um rumo. A bússola mostra qual pede você hoje.", bússola **cromo (d3)** 200px à esquerda (sticky) com contador `NN · 08`, nome e frase da área, anotação manuscrita "role a lista: a agulha acompanha"; à direita, lista de 8 linhas com **ícone de área** (spec §05: cromo pequeno + marcação do rumo acesa + primitiva), nome + descrição, **score** grande e **delta** (▲ verde / ▼ coral / – neutro), linha ativa com highlight roxo sutil. Hover na linha (desktop) ou toque (mobile) → `point()` da agulha + meta da esquerda; **nada toca no arco**.
+- `SLBussola3D.areaIcon(i, sz)` + primitivas das 8 áreas portadas pra `shared/bussola-3d.js` e CSS `.aic`/`.gly` pro `shared/bussola-3d.css` (gera `<span>` pra viver dentro de `<button>`).
+- **Arco desacoplado:** removidos auto-busca, clique-área→norte, glance/peek/north e o clique nos cards; ficam drag 1:1 com peso, inércia, assentamento no card mais próximo, balanço idle, setas do teclado e tilt no hover.
+- Delta positivo usa `#44a616` (elétrico rebaixado pra legibilidade no claro, cor da imagem) — **token pendente de aprovação** no DS.
+- QA: desktop (hover/click na linha Corpo → agulha SE + meta 04·08) e mobile (toque em Carreira → agulha W) verificados; console limpo nos dois.
+
+**Pendências:** ⏳ aprovação da landing v2 r4; decidir token do verde-delta no claro.
+
+**Arquivos:** `prototypes/v5/landing/{landing.html,landing.mobile.html}` · `prototypes/v5/shared/{bussola-3d.css,bussola-3d.js}`.
+
+---
+
 ## 2026-07-28 · Sessão 3 — Onda 0, rodada 3: marca 3D "cromo líquido" integrada
 
 **Contexto:** o usuário entregou a marca repaginada em `SyncLife DS v5 — Estúdio (POC)/design_handoff_marca_3d/` (README + `marca-3d.html`, rodada 7 da marca): a bússola vira um **objeto renderizado em CSS/SVG** (cromo líquido padrão, cerâmica off-white no claro), com comportamento próprio da agulha e ícones de área que revogam parte da E-09. Isso supersede a página de 4 direções de lockup da sessão 2.

@@ -68,14 +68,11 @@
   .strip .scard{position:absolute;left:50%;top:36px;width:250px;margin-left:-125px;
     transform-origin:50% 2000px;
     transform:rotate(calc(var(--a,0deg) + var(--off,0deg)))}
-  .strip .scard.north{z-index:2}
   .scin{--t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;--line:rgba(255,255,255,.09);color:var(--t1);
     background:#1b1918;border:1px solid rgba(255,255,255,.09);border-radius:14px;overflow:hidden;
     box-shadow:0 24px 48px -20px rgba(21,19,19,.45);
     transform:translateY(var(--lift,0px));
     transition:transform .45s var(--ease),box-shadow .4s var(--ease),border-color .45s var(--ease)}
-  .scard.north .scin{--lift:-5px;border-color:rgba(104,64,255,.55);
-    box-shadow:0 30px 56px -22px rgba(104,64,255,.2)}
   .scard .tb{display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid var(--line);background:#161414}
   .scard .tb i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.12)}
   .scard .tb .nm{font:600 11px var(--int);color:var(--t2);margin-left:3px}
@@ -125,16 +122,27 @@
   .anim .upulse{animation:upulse 3.4s var(--ease) infinite}
   @keyframes upulse{0%,100%{transform:none}50%{transform:scale(1.05)}}
 
-  /* a bússola da vida, abaixo do arco: instrumento 3D centrado */
-  .hero-bussola{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:20px;padding:12px 0 4px;text-align:center}
-  .hb-stage{position:relative;width:170px;height:170px;margin:0 auto}
-  .hbhits{position:absolute;inset:0;width:100%;height:100%;z-index:5}
-  .hbhits .hit{fill:transparent;cursor:pointer}
-  .hero-bussola .focoline{border-left:none;padding-left:0;margin:0 auto;min-height:0;max-width:320px;text-align:center}
-  .hero-bussola .chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;margin:0 -20px;padding-left:20px;padding-right:20px;
-    max-width:100vw;scrollbar-width:none}
-  .hero-bussola .chips::-webkit-scrollbar{display:none}
-  .hero-bussola .chip{flex-shrink:0}
+  /* AS OITO ÁREAS: o índice da sua vida (a lista conversa só com a bússola) */
+  .areas8{padding:60px 0 52px}
+  .areas8 h2{font:500 clamp(1.9rem,8vw,2.4rem)/1.06 var(--gro);letter-spacing:-.04em;margin-top:14px}
+  .a8-left{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;margin-top:28px}
+  .a8-meta{margin-top:14px}
+  .a8-ix{font:700 10.5px var(--gro);letter-spacing:.22em;color:var(--t3)}
+  .a8-nome{font:500 24px/1.1 var(--gro);letter-spacing:-.03em;margin-top:6px}
+  .a8-frase{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:8px;max-width:300px;min-height:42px}
+  .a8-list{border-top:1px solid var(--line);margin-top:22px}
+  .a8-row{display:grid;grid-template-columns:46px 1fr auto 32px;gap:12px;align-items:center;width:100%;
+    padding:13px 4px;border:0;border-bottom:1px solid var(--line);background:none;cursor:pointer;text-align:left;
+    font-family:var(--int);color:var(--t1);transition:background .3s var(--ease)}
+  .a8-row.on{background:linear-gradient(90deg,rgba(104,64,255,.07),transparent 72%)}
+  .a8-row .tx{display:flex;flex-direction:column;gap:2px}
+  .a8-row .nm{font:500 15px var(--gro);letter-spacing:-.02em}
+  .a8-row .ds{font:400 11.5px var(--int);color:var(--t3)}
+  .a8-row .score{font:700 24px/1 var(--gro);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+  .a8-row .delta{font:700 11px var(--gro);text-align:right}
+  .a8-row .delta.up{color:#44a616} /* elétrico rebaixado pra legibilidade no claro (aprovar token) */
+  .a8-row .delta.down{color:var(--coral)}
+  .a8-row .delta.flat{color:var(--t3)}
 
   /* press */
   .press{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:24px 0}
@@ -385,37 +393,36 @@
     </div></div>
   </div>
 
-  <!-- a bússola da vida: tocar numa área traz a tela dela pro norte -->
+</header>
+
+<!-- AS OITO ÁREAS: o índice da sua vida. A lista conversa só com a bússola. -->
+<section class="areas8" id="areas">
   <div class="wrap">
-    <div class="hero-bussola rv" id="hb">
-      <p class="eyebrow"><b>A bússola da vida</b> · toque numa área</p>
-      <div class="hb-stage">
-        <div class="bs dl" id="hbbs" data-bs3d style="--sz:170px" role="img" aria-label="A Bússola da Vida: a agulha aponta a área em foco"></div>
-        <svg class="hbhits" id="hbhits" viewBox="0 0 200 200" role="group" aria-label="Escolher área na bússola">
-          <circle class="hit" data-area="0" cx="100" cy="22" r="19"><title>01 · Finanças</title></circle>
-          <circle class="hit" data-area="1" cx="155.2" cy="44.8" r="19"><title>02 · Futuro</title></circle>
-          <circle class="hit" data-area="2" cx="178" cy="100" r="19"><title>03 · Tempo</title></circle>
-          <circle class="hit" data-area="3" cx="155.2" cy="155.2" r="19"><title>04 · Corpo</title></circle>
-          <circle class="hit" data-area="4" cx="100" cy="178" r="19"><title>05 · Mente</title></circle>
-          <circle class="hit" data-area="5" cx="44.8" cy="155.2" r="19"><title>06 · Patrimônio</title></circle>
-          <circle class="hit" data-area="6" cx="22" cy="100" r="19"><title>07 · Carreira</title></circle>
-          <circle class="hit" data-area="7" cx="44.8" cy="44.8" r="19"><title>08 · Experiências</title></circle>
-        </svg>
+    <div class="rv">
+      <p class="eyebrow"><b>As oito áreas</b> · o índice da sua vida</p>
+      <h2>Cada área tem um rumo. A bússola mostra qual pede você hoje.</h2>
+    </div>
+    <div class="a8-left rv">
+      <div class="bs d3" id="a8bs" data-bs3d style="--sz:150px" role="img" aria-label="A Bússola da Vida apontando a área selecionada"></div>
+      <div class="a8-meta" aria-live="polite">
+        <p class="a8-ix num" id="a8ix">01 · 08</p>
+        <h3 class="a8-nome" id="a8nome">Finanças</h3>
+        <p class="a8-frase" id="a8frase">O lazer estourou R$ 8. Segurando essa semana, o mês fecha com 39% poupado.</p>
       </div>
-      <p class="focoline" id="hbline">Hoje o norte é <b>05 · Mente</b>: 20 minutos de leitura antes de dormir.</p>
-      <div class="chips" id="hbchips" role="group" aria-label="Escolher área em foco">
-        <button class="chip" type="button"><span class="n num">01</span>Finanças</button>
-        <button class="chip" type="button"><span class="n num">02</span>Futuro</button>
-        <button class="chip" type="button"><span class="n num">03</span>Tempo</button>
-        <button class="chip" type="button"><span class="n num">04</span>Corpo</button>
-        <button class="chip on" type="button"><span class="n num">05</span>Mente</button>
-        <button class="chip" type="button"><span class="n num">06</span>Patrimônio</button>
-        <button class="chip" type="button"><span class="n num">07</span>Carreira</button>
-        <button class="chip" type="button"><span class="n num">08</span>Experiências</button>
-      </div>
+      <span class="hand rx" style="transform:rotate(-2deg)">toque na lista: a agulha acompanha</span>
+    </div>
+    <div class="a8-list rv" id="a8list">
+      <button class="a8-row on" type="button" data-area="0"><span class="aic-slot"></span><span class="tx"><span class="nm">Finanças</span><span class="ds">Contas, orçamentos e o saldo do mês.</span></span><span class="score num">82</span><span class="delta up num">▲2</span></button>
+      <button class="a8-row" type="button" data-area="1"><span class="aic-slot"></span><span class="tx"><span class="nm">Futuro</span><span class="ds">Metas, reserva e projeção.</span></span><span class="score num">71</span><span class="delta up num">▲3</span></button>
+      <button class="a8-row" type="button" data-area="2"><span class="aic-slot"></span><span class="tx"><span class="nm">Tempo</span><span class="ds">Agenda, blocos de foco e rotina.</span></span><span class="score num">64</span><span class="delta down num">▼1</span></button>
+      <button class="a8-row" type="button" data-area="3"><span class="aic-slot"></span><span class="tx"><span class="nm">Corpo</span><span class="ds">Treino, sono, alimentação e exames.</span></span><span class="score num">58</span><span class="delta up num">▲1</span></button>
+      <button class="a8-row" type="button" data-area="4"><span class="aic-slot"></span><span class="tx"><span class="nm">Mente</span><span class="ds">Leitura, cursos, terapia e humor.</span></span><span class="score num">76</span><span class="delta up num">▲2</span></button>
+      <button class="a8-row" type="button" data-area="5"><span class="aic-slot"></span><span class="tx"><span class="nm">Patrimônio</span><span class="ds">Investimentos e evolução do capital.</span></span><span class="score num">80</span><span class="delta up num">▲4</span></button>
+      <button class="a8-row" type="button" data-area="6"><span class="aic-slot"></span><span class="tx"><span class="nm">Carreira</span><span class="ds">Metas profissionais, skills e renda.</span></span><span class="score num">69</span><span class="delta flat num">–</span></button>
+      <button class="a8-row" type="button" data-area="7"><span class="aic-slot"></span><span class="tx"><span class="nm">Experiências</span><span class="ds">Viagens, lazer e o que fica de memória.</span></span><span class="score num">74</span><span class="delta up num">▲1</span></button>
     </div>
   </div>
-</header>
+</section>
 
 <!-- prova social -->
 <section class="press rv">
@@ -617,13 +624,13 @@
     setTimeout(function () { var hl = document.getElementById('hl-hero'); if (hl) hl.classList.add('on'); }, 900);
   }
 
-  // ── semicírculo + bússola (mobile: pivô 2000px → drag .042; sem transition de CSS no arco,
-  //    o rAF conduz `offCur` com lerp; solto → assenta no card mais próximo, sempre há um norte) ──
+  // ── semicírculo: independente da bússola (mobile: pivô 2000px → drag .042).
+  //    Drag com peso, inércia e assentamento no card mais próximo. ──
   var strip = document.getElementById('strip');
   if (strip) {
     var STEP = 7.5, MAX = 26.25, N = 8;
     var off = 0, offCur = 0, sway = 0, vel = 0, down = false, moved = false, lastX = 0, lastT = 0, idleT = 0;
-    var tw = null, auto = true, wasMoving = false;
+    var tw = null, wasMoving = false;
     var cards = [].slice.call(strip.querySelectorAll('.scard'));
 
     function cubicBezier(p1x, p1y, p2x, p2y) {
@@ -646,36 +653,12 @@
     function clampOff(v) { return Math.max(-MAX, Math.min(MAX, v)); }
     function render() { strip.style.setProperty('--off', (offCur + sway).toFixed(3) + 'deg'); }
     function nearest() { return Math.max(0, Math.min(N - 1, Math.round(3.5 - off / STEP))); }
-
-    var bsEl = document.getElementById('hbbs');
-    var needle = (bsEl && window.SLBussola3D) ? SLBussola3D.control(bsEl, { reduce: reduce }) : null;
-    var chips = [].slice.call(document.querySelectorAll('#hbchips .chip'));
-    var hits = [].slice.call(document.querySelectorAll('#hbhits .hit'));
-    var line = document.getElementById('hbline');
-    var AREAS = window.SLBussola ? SLBussola.AREAS : [];
-    var cur = 0;
-
-    function pointTo(i) {
-      cur = i;
-      if (needle) needle.point(i);
-      chips.forEach(function (c, j) { c.classList.toggle('on', j === i); });
-      cards.forEach(function (c) { c.classList.toggle('north', +c.getAttribute('data-area') === i); });
-      if (line && AREAS[i]) line.innerHTML = 'Hoje o norte é <b>' + AREAS[i][0] + ' · ' + AREAS[i][1] + '</b>: ' + AREAS[i][2] + '.';
-    }
-    function goTo(i) {
-      pointTo(i);
+    function settle(i) { // assenta num detent (só o arco; a bússola não participa)
       var to = clampOff(-angleOf(i));
       if (reduce) { off = offCur = to; tw = null; render(); return; }
       tw = { from: off, to: to, t0: performance.now(), dur: Math.max(420, Math.min(1200, Math.abs(to - off) * 24)) };
       vel = 0; idleT = 0;
     }
-    function focus(i) { auto = false; goTo(i); }
-
-    chips.forEach(function (c, i) { c.addEventListener('click', function () { focus(i); }); });
-    hits.forEach(function (h) { h.addEventListener('click', function () { focus(+h.getAttribute('data-area')); }); });
-    cards.forEach(function (c) {
-      c.addEventListener('click', function () { if (moved) return; focus(+c.getAttribute('data-area')); });
-    });
 
     strip.addEventListener('pointerdown', function (e) {
       down = true; moved = false; lastX = e.clientX; lastT = performance.now(); vel = 0; tw = null;
@@ -684,7 +667,7 @@
     addEventListener('pointermove', function (e) {
       if (!down) return;
       var dx = e.clientX - lastX; lastX = e.clientX;
-      if (Math.abs(dx) > 3) { moved = true; auto = false; }
+      if (Math.abs(dx) > 3) moved = true;
       off = clampOff(off + dx * .042);
       var now = performance.now(), dt = now - lastT; lastT = now;
       if (dt > 0) vel = dx * .042 / dt * 16;
@@ -692,12 +675,12 @@
     });
     addEventListener('pointerup', function () {
       if (!down) return; down = false; strip.classList.remove('dragging');
-      if (moved && Math.abs(vel) <= .004) goTo(nearest()); // soltou parado: assenta no detent
+      if (moved && Math.abs(vel) <= .004) settle(nearest()); // soltou parado: assenta no detent
     });
     strip.addEventListener('click', function (e) { if (moved) e.preventDefault(); }, true);
     strip.addEventListener('keydown', function (e) { // setas andam de card em card
-      if (e.key === 'ArrowRight') { focus(Math.min(N - 1, cur + 1)); e.preventDefault(); }
-      if (e.key === 'ArrowLeft') { focus(Math.max(0, cur - 1)); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { settle(Math.min(N - 1, nearest() + 1)); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { settle(Math.max(0, nearest() - 1)); e.preventDefault(); }
     });
 
     if (!reduce) {
@@ -712,7 +695,7 @@
         } else if (!down) {
           if (Math.abs(vel) > .004) { off = clampOff(off + vel); vel *= .94; idleT = 0; wasMoving = true; }
           else {
-            if (wasMoving) { wasMoving = false; goTo(nearest()); }
+            if (wasMoving) { wasMoving = false; settle(nearest()); }
             idleT += 16;
             if (idleT > 1200) swayTarget = Math.sin(t / 1900) * 2.2;
           }
@@ -721,11 +704,40 @@
         offCur += (off - offCur) * (down ? .42 : .17);
         render();
       })(0);
-      setInterval(function () { if (auto && !down && !tw) goTo((cur + 1) % N); }, 5000);
     }
-    pointTo(nearest());
-    off = offCur = clampOff(-angleOf(cur));
+    off = offCur = clampOff(-angleOf(nearest()));
     render();
+  }
+
+  // ── as oito áreas: a lista conversa SÓ com a bússola (toque aponta, o arco não participa) ──
+  var a8bs = document.getElementById('a8bs');
+  if (a8bs && window.SLBussola3D) {
+    var a8 = SLBussola3D.control(a8bs, { reduce: reduce });
+    var rows = [].slice.call(document.querySelectorAll('.a8-row'));
+    var a8ix = document.getElementById('a8ix'), a8nome = document.getElementById('a8nome'), a8frase = document.getElementById('a8frase');
+    var FRASES = [
+      'O lazer estourou R$ 8. Segurando essa semana, o mês fecha com 39% poupado.',
+      'A reserva cobre 4,2 meses. O aporte da Itália pode ser antecipado.',
+      '2h de foco livres hoje à tarde. A agenda da semana está 80% protegida.',
+      'Três treinos na semana, meta batida. O sono é quem está devendo.',
+      'Leitura em dia, 2 sessões na semana. A trilha de UX pede 20 min hoje.',
+      'Carteira +2,1% no mês. Proventos de julho já reinvestidos.',
+      '3 de 5 skills no alvo do próximo nível. A 1:1 de terça está preparada.',
+      '92 dias pra Itália. Falta fechar o roteiro de Positano.'
+    ];
+    rows.forEach(function (r) {
+      var i = +r.getAttribute('data-area');
+      var slot = r.querySelector('.aic-slot');
+      if (slot) slot.appendChild(SLBussola3D.areaIcon(i, 46));
+      r.addEventListener('click', function () {
+        a8.point(i);
+        rows.forEach(function (x) { x.classList.toggle('on', x === r); });
+        if (a8ix) a8ix.textContent = '0' + (i + 1) + ' · 08';
+        if (a8nome) a8nome.textContent = r.querySelector('.nm').textContent;
+        if (a8frase) a8frase.textContent = FRASES[i];
+      });
+    });
+    a8.point(0);
   }
 })();
 </script>

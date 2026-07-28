@@ -67,5 +67,35 @@ window.SLBussola3D = (function () {
     return { point: point, glance: glance, unglance: unglance, index: function () { return cur; } };
   }
 
-  return { mount: mount, control: control, buildTicks: buildTicks };
+  // Primitivas geométricas das 8 áreas (spec §05, ordem canônica 01 Finanças..08 Experiências)
+  var PRIM = [
+    '<circle class="accf" cx="28" cy="28" r="7"></circle>',
+    '<circle class="eng" cx="28" cy="28.9" r="7.4"></circle><circle class="acc" cx="28" cy="28" r="7.4"></circle>',
+    '<circle class="eng" cx="28" cy="28.9" r="7.6"></circle><circle class="top" cx="28" cy="28" r="7.6"></circle><path class="acc" d="M28 24.2 V28 h3.4"></path>',
+    '<rect class="eng" x="24.2" y="21.9" width="7.6" height="14" rx="3.8"></rect><rect class="top" x="24.2" y="21" width="7.6" height="14" rx="3.8"></rect><path class="acc" d="M24.6 30.4 h6.8"></path>',
+    '<circle class="top" cx="20.9" cy="33.4" r="3.5"></circle><circle class="top" cx="28" cy="28" r="3.5"></circle><circle class="accf" cx="35.1" cy="22.6" r="3.8"></circle>',
+    '<rect class="eng" x="21.4" y="22.4" width="13.2" height="13.2" rx="2.4"></rect><rect class="top" x="21.4" y="21.4" width="13.2" height="13.2" rx="2.4"></rect>',
+    '<path class="eng" d="M21.4 31.6 L28 25.4 L34.6 31.6"></path><path class="acc" d="M21.4 30.6 L28 24.4 L34.6 30.6"></path>',
+    '<path class="eng" d="M28 21.6 L34.6 28.9 L28 36.2 L21.4 28.9 Z"></path><path class="top" d="M28 20.6 L34.6 28 L28 35.4 L21.4 28 Z"></path>'
+  ];
+
+  // Ícone de área: bússola em cromo pequeno, sem agulha e sem pivô, marcação do rumo acesa
+  // + primitiva no centro. Sempre em modo .s-sm (contraste manda), como na spec.
+  function areaIcon(i, sz) {
+    var el = document.createElement('span'); // span: pode viver dentro de botões/links
+    el.className = 'bs d3 s-sm aic';
+    el.style.setProperty('--sz', (sz || 56) + 'px');
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<div class="rim"></div><div class="dial">' +
+      '<svg class="tk" viewBox="0 0 200 200" aria-hidden="true"></svg>' +
+      '<svg class="gly" viewBox="0 0 56 56" aria-hidden="true">' + PRIM[i] + '</svg>' +
+      '</div><div class="gl"></div>';
+    var svg = el.querySelector('.tk');
+    buildTicks(svg);
+    svg.querySelectorAll('.mn').forEach(function (n) { n.remove(); });
+    svg.querySelectorAll('.t').forEach(function (g) { if (+g.getAttribute('data-i') === i) g.classList.add('on'); });
+    return el;
+  }
+
+  return { mount: mount, control: control, buildTicks: buildTicks, areaIcon: areaIcon };
 })();
