@@ -30,13 +30,6 @@
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
   .wrap{max-width:1180px;margin:0 auto;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
 
-  /* glifo da sincronia (marca nova, CSS puro) */
-  .glyph{display:inline-block;width:.72em;height:.72em;border:.11em solid var(--roxo);border-radius:50%;
-    border-top-color:transparent;position:relative;transform:rotate(-45deg);vertical-align:-.06em;flex-shrink:0}
-  .glyph::after{content:"";position:absolute;top:-.22em;left:50%;margin-left:-.11em;width:.22em;height:.22em;border-radius:50%;background:var(--ele)}
-  .anim .glyph.spin{animation:glyphspin 16s linear infinite}
-  @keyframes glyphspin{from{transform:rotate(-45deg)}to{transform:rotate(315deg)}}
-
   /* caligrafia do coach */
   .hand{font:700 19px/1.25 'Caveat',cursive;color:var(--coral);letter-spacing:.01em}
   .hand.rx{color:var(--roxo)}
@@ -85,7 +78,6 @@
     position:relative;transition:border-color .35s var(--ease)}
   .selo:hover{border-color:rgba(161,255,98,.4)}
   .selo::after{content:"";position:absolute;inset:5px;border:1px solid var(--line);border-radius:11px;pointer-events:none}
-  .selo .glyph{position:absolute;top:12px;right:12px;font-size:15px}
   .anim .selo{animation:breathe 4.5s var(--ease) infinite}
   @keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(161,255,98,0)}50%{box-shadow:0 0 26px -6px rgba(161,255,98,.18)}}
   .selo .k{font:700 9.5px var(--gro);letter-spacing:.24em;color:var(--t3)}
@@ -204,7 +196,7 @@
 
 <!-- chrome -->
 <header class="bar">
-  <a class="brand" href="#"><span class="glyph spin" aria-hidden="true" style="margin-right:8px"></span>Sync<em>Life</em></a>
+  <a class="brand" href="#">Sync<em>Life</em></a>
   <div class="mid"><span class="date">Segunda · 27 de julho de 2026</span></div>
   <div class="acts">
     <button class="btn btn-ghost" type="button">Revisão semanal</button>
@@ -241,7 +233,6 @@
         <p class="sub">Julho está 83% executado e a poupança segue acima da meta. Uma única atenção hoje: o lazer chegou perto do teto.</p>
       </div>
       <div class="selo" role="img" aria-label="Life Sync Score 78, mais 3 esta semana, no ritmo">
-        <span class="glyph" aria-hidden="true"></span>
         <div class="k">LIFE SYNC SCORE</div>
         <div class="n num" data-cnt="78">78</div>
         <div class="d num">+3 esta semana</div>
