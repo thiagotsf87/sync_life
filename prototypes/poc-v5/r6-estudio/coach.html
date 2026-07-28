@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Coach · r6 Estúdio</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#151313; --s1:#201d1d; --s2:#2a2727;
+    --line:rgba(255,255,255,.08); --line-h:rgba(255,255,255,.18);
+    --t1:#f4f4f4; --t2:#b8b8b8; --t3:#817f7f;
+    --roxo:#6840ff; --roxo-h:#7a55ff; --ele:#a1ff62; --coral:#f84131;
+    --gro:'Space Grotesk',sans-serif; --int:'Inter',sans-serif;
+    --ease:cubic-bezier(.625,.05,0,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--t1);font:400 14px/1.55 var(--int);-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--roxo);color:#fff}
+  a{color:inherit;text-decoration:none}
+  button{font-family:var(--int)}
+  .num{font-family:var(--gro);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .eyebrow{font:700 10px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--t3)}
+  .grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+  .wrap{max-width:1180px;margin:0 auto;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+  .hand{font:700 18px/1.25 'Caveat',cursive;color:var(--coral)}
+
+  /* chrome */
+  .bar{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+    padding:0 clamp(20px,4vw,56px);position:sticky;top:0;background:rgba(21,19,19,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:60}
+  .brand{font:700 17px var(--gro);letter-spacing:-.02em}
+  .brand em{font-style:normal;color:var(--roxo)}
+  .bar .date{font:700 10.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+  .btn{display:inline-flex;align-items:center;gap:7px;border-radius:999px;cursor:pointer;font:600 12.5px var(--int);
+    transition:background .3s var(--ease),border-color .3s var(--ease),color .3s var(--ease)}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--t2);padding:8px 15px}
+  .btn-ghost:hover{border-color:var(--line-h);color:var(--t1)}
+  .modbar{border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .modbar::-webkit-scrollbar{display:none}
+  .modbar .in{display:flex;gap:2px;padding:0 clamp(20px,4vw,56px);min-width:max-content}
+  .modbar a{display:flex;align-items:baseline;gap:7px;padding:13px 14px;font:600 12px var(--int);color:var(--t3);
+    border-bottom:2px solid transparent;transition:color .3s var(--ease),border-color .3s var(--ease);white-space:nowrap}
+  .modbar a .n{font:700 10.5px var(--gro)}
+  .modbar a:hover{color:var(--t1)}
+  .modbar a.on{color:var(--t1);border-bottom-color:var(--roxo)}
+  .modbar a.on .n{color:var(--roxo)}
+
+  /* layout do coach: conversa ao centro + contexto na margem */
+  .coach-grid{display:grid;grid-template-columns:1fr 300px;gap:clamp(36px,5vw,80px);align-items:start;padding:44px 0 140px}
+  .mast{margin-bottom:34px}
+  .mast h1{font:500 clamp(26px,3.2vw,40px)/1.06 var(--gro);letter-spacing:-.035em;margin-top:12px}
+  .mast .sub{font:400 13.5px var(--int);color:var(--t3);margin-top:10px}
+
+  .thread{display:flex;flex-direction:column;gap:14px;max-width:720px}
+  .divider{display:flex;align-items:center;gap:14px;font:700 9.5px var(--gro);letter-spacing:.2em;color:var(--t3);text-transform:uppercase;margin:8px 0}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+  .bub{max-width:78%;padding:13px 17px;font:400 13.5px/1.65 var(--int)}
+  .bub strong{color:var(--t1);font-weight:600}
+  .bub .g{color:var(--ele);font-weight:600}
+  .bub .w{color:var(--coral);font-weight:600}
+  .bub.u{align-self:flex-end;background:var(--roxo);color:#fff;border-radius:16px 16px 4px 16px}
+  .bub.u strong{color:#fff}
+  .bub.a{align-self:flex-start;background:var(--s1);border:1px solid var(--line);color:var(--t2);border-radius:16px 16px 16px 4px}
+  .bub .meta{display:block;font:500 10px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-top:9px}
+  .bub.u .meta{color:#cfc4ff}
+  /* cartão de ação dentro da conversa */
+  .action{align-self:flex-start;border:1px solid var(--line);border-left:3px solid var(--ele);border-radius:12px;padding:13px 16px;max-width:78%;background:#1b1918}
+  .action .al{font:700 9.5px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--ele);margin-bottom:6px}
+  .action p{font:400 12.5px/1.6 var(--int);color:var(--t2)}
+  .action p b{color:var(--t1);font-weight:600;font-family:var(--gro)}
+  .action .done{display:inline-flex;align-items:center;gap:7px;margin-top:10px;font:600 11.5px var(--int);color:var(--ele)}
+  .action .done svg{flex-shrink:0}
+  .typing{align-self:flex-start;display:flex;gap:5px;padding:12px 16px;background:var(--s1);border:1px solid var(--line);border-radius:16px 16px 16px 4px}
+  .typing i{width:6px;height:6px;border-radius:50%;background:var(--t3)}
+  .anim .typing i{animation:tdot 1s var(--ease) infinite;animation-delay:calc(var(--i)*.18s)}
+  @keyframes tdot{0%,100%{transform:none;opacity:.5}50%{transform:translateY(-3px);opacity:1}}
+
+  /* margem: o que o coach enxerga */
+  .ctx{border-left:1px solid var(--line);padding-left:clamp(20px,3vw,40px);position:sticky;top:96px}
+  .ctx .sec{margin-bottom:26px}
+  .ctx-row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font:400 12.5px var(--int);color:var(--t2)}
+  .ctx-row:last-child{border-bottom:none}
+  .ctx-row .v{font:600 12.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t1)}
+  .ctx .note{font:400 11.5px/1.6 var(--int);color:var(--t3);margin-top:12px}
+  .chips{display:flex;flex-direction:column;gap:8px;align-items:flex-start;margin-top:10px}
+  .chip{font:500 12px var(--int);color:var(--t2);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;background:transparent;
+    text-align:left;transition:border-color .3s var(--ease),color .3s var(--ease)}
+  .chip:hover{border-color:rgba(104,64,255,.55);color:var(--t1)}
+
+  /* input fixo */
+  .askbar{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:14px clamp(20px,4vw,56px) 22px;
+    background:linear-gradient(transparent,rgba(21,19,19,.88) 34%)}
+  .askbar .in{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px;background:#1b1918;border:1px solid var(--line-h);
+    border-radius:999px;padding:15px 22px;box-shadow:0 18px 44px -18px rgba(0,0,0,.7)}
+  .askbar span{flex:1;font:400 13.5px var(--int);color:var(--t3)}
+  .askbar svg{color:var(--roxo);flex-shrink:0}
+  .askbar .in:hover{border-color:rgba(104,64,255,.5)}
+
+  /* motion */
+  .anim .boot{animation:rise .7s var(--ease) backwards}
+  .anim .b1{animation-delay:.05s}.anim .b2{animation-delay:.14s}.anim .b3{animation-delay:.22s}
+  .anim .b4{animation-delay:.3s}.anim .b5{animation-delay:.38s}.anim .b6{animation-delay:.46s}.anim .b7{animation-delay:.54s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  @media (max-width:960px){
+    .coach-grid{grid-template-columns:1fr}
+    .ctx{border-left:none;padding-left:0;position:static;border-top:1px solid var(--line);padding-top:22px}
+    .bar .date{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="brand" href="#">Sync<em>Life</em></a>
+  <span class="date">Segunda · 27 de julho de 2026</span>
+  <button class="btn btn-ghost" type="button">Histórico de conversas</button>
+</header>
+<nav class="modbar" aria-label="Módulos">
+  <div class="in">
+    <a href="dashboard.html">Panorama</a>
+    <a href="financas.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a class="on" href="#">Coach</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div class="coach-grid">
+    <section aria-label="Conversa com o coach">
+      <div class="mast boot b1">
+        <p class="eyebrow">Coach · conversa contínua</p>
+        <h1>Pergunte com contexto. O coach já leu o seu mês.</h1>
+        <p class="sub">Sem repetir informação: orçamentos, metas, agenda e treinos já estão na conversa.</p>
+      </div>
+
+      <div class="thread">
+        <div class="divider boot b2">Hoje · 14:02</div>
+
+        <div class="bub u boot b3">Quanto ainda posso gastar em lazer esse mês?</div>
+
+        <div class="bub a boot b4">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o resto de julho está folgado, o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+          <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+        </div>
+
+        <div class="bub u boot b5">Então antecipa o aporte da Itália pra hoje.</div>
+
+        <div class="action boot b6" role="status">
+          <div class="al">Ação executada</div>
+          <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+          <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+        </div>
+
+        <div class="bub a boot b7">Feito. Aproveitando: sexta tem o jantar com a Ana no calendário. Se for em casa, o lazer sobrevive à semana; se for fora, me avisa que eu re-projeto o mês na hora.
+          <span class="meta">Fontes: agenda · orçamento Lazer</span>
+        </div>
+
+        <div class="typing boot b7" aria-label="Coach digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+      </div>
+    </section>
+
+    <aside class="ctx boot b4" aria-label="Contexto do coach">
+      <div class="sec">
+        <p class="eyebrow" style="margin-bottom:6px">O que o coach enxerga</p>
+        <div class="ctx-row"><span>Transações de julho</span><span class="v num">34</span></div>
+        <div class="ctx-row"><span>Orçamentos ativos</span><span class="v num">6</span></div>
+        <div class="ctx-row"><span>Metas em andamento</span><span class="v num">3</span></div>
+        <div class="ctx-row"><span>Eventos da semana</span><span class="v num">9</span></div>
+        <div class="ctx-row"><span>Treinos da semana</span><span class="v num">3/7</span></div>
+        <p class="note">Tudo processado no seu espaço. Nada da conversa vira dado de treino.</p>
+      </div>
+      <div class="sec">
+        <p class="eyebrow" style="margin-bottom:2px">Atalhos</p>
+        <div class="chips">
+          <button class="chip" type="button">Quanto posso gastar hoje?</button>
+          <button class="chip" type="button">Resumo da minha semana</button>
+          <button class="chip" type="button">Simular: e se eu poupar R$&nbsp;800?</button>
+          <button class="chip" type="button">Gerar relatório do mês</button>
+        </div>
+      </div>
+      <p class="hand" style="transform:rotate(-2.4deg)">é conversa, não formulário!</p>
+    </aside>
+  </div>
+</main>
+
+<div class="askbar">
+  <div class="in">
+    <span>Pergunte qualquer coisa sobre a sua vida…</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div>
+</div>
+
+<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return; // sem .anim: tudo visível
+  document.documentElement.classList.add('anim');
+})();
+</script>
+</body>
+</html>
