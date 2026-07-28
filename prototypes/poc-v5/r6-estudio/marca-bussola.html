@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · A marca · A Bússola da Vida</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#151313; --s1:#201d1d; --s2:#2a2727;
+    --line:rgba(255,255,255,.08); --line-h:rgba(255,255,255,.18);
+    --t1:#f4f4f4; --t2:#b8b8b8; --t3:#817f7f;
+    --paper:#f4f4f4; --ink:#151313; --ink2:#4f4c4c; --pline:rgba(21,19,19,.14);
+    --roxo:#6840ff; --roxo-h:#7a55ff; --ele:#a1ff62; --coral:#f84131;
+    --gro:'Space Grotesk',sans-serif; --int:'Inter',sans-serif;
+    --ease:cubic-bezier(.625,.05,0,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--t1);font:400 14px/1.55 var(--int);-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--roxo);color:#fff}
+  a{color:inherit;text-decoration:none}
+  button{font-family:var(--int)}
+  .num{font-family:var(--gro);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .eyebrow{font:700 10px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--t3)}
+  .eyebrow b{color:var(--roxo)}
+  .grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+  .wrap{max-width:1180px;margin:0 auto;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+  .hand{font:700 19px/1.25 'Caveat',cursive;color:var(--coral);letter-spacing:.01em}
+  .hand-arrow{stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .anim .draw .hand-arrow{stroke-dasharray:120;stroke-dashoffset:120;transition:stroke-dashoffset 1.1s var(--ease) .3s}
+  .anim .draw.in .hand-arrow{stroke-dashoffset:0}
+
+  .bar{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+    padding:0 clamp(20px,4vw,56px);position:sticky;top:0;background:rgba(21,19,19,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:60}
+  .brand{font:700 17px var(--gro);letter-spacing:-.02em}
+  .brand em{font-style:normal;color:var(--roxo)}
+  .bar .date{font:700 10.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+
+  .mast{padding:56px 0 44px}
+  .mast h1{font:500 clamp(34px,4.6vw,58px)/1.02 var(--gro);letter-spacing:-.045em;margin-top:14px;max-width:820px}
+  .mast h1 em{font-style:normal;color:var(--roxo)}
+  .mast .sub{font:400 14.5px/1.7 var(--int);color:var(--t2);margin-top:16px;max-width:66ch}
+  .mast .sub strong{color:var(--t1);font-weight:600}
+
+  .sec{padding:56px 0;border-top:1px solid var(--line)}
+  .sec h2{font:500 clamp(22px,2.8vw,34px)/1.1 var(--gro);letter-spacing:-.035em;margin-top:12px;max-width:680px}
+  .sec h2 em{font-style:normal;color:var(--roxo)}
+  .sec .lead{font:400 14px/1.7 var(--int);color:var(--t2);margin-top:12px;max-width:62ch}
+  .sec .lead strong{color:var(--t1);font-weight:600}
+
+  .tile{border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .tile.dark{background:#1b1918;border:1px solid var(--line);
+    --sym-fg:#f4f4f4;--sym-ac:#6840ff;--sym-live:#a1ff62;--sym-pivot:#1b1918}
+  .tile.light{background:var(--paper);border:1px solid var(--line);
+    --sym-fg:#151313;--sym-ac:#6840ff;--sym-live:#151313;--sym-pivot:#f4f4f4}
+  .tile .cap{position:absolute;left:16px;bottom:12px;font:700 9px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+  .tile.light .cap{color:var(--ink2)}
+
+  svg.sym{display:block}
+  .sym .fg{stroke:var(--sym-fg)}
+  .sym .fgf{fill:var(--sym-fg)}
+  .sym .acf{fill:var(--sym-ac)}
+  .sym .livef{fill:var(--sym-live)}
+  .sym .tick{stroke:var(--sym-fg)}
+  .sym .tick.on{stroke:var(--sym-live)}
+  .sym .ringc{stroke:var(--sym-fg)}
+  .sym .pivot{fill:var(--sym-pivot)}
+  .sym .anum{font:700 5px var(--gro);fill:var(--sym-fg);opacity:.65}
+  .sym .anum.on{fill:var(--sym-live);opacity:1}
+
+  /* agulha: rotação por variável + entrada com overshoot */
+  .point{transform-origin:32px 32px}
+  .p80 .point{transform-origin:40px 40px}
+  .point{transform:rotate(var(--rot,0deg))}
+  .anim .point{transition:transform .8s var(--ease)}
+  .needle{transform-origin:32px 32px}
+  .p80 .needle{transform-origin:40px 40px}
+  .anim .sec.in .needle{animation:swing 1.4s var(--ease) backwards .3s}
+  @keyframes swing{0%{transform:rotate(-80deg)}55%{transform:rotate(14deg)}78%{transform:rotate(-5deg)}100%{transform:rotate(0)}}
+  .anim .tick.on{animation:tickon .5s var(--ease)}
+  @keyframes tickon{from{opacity:.25}to{opacity:1}}
+
+  /* construção */
+  .cons{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(28px,4vw,64px);margin-top:34px;align-items:center}
+  .cons .tile.dark{min-height:360px}
+  .parts .prow{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:14px 0;border-bottom:1px dashed var(--line)}
+  .parts .prow:last-child{border-bottom:none}
+  .parts .pn{font:700 12px var(--gro);color:var(--roxo)}
+  .parts h4{font:600 14px var(--int)}
+  .parts p{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:4px}
+  .parts p b{color:var(--t2);font-weight:600}
+
+  /* cerimonial */
+  .cer{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,64px);margin-top:34px;align-items:stretch}
+  .cer .tile{min-height:380px}
+
+  /* bússola viva */
+  .viva-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(28px,4vw,64px);margin-top:34px;align-items:center}
+  .viva-grid .tile.dark{min-height:380px}
+  .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{font:500 12.5px var(--int);color:var(--t2);border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;background:transparent;
+    display:inline-flex;align-items:baseline;gap:7px;transition:border-color .3s var(--ease),color .3s var(--ease)}
+  .chip .n{font:700 10px var(--gro);color:var(--t3)}
+  .chip:hover{border-color:var(--line-h);color:var(--t1)}
+  .chip.on{border-color:var(--roxo);color:var(--t1)}
+  .chip.on .n{color:var(--roxo)}
+  .focoline{font:400 14px/1.6 var(--int);color:var(--t2);border-left:2px solid var(--roxo);padding-left:14px;margin-top:22px;min-height:44px}
+  .focoline b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+
+  /* escalas */
+  .scale-row{display:flex;gap:14px;margin-top:34px;align-items:stretch;flex-wrap:wrap}
+  .szbox{background:#1b1918;border:1px solid var(--line);border-radius:12px;padding:16px 14px 10px;display:flex;flex-direction:column;
+    align-items:center;justify-content:flex-end;gap:10px;flex:1;min-width:110px;
+    --sym-fg:#f4f4f4;--sym-ac:#6840ff;--sym-live:#a1ff62;--sym-pivot:#1b1918}
+  .szbox.lightbox{background:var(--paper);border-color:var(--line);
+    --sym-fg:#151313;--sym-ac:#6840ff;--sym-live:#151313;--sym-pivot:#f4f4f4}
+  .szbox .lb{font:700 9px var(--gro);letter-spacing:.18em;color:var(--t3);text-align:center}
+  .szbox.lightbox .lb{color:var(--ink2)}
+  .lockup{display:flex;align-items:center;gap:12px;background:#1b1918;border:1px solid var(--line);border-radius:16px;padding:18px 24px;margin-top:14px;
+    --sym-fg:#f4f4f4;--sym-ac:#6840ff;--sym-live:#a1ff62;--sym-pivot:#1b1918;width:fit-content}
+  .lockup .wm{font:700 21px var(--gro);letter-spacing:-.02em}
+  .lockup .wm em{font-style:normal;color:var(--roxo)}
+
+  /* aplicações */
+  .apps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px}
+  .app{background:#1b1918;border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:16px;justify-content:center;min-height:180px;
+    --sym-fg:#f4f4f4;--sym-ac:#6840ff;--sym-live:#a1ff62;--sym-pivot:#151313}
+  .app .lb{font:700 9px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+  .appicon{width:84px;height:84px;border-radius:20px;background:#151313;border:1px solid var(--line-h);display:flex;align-items:center;justify-content:center}
+  .appicon.lighty{background:var(--paper);--sym-fg:#151313;--sym-live:#151313;--sym-pivot:#f4f4f4}
+  .tabmock{display:flex;align-items:center;gap:9px;background:#242020;border:1px solid var(--line);border-bottom:none;border-radius:10px 10px 0 0;padding:9px 16px;
+    font:400 11.5px var(--int);color:var(--t2)}
+  .tabmock .x{margin-left:10px;color:var(--t3);font-size:12px}
+  .navmock{display:flex;align-items:center;gap:16px;background:#0d0c0c;border:1px solid var(--line-h);border-radius:14px;padding:10px 12px 10px 16px}
+  .navmock .wm{font:700 14.5px var(--gro);letter-spacing:-.02em}
+  .navmock .wm em{font-style:normal;color:var(--roxo)}
+  .navmock .lk{font:500 11px var(--int);color:var(--t3)}
+  .navmock .cta{font:600 10.5px var(--int);color:#fff;background:var(--roxo);border-radius:999px;padding:6px 11px}
+
+  .colofao{border-top:1px solid var(--line);padding:26px clamp(20px,4vw,56px);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    font:400 12.5px var(--int);color:var(--t3)}
+  .colofao b{color:var(--t2);font-weight:600;font-family:var(--gro)}
+
+  .anim .boot{animation:rise .7s var(--ease) backwards}
+  .anim .b1{animation-delay:.04s}.anim .b2{animation-delay:.12s}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .anim .rv{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+  .anim .rv.in{opacity:1;transform:none}
+
+  @media (max-width:960px){
+    .cons,.cer,.viva-grid{grid-template-columns:1fr}
+    .apps{grid-template-columns:1fr}
+    .bar .date{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="brand" href="#">Sync<em>Life</em></a>
+  <span class="date">A marca · rodada 3 · refinamento</span>
+  <span class="eyebrow">A Bússola da Vida</span>
+</header>
+
+<main class="wrap">
+  <section class="mast boot b1">
+    <p class="eyebrow"><b>Direção escolhida</b> · O Norte, evoluído</p>
+    <h1>A bússola da vida: <em>as áreas são os pontos cardeais</em>.</h1>
+    <p class="sub">A sua sugestão virou o coração do símbolo: no lugar de N, S, L e O, as marcações da bússola são <strong>as oito áreas do SyncLife</strong>. A agulha roxa aponta pra área que pede você hoje; a marcação acesa em elétrico responde. Gerenciar é isso: <strong>cuidado</strong> (o aro que envolve), <strong>foco</strong> (a agulha), <strong>evolução</strong> (o norte muda com a vida), <strong>performance</strong> (a área acesa, medida). Tudo em um instrumento só.</p>
+  </section>
+
+  <!-- ── construção ── -->
+  <section class="sec boot b2" id="cons">
+    <p class="eyebrow"><b>01</b> · A construção</p>
+    <h2>Cinco peças, um instrumento.</h2>
+    <div class="cons">
+      <div class="tile dark">
+        <svg class="sym" width="300" height="300" viewBox="0 0 64 64" aria-label="A Bússola da Vida, construção">
+          <circle class="ringc" cx="32" cy="32" r="25.5" fill="none" stroke-width=".6" opacity=".35"/>
+          <g class="ticks">
+            <line class="tick on" x1="32" y1="8.5" x2="32" y2="12.5" stroke-width="2" stroke-linecap="round"/>
+            <line class="tick" x1="48.6" y1="15.4" x2="45.8" y2="18.2" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="55.5" y1="32" x2="51.5" y2="32" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="48.6" y1="48.6" x2="45.8" y2="45.8" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="32" y1="55.5" x2="32" y2="51.5" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="15.4" y1="48.6" x2="18.2" y2="45.8" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="8.5" y1="32" x2="12.5" y2="32" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="15.4" y1="15.4" x2="18.2" y2="18.2" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          </g>
+          <g class="needle">
+            <polygon class="acf" points="32,10 36.5,32 27.5,32"/>
+            <polygon class="fgf" points="32,53 27.5,32 36.5,32" opacity=".28"/>
+            <circle class="pivot" cx="32" cy="32" r="2.6"/>
+          </g>
+        </svg>
+        <span class="cap">Versão padrão · 1:1</span>
+      </div>
+      <div class="parts">
+        <div class="prow"><span class="pn num">01</span><div><h4>O aro</h4><p>O mundo da sua vida, fechado e fino. Hairline, como todo o DS: <b>cuidado que envolve sem pesar</b>.</p></div></div>
+        <div class="prow"><span class="pn num">02</span><div><h4>As oito marcações</h4><p>As áreas no lugar dos pontos cardeais: 01 Finanças no norte, girando em sentido horário até 08 Experiências. <b>Posição, não cor</b>, identifica o módulo (E-09).</p></div></div>
+        <div class="prow"><span class="pn num">03</span><div><h4>A agulha</h4><p>Norte roxo: pra onde olhar agora. Sul apagado: <b>o que fica pra depois</b>. Foco é escolher, e escolher tem dois lados.</p></div></div>
+        <div class="prow"><span class="pn num">04</span><div><h4>O pivô</h4><p>Você, no centro de tudo. É o único ponto que <b>nunca se move</b>.</p></div></div>
+        <div class="prow"><span class="pn num">05</span><div><h4>A marcação acesa</h4><p>A área que pede você hoje, em elétrico: <b>o dado vivo</b>. No claro, vira ink (o elétrico é detalhe do escuro).</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── rosa cerimonial ── -->
+  <section class="sec rv" id="cer">
+    <p class="eyebrow"><b>02</b> · A rosa das áreas</p>
+    <h2>A versão cerimonial, com as áreas numeradas.</h2>
+    <p class="lead">Pra momentos de respiro: splash, página sobre, capa do relatório mensal. Os números são os mesmos da barra de módulos do app: a bússola e a navegação falam a mesma língua.</p>
+    <div class="cer">
+      <div class="tile dark">
+        <svg class="sym p80" width="320" height="320" viewBox="0 0 80 80" aria-label="Rosa das áreas, versão cerimonial">
+          <circle class="ringc" cx="40" cy="40" r="26" fill="none" stroke-width=".6" opacity=".35"/>
+          <g class="ticks">
+            <line class="tick on" x1="40" y1="15.5" x2="40" y2="20" stroke-width="2" stroke-linecap="round"/>
+            <line class="tick" x1="57.3" y1="22.7" x2="54.1" y2="25.9" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="64.5" y1="40" x2="60" y2="40" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="57.3" y1="57.3" x2="54.1" y2="54.1" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="40" y1="64.5" x2="40" y2="60" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="22.7" y1="57.3" x2="25.9" y2="54.1" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="15.5" y1="40" x2="20" y2="40" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+            <line class="tick" x1="22.7" y1="22.7" x2="25.9" y2="25.9" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          </g>
+          <g class="anums">
+            <text class="anum on num" x="40" y="8" text-anchor="middle" dy=".35em">01</text>
+            <text class="anum num" x="62.6" y="17.4" text-anchor="middle" dy=".35em">02</text>
+            <text class="anum num" x="72" y="40" text-anchor="middle" dy=".35em">03</text>
+            <text class="anum num" x="62.6" y="62.6" text-anchor="middle" dy=".35em">04</text>
+            <text class="anum num" x="40" y="72" text-anchor="middle" dy=".35em">05</text>
+            <text class="anum num" x="17.4" y="62.6" text-anchor="middle" dy=".35em">06</text>
+            <text class="anum num" x="8" y="40" text-anchor="middle" dy=".35em">07</text>
+            <text class="anum num" x="17.4" y="17.4" text-anchor="middle" dy=".35em">08</text>
+          </g>
+          <g class="needle">
+            <polygon class="acf" points="40,14 45,40 35,40"/>
+            <polygon class="fgf" points="40,62 35,40 45,40" opacity=".28"/>
+            <circle class="pivot" cx="40" cy="40" r="2.8"/>
+          </g>
+        </svg>
+        <span class="cap">Cerimonial · escuro</span>
+      </div>
+      <div class="tile light">
+        <svg class="sym p80" width="260" height="260" viewBox="0 0 80 80" aria-hidden="true">
+          <circle class="ringc" cx="40" cy="40" r="26" fill="none" stroke-width=".7" opacity=".4"/>
+          <g class="ticks">
+            <line class="tick on" x1="40" y1="15.5" x2="40" y2="20" stroke-width="2" stroke-linecap="round"/>
+            <line class="tick" x1="57.3" y1="22.7" x2="54.1" y2="25.9" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+            <line class="tick" x1="64.5" y1="40" x2="60" y2="40" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+            <line class="tick" x1="57.3" y1="57.3" x2="54.1" y2="54.1" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+            <line class="tick" x1="40" y1="64.5" x2="40" y2="60" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+            <line class="tick" x1="22.7" y1="57.3" x2="25.9" y2="54.1" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+            <line class="tick" x1="15.5" y1="40" x2="20" y2="40" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+            <line class="tick" x1="22.7" y1="22.7" x2="25.9" y2="25.9" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+          </g>
+          <g class="anums">
+            <text class="anum num" x="40" y="8" text-anchor="middle" dy=".35em">01</text>
+            <text class="anum num" x="62.6" y="17.4" text-anchor="middle" dy=".35em">02</text>
+            <text class="anum num" x="72" y="40" text-anchor="middle" dy=".35em">03</text>
+            <text class="anum num" x="62.6" y="62.6" text-anchor="middle" dy=".35em">04</text>
+            <text class="anum num" x="40" y="72" text-anchor="middle" dy=".35em">05</text>
+            <text class="anum num" x="17.4" y="62.6" text-anchor="middle" dy=".35em">06</text>
+            <text class="anum num" x="8" y="40" text-anchor="middle" dy=".35em">07</text>
+            <text class="anum num" x="17.4" y="17.4" text-anchor="middle" dy=".35em">08</text>
+          </g>
+          <g class="needle">
+            <polygon class="acf" points="40,14 45,40 35,40"/>
+            <polygon class="fgf" points="40,62 35,40 45,40" opacity=".28"/>
+            <circle class="pivot" cx="40" cy="40" r="2.8"/>
+          </g>
+        </svg>
+        <span class="cap">Cerimonial · claro</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── bússola viva ── -->
+  <section class="sec rv" id="viva">
+    <p class="eyebrow"><b>03</b> · A bússola viva</p>
+    <h2>O símbolo é um instrumento: <em>aponta pra área que pede você</em>.</h2>
+    <p class="lead">No produto, a bússola não é decoração. O briefing do dia diz onde está o norte, e a agulha obedece. Clique numa área (ou espere: ela procura sozinha).</p>
+    <div class="viva-grid">
+      <div class="tile dark">
+        <svg class="sym" width="300" height="300" viewBox="0 0 64 64" aria-label="A bússola apontando para a área em foco">
+          <circle class="ringc" cx="32" cy="32" r="25.5" fill="none" stroke-width=".6" opacity=".35"/>
+          <g class="ticks" id="vticks">
+            <line class="tick" x1="32" y1="8.5" x2="32" y2="12.5" stroke-width="2" stroke-linecap="round"/>
+            <line class="tick" x1="48.6" y1="15.4" x2="45.8" y2="18.2" stroke-width="2" stroke-linecap="round"/>
+            <line class="tick" x1="55.5" y1="32" x2="51.5" y2="32" stroke-width="2" stroke-linecap="round"/>
+            <line class="tick" x1="48.6" y1="48.6" x2="45.8" y2="45.8" stroke-width="2" stroke-linecap="round"/>
+            <line class="tick" x1="32" y1="55.5" x2="32" y2="51.5" stroke-width="2" stroke-linecap="round"/>
+            <line class="tick" x1="15.4" y1="48.6" x2="18.2" y2="45.8" stroke-width="2" stroke-linecap="round"/>
+            <line class="tick" x1="8.5" y1="32" x2="12.5" y2="32" stroke-width="2" stroke-linecap="round"/>
+            <line class="tick" x1="15.4" y1="15.4" x2="18.2" y2="18.2" stroke-width="2" stroke-linecap="round"/>
+          </g>
+          <g class="point" id="vpoint">
+            <g class="needle">
+              <polygon class="acf" points="32,10 36.5,32 27.5,32"/>
+              <polygon class="fgf" points="32,53 27.5,32 36.5,32" opacity=".28"/>
+              <circle class="pivot" cx="32" cy="32" r="2.6"/>
+            </g>
+          </g>
+        </svg>
+        <span class="cap">Interativa · escolha uma área</span>
+      </div>
+      <div>
+        <div class="chips" id="vchips" role="group" aria-label="Escolher área em foco">
+          <button class="chip" type="button"><span class="n num">01</span>Finanças</button>
+          <button class="chip" type="button"><span class="n num">02</span>Futuro</button>
+          <button class="chip" type="button"><span class="n num">03</span>Tempo</button>
+          <button class="chip" type="button"><span class="n num">04</span>Corpo</button>
+          <button class="chip" type="button"><span class="n num">05</span>Mente</button>
+          <button class="chip" type="button"><span class="n num">06</span>Patrimônio</button>
+          <button class="chip" type="button"><span class="n num">07</span>Carreira</button>
+          <button class="chip" type="button"><span class="n num">08</span>Experiências</button>
+        </div>
+        <p class="focoline" id="focoline" aria-live="polite">Hoje o norte é <b>01 · Finanças</b>: segurar o lazer até sexta.</p>
+        <div class="draw rv" style="display:flex;align-items:center;gap:8px;margin-top:18px">
+          <svg class="hand-arrow" width="42" height="24" viewBox="0 0 42 24" aria-hidden="true" style="color:var(--coral)"><path d="M40 4 C28 20, 15 22, 3 15 M9 21 L3 15 L10 11"/></svg>
+          <span class="hand" style="transform:rotate(-2deg)">o logo trabalha: aponta o foco do dia</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── escalas ── -->
+  <section class="sec rv" id="escalas">
+    <p class="eyebrow"><b>04</b> · Escalas e degradação</p>
+    <h2>Do splash ao favicon, perdendo peças na ordem certa.</h2>
+    <p class="lead">Primeiro caem os números, depois o aro, depois as marcações. A agulha com o pivô é o núcleo irredutível: <strong>ela sozinha ainda é a marca</strong>.</p>
+    <div class="scale-row">
+      <div class="szbox">
+        <svg class="sym p80" width="120" height="120" viewBox="0 0 80 80"><circle class="ringc" cx="40" cy="40" r="26" fill="none" stroke-width=".7" opacity=".35"/><g class="ticks"><line class="tick on" x1="40" y1="15.5" x2="40" y2="20" stroke-width="2" stroke-linecap="round"/><line class="tick" x1="57.3" y1="22.7" x2="54.1" y2="25.9" stroke-width="2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="64.5" y1="40" x2="60" y2="40" stroke-width="2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="57.3" y1="57.3" x2="54.1" y2="54.1" stroke-width="2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="40" y1="64.5" x2="40" y2="60" stroke-width="2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="22.7" y1="57.3" x2="25.9" y2="54.1" stroke-width="2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="15.5" y1="40" x2="20" y2="40" stroke-width="2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="22.7" y1="22.7" x2="25.9" y2="25.9" stroke-width="2" stroke-linecap="round" opacity=".8"/></g><g class="anums"><text class="anum on num" x="40" y="8" text-anchor="middle" dy=".35em">01</text><text class="anum num" x="62.6" y="17.4" text-anchor="middle" dy=".35em">02</text><text class="anum num" x="72" y="40" text-anchor="middle" dy=".35em">03</text><text class="anum num" x="62.6" y="62.6" text-anchor="middle" dy=".35em">04</text><text class="anum num" x="40" y="72" text-anchor="middle" dy=".35em">05</text><text class="anum num" x="17.4" y="62.6" text-anchor="middle" dy=".35em">06</text><text class="anum num" x="8" y="40" text-anchor="middle" dy=".35em">07</text><text class="anum num" x="17.4" y="17.4" text-anchor="middle" dy=".35em">08</text></g><g class="needle"><polygon class="acf" points="40,14 45,40 35,40"/><polygon class="fgf" points="40,62 35,40 45,40" opacity=".28"/><circle class="pivot" cx="40" cy="40" r="2.8"/></g></svg>
+        <span class="lb">Cerimonial · com números</span>
+      </div>
+      <div class="szbox">
+        <svg class="sym" width="72" height="72" viewBox="0 0 64 64"><circle class="ringc" cx="32" cy="32" r="25.5" fill="none" stroke-width="1" opacity=".35"/><g class="ticks"><line class="tick on" x1="32" y1="8.5" x2="32" y2="12.5" stroke-width="2.4" stroke-linecap="round"/><line class="tick" x1="48.6" y1="15.4" x2="45.8" y2="18.2" stroke-width="2.4" stroke-linecap="round" opacity=".8"/><line class="tick" x1="55.5" y1="32" x2="51.5" y2="32" stroke-width="2.4" stroke-linecap="round" opacity=".8"/><line class="tick" x1="48.6" y1="48.6" x2="45.8" y2="45.8" stroke-width="2.4" stroke-linecap="round" opacity=".8"/><line class="tick" x1="32" y1="55.5" x2="32" y2="51.5" stroke-width="2.4" stroke-linecap="round" opacity=".8"/><line class="tick" x1="15.4" y1="48.6" x2="18.2" y2="45.8" stroke-width="2.4" stroke-linecap="round" opacity=".8"/><line class="tick" x1="8.5" y1="32" x2="12.5" y2="32" stroke-width="2.4" stroke-linecap="round" opacity=".8"/><line class="tick" x1="15.4" y1="15.4" x2="18.2" y2="18.2" stroke-width="2.4" stroke-linecap="round" opacity=".8"/></g><g class="needle"><polygon class="acf" points="32,10 36.5,32 27.5,32"/><polygon class="fgf" points="32,53 27.5,32 36.5,32" opacity=".28"/><circle class="pivot" cx="32" cy="32" r="2.6"/></g></svg>
+        <span class="lb">72 · padrão</span>
+      </div>
+      <div class="szbox">
+        <svg class="sym" width="48" height="48" viewBox="0 0 64 64"><g class="ticks"><line class="tick on" x1="32" y1="7" x2="32" y2="12.5" stroke-width="3.2" stroke-linecap="round"/><line class="tick" x1="49.7" y1="14.3" x2="45.8" y2="18.2" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="57" y1="32" x2="51.5" y2="32" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="49.7" y1="49.7" x2="45.8" y2="45.8" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="32" y1="57" x2="32" y2="51.5" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="14.3" y1="49.7" x2="18.2" y2="45.8" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="7" y1="32" x2="12.5" y2="32" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="14.3" y1="14.3" x2="18.2" y2="18.2" stroke-width="3.2" stroke-linecap="round" opacity=".8"/></g><g class="needle"><polygon class="acf" points="32,9 37,32 27,32"/><polygon class="fgf" points="32,54 27,32 37,32" opacity=".3"/><circle class="pivot" cx="32" cy="32" r="3"/></g></svg>
+        <span class="lb">48 · sem o aro</span>
+      </div>
+      <div class="szbox">
+        <svg class="sym" width="32" height="32" viewBox="0 0 64 64"><g class="ticks"><line class="tick on" x1="32" y1="5" x2="32" y2="12" stroke-width="4.5" stroke-linecap="round"/><line class="tick" x1="59" y1="32" x2="52" y2="32" stroke-width="4.5" stroke-linecap="round" opacity=".7"/><line class="tick" x1="32" y1="59" x2="32" y2="52" stroke-width="4.5" stroke-linecap="round" opacity=".7"/><line class="tick" x1="5" y1="32" x2="12" y2="32" stroke-width="4.5" stroke-linecap="round" opacity=".7"/></g><g class="needle"><polygon class="acf" points="32,8 38,32 26,32"/><polygon class="fgf" points="32,55 26,32 38,32" opacity=".3"/><circle class="pivot" cx="32" cy="32" r="3.5"/></g></svg>
+        <span class="lb">32 · 4 marcações</span>
+      </div>
+      <div class="szbox">
+        <svg class="sym" width="16" height="16" viewBox="0 0 64 64"><line class="tick on" x1="32" y1="2" x2="32" y2="11" stroke-width="7" stroke-linecap="round"/><g class="needle"><polygon class="acf" points="32,8 40,34 24,34"/><polygon class="fgf" points="32,58 24,34 40,34" opacity=".35"/></g></svg>
+        <span class="lb">16 · núcleo</span>
+      </div>
+      <div class="szbox lightbox">
+        <svg class="sym" width="72" height="72" viewBox="0 0 64 64"><circle class="ringc" cx="32" cy="32" r="25.5" fill="none" stroke-width="1" opacity=".4"/><g class="ticks"><line class="tick on" x1="32" y1="8.5" x2="32" y2="12.5" stroke-width="2.4" stroke-linecap="round"/><line class="tick" x1="48.6" y1="15.4" x2="45.8" y2="18.2" stroke-width="2.4" stroke-linecap="round" opacity=".75"/><line class="tick" x1="55.5" y1="32" x2="51.5" y2="32" stroke-width="2.4" stroke-linecap="round" opacity=".75"/><line class="tick" x1="48.6" y1="48.6" x2="45.8" y2="45.8" stroke-width="2.4" stroke-linecap="round" opacity=".75"/><line class="tick" x1="32" y1="55.5" x2="32" y2="51.5" stroke-width="2.4" stroke-linecap="round" opacity=".75"/><line class="tick" x1="15.4" y1="48.6" x2="18.2" y2="45.8" stroke-width="2.4" stroke-linecap="round" opacity=".75"/><line class="tick" x1="8.5" y1="32" x2="12.5" y2="32" stroke-width="2.4" stroke-linecap="round" opacity=".75"/><line class="tick" x1="15.4" y1="15.4" x2="18.2" y2="18.2" stroke-width="2.4" stroke-linecap="round" opacity=".75"/></g><g class="needle"><polygon class="acf" points="32,10 36.5,32 27.5,32"/><polygon class="fgf" points="32,53 27.5,32 36.5,32" opacity=".28"/><circle class="pivot" cx="32" cy="32" r="2.6"/></g></svg>
+        <span class="lb">Claro · ink + roxo</span>
+      </div>
+    </div>
+    <div class="lockup">
+      <svg class="sym" width="27" height="27" viewBox="0 0 64 64"><g class="ticks"><line class="tick on" x1="32" y1="5" x2="32" y2="12" stroke-width="4.5" stroke-linecap="round"/><line class="tick" x1="59" y1="32" x2="52" y2="32" stroke-width="4.5" stroke-linecap="round" opacity=".7"/><line class="tick" x1="32" y1="59" x2="32" y2="52" stroke-width="4.5" stroke-linecap="round" opacity=".7"/><line class="tick" x1="5" y1="32" x2="12" y2="32" stroke-width="4.5" stroke-linecap="round" opacity=".7"/></g><g class="needle"><polygon class="acf" points="32,8 38,32 26,32"/><polygon class="fgf" points="32,55 26,32 38,32" opacity=".3"/><circle class="pivot" cx="32" cy="32" r="3.5"/></g></svg>
+      <span class="wm">Sync<em>Life</em></span>
+    </div>
+  </section>
+
+  <!-- ── aplicações ── -->
+  <section class="sec rv" id="apps">
+    <p class="eyebrow"><b>05</b> · Aplicações</p>
+    <h2>A bússola em campo.</h2>
+    <div class="apps">
+      <div class="app">
+        <div style="display:flex;gap:16px">
+          <div class="appicon">
+            <svg class="sym" width="52" height="52" viewBox="0 0 64 64"><g class="ticks"><line class="tick on" x1="32" y1="7" x2="32" y2="12.5" stroke-width="3.2" stroke-linecap="round"/><line class="tick" x1="49.7" y1="14.3" x2="45.8" y2="18.2" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="57" y1="32" x2="51.5" y2="32" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="49.7" y1="49.7" x2="45.8" y2="45.8" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="32" y1="57" x2="32" y2="51.5" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="14.3" y1="49.7" x2="18.2" y2="45.8" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="7" y1="32" x2="12.5" y2="32" stroke-width="3.2" stroke-linecap="round" opacity=".8"/><line class="tick" x1="14.3" y1="14.3" x2="18.2" y2="18.2" stroke-width="3.2" stroke-linecap="round" opacity=".8"/></g><g class="needle"><polygon class="acf" points="32,9 37,32 27,32"/><polygon class="fgf" points="32,54 27,32 37,32" opacity=".3"/><circle class="pivot" cx="32" cy="32" r="3" style="fill:#151313"/></g></svg>
+          </div>
+          <div class="appicon lighty">
+            <svg class="sym" width="52" height="52" viewBox="0 0 64 64"><g class="ticks"><line class="tick on" x1="32" y1="7" x2="32" y2="12.5" stroke-width="3.2" stroke-linecap="round"/><line class="tick" x1="49.7" y1="14.3" x2="45.8" y2="18.2" stroke-width="3.2" stroke-linecap="round" opacity=".75"/><line class="tick" x1="57" y1="32" x2="51.5" y2="32" stroke-width="3.2" stroke-linecap="round" opacity=".75"/><line class="tick" x1="49.7" y1="49.7" x2="45.8" y2="45.8" stroke-width="3.2" stroke-linecap="round" opacity=".75"/><line class="tick" x1="32" y1="57" x2="32" y2="51.5" stroke-width="3.2" stroke-linecap="round" opacity=".75"/><line class="tick" x1="14.3" y1="49.7" x2="18.2" y2="45.8" stroke-width="3.2" stroke-linecap="round" opacity=".75"/><line class="tick" x1="7" y1="32" x2="12.5" y2="32" stroke-width="3.2" stroke-linecap="round" opacity=".75"/><line class="tick" x1="14.3" y1="14.3" x2="18.2" y2="18.2" stroke-width="3.2" stroke-linecap="round" opacity=".75"/></g><g class="needle"><polygon class="acf" points="32,9 37,32 27,32"/><polygon class="fgf" points="32,54 27,32 37,32" opacity=".3"/><circle class="pivot" cx="32" cy="32" r="3"/></g></svg>
+          </div>
+        </div>
+        <span class="lb">Ícone de app · escuro e claro</span>
+      </div>
+      <div class="app">
+        <div class="tabmock">
+          <svg class="sym" width="15" height="15" viewBox="0 0 64 64"><line class="tick on" x1="32" y1="2" x2="32" y2="11" stroke-width="7" stroke-linecap="round"/><g><polygon class="acf" points="32,8 40,34 24,34"/><polygon class="fgf" points="32,58 24,34 40,34" opacity=".35"/></g></svg>
+          <span>SyncLife · Edição do dia</span>
+          <span class="x">×</span>
+        </div>
+        <span class="lb">Favicon na aba · 16px</span>
+      </div>
+      <div class="app">
+        <div class="navmock">
+          <svg class="sym" width="20" height="20" viewBox="0 0 64 64"><g class="ticks"><line class="tick on" x1="32" y1="5" x2="32" y2="12" stroke-width="4.5" stroke-linecap="round"/><line class="tick" x1="59" y1="32" x2="52" y2="32" stroke-width="4.5" stroke-linecap="round" opacity=".7"/><line class="tick" x1="32" y1="59" x2="32" y2="52" stroke-width="4.5" stroke-linecap="round" opacity=".7"/><line class="tick" x1="5" y1="32" x2="12" y2="32" stroke-width="4.5" stroke-linecap="round" opacity=".7"/></g><g><polygon class="acf" points="32,8 38,32 26,32"/><polygon class="fgf" points="32,55 26,32 38,32" opacity=".3"/><circle class="pivot" cx="32" cy="32" r="3.5" style="fill:#0d0c0c"/></g></svg>
+          <span class="wm">Sync<em>Life</em></span>
+          <span class="lk">Produto</span><span class="lk">Preços</span><span class="lk">FAQ</span>
+          <span class="cta">Começar grátis</span>
+        </div>
+        <span class="lb">Nav-pílula da landing</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="colofao">
+  <span>Aprovando a bússola: entra no <b>DESIGN-SYSTEM-v5.md</b> como marca oficial</span>
+  <span>Próximos passos do refinamento: grade geométrica final, versão mono, favicon/ícone reais exportados, aplicação nos 4 protótipos</span>
+</footer>
+
+<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce) {
+    document.documentElement.classList.add('anim');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: .12, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.rv, .draw, .sec').forEach(function (el) { io.observe(el); });
+  }
+
+  // a bússola viva: a agulha aponta pra área escolhida (teclado e clique sempre; auto-busca só sem reduce)
+  var areas = [
+    ['01', 'Finanças', 'segurar o lazer até sexta'],
+    ['02', 'Futuro', 'antecipar o aporte da Itália'],
+    ['03', 'Tempo', 'proteger o bloco de foco de amanhã'],
+    ['04', 'Corpo', 'hoje é dia de treino, 3 de 7 na semana'],
+    ['05', 'Mente', '20 minutos de leitura antes de dormir'],
+    ['06', 'Patrimônio', 'reinvestir os proventos de julho'],
+    ['07', 'Carreira', 'preparar a 1:1 de terça'],
+    ['08', 'Experiências', 'fechar o roteiro de Positano']
+  ];
+  var point = document.getElementById('vpoint');
+  var ticks = [].slice.call(document.querySelectorAll('#vticks .tick'));
+  var chips = [].slice.call(document.querySelectorAll('#vchips .chip'));
+  var line = document.getElementById('focoline');
+  var cur = 0, auto = true;
+
+  function setArea(i) {
+    cur = i;
+    point.style.setProperty('--rot', (i * 45) + 'deg');
+    ticks.forEach(function (t, j) { t.classList.toggle('on', j === i); });
+    chips.forEach(function (c, j) { c.classList.toggle('on', j === i); });
+    line.innerHTML = 'Hoje o norte é <b>' + areas[i][0] + ' · ' + areas[i][1] + '</b>: ' + areas[i][2] + '.';
+  }
+  chips.forEach(function (c, i) {
+    c.addEventListener('click', function () { auto = false; setArea(i); });
+  });
+  if (!reduce) {
+    setInterval(function () { if (auto) setArea((cur + 1) % 8); }, 3600);
+  }
+  setArea(0);
+})();
+</script>
+</body>
+</html>
