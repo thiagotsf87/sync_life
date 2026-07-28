@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Mobile · Sua vida inteira, em sincronia</title>
+<!-- Onda 0 · Landing v2 MOBILE dedicada (390×844). Não é breakpoint: hierarquia própria.
+     Arco reduzido (card 250px, pivô 2000px), bússola 120px com chips em scroll-x. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<style>
+  body{font-size:14.5px}
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* nav compacta: brand + CTA */
+  .navwrap{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:70;width:calc(100vw - 24px);
+    --t1:#f4f4f4;--t2:#b8b8b8;--line:rgba(255,255,255,.1);color:var(--t1)}
+  nav{display:flex;align-items:center;justify-content:space-between;gap:12px;height:52px;
+    padding:0 8px 0 16px;background:#0d0c0cf2;border:1px solid var(--line);border-radius:14px 14px 0 0;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .brand{font:700 16.5px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:8px}
+  .brand em{font-style:normal;color:var(--roxo)}
+  nav .btn-roxo{padding:8px 15px;font-size:12.5px}
+  .ticker{overflow:hidden;background:var(--ele);border-radius:0 0 14px 14px;height:24px;display:flex;align-items:center;white-space:nowrap}
+  .ticker .tk{display:inline-block;font:700 9.5px var(--gro);letter-spacing:.16em;color:#151313}
+  .anim .ticker .tk{animation:mq 40s linear infinite}
+  .ticker span{padding:0 14px}
+
+  /* HERO */
+  .hero{padding:118px 0 0;position:relative}
+  .atmo{position:absolute;inset:-4% -20% -2%;z-index:-1;pointer-events:none;
+    background:radial-gradient(420px 320px at 85% 2%,rgba(104,64,255,.12),transparent 64%),
+      radial-gradient(340px 280px at 0% 55%,rgba(161,255,98,.08),transparent 62%)}
+  .hero .pill-novo{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;
+    font:600 10px var(--gro);letter-spacing:.13em;color:var(--t2);text-transform:uppercase;margin-bottom:24px}
+  .hero .pill-novo .dot{width:6px;height:6px;border-radius:50%;background:var(--ele)}
+  .anim .pill-novo .dot{animation:pulse 2.4s var(--ease) infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(161,255,98,.35)}50%{box-shadow:0 0 0 6px rgba(161,255,98,0)}}
+  h1{font:500 clamp(2.6rem,13.4vw,3.4rem)/1 var(--gro);letter-spacing:-.05em;color:var(--t1)}
+  h1 .l2{display:flex;align-items:center;gap:.08em}
+  h1 em{font-style:normal;color:var(--roxo)}
+  h1 .badge78{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;
+    width:.94em;height:.94em;background:#151313;border-radius:.18em;margin-left:.08em;flex-shrink:0}
+  h1 .badge78 .b-n{font:700 .34em/1 var(--gro);letter-spacing:-.03em;color:var(--ele)}
+  h1 .badge78 .b-l{font:700 .085em var(--gro);letter-spacing:.24em;color:#8a8686;margin-top:.14em}
+  .hero-sub{font:400 15px/1.65 var(--int);color:var(--t2);margin-top:22px}
+  .hero-sub strong{color:var(--t1);font-weight:600}
+  .hero-ctas{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+  .hero-ctas .btn{justify-content:center}
+  .hero-proof{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px}
+  .hero-proof span{display:inline-flex;align-items:center;gap:6px;font:500 11.5px var(--int);color:var(--t3)}
+  .hero-proof svg{color:var(--roxo)}
+
+  /* faixa das 8 áreas */
+  .strip-head{display:flex;justify-content:space-between;align-items:baseline;margin:52px 0 12px}
+  .drag-cue{display:inline-flex;align-items:center;gap:7px;font:600 10px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
+  .anim .drag-cue svg{animation:nudge 2.2s var(--ease) infinite}
+  @keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+  /* semicírculo mobile: card 250px, pivô 2000px, passo 7.5° (corda 2000·sin7.5° ≈ 261px) */
+  .strip{position:relative;height:470px;margin-top:4px;cursor:grab;touch-action:pan-y;overflow:hidden}
+  .strip.dragging{cursor:grabbing}
+  .strip .scard{position:absolute;left:50%;top:36px;width:250px;margin-left:-125px;
+    transform-origin:50% 2000px;
+    transform:rotate(calc(var(--a,0deg) + var(--off,0deg)))}
+  .strip .scard.north{transform:rotate(calc(var(--a,0deg) + var(--off,0deg))) translateY(-5px);z-index:2;
+    border-color:rgba(104,64,255,.5)}
+  .scard{--t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;--line:rgba(255,255,255,.09);color:var(--t1);
+    background:#1b1918;border:1px solid rgba(255,255,255,.09);border-radius:14px;overflow:hidden;
+    box-shadow:0 24px 48px -20px rgba(21,19,19,.45);
+    transition:transform .5s var(--ease),box-shadow .35s var(--ease),border-color .5s var(--ease)}
+  .scard .tb{display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid var(--line);background:#161414}
+  .scard .tb i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.12)}
+  .scard .tb .nm{font:600 11px var(--int);color:var(--t2);margin-left:3px}
+  .scard .tb .ix{margin-left:auto;font:700 9.5px var(--gro);color:var(--t3)}
+  .scard .ui{position:relative;padding:13px;height:172px;display:flex;flex-direction:column;gap:9px;
+    background:radial-gradient(180px 100px at 85% 0%,rgba(104,64,255,.07),transparent 70%)}
+  .ui .lbl{font:700 8.5px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+  .ui .big{font:700 22px/1 var(--gro);letter-spacing:-.03em}
+  .ui .sub{font:400 10.5px var(--int);color:var(--t3)}
+  .ubar{display:grid;grid-template-columns:66px 1fr 40px;gap:8px;align-items:center}
+  .ubar .k{font:400 10.5px var(--int);color:var(--t2)}
+  .ubar .t{height:4px;border-radius:2px;background:#2e2a2a;overflow:hidden}
+  .ubar .f{display:block;height:100%;border-radius:2px;background:var(--t3);width:var(--w)}
+  .ubar.hot .f{background:var(--coral)}
+  .ubar .v{font:500 10px var(--gro);color:var(--t3);text-align:right}
+  .ubar.hot .v{color:var(--coral)}
+  .anim .ubar .f{animation:uifill 7s var(--ease) infinite;animation-delay:var(--d,0s)}
+  @keyframes uifill{0%{width:6%}34%{width:var(--w)}86%{width:var(--w)}100%{width:6%}}
+  .ubtn{position:absolute;top:11px;right:11px;font:600 10px var(--int);color:#fff;background:var(--roxo);border-radius:999px;padding:5px 10px}
+  .anim .ubtn{animation:upress 7s var(--ease) infinite}
+  @keyframes upress{0%,54%,66%,100%{transform:scale(1)}58%,62%{transform:scale(.9);background:var(--roxo-h)}}
+  .ucur{display:none}
+  .anim .ucur{display:block;position:absolute;width:11px;height:11px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 6px rgba(0,0,0,.5);z-index:3;animation:umove 7s var(--ease) infinite}
+  @keyframes umove{0%,28%{transform:translate(24px,128px);opacity:0}40%{opacity:1}56%{transform:translate(192px,11px)}
+    58%{transform:translate(192px,11px) scale(.8)}62%{transform:translate(192px,11px) scale(1)}80%{opacity:1}92%,100%{transform:translate(24px,128px);opacity:0}}
+  .uringw{display:flex;align-items:center;gap:12px}
+  .uring circle.fg{stroke:var(--ele);stroke-dasharray:163;stroke-dashoffset:49;stroke-linecap:round;fill:none}
+  .anim .uring circle.fg{animation:uring 7s var(--ease) infinite}
+  @keyframes uring{0%{stroke-dashoffset:163}38%{stroke-dashoffset:49}88%{stroke-dashoffset:49}100%{stroke-dashoffset:163}}
+  .uspark path.ln{stroke-dasharray:290;stroke-dashoffset:0}
+  .anim .uspark path.ln{animation:uspark 7.5s var(--ease) infinite}
+  @keyframes uspark{0%{stroke-dashoffset:290}42%{stroke-dashoffset:0}90%{stroke-dashoffset:0}100%{stroke-dashoffset:290}}
+  .urow{display:flex;align-items:center;gap:8px;font:400 10.5px var(--int);color:var(--t2)}
+  .urow time{font:500 9.5px var(--gro);color:var(--t3);width:32px;flex-shrink:0}
+  .ublock{flex:1;height:19px;border-radius:6px;background:rgba(104,64,255,.2);border:1px solid rgba(104,64,255,.45);
+    display:flex;align-items:center;padding:0 7px;font:500 9.5px var(--int);color:#cfc4ff}
+  .anim .ublock{animation:ublock 7s var(--ease) infinite}
+  @keyframes ublock{0%,20%{transform:translateX(-14px);opacity:0}32%,90%{transform:none;opacity:1}100%{opacity:0}}
+  .ucheck{width:12px;height:12px;border-radius:4px;border:1.5px solid var(--t3);position:relative;flex-shrink:0}
+  .ucheck svg{position:absolute;inset:1px;color:var(--ele)}
+  .ucheck svg path{stroke-dasharray:16;stroke-dashoffset:0}
+  .anim .ucheck svg path{animation:ucheck 7s var(--ease) infinite}
+  @keyframes ucheck{0%,40%{stroke-dashoffset:16}52%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:16}}
+  .anim .ustrike{animation:ustrike 7s var(--ease) infinite}
+  @keyframes ustrike{0%,50%{color:var(--t2)}58%,92%{color:var(--t3);text-decoration:line-through}100%{color:var(--t2)}}
+  .anim .upulse{animation:upulse 3.4s var(--ease) infinite}
+  @keyframes upulse{0%,100%{transform:none}50%{transform:scale(1.05)}}
+
+  /* a bússola da vida, abaixo do arco (empilhada) */
+  .hero-bussola{display:flex;flex-direction:column;gap:16px;margin-top:22px;padding:24px 0 8px;border-top:1px solid var(--line);
+    --sym-fg:#151313;--sym-ac:#6840ff;--sym-live:#151313;--sym-pivot:#f4f4f4}
+  .hero-bussola .sym{margin:0 auto}
+  .hero-bussola .hit{fill:transparent;cursor:pointer}
+  .hero-bussola .focoline{margin-top:0;min-height:0}
+  .hero-bussola .chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;margin:0 -20px;padding-left:20px;padding-right:20px;
+    scrollbar-width:none}
+  .hero-bussola .chips::-webkit-scrollbar{display:none}
+  .hero-bussola .chip{flex-shrink:0}
+
+  /* press */
+  .press{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:24px 0}
+  .press p{font:600 10px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .press-logos{display:flex;gap:20px;flex-wrap:wrap}
+  .press-logos span{font:700 13.5px var(--gro);color:var(--t3)}
+
+  /* decisão de marca (mesma escolha do desktop) */
+  .lockups{padding:48px 0;border-bottom:1px solid var(--line)}
+  .lock-row{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+  .lock-opt{border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--s1);
+    display:flex;flex-direction:column;gap:13px;align-items:flex-start}
+  .lock-cap{font:400 12px/1.6 var(--int);color:var(--t3)}
+  .lock-cap b{color:var(--t1);font-weight:600}
+  .navmock{display:flex;align-items:center;gap:11px;background:#0d0c0c;border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:9px 10px 9px 14px;color:#f4f4f4}
+  .navmock .wm{font:700 14px var(--gro);letter-spacing:-.02em}
+  .navmock .wm em{font-style:normal;color:var(--roxo)}
+  .navmock .cta{font:600 10px var(--int);color:#fff;background:var(--roxo);border-radius:999px;padding:5px 10px;margin-left:auto}
+
+  /* produto em espécimes (coluna única) */
+  .paper{background:#171515;color:var(--ink);padding:70px 0}
+  .paper .eyebrow{color:var(--ink2)}
+  .paper h2{font:500 clamp(1.9rem,8vw,2.4rem)/1.06 var(--gro);letter-spacing:-.04em;margin-top:14px}
+  .paper h2 em{font-style:normal;color:var(--roxo)}
+  .paper .lead{font:400 14.5px/1.7 var(--int);color:var(--ink2);margin-top:16px}
+  .spec-grid{display:flex;flex-direction:column;gap:30px;margin-top:44px}
+  .specimen{border-top:1px solid var(--pline);padding-top:16px}
+  .specimen .tag{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+  .specimen .tag span{font:700 9.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--ink2)}
+  .specimen .tag i{font-style:normal;font:700 9.5px var(--gro);color:var(--roxo)}
+  .sp-score{display:flex;align-items:baseline;gap:16px}
+  .sp-score .n{font:700 76px/1 var(--gro);letter-spacing:-.06em;color:var(--ink)}
+  .sp-score .meta{display:flex;flex-direction:column;gap:5px}
+  .sp-score .up{font:600 12.5px var(--gro);color:var(--ele)}
+  .sp-score .lbl{font:400 11.5px var(--int);color:var(--ink2)}
+  .sp-orc .row{display:grid;grid-template-columns:92px 1fr auto;gap:11px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--pline)}
+  .sp-orc .row:last-child{border-bottom:none}
+  .sp-orc .nm{font:500 12.5px var(--int);color:var(--ink)}
+  .sp-orc .track{height:4px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden}
+  .sp-orc .track i{display:block;height:100%;border-radius:2px;background:var(--ink2)}
+  .sp-orc .hot .track i{background:var(--coral)}
+  .sp-orc .val{font:500 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2)}
+  .sp-orc .hot .val{color:var(--coral)}
+  .sp-chat{display:flex;flex-direction:column;gap:9px}
+  .sp-chat .bub{max-width:92%;padding:10px 13px;font:400 12.5px/1.55 var(--int);border-radius:14px}
+  .sp-chat .u{align-self:flex-end;background:var(--roxo);color:#fff;border-bottom-right-radius:4px}
+  .sp-chat .a{align-self:flex-start;background:#242020;border:1px solid var(--pline);color:var(--ink2);border-bottom-left-radius:4px}
+  .sp-chat .a strong{color:var(--ink);font-weight:600}
+  .mnote{font:400 11.5px/1.6 var(--int);color:var(--ink2);border-left:2px solid var(--roxo);padding-left:12px}
+
+  /* marquee */
+  .mq{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0;white-space:nowrap}
+  .mq-track{display:inline-block}
+  .anim .mq-track{animation:mq 80s linear infinite}
+  @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-25%)}}
+  .mq span{font:500 15px var(--gro);letter-spacing:.04em;text-transform:uppercase;color:var(--t3);padding:0 20px}
+  .mq i{color:var(--roxo);font-style:normal}
+
+  /* IA */
+  .ia{padding:70px 0}
+  .ia h2{font:500 clamp(1.8rem,7.6vw,2.3rem)/1.08 var(--gro);letter-spacing:-.04em;margin-top:14px}
+  .ia h2 em{font-style:normal;color:var(--ele)}
+  .ia .lead{font:400 14.5px/1.7 var(--int);color:var(--t2);margin-top:14px}
+  .ia-grid{display:flex;flex-direction:column;gap:34px;margin-top:38px}
+  .ia-feat{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 0;border-top:1px solid var(--line)}
+  .ia-feat .fn{font:700 13px var(--gro);color:var(--roxo)}
+  .ia-feat h4{font:600 14.5px var(--int)}
+  .ia-feat p{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:4px}
+  .chat{display:flex;flex-direction:column;gap:9px}
+  .chat .bub{max-width:88%;padding:11px 14px;font:400 13px/1.6 var(--int)}
+  .chat .bub strong{color:var(--t1);font-weight:600}
+  .chat .bub .g{color:var(--ele);font-weight:600}
+  .chat .u{align-self:flex-end;background:var(--roxo);border:1px solid var(--roxo);color:#fff;border-radius:15px 15px 4px 15px}
+  .chat .a{align-self:flex-start;background:var(--s1);border:1px solid var(--line);color:var(--t2);border-radius:15px 15px 15px 4px;box-shadow:0 4px 14px rgba(21,19,19,.05)}
+  .chat-input{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--line);border-radius:999px;padding:12px 18px;margin-top:4px}
+  .chat-input span{flex:1;font:400 12.5px var(--int);color:var(--t3)}
+  .chat-input svg{color:var(--roxo)}
+
+  /* PRICING compacto */
+  .precos{padding:70px 0}
+  .precos .head{text-align:center;margin-bottom:38px}
+  .precos h2{font:500 clamp(1.8rem,7.6vw,2.3rem)/1.08 var(--gro);letter-spacing:-.04em;margin-top:12px}
+  .ptable{border-top:1px solid var(--line)}
+  .prow{display:grid;grid-template-columns:1.15fr 1fr 1fr;align-items:center;border-bottom:1px solid var(--line)}
+  .prow > div{padding:11px 8px}
+  .prow .feat{font:400 12px var(--int);color:var(--t2)}
+  .prow .c{text-align:center;font:500 12px var(--int);color:var(--t2)}
+  .prow .c svg{color:var(--ele);vertical-align:-2px}
+  .prow .c .no{color:var(--t3);opacity:.5}
+  .prow.hdr{border-bottom-width:2px;border-bottom-color:var(--line-h)}
+  .prow.hdr > div{padding-top:18px;padding-bottom:18px}
+  .prow.hdr .plan-n{font:500 16px var(--gro);letter-spacing:-.02em}
+  .prow.hdr .plan-p{font:700 24px/1 var(--gro);letter-spacing:-.04em;margin-top:8px}
+  .prow.hdr .plan-s{font:400 11px var(--int);color:var(--t3);margin-top:5px}
+  .col-pro{position:relative;background:var(--roxo)}
+  .prow .c.col-pro{color:#fff}
+  .prow.hdr .col-pro .plan-s{color:#d9d0ff}
+  .prow.hdr .col-pro .tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font:700 8.5px var(--gro);letter-spacing:.13em;
+    color:#151313;background:var(--ele);border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .prow .c.col-pro .no{color:#d9d0ff;opacity:.7}
+  .prow.cta .col-pro .btn-roxo{background:#151313;color:#fff}
+  .prow.cta > div{padding:14px 8px}
+  .prow.cta .btn{width:100%;justify-content:center;padding:11px 10px;font-size:12.5px}
+
+  /* FAQ */
+  .faqsec{padding:20px 0 70px}
+  .faqsec h2{font:500 clamp(1.5rem,6vw,1.9rem) var(--gro);letter-spacing:-.03em;text-align:center}
+  .faq{margin:28px auto 0}
+  .faq details{border-bottom:1px solid var(--line)}
+  .faq summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 4px;cursor:pointer;list-style:none;
+    font:600 14px var(--int);color:var(--t1)}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary svg{flex-shrink:0;color:var(--t3);transition:transform .4s var(--ease)}
+  .faq details[open] summary svg{transform:rotate(180deg)}
+  .faq .ans{padding:0 4px 18px;font:400 13px/1.65 var(--int);color:var(--t2)}
+
+  /* CTA final */
+  .final{padding:84px 0;text-align:center;border-top:1px solid var(--line)}
+  .final h2{font:500 clamp(2.2rem,11vw,3rem)/1.02 var(--gro);letter-spacing:-.05em}
+  .final h2 em{font-style:normal;color:var(--roxo)}
+  .final p{color:var(--t2);margin:20px auto 28px;max-width:300px;font-size:14px}
+
+  footer{border-top:1px solid var(--line);padding:48px 0 32px}
+  .foot-grid{display:flex;flex-direction:column;gap:28px}
+  .foot-tag{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:12px}
+  .foot-col h5{font:700 10px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t2);margin-bottom:12px}
+  .foot-col a{display:block;font:400 12.5px var(--int);color:var(--t3);padding:3px 0}
+  .foot-base{margin-top:32px;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px;
+    font:400 11.5px var(--int);color:var(--t3)}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="navwrap">
+  <nav>
+    <a class="brand" href="#">
+      <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+      Sync<em>Life</em></a>
+    <a class="btn btn-roxo" href="#">Começar grátis</a>
+  </nav>
+  <div class="ticker" aria-hidden="true">
+    <div class="tk"><span>24.000 BRASILEIROS EM SINCRONIA</span><span>·</span><span>14 DIAS PRO GRÁTIS</span><span>·</span><span>SEM CARTÃO DE CRÉDITO</span><span>·</span><span>24.000 BRASILEIROS EM SINCRONIA</span><span>·</span><span>14 DIAS PRO GRÁTIS</span><span>·</span><span>SEM CARTÃO DE CRÉDITO</span><span>·</span><span>24.000 BRASILEIROS EM SINCRONIA</span><span>·</span><span>14 DIAS PRO GRÁTIS</span><span>·</span><span>SEM CARTÃO DE CRÉDITO</span><span>·</span></div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="atmo" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="pill-novo boot b1"><span class="dot"></span>Novo · Coach IA em todos os planos</span>
+    <h1>
+      <span class="boot b2" style="display:block">Sua vida inteira,</span>
+      <span class="l2 boot b3"><em>em sincronia.</em>
+        <span class="badge78" role="img" aria-label="Life Sync Score 74, mais 3 hoje">
+          <span class="b-n num">74</span>
+          <span class="b-l">SCORE</span>
+        </span>
+      </span>
+    </h1>
+    <p class="hero-sub boot b4">Finanças, saúde, rotina, carreira e mente. Todas as áreas da sua vida em um só lugar. <span class="hl" id="hl-hero">Sem planilhas. Sem 8 apps abertos. Sem ansiedade.</span></p>
+    <div class="hero-ctas boot b5">
+      <a class="btn btn-roxo" href="#">Começar grátis
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="#produto">Ver demonstração</a>
+    </div>
+    <div class="hero-proof boot b5">
+      <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>14 dias PRO grátis</span>
+      <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sem cartão</span>
+      <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>LGPD-ready</span>
+    </div>
+
+    <div class="strip-head boot b5">
+      <p class="eyebrow"><b>Oito áreas</b> · uma interface</p>
+      <span class="drag-cue">Arraste
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </span>
+    </div>
+  </div>
+  <div class="strip boot b5" id="strip" tabindex="0" aria-label="As oito áreas do SyncLife em uso, faixa com rolagem horizontal; a bússola abaixo traz cada área pro centro">
+    <div class="scard" style="--a:-26.25deg" data-area="0">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Finanças</span><span class="ix num">01</span></div>
+      <div class="ui">
+        <span class="ubtn">+ Nova</span>
+        <span class="ucur" aria-hidden="true"></span>
+        <div><div class="lbl">Saldo do mês</div><div class="big num">R$&nbsp;1.840</div></div>
+        <div class="ubar" style="--w:80%;--d:.2s"><span class="k">Alimentação</span><span class="t"><span class="f"></span></span><span class="v num">80%</span></div>
+        <div class="ubar hot" style="--w:98%;--d:.5s"><span class="k">Lazer</span><span class="t"><span class="f"></span></span><span class="v num">98%</span></div>
+        <div class="ubar" style="--w:70%;--d:.8s"><span class="k">Transporte</span><span class="t"><span class="f"></span></span><span class="v num">70%</span></div>
+      </div>
+    </div>
+    <div class="scard" style="--a:-18.75deg" data-area="1">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Futuro</span><span class="ix num">02</span></div>
+      <div class="ui">
+        <div><div class="lbl">Viagem Itália</div><div class="big num">68%</div></div>
+        <div class="ubar" style="--w:68%;--d:.3s;grid-template-columns:1fr 60px"><span class="t"><span class="f" style="background:var(--roxo)"></span></span><span class="v num">R$&nbsp;8.600</span></div>
+        <div class="sub">Aporte de R$&nbsp;580 agendado pra sexta. No ritmo, você chega uma semana antes do prazo.</div>
+      </div>
+    </div>
+    <div class="scard" style="--a:-11.25deg" data-area="2">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Tempo</span><span class="ix num">03</span></div>
+      <div class="ui">
+        <div><div class="lbl">Hoje</div><div class="big num">42 min <span class="sub">de foco</span></div></div>
+        <div class="urow"><time class="num">07:30</time>Fisioterapia</div>
+        <div class="urow"><time class="num">09:00</time><span class="ublock">Bloco de foco · projeto</span></div>
+        <div class="urow"><span class="ucheck"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5 L4.6 9 L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ustrike">Revisão semanal</span></div>
+      </div>
+    </div>
+    <div class="scard" style="--a:-3.75deg" data-area="3">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Corpo</span><span class="ix num">04</span></div>
+      <div class="ui">
+        <div class="lbl">Treinos da semana</div>
+        <div class="uringw">
+          <svg class="uring" width="62" height="62" viewBox="0 0 72 72" aria-hidden="true">
+            <circle cx="36" cy="36" r="26" stroke="#2e2a2a" stroke-width="7" fill="none"/>
+            <circle class="fg" cx="36" cy="36" r="26" stroke-width="7" transform="rotate(-90 36 36)"/>
+          </svg>
+          <div><div class="big num">3/7</div><div class="sub">2 corridas · 1 força</div></div>
+        </div>
+        <div class="sub">Cardápio de amanhã gerado pelo coach.</div>
+      </div>
+    </div>
+    <div class="scard" style="--a:3.75deg" data-area="4">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Mente</span><span class="ix num">05</span></div>
+      <div class="ui">
+        <div><div class="lbl">Esta semana</div><div class="big num">2 <span class="sub">sessões de leitura</span></div></div>
+        <div class="ubar" style="--w:40%;--d:.2s"><span class="k">Livro atual</span><span class="t"><span class="f"></span></span><span class="v num">40%</span></div>
+        <div class="ubar" style="--w:65%;--d:.55s"><span class="k">Curso de UX</span><span class="t"><span class="f"></span></span><span class="v num">65%</span></div>
+        <div class="sub">Trilha sugerida: 20 min por dia.</div>
+      </div>
+    </div>
+    <div class="scard" style="--a:11.25deg" data-area="5">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Patrimônio</span><span class="ix num">06</span></div>
+      <div class="ui">
+        <div><div class="lbl">Carteira</div><div class="big num">R$&nbsp;48,2k <span class="sub" style="color:var(--ele)">+7%</span></div></div>
+        <svg class="uspark" width="100%" height="48" viewBox="0 0 240 54" preserveAspectRatio="none" aria-hidden="true">
+          <path class="ln" d="M0,44 C24,40 40,30 62,32 C84,34 100,22 124,20 C148,18 166,24 190,14 C210,6 226,8 240,4" fill="none" stroke="#a1ff62" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div class="sub">Proventos de julho reinvestidos.</div>
+      </div>
+    </div>
+    <div class="scard" style="--a:18.75deg" data-area="6">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Carreira</span><span class="ix num">07</span></div>
+      <div class="ui">
+        <div><div class="lbl">Próximo nível</div><div class="big num">3/5 <span class="sub">skills no alvo</span></div></div>
+        <div class="ubar" style="--w:70%;--d:.25s"><span class="k">Inglês</span><span class="t"><span class="f"></span></span><span class="v num">70%</span></div>
+        <div class="ubar" style="--w:40%;--d:.6s"><span class="k">Liderança</span><span class="t"><span class="f"></span></span><span class="v num">40%</span></div>
+        <div class="urow"><time class="num">ter</time>1:1 com a gestora às 14:00</div>
+      </div>
+    </div>
+    <div class="scard" style="--a:26.25deg" data-area="7">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">Experiências</span><span class="ix num">08</span></div>
+      <div class="ui">
+        <div class="lbl">Próxima viagem</div>
+        <div class="big num upulse" style="font-size:34px">92 <span class="sub">dias pra Itália</span></div>
+        <div class="urow"><span class="sub">Roma · Florença · Positano</span></div>
+        <div class="ubar" style="--w:68%;--d:.4s;grid-template-columns:1fr 70px"><span class="t"><span class="f" style="background:var(--roxo)"></span></span><span class="v num">planejado</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- a bússola da vida: tocar numa área traz a tela dela pro norte -->
+  <div class="wrap">
+    <div class="hero-bussola sym-swing rv" id="hb">
+      <svg class="sym" width="120" height="120" viewBox="0 0 64 64" role="group" aria-label="A Bússola da Vida, interativa: escolha uma área e a miniatura dela vem pro centro">
+        <circle class="ringc" cx="32" cy="32" r="25.5" fill="none" stroke-width=".6" opacity=".35"/>
+        <g class="ticks" id="hbticks">
+          <line class="tick" x1="32" y1="8.5" x2="32" y2="12.5" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="48.6" y1="15.4" x2="45.8" y2="18.2" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="55.5" y1="32" x2="51.5" y2="32" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="48.6" y1="48.6" x2="45.8" y2="45.8" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick on" x1="32" y1="55.5" x2="32" y2="51.5" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="15.4" y1="48.6" x2="18.2" y2="45.8" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="8.5" y1="32" x2="12.5" y2="32" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="15.4" y1="15.4" x2="18.2" y2="18.2" stroke-width="2" stroke-linecap="round"/>
+        </g>
+        <g class="point" id="hbpoint">
+          <g class="needle">
+            <polygon class="acf" points="32,10 36.5,32 27.5,32"/>
+            <polygon class="fgf" points="32,53 27.5,32 36.5,32" opacity=".28"/>
+            <circle class="pivot" cx="32" cy="32" r="2.6"/>
+          </g>
+        </g>
+        <g id="hbhits">
+          <circle class="hit" data-area="0" cx="32" cy="8.5" r="8"><title>01 · Finanças</title></circle>
+          <circle class="hit" data-area="1" cx="48.6" cy="15.4" r="8"><title>02 · Futuro</title></circle>
+          <circle class="hit" data-area="2" cx="55.5" cy="32" r="8"><title>03 · Tempo</title></circle>
+          <circle class="hit" data-area="3" cx="48.6" cy="48.6" r="8"><title>04 · Corpo</title></circle>
+          <circle class="hit" data-area="4" cx="32" cy="55.5" r="8"><title>05 · Mente</title></circle>
+          <circle class="hit" data-area="5" cx="15.4" cy="48.6" r="8"><title>06 · Patrimônio</title></circle>
+          <circle class="hit" data-area="6" cx="8.5" cy="32" r="8"><title>07 · Carreira</title></circle>
+          <circle class="hit" data-area="7" cx="15.4" cy="15.4" r="8"><title>08 · Experiências</title></circle>
+        </g>
+      </svg>
+      <p class="eyebrow" style="text-align:center"><b>A bússola da vida</b> · toque numa área</p>
+      <p class="focoline" id="hbline">Hoje o norte é <b>05 · Mente</b>: 20 minutos de leitura antes de dormir.</p>
+      <div class="chips" id="hbchips" role="group" aria-label="Escolher área em foco">
+        <button class="chip" type="button"><span class="n num">01</span>Finanças</button>
+        <button class="chip" type="button"><span class="n num">02</span>Futuro</button>
+        <button class="chip" type="button"><span class="n num">03</span>Tempo</button>
+        <button class="chip" type="button"><span class="n num">04</span>Corpo</button>
+        <button class="chip on" type="button"><span class="n num">05</span>Mente</button>
+        <button class="chip" type="button"><span class="n num">06</span>Patrimônio</button>
+        <button class="chip" type="button"><span class="n num">07</span>Carreira</button>
+        <button class="chip" type="button"><span class="n num">08</span>Experiências</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- prova social -->
+<section class="press rv">
+  <div class="wrap">
+    <p>Mais de 24.000 brasileiros já organizam a vida com SyncLife</p>
+    <div class="press-logos">
+      <span>Folha de SP</span><span>Exame</span><span>Forbes BR</span><span>O Globo</span>
+    </div>
+  </div>
+</section>
+
+<!-- DECISÃO DE MARCA (mesma escolha do desktop; sai após a aprovação) -->
+<section class="lockups rv" id="lockup">
+  <div class="wrap">
+    <p class="eyebrow"><b>Decisão de marca</b> · qual bússola acompanha o wordmark?</p>
+    <div class="lock-row">
+      <div class="lock-opt">
+        <div class="navmock">
+          <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+          <span class="wm">Sync<em>Life</em></span>
+          <span class="cta">Começar grátis</span>
+        </div>
+        <p class="lock-cap"><b>Direção 1 · Núcleo ampliado (recomendada).</b> A marca degrada pro núcleo (§5.3): agulha grande + marcação norte acesa.</p>
+      </div>
+      <div class="lock-opt">
+        <div class="navmock">
+          <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="6" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="6" stroke-linecap="round" opacity=".7"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="6" stroke-linecap="round" opacity=".7"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="6" stroke-linecap="round" opacity=".7"/><polygon points="32,8 39,32 25,32" fill="#6840ff"/><polygon points="32,55 25,32 39,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="2.8" fill="#0d0c0c"/></svg>
+          <span class="wm">Sync<em>Life</em></span>
+          <span class="cta">Começar grátis</span>
+        </div>
+        <p class="lock-cap"><b>Direção 2 · Versão 32 reforçada.</b> As 4 marcações cardeais com traços mais grossos e agulha alargada.</p>
+      </div>
+      <div class="lock-opt">
+        <div class="navmock">
+          <svg width="21" height="21" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1b1918" stroke="rgba(255,255,255,.16)"/><line x1="32" y1="6" x2="32" y2="13" stroke="#a1ff62" stroke-width="6" stroke-linecap="round"/><polygon points="32,10 39,34 25,34" fill="#6840ff"/><polygon points="32,57 25,34 39,34" fill="#f4f4f4" opacity=".3"/></svg>
+          <span class="wm">Sync<em>Life</em></span>
+          <span class="cta">Começar grátis</span>
+        </div>
+        <p class="lock-cap"><b>Direção 3 · Selo.</b> O núcleo dentro do tile do favicon oficial (§5.5): objeto sólido na pill.</p>
+      </div>
+    </div>
+    <p class="hand" style="margin-top:16px;transform:rotate(-1.6deg)">escolha uma: essa seção sai depois da aprovação</p>
+  </div>
+</section>
+
+<!-- produto em espécimes -->
+<section class="paper" id="produto">
+  <div class="wrap">
+    <div class="rv">
+      <p class="eyebrow">O produto · por dentro</p>
+      <h2>Tudo o que você gerencia na sua vida, <em>em um lugar só.</em></h2>
+      <p class="lead">Peças reais da interface, com os seus dados no centro. Números grandes, leitura limpa, zero ruído.</p>
+    </div>
+    <div class="spec-grid">
+      <div class="specimen rv">
+        <div class="tag"><span>Life Sync Score</span><i>fig. 01</i></div>
+        <div class="sp-score">
+          <span class="n num">74</span>
+          <div class="meta">
+            <span class="up num">+3 hoje</span>
+            <span class="lbl">Um número que resume as 8 dimensões da sua vida, atualizado em tempo real.</span>
+          </div>
+        </div>
+        <div class="draw rv" style="display:flex;align-items:center;gap:6px;margin-top:10px">
+          <svg class="hand-arrow" width="40" height="23" viewBox="0 0 46 26" aria-hidden="true" style="color:var(--coral)"><path d="M44 4 C30 22, 16 24, 3 16 M9 22 L3 16 L10 12"/></svg>
+          <span class="hand">a vida inteira num número só</span>
+        </div>
+      </div>
+      <div class="specimen rv">
+        <div class="tag"><span>Orçamentos ao vivo</span><i>fig. 02</i></div>
+        <div class="sp-orc">
+          <div class="row"><span class="nm">Alimentação</span><div class="track"><i style="width:80%"></i></div><span class="val">640 / 800</span></div>
+          <div class="row hot"><span class="nm">Lazer</span><div class="track"><i style="width:82%"></i></div><span class="val">410 / 500</span></div>
+          <div class="row"><span class="nm">Transporte</span><div class="track"><i style="width:70%"></i></div><span class="val">280 / 400</span></div>
+        </div>
+        <p class="mnote rv" style="margin-top:14px">Cada barra muda de cor quando você se aproxima do limite. Sem susto no fim do mês.</p>
+      </div>
+      <div class="specimen rv">
+        <div class="tag"><span>Consultor IA · conversa real</span><i>fig. 03</i></div>
+        <div class="sp-chat">
+          <div class="bub u">Quanto gastei em lazer esse mês?</div>
+          <div class="bub a">Você gastou <strong class="num">R$&nbsp;410,00</strong> em Lazer, 82% do orçamento (R$&nbsp;500,00). Com 8 dias restantes, considere reduzir saídas até o fim do mês.</div>
+          <div class="bub u">E na Viagem Itália, quanto falta?</div>
+          <div class="bub a">Faltam <strong class="num">R$&nbsp;4.100,00</strong> (32%) para completar a meta. No ritmo atual, você atinge em <strong>7 meses</strong>, uma semana antes do prazo.</div>
+        </div>
+        <p class="hand rx rv" style="transform:rotate(-2.5deg);margin-top:12px;text-align:right">resposta com contexto, não chute!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- marquee -->
+<div class="mq" aria-hidden="true">
+  <div class="mq-track">
+    <span>Finanças <i>✦</i></span><span>Futuro <i>✦</i></span><span>Tempo <i>✦</i></span><span>Corpo <i>✦</i></span><span>Mente <i>✦</i></span><span>Patrimônio <i>✦</i></span><span>Carreira <i>✦</i></span><span>Experiências <i>✦</i></span><span>Finanças <i>✦</i></span><span>Futuro <i>✦</i></span><span>Tempo <i>✦</i></span><span>Corpo <i>✦</i></span><span>Mente <i>✦</i></span><span>Patrimônio <i>✦</i></span><span>Carreira <i>✦</i></span><span>Experiências <i>✦</i></span><span>Finanças <i>✦</i></span><span>Futuro <i>✦</i></span><span>Tempo <i>✦</i></span><span>Corpo <i>✦</i></span><span>Mente <i>✦</i></span><span>Patrimônio <i>✦</i></span><span>Carreira <i>✦</i></span><span>Experiências <i>✦</i></span>
+  </div>
+</div>
+
+<!-- IA -->
+<section class="ia" id="manifesto">
+  <div class="wrap">
+    <div class="rv">
+      <p class="eyebrow"><b>Consultor IA</b> · integrado</p>
+      <h2>Uma IA que <em>conhece sua vida</em>. E fala como um amigo.</h2>
+      <p class="lead">O consultor do SyncLife enxerga seus orçamentos, suas metas, seu treino e seus eventos, e gera insights personalizados em tempo real.</p>
+    </div>
+    <div class="ia-grid">
+      <div class="rv">
+        <div class="ia-feat"><span class="fn num">01</span><div><h4>Insights diários</h4><p>Alertas, ações recomendadas e conquistas direto na sua tela inicial.</p></div></div>
+        <div class="ia-feat"><span class="fn num">02</span><div><h4>Relatórios completos</h4><p>Gere um PDF do seu mês inteiro em finanças, saúde e produtividade em 1 clique.</p></div></div>
+        <div class="ia-feat"><span class="fn num">03</span><div><h4>Pergunte qualquer coisa</h4><p>"Quanto gastei em lazer? Quanto preciso poupar pra viajar em julho?" em linguagem natural.</p></div></div>
+      </div>
+      <div class="chat rv">
+        <div class="bub u">Se eu antecipar a parcela da viagem, aperta o mês?</div>
+        <div class="bub a">Não. Antecipando <strong class="num">R$&nbsp;580</strong> hoje, seu saldo projetado fecha em <strong class="num">R$&nbsp;1.540</strong> e a poupança segue <span class="g">acima da meta</span>. Vale fazer.</div>
+        <div class="bub u">Então agenda pra sexta.</div>
+        <div class="bub a">Agendado. Transferência de <strong class="num">R$&nbsp;580</strong> pra Viagem Itália na sexta, 31 de julho. A meta chega a <strong class="num">73%</strong>.</div>
+        <div class="chat-input">
+          <span>Pergunte algo…</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="precos dk" id="precos">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow"><b>Preços</b> · sem pegadinhas</p>
+      <h2>Comece grátis. Evolua quando quiser.</h2>
+    </div>
+    <div class="ptable rv">
+      <div class="prow hdr">
+        <div></div>
+        <div class="c"><div class="plan-n">Free</div><div class="plan-p num">R$&nbsp;0</div><div class="plan-s">para sempre</div></div>
+        <div class="c col-pro"><span class="tag">RECOMENDADO</span><div class="plan-n">PRO</div><div class="plan-p num">R$&nbsp;24,90</div><div class="plan-s">por mês</div></div>
+      </div>
+      <div class="prow"><div class="feat">Módulos</div><div class="c">Todos os 11</div><div class="c col-pro">Todos os 11</div></div>
+      <div class="prow"><div class="feat">Transações</div><div class="c num">50/mês</div><div class="c col-pro">Ilimitadas</div></div>
+      <div class="prow"><div class="feat">Life Sync Score</div><div class="c">Básico</div><div class="c col-pro">Completo</div></div>
+      <div class="prow"><div class="feat">Consultor IA + Coach IA</div><div class="c"><span class="no">–</span></div><div class="c col-pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      <div class="prow"><div class="feat">Cardápio por IA</div><div class="c"><span class="no">–</span></div><div class="c col-pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      <div class="prow"><div class="feat">Relatórios PDF</div><div class="c"><span class="no">–</span></div><div class="c col-pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      <div class="prow"><div class="feat">Google Calendar</div><div class="c"><span class="no">–</span></div><div class="c col-pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      <div class="prow"><div class="feat">Dispositivos</div><div class="c num">1</div><div class="c col-pro">Ilimitados</div></div>
+      <div class="prow cta">
+        <div></div>
+        <div class="c"><a class="btn btn-ghost" href="#">Grátis</a></div>
+        <div class="c col-pro"><a class="btn btn-roxo" href="#">14 dias grátis</a></div>
+      </div>
+    </div>
+    <p class="hand rv" style="text-align:right;margin:12px 0 0;transform:rotate(-1.6deg)">cancela quando quiser, sem drama</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faqsec" id="faq">
+  <div class="wrap">
+    <h2 class="rv">Perguntas comuns</h2>
+    <div class="faq rv">
+      <details open>
+        <summary>Meus dados financeiros ficam seguros?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <p class="ans">Sim. SyncLife é LGPD-compliant, dados criptografados em trânsito (TLS 1.3) e em repouso (AES-256). Você pode exportar ou excluir tudo a qualquer momento.</p>
+      </details>
+      <details>
+        <summary>Posso usar grátis pra sempre?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <p class="ans">Sim. O plano Free dura indefinidamente. PRO desbloqueia limites e features de IA, mas o essencial funciona pra sempre sem custo.</p>
+      </details>
+      <details>
+        <summary>Funciona offline?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <p class="ans">O app mobile sincroniza automaticamente quando você volta online. Você pode registrar transações, eventos e atividades sem conexão.</p>
+      </details>
+      <details>
+        <summary>Tem versão Web e Mobile?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <p class="ans">Sim, interfaces nativas para iOS, Android e Web. Tudo sincroniza em tempo real.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA final -->
+<section class="final dk rv">
+  <div class="wrap">
+    <h2>A vida em sincronia<br><em>começa hoje.</em></h2>
+    <p>14 dias grátis no PRO. Sem cartão de crédito. Cancele a qualquer momento.</p>
+    <a class="btn btn-roxo" href="#" style="padding:15px 28px;font-size:14.5px">Começar agora
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+</section>
+
+<footer class="dk">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <span class="brand">
+          <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+          Sync<em>Life</em></span>
+        <p class="foot-tag">Sua vida inteira, organizada em um só lugar.<br>Feito no Brasil, com cuidado.</p>
+      </div>
+      <div class="foot-col"><h5>Produto</h5><a href="#">Recursos</a><a href="#">Preços</a><a href="#">Roadmap</a></div>
+      <div class="foot-col"><h5>Empresa</h5><a href="#">Sobre</a><a href="#">Manifesto</a><a href="#">Blog</a></div>
+      <div class="foot-col"><h5>Legal</h5><a href="#">Privacidade</a><a href="#">Termos</a><a href="#">LGPD</a></div>
+    </div>
+    <div class="foot-base">
+      <span>© 2026 SyncLife. Todos os direitos reservados.</span>
+      <span>v0.9.4 · São Paulo, Brasil</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../shared/bussola.js"></script>
+<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!reduce) {
+    document.documentElement.classList.add('anim');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: .12, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.rv, .draw').forEach(function (el) { io.observe(el); });
+    setTimeout(function () { var hl = document.getElementById('hl-hero'); if (hl) hl.classList.add('on'); }, 900);
+  }
+
+  // ── semicírculo + bússola (constantes mobile: pivô 2000px → drag .042) ──
+  var strip = document.getElementById('strip');
+  if (strip) {
+    var STEP = 7.5, MAX = 26.25, N = 8;
+    var off = 0, sway = 0, vel = 0, down = false, moved = false, lastX = 0, lastT = 0, idleT = 0;
+    var tw = null, auto = true, wasMoving = false;
+    var cards = [].slice.call(strip.querySelectorAll('.scard'));
+
+    function cubicBezier(p1x, p1y, p2x, p2y) {
+      function comp(t, a, b) { var mt = 1 - t; return 3 * a * mt * mt * t + 3 * b * mt * t * t + t * t * t; }
+      function deriv(t, a, b) { var mt = 1 - t; return 3 * mt * mt * a + 6 * mt * t * (b - a) + 3 * t * t * (1 - b); }
+      return function (x) {
+        if (x <= 0) return 0; if (x >= 1) return 1;
+        var t = x;
+        for (var i = 0; i < 6; i++) {
+          var err = comp(t, p1x, p2x) - x, d = deriv(t, p1x, p2x);
+          if (Math.abs(err) < 1e-4 || Math.abs(d) < 1e-6) break;
+          t = Math.max(0, Math.min(1, t - err / d));
+        }
+        return comp(t, p1y, p2y);
+      };
+    }
+    var ease = cubicBezier(.625, .05, 0, 1);
+
+    function angleOf(i) { return (i - 3.5) * STEP; }
+    function clampOff(v) { return Math.max(-MAX, Math.min(MAX, v)); }
+    function render() { strip.style.setProperty('--off', (off + sway).toFixed(3) + 'deg'); }
+    function nearest() { return Math.max(0, Math.min(N - 1, Math.round(3.5 - off / STEP))); }
+
+    var point = document.getElementById('hbpoint');
+    var ticks = [].slice.call(document.querySelectorAll('#hbticks .tick'));
+    var chips = [].slice.call(document.querySelectorAll('#hbchips .chip'));
+    var hits = [].slice.call(document.querySelectorAll('#hbhits .hit'));
+    var line = document.getElementById('hbline');
+    var AREAS = window.SLBussola ? SLBussola.AREAS : [];
+    var cur = 0, rot = 0;
+
+    function pointTo(i) {
+      cur = i;
+      var norm = ((rot % 360) + 360) % 360;
+      rot += ((i * 45 - norm + 540) % 360) - 180;
+      if (point) point.style.setProperty('--rot', rot + 'deg');
+      ticks.forEach(function (t, j) { t.classList.toggle('on', j === i); });
+      chips.forEach(function (c, j) { c.classList.toggle('on', j === i); });
+      cards.forEach(function (c) { c.classList.toggle('north', +c.getAttribute('data-area') === i); });
+      if (line && AREAS[i]) line.innerHTML = 'Hoje o norte é <b>' + AREAS[i][0] + ' · ' + AREAS[i][1] + '</b>: ' + AREAS[i][2] + '.';
+    }
+    function goTo(i) {
+      pointTo(i);
+      var to = clampOff(-angleOf(i));
+      if (reduce) { off = to; tw = null; render(); return; }
+      tw = { from: off, to: to, t0: performance.now(), dur: Math.max(500, Math.min(1200, Math.abs(to - off) * 24)) };
+      vel = 0; idleT = 0;
+    }
+    function focus(i) { auto = false; goTo(i); }
+
+    chips.forEach(function (c, i) { c.addEventListener('click', function () { focus(i); }); });
+    hits.forEach(function (h) { h.addEventListener('click', function () { focus(+h.getAttribute('data-area')); }); });
+    cards.forEach(function (c) {
+      c.addEventListener('click', function () { if (moved) return; focus(+c.getAttribute('data-area')); });
+    });
+
+    strip.addEventListener('pointerdown', function (e) {
+      down = true; moved = false; lastX = e.clientX; lastT = performance.now(); vel = 0; tw = null;
+      strip.classList.add('dragging');
+    });
+    addEventListener('pointermove', function (e) {
+      if (!down) return;
+      var dx = e.clientX - lastX; lastX = e.clientX;
+      if (Math.abs(dx) > 3) { moved = true; auto = false; }
+      off = clampOff(off + dx * .042);
+      var now = performance.now(), dt = now - lastT; lastT = now;
+      if (dt > 0) vel = dx * .042 / dt * 16;
+      idleT = 0; render();
+    });
+    addEventListener('pointerup', function () {
+      if (!down) return; down = false; strip.classList.remove('dragging');
+      if (moved && Math.abs(vel) <= .003) pointTo(nearest());
+    });
+    strip.addEventListener('click', function (e) { if (moved) e.preventDefault(); }, true);
+    strip.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { auto = false; tw = null; off = clampOff(off - STEP); idleT = 0; pointTo(nearest()); e.preventDefault(); render(); }
+      if (e.key === 'ArrowLeft') { auto = false; tw = null; off = clampOff(off + STEP); idleT = 0; pointTo(nearest()); e.preventDefault(); render(); }
+    });
+
+    if (!reduce) {
+      (function loop(t) {
+        requestAnimationFrame(loop);
+        var swayTarget = 0;
+        if (tw) {
+          var p = Math.min(1, (t - tw.t0) / tw.dur);
+          off = tw.from + (tw.to - tw.from) * ease(p);
+          idleT = 0;
+          if (p >= 1) tw = null;
+        } else if (!down) {
+          if (Math.abs(vel) > .003) { off = clampOff(off + vel); vel *= .95; idleT = 0; wasMoving = true; }
+          else {
+            if (wasMoving) { wasMoving = false; pointTo(nearest()); }
+            idleT += 16;
+            if (idleT > 1100) swayTarget = Math.sin(t / 1900) * 3.0;
+          }
+        }
+        sway += (swayTarget - sway) * .04;
+        render();
+      })(0);
+      setInterval(function () { if (auto && !down && !tw) goTo((cur + 1) % N); }, 5000);
+    }
+    pointTo(nearest());
+    render();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · DS v5 · Hub de protótipos</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/base.css">
+<style>
+  body{background:var(--bg);color:var(--t1)}
+  .wrap{--wrap-max:1080px}
+  .bar{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+    padding:0 clamp(20px,4vw,56px);position:sticky;top:0;background:rgba(21,19,19,.85);backdrop-filter:blur(12px);z-index:60}
+  .brand{font:700 17px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:8px}
+  .brand em{font-style:normal;color:var(--roxo)}
+  .bar .date{font:700 10.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+  .mast{padding:52px 0 36px}
+  .mast h1{font:500 clamp(30px,4vw,48px)/1.04 var(--gro);letter-spacing:-.045em;margin-top:12px;max-width:760px}
+  .mast h1 em{font-style:normal;color:var(--roxo)}
+  .mast .sub{font:400 14px/1.7 var(--int);color:var(--t2);margin-top:14px;max-width:64ch}
+  .onda{padding:30px 0;border-top:1px solid var(--line)}
+  .onda h2{font:500 19px var(--gro);letter-spacing:-.02em;display:flex;align-items:baseline;gap:12px}
+  .onda h2 .on{font:700 11px var(--gro);color:var(--roxo)}
+  .onda h2 .tam{margin-left:auto;font:700 9.5px var(--gro);letter-spacing:.18em;color:var(--t3)}
+  table{width:100%;border-collapse:collapse;margin-top:14px}
+  th{font:700 9.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  td{font:400 13px var(--int);color:var(--t2);padding:9px 10px;border-bottom:1px dashed var(--line)}
+  tr:last-child td{border-bottom:none}
+  td a{color:var(--t1);border-bottom:1px solid var(--line-h)}
+  td a:hover{color:var(--roxo);border-color:var(--roxo)}
+  td .off{color:var(--t3);opacity:.55}
+  .st{display:inline-flex;align-items:center;gap:7px;font:600 11px var(--int);white-space:nowrap}
+  .st i{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .st.planejada{color:var(--t3)} .st.planejada i{background:var(--t3);opacity:.5}
+  .st.rascunho{color:var(--t2)} .st.rascunho i{background:var(--t2)}
+  .st.aprovacao{color:var(--coral)} .st.aprovacao i{background:var(--coral)}
+  .st.aprovado{color:var(--ele)} .st.aprovado i{background:var(--ele)}
+  .st.implementado{color:var(--roxo)} .st.implementado i{background:var(--roxo)}
+  .st.qa{color:var(--ele)} .st.qa i{background:var(--ele);box-shadow:0 0 0 3px rgba(161,255,98,.18)}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:20px;padding:14px 0;border-top:1px solid var(--line)}
+  .colofao{border-top:1px solid var(--line);margin-top:40px;padding:24px clamp(20px,4vw,56px);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    font:400 12.5px var(--int);color:var(--t3)}
+  .colofao b{color:var(--t2);font-weight:600;font-family:var(--gro)}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    Sync<em>Life</em></a>
+  <span class="date">DS v5 · Estúdio · Hub de protótipos</span>
+  <span class="eyebrow">Redesign completo</span>
+</header>
+
+<main class="wrap">
+  <section class="mast">
+    <p class="eyebrow"><b>Onda a onda</b> · protótipo → aprovação → implementação → QA de identidade</p>
+    <h1>Todas as telas do SyncLife, <em>no DS v5</em>.</h1>
+    <p class="sub">Este hub é a interface de aprovação: cada tela tem protótipo desktop e mobile dedicados. Nada é implementado antes do "aprovado". Fonte de verdade: <b>DESIGN-SYSTEM-v5.md</b>; em divergência, os protótipos vencem.</p>
+    <div class="legend">
+      <span class="st planejada"><i></i>planejada</span>
+      <span class="st rascunho"><i></i>rascunho</span>
+      <span class="st aprovacao"><i></i>em aprovação</span>
+      <span class="st aprovado"><i></i>aprovada</span>
+      <span class="st implementado"><i></i>implementada</span>
+      <span class="st qa"><i></i>QA de identidade ok</span>
+    </div>
+  </section>
+
+  <div id="ondas"></div>
+</main>
+
+<footer class="colofao">
+  <span>Branch <b>poc/ds-v5</b> · handoff em <b>docs/handoff/HANDOFF-v5.md</b></span>
+  <span>Servir com <b>python -m http.server</b> na pasta prototypes/v5 (file:// não roda os protótipos)</span>
+</footer>
+
+<script>
+(function () {
+  // status: planejada | rascunho | aprovacao | aprovado | implementado | qa
+  var ST_LABEL = { planejada: 'planejada', rascunho: 'rascunho', aprovacao: 'em aprovação', aprovado: 'aprovada', implementado: 'implementada', qa: 'QA ok' };
+  var ONDAS = [
+    { n: '00', titulo: 'Landing v2 + marca', tam: 'M', telas: [
+      ['Landing', 'landing/landing.html', 'landing/landing.mobile.html', 'aprovacao'],
+      ['Decisão do lockup (3 direções)', 'landing/landing.html#lockup', null, 'aprovacao'],
+    ]},
+    { n: '01', titulo: 'Público + auth', tam: 'M', telas: [
+      ['Pricing', null, null, 'planejada'],
+      ['Login', null, null, 'planejada'],
+      ['Cadastro', null, null, 'planejada'],
+      ['Esqueceu a senha', null, null, 'planejada'],
+      ['Redefinir senha', null, null, 'planejada'],
+      ['Onboarding', null, null, 'planejada'],
+    ]},
+    { n: '02', titulo: 'Chrome do app + Dashboard', tam: 'L', telas: [
+      ['Shell v5 (bar + ticker + modbar)', null, null, 'planejada'],
+      ['Panorama · Edição do dia', null, null, 'planejada'],
+      ['Review semanal', null, null, 'planejada'],
+      ['Life Score detalhado', null, null, 'planejada'],
+    ]},
+    { n: '03', titulo: 'Coach', tam: 'S', telas: [
+      ['Coach IA', null, null, 'planejada'],
+    ]},
+    { n: '04', titulo: '01 · Finanças', tam: 'XL', telas: [
+      ['Visão geral', null, null, 'planejada'], ['Transações', null, null, 'planejada'],
+      ['Orçamentos', null, null, 'planejada'], ['Recorrentes', null, null, 'planejada'],
+      ['Planejamento', null, null, 'planejada'], ['Calendário', null, null, 'planejada'],
+      ['Relatórios', null, null, 'planejada'], ['Importar extrato', null, null, 'planejada'],
+    ]},
+    { n: '05', titulo: '02 · Futuro', tam: 'M', telas: [
+      ['Objetivos (hub)', null, null, 'planejada'], ['Novo objetivo', null, null, 'planejada'],
+      ['Detalhe do objetivo', null, null, 'planejada'], ['Check-in semanal', null, null, 'planejada'],
+    ]},
+    { n: '06', titulo: '03 · Tempo', tam: 'L', telas: [
+      ['Visão do tempo (hub)', null, null, 'planejada'], ['Agenda diária', null, null, 'planejada'],
+      ['Agenda semanal', null, null, 'planejada'], ['Agenda mensal', null, null, 'planejada'],
+      ['Modo foco', null, null, 'planejada'], ['Review semanal', null, null, 'planejada'],
+    ]},
+    { n: '07', titulo: '04 · Corpo', tam: 'L', telas: [
+      ['Visão do corpo (hub)', null, null, 'planejada'], ['Atividades físicas', null, null, 'planejada'],
+      ['Cardápio com IA', null, null, 'planejada'], ['Coach do corpo', null, null, 'planejada'],
+      ['Peso e medidas', null, null, 'planejada'], ['Saúde preventiva', null, null, 'planejada'],
+    ]},
+    { n: '08', titulo: '05 · Mente', tam: 'L', telas: [
+      ['Visão da mente (hub)', null, null, 'planejada'], ['Biblioteca', null, null, 'planejada'],
+      ['Sessões', null, null, 'planejada'], ['Timer', null, null, 'planejada'],
+      ['Trilhas', null, null, 'planejada'], ['Detalhe da trilha', null, null, 'planejada'],
+    ]},
+    { n: '09', titulo: '06 · Patrimônio', tam: 'L', telas: [
+      ['Visão do patrimônio (hub)', null, null, 'planejada'], ['Carteira', null, null, 'planejada'],
+      ['Detalhe do ativo', null, null, 'planejada'], ['Evolução', null, null, 'planejada'],
+      ['Proventos', null, null, 'planejada'], ['Simulador IF', null, null, 'planejada'],
+    ]},
+    { n: '10', titulo: '07 · Carreira', tam: 'M', telas: [
+      ['Visão de carreira (hub)', null, null, 'planejada'], ['Perfil profissional', null, null, 'planejada'],
+      ['Habilidades', null, null, 'planejada'], ['Histórico', null, null, 'planejada'],
+      ['Roadmap', null, null, 'planejada'],
+    ]},
+    { n: '11', titulo: '08 · Experiências', tam: 'L', telas: [
+      ['Visão de experiências (hub)', null, null, 'planejada'], ['Minhas viagens', null, null, 'planejada'],
+      ['Detalhe da viagem', null, null, 'planejada'], ['Nova viagem', null, null, 'planejada'],
+      ['Bucket list', null, null, 'planejada'], ['Memórias', null, null, 'planejada'],
+      ['Passaporte', null, null, 'planejada'],
+    ]},
+    { n: '12', titulo: 'Conquistas', tam: 'S', telas: [
+      ['Conquistas (hub)', null, null, 'planejada'], ['Ranking', null, null, 'planejada'],
+    ]},
+    { n: '13', titulo: 'Configurações', tam: 'M', telas: [
+      ['Configurações (hub)', null, null, 'planejada'], ['Aparência', null, null, 'planejada'],
+      ['Categorias', null, null, 'planejada'], ['Contas', null, null, 'planejada'],
+      ['Integrações', null, null, 'planejada'], ['Notificações', null, null, 'planejada'],
+      ['Meu plano', null, null, 'planejada'],
+    ]},
+    { n: '14', titulo: 'Varredura final', tam: 'M', telas: [
+      ['Modais e estados vazios restantes', null, null, 'planejada'],
+      ['Assets finais da marca (SVG, ICO, PNG)', null, null, 'planejada'],
+      ['Remoção do v3 + DS v5.1', null, null, 'planejada'],
+    ]},
+  ];
+
+  function link(href, label) {
+    return href ? '<a href="' + href + '">' + label + '</a>' : '<span class="off">' + label + '</span>';
+  }
+  var host = document.getElementById('ondas');
+  host.innerHTML = ONDAS.map(function (o) {
+    return '<section class="onda"><h2><span class="on num">ONDA ' + o.n + '</span>' + o.titulo +
+      '<span class="tam">' + o.tam + '</span></h2><table><thead><tr><th style="width:44%">Tela</th><th>Desktop</th><th>Mobile</th><th style="width:150px">Status</th></tr></thead><tbody>' +
+      o.telas.map(function (t) {
+        return '<tr><td style="color:var(--t1)">' + t[0] + '</td>' +
+          '<td>' + link(t[1], 'abrir') + '</td>' +
+          '<td>' + link(t[2], 'abrir 390px') + '</td>' +
+          '<td><span class="st ' + t[3] + '"><i></i>' + ST_LABEL[t[3]] + '</span></td></tr>';
+      }).join('') + '</tbody></table></section>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

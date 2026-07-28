@@ -1,0 +1,15 @@
+/* SyncLife DS v5 "Estúdio" — tokens (§2 do DESIGN-SYSTEM-v5.md)
+   Derivado 1:1 de prototypes/poc-v5/r6-estudio/landing.html (:root claro + .dk).
+   Página clara é o padrão do marketing; seções escuras re-declaram via .dk.
+   Os tokens do chrome do app escuro (bar/ticker/modbar) entram na Onda 2. */
+:root{
+  --bg:#f4f4f4; --s1:#ffffff; --s2:#eceaea;
+  --line:rgba(21,19,19,.12); --line-h:rgba(21,19,19,.28);
+  --t1:#151313; --t2:#4f4c4c; --t3:#6b6868;
+  --ink:#f4f4f4; --ink2:#b8b8b8; --pline:rgba(255,255,255,.12);
+  --roxo:#6840ff; --roxo-h:#7a55ff; --ele:#a1ff62; --coral:#f84131;
+  --gro:'Space Grotesk',sans-serif; --int:'Inter',sans-serif;
+  --ease:cubic-bezier(.625,.05,0,1);
+}
+.dk{--bg:#151313;--s1:#201d1d;--s2:#2a2727;--line:rgba(255,255,255,.08);--line-h:rgba(255,255,255,.18);
+  --t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;background:var(--bg);color:var(--t1)}
