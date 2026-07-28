@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SyncLife · Sua vida inteira, em sincronia</title>
-<link rel="icon" href="data:,">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
@@ -25,6 +25,7 @@
   html{scroll-behavior:smooth}
   html.lenis, html.lenis body{scroll-behavior:auto}
   @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+  html,body{overflow-x:clip} /* .atmo e marquees sangram além da viewport; a página nunca rola horizontal */
   body{background:var(--bg);color:var(--t1);font:400 15px/1.6 var(--int);-webkit-font-smoothing:antialiased}
   ::selection{background:var(--roxo);color:#fff}
   a{color:inherit;text-decoration:none}
@@ -347,7 +348,9 @@
 
 <div class="navwrap">
   <nav>
-    <a class="brand" href="#">Sync<em>Life</em></a>
+    <a class="brand" href="#">
+      <svg width="21" height="21" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#0d0c0c"/></svg>
+      Sync<em>Life</em></a>
     <div class="nav-links">
       <a href="#produto">Produto</a>
       <a href="#precos">Preços</a>
@@ -653,7 +656,9 @@
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <span class="brand">Sync<em>Life</em></span>
+        <span class="brand">
+          <svg width="21" height="21" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+          Sync<em>Life</em></span>
         <p class="foot-tag">Sua vida inteira, organizada em um só lugar.<br>Feito no Brasil, com cuidado.</p>
       </div>
       <div class="foot-col"><h5>Produto</h5><a href="#">Recursos</a><a href="#">Preços</a><a href="#">Roadmap</a><a href="#">Mudanças</a></div>

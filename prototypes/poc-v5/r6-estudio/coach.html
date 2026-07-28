@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SyncLife · Coach · r6 Estúdio</title>
-<link rel="icon" href="data:,">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@
   /* chrome */
   .bar{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
     padding:0 clamp(20px,4vw,56px);position:sticky;top:0;background:rgba(21,19,19,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:60}
-  .brand{font:700 17px var(--gro);letter-spacing:-.02em}
+  .brand{font:700 17px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:8px}
   .brand em{font-style:normal;color:var(--roxo)}
   .bar .date{font:700 10.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
   .btn{display:inline-flex;align-items:center;gap:7px;border-radius:999px;cursor:pointer;font:600 12.5px var(--int);
@@ -117,7 +117,9 @@
 <div class="grain" aria-hidden="true"></div>
 
 <header class="bar">
-  <a class="brand" href="#">Sync<em>Life</em></a>
+  <a class="brand" href="#">
+    <svg width="20" height="20" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+    Sync<em>Life</em></a>
   <span class="date">Segunda · 27 de julho de 2026</span>
   <button class="btn btn-ghost" type="button">Histórico de conversas</button>
 </header>

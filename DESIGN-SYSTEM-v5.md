@@ -6,7 +6,8 @@
 > em 2026-07-28). Indicadores, gráficos e funcionalidades que aparecem nos protótipos são
 > **ilustrativos**: a definição real de conteúdo será feita depois, módulo a módulo.
 >
-> **Fonte de verdade visual:** os próprios protótipos em `prototypes/poc-v5/r6-estudio/`.
+> **Fonte de verdade visual:** os próprios protótipos em `prototypes/poc-v5/r6-estudio/`
+> (as 4 telas + `marca-bussola.html` para a marca).
 > Em caso de divergência entre este documento e os protótipos, os protótipos vencem.
 
 ---
@@ -267,15 +268,73 @@ O que faz uma tela "parecer SyncLife". Aprovados como conjunto:
    *Pendência: substituir as micro-UIs por imagens reais das telas v5 quando existirem.*
 7. **Grain** — noise SVG fixo, opacity .03 (página clara) / .04 (escura), `z-index:90`,
    pointer-events none.
-8. **Logotipo provisório** — wordmark `Sync` (t1) + `Life` (roxo) em Space Grotesk 700.
-   **O símbolo/glifo da marca será decidido em processo separado; nenhum ícone de marca
-   entra no DS até lá.**
+8. **A marca — A Bússola da Vida** — bússola cujas marcações são as 8 áreas (ver §5).
+   Wordmark `Sync` (t1) + `Life` (roxo) em Space Grotesk 700, com a bússola à esquerda.
 
 ---
 
-## 5. Anatomia
+## 5. A marca — A Bússola da Vida
 
-### 5.1 Chrome do app (substitui ModuleBar + Sidebar do v3)
+> Decidida em 2026-07-28, rodada 3 do processo da marca. Conceito aprovado: **bússola viva**.
+> Fonte de verdade: `prototypes/poc-v5/r6-estudio/marca-bussola.html` (construção, rosa
+> cerimonial, demo interativa, escalas, aplicações). Rodadas anteriores em `marca.html`.
+
+### 5.1 Conceito
+
+A marca é um **instrumento, não um emblema**: uma bússola cujos pontos cardeais são as
+8 áreas do SyncLife. A agulha aponta pra área que pede o usuário hoje. Os quatro pilares
+da concepção estão no objeto: **cuidado** (o aro que envolve), **foco** (a agulha),
+**evolução** (o norte muda com a vida), **performance** (a marcação acesa, medida), e a
+rosa completa é o "tudo em um único lugar".
+
+### 5.2 Construção (5 peças)
+
+| Peça | Spec | Significado |
+|---|---|---|
+| O aro | círculo hairline (stroke fino, opacity ~.35) | o mundo da vida, cuidado que envolve sem pesar |
+| As 8 marcações | ticks a cada 45°, round cap; 01 Finanças no norte, sentido horário até 08 Experiências | as áreas nos pontos cardeais; **posição, não cor**, identifica o módulo (E-09) |
+| A agulha | losango duotone: metade norte **roxa** sólida, metade sul `--t1` a 28% | norte = pra onde olhar agora; sul apagado = o que fica pra depois |
+| O pivô | círculo pequeno na **cor do fundo local** sobre a junção | você, no centro; o único ponto que nunca se move |
+| A marcação acesa | o tick apontado fica **elétrico** (ink no claro) | a área em foco, o dado vivo |
+
+### 5.3 Versões e degradação
+
+| Versão | Peças | Uso |
+|---|---|---|
+| Cerimonial | tudo + números `01…08` ao redor (mesma numeração da modbar) | splash, página sobre, capa de relatório |
+| Padrão | aro + 8 marcações + agulha + pivô | superfícies grandes, tiles, marketing |
+| 48 | sem o aro | headers, cards de app store |
+| 32 | 4 marcações (N/L/S/O) + agulha | lockup de nav, ícones médios |
+| 16 · núcleo | agulha + marcação norte acesa | favicon; **a agulha sozinha ainda é a marca** |
+
+Ordem de perda: números → aro → marcações → núcleo. Nunca pular a ordem.
+
+### 5.4 Comportamento — a bússola viva
+
+- Rotação da agulha = área em foco: `rot = i × 45°` (i = índice da área, 01 no norte).
+  A marcação acesa acompanha a agulha.
+- Transição de rotação: `.8s` com a easing assinatura; entrada com swing e overshoot
+  (`-80° → +14° → -5° → 0`).
+- **Só aponta uma área quando há dado real de foco** (o briefing do dia). Sem dado,
+  aponta o norte. A bússola nunca mente.
+- Sob reduced-motion: sem busca automática; mudanças de foco são instantâneas (a
+  interação continua funcionando).
+
+### 5.5 Regras de uso
+
+- Agulha sempre roxa; sul sempre apagado; **coral nunca** (E-06).
+- No claro: ink + roxo (o elétrico é detalhe do escuro).
+- Pivô sempre na cor do fundo local (o "furo" do instrumento).
+- **Não usar como spinner ou loading genérico**: a bússola aponta, não gira à toa.
+- Lockup: bússola (versão 32) à esquerda do wordmark, gap ~8px, mesma altura da
+  x-height até a cap-height do wordmark.
+- Favicon oficial: núcleo em tile escuro `#151313` com raio ~22% (rx 14 em 64).
+
+---
+
+## 6. Anatomia
+
+### 6.1 Chrome do app (substitui ModuleBar + Sidebar do v3)
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -294,7 +353,7 @@ O que faz uma tela "parecer SyncLife". Aprovados como conjunto:
   scrollbar oculta. Panorama sem número; ativa fica `--t1` com número roxo.
 - Não existe sidebar. A hierarquia interna do módulo vive na própria página.
 
-### 5.2 Dashboard — "Edição do dia" (Panorama)
+### 6.2 Dashboard — "Edição do dia" (Panorama)
 
 Ordem vertical:
 
@@ -312,7 +371,7 @@ Ordem vertical:
    metas com barra hairline 3px.
 7. **Colofão** — rodapé de fechamento (projeção, streak, badges, última sincronização).
 
-### 5.3 Tela de módulo (template = Finanças)
+### 6.3 Tela de módulo (template = Finanças)
 
 Mesmo chrome; ticker com dados do módulo. Ordem:
 
@@ -327,7 +386,7 @@ Mesmo chrome; ticker com dados do módulo. Ordem:
 6. **Metas + recorrentes** — 2 colunas de linhas hairline.
 7. **Colofão** do módulo.
 
-### 5.4 Coach — conversa como página
+### 6.4 Coach — conversa como página
 
 - Grid `1fr 300px`: **thread** central (max 720px) | **margem de contexto** sticky.
 - Thread: divider de data, bolhas (`.bub.u` roxa / `.bub.a` superfície `--s1`), cada resposta
@@ -337,7 +396,7 @@ Mesmo chrome; ticker com dados do módulo. Ordem:
   verticais, caligrafia `é conversa, não formulário!`.
 - **Askbar fixa** ao rodapé: pílula escura com sombra longa sobre gradiente de fade.
 
-### 5.5 Landing
+### 6.5 Landing
 
 1. Pill nav flutuante (dark, blur) + ticker grudado.
 2. **Hero manchete de dobra inteira** — pill "Novo", h1 gigante com badge do score embutido
@@ -354,7 +413,7 @@ Mesmo chrome; ticker com dados do módulo. Ordem:
 9. FAQ em `<details>` hairline.
 10. CTA final gigante (banda escura) + footer.
 
-### 5.6 Princípio de container
+### 6.6 Princípio de container
 
 Sem cards. Um contorno/superfície só é permitido quando o elemento é um **objeto** com
 identidade própria: selo, mini-tela, cartão de ação executada, askbar/ask, pill nav, chip,
@@ -362,7 +421,7 @@ tag. Agrupamento de conteúdo é feito por hairline, espaçamento e eyebrow, nun
 
 ---
 
-## 6. Inventário de componentes
+## 7. Inventário de componentes
 
 | Componente | Onde | Spec resumida |
 |---|---|---|
@@ -395,7 +454,7 @@ tag. Agrupamento de conteúdo é feito por hairline, espaçamento e eyebrow, nun
 
 ---
 
-## 7. Regras invariantes (E-01 a E-12)
+## 8. Regras invariantes (E-01 a E-12)
 
 | Regra | Resumo |
 |---|---|
@@ -410,14 +469,14 @@ tag. Agrupamento de conteúdo é feito por hairline, espaçamento e eyebrow, nun
 | **E-09** Módulo por índice | Identificação de módulo é numeral (`01…08`), sem cor de módulo e sem ícone por módulo |
 | **E-10** Caveat só na voz do coach | `.hand` restrita a anotações do coach, máx. 1 por dobra; nunca em chrome, dados ou títulos |
 | **E-11** Objetos sempre escuros | Pill nav e mini-telas re-declaram vars dark mesmo em página clara |
-| **E-12** Marca sem símbolo | Wordmark `Sync`+`Life` apenas; glifo/ícone de marca fora do DS até o processo separado decidir |
+| **E-12** Marca = Bússola da Vida | Wordmark `Sync`+`Life` + bússola (§5). Agulha sempre roxa, sul apagado, marcação acesa elétrica (ink no claro), coral nunca. Viva só com dado real de foco; sem dado, aponta o norte. Nunca como spinner |
 
 Regras de copy do v3 que **continuam valendo**: sem em-dash (—) na copy, sentence case,
 "você" nunca "o usuário", sem emoji em chrome, microcopy seca (`Salvo.`).
 
 ---
 
-## 8. Acessibilidade
+## 9. Acessibilidade
 
 - `prefers-reduced-motion` respeitado integralmente (E-02); teclado move o arco mesmo com reduce.
 - Elementos decorativos com `aria-hidden` (ticker, grain, atmosfera, SVGs de dado repetido).
@@ -428,7 +487,7 @@ Regras de copy do v3 que **continuam valendo**: sem em-dash (—) na copy, sente
 
 ---
 
-## 9. v3 → v5 (o que muda)
+## 10. v3 → v5 (o que muda)
 
 | Dimensão | v3 | v5 |
 |---|---|---|
@@ -450,12 +509,13 @@ Regras de copy do v3 que **continuam valendo**: sem em-dash (—) na copy, sente
 
 ---
 
-## 10. Pendências do DS
+## 11. Pendências do DS
 
 - [ ] Ajustes finos **visuais** da landing (lista do usuário pendente; cor/linguagem/layout são lei).
 - [ ] Veredito final do dashboard/finanças/coach como conjunto.
 - [ ] Substituir micro-UIs do arco por **imagens reais** das telas v5.
-- [ ] Processo separado do **símbolo da marca** (E-12).
+- [x] Símbolo da marca decidido: **A Bússola da Vida** (§5, 2026-07-28). Falta exportar os
+      assets finais (SVG mestre com grade, ICO/PNG, ícones iOS/Android) e a versão mono.
 - [ ] Definição real de indicadores/gráficos/funcionalidades, módulo a módulo.
 - [ ] Telas restantes (Futuro, Tempo, Corpo, Mente, Patrimônio, Carreira, Experiências,
       Conquistas, Configurações, auth, mobile) na linguagem v5.
