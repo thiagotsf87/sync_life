@@ -10,14 +10,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#151313; --s1:#201d1d; --s2:#2a2727;
-    --line:rgba(255,255,255,.08); --line-h:rgba(255,255,255,.18);
-    --t1:#f4f4f4; --t2:#b8b8b8; --t3:#817f7f;
-    --paper:#f4f4f4; --ink:#151313; --ink2:#4f4c4c; --pline:rgba(21,19,19,.14);
+    /* página clara (referência Osmo); seções escuras re-declaram via .dk */
+    --bg:#f4f4f4; --s1:#ffffff; --s2:#eceaea;
+    --line:rgba(21,19,19,.12); --line-h:rgba(21,19,19,.28);
+    --t1:#151313; --t2:#4f4c4c; --t3:#6b6868;
+    --ink:#f4f4f4; --ink2:#b8b8b8; --pline:rgba(255,255,255,.12);
     --roxo:#6840ff; --roxo-h:#7a55ff; --ele:#a1ff62; --coral:#f84131;
     --gro:'Space Grotesk',sans-serif; --int:'Inter',sans-serif;
     --ease:cubic-bezier(.625,.05,0,1);
   }
+  .dk{--bg:#151313;--s1:#201d1d;--s2:#2a2727;--line:rgba(255,255,255,.08);--line-h:rgba(255,255,255,.18);
+    --t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;background:var(--bg);color:var(--t1)}
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
   html.lenis, html.lenis body{scroll-behavior:auto}
@@ -26,7 +29,7 @@
   ::selection{background:var(--roxo);color:#fff}
   a{color:inherit;text-decoration:none}
   .num{font-family:var(--gro);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-  .grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.045;
+  .grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.03;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
 
   /* caligrafia do coach */
@@ -53,7 +56,8 @@
   .btn-ghost:hover{border-color:var(--line-h)}
 
   /* nav: pílula flutuante + ticker elétrico grudado */
-  .navwrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:70;width:min(880px,94vw)}
+  .navwrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:70;width:min(880px,94vw);
+    --t1:#f4f4f4;--t2:#b8b8b8;--line:rgba(255,255,255,.1);color:var(--t1)}
   nav{display:flex;align-items:center;justify-content:space-between;gap:18px;height:56px;
     padding:0 10px 0 22px;background:#0d0c0cf2;border:1px solid var(--line);border-radius:16px 16px 0 0;
     backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
@@ -82,9 +86,9 @@
   h1 .l2{display:flex;align-items:center;gap:.06em}
   h1 em{font-style:normal;color:var(--roxo)}
   h1 .badge78{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;vertical-align:middle;
-    width:.92em;height:.92em;border:2px solid var(--line-h);border-radius:.18em;margin-left:.08em;flex-shrink:0}
+    width:.92em;height:.92em;background:#151313;border-radius:.18em;margin-left:.08em;flex-shrink:0}
   h1 .badge78 .b-n{font:700 .34em/1 var(--gro);letter-spacing:-.03em;color:var(--ele)}
-  h1 .badge78 .b-l{font:700 .085em var(--gro);letter-spacing:.24em;color:var(--t3);margin-top:.14em}
+  h1 .badge78 .b-l{font:700 .085em var(--gro);letter-spacing:.24em;color:#8a8686;margin-top:.14em}
   .hero-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-top:44px;flex-wrap:wrap}
   .hero-sub{font:400 16.5px/1.65 var(--int);color:var(--t2);max-width:430px}
   .hero-sub strong{color:var(--t1);font-weight:600}
@@ -92,22 +96,25 @@
   .hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
   .hero-proof{display:flex;gap:18px;flex-wrap:wrap}
   .hero-proof span{display:inline-flex;align-items:center;gap:7px;font:500 12px var(--int);color:var(--t3)}
-  .hero-proof svg{color:var(--ele)}
+  .hero-proof svg{color:var(--roxo)}
 
   /* ─── faixa arrastável das 8 áreas ─── */
   .strip-head{display:flex;justify-content:space-between;align-items:baseline;margin:84px 0 18px}
   .drag-cue{display:inline-flex;align-items:center;gap:8px;font:600 11px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
   .anim .drag-cue svg{animation:nudge 2.2s var(--ease) infinite}
   @keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
-  /* ─── faixa de telas em leque: as áreas em uso ─── */
-  .strip{display:flex;gap:18px;overflow-x:auto;padding:34px 4vw 44px;cursor:grab;scrollbar-width:none;-ms-overflow-style:none}
-  .strip::-webkit-scrollbar{display:none}
+  /* ─── semicírculo de telas: as áreas em uso girando num arco (à la Osmo) ─── */
+  .strip{position:relative;height:520px;margin-top:6px;cursor:grab;touch-action:pan-y;overflow:hidden}
   .strip.dragging{cursor:grabbing}
-  .scard{flex:0 0 300px;background:#1b1918;border:1px solid var(--line);border-radius:16px;overflow:hidden;
-    transform:rotate(calc(var(--r,0deg) + var(--tilt,0deg))) translateY(var(--y,0px));
-    box-shadow:0 24px 50px -22px rgba(0,0,0,.65);
-    transition:transform .5s var(--ease),border-color .35s var(--ease)}
-  .scard:hover{transform:rotate(0deg) translateY(calc(var(--y,0px) - 12px));border-color:var(--line-h)}
+  .strip .scard{position:absolute;left:50%;top:44px;width:300px;margin-left:-150px;
+    transform-origin:50% 2600px;
+    transform:rotate(calc(var(--a,0deg) + var(--off,0deg)))}
+  .strip .scard:hover{transform:rotate(calc(var(--a,0deg) + var(--off,0deg))) translateY(-12px)}
+  .scard{--t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;--line:rgba(255,255,255,.09);color:var(--t1);
+    background:#1b1918;border:1px solid rgba(255,255,255,.09);border-radius:16px;overflow:hidden;
+    box-shadow:0 30px 60px -24px rgba(21,19,19,.45);
+    transition:transform .5s var(--ease),box-shadow .35s var(--ease)}
+  .scard:hover{box-shadow:0 40px 70px -24px rgba(21,19,19,.55)}
   .scard .tb{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:#161414}
   .scard .tb i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12)}
   .scard .tb .nm{font:600 11.5px var(--int);color:var(--t2);margin-left:4px}
@@ -180,8 +187,8 @@
   /* atmosfera do hero */
   .hero{position:relative}
   .atmo{position:absolute;inset:-6% -12% -2%;z-index:-1;pointer-events:none;
-    background:radial-gradient(680px 480px at 80% 4%,rgba(104,64,255,.14),transparent 64%),
-      radial-gradient(520px 420px at 4% 62%,rgba(161,255,98,.05),transparent 62%)}
+    background:radial-gradient(680px 480px at 80% 4%,rgba(104,64,255,.1),transparent 64%),
+      radial-gradient(520px 420px at 4% 62%,rgba(161,255,98,.07),transparent 62%)}
   .hero .guide{position:absolute;left:50%;top:-40px;bottom:0;width:1px;background:var(--line);z-index:-1}
 
   /* press */
@@ -193,7 +200,7 @@
   .press-logos span:hover{color:var(--t2)}
 
   /* ─── SEÇÃO CLARA: o produto em espécimes ─── */
-  .paper{background:var(--paper);color:var(--ink);padding:110px 0}
+  .paper{background:#171515;color:var(--ink);padding:110px 0}
   .paper .eyebrow{color:var(--ink2)}
   .paper h2{font:500 clamp(2.2rem,4.6vw,4rem)/1.04 var(--gro);letter-spacing:-.045em;max-width:640px;margin-top:18px}
   .paper h2 em{font-style:normal;color:var(--roxo)}
@@ -208,13 +215,13 @@
   .sp-score{display:flex;align-items:baseline;gap:18px}
   .sp-score .n{font:700 96px/1 var(--gro);letter-spacing:-.06em;color:var(--ink)}
   .sp-score .meta{display:flex;flex-direction:column;gap:6px}
-  .sp-score .up{font:600 13px var(--gro);color:#3d7a1f}
+  .sp-score .up{font:600 13px var(--gro);color:var(--ele)}
   .sp-score .lbl{font:400 12px var(--int);color:var(--ink2)}
   /* espécime: orçamento */
   .sp-orc .row{display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--pline)}
   .sp-orc .row:last-child{border-bottom:none}
   .sp-orc .nm{font:500 13px var(--int);color:var(--ink)}
-  .sp-orc .track{height:4px;border-radius:2px;background:rgba(21,19,19,.1);overflow:hidden}
+  .sp-orc .track{height:4px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden}
   .sp-orc .track i{display:block;height:100%;border-radius:2px;background:var(--ink2)}
   .sp-orc .hot .track i{background:var(--coral)}
   .sp-orc .val{font:500 12px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2)}
@@ -223,8 +230,7 @@
   .sp-chat{display:flex;flex-direction:column;gap:10px}
   .sp-chat .bub{max-width:88%;padding:11px 15px;font:400 13px/1.55 var(--int);border-radius:15px}
   .sp-chat .u{align-self:flex-end;background:var(--roxo);color:#fff;border-bottom-right-radius:4px}
-  .sp-chat .a{align-self:flex-start;background:#fff;border:1px solid var(--pline);color:var(--ink2);border-bottom-left-radius:4px;
-    box-shadow:0 4px 14px rgba(21,19,19,.06)}
+  .sp-chat .a{align-self:flex-start;background:#242020;border:1px solid var(--pline);color:var(--ink2);border-bottom-left-radius:4px}
   .sp-chat .a strong{color:var(--ink);font-weight:600}
   /* notas de margem */
   .mnote{font:400 12px/1.6 var(--int);color:var(--ink2);border-left:2px solid var(--roxo);padding-left:14px;max-width:300px}
@@ -253,8 +259,8 @@
   .chat .bub{max-width:82%;padding:12px 16px;font:400 13.5px/1.6 var(--int)}
   .chat .bub strong{color:var(--t1);font-weight:600}
   .chat .bub .g{color:var(--ele);font-weight:600}
-  .chat .u{align-self:flex-end;background:rgba(104,64,255,.16);border:1px solid rgba(104,64,255,.4);color:#cfc4ff;border-radius:16px 16px 4px 16px}
-  .chat .a{align-self:flex-start;background:var(--s1);border:1px solid var(--line);color:var(--t2);border-radius:16px 16px 16px 4px}
+  .chat .u{align-self:flex-end;background:var(--roxo);border:1px solid var(--roxo);color:#fff;border-radius:16px 16px 4px 16px}
+  .chat .a{align-self:flex-start;background:var(--s1);border:1px solid var(--line);color:var(--t2);border-radius:16px 16px 16px 4px;box-shadow:0 4px 14px rgba(21,19,19,.05)}
   .chat-input{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--line);border-radius:999px;padding:13px 20px;margin-top:6px}
   .chat-input span{flex:1;font:400 13px var(--int);color:var(--t3)}
   .chat-input svg{color:var(--roxo)}
@@ -399,7 +405,7 @@
     </div>
   </div>
   <div class="strip boot b5" id="strip" tabindex="0" aria-label="As oito áreas do SyncLife em uso, faixa com rolagem horizontal">
-    <div class="scard" style="--r:-4deg;--y:22px">
+    <div class="scard" style="--a:-22.75deg">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Finanças</span><span class="ix num">01</span></div>
       <div class="ui">
         <span class="ubtn">+ Nova</span>
@@ -410,7 +416,7 @@
         <div class="ubar" style="--w:70%;--d:.8s"><span class="k">Transporte</span><span class="t"><span class="f"></span></span><span class="v num">70%</span></div>
       </div>
     </div>
-    <div class="scard" style="--r:2deg;--y:4px">
+    <div class="scard" style="--a:-16.25deg">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Coach IA</span><span class="ix num">02</span></div>
       <div class="ui">
         <div class="ubub u">Quanto gastei em lazer?</div>
@@ -418,7 +424,7 @@
         <div class="ubub a uans"><strong class="num">R$&nbsp;410</strong>, 82% do orçamento. Com 8 dias restantes, vale segurar as saídas.</div>
       </div>
     </div>
-    <div class="scard" style="--r:-2deg;--y:12px">
+    <div class="scard" style="--a:-9.75deg">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Tempo</span><span class="ix num">03</span></div>
       <div class="ui">
         <div><div class="lbl">Hoje</div><div class="big num">42 min <span class="sub">de foco</span></div></div>
@@ -427,7 +433,7 @@
         <div class="urow"><span class="ucheck"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5 L4.6 9 L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ustrike">Revisão semanal</span></div>
       </div>
     </div>
-    <div class="scard" style="--r:3deg;--y:26px">
+    <div class="scard" style="--a:-3.25deg">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Corpo</span><span class="ix num">04</span></div>
       <div class="ui">
         <div class="lbl">Treinos da semana</div>
@@ -441,7 +447,7 @@
         <div class="sub">Cardápio de amanhã gerado pelo coach.</div>
       </div>
     </div>
-    <div class="scard" style="--r:-3deg;--y:8px">
+    <div class="scard" style="--a:3.25deg">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Futuro</span><span class="ix num">05</span></div>
       <div class="ui">
         <div><div class="lbl">Viagem Itália</div><div class="big num">68%</div></div>
@@ -449,7 +455,7 @@
         <div class="sub">Aporte de R$&nbsp;580 agendado pra sexta. No ritmo, você chega uma semana antes do prazo.</div>
       </div>
     </div>
-    <div class="scard" style="--r:2.5deg;--y:18px">
+    <div class="scard" style="--a:9.75deg">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Patrimônio</span><span class="ix num">06</span></div>
       <div class="ui">
         <div><div class="lbl">Carteira</div><div class="big num">R$&nbsp;48,2k <span class="sub" style="color:var(--ele)">+7%</span></div></div>
@@ -459,7 +465,7 @@
         <div class="sub">Proventos de julho reinvestidos.</div>
       </div>
     </div>
-    <div class="scard" style="--r:-1.5deg;--y:6px">
+    <div class="scard" style="--a:16.25deg">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Mente</span><span class="ix num">07</span></div>
       <div class="ui">
         <div><div class="lbl">Esta semana</div><div class="big num">2 <span class="sub">sessões de leitura</span></div></div>
@@ -468,7 +474,7 @@
         <div class="sub">Trilha sugerida: 20 min por dia.</div>
       </div>
     </div>
-    <div class="scard" style="--r:4deg;--y:28px">
+    <div class="scard" style="--a:22.75deg">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Experiências</span><span class="ix num">08</span></div>
       <div class="ui">
         <div class="lbl">Próxima viagem</div>
@@ -577,7 +583,7 @@
 </section>
 
 <!-- PRICING: tabela editorial -->
-<section class="precos" id="precos">
+<section class="precos dk" id="precos">
   <div class="wrap">
     <div class="head rv">
       <p class="eyebrow"><b>Preços</b> · sem pegadinhas</p>
@@ -633,7 +639,7 @@
 </section>
 
 <!-- CTA final -->
-<section class="final rv">
+<section class="final dk rv">
   <div class="wrap">
     <h2>A vida em sincronia<br><em>começa hoje.</em></h2>
     <p>14 dias grátis no PRO. Sem cartão de crédito. Cancele a qualquer momento.</p>
@@ -643,7 +649,7 @@
   </div>
 </section>
 
-<footer>
+<footer class="dk">
   <div class="wrap">
     <div class="foot-grid">
       <div>
@@ -695,39 +701,44 @@
     requestAnimationFrame(raf);
   }
 
-  // faixa arrastável com inércia (drag sempre funciona; física só sem reduce)
+  // semicírculo: drag gira o arco (com inércia e balanço idle sem reduce; teclado sempre)
   var strip = document.getElementById('strip');
   if (strip) {
-    var down = false, startX = 0, startL = 0, moved = false, vel = 0, lastX = 0, lastT = 0, momId = 0;
+    var STEP = 6.5, MAX = 22.75;
+    var off = 0, sway = 0, swayT = 0, vel = 0, down = false, moved = false, lastX = 0, lastT = 0, idleT = 0;
+    function clampOff(v) { return Math.max(-MAX, Math.min(MAX, v)); }
+    function render() { strip.style.setProperty('--off', (off + sway).toFixed(3) + 'deg'); }
     strip.addEventListener('pointerdown', function (e) {
-      down = true; moved = false; startX = lastX = e.clientX; startL = strip.scrollLeft; lastT = performance.now();
-      vel = 0; cancelAnimationFrame(momId);
+      down = true; moved = false; lastX = e.clientX; lastT = performance.now(); vel = 0;
       strip.classList.add('dragging');
     });
     addEventListener('pointermove', function (e) {
       if (!down) return;
-      var dx = e.clientX - startX;
-      if (Math.abs(dx) > 4) moved = true;
-      strip.scrollLeft = startL - dx;
-      var now = performance.now(), dt = now - lastT;
-      if (dt > 0) { vel = (e.clientX - lastX) / dt * 16; lastX = e.clientX; lastT = now; }
-      if (!reduce) {
-        var tilt = Math.max(-3, Math.min(3, -vel * .3));
-        strip.style.setProperty('--tilt', tilt.toFixed(2) + 'deg');
-      }
+      var dx = e.clientX - lastX; lastX = e.clientX;
+      if (Math.abs(dx) > 3) moved = true;
+      off = clampOff(off + dx * .028);
+      var now = performance.now(), dt = now - lastT; lastT = now;
+      if (dt > 0) vel = dx * .028 / dt * 16;
+      idleT = 0; render();
     });
-    addEventListener('pointerup', function () {
-      if (!down) return;
-      down = false; strip.classList.remove('dragging');
-      strip.style.removeProperty('--tilt');
-      if (!reduce && Math.abs(vel) > 1) {
-        (function momentum() {
-          strip.scrollLeft -= vel; vel *= .94;
-          if (Math.abs(vel) > .4) momId = requestAnimationFrame(momentum);
-        })();
-      }
-    });
+    addEventListener('pointerup', function () { if (!down) return; down = false; strip.classList.remove('dragging'); });
     strip.addEventListener('click', function (e) { if (moved) e.preventDefault(); }, true);
+    strip.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { off = clampOff(off - STEP); idleT = 0; e.preventDefault(); render(); }
+      if (e.key === 'ArrowLeft') { off = clampOff(off + STEP); idleT = 0; e.preventDefault(); render(); }
+    });
+    if (!reduce) {
+      (function loop(t) {
+        requestAnimationFrame(loop);
+        var swayTarget = 0;
+        if (!down) {
+          if (Math.abs(vel) > .003) { off = clampOff(off + vel); vel *= .95; idleT = 0; }
+          else { idleT += 16; if (idleT > 1600) swayTarget = Math.sin(t / 2600) * 2.4; }
+        }
+        sway += (swayTarget - sway) * .04;
+        render();
+      })(0);
+    } else { render(); }
   }
 
   // deriva sutil dos espécimes no scroll (sem pin, sem scrub de história)
