@@ -1,0 +1,66 @@
+/* A Bússola da Vida 3D — cromo líquido (padrão) + cerâmica clara.
+   Fonte de verdade: SyncLife DS v5 — Estúdio (POC)/design_handoff_marca_3d/marca-3d.html (rodada 7).
+   Copiado 1:1 com uma diferença: TODOS os seletores internos são escopados sob .bs
+   (na spec eram globais e .tk colidia com o .tk do ticker da landing).
+   d1 (vidro) e d2 (titânio) ficaram na spec como exploração e não entram aqui.
+   Uso: <div class="bs d3" data-bs3d style="--sz:NNpx"></div> + SLBussola3D.mount(el). */
+
+.bs{position:relative;display:block;width:var(--sz,280px);height:var(--sz,280px);border-radius:50%;flex:none;isolation:isolate;--rot:0deg}
+.bs .rim{position:absolute;inset:0;border-radius:50%}
+.bs .dial{position:absolute;inset:8.5%;border-radius:50%;perspective:640px;overflow:hidden}
+.bs .tk{position:absolute;inset:0;width:100%;height:100%}
+.bs .tk .mn{stroke:var(--mn,rgba(255,255,255,.16));stroke-width:2.4;stroke-linecap:round}
+.bs .tk .d{stroke:var(--tkd,rgba(0,0,0,.55));stroke-width:5.4;stroke-linecap:round}
+.bs .tk .l{stroke:var(--tkl,rgba(255,255,255,.22));stroke-width:5.4;stroke-linecap:round}
+.bs .tk .t.on .d{stroke:var(--lit-d,rgba(20,40,0,.5))}
+.bs .tk .t.on .l{stroke:var(--lit,#a1ff62)}
+.bs .tk .t.on{filter:drop-shadow(0 0 6px var(--lit-g,rgba(161,255,98,.55)))}
+.bs .nd{position:absolute;inset:0;transform:rotate(var(--rot))}
+.anim .bs .nd{transition:transform .52s var(--ease)}
+.bs .nh,.bs .sh{position:absolute;left:50%;width:var(--nw,11.5%);transform:translateX(-50%)}
+.bs .nh{top:8%;height:42%;clip-path:polygon(50% 0,100% 100%,0 100%);background:linear-gradient(102deg,var(--n1,#9c7dff) 0 47%,var(--n2,#5730e0) 47% 100%)}
+.bs .sh{top:50%;height:42%;clip-path:polygon(0 0,100% 0,50% 100%);background:linear-gradient(102deg,var(--s1n,#4a4544) 0 47%,var(--s2n,#1e1b1b) 47% 100%)}
+.bs .nsh{position:absolute;inset:0;transform:rotate(var(--rot)) translate(3%,4%);filter:blur(6px);opacity:.5}
+.anim .bs .nsh{transition:transform .52s var(--ease)}
+.bs .nsh i{position:absolute;left:50%;top:8%;width:var(--nw,11.5%);height:84%;transform:translateX(-50%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:#000}
+.bs .pv{position:absolute;left:50%;top:50%;width:12.5%;height:12.5%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.9),var(--pv1,#312d2d) 52%,var(--pv2,#0e0d0d));box-shadow:0 2px 4px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.14)}
+.bs .gl{position:absolute;inset:0;border-radius:50%;pointer-events:none}
+.bs .sw{position:absolute;inset:0;border-radius:50%;pointer-events:none;background:linear-gradient(112deg,transparent 32%,rgba(255,255,255,.3) 46%,rgba(255,255,255,.06) 53%,transparent 66%);transform:translateX(-125%);opacity:0}
+@keyframes sweep{0%{transform:translateX(-125%);opacity:0}18%{opacity:1}100%{transform:translateX(125%);opacity:0}}
+.anim .bs:hover .sw{animation:sweep 1.15s var(--ease)}
+.bs.busy .nd,.bs.busy .nsh{transform:rotate(var(--rot)) rotateX(16deg)}
+
+/* --- legibilidade em tamanho pequeno: o material cede, o contraste manda --- */
+.bs.s-sm{--nw:16.5%}
+.bs.s-xs{--nw:22%}
+.bs.s-sm .dial{inset:11.5%}
+.bs.s-xs .dial{inset:16%}
+.bs.s-sm .tk .d,.bs.s-sm .tk .l{stroke-width:9.5}
+.bs.s-xs .tk .d,.bs.s-xs .tk .l{stroke-width:14}
+.bs.s-sm .pv{width:17%;height:17%}
+.bs.s-xs .pv{width:23%;height:23%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.bs.s-sm .nsh,.bs.s-sm .sw{display:none}
+.bs.s-sm .nh{filter:none}
+.bs.s-sm .tk .t.on{filter:none}
+.bs.s-sm .tk .t.on .l{stroke:var(--lit-s,var(--lit))}
+.bs.dl.s-sm{--tkl:rgba(21,19,19,.76);--s1n:#aca7a2;--s2n:#78736e;--lit-s:#5a2fe6}
+.bs.dl.s-sm .dial{background:radial-gradient(120% 120% at 32% 18%,#ffffff,#e4e0db 78%);box-shadow:inset 0 1.5px 4px rgba(21,19,19,.28),inset 0 -1px 0 #fff}
+/* cromo pequeno: aro cromado de alto contraste + mostrador escuro pra agulha aparecer */
+.bs.d3.s-sm{--mn:rgba(255,255,255,.6);--tkd:rgba(0,0,0,.8);--tkl:#ffffff;--lit-s:#b8ff7a;--n1:#ac90ff;--n2:#5d33ea;--s1n:#cdc8c2;--s2n:#3b3735;--pv1:#e8e4e0;--pv2:#4a4644}
+.bs.d3.s-sm .rim{background:conic-gradient(from 200deg,#fbfaf8 0 5%,#57524e 14%,#0b0a0a 26%,#918c86 39%,#f2efeb 50%,#6b6663 61%,#100f0f 75%,#b9b4ae 89%,#fbfaf8 100%);box-shadow:0 0 0 1px rgba(255,255,255,.6),inset 0 1.5px 0 #fff,inset 0 -1.5px 2px rgba(0,0,0,.8),0 6px 14px -4px rgba(0,0,0,.95)}
+.bs.d3.s-sm .dial{background:radial-gradient(120% 120% at 32% 16%,#2c2927,#0e0d0d 72%);box-shadow:inset 0 2px 5px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,255,255,.4)}
+.bs.d3.s-sm .gl{background:linear-gradient(150deg,rgba(255,255,255,.55) 0 9%,transparent 26%)}
+.bs.d3.s-xs .gl{display:none}
+
+/* --- D3 · cromo líquido (material oficial) --- */
+.bs.d3{--mn:rgba(255,255,255,.42);--tkd:rgba(0,0,0,.5);--tkl:rgba(255,255,255,.7);--pv1:#8d8781;--pv2:#100f0f;--s1n:#8e8882;--s2n:#2b2827}
+.bs.d3 .rim{background:conic-gradient(from 196deg,#f3f0ec 0%,#8c8781 9%,#2a2725 20%,#0f0e0e 29%,#5d5854 40%,#d9d4ce 50%,#f7f5f2 55%,#7d7873 66%,#1a1817 78%,#454140 88%,#cdc8c2 96%,#f3f0ec 100%);box-shadow:0 0 0 1px rgba(255,255,255,.2),inset 0 2px 0 rgba(255,255,255,.7),inset 0 -3px 4px rgba(0,0,0,.7),0 30px 66px -22px rgba(0,0,0,.9)}
+.bs.d3 .dial{background:conic-gradient(from 200deg,#2b2827 0%,#0f0e0e 22%,#6b6763 44%,#cfcac4 50%,#5e5a57 58%,#131211 80%,#2b2827 100%);box-shadow:inset 0 4px 14px rgba(0,0,0,.85),inset 0 -1px 0 rgba(255,255,255,.4)}
+.bs.d3 .nh{filter:drop-shadow(0 2px 4px rgba(0,0,0,.7))}
+.bs.d3 .gl{background:linear-gradient(150deg,rgba(255,255,255,.4) 0 12%,transparent 34%),radial-gradient(46% 30% at 74% 88%,rgba(255,255,255,.18),transparent 74%)}
+
+/* --- claro (cerâmica) — bandas claras, impressão, mono --- */
+.bs.dl{--mn:rgba(21,19,19,.3);--tkd:rgba(255,255,255,.85);--tkl:rgba(21,19,19,.5);--lit:#6840ff;--lit-d:rgba(255,255,255,.7);--lit-g:rgba(104,64,255,.4);--pv1:#dedad6;--pv2:#8b8681;--s1n:#c9c4bf;--s2n:#8d8883}
+.bs.dl .rim{background:radial-gradient(115% 115% at 28% 14%,#ffffff,#eae7e3 42%,#cbc7c2 78%,#b4b0ab 100%);box-shadow:0 0 0 1px rgba(21,19,19,.1),inset 0 2px 0 rgba(255,255,255,1),inset 0 -2px 3px rgba(21,19,19,.28),0 26px 56px -24px rgba(21,19,19,.55)}
+.bs.dl .dial{background:radial-gradient(120% 120% at 32% 18%,#ffffff,#efece8 48%,#d6d2cd);box-shadow:inset 0 3px 9px rgba(21,19,19,.22),inset 0 -1px 0 #fff}
+.bs.dl .gl{background:radial-gradient(56% 38% at 26% 12%,rgba(255,255,255,.9),transparent 70%)}

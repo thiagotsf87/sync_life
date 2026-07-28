@@ -16,6 +16,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/tokens.css">
 <link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/bussola-3d.css">
 <style>
   /* nav: pílula flutuante + ticker elétrico grudado */
   .navwrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:70;width:min(880px,94vw);
@@ -23,7 +24,7 @@
   nav{display:flex;align-items:center;justify-content:space-between;gap:18px;height:56px;
     padding:0 10px 0 22px;background:#0d0c0cf2;border:1px solid var(--line);border-radius:16px 16px 0 0;
     backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-  .brand{font:700 18px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:9px}
+  .brand{font:700 18px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:11px}
   .brand em{font-style:normal;color:var(--roxo)}
   .nav-links{display:flex;gap:24px}
   .nav-links a{font:500 13px var(--int);color:var(--t2);transition:color .3s var(--ease)}
@@ -147,12 +148,12 @@
   .anim .upulse{animation:upulse 3.4s var(--ease) infinite}
   @keyframes upulse{0%,100%{transform:none}50%{transform:scale(1.05)}}
 
-  /* ─── a bússola da vida, abaixo do semicírculo: o instrumento que conduz o arco ─── */
-  .hero-bussola{display:grid;grid-template-columns:210px 1fr;gap:clamp(28px,4vw,60px);align-items:center;
-    margin-top:24px;padding:14px 0 6px;
-    --sym-fg:#151313;--sym-ac:#6840ff;--sym-live:#151313;--sym-pivot:#f4f4f4}
-  .hero-bussola .hit{fill:transparent;cursor:pointer}
-  .hero-bussola .anum{cursor:pointer}
+  /* ─── a bússola da vida, abaixo do semicírculo: o instrumento 3D que conduz o arco ─── */
+  .hero-bussola{display:grid;grid-template-columns:224px 1fr;gap:clamp(28px,4vw,60px);align-items:center;
+    margin-top:24px;padding:16px 0 8px}
+  .hb-stage{position:relative;width:224px;height:224px}
+  .hbhits{position:absolute;inset:0;width:100%;height:100%;z-index:5}
+  .hbhits .hit{fill:transparent;cursor:pointer}
   .hero-bussola .focoline{margin-top:12px;min-height:0}
   .hero-bussola .chips{margin-top:16px}
 
@@ -305,7 +306,7 @@
 <div class="navwrap">
   <nav>
     <a class="brand" href="#">
-      <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="3" x2="32" y2="12" stroke="#a1ff62" stroke-width="8" stroke-linecap="round"/><polygon points="32,7 41.5,36 22.5,36" fill="#6840ff"/><polygon points="32,60 22.5,36 41.5,36" fill="#f4f4f4" opacity=".4"/></svg>
+      <span class="bs d3" data-bs3d style="--sz:22px" aria-hidden="true"></span>
       Sync<em>Life</em></a>
     <div class="nav-links">
       <a href="#produto">Produto</a>
@@ -444,49 +445,22 @@
     </div></div>
   </div>
 
-  <!-- a bússola da vida: o instrumento da marca; tocar numa área traz a tela dela pro norte -->
+  <!-- a bússola da vida: o instrumento 3D da marca; tocar numa área traz a tela dela pro norte -->
   <div class="wrap">
-    <div class="hero-bussola sym-swing rv" id="hb">
-      <svg class="sym p80" width="210" height="210" viewBox="0 0 80 80" role="group" aria-label="A Bússola da Vida, interativa: escolha uma área e a miniatura dela vem pro centro">
-        <circle class="ringc" cx="40" cy="40" r="26" fill="none" stroke-width=".6" opacity=".35"/>
-        <g class="ticks" id="hbticks">
-          <line class="tick" x1="40" y1="15.5" x2="40" y2="20" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="57.3" y1="22.7" x2="54.1" y2="25.9" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="64.5" y1="40" x2="60" y2="40" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="57.3" y1="57.3" x2="54.1" y2="54.1" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick on" x1="40" y1="64.5" x2="40" y2="60" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="22.7" y1="57.3" x2="25.9" y2="54.1" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="15.5" y1="40" x2="20" y2="40" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="22.7" y1="22.7" x2="25.9" y2="25.9" stroke-width="2" stroke-linecap="round"/>
-        </g>
-        <g class="anums" id="hbnums">
-          <text class="anum num" x="40" y="8" text-anchor="middle" dy=".35em">01</text>
-          <text class="anum num" x="62.6" y="17.4" text-anchor="middle" dy=".35em">02</text>
-          <text class="anum num" x="72" y="40" text-anchor="middle" dy=".35em">03</text>
-          <text class="anum num" x="62.6" y="62.6" text-anchor="middle" dy=".35em">04</text>
-          <text class="anum on num" x="40" y="72" text-anchor="middle" dy=".35em">05</text>
-          <text class="anum num" x="17.4" y="62.6" text-anchor="middle" dy=".35em">06</text>
-          <text class="anum num" x="8" y="40" text-anchor="middle" dy=".35em">07</text>
-          <text class="anum num" x="17.4" y="17.4" text-anchor="middle" dy=".35em">08</text>
-        </g>
-        <g class="point" id="hbpoint">
-          <g class="needle">
-            <polygon class="acf" points="40,14 45,40 35,40"/>
-            <polygon class="fgf" points="40,62 35,40 45,40" opacity=".28"/>
-            <circle class="pivot" cx="40" cy="40" r="2.8"/>
-          </g>
-        </g>
-        <g id="hbhits">
-          <circle class="hit" data-area="0" cx="40" cy="11" r="9.5"><title>01 · Finanças</title></circle>
-          <circle class="hit" data-area="1" cx="60.5" cy="19.5" r="9.5"><title>02 · Futuro</title></circle>
-          <circle class="hit" data-area="2" cx="69" cy="40" r="9.5"><title>03 · Tempo</title></circle>
-          <circle class="hit" data-area="3" cx="60.5" cy="60.5" r="9.5"><title>04 · Corpo</title></circle>
-          <circle class="hit" data-area="4" cx="40" cy="69" r="9.5"><title>05 · Mente</title></circle>
-          <circle class="hit" data-area="5" cx="19.5" cy="60.5" r="9.5"><title>06 · Patrimônio</title></circle>
-          <circle class="hit" data-area="6" cx="11" cy="40" r="9.5"><title>07 · Carreira</title></circle>
-          <circle class="hit" data-area="7" cx="19.5" cy="19.5" r="9.5"><title>08 · Experiências</title></circle>
-        </g>
-      </svg>
+    <div class="hero-bussola rv" id="hb">
+      <div class="hb-stage">
+        <div class="bs dl" id="hbbs" data-bs3d style="--sz:224px" role="img" aria-label="A Bússola da Vida: a agulha aponta a área em foco"></div>
+        <svg class="hbhits" id="hbhits" viewBox="0 0 200 200" role="group" aria-label="Escolher área na bússola">
+          <circle class="hit" data-area="0" cx="100" cy="22" r="17"><title>01 · Finanças</title></circle>
+          <circle class="hit" data-area="1" cx="155.2" cy="44.8" r="17"><title>02 · Futuro</title></circle>
+          <circle class="hit" data-area="2" cx="178" cy="100" r="17"><title>03 · Tempo</title></circle>
+          <circle class="hit" data-area="3" cx="155.2" cy="155.2" r="17"><title>04 · Corpo</title></circle>
+          <circle class="hit" data-area="4" cx="100" cy="178" r="17"><title>05 · Mente</title></circle>
+          <circle class="hit" data-area="5" cx="44.8" cy="155.2" r="17"><title>06 · Patrimônio</title></circle>
+          <circle class="hit" data-area="6" cx="22" cy="100" r="17"><title>07 · Carreira</title></circle>
+          <circle class="hit" data-area="7" cx="44.8" cy="44.8" r="17"><title>08 · Experiências</title></circle>
+        </svg>
+      </div>
       <div class="hb-info">
         <p class="eyebrow"><b>A bússola da vida</b> · a marca aponta o foco do dia. Toque numa área e a tela dela vem pro norte</p>
         <p class="focoline" id="hbline">Hoje o norte é <b>05 · Mente</b>: 20 minutos de leitura antes de dormir.</p>
@@ -673,7 +647,7 @@
     <div class="foot-grid">
       <div>
         <span class="brand">
-          <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="3" x2="32" y2="12" stroke="#a1ff62" stroke-width="8" stroke-linecap="round"/><polygon points="32,7 41.5,36 22.5,36" fill="#6840ff"/><polygon points="32,60 22.5,36 41.5,36" fill="#f4f4f4" opacity=".4"/></svg>
+          <span class="bs d3" data-bs3d style="--sz:22px" aria-hidden="true"></span>
           Sync<em>Life</em></span>
         <p class="foot-tag">Sua vida inteira, organizada em um só lugar.<br>Feito no Brasil, com cuidado.</p>
       </div>
@@ -690,10 +664,14 @@
 </footer>
 
 <script src="../shared/bussola.js"></script>
+<script src="../shared/bussola-3d.js"></script>
 <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
 <script>
 (function () {
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // marca 3D: monta todas as bússolas da página (nav, footer, hero)
+  if (window.SLBussola3D) document.querySelectorAll('[data-bs3d]').forEach(function (el) { SLBussola3D.mount(el); });
 
   if (!reduce) {
     document.documentElement.classList.add('anim');
@@ -762,25 +740,18 @@
     function render() { strip.style.setProperty('--off', (offCur + sway).toFixed(3) + 'deg'); }
     function nearest() { return Math.max(0, Math.min(N - 1, Math.round(3.5 - off / STEP))); }
 
-    // a bússola do hero
-    var point = document.getElementById('hbpoint');
-    var ticks = [].slice.call(document.querySelectorAll('#hbticks .tick'));
-    var anums = [].slice.call(document.querySelectorAll('#hbnums .anum'));
+    // a bússola 3D do hero (cerâmica na banda clara; agulha com overshoot via SLBussola3D)
+    var bsEl = document.getElementById('hbbs');
+    var needle = (bsEl && window.SLBussola3D) ? SLBussola3D.control(bsEl, { reduce: reduce }) : null;
     var chips = [].slice.call(document.querySelectorAll('#hbchips .chip'));
     var hits = [].slice.call(document.querySelectorAll('#hbhits .hit'));
     var line = document.getElementById('hbline');
     var AREAS = window.SLBussola ? SLBussola.AREAS : [];
-    var cur = 0, rot = 0;
+    var cur = 0;
 
-    function rotTo(i) { // agulha por caminho mais curto acumulado
-      var norm = ((rot % 360) + 360) % 360;
-      rot += ((i * 45 - norm + 540) % 360) - 180;
-      if (point) point.style.setProperty('--rot', rot + 'deg');
-    }
     function pointTo(i) {
-      cur = i; rotTo(i);
-      ticks.forEach(function (t, j) { t.classList.toggle('on', j === i); });
-      anums.forEach(function (a, j) { a.classList.toggle('on', j === i); });
+      cur = i;
+      if (needle) needle.point(i);
       chips.forEach(function (c, j) { c.classList.toggle('on', j === i); });
       cards.forEach(function (c) { c.classList.remove('peek'); c.classList.toggle('north', +c.getAttribute('data-area') === i); });
       if (line && AREAS[i]) line.innerHTML = 'Hoje o norte é <b>' + AREAS[i][0] + ' · ' + AREAS[i][1] + '</b>: ' + AREAS[i][2] + '.';
@@ -796,9 +767,9 @@
     }
     function focus(i) { auto = false; goTo(i); }
 
-    // hover bidirecional (só com ponteiro fino)
-    function peek(i) { rotTo(i); cards.forEach(function (c) { c.classList.toggle('peek', +c.getAttribute('data-area') === i && i !== cur); }); }
-    function unpeek() { rotTo(cur); cards.forEach(function (c) { c.classList.remove('peek'); }); }
+    // hover bidirecional (só com ponteiro fino): a agulha olha (glance) sem assentar
+    function peek(i) { if (needle) needle.glance(i); cards.forEach(function (c) { c.classList.toggle('peek', +c.getAttribute('data-area') === i && i !== cur); }); }
+    function unpeek() { if (needle) needle.unglance(); cards.forEach(function (c) { c.classList.remove('peek'); }); }
     function bindArea(el, i) {
       el.addEventListener('click', function () { focus(i); });
       if (fine) {
@@ -814,8 +785,8 @@
       var scin = c.querySelector('.scin');
       c.addEventListener('click', function () { if (moved) return; focus(i); });
       if (fine && !reduce) {
-        c.addEventListener('pointerenter', function () { if (!down) rotTo(i); }); // a agulha olha pro card
-        c.addEventListener('pointerleave', function () { rotTo(cur); scin.style.setProperty('--rx', '0deg'); scin.style.setProperty('--ry', '0deg'); });
+        c.addEventListener('pointerenter', function () { if (!down && needle) needle.glance(i); }); // a agulha olha pro card
+        c.addEventListener('pointerleave', function () { if (needle) needle.unglance(); scin.style.setProperty('--rx', '0deg'); scin.style.setProperty('--ry', '0deg'); });
         c.addEventListener('mousemove', function (e) { // tilt sutil em direção ao cursor
           if (down) return;
           var r = scin.getBoundingClientRect();

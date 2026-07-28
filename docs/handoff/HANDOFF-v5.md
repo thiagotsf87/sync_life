@@ -27,6 +27,30 @@
 
 ---
 
+## 2026-07-28 · Sessão 3 — Onda 0, rodada 3: marca 3D "cromo líquido" integrada
+
+**Contexto:** o usuário entregou a marca repaginada em `SyncLife DS v5 — Estúdio (POC)/design_handoff_marca_3d/` (README + `marca-3d.html`, rodada 7 da marca): a bússola vira um **objeto renderizado em CSS/SVG** (cromo líquido padrão, cerâmica off-white no claro), com comportamento próprio da agulha e ícones de área que revogam parte da E-09. Isso supersede a página de 4 direções de lockup da sessão 2.
+
+**Feito:**
+- `shared/bussola-3d.css` + `shared/bussola-3d.js`: porte 1:1 do material (d3 cromo + dl cerâmica + modos `.s-sm`/`.s-xs`, thresholds 54/34/22px) e do comportamento (transição .52s, overshoot alvo+9° assentando em 330ms, `rotateX(16deg)` no trajeto, tick aceso com 260ms de atraso, sweep no hover >54px). Diferença deliberada e documentada: rotação acumulada por caminho-mais-curto e overshoot no sentido do movimento.
+- **Bug corrigido no porte:** os seletores internos da spec são globais e `.tk` colidia com o `.tk` do ticker da landing (o texto saltava pra fora da barra). Todo o CSS da bússola foi escopado sob `.bs`.
+- Landing desktop: bússola do hero agora é a peça 3D em **cerâmica** 224px (banda clara, conforme spec) com hit-areas invisíveis sobre os rumos; nav e footer com **cromo 22px** (`.s-sm/.s-xs` automático), gap do lockup 9→11px. Hover nos cards usa `glance()` (a agulha olha sem assentar); clique usa `point()` com overshoot. Sincronia arco↔bússola preservada.
+- Landing mobile: cerâmica 170px centrada + cromo 21px no nav/footer, mesmo controle.
+- Spec copiada pra `prototypes/v5/marca/marca-3d.html` (servida pelo hub); `marca/lockup.html` (4 direções) **removida** (superseded).
+- `DESIGN-SYSTEM-v5.md` atualizado conforme a tabela do README: §5.1 (material oficial cromo líquido), §5.2 (construção com material, pivô = cabeça de eixo), §5.3 (degradação por thresholds 54/34/22 + lockup gap 11), §5.4 (.52s, overshoot 2 etapas, tilt, lit 260ms), §5.5 (favicon/tiles/ícones de área), E-06 (gradiente como iluminação na marca), E-09 (revogada em parte: ícone de rumo por área, cor de módulo segue proibida).
+- QA: desktop + mobile verificados (ticker ok, clique 01 → agulha norte + arco sincronizado), console limpo nas landings (só 404 de favicon na spec copiada, que não declara ícone).
+
+**Pendências:**
+- ⏳ Aprovação da landing v2 r3 (agora com a marca 3D aplicada).
+- Favicon dos protótipos ainda é o flat antigo (data-URI); o README manda exportar bitmap renderizando o componente — fazer na fase de implementação.
+- Ícones das 8 áreas e set de UI (seções 05/06 da spec) entram quando o chrome do app for prototipado (Onda 2+).
+
+**Próximo passo:** revisão do usuário na landing com a marca 3D; com o aprovado, implementação em `web/` (inclui `<Compass />`, `<Logo />`, manifest/favicon novos conforme README).
+
+**Arquivos:** `prototypes/v5/shared/{bussola-3d.css,bussola-3d.js}` (novos) · `prototypes/v5/landing/{landing.html,landing.mobile.html}` · `prototypes/v5/marca/marca-3d.html` (novo, cópia da spec) · `prototypes/v5/marca/lockup.html` (removido) · `prototypes/v5/index.html` · `DESIGN-SYSTEM-v5.md` (§5, E-06, E-09).
+
+---
+
 ## 2026-07-28 · Sessão 2 — Onda 0, rodada 2: feedback do usuário aplicado
 
 **Feedback recebido:** (1) remover a linha vertical central do hero e a linha acima da bússola; (2) interatividade arco↔bússola "péssima", melhorar no padrão Osmo; (3) seção de decisão de marca não pertence à landing; (4) ícone da marca fraco; (5) bússola boa de ideia, execução fraca; (6) mobile: ajustar bússola e a última seção (footer). Usuário também apontou quebra de expectativa sobre o r6 ser "só validação de DS" (registrado: base r6 foi reaproveitada demais na v1 da landing).

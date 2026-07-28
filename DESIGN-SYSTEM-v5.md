@@ -275,11 +275,12 @@ O que faz uma tela "parecer SyncLife". Aprovados como conjunto:
 
 ## 5. A marca — A Bússola da Vida
 
-> Decidida em 2026-07-28, rodada 3 do processo da marca. Conceito aprovado: **bússola viva**.
-> Fonte de verdade: `prototypes/poc-v5/r6-estudio/marca-bussola.html` (construção, rosa
-> cerimonial, demo interativa, escalas, aplicações). Rodadas anteriores em `marca.html`.
+> Decidida em 2026-07-28 (rodada 3: conceito **bússola viva**; rodada 7: **marca 3D**).
+> Fonte de verdade atual: `design_handoff_marca_3d/marca-3d.html` + `README.md`
+> (espelhados em `prototypes/v5/marca/marca-3d.html`). Histórico do conceito em
+> `prototypes/poc-v5/r6-estudio/marca-bussola.html`; rodadas anteriores em `marca.html`.
 
-### 5.1 Conceito
+### 5.1 Conceito e material
 
 A marca é um **instrumento, não um emblema**: uma bússola cujos pontos cardeais são as
 8 áreas do SyncLife. A agulha aponta pra área que pede o usuário hoje. Os quatro pilares
@@ -287,48 +288,67 @@ da concepção estão no objeto: **cuidado** (o aro que envolve), **foco** (a ag
 **evolução** (o norte muda com a vida), **performance** (a marcação acesa, medida), e a
 rosa completa é o "tudo em um único lugar".
 
-### 5.2 Construção (5 peças)
+**Material oficial (rodada 7): cromo líquido.** A bússola deixa de ser desenho vetorial
+hairline e passa a ser um **objeto renderizado** (inteiro em CSS/SVG, nunca bitmap): aro
+espelhado com horizonte refletido, mostrador rebaixado escuro, marcações gravadas, agulha
+facetada em cromo roxo, pivô usinado. Vidro fumê e titânio escovado ficam registrados como
+exploração, **não** são variantes de uso. Versão clara = **cerâmica off-white** (bandas
+claras, impressão e mono).
 
-| Peça | Spec | Significado |
+### 5.2 Construção (5 peças, com material)
+
+| Peça | Spec (rodada 7) | Significado |
 |---|---|---|
-| O aro | círculo hairline (stroke fino, opacity ~.35) | o mundo da vida, cuidado que envolve sem pesar |
-| As 8 marcações | ticks a cada 45°, round cap; 01 Finanças no norte, sentido horário até 08 Experiências | as áreas nos pontos cardeais; **posição, não cor**, identifica o módulo (E-09) |
-| A agulha | losango duotone: metade norte **roxa** sólida, metade sul `--t1` a 28% | norte = pra onde olhar agora; sul apagado = o que fica pra depois |
-| O pivô | círculo pequeno na **cor do fundo local** sobre a junção | você, no centro; o único ponto que nunca se move |
-| A marcação acesa | o tick apontado fica **elétrico** (ink no claro) | a área em foco, o dado vivo |
+| O aro | **torneado**, luz na quina superior (conic-gradient de cromo) | o mundo da vida, cuidado que envolve sem pesar |
+| As marcações | **24 gravadas** (traço escuro + quina iluminada), sendo **8 maiores** nas áreas a cada 45°; 01 Finanças no norte, horário até 08 Experiências | as áreas nos pontos cardeais; **posição, não cor**, identifica o módulo |
+| A agulha | **facetada em 2 planos**, norte em cromo roxo (`#9c7dff`/`#5730e0`), sul em cromo apagado | norte = pra onde olhar agora; sul apagado = o que fica pra depois |
+| O pivô | **cabeça de eixo usinada** (radial-gradient; deixa de ser "furo na cor do fundo") | você, no centro; o único ponto que nunca se move |
+| A marcação acesa | a do rumo em foco acende em **elétrico** (`#b8ff7a` no cromo pequeno; **roxo** na versão clara) | a área em foco, o dado vivo |
 
-### 5.3 Versões e degradação
+Anatomia de camadas (`.bs > .rim / .dial(.nsh .tk .nd .pv) / .gl / .sw`), cores exatas e
+comportamento: `design_handoff_marca_3d/README.md` (hifi, valores finais).
 
-| Versão | Peças | Uso |
-|---|---|---|
-| Cerimonial | tudo + números `01…08` ao redor (mesma numeração da modbar) | splash, página sobre, capa de relatório |
-| Padrão | aro + 8 marcações + agulha + pivô | superfícies grandes, tiles, marketing |
-| 48 | sem o aro | headers, cards de app store |
-| 32 | 4 marcações (N/L/S/O) + agulha | lockup de nav, ícones médios |
-| 16 · núcleo | agulha + marcação norte acesa | favicon; **a agulha sozinha ainda é a marca** |
+### 5.3 Escala e degradação (por material)
 
-Ordem de perda: números → aro → marcações → núcleo. Nunca pular a ordem.
+Thresholds medidos no lado da peça:
+
+| Largura | O que sai |
+|---|---|
+| `< 54px` | as 16 marcações menores; entra o modo `.s-sm` (**o contraste manda, o material cede**: aro de alto contraste, mostrador escuro chapado, agulha e marcações mais grossas, zero blur) |
+| `< 34px` | as marcações maiores de índice ímpar (sobram 4: N/L/S/O) |
+| `≤ 22px` | todas as marcações menos a do norte; entra o modo `.s-xs` (favicon, lockup mínimo) |
+
+Ordem de perda: **reflexo → marcações menores → aro → núcleo**. Em 16px sobram aro brilhante +
+agulha roxa + marcação norte, e isso ainda é a marca. Lockup: bússola 30px + wordmark (22px na
+nav compacta), **gap 11px**.
 
 ### 5.4 Comportamento — a bússola viva
 
-- Rotação da agulha = área em foco: `rot = i × 45°` (i = índice da área, 01 no norte).
-  A marcação acesa acompanha a agulha.
-- Transição de rotação: `.8s` com a easing assinatura; entrada com swing e overshoot
-  (`-80° → +14° → -5° → 0`).
+- **Só a agulha se move; o corpo nunca gira.** Rotação = rumo da área em foco:
+  `rot = i × 45°` (i = índice da área, 01 no norte).
+- Transição: `.52s` com a easing assinatura. **Overshoot em duas etapas**: vai para
+  `alvo + 9°` e assenta no alvo após `330ms`. Durante o trajeto a agulha ganha
+  `rotateX(16deg)` em perspectiva (o mostrador tem `perspective:640px`).
+- A marcação de destino acende `260ms` após o início do movimento (a luz chega depois
+  da agulha). A sombra projetada acompanha a rotação.
+- Varredura de luz no hover (`sweep 1.15s`), só em peças > 54px.
 - **Só aponta uma área quando há dado real de foco** (o briefing do dia). Sem dado,
   aponta o norte. A bússola nunca mente.
-- Sob reduced-motion: sem busca automática; mudanças de foco são instantâneas (a
-  interação continua funcionando).
+- Sob reduced-motion: sem busca automática, sem overshoot, sem varredura, sem inclinação;
+  mudanças de foco são instantâneas (a interação continua funcionando).
 
 ### 5.5 Regras de uso
 
-- Agulha sempre roxa; sul sempre apagado; **coral nunca** (E-06).
-- No claro: ink + roxo (o elétrico é detalhe do escuro).
-- Pivô sempre na cor do fundo local (o "furo" do instrumento).
+- Agulha sempre roxa; sul sempre apagado (cromo); **coral nunca** (E-06).
+- No claro (cerâmica): marcação acesa em **roxo** (o elétrico é detalhe do escuro).
 - **Não usar como spinner ou loading genérico**: a bússola aponta, não gira à toa.
-- Lockup: bússola (versão 32) à esquerda do wordmark, gap ~8px, mesma altura da
-  x-height até a cap-height do wordmark.
-- Favicon oficial: núcleo em tile escuro `#151313` com raio ~22% (rx 14 em 64).
+- Lockup: bússola 30px + wordmark à esquerda, **gap 11px** (22px + wordmark 21px na nav
+  compacta), alinhados no centro vertical.
+- Favicon: a própria peça em modo `.s-xs` a 15-16px (exportar bitmap renderizando o
+  componente, nunca redesenhar). Tiles de app: iOS squircle 22.5%, Android maskable circular.
+- Ícones das 8 áreas: a própria bússola em cromo pequeno, sem agulha, com a marcação do
+  rumo acesa + primitiva geométrica da área no centro (mesmo material para as 8; ver
+  handoff da marca 3D). Ícone e índice contam a mesma coisa.
 
 ---
 
@@ -463,10 +483,10 @@ tag. Agrupamento de conteúdo é feito por hairline, espaçamento e eyebrow, nun
 | **E-03** Lenis nunca com `scroll-behavior:smooth` | `html.lenis{scroll-behavior:auto}` obrigatório; Lenis só na landing, sempre guarded |
 | **E-04** Hairline, não card | Container/borda só para objetos (selo, scard, ação, askbar, pills). Agrupamento = hairline + eyebrow + espaço |
 | **E-05** Um número grande por dobra | Score no selo, saldo na banda; nunca dois heróis competindo |
-| **E-06** Tri-acento com papel fixo | Roxo = ação/marca · Elétrico = positivo/dado vivo · Coral = alerta/voz do coach. Acento como superfície só em ticker e coluna PRO |
+| **E-06** Tri-acento com papel fixo | Roxo = ação/marca · Elétrico = positivo/dado vivo · Coral = alerta/voz do coach. Acento como superfície só em ticker e coluna PRO. **Exceção de marca (rodada 7):** gradiente segue proibido em superfícies de seção, mas marca e ícones usam gradiente **como iluminação** (aro, bisel, faceta); nenhuma cor nova |
 | **E-07** IA escreve prosa com fontes | Briefing assinado (`Escrito às…`) e respostas do coach com `Fontes: …`. IA nunca vira widget |
 | **E-08** Números em `.num` | Space Grotesk + tabular-nums + tracking -.02em para todo valor. NBSP após `R$`, en-dash em negativos, pt-BR |
-| **E-09** Módulo por índice | Identificação de módulo é numeral (`01…08`), sem cor de módulo e sem ícone por módulo |
+| **E-09** Módulo por índice + ícone de rumo | **Revogada em parte (rodada 7):** módulo passa a ter ícone além do índice (a bússola em cromo com a marcação do rumo acesa + primitiva da área, §5.5). Continua proibida a **cor de módulo**: mesmo material para as 8 áreas, muda geometria e rumo, nunca matiz |
 | **E-10** Caveat só na voz do coach | `.hand` restrita a anotações do coach, máx. 1 por dobra; nunca em chrome, dados ou títulos |
 | **E-11** Objetos sempre escuros | Pill nav e mini-telas re-declaram vars dark mesmo em página clara |
 | **E-12** Marca = Bússola da Vida | Wordmark `Sync`+`Life` + bússola (§5). Agulha sempre roxa, sul apagado, marcação acesa elétrica (ink no claro), coral nunca. Viva só com dado real de foco; sem dado, aponta o norte. Nunca como spinner |
