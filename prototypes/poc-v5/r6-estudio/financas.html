@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Finanças · r6 Estúdio</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#151313; --s1:#201d1d; --s2:#2a2727;
+    --line:rgba(255,255,255,.08); --line-h:rgba(255,255,255,.18);
+    --t1:#f4f4f4; --t2:#b8b8b8; --t3:#817f7f;
+    --paper:#f4f4f4; --ink:#151313; --ink2:#4f4c4c; --pline:rgba(21,19,19,.14);
+    --roxo:#6840ff; --roxo-h:#7a55ff; --ele:#a1ff62; --coral:#f84131;
+    --gro:'Space Grotesk',sans-serif; --int:'Inter',sans-serif;
+    --ease:cubic-bezier(.625,.05,0,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--t1);font:400 14px/1.55 var(--int);-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--roxo);color:#fff}
+  a{color:inherit;text-decoration:none}
+  button{font-family:var(--int)}
+  .num{font-family:var(--gro);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .eyebrow{font:700 10px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--t3)}
+  .ele{color:var(--ele)} .coral{color:var(--coral)}
+  .grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+  .wrap{max-width:1180px;margin:0 auto;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+  .hand{font:700 19px/1.25 'Caveat',cursive;color:var(--coral);letter-spacing:.01em}
+  .hand-arrow{stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .anim .draw .hand-arrow{stroke-dasharray:120;stroke-dashoffset:120;transition:stroke-dashoffset 1.1s var(--ease) .3s}
+  .anim .draw.in .hand-arrow{stroke-dashoffset:0}
+
+  /* chrome (idêntico ao dashboard r6) */
+  .bar{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+    padding:0 clamp(20px,4vw,56px);position:sticky;top:0;background:rgba(21,19,19,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:60}
+  .brand{font:700 17px var(--gro);letter-spacing:-.02em}
+  .brand em{font-style:normal;color:var(--roxo)}
+  .bar .mid{display:flex;align-items:center;gap:14px}
+  .bar .date{font:700 10.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+  .bar .acts{display:flex;gap:10px}
+  .btn{display:inline-flex;align-items:center;gap:7px;border-radius:999px;cursor:pointer;font:600 12.5px var(--int);
+    transition:background .3s var(--ease),border-color .3s var(--ease),color .3s var(--ease)}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--t2);padding:8px 15px}
+  .btn-ghost:hover{border-color:var(--line-h);color:var(--t1)}
+  .btn-roxo{background:var(--roxo);border:none;color:#fff;padding:8px 17px}
+  .btn-roxo:hover{background:var(--roxo-h)}
+  .ticker{overflow:hidden;background:var(--ele);height:28px;display:flex;align-items:center;white-space:nowrap}
+  .ticker .tk{display:inline-block;font:700 10px var(--gro);letter-spacing:.16em;color:#151313}
+  .anim .ticker .tk{animation:mqtk 46s linear infinite}
+  @keyframes mqtk{from{transform:translateX(0)}to{transform:translateX(-25%)}}
+  .ticker span{padding:0 18px}
+  .modbar{border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .modbar::-webkit-scrollbar{display:none}
+  .modbar .in{display:flex;gap:2px;padding:0 clamp(20px,4vw,56px);min-width:max-content}
+  .modbar a{display:flex;align-items:baseline;gap:7px;padding:13px 14px;font:600 12px var(--int);color:var(--t3);
+    border-bottom:2px solid transparent;transition:color .3s var(--ease),border-color .3s var(--ease);white-space:nowrap}
+  .modbar a .n{font:700 10.5px var(--gro)}
+  .modbar a:hover{color:var(--t1)}
+  .modbar a.on{color:var(--t1);border-bottom-color:var(--roxo)}
+  .modbar a.on .n{color:var(--roxo)}
+
+  /* masthead */
+  .mast{padding:52px 0 44px;display:flex;justify-content:space-between;align-items:flex-end;gap:36px}
+  .mast h1{font:500 clamp(30px,4vw,50px)/1.04 var(--gro);letter-spacing:-.04em;margin-top:14px;max-width:640px}
+  .mast h1 em{font-style:normal;color:var(--coral)}
+  .mast .sub{font:400 14.5px var(--int);color:var(--t2);margin-top:14px;max-width:56ch}
+  .selo{flex-shrink:0;border:1px solid var(--line-h);border-radius:16px;padding:20px 24px 18px;text-align:center;min-width:168px;position:relative}
+  .selo::after{content:"";position:absolute;inset:5px;border:1px solid var(--line);border-radius:11px;pointer-events:none}
+  .selo .k{font:700 9.5px var(--gro);letter-spacing:.24em;color:var(--t3)}
+  .selo .n{font:700 52px/1 var(--gro);letter-spacing:-.05em;margin:8px 0 6px}
+  .selo .d{font:600 11.5px var(--gro);color:var(--ele)}
+
+  /* folha: briefing do módulo */
+  .folha{background:var(--paper);color:var(--ink)}
+  .folha .in{max-width:1180px;margin:0 auto;padding:54px clamp(20px,4vw,56px) 50px;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(36px,5vw,80px)}
+  .folha .eyebrow{color:var(--ink2)}
+  .folha .eyebrow b{color:var(--roxo)}
+  .folha h2{font:500 clamp(20px,2.3vw,28px)/1.25 var(--gro);letter-spacing:-.03em;margin:14px 0 14px}
+  .folha .body{font:400 15px/1.75 var(--int);color:var(--ink2);max-width:62ch}
+  .folha .body strong{color:var(--ink);font-weight:600}
+  .folha .body .warn{color:var(--coral);font-weight:600}
+  .folha .ass{display:flex;align-items:center;gap:10px;margin-top:20px;font:400 11.5px var(--int);color:var(--ink2)}
+  .folha .ass::before{content:"";width:26px;height:2px;background:var(--roxo)}
+  .recs{border-left:1px solid var(--pline);padding-left:clamp(20px,3vw,44px)}
+  .rec{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:14px 0;border-bottom:1px dashed var(--pline);cursor:pointer}
+  .rec:last-of-type{border-bottom:none}
+  .rec .rn{font:700 13px var(--gro);color:var(--roxo)}
+  .rec h4{font:600 14px var(--int);color:var(--ink);display:flex;align-items:center;gap:8px}
+  .rec h4 svg{opacity:0;transform:translateX(-4px);transition:opacity .3s var(--ease),transform .3s var(--ease);color:var(--roxo);flex-shrink:0}
+  .rec:hover h4 svg{opacity:1;transform:none}
+  .rec p{font:400 12.5px/1.6 var(--int);color:var(--ink2);margin-top:4px}
+  .rec p b{color:var(--ink);font-weight:600;font-family:var(--gro)}
+
+  /* números do mês */
+  .nums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+  .nums > div{padding:32px clamp(16px,2.4vw,34px);border-right:1px solid var(--line)}
+  .nums > div:last-child{border-right:none}
+  .nums .v{font:700 clamp(26px,3.2vw,42px)/1 var(--gro);letter-spacing:-.04em;margin-top:12px}
+  .nums .d{font:500 12px var(--int);margin-top:8px;color:var(--t3)}
+
+  /* zona 2 colunas: orçamentos | fluxo */
+  .zone{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(36px,5vw,80px);padding:52px 0 8px}
+  .sec-eyebrow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+  .sec-eyebrow a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .sec-eyebrow a:hover{color:var(--t1)}
+  .orc-row{display:grid;grid-template-columns:110px 1fr 130px;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+  .orc-row:last-of-type{border-bottom:none}
+  .orc-row .nm{font:500 13px var(--int);color:var(--t2)}
+  .orc-row .track{height:4px;border-radius:2px;background:var(--s2);overflow:hidden}
+  .orc-row .track i{display:block;height:100%;border-radius:2px;background:var(--t3);width:var(--w)}
+  .anim .orc-row .track i{animation:fill 1.2s var(--ease) backwards;animation-delay:var(--d,0s)}
+  @keyframes fill{from{width:0}}
+  .orc-row.hot .track i{background:var(--coral)}
+  .orc-row .val{font:500 12px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3);text-align:right;white-space:nowrap}
+  .orc-row.hot .val{color:var(--coral)}
+  .orc-total{display:flex;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font:400 12px var(--int);color:var(--t3)}
+  .orc-total .num{color:var(--t2);font-size:12px}
+
+  /* fluxo de caixa */
+  .fluxo svg{display:block;width:100%;height:170px}
+  .fluxo .cap{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px}
+  .fluxo .cap .v{font:700 22px var(--gro);letter-spacing:-.03em}
+  .fluxo .cap span{font:400 11.5px var(--int);color:var(--t3)}
+
+  /* transações */
+  .txs{padding:44px 0 8px}
+  .tx{display:grid;grid-template-columns:52px 1fr 130px 110px;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);
+    transition:padding-left .3s var(--ease)}
+  .tx:hover{padding-left:8px}
+  .tx:last-of-type{border-bottom:none}
+  .tx time{font:500 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+  .tx .who{font:500 13.5px var(--int)}
+  .tx .cat{font:400 11.5px var(--int);color:var(--t3)}
+  .tx .v{font:600 14px var(--gro);font-variant-numeric:tabular-nums;text-align:right}
+  .tx .v.in{color:var(--ele)}
+  .tx .v.out{color:var(--t2)}
+  .tx .v.hot{color:var(--coral)}
+
+  /* metas do módulo */
+  .metas{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,5vw,80px);padding:44px 0 64px}
+  .mrow .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .mrow .nm{font:500 13.5px var(--int)}
+  .mrow .pct{font:700 13.5px var(--gro)}
+  .mrow .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-bottom:6px}
+  .mrow .track i{display:block;height:100%;background:var(--t2);border-radius:2px;width:var(--w)}
+  .anim .mrow .track i{animation:fill 1.2s var(--ease) backwards;animation-delay:.3s}
+  .mrow .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+
+  .colofao{border-top:1px solid var(--line);padding:22px clamp(20px,4vw,56px);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    font:400 12px var(--int);color:var(--t3)}
+  .colofao b{color:var(--t2);font-weight:600;font-family:var(--gro)}
+
+  /* motion */
+  .anim .boot{animation:rise .7s var(--ease) backwards}
+  .anim .b1{animation-delay:.04s}.anim .b2{animation-delay:.12s}.anim .b3{animation-delay:.2s}.anim .b4{animation-delay:.28s}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .anim .rv{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+  .anim .rv.in{opacity:1;transform:none}
+
+  @media (max-width:960px){
+    .mast{flex-direction:column;align-items:flex-start}
+    .folha .in{grid-template-columns:1fr}
+    .recs{border-left:none;padding-left:0;border-top:1px solid var(--pline);padding-top:20px}
+    .nums{grid-template-columns:1fr 1fr}
+    .nums > div:nth-child(2){border-right:none}
+    .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+    .zone,.metas{grid-template-columns:1fr}
+    .bar .mid{display:none}
+    .tx{grid-template-columns:44px 1fr 90px}
+    .tx .cat{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="brand" href="#">Sync<em>Life</em></a>
+  <div class="mid"><span class="date">Segunda · 27 de julho de 2026</span></div>
+  <div class="acts">
+    <button class="btn btn-ghost" type="button">Relatório do mês</button>
+    <button class="btn btn-roxo" type="button">+ Nova transação</button>
+  </div>
+</header>
+<div class="ticker" aria-hidden="true">
+  <div class="tk"><span>SALDO <b>R$&nbsp;1.840</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ALUGUEL EM <b>3 DIAS</b></span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>SALDO <b>R$&nbsp;1.840</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ALUGUEL EM <b>3 DIAS</b></span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>SALDO <b>R$&nbsp;1.840</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ALUGUEL EM <b>3 DIAS</b></span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>SALDO <b>R$&nbsp;1.840</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ALUGUEL EM <b>3 DIAS</b></span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span></div>
+</div>
+<nav class="modbar" aria-label="Módulos">
+  <div class="in">
+    <a href="dashboard.html">Panorama</a>
+    <a class="on" href="#"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#"><span class="n">09</span>Conquistas</a>
+    <a href="#"><span class="n">10</span>Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+    <section class="mast boot b1">
+      <div>
+        <p class="eyebrow">Finanças · julho 2026</p>
+        <h1>O mês está 83% executado. Só o <em>lazer</em> encosta no teto.</h1>
+        <p class="sub">Receitas em dia, aporte de quarta coberto, poupança 7 pontos acima da meta. Abaixo, a evidência.</p>
+      </div>
+      <div class="selo" role="img" aria-label="Saúde do mês: 82 pontos, mais 2 esta semana">
+        <div class="k">SAÚDE DO MÊS</div>
+        <div class="n num" data-cnt="82">82</div>
+        <div class="d num">▲2 esta semana</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- folha: briefing de finanças -->
+  <section class="folha boot b2" aria-label="Briefing de Finanças">
+    <div class="in">
+      <article>
+        <p class="eyebrow"><b>O briefing de finanças</b> · Consultor IA</p>
+        <h2>Com R$&nbsp;10 de folga no lazer e 4 dias de mês, a regra é simples: um café a menos.</h2>
+        <p class="body">Você já usou <span class="warn">R$&nbsp;410 dos R$&nbsp;420</span> de lazer. Fora isso, julho navega: as despesas somam <strong class="num">R$&nbsp;3.160</strong> (63% da receita), o aluguel de sexta está coberto e o fechamento projeta <strong class="num">R$&nbsp;2.120</strong> de saldo. Se antecipar o aporte da Itália em <strong class="num">R$&nbsp;120</strong>, a meta passa de 68% ainda neste mês.</p>
+        <div class="draw rv" style="display:flex;align-items:center;gap:8px;margin-top:16px">
+          <svg class="hand-arrow" width="42" height="24" viewBox="0 0 42 24" aria-hidden="true" style="color:var(--coral)"><path d="M40 4 C28 20, 15 22, 3 15 M9 21 L3 15 L10 11"/></svg>
+          <span class="hand" style="transform:rotate(-2deg)">segura só até sexta!</span>
+        </div>
+        <p class="ass">Escrito às 14:05, com base em 34 transações e 6 orçamentos de julho.</p>
+      </article>
+      <aside class="recs">
+        <p class="eyebrow">Ações de hoje</p>
+        <div class="rec"><span class="rn num">01</span><div><h4>Congelar o lazer até sexta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></h4><p>Restam <b>R$&nbsp;10</b>. O coach avisa se algo entrar na categoria.</p></div></div>
+        <div class="rec"><span class="rn num">02</span><div><h4>Antecipar aporte da Itália<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></h4><p>Cabem <b>+R$&nbsp;120</b> sem apertar o fechamento.</p></div></div>
+        <div class="rec"><span class="rn num">03</span><div><h4>Revisar assinaturas<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></h4><p><b>R$&nbsp;96</b> em 4 serviços. Dois sem uso há 60 dias.</p></div></div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <!-- números -->
+    <section class="nums boot b3" aria-label="Números do mês">
+      <div><p class="eyebrow">Receitas</p><div class="v num" data-cnt="5000" data-prefix="R$&nbsp;">R$&nbsp;5.000</div><div class="d num ele">+8% vs junho</div></div>
+      <div><p class="eyebrow">Despesas</p><div class="v num" data-cnt="3160" data-prefix="R$&nbsp;">R$&nbsp;3.160</div><div class="d num">63% da receita</div></div>
+      <div><p class="eyebrow">Saldo</p><div class="v num" data-cnt="1840" data-prefix="R$&nbsp;">R$&nbsp;1.840</div><div class="d num ele">+12% vs junho</div></div>
+      <div><p class="eyebrow">Poupança</p><div class="v num" data-cnt="37" data-suffix="%">37%</div><div class="d num">Meta: 30%</div></div>
+    </section>
+
+    <!-- orçamentos | fluxo -->
+    <section class="zone" aria-label="Orçamentos e fluxo">
+      <div class="rv">
+        <div class="sec-eyebrow"><p class="eyebrow">Orçamentos · julho</p><a href="#">Gerenciar →</a></div>
+        <div class="orc-row hot"><span class="nm">Moradia</span><div class="track"><i style="--w:86%;--d:.05s"></i></div><span class="val">1.200 / 1.400 · 86%</span></div>
+        <div class="orc-row"><span class="nm">Alimentação</span><div class="track"><i style="--w:80%;--d:.15s"></i></div><span class="val">640 / 800 · 80%</span></div>
+        <div class="orc-row hot"><span class="nm">Lazer</span><div class="track"><i style="--w:98%;--d:.25s"></i></div><span class="val">410 / 420 · 98%</span></div>
+        <div class="orc-row"><span class="nm">Transporte</span><div class="track"><i style="--w:70%;--d:.35s"></i></div><span class="val">280 / 400 · 70%</span></div>
+        <div class="orc-row"><span class="nm">Mercado</span><div class="track"><i style="--w:81%;--d:.45s"></i></div><span class="val">486 / 600 · 81%</span></div>
+        <div class="orc-row"><span class="nm">Assinaturas</span><div class="track"><i style="--w:80%;--d:.55s"></i></div><span class="val">96 / 120 · 80%</span></div>
+        <div class="orc-total"><span>Total do mês</span><span class="num">R$&nbsp;3.112 de R$&nbsp;3.740 · 83%</span></div>
+      </div>
+      <div class="fluxo rv">
+        <div class="sec-eyebrow"><p class="eyebrow">Fluxo de caixa · dia a dia</p><a href="#">Ver análise →</a></div>
+        <svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#a1ff62" stop-opacity=".14"/><stop offset="100%" stop-color="#a1ff62" stop-opacity="0"/>
+          </linearGradient></defs>
+          <line x1="0" y1="100" x2="300" y2="100" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+          <path d="M0,96 L20,90 L40,92 L60,58 L80,62 L100,66 L120,60 L140,64 L160,50 L180,54 L200,44 L220,48 L240,40 L260,36 L280,30 L300,24 L300,120 L0,120 Z" fill="url(#fg)"/>
+          <path class="ln" d="M0,96 L20,90 L40,92 L60,58 L80,62 L100,66 L120,60 L140,64 L160,50 L180,54 L200,44 L220,48 L240,40 L260,36 L280,30 L300,24" fill="none" stroke="#a1ff62" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="300" cy="24" r="3" fill="#a1ff62"/>
+          <circle cx="60" cy="58" r="2.6" fill="#f4f4f4"/>
+        </svg>
+        <div class="cap"><span>Fechamento projetado</span><span class="v num">R$&nbsp;2.120</span></div>
+        <div class="cap" style="margin-top:4px"><span>Dia 5: salário + aluguel no mesmo dia, o vale do gráfico é normal.</span></div>
+      </div>
+    </section>
+
+    <!-- transações -->
+    <section class="txs rv" aria-label="Transações recentes">
+      <div class="sec-eyebrow"><p class="eyebrow">Últimas transações</p><a href="#">Ver todas · 34 →</a></div>
+      <div class="tx"><time class="num">27 jul</time><div><div class="who">Padaria Santa Marta</div><div class="cat">Alimentação · débito</div></div><span class="cat">08:12</span><span class="v out num">– R$&nbsp;18,40</span></div>
+      <div class="tx"><time class="num">26 jul</time><div><div class="who">Cinema Reserva Cultural</div><div class="cat">Lazer · crédito</div></div><span class="cat">21:40</span><span class="v hot num">– R$&nbsp;64,00</span></div>
+      <div class="tx"><time class="num">26 jul</time><div><div class="who">Mercado Pão de Açúcar</div><div class="cat">Mercado · crédito</div></div><span class="cat">19:05</span><span class="v out num">– R$&nbsp;214,90</span></div>
+      <div class="tx"><time class="num">25 jul</time><div><div class="who">Aporte · Viagem Itália</div><div class="cat">Futuro · automático</div></div><span class="cat">09:00</span><span class="v out num">– R$&nbsp;580,00</span></div>
+      <div class="tx"><time class="num">25 jul</time><div><div class="who">Uber</div><div class="cat">Transporte · crédito</div></div><span class="cat">18:22</span><span class="v out num">– R$&nbsp;24,50</span></div>
+      <div class="tx"><time class="num">24 jul</time><div><div class="who">Farmácia São João</div><div class="cat">Saúde · débito</div></div><span class="cat">12:47</span><span class="v out num">– R$&nbsp;89,20</span></div>
+      <div class="tx"><time class="num">23 jul</time><div><div class="who">Salário · Acme Ltda</div><div class="cat">Receita · transferência</div></div><span class="cat">06:00</span><span class="v in num">+ R$&nbsp;5.000,00</span></div>
+    </section>
+
+    <!-- metas financeiras -->
+    <section class="metas" aria-label="Metas financeiras">
+      <div class="rv">
+        <div class="sec-eyebrow"><p class="eyebrow">Metas com dinheiro</p><a href="#">Módulo Futuro →</a></div>
+        <div class="mrow" style="margin-bottom:14px">
+          <div class="r1"><span class="nm">Viagem Itália</span><span class="pct num">68%</span></div>
+          <div class="track"><i style="--w:68%"></i></div>
+          <div class="sub">R$&nbsp;8.600 de R$&nbsp;12.700 · dez 2026</div>
+        </div>
+        <div class="mrow">
+          <div class="r1"><span class="nm">Reserva de emergência</span><span class="pct num">80%</span></div>
+          <div class="track"><i style="--w:80%"></i></div>
+          <div class="sub">R$&nbsp;14.400 de R$&nbsp;18.000</div>
+        </div>
+      </div>
+      <div class="rv">
+        <div class="sec-eyebrow"><p class="eyebrow">Próximas recorrentes</p><a href="#">Gerenciar →</a></div>
+        <div class="orc-row" style="grid-template-columns:1fr auto"><span class="nm">Aluguel <span style="color:var(--t3);font-size:11px">· em 3 dias</span></span><span class="val" style="color:var(--t1)">R$&nbsp;1.200,00</span></div>
+        <div class="orc-row" style="grid-template-columns:1fr auto"><span class="nm">Internet <span style="color:var(--t3);font-size:11px">· em 5 dias</span></span><span class="val" style="color:var(--t1)">R$&nbsp;89,90</span></div>
+        <div class="orc-row" style="grid-template-columns:1fr auto"><span class="nm">Academia <span style="color:var(--t3);font-size:11px">· em 8 dias</span></span><span class="val" style="color:var(--t1)">R$&nbsp;129,00</span></div>
+        <div class="orc-row" style="grid-template-columns:1fr auto"><span class="nm">Streaming <span style="color:var(--t3);font-size:11px">· em 11 dias</span></span><span class="val" style="color:var(--t1)">R$&nbsp;55,90</span></div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="colofao">
+    <span>Julho até aqui: <b class="num">34</b> transações em <b class="num">6</b> orçamentos</span>
+    <span>Última sincronização <b class="num">14:05</b></span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return; // sem .anim: tudo visível e com valores finais
+  document.documentElement.classList.add('anim');
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: .12, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.rv, .draw').forEach(function (el) { io.observe(el); });
+
+  function ease(t) { return 1 - Math.pow(1 - t, 4); }
+  var cio = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      cio.unobserve(en.target);
+      var el = en.target, target = parseInt(el.getAttribute('data-cnt'), 10);
+      var pre = el.getAttribute('data-prefix') || '', suf = el.getAttribute('data-suffix') || '';
+      var t0 = performance.now(), dur = 1100;
+      (function tick(now) {
+        var p = Math.min(1, (now - t0) / dur);
+        el.textContent = pre + Math.round(target * ease(p)).toLocaleString('pt-BR') + suf;
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    });
+  }, { threshold: .5 });
+  document.querySelectorAll('[data-cnt]').forEach(function (el) { cio.observe(el); });
+})();
+</script>
+</body>
+</html>
