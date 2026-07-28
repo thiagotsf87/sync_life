@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · A marca · O lockup do nav</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<style>
+  body{font-size:14px}
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+  .bar{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+    padding:0 clamp(20px,4vw,56px);position:sticky;top:0;background:rgba(21,19,19,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:60}
+  .brand{font:700 17px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:9px}
+  .brand em{font-style:normal;color:var(--roxo)}
+  .bar .date{font:700 10.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+  .mast{padding:56px 0 44px}
+  .mast h1{font:500 clamp(34px,4.6vw,58px)/1.02 var(--gro);letter-spacing:-.045em;margin-top:14px;max-width:820px}
+  .mast h1 em{font-style:normal;color:var(--roxo)}
+  .mast .sub{font:400 14.5px/1.7 var(--int);color:var(--t2);margin-top:16px;max-width:66ch}
+  .mast .sub strong{color:var(--t1);font-weight:600}
+  .sec{padding:56px 0;border-top:1px solid var(--line)}
+  .sec h2{font:500 clamp(22px,2.8vw,34px)/1.1 var(--gro);letter-spacing:-.035em;margin-top:12px;max-width:680px}
+  .sec .lead{font:400 14px/1.7 var(--int);color:var(--t2);margin-top:12px;max-width:62ch}
+
+  /* grid das direções */
+  .dirs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:34px}
+  .dir{border:1px solid var(--line);border-radius:16px;padding:26px;background:#1b1918;display:flex;flex-direction:column;gap:18px}
+  .dir.reco{border-color:rgba(104,64,255,.5)}
+  .dir .tag{display:flex;justify-content:space-between;align-items:baseline}
+  .dir .tag span{font:700 10px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+  .dir .tag i{font-style:normal;font:700 10px var(--gro);color:var(--roxo)}
+  .dir p{font:400 12.5px/1.65 var(--int);color:var(--t3)}
+  .dir p b{color:var(--t1);font-weight:600}
+  /* nav real, em escala 1:1 da landing */
+  .navmock{display:flex;align-items:center;gap:14px;background:#0d0c0c;border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:13px 12px 13px 20px}
+  .navmock .wm{font:700 18px var(--gro);letter-spacing:-.02em}
+  .navmock .wm em{font-style:normal;color:var(--roxo)}
+  .navmock .lk{font:500 13px var(--int);color:#817f7f}
+  .navmock .cta{font:600 13px var(--int);color:#fff;background:var(--roxo);border-radius:999px;padding:9px 16px;margin-left:auto}
+  /* escadas de tamanho */
+  .sizes{display:flex;align-items:flex-end;gap:22px}
+  .sizes .sz{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .sizes .lb{font:700 9px var(--gro);letter-spacing:.16em;color:var(--t3)}
+  /* contexto claro */
+  .lightband{background:var(--paper, #f4f4f4);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;width:fit-content}
+  .lightband .wm{font:700 15px var(--gro);letter-spacing:-.02em;color:#151313}
+  .lightband .wm em{font-style:normal;color:var(--roxo)}
+
+  .colofao{border-top:1px solid var(--line);margin-top:44px;padding:26px clamp(20px,4vw,56px);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    font:400 12.5px var(--int);color:var(--t3)}
+  .colofao b{color:var(--t2);font-weight:600;font-family:var(--gro)}
+  @media (max-width:900px){ .dirs{grid-template-columns:1fr} .bar .date{display:none} }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="brand" href="../index.html">
+    <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="3" x2="32" y2="12" stroke="#a1ff62" stroke-width="8" stroke-linecap="round"/><polygon points="32,7 41.5,36 22.5,36" fill="#6840ff"/><polygon points="32,60 22.5,36 41.5,36" fill="#f4f4f4" opacity=".4"/></svg>
+    Sync<em>Life</em></a>
+  <span class="date">A marca · rodada 4 · o lockup do nav</span>
+  <span class="eyebrow">Decisão em aberto</span>
+</header>
+
+<main class="wrap">
+  <section class="mast boot b1">
+    <p class="eyebrow"><b>O problema</b> · a bússola sumia ao lado do wordmark</p>
+    <h1>O símbolo no lockup: <em>presença em 22 pixels</em>.</h1>
+    <p class="sub">A versão que estava na nav (ticks finos, opacidade .5, agulha estreita) virava um borrão na escala real. Aqui estão <strong>4 direções mais fortes</strong>, cada uma montada na nav em escala 1:1 da landing, com a escada de tamanhos e o contexto claro. A ordem de degradação do DS (§5.3) continua valendo: o que muda é o quanto de peça cabe com força nesse tamanho.</p>
+  </section>
+
+  <section class="sec boot b2">
+    <p class="eyebrow"><b>01</b> · As direções</p>
+    <h2>Quatro jeitos de assinar a nav.</h2>
+    <div class="dirs">
+
+      <div class="dir reco">
+        <div class="tag"><span>Direção A · Núcleo forte</span><i>recomendada · aplicada na landing v2</i></div>
+        <div class="navmock">
+          <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="3" x2="32" y2="12" stroke="#a1ff62" stroke-width="8" stroke-linecap="round"/><polygon points="32,7 41.5,36 22.5,36" fill="#6840ff"/><polygon points="32,60 22.5,36 41.5,36" fill="#f4f4f4" opacity=".4"/></svg>
+          <span class="wm">Sync<em>Life</em></span>
+          <span class="lk">Produto</span><span class="lk">Preços</span><span class="lk">FAQ</span>
+          <span class="cta">Começar grátis</span>
+        </div>
+        <div class="sizes">
+          <div class="sz"><svg width="16" height="16" viewBox="0 0 64 64"><line x1="32" y1="3" x2="32" y2="12" stroke="#a1ff62" stroke-width="8" stroke-linecap="round"/><polygon points="32,7 41.5,36 22.5,36" fill="#6840ff"/><polygon points="32,60 22.5,36 41.5,36" fill="#f4f4f4" opacity=".4"/></svg><span class="lb">16</span></div>
+          <div class="sz"><svg width="22" height="22" viewBox="0 0 64 64"><line x1="32" y1="3" x2="32" y2="12" stroke="#a1ff62" stroke-width="8" stroke-linecap="round"/><polygon points="32,7 41.5,36 22.5,36" fill="#6840ff"/><polygon points="32,60 22.5,36 41.5,36" fill="#f4f4f4" opacity=".4"/></svg><span class="lb">22</span></div>
+          <div class="sz"><svg width="32" height="32" viewBox="0 0 64 64"><line x1="32" y1="3" x2="32" y2="12" stroke="#a1ff62" stroke-width="8" stroke-linecap="round"/><polygon points="32,7 41.5,36 22.5,36" fill="#6840ff"/><polygon points="32,60 22.5,36 41.5,36" fill="#f4f4f4" opacity=".4"/></svg><span class="lb">32</span></div>
+          <div class="lightband"><svg width="20" height="20" viewBox="0 0 64 64"><line x1="32" y1="3" x2="32" y2="12" stroke="#151313" stroke-width="8" stroke-linecap="round"/><polygon points="32,7 41.5,36 22.5,36" fill="#6840ff"/><polygon points="32,60 22.5,36 41.5,36" fill="#151313" opacity=".35"/></svg><span class="wm">Sync<em>Life</em></span></div>
+        </div>
+        <p><b>Agulha larga + marcação norte grossa, nada mais.</b> Na escala da nav a marca degrada pro núcleo (§5.3) e cada peça que fica, fica com força. No claro, o tick vira ink.</p>
+      </div>
+
+      <div class="dir">
+        <div class="tag"><span>Direção B · Selo</span><i>eco do favicon</i></div>
+        <div class="navmock">
+          <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#211e1e" stroke="rgba(255,255,255,.18)"/><line x1="32" y1="7" x2="32" y2="15" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,11 40.5,37 23.5,37" fill="#6840ff"/><polygon points="32,58 23.5,37 40.5,37" fill="#f4f4f4" opacity=".38"/></svg>
+          <span class="wm">Sync<em>Life</em></span>
+          <span class="lk">Produto</span><span class="lk">Preços</span><span class="lk">FAQ</span>
+          <span class="cta">Começar grátis</span>
+        </div>
+        <div class="sizes">
+          <div class="sz"><svg width="16" height="16" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#211e1e" stroke="rgba(255,255,255,.18)"/><line x1="32" y1="7" x2="32" y2="15" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,11 40.5,37 23.5,37" fill="#6840ff"/><polygon points="32,58 23.5,37 40.5,37" fill="#f4f4f4" opacity=".38"/></svg><span class="lb">16</span></div>
+          <div class="sz"><svg width="26" height="26" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#211e1e" stroke="rgba(255,255,255,.18)"/><line x1="32" y1="7" x2="32" y2="15" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,11 40.5,37 23.5,37" fill="#6840ff"/><polygon points="32,58 23.5,37 40.5,37" fill="#f4f4f4" opacity=".38"/></svg><span class="lb">26</span></div>
+          <div class="sz"><svg width="34" height="34" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#211e1e" stroke="rgba(255,255,255,.18)"/><line x1="32" y1="7" x2="32" y2="15" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,11 40.5,37 23.5,37" fill="#6840ff"/><polygon points="32,58 23.5,37 40.5,37" fill="#f4f4f4" opacity=".38"/></svg><span class="lb">34</span></div>
+          <div class="lightband"><svg width="22" height="22" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#151313"/><line x1="32" y1="7" x2="32" y2="15" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,11 40.5,37 23.5,37" fill="#6840ff"/><polygon points="32,58 23.5,37 40.5,37" fill="#f4f4f4" opacity=".38"/></svg><span class="wm">Sync<em>Life</em></span></div>
+        </div>
+        <p><b>O núcleo dentro do tile do favicon (§5.5).</b> A marca vira um objeto sólido na pill, idêntico ao que aparece na aba do navegador e no ícone de app. Máxima consistência entre contextos.</p>
+      </div>
+
+      <div class="dir">
+        <div class="tag"><span>Direção C · Rosa completa reforçada</span><i>as 4 marcações</i></div>
+        <div class="navmock">
+          <svg width="25" height="25" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="4" x2="32" y2="12" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><line x1="60" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><line x1="32" y1="60" x2="32" y2="52" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><line x1="4" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><polygon points="32,8 40,32 24,32" fill="#6840ff"/><polygon points="32,56 24,32 40,32" fill="#f4f4f4" opacity=".35"/><circle cx="32" cy="32" r="2.6" fill="#0d0c0c"/></svg>
+          <span class="wm">Sync<em>Life</em></span>
+          <span class="lk">Produto</span><span class="lk">Preços</span><span class="lk">FAQ</span>
+          <span class="cta">Começar grátis</span>
+        </div>
+        <div class="sizes">
+          <div class="sz"><svg width="16" height="16" viewBox="0 0 64 64"><line x1="32" y1="4" x2="32" y2="12" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><line x1="60" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><line x1="32" y1="60" x2="32" y2="52" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><line x1="4" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><polygon points="32,8 40,32 24,32" fill="#6840ff"/><polygon points="32,56 24,32 40,32" fill="#f4f4f4" opacity=".35"/><circle cx="32" cy="32" r="2.6" fill="#0d0c0c"/></svg><span class="lb">16</span></div>
+          <div class="sz"><svg width="25" height="25" viewBox="0 0 64 64"><line x1="32" y1="4" x2="32" y2="12" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><line x1="60" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><line x1="32" y1="60" x2="32" y2="52" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><line x1="4" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><polygon points="32,8 40,32 24,32" fill="#6840ff"/><polygon points="32,56 24,32 40,32" fill="#f4f4f4" opacity=".35"/><circle cx="32" cy="32" r="2.6" fill="#0d0c0c"/></svg><span class="lb">25</span></div>
+          <div class="sz"><svg width="34" height="34" viewBox="0 0 64 64"><line x1="32" y1="4" x2="32" y2="12" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><line x1="60" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><line x1="32" y1="60" x2="32" y2="52" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><line x1="4" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="7" stroke-linecap="round" opacity=".7"/><polygon points="32,8 40,32 24,32" fill="#6840ff"/><polygon points="32,56 24,32 40,32" fill="#f4f4f4" opacity=".35"/><circle cx="32" cy="32" r="2.6" fill="#0d0c0c"/></svg><span class="lb">34</span></div>
+          <div class="lightband"><svg width="21" height="21" viewBox="0 0 64 64"><line x1="32" y1="4" x2="32" y2="12" stroke="#151313" stroke-width="7" stroke-linecap="round"/><line x1="60" y1="32" x2="52" y2="32" stroke="#151313" stroke-width="7" stroke-linecap="round" opacity=".6"/><line x1="32" y1="60" x2="32" y2="52" stroke="#151313" stroke-width="7" stroke-linecap="round" opacity=".6"/><line x1="4" y1="32" x2="12" y2="32" stroke="#151313" stroke-width="7" stroke-linecap="round" opacity=".6"/><polygon points="32,8 40,32 24,32" fill="#6840ff"/><polygon points="32,56 24,32 40,32" fill="#151313" opacity=".3"/><circle cx="32" cy="32" r="2.6" fill="#f4f4f4"/></svg><span class="wm">Sync<em>Life</em></span></div>
+        </div>
+        <p><b>A versão 32 com traços à altura do wordmark.</b> Marcações levadas de 4.5 pra 7 de espessura, opacidade .7, agulha alargada e leitura de "instrumento completo" mesmo pequena.</p>
+      </div>
+
+      <div class="dir">
+        <div class="tag"><span>Direção D · Agulha viva</span><i>o gesto puro</i></div>
+        <div class="navmock">
+          <svg width="24" height="24" viewBox="0 0 64 64" aria-hidden="true"><polygon points="32,2 43,38 21,38" fill="#6840ff"/><polygon points="32,62 21,38 43,38" fill="#f4f4f4" opacity=".42"/><circle cx="32" cy="38" r="4" fill="#0d0c0c"/></svg>
+          <span class="wm">Sync<em>Life</em></span>
+          <span class="lk">Produto</span><span class="lk">Preços</span><span class="lk">FAQ</span>
+          <span class="cta">Começar grátis</span>
+        </div>
+        <div class="sizes">
+          <div class="sz"><svg width="16" height="16" viewBox="0 0 64 64"><polygon points="32,2 43,38 21,38" fill="#6840ff"/><polygon points="32,62 21,38 43,38" fill="#f4f4f4" opacity=".42"/><circle cx="32" cy="38" r="4" fill="#0d0c0c"/></svg><span class="lb">16</span></div>
+          <div class="sz"><svg width="24" height="24" viewBox="0 0 64 64"><polygon points="32,2 43,38 21,38" fill="#6840ff"/><polygon points="32,62 21,38 43,38" fill="#f4f4f4" opacity=".42"/><circle cx="32" cy="38" r="4" fill="#0d0c0c"/></svg><span class="lb">24</span></div>
+          <div class="sz"><svg width="32" height="32" viewBox="0 0 64 64"><polygon points="32,2 43,38 21,38" fill="#6840ff"/><polygon points="32,62 21,38 43,38" fill="#f4f4f4" opacity=".42"/><circle cx="32" cy="38" r="4" fill="#0d0c0c"/></svg><span class="lb">32</span></div>
+          <div class="lightband"><svg width="20" height="20" viewBox="0 0 64 64"><polygon points="32,2 43,38 21,38" fill="#6840ff"/><polygon points="32,62 21,38 43,38" fill="#151313" opacity=".35"/><circle cx="32" cy="38" r="4" fill="#f4f4f4"/></svg><span class="wm">Sync<em>Life</em></span></div>
+        </div>
+        <p><b>Só a agulha, o maior possível, com o pivô furado.</b> Sem tick: o gesto de apontar vira a marca inteira ("a agulha sozinha ainda é a marca", §5.3). A mais ousada e a mais limpa.</p>
+      </div>
+
+    </div>
+    <p class="hand rv" style="margin-top:22px;transform:rotate(-1.6deg)">escolha uma direção: ela vai pra nav, footer e favicon de tudo</p>
+  </section>
+</main>
+
+<footer class="colofao">
+  <span>Após a decisão: aplicar em nav + footer + favicon dos protótipos e registrar no <b>DESIGN-SYSTEM-v5.md §5.5</b></span>
+  <span>A landing v2 usa a direção A provisoriamente</span>
+</footer>
+
+<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce) {
+    document.documentElement.classList.add('anim');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: .12, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.rv').forEach(function (el) { io.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>

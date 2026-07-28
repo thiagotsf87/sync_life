@@ -64,7 +64,6 @@
   .atmo{position:absolute;inset:-6% -12% -2%;z-index:-1;pointer-events:none;
     background:radial-gradient(680px 480px at 80% 4%,rgba(104,64,255,.1),transparent 64%),
       radial-gradient(520px 420px at 4% 62%,rgba(161,255,98,.07),transparent 62%)}
-  .hero .guide{position:absolute;left:50%;top:-40px;bottom:0;width:1px;background:var(--line);z-index:-1}
 
   /* ─── faixa arrastável das 8 áreas ─── */
   .strip-head{display:flex;justify-content:space-between;align-items:baseline;margin:84px 0 18px}
@@ -75,17 +74,24 @@
      v2: cards 340px, passo 7.5° (corda 2600·sin7.5° ≈ 339px mantém o encosto do r6) */
   .strip{position:relative;height:600px;margin-top:6px;cursor:grab;touch-action:pan-y;overflow:hidden}
   .strip.dragging{cursor:grabbing}
+  /* física em 2 camadas (à la Osmo): .scard = rotação do arco, SEM transition (o rAF conduz com lerp
+     pesado, drag responde 1:1); .scin = o objeto (lift, tilt ao cursor, sombra) com a easing assinatura */
   .strip .scard{position:absolute;left:50%;top:48px;width:340px;margin-left:-170px;
-    transform-origin:50% 2600px;
+    transform-origin:50% 2600px;perspective:900px;
     transform:rotate(calc(var(--a,0deg) + var(--off,0deg)))}
-  .strip .scard.north{transform:rotate(calc(var(--a,0deg) + var(--off,0deg))) translateY(-6px);z-index:2;
-    border-color:rgba(104,64,255,.5)}
-  .strip .scard:hover{transform:rotate(calc(var(--a,0deg) + var(--off,0deg))) translateY(-12px);z-index:3}
-  .scard{--t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;--line:rgba(255,255,255,.09);color:var(--t1);
+  .strip .scard:hover{z-index:3}
+  .strip .scard.north{z-index:2}
+  .scin{--t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;--line:rgba(255,255,255,.09);color:var(--t1);
     background:#1b1918;border:1px solid rgba(255,255,255,.09);border-radius:16px;overflow:hidden;
     box-shadow:0 30px 60px -24px rgba(21,19,19,.45);
-    transition:transform .5s var(--ease),box-shadow .35s var(--ease),border-color .5s var(--ease)}
-  .scard:hover{box-shadow:0 40px 70px -24px rgba(21,19,19,.55)}
+    transform:translateY(var(--lift,0px)) scale(var(--sc,1)) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+    transition:transform .45s var(--ease),box-shadow .4s var(--ease),border-color .45s var(--ease);
+    will-change:transform}
+  .scard:hover .scin{--lift:-14px;--sc:1.015;border-color:rgba(255,255,255,.16);
+    box-shadow:0 46px 84px -28px rgba(21,19,19,.6)}
+  .scard.peek .scin{--lift:-10px;border-color:rgba(104,64,255,.4)}
+  .scard.north .scin{--lift:-6px;border-color:rgba(104,64,255,.55);
+    box-shadow:0 40px 74px -26px rgba(104,64,255,.18)}
   .scard .tb{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:#161414}
   .scard .tb i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12)}
   .scard .tb .nm{font:600 11.5px var(--int);color:var(--t2);margin-left:4px}
@@ -141,11 +147,12 @@
   .anim .upulse{animation:upulse 3.4s var(--ease) infinite}
   @keyframes upulse{0%,100%{transform:none}50%{transform:scale(1.05)}}
 
-  /* ─── a bússola da vida, abaixo do semicírculo: interagir aqui gira o arco ─── */
-  .hero-bussola{display:grid;grid-template-columns:150px 1fr;gap:clamp(24px,3.4vw,52px);align-items:center;
-    margin-top:30px;padding:28px 0 10px;border-top:1px solid var(--line);
+  /* ─── a bússola da vida, abaixo do semicírculo: o instrumento que conduz o arco ─── */
+  .hero-bussola{display:grid;grid-template-columns:210px 1fr;gap:clamp(28px,4vw,60px);align-items:center;
+    margin-top:24px;padding:14px 0 6px;
     --sym-fg:#151313;--sym-ac:#6840ff;--sym-live:#151313;--sym-pivot:#f4f4f4}
   .hero-bussola .hit{fill:transparent;cursor:pointer}
+  .hero-bussola .anum{cursor:pointer}
   .hero-bussola .focoline{margin-top:12px;min-height:0}
   .hero-bussola .chips{margin-top:16px}
 
@@ -156,20 +163,6 @@
   .press-logos{display:flex;gap:34px;flex-wrap:wrap}
   .press-logos span{font:700 15px var(--gro);color:var(--t3);transition:color .4s var(--ease)}
   .press-logos span:hover{color:var(--t2)}
-
-  /* ─── decisão de marca: 3 direções de lockup (seção sai após a aprovação) ─── */
-  .lockups{padding:64px 0;border-bottom:1px solid var(--line)}
-  .lock-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
-  .lock-opt{border:1px solid var(--line);border-radius:16px;padding:22px;background:var(--s1);
-    display:flex;flex-direction:column;gap:16px;align-items:flex-start}
-  .lock-cap{font:400 12.5px/1.6 var(--int);color:var(--t3)}
-  .lock-cap b{color:var(--t1);font-weight:600}
-  .navmock{display:flex;align-items:center;gap:14px;background:#0d0c0c;border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:10px 12px 10px 16px;
-    color:#f4f4f4}
-  .navmock .wm{font:700 14.5px var(--gro);letter-spacing:-.02em}
-  .navmock .wm em{font-style:normal;color:var(--roxo)}
-  .navmock .lk{font:500 11px var(--int);color:#817f7f}
-  .navmock .cta{font:600 10.5px var(--int);color:#fff;background:var(--roxo);border-radius:999px;padding:6px 11px}
 
   /* ─── SEÇÃO escura: o produto em espécimes ─── */
   .paper{background:#171515;color:var(--ink);padding:110px 0}
@@ -298,7 +291,6 @@
     .foot-grid{grid-template-columns:1fr 1fr}
     .hero-right{align-items:flex-start}
     .hero-bussola{grid-template-columns:1fr;justify-items:start}
-    .lock-row{grid-template-columns:1fr}
   }
   @media (max-width:720px){
     .prow{grid-template-columns:1.2fr 1fr 1fr}
@@ -313,7 +305,7 @@
 <div class="navwrap">
   <nav>
     <a class="brand" href="#">
-      <svg width="20" height="20" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+      <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="3" x2="32" y2="12" stroke="#a1ff62" stroke-width="8" stroke-linecap="round"/><polygon points="32,7 41.5,36 22.5,36" fill="#6840ff"/><polygon points="32,60 22.5,36 41.5,36" fill="#f4f4f4" opacity=".4"/></svg>
       Sync<em>Life</em></a>
     <div class="nav-links">
       <a href="#produto">Produto</a>
@@ -334,7 +326,6 @@
 <!-- HERO: manchete de dobra inteira, sem mockup -->
 <header class="hero">
   <div class="atmo" aria-hidden="true"></div>
-  <div class="guide" aria-hidden="true"></div>
   <div class="wrap">
     <span class="pill-novo boot b1"><span class="dot"></span>Novo · Coach IA em todos os planos</span>
     <h1>
@@ -372,7 +363,7 @@
     </div>
   </div>
   <div class="strip boot b5" id="strip" tabindex="0" aria-label="As oito áreas do SyncLife em uso, faixa com rolagem horizontal; a bússola abaixo traz cada área pro centro">
-    <div class="scard" style="--a:-26.25deg" data-area="0">
+    <div class="scard" style="--a:-26.25deg" data-area="0"><div class="scin">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Finanças</span><span class="ix num">01</span></div>
       <div class="ui">
         <span class="ubtn">+ Nova</span>
@@ -382,16 +373,16 @@
         <div class="ubar hot" style="--w:98%;--d:.5s"><span class="k">Lazer</span><span class="t"><span class="f"></span></span><span class="v num">98%</span></div>
         <div class="ubar" style="--w:70%;--d:.8s"><span class="k">Transporte</span><span class="t"><span class="f"></span></span><span class="v num">70%</span></div>
       </div>
-    </div>
-    <div class="scard" style="--a:-18.75deg" data-area="1">
+    </div></div>
+    <div class="scard" style="--a:-18.75deg" data-area="1"><div class="scin">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Futuro</span><span class="ix num">02</span></div>
       <div class="ui">
         <div><div class="lbl">Viagem Itália</div><div class="big num">68%</div></div>
         <div class="ubar" style="--w:68%;--d:.3s;grid-template-columns:1fr 60px"><span class="t"><span class="f" style="background:var(--roxo)"></span></span><span class="v num">R$&nbsp;8.600</span></div>
         <div class="sub">Aporte de R$&nbsp;580 agendado pra sexta. No ritmo, você chega uma semana antes do prazo.</div>
       </div>
-    </div>
-    <div class="scard" style="--a:-11.25deg" data-area="2">
+    </div></div>
+    <div class="scard" style="--a:-11.25deg" data-area="2"><div class="scin">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Tempo</span><span class="ix num">03</span></div>
       <div class="ui">
         <div><div class="lbl">Hoje</div><div class="big num">42 min <span class="sub">de foco</span></div></div>
@@ -399,8 +390,8 @@
         <div class="urow"><time class="num">09:00</time><span class="ublock">Bloco de foco · projeto</span></div>
         <div class="urow"><span class="ucheck"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5 L4.6 9 L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ustrike">Revisão semanal</span></div>
       </div>
-    </div>
-    <div class="scard" style="--a:-3.75deg" data-area="3">
+    </div></div>
+    <div class="scard" style="--a:-3.75deg" data-area="3"><div class="scin">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Corpo</span><span class="ix num">04</span></div>
       <div class="ui">
         <div class="lbl">Treinos da semana</div>
@@ -413,8 +404,8 @@
         </div>
         <div class="sub">Cardápio de amanhã gerado pelo coach.</div>
       </div>
-    </div>
-    <div class="scard" style="--a:3.75deg" data-area="4">
+    </div></div>
+    <div class="scard" style="--a:3.75deg" data-area="4"><div class="scin">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Mente</span><span class="ix num">05</span></div>
       <div class="ui">
         <div><div class="lbl">Esta semana</div><div class="big num">2 <span class="sub">sessões de leitura</span></div></div>
@@ -422,8 +413,8 @@
         <div class="ubar" style="--w:65%;--d:.55s"><span class="k">Curso de UX</span><span class="t"><span class="f"></span></span><span class="v num">65%</span></div>
         <div class="sub">Trilha sugerida: 20 min por dia.</div>
       </div>
-    </div>
-    <div class="scard" style="--a:11.25deg" data-area="5">
+    </div></div>
+    <div class="scard" style="--a:11.25deg" data-area="5"><div class="scin">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Patrimônio</span><span class="ix num">06</span></div>
       <div class="ui">
         <div><div class="lbl">Carteira</div><div class="big num">R$&nbsp;48,2k <span class="sub" style="color:var(--ele)">+7%</span></div></div>
@@ -432,8 +423,8 @@
         </svg>
         <div class="sub">Proventos de julho reinvestidos.</div>
       </div>
-    </div>
-    <div class="scard" style="--a:18.75deg" data-area="6">
+    </div></div>
+    <div class="scard" style="--a:18.75deg" data-area="6"><div class="scin">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Carreira</span><span class="ix num">07</span></div>
       <div class="ui">
         <div><div class="lbl">Próximo nível</div><div class="big num">3/5 <span class="sub">skills no alvo</span></div></div>
@@ -441,8 +432,8 @@
         <div class="ubar" style="--w:40%;--d:.6s"><span class="k">Liderança</span><span class="t"><span class="f"></span></span><span class="v num">40%</span></div>
         <div class="urow"><time class="num">ter</time>1:1 com a gestora às 14:00</div>
       </div>
-    </div>
-    <div class="scard" style="--a:26.25deg" data-area="7">
+    </div></div>
+    <div class="scard" style="--a:26.25deg" data-area="7"><div class="scin">
       <div class="tb"><i></i><i></i><i></i><span class="nm">Experiências</span><span class="ix num">08</span></div>
       <div class="ui">
         <div class="lbl">Próxima viagem</div>
@@ -450,40 +441,50 @@
         <div class="urow"><span class="sub">Roma · Florença · Positano</span></div>
         <div class="ubar" style="--w:68%;--d:.4s;grid-template-columns:1fr 70px"><span class="t"><span class="f" style="background:var(--roxo)"></span></span><span class="v num">planejado</span></div>
       </div>
-    </div>
+    </div></div>
   </div>
 
-  <!-- a bússola da vida: a marca é um instrumento; tocar numa área traz a tela dela pro norte -->
+  <!-- a bússola da vida: o instrumento da marca; tocar numa área traz a tela dela pro norte -->
   <div class="wrap">
     <div class="hero-bussola sym-swing rv" id="hb">
-      <svg class="sym" width="150" height="150" viewBox="0 0 64 64" role="group" aria-label="A Bússola da Vida, interativa: escolha uma área e a miniatura dela vem pro centro">
-        <circle class="ringc" cx="32" cy="32" r="25.5" fill="none" stroke-width=".6" opacity=".35"/>
+      <svg class="sym p80" width="210" height="210" viewBox="0 0 80 80" role="group" aria-label="A Bússola da Vida, interativa: escolha uma área e a miniatura dela vem pro centro">
+        <circle class="ringc" cx="40" cy="40" r="26" fill="none" stroke-width=".6" opacity=".35"/>
         <g class="ticks" id="hbticks">
-          <line class="tick" x1="32" y1="8.5" x2="32" y2="12.5" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="48.6" y1="15.4" x2="45.8" y2="18.2" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="55.5" y1="32" x2="51.5" y2="32" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="48.6" y1="48.6" x2="45.8" y2="45.8" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick on" x1="32" y1="55.5" x2="32" y2="51.5" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="15.4" y1="48.6" x2="18.2" y2="45.8" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="8.5" y1="32" x2="12.5" y2="32" stroke-width="2" stroke-linecap="round"/>
-          <line class="tick" x1="15.4" y1="15.4" x2="18.2" y2="18.2" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="40" y1="15.5" x2="40" y2="20" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="57.3" y1="22.7" x2="54.1" y2="25.9" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="64.5" y1="40" x2="60" y2="40" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="57.3" y1="57.3" x2="54.1" y2="54.1" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick on" x1="40" y1="64.5" x2="40" y2="60" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="22.7" y1="57.3" x2="25.9" y2="54.1" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="15.5" y1="40" x2="20" y2="40" stroke-width="2" stroke-linecap="round"/>
+          <line class="tick" x1="22.7" y1="22.7" x2="25.9" y2="25.9" stroke-width="2" stroke-linecap="round"/>
+        </g>
+        <g class="anums" id="hbnums">
+          <text class="anum num" x="40" y="8" text-anchor="middle" dy=".35em">01</text>
+          <text class="anum num" x="62.6" y="17.4" text-anchor="middle" dy=".35em">02</text>
+          <text class="anum num" x="72" y="40" text-anchor="middle" dy=".35em">03</text>
+          <text class="anum num" x="62.6" y="62.6" text-anchor="middle" dy=".35em">04</text>
+          <text class="anum on num" x="40" y="72" text-anchor="middle" dy=".35em">05</text>
+          <text class="anum num" x="17.4" y="62.6" text-anchor="middle" dy=".35em">06</text>
+          <text class="anum num" x="8" y="40" text-anchor="middle" dy=".35em">07</text>
+          <text class="anum num" x="17.4" y="17.4" text-anchor="middle" dy=".35em">08</text>
         </g>
         <g class="point" id="hbpoint">
           <g class="needle">
-            <polygon class="acf" points="32,10 36.5,32 27.5,32"/>
-            <polygon class="fgf" points="32,53 27.5,32 36.5,32" opacity=".28"/>
-            <circle class="pivot" cx="32" cy="32" r="2.6"/>
+            <polygon class="acf" points="40,14 45,40 35,40"/>
+            <polygon class="fgf" points="40,62 35,40 45,40" opacity=".28"/>
+            <circle class="pivot" cx="40" cy="40" r="2.8"/>
           </g>
         </g>
         <g id="hbhits">
-          <circle class="hit" data-area="0" cx="32" cy="8.5" r="7"><title>01 · Finanças</title></circle>
-          <circle class="hit" data-area="1" cx="48.6" cy="15.4" r="7"><title>02 · Futuro</title></circle>
-          <circle class="hit" data-area="2" cx="55.5" cy="32" r="7"><title>03 · Tempo</title></circle>
-          <circle class="hit" data-area="3" cx="48.6" cy="48.6" r="7"><title>04 · Corpo</title></circle>
-          <circle class="hit" data-area="4" cx="32" cy="55.5" r="7"><title>05 · Mente</title></circle>
-          <circle class="hit" data-area="5" cx="15.4" cy="48.6" r="7"><title>06 · Patrimônio</title></circle>
-          <circle class="hit" data-area="6" cx="8.5" cy="32" r="7"><title>07 · Carreira</title></circle>
-          <circle class="hit" data-area="7" cx="15.4" cy="15.4" r="7"><title>08 · Experiências</title></circle>
+          <circle class="hit" data-area="0" cx="40" cy="11" r="9.5"><title>01 · Finanças</title></circle>
+          <circle class="hit" data-area="1" cx="60.5" cy="19.5" r="9.5"><title>02 · Futuro</title></circle>
+          <circle class="hit" data-area="2" cx="69" cy="40" r="9.5"><title>03 · Tempo</title></circle>
+          <circle class="hit" data-area="3" cx="60.5" cy="60.5" r="9.5"><title>04 · Corpo</title></circle>
+          <circle class="hit" data-area="4" cx="40" cy="69" r="9.5"><title>05 · Mente</title></circle>
+          <circle class="hit" data-area="5" cx="19.5" cy="60.5" r="9.5"><title>06 · Patrimônio</title></circle>
+          <circle class="hit" data-area="6" cx="11" cy="40" r="9.5"><title>07 · Carreira</title></circle>
+          <circle class="hit" data-area="7" cx="19.5" cy="19.5" r="9.5"><title>08 · Experiências</title></circle>
         </g>
       </svg>
       <div class="hb-info">
@@ -511,43 +512,6 @@
     <div class="press-logos">
       <span>Folha de SP</span><span>Exame</span><span>Pequenas Empresas</span><span>Forbes BR</span><span>O Globo</span>
     </div>
-  </div>
-</section>
-
-<!-- DECISÃO DE MARCA: a miniatura do lockup (remover a seção após a aprovação) -->
-<section class="lockups rv" id="lockup">
-  <div class="wrap">
-    <p class="eyebrow"><b>Decisão de marca</b> · qual bússola acompanha o wordmark? A nav lá em cima já usa a direção 1</p>
-    <div class="lock-row">
-      <div class="lock-opt">
-        <div class="navmock">
-          <svg width="20" height="20" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
-          <span class="wm">Sync<em>Life</em></span>
-          <span class="lk">Produto</span><span class="lk">Preços</span>
-          <span class="cta">Começar grátis</span>
-        </div>
-        <p class="lock-cap"><b>Direção 1 · Núcleo ampliado (recomendada).</b> Na escala da nav a marca degrada pro núcleo (§5.3): agulha grande + marcação norte acesa. Máxima legibilidade a 20px.</p>
-      </div>
-      <div class="lock-opt">
-        <div class="navmock">
-          <svg width="24" height="24" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="6" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="6" stroke-linecap="round" opacity=".7"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="6" stroke-linecap="round" opacity=".7"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="6" stroke-linecap="round" opacity=".7"/><polygon points="32,8 39,32 25,32" fill="#6840ff"/><polygon points="32,55 25,32 39,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="2.8" fill="#0d0c0c"/></svg>
-          <span class="wm">Sync<em>Life</em></span>
-          <span class="lk">Produto</span><span class="lk">Preços</span>
-          <span class="cta">Começar grátis</span>
-        </div>
-        <p class="lock-cap"><b>Direção 2 · Versão 32 reforçada.</b> Mantém as 4 marcações cardeais, com traços mais grossos (4.5→6), opacidade .7 e agulha alargada, renderizada a 24px.</p>
-      </div>
-      <div class="lock-opt">
-        <div class="navmock">
-          <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1b1918" stroke="rgba(255,255,255,.16)"/><line x1="32" y1="6" x2="32" y2="13" stroke="#a1ff62" stroke-width="6" stroke-linecap="round"/><polygon points="32,10 39,34 25,34" fill="#6840ff"/><polygon points="32,57 25,34 39,34" fill="#f4f4f4" opacity=".3"/></svg>
-          <span class="wm">Sync<em>Life</em></span>
-          <span class="lk">Produto</span><span class="lk">Preços</span>
-          <span class="cta">Começar grátis</span>
-        </div>
-        <p class="lock-cap"><b>Direção 3 · Selo.</b> O núcleo dentro do tile do favicon oficial (§5.5): a marca vira um objeto sólido na pill, eco direto da aba do navegador.</p>
-      </div>
-    </div>
-    <p class="hand" style="margin-top:18px;transform:rotate(-1.6deg)">escolha uma: essa seção sai depois da aprovação</p>
   </div>
 </section>
 
@@ -709,7 +673,7 @@
     <div class="foot-grid">
       <div>
         <span class="brand">
-          <svg width="20" height="20" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+          <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="3" x2="32" y2="12" stroke="#a1ff62" stroke-width="8" stroke-linecap="round"/><polygon points="32,7 41.5,36 22.5,36" fill="#6840ff"/><polygon points="32,60 22.5,36 41.5,36" fill="#f4f4f4" opacity=".4"/></svg>
           Sync<em>Life</em></span>
         <p class="foot-tag">Sua vida inteira, organizada em um só lugar.<br>Feito no Brasil, com cuidado.</p>
       </div>
@@ -759,16 +723,21 @@
     requestAnimationFrame(raf);
   }
 
-  // ── semicírculo + bússola: um sistema só ──
-  // Drag gira o arco (inércia + balanço idle); clicar numa área da bússola (tick, chip ou card)
-  // gira o arco card a card até a miniatura da área chegar ao norte, e a agulha acompanha.
+  // ── semicírculo + bússola: um instrumento só ──
+  // Física em 2 camadas: o arco gira SEM transition de CSS (o rAF conduz `offCur` com lerp pesado,
+  // então o drag responde 1:1 e o movimento tem peso, à la Osmo). O objeto (.scin) faz lift/tilt.
+  // A bússola e o arco conversam nos dois sentidos: hover num card → a agulha olha pra ele;
+  // hover numa área da bússola → o card responde (peek); clique → o card vem pro norte.
+  // Ao fim de drag/inércia, o arco assenta no card mais próximo (detent): sempre há um norte.
   var strip = document.getElementById('strip');
   if (strip) {
     var STEP = 7.5, MAX = 26.25, N = 8;
-    var off = 0, sway = 0, vel = 0, down = false, moved = false, lastX = 0, lastT = 0, idleT = 0;
+    var off = 0, offCur = 0, sway = 0, vel = 0, down = false, moved = false, lastX = 0, lastT = 0, idleT = 0;
     var tw = null;          // tween ativo do "vai pro norte"
     var auto = true;        // vitrine: procura sozinha até a primeira interação
+    var overStrip = false;  // cursor sobre o arco pausa a vitrine
     var wasMoving = false;
+    var fine = matchMedia('(pointer: fine)').matches;
     var cards = [].slice.call(strip.querySelectorAll('.scard'));
 
     // solver da easing assinatura cubic-bezier(.625,.05,0,1)
@@ -790,45 +759,75 @@
 
     function angleOf(i) { return (i - 3.5) * STEP; }
     function clampOff(v) { return Math.max(-MAX, Math.min(MAX, v)); }
-    function render() { strip.style.setProperty('--off', (off + sway).toFixed(3) + 'deg'); }
+    function render() { strip.style.setProperty('--off', (offCur + sway).toFixed(3) + 'deg'); }
     function nearest() { return Math.max(0, Math.min(N - 1, Math.round(3.5 - off / STEP))); }
 
     // a bússola do hero
     var point = document.getElementById('hbpoint');
     var ticks = [].slice.call(document.querySelectorAll('#hbticks .tick'));
+    var anums = [].slice.call(document.querySelectorAll('#hbnums .anum'));
     var chips = [].slice.call(document.querySelectorAll('#hbchips .chip'));
     var hits = [].slice.call(document.querySelectorAll('#hbhits .hit'));
     var line = document.getElementById('hbline');
     var AREAS = window.SLBussola ? SLBussola.AREAS : [];
     var cur = 0, rot = 0;
 
-    function pointTo(i) {
-      cur = i;
+    function rotTo(i) { // agulha por caminho mais curto acumulado
       var norm = ((rot % 360) + 360) % 360;
-      rot += ((i * 45 - norm + 540) % 360) - 180; // caminho mais curto, sem volta longa
+      rot += ((i * 45 - norm + 540) % 360) - 180;
       if (point) point.style.setProperty('--rot', rot + 'deg');
+    }
+    function pointTo(i) {
+      cur = i; rotTo(i);
       ticks.forEach(function (t, j) { t.classList.toggle('on', j === i); });
+      anums.forEach(function (a, j) { a.classList.toggle('on', j === i); });
       chips.forEach(function (c, j) { c.classList.toggle('on', j === i); });
-      cards.forEach(function (c) { c.classList.toggle('north', +c.getAttribute('data-area') === i); });
+      cards.forEach(function (c) { c.classList.remove('peek'); c.classList.toggle('north', +c.getAttribute('data-area') === i); });
       if (line && AREAS[i]) line.innerHTML = 'Hoje o norte é <b>' + AREAS[i][0] + ' · ' + AREAS[i][1] + '</b>: ' + AREAS[i][2] + '.';
     }
 
     function goTo(i) {
       pointTo(i);
       var to = clampOff(-angleOf(i));
-      if (reduce) { off = to; tw = null; render(); return; }
+      if (reduce) { off = offCur = to; tw = null; render(); return; }
       // o arco gira, card a card, até a miniatura chegar ao norte (duração pela distância)
-      tw = { from: off, to: to, t0: performance.now(), dur: Math.max(500, Math.min(1200, Math.abs(to - off) * 24)) };
+      tw = { from: off, to: to, t0: performance.now(), dur: Math.max(420, Math.min(1200, Math.abs(to - off) * 24)) };
       vel = 0; idleT = 0;
     }
     function focus(i) { auto = false; goTo(i); }
 
-    chips.forEach(function (c, i) { c.addEventListener('click', function () { focus(i); }); });
-    hits.forEach(function (h) { h.addEventListener('click', function () { focus(+h.getAttribute('data-area')); }); });
+    // hover bidirecional (só com ponteiro fino)
+    function peek(i) { rotTo(i); cards.forEach(function (c) { c.classList.toggle('peek', +c.getAttribute('data-area') === i && i !== cur); }); }
+    function unpeek() { rotTo(cur); cards.forEach(function (c) { c.classList.remove('peek'); }); }
+    function bindArea(el, i) {
+      el.addEventListener('click', function () { focus(i); });
+      if (fine) {
+        el.addEventListener('pointerenter', function () { peek(i); });
+        el.addEventListener('pointerleave', function () { unpeek(); });
+      }
+    }
+    chips.forEach(function (c, i) { bindArea(c, i); });
+    hits.forEach(function (h) { bindArea(h, +h.getAttribute('data-area')); });
+
     cards.forEach(function (c) {
-      c.addEventListener('click', function () { if (moved) return; focus(+c.getAttribute('data-area')); });
+      var i = +c.getAttribute('data-area');
+      var scin = c.querySelector('.scin');
+      c.addEventListener('click', function () { if (moved) return; focus(i); });
+      if (fine && !reduce) {
+        c.addEventListener('pointerenter', function () { if (!down) rotTo(i); }); // a agulha olha pro card
+        c.addEventListener('pointerleave', function () { rotTo(cur); scin.style.setProperty('--rx', '0deg'); scin.style.setProperty('--ry', '0deg'); });
+        c.addEventListener('mousemove', function (e) { // tilt sutil em direção ao cursor
+          if (down) return;
+          var r = scin.getBoundingClientRect();
+          var nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
+          scin.style.setProperty('--ry', (nx * 7).toFixed(2) + 'deg');
+          scin.style.setProperty('--rx', (-ny * 6).toFixed(2) + 'deg');
+        });
+      }
     });
 
+    strip.addEventListener('pointerenter', function () { overStrip = true; });
+    strip.addEventListener('pointerleave', function () { overStrip = false; });
     strip.addEventListener('pointerdown', function (e) {
       down = true; moved = false; lastX = e.clientX; lastT = performance.now(); vel = 0; tw = null;
       strip.classList.add('dragging');
@@ -840,16 +839,16 @@
       off = clampOff(off + dx * .033);
       var now = performance.now(), dt = now - lastT; lastT = now;
       if (dt > 0) vel = dx * .033 / dt * 16;
-      idleT = 0; render();
+      idleT = 0;
     });
     addEventListener('pointerup', function () {
       if (!down) return; down = false; strip.classList.remove('dragging');
-      if (moved && Math.abs(vel) <= .003) pointTo(nearest()); // parou sem inércia: agulha acompanha
+      if (moved && Math.abs(vel) <= .004) goTo(nearest()); // soltou parado: assenta no detent
     });
     strip.addEventListener('click', function (e) { if (moved) e.preventDefault(); }, true);
-    strip.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight') { auto = false; tw = null; off = clampOff(off - STEP); idleT = 0; pointTo(nearest()); e.preventDefault(); render(); }
-      if (e.key === 'ArrowLeft') { auto = false; tw = null; off = clampOff(off + STEP); idleT = 0; pointTo(nearest()); e.preventDefault(); render(); }
+    strip.addEventListener('keydown', function (e) { // setas andam de card em card
+      if (e.key === 'ArrowRight') { focus(Math.min(N - 1, cur + 1)); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { focus(Math.max(0, cur - 1)); e.preventDefault(); }
     });
 
     if (!reduce) {
@@ -862,20 +861,22 @@
           idleT = 0;
           if (p >= 1) tw = null;
         } else if (!down) {
-          if (Math.abs(vel) > .003) { off = clampOff(off + vel); vel *= .95; idleT = 0; wasMoving = true; }
+          if (Math.abs(vel) > .004) { off = clampOff(off + vel); vel *= .94; idleT = 0; wasMoving = true; }
           else {
-            if (wasMoving) { wasMoving = false; pointTo(nearest()); } // fim da inércia: bússola e arco nunca discordam
+            if (wasMoving) { wasMoving = false; goTo(nearest()); } // fim da inércia: assenta no card mais próximo
             idleT += 16;
-            if (idleT > 1100) swayTarget = Math.sin(t / 1900) * 3.0; // balanço idle, um pouco mais vivo que o r6
+            if (idleT > 1200) swayTarget = Math.sin(t / 1900) * 2.2; // respiração idle em volta do detent
           }
         }
         sway += (swayTarget - sway) * .04;
+        offCur += (off - offCur) * (down ? .42 : .17); // peso: 1:1 no drag, pursuit macio no resto
         render();
       })(0);
-      // vitrine: sem interação, a bússola procura sozinha (agulha e arco juntos) a cada 5s
-      setInterval(function () { if (auto && !down && !tw) goTo((cur + 1) % N); }, 5000);
+      // vitrine: sem interação (e sem cursor sobre o arco), a bússola procura sozinha a cada 5s
+      setInterval(function () { if (auto && !down && !tw && !overStrip) goTo((cur + 1) % N); }, 5000);
     }
     pointTo(nearest());
+    off = offCur = clampOff(-angleOf(cur));
     render();
   }
 
