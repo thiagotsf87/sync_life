@@ -20,10 +20,16 @@
 <link rel="stylesheet" href="../shared/base.css">
 <link rel="stylesheet" href="../shared/bussola-3d.css">
 <style>
-  /* o campo vive entre o fundo e o conteúdo: html carrega a cor, o body fica transparente */
-  html{background:var(--bg)}
-  body{background:transparent}
-  #campo{position:fixed;inset:0;z-index:-1;pointer-events:none}
+  /* r7 (inspiração Jeton): o fundo vivo mora SÓ no hero. Aurora de estúdio (massas de cor
+     da marca, desfocadas, derivando devagar) + a peça cromo gigante e soft sangrando no canto.
+     O resto da página é papel limpo. */
+  #aurora{position:absolute;left:-8%;top:-10%;width:116%;height:114%;z-index:0;pointer-events:none;
+    filter:blur(52px) saturate(1.1);opacity:.85}
+  #herobs{position:absolute;top:-130px;right:-150px;width:640px;height:640px;z-index:1;pointer-events:none;
+    filter:blur(2.2px);opacity:.92}
+  .hero .wrap{position:relative;z-index:2}
+  .strip{z-index:2}
+  @media (max-width:1180px){ #herobs{display:none} }
 
   /* nav: pílula flutuante + ticker elétrico grudado */
   .navwrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:70;width:min(880px,94vw);
@@ -69,10 +75,7 @@
   .hero-proof span{display:inline-flex;align-items:center;gap:7px;font:500 12px var(--int);color:var(--t3)}
   .hero-proof svg{color:var(--roxo)}
 
-  /* atmosfera do hero */
-  .atmo{position:absolute;inset:-6% -12% -2%;z-index:-1;pointer-events:none;
-    background:radial-gradient(680px 480px at 80% 4%,rgba(104,64,255,.1),transparent 64%),
-      radial-gradient(520px 420px at 4% 62%,rgba(161,255,98,.07),transparent 62%)}
+  /* atmosfera do hero: substituída pela aurora viva (canvas #aurora) na r7 */
 
   /* ─── faixa arrastável das 8 áreas ─── */
   .strip-head{display:flex;justify-content:space-between;align-items:baseline;margin:84px 0 18px}
@@ -202,8 +205,8 @@
   .press-logos span{font:700 15px var(--gro);color:var(--t3);transition:color .4s var(--ease)}
   .press-logos span:hover{color:var(--t2)}
 
-  /* ─── SEÇÃO escura: o produto em espécimes ─── */
-  .paper{background:#171515;color:var(--ink);padding:110px 0}
+  /* ─── SEÇÃO escura: o produto em espécimes (cantos arredondados à la Jeton) ─── */
+  .paper{background:#171515;color:var(--ink);padding:110px 0;border-radius:44px}
   .paper .eyebrow{color:var(--ink2)}
   .paper h2{font:500 clamp(2.2rem,4.6vw,4rem)/1.04 var(--gro);letter-spacing:-.045em;max-width:640px;margin-top:18px}
   .paper h2 em{font-style:normal;color:var(--roxo)}
@@ -275,7 +278,7 @@
   .chat-input svg{color:var(--roxo)}
 
   /* ─── PRICING: tabela editorial ─── */
-  .precos{padding:110px 0}
+  .precos{padding:110px 0;border-radius:44px}
   .precos .head{text-align:center;margin-bottom:60px}
   .precos h2{font:500 clamp(2.1rem,4.2vw,3.6rem)/1.05 var(--gro);letter-spacing:-.045em;margin-top:16px}
   .ptable{max-width:880px;margin:0 auto;border-top:1px solid var(--line)}
@@ -315,7 +318,7 @@
   .faq .ans{padding:0 6px 22px;font:400 14px/1.65 var(--int);color:var(--t2);max-width:640px}
 
   /* CTA final gigante */
-  .final{padding:130px 0;text-align:center;border-top:1px solid var(--line)}
+  .final{padding:130px 0;text-align:center;border-radius:44px 44px 0 0}
   .final h2{font:500 clamp(2.8rem,7.4vw,6.6rem)/1 var(--gro);letter-spacing:-.055em}
   .final h2 em{font-style:normal;color:var(--roxo)}
   .final p{color:var(--t2);margin:26px auto 38px;max-width:420px}
@@ -345,7 +348,6 @@
 </style>
 </head>
 <body>
-<canvas id="campo" aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
 
 <div class="navwrap">
@@ -371,7 +373,8 @@
 
 <!-- HERO: manchete de dobra inteira, sem mockup -->
 <header class="hero">
-  <div class="atmo" aria-hidden="true"></div>
+  <canvas id="aurora" aria-hidden="true"></canvas>
+  <canvas id="herobs" aria-hidden="true"></canvas>
   <div class="wrap">
     <span class="pill-novo boot b1"><span class="dot"></span>Novo · Coach IA em todos os planos</span>
     <h1>
@@ -908,60 +911,40 @@
     a8.point(0);
   }
 
-  // ── O CAMPO v2: carta de navegação. Parado, o fundo é quase vazio (4 isolinhas que mal
-  //    se veem, inclinando com o rumo da agulha). Ao mover o cursor, ele desenha uma ROTA
-  //    tracejada roxa, como trajeto num mapa, que evapora em ~2,6s. Interação alta, ruído zero. ──
-  var campo = document.getElementById('campo');
-  if (campo) {
-    var fctx = campo.getContext('2d');
-    var DPRf = Math.min(2, devicePixelRatio || 1);
-    function fsize() {
-      campo.width = innerWidth * DPRf; campo.height = innerHeight * DPRf;
-      campo.style.width = innerWidth + 'px'; campo.style.height = innerHeight + 'px';
+  // ── AURORA DE ESTÚDIO (inspiração Jeton): o fundo vivo mora SÓ no hero. Três massas de
+  //    cor da marca, enormes e desfocadas (blur no CSS), derivando em ciclos de ~25s.
+  //    Canvas em 1/3 da resolução: o blur esconde tudo, o custo é mínimo. ──
+  var aurora = document.getElementById('aurora');
+  if (aurora) {
+    var actx = aurora.getContext('2d');
+    var BL = [
+      { c: '104,64,255', a: .62, fx: .21, fy: .16, px: .28, py: .34, ph: 0 },
+      { c: '161,255,98', a: .40, fx: .16, fy: .21, px: .70, py: .26, ph: 2.1 },
+      { c: '248,65,49',  a: .24, fx: .13, fy: .17, px: .52, py: .82, ph: 4.2 }
+    ];
+    function asize() { // mede o hero (o canvas é replaced: o bitmap não pode derivar do próprio box)
+      var hero = aurora.parentElement;
+      aurora.width = Math.max(2, Math.floor(hero.clientWidth * 1.16 / 3));
+      aurora.height = Math.max(2, Math.floor(hero.clientHeight * 1.14 / 3));
     }
-    fsize(); addEventListener('resize', fsize);
-    var rota = [];
-    addEventListener('pointermove', function (e) {
-      var p = rota[rota.length - 1];
-      if (!p || Math.hypot(e.clientX - p.x, e.clientY - p.y) > 14)
-        rota.push({ x: e.clientX, y: e.clientY, t: performance.now() });
-      if (rota.length > 110) rota.shift();
-    });
-    function fdraw(now) {
-      fctx.setTransform(DPRf, 0, 0, DPRf, 0, 0);
-      fctx.clearRect(0, 0, innerWidth, innerHeight);
-      // isolinhas: 4 curvas longas e calmas; a inclinação segue o rumo da agulha
-      var slope = Math.sin((window.__vivaHeading || 0) * Math.PI / 180) * .1;
-      fctx.lineCap = 'round'; fctx.lineWidth = 1;
-      for (var l = 0; l < 4; l++) {
-        fctx.strokeStyle = 'rgba(21,19,19,' + (.045 + l * .008) + ')';
-        fctx.beginPath();
-        var base = innerHeight * (.16 + l * .23);
-        for (var x = -40; x <= innerWidth + 40; x += 26) {
-          var y = base + (x - innerWidth / 2) * slope
-            + Math.sin(x * .0032 + now * .00014 + l * 1.9) * 30
-            + Math.sin(x * .0009 - now * .00008 + l * .8) * 44;
-          if (x === -40) fctx.moveTo(x, y); else fctx.lineTo(x, y);
-        }
-        fctx.stroke();
-      }
-      // a rota: trajeto tracejado do cursor, evaporando
-      if (rota.length > 1) {
-        fctx.setLineDash([2, 7]); fctx.lineWidth = 1.4;
-        for (var i = 1; i < rota.length; i++) {
-          var a = rota[i], b = rota[i - 1];
-          var idade = (now - a.t) / 2600;
-          if (idade >= 1) continue;
-          fctx.strokeStyle = 'rgba(104,64,255,' + (.38 * (1 - idade)).toFixed(3) + ')';
-          fctx.beginPath(); fctx.moveTo(b.x, b.y); fctx.lineTo(a.x, a.y); fctx.stroke();
-        }
-        fctx.setLineDash([]);
-        while (rota.length && (now - rota[0].t) > 2600) rota.shift();
+    asize(); addEventListener('resize', asize);
+    function adraw(t) {
+      var w = aurora.width, h = aurora.height;
+      actx.clearRect(0, 0, w, h);
+      for (var i = 0; i < BL.length; i++) {
+        var b = BL[i];
+        var x = w * (b.px + .17 * Math.sin(t * b.fx * .001 + b.ph));
+        var y = h * (b.py + .15 * Math.cos(t * b.fy * .001 + b.ph * 1.3));
+        var g = actx.createRadialGradient(x, y, 0, x, y, Math.max(w, h) * .36);
+        g.addColorStop(0, 'rgba(' + b.c + ',' + b.a + ')');
+        g.addColorStop(1, 'rgba(' + b.c + ',0)');
+        actx.fillStyle = g; actx.fillRect(0, 0, w, h);
       }
     }
     if (!reduce) {
-      (function floop(t) { requestAnimationFrame(floop); if (!document.hidden) fdraw(t); })(0);
-    }
+      var askip = 0;
+      (function aloop(t) { requestAnimationFrame(aloop); if (document.hidden || (askip++ % 2)) return; adraw(t); })(0);
+    } else adraw(0);
   }
 
   // ── A TINTA: números assentam como instrumento (sobem, passam do ponto e voltam) ──
@@ -1037,27 +1020,28 @@ try {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const THREE = await import('three');
   const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
-  const canvas = document.getElementById('a8gl');
-  const stage = document.getElementById('a8stage');
-  if (canvas && stage) {
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
-    renderer.setSize(300, 300, false);
+
+  // a vida em sincronia: a luz do instrumento segue a SUA hora
+  const h = new Date().getHours();
+  const fase = (h < 6 || h >= 19) ? 'noite' : (h < 12 ? 'manha' : 'tarde');
+  const LUZ = { manha: [0xffd9a4, 1.7, 1.12], tarde: [0xffffff, 1.25, 1.0], noite: [0x9db4ff, 1.5, .82] }[fase];
+
+  // monta uma cena completa da peça num canvas (cada contexto GL precisa da sua)
+  function montar(canvas, opt) {
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: opt.dpr > 1 });
+    renderer.setPixelRatio(opt.dpr);
+    renderer.setSize(opt.size, opt.size, false);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = LUZ[2];
 
     const scene = new THREE.Scene();
-    const cam = new THREE.PerspectiveCamera(30, 1, .1, 30);
-    cam.position.set(0, 1.05, 4.6); cam.lookAt(0, -.06, 0);
+    const cam = new THREE.PerspectiveCamera(opt.fov, 1, .1, 30);
+    cam.position.set(opt.camPos[0], opt.camPos[1], opt.camPos[2]);
+    cam.lookAt(opt.camLook[0], opt.camLook[1], opt.camLook[2]);
     const pmrem = new THREE.PMREMGenerator(renderer);
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0).texture;
-
-    // a vida em sincronia: a luz do instrumento segue a SUA hora
-    const h = new Date().getHours();
-    const fase = (h < 6 || h >= 19) ? 'noite' : (h < 12 ? 'manha' : 'tarde');
-    const LUZ = { manha: [0xffd9a4, 1.7, 1.12], tarde: [0xffffff, 1.25, 1.0], noite: [0x9db4ff, 1.5, .82] }[fase];
     const key = new THREE.DirectionalLight(LUZ[0], LUZ[1]);
     key.position.set(2.4, 3.2, 2.6); scene.add(key);
-    renderer.toneMappingExposure = LUZ[2];
 
     const chrome = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 1, roughness: .12 });
     const dialM = new THREE.MeshStandardMaterial({ color: 0x131110, metalness: .85, roughness: .42 });
@@ -1089,19 +1073,43 @@ try {
     pivo.position.z = .07;
     nd.add(norte, sul, pivo); nd.position.z = .06; body.add(nd);
 
-    stage.classList.add('gl-on'); // WebGL ok: o CSS sai, o objeto entra
+    return { renderer, scene, cam, body, nd, ticks, tickM, litM, canvas, p: opt.anim };
+  }
 
-    // agulha com MOLA: aceleração + amortecimento (o overshoot nasce da física, não de keyframe)
+  const inst = [];
+  const secCv = document.getElementById('a8gl');
+  const stage = document.getElementById('a8stage');
+  if (secCv && stage) {
+    inst.push(montar(secCv, {
+      size: 300, dpr: Math.min(2, devicePixelRatio || 1), fov: 30,
+      camPos: [0, 1.05, 4.6], camLook: [0, -.06, 0],
+      anim: { bx: -.34, swayA: .05, followPx: .5, followPy: .22, yOsc: 0 }
+    }));
+    stage.classList.add('gl-on'); // WebGL ok: o CSS sai, o objeto entra
+  }
+  // a peça gigante e soft do hero (o "objeto de abertura", à la moeda do Jeton)
+  const heroCv = document.getElementById('herobs');
+  if (heroCv) {
+    inst.push(montar(heroCv, {
+      size: 640, dpr: 1, fov: 30,
+      camPos: [.55, .5, 2.7], camLook: [-.12, -.08, 0],
+      anim: { bx: -.2, swayA: .03, followPx: .12, followPy: .06, yOsc: .5 }
+    }));
+  }
+
+  if (inst.length) {
+    // agulha com MOLA compartilhada: as duas peças leem o mesmo rumo
     let ang = 0, vel = 0, target = 0;
     window.__vivaSet = function (i) {
       target = -i * 45 * Math.PI / 180;
-      ticks.forEach(function (t, j) { t.material = (j === i) ? litM : tickM; });
+      inst.forEach(function (I) { I.ticks.forEach(function (t, j) { t.material = (j === i) ? I.litM : I.tickM; }); });
     };
     window.__vivaSet(Math.round((window.__vivaHeading || 0) / 45) % 8);
 
     let px = 0, py = 0;
+    const refCv = secCv || heroCv;
     addEventListener('pointermove', e => {
-      const r = canvas.getBoundingClientRect();
+      const r = refCv.getBoundingClientRect();
       if (r.top < innerHeight && r.bottom > 0) {
         px = (e.clientX - (r.left + r.width / 2)) / innerWidth * 2;
         py = (e.clientY - (r.top + r.height / 2)) / innerHeight * 2;
@@ -1114,13 +1122,16 @@ try {
       const dt = Math.min(.05, (now - last) / 1000); last = now;
       if (!reduce) { vel += ((target - ang) * 46 - vel * 6.8) * dt; ang += vel * dt; }
       else ang = target;
-      nd.rotation.z = ang;
       const t = now / 1000;
-      const ty = px * .5;
-      const tx = -.34 + (reduce ? 0 : Math.sin(t * .4) * .05) + py * .22 + Math.min(.2, scrollY * .00012);
-      body.rotation.y += (ty - body.rotation.y) * .06;   // a peça acompanha o cursor
-      body.rotation.x += (tx - body.rotation.x) * .06;   // e o reflexo corre com o scroll
-      renderer.render(scene, cam);
+      for (const I of inst) {
+        if (I.canvas.offsetParent === null) continue; // fora do layout (ex.: hero no mobile)
+        I.nd.rotation.z = ang;
+        const ty = px * I.p.followPx + (I.p.yOsc ? Math.sin(t * .13) * I.p.yOsc : 0);
+        const tx = I.p.bx + (reduce ? 0 : Math.sin(t * .4) * I.p.swayA) + py * I.p.followPy + Math.min(.2, scrollY * .00012);
+        I.body.rotation.y += (ty - I.body.rotation.y) * .06;   // a peça acompanha o cursor
+        I.body.rotation.x += (tx - I.body.rotation.x) * .06;   // e o reflexo corre com o scroll
+        I.renderer.render(I.scene, I.cam);
+      }
     })(last);
   }
 } catch (err) {

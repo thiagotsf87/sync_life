@@ -27,6 +27,25 @@
 
 ---
 
+## 2026-07-30 · Sessão 7 — Onda 0, r7: fundo Jeton-like (aurora + peça gigante + bandas arredondadas)
+
+**Feedback do usuário na r6:** fundo ainda não agradou (nem rota tracejada do mouse, nem isolinhas); referência explícita: o fundo e as transições do site do Jeton; pode ser só em partes do site.
+
+**Análise do Jeton (ao vivo):** gradiente vivo full-bleed SÓ no hero + moeda 3D gigante e soft sangrando no canto; miolo branco limpo com tipografia colorida; seções emolduradas; wordmark gigante no fim. Padrão traduzido pro SyncLife:
+
+**Feito (em `landing-viva.html`):**
+- Campo v2 (rota + isolinhas) **removido** por completo. O fundo vivo agora mora SÓ no hero.
+- **Aurora de estúdio** (`#aurora`, canvas 2D a 1/3 da resolução + blur 52px no CSS): três massas de cor da marca (roxo .62, elétrico .40, coral .24) derivando em ciclos de ~25s sobre o papel. Gotcha de implementação registrado: canvas é elemento *replaced*: `inset` não estica o box (colapsou pra 100×50 e o bitmap derivava do próprio box); fix = `width/height` percentuais explícitos + bitmap medido no `.hero` pai.
+- **A peça gigante do hero** (equivalente da moeda do Jeton): segunda instância three.js da bússola (640px, DPR 1, `blur(2.2px)`, opacity .92) sangrando no canto superior direito; módulo refatorado pra função `montar(canvas, opts)` (cada contexto GL tem sua cena/PMREM), mola da agulha compartilhada entre as duas peças, oscilação Y própria no hero; `display:none` < 1180px e render pulado quando fora do layout.
+- **Transições de seção**: bandas escuras com cantos arredondados 44px (`.paper`, `.precos`; `.final` só no topo), moldura Jeton contra o papel.
+- QA: aurora visível e viva (pixel roxo confirmado no bitmap; box 1653×1575), peça do hero renderizando, cantos ok, console 100% limpo.
+
+**Pendências:** ⏳ veredito da r7. Fila seguinte: transição de cor contínua entre seções no scroll (Jeton morphing), wordmark gigante no footer, mobile dedicado da viva.
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html`.
+
+---
+
 ## 2026-07-30 · Sessão 6 — Onda 0, r6: feedback da landing viva aplicado
 
 **Veredito do usuário na r5:** CAMPO (limalha) reprovado ("poluído, pouca interação"); **OBJETO (bússola three.js) APROVADO** → registrado no DS; + 3 ajustes de conteúdo/layout.
