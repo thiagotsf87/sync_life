@@ -10,7 +10,7 @@
 - **Branch:** `poc/ds-v5` · último commit = r10. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`.
 - **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r13 em evolução** (é onde o trabalho acontece).
 - **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · seção "As oito áreas" (hover→agulha) · direção da r11/r12 (animações + fundo roxo da IA).
-- **Aguardando veredito:** r14 ("ficou bom" na r13 + 4 finos: aurora com deriva ~3x mais rápida (visível), gatilhos de animação nos próprios elementos (nada anima fora da tela), Free e PRO do mesmo tamanho, nota do painel trocada por "é assim que a sua vida aparece no app").
+- **Aguardando veredito:** r15 (nuvem agora PASSEIA — amplitude do drift dobrada, .14→.26 da largura; margens laterais dos palcos produto/IA restauradas pro gutter 4vw do `.wrap`, conteúdo alinhado a 90px como o resto).
 - **Fila combinada:** h1 do hero com SplitText na entrada · mobile dedicado da landing-viva · depois Onda 0 fase de implementação em `web/` (Fundação A + `<Compass />`).
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
@@ -18,7 +18,7 @@
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ viva r14 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r14** (r13 recebeu "ficou bom"; marca 3D, bússola WebGL, oito áreas e direção r11-r13 aprovadas) | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r15 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r15** (r13 recebeu "ficou bom"; marca 3D, bússola WebGL, oito áreas e direção r11-r14 aprovadas) | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -33,6 +33,21 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-30 · Sessão 15 — Onda 0, r15: a nuvem passeia + margens dos palcos alinhadas
+
+**Feedback do usuário na r14:** nuvens ainda parecem paradas; margem lateral das seções produto e IA diferente das demais.
+
+**Diagnóstico e feito (em `landing-viva.html`):**
+- **Nuvem:** o problema não era velocidade e sim AMPLITUDE — os blobs oscilavam só ~14% da largura em volta de âncoras fixas (com blur 56px isso lê como parado). Amplitudes dobradas (.14/.06→.26/.10 no x, .12/.05→.22/.08 no y): agora os blobs varrem ~metade da tela por ciclo (~10s). Verificado por centroide do canal roxo: deslocou ~70px de tela em 2s.
+- **Margens:** causa raiz — `padding:70px 0` (shorthand) em `.prod-wrap` e `.ia .wrap` ZERAVA o gutter lateral de `4vw` herdado do `.wrap` base. Trocado por `padding-top/bottom` (o shorthand nunca deve ser usado pra "só vertical" sobre o .wrap). Medido: conteúdo de hero, produto e IA alinhados a 90px; FAQ segue mais estreito por design (max-width 1080).
+- QA (`?v=r15`): console limpo (warning restante é do probe getImageData do próprio QA), screenshot com o eyebrow "O PRODUTO" alinhado à seção de imprensa acima.
+
+**Pendências:** ⏳ veredito da r15; fila: SplitText no h1 do hero, mobile dedicado da viva.
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html`.
 
 ---
 

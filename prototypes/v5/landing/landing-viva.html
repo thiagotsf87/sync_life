@@ -208,7 +208,9 @@
      com o scroll (o padrão dos refs Jeton/Osmo/Phamily: componentes se encaixando) ─── */
   .prod{background:#171515;color:var(--ink);border-radius:44px;min-height:100vh;display:flex;align-items:center;
     position:relative;overflow:hidden}
-  .prod-wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(40px,5vw,84px);align-items:center;padding:70px 0;width:100%}
+  /* r15: só padding vertical — o shorthand "70px 0" zerava o gutter lateral de 4vw do .wrap base */
+  .prod-wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(40px,5vw,84px);align-items:center;
+    padding-top:70px;padding-bottom:70px;width:100%}
   .prod .eyebrow{color:var(--ink2)}
   .prod h2{font:500 clamp(2rem,3.8vw,3.4rem)/1.06 var(--gro);letter-spacing:-.045em;margin-top:16px}
   .prod h2 em{font-style:normal;color:var(--roxo)}
@@ -266,7 +268,7 @@
      a conversa avança com o scroll e a ação se desenha no fim ─── */
   .ia{background:radial-gradient(130% 140% at 14% 0%,#7c58ff 0%,#6840ff 46%,#5227e6 100%);color:#fff;
     border-radius:44px;min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
-  .ia .wrap{padding:70px 0;width:100%}
+  .ia .wrap{padding-top:70px;padding-bottom:70px;width:100%} /* r15: mantém o gutter lateral do .wrap */
   .ia .eyebrow{color:rgba(255,255,255,.62)}
   .ia .eyebrow b{color:#fff}
   .ia .head{max-width:660px}
@@ -971,8 +973,9 @@
       ctx.clearRect(0, 0, w, h);
       for (var i = 0; i < blobs.length; i++) {
         var b = blobs[i];
-        var x = w * (b.px + .14 * Math.sin(t * b.fx * .001 + b.ph) + .06 * Math.sin(t * b.fx * .0023 + b.ph * 2)) + leanX * w * .07;
-        var y = h * (b.py + .12 * Math.cos(t * b.fy * .001 + b.ph * 1.3) + .05 * Math.cos(t * b.fy * .0019 + b.ph)) + leanY * h * .05;
+        // r15: amplitude dobrada — a nuvem PASSEIA pela tela (antes oscilava ~14% em volta da âncora e lia como parada)
+        var x = w * (b.px + .26 * Math.sin(t * b.fx * .001 + b.ph) + .10 * Math.sin(t * b.fx * .0023 + b.ph * 2)) + leanX * w * .07;
+        var y = h * (b.py + .22 * Math.cos(t * b.fy * .001 + b.ph * 1.3) + .08 * Math.cos(t * b.fy * .0019 + b.ph)) + leanY * h * .05;
         var r = Math.max(w, h) * .36 * (1 + .11 * Math.sin(t * .0007 + b.ph * 3)); // respiração visível (r14)
         var g = ctx.createRadialGradient(x, y, 0, x, y, r);
         g.addColorStop(0, 'rgba(' + b.c + ',' + b.a + ')');
