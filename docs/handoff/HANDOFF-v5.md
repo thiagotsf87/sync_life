@@ -27,6 +27,27 @@
 
 ---
 
+## 2026-07-29 · Sessão 5 — Onda 0, r5: EXPERIMENTO "landing viva" (WebGL liberado)
+
+**Contexto:** o usuário liberou WebGL (a reprovação da r3 foi por desconhecimento da ferramenta) e pediu insights grandes a partir de three.js/gsap/anime.js/motion.dev (viés: capacidades) + Jeton/Osmo/Phamily (viés: conceito). Análise ao vivo dos 7 sites feita por browser. Tese aprovada pra experimento: **"o site É o instrumento"**, em 3 camadas (campo / objeto / tinta).
+
+**Feito:**
+- **`landing/landing-viva.html`** (arquivo NOVO; a `landing.html` r4 ficou intacta como versão segura + tag git `poc-landing-r4`):
+  - **O CAMPO**: fundo de "limalha de ferro digital" (canvas 2D, ~1100 traços em grade com ruído) que se orienta pro rumo da agulha (`window.__vivaHeading`) e redemoinha ao redor do cursor (ímã, raio 170px). Visível só nas bandas claras (html carrega o bg, body transparente, canvas em z -1).
+  - **O OBJETO**: a bússola da seção "As oito áreas" em **three.js cromo real** (torus cromado + mostrador rebaixado + 24 ticks 3D + agulha facetada roxa + pivô, RoomEnvironment via PMREM, ACES): luz temperada pela **hora local** (manhã dourada / tarde neutra / noite fria com tick elétrico mais forte), **agulha com mola física** (aceleração+amortecimento, overshoot emerge da física), peça acompanha o cursor e o reflexo corre com o scroll. Fallback: se WebGL/CDN falhar, o `catch` mantém a bússola CSS (`.gl-on` alterna).
+  - **A TINTA**: scores da lista + badge 74 do hero assentam como instrumento (count-up com overshoot easeOutBack) ao entrar na viewport.
+  - Ponte: `sel(i)` na lista → `__vivaHeading`/`__vivaSet(i)` → agulha 3D + campo, tudo junto. Arco de miniaturas segue independente (decisão da r4 mantida).
+- Hub atualizado (r4 = "versão segura"; r5 = linha própria). CDN: three@0.170.0 via jsdelivr + importmap.
+- QA: WebGL ativo (`gl-on`), hover/click na linha Patrimônio → agulha 225° + tick aceso + campo reorientado; console 100% limpo (warning de PMREM resolvido com sigma 0).
+
+**Decisões/insights registrados (da análise das referências):** anime.js dispensada (redundante com GSAP+motion); GSAP (agora grátis) planejada pra fase de implementação (scroll/caligrafia/inércia); motion.dev candidata a lib de motion do DS no app React (springs nomeadas needle/detent/settle); ideias na fila: partículas de dados→norte, "dia sincronizado" (scroll-story com narrativa), gravidade nos badges (Jeton), cursor-agulha, arco em 3D real.
+
+**Pendências:** ⏳ veredito do usuário entre **landing r4 (segura)** × **landing viva r5**, e o quanto da tese vira lei do DS; mobile dedicado da r5 só após o veredito; performance mobile do campo (gap 48px já reduz, falta validar em device real).
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html` (novo) · `prototypes/v5/index.html` · tag `poc-landing-r4`.
+
+---
+
 ## 2026-07-28 · Sessão 4 — Onda 0, rodada 4: seção "As oito áreas" (referência em imagem)
 
 **Pedido do usuário** (referência: `docs/handoff/refs/2026-07-28-as-oito-areas.png`): substituir o bloco da bússola do hero pela seção "As oito áreas · o índice da sua vida"; a lista interage APENAS com a bússola (hover → agulha aponta); a bússola deve ser o **cromo** da imagem (não a cerâmica branca); o arco de miniaturas volta a ser independente (só drag/inércia).
