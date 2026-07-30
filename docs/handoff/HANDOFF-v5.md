@@ -27,6 +27,22 @@
 
 ---
 
+## 2026-07-30 · Sessão 9 — Onda 0, r9: ritmo claro/escuro + transições de seção (GSAP entra)
+
+**Feedback do usuário na r8:** fundo da IA ok, mas ficou "preto, escuro e preto" na sequência de bandas; falta o que Jeton/Osmo/Phamily têm em comum: cada seção entrar animada com transição própria no scroll — é isso que dá cara profissional.
+
+**Feito (em `landing-viva.html`):**
+- **Ritmo corrigido:** pricing voltou pro papel claro (saiu `.dk` e o radius). Sequência agora alterna: hero claro → áreas claro → paper ESCURO → marquee claro → IA ESCURA → pricing/FAQ claros → final ESCURO. O cartão da IA respira sozinho entre bandas claras.
+- **GSAP adotado na landing** (gsap@3.13 + ScrollTrigger + SplitText + CustomEase via jsdelivr, todos gratuitos): easing assinatura registrada como ease `sl` (E-01); glue com Lenis via `_lenis.on('scroll', ScrollTrigger.update)`; tudo gated por `!reduce && window.gsap` com o sistema `.rv` preservado como fallback (CDN caiu → página segue completa, E-02).
+- **Transições por seção:** (1) cartões escuros (.paper/.ia/.final) entram como **cover** com scale .94→1 + y 70→0 em scrub; (2) manchetes (.areas8/.paper/.ia/.precos h2) com **palavras subindo de máscara** linha a linha (SplitText, `.sl-line` com folga pra descendentes); (3) **cascatas** nas 8 áreas e nas linhas do pricing; (4) **marquee entorta** com a velocidade do scroll (quickTo skewX ±8°) e assenta ao parar.
+- QA: 10 ScrollTriggers ativos, cover medido no meio do scrub (scale .9688 + y 36), pricing claro renderizado, console 100% limpo.
+
+**Pendências:** ⏳ veredito da r9; fila: wordmark gigante no rodapé, mobile dedicado da viva, aplicar SplitText também no h1 do hero (entrada de página).
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html`.
+
+---
+
 ## 2026-07-30 · Sessão 8 — Onda 0, r8: hero só com aurora + a seção da IA vira o segundo palco
 
 **Feedback do usuário na r7:** gradiente animado do hero APROVADO; peça 3D do hero reprovada (resolução baixa e bússola demais na página); pedir algo forte na seção "Uma IA que conhece sua vida" (funcionalidade principal).
