@@ -23,8 +23,10 @@
   /* r7 (inspiração Jeton): o fundo vivo mora SÓ no hero. Aurora de estúdio (massas de cor
      da marca, desfocadas, derivando devagar) + a peça cromo gigante e soft sangrando no canto.
      O resto da página é papel limpo. */
-  #aurora{position:absolute;left:-8%;top:-10%;width:116%;height:114%;z-index:0;pointer-events:none;
-    filter:blur(52px) saturate(1.1);opacity:.85}
+  /* r13: a aurora virou o fundo vivo de TODA área clara (fixa atrás do papel, as bandas
+     escuras/roxa a cobrem); paleta só azul/lilás/roxo — o coral avermelhado saiu */
+  .aurora-fix{position:fixed;inset:0;z-index:-1;pointer-events:none;filter:blur(56px) saturate(1.08);opacity:.65}
+  .aurora-fix canvas{width:100%;height:100%;display:block}
   .hero .wrap{position:relative;z-index:2}
   .strip{z-index:2}
 
@@ -335,8 +337,9 @@
   .final h2{font:500 clamp(2.6rem,6.6vw,5.8rem)/1.02 var(--gro);letter-spacing:-.055em}
   .final h2 em{font-style:normal;color:var(--roxo)}
   .final p{color:var(--t2);margin:24px auto 36px;max-width:420px}
-  .final .wordmark{display:block;font:700 clamp(110px,16.5vw,250px)/.8 var(--gro);letter-spacing:-.06em;color:var(--t1);
-    margin:90px auto -16px;transform:translateY(9%);user-select:none;white-space:nowrap}
+  /* r13: menor e INTEIRO (o corte do descendente do y fazia ler "sunklife") */
+  .final .wordmark{display:block;font:700 clamp(72px,11vw,168px)/.95 var(--gro);letter-spacing:-.045em;color:var(--t1);
+    margin:84px auto 0;padding-bottom:40px;user-select:none;white-space:nowrap}
   .final .wordmark em{font-style:normal;color:var(--roxo)}
 
   footer{border-top:1px solid var(--line);padding:64px 0 40px}
@@ -365,6 +368,7 @@
 </style>
 </head>
 <body>
+<div class="aurora-fix" aria-hidden="true"><canvas id="aurora"></canvas></div>
 <div class="grain" aria-hidden="true"></div>
 
 <div class="navwrap">
@@ -390,7 +394,6 @@
 
 <!-- HERO: manchete de dobra inteira, sem mockup -->
 <header class="hero">
-  <canvas id="aurora" aria-hidden="true"></canvas>
   <div class="wrap">
     <span class="pill-novo boot b1"><span class="dot"></span>Novo · Coach IA em todos os planos</span>
     <h1>
@@ -984,14 +987,14 @@
         leanX += ((mNX - .5) - leanX) * .025; leanY += ((mNY - .5) - leanY) * .025; draw(t); })(0);
     } else draw(0);
   }
-  // hero (papel claro): roxo, elétrico, um sopro de coral e um roxo-claro de profundidade.
-  // (r11: a seção IA virou banda roxa sólida — a aurora agora vive SÓ no hero)
+  // r13: aurora GLOBAL fixa atrás de toda área clara. Paleta azul/lilás/roxo
+  // (o coral avermelhado e o verde saíram do fundo a pedido do usuário)
   vivaAurora('aurora', [
-    { c: '104,64,255', a: .62, fx: .21, fy: .16, px: .28, py: .34, ph: 0 },
-    { c: '161,255,98', a: .40, fx: .16, fy: .21, px: .70, py: .26, ph: 2.1 },
-    { c: '248,65,49',  a: .24, fx: .13, fy: .17, px: .52, py: .82, ph: 4.2 },
-    { c: '156,125,255', a: .30, fx: .11, fy: .14, px: .84, py: .62, ph: 5.4 }
-  ], 1.16, 1.14);
+    { c: '104,64,255',  a: .55, fx: .21, fy: .16, px: .26, py: .30, ph: 0 },   // roxo
+    { c: '74,108,255',  a: .42, fx: .15, fy: .20, px: .72, py: .24, ph: 2.1 }, // azul
+    { c: '165,138,255', a: .34, fx: .12, fy: .16, px: .50, py: .80, ph: 4.2 }, // lilás
+    { c: '82,39,230',   a: .26, fx: .10, fy: .13, px: .86, py: .62, ph: 5.4 }  // roxo profundo
+  ], 1, 1);
 
   // ── A TINTA: números assentam como instrumento (sobem, passam do ponto e voltam) ──
   function odometro(el) {
@@ -1022,68 +1025,61 @@
     CustomEase.create('sl', '.625,.05,0,1'); // a easing assinatura (E-01) vira ease do GSAP
     if (window._lenis) window._lenis.on('scroll', ScrollTrigger.update);
 
-    // 1) OS PALCOS PINADOS (r12): a seção NUNCA chega vazia — cabeçalho e primeiras
-    //    peças entram na APROXIMAÇÃO (antes do pin), e o pin curto só termina a cena.
-    //    E cada palco tem transição própria: no produto as peças VOAM e se encaixam;
-    //    na IA as bolhas dão POP de mensagem chegando. Só desktop; no mobile e sem
-    //    GSAP as seções são estáticas e completas (E-02).
+    // 1) OS PALCOS (r13): SEM PIN — a coreografia acontece COM a tela em movimento.
+    //    As peças entram em scrub enquanto a seção atravessa a viewport (a página
+    //    nunca congela); cabeçalhos entram na aproximação. Transição própria por
+    //    palco mantida: produto = voo com encaixe · IA = pop de mensageiro.
+    //    Só desktop; no mobile e sem GSAP as seções são estáticas e completas (E-02).
     if (matchMedia('(min-width:1024px)').matches) {
       // nos palcos o GSAP é o único condutor: o .rv sai pra não disputar a opacidade
       document.querySelectorAll('.prod .rv, .ia .rv').forEach(function (el) { el.classList.remove('rv'); });
 
-      // — produto: na aproximação, cabeçalho + score + coach já se montam…
+      // — produto: cabeçalho na aproximação, peças voando durante a travessia
       gsap.from('.prod-head > *', {
         y: 40, opacity: 0, stagger: .09, duration: .7, ease: 'sl',
         scrollTrigger: { trigger: '.prod', start: 'top 75%', once: true }
       });
-      [['.pc-score', -180, -90, -8], ['.pc-brief', 200, -110, 7]].forEach(function (p, i) {
-        gsap.from(p[0], {
-          x: p[1], y: p[2], rotation: p[3], scale: .8, opacity: 0, duration: .85, delay: i * .14, ease: 'back.out(1.5)',
-          scrollTrigger: { trigger: '.prod', start: 'top 52%', once: true }
-        });
-      });
-      // …e o pin curto encaixa o resto, começando no primeiro pixel de scroll
       var tlP = gsap.timeline({
-        scrollTrigger: { trigger: '.prod', start: 'top top', end: '+=130%', scrub: true, pin: true, anticipatePin: 1 }
+        scrollTrigger: { trigger: '.prod', start: 'top 82%', end: 'top -12%', scrub: true }
       });
-      [['.pc-orc', -240, 110, 7], ['.pc-agenda', 260, 80, -8], ['.pc-meta', 0, 220, 4]].forEach(function (p, i) {
-        tlP.from(p[0], { x: p[1], y: p[2], rotation: p[3], scale: .78, opacity: 0, duration: .7, ease: 'back.out(1.5)' }, i * .34);
+      [
+        ['.pc-score', -180, -90, -8], ['.pc-brief', 200, -110, 7],
+        ['.pc-orc', -240, 110, 7], ['.pc-agenda', 260, 80, -8], ['.pc-meta', 0, 220, 4]
+      ].forEach(function (p, i) {
+        tlP.from(p[0], { x: p[1], y: p[2], rotation: p[3], scale: .78, opacity: 0, duration: .62, ease: 'back.out(1.5)' }, i * .3);
       });
-      tlP.to({}, { duration: .35 }); // respiro curto com o painel montado
 
-      // — IA: a aproximação completa o lado esquerdo (manchete + feats)…
+      // — IA: manchete e feats na aproximação, mensagens chegando durante a travessia
       gsap.from('.ia .head > *', {
         y: 36, opacity: 0, stagger: .09, duration: .6, ease: 'sl',
         scrollTrigger: { trigger: '.ia', start: 'top 72%', once: true }
       });
       gsap.from('.ia-feat', {
         y: 26, opacity: 0, stagger: .1, duration: .5, ease: 'sl',
-        scrollTrigger: { trigger: '.ia', start: 'top 45%', once: true }
+        scrollTrigger: { trigger: '.ia', start: 'top 55%', once: true }
       });
-      // …e no pin as mensagens CHEGAM: pop da cauda, como mensageiro de verdade
       var tlI = gsap.timeline({
-        scrollTrigger: { trigger: '.ia', start: 'top top', end: '+=150%', scrub: true, pin: true, anticipatePin: 1 }
+        scrollTrigger: { trigger: '.ia', start: 'top 78%', end: 'top -18%', scrub: true }
       });
       [].slice.call(document.querySelectorAll('#iachat > *')).forEach(function (m, i) {
         if (m.classList.contains('acao')) {
-          // o selo CARIMBA (vem de cima, grande, e assenta) + check se desenha
-          tlI.from(m, { scale: 1.5, rotation: -5, opacity: 0, duration: .45, ease: 'back.out(1.8)', transformOrigin: '30% 50%' }, i * .38);
+          // o selo CARIMBA (vem grande, assenta) + check se desenha
+          tlI.from(m, { scale: 1.5, rotation: -5, opacity: 0, duration: .45, ease: 'back.out(1.8)', transformOrigin: '30% 50%' }, i * .3);
           tlI.fromTo('.acao .ck', { strokeDashoffset: 20 }, { strokeDashoffset: 0, duration: .3, ease: 'none' }, '>-.1');
         } else if (m.classList.contains('chat-input')) {
-          tlI.from(m, { y: 30, opacity: 0, duration: .4, ease: 'sl' }, i * .38);
+          tlI.from(m, { y: 30, opacity: 0, duration: .4, ease: 'sl' }, i * .3);
         } else {
           var user = m.classList.contains('u');
           tlI.from(m, {
             scale: .55, x: user ? 46 : -46, y: 14, opacity: 0, duration: .5, ease: 'back.out(1.7)',
             transformOrigin: user ? '100% 100%' : '0% 100%'
-          }, i * .38);
+          }, i * .3);
         }
       });
-      tlI.to({}, { duration: .3 });
 
-      // o wordmark gigante sobe pra fechar a página (Jeton)
+      // o wordmark sobe pra fechar a página (Jeton)
       gsap.from('.final .wordmark', {
-        yPercent: 46, ease: 'none',
+        yPercent: 34, ease: 'none',
         scrollTrigger: { trigger: '.final', start: 'top 75%', end: 'bottom bottom', scrub: true }
       });
     }

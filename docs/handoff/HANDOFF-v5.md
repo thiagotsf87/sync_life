@@ -8,9 +8,9 @@
 ## Retomada rápida (pra nova sessão)
 
 - **Branch:** `poc/ds-v5` · último commit = r10. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`.
-- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r12 em evolução** (é onde o trabalho acontece).
-- **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · aurora do hero (gradiente animado) · seção "As oito áreas" (hover→agulha) · **direção da r11 aprovada em essência** (gostou das animações e do fundo roxo da IA).
-- **Aguardando veredito:** r12 (ajuste fino da r11: palcos nunca chegam vazios — cabeçalho + primeiras peças entram na aproximação, pins encurtados 200→130% e 240→150%, e a IA ganhou transição própria: bolhas com pop de mensageiro + selo carimbando).
+- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r13 em evolução** (é onde o trabalho acontece).
+- **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · seção "As oito áreas" (hover→agulha) · direção da r11/r12 (animações + fundo roxo da IA).
+- **Aguardando veredito:** r13 (aurora global azul/lilás/roxo fixa atrás de toda área clara, sem coral; palcos SEM pin — coreografia em scrub durante a travessia, a tela nunca congela; wordmark menor e inteiro).
 - **Fila combinada:** h1 do hero com SplitText na entrada · mobile dedicado da landing-viva · depois Onda 0 fase de implementação em `web/` (Fundação A + `<Compass />`).
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
@@ -18,7 +18,7 @@
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ viva r12 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r12** (marca 3D, bússola WebGL, aurora do hero, oito áreas e direção da r11 já aprovadas) | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r13 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r13** (marca 3D, bússola WebGL, oito áreas e direção r11/r12 já aprovadas) | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -33,6 +33,22 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-30 · Sessão 13 — Onda 0, r13: aurora global sem coral, palcos sem pin, wordmark inteiro
+
+**Feedback do usuário na r12:** (1) tonalidade avermelhada na sombra do fundo do hero — manter só azul/lilás/roxo, e levar o movimento da sombra pra TODAS as telas de fundo branco; (2) transições dos palcos muito melhores, mas as telas ficam PARADAS até as transições acabarem — que aconteçam com a tela em movimento; (3) "SyncLife" no final grande demais e com a base cortada, lendo "sunklife".
+
+**Feito (em `landing-viva.html`):**
+- **Aurora global:** o canvas saiu do hero e virou `.aurora-fix` (position:fixed, z-index:-1, blur 56px, opacity .65) atrás de TODA área clara — hero, oito áreas, press, pricing e FAQ ganham a sombra viva; as bandas escuras/roxa cobrem naturalmente. Paleta nova SÓ azul/lilás/roxo: roxo 104,64,255 · azul 74,108,255 · lilás 165,138,255 · roxo profundo 82,39,230 (coral E verde saíram do fundo). Gotcha: canvas dentro de wrapper fixed mede o pai = viewport, `size()` original funciona sem mudança.
+- **Palcos SEM pin (a tela nunca congela):** pins removidos por completo; as coreografias viraram scrub na TRAVESSIA da seção (produto `top 82%`→`top -12%`, IA `top 78%`→`top -18%`): as peças voam/assentam e as bolhas dão pop ENQUANTO a seção atravessa a viewport. Cabeçalhos seguem como once-tweens na aproximação. Página encolheu ~3k px (sem pin spacers) — resolve também o "blocos espaçados". Transições próprias por palco mantidas (voo × pop de mensageiro).
+- **Wordmark inteiro:** clamp 110-250px/lh .8 + translateY(9%) → clamp 72-168px/lh .95, sem corte e com padding-bottom 40px (o descendente do y aparece completo; adeus "sunklife"). Scrub de subida mantido (yPercent 34).
+- QA (`?v=r13` contra cache): 0 pins, aurora fixa medida, console limpo desktop + mobile 390 (0 pins, canvas 125px de bitmap), doc 10.9k→6.9k px; screenshots da travessia (peças montando com a seção em movimento), pricing com lilás atrás e wordmark completo.
+
+**Pendências:** ⏳ veredito da r13; fila: SplitText no h1 do hero, mobile dedicado da viva.
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html`.
 
 ---
 
