@@ -27,6 +27,24 @@
 
 ---
 
+## 2026-07-30 · Sessão 6 — Onda 0, r6: feedback da landing viva aplicado
+
+**Veredito do usuário na r5:** CAMPO (limalha) reprovado ("poluído, pouca interação"); **OBJETO (bússola three.js) APROVADO** → registrado no DS; + 3 ajustes de conteúdo/layout.
+
+**Feito (tudo em `landing-viva.html`; a r4 segue intacta):**
+- **CAMPO v2 "carta de navegação":** parado, o fundo é quase vazio (4 isolinhas longas e calmas, opacidade ~.05, cuja inclinação segue o rumo da agulha). Ao mover o cursor, ele desenha uma **rota tracejada roxa** (como trajeto num mapa) que evapora em ~2,6s. Interação alta, ruído zero. Validado por medição do canvas (72,5k→81,2k bytes após gesto).
+- **DS §5.6 nova**: "A peça viva em WebGL (aprovada 2026-07-30)": construção 3D fiel ao §5.2, luz pela hora local, agulha com mola física, fallback CSS obrigatório, orçamento de perf (1 canvas, DPR ≤ 2).
+- **CTAs**: "Começar grátis"/"Ver demonstração" + prova social movidos pra baixo do parágrafo do hero, alinhados à esquerda (hero-foot em coluna).
+- **Régua de sintonia** preenche o vão sob o arco (strip 600→552px): escala com ticks + números 01-08 que **desliza sob um ponteiro roxo fixo** (como dial de rádio) sincronizada com o `--off` do arco; clicar num número assenta o card correspondente no norte (controle do próprio arco, sem tocar na bússola). Máscara de fade nas bordas.
+- **Conteúdo IA sem repetição**: fig. 03 do "produto por dentro" deixou de ser um segundo chat e virou **"O briefing do dia · escrito pra você"** (prosa assinada "Escrito às 07:12 · terça" + "Fontes: orçamentos · agenda · aportes · treinos", E-07); a seção IA agora é conversa+ação, com feats renomeados: 01 Enxerga tudo de uma vez · 02 Age por você · 03 Relatórios completos (saíram "Insights diários" e "Pergunte qualquer coisa", redundantes).
+- QA: régua clicável girando o arco (02 → Futuro no norte), briefing renderizado, console 100% limpo.
+
+**Pendências:** ⏳ veredito da r6 (campo novo + régua + conteúdo); depois: mobile dedicado da viva e demais ideias da fila (partículas de dados, dia sincronizado, cursor-agulha).
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html` · `DESIGN-SYSTEM-v5.md` (§5.6).
+
+---
+
 ## 2026-07-29 · Sessão 5 — Onda 0, r5: EXPERIMENTO "landing viva" (WebGL liberado)
 
 **Contexto:** o usuário liberou WebGL (a reprovação da r3 foi por desconhecimento da ferramenta) e pediu insights grandes a partir de three.js/gsap/anime.js/motion.dev (viés: capacidades) + Jeton/Osmo/Phamily (viés: conceito). Análise ao vivo dos 7 sites feita por browser. Tese aprovada pra experimento: **"o site É o instrumento"**, em 3 camadas (campo / objeto / tinta).

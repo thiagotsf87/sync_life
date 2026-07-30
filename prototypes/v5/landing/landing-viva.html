@@ -59,10 +59,11 @@
     width:.92em;height:.92em;background:#151313;border-radius:.18em;margin-left:.08em;flex-shrink:0}
   h1 .badge78 .b-n{font:700 .34em/1 var(--gro);letter-spacing:-.03em;color:var(--ele)}
   h1 .badge78 .b-l{font:700 .085em var(--gro);letter-spacing:.24em;color:#8a8686;margin-top:.14em}
-  .hero-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-top:44px;flex-wrap:wrap}
-  .hero-sub{font:400 16.5px/1.65 var(--int);color:var(--t2);max-width:430px}
+  /* r6: CTAs e prova social descem pra baixo do texto, tudo alinhado à esquerda */
+  .hero-foot{display:flex;flex-direction:column;align-items:flex-start;gap:24px;margin-top:40px}
+  .hero-sub{font:400 16.5px/1.65 var(--int);color:var(--t2);max-width:520px}
   .hero-sub strong{color:var(--t1);font-weight:600}
-  .hero-right{display:flex;flex-direction:column;gap:16px;align-items:flex-end}
+  .hero-right{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
   .hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
   .hero-proof{display:flex;gap:18px;flex-wrap:wrap}
   .hero-proof span{display:inline-flex;align-items:center;gap:7px;font:500 12px var(--int);color:var(--t3)}
@@ -80,8 +81,20 @@
   @keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
   /* ─── semicírculo de telas: as áreas em uso girando num arco (à la Osmo) ───
      v2: cards 340px, passo 7.5° (corda 2600·sin7.5° ≈ 339px mantém o encosto do r6) */
-  .strip{position:relative;height:600px;margin-top:6px;cursor:grab;touch-action:pan-y;overflow:hidden}
+  .strip{position:relative;height:552px;margin-top:6px;cursor:grab;touch-action:pan-y;overflow:hidden}
   .strip.dragging{cursor:grabbing}
+  /* régua de sintonia: preenche o vão sob o arco. A escala desliza sob o ponteiro fixo,
+     como dial de rádio; clicar num número sintoniza o card correspondente no norte */
+  .regua{position:absolute;left:50%;bottom:26px;width:min(560px,80vw);transform:translateX(-50%);height:46px;overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 18% 82%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 18% 82%,transparent)}
+  .regua-tk{position:absolute;left:50%;top:0;height:100%}
+  .regua-tk i{position:absolute;top:6px;width:1px;height:7px;background:var(--line-h)}
+  .regua-tk b{position:absolute;top:17px;transform:translateX(-50%);font:700 11px var(--gro);color:var(--t3);cursor:pointer;
+    padding:3px 7px;transition:color .3s var(--ease)}
+  .regua-tk b:hover{color:var(--t1)}
+  .regua-tk b.on{color:var(--roxo)}
+  .regua-ponteiro{position:absolute;left:50%;top:0;width:2px;height:11px;margin-left:-1px;background:var(--roxo);border-radius:1px}
   /* física em 2 camadas (à la Osmo): .scard = rotação do arco, SEM transition (o rAF conduz com lerp
      pesado, drag responde 1:1); .scin = o objeto (lift, tilt ao cursor, sombra) com a easing assinatura */
   .strip .scard{position:absolute;left:50%;top:48px;width:340px;margin-left:-170px;
@@ -216,6 +229,12 @@
   .sp-orc .hot .track i{background:var(--coral)}
   .sp-orc .val{font:500 12px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2)}
   .sp-orc .hot .val{color:var(--coral)}
+  /* espécime: o briefing escrito (E-07: a IA escreve prosa com fontes) */
+  .sp-brief{display:flex;flex-direction:column;gap:12px}
+  .sp-brief .bf-hora{font:700 10px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--ink2)}
+  .sp-brief .bf-txt{font:400 14.5px/1.75 var(--int);color:var(--ink);max-width:52ch}
+  .sp-brief .bf-txt b{font-weight:600}
+  .sp-brief .bf-fontes{font:400 11.5px var(--int);color:var(--ink2);border-top:1px dashed var(--pline);padding-top:10px}
   /* espécime: chat real */
   .sp-chat{display:flex;flex-direction:column;gap:10px}
   .sp-chat .bub{max-width:88%;padding:11px 15px;font:400 13px/1.55 var(--int);border-radius:15px}
@@ -556,16 +575,15 @@
       </div>
       <div class="spec-col">
         <div class="specimen rv drift" data-drift="-14">
-          <div class="tag"><span>Consultor IA · conversa real</span><i>fig. 03</i></div>
-          <div class="sp-chat">
-            <div class="bub u">Quanto gastei em lazer esse mês?</div>
-            <div class="bub a">Você gastou <strong class="num">R$&nbsp;410,00</strong> em Lazer, 82% do orçamento (R$&nbsp;500,00). Com 8 dias restantes, considere reduzir saídas até o fim do mês.</div>
-            <div class="bub u">E na Viagem Itália, quanto falta?</div>
-            <div class="bub a">Faltam <strong class="num">R$&nbsp;4.100,00</strong> (32%) para completar a meta. Mantendo seu ritmo atual de R$&nbsp;580/mês, você atinge em <strong>7 meses</strong>, uma semana antes do prazo.</div>
+          <div class="tag"><span>O briefing do dia · escrito pra você</span><i>fig. 03</i></div>
+          <div class="sp-brief">
+            <p class="bf-hora num">Escrito às 07:12 · terça</p>
+            <p class="bf-txt">Julho está <b class="num">4 pontos</b> acima de junho. As manhãs protegidas seguraram o foco, o aporte antecipado rendeu antes da média e o único ponto solto é o orçamento de lazer, que passou do limite por <b class="num">R$&nbsp;8</b>. Um ajuste pequeno hoje evita um corte grande na semana que vem.</p>
+            <p class="bf-fontes">Fontes: orçamentos · agenda · aportes · treinos</p>
           </div>
         </div>
-        <p class="mnote rv">A IA enxerga orçamentos, metas, treino e agenda ao mesmo tempo. Por isso a resposta vem com contexto, não com achismo.</p>
-        <p class="hand rx rv" style="transform:rotate(-2.5deg);align-self:flex-end">resposta com contexto, não chute!</p>
+        <p class="mnote rv">Todo dia às 7h o coach escreve o seu dia em prosa: com números, com fontes, sem virar painel de widgets.</p>
+        <p class="hand rx rv" style="transform:rotate(-2.5deg);align-self:flex-end">escrito pra você, e assinado!</p>
       </div>
     </div>
   </div>
@@ -584,13 +602,13 @@
     <div class="head rv">
       <p class="eyebrow"><b>Consultor IA</b> · integrado</p>
       <h2>Uma IA que <em>conhece sua vida</em>. E fala como um amigo.</h2>
-      <p class="lead">Não é mais um chatbot genérico. O consultor do SyncLife enxerga seus orçamentos, suas metas, seu treino e seus eventos, e gera insights personalizados em tempo real.</p>
+      <p class="lead">O briefing conta o seu dia; aqui você conversa e decide. E quando você decide, o consultor executa: agenda, transfere, protege o foco.</p>
     </div>
     <div class="ia-grid">
       <div class="ia-feats rv">
-        <div class="ia-feat"><span class="fn num">01</span><div><h4>Insights diários</h4><p>Alertas, ações recomendadas e conquistas direto na sua tela inicial.</p></div></div>
-        <div class="ia-feat"><span class="fn num">02</span><div><h4>Relatórios completos</h4><p>Gere um PDF do seu mês inteiro em finanças, saúde e produtividade em 1 clique.</p></div></div>
-        <div class="ia-feat"><span class="fn num">03</span><div><h4>Pergunte qualquer coisa</h4><p>"Quanto gastei em lazer? Quanto preciso poupar pra viajar em julho?" em linguagem natural.</p></div></div>
+        <div class="ia-feat"><span class="fn num">01</span><div><h4>Enxerga tudo de uma vez</h4><p>Orçamentos, metas, treino e agenda no mesmo contexto: cada resposta vem com o porquê e com as fontes.</p></div></div>
+        <div class="ia-feat"><span class="fn num">02</span><div><h4>Age por você</h4><p>Agendar o aporte, remarcar o treino, proteger 2h de foco: você confirma na conversa, ele executa.</p></div></div>
+        <div class="ia-feat"><span class="fn num">03</span><div><h4>Relatórios completos</h4><p>O mês inteiro em PDF: finanças, saúde e produtividade em 1 clique.</p></div></div>
       </div>
       <div class="chat rv">
         <div class="bub u">Se eu antecipar a parcela da viagem, aperta o mês?</div>
@@ -761,14 +779,19 @@
 
     function angleOf(i) { return (i - 3.5) * STEP; }
     function clampOff(v) { return Math.max(-MAX, Math.min(MAX, v)); }
-    function render() { strip.style.setProperty('--off', (offCur + sway).toFixed(3) + 'deg'); }
+    function render() {
+      strip.style.setProperty('--off', (offCur + sway).toFixed(3) + 'deg');
+      if (rtk) rtk.style.transform = 'translateX(' + ((offCur + sway) / STEP * SPC).toFixed(2) + 'px)';
+    }
     function nearest() { return Math.max(0, Math.min(N - 1, Math.round(3.5 - off / STEP))); }
     function settle(i) { // assenta num detent (só o arco; a bússola não participa)
+      mark(i);
       var to = clampOff(-angleOf(i));
       if (reduce) { off = offCur = to; tw = null; render(); return; }
       tw = { from: off, to: to, t0: performance.now(), dur: Math.max(420, Math.min(1200, Math.abs(to - off) * 24)) };
       vel = 0; idleT = 0;
     }
+    function mark(i) { rnums.forEach(function (b, j) { b.classList.toggle('on', j === i); }); }
 
     cards.forEach(function (c) {
       var scin = c.querySelector('.scin');
@@ -783,6 +806,22 @@
         });
       }
     });
+
+    // régua de sintonia: construída aqui pra conversar direto com settle()
+    var SPC = 64, rnums = [], rtk = null;
+    (function () {
+      var regua = document.createElement('div'); regua.className = 'regua';
+      rtk = document.createElement('div'); rtk.className = 'regua-tk';
+      for (var q = -16; q <= 16; q++) { var tk = document.createElement('i'); tk.style.left = (q * SPC / 4) + 'px'; rtk.appendChild(tk); }
+      for (var ri = 0; ri < N; ri++) (function (ri) {
+        var b = document.createElement('b'); b.className = 'num'; b.textContent = '0' + (ri + 1);
+        b.style.left = ((ri - 3.5) * SPC) + 'px';
+        b.addEventListener('click', function () { settle(ri); });
+        rtk.appendChild(b); rnums.push(b);
+      })(ri);
+      var pon = document.createElement('span'); pon.className = 'regua-ponteiro';
+      regua.appendChild(rtk); regua.appendChild(pon); strip.appendChild(regua);
+    })();
 
     strip.addEventListener('pointerdown', function (e) {
       down = true; moved = false; lastX = e.clientX; lastT = performance.now(); vel = 0; tw = null;
@@ -830,6 +869,7 @@
       })(0);
     }
     off = offCur = clampOff(-angleOf(nearest()));
+    mark(nearest());
     render();
   }
 
@@ -868,50 +908,60 @@
     a8.point(0);
   }
 
-  // ── O CAMPO: limalha de ferro digital. Cada traço se orienta pro rumo da agulha
-  //    (window.__vivaHeading) com um sopro de ruído; o cursor é um ímã que redemoinha. ──
+  // ── O CAMPO v2: carta de navegação. Parado, o fundo é quase vazio (4 isolinhas que mal
+  //    se veem, inclinando com o rumo da agulha). Ao mover o cursor, ele desenha uma ROTA
+  //    tracejada roxa, como trajeto num mapa, que evapora em ~2,6s. Interação alta, ruído zero. ──
   var campo = document.getElementById('campo');
   if (campo) {
     var fctx = campo.getContext('2d');
     var DPRf = Math.min(2, devicePixelRatio || 1);
-    var pts = [], mx = -9999, my = -9999;
     function fsize() {
       campo.width = innerWidth * DPRf; campo.height = innerHeight * DPRf;
       campo.style.width = innerWidth + 'px'; campo.style.height = innerHeight + 'px';
-      pts = [];
-      var gap = innerWidth < 720 ? 48 : 34;
-      for (var y = gap / 2; y < innerHeight; y += gap)
-        for (var x = gap / 2; x < innerWidth; x += gap)
-          pts.push({ x: x + (Math.random() - .5) * gap * .6, y: y + (Math.random() - .5) * gap * .6, dx: 0, dy: -1 });
     }
     fsize(); addEventListener('resize', fsize);
-    addEventListener('pointermove', function (e) { mx = e.clientX; my = e.clientY; });
-    function fdraw(t) {
+    var rota = [];
+    addEventListener('pointermove', function (e) {
+      var p = rota[rota.length - 1];
+      if (!p || Math.hypot(e.clientX - p.x, e.clientY - p.y) > 14)
+        rota.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+      if (rota.length > 110) rota.shift();
+    });
+    function fdraw(now) {
       fctx.setTransform(DPRf, 0, 0, DPRf, 0, 0);
       fctx.clearRect(0, 0, innerWidth, innerHeight);
-      var head = ((window.__vivaHeading || 0) - 90) * Math.PI / 180; // 0° = norte (pra cima)
-      fctx.strokeStyle = 'rgba(21,19,19,.16)'; fctx.lineWidth = 1.1; fctx.lineCap = 'round';
-      fctx.beginPath();
-      for (var i = 0; i < pts.length; i++) {
-        var p = pts[i];
-        var n = Math.sin(p.x * .006 + t * .00022) + Math.sin(p.y * .005 - t * .00017);
-        var a = head + n * .34;
-        var bx = Math.cos(a), by = Math.sin(a);
-        var dxm = p.x - mx, dym = p.y - my, d2 = dxm * dxm + dym * dym;
-        if (d2 < 28900) { // raio de 170px: o ímã do cursor
-          var d = Math.sqrt(d2) || 1, f = 1 - d / 170;
-          bx += (-dym / d) * f * 1.7; by += (dxm / d) * f * 1.7; // tangente: redemoinho
+      // isolinhas: 4 curvas longas e calmas; a inclinação segue o rumo da agulha
+      var slope = Math.sin((window.__vivaHeading || 0) * Math.PI / 180) * .1;
+      fctx.lineCap = 'round'; fctx.lineWidth = 1;
+      for (var l = 0; l < 4; l++) {
+        fctx.strokeStyle = 'rgba(21,19,19,' + (.045 + l * .008) + ')';
+        fctx.beginPath();
+        var base = innerHeight * (.16 + l * .23);
+        for (var x = -40; x <= innerWidth + 40; x += 26) {
+          var y = base + (x - innerWidth / 2) * slope
+            + Math.sin(x * .0032 + now * .00014 + l * 1.9) * 30
+            + Math.sin(x * .0009 - now * .00008 + l * .8) * 44;
+          if (x === -40) fctx.moveTo(x, y); else fctx.lineTo(x, y);
         }
-        var bl = Math.hypot(bx, by) || 1; bx /= bl; by /= bl;
-        p.dx += (bx - p.dx) * .09; p.dy += (by - p.dy) * .09;
-        fctx.moveTo(p.x - p.dx * 3.6, p.y - p.dy * 3.6);
-        fctx.lineTo(p.x + p.dx * 3.6, p.y + p.dy * 3.6);
+        fctx.stroke();
       }
-      fctx.stroke();
+      // a rota: trajeto tracejado do cursor, evaporando
+      if (rota.length > 1) {
+        fctx.setLineDash([2, 7]); fctx.lineWidth = 1.4;
+        for (var i = 1; i < rota.length; i++) {
+          var a = rota[i], b = rota[i - 1];
+          var idade = (now - a.t) / 2600;
+          if (idade >= 1) continue;
+          fctx.strokeStyle = 'rgba(104,64,255,' + (.38 * (1 - idade)).toFixed(3) + ')';
+          fctx.beginPath(); fctx.moveTo(b.x, b.y); fctx.lineTo(a.x, a.y); fctx.stroke();
+        }
+        fctx.setLineDash([]);
+        while (rota.length && (now - rota[0].t) > 2600) rota.shift();
+      }
     }
     if (!reduce) {
       (function floop(t) { requestAnimationFrame(floop); if (!document.hidden) fdraw(t); })(0);
-    } else fdraw(0);
+    }
   }
 
   // ── A TINTA: números assentam como instrumento (sobem, passam do ponto e voltam) ──

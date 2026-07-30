@@ -350,6 +350,22 @@ nav compacta), **gap 11px**.
   rumo acesa + primitiva geométrica da área no centro (mesmo material para as 8; ver
   handoff da marca 3D). Ícone e índice contam a mesma coisa.
 
+### 5.6 A peça viva em WebGL (aprovada 2026-07-30)
+
+Em superfícies ricas (landing, splash, página da marca), a bússola pode ser **renderizada
+de verdade** (three.js, referência em `prototypes/v5/landing/landing-viva.html`):
+
+- Construção 3D fiel ao §5.2: aro torneado (torus cromado com ambiente refletido via
+  PMREM), mostrador rebaixado, 24 marcações em relevo, agulha facetada, pivô usinado.
+- **A luz segue a hora local do usuário**: manhã dourada, tarde neutra, noite fria com a
+  marcação acesa mais intensa. O instrumento nunca está igual duas vezes.
+- **A agulha tem mola física** (aceleração + amortecimento): o overshoot do §5.4 emerge da
+  física, não de keyframe. A peça inclina acompanhando o cursor; o reflexo corre com o scroll.
+- **O render CSS (§5.2) é o fallback obrigatório** e a única versão em contextos sem GPU,
+  SSR ou com `prefers-reduced-motion` na parte de busca automática. Nunca os dois visíveis
+  ao mesmo tempo; a troca é silenciosa (`try/catch` + classe no palco).
+- Orçamento de performance: 1 canvas por página, DPR ≤ 2, pausa fora da viewport.
+
 ---
 
 ## 6. Anatomia
