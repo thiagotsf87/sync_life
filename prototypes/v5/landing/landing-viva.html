@@ -25,11 +25,8 @@
      O resto da página é papel limpo. */
   #aurora{position:absolute;left:-8%;top:-10%;width:116%;height:114%;z-index:0;pointer-events:none;
     filter:blur(52px) saturate(1.1);opacity:.85}
-  #herobs{position:absolute;top:-130px;right:-150px;width:640px;height:640px;z-index:1;pointer-events:none;
-    filter:blur(2.2px);opacity:.92}
   .hero .wrap{position:relative;z-index:2}
   .strip{z-index:2}
-  @media (max-width:1180px){ #herobs{display:none} }
 
   /* nav: pílula flutuante + ticker elétrico grudado */
   .navwrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:70;width:min(880px,94vw);
@@ -255,8 +252,30 @@
   .mq span{font:500 17px var(--gro);letter-spacing:.04em;text-transform:uppercase;color:var(--t3);padding:0 28px}
   .mq i{color:var(--roxo);font-style:normal}
 
-  /* ─── IA: transcrição ao centro ─── */
-  .ia{padding:110px 0}
+  /* ─── IA: a funcionalidade principal ganha o palco (r8): banda escura arredondada,
+     aurora própria e a conversa que se escreve sozinha quando a dobra entra ─── */
+  .ia{padding:110px 0;position:relative;overflow:hidden;border-radius:44px}
+  #aurora2{position:absolute;left:-6%;top:-12%;width:112%;height:124%;z-index:0;pointer-events:none;
+    filter:blur(60px) saturate(1.05);opacity:.42}
+  .ia .wrap{position:relative;z-index:2}
+  .anim .ia .chat .msg{opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+  .anim .ia .chat .msg.in{opacity:1;transform:none}
+  .ia .chat .msg.gone{display:none}
+  .typing{display:none;gap:4px;padding:13px 16px;background:var(--s1);border:1px solid var(--line);
+    border-radius:16px 16px 16px 4px;width:fit-content;align-self:flex-start}
+  .anim .typing{display:flex}
+  .typing i{width:5px;height:5px;border-radius:50%;background:var(--t3)}
+  .anim .typing.in i{animation:tdot 1s var(--ease) infinite}
+  .typing i:nth-child(2){animation-delay:.15s}
+  .typing i:nth-child(3){animation-delay:.3s}
+  @keyframes tdot{0%,100%{transform:none;opacity:.5}50%{transform:translateY(-3px);opacity:1}}
+  .acao{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;font:600 12.5px var(--int);color:var(--ele);
+    border:1px solid rgba(161,255,98,.35);background:rgba(161,255,98,.08);border-radius:999px;padding:8px 14px}
+  .acao svg{flex:none}
+  .acao .ck{stroke:var(--ele);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:20;stroke-dashoffset:0}
+  .anim .acao .ck{stroke-dashoffset:20;transition:stroke-dashoffset .6s var(--ease) .2s}
+  .anim .acao.in .ck{stroke-dashoffset:0}
   .ia .head{max-width:680px}
   .ia h2{font:500 clamp(2.1rem,4.2vw,3.6rem)/1.05 var(--gro);letter-spacing:-.045em;margin-top:18px}
   .ia h2 em{font-style:normal;color:var(--ele)}
@@ -374,7 +393,6 @@
 <!-- HERO: manchete de dobra inteira, sem mockup -->
 <header class="hero">
   <canvas id="aurora" aria-hidden="true"></canvas>
-  <canvas id="herobs" aria-hidden="true"></canvas>
   <div class="wrap">
     <span class="pill-novo boot b1"><span class="dot"></span>Novo · Coach IA em todos os planos</span>
     <h1>
@@ -599,8 +617,9 @@
   </div>
 </div>
 
-<!-- IA -->
-<section class="ia" id="manifesto">
+<!-- IA: a funcionalidade principal, com palco próprio -->
+<section class="ia dk" id="manifesto">
+  <canvas id="aurora2" aria-hidden="true"></canvas>
   <div class="wrap">
     <div class="head rv">
       <p class="eyebrow"><b>Consultor IA</b> · integrado</p>
@@ -613,11 +632,14 @@
         <div class="ia-feat"><span class="fn num">02</span><div><h4>Age por você</h4><p>Agendar o aporte, remarcar o treino, proteger 2h de foco: você confirma na conversa, ele executa.</p></div></div>
         <div class="ia-feat"><span class="fn num">03</span><div><h4>Relatórios completos</h4><p>O mês inteiro em PDF: finanças, saúde e produtividade em 1 clique.</p></div></div>
       </div>
-      <div class="chat rv">
-        <div class="bub u">Se eu antecipar a parcela da viagem, aperta o mês?</div>
-        <div class="bub a">Não. Antecipando <strong class="num">R$&nbsp;580</strong> hoje, seu saldo projetado fecha em <strong class="num">R$&nbsp;1.540</strong> e a poupança segue <span class="g">acima da meta</span>. Vale fazer.</div>
-        <div class="bub u">Então agenda pra sexta.</div>
-        <div class="bub a">Agendado. Transferência de <strong class="num">R$&nbsp;580</strong> pra Viagem Itália na sexta, 31 de julho. A meta chega a <strong class="num">73%</strong>.</div>
+      <div class="chat rv" id="iachat">
+        <div class="bub u msg">Se eu antecipar a parcela da viagem, aperta o mês?</div>
+        <div class="typing msg" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="bub a msg">Não. Antecipando <strong class="num">R$&nbsp;580</strong> hoje, seu saldo projetado fecha em <strong class="num">R$&nbsp;1.540</strong> e a poupança segue <span class="g">acima da meta</span>. Vale fazer.</div>
+        <div class="bub u msg">Então agenda pra sexta.</div>
+        <div class="typing msg" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="bub a msg">Agendado. Transferência de <strong class="num">R$&nbsp;580</strong> pra Viagem Itália na sexta, 31 de julho. A meta chega a <strong class="num">73%</strong>.</div>
+        <div class="acao msg"><svg width="15" height="15" viewBox="0 0 16 14" aria-hidden="true"><path class="ck" d="M2 7.5 L6 11.5 L14 2.5"/></svg>Ação executada · aporte agendado pra sexta, 31 jul</div>
         <div class="chat-input">
           <span>Pergunte algo…</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
@@ -911,41 +933,55 @@
     a8.point(0);
   }
 
-  // ── AURORA DE ESTÚDIO (inspiração Jeton): o fundo vivo mora SÓ no hero. Três massas de
-  //    cor da marca, enormes e desfocadas (blur no CSS), derivando em ciclos de ~25s.
-  //    Canvas em 1/3 da resolução: o blur esconde tudo, o custo é mínimo. ──
-  var aurora = document.getElementById('aurora');
-  if (aurora) {
-    var actx = aurora.getContext('2d');
-    var BL = [
-      { c: '104,64,255', a: .62, fx: .21, fy: .16, px: .28, py: .34, ph: 0 },
-      { c: '161,255,98', a: .40, fx: .16, fy: .21, px: .70, py: .26, ph: 2.1 },
-      { c: '248,65,49',  a: .24, fx: .13, fy: .17, px: .52, py: .82, ph: 4.2 }
-    ];
-    function asize() { // mede o hero (o canvas é replaced: o bitmap não pode derivar do próprio box)
-      var hero = aurora.parentElement;
-      aurora.width = Math.max(2, Math.floor(hero.clientWidth * 1.16 / 3));
-      aurora.height = Math.max(2, Math.floor(hero.clientHeight * 1.14 / 3));
+  // ── AURORA DE ESTÚDIO (inspiração Jeton): massas de cor enormes e desfocadas derivando.
+  //    r8: movimento com 2 harmônicos, raio que respira e uma inclinação sutil na direção
+  //    do cursor. Canvas a 1/3 da resolução; o blur do CSS esconde tudo, o custo é mínimo. ──
+  var leanX = 0, leanY = 0, mNX = .5, mNY = .5;
+  addEventListener('pointermove', function (e) { mNX = e.clientX / innerWidth; mNY = e.clientY / innerHeight; });
+  function vivaAurora(id, blobs, fw, fh) {
+    var cv = document.getElementById(id);
+    if (!cv) return;
+    var ctx = cv.getContext('2d');
+    function size() { // mede o pai (canvas é replaced: o bitmap não pode derivar do próprio box)
+      var p = cv.parentElement;
+      cv.width = Math.max(2, Math.floor(p.clientWidth * fw / 3));
+      cv.height = Math.max(2, Math.floor(p.clientHeight * fh / 3));
     }
-    asize(); addEventListener('resize', asize);
-    function adraw(t) {
-      var w = aurora.width, h = aurora.height;
-      actx.clearRect(0, 0, w, h);
-      for (var i = 0; i < BL.length; i++) {
-        var b = BL[i];
-        var x = w * (b.px + .17 * Math.sin(t * b.fx * .001 + b.ph));
-        var y = h * (b.py + .15 * Math.cos(t * b.fy * .001 + b.ph * 1.3));
-        var g = actx.createRadialGradient(x, y, 0, x, y, Math.max(w, h) * .36);
+    size(); addEventListener('resize', size);
+    function draw(t) {
+      var w = cv.width, h = cv.height;
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < blobs.length; i++) {
+        var b = blobs[i];
+        var x = w * (b.px + .14 * Math.sin(t * b.fx * .001 + b.ph) + .06 * Math.sin(t * b.fx * .0023 + b.ph * 2)) + leanX * w * .07;
+        var y = h * (b.py + .12 * Math.cos(t * b.fy * .001 + b.ph * 1.3) + .05 * Math.cos(t * b.fy * .0019 + b.ph)) + leanY * h * .05;
+        var r = Math.max(w, h) * .36 * (1 + .11 * Math.sin(t * .0003 + b.ph * 3));
+        var g = ctx.createRadialGradient(x, y, 0, x, y, r);
         g.addColorStop(0, 'rgba(' + b.c + ',' + b.a + ')');
         g.addColorStop(1, 'rgba(' + b.c + ',0)');
-        actx.fillStyle = g; actx.fillRect(0, 0, w, h);
+        ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
       }
     }
     if (!reduce) {
-      var askip = 0;
-      (function aloop(t) { requestAnimationFrame(aloop); if (document.hidden || (askip++ % 2)) return; adraw(t); })(0);
-    } else adraw(0);
+      var skip = 0;
+      (function loop(t) { requestAnimationFrame(loop); if (document.hidden || (skip++ % 2)) return;
+        leanX += ((mNX - .5) - leanX) * .025; leanY += ((mNY - .5) - leanY) * .025; draw(t); })(0);
+    } else draw(0);
   }
+  // hero (papel claro): roxo, elétrico, um sopro de coral e um roxo-claro de profundidade
+  vivaAurora('aurora', [
+    { c: '104,64,255', a: .62, fx: .21, fy: .16, px: .28, py: .34, ph: 0 },
+    { c: '161,255,98', a: .40, fx: .16, fy: .21, px: .70, py: .26, ph: 2.1 },
+    { c: '248,65,49',  a: .24, fx: .13, fy: .17, px: .52, py: .82, ph: 4.2 },
+    { c: '156,125,255', a: .30, fx: .11, fy: .14, px: .84, py: .62, ph: 5.4 }
+  ], 1.16, 1.14);
+  // seção IA (banda escura): glow roxo/elétrico, coral contido (a voz do coach mora aqui)
+  vivaAurora('aurora2', [
+    { c: '104,64,255', a: .50, fx: .17, fy: .13, px: .24, py: .30, ph: .8 },
+    { c: '122,85,255', a: .34, fx: .12, fy: .16, px: .78, py: .68, ph: 3.1 },
+    { c: '161,255,98', a: .26, fx: .15, fy: .11, px: .68, py: .18, ph: 1.9 },
+    { c: '248,65,49',  a: .14, fx: .10, fy: .14, px: .40, py: .86, ph: 4.6 }
+  ], 1.12, 1.24);
 
   // ── A TINTA: números assentam como instrumento (sobem, passam do ponto e voltam) ──
   function odometro(el) {
@@ -966,6 +1002,37 @@
       es.forEach(function (e) { if (e.isIntersecting) { odometro(e.target); ioNum.unobserve(e.target); } });
     }, { threshold: .5 });
     document.querySelectorAll('.a8-row .score, .badge78 .b-n').forEach(function (el) { ioNum.observe(el); });
+  }
+
+  // ── a conversa que se escreve: quando a dobra da IA entra, o chat acontece uma vez
+  //    (pergunta → digitando → resposta → pedido → digitando → execução → selo com check).
+  //    Sem .anim (reduce/no-JS), a conversa inteira já está na página. ──
+  var iachat = document.getElementById('iachat');
+  if (iachat && !reduce && 'IntersectionObserver' in window) {
+    var MSGS = [].slice.call(iachat.querySelectorAll('.msg'));
+    var falou = false;
+    var ROTEIRO = [
+      { i: 0, t: 150 },                 // pergunta
+      { i: 1, t: 800 },                 // digitando…
+      { i: 1, t: 1750, some: true },
+      { i: 2, t: 1750 },                // resposta com números
+      { i: 3, t: 2750 },                // "então agenda pra sexta"
+      { i: 4, t: 3300 },                // digitando…
+      { i: 4, t: 4250, some: true },
+      { i: 5, t: 4250 },                // agendado
+      { i: 6, t: 4900 }                 // selo: ação executada (check se desenha)
+    ];
+    var ioChat = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting && !falou) {
+          falou = true; ioChat.disconnect();
+          ROTEIRO.forEach(function (s) {
+            setTimeout(function () { MSGS[s.i].classList.add(s.some ? 'gone' : 'in'); }, s.t);
+          });
+        }
+      });
+    }, { threshold: .35 });
+    ioChat.observe(iachat);
   }
 
   // deriva sutil dos espécimes no scroll (sem pin, sem scrub de história)
@@ -1086,15 +1153,6 @@ try {
       anim: { bx: -.34, swayA: .05, followPx: .5, followPy: .22, yOsc: 0 }
     }));
     stage.classList.add('gl-on'); // WebGL ok: o CSS sai, o objeto entra
-  }
-  // a peça gigante e soft do hero (o "objeto de abertura", à la moeda do Jeton)
-  const heroCv = document.getElementById('herobs');
-  if (heroCv) {
-    inst.push(montar(heroCv, {
-      size: 640, dpr: 1, fov: 30,
-      camPos: [.55, .5, 2.7], camLook: [-.12, -.08, 0],
-      anim: { bx: -.2, swayA: .03, followPx: .12, followPy: .06, yOsc: .5 }
-    }));
   }
 
   if (inst.length) {

@@ -27,6 +27,22 @@
 
 ---
 
+## 2026-07-30 · Sessão 8 — Onda 0, r8: hero só com aurora + a seção da IA vira o segundo palco
+
+**Feedback do usuário na r7:** gradiente animado do hero APROVADO; peça 3D do hero reprovada (resolução baixa e bússola demais na página); pedir algo forte na seção "Uma IA que conhece sua vida" (funcionalidade principal).
+
+**Feito (em `landing-viva.html`):**
+- **Peça 3D do hero removida** (canvas, CSS e instância do módulo; o three.js segue só na bússola da seção das 8 áreas, aprovada).
+- **Aurora melhorada** e extraída pra função `vivaAurora(id, blobs, fw, fh)`: movimento com 2 harmônicos por eixo, raio "respirando" (±11%), inclinação sutil na direção do cursor (lerp .025) e um 4º blob roxo-claro de profundidade.
+- **Seção IA = segundo momento vivo da página:** banda escura arredondada 44px com **aurora dark própria** (`#aurora2`: roxo/roxo-claro/elétrico/coral contido) e **a conversa que se escreve sozinha** quando a dobra entra (IO, roda 1×): pergunta → "digitando…" → resposta com números → "Então agenda pra sexta." → digitando → "Agendado…" → **selo elétrico "Ação executada · aporte agendado pra sexta, 31 jul" com o check se desenhando**. Sem `.anim` (reduce/no-JS) a conversa inteira já está na página (E-02).
+- QA: hero limpo com aurora rica; sequência do chat verificada completa (6,2s); console 100% limpo.
+
+**Pendências:** ⏳ veredito da r8; fila: morphing de cor entre seções, wordmark gigante no rodapé, mobile dedicado da viva.
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html`.
+
+---
+
 ## 2026-07-30 · Sessão 7 — Onda 0, r7: fundo Jeton-like (aurora + peça gigante + bandas arredondadas)
 
 **Feedback do usuário na r6:** fundo ainda não agradou (nem rota tracejada do mouse, nem isolinhas); referência explícita: o fundo e as transições do site do Jeton; pode ser só em partes do site.
