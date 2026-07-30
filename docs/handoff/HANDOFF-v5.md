@@ -10,15 +10,15 @@
 - **Branch:** `poc/ds-v5`. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`. (QA: validar com `?v=rN` por causa do cache do http.server.)
 - **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r15 APROVADA em 2026-07-30** (tag `poc-landing-viva-r15`).
 - **✅ LANDING DESKTOP APROVADA (r15):** aurora global azul/lilás/roxo passeando atrás das áreas claras · palcos produto/IA sem pin com coreografia na travessia (voo com encaixe × pop de mensageiro) · banda roxa sólida da IA · pricing em 2 cartões iguais · FAQ 2 colunas · wordmark gigante inteiro · copy vendável com números canônicos. Já aprovados antes: marca 3D cromo líquido (DS §5), bússola WebGL (DS §5.6), seção "As oito áreas".
-- **⏳ MOBILE m1 EM APROVAÇÃO:** `landing/landing-viva.mobile.html` (390×844, dedicado) porta a r15 inteira pro toque: aurora global, arco com régua de sintonia, bússola WebGL (DPR 1) com fallback CSS, coreografia em scrub por elemento (voo com encaixe × pop de mensageiro), pricing empilhado, wordmark inteiro. Scroll nativo, sem Lenis.
-- **Próximo passo:** veredito do usuário no mobile m1 → com ele aprovado, implementação da Onda 0 em `web/` (Fundação A: tokens/fontes + `<Compass />` + landing real) + teste de identidade. Polimento opcional na fila: SplitText no h1 do hero.
+- **✅ MOBILE m1 APROVADO (2026-07-30, tag `poc-landing-viva-mobile-m1`):** `landing/landing-viva.mobile.html` (390×844, dedicado) porta a r15 inteira pro toque: aurora global, arco com régua de sintonia, bússola WebGL (DPR 1) com fallback CSS, coreografia em scrub por elemento (voo com encaixe × pop de mensageiro), pricing empilhado, wordmark inteiro. Scroll nativo, sem Lenis.
+- **Próximo passo: IMPLEMENTAÇÃO da Onda 0 em `web/`** (Fundação A: tokens v5 escopados sob `.v5` + fontes Inter/Caveat via next/font + `<Compass />` + landing real desktop+mobile) + teste de identidade screenshot a screenshot em `next start`. Lembrete de implementação: `document.fonts.load()` explícito antes de SplitText (fix do m1; a desktop r15 tem o padrão latente). Polimento opcional na fila: SplitText no h1 do hero.
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
 ## Status das ondas
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **DESKTOP APROVADA (r15, 2026-07-30)** · ⏳ mobile m1 em aprovação | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -33,6 +33,17 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-30 · Sessão 16b — ✅ APROVAÇÃO do mobile m1 (Onda 0: fase de protótipo COMPLETA)
+
+**Veredito do usuário:** "aprovado". O `landing-viva.mobile.html` m1 é a landing mobile oficial da Onda 0.
+
+**Registrado:**
+- Tag git `poc-landing-viva-mobile-m1` no commit da aprovação; hub com a linha do mobile marcada aprovada.
+- Onda 0 fecha a fase de protótipo com os dois oficiais: desktop r15 (`poc-landing-viva-r15`) + mobile m1. A r4 segura segue congelada em `poc-landing-r4`.
+- **Próximo passo do ciclo (regra do programa): IMPLEMENTAÇÃO em `web/`** — Fundação A (tokens v5 sob `.v5`, Inter/Caveat via next/font, `<Compass />` three.js com fallback, landing real desktop+mobile com GSAP) e teste de identidade screenshot a screenshot contra os 2 protótipos, sempre em `next start` (nunca dev). Levar o fix do `document.fonts.load()` pro SplitText.
 
 ---
 
