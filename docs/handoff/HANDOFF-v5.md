@@ -7,18 +7,17 @@
 
 ## Retomada rápida (pra nova sessão)
 
-- **Branch:** `poc/ds-v5` · último commit = r10. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`.
-- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r13 em evolução** (é onde o trabalho acontece).
-- **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · seção "As oito áreas" (hover→agulha) · direção da r11/r12 (animações + fundo roxo da IA).
-- **Aguardando veredito:** r15 (nuvem agora PASSEIA — amplitude do drift dobrada, .14→.26 da largura; margens laterais dos palcos produto/IA restauradas pro gutter 4vw do `.wrap`, conteúdo alinhado a 90px como o resto).
-- **Fila combinada:** h1 do hero com SplitText na entrada · mobile dedicado da landing-viva · depois Onda 0 fase de implementação em `web/` (Fundação A + `<Compass />`).
+- **Branch:** `poc/ds-v5`. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`. (QA: validar com `?v=rN` por causa do cache do http.server.)
+- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r15 APROVADA em 2026-07-30** (tag `poc-landing-viva-r15`).
+- **✅ LANDING DESKTOP APROVADA (r15):** aurora global azul/lilás/roxo passeando atrás das áreas claras · palcos produto/IA sem pin com coreografia na travessia (voo com encaixe × pop de mensageiro) · banda roxa sólida da IA · pricing em 2 cartões iguais · FAQ 2 colunas · wordmark gigante inteiro · copy vendável com números canônicos. Já aprovados antes: marca 3D cromo líquido (DS §5), bússola WebGL (DS §5.6), seção "As oito áreas".
+- **Próximo passo:** protótipo mobile dedicado da landing-viva → com ele aprovado, implementação da Onda 0 em `web/` (Fundação A: tokens/fontes + `<Compass />` + landing real) + teste de identidade. Polimento opcional na fila: SplitText no h1 do hero.
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
 ## Status das ondas
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ viva r15 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r15** (r13 recebeu "ficou bom"; marca 3D, bússola WebGL, oito áreas e direção r11-r14 aprovadas) | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r15 (r4 segura preservada) | ✅ **DESKTOP APROVADA (r15, 2026-07-30)** · mobile dedicado pendente | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -33,6 +32,17 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-30 · Sessão 15b — ✅ APROVAÇÃO da landing desktop (r15)
+
+**Veredito do usuário:** "aprovado". A `landing-viva.html` r15 é a landing desktop oficial da Onda 0.
+
+**Registrado:**
+- Tag git `poc-landing-viva-r15` no commit da aprovação; a r4 segura segue congelada em `poc-landing-r4`.
+- O que a aprovação cobre: aurora global (azul/lilás/roxo, drift amplo), palcos produto/IA sem pin (coreografia na travessia, transição própria por palco), banda roxa sólida da IA, pricing 2 cartões, FAQ 2 colunas, CTA final com wordmark gigante, copy vendável, números canônicos, ticker de scores, fallbacks E-02 (mobile/no-GSAP estático completo).
+- Próximo passo do ciclo (regra do programa): protótipo MOBILE dedicado da landing-viva → aprovação → implementação em `web/` + teste de identidade.
 
 ---
 
