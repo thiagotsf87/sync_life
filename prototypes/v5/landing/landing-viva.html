@@ -1022,36 +1022,64 @@
     CustomEase.create('sl', '.625,.05,0,1'); // a easing assinatura (E-01) vira ease do GSAP
     if (window._lenis) window._lenis.on('scroll', ScrollTrigger.update);
 
-    // 1) OS PALCOS PINADOS (r11, o padrão dos refs): a tela segura e se transforma
-    //    com o scroll — no produto o painel se monta peça a peça; na IA a conversa
-    //    avança bolha a bolha e a ação se desenha no fim. Só desktop; no mobile e
-    //    sem GSAP as seções são estáticas e completas (E-02).
+    // 1) OS PALCOS PINADOS (r12): a seção NUNCA chega vazia — cabeçalho e primeiras
+    //    peças entram na APROXIMAÇÃO (antes do pin), e o pin curto só termina a cena.
+    //    E cada palco tem transição própria: no produto as peças VOAM e se encaixam;
+    //    na IA as bolhas dão POP de mensagem chegando. Só desktop; no mobile e sem
+    //    GSAP as seções são estáticas e completas (E-02).
     if (matchMedia('(min-width:1024px)').matches) {
-      // nos palcos o scrub é o único condutor: o .rv sai pra não disputar a opacidade
+      // nos palcos o GSAP é o único condutor: o .rv sai pra não disputar a opacidade
       document.querySelectorAll('.prod .rv, .ia .rv').forEach(function (el) { el.classList.remove('rv'); });
 
+      // — produto: na aproximação, cabeçalho + score + coach já se montam…
+      gsap.from('.prod-head > *', {
+        y: 40, opacity: 0, stagger: .09, duration: .7, ease: 'sl',
+        scrollTrigger: { trigger: '.prod', start: 'top 75%', once: true }
+      });
+      [['.pc-score', -180, -90, -8], ['.pc-brief', 200, -110, 7]].forEach(function (p, i) {
+        gsap.from(p[0], {
+          x: p[1], y: p[2], rotation: p[3], scale: .8, opacity: 0, duration: .85, delay: i * .14, ease: 'back.out(1.5)',
+          scrollTrigger: { trigger: '.prod', start: 'top 52%', once: true }
+        });
+      });
+      // …e o pin curto encaixa o resto, começando no primeiro pixel de scroll
       var tlP = gsap.timeline({
-        scrollTrigger: { trigger: '.prod', start: 'top top', end: '+=200%', scrub: true, pin: true, anticipatePin: 1 }
+        scrollTrigger: { trigger: '.prod', start: 'top top', end: '+=130%', scrub: true, pin: true, anticipatePin: 1 }
       });
-      tlP.from('.prod-head > *', { y: 46, opacity: 0, stagger: .07, duration: .5, ease: 'sl' }, 0);
-      [
-        ['.pc-score', -240, -150, -9], ['.pc-brief', 250, -180, 8],
-        ['.pc-orc', -280, 130, 7], ['.pc-agenda', 300, 90, -8], ['.pc-meta', 0, 250, 4]
-      ].forEach(function (p, i) {
-        tlP.from(p[0], { x: p[1], y: p[2], rotation: p[3], scale: .78, opacity: 0, duration: .8, ease: 'back.out(1.5)' }, .5 + i * .4);
+      [['.pc-orc', -240, 110, 7], ['.pc-agenda', 260, 80, -8], ['.pc-meta', 0, 220, 4]].forEach(function (p, i) {
+        tlP.from(p[0], { x: p[1], y: p[2], rotation: p[3], scale: .78, opacity: 0, duration: .7, ease: 'back.out(1.5)' }, i * .34);
       });
-      tlP.to({}, { duration: .5 }); // segura o painel montado antes de soltar o pin
+      tlP.to({}, { duration: .35 }); // respiro curto com o painel montado
 
+      // — IA: a aproximação completa o lado esquerdo (manchete + feats)…
+      gsap.from('.ia .head > *', {
+        y: 36, opacity: 0, stagger: .09, duration: .6, ease: 'sl',
+        scrollTrigger: { trigger: '.ia', start: 'top 72%', once: true }
+      });
+      gsap.from('.ia-feat', {
+        y: 26, opacity: 0, stagger: .1, duration: .5, ease: 'sl',
+        scrollTrigger: { trigger: '.ia', start: 'top 45%', once: true }
+      });
+      // …e no pin as mensagens CHEGAM: pop da cauda, como mensageiro de verdade
       var tlI = gsap.timeline({
-        scrollTrigger: { trigger: '.ia', start: 'top top', end: '+=240%', scrub: true, pin: true, anticipatePin: 1 }
+        scrollTrigger: { trigger: '.ia', start: 'top top', end: '+=150%', scrub: true, pin: true, anticipatePin: 1 }
       });
-      tlI.from('.ia .head > *', { y: 40, opacity: 0, stagger: .07, duration: .45, ease: 'sl' }, 0);
-      tlI.from('.ia-feat', { y: 34, opacity: 0, stagger: .14, duration: .45, ease: 'sl' }, .35);
       [].slice.call(document.querySelectorAll('#iachat > *')).forEach(function (m, i) {
-        tlI.from(m, { y: 46, opacity: 0, duration: .5, ease: 'sl' }, 1.0 + i * .55);
+        if (m.classList.contains('acao')) {
+          // o selo CARIMBA (vem de cima, grande, e assenta) + check se desenha
+          tlI.from(m, { scale: 1.5, rotation: -5, opacity: 0, duration: .45, ease: 'back.out(1.8)', transformOrigin: '30% 50%' }, i * .38);
+          tlI.fromTo('.acao .ck', { strokeDashoffset: 20 }, { strokeDashoffset: 0, duration: .3, ease: 'none' }, '>-.1');
+        } else if (m.classList.contains('chat-input')) {
+          tlI.from(m, { y: 30, opacity: 0, duration: .4, ease: 'sl' }, i * .38);
+        } else {
+          var user = m.classList.contains('u');
+          tlI.from(m, {
+            scale: .55, x: user ? 46 : -46, y: 14, opacity: 0, duration: .5, ease: 'back.out(1.7)',
+            transformOrigin: user ? '100% 100%' : '0% 100%'
+          }, i * .38);
+        }
       });
-      tlI.fromTo('.acao .ck', { strokeDashoffset: 20 }, { strokeDashoffset: 0, duration: .35, ease: 'none' }, '>-.15');
-      tlI.to({}, { duration: .5 });
+      tlI.to({}, { duration: .3 });
 
       // o wordmark gigante sobe pra fechar a página (Jeton)
       gsap.from('.final .wordmark', {

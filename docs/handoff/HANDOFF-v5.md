@@ -8,9 +8,9 @@
 ## Retomada rápida (pra nova sessão)
 
 - **Branch:** `poc/ds-v5` · último commit = r10. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`.
-- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r11 em evolução** (é onde o trabalho acontece).
-- **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · aurora do hero (gradiente animado) · seção "As oito áreas" (hover→agulha).
-- **Aguardando veredito:** r11 (do produto ao final refeito: dois palcos PINADOS com scrub — painel que se monta peça a peça + conversa da IA que avança com o scroll em banda roxa sólida; pricing em 2 cartões; FAQ 2 colunas; wordmark gigante no final; copy vendável).
+- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r12 em evolução** (é onde o trabalho acontece).
+- **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · aurora do hero (gradiente animado) · seção "As oito áreas" (hover→agulha) · **direção da r11 aprovada em essência** (gostou das animações e do fundo roxo da IA).
+- **Aguardando veredito:** r12 (ajuste fino da r11: palcos nunca chegam vazios — cabeçalho + primeiras peças entram na aproximação, pins encurtados 200→130% e 240→150%, e a IA ganhou transição própria: bolhas com pop de mensageiro + selo carimbando).
 - **Fila combinada:** h1 do hero com SplitText na entrada · mobile dedicado da landing-viva · depois Onda 0 fase de implementação em `web/` (Fundação A + `<Compass />`).
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
@@ -18,7 +18,7 @@
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ viva r11 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r11** (marca 3D, bússola WebGL, aurora do hero e oito áreas já aprovadas) | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r12 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r12** (marca 3D, bússola WebGL, aurora do hero, oito áreas e direção da r11 já aprovadas) | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -33,6 +33,24 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-30 · Sessão 12 — Onda 0, r12: palcos nunca chegam vazios + transição própria por palco
+
+**Feedback do usuário na r11:** GOSTOU das animações e do fundo roxo da IA. Problemas: blocos muito espaçados, transições demoram a começar (a tela fica toda preta/roxa antes da primeira transição) e produto e IA tinham as MESMAS transições.
+
+**Diagnóstico (Playwright, medido):** com tudo dentro do scrub pinado, no início do pin h2/score/meta estavam com opacity 0 → banda 100% vazia na chegada; a manchete sozinha consumia ~430px de scroll. Pins longos (200%/240% = 1800/2160px) espaçavam os blocos.
+
+**Feito (em `landing-viva.html`):**
+- **A seção nunca chega vazia:** cabeçalho (`top 75%`) + score/coach (`top 52%`) do produto e cabeçalho (`top 72%`) + feats (`top 45%`) da IA entram como once-tweens NA APROXIMAÇÃO, antes do pin. Verificado no início do pin: h2/score/brief opacity 1 e a peça seguinte já a 0.09 (ação no primeiro pixel).
+- **Pins encurtados:** produto 200%→130% (1170px), IA 240%→150% (1350px); respiros finais .5→.35/.3.
+- **Transição própria por palco:** produto mantém o VOO com encaixe (`back.out`, 3 peças restantes no pin); IA agora tem POP DE MENSAGEIRO — bolhas nascem da cauda (scale .55, origin no canto correto por autor, `back.out(1.7)`), selo CARIMBA (scale 1.5 + rotação assentando) com check se desenhando, input sobe por último.
+- QA: console limpo desktop e mobile; mobile segue 0 pins com nota "se monta sozinho" oculta. Gotcha de QA novo: o http.server serve com cache → validar mudanças com query-string (`?v=r12`), senão o browser reusa o HTML antigo e os pins medem os valores da rodada anterior.
+
+**Pendências:** ⏳ veredito da r12; fila: SplitText no h1 do hero, mobile dedicado da viva.
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html`.
 
 ---
 
