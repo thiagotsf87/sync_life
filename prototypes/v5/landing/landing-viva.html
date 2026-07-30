@@ -301,7 +301,7 @@
   .precos .head{text-align:center;margin-bottom:54px}
   .precos h2{font:500 clamp(2.1rem,4.2vw,3.6rem)/1.05 var(--gro);letter-spacing:-.045em;margin-top:16px}
   .precos .sub{font:400 15px var(--int);color:var(--t2);margin-top:16px}
-  .pcards{display:grid;grid-template-columns:minmax(300px,380px) minmax(320px,430px);justify-content:center;gap:22px;align-items:stretch}
+  .pcards{display:grid;grid-template-columns:repeat(2,minmax(300px,410px));justify-content:center;gap:22px;align-items:stretch} /* r14: Free e PRO do mesmo tamanho */
   .pcard{background:#fff;border:1px solid var(--line);border-radius:26px;padding:34px 32px;display:flex;flex-direction:column}
   .pcard .pn{font:500 17px var(--gro);letter-spacing:-.01em}
   .pcard .pp{font:700 clamp(38px,4.4vw,54px)/1 var(--gro);letter-spacing:-.045em;margin-top:12px}
@@ -354,7 +354,6 @@
   @media (max-width:1023px){
     .nav-links{display:none}
     .prod,.ia{min-height:auto}
-    .prod-hand{display:none} /* sem pin no mobile: a nota "se monta sozinho" sai junto */
     .prod-wrap,.ia-grid,.pcards,.faq-grid{grid-template-columns:1fr}
     .foot-grid{grid-template-columns:1fr 1fr}
     .hero-right{align-items:flex-start}
@@ -568,7 +567,7 @@
       <p class="eyebrow">O produto</p>
       <h2>Chega de oito apps abertos. <em>Aqui, tudo se encaixa.</em></h2>
       <p class="lead">Finanças, agenda, treinos e metas no mesmo painel. Você registra em segundos; o SyncLife conecta tudo e mostra o que precisa da sua atenção hoje.</p>
-      <p class="hand prod-hand" style="transform:rotate(-2deg)">role: o painel se monta sozinho</p>
+      <p class="hand prod-hand" style="transform:rotate(-2deg)">é assim que a sua vida aparece no app</p>
     </div>
     <div class="prod-stage">
       <div class="pc pc-score rv">
@@ -974,7 +973,7 @@
         var b = blobs[i];
         var x = w * (b.px + .14 * Math.sin(t * b.fx * .001 + b.ph) + .06 * Math.sin(t * b.fx * .0023 + b.ph * 2)) + leanX * w * .07;
         var y = h * (b.py + .12 * Math.cos(t * b.fy * .001 + b.ph * 1.3) + .05 * Math.cos(t * b.fy * .0019 + b.ph)) + leanY * h * .05;
-        var r = Math.max(w, h) * .36 * (1 + .11 * Math.sin(t * .0003 + b.ph * 3));
+        var r = Math.max(w, h) * .36 * (1 + .11 * Math.sin(t * .0007 + b.ph * 3)); // respiração visível (r14)
         var g = ctx.createRadialGradient(x, y, 0, x, y, r);
         g.addColorStop(0, 'rgba(' + b.c + ',' + b.a + ')');
         g.addColorStop(1, 'rgba(' + b.c + ',0)');
@@ -988,12 +987,13 @@
     } else draw(0);
   }
   // r13: aurora GLOBAL fixa atrás de toda área clara. Paleta azul/lilás/roxo
-  // (o coral avermelhado e o verde saíram do fundo a pedido do usuário)
+  // (o coral avermelhado e o verde saíram do fundo a pedido do usuário).
+  // r14: deriva ~3x mais rápida — em ciclo de ~30s a nuvem parecia parada.
   vivaAurora('aurora', [
-    { c: '104,64,255',  a: .55, fx: .21, fy: .16, px: .26, py: .30, ph: 0 },   // roxo
-    { c: '74,108,255',  a: .42, fx: .15, fy: .20, px: .72, py: .24, ph: 2.1 }, // azul
-    { c: '165,138,255', a: .34, fx: .12, fy: .16, px: .50, py: .80, ph: 4.2 }, // lilás
-    { c: '82,39,230',   a: .26, fx: .10, fy: .13, px: .86, py: .62, ph: 5.4 }  // roxo profundo
+    { c: '104,64,255',  a: .55, fx: .58, fy: .46, px: .26, py: .30, ph: 0 },   // roxo
+    { c: '74,108,255',  a: .42, fx: .44, fy: .56, px: .72, py: .24, ph: 2.1 }, // azul
+    { c: '165,138,255', a: .34, fx: .36, fy: .46, px: .50, py: .80, ph: 4.2 }, // lilás
+    { c: '82,39,230',   a: .26, fx: .30, fy: .38, px: .86, py: .62, ph: 5.4 }  // roxo profundo
   ], 1, 1);
 
   // ── A TINTA: números assentam como instrumento (sobem, passam do ponto e voltam) ──
@@ -1034,13 +1034,15 @@
       // nos palcos o GSAP é o único condutor: o .rv sai pra não disputar a opacidade
       document.querySelectorAll('.prod .rv, .ia .rv').forEach(function (el) { el.classList.remove('rv'); });
 
-      // — produto: cabeçalho na aproximação, peças voando durante a travessia
+      // — produto: cabeçalho na aproximação, peças voando durante a travessia.
+      //   r14: gatilhos no PRÓPRIO elemento (cabeçalho/palco), não na seção —
+      //   nada anima antes de estar de fato na tela
       gsap.from('.prod-head > *', {
         y: 40, opacity: 0, stagger: .09, duration: .7, ease: 'sl',
-        scrollTrigger: { trigger: '.prod', start: 'top 75%', once: true }
+        scrollTrigger: { trigger: '.prod-head', start: 'top 88%', once: true }
       });
       var tlP = gsap.timeline({
-        scrollTrigger: { trigger: '.prod', start: 'top 82%', end: 'top -12%', scrub: true }
+        scrollTrigger: { trigger: '.prod-stage', start: 'top 92%', end: 'top 22%', scrub: true }
       });
       [
         ['.pc-score', -180, -90, -8], ['.pc-brief', 200, -110, 7],
@@ -1052,14 +1054,14 @@
       // — IA: manchete e feats na aproximação, mensagens chegando durante a travessia
       gsap.from('.ia .head > *', {
         y: 36, opacity: 0, stagger: .09, duration: .6, ease: 'sl',
-        scrollTrigger: { trigger: '.ia', start: 'top 72%', once: true }
+        scrollTrigger: { trigger: '.ia .head', start: 'top 88%', once: true }
       });
       gsap.from('.ia-feat', {
         y: 26, opacity: 0, stagger: .1, duration: .5, ease: 'sl',
-        scrollTrigger: { trigger: '.ia', start: 'top 55%', once: true }
+        scrollTrigger: { trigger: '.ia-feats', start: 'top 88%', once: true }
       });
       var tlI = gsap.timeline({
-        scrollTrigger: { trigger: '.ia', start: 'top 78%', end: 'top -18%', scrub: true }
+        scrollTrigger: { trigger: '#iachat', start: 'top 92%', end: 'top 18%', scrub: true }
       });
       [].slice.call(document.querySelectorAll('#iachat > *')).forEach(function (m, i) {
         if (m.classList.contains('acao')) {

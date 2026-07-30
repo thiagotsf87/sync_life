@@ -10,7 +10,7 @@
 - **Branch:** `poc/ds-v5` · último commit = r10. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`.
 - **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r13 em evolução** (é onde o trabalho acontece).
 - **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · seção "As oito áreas" (hover→agulha) · direção da r11/r12 (animações + fundo roxo da IA).
-- **Aguardando veredito:** r13 (aurora global azul/lilás/roxo fixa atrás de toda área clara, sem coral; palcos SEM pin — coreografia em scrub durante a travessia, a tela nunca congela; wordmark menor e inteiro).
+- **Aguardando veredito:** r14 ("ficou bom" na r13 + 4 finos: aurora com deriva ~3x mais rápida (visível), gatilhos de animação nos próprios elementos (nada anima fora da tela), Free e PRO do mesmo tamanho, nota do painel trocada por "é assim que a sua vida aparece no app").
 - **Fila combinada:** h1 do hero com SplitText na entrada · mobile dedicado da landing-viva · depois Onda 0 fase de implementação em `web/` (Fundação A + `<Compass />`).
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
@@ -18,7 +18,7 @@
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ viva r13 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r13** (marca 3D, bússola WebGL, oito áreas e direção r11/r12 já aprovadas) | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r14 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r14** (r13 recebeu "ficou bom"; marca 3D, bússola WebGL, oito áreas e direção r11-r13 aprovadas) | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -33,6 +33,23 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-30 · Sessão 14 — Onda 0, r14: 4 finos sobre a r13 aprovada ("ficou bom")
+
+**Feedback do usuário na r13:** "ficou bom" + 4 ajustes: (1) a nuvem do fundo precisa estar em movimento; (2) transições acontecendo cedo demais, algumas fora da tela; (3) Free e PRO com o mesmo tamanho; (4) trocar "role: o painel se monta sozinho" por algo referente à aplicação.
+
+**Feito (em `landing-viva.html`):**
+- **Aurora em movimento visível:** deriva ~3x mais rápida (fx/fy .10-.21 → .30-.58; ciclo ~30s → ~10s) + respiração do raio .0003 → .0007. Verificado por diff de bitmap em 2 instantes (delta 1129).
+- **Gatilhos nos próprios elementos:** `.prod-head`/`.prod-stage`/`.ia .head`/`.ia-feats`/`#iachat` como triggers (antes era a seção inteira de 100vh, que disparava com o conteúdo ainda abaixo da dobra). Palco do produto: scrub `top 92%`→`top 22%` do stage; chat idem. Nada anima fora da tela.
+- **Pricing:** `repeat(2, minmax(300px,410px))` — Free e PRO idênticos (medido: 410×456 ambos).
+- **Nota do painel:** "é assim que a sua vida aparece no app" (e voltou a aparecer no mobile, já que não fala mais de scroll).
+- QA (`?v=r14`): console limpo (único warning era do próprio probe getImageData do QA), travessia re-verificada com peças chegando dentro do quadro.
+
+**Pendências:** ⏳ veredito da r14; fila: SplitText no h1 do hero, mobile dedicado da viva.
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html`.
 
 ---
 
