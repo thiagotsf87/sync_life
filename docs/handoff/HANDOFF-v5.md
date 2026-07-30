@@ -7,18 +7,18 @@
 
 ## Retomada rápida (pra nova sessão)
 
-- **Branch:** `poc/ds-v5` · último commit `099443b` (r9). Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`.
-- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r9 em evolução** (é onde o trabalho acontece).
+- **Branch:** `poc/ds-v5` · último commit = r10. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`.
+- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r10 em evolução** (é onde o trabalho acontece).
 - **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · aurora do hero (gradiente animado) · seção IA como palco escuro com conversa auto-escrita · seção "As oito áreas" (hover→agulha).
-- **Aguardando veredito:** r9 (ritmo claro/escuro + transições GSAP por seção: covers, SplitText nas manchetes, cascatas, marquee com skew).
+- **Aguardando veredito:** r10 (metade de baixo re-narrada como "uma terça de verdade": 07:12 briefing → 12:47 conversa → sexta ação; números canônicos na página inteira; palco da IA com luz composta e reativa; covers com presença real).
 - **Fila combinada:** wordmark gigante no rodapé (Jeton) · h1 do hero com SplitText na entrada · mobile dedicado da landing-viva · depois Onda 0 fase de implementação em `web/` (Fundação A + `<Compass />`).
-- **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616`.
+- **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
 ## Status das ondas
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ viva r9 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r9** (marca 3D, bússola WebGL, aurora, seção IA e oito áreas já aprovadas) | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r10 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r10** (marca 3D, bússola WebGL, aurora, seção IA e oito áreas já aprovadas) | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -33,6 +33,26 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-30 · Sessão 10 — Onda 0, r10: a metade de baixo vira história ("uma terça de verdade")
+
+**Feedback do usuário na r9 (escopo: da seção O Produto pra baixo):** informações não casam entre seções; animações não ficaram boas; fundo da seção IA ruim; pedir storytelling conectado ao tema e ao objetivo da ferramenta.
+
+**Diagnóstico (QA visual + leitura do código):** Lazer existia em 3 estados (98% hero · 82% fig.02 · "estourou R$ 8" briefing/bússola); o aporte da viagem era narrado em 3 tempos conflitantes (agendado no hero, já rendido no briefing, sendo decidido no chat); chat dizia "hoje" mas agendava sexta; pricing vendia "11 módulos" numa página que só fala de 8 áreas; marquee repetia os nomes das áreas pela 3ª vez; aurora2 (4 blobs uniformes) virava lama esverdeada; cover da r9 media scale .97/y 36 no meio do scrub (imperceptível).
+
+**Feito (em `landing-viva.html`) — conceito: a metade de baixo é UM DIA narrado (07:12 briefing planta → 12:47 conversa decide → sexta a ação executa → "começa hoje" fecha o arco), com um único conjunto de números canônicos:**
+- **Números canônicos:** score 74 (+3) · Lazer 508/500 (estourou R$ 8; hero corrigido pra 102%, fig.03 com barra ATRAVESSANDO a linha do limite) · Alimentação 640/800 · Transporte 280/400 · Viagem Itália 68%→73% com aporte R$ 580 na sexta 31 jul (68% + 580 = 73% na matemática real da meta) · pricing agora fala "Áreas da vida · Todas as 8".
+- **Seção #produto re-narrada:** eyebrow "uma terça de verdade", h2 "Às 07:12, o dia já chega lido.", relógio-fantasma gigante "07:12" em contorno (paralaxe sutil); briefing vira a peça-guia (fig. 01) e PLANTA a pergunta do capítulo seguinte ("a parcela da viagem pode ser antecipada. Quer ver se cabe?"); score e orçamentos viram as provas (fig. 02/03). **O briefing se escreve** (SplitText lines+mask) e, quando cita um número, a figura correspondente ACENDE (odômetro no 74; barra do lazer estoura 58%→103% na hora do "R$ 8"). Hover nas citações re-acende a prova. mnote: "uma vida só, uma fonte só".
+- **Marquee → ticker do índice da vida:** nomes + scores + deltas idênticos à lista das 8 áreas (82▲2 · 71▲3 · 64▼1 · 58▲1 · 76▲2 · 80▲4 · 69– · 74▲1), verde-delta `#44a616` no claro. Skew com velocidade mantido.
+- **Palco da IA recomposto:** aurora2 deixa de ser 4 blobs uniformes → luz composta (roxo direcional atrás da manchete + roxo-claro de fundo + sombreamento do lado do chat pra contraste das bolhas) e o ELÉTRICO virou luz reativa: só acende quando o selo "Ação executada" aparece (pulso `__iaGlow` 1→halo residual .16). Relógio-fantasma "12:47"; chat ganhou timestamp "terça · 12:47" e perdeu o "hoje" conflitante; lead amarra os capítulos ("De manhã, o briefing planta a pergunta…").
+- **Covers com presença real:** scale .90 + y 130 + raio morfando 76→44px em scrub até top 28% (medido no meio: .9003/129.6/76px). SplitText agora espera `document.fonts.ready` (warnings de medição zerados).
+- QA: console 100% limpo; ticker validado número a número contra a lista; hover→lit ok; barra 103% pós-timeline; pulso da luz medido (glow .27 em decaimento); pricing claro com "Todas as 8".
+
+**Pendências:** ⏳ veredito da r10; fila: wordmark gigante no rodapé, SplitText no h1 do hero, mobile dedicado da viva.
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html`.
 
 ---
 

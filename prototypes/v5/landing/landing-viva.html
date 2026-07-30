@@ -202,12 +202,18 @@
   .press-logos span{font:700 15px var(--gro);color:var(--t3);transition:color .4s var(--ease)}
   .press-logos span:hover{color:var(--t2)}
 
-  /* ─── SEÇÃO escura: o produto em espécimes (cantos arredondados à la Jeton) ─── */
+  /* ─── SEÇÃO escura: o produto em espécimes (cantos arredondados à la Jeton).
+     r10: a seção vira o capítulo das 07:12 — o briefing conduz, as figuras são as provas ─── */
   .paper{background:#171515;color:var(--ink);padding:110px 0;border-radius:44px}
+  .paper .wrap{position:relative}
   .paper .eyebrow{color:var(--ink2)}
   .paper h2{font:500 clamp(2.2rem,4.6vw,4rem)/1.04 var(--gro);letter-spacing:-.045em;max-width:640px;margin-top:18px}
   .paper h2 em{font-style:normal;color:var(--roxo)}
   .paper .lead{font:400 16px/1.7 var(--int);color:var(--ink2);max-width:520px;margin-top:22px}
+  /* o relógio do capítulo: numeral gigante em contorno, marca a hora da história */
+  .ch-clock{position:absolute;right:0;top:-18px;font:700 clamp(96px,12vw,180px)/1 var(--gro);letter-spacing:-.06em;
+    font-variant-numeric:tabular-nums;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.13);
+    pointer-events:none;user-select:none}
   .spec-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(40px,5vw,90px);margin-top:70px;align-items:start}
   .spec-col{display:flex;flex-direction:column;gap:34px}
   .specimen{border-top:1px solid var(--pline);padding-top:18px}
@@ -220,21 +226,26 @@
   .sp-score .meta{display:flex;flex-direction:column;gap:6px}
   .sp-score .up{font:600 13px var(--gro);color:var(--ele)}
   .sp-score .lbl{font:400 12px var(--int);color:var(--ink2)}
-  /* espécime: orçamento */
+  /* espécime: orçamento. r10: a linha do limite existe de verdade, e a barra estourada a atravessa */
   .sp-orc .row{display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--pline)}
   .sp-orc .row:last-child{border-bottom:none}
   .sp-orc .nm{font:500 13px var(--int);color:var(--ink)}
-  .sp-orc .track{height:4px;border-radius:2px;background:rgba(255,255,255,.12);overflow:hidden}
-  .sp-orc .track i{display:block;height:100%;border-radius:2px;background:var(--ink2)}
-  .sp-orc .hot .track i{background:var(--coral)}
+  .sp-orc .track{height:4px;border-radius:2px;background:rgba(255,255,255,.12);position:relative}
+  .sp-orc .track::after{content:'';position:absolute;right:0;top:-4px;bottom:-4px;width:1px;background:rgba(255,255,255,.28)} /* o limite */
+  .sp-orc .track i{display:block;height:100%;border-radius:2px;background:var(--ink2);max-width:none}
+  .sp-orc .hot .track i{background:var(--coral);box-shadow:0 0 9px rgba(248,65,49,.55)}
   .sp-orc .val{font:500 12px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2)}
   .sp-orc .hot .val{color:var(--coral)}
-  /* espécime: o briefing escrito (E-07: a IA escreve prosa com fontes) */
+  /* espécime: o briefing escrito (E-07: a IA escreve prosa com fontes). r10: vira a peça-guia */
   .sp-brief{display:flex;flex-direction:column;gap:12px}
   .sp-brief .bf-hora{font:700 10px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--ink2)}
-  .sp-brief .bf-txt{font:400 14.5px/1.75 var(--int);color:var(--ink);max-width:52ch}
+  .sp-brief .bf-txt{font:400 15.5px/1.8 var(--int);color:var(--ink);max-width:54ch}
   .sp-brief .bf-txt b{font-weight:600}
   .sp-brief .bf-fontes{font:400 11.5px var(--int);color:var(--ink2);border-top:1px dashed var(--pline);padding-top:10px}
+  /* referência citada no briefing ↔ figura que prova: hover acende as duas */
+  .bf-ref{border-bottom:1px dotted rgba(104,64,255,.6);cursor:default}
+  .specimen{transition:background .5s var(--ease)}
+  .specimen.lit{background:linear-gradient(90deg,rgba(104,64,255,.12),transparent 72%)}
   /* espécime: chat real */
   .sp-chat{display:flex;flex-direction:column;gap:10px}
   .sp-chat .bub{max-width:88%;padding:11px 15px;font:400 13px/1.55 var(--int);border-radius:15px}
@@ -244,20 +255,29 @@
   /* notas de margem */
   .mnote{font:400 12px/1.6 var(--int);color:var(--ink2);border-left:2px solid var(--roxo);padding-left:14px;max-width:300px}
 
-  /* marquee */
+  /* marquee. r10: vira o ticker do índice da vida — os mesmos scores e deltas da lista das 8 áreas */
   .mq{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;white-space:nowrap}
   .mq-track{display:inline-block}
   .anim .mq-track{animation:mq 80s linear infinite}
   @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-25%)}}
   .mq span{font:500 17px var(--gro);letter-spacing:.04em;text-transform:uppercase;color:var(--t3);padding:0 28px}
-  .mq i{color:var(--roxo);font-style:normal}
+  .mq b{font-weight:700;color:var(--t1);margin-left:10px;letter-spacing:0}
+  .mq em.d{font-style:normal;font-size:12px;margin-left:5px;vertical-align:2px;letter-spacing:0}
+  .mq em.d.up{color:#44a616}
+  .mq em.d.down{color:var(--coral)}
+  .mq em.d.flat{color:var(--t3)}
+  .mq i{color:var(--roxo);font-style:normal;margin-left:24px}
 
   /* ─── IA: a funcionalidade principal ganha o palco (r8): banda escura arredondada,
-     aurora própria e a conversa que se escreve sozinha quando a dobra entra ─── */
+     aurora própria e a conversa que se escreve sozinha quando a dobra entra.
+     r10: o palco vira LUZ COMPOSTA — roxo direcional atrás da manchete, lado do chat
+     escurecido pra contraste, e o elétrico só acende quando a ação executa ─── */
   .ia{padding:110px 0;position:relative;overflow:hidden;border-radius:44px}
   #aurora2{position:absolute;left:-6%;top:-12%;width:112%;height:124%;z-index:0;pointer-events:none;
-    filter:blur(60px) saturate(1.05);opacity:.42}
+    filter:blur(60px) saturate(1.05);opacity:.55}
   .ia .wrap{position:relative;z-index:2}
+  .ia .ch-clock{-webkit-text-stroke-color:rgba(255,255,255,.10);top:-8px}
+  .chat-ts{align-self:center;font:600 10.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
   .anim .ia .chat .msg{opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
   .anim .ia .chat .msg.in{opacity:1;transform:none}
   .ia .chat .msg.gone{display:none}
@@ -355,6 +375,7 @@
 
   @media (max-width:1023px){
     .nav-links{display:none}
+    .ch-clock{display:none}
     .spec-grid,.ia-grid{grid-template-columns:1fr}
     .foot-grid{grid-template-columns:1fr 1fr}
     .hero-right{align-items:flex-start}
@@ -439,7 +460,7 @@
         <span class="ucur" aria-hidden="true"></span>
         <div><div class="lbl">Saldo do mês</div><div class="big num">R$&nbsp;1.840</div></div>
         <div class="ubar" style="--w:80%;--d:.2s"><span class="k">Alimentação</span><span class="t"><span class="f"></span></span><span class="v num">80%</span></div>
-        <div class="ubar hot" style="--w:98%;--d:.5s"><span class="k">Lazer</span><span class="t"><span class="f"></span></span><span class="v num">98%</span></div>
+        <div class="ubar hot" style="--w:100%;--d:.5s"><span class="k">Lazer</span><span class="t"><span class="f"></span></span><span class="v num">102%</span></div>
         <div class="ubar" style="--w:70%;--d:.8s"><span class="k">Transporte</span><span class="t"><span class="f"></span></span><span class="v num">70%</span></div>
       </div>
     </div></div>
@@ -562,18 +583,33 @@
   </div>
 </section>
 
-<!-- SEÇÃO escura: o produto em espécimes anotados -->
+<!-- SEÇÃO escura: o produto em espécimes anotados.
+     r10: capítulo 1 da terça — às 07:12 o briefing chega lido; as figuras ao lado
+     são as provas dos números que ele cita (uma vida só, uma fonte só) -->
 <section class="paper" id="produto">
   <div class="wrap">
+    <span class="ch-clock num" aria-hidden="true">07:12</span>
     <div class="rv">
-      <p class="eyebrow">O produto · por dentro</p>
-      <h2>Tudo o que você gerencia na sua vida, <em>em um lugar só.</em></h2>
-      <p class="lead">Peças reais da interface, com os seus dados no centro. É assim que o SyncLife mostra a sua vida: números grandes, leitura limpa, zero ruído.</p>
+      <p class="eyebrow">O produto · uma terça de verdade</p>
+      <h2>Às 07:12, o dia já chega <em>lido.</em></h2>
+      <p class="lead">Todo dia, antes do primeiro café, o coach lê as suas oito áreas e escreve o seu dia em prosa. Repare nos números: são os mesmos na página inteira, porque a fonte é uma só.</p>
     </div>
     <div class="spec-grid">
       <div class="spec-col">
-        <div class="specimen rv drift" data-drift="10">
-          <div class="tag"><span>Life Sync Score</span><i>fig. 01</i></div>
+        <div class="specimen rv drift" data-drift="-10">
+          <div class="tag"><span>O briefing do dia · escrito pra você</span><i>fig. 01</i></div>
+          <div class="sp-brief">
+            <p class="bf-hora num">Escrito às 07:12 · terça, 28 jul</p>
+            <p class="bf-txt">O dia abre com o score em <b class="num bf-ref" data-ref="score">74</b>, três pontos acima de ontem. O único ponto solto é o lazer, que estourou o limite em <b class="num bf-ref" data-ref="lazer">R$&nbsp;8</b>: um ajuste pequeno hoje evita um corte grande no fim do mês. E fica um lembrete, a parcela da viagem pode ser antecipada. Quer ver se cabe?</p>
+            <p class="bf-fontes">Fontes: orçamentos · agenda · aportes · treinos</p>
+          </div>
+        </div>
+        <p class="hand rx rv" style="transform:rotate(-2.5deg);align-self:flex-end">escrito pra você, e assinado!</p>
+        <p class="mnote rv">Os números que o briefing cita são os das figuras ao lado. Uma vida só, uma fonte só.</p>
+      </div>
+      <div class="spec-col">
+        <div class="specimen rv drift" data-drift="12" id="sp-card-score">
+          <div class="tag"><span>Life Sync Score</span><i>fig. 02</i></div>
           <div class="sp-score">
             <span class="n num">74</span>
             <div class="meta">
@@ -586,36 +622,24 @@
             <span class="hand">a vida inteira num número só</span>
           </div>
         </div>
-        <div class="specimen rv">
-          <div class="tag"><span>Orçamentos ao vivo</span><i>fig. 02</i></div>
+        <div class="specimen rv" id="sp-card-orc">
+          <div class="tag"><span>Orçamentos ao vivo</span><i>fig. 03</i></div>
           <div class="sp-orc">
             <div class="row"><span class="nm">Alimentação</span><div class="track"><i style="width:80%"></i></div><span class="val">640 / 800</span></div>
-            <div class="row hot"><span class="nm">Lazer</span><div class="track"><i style="width:82%"></i></div><span class="val">410 / 500</span></div>
+            <div class="row hot"><span class="nm">Lazer</span><div class="track"><i style="width:103%"></i></div><span class="val">508 / 500</span></div>
             <div class="row"><span class="nm">Transporte</span><div class="track"><i style="width:70%"></i></div><span class="val">280 / 400</span></div>
           </div>
         </div>
-        <p class="mnote rv">Cada barra muda de cor quando você se aproxima do limite. Sem susto no fim do mês.</p>
-      </div>
-      <div class="spec-col">
-        <div class="specimen rv drift" data-drift="-14">
-          <div class="tag"><span>O briefing do dia · escrito pra você</span><i>fig. 03</i></div>
-          <div class="sp-brief">
-            <p class="bf-hora num">Escrito às 07:12 · terça</p>
-            <p class="bf-txt">Julho está <b class="num">4 pontos</b> acima de junho. As manhãs protegidas seguraram o foco, o aporte antecipado rendeu antes da média e o único ponto solto é o orçamento de lazer, que passou do limite por <b class="num">R$&nbsp;8</b>. Um ajuste pequeno hoje evita um corte grande na semana que vem.</p>
-            <p class="bf-fontes">Fontes: orçamentos · agenda · aportes · treinos</p>
-          </div>
-        </div>
-        <p class="mnote rv">Todo dia às 7h o coach escreve o seu dia em prosa: com números, com fontes, sem virar painel de widgets.</p>
-        <p class="hand rx rv" style="transform:rotate(-2.5deg);align-self:flex-end">escrito pra você, e assinado!</p>
+        <p class="mnote rv">Estourou? A barra atravessa a linha do limite, e o briefing te conta em reais.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- marquee -->
+<!-- marquee. r10: ticker do índice da vida — os mesmos scores/deltas da lista das 8 áreas -->
 <div class="mq" aria-hidden="true">
   <div class="mq-track">
-    <span>Finanças <i>✦</i></span><span>Futuro <i>✦</i></span><span>Tempo <i>✦</i></span><span>Corpo <i>✦</i></span><span>Mente <i>✦</i></span><span>Patrimônio <i>✦</i></span><span>Carreira <i>✦</i></span><span>Experiências <i>✦</i></span><span>Finanças <i>✦</i></span><span>Futuro <i>✦</i></span><span>Tempo <i>✦</i></span><span>Corpo <i>✦</i></span><span>Mente <i>✦</i></span><span>Patrimônio <i>✦</i></span><span>Carreira <i>✦</i></span><span>Experiências <i>✦</i></span><span>Finanças <i>✦</i></span><span>Futuro <i>✦</i></span><span>Tempo <i>✦</i></span><span>Corpo <i>✦</i></span><span>Mente <i>✦</i></span><span>Patrimônio <i>✦</i></span><span>Carreira <i>✦</i></span><span>Experiências <i>✦</i></span><span>Finanças <i>✦</i></span><span>Futuro <i>✦</i></span><span>Tempo <i>✦</i></span><span>Corpo <i>✦</i></span><span>Mente <i>✦</i></span><span>Patrimônio <i>✦</i></span><span>Carreira <i>✦</i></span><span>Experiências <i>✦</i></span>
+    <span>Finanças <b class="num">82</b><em class="d up">▲2</em><i>✦</i></span><span>Futuro <b class="num">71</b><em class="d up">▲3</em><i>✦</i></span><span>Tempo <b class="num">64</b><em class="d down">▼1</em><i>✦</i></span><span>Corpo <b class="num">58</b><em class="d up">▲1</em><i>✦</i></span><span>Mente <b class="num">76</b><em class="d up">▲2</em><i>✦</i></span><span>Patrimônio <b class="num">80</b><em class="d up">▲4</em><i>✦</i></span><span>Carreira <b class="num">69</b><em class="d flat">–</em><i>✦</i></span><span>Experiências <b class="num">74</b><em class="d up">▲1</em><i>✦</i></span><span>Finanças <b class="num">82</b><em class="d up">▲2</em><i>✦</i></span><span>Futuro <b class="num">71</b><em class="d up">▲3</em><i>✦</i></span><span>Tempo <b class="num">64</b><em class="d down">▼1</em><i>✦</i></span><span>Corpo <b class="num">58</b><em class="d up">▲1</em><i>✦</i></span><span>Mente <b class="num">76</b><em class="d up">▲2</em><i>✦</i></span><span>Patrimônio <b class="num">80</b><em class="d up">▲4</em><i>✦</i></span><span>Carreira <b class="num">69</b><em class="d flat">–</em><i>✦</i></span><span>Experiências <b class="num">74</b><em class="d up">▲1</em><i>✦</i></span><span>Finanças <b class="num">82</b><em class="d up">▲2</em><i>✦</i></span><span>Futuro <b class="num">71</b><em class="d up">▲3</em><i>✦</i></span><span>Tempo <b class="num">64</b><em class="d down">▼1</em><i>✦</i></span><span>Corpo <b class="num">58</b><em class="d up">▲1</em><i>✦</i></span><span>Mente <b class="num">76</b><em class="d up">▲2</em><i>✦</i></span><span>Patrimônio <b class="num">80</b><em class="d up">▲4</em><i>✦</i></span><span>Carreira <b class="num">69</b><em class="d flat">–</em><i>✦</i></span><span>Experiências <b class="num">74</b><em class="d up">▲1</em><i>✦</i></span><span>Finanças <b class="num">82</b><em class="d up">▲2</em><i>✦</i></span><span>Futuro <b class="num">71</b><em class="d up">▲3</em><i>✦</i></span><span>Tempo <b class="num">64</b><em class="d down">▼1</em><i>✦</i></span><span>Corpo <b class="num">58</b><em class="d up">▲1</em><i>✦</i></span><span>Mente <b class="num">76</b><em class="d up">▲2</em><i>✦</i></span><span>Patrimônio <b class="num">80</b><em class="d up">▲4</em><i>✦</i></span><span>Carreira <b class="num">69</b><em class="d flat">–</em><i>✦</i></span><span>Experiências <b class="num">74</b><em class="d up">▲1</em><i>✦</i></span>
   </div>
 </div>
 
@@ -623,10 +647,11 @@
 <section class="ia dk" id="manifesto">
   <canvas id="aurora2" aria-hidden="true"></canvas>
   <div class="wrap">
+    <span class="ch-clock num" aria-hidden="true">12:47</span>
     <div class="head rv">
       <p class="eyebrow"><b>Consultor IA</b> · integrado</p>
       <h2>Uma IA que <em>conhece sua vida</em>. E fala como um amigo.</h2>
-      <p class="lead">O briefing conta o seu dia; aqui você conversa e decide. E quando você decide, o consultor executa: agenda, transfere, protege o foco.</p>
+      <p class="lead">De manhã, o briefing planta a pergunta. Aqui você conversa e decide; e quando você decide, o consultor executa: agenda, transfere, protege o foco.</p>
     </div>
     <div class="ia-grid">
       <div class="ia-feats rv">
@@ -635,9 +660,10 @@
         <div class="ia-feat"><span class="fn num">03</span><div><h4>Relatórios completos</h4><p>O mês inteiro em PDF: finanças, saúde e produtividade em 1 clique.</p></div></div>
       </div>
       <div class="chat rv" id="iachat">
+        <div class="chat-ts msg num">terça · 12:47</div>
         <div class="bub u msg">Se eu antecipar a parcela da viagem, aperta o mês?</div>
         <div class="typing msg" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div class="bub a msg">Não. Antecipando <strong class="num">R$&nbsp;580</strong> hoje, seu saldo projetado fecha em <strong class="num">R$&nbsp;1.540</strong> e a poupança segue <span class="g">acima da meta</span>. Vale fazer.</div>
+        <div class="bub a msg">Não. Antecipando <strong class="num">R$&nbsp;580</strong>, seu saldo projetado de julho fecha em <strong class="num">R$&nbsp;1.540</strong> e a poupança segue <span class="g">acima da meta</span>. Vale fazer.</div>
         <div class="bub u msg">Então agenda pra sexta.</div>
         <div class="typing msg" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="bub a msg">Agendado. Transferência de <strong class="num">R$&nbsp;580</strong> pra Viagem Itália na sexta, 31 de julho. A meta chega a <strong class="num">73%</strong>.</div>
@@ -664,7 +690,7 @@
         <div class="c"><div class="plan-n">Free</div><div class="plan-p num">R$&nbsp;0</div><div class="plan-s">para sempre</div></div>
         <div class="c col-pro"><span class="tag">RECOMENDADO</span><div class="plan-n">PRO</div><div class="plan-p num">R$&nbsp;24,90</div><div class="plan-s">por mês</div></div>
       </div>
-      <div class="prow"><div class="feat">Módulos</div><div class="c">Todos os 11</div><div class="c col-pro">Todos os 11</div></div>
+      <div class="prow"><div class="feat">Áreas da vida</div><div class="c">Todas as 8</div><div class="c col-pro">Todas as 8</div></div>
       <div class="prow"><div class="feat">Transações</div><div class="c num">50/mês</div><div class="c col-pro">Ilimitadas</div></div>
       <div class="prow"><div class="feat">Life Sync Score</div><div class="c">Básico</div><div class="c col-pro">Completo</div></div>
       <div class="prow"><div class="feat">Consultor IA + Coach IA</div><div class="c"><span class="no">–</span></div><div class="c col-pro"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
@@ -944,10 +970,12 @@
   //    do cursor. Canvas a 1/3 da resolução; o blur do CSS esconde tudo, o custo é mínimo. ──
   var leanX = 0, leanY = 0, mNX = .5, mNY = .5;
   addEventListener('pointermove', function (e) { mNX = e.clientX / innerWidth; mNY = e.clientY / innerHeight; });
-  function vivaAurora(id, blobs, fw, fh) {
+  window.__iaGlow = 0; // 0→1 quando a ação executa no chat; decai até um halo residual
+  function vivaAurora(id, blobs, fw, fh, opts) {
     var cv = document.getElementById(id);
     if (!cv) return;
     var ctx = cv.getContext('2d');
+    opts = opts || {};
     function size() { // mede o pai (canvas é replaced: o bitmap não pode derivar do próprio box)
       var p = cv.parentElement;
       cv.width = Math.max(2, Math.floor(p.clientWidth * fw / 3));
@@ -959,14 +987,27 @@
       ctx.clearRect(0, 0, w, h);
       for (var i = 0; i < blobs.length; i++) {
         var b = blobs[i];
+        // blobs com b.g são a LUZ REATIVA: só existem na força do __iaGlow
+        var a = b.g ? b.a * Math.max(0, window.__iaGlow) : b.a;
+        if (a < .005) continue;
         var x = w * (b.px + .14 * Math.sin(t * b.fx * .001 + b.ph) + .06 * Math.sin(t * b.fx * .0023 + b.ph * 2)) + leanX * w * .07;
         var y = h * (b.py + .12 * Math.cos(t * b.fy * .001 + b.ph * 1.3) + .05 * Math.cos(t * b.fy * .0019 + b.ph)) + leanY * h * .05;
-        var r = Math.max(w, h) * .36 * (1 + .11 * Math.sin(t * .0003 + b.ph * 3));
+        var r = Math.max(w, h) * (b.r || .36) * (1 + .11 * Math.sin(t * .0003 + b.ph * 3));
         var g = ctx.createRadialGradient(x, y, 0, x, y, r);
-        g.addColorStop(0, 'rgba(' + b.c + ',' + b.a + ')');
+        g.addColorStop(0, 'rgba(' + b.c + ',' + a + ')');
         g.addColorStop(1, 'rgba(' + b.c + ',0)');
         ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
       }
+      if (opts.shade) { // escurece o lado do chat: as bolhas ganham contraste, o cartão ganha borda limpa
+        var sh = ctx.createLinearGradient(w * .45, 0, w, 0);
+        sh.addColorStop(0, 'rgba(23,21,21,0)'); sh.addColorStop(1, 'rgba(23,21,21,.5)');
+        ctx.fillStyle = sh; ctx.fillRect(0, 0, w, h);
+        var vg = ctx.createLinearGradient(0, h * .55, 0, h);
+        vg.addColorStop(0, 'rgba(23,21,21,0)'); vg.addColorStop(1, 'rgba(23,21,21,.45)');
+        ctx.fillStyle = vg; ctx.fillRect(0, 0, w, h);
+      }
+      if (opts.glowDecay && window.__iaGlow > 0)
+        window.__iaGlow = .16 + (window.__iaGlow - .16) * .985; // assenta num halo residual
     }
     if (!reduce) {
       var skip = 0;
@@ -981,13 +1022,13 @@
     { c: '248,65,49',  a: .24, fx: .13, fy: .17, px: .52, py: .82, ph: 4.2 },
     { c: '156,125,255', a: .30, fx: .11, fy: .14, px: .84, py: .62, ph: 5.4 }
   ], 1.16, 1.14);
-  // seção IA (banda escura): glow roxo/elétrico, coral contido (a voz do coach mora aqui)
+  // seção IA (r10): luz composta, não sopa de cores — roxo direcional atrás da manchete,
+  // roxo-claro de fundo, e o ELÉTRICO só quando a ação executa (a luz reage à história)
   vivaAurora('aurora2', [
-    { c: '104,64,255', a: .50, fx: .17, fy: .13, px: .24, py: .30, ph: .8 },
-    { c: '122,85,255', a: .34, fx: .12, fy: .16, px: .78, py: .68, ph: 3.1 },
-    { c: '161,255,98', a: .26, fx: .15, fy: .11, px: .68, py: .18, ph: 1.9 },
-    { c: '248,65,49',  a: .14, fx: .10, fy: .14, px: .40, py: .86, ph: 4.6 }
-  ], 1.12, 1.24);
+    { c: '104,64,255', a: .60, fx: .13, fy: .10, px: .18, py: .26, ph: .8, r: .44 },
+    { c: '140,105,255', a: .28, fx: .09, fy: .13, px: .44, py: .80, ph: 3.1, r: .38 },
+    { c: '161,255,98', a: .32, fx: .07, fy: .08, px: .70, py: .58, ph: 1.9, r: .30, g: 1 }
+  ], 1.12, 1.24, { shade: true, glowDecay: true });
 
   // ── A TINTA: números assentam como instrumento (sobem, passam do ponto e voltam) ──
   function odometro(el) {
@@ -1018,25 +1059,30 @@
     CustomEase.create('sl', '.625,.05,0,1'); // a easing assinatura (E-01) vira ease do GSAP
     if (window._lenis) window._lenis.on('scroll', ScrollTrigger.update);
 
-    // 1) os cartões escuros entram como COVER: sobem levemente maiores no raio e menores
-    //    na escala, e assentam conforme o scroll avança (entrada Jeton)
-    ['.paper', '.ia', '.final'].forEach(function (sel) {
-      var el = document.querySelector(sel);
+    // 1) os cartões escuros entram como COVER de verdade (r10: a r9 era tímida demais
+    //    pra se sentir): mais curso, raio morfando 76→44 e o miolo só entra depois
+    //    que o cartão assenta (entrada Jeton)
+    [{ s: '.paper' }, { s: '.ia' }, { s: '.final', semRaio: true }].forEach(function (cfg) {
+      var el = document.querySelector(cfg.s);
       if (!el) return;
-      gsap.fromTo(el, { scale: .94, y: 70 }, {
-        scale: 1, y: 0, ease: 'none',
-        scrollTrigger: { trigger: el, start: 'top 94%', end: 'top 40%', scrub: true }
-      });
+      var de = { scale: .9, y: 130 }, para = { scale: 1, y: 0, ease: 'none' };
+      if (!cfg.semRaio) { de.borderRadius = '76px'; para.borderRadius = '44px'; }
+      gsap.fromTo(el, de, Object.assign(para, {
+        scrollTrigger: { trigger: el, start: 'top 98%', end: 'top 28%', scrub: true }
+      }));
     });
 
     // 2) manchetes: as palavras sobem de dentro de uma máscara, linha a linha
-    document.querySelectorAll('.areas8 h2, .paper h2, .ia h2, .precos h2').forEach(function (h) {
-      var split = new SplitText(h, { type: 'lines,words', linesClass: 'sl-line' });
-      gsap.from(split.words, {
-        yPercent: 115, duration: .9, ease: 'sl', stagger: .035,
-        scrollTrigger: { trigger: h, start: 'top 86%', once: true }
+    //    (r10: split só depois das fontes prontas, senão as linhas medem errado e o console reclama)
+    function montarManchetes() {
+      document.querySelectorAll('.areas8 h2, .paper h2, .ia h2, .precos h2').forEach(function (h) {
+        var split = new SplitText(h, { type: 'lines,words', linesClass: 'sl-line' });
+        gsap.from(split.words, {
+          yPercent: 115, duration: .9, ease: 'sl', stagger: .035,
+          scrollTrigger: { trigger: h, start: 'top 86%', once: true }
+        });
       });
-    });
+    }
 
     // 3) listas em cascata: as 8 áreas e as linhas do pricing
     gsap.from('.a8-row', {
@@ -1055,6 +1101,58 @@
     });
     var skTo;
     addEventListener('scroll', function () { clearTimeout(skTo); skTo = setTimeout(function () { skewSetter(0); }, 140); }, { passive: true });
+
+    // 5) os relógios dos capítulos (07:12 / 12:47) derivam devagar, como marca d'água
+    document.querySelectorAll('.ch-clock').forEach(function (ck) {
+      gsap.fromTo(ck, { y: 40 }, {
+        y: -46, ease: 'none',
+        scrollTrigger: { trigger: ck.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true }
+      });
+    });
+
+    // 6) O BRIEFING SE ESCREVE (r10): as linhas da prosa sobem de máscara uma a uma;
+    //    quando a linha cita um número, a figura que o prova acende junto —
+    //    a sincronia da marca virando animação
+    function acende(id) {
+      var card = document.getElementById(id);
+      if (!card) return;
+      card.classList.add('lit');
+      setTimeout(function () { card.classList.remove('lit'); }, 1600);
+    }
+    function fireScore() { acende('sp-card-score'); odometro(document.querySelector('.sp-score .n')); }
+    function fireLazer() {
+      acende('sp-card-orc');
+      gsap.fromTo('#sp-card-orc .hot .track i', { width: '58%' }, { width: '103%', duration: 1, ease: 'sl' });
+    }
+    function montarBriefing() {
+      try {
+        var bf = document.querySelector('.sp-brief .bf-txt');
+        if (bf) {
+          var spb = new SplitText(bf, { type: 'lines', mask: 'lines' });
+          // split ok: a barra do lazer parte de 58% e só estoura quando o briefing citar o R$ 8
+          gsap.set('#sp-card-orc .hot .track i', { width: '58%' });
+          var tlb = gsap.timeline({ scrollTrigger: { trigger: '.sp-brief', start: 'top 78%', once: true } });
+          spb.lines.forEach(function (ln, i) {
+            tlb.from(ln, { yPercent: 115, duration: .7, ease: 'sl' }, i * .16);
+            if (ln.querySelector('[data-ref="score"]')) tlb.call(fireScore, null, i * .16 + .38);
+            if (ln.querySelector('[data-ref="lazer"]')) tlb.call(fireLazer, null, i * .16 + .38);
+          });
+        }
+      } catch (e) { /* SplitText indisponível: o briefing fica estático e completo (E-02) */ }
+    }
+
+    // splits esperam as fontes: medida certa, console limpo
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { montarManchetes(); montarBriefing(); });
+    else { montarManchetes(); montarBriefing(); }
+
+    // hover na citação → a figura acende (e explica por que os números batem)
+    var REF2CARD = { score: 'sp-card-score', lazer: 'sp-card-orc' };
+    document.querySelectorAll('.bf-ref').forEach(function (ref) {
+      var card = document.getElementById(REF2CARD[ref.getAttribute('data-ref')]);
+      if (!card) return;
+      ref.addEventListener('mouseenter', function () { card.classList.add('lit'); });
+      ref.addEventListener('mouseleave', function () { card.classList.remove('lit'); });
+    });
   }
 
   // ── a conversa que se escreve: quando a dobra da IA entra, o chat acontece uma vez
@@ -1065,22 +1163,26 @@
     var MSGS = [].slice.call(iachat.querySelectorAll('.msg'));
     var falou = false;
     var ROTEIRO = [
-      { i: 0, t: 150 },                 // pergunta
-      { i: 1, t: 800 },                 // digitando…
-      { i: 1, t: 1750, some: true },
-      { i: 2, t: 1750 },                // resposta com números
-      { i: 3, t: 2750 },                // "então agenda pra sexta"
-      { i: 4, t: 3300 },                // digitando…
-      { i: 4, t: 4250, some: true },
-      { i: 5, t: 4250 },                // agendado
-      { i: 6, t: 4900 }                 // selo: ação executada (check se desenha)
+      { i: 0, t: 0 },                   // terça · 12:47
+      { i: 1, t: 350 },                 // pergunta
+      { i: 2, t: 1000 },                // digitando…
+      { i: 2, t: 1950, some: true },
+      { i: 3, t: 1950 },                // resposta com números
+      { i: 4, t: 2950 },                // "então agenda pra sexta"
+      { i: 5, t: 3500 },                // digitando…
+      { i: 5, t: 4450, some: true },
+      { i: 6, t: 4450 },                // agendado
+      { i: 7, t: 5100, luz: true }      // selo: ação executada (check se desenha + a luz elétrica acende)
     ];
     var ioChat = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
         if (e.isIntersecting && !falou) {
           falou = true; ioChat.disconnect();
           ROTEIRO.forEach(function (s) {
-            setTimeout(function () { MSGS[s.i].classList.add(s.some ? 'gone' : 'in'); }, s.t);
+            setTimeout(function () {
+              MSGS[s.i].classList.add(s.some ? 'gone' : 'in');
+              if (s.luz) window.__iaGlow = 1; // o palco reage: pulso elétrico atrás do chat
+            }, s.t);
           });
         }
       });
