@@ -5,11 +5,20 @@
 > Regras invioláveis: fidelidade ao `DESIGN-SYSTEM-v5.md` (protótipos vencem em divergência); protótipo → aprovação
 > explícita do usuário → implementação → teste de identidade; mobile = protótipo dedicado por tela; handoff toda sessão.
 
+## Retomada rápida (pra nova sessão)
+
+- **Branch:** `poc/ds-v5` · último commit `099443b` (r9). Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`.
+- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r9 em evolução** (é onde o trabalho acontece).
+- **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · aurora do hero (gradiente animado) · seção IA como palco escuro com conversa auto-escrita · seção "As oito áreas" (hover→agulha).
+- **Aguardando veredito:** r9 (ritmo claro/escuro + transições GSAP por seção: covers, SplitText nas manchetes, cascatas, marquee com skew).
+- **Fila combinada:** wordmark gigante no rodapé (Jeton) · h1 do hero com SplitText na entrada · mobile dedicado da landing-viva · depois Onda 0 fase de implementação em `web/` (Fundação A + `<Compass />`).
+- **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616`.
+
 ## Status das ondas
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ rodada 4 pronta | ⏳ **aguardando usuário** (marca 3D já aprovada: é entrega dele) | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r9 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r9** (marca 3D, bússola WebGL, aurora, seção IA e oito áreas já aprovadas) | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
