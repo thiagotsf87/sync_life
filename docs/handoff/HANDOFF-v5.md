@@ -10,14 +10,15 @@
 - **Branch:** `poc/ds-v5`. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`. (QA: validar com `?v=rN` por causa do cache do http.server.)
 - **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r15 APROVADA em 2026-07-30** (tag `poc-landing-viva-r15`).
 - **✅ LANDING DESKTOP APROVADA (r15):** aurora global azul/lilás/roxo passeando atrás das áreas claras · palcos produto/IA sem pin com coreografia na travessia (voo com encaixe × pop de mensageiro) · banda roxa sólida da IA · pricing em 2 cartões iguais · FAQ 2 colunas · wordmark gigante inteiro · copy vendável com números canônicos. Já aprovados antes: marca 3D cromo líquido (DS §5), bússola WebGL (DS §5.6), seção "As oito áreas".
-- **Próximo passo:** protótipo mobile dedicado da landing-viva → com ele aprovado, implementação da Onda 0 em `web/` (Fundação A: tokens/fontes + `<Compass />` + landing real) + teste de identidade. Polimento opcional na fila: SplitText no h1 do hero.
+- **⏳ MOBILE m1 EM APROVAÇÃO:** `landing/landing-viva.mobile.html` (390×844, dedicado) porta a r15 inteira pro toque: aurora global, arco com régua de sintonia, bússola WebGL (DPR 1) com fallback CSS, coreografia em scrub por elemento (voo com encaixe × pop de mensageiro), pricing empilhado, wordmark inteiro. Scroll nativo, sem Lenis.
+- **Próximo passo:** veredito do usuário no mobile m1 → com ele aprovado, implementação da Onda 0 em `web/` (Fundação A: tokens/fontes + `<Compass />` + landing real) + teste de identidade. Polimento opcional na fila: SplitText no h1 do hero.
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
 ## Status das ondas
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ viva r15 (r4 segura preservada) | ✅ **DESKTOP APROVADA (r15, 2026-07-30)** · mobile dedicado pendente | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **DESKTOP APROVADA (r15, 2026-07-30)** · ⏳ mobile m1 em aprovação | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -32,6 +33,24 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-30 · Sessão 16 — Onda 0, m1: protótipo MOBILE dedicado da landing viva
+
+**Contexto:** com a desktop r15 aprovada, o ciclo do programa pede o protótipo mobile dedicado (390×844, hierarquia própria, não breakpoint). Base estrutural: o esqueleto mobile da r4 (nav pill compacta, arco 250px/pivô 2000px, áreas centradas, footer 3 colunas) + TODO o conteúdo e as camadas vivas da r15.
+
+**Feito (`landing/landing-viva.mobile.html`, novo):**
+- **Conteúdo 1:1 com a r15 aprovada:** copy vendável, números canônicos (score 74+3 · Lazer 102% e 508/500 atravessando a linha do limite · viagem 68→73% c/ R$ 580 sexta 31 jul), pricing em 2 cartões (Free branco · PRO escuro, EMPILHADOS, tag elétrica), FAQ com sub editorial, wordmark gigante inteiro, ticker do índice da vida com scores/deltas, banda roxa sólida da IA.
+- **Camadas vivas adaptadas pro toque:** aurora global fixa (mesma paleta/amplitudes da r15, blur 48px) · arco com régua de sintonia (SPC 52, tocar no número assenta o card) · bússola WebGL cromo na seção das áreas (DPR 1, orçamento §5.6, fallback CSS via catch) · odômetro nos scores.
+- **Coreografia em scrub SEM pin, gatilho no próprio elemento** (regra da r14: nada anima fora da tela): produto = cada peça do painel voa e ENCAIXA na própria travessia (`top 97%`→`top 58%`, back.out; medido: entra a scale .82/rot 4°/+64px, assenta com overshoot 1.01); IA = bolhas com pop de mensageiro por mensagem + selo carimbando com check se desenhando; wordmark sobe em scrub; manchetes SplitText (áreas/preços); cascatas nas listas; ticker entorta com a velocidade. **Scroll nativo (sem Lenis — o momentum do device já é o peso).** E-02: sem GSAP/reduce = página estática completa via `.rv`.
+- **Fix de console:** `document.fonts.ready` pode resolver ANTES do Space Grotesk começar a baixar (nenhum load pendente) e o SplitText media errado ("called before fonts loaded" ×10). Fix: `document.fonts.load('500/700 32px Space Grotesk')` explícito antes do split. A desktop r15 tem o mesmo padrão latente (lá mascarado por cache) — corrigir na implementação.
+- Hub: linha da viva desktop marcada APROVADA + linha nova do mobile m1 em aprovação.
+- QA (`?v=m1`/`?v=m1b`, 390×844): console 100% limpo (os 2 warnings de Canvas2D são do probe do próprio Playwright, já documentados na r15) · 20 ScrollTriggers, 0 pins, sem overflow-x, doc 7374px · gl-on com agulha respondendo ao toque na lista (Corpo → SE + meta 04·08) · régua sintonizando (tap 05 → arco a -3.75°) · voo medido nas 2 pontas · screenshots das 7 dobras no scratchpad (`qa-onda0-mobile/`).
+
+**Pendências:** ⏳ veredito do usuário no mobile m1; com o aprovado, implementação da Onda 0 em `web/` + teste de identidade.
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.mobile.html` (novo) · `prototypes/v5/index.html` · este handoff.
 
 ---
 
