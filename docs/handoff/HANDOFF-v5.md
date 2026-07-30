@@ -8,17 +8,17 @@
 ## Retomada rápida (pra nova sessão)
 
 - **Branch:** `poc/ds-v5` · último commit = r10. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`.
-- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r10 em evolução** (é onde o trabalho acontece).
-- **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · aurora do hero (gradiente animado) · seção IA como palco escuro com conversa auto-escrita · seção "As oito áreas" (hover→agulha).
-- **Aguardando veredito:** r10 (metade de baixo re-narrada como "uma terça de verdade": 07:12 briefing → 12:47 conversa → sexta ação; números canônicos na página inteira; palco da IA com luz composta e reativa; covers com presença real).
-- **Fila combinada:** wordmark gigante no rodapé (Jeton) · h1 do hero com SplitText na entrada · mobile dedicado da landing-viva · depois Onda 0 fase de implementação em `web/` (Fundação A + `<Compass />`).
+- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r5→r11 em evolução** (é onde o trabalho acontece).
+- **Já aprovado pelo usuário:** marca 3D cromo líquido (entrega dele, DS §5) · bússola WebGL viva (DS §5.6) · aurora do hero (gradiente animado) · seção "As oito áreas" (hover→agulha).
+- **Aguardando veredito:** r11 (do produto ao final refeito: dois palcos PINADOS com scrub — painel que se monta peça a peça + conversa da IA que avança com o scroll em banda roxa sólida; pricing em 2 cartões; FAQ 2 colunas; wordmark gigante no final; copy vendável).
+- **Fila combinada:** h1 do hero com SplitText na entrada · mobile dedicado da landing-viva · depois Onda 0 fase de implementação em `web/` (Fundação A + `<Compass />`).
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
 ## Status das ondas
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ viva r10 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r10** (marca 3D, bússola WebGL, aurora, seção IA e oito áreas já aprovadas) | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r11 pronta (r4 segura preservada) | ⏳ **aguardando veredito da r11** (marca 3D, bússola WebGL, aurora do hero e oito áreas já aprovadas) | – | – |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -33,6 +33,27 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-30 · Sessão 11 — Onda 0, r11: do produto ao final REFEITO (palcos pinados, à la refs)
+
+**Feedback do usuário na r10 (duro):** sequência pós-produto ruim; combinação de cores do fundo da IA ruim; texto com "termos meio estranhos"; pricing e FAQ ruins. Refazer do produto até o final considerando Phamily/Jeton/Osmo: transições de seção excelentes, componentes se ENCAIXANDO conforme o scroll, a tela se TRANSFORMANDO ao descer. Conteúdo vendável e atrativo.
+
+**Lição registrada:** a r10 ainda era "seção com entrada animada"; os refs fazem outra coisa: pin + scrub (a tela segura e se transforma com o scroll). E copy de landing vende benefício direto, sem metáfora literária ("uma terça de verdade", "o dia chega lido", relógios-fantasma 07:12/12:47 = reprovados).
+
+**Feito (em `landing-viva.html`), do `#produto` ao rodapé:**
+- **Palco 1 · O produto (pin ~200% de scroll):** h2 vendável "Chega de oito apps abertos. Aqui, tudo se encaixa." fixa à esquerda; à direita **o painel se monta peça a peça com o scroll**: 5 cards (Score 74 · Coach briefing · Finanças com lazer estourando o limite · Agenda · Meta Viagem Itália 68%) voam de fora com rotação e **assentam com overshoot** (`back.out`), grid limpo no final. Números canônicos da r10 preservados (essa parte não foi reclamada).
+- **Palco 2 · IA (pin ~240%):** aurora2 **deletada** (canvas+JS); banda **ROXA SÓLIDA** (radial sutil #7c58ff→#5227e6, cor de marca à la Jeton) com texto branco e em elétrico. h2 "Uma IA que conhece sua vida. E resolve por você." A **conversa avança bolha a bolha com o scroll** (scrub, sem timers; ROTEIRO/IO removidos), bolhas do usuário em #171515 e da IA em branco (contraste real), selo "Ação executada" com check se desenhando no fim do pin.
+- **Pricing:** tabela → **2 cartões** (Free branco · PRO escuro com tag elétrica "RECOMENDADO"), listas de 5-6 itens com check, CTA full-width em cada, microcopy "Sem cartão de crédito no teste" / "Grátis pra sempre, de verdade". Coerência nova: Free inclui "Coach IA com briefing diário" (casa com a pill do hero "Coach IA em todos os planos"); PRO = "Consultor IA que executa por você".
+- **FAQ:** editorial 2 colunas (h2 + sub à esquerda, accordion à direita).
+- **Final:** CTA + **wordmark gigante** Sync(branco)Life(roxo) clamp 110-250px cortado na base, subindo com scrub (item da fila Jeton, entregue).
+- **Infra:** pins só desktop ≥1024 + sem reduce; `.rv` é removido via JS dentro dos palcos (o scrub é o único condutor); mobile/no-GSAP = seções estáticas completas (E-02); nota "role: o painel se monta sozinho" some no mobile; manchetes SplitText agora só em `.areas8 h2, .precos h2` (nos palcos quem conduz é o pin).
+- QA: console 100% limpo (desktop e 390px); pins medidos (prod 2649→4449, ia 5420→7580); montagem verificada em 3 estágios do scrub; conversa scrubada verificada; mobile sem pins com 5 cards + 4 bolhas + 2 pcards presentes.
+
+**Pendências:** ⏳ veredito da r11; fila: SplitText no h1 do hero, mobile dedicado da viva.
+
+**Arquivos:** `prototypes/v5/landing/landing-viva.html`.
 
 ---
 

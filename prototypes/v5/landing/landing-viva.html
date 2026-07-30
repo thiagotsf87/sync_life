@@ -202,58 +202,50 @@
   .press-logos span{font:700 15px var(--gro);color:var(--t3);transition:color .4s var(--ease)}
   .press-logos span:hover{color:var(--t2)}
 
-  /* ─── SEÇÃO escura: o produto em espécimes (cantos arredondados à la Jeton).
-     r10: a seção vira o capítulo das 07:12 — o briefing conduz, as figuras são as provas ─── */
-  .paper{background:#171515;color:var(--ink);padding:110px 0;border-radius:44px}
-  .paper .wrap{position:relative}
-  .paper .eyebrow{color:var(--ink2)}
-  .paper h2{font:500 clamp(2.2rem,4.6vw,4rem)/1.04 var(--gro);letter-spacing:-.045em;max-width:640px;margin-top:18px}
-  .paper h2 em{font-style:normal;color:var(--roxo)}
-  .paper .lead{font:400 16px/1.7 var(--int);color:var(--ink2);max-width:520px;margin-top:22px}
-  /* o relógio do capítulo: numeral gigante em contorno, marca a hora da história */
-  .ch-clock{position:absolute;right:0;top:-18px;font:700 clamp(96px,12vw,180px)/1 var(--gro);letter-spacing:-.06em;
-    font-variant-numeric:tabular-nums;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.13);
-    pointer-events:none;user-select:none}
-  .spec-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(40px,5vw,90px);margin-top:70px;align-items:start}
-  .spec-col{display:flex;flex-direction:column;gap:34px}
-  .specimen{border-top:1px solid var(--pline);padding-top:18px}
-  .specimen .tag{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
-  .specimen .tag span{font:700 10px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--ink2)}
-  .specimen .tag i{font-style:normal;font:700 10px var(--gro);color:var(--roxo)}
-  /* espécime: score */
-  .sp-score{display:flex;align-items:baseline;gap:18px}
-  .sp-score .n{font:700 96px/1 var(--gro);letter-spacing:-.06em;color:var(--ink)}
-  .sp-score .meta{display:flex;flex-direction:column;gap:6px}
-  .sp-score .up{font:600 13px var(--gro);color:var(--ele)}
-  .sp-score .lbl{font:400 12px var(--int);color:var(--ink2)}
-  /* espécime: orçamento. r10: a linha do limite existe de verdade, e a barra estourada a atravessa */
-  .sp-orc .row{display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--pline)}
-  .sp-orc .row:last-child{border-bottom:none}
-  .sp-orc .nm{font:500 13px var(--int);color:var(--ink)}
+  /* ─── O PRODUTO (r11): palco PINADO — a tela segura e o painel se monta peça a peça
+     com o scroll (o padrão dos refs Jeton/Osmo/Phamily: componentes se encaixando) ─── */
+  .prod{background:#171515;color:var(--ink);border-radius:44px;min-height:100vh;display:flex;align-items:center;
+    position:relative;overflow:hidden}
+  .prod-wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(40px,5vw,84px);align-items:center;padding:70px 0;width:100%}
+  .prod .eyebrow{color:var(--ink2)}
+  .prod h2{font:500 clamp(2rem,3.8vw,3.4rem)/1.06 var(--gro);letter-spacing:-.045em;margin-top:16px}
+  .prod h2 em{font-style:normal;color:var(--roxo)}
+  .prod .lead{font:400 15.5px/1.7 var(--int);color:var(--ink2);max-width:440px;margin-top:20px}
+  .prod-hand{margin-top:28px;display:inline-block}
+  /* as peças do painel */
+  .prod-stage{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .pc{background:#201d1d;border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:18px 20px;
+    box-shadow:0 18px 44px rgba(0,0,0,.35);will-change:transform}
+  .pc-tag{display:inline-block;font:700 9.5px var(--gro);letter-spacing:.18em;text-transform:uppercase;
+    color:#a58aff;background:rgba(104,64,255,.16);border-radius:999px;padding:4px 10px;margin-bottom:12px}
+  .pc-quote{font:400 13.5px/1.65 var(--int);color:var(--ink)}
+  .pc-sub{display:block;font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);margin-top:10px}
+  .pc-row{display:flex;align-items:center;gap:10px;font:400 13px var(--int);color:var(--ink);padding:7px 0;border-bottom:1px dashed var(--pline)}
+  .pc-row:last-child{border-bottom:none;padding-bottom:0}
+  .pc-row time{font:600 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2);min-width:38px}
+  .pc-meta{grid-column:1 / -1}
+  .pc-meta .mrow{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+  .pc-meta .mnm{font:500 13.5px var(--int);color:var(--ink)}
+  .pc-meta .mtrack{height:5px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+  .pc-meta .mtrack i{display:block;height:100%;width:68%;border-radius:3px;background:var(--roxo)}
+  .pc-meta .mval{font:600 12px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2)}
+  .pc-meta .msub{font:400 11.5px/1.5 var(--int);color:var(--ink2);margin-top:9px}
+  /* score dentro da peça */
+  .sp-score{display:flex;align-items:baseline;gap:16px}
+  .sp-score .n{font:700 64px/1 var(--gro);letter-spacing:-.06em;color:var(--ink)}
+  .sp-score .meta{display:flex;flex-direction:column;gap:5px}
+  .sp-score .up{font:600 12.5px var(--gro);color:var(--ele)}
+  .sp-score .lbl{font:400 11.5px/1.45 var(--int);color:var(--ink2)}
+  /* orçamentos dentro da peça: a linha do limite existe, e a barra estourada a atravessa */
+  .sp-orc .row{display:grid;grid-template-columns:86px 1fr auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--pline)}
+  .sp-orc .row:last-child{border-bottom:none;padding-bottom:0}
+  .sp-orc .nm{font:500 12.5px var(--int);color:var(--ink)}
   .sp-orc .track{height:4px;border-radius:2px;background:rgba(255,255,255,.12);position:relative}
   .sp-orc .track::after{content:'';position:absolute;right:0;top:-4px;bottom:-4px;width:1px;background:rgba(255,255,255,.28)} /* o limite */
   .sp-orc .track i{display:block;height:100%;border-radius:2px;background:var(--ink2);max-width:none}
   .sp-orc .hot .track i{background:var(--coral);box-shadow:0 0 9px rgba(248,65,49,.55)}
-  .sp-orc .val{font:500 12px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2)}
+  .sp-orc .val{font:500 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2)}
   .sp-orc .hot .val{color:var(--coral)}
-  /* espécime: o briefing escrito (E-07: a IA escreve prosa com fontes). r10: vira a peça-guia */
-  .sp-brief{display:flex;flex-direction:column;gap:12px}
-  .sp-brief .bf-hora{font:700 10px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--ink2)}
-  .sp-brief .bf-txt{font:400 15.5px/1.8 var(--int);color:var(--ink);max-width:54ch}
-  .sp-brief .bf-txt b{font-weight:600}
-  .sp-brief .bf-fontes{font:400 11.5px var(--int);color:var(--ink2);border-top:1px dashed var(--pline);padding-top:10px}
-  /* referência citada no briefing ↔ figura que prova: hover acende as duas */
-  .bf-ref{border-bottom:1px dotted rgba(104,64,255,.6);cursor:default}
-  .specimen{transition:background .5s var(--ease)}
-  .specimen.lit{background:linear-gradient(90deg,rgba(104,64,255,.12),transparent 72%)}
-  /* espécime: chat real */
-  .sp-chat{display:flex;flex-direction:column;gap:10px}
-  .sp-chat .bub{max-width:88%;padding:11px 15px;font:400 13px/1.55 var(--int);border-radius:15px}
-  .sp-chat .u{align-self:flex-end;background:var(--roxo);color:#fff;border-bottom-right-radius:4px}
-  .sp-chat .a{align-self:flex-start;background:#242020;border:1px solid var(--pline);color:var(--ink2);border-bottom-left-radius:4px}
-  .sp-chat .a strong{color:var(--ink);font-weight:600}
-  /* notas de margem */
-  .mnote{font:400 12px/1.6 var(--int);color:var(--ink2);border-left:2px solid var(--roxo);padding-left:14px;max-width:300px}
 
   /* marquee. r10: vira o ticker do índice da vida — os mesmos scores e deltas da lista das 8 áreas */
   .mq{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;white-space:nowrap}
@@ -268,101 +260,84 @@
   .mq em.d.flat{color:var(--t3)}
   .mq i{color:var(--roxo);font-style:normal;margin-left:24px}
 
-  /* ─── IA: a funcionalidade principal ganha o palco (r8): banda escura arredondada,
-     aurora própria e a conversa que se escreve sozinha quando a dobra entra.
-     r10: o palco vira LUZ COMPOSTA — roxo direcional atrás da manchete, lado do chat
-     escurecido pra contraste, e o elétrico só acende quando a ação executa ─── */
-  .ia{padding:110px 0;position:relative;overflow:hidden;border-radius:44px}
-  #aurora2{position:absolute;left:-6%;top:-12%;width:112%;height:124%;z-index:0;pointer-events:none;
-    filter:blur(60px) saturate(1.05);opacity:.55}
-  .ia .wrap{position:relative;z-index:2}
-  .ia .ch-clock{-webkit-text-stroke-color:rgba(255,255,255,.10);top:-8px}
-  .chat-ts{align-self:center;font:600 10.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
-  .anim .ia .chat .msg{opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
-  .anim .ia .chat .msg.in{opacity:1;transform:none}
-  .ia .chat .msg.gone{display:none}
-  .typing{display:none;gap:4px;padding:13px 16px;background:var(--s1);border:1px solid var(--line);
-    border-radius:16px 16px 16px 4px;width:fit-content;align-self:flex-start}
-  .anim .typing{display:flex}
-  .typing i{width:5px;height:5px;border-radius:50%;background:var(--t3)}
-  .anim .typing.in i{animation:tdot 1s var(--ease) infinite}
-  .typing i:nth-child(2){animation-delay:.15s}
-  .typing i:nth-child(3){animation-delay:.3s}
-  @keyframes tdot{0%,100%{transform:none;opacity:.5}50%{transform:translateY(-3px);opacity:1}}
-  .acao{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;font:600 12.5px var(--int);color:var(--ele);
-    border:1px solid rgba(161,255,98,.35);background:rgba(161,255,98,.08);border-radius:999px;padding:8px 14px}
+  /* ─── IA (r11): o segundo palco PINADO — banda ROXA sólida (cor de marca, sem aurora),
+     a conversa avança com o scroll e a ação se desenha no fim ─── */
+  .ia{background:radial-gradient(130% 140% at 14% 0%,#7c58ff 0%,#6840ff 46%,#5227e6 100%);color:#fff;
+    border-radius:44px;min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+  .ia .wrap{padding:70px 0;width:100%}
+  .ia .eyebrow{color:rgba(255,255,255,.62)}
+  .ia .eyebrow b{color:#fff}
+  .ia .head{max-width:660px}
+  .ia h2{font:500 clamp(2.1rem,4vw,3.5rem)/1.05 var(--gro);letter-spacing:-.045em;margin-top:16px}
+  .ia h2 em{font-style:normal;color:var(--ele)}
+  .ia .lead{font:400 15.5px/1.7 var(--int);color:rgba(255,255,255,.8);max-width:520px;margin-top:20px}
+  .ia-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(40px,5vw,90px);margin-top:48px;align-items:start}
+  .ia-feats{display:flex;flex-direction:column}
+  .ia-feat{display:grid;grid-template-columns:52px 1fr;gap:16px;padding:20px 0;border-top:1px solid rgba(255,255,255,.22)}
+  .ia-feat .fn{font:700 14px var(--gro);color:var(--ele)}
+  .ia-feat h4{font:600 15px var(--int);color:#fff}
+  .ia-feat p{font:400 13px/1.6 var(--int);color:rgba(255,255,255,.68);margin-top:5px}
+  .chat{display:flex;flex-direction:column;gap:10px}
+  .chat .bub{max-width:84%;padding:12px 16px;font:400 13.5px/1.6 var(--int)}
+  .chat .u{align-self:flex-end;background:#171515;color:#fff;border-radius:16px 16px 4px 16px}
+  .chat .a{align-self:flex-start;background:#fff;color:#2a2626;border-radius:16px 16px 16px 4px;box-shadow:0 14px 30px rgba(21,19,19,.25)}
+  .chat .a strong{color:#171515;font-weight:650}
+  .chat .a .g{color:#2e7d0f;font-weight:600}
+  .acao{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;font:600 12.5px var(--int);color:#eaffd8;
+    border:1px solid rgba(161,255,98,.55);background:rgba(161,255,98,.16);border-radius:999px;padding:8px 14px}
   .acao svg{flex:none}
   .acao .ck{stroke:var(--ele);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;
     stroke-dasharray:20;stroke-dashoffset:0}
-  .anim .acao .ck{stroke-dashoffset:20;transition:stroke-dashoffset .6s var(--ease) .2s}
-  .anim .acao.in .ck{stroke-dashoffset:0}
-  .ia .head{max-width:680px}
-  .ia h2{font:500 clamp(2.1rem,4.2vw,3.6rem)/1.05 var(--gro);letter-spacing:-.045em;margin-top:18px}
-  .ia h2 em{font-style:normal;color:var(--ele)}
-  .ia .lead{font:400 15.5px/1.7 var(--int);color:var(--t2);max-width:520px;margin-top:20px}
-  .ia-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(40px,5vw,90px);margin-top:60px;align-items:start}
-  .ia-feats{display:flex;flex-direction:column}
-  .ia-feat{display:grid;grid-template-columns:56px 1fr;gap:18px;padding:22px 0;border-top:1px solid var(--line)}
-  .ia-feat .fn{font:700 14px var(--gro);color:var(--roxo)}
-  .ia-feat h4{font:600 15px var(--int)}
-  .ia-feat p{font:400 13px/1.6 var(--int);color:var(--t3);margin-top:5px}
-  .chat{display:flex;flex-direction:column;gap:10px}
-  .chat .bub{max-width:82%;padding:12px 16px;font:400 13.5px/1.6 var(--int)}
-  .chat .bub strong{color:var(--t1);font-weight:600}
-  .chat .bub .g{color:var(--ele);font-weight:600}
-  .chat .u{align-self:flex-end;background:var(--roxo);border:1px solid var(--roxo);color:#fff;border-radius:16px 16px 4px 16px}
-  .chat .a{align-self:flex-start;background:var(--s1);border:1px solid var(--line);color:var(--t2);border-radius:16px 16px 16px 4px;box-shadow:0 4px 14px rgba(21,19,19,.05)}
-  .chat-input{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--line);border-radius:999px;padding:13px 20px;margin-top:6px}
-  .chat-input span{flex:1;font:400 13px var(--int);color:var(--t3)}
-  .chat-input svg{color:var(--roxo)}
+  .chat-input{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.26);border-radius:999px;padding:13px 20px;margin-top:6px}
+  .chat-input span{flex:1;font:400 13px var(--int);color:rgba(255,255,255,.66)}
+  .chat-input svg{color:#fff}
 
-  /* ─── PRICING: tabela editorial (r9: volta pro papel claro, o cartão escuro da IA respira) ─── */
-  .precos{padding:110px 0}
+  /* ─── PRICING (r11): dois cartões, decisão em cinco segundos ─── */
+  .precos{padding:120px 0 90px}
   /* linhas do SplitText: máscara de onde as palavras sobem (folga pros descendentes g/ç) */
   .sl-line{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
-  .precos .head{text-align:center;margin-bottom:60px}
+  .precos .head{text-align:center;margin-bottom:54px}
   .precos h2{font:500 clamp(2.1rem,4.2vw,3.6rem)/1.05 var(--gro);letter-spacing:-.045em;margin-top:16px}
-  .ptable{max-width:880px;margin:0 auto;border-top:1px solid var(--line)}
-  .prow{display:grid;grid-template-columns:1.3fr 1fr 1fr;align-items:center;border-bottom:1px solid var(--line)}
-  .prow > div{padding:16px 18px}
-  .prow .feat{font:400 13.5px var(--int);color:var(--t2)}
-  .prow .c{text-align:center;font:500 13px var(--int);color:var(--t2)}
-  .prow .c svg{color:var(--ele);vertical-align:-2px}
-  .prow .c .no{color:var(--t3);opacity:.5}
-  .prow.hdr{border-bottom-width:2px;border-bottom-color:var(--line-h)}
-  .prow.hdr > div{padding-top:26px;padding-bottom:26px}
-  .prow.hdr .plan-n{font:500 20px var(--gro);letter-spacing:-.02em}
-  .prow.hdr .plan-p{font:700 clamp(28px,3.4vw,44px)/1 var(--gro);letter-spacing:-.04em;margin-top:10px}
-  .prow.hdr .plan-s{font:400 12px var(--int);color:var(--t3);margin-top:6px}
-  .prow.hdr .c{text-align:center}
-  .col-pro{position:relative;background:var(--roxo)}
-  .prow .c.col-pro{color:#fff}
-  .prow.hdr .col-pro .plan-s{color:#d9d0ff}
-  .prow.hdr .col-pro .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);font:700 9.5px var(--gro);letter-spacing:.14em;
+  .precos .sub{font:400 15px var(--int);color:var(--t2);margin-top:16px}
+  .pcards{display:grid;grid-template-columns:minmax(300px,380px) minmax(320px,430px);justify-content:center;gap:22px;align-items:stretch}
+  .pcard{background:#fff;border:1px solid var(--line);border-radius:26px;padding:34px 32px;display:flex;flex-direction:column}
+  .pcard .pn{font:500 17px var(--gro);letter-spacing:-.01em}
+  .pcard .pp{font:700 clamp(38px,4.4vw,54px)/1 var(--gro);letter-spacing:-.045em;margin-top:12px}
+  .pcard .pp small{font:400 13px var(--int);letter-spacing:0;color:var(--t3);margin-left:6px}
+  .pcard ul{list-style:none;margin:24px 0 28px;display:flex;flex-direction:column;gap:11px;flex:1}
+  .pcard li{display:flex;align-items:flex-start;gap:10px;font:400 13.5px/1.5 var(--int);color:var(--t2)}
+  .pcard li svg{flex:none;margin-top:2px;color:#44a616}
+  .pcard .btn{width:100%;justify-content:center}
+  .pcard.pro{background:#171515;border-color:#171515;color:#fff;position:relative;box-shadow:0 34px 70px rgba(21,19,19,.22)}
+  .pcard.pro .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);font:700 9.5px var(--gro);letter-spacing:.14em;
     color:#151313;background:var(--ele);border-radius:999px;padding:5px 12px;white-space:nowrap}
-  .prow .c.col-pro .no{color:#d9d0ff;opacity:.7}
-  .prow.cta .col-pro .btn-roxo{background:#151313;color:#fff}
-  .prow.cta .col-pro .btn-roxo:hover{background:#000}
-  .prow.cta > div{padding:22px 18px}
-  .prow.cta .btn{width:100%;justify-content:center}
+  .pcard.pro .pp small{color:rgba(255,255,255,.5)}
+  .pcard.pro li{color:rgba(255,255,255,.82)}
+  .pcard.pro li svg{color:var(--ele)}
+  .pcard .pfoot{font:400 11.5px var(--int);color:var(--t3);text-align:center;margin-top:12px}
+  .pcard.pro .pfoot{color:rgba(255,255,255,.5)}
 
-  /* FAQ */
-  .faqsec{padding:30px 0 110px}
-  .faq{max-width:760px;margin:44px auto 0}
-  .faqsec h2{font:500 clamp(1.8rem,3vw,2.6rem) var(--gro);letter-spacing:-.035em;text-align:center}
+  /* FAQ (r11): editorial em duas colunas */
+  .faqsec{padding:30px 0 120px}
+  .faq-grid{display:grid;grid-template-columns:.8fr 1.4fr;gap:clamp(40px,6vw,90px);max-width:1080px;margin:0 auto}
+  .faqsec h2{font:500 clamp(1.9rem,3vw,2.6rem)/1.1 var(--gro);letter-spacing:-.04em}
+  .faqsec .fsub{font:400 14px/1.6 var(--int);color:var(--t2);margin-top:14px;max-width:300px}
   .faq details{border-bottom:1px solid var(--line)}
   .faq summary{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 6px;cursor:pointer;list-style:none;
     font:600 15px var(--int);color:var(--t1)}
   .faq summary::-webkit-details-marker{display:none}
   .faq summary svg{flex-shrink:0;color:var(--t3);transition:transform .4s var(--ease)}
   .faq details[open] summary svg{transform:rotate(180deg)}
-  .faq .ans{padding:0 6px 22px;font:400 14px/1.65 var(--int);color:var(--t2);max-width:640px}
+  .faq .ans{padding:0 6px 22px;font:400 14px/1.65 var(--int);color:var(--t2);max-width:560px}
 
-  /* CTA final gigante */
-  .final{padding:130px 0;text-align:center;border-radius:44px 44px 0 0}
-  .final h2{font:500 clamp(2.8rem,7.4vw,6.6rem)/1 var(--gro);letter-spacing:-.055em}
+  /* CTA final gigante + wordmark Jeton no rodapé */
+  .final{padding:130px 0 0;text-align:center;border-radius:44px 44px 0 0;overflow:hidden}
+  .final h2{font:500 clamp(2.6rem,6.6vw,5.8rem)/1.02 var(--gro);letter-spacing:-.055em}
   .final h2 em{font-style:normal;color:var(--roxo)}
-  .final p{color:var(--t2);margin:26px auto 38px;max-width:420px}
+  .final p{color:var(--t2);margin:24px auto 36px;max-width:420px}
+  .final .wordmark{display:block;font:700 clamp(110px,16.5vw,250px)/.8 var(--gro);letter-spacing:-.06em;color:var(--t1);
+    margin:90px auto -16px;transform:translateY(9%);user-select:none;white-space:nowrap}
+  .final .wordmark em{font-style:normal;color:var(--roxo)}
 
   footer{border-top:1px solid var(--line);padding:64px 0 40px}
   .foot-grid{display:grid;grid-template-columns:2fr repeat(4,1fr);gap:40px}
@@ -375,16 +350,16 @@
 
   @media (max-width:1023px){
     .nav-links{display:none}
-    .ch-clock{display:none}
-    .spec-grid,.ia-grid{grid-template-columns:1fr}
+    .prod,.ia{min-height:auto}
+    .prod-hand{display:none} /* sem pin no mobile: a nota "se monta sozinho" sai junto */
+    .prod-wrap,.ia-grid,.pcards,.faq-grid{grid-template-columns:1fr}
     .foot-grid{grid-template-columns:1fr 1fr}
     .hero-right{align-items:flex-start}
     .a8-grid{grid-template-columns:1fr}
     .a8-left{position:static}
   }
   @media (max-width:720px){
-    .prow{grid-template-columns:1.2fr 1fr 1fr}
-    .prow > div{padding:12px 8px}
+    .prod-stage{grid-template-columns:1fr}
     .foot-grid{grid-template-columns:1fr}
   }
 </style>
@@ -583,54 +558,53 @@
   </div>
 </section>
 
-<!-- SEÇÃO escura: o produto em espécimes anotados.
-     r10: capítulo 1 da terça — às 07:12 o briefing chega lido; as figuras ao lado
-     são as provas dos números que ele cita (uma vida só, uma fonte só) -->
-<section class="paper" id="produto">
-  <div class="wrap">
-    <span class="ch-clock num" aria-hidden="true">07:12</span>
-    <div class="rv">
-      <p class="eyebrow">O produto · uma terça de verdade</p>
-      <h2>Às 07:12, o dia já chega <em>lido.</em></h2>
-      <p class="lead">Todo dia, antes do primeiro café, o coach lê as suas oito áreas e escreve o seu dia em prosa. Repare nos números: são os mesmos na página inteira, porque a fonte é uma só.</p>
+<!-- O PRODUTO (r11): palco pinado — a tela segura e o painel se monta peça a peça com o scroll -->
+<section class="prod" id="produto">
+  <div class="wrap prod-wrap">
+    <div class="prod-head rv">
+      <p class="eyebrow">O produto</p>
+      <h2>Chega de oito apps abertos. <em>Aqui, tudo se encaixa.</em></h2>
+      <p class="lead">Finanças, agenda, treinos e metas no mesmo painel. Você registra em segundos; o SyncLife conecta tudo e mostra o que precisa da sua atenção hoje.</p>
+      <p class="hand prod-hand" style="transform:rotate(-2deg)">role: o painel se monta sozinho</p>
     </div>
-    <div class="spec-grid">
-      <div class="spec-col">
-        <div class="specimen rv drift" data-drift="-10">
-          <div class="tag"><span>O briefing do dia · escrito pra você</span><i>fig. 01</i></div>
-          <div class="sp-brief">
-            <p class="bf-hora num">Escrito às 07:12 · terça, 28 jul</p>
-            <p class="bf-txt">O dia abre com o score em <b class="num bf-ref" data-ref="score">74</b>, três pontos acima de ontem. O único ponto solto é o lazer, que estourou o limite em <b class="num bf-ref" data-ref="lazer">R$&nbsp;8</b>: um ajuste pequeno hoje evita um corte grande no fim do mês. E fica um lembrete, a parcela da viagem pode ser antecipada. Quer ver se cabe?</p>
-            <p class="bf-fontes">Fontes: orçamentos · agenda · aportes · treinos</p>
+    <div class="prod-stage">
+      <div class="pc pc-score rv">
+        <span class="pc-tag">Score</span>
+        <div class="sp-score">
+          <span class="n num">74</span>
+          <div class="meta">
+            <span class="up num">+3 hoje</span>
+            <span class="lbl">As 8 áreas da sua vida num número só.</span>
           </div>
         </div>
-        <p class="hand rx rv" style="transform:rotate(-2.5deg);align-self:flex-end">escrito pra você, e assinado!</p>
-        <p class="mnote rv">Os números que o briefing cita são os das figuras ao lado. Uma vida só, uma fonte só.</p>
       </div>
-      <div class="spec-col">
-        <div class="specimen rv drift" data-drift="12" id="sp-card-score">
-          <div class="tag"><span>Life Sync Score</span><i>fig. 02</i></div>
-          <div class="sp-score">
-            <span class="n num">74</span>
-            <div class="meta">
-              <span class="up num">+3 hoje</span>
-              <span class="lbl">Um número que resume as 8 dimensões da sua vida, atualizado em tempo real.</span>
-            </div>
-          </div>
-          <div class="draw rv" style="display:flex;align-items:center;gap:6px;margin-top:10px">
-            <svg class="hand-arrow" width="46" height="26" viewBox="0 0 46 26" aria-hidden="true" style="color:var(--coral)"><path d="M44 4 C30 22, 16 24, 3 16 M9 22 L3 16 L10 12"/></svg>
-            <span class="hand">a vida inteira num número só</span>
-          </div>
+      <div class="pc pc-brief rv">
+        <span class="pc-tag">Coach</span>
+        <p class="pc-quote">"Seu score subiu 3 pontos. Só o lazer passou do limite: R$&nbsp;8. Um ajuste hoje resolve."</p>
+        <span class="pc-sub num">Briefing de hoje · 07:12</span>
+      </div>
+      <div class="pc pc-orc rv">
+        <span class="pc-tag">Finanças</span>
+        <div class="sp-orc">
+          <div class="row"><span class="nm">Alimentação</span><div class="track"><i style="width:80%"></i></div><span class="val">640 / 800</span></div>
+          <div class="row hot"><span class="nm">Lazer</span><div class="track"><i style="width:103%"></i></div><span class="val">508 / 500</span></div>
+          <div class="row"><span class="nm">Transporte</span><div class="track"><i style="width:70%"></i></div><span class="val">280 / 400</span></div>
         </div>
-        <div class="specimen rv" id="sp-card-orc">
-          <div class="tag"><span>Orçamentos ao vivo</span><i>fig. 03</i></div>
-          <div class="sp-orc">
-            <div class="row"><span class="nm">Alimentação</span><div class="track"><i style="width:80%"></i></div><span class="val">640 / 800</span></div>
-            <div class="row hot"><span class="nm">Lazer</span><div class="track"><i style="width:103%"></i></div><span class="val">508 / 500</span></div>
-            <div class="row"><span class="nm">Transporte</span><div class="track"><i style="width:70%"></i></div><span class="val">280 / 400</span></div>
-          </div>
+      </div>
+      <div class="pc pc-agenda rv">
+        <span class="pc-tag">Agenda</span>
+        <div class="pc-row"><time class="num">07:30</time>Fisioterapia</div>
+        <div class="pc-row"><time class="num">09:00</time>Bloco de foco · projeto</div>
+        <div class="pc-row"><time class="num">14:00</time>1:1 com a gestora</div>
+      </div>
+      <div class="pc pc-meta rv">
+        <span class="pc-tag">Metas</span>
+        <div class="mrow">
+          <span class="mnm">Viagem Itália</span>
+          <div class="mtrack"><i></i></div>
+          <span class="mval">68%</span>
         </div>
-        <p class="mnote rv">Estourou? A barra atravessa a linha do limite, e o briefing te conta em reais.</p>
+        <p class="msub">R$&nbsp;8.600 de R$&nbsp;12.600 · aporte de R$&nbsp;580 agendado pra sexta</p>
       </div>
     </div>
   </div>
@@ -643,31 +617,26 @@
   </div>
 </div>
 
-<!-- IA: a funcionalidade principal, com palco próprio -->
-<section class="ia dk" id="manifesto">
-  <canvas id="aurora2" aria-hidden="true"></canvas>
+<!-- IA (r11): o segundo palco pinado — banda roxa sólida, a conversa avança com o scroll -->
+<section class="ia" id="manifesto">
   <div class="wrap">
-    <span class="ch-clock num" aria-hidden="true">12:47</span>
     <div class="head rv">
-      <p class="eyebrow"><b>Consultor IA</b> · integrado</p>
-      <h2>Uma IA que <em>conhece sua vida</em>. E fala como um amigo.</h2>
-      <p class="lead">De manhã, o briefing planta a pergunta. Aqui você conversa e decide; e quando você decide, o consultor executa: agenda, transfere, protege o foco.</p>
+      <p class="eyebrow"><b>Consultor IA</b> · incluso no PRO</p>
+      <h2>Uma IA que conhece sua vida. <em>E resolve por você.</em></h2>
+      <p class="lead">Pergunte qualquer coisa: a resposta vem com os seus números, não com conselho genérico. E o que você decidir, o consultor executa na hora.</p>
     </div>
     <div class="ia-grid">
       <div class="ia-feats rv">
-        <div class="ia-feat"><span class="fn num">01</span><div><h4>Enxerga tudo de uma vez</h4><p>Orçamentos, metas, treino e agenda no mesmo contexto: cada resposta vem com o porquê e com as fontes.</p></div></div>
-        <div class="ia-feat"><span class="fn num">02</span><div><h4>Age por você</h4><p>Agendar o aporte, remarcar o treino, proteger 2h de foco: você confirma na conversa, ele executa.</p></div></div>
-        <div class="ia-feat"><span class="fn num">03</span><div><h4>Relatórios completos</h4><p>O mês inteiro em PDF: finanças, saúde e produtividade em 1 clique.</p></div></div>
+        <div class="ia-feat"><span class="fn num">01</span><div><h4>Contexto completo</h4><p>Orçamentos, metas, treino e agenda na mesma resposta, sempre com o porquê.</p></div></div>
+        <div class="ia-feat"><span class="fn num">02</span><div><h4>Ação de verdade</h4><p>Agendar o aporte, remarcar o treino, proteger o foco: você confirma, ele executa.</p></div></div>
+        <div class="ia-feat"><span class="fn num">03</span><div><h4>Relatórios em um clique</h4><p>O mês inteiro em PDF: finanças, saúde e produtividade.</p></div></div>
       </div>
       <div class="chat rv" id="iachat">
-        <div class="chat-ts msg num">terça · 12:47</div>
-        <div class="bub u msg">Se eu antecipar a parcela da viagem, aperta o mês?</div>
-        <div class="typing msg" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div class="bub a msg">Não. Antecipando <strong class="num">R$&nbsp;580</strong>, seu saldo projetado de julho fecha em <strong class="num">R$&nbsp;1.540</strong> e a poupança segue <span class="g">acima da meta</span>. Vale fazer.</div>
-        <div class="bub u msg">Então agenda pra sexta.</div>
-        <div class="typing msg" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div class="bub a msg">Agendado. Transferência de <strong class="num">R$&nbsp;580</strong> pra Viagem Itália na sexta, 31 de julho. A meta chega a <strong class="num">73%</strong>.</div>
-        <div class="acao msg"><svg width="15" height="15" viewBox="0 0 16 14" aria-hidden="true"><path class="ck" d="M2 7.5 L6 11.5 L14 2.5"/></svg>Ação executada · aporte agendado pra sexta, 31 jul</div>
+        <div class="bub u">Se eu antecipar a parcela da viagem, aperta o mês?</div>
+        <div class="bub a">Não. Antecipando <strong class="num">R$&nbsp;580</strong>, seu saldo projetado de julho fecha em <strong class="num">R$&nbsp;1.540</strong> e a poupança segue <span class="g">acima da meta</span>. Vale fazer.</div>
+        <div class="bub u">Então agenda pra sexta.</div>
+        <div class="bub a">Agendado. Transferência de <strong class="num">R$&nbsp;580</strong> pra Viagem Itália na sexta, 31 de julho. A meta chega a <strong class="num">73%</strong>.</div>
+        <div class="acao"><svg width="15" height="15" viewBox="0 0 16 14" aria-hidden="true"><path class="ck" d="M2 7.5 L6 11.5 L14 2.5"/></svg>Ação executada · aporte agendado pra sexta, 31 jul</div>
         <div class="chat-input">
           <span>Pergunte algo…</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
@@ -677,41 +646,55 @@
   </div>
 </section>
 
-<!-- PRICING: tabela editorial -->
+<!-- PRICING (r11): dois cartões, decisão em cinco segundos -->
 <section class="precos" id="precos">
   <div class="wrap">
     <div class="head rv">
-      <p class="eyebrow"><b>Preços</b> · sem pegadinhas</p>
+      <p class="eyebrow"><b>Preços</b> · sem pegadinha</p>
       <h2>Comece grátis. Evolua quando quiser.</h2>
+      <p class="sub">Sem cartão pra começar, sem multa pra sair.</p>
     </div>
-    <div class="ptable rv">
-      <div class="prow hdr">
-        <div></div>
-        <div class="c"><div class="plan-n">Free</div><div class="plan-p num">R$&nbsp;0</div><div class="plan-s">para sempre</div></div>
-        <div class="c col-pro"><span class="tag">RECOMENDADO</span><div class="plan-n">PRO</div><div class="plan-p num">R$&nbsp;24,90</div><div class="plan-s">por mês</div></div>
+    <div class="pcards">
+      <div class="pcard">
+        <div class="pn">Free</div>
+        <div class="pp num">R$&nbsp;0<small>pra sempre</small></div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Todas as 8 áreas da vida</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Coach IA com briefing diário</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Life Sync Score</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>50 transações por mês</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Web e mobile, 1 dispositivo</li>
+        </ul>
+        <a class="btn btn-ghost" href="#">Começar grátis</a>
+        <p class="pfoot">Grátis pra sempre, de verdade.</p>
       </div>
-      <div class="prow"><div class="feat">Áreas da vida</div><div class="c">Todas as 8</div><div class="c col-pro">Todas as 8</div></div>
-      <div class="prow"><div class="feat">Transações</div><div class="c num">50/mês</div><div class="c col-pro">Ilimitadas</div></div>
-      <div class="prow"><div class="feat">Life Sync Score</div><div class="c">Básico</div><div class="c col-pro">Completo</div></div>
-      <div class="prow"><div class="feat">Consultor IA + Coach IA</div><div class="c"><span class="no">–</span></div><div class="c col-pro"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
-      <div class="prow"><div class="feat">Cardápio gerado por IA</div><div class="c"><span class="no">–</span></div><div class="c col-pro"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
-      <div class="prow"><div class="feat">Relatórios PDF cross-module</div><div class="c"><span class="no">–</span></div><div class="c col-pro"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
-      <div class="prow"><div class="feat">Google Calendar bidirecional</div><div class="c"><span class="no">–</span></div><div class="c col-pro"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
-      <div class="prow"><div class="feat">Dispositivos</div><div class="c num">1</div><div class="c col-pro">Ilimitados</div></div>
-      <div class="prow cta">
-        <div></div>
-        <div class="c"><a class="btn btn-ghost" href="#">Começar grátis</a></div>
-        <div class="c col-pro"><a class="btn btn-roxo" href="#">Testar 14 dias grátis</a></div>
+      <div class="pcard pro">
+        <span class="tag">RECOMENDADO</span>
+        <div class="pn">PRO</div>
+        <div class="pp num">R$&nbsp;24,90<small>por mês</small></div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Tudo do Free, sem limites</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Consultor IA que executa por você</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Relatórios completos em PDF</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Cardápio e planos gerados por IA</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Google Calendar bidirecional</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Dispositivos ilimitados</li>
+        </ul>
+        <a class="btn btn-roxo" href="#">Testar 14 dias grátis</a>
+        <p class="pfoot">Sem cartão de crédito no teste.</p>
       </div>
     </div>
-    <p class="hand rv" style="text-align:right;max-width:880px;margin:14px auto 0;transform:rotate(-1.6deg)">cancela quando quiser, sem drama</p>
+    <p class="hand rv" style="text-align:right;max-width:860px;margin:16px auto 0;transform:rotate(-1.6deg)">cancela quando quiser, sem drama</p>
   </div>
 </section>
 
-<!-- FAQ -->
+<!-- FAQ (r11): editorial em duas colunas -->
 <section class="faqsec" id="faq">
-  <div class="wrap">
-    <h2 class="rv">Perguntas comuns</h2>
+  <div class="wrap faq-grid">
+    <div class="rv">
+      <h2>Perguntas comuns</h2>
+      <p class="fsub">O que todo mundo pergunta antes de criar a conta.</p>
+    </div>
     <div class="faq rv">
       <details open>
         <summary>Meus dados financeiros ficam seguros?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
@@ -733,7 +716,7 @@
   </div>
 </section>
 
-<!-- CTA final -->
+<!-- CTA final + wordmark gigante (Jeton) -->
 <section class="final dk rv">
   <div class="wrap">
     <h2>A vida em sincronia<br><em>começa hoje.</em></h2>
@@ -742,6 +725,7 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </a>
   </div>
+  <span class="wordmark" aria-hidden="true">Sync<em>Life</em></span>
 </section>
 
 <footer class="dk">
@@ -970,12 +954,10 @@
   //    do cursor. Canvas a 1/3 da resolução; o blur do CSS esconde tudo, o custo é mínimo. ──
   var leanX = 0, leanY = 0, mNX = .5, mNY = .5;
   addEventListener('pointermove', function (e) { mNX = e.clientX / innerWidth; mNY = e.clientY / innerHeight; });
-  window.__iaGlow = 0; // 0→1 quando a ação executa no chat; decai até um halo residual
-  function vivaAurora(id, blobs, fw, fh, opts) {
+  function vivaAurora(id, blobs, fw, fh) {
     var cv = document.getElementById(id);
     if (!cv) return;
     var ctx = cv.getContext('2d');
-    opts = opts || {};
     function size() { // mede o pai (canvas é replaced: o bitmap não pode derivar do próprio box)
       var p = cv.parentElement;
       cv.width = Math.max(2, Math.floor(p.clientWidth * fw / 3));
@@ -987,27 +969,14 @@
       ctx.clearRect(0, 0, w, h);
       for (var i = 0; i < blobs.length; i++) {
         var b = blobs[i];
-        // blobs com b.g são a LUZ REATIVA: só existem na força do __iaGlow
-        var a = b.g ? b.a * Math.max(0, window.__iaGlow) : b.a;
-        if (a < .005) continue;
         var x = w * (b.px + .14 * Math.sin(t * b.fx * .001 + b.ph) + .06 * Math.sin(t * b.fx * .0023 + b.ph * 2)) + leanX * w * .07;
         var y = h * (b.py + .12 * Math.cos(t * b.fy * .001 + b.ph * 1.3) + .05 * Math.cos(t * b.fy * .0019 + b.ph)) + leanY * h * .05;
-        var r = Math.max(w, h) * (b.r || .36) * (1 + .11 * Math.sin(t * .0003 + b.ph * 3));
+        var r = Math.max(w, h) * .36 * (1 + .11 * Math.sin(t * .0003 + b.ph * 3));
         var g = ctx.createRadialGradient(x, y, 0, x, y, r);
-        g.addColorStop(0, 'rgba(' + b.c + ',' + a + ')');
+        g.addColorStop(0, 'rgba(' + b.c + ',' + b.a + ')');
         g.addColorStop(1, 'rgba(' + b.c + ',0)');
         ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
       }
-      if (opts.shade) { // escurece o lado do chat: as bolhas ganham contraste, o cartão ganha borda limpa
-        var sh = ctx.createLinearGradient(w * .45, 0, w, 0);
-        sh.addColorStop(0, 'rgba(23,21,21,0)'); sh.addColorStop(1, 'rgba(23,21,21,.5)');
-        ctx.fillStyle = sh; ctx.fillRect(0, 0, w, h);
-        var vg = ctx.createLinearGradient(0, h * .55, 0, h);
-        vg.addColorStop(0, 'rgba(23,21,21,0)'); vg.addColorStop(1, 'rgba(23,21,21,.45)');
-        ctx.fillStyle = vg; ctx.fillRect(0, 0, w, h);
-      }
-      if (opts.glowDecay && window.__iaGlow > 0)
-        window.__iaGlow = .16 + (window.__iaGlow - .16) * .985; // assenta num halo residual
     }
     if (!reduce) {
       var skip = 0;
@@ -1015,20 +984,14 @@
         leanX += ((mNX - .5) - leanX) * .025; leanY += ((mNY - .5) - leanY) * .025; draw(t); })(0);
     } else draw(0);
   }
-  // hero (papel claro): roxo, elétrico, um sopro de coral e um roxo-claro de profundidade
+  // hero (papel claro): roxo, elétrico, um sopro de coral e um roxo-claro de profundidade.
+  // (r11: a seção IA virou banda roxa sólida — a aurora agora vive SÓ no hero)
   vivaAurora('aurora', [
     { c: '104,64,255', a: .62, fx: .21, fy: .16, px: .28, py: .34, ph: 0 },
     { c: '161,255,98', a: .40, fx: .16, fy: .21, px: .70, py: .26, ph: 2.1 },
     { c: '248,65,49',  a: .24, fx: .13, fy: .17, px: .52, py: .82, ph: 4.2 },
     { c: '156,125,255', a: .30, fx: .11, fy: .14, px: .84, py: .62, ph: 5.4 }
   ], 1.16, 1.14);
-  // seção IA (r10): luz composta, não sopa de cores — roxo direcional atrás da manchete,
-  // roxo-claro de fundo, e o ELÉTRICO só quando a ação executa (a luz reage à história)
-  vivaAurora('aurora2', [
-    { c: '104,64,255', a: .60, fx: .13, fy: .10, px: .18, py: .26, ph: .8, r: .44 },
-    { c: '140,105,255', a: .28, fx: .09, fy: .13, px: .44, py: .80, ph: 3.1, r: .38 },
-    { c: '161,255,98', a: .32, fx: .07, fy: .08, px: .70, py: .58, ph: 1.9, r: .30, g: 1 }
-  ], 1.12, 1.24, { shade: true, glowDecay: true });
 
   // ── A TINTA: números assentam como instrumento (sobem, passam do ponto e voltam) ──
   function odometro(el) {
@@ -1059,23 +1022,49 @@
     CustomEase.create('sl', '.625,.05,0,1'); // a easing assinatura (E-01) vira ease do GSAP
     if (window._lenis) window._lenis.on('scroll', ScrollTrigger.update);
 
-    // 1) os cartões escuros entram como COVER de verdade (r10: a r9 era tímida demais
-    //    pra se sentir): mais curso, raio morfando 76→44 e o miolo só entra depois
-    //    que o cartão assenta (entrada Jeton)
-    [{ s: '.paper' }, { s: '.ia' }, { s: '.final', semRaio: true }].forEach(function (cfg) {
-      var el = document.querySelector(cfg.s);
-      if (!el) return;
-      var de = { scale: .9, y: 130 }, para = { scale: 1, y: 0, ease: 'none' };
-      if (!cfg.semRaio) { de.borderRadius = '76px'; para.borderRadius = '44px'; }
-      gsap.fromTo(el, de, Object.assign(para, {
-        scrollTrigger: { trigger: el, start: 'top 98%', end: 'top 28%', scrub: true }
-      }));
-    });
+    // 1) OS PALCOS PINADOS (r11, o padrão dos refs): a tela segura e se transforma
+    //    com o scroll — no produto o painel se monta peça a peça; na IA a conversa
+    //    avança bolha a bolha e a ação se desenha no fim. Só desktop; no mobile e
+    //    sem GSAP as seções são estáticas e completas (E-02).
+    if (matchMedia('(min-width:1024px)').matches) {
+      // nos palcos o scrub é o único condutor: o .rv sai pra não disputar a opacidade
+      document.querySelectorAll('.prod .rv, .ia .rv').forEach(function (el) { el.classList.remove('rv'); });
+
+      var tlP = gsap.timeline({
+        scrollTrigger: { trigger: '.prod', start: 'top top', end: '+=200%', scrub: true, pin: true, anticipatePin: 1 }
+      });
+      tlP.from('.prod-head > *', { y: 46, opacity: 0, stagger: .07, duration: .5, ease: 'sl' }, 0);
+      [
+        ['.pc-score', -240, -150, -9], ['.pc-brief', 250, -180, 8],
+        ['.pc-orc', -280, 130, 7], ['.pc-agenda', 300, 90, -8], ['.pc-meta', 0, 250, 4]
+      ].forEach(function (p, i) {
+        tlP.from(p[0], { x: p[1], y: p[2], rotation: p[3], scale: .78, opacity: 0, duration: .8, ease: 'back.out(1.5)' }, .5 + i * .4);
+      });
+      tlP.to({}, { duration: .5 }); // segura o painel montado antes de soltar o pin
+
+      var tlI = gsap.timeline({
+        scrollTrigger: { trigger: '.ia', start: 'top top', end: '+=240%', scrub: true, pin: true, anticipatePin: 1 }
+      });
+      tlI.from('.ia .head > *', { y: 40, opacity: 0, stagger: .07, duration: .45, ease: 'sl' }, 0);
+      tlI.from('.ia-feat', { y: 34, opacity: 0, stagger: .14, duration: .45, ease: 'sl' }, .35);
+      [].slice.call(document.querySelectorAll('#iachat > *')).forEach(function (m, i) {
+        tlI.from(m, { y: 46, opacity: 0, duration: .5, ease: 'sl' }, 1.0 + i * .55);
+      });
+      tlI.fromTo('.acao .ck', { strokeDashoffset: 20 }, { strokeDashoffset: 0, duration: .35, ease: 'none' }, '>-.15');
+      tlI.to({}, { duration: .5 });
+
+      // o wordmark gigante sobe pra fechar a página (Jeton)
+      gsap.from('.final .wordmark', {
+        yPercent: 46, ease: 'none',
+        scrollTrigger: { trigger: '.final', start: 'top 75%', end: 'bottom bottom', scrub: true }
+      });
+    }
 
     // 2) manchetes: as palavras sobem de dentro de uma máscara, linha a linha
-    //    (r10: split só depois das fontes prontas, senão as linhas medem errado e o console reclama)
+    //    (split só depois das fontes prontas, senão as linhas medem errado e o console reclama;
+    //     as manchetes dos palcos pinados ficam de fora — lá quem conduz é o pin)
     function montarManchetes() {
-      document.querySelectorAll('.areas8 h2, .paper h2, .ia h2, .precos h2').forEach(function (h) {
+      document.querySelectorAll('.areas8 h2, .precos h2').forEach(function (h) {
         var split = new SplitText(h, { type: 'lines,words', linesClass: 'sl-line' });
         gsap.from(split.words, {
           yPercent: 115, duration: .9, ease: 'sl', stagger: .035,
@@ -1084,14 +1073,14 @@
       });
     }
 
-    // 3) listas em cascata: as 8 áreas e as linhas do pricing
+    // 3) cascatas: as 8 áreas e os cartões de preço
     gsap.from('.a8-row', {
       y: 26, opacity: 0, duration: .7, ease: 'sl', stagger: .06,
       scrollTrigger: { trigger: '.a8-list', start: 'top 84%', once: true }
     });
-    gsap.from('.ptable .prow', {
-      y: 24, opacity: 0, duration: .6, ease: 'sl', stagger: .05,
-      scrollTrigger: { trigger: '.ptable', start: 'top 82%', once: true }
+    gsap.from('.pcard', {
+      y: 60, opacity: 0, duration: .7, ease: 'sl', stagger: .12,
+      scrollTrigger: { trigger: '.pcards', start: 'top 80%', once: true }
     });
 
     // 4) o marquee entorta com a velocidade do scroll (e assenta quando você para)
@@ -1102,93 +1091,13 @@
     var skTo;
     addEventListener('scroll', function () { clearTimeout(skTo); skTo = setTimeout(function () { skewSetter(0); }, 140); }, { passive: true });
 
-    // 5) os relógios dos capítulos (07:12 / 12:47) derivam devagar, como marca d'água
-    document.querySelectorAll('.ch-clock').forEach(function (ck) {
-      gsap.fromTo(ck, { y: 40 }, {
-        y: -46, ease: 'none',
-        scrollTrigger: { trigger: ck.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true }
-      });
-    });
-
-    // 6) O BRIEFING SE ESCREVE (r10): as linhas da prosa sobem de máscara uma a uma;
-    //    quando a linha cita um número, a figura que o prova acende junto —
-    //    a sincronia da marca virando animação
-    function acende(id) {
-      var card = document.getElementById(id);
-      if (!card) return;
-      card.classList.add('lit');
-      setTimeout(function () { card.classList.remove('lit'); }, 1600);
-    }
-    function fireScore() { acende('sp-card-score'); odometro(document.querySelector('.sp-score .n')); }
-    function fireLazer() {
-      acende('sp-card-orc');
-      gsap.fromTo('#sp-card-orc .hot .track i', { width: '58%' }, { width: '103%', duration: 1, ease: 'sl' });
-    }
-    function montarBriefing() {
-      try {
-        var bf = document.querySelector('.sp-brief .bf-txt');
-        if (bf) {
-          var spb = new SplitText(bf, { type: 'lines', mask: 'lines' });
-          // split ok: a barra do lazer parte de 58% e só estoura quando o briefing citar o R$ 8
-          gsap.set('#sp-card-orc .hot .track i', { width: '58%' });
-          var tlb = gsap.timeline({ scrollTrigger: { trigger: '.sp-brief', start: 'top 78%', once: true } });
-          spb.lines.forEach(function (ln, i) {
-            tlb.from(ln, { yPercent: 115, duration: .7, ease: 'sl' }, i * .16);
-            if (ln.querySelector('[data-ref="score"]')) tlb.call(fireScore, null, i * .16 + .38);
-            if (ln.querySelector('[data-ref="lazer"]')) tlb.call(fireLazer, null, i * .16 + .38);
-          });
-        }
-      } catch (e) { /* SplitText indisponível: o briefing fica estático e completo (E-02) */ }
-    }
-
     // splits esperam as fontes: medida certa, console limpo
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { montarManchetes(); montarBriefing(); });
-    else { montarManchetes(); montarBriefing(); }
-
-    // hover na citação → a figura acende (e explica por que os números batem)
-    var REF2CARD = { score: 'sp-card-score', lazer: 'sp-card-orc' };
-    document.querySelectorAll('.bf-ref').forEach(function (ref) {
-      var card = document.getElementById(REF2CARD[ref.getAttribute('data-ref')]);
-      if (!card) return;
-      ref.addEventListener('mouseenter', function () { card.classList.add('lit'); });
-      ref.addEventListener('mouseleave', function () { card.classList.remove('lit'); });
-    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(montarManchetes);
+    else montarManchetes();
   }
 
-  // ── a conversa que se escreve: quando a dobra da IA entra, o chat acontece uma vez
-  //    (pergunta → digitando → resposta → pedido → digitando → execução → selo com check).
-  //    Sem .anim (reduce/no-JS), a conversa inteira já está na página. ──
-  var iachat = document.getElementById('iachat');
-  if (iachat && !reduce && 'IntersectionObserver' in window) {
-    var MSGS = [].slice.call(iachat.querySelectorAll('.msg'));
-    var falou = false;
-    var ROTEIRO = [
-      { i: 0, t: 0 },                   // terça · 12:47
-      { i: 1, t: 350 },                 // pergunta
-      { i: 2, t: 1000 },                // digitando…
-      { i: 2, t: 1950, some: true },
-      { i: 3, t: 1950 },                // resposta com números
-      { i: 4, t: 2950 },                // "então agenda pra sexta"
-      { i: 5, t: 3500 },                // digitando…
-      { i: 5, t: 4450, some: true },
-      { i: 6, t: 4450 },                // agendado
-      { i: 7, t: 5100, luz: true }      // selo: ação executada (check se desenha + a luz elétrica acende)
-    ];
-    var ioChat = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (e.isIntersecting && !falou) {
-          falou = true; ioChat.disconnect();
-          ROTEIRO.forEach(function (s) {
-            setTimeout(function () {
-              MSGS[s.i].classList.add(s.some ? 'gone' : 'in');
-              if (s.luz) window.__iaGlow = 1; // o palco reage: pulso elétrico atrás do chat
-            }, s.t);
-          });
-        }
-      });
-    }, { threshold: .35 });
-    ioChat.observe(iachat);
-  }
+  // (r11: a conversa da IA deixou de ser conduzida por timers — agora ela avança
+  //  com o scroll dentro do palco pinado, junto com os demais ScrollTriggers)
 
   // deriva sutil dos espécimes no scroll (sem pin, sem scrub de história)
   if (!reduce) {
