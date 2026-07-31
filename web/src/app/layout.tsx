@@ -2,7 +2,23 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "@/components/ui/sonner";
 import { ServiceWorkerRegistration } from "@/components/pwa/sw-register";
 import "./globals.css";
-import { Space_Grotesk, IBM_Plex_Mono, DM_Sans, Syne } from "next/font/google";
+import { Space_Grotesk, IBM_Plex_Mono, DM_Sans, Syne, Inter, Caveat } from "next/font/google";
+
+// DS v5 "Estúdio": Inter (body) + Caveat (caligrafia do coach, E-10).
+// Space Grotesk (display v5) já era carregada pelo v3.
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-caveat",
+  display: "swap",
+});
 
 const syne = Syne({
   subsets: ["latin"],
@@ -68,7 +84,7 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${syne.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} ${dmSans.variable}`}
+      className={`${syne.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} ${dmSans.variable} ${inter.variable} ${caveat.variable}`}
     >
       <body className={`${dmSans.className} antialiased`}>
         {/* Anti-FOUC: apply theme before first paint */}

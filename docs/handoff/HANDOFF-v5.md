@@ -10,6 +10,7 @@
 - **Branch:** `poc/ds-v5`. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`. (QA: validar com `?v=rN` por causa do cache do http.server.)
 - **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r15 APROVADA em 2026-07-30** (tag `poc-landing-viva-r15`).
 - **✅ LANDING DESKTOP APROVADA (r15):** aurora global azul/lilás/roxo passeando atrás das áreas claras · palcos produto/IA sem pin com coreografia na travessia (voo com encaixe × pop de mensageiro) · banda roxa sólida da IA · pricing em 2 cartões iguais · FAQ 2 colunas · wordmark gigante inteiro · copy vendável com números canônicos. Já aprovados antes: marca 3D cromo líquido (DS §5), bússola WebGL (DS §5.6), seção "As oito áreas".
+- **✅ ONDA 0 IMPLEMENTADA em `web/` (2026-07-30):** rota `/` agora renderiza a landing v5 (`LandingV5` = árvores `LandingVivaDesktop` r15 + `LandingVivaMobile` m1, CSS decide qual aparece em 1024px; árvore oculta = E-02 estático). Fundação A no lugar: `styles/{tokens-v5,v5,bussola-3d}.css` escopados sob `.v5`, Inter+Caveat no `layout.tsx`, `lib/v5/{bussola-3d,viva,compass-gl}.ts`, deps gsap+lenis+three. Teste de identidade: desktop DELTA 0px em todas as âncoras (doc 6947px idêntico); mobile idêntico em device (no preview desktop o protótipo perde 15px pra scrollbar nativa; o app usa a scrollbar do globals v3). Servir local: `npx next start -p 3006` (porta 3006; se EADDRINUSE, matar o listener antigo).
 - **✅ MOBILE m1 APROVADO (2026-07-30, tag `poc-landing-viva-mobile-m1`):** `landing/landing-viva.mobile.html` (390×844, dedicado) porta a r15 inteira pro toque: aurora global, arco com régua de sintonia, bússola WebGL (DPR 1) com fallback CSS, coreografia em scrub por elemento (voo com encaixe × pop de mensageiro), pricing empilhado, wordmark inteiro. Scroll nativo, sem Lenis.
 - **Próximo passo: IMPLEMENTAÇÃO da Onda 0 em `web/`** (Fundação A: tokens v5 escopados sob `.v5` + fontes Inter/Caveat via next/font + `<Compass />` + landing real desktop+mobile) + teste de identidade screenshot a screenshot em `next start`. Lembrete de implementação: `document.fonts.load()` explícito antes de SplitText (fix do m1; a desktop r15 tem o padrão latente). Polimento opcional na fila: SplitText no h1 do hero.
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
@@ -18,7 +19,7 @@
 
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
-| 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | – | – |
+| 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
@@ -33,6 +34,25 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-30 · Sessão 17 — ✅ IMPLEMENTAÇÃO da Onda 0 em `web/` + teste de identidade
+
+**Escopo:** Fundação A (plano §5) + landing real desktop (r15) e mobile (m1) na rota `/`, teste de identidade em `next start`.
+
+**Feito:**
+- **Deps/fontes:** gsap 3.13 + lenis + three (npm) · Inter (400/500/600) e Caveat (600/700) via next/font no `layout.tsx` (`--font-inter`/`--font-caveat`; Space Grotesk já existia).
+- **Fundação CSS** (escopada sob `.v5`, coexiste com v3 sem colisão): `src/styles/tokens-v5.css` (tokens §2, fontes mapeadas pras vars do next/font), `src/styles/v5.css` (base.css portado; gate `.anim` no ROOT de cada árvore: árvore não inicializada = estática completa E-02; keyframes prefixados `v5*` — o `pulse` do Tailwind colidia), `src/styles/bussola-3d.css` (1:1, keyframe `v5sweep`).
+- **Libs `src/lib/v5/`:** `bussola-3d.ts` (mount/control/areaIcon tipados), `viva.ts` (solver da easing, initStrip com régua + cleanup, initAreas8, initAurora, odômetros, `loadDisplayFonts` — pede as faces pela FAMÍLIA COMPUTADA porque o next/font renomeia as famílias, o literal 'Space Grotesk' não casaria), `compass-gl.ts` (three por import dinâmico, dispose completo, luz pela hora local).
+- **Componentes `src/components/landing-v5/`:** `content.tsx` (conteúdo canônico compartilhado: cards do arco, lista das 8 áreas, palco do produto, chat, pricing, FAQ, tickers com scores), `LandingVivaDesktop.tsx` + `landing-viva-desktop.css` (escopo `.lv-d`, keyframes `lvd-*`; coreografia r15: timelines na travessia do stage/chat, Lenis + glue ScrollTrigger, magnéticos, SplitText pós-fontes) e `LandingVivaMobile.tsx` + `landing-viva-mobile.css` (`.lv-m`/`lvm-*`; coreografia m1: scrub POR ELEMENTO, scroll nativo). Cada árvore inicializa via matchMedia(1024) só quando visível; GSAP em `gsap.context(root)` com `ctx.revert()` no unmount. `page.tsx` → `<LandingV5 />` (v3 `LandingClient` fica intacto até a Onda 14).
+- **Bug real achado no QA:** a aurora sumia — no protótipo o fundo mora no BODY (canvas z-index:-1 pinta acima do fundo do canvas raiz); o `.v5` com background opaco a cobria (negative child pinta ABAIXO de block background do mesmo stacking context). Fix: `html.v5-scroll body{background:#f4f4f4}` e `.v5` sem background.
+- **Teste de identidade (Playwright, `next start -p 3006` vs http.server 8123):** DESKTOP: âncoras EXATAS (areas 1381 · produto 2649 · precos 4520 · final 5898 · doc 6947 — delta 0px), tipografia conferida por computed style (h1 SG 500 132.48px/-7.29px, tokens hex exatos), pares de screenshot idênticos em hero/produto/preços/final. MOBILE: estrutura e visual idênticos; alturas de 4 blocos ~1 linha menores porque o PREVIEW do protótipo em browser desktop perde 15px pra scrollbar nativa (útil 375px) e o app esconde scrollbar no mobile via globals v3 (útil 390px = comportamento de device real). Console: mobile 0 avisos; desktop só o info do compilador de shader ANGLE (three/Windows).
+- Hub: as duas linhas da viva marcadas "QA ok".
+
+**Pendências:** nenhuma da Onda 0. Próximo: **Onda 1 (público + auth)** — pricing, login, cadastro, senhas, onboarding (6 telas ×2, protótipos primeiro). Favicon/manifest da bússola ficam pra Onda 14 (assets).
+
+**Arquivos:** `web/src/app/{layout,page}.tsx` · `web/src/styles/{tokens-v5,v5,bussola-3d}.css` · `web/src/lib/v5/{bussola-3d,viva,compass-gl}.ts` · `web/src/components/landing-v5/*` · `web/package.json` · `prototypes/v5/index.html` · este handoff.
 
 ---
 

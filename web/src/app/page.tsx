@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { LandingClient } from '@/components/landing/LandingClient'
+import { LandingV5 } from '@/components/landing-v5/LandingV5'
 
 export const metadata: Metadata = {
   title: 'SyncLife · Sua vida inteira, em sincronia',
@@ -29,5 +29,5 @@ export const metadata: Metadata = {
 }
 
 export default function LandingPage() {
-  return <LandingClient />
+  return <LandingV5 />
 }

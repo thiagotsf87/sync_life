@@ -1,0 +1,18 @@
+/* SyncLife DS v5 "Estúdio" — tokens (§2 do DESIGN-SYSTEM-v5.md)
+   Porte 1:1 de prototypes/v5/shared/tokens.css, ESCOPADO sob .v5 pra coexistir
+   com o v3 (v3 usa --background/shadcn; v5 usa --bg/--s1/--t1) sem colisão.
+   Fontes mapeadas pras variáveis do next/font (o next/font renomeia as famílias,
+   por isso o literal 'Space Grotesk'/'Inter' fica só de fallback). */
+.v5{
+  --bg:#f4f4f4; --s1:#ffffff; --s2:#eceaea;
+  --line:rgba(21,19,19,.12); --line-h:rgba(21,19,19,.28);
+  --t1:#151313; --t2:#4f4c4c; --t3:#6b6868;
+  --ink:#f4f4f4; --ink2:#b8b8b8; --pline:rgba(255,255,255,.12);
+  --roxo:#6840ff; --roxo-h:#7a55ff; --ele:#a1ff62; --coral:#f84131;
+  --gro:var(--font-space-grotesk),'Space Grotesk',sans-serif;
+  --int:var(--font-inter),'Inter',sans-serif;
+  --hand:var(--font-caveat),'Caveat',cursive;
+  --ease:cubic-bezier(.625,.05,0,1);
+}
+.v5 .dk{--bg:#151313;--s1:#201d1d;--s2:#2a2727;--line:rgba(255,255,255,.08);--line-h:rgba(255,255,255,.18);
+  --t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;background:var(--bg);color:var(--t1)}

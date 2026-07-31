@@ -1,0 +1,329 @@
+/* Landing VIVA — desktop (porte 1:1 do <style> de prototypes/v5/landing/landing-viva.html r15).
+   Escopo .lv-d; gate de motion .lv-d.anim; keyframes prefixados lvd- (colisão global).
+   Os @media <1024px do protótipo NÃO entram: abaixo de 1024 quem responde é a árvore
+   mobile dedicada (.lv-m), igual ao par de protótipos aprovados. */
+
+.lv-d{display:none}
+@media (min-width:1024px){ .lv-d{display:block} }
+
+/* aurora global (r13): fixa atrás de toda área clara; as bandas escuras cobrem */
+.lv-d .aurora-fix{position:fixed;inset:0;z-index:-1;pointer-events:none;filter:blur(56px) saturate(1.08);opacity:.65}
+.lv-d .aurora-fix canvas{width:100%;height:100%;display:block}
+.lv-d .hero .wrap{position:relative;z-index:2}
+.lv-d .strip{z-index:2}
+
+/* nav: pílula flutuante + ticker elétrico grudado */
+.lv-d .navwrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:70;width:min(880px,94vw);
+  --t1:#f4f4f4;--t2:#b8b8b8;--line:rgba(255,255,255,.1);color:var(--t1)}
+.lv-d nav{display:flex;align-items:center;justify-content:space-between;gap:18px;height:56px;
+  padding:0 10px 0 22px;background:#0d0c0cf2;border:1px solid var(--line);border-radius:16px 16px 0 0;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.lv-d .brand{font:700 18px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:11px}
+.lv-d .brand em{font-style:normal;color:var(--roxo)}
+.lv-d .nav-links{display:flex;gap:24px}
+.lv-d .nav-links a{font:500 13px var(--int);color:var(--t2);transition:color .3s var(--ease)}
+.lv-d .nav-links a:hover{color:var(--t1)}
+.lv-d .nav-cta{display:flex;align-items:center;gap:14px}
+.lv-d .nav-cta .entrar{font:500 13px var(--int);color:var(--t2)}
+.lv-d .nav-cta .entrar:hover{color:var(--t1)}
+.lv-d nav .btn-roxo{padding:9px 18px;font-size:13px}
+.lv-d .ticker{overflow:hidden;background:var(--ele);border-radius:0 0 16px 16px;height:26px;display:flex;align-items:center;white-space:nowrap}
+.lv-d .ticker .tk{display:inline-block;font:700 10px var(--gro);letter-spacing:.16em;color:#151313}
+.lv-d.anim .ticker .tk{animation:lvd-mq 40s linear infinite}
+.lv-d .ticker span{padding:0 18px}
+
+/* ─── HERO: manchete de dobra inteira ─── */
+.lv-d .hero{padding:170px 0 0;position:relative}
+.lv-d .hero .pill-novo{display:inline-flex;align-items:center;gap:9px;padding:7px 14px;border:1px solid var(--line);border-radius:999px;
+  font:600 11px var(--gro);letter-spacing:.14em;color:var(--t2);text-transform:uppercase;margin-bottom:34px}
+.lv-d .hero .pill-novo .dot{width:7px;height:7px;border-radius:50%;background:var(--ele)}
+.lv-d.anim .pill-novo .dot{animation:lvd-pulse 2.4s var(--ease) infinite}
+@keyframes lvd-pulse{0%,100%{box-shadow:0 0 0 0 rgba(161,255,98,.35)}50%{box-shadow:0 0 0 7px rgba(161,255,98,0)}}
+.lv-d h1{font:500 clamp(3.4rem,9.2vw,8.6rem)/0.98 var(--gro);letter-spacing:-.055em;color:var(--t1)}
+.lv-d h1 .l2{display:flex;align-items:center;gap:.06em}
+.lv-d h1 em{font-style:normal;color:var(--roxo)}
+.lv-d h1 .badge78{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;vertical-align:middle;
+  width:.92em;height:.92em;background:#151313;border-radius:.18em;margin-left:.08em;flex-shrink:0}
+.lv-d h1 .badge78 .b-n{font:700 .34em/1 var(--gro);letter-spacing:-.03em;color:var(--ele)}
+.lv-d h1 .badge78 .b-l{font:700 .085em var(--gro);letter-spacing:.24em;color:#8a8686;margin-top:.14em}
+/* r6: CTAs e prova social descem pra baixo do texto, tudo alinhado à esquerda */
+.lv-d .hero-foot{display:flex;flex-direction:column;align-items:flex-start;gap:24px;margin-top:40px}
+.lv-d .hero-sub{font:400 16.5px/1.65 var(--int);color:var(--t2);max-width:520px}
+.lv-d .hero-sub strong{color:var(--t1);font-weight:600}
+.lv-d .hero-right{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.lv-d .hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.lv-d .hero-proof{display:flex;gap:18px;flex-wrap:wrap}
+.lv-d .hero-proof span{display:inline-flex;align-items:center;gap:7px;font:500 12px var(--int);color:var(--t3)}
+.lv-d .hero-proof svg{color:var(--roxo)}
+
+/* ─── faixa arrastável das 8 áreas ─── */
+.lv-d .strip-head{display:flex;justify-content:space-between;align-items:baseline;margin:84px 0 18px}
+.lv-d .drag-cue{display:inline-flex;align-items:center;gap:8px;font:600 11px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+.lv-d.anim .drag-cue svg{animation:lvd-nudge 2.2s var(--ease) infinite}
+@keyframes lvd-nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+/* semicírculo de telas: cards 340px, passo 7.5° (corda 2600·sin7.5° ≈ 339px) */
+.lv-d .strip{position:relative;height:552px;margin-top:6px;cursor:grab;touch-action:pan-y;overflow:hidden}
+.lv-d .strip.dragging{cursor:grabbing}
+/* régua de sintonia: a escala desliza sob o ponteiro fixo, como dial de rádio */
+.lv-d .regua{position:absolute;left:50%;bottom:26px;width:min(560px,80vw);transform:translateX(-50%);height:46px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 18% 82%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 18% 82%,transparent)}
+.lv-d .regua-tk{position:absolute;left:50%;top:0;height:100%}
+.lv-d .regua-tk i{position:absolute;top:6px;width:1px;height:7px;background:var(--line-h)}
+.lv-d .regua-tk b{position:absolute;top:17px;transform:translateX(-50%);font:700 11px var(--gro);color:var(--t3);cursor:pointer;
+  padding:3px 7px;transition:color .3s var(--ease)}
+.lv-d .regua-tk b:hover{color:var(--t1)}
+.lv-d .regua-tk b.on{color:var(--roxo)}
+.lv-d .regua-ponteiro{position:absolute;left:50%;top:0;width:2px;height:11px;margin-left:-1px;background:var(--roxo);border-radius:1px}
+/* física em 2 camadas (à la Osmo): .scard = rotação sem transition (rAF conduz), .scin = o objeto */
+.lv-d .strip .scard{position:absolute;left:50%;top:48px;width:340px;margin-left:-170px;
+  transform-origin:50% 2600px;perspective:900px;
+  transform:rotate(calc(var(--a,0deg) + var(--off,0deg)))}
+.lv-d .strip .scard:hover{z-index:3}
+.lv-d .scin{--t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;--line:rgba(255,255,255,.09);color:var(--t1);
+  background:#1b1918;border:1px solid rgba(255,255,255,.09);border-radius:16px;overflow:hidden;
+  box-shadow:0 30px 60px -24px rgba(21,19,19,.45);
+  transform:translateY(var(--lift,0px)) scale(var(--sc,1)) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  transition:transform .45s var(--ease),box-shadow .4s var(--ease),border-color .45s var(--ease);
+  will-change:transform}
+.lv-d .scard:hover .scin{--lift:-14px;--sc:1.015;border-color:rgba(255,255,255,.16);
+  box-shadow:0 46px 84px -28px rgba(21,19,19,.6)}
+.lv-d .scard .tb{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:#161414}
+.lv-d .scard .tb i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12)}
+.lv-d .scard .tb .nm{font:600 11.5px var(--int);color:var(--t2);margin-left:4px}
+.lv-d .scard .tb .ix{margin-left:auto;font:700 10px var(--gro);color:var(--t3)}
+.lv-d .scard .ui{position:relative;padding:16px;height:224px;display:flex;flex-direction:column;gap:11px;
+  background:radial-gradient(220px 120px at 85% 0%,rgba(104,64,255,.07),transparent 70%)}
+.lv-d .ui .lbl{font:700 9px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+.lv-d .ui .big{font:700 26px/1 var(--gro);letter-spacing:-.03em}
+.lv-d .ui .sub{font:400 11px var(--int);color:var(--t3)}
+/* barras que preenchem sozinhas */
+.lv-d .ubar{display:grid;grid-template-columns:74px 1fr 44px;gap:9px;align-items:center}
+.lv-d .ubar .k{font:400 11px var(--int);color:var(--t2)}
+.lv-d .ubar .t{height:4px;border-radius:2px;background:#2e2a2a;overflow:hidden}
+.lv-d .ubar .f{display:block;height:100%;border-radius:2px;background:var(--t3);width:var(--w)}
+.lv-d .ubar.hot .f{background:var(--coral)}
+.lv-d .ubar .v{font:500 10.5px var(--gro);color:var(--t3);text-align:right}
+.lv-d .ubar.hot .v{color:var(--coral)}
+.lv-d.anim .ubar .f{animation:lvd-uifill 7s var(--ease) infinite;animation-delay:var(--d,0s)}
+@keyframes lvd-uifill{0%{width:6%}34%{width:var(--w)}86%{width:var(--w)}100%{width:6%}}
+/* botão + cursor fantasma clicando */
+.lv-d .ubtn{position:absolute;top:14px;right:14px;font:600 10.5px var(--int);color:#fff;background:var(--roxo);border-radius:999px;padding:6px 11px}
+.lv-d.anim .ubtn{animation:lvd-upress 7s var(--ease) infinite}
+@keyframes lvd-upress{0%,54%,66%,100%{transform:scale(1)}58%,62%{transform:scale(.9);background:var(--roxo-h)}}
+.lv-d .ucur{display:none}
+.lv-d.anim .ucur{display:block;position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 6px rgba(0,0,0,.5);z-index:3;animation:lvd-umove 7s var(--ease) infinite}
+@keyframes lvd-umove{0%,28%{transform:translate(30px,170px);opacity:0}40%{opacity:1}56%{transform:translate(276px,14px)}
+  58%{transform:translate(276px,14px) scale(.8)}62%{transform:translate(276px,14px) scale(1)}80%{opacity:1}92%,100%{transform:translate(30px,170px);opacity:0}}
+/* anel de progresso */
+.lv-d .uringw{display:flex;align-items:center;gap:14px}
+.lv-d .uring circle.fg{stroke:var(--ele);stroke-dasharray:163;stroke-dashoffset:49;stroke-linecap:round;fill:none}
+.lv-d.anim .uring circle.fg{animation:lvd-uring 7s var(--ease) infinite}
+@keyframes lvd-uring{0%{stroke-dashoffset:163}38%{stroke-dashoffset:49}88%{stroke-dashoffset:49}100%{stroke-dashoffset:163}}
+/* sparkline que se desenha */
+.lv-d .uspark path.ln{stroke-dasharray:290;stroke-dashoffset:0}
+.lv-d.anim .uspark path.ln{animation:lvd-uspark 7.5s var(--ease) infinite}
+@keyframes lvd-uspark{0%{stroke-dashoffset:290}42%{stroke-dashoffset:0}90%{stroke-dashoffset:0}100%{stroke-dashoffset:290}}
+/* bloco de agenda deslizando + check */
+.lv-d .urow{display:flex;align-items:center;gap:9px;font:400 11px var(--int);color:var(--t2)}
+.lv-d .urow time{font:500 10px var(--gro);color:var(--t3);width:34px;flex-shrink:0}
+.lv-d .ublock{flex:1;height:20px;border-radius:6px;background:rgba(104,64,255,.2);border:1px solid rgba(104,64,255,.45);
+  display:flex;align-items:center;padding:0 8px;font:500 10px var(--int);color:#cfc4ff}
+.lv-d.anim .ublock{animation:lvd-ublock 7s var(--ease) infinite}
+@keyframes lvd-ublock{0%,20%{transform:translateX(-14px);opacity:0}32%,90%{transform:none;opacity:1}100%{opacity:0}}
+.lv-d .ucheck{width:13px;height:13px;border-radius:4px;border:1.5px solid var(--t3);position:relative;flex-shrink:0}
+.lv-d .ucheck svg{position:absolute;inset:1px;color:var(--ele)}
+.lv-d .ucheck svg path{stroke-dasharray:16;stroke-dashoffset:0}
+.lv-d.anim .ucheck svg path{animation:lvd-ucheck 7s var(--ease) infinite}
+@keyframes lvd-ucheck{0%,40%{stroke-dashoffset:16}52%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:16}}
+.lv-d.anim .ustrike{animation:lvd-ustrike 7s var(--ease) infinite}
+@keyframes lvd-ustrike{0%,50%{color:var(--t2)}58%,92%{color:var(--t3);text-decoration:line-through}100%{color:var(--t2)}}
+/* pulso do countdown */
+.lv-d.anim .upulse{animation:lvd-upulse 3.4s var(--ease) infinite}
+@keyframes lvd-upulse{0%,100%{transform:none}50%{transform:scale(1.05)}}
+
+/* ─── AS OITO ÁREAS: o índice da sua vida ─── */
+.lv-d .areas8{padding:clamp(72px,8vw,110px) 0 84px}
+.lv-d .areas8 h2{font:500 clamp(2.2rem,4.6vw,4rem)/1.04 var(--gro);letter-spacing:-.045em;max-width:660px;margin-top:18px}
+.lv-d .a8-grid{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:clamp(40px,6vw,110px);margin-top:clamp(36px,4vw,60px);align-items:start}
+.lv-d .a8-left{position:sticky;top:110px;display:flex;flex-direction:column;gap:22px}
+/* palco da bússola: o canvas 3D entra por cima; sem WebGL, fica o CSS */
+.lv-d .a8-stage{position:relative;width:300px;height:300px}
+.lv-d .a8-stage .bs{position:absolute;inset:50px}
+.lv-d .a8-gl{position:absolute;inset:0;width:100%;height:100%;display:none}
+.lv-d .a8-stage.gl-on .bs{display:none}
+.lv-d .a8-stage.gl-on .a8-gl{display:block}
+.lv-d .a8-stage::after{content:"";position:absolute;left:16%;right:16%;bottom:12px;height:24px;border-radius:50%;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(21,19,19,.3),transparent 70%);filter:blur(6px);z-index:-1}
+.lv-d .a8-ix{font:700 11px var(--gro);letter-spacing:.22em;color:var(--t3)}
+.lv-d .a8-nome{font:500 30px/1.1 var(--gro);letter-spacing:-.03em;margin-top:8px}
+.lv-d .a8-frase{font:400 14px/1.65 var(--int);color:var(--t2);margin-top:10px;max-width:34ch;min-height:48px}
+.lv-d .a8-list{border-top:1px solid var(--line)}
+.lv-d .a8-row{display:grid;grid-template-columns:56px 1fr auto 48px;gap:20px;align-items:center;width:100%;
+  padding:15px 14px 15px 6px;border:0;border-bottom:1px solid var(--line);background:none;cursor:pointer;text-align:left;
+  font-family:var(--int);color:var(--t1);transition:background .3s var(--ease),padding-left .3s var(--ease)}
+.lv-d .a8-row:hover,.lv-d .a8-row.on{background:linear-gradient(90deg,rgba(104,64,255,.07),transparent 72%);padding-left:12px}
+.lv-d .a8-row .tx{display:flex;flex-direction:column;gap:3px}
+.lv-d .a8-row .nm{font:500 16.5px var(--gro);letter-spacing:-.02em}
+.lv-d .a8-row .ds{font:400 12.5px var(--int);color:var(--t3)}
+.lv-d .a8-row .score{font:700 30px/1 var(--gro);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.lv-d .a8-row .delta{font:700 12px var(--gro);text-align:right}
+.lv-d .a8-row .delta.up{color:#44a616} /* elétrico rebaixado pra legibilidade no claro (aprovar token) */
+.lv-d .a8-row .delta.down{color:var(--coral)}
+.lv-d .a8-row .delta.flat{color:var(--t3)}
+
+/* press */
+.lv-d .press{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:30px 0}
+.lv-d .press .wrap{display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap}
+.lv-d .press p{font:600 10.5px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);max-width:300px}
+.lv-d .press-logos{display:flex;gap:34px;flex-wrap:wrap}
+.lv-d .press-logos span{font:700 15px var(--gro);color:var(--t3);transition:color .4s var(--ease)}
+.lv-d .press-logos span:hover{color:var(--t2)}
+
+/* ─── O PRODUTO: a tela se transforma na travessia (r13: sem pin) ─── */
+.lv-d .prod{background:#171515;color:var(--ink);border-radius:44px;min-height:100vh;display:flex;align-items:center;
+  position:relative;overflow:hidden}
+/* r15: só padding vertical — o shorthand "70px 0" zerava o gutter lateral de 4vw do .wrap base */
+.lv-d .prod-wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(40px,5vw,84px);align-items:center;
+  padding-top:70px;padding-bottom:70px;width:100%}
+.lv-d .prod .eyebrow{color:var(--ink2)}
+.lv-d .prod h2{font:500 clamp(2rem,3.8vw,3.4rem)/1.06 var(--gro);letter-spacing:-.045em;margin-top:16px}
+.lv-d .prod h2 em{font-style:normal;color:var(--roxo)}
+.lv-d .prod .lead{font:400 15.5px/1.7 var(--int);color:var(--ink2);max-width:440px;margin-top:20px}
+.lv-d .prod-hand{margin-top:28px;display:inline-block}
+/* as peças do painel */
+.lv-d .prod-stage{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lv-d .pc{background:#201d1d;border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:18px 20px;
+  box-shadow:0 18px 44px rgba(0,0,0,.35);will-change:transform}
+.lv-d .pc-tag{display:inline-block;font:700 9.5px var(--gro);letter-spacing:.18em;text-transform:uppercase;
+  color:#a58aff;background:rgba(104,64,255,.16);border-radius:999px;padding:4px 10px;margin-bottom:12px}
+.lv-d .pc-quote{font:400 13.5px/1.65 var(--int);color:var(--ink)}
+.lv-d .pc-sub{display:block;font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);margin-top:10px}
+.lv-d .pc-row{display:flex;align-items:center;gap:10px;font:400 13px var(--int);color:var(--ink);padding:7px 0;border-bottom:1px dashed var(--pline)}
+.lv-d .pc-row:last-child{border-bottom:none;padding-bottom:0}
+.lv-d .pc-row time{font:600 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2);min-width:38px}
+.lv-d .pc-meta{grid-column:1 / -1}
+.lv-d .pc-meta .mrow{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.lv-d .pc-meta .mnm{font:500 13.5px var(--int);color:var(--ink)}
+.lv-d .pc-meta .mtrack{height:5px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+.lv-d .pc-meta .mtrack i{display:block;height:100%;width:68%;border-radius:3px;background:var(--roxo)}
+.lv-d .pc-meta .mval{font:600 12px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2)}
+.lv-d .pc-meta .msub{font:400 11.5px/1.5 var(--int);color:var(--ink2);margin-top:9px}
+/* score dentro da peça */
+.lv-d .sp-score{display:flex;align-items:baseline;gap:16px}
+.lv-d .sp-score .n{font:700 64px/1 var(--gro);letter-spacing:-.06em;color:var(--ink)}
+.lv-d .sp-score .meta{display:flex;flex-direction:column;gap:5px}
+.lv-d .sp-score .up{font:600 12.5px var(--gro);color:var(--ele)}
+.lv-d .sp-score .lbl{font:400 11.5px/1.45 var(--int);color:var(--ink2)}
+/* orçamentos: a linha do limite existe, e a barra estourada a atravessa */
+.lv-d .sp-orc .row{display:grid;grid-template-columns:86px 1fr auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--pline)}
+.lv-d .sp-orc .row:last-child{border-bottom:none;padding-bottom:0}
+.lv-d .sp-orc .nm{font:500 12.5px var(--int);color:var(--ink)}
+.lv-d .sp-orc .track{height:4px;border-radius:2px;background:rgba(255,255,255,.12);position:relative}
+.lv-d .sp-orc .track::after{content:'';position:absolute;right:0;top:-4px;bottom:-4px;width:1px;background:rgba(255,255,255,.28)} /* o limite */
+.lv-d .sp-orc .track i{display:block;height:100%;border-radius:2px;background:var(--ink2);max-width:none}
+.lv-d .sp-orc .hot .track i{background:var(--coral);box-shadow:0 0 9px rgba(248,65,49,.55)}
+.lv-d .sp-orc .val{font:500 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--ink2)}
+.lv-d .sp-orc .hot .val{color:var(--coral)}
+
+/* ticker do índice da vida (r10): os mesmos scores e deltas da lista das 8 áreas */
+.lv-d .mq{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;white-space:nowrap}
+.lv-d .mq-track{display:inline-block}
+.lv-d.anim .mq-track{animation:lvd-mq 80s linear infinite}
+@keyframes lvd-mq{from{transform:translateX(0)}to{transform:translateX(-25%)}}
+.lv-d .mq span{font:500 17px var(--gro);letter-spacing:.04em;text-transform:uppercase;color:var(--t3);padding:0 28px}
+.lv-d .mq b{font-weight:700;color:var(--t1);margin-left:10px;letter-spacing:0}
+.lv-d .mq em.d{font-style:normal;font-size:12px;margin-left:5px;vertical-align:2px;letter-spacing:0}
+.lv-d .mq em.d.up{color:#44a616}
+.lv-d .mq em.d.down{color:var(--coral)}
+.lv-d .mq em.d.flat{color:var(--t3)}
+.lv-d .mq i{color:var(--roxo);font-style:normal;margin-left:24px}
+
+/* ─── IA: banda ROXA sólida, a conversa avança na travessia ─── */
+.lv-d .ia{background:radial-gradient(130% 140% at 14% 0%,#7c58ff 0%,#6840ff 46%,#5227e6 100%);color:#fff;
+  border-radius:44px;min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+.lv-d .ia .wrap{padding-top:70px;padding-bottom:70px;width:100%} /* r15: mantém o gutter lateral do .wrap */
+.lv-d .ia .eyebrow{color:rgba(255,255,255,.62)}
+.lv-d .ia .eyebrow b{color:#fff}
+.lv-d .ia .head{max-width:660px}
+.lv-d .ia h2{font:500 clamp(2.1rem,4vw,3.5rem)/1.05 var(--gro);letter-spacing:-.045em;margin-top:16px}
+.lv-d .ia h2 em{font-style:normal;color:var(--ele)}
+.lv-d .ia .lead{font:400 15.5px/1.7 var(--int);color:rgba(255,255,255,.8);max-width:520px;margin-top:20px}
+.lv-d .ia-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(40px,5vw,90px);margin-top:48px;align-items:start}
+.lv-d .ia-feats{display:flex;flex-direction:column}
+.lv-d .ia-feat{display:grid;grid-template-columns:52px 1fr;gap:16px;padding:20px 0;border-top:1px solid rgba(255,255,255,.22)}
+.lv-d .ia-feat .fn{font:700 14px var(--gro);color:var(--ele)}
+.lv-d .ia-feat h4{font:600 15px var(--int);color:#fff}
+.lv-d .ia-feat p{font:400 13px/1.6 var(--int);color:rgba(255,255,255,.68);margin-top:5px}
+.lv-d .chat{display:flex;flex-direction:column;gap:10px}
+.lv-d .chat .bub{max-width:84%;padding:12px 16px;font:400 13.5px/1.6 var(--int)}
+.lv-d .chat .u{align-self:flex-end;background:#171515;color:#fff;border-radius:16px 16px 4px 16px}
+.lv-d .chat .a{align-self:flex-start;background:#fff;color:#2a2626;border-radius:16px 16px 16px 4px;box-shadow:0 14px 30px rgba(21,19,19,.25)}
+.lv-d .chat .a strong{color:#171515;font-weight:650}
+.lv-d .chat .a .g{color:#2e7d0f;font-weight:600}
+.lv-d .acao{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;font:600 12.5px var(--int);color:#eaffd8;
+  border:1px solid rgba(161,255,98,.55);background:rgba(161,255,98,.16);border-radius:999px;padding:8px 14px}
+.lv-d .acao svg{flex:none}
+.lv-d .acao .ck{stroke:var(--ele);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:20;stroke-dashoffset:0}
+.lv-d .chat-input{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.26);border-radius:999px;padding:13px 20px;margin-top:6px}
+.lv-d .chat-input span{flex:1;font:400 13px var(--int);color:rgba(255,255,255,.66)}
+.lv-d .chat-input svg{color:#fff}
+
+/* ─── PRICING: dois cartões, decisão em cinco segundos ─── */
+.lv-d .precos{padding:120px 0 90px}
+/* linhas do SplitText: máscara de onde as palavras sobem (folga pros descendentes g/ç) */
+.lv-d .sl-line{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+.lv-d .precos .head{text-align:center;margin-bottom:54px}
+.lv-d .precos h2{font:500 clamp(2.1rem,4.2vw,3.6rem)/1.05 var(--gro);letter-spacing:-.045em;margin-top:16px}
+.lv-d .precos .sub{font:400 15px var(--int);color:var(--t2);margin-top:16px}
+.lv-d .pcards{display:grid;grid-template-columns:repeat(2,minmax(300px,410px));justify-content:center;gap:22px;align-items:stretch} /* r14: Free e PRO do mesmo tamanho */
+.lv-d .pcard{background:#fff;border:1px solid var(--line);border-radius:26px;padding:34px 32px;display:flex;flex-direction:column}
+.lv-d .pcard .pn{font:500 17px var(--gro);letter-spacing:-.01em}
+.lv-d .pcard .pp{font:700 clamp(38px,4.4vw,54px)/1 var(--gro);letter-spacing:-.045em;margin-top:12px}
+.lv-d .pcard .pp small{font:400 13px var(--int);letter-spacing:0;color:var(--t3);margin-left:6px}
+.lv-d .pcard ul{list-style:none;margin:24px 0 28px;display:flex;flex-direction:column;gap:11px;flex:1}
+.lv-d .pcard li{display:flex;align-items:flex-start;gap:10px;font:400 13.5px/1.5 var(--int);color:var(--t2)}
+.lv-d .pcard li svg{flex:none;margin-top:2px;color:#44a616}
+.lv-d .pcard .btn{width:100%;justify-content:center}
+.lv-d .pcard.pro{background:#171515;border-color:#171515;color:#fff;position:relative;box-shadow:0 34px 70px rgba(21,19,19,.22)}
+.lv-d .pcard.pro .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);font:700 9.5px var(--gro);letter-spacing:.14em;
+  color:#151313;background:var(--ele);border-radius:999px;padding:5px 12px;white-space:nowrap}
+.lv-d .pcard.pro .pp small{color:rgba(255,255,255,.5)}
+.lv-d .pcard.pro li{color:rgba(255,255,255,.82)}
+.lv-d .pcard.pro li svg{color:var(--ele)}
+.lv-d .pcard .pfoot{font:400 11.5px var(--int);color:var(--t3);text-align:center;margin-top:12px}
+.lv-d .pcard.pro .pfoot{color:rgba(255,255,255,.5)}
+
+/* FAQ: editorial em duas colunas */
+.lv-d .faqsec{padding:30px 0 120px}
+.lv-d .faq-grid{display:grid;grid-template-columns:.8fr 1.4fr;gap:clamp(40px,6vw,90px);max-width:1080px;margin:0 auto}
+.lv-d .faqsec h2{font:500 clamp(1.9rem,3vw,2.6rem)/1.1 var(--gro);letter-spacing:-.04em}
+.lv-d .faqsec .fsub{font:400 14px/1.6 var(--int);color:var(--t2);margin-top:14px;max-width:300px}
+.lv-d .faq details{border-bottom:1px solid var(--line)}
+.lv-d .faq summary{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 6px;cursor:pointer;list-style:none;
+  font:600 15px var(--int);color:var(--t1)}
+.lv-d .faq summary::-webkit-details-marker{display:none}
+.lv-d .faq summary svg{flex-shrink:0;color:var(--t3);transition:transform .4s var(--ease)}
+.lv-d .faq details[open] summary svg{transform:rotate(180deg)}
+.lv-d .faq .ans{padding:0 6px 22px;font:400 14px/1.65 var(--int);color:var(--t2);max-width:560px}
+
+/* CTA final gigante + wordmark Jeton no rodapé */
+.lv-d .final{padding:130px 0 0;text-align:center;border-radius:44px 44px 0 0;overflow:hidden}
+.lv-d .final h2{font:500 clamp(2.6rem,6.6vw,5.8rem)/1.02 var(--gro);letter-spacing:-.055em}
+.lv-d .final h2 em{font-style:normal;color:var(--roxo)}
+.lv-d .final p{color:var(--t2);margin:24px auto 36px;max-width:420px}
+/* r13: menor e INTEIRO (o corte do descendente do y fazia ler "sunklife") */
+.lv-d .final .wordmark{display:block;font:700 clamp(72px,11vw,168px)/.95 var(--gro);letter-spacing:-.045em;color:var(--t1);
+  margin:84px auto 0;padding-bottom:40px;user-select:none;white-space:nowrap}
+.lv-d .final .wordmark em{font-style:normal;color:var(--roxo)}
+
+.lv-d footer{border-top:1px solid var(--line);padding:64px 0 40px}
+.lv-d .foot-grid{display:grid;grid-template-columns:2fr repeat(4,1fr);gap:40px}
+.lv-d .foot-tag{font:400 13px/1.6 var(--int);color:var(--t3);max-width:270px;margin-top:14px}
+.lv-d .foot-col h5{font:700 10.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t2);margin-bottom:16px}
+.lv-d .foot-col a{display:block;font:400 13px var(--int);color:var(--t3);padding:4px 0;transition:color .3s var(--ease)}
+.lv-d .foot-col a:hover{color:var(--t1)}
+.lv-d .foot-base{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  font:400 12px var(--int);color:var(--t3)}
