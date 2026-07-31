@@ -21,6 +21,8 @@ interface Msg {
   id: number
   role: 'user' | 'assistant'
   content: string
+  /** bolha gerada no client (kill-switch, erros): renderiza, mas fica FORA do payload do modelo */
+  local?: boolean
 }
 
 const FALLBACK_SUGESTOES = [
@@ -65,6 +67,13 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
   const seedRef = useRef(seed)
   seedRef.current = seed
   const nextIdRef = useRef(1)
+  const abortRef = useRef<AbortController | null>(null)
+
+  // aborta um stream pendente SÓ no desmonte do componente
+  // (fechar/reabrir a camada preserva a conversa e o stream em andamento)
+  useEffect(() => {
+    return () => { abortRef.current?.abort() }
+  }, [])
 
   // variante sheet (<1024px), com listener (SSR-safe: window só no effect)
   useEffect(() => {
@@ -118,9 +127,14 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
       setThreadStart(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
     }
 
+    // bolha local (kill-switch, erros): renderiza, mas não entra no payload do modelo
+    const pushLocal = (content: string) => {
+      setMessages((prev) => [...prev, { id: nextIdRef.current++, role: 'assistant', content, local: true }])
+    }
+
     // kill-switch: resposta local imediata, sem fetch
     if (!COACH_OS_ENABLED) {
-      setMessages([...history, { id: nextIdRef.current++, role: 'assistant', content: COACH_DESLIGADO }])
+      pushLocal(COACH_DESLIGADO)
       return
     }
 
@@ -138,18 +152,25 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
       }
     }
 
+    const ctrl = new AbortController()
+    abortRef.current = ctrl
+
     try {
       const res = await fetch('/api/ai/coach-thread', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          // schema aceita 50; mandamos só as últimas 20
-          messages: history.slice(-20).map(({ role, content }) => ({ role, content })),
+          // bolhas locais fora do contexto; schema aceita 50, mandamos só as últimas 20
+          messages: history
+            .filter((m) => !m.local)
+            .slice(-20)
+            .map(({ role, content }) => ({ role, content })),
           moduleId: 'panorama',
         }),
+        signal: ctrl.signal,
       })
       if (!res.ok || !res.body) {
-        push(ERRO_RESPOSTA)
+        pushLocal(ERRO_RESPOSTA)
         return
       }
       const reader = res.body.getReader()
@@ -163,15 +184,15 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
       }
       acc += decoder.decode()
       if (acc && started) push(acc)
-      if (!started) push(acc || ERRO_RESPOSTA)
-    } catch {
-      // abort/erro de rede: bolha de erro (nova bolha se já havia resposta parcial)
       if (!started) {
-        push(ERRO_RESPOSTA)
-      } else {
-        setMessages((prev) => [...prev, { id: nextIdRef.current++, role: 'assistant', content: ERRO_RESPOSTA }])
+        if (acc) push(acc)
+        else pushLocal(ERRO_RESPOSTA)
       }
+    } catch {
+      // abort do desmonte: silencioso; erro de rede: bolha local de erro
+      if (!ctrl.signal.aborted) pushLocal(ERRO_RESPOSTA)
     } finally {
+      if (abortRef.current === ctrl) abortRef.current = null
       setTyping(false)
       setBusy(false)
     }

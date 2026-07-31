@@ -10,11 +10,13 @@
 
 @media (max-width:1023px){
   .v5 .bar .d-only{display:none}
-  .v5 .bar{height:56px;padding:0 18px}
+  /* classe repetida = bump de especificidade order-independent nos seletores que
+     empatariam com os equivalentes do app-v5.css (não depender da ordem de emissão) */
+  .v5 .bar.bar{height:56px;padding:0 18px}
   .v5 .bar .brand{font-size:16px}
-  .v5 .bar .acts{gap:8px}
+  .v5 .bar .acts.acts{gap:8px}
   .v5 .bar .btn-sm.ghost{padding:11px 13px}
   .v5 .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:1}
-  .v5 .ticker{height:24px}
-  .v5 .camada .csug .chip{padding:11px 16px}
+  .v5 .ticker.ticker{height:24px}
+  .v5 .camada .csug .chip.chip{padding:11px 16px}
 }
