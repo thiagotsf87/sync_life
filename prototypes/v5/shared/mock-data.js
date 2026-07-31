@@ -18,6 +18,42 @@ window.SL_MOCK = {
   // telas que não são áreas da bússola (não entram na numeração 01-08)
   extras: ['Panorama', 'Coach IA', 'Conquistas', 'Configurações'],
 
+  // áreas que o usuário ativou no onboarding (fonte: profiles.active_modules)
+  ativas: ['01', '02', '04', '08'],
+
+  diario: {
+    edicao: 208,
+    saudacao: 'Boa tarde, Thiago.',
+    sub: 'Julho está 83% executado e a poupança segue acima da meta. Uma única atenção hoje: o lazer chegou perto do teto.',
+    checkin: {
+      done: false,
+      opcoes: ['Péssimo', 'Ruim', 'Neutro', 'Bem', 'Ótimo'],
+      doneAs: 'Registrado às 21:14',
+      doneMood: 'Bem',
+      doneNote: 'Dia produtivo, treino feito.',
+    },
+    hoje: [
+      { t: '07:30', tx: 'Fisioterapia' },
+      { t: 'R$ 1.200,00', tx: 'Aluguel', tag: 'EM 3 DIAS', due: true, money: true },
+      { t: 'TER 10:00', tx: '1:1 com gestor' },
+      { t: 'R$ 580,00', tx: 'Aporte automático', tag: 'QUA', money: true },
+      { t: 'SEX 20:00', tx: 'Jantar com Ana' },
+      { t: 'R$ 89,90', tx: 'Internet', tag: 'EM 5 DIAS', money: true },
+    ],
+  },
+
+  // scores por área (ordem canônica; ativas ganham linha rica no Diário)
+  dims: [
+    { n: '01', nome: 'Finanças',     meta: 'Saldo R$ 1.840 · lazer no limite', score: 82, tr: 2 },
+    { n: '02', nome: 'Futuro',       meta: '3 metas · 61% de média',           score: 74, tr: 1 },
+    { n: '03', nome: 'Tempo',        meta: '9 eventos · 5/7 dias com foco',    score: 71, tr: 0 },
+    { n: '04', nome: 'Corpo',        meta: '3 atividades · 126 min',           score: 64, tr: 3 },
+    { n: '05', nome: 'Mente',        meta: '2 sessões de leitura',             score: 58, tr: -1 },
+    { n: '06', nome: 'Patrimônio',   meta: 'R$ 48,2k · +7% no ano',            score: 76, tr: 1 },
+    { n: '07', nome: 'Carreira',     meta: 'Roadmap 3/5 marcos',               score: 69, tr: 1 },
+    { n: '08', nome: 'Experiências', meta: 'Itália em 92 dias',                score: 80, tr: 0 },
+  ],
+
   financas: {
     receitas: 5000, despesas: 3160, saldoLivre: 1840,
     poupancaPct: 37, metaPoupancaPct: 30,
@@ -62,6 +98,18 @@ window.SL_MOCK = {
       { hora: '07:12', texto: 'Briefing do dia enviado.' },
       { hora: 'ontem', texto: 'Aporte de R$ 300 confirmado, 2 dias antes do planejado.' },
       { hora: 'seg', texto: 'Semana começou com as manhãs livres de reunião. Bom sinal.' },
+    ],
+    saudacaoCamada: 'Já li o seu dia. O que você quer saber?',
+    sugestoes: [
+      'Quanto ainda posso gastar em lazer?',
+      'Resumo da minha semana',
+      'Simular: e se eu poupar R$ 800?',
+    ],
+    thread: [
+      { de: 'u', tx: 'Quanto ainda posso gastar em lazer esse mês?' },
+      { de: 'a', tx: 'Quase nada: R$ 10 até quinta. Você usou R$ 410 dos R$ 420 do orçamento, e o cinema de ontem (R$ 64) foi o que encostou no teto. A boa notícia: o fechamento projeta R$ 2.120.', fontes: 'Fontes: orçamento Lazer · 34 transações · projeção do mês' },
+      { de: 'u', tx: 'Então antecipa o aporte da Itália pra hoje.' },
+      { de: 'acao', tx: 'Transferência de R$ 580 pra Viagem Itália agendada pra hoje, 16:00. A meta vai a 70% e o saldo projetado segue positivo em R$ 1.540.', done: 'Confirmado por você · 14:04' },
     ],
   },
   fmtBRL(n) { return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); },
