@@ -182,7 +182,7 @@ export function LandingVivaMobile() {
 
       <div className="navwrap">
         <nav>
-          <a className="brand" href="#"><BsMark sz={21} />Sync<em>Life</em></a>
+          <a className="brand" href="#"><BsMark sz={21} /><span className="wm">Sync<em>Life</em></span></a>
           <a className="btn btn-roxo" href="/cadastro">Começar grátis</a>
         </nav>
         <div className="ticker" aria-hidden="true"><TickerText repeats={3} /></div>
@@ -305,7 +305,7 @@ export function LandingVivaMobile() {
         <div className="wrap">
           <div className="foot-grid">
             <div>
-              <span className="brand"><BsMark sz={21} />Sync<em>Life</em></span>
+              <span className="brand"><BsMark sz={21} /><span className="wm">Sync<em>Life</em></span></span>
               <p className="foot-tag">Sua vida inteira, organizada em um só lugar. Feito no Brasil, com cuidado.</p>
             </div>
             <div className="foot-cols">

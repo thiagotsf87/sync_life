@@ -205,7 +205,7 @@ export function LandingVivaDesktop() {
 
       <div className="navwrap">
         <nav>
-          <a className="brand" href="#"><BsMark sz={22} />Sync<em>Life</em></a>
+          <a className="brand" href="#"><BsMark sz={22} /><span className="wm">Sync<em>Life</em></span></a>
           <div className="nav-links">
             <a href="#produto">Produto</a>
             <a href="#precos">Preços</a>
@@ -346,7 +346,7 @@ export function LandingVivaDesktop() {
         <div className="wrap">
           <div className="foot-grid">
             <div>
-              <span className="brand"><BsMark sz={22} />Sync<em>Life</em></span>
+              <span className="brand"><BsMark sz={22} /><span className="wm">Sync<em>Life</em></span></span>
               <p className="foot-tag">Sua vida inteira, organizada em um só lugar.<br />Feito no Brasil, com cuidado.</p>
             </div>
             <div className="foot-col"><h5>Produto</h5><a href="#">Recursos</a><a href="#precos">Preços</a><a href="#">Roadmap</a><a href="#">Mudanças</a></div>
