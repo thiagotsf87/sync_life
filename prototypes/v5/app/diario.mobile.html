@@ -9,21 +9,20 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/tokens.css">
 <link rel="stylesheet" href="../shared/base.css">
 <link rel="stylesheet" href="../shared/app.css">
 <style>
   body{font-size:14px}
   .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
-  .ele{color:var(--ele)}
 
   /* ─── chrome compactado ─── */
   .bar{height:56px;padding:0 18px}
   .brand{font-size:16px}
   .bar .acts{gap:8px}
-  .bar .btn-sm.ghost{padding:7px 13px}
-  .bar .btn-sm.roxo{padding:7px 14px;font-size:15px;line-height:1}
+  .bar .btn-sm.ghost{padding:11px 13px}
+  .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:1}
   .ticker{height:24px}
 
   /* ─── masthead empilhado + selo em faixa ─── */
@@ -65,6 +64,8 @@
   /* ─── check-in empilhado ─── */
   .checkin{padding-top:26px;padding-bottom:26px;border-bottom:1px solid var(--line)}
   .frase{font:500 19px var(--gro);letter-spacing:-.02em;margin:10px 0 14px}
+  .mood{padding:12px 17px}
+  .checkin .btn-sm{padding:12px 20px}
   .ck-form{flex-direction:column;align-items:stretch;margin-top:16px}
   .checkin .ck-done{margin-top:16px}
 
@@ -92,7 +93,7 @@
   /* ─── suas áreas em 1 coluna ─── */
   .dims-sec{padding:44px 0 6px}
   .dims-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-  .dims-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .dims-head a{font:500 12px var(--int);color:var(--t3);padding:12px 0;margin:-12px 0;transition:color .3s var(--ease)}
   .dims-head a:hover{color:var(--t1)}
   .dims{display:grid;grid-template-columns:1fr}
   .dimrow{display:grid;grid-template-columns:30px 1fr auto;gap:12px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line)}
@@ -125,6 +126,9 @@
   /* ─── colofão em coluna ─── */
   .colofao{flex-direction:column;align-items:flex-start;gap:8px;padding:20px 20px 30px}
   .colofao .r{flex-direction:column;gap:8px}
+
+  /* ─── camada: alvos de toque ─── */
+  .camada .csug .chip{padding:11px 16px}
 
   /* ─── estados: anotação do protótipo (fora do fluxo do app) ─── */
   .proto-estados{border-top:3px double var(--line-h);margin-top:56px;padding-top:30px;padding-bottom:72px}
@@ -353,7 +357,7 @@
     <input type="text" placeholder="Pergunte qualquer coisa sobre a sua vida">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
   </div></form>
-  <a class="cfull" href="#">Conversa completa →</a>
+  <a class="cfull" href="#coach">Conversa completa →</a>
 </aside>
 
 <!-- estados: anotação do protótipo -->

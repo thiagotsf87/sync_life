@@ -49,6 +49,7 @@ window.SLApp = (function () {
       function play() { // chip ou envio: mostra a conversa mock no lugar do estado vazio
         if (empty) empty.style.display = 'none';
         if (thread) thread.hidden = false;
+        var cb = camada.querySelector('.cbody'); if (cb) cb.scrollTop = cb.scrollHeight;
       }
       document.querySelectorAll('[data-coach-open]').forEach(function (el) {
         el.addEventListener('click', function () { open(el.getAttribute('data-coach-seed') || ''); });

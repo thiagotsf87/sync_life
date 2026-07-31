@@ -2,6 +2,8 @@
    Telas de app são escuras: <html class="dk">. Banda clara local = .lt (flip inverso). */
 
 [hidden]{display:none!important}
+html{-webkit-tap-highlight-color:transparent}
+.ele{color:var(--ele)}
 
 .lt{--bg:#f4f4f4;--s1:#ffffff;--s2:#eceaea;--line:rgba(21,19,19,.14);--line-h:rgba(21,19,19,.28);
   --t1:#151313;--t2:#4f4c4c;--t3:#6b6868;background:var(--bg);color:var(--t1)}
@@ -118,10 +120,11 @@
   transition:color .3s var(--ease)}
 .camada .cfull:hover{color:var(--t1)}
 /* variante mobile: bottom sheet */
-.camada.sheet{top:auto;left:0;right:0;height:86vh;width:auto;border-left:none;border-top:1px solid var(--line-h);
+.camada.sheet{top:auto;left:0;right:0;height:86vh;height:86dvh;width:auto;border-left:none;border-top:1px solid var(--line-h);
   border-radius:22px 22px 0 0;transform:translateY(105%);box-shadow:0 -24px 60px -30px rgba(0,0,0,.6)}
 .camada.sheet.open{transform:none}
 .camada.sheet .handle{width:44px;height:4px;border-radius:2px;background:var(--line-h);margin:10px auto 0}
+.camada.sheet .cfull{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
 
 @media (max-width:960px){.bar .date{display:none}}
 
