@@ -37,6 +37,22 @@
 
 ---
 
+## 2026-07-31 · Sessão 19b — Infra: `SUPABASE_SERVICE_ROLE_KEY` de produção restaurada
+
+**Contexto:** a sessão 19 flagrou a service_role do `web/.env.local` inválida (era do projeto de HOMOLOG contra a URL de produção; provavelmente sempre foi). O usuário foi trocar a chave e o diagnóstico passou por três pegadinhas reais, todas resolvidas:
+
+1. **Arquivo errado:** o usuário salvava em `web/.env` e a validação lia `web/.env.local` (que tem precedência no Next). Detectado pelo mtime dos arquivos.
+2. **Projeto errado:** a primeira chave colada era `service_role` do `sync_life_homolog` (`bculmhmoxxpjlcilkgmp`). Diagnóstico definitivo: decodificar o claim `ref` do próprio JWT (o token diz de qual projeto foi emitido). Nomes canônicos da org: **sync_life Project** = `xmtzpjtbqhgwmebycxmx` = produção · **sync_life_homolog** = `bculmhmoxxpjlcilkgmp` (o usuário também reativou o homolog, que estava pausado).
+3. **Chave errada:** a segunda colagem era o **JWT Secret** (chave de ASSINATURA da página "JWT Keys"), não a service_role. Solução: derivar a service_role localmente (HS256 sobre header+payload `{iss:supabase, ref, role:service_role}` com o secret), validar contra `auth/v1/admin/users` e salvar — sem o usuário precisar copiar de novo.
+
+**Estado final (validado):** `SUPABASE_SERVICE_ROLE_KEY` nos DOIS arquivos (`web/.env` e `web/.env.local`) é service_role de produção com **HTTP 200** no endpoint admin; o secret cru saiu da posição de API key; ambos os arquivos seguem no `.gitignore` (nada rastreado) e nenhum segredo passou pelo transcript (validações leram do env e reportaram só status/claims).
+
+**Receitas de QA que ficam:** (a) suspeitou de chave Supabase → decodificar o claim `ref`/`role` do JWT antes de qualquer coisa; (b) "salvei mas não mudou" → conferir mtime e procurar outros `.env*` (o Next carrega `.env` E `.env.local`, com `.local` vencendo); (c) com o JWT Secret legacy dá pra derivar anon/service_role localmente em caso de resgate.
+
+**Arquivos:** `web/.env` e `web/.env.local` (fora do git) · este handoff.
+
+---
+
 ## 2026-07-31 · Sessão 19 — ✅ APROVAÇÃO da Onda 1 + IMPLEMENTAÇÃO em `web/` + QA de identidade
 
 **Veredito do usuário:** "prototipos aprovados." → tag `poc-onda1-publico-auth-r2`; ciclo do programa seguiu direto pra implementação.
