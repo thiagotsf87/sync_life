@@ -11,7 +11,7 @@ import type { PanoramaContext } from '@/lib/coach/context'
 
 const model = google('gemini-2.5-flash')
 
-const InputSchema = z.object({ period: z.string().min(1).max(40) })
+const InputSchema = z.object({ period: z.string().min(1).max(40), forceFallback: z.boolean().optional() })
 
 const BriefSchema = z.object({
   headline: z.string(),
@@ -98,7 +98,7 @@ function buildFallbackBrief(ctx: PanoramaContext, period: string): Brief {
   if (tenso && tenso.pct > 85) {
     candidatos.push({ title: `Segurar ${tenso.category}`, detail: `Já foram ${fmtBRL(tenso.gasto)} de ${fmtBRL(tenso.limite)}, ${tenso.pct}% do limite.` })
   } else if (tenso && tenso.pct > 70) {
-    candidatos.push({ title: `De olho em ${tenso.category}`, detail: `O orçamento está em ${tenso.pct}% do limite, ainda dá para fechar o mês dentro.` })
+    candidatos.push({ title: `De olho em ${tenso.category}`, detail: `O orçamento está em ${tenso.pct}% do limite, ainda dá para fechar o mês dentro do limite.` })
   }
   if (contas.length > 0) {
     const conta = contas[0]
@@ -158,6 +158,13 @@ export async function POST(req: Request) {
     const sb = supabase as unknown as { from: (t: string) => any }
     const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
 
+    // 0. Kill-switch: saída 100% determinística, sem cache (nem leitura) e sem Gemini
+    if (parsed.data.forceFallback) {
+      const context = await buildModuleContext(supabase, user.id, 'panorama') as PanoramaContext
+      const brief = buildFallbackBrief(context, period)
+      return NextResponse.json({ ...brief, generatedAt: new Date().toISOString(), cached: false, fallback: true, forced: true })
+    }
+
     // 1. Cache do dia (1 geração/dia/usuário)
     const { data: cached }: { data: { payload: unknown; created_at: string } | null } =
       await sb.from('coach_briefs')
@@ -194,10 +201,13 @@ export async function POST(req: Request) {
           '- NUNCA mencione nem cobre check-in ausente. Se houver checkin_ontem no contexto, pode referenciá-lo de forma positiva.'
         const { object } = await generateObject({ model, schema: BriefSchema, prompt })
         const brief = sanitizeBrief(object)
-        // Cache best-effort: erro de INSERT não derruba a resposta
+        // Cache best-effort (upsert repara linha ruim do dia): erro não derruba a resposta
         try {
           await sb.from('coach_briefs')
-            .insert({ user_id: user.id, brief_date: today, module_id: 'diario', payload: brief })
+            .upsert(
+              { user_id: user.id, brief_date: today, module_id: 'diario', payload: brief },
+              { onConflict: 'user_id,brief_date,module_id' },
+            )
         } catch { /* cache é otimização */ }
         return NextResponse.json({ ...brief, generatedAt: new Date().toISOString(), cached: false })
       } catch (error) {

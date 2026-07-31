@@ -75,10 +75,14 @@ export type PanoramaContext = {
   checkin_ontem?: CheckinResumo
 }
 
+/** Data de hoje no fuso America/Sao_Paulo (YYYY-MM-DD). */
+function todaySaoPaulo(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+}
+
 /** Data de ontem no fuso America/Sao_Paulo (YYYY-MM-DD). */
 function yesterdaySaoPaulo(): string {
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
-  const d = new Date(`${today}T12:00:00Z`)
+  const d = new Date(`${todaySaoPaulo()}T12:00:00Z`)
   d.setUTCDate(d.getUTCDate() - 1)
   return d.toISOString().slice(0, 10)
 }
@@ -91,10 +95,12 @@ export async function buildModuleContext(
   const sb = supabase as { from: (t: string) => any }
   if (moduleId !== 'financas' && moduleId !== 'panorama') return {}
 
-  const now = new Date()
-  const y = now.getFullYear(), m = now.getMonth()
-  const start = `${y}-${String(m + 1).padStart(2, '0')}-01`
-  const end = new Date(y, m + 1, 0).toISOString().slice(0, 10)
+  // Janela do mês corrente derivada da data em America/Sao_Paulo (não do fuso do
+  // servidor): perto da virada do mês em UTC, o mês local ainda é o anterior.
+  const today = todaySaoPaulo()
+  const y = Number(today.slice(0, 4)), m = Number(today.slice(5, 7)) // m = 1-12
+  const start = `${today.slice(0, 7)}-01`
+  const end = new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10)
   const { data } = await sb.from('transactions')
     .select('amount, type, category:categories(name)')
     .eq('user_id', userId).eq('is_future', false).gte('date', start).lte('date', end)
@@ -124,7 +130,7 @@ export async function buildModuleContext(
     const { data: buds }: { data: { amount: number; category: { name: string } | null }[] | null } =
       await sb.from('budgets')
         .select('amount, category:categories(name)')
-        .eq('user_id', userId).eq('month', m + 1).eq('year', y)
+        .eq('user_id', userId).eq('month', m).eq('year', y)
     if (buds && buds.length > 0) {
       const spent = new Map<string, number>()
       for (const t of txs) {
