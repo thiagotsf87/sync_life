@@ -37,8 +37,9 @@ export interface DiarioHojeItem {
 export interface AreaLinha {
   n: string
   nome: string
-  score: number
-  tendencia: number
+  /** Ausente em áreas inativas: o engine não calcula score de módulo inativo. */
+  score?: number
+  tendencia?: number
   meta: string
 }
 
@@ -98,8 +99,14 @@ const AREAS_CANONICAS: ReadonlyArray<{ key: ModuleKey; n: string; nome: string }
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
-/** fmtBRL com espaço pós-R$ trocado por NBSP (padrão v5, sem alterar o helper global). */
-const fmtV5 = (n: number): string => fmtBRL(n).replace(/^R\$ /, `R$${NBSP}`)
+/**
+ * fmtBRL com espaço pós-R$ trocado por NBSP (padrão v5, sem alterar o helper
+ * global). Negativo segue a máscara do DS: en-dash + espaço + valor absoluto.
+ */
+const fmtV5 = (n: number): string => {
+  const abs = fmtBRL(Math.abs(n)).replace(/^R\$ /, `R$${NBSP}`)
+  return n < 0 ? `– ${abs}` : abs
+}
 
 /** Data de hoje (YYYY-MM-DD) no fuso de São Paulo. */
 function spTodayISO(): string {
@@ -204,12 +211,18 @@ export function useDiario(): DiarioData {
   const semanaAtras = lifeScore.history.length >= 7 ? lifeScore.history[6] : null
 
   const buildArea = (def: { key: ModuleKey; n: string; nome: string }): AreaLinha => {
-    const scoreArea = areaScore.get(def.key) ?? 0
-    let tendencia = 0
-    if (semanaAtras && areaScore.has(def.key)) {
-      const col: `${ModuleKey}_score` = `${def.key}_score`
-      const anterior = semanaAtras[col]
-      if (typeof anterior === 'number') tendencia = Math.round(scoreArea - anterior)
+    // Área inativa (fora de result.modules): score/tendencia ficam undefined,
+    // renderizar 0 seria número fabricado.
+    const scoreArea = areaScore.get(def.key)
+
+    let tendencia: number | undefined
+    if (scoreArea !== undefined) {
+      tendencia = 0
+      if (semanaAtras) {
+        const col: `${ModuleKey}_score` = `${def.key}_score`
+        const anterior = semanaAtras[col]
+        if (typeof anterior === 'number') tendencia = Math.round(scoreArea - anterior)
+      }
     }
 
     let meta = ''
@@ -217,8 +230,15 @@ export function useDiario(): DiarioData {
       meta = `Saldo ${fmtV5(nums.saldo)}`
       if (maisTenso) meta += ` · ${maisTensoNome} ${maisTenso.pct}%`
     } else if (def.key === 'futuro' && !metasQ.isLoading && !metasQ.error) {
-      const n = metasQ.goals.length
-      meta = n === 1 ? '1 meta ativa' : `${n} metas ativas`
+      const goals = metasQ.goals
+      if (goals.length === 0) {
+        meta = '0 metas ativas'
+      } else {
+        const media = Math.round(
+          goals.reduce((s, g) => s + calcProgress(g.current_amount, g.target_amount), 0) / goals.length,
+        )
+        meta = `${goals.length} ${goals.length === 1 ? 'meta' : 'metas'} · ${media}%`
+      }
     }
 
     return { n: def.n, nome: def.nome, score: scoreArea, tendencia, meta }
