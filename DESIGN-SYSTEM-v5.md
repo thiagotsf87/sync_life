@@ -119,6 +119,12 @@ Não há mais "4 temas selecionáveis" como no v3. O v5 define **modo por contex
   background:var(--bg);color:var(--t1)}
 ```
 
+O flip tem direção dupla: `.dk` escurece uma seção em página clara (landing) e `.lt`
+clareia uma seção em página escura (telas do app: a folha do briefing). `.lt` re-declara
+as MESMAS vars (`--bg --s1 --s2 --line --line-h --t1 --t2 --t3`) com os valores do tema
+claro; filhos usam os tokens normalmente, sem vars paralelas de "paper/ink". Definido em
+`prototypes/v5/shared/app.css` (chrome do app, Onda 2).
+
 > Tema selecionável pelo usuário (claro/escuro global no app) é decisão de produto ainda
 > aberta; o DS suporta via o mesmo mecanismo de re-declaração.
 
@@ -374,38 +380,51 @@ de verdade** (three.js, referência em `prototypes/v5/landing/landing-viva.html`
 
 ```
 ┌──────────────────────────────────────────────────┐
-│ bar (64px sticky, blur): brand · data · ações    │
+│ bar (64px sticky, blur): brand · data · coach ·  │
+│ ações                                            │
 ├──────────────────────────────────────────────────┤
 │ ticker do dia (28px, elétrico, marquee)          │
 ├──────────────────────────────────────────────────┤
-│ modbar: Panorama · 01 Finanças · 02 Futuro …     │  ← tabs horizontais, scroll-x,
-├──────────────────────────────────────────────────┤    ativa = border-bottom 2px roxo
+│ modbar: Diário · 01 Finanças … 08 Experiências · │
+│ Conquistas · Configurações                       │
+├──────────────────────────────────────────────────┤
 │ conteúdo (wrap max 1180px)                       │
 └──────────────────────────────────────────────────┘
 ```
 
 - `bar`: `position:sticky`, `background:rgba(21,19,19,.85)` + `backdrop-filter:blur(12px)`.
-- `modbar`: módulos **numerados** (`.n` em Space Grotesk), sem ícones, sem cores de módulo,
-  scrollbar oculta. Panorama sem número; ativa fica `--t1` com número roxo.
+  À direita, o **gatilho do coach**: pílula ghost com a bússola 16px + "Pergunte ao coach",
+  presente em TODAS as telas autenticadas. Abre a camada do coach (§6.4).
+- `modbar`: só as 8 áreas levam número (`.n` em Space Grotesk, numeração canônica §5.2).
+  Diário, Conquistas e Configurações ficam SEM número. **Não existe item Coach** (o coach
+  é camada, §6.4). Sem ícones, sem cores de módulo, scrollbar oculta; ativa = `--t1` com
+  `border-bottom` 2px roxo (número roxo quando houver).
 - Não existe sidebar. A hierarquia interna do módulo vive na própria página.
 
-### 6.2 Dashboard — "Edição do dia" (Panorama)
+### 6.2 Diário (substitui o Panorama; rota /dashboard mantida)
+
+O diário que o coach escreve com você. Três diferenciais sobre um "dashboard": autoria
+explícita do coach, check-in do usuário e personalização por `profiles.active_modules`.
+Spec de produto: `docs/superpowers/specs/2026-07-31-coach-diario-v5-design.md`.
 
 Ordem vertical:
 
-1. **Masthead** — eyebrow `Edição nº · seu panorama diário`, saudação em display, sub de
+1. **Masthead** — eyebrow `Edição nº N · seu diário`, saudação em display, sub de
    1 parágrafo + **selo** do Life Sync Score à direita.
-2. **A folha** — banda papel (`--paper`) com o briefing do Consultor IA: eyebrow, título
-   editorial, 2 parágrafos de prosa com números embutidos (`strong.num`, `.warn` coral),
-   rabisco do coach, assinatura (`Escrito às 14:05, com base em…`). À direita, coluna
-   `recs`: 3 recomendações numeradas + input `ask` em pílula.
-3. **Hoje** — linha única scroll-x com eventos/contas (`time` + tag `EM 3 DIAS`).
-4. **Números do mês** — banda 4 colunas com hairlines internas, valores com count-up.
-5. **As 8 dimensões** — índice em 2 colunas: `01 Finanças … 08 Experiências`, cada linha com
-   nome display 16px, metadado 11.5px e score 22px + tendência (`▲2` elétrico / `▼1` coral / `–`).
-6. **Atenção + Metas** — grid 1.5fr/1fr: notas com dot coral/elétrico e valor à direita |
-   metas com barra hairline 3px.
-7. **Colofão** — rodapé de fechamento (projeção, streak, badges, última sincronização).
+2. **A folha** — banda `.lt` com o briefing do coach: eyebrow, título editorial, 2
+   parágrafos de prosa com números embutidos, rabisco `.hand`, assinatura (`Escrito
+   às…, com base em…`). À direita, coluna `recs`: 3 recomendações numeradas + `ask`
+   em pílula, que abre a **camada do coach** com a pergunta semeada.
+3. **Check-in** — "Como foi o dia?": 5 pílulas de humor + 1 linha opcional (Inter,
+   nunca Caveat) + Registrar. Registrado, colapsa para `Registrado às 21:14 · …`.
+   O coach nunca cobra check-in perdido; sem streak de check-in.
+4. **Hoje** — linha única scroll-x com eventos/contas (`time` + tag `EM 3 DIAS`).
+5. **Números do mês** — banda 4 colunas com hairlines internas, count-up.
+6. **Suas áreas** — só as áreas ativas ganham linha rica (nº, nome display, metadado,
+   score 22px + tendência). As demais colapsam numa linha única quieta ao final
+   (`Outras: 05 Mente 71 · 07 Carreira 64 · …`), sem juízo de valor.
+7. **Atenção + Metas** — grid 1.5fr/1fr filtrado pelas áreas ativas.
+8. **Colofão** — projeção, streak, badges, última sincronização.
 
 ### 6.3 Tela de módulo (template = Finanças)
 
@@ -422,15 +441,25 @@ Mesmo chrome; ticker com dados do módulo. Ordem:
 6. **Metas + recorrentes** — 2 colunas de linhas hairline.
 7. **Colofão** do módulo.
 
-### 6.4 Coach — conversa como página
+### 6.4 Coach — camada global, não destino
 
-- Grid `1fr 300px`: **thread** central (max 720px) | **margem de contexto** sticky.
-- Thread: divider de data, bolhas (`.bub.u` roxa / `.bub.a` superfície `--s1`), cada resposta
-  da IA com **fontes citadas** (`.meta`: `Fontes: orçamento Lazer · 34 transações · …`),
-  cartão **Ação executada** (borda esquerda 3px elétrica + confirmação com hora), typing dots.
-- Margem: `O que o coach enxerga` (linhas chave/valor), nota de privacidade, atalhos em chips
-  verticais, caligrafia `é conversa, não formulário!`.
-- **Askbar fixa** ao rodapé: pílula escura com sombra longa sobre gradiente de fade.
+O coach não é um item de menu: é uma camada disponível em qualquer tela autenticada.
+
+- **Gatilho:** pílula no `bar` (§6.1) e o `ask` da folha do Diário (pergunta semeada).
+- **Camada (desktop):** painel lateral direito `min(460px, 92vw)`, altura total, fundo
+  `--s1`, `border-left` hairline, scrim escuro; entra com `translateX` no easing
+  assinatura. **Mobile:** bottom sheet ~86vh com handle. Fecha por scrim, botão ou Esc.
+- **Conteúdo da camada:** header (eyebrow `Coach · lendo: <contexto atual>` + fechar),
+  thread de bolhas (`.bub.u` roxa / `.bub.a` superfície) com **fontes citadas** (`.meta`)
+  sob cada resposta, cartão **Ação executada** (borda esquerda 3px elétrica; visual do
+  N3, implementação em sprint próprio), typing dots. Vazia, mostra 1 saudação curta +
+  chips de sugestão (gerados pelo coach-brief) — nunca um chat em branco.
+- **Askbar** fixa ao rodapé da camada: pílula escura com sombra longa.
+- **Vista cheia `/coach`:** o grid conversa + margem `O que o coach enxerga` (protótipo
+  r6 continua válido como linguagem). Alcançada pelo link `Conversa completa →` na
+  camada; guarda o histórico contínuo com divisores de data.
+- Backend por nível (N1 briefing cacheado · N2 thread persistida com fontes · N3 ações
+  · N4 proatividade): ver a spec de produto.
 
 ### 6.5 Landing
 
@@ -548,7 +577,7 @@ Regras de copy do v3 que **continuam valendo**: sem em-dash (—) na copy, sente
 ## 11. Pendências do DS
 
 - [ ] Ajustes finos **visuais** da landing (lista do usuário pendente; cor/linguagem/layout são lei).
-- [ ] Veredito final do dashboard/finanças/coach como conjunto.
+- [ ] Veredito final do Diário/finanças/coach como conjunto.
 - [ ] Substituir micro-UIs do arco por **imagens reais** das telas v5.
 - [x] Símbolo da marca decidido: **A Bússola da Vida** (§5, 2026-07-28). Falta exportar os
       assets finais (SVG mestre com grade, ICO/PNG, ícones iOS/Android) e a versão mono.
@@ -557,6 +586,7 @@ Regras de copy do v3 que **continuam valendo**: sem em-dash (—) na copy, sente
       Conquistas, Configurações, auth, mobile) na linguagem v5.
 - [ ] Decisão de produto: tema claro/escuro selecionável no app.
 - [ ] Tokens em arquivo importável (`tokens-v5.css`) quando o conjunto fechar.
+- [ ] Onda 2 lote 2: Review semanal + Life Score detalhado (anatomias ainda não especificadas).
 
 ---
 
