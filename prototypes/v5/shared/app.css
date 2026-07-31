@@ -1,0 +1,109 @@
+/* SyncLife DS v5 — chrome do app + camada do coach (Onda 2+)
+   Telas de app são escuras: <html class="dk">. Banda clara local = .lt (flip inverso). */
+
+.lt{--bg:#f4f4f4;--s1:#ffffff;--s2:#eceaea;--line:rgba(21,19,19,.14);--line-h:rgba(21,19,19,.28);
+  --t1:#151313;--t2:#4f4c4c;--t3:#6b6868;background:var(--bg);color:var(--t1)}
+
+/* ── bar ── */
+.bar{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(20px,4vw,56px);position:sticky;top:0;background:rgba(21,19,19,.85);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:60}
+.brand{font:700 17px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:8px}
+.brand em{font-style:normal;color:var(--roxo)}
+.bar .date{font:700 10.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+.bar .acts{display:flex;gap:10px;align-items:center}
+.btn-sm{display:inline-flex;align-items:center;gap:7px;border-radius:999px;cursor:pointer;font:600 12.5px var(--int);
+  transition:background .3s var(--ease),border-color .3s var(--ease),color .3s var(--ease)}
+.btn-sm.ghost{background:transparent;border:1px solid var(--line);color:var(--t2);padding:8px 15px}
+.btn-sm.ghost:hover{border-color:var(--line-h);color:var(--t1)}
+.btn-sm.roxo{background:var(--roxo);border:none;color:#fff;padding:8px 17px}
+.btn-sm.roxo:hover{background:var(--roxo-h)}
+/* gatilho do coach: pílula ghost com a bússola */
+.coach-pill{border-color:rgba(104,64,255,.5);color:var(--t1)}
+.coach-pill:hover{border-color:var(--roxo)}
+.coach-pill svg{flex-shrink:0}
+
+/* ── ticker ── */
+.ticker{overflow:hidden;background:var(--ele);height:28px;display:flex;align-items:center;white-space:nowrap}
+.ticker .tk{display:inline-block;font:700 10px var(--gro);letter-spacing:.16em;color:#151313}
+.anim .ticker .tk{animation:sl-mqtk 46s linear infinite}
+@keyframes sl-mqtk{from{transform:translateX(0)}to{transform:translateX(-25%)}}
+.ticker span{padding:0 18px}
+
+/* ── modbar (Diário/Conquistas/Config SEM número; sem item Coach) ── */
+.modbar{border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.modbar::-webkit-scrollbar{display:none}
+.modbar .in{display:flex;gap:2px;padding:0 clamp(20px,4vw,56px);min-width:max-content}
+.modbar a{display:flex;align-items:baseline;gap:7px;padding:13px 14px;font:600 12px var(--int);color:var(--t3);
+  border-bottom:2px solid transparent;transition:color .3s var(--ease),border-color .3s var(--ease);white-space:nowrap}
+.modbar a .n{font:700 10.5px var(--gro)}
+.modbar a:hover{color:var(--t1)}
+.modbar a.on{color:var(--t1);border-bottom-color:var(--roxo)}
+.modbar a.on .n{color:var(--roxo)}
+
+/* ── colofão ── */
+.colofao{border-top:1px solid var(--line);padding:22px clamp(20px,4vw,56px);display:flex;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;font:400 12px var(--int);color:var(--t3)}
+.colofao b{color:var(--t2);font-weight:600;font-family:var(--gro)}
+.colofao .r{display:flex;gap:22px;flex-wrap:wrap}
+
+/* ── bolhas de conversa (camada e vista cheia) ── */
+.bub{max-width:82%;padding:13px 17px;font:400 13.5px/1.65 var(--int)}
+.bub strong{color:var(--t1);font-weight:600}
+.bub .w{color:var(--coral);font-weight:600}
+.bub.u{align-self:flex-end;background:var(--roxo);color:#fff;border-radius:16px 16px 4px 16px}
+.bub.u strong{color:#fff}
+.bub.a{align-self:flex-start;background:var(--s2);border:1px solid var(--line);color:var(--t2);border-radius:16px 16px 16px 4px}
+.bub .meta{display:block;font:500 10px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-top:9px}
+.action{align-self:flex-start;border:1px solid var(--line);border-left:3px solid var(--ele);border-radius:12px;
+  padding:13px 16px;max-width:82%;background:#1b1918}
+.action .al{font:700 9.5px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--ele);margin-bottom:6px}
+.action p{font:400 12.5px/1.6 var(--int);color:var(--t2)}
+.action p b{color:var(--t1);font-weight:600;font-family:var(--gro)}
+.action .done{display:inline-flex;align-items:center;gap:7px;margin-top:10px;font:600 11.5px var(--int);color:var(--ele)}
+.typing{align-self:flex-start;display:flex;gap:5px;padding:12px 16px;background:var(--s2);border:1px solid var(--line);
+  border-radius:16px 16px 16px 4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--t3)}
+.anim .typing i{animation:sl-tdot 1s var(--ease) infinite;animation-delay:calc(var(--i)*.18s)}
+@keyframes sl-tdot{0%,100%{transform:none;opacity:.5}50%{transform:translateY(-3px);opacity:1}}
+
+/* ── camada do coach ── */
+.scrim{position:fixed;inset:0;background:rgba(13,12,11,.55);backdrop-filter:blur(3px);z-index:75;
+  opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
+.scrim.open{opacity:1;pointer-events:auto}
+.camada{position:fixed;top:0;right:0;bottom:0;width:min(460px,92vw);background:var(--s1);
+  border-left:1px solid var(--line);z-index:80;display:flex;flex-direction:column;
+  transform:translateX(105%);transition:transform .55s var(--ease);
+  box-shadow:-24px 0 60px -30px rgba(0,0,0,.6)}
+.camada.open{transform:none}
+.camada .chead{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:18px 22px;border-bottom:1px solid var(--line)}
+.camada .chead .x{background:none;border:1px solid var(--line);border-radius:999px;width:32px;height:32px;
+  display:inline-flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;
+  transition:border-color .3s var(--ease),color .3s var(--ease)}
+.camada .chead .x:hover{border-color:var(--line-h);color:var(--t1)}
+.camada .cbody{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:12px}
+.camada .hello{font:400 13.5px/1.6 var(--int);color:var(--t2)}
+.camada .csug{display:flex;flex-direction:column;gap:8px;align-items:flex-start;margin-top:4px}
+.camada .csug .chip{font:500 12px var(--int);color:var(--t2);border:1px solid var(--line);border-radius:999px;
+  padding:8px 14px;cursor:pointer;background:transparent;text-align:left;
+  transition:border-color .3s var(--ease),color .3s var(--ease)}
+.camada .csug .chip:hover{border-color:rgba(104,64,255,.55);color:var(--t1)}
+.camada .divider{display:flex;align-items:center;gap:14px;font:700 9.5px var(--gro);letter-spacing:.2em;
+  color:var(--t3);text-transform:uppercase;margin:6px 0}
+.camada .divider::before,.camada .divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.camada .cask{padding:14px 18px 18px;border-top:1px solid var(--line)}
+.camada .cask .in{display:flex;align-items:center;gap:11px;background:#1b1918;border:1px solid var(--line-h);
+  border-radius:999px;padding:13px 19px}
+.camada .cask .in:focus-within{border-color:rgba(104,64,255,.55)}
+.camada .cask input{flex:1;background:none;border:none;outline:none;color:var(--t1);font:400 13.5px var(--int)}
+.camada .cask input::placeholder{color:var(--t3)}
+.camada .cask svg{color:var(--roxo);flex-shrink:0}
+.camada .cfull{display:block;text-align:center;font:500 11.5px var(--int);color:var(--t3);padding:0 0 14px;
+  transition:color .3s var(--ease)}
+.camada .cfull:hover{color:var(--t1)}
+/* variante mobile: bottom sheet */
+.camada.sheet{top:auto;left:0;right:0;height:86vh;width:auto;border-left:none;border-top:1px solid var(--line-h);
+  border-radius:22px 22px 0 0;transform:translateY(105%)}
+.camada.sheet.open{transform:none}
+.camada.sheet .handle{width:44px;height:4px;border-radius:2px;background:var(--line-h);margin:10px auto 0}
