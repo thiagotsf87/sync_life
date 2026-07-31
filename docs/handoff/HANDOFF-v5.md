@@ -37,6 +37,23 @@
 
 ---
 
+## 2026-07-31 · Sessão 18b — Onda 1, rodada 2: feedback do usuário (onboarding centrado + wordmark junto)
+
+**Feedback recebido:** (1) onboarding desktop com disposição à esquerda, tela vazia à direita/abaixo no passo 1 → centralizar; (2) "SyncLife" aparecendo SEPARADO no cabeçalho das telas novas e da landing (no wordmark do final aparece junto, correto); (3) pergunta: as regras de negócio (obrigatoriedade, mensagens) entram nos protótipos ou depois?
+
+**Feito:**
+- **Onboarding desktop centrado:** `.step` virou palco flex centrado (`min-height:calc(100vh - 64px)`, conteúdo no eixo central); nome em manchete com texto centrado, listas (prox/objetivos/comece) com largura própria e texto à esquerda por dentro; passo 04 recomposto em coluna central (selo em cima, prosa e "comece por aqui" abaixo). Mobile não mudou (não tinha o problema de vazio).
+- **CAUSA RAIZ do "Sync Life" separado:** `.brand`/`.lockup` são `inline-flex` com `gap` e o markup era `<span class=bs></span>Sync<em>Life</em>`: o texto "Sync" e o `<em>Life</em>` viram DOIS itens flex anônimos e o gap entra no meio. O wordmark gigante do final não é flex, por isso lá sempre foi junto. **Fix: embrulhar em `<span class="wm">Sync<em>Life</em></span>`** (o gap fica só entre a bússola e o texto). Aplicado nos **25 pontos** dos protótipos (Onda 1 inteira + landing-viva desktop/mobile + landing r4 segura + hub) e nos **4 pontos da implementação** (`LandingVivaDesktop/Mobile.tsx`, navs + footers; wordmarks gigantes intactos).
+- **Teste de identidade do fix:** `npm run build` + `next start -p 3006` (listener velho da 3006 morto antes) → `.wm` computa "SyncLife" com **73px nos dois lados** (protótipo × app), navs visualmente idênticas.
+- QA do onboarding centrado: fluxo completo com cliques FÍSICOS (passos 1→4, eco "Pronto, Thiago."). Nota de QA: uma bateria de cliques falhou por instabilidade do BROWSER do Playwright rodando junto com `npm run build` (CPU saturada, browser chegou a morrer); em browser novo sem build paralelo, tudo passa. Não confundir com bug de página.
+- **Resposta ao ponto 3 (registrada):** os protótipos cobrem o VISUAL dos estados (seções "Estados · anotação do protótipo": erros de credencial, e-mail não confirmado, senhas divergentes, força, e-mail já cadastrado); o COMPORTAMENTO (campos obrigatórios, validação, redirects, reenvio) entra na implementação herdando o que o app v3 já faz hoje (Supabase auth + validações existentes), com a copy seca do v5. Se o usuário quiser aprovar a matriz completa de mensagens por campo, ela pode ser adicionada às seções de estados antes do "aprovado".
+
+**Pendências:** ⏳ veredito da rodada 2 (onboarding centrado) + demais telas da Onda 1.
+
+**Arquivos:** `prototypes/v5/auth/*.html` · `prototypes/v5/landing/*.html` · `prototypes/v5/index.html` · `web/src/components/landing-v5/{LandingVivaDesktop,LandingVivaMobile}.tsx` · este handoff.
+
+---
+
 ## 2026-07-31 · Sessão 18 — Onda 1: protótipos de público + auth (6 telas ×2)
 
 **Escopo:** fase de protótipo da Onda 1 completa: pricing, login, cadastro, esqueceu a senha, redefinir senha e onboarding, cada uma com desktop (1440) e mobile dedicado (390×844).

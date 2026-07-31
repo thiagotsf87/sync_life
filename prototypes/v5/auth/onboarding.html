@@ -42,17 +42,21 @@
   .pular:hover{color:var(--t1)}
   html:not(.js) .tabs, html:not(.js) .pular{visibility:hidden}
 
-  /* passos */
-  .step{padding-top:clamp(48px,7vh,84px);padding-bottom:140px} /* nunca shorthand sobre o .wrap */
+  /* passos: conteúdo centrado no palco (a coluna esquerda deixava a tela vazia à direita) */
+  .step{padding-top:clamp(40px,6vh,72px);padding-bottom:150px; /* nunca shorthand sobre o .wrap */
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    min-height:calc(100vh - 64px)}
   html.js .step{display:none}
-  html.js .step.on{display:block}
+  html.js .step.on{display:flex}
   .step .eyebrow{margin-bottom:16px}
   .step h1{font:500 clamp(30px,4.2vw,48px)/1.06 var(--gro);letter-spacing:-.045em;color:var(--t1);max-width:640px}
   .step h1 em{font-style:normal;color:var(--roxo)}
   .step .sub{font:400 14.5px/1.7 var(--int);color:var(--t2);margin-top:14px;max-width:56ch}
 
   /* passo 01: o nome em manchete */
-  .gname{margin-top:44px;max-width:560px}
+  .gname{margin-top:44px;width:min(560px,100%)}
+  .gname input{text-align:center}
+  .gname .handrow{justify-content:center}
   .gname input{width:100%;background:none;border:0;border-bottom:2px solid var(--line-h);border-radius:0;
     font:500 clamp(30px,4vw,50px)/1.1 var(--gro);letter-spacing:-.045em;color:var(--t1);
     padding:4px 2px 14px;outline:none;caret-color:var(--roxo);transition:border-color .35s var(--ease)}
@@ -60,7 +64,7 @@
   .gname input:focus{border-color:var(--roxo)}
   .gname .handrow{display:flex;align-items:center;gap:9px;margin-top:16px}
   .gname .handrow svg{color:var(--coral)}
-  .prox{margin-top:56px;max-width:420px;border-top:1px solid var(--line)}
+  .prox{margin-top:56px;width:min(420px,100%);text-align:left;border-top:1px solid var(--line)}
   .prox .r{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:baseline;
     padding:12px 4px;border-bottom:1px solid var(--line);font:400 13.5px var(--int);color:var(--t3)}
   .prox .r .n{font:700 11px var(--gro)}
@@ -69,7 +73,8 @@
   .prox .r .tagnow{font:700 9px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--ele)}
 
   /* passo 02: objetivos em linhas selecionáveis */
-  .objs{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(28px,4vw,64px);margin-top:38px;border-top:1px solid var(--line)}
+  .objs{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(28px,4vw,64px);margin-top:38px;border-top:1px solid var(--line);
+    width:min(940px,100%);text-align:left}
   .obj{display:grid;grid-template-columns:1fr 22px;gap:16px;align-items:center;text-align:left;width:100%;
     padding:15px 8px 15px 4px;background:none;border:0;border-bottom:1px solid var(--line);cursor:pointer;
     font-family:var(--int);color:var(--t1);transition:background .3s var(--ease),padding-left .3s var(--ease)}
@@ -86,7 +91,8 @@
   .contagem b{font:700 15px var(--gro);color:var(--t1)}
 
   /* passo 03: as 8 áreas com ícone de rumo + bússola que acompanha */
-  .a-grid{display:grid;grid-template-columns:1fr 280px;gap:clamp(40px,6vw,96px);margin-top:38px;align-items:start}
+  .a-grid{display:grid;grid-template-columns:1fr 280px;gap:clamp(40px,6vw,96px);margin-top:38px;align-items:start;
+    width:100%;text-align:left}
   .alist{border-top:1px solid var(--line)}
   .arow{display:grid;grid-template-columns:46px 30px 1fr auto;gap:14px;align-items:center;
     padding:13px 8px 13px 4px;border-bottom:1px solid var(--line);cursor:pointer;
@@ -112,8 +118,10 @@
   .a-nota{font:400 12.5px/1.6 var(--int);color:var(--t3);border-left:2px solid var(--roxo);padding-left:12px;
     text-align:left;max-width:220px}
 
-  /* passo 04: o selo do score inicial + prosa assinada */
-  .fim{display:grid;grid-template-columns:200px 1fr;gap:clamp(40px,5vw,72px);align-items:start;margin-top:8px}
+  /* passo 04: o selo do score inicial + prosa assinada, tudo no eixo central */
+  .fim{display:flex;flex-direction:column;align-items:center;margin-top:4px}
+  .fim .selo{margin-bottom:32px;min-width:200px}
+  .fim > div{display:flex;flex-direction:column;align-items:center}
   .selo{border:1px solid var(--line-h);border-radius:16px;padding:26px 24px 22px;text-align:center;position:relative;
     transition:border-color .35s var(--ease)}
   .selo::after{content:"";position:absolute;inset:5px;border:1px solid var(--line);border-radius:11px;pointer-events:none}
@@ -123,10 +131,10 @@
   .selo .n{font:700 72px/1 var(--gro);letter-spacing:-.05em;margin:10px 0 6px;color:var(--t1)}
   .selo .d{font:600 11.5px var(--gro);color:var(--ele)}
   .selo .s{font:400 10.5px var(--int);color:var(--t3);margin-top:4px}
-  .fim .prosa{font:400 15.5px/1.8 var(--int);color:var(--t2);max-width:54ch;margin-top:20px}
+  .fim .prosa{font:400 15.5px/1.8 var(--int);color:var(--t2);max-width:54ch;margin-top:20px;text-align:center}
   .fim .prosa b{font-family:var(--gro);font-weight:700;letter-spacing:-.01em;color:var(--t1)}
   .fim .assin{font:400 11.5px var(--int);color:var(--t3);margin-top:14px}
-  .comece{margin-top:36px;max-width:520px}
+  .comece{margin-top:36px;width:min(520px,100%);text-align:left}
   .comece .eyebrow{margin-bottom:4px}
   .comece .r{display:grid;grid-template-columns:30px 1fr auto;gap:14px;align-items:center;
     padding:14px 6px;border-bottom:1px solid var(--line);cursor:pointer;
@@ -163,7 +171,7 @@
 <header class="bar">
   <span class="brand">
     <span class="bs d3" data-bs3d style="--sz:22px" aria-hidden="true"></span>
-    Sync<em>Life</em></span>
+    <span class="wm">Sync<em>Life</em></span></span>
   <nav class="tabs" aria-label="Passos da configuração">
     <button class="tab on" data-goto="1"><span class="n num">01</span>Nome</button>
     <button class="tab" data-goto="2"><span class="n num">02</span>Objetivos</button>
