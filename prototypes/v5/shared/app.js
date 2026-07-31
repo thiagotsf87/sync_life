@@ -2,6 +2,8 @@
 // SLApp.boot(): gate .anim (reduce = página estática), reveals IO, count-up, camada do coach, check-in.
 window.SLApp = (function () {
   function boot() {
+    if (boot._done) return;
+    boot._done = true;
     var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduce) document.documentElement.classList.add('anim');
 
@@ -40,7 +42,8 @@ window.SLApp = (function () {
       var thread = camada.querySelector('.cthread'); // conversa mock (hidden por padrão)
       function open(seed) {
         camada.classList.add('open'); scrim.classList.add('open');
-        var inp = camada.querySelector('.cask input'); if (inp) { inp.value = seed || ''; inp.focus(); }
+        var inp = camada.querySelector('.cask input');
+        if (inp) { inp.value = seed || ''; if (!camada.classList.contains('sheet')) inp.focus({ preventScroll: true }); }
       }
       function close() { camada.classList.remove('open'); scrim.classList.remove('open'); }
       function play() { // chip ou envio: mostra a conversa mock no lugar do estado vazio
@@ -58,7 +61,7 @@ window.SLApp = (function () {
       var x = camada.querySelector('.chead .x');
       if (x) x.addEventListener('click', close);
       scrim.addEventListener('click', close);
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && camada.classList.contains('open')) close(); });
     }
 
     // ── check-in ──
@@ -69,12 +72,12 @@ window.SLApp = (function () {
       pills.forEach(function (p) {
         p.addEventListener('click', function () {
           pills.forEach(function (q) { q.classList.remove('on'); });
-          p.classList.add('on'); picked = p.textContent;
+          p.classList.add('on'); picked = p.textContent.trim();
         });
       });
       var btn = ck.querySelector('.ck-save');
       if (btn) btn.addEventListener('click', function () {
-        if (!picked) return;
+        if (!picked || !form || !doneBox) return;
         var note = ck.querySelector('.ck-note');
         var out = doneBox.querySelector('[data-out]');
         if (out) out.textContent = picked + (note && note.value ? ' · "' + note.value + '"' : '');

@@ -1,6 +1,8 @@
 /* SyncLife DS v5 — chrome do app + camada do coach (Onda 2+)
    Telas de app são escuras: <html class="dk">. Banda clara local = .lt (flip inverso). */
 
+[hidden]{display:none!important}
+
 .lt{--bg:#f4f4f4;--s1:#ffffff;--s2:#eceaea;--line:rgba(21,19,19,.14);--line-h:rgba(21,19,19,.28);
   --t1:#151313;--t2:#4f4c4c;--t3:#6b6868;background:var(--bg);color:var(--t1)}
 
@@ -67,8 +69,20 @@
 .anim .typing i{animation:sl-tdot 1s var(--ease) infinite;animation-delay:calc(var(--i)*.18s)}
 @keyframes sl-tdot{0%,100%{transform:none;opacity:.5}50%{transform:translateY(-3px);opacity:1}}
 
+/* ── check-in do Diário (par do wiring em app.js) ── */
+.checkin .moods{display:flex;flex-wrap:wrap;gap:9px}
+.mood{font:500 12.5px var(--int);color:var(--t2);border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;background:transparent;transition:border-color .3s var(--ease),color .3s var(--ease)}
+.mood:hover{border-color:var(--line-h);color:var(--t1)}
+.mood.on{border-color:var(--roxo);color:var(--t1)}
+.ck-form{display:flex;gap:10px;align-items:center}
+.ck-note{flex:1;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:var(--t1);font:400 13px var(--int);outline:none}
+.ck-note::placeholder{color:var(--t3)}
+.ck-note:focus{border-color:rgba(104,64,255,.55)}
+.ck-done{font:400 13px var(--int);color:var(--t3)}
+.ck-done b{color:var(--t2);font-weight:600}
+
 /* ── camada do coach ── */
-.scrim{position:fixed;inset:0;background:rgba(13,12,11,.55);backdrop-filter:blur(3px);z-index:75;
+.scrim{position:fixed;inset:0;background:rgba(13,12,11,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:75;
   opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
 .scrim.open{opacity:1;pointer-events:auto}
 .camada{position:fixed;top:0;right:0;bottom:0;width:min(460px,92vw);background:var(--s1);
@@ -83,6 +97,7 @@
   transition:border-color .3s var(--ease),color .3s var(--ease)}
 .camada .chead .x:hover{border-color:var(--line-h);color:var(--t1)}
 .camada .cbody{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:12px}
+.camada .cthread{display:flex;flex-direction:column;gap:12px}
 .camada .hello{font:400 13.5px/1.6 var(--int);color:var(--t2)}
 .camada .csug{display:flex;flex-direction:column;gap:8px;align-items:flex-start;margin-top:4px}
 .camada .csug .chip{font:500 12px var(--int);color:var(--t2);border:1px solid var(--line);border-radius:999px;
@@ -104,6 +119,8 @@
 .camada .cfull:hover{color:var(--t1)}
 /* variante mobile: bottom sheet */
 .camada.sheet{top:auto;left:0;right:0;height:86vh;width:auto;border-left:none;border-top:1px solid var(--line-h);
-  border-radius:22px 22px 0 0;transform:translateY(105%)}
+  border-radius:22px 22px 0 0;transform:translateY(105%);box-shadow:0 -24px 60px -30px rgba(0,0,0,.6)}
 .camada.sheet.open{transform:none}
 .camada.sheet .handle{width:44px;height:4px;border-radius:2px;background:var(--line-h);margin:10px auto 0}
+
+@media (prefers-reduced-motion:reduce){.scrim,.camada{transition:none}}
