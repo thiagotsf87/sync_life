@@ -2640,10 +2640,10 @@ export type PlanningEvent = Database['public']['Tables']['planning_events']['Row
 export type PlanningEventInsert = Database['public']['Tables']['planning_events']['Insert']
 export type PlanningEventUpdate = Database['public']['Tables']['planning_events']['Update']
 
-// Coach / Diario
-export type CoachBrief = Database['public']['Tables']['coach_briefs']['Row']
-export type CoachBriefInsert = Database['public']['Tables']['coach_briefs']['Insert']
-export type CoachBriefUpdate = Database['public']['Tables']['coach_briefs']['Update']
+// Coach / Diario ("Row" no nome evita colisão com a interface CoachBrief de components/coach/CoachHero.tsx)
+export type CoachBriefRow = Database['public']['Tables']['coach_briefs']['Row']
+export type CoachBriefRowInsert = Database['public']['Tables']['coach_briefs']['Insert']
+export type CoachBriefRowUpdate = Database['public']['Tables']['coach_briefs']['Update']
 
 export type DailyCheckin = Database['public']['Tables']['daily_checkins']['Row']
 export type DailyCheckinInsert = Database['public']['Tables']['daily_checkins']['Insert']
