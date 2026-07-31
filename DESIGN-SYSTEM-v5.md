@@ -151,7 +151,7 @@ Escala (valores dos protótipos):
 | Manchete landing (h1) | `500 clamp(3.4rem,9.2vw,8.6rem)/0.98`, tracking `-.055em` |
 | H2 de seção landing | `500 clamp(2.1rem,4.6vw,4rem)/1.05`, tracking `-.045em` |
 | Masthead app (h1) | `500 clamp(34px,4.6vw,58px)/1.02`, tracking `-.045em` (módulo: `clamp(30px,4vw,50px)`) |
-| Score no selo | `700 64px/1` (dashboard) / `52px` (módulo), tracking `-.05em` |
+| Score no selo | `700 64px/1` (diário) / `52px` (módulo), tracking `-.05em` |
 | Banda de números | `700 clamp(28px,3.4vw,44px)/1`, tracking `-.04em` |
 | Espécime score (landing) | `700 96px/1`, tracking `-.06em` |
 | Eyebrow | `700 10–10.5px`, tracking `.22em`, uppercase, `--t3` |
@@ -267,7 +267,7 @@ O que faz uma tela "parecer SyncLife". Aprovados como conjunto:
 4. **Acento como superfície** — coluna PRO roxa sólida na tabela de preços (CTA interno vira
    `#151313`); ticker elétrico. Somente esses dois casos.
 5. **Selo de edição** — número grande em moldura dupla (borda + `::after` inset 5px),
-   respiração de glow elétrico (`breathe` 4.5s) no dashboard. É o "carimbo" do score.
+   respiração de glow elétrico (`breathe` 4.5s) no diário. É o "carimbo" do score.
 6. **Mini-telas** (`.scard`) — janelas escuras 300px com titlebar (3 dots + nome + índice) e
    micro-UIs animadas em loop de 7–8s (barras, typing, cursor fantasma clicando, anel,
    sparkline, bloco de agenda, check riscando). No hero da landing, giram em **semicírculo**
@@ -483,7 +483,8 @@ O coach não é um item de menu: é uma camada disponível em qualquer tela aute
 
 Sem cards. Um contorno/superfície só é permitido quando o elemento é um **objeto** com
 identidade própria: selo, mini-tela, cartão de ação executada, askbar/ask, pill nav, chip,
-tag. Agrupamento de conteúdo é feito por hairline, espaçamento e eyebrow, nunca por caixa.
+tag, camada do coach. Agrupamento de conteúdo é feito por hairline, espaçamento e eyebrow,
+nunca por caixa.
 
 ---
 
@@ -497,19 +498,21 @@ tag. Agrupamento de conteúdo é feito por hairline, espaçamento e eyebrow, nun
 | `.ticker` | landing, app | marquee elétrico, conteúdo 4×, 40–46s linear |
 | `.modbar` | app | tabs numeradas scroll-x, ativa border-bottom roxa |
 | `.mast` + `.selo` | app | saudação/manchete + selo de moldura dupla com score |
-| `.folha` + `.rec` + `.ask` | app | banda papel com briefing em prosa + recs numeradas + input pílula |
-| `.hoje` / `.ev` | dashboard | linha do dia scroll-x, tags `EM N DIAS` (due = coral) |
+| `.folha` + `.rec` + `.ask` | app | banda clara (`.lt`) com briefing em prosa + recs numeradas + input pílula |
+| `.hoje` / `.ev` | diário | linha do dia scroll-x, tags `EM N DIAS` (due = coral) |
 | `.nums` | app | banda 4 colunas hairline, valores `data-cnt` |
-| `.dimrow` | dashboard | linha de dimensão: índice, nome, metadado, score + tendência |
-| `.nota` | dashboard | dot coral/elétrico + texto + valor |
+| `.dimrow` | diário | linha de área: no Diário, só as áreas ativas ganham linha rica (índice, nome, metadado, score + tendência); as demais colapsam na linha `Outras: …` |
+| `.nota` | diário | dot coral/elétrico + texto + valor |
+| `.checkin` | diário | check-in "Como foi o dia?": pílulas de humor (`.mood`) + nota opcional (`.ck-note`) + estado registrado (`.ck-done`) |
 | `.mrow` | app | meta com barra 3px hairline |
 | `.orc-row` | finanças | orçamento: nome, trilha 4px com `--w`, valor `410 / 420 · 98%`; `.hot` coral |
 | `.tx` | finanças | transação em grid denso, hover desliza, `+` elétrico / hot coral |
 | `.fluxo` | finanças | SVG linha elétrica + área gradiente + dot final + legenda em prosa |
-| `.bub` / `.action` / `.typing` | coach, landing | bolhas de conversa, cartão de ação (borda elétrica), typing dots |
-| `.bub .meta` | coach | fontes citadas sob cada resposta da IA |
-| `.ctx` / `.ctx-row` / `.chip` | coach | margem de contexto sticky + atalhos |
-| `.askbar` | coach | input fixo em pílula sobre gradiente de fade |
+| `.camada` / `.scrim` | todas (autenticado) | painel global do coach: desktop lateral `min(460px,92vw)`, mobile bottom sheet ~86vh + scrim |
+| `.bub` / `.action` / `.typing` | coach (camada + vista cheia), landing | bolhas de conversa, cartão de ação (borda elétrica), typing dots |
+| `.bub .meta` | coach (camada + vista cheia) | fontes citadas sob cada resposta da IA |
+| `.ctx` / `.ctx-row` / `.chip` | coach (camada + vista cheia) | margem de contexto sticky + atalhos |
+| `.askbar` | coach (camada + vista cheia) | input fixo em pílula sobre gradiente de fade |
 | `.colofao` | app | rodapé hairline com metadados da edição |
 | `.hand` / `.hand-arrow` / `.draw` | todas | caligrafia + seta que se desenha |
 | `.hl` | landing | marca-texto elétrico que varre |
@@ -527,7 +530,7 @@ tag. Agrupamento de conteúdo é feito por hairline, espaçamento e eyebrow, nun
 | **E-01** Easing única | Toda transição/animação não-linear usa `cubic-bezier(.625,.05,0,1)` |
 | **E-02** Gate `.anim` | HTML nasce com valores finais; animação só existe sob `.anim` (JS + `!reduced-motion`). Reduce = página completa e estática |
 | **E-03** Lenis nunca com `scroll-behavior:smooth` | `html.lenis{scroll-behavior:auto}` obrigatório; Lenis só na landing, sempre guarded |
-| **E-04** Hairline, não card | Container/borda só para objetos (selo, scard, ação, askbar, pills). Agrupamento = hairline + eyebrow + espaço |
+| **E-04** Hairline, não card | Container/borda só para objetos (selo, scard, ação, askbar, pills, camada do coach). Agrupamento = hairline + eyebrow + espaço |
 | **E-05** Um número grande por dobra | Score no selo, saldo na banda; nunca dois heróis competindo |
 | **E-06** Tri-acento com papel fixo | Roxo = ação/marca · Elétrico = positivo/dado vivo · Coral = alerta/voz do coach. Acento como superfície só em ticker e coluna PRO. **Exceção de marca (rodada 7):** gradiente segue proibido em superfícies de seção, mas marca e ícones usam gradiente **como iluminação** (aro, bisel, faceta); nenhuma cor nova |
 | **E-07** IA escreve prosa com fontes | Briefing assinado (`Escrito às…`) e respostas do coach com `Fontes: …`. IA nunca vira widget |
