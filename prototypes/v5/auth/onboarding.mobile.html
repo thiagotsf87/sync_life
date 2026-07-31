@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Primeira edição · Mobile</title>
+<!-- Onda 1 · Onboarding MOBILE dedicado (390×844). Modo escuro do app; 4 passos com barra de
+     progresso fina sob o topo e nav fixa embaixo. Áreas com ícone de rumo (§5.5); a bússola
+     aponta a última área ativada. E-02: sem JS, passos empilhados e completos. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/bussola-3d.css">
+<link rel="stylesheet" href="../shared/auth.css">
+<style>
+  body{background:var(--bg);font-size:14px}
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+  .grain{opacity:.04}
+
+  .bar{height:56px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+    gap:14px;padding:0 18px;position:sticky;top:0;background:rgba(21,19,19,.88);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:60}
+  .brand{font:700 16px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:9px}
+  .brand em{font-style:normal;color:var(--roxo)}
+  .pular{font:500 12px var(--int);color:var(--t3);background:none;border:0;cursor:pointer}
+  .pular:active{color:var(--t1)}
+  .prog{position:sticky;top:56px;z-index:59;display:flex;gap:6px;padding:10px 18px;background:rgba(21,19,19,.88);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .prog i{height:2px;flex:1;border-radius:1px;background:var(--s2);transition:background .3s var(--ease)}
+  .prog i.on{background:var(--roxo)}
+  html:not(.js) .prog, html:not(.js) .pular{visibility:hidden}
+
+  .step{padding-top:30px;padding-bottom:150px} /* nunca shorthand sobre o .wrap */
+  html.js .step{display:none}
+  html.js .step.on{display:block}
+  .step .eyebrow{margin-bottom:12px}
+  .step h1{font:500 clamp(1.7rem,7.6vw,2.1rem)/1.08 var(--gro);letter-spacing:-.04em;color:var(--t1)}
+  .step .sub{font:400 13px/1.65 var(--int);color:var(--t2);margin-top:11px}
+
+  /* passo 01 */
+  .gname{margin-top:32px}
+  .gname input{width:100%;background:none;border:0;border-bottom:2px solid var(--line-h);border-radius:0;
+    font:500 clamp(26px,8vw,34px)/1.15 var(--gro);letter-spacing:-.04em;color:var(--t1);
+    padding:4px 2px 12px;outline:none;caret-color:var(--roxo);transition:border-color .35s var(--ease)}
+  .gname input::placeholder{color:var(--t3);opacity:.55}
+  .gname input:focus{border-color:var(--roxo)}
+  .gname .handrow{display:flex;align-items:center;gap:8px;margin-top:13px}
+  .prox{margin-top:40px;border-top:1px solid var(--line)}
+  .prox .r{display:grid;grid-template-columns:30px 1fr auto;gap:11px;align-items:baseline;
+    padding:11px 2px;border-bottom:1px solid var(--line);font:400 13px var(--int);color:var(--t3)}
+  .prox .r .n{font:700 10.5px var(--gro)}
+  .prox .r.now{color:var(--t1)}
+  .prox .r.now .n{color:var(--roxo)}
+  .prox .r .tagnow{font:700 8.5px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--ele)}
+
+  /* passo 02 */
+  .objs{margin-top:26px;border-top:1px solid var(--line)}
+  .obj{display:grid;grid-template-columns:1fr 20px;gap:13px;align-items:center;text-align:left;width:100%;
+    padding:13px 4px 13px 2px;background:none;border:0;border-bottom:1px solid var(--line);cursor:pointer;
+    font-family:var(--int);color:var(--t1);transition:background .3s var(--ease)}
+  .obj.sel{background:linear-gradient(90deg,rgba(104,64,255,.1),transparent 78%)}
+  .obj .tt{font:600 14px var(--int)}
+  .obj .ds{font:400 12px/1.5 var(--int);color:var(--t3);margin-top:2px}
+  .obj .ok{width:20px;height:20px;border-radius:50%;border:1px solid var(--line-h);display:flex;align-items:center;
+    justify-content:center;transition:background .3s var(--ease),border-color .3s var(--ease)}
+  .obj .ok svg{opacity:0;transition:opacity .2s var(--ease)}
+  .obj.sel .ok{background:var(--roxo);border-color:var(--roxo)}
+  .obj.sel .ok svg{opacity:1}
+  .contagem{margin-top:18px;font:400 13px var(--int);color:var(--t2)}
+  .contagem b{font:700 14.5px var(--gro);color:var(--t1)}
+
+  /* passo 03 */
+  .alist{margin-top:26px;border-top:1px solid var(--line)}
+  .arow{display:grid;grid-template-columns:40px 24px 1fr auto;gap:11px;align-items:center;
+    padding:12px 4px 12px 2px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .3s var(--ease)}
+  .arow .ix{font:700 10.5px var(--gro);color:var(--t3)}
+  .arow .tx{display:flex;flex-direction:column;gap:2px}
+  .arow .nm{font:500 15px var(--gro);letter-spacing:-.02em;color:var(--t1)}
+  .arow .ds{font:400 11.5px var(--int);color:var(--t3)}
+  .arow.off .nm{color:var(--t2)}
+  .arow.off .aic{opacity:.45;filter:grayscale(.6)}
+  .tgl{width:38px;height:21px;border-radius:999px;background:var(--s2);position:relative;flex-shrink:0;
+    transition:background .3s var(--ease)}
+  .tgl::after{content:'';position:absolute;top:3px;left:3px;width:15px;height:15px;border-radius:50%;
+    background:var(--t3);transition:left .3s var(--ease),background .3s var(--ease)}
+  .arow:not(.off) .tgl{background:var(--roxo)}
+  .arow:not(.off) .tgl::after{left:20px;background:#fff}
+  .a-side{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;margin-top:30px}
+  .a-stage{position:relative;width:160px;height:160px}
+  .a-stage .bs{position:absolute;inset:6px}
+  .a-side .b-meta{font:700 10.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+  .a-side .b-meta b{color:var(--ele);font-size:12.5px;letter-spacing:0}
+  .a-nota{font:400 12px/1.6 var(--int);color:var(--t3);border-left:2px solid var(--roxo);padding-left:11px;
+    text-align:left;max-width:280px}
+
+  /* passo 04 */
+  .selo{border:1px solid var(--line-h);border-radius:16px;padding:22px 22px 18px;text-align:center;position:relative;
+    max-width:200px;margin:26px auto 0}
+  .selo::after{content:"";position:absolute;inset:5px;border:1px solid var(--line);border-radius:11px;pointer-events:none}
+  .anim .selo{animation:breathe 4.5s var(--ease) infinite}
+  @keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(161,255,98,0)}50%{box-shadow:0 0 26px -6px rgba(161,255,98,.18)}}
+  .selo .k{font:700 9px var(--gro);letter-spacing:.24em;color:var(--t3)}
+  .selo .n{font:700 58px/1 var(--gro);letter-spacing:-.05em;margin:8px 0 5px;color:var(--t1)}
+  .selo .d{font:600 11px var(--gro);color:var(--ele)}
+  .selo .s{font:400 10px var(--int);color:var(--t3);margin-top:3px}
+  .fim h1{margin-top:26px;text-align:center}
+  .fim .prosa{font:400 13.5px/1.75 var(--int);color:var(--t2);margin-top:14px;text-align:center}
+  .fim .prosa b{font-family:var(--gro);font-weight:700;letter-spacing:-.01em;color:var(--t1)}
+  .fim .assin{font:400 11px var(--int);color:var(--t3);margin-top:10px;text-align:center}
+  .comece{margin-top:28px}
+  .comece .eyebrow{margin-bottom:2px}
+  .comece .r{display:grid;grid-template-columns:26px 1fr auto;gap:12px;align-items:center;
+    padding:13px 2px;border-bottom:1px solid var(--line)}
+  .comece .r .n{font:700 10.5px var(--gro);color:var(--roxo)}
+  .comece .r .tt{font:500 13.5px var(--int);color:var(--t1)}
+  .comece .r .ds{font:400 11.5px var(--int);color:var(--t3);margin-top:2px}
+  .comece .r svg{color:var(--t3)}
+  .fim-cta{margin-top:30px;text-align:center}
+
+  .onbnav{position:fixed;left:0;right:0;bottom:0;z-index:60;border-top:1px solid var(--line);
+    background:rgba(21,19,19,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .onbnav .in{padding:12px 18px calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .onbnav .meio{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+  .onbnav .btn-ghost{visibility:hidden}
+  .onbnav.tem-volta .btn-ghost{visibility:visible}
+  html:not(.js) .onbnav{display:none}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="bar">
+  <span class="brand">
+    <span class="bs d3" data-bs3d style="--sz:21px" aria-hidden="true"></span>
+    Sync<em>Life</em></span>
+  <button class="pular" id="pular">Pular configuração</button>
+</header>
+<div class="prog" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
+
+<!-- ═══ passo 01 · nome ═══ -->
+<section class="step on wrap" data-step="1">
+  <p class="eyebrow boot b1"><b>Sua primeira edição</b> · passo 01 de 04</p>
+  <h1 class="boot b2">Antes de tudo: como devemos te chamar?</h1>
+  <p class="sub boot b2">É assim que o seu briefing diário vai começar. Leva menos de um minuto configurar tudo.</p>
+  <div class="gname boot b3">
+    <input id="nome" type="text" placeholder="Seu nome" autocomplete="given-name" aria-label="Seu nome">
+    <div class="handrow">
+      <span class="hand" style="transform:rotate(-2deg)">pode ser apelido</span>
+    </div>
+  </div>
+  <div class="prox boot b4">
+    <div class="r now"><span class="n num">01</span><span>Seu nome</span><span class="tagnow">agora</span></div>
+    <div class="r"><span class="n num">02</span><span>Seus objetivos de vida</span><span></span></div>
+    <div class="r"><span class="n num">03</span><span>As áreas da sua bússola</span><span></span></div>
+    <div class="r"><span class="n num">04</span><span>Pronto.</span><span></span></div>
+  </div>
+</section>
+
+<!-- ═══ passo 02 · objetivos ═══ -->
+<section class="step wrap" data-step="2">
+  <p class="eyebrow"><b>Sua primeira edição</b> · passo 02 de 04</p>
+  <h1 id="h-obj">O que você quer mudar?</h1>
+  <p class="sub">Marque tudo que fizer sentido agora. Isso calibra os insights do coach e o seu Life Sync Score.</p>
+  <div class="objs" id="objs">
+    <button class="obj" type="button"><span><span class="tt">Organizar as finanças</span><span class="ds" style="display:block">Sair do vermelho, controlar gastos, criar orçamento</span></span><span class="ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></button>
+    <button class="obj" type="button"><span><span class="tt">Construir patrimônio</span><span class="ds" style="display:block">Investir, acompanhar proventos, crescer o capital</span></span><span class="ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></button>
+    <button class="obj" type="button"><span><span class="tt">Cuidar da saúde</span><span class="ds" style="display:block">Treinos, alimentação, peso e exames em dia</span></span><span class="ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></button>
+    <button class="obj" type="button"><span><span class="tt">Ter mais tempo livre</span><span class="ds" style="display:block">Rotina organizada, menos procrastinação, blocos de foco</span></span><span class="ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></button>
+    <button class="obj" type="button"><span><span class="tt">Crescer na carreira</span><span class="ds" style="display:block">Projetos, certificações, networking, promoção</span></span><span class="ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></button>
+    <button class="obj" type="button"><span><span class="tt">Realizar sonhos</span><span class="ds" style="display:block">Casa própria, viagem dos sonhos, aposentadoria antecipada</span></span><span class="ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></button>
+    <button class="obj" type="button"><span><span class="tt">Equilíbrio mental</span><span class="ds" style="display:block">Menos ansiedade, hábitos saudáveis, leitura e reflexão</span></span><span class="ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></button>
+    <button class="obj" type="button"><span><span class="tt">Viajar mais</span><span class="ds" style="display:block">Roteiros, orçamento de viagem e memórias</span></span><span class="ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></button>
+    <button class="obj" type="button"><span><span class="tt">Vida equilibrada</span><span class="ds" style="display:block">Visão do todo, nenhuma área esquecida</span></span><span class="ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></button>
+  </div>
+  <p class="contagem"><b class="num" id="obj-count">0</b> <span id="obj-count-lbl">objetivos selecionados</span></p>
+</section>
+
+<!-- ═══ passo 03 · áreas ═══ -->
+<section class="step wrap" data-step="3">
+  <p class="eyebrow"><b>Sua primeira edição</b> · passo 03 de 04</p>
+  <h1>Quais áreas entram na sua bússola?</h1>
+  <p class="sub">Todas ficam disponíveis. As ativas ganham destaque no panorama e puxam o seu Life Sync Score.</p>
+  <div class="alist" id="alist">
+    <div class="arow" data-area="0"><span class="aic-slot"></span><span class="ix num">01</span><span class="tx"><span class="nm">Finanças</span><span class="ds">Contas, orçamentos e o saldo do mês.</span></span><span class="tgl" role="switch" aria-checked="true"></span></div>
+    <div class="arow" data-area="1"><span class="aic-slot"></span><span class="ix num">02</span><span class="tx"><span class="nm">Futuro</span><span class="ds">Metas, reserva e projeção.</span></span><span class="tgl" role="switch" aria-checked="true"></span></div>
+    <div class="arow" data-area="2"><span class="aic-slot"></span><span class="ix num">03</span><span class="tx"><span class="nm">Tempo</span><span class="ds">Agenda, foco e rotina.</span></span><span class="tgl" role="switch" aria-checked="true"></span></div>
+    <div class="arow" data-area="3"><span class="aic-slot"></span><span class="ix num">04</span><span class="tx"><span class="nm">Corpo</span><span class="ds">Treino, sono e alimentação.</span></span><span class="tgl" role="switch" aria-checked="true"></span></div>
+    <div class="arow" data-area="4"><span class="aic-slot"></span><span class="ix num">05</span><span class="tx"><span class="nm">Mente</span><span class="ds">Leitura, cursos e humor.</span></span><span class="tgl" role="switch" aria-checked="true"></span></div>
+    <div class="arow off" data-area="5"><span class="aic-slot"></span><span class="ix num">06</span><span class="tx"><span class="nm">Patrimônio</span><span class="ds">Investimentos e evolução.</span></span><span class="tgl" role="switch" aria-checked="false"></span></div>
+    <div class="arow off" data-area="6"><span class="aic-slot"></span><span class="ix num">07</span><span class="tx"><span class="nm">Carreira</span><span class="ds">Skills, metas e renda.</span></span><span class="tgl" role="switch" aria-checked="false"></span></div>
+    <div class="arow off" data-area="7"><span class="aic-slot"></span><span class="ix num">08</span><span class="tx"><span class="nm">Experiências</span><span class="ds">Viagens, lazer e memória.</span></span><span class="tgl" role="switch" aria-checked="false"></span></div>
+  </div>
+  <div class="a-side">
+    <div class="a-stage">
+      <div class="bs d3" id="obs" data-bs3d style="--sz:148px" role="img" aria-label="A Bússola da Vida apontando a última área ativada"></div>
+    </div>
+    <p class="b-meta">Áreas ativas · <b class="num" id="a-count">05</b></p>
+    <p class="a-nota">Você muda isso quando quiser em Configurações.</p>
+  </div>
+</section>
+
+<!-- ═══ passo 04 · pronto ═══ -->
+<section class="step wrap fim" data-step="4">
+  <p class="eyebrow" style="text-align:center"><b>Sua primeira edição</b> · passo 04 de 04</p>
+  <div class="selo" role="img" aria-label="Life Sync Score inicial: 70 pontos">
+    <div class="k">LIFE SYNC SCORE</div>
+    <div class="n num">70</div>
+    <div class="d num">ponto de partida</div>
+    <div class="s">calibra a cada registro</div>
+  </div>
+  <h1 id="h-fim">Pronto. Sua bússola está calibrada.</h1>
+  <p class="prosa">Sua vida agora tem <b class="num" id="eco-areas">5 áreas</b> ativas e <b class="num" id="eco-objs">0 objetivos</b> no radar. O seu Life Sync Score nasce em <b class="num">70 pontos</b> e fica mais preciso a cada registro.</p>
+  <p class="assin">Escrito agora · com base nas suas escolhas</p>
+  <div class="comece">
+    <p class="eyebrow">Comece por aqui</p>
+    <div class="r"><span class="n num">01</span><span><span class="tt" style="display:block">Registre a primeira transação</span><span class="ds" style="display:block">01 Finanças · 30 segundos</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+    <div class="r"><span class="n num">02</span><span><span class="tt" style="display:block">Crie o primeiro objetivo</span><span class="ds" style="display:block">02 Futuro · 1 minuto</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+    <div class="r"><span class="n num">03</span><span><span class="tt" style="display:block">Proteja um bloco de foco</span><span class="ds" style="display:block">03 Tempo · 2 minutos</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+  </div>
+  <div class="fim-cta">
+    <button class="btn btn-roxo" style="padding:14px 28px;font-size:14px" type="button">Abrir meu panorama
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </div>
+</section>
+
+<div class="onbnav" id="onbnav">
+  <div class="in">
+    <button class="btn btn-ghost" id="voltar" type="button" style="padding:9px 16px;font-size:12.5px">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Voltar</button>
+    <span class="meio num" id="passo-meio">Passo 1 de 4</span>
+    <button class="btn btn-roxo" id="avancar" type="button" style="padding:10px 20px;font-size:13px">Próximo
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </div>
+</div>
+
+<script src="../shared/bussola-3d.js"></script>
+<script src="../shared/public.js"></script>
+<script>
+SLPub.boot({ aurora: false });
+(function () {
+  var step = 1, TOTAL = 4;
+  var steps = [].slice.call(document.querySelectorAll('.step'));
+  var segs = [].slice.call(document.querySelectorAll('.prog i'));
+  var nav = document.getElementById('onbnav');
+
+  if (window.SLBussola3D) document.querySelectorAll('#alist .aic-slot').forEach(function (s) {
+    s.appendChild(SLBussola3D.areaIcon(+s.parentElement.getAttribute('data-area'), 40));
+  });
+  var bs = document.getElementById('obs');
+  var ctl = (bs && window.SLBussola3D) ? SLBussola3D.control(bs, { reduce: SLPub.reduce }) : null;
+
+  function goto(n) {
+    step = Math.max(1, Math.min(TOTAL, n));
+    steps.forEach(function (s) { s.classList.toggle('on', +s.getAttribute('data-step') === step); });
+    segs.forEach(function (i, ix) { i.classList.toggle('on', ix < step); });
+    nav.classList.toggle('tem-volta', step > 1);
+    document.getElementById('passo-meio').textContent = 'Passo ' + step + ' de 4';
+    document.getElementById('avancar').style.visibility = step === TOTAL ? 'hidden' : 'visible';
+    if (step === 2) ecoNome();
+    if (step === 4) ecoFim();
+    scrollTo(0, 0);
+  }
+  document.getElementById('avancar').addEventListener('click', function () { goto(step + 1); });
+  document.getElementById('voltar').addEventListener('click', function () { goto(step - 1); });
+  document.getElementById('pular').addEventListener('click', function () { goto(4); });
+
+  function primeiroNome() {
+    var v = document.getElementById('nome').value.trim().split(/\s+/)[0] || '';
+    return v ? v.charAt(0).toUpperCase() + v.slice(1) : '';
+  }
+  function ecoNome() {
+    var n = primeiroNome();
+    document.getElementById('h-obj').textContent = n ? n + ', o que você quer mudar?' : 'O que você quer mudar?';
+  }
+
+  var objCount = 0;
+  document.querySelectorAll('.obj').forEach(function (o) {
+    o.addEventListener('click', function () {
+      o.classList.toggle('sel');
+      objCount = document.querySelectorAll('.obj.sel').length;
+      document.getElementById('obj-count').textContent = objCount;
+      document.getElementById('obj-count-lbl').textContent = objCount === 1 ? 'objetivo selecionado' : 'objetivos selecionados';
+    });
+  });
+
+  function areaCount() { return document.querySelectorAll('.arow:not(.off)').length; }
+  document.querySelectorAll('.arow').forEach(function (r) {
+    r.addEventListener('click', function () {
+      var vaiLigar = r.classList.contains('off');
+      if (!vaiLigar && areaCount() === 1) return; // a bússola nunca fica sem norte
+      r.classList.toggle('off');
+      r.querySelector('.tgl').setAttribute('aria-checked', String(!r.classList.contains('off')));
+      var n = areaCount();
+      document.getElementById('a-count').textContent = (n < 10 ? '0' : '') + n;
+      if (ctl && vaiLigar) ctl.point(+r.getAttribute('data-area'));
+    });
+  });
+
+  function ecoFim() {
+    var n = primeiroNome(), na = areaCount();
+    document.getElementById('h-fim').textContent = n ? 'Pronto, ' + n + '. Sua bússola está calibrada.' : 'Pronto. Sua bússola está calibrada.';
+    document.getElementById('eco-areas').textContent = na + (na === 1 ? ' área' : ' áreas');
+    document.getElementById('eco-objs').textContent = objCount + (objCount === 1 ? ' objetivo' : ' objetivos');
+  }
+
+  goto(1);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Recuperar acesso</title>
+<!-- Onda 1 · Esqueceu a senha. Coluna única centrada, sem caixa (E-04: a página É a folha).
+     Fluxo em 3 passos (pedir link → e-mail enviado → nova senha); o passo 2 entra no lugar
+     do 1 ao "enviar" (demo JS). Sem JS os dois estados ficam empilhados (E-02). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/bussola-3d.css">
+<link rel="stylesheet" href="../shared/auth.css">
+<style>
+  .aurora-fix{position:fixed;inset:0;z-index:-1;pointer-events:none;filter:blur(56px) saturate(1.08);opacity:.65}
+  .aurora-fix canvas{width:100%;height:100%;display:block}
+
+  .volta{position:fixed;top:22px;left:22px;z-index:70}
+  .volta a{display:inline-flex;align-items:center;gap:8px;font:500 13px var(--int);color:var(--t2);
+    border:1px solid var(--line);border-radius:999px;padding:9px 16px;background:rgba(255,255,255,.6);
+    backdrop-filter:blur(8px);transition:color .3s var(--ease),border-color .3s var(--ease)}
+  .volta a:hover{color:var(--t1);border-color:var(--line-h)}
+
+  .sheet{max-width:400px;margin:0 auto;padding:120px 20px 80px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .lockup{display:inline-flex;align-items:center;gap:11px;font:700 20px var(--gro);letter-spacing:-.02em;color:var(--t1)}
+  .lockup em{font-style:normal;color:var(--roxo)}
+  .sheet .passos{margin:34px auto 30px}
+  .sheet .eyebrow{margin-bottom:14px}
+  .sheet h1{font:500 clamp(1.9rem,3vw,2.5rem)/1.08 var(--gro);letter-spacing:-.04em;color:var(--t1)}
+  .sheet .sub{font:400 14px/1.65 var(--int);color:var(--t2);margin-top:12px;max-width:36ch}
+  .sheet form{width:100%;margin-top:28px;text-align:left}
+  .sheet .footlnk{margin-top:26px;font:400 13px var(--int);color:var(--t3)}
+  .sheet .footlnk a{color:var(--roxo);font-weight:500;border-bottom:1px solid rgba(104,64,255,.35)}
+
+  /* estado 2: e-mail enviado */
+  .ok-selo{width:64px;height:64px;border-radius:50%;border:1px solid var(--line-h);position:relative;
+    display:flex;align-items:center;justify-content:center;margin-bottom:22px}
+  .ok-selo::after{content:"";position:absolute;inset:5px;border:1px solid var(--line);border-radius:50%}
+  .ok-selo svg{color:#44a616}
+  .anim .ok-selo .ck{stroke-dasharray:34;stroke-dashoffset:34;transition:stroke-dashoffset .9s var(--ease) .3s}
+  .anim .in .ok-selo .ck, html:not(.js) .ok-selo .ck{stroke-dashoffset:0}
+  .infos{width:100%;margin-top:26px;border-top:1px solid var(--line);text-align:left}
+  .infos .r{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line);
+    font:400 13px/1.5 var(--int);color:var(--t2)}
+  .infos .r svg{flex-shrink:0;color:var(--t3)}
+  .infos .r b{color:var(--t1);font-weight:600}
+  #estado2 .btn-ghost{margin-top:24px}
+  .divider-proto{width:100%;max-width:400px;margin:30px auto 0;border-top:1px dashed var(--line-h);padding-top:22px}
+  .divider-proto .eyebrow{color:var(--coral);text-align:center}
+  html.js .divider-proto{display:none}
+  html.js #estado2{display:none}
+  html.js #estado2.show{display:flex}
+  html.js body.sent #estado1{display:none}
+</style>
+</head>
+<body>
+<div class="aurora-fix" aria-hidden="true"><canvas id="aurora"></canvas></div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="volta">
+  <a href="login.html">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Voltar ao login</a>
+</div>
+
+<!-- estado 1: pedir o link -->
+<main class="sheet boot b1" id="estado1">
+  <a class="lockup" href="../landing/landing-viva.html" aria-label="SyncLife">
+    <span class="bs d3" data-bs3d style="--sz:30px" aria-hidden="true"></span>
+    Sync<em>Life</em></a>
+  <div class="passos" aria-label="Passo 1 de 3"><i class="on"></i><i></i><i></i></div>
+  <p class="eyebrow"><b>Recuperar acesso</b> · passo 01 de 03</p>
+  <h1>Esqueceu a senha?</h1>
+  <p class="sub">Sem drama. Informe o e-mail da conta e enviaremos um link pra redefinir.</p>
+  <form onsubmit="return false" id="form1">
+    <div class="fld">
+      <label for="email">E-mail cadastrado</label>
+      <input id="email" type="email" placeholder="seu@email.com" autocomplete="email">
+    </div>
+    <button type="submit" class="btn btn-roxo btn-full" id="enviar">Enviar link de recuperação
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </form>
+  <p class="footlnk">Lembrou a senha? <a href="login.html">Voltar ao login</a></p>
+</main>
+
+<div class="divider-proto"><p class="eyebrow">Estado 02 · e-mail enviado (anotação do protótipo)</p></div>
+
+<!-- estado 2: e-mail enviado -->
+<main class="sheet rv in" id="estado2">
+  <a class="lockup" href="../landing/landing-viva.html" aria-label="SyncLife">
+    <span class="bs d3" data-bs3d style="--sz:30px" aria-hidden="true"></span>
+    Sync<em>Life</em></a>
+  <div class="passos" aria-label="Passo 2 de 3"><i class="on"></i><i class="on"></i><i></i></div>
+  <div class="ok-selo" style="margin-top:34px">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path class="ck" d="M20 6 L9 17 L4 12"/></svg>
+  </div>
+  <p class="eyebrow"><b>Recuperar acesso</b> · passo 02 de 03</p>
+  <h1>E-mail enviado.</h1>
+  <p class="sub">O link de recuperação foi pra <b id="email-eco" style="color:var(--t1);font-weight:600">voce@email.com</b>. Verifique a caixa de entrada e o spam.</p>
+  <div class="infos">
+    <div class="r">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>O link expira em <b class="num">30 minutos</b></span>
+    </div>
+    <div class="r">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+      <span>Nada na caixa de entrada? Olhe a pasta de <b>spam</b></span>
+    </div>
+  </div>
+  <button type="button" class="btn btn-ghost" id="reenviar">Reenviar e-mail</button>
+  <p class="footlnk">Lembrou a senha? <a href="login.html">Voltar ao login</a></p>
+</main>
+
+<script src="../shared/bussola-3d.js"></script>
+<script src="../shared/public.js"></script>
+<script>
+SLPub.boot();
+// demo do fluxo: "enviar" troca o estado 1 pelo 2 (sem JS os dois ficam empilhados, E-02)
+(function () {
+  var f = document.getElementById('form1'), e2 = document.getElementById('estado2');
+  f.addEventListener('submit', function () {
+    var v = document.getElementById('email').value.trim();
+    if (v) document.getElementById('email-eco').textContent = v;
+    document.body.classList.add('sent');
+    e2.classList.add('show', 'in');
+    scrollTo(0, 0);
+  });
+  document.getElementById('reenviar').addEventListener('click', function () {
+    document.body.classList.remove('sent');
+    e2.classList.remove('show');
+    scrollTo(0, 0);
+  });
+})();
+</script>
+</body>
+</html>

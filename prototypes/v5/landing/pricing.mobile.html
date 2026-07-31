@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Preços · Mobile</title>
+<!-- Onda 1 · Pricing MOBILE dedicado (390×844). Família da landing m1: nav pill + ticker,
+     aurora global, cartões empilhados, comparativo compacto em 3 colunas, FAQ em coluna.
+     Scroll nativo, sem Lenis. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/bussola-3d.css">
+<style>
+  body{font-size:14.5px}
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+  .aurora-fix{position:fixed;inset:0;z-index:-1;pointer-events:none;filter:blur(48px) saturate(1.08);opacity:.65}
+  .aurora-fix canvas{width:100%;height:100%;display:block}
+
+  .navwrap{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:70;width:calc(100vw - 24px);
+    --t1:#f4f4f4;--t2:#b8b8b8;--line:rgba(255,255,255,.1);color:var(--t1)}
+  nav{display:flex;align-items:center;justify-content:space-between;gap:12px;height:52px;
+    padding:0 8px 0 16px;background:#0d0c0cf2;border:1px solid var(--line);border-radius:14px 14px 0 0;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .brand{font:700 16.5px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:8px}
+  .brand em{font-style:normal;color:var(--roxo)}
+  nav .btn-roxo{padding:8px 15px;font-size:12.5px}
+  .ticker{overflow:hidden;background:var(--ele);border-radius:0 0 14px 14px;height:24px;display:flex;align-items:center;white-space:nowrap}
+  .ticker .tk{display:inline-block;font:700 9.5px var(--gro);letter-spacing:.16em;color:#151313}
+  .anim .ticker .tk{animation:mq 40s linear infinite}
+  @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-25%)}}
+  .ticker span{padding:0 14px}
+
+  .phero{padding:118px 0 0;text-align:center}
+  .phero h1{font:500 clamp(2.1rem,10.5vw,2.7rem)/1.04 var(--gro);letter-spacing:-.05em;color:var(--t1);margin-top:14px}
+  .phero h1 em{font-style:normal;color:var(--roxo)}
+  .phero .sub{font:400 14px/1.65 var(--int);color:var(--t2);margin:16px auto 0;max-width:34ch}
+  .bill{display:inline-flex;align-items:center;gap:4px;margin-top:26px;border:1px solid var(--line);border-radius:999px;
+    padding:4px;background:rgba(255,255,255,.55);backdrop-filter:blur(8px);position:relative}
+  .bill button{font:600 12.5px var(--int);color:var(--t2);background:none;border:0;border-radius:999px;
+    padding:8px 18px;cursor:pointer;transition:background .3s var(--ease),color .3s var(--ease)}
+  .bill button.on{background:#151313;color:#f4f4f4}
+  .bill .desc{position:absolute;right:-10px;top:-13px;font:700 8.5px var(--gro);letter-spacing:.1em;color:#151313;
+    background:var(--ele);border-radius:999px;padding:4px 8px;white-space:nowrap;transform:rotate(3deg)}
+
+  .precos{padding:38px 0 30px}
+  .pcards{display:flex;flex-direction:column;gap:24px;max-width:352px;margin:0 auto}
+  .pcard{background:#fff;border:1px solid var(--line);border-radius:22px;padding:28px 26px;display:flex;flex-direction:column}
+  .pcard .pn{font:500 16px var(--gro);letter-spacing:-.01em}
+  .pcard .pp{font:700 40px/1 var(--gro);letter-spacing:-.045em;margin-top:10px}
+  .pcard .pp small{font:400 12.5px var(--int);letter-spacing:0;color:var(--t3);margin-left:6px}
+  .pcard ul{list-style:none;margin:20px 0 22px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .pcard li{display:flex;align-items:flex-start;gap:9px;font:400 13px/1.5 var(--int);color:var(--t2)}
+  .pcard li svg{flex:none;margin-top:2px;color:#44a616}
+  .pcard .btn{width:100%;justify-content:center}
+  .pcard.pro{background:#171515;border-color:#171515;color:#fff;position:relative;box-shadow:0 28px 56px rgba(21,19,19,.22)}
+  .pcard.pro .tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font:700 9px var(--gro);letter-spacing:.14em;
+    color:#151313;background:var(--ele);border-radius:999px;padding:5px 11px;white-space:nowrap}
+  .pcard.pro .pp small{color:rgba(255,255,255,.5)}
+  .pcard.pro li{color:rgba(255,255,255,.82)}
+  .pcard.pro li svg{color:var(--ele)}
+  .pcard .pfoot{font:400 11px var(--int);color:var(--t3);text-align:center;margin-top:11px}
+  .pcard.pro .pfoot{color:rgba(255,255,255,.5)}
+  .pp .anual, .pfoot .anual{display:none}
+  body.anual .pp .mensal, body.anual .pfoot .mensal{display:none}
+  body.anual .pp .anual{display:inline}
+  body.anual .pfoot .anual{display:inline}
+  .hand-precos{text-align:right;margin:14px 6px 0;transform:rotate(-1.6deg)}
+
+  /* comparativo compacto */
+  .cmp{padding:48px 0 20px}
+  .cmp .head{text-align:center;margin-bottom:28px}
+  .cmp h2{font:500 clamp(1.6rem,7.4vw,2rem)/1.1 var(--gro);letter-spacing:-.04em;margin-top:12px}
+  .cmp .csub{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .crow{display:grid;grid-template-columns:1.5fr .6fr .6fr;gap:10px;align-items:center;
+    padding:11px 2px;border-bottom:1px solid var(--line)}
+  .crow.chead{border-bottom:1px solid var(--line-h);padding-bottom:12px}
+  .crow.chead .pl{font:700 11px var(--gro);text-align:center;color:var(--t1)}
+  .crow.chead .pl.pro{color:#fff;background:var(--roxo);border-radius:999px;padding:6px 0;
+    box-shadow:0 8px 20px -8px rgba(104,64,255,.55)}
+  .crow .ft{font:400 12.5px/1.4 var(--int);color:var(--t1)}
+  .crow .vv{text-align:center;font:500 11.5px var(--int);color:var(--t2)}
+  .crow .vv.pro{color:var(--t1);font-weight:600}
+  .crow .vv svg{color:#44a616;vertical-align:-2px}
+  .crow .vv .no{color:var(--t3);opacity:.6;font-weight:400}
+  .cgroup{padding:24px 2px 8px;border-bottom:1px solid var(--line)}
+
+  .faqsec{padding:52px 0 60px}
+  .faqsec h2{font:500 clamp(1.6rem,7.4vw,2rem)/1.1 var(--gro);letter-spacing:-.04em}
+  .faqsec .fsub{font:400 13px/1.6 var(--int);color:var(--t2);margin:10px 0 8px}
+  .faq details{border-bottom:1px solid var(--line)}
+  .faq summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 2px;cursor:pointer;list-style:none;
+    font:600 14px var(--int);color:var(--t1)}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary svg{flex-shrink:0;color:var(--t3);transition:transform .4s var(--ease)}
+  .faq details[open] summary svg{transform:rotate(180deg)}
+  .faq .ans{padding:0 2px 18px;font:400 13px/1.65 var(--int);color:var(--t2)}
+
+  .final{padding:70px 0 60px;text-align:center;border-radius:28px 28px 0 0;overflow:hidden}
+  .final h2{font:500 clamp(1.9rem,9vw,2.4rem)/1.06 var(--gro);letter-spacing:-.05em}
+  .final h2 em{font-style:normal;color:var(--roxo)}
+  .final p{color:var(--t2);margin:18px auto 28px;max-width:300px;font-size:13.5px}
+  footer{border-top:1px solid var(--line);padding:44px 0 32px}
+  .foot-tag{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:12px}
+  .foot-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;margin-top:30px}
+  .foot-col h5{font:700 10px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t2);margin-bottom:12px}
+  .foot-col a{display:block;font:400 12.5px var(--int);color:var(--t3);padding:3px 0}
+  .foot-base{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px;
+    font:400 11.5px var(--int);color:var(--t3)}
+</style>
+</head>
+<body>
+<div class="aurora-fix" aria-hidden="true"><canvas id="aurora"></canvas></div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="navwrap">
+  <nav>
+    <a class="brand" href="landing-viva.mobile.html">
+      <span class="bs d3" data-bs3d style="--sz:21px" aria-hidden="true"></span>
+      Sync<em>Life</em></a>
+    <a class="btn btn-roxo" href="../auth/cadastro.mobile.html">Começar grátis</a>
+  </nav>
+  <div class="ticker" aria-hidden="true">
+    <div class="tk"><span>24.000 BRASILEIROS EM SINCRONIA</span><span>·</span><span>14 DIAS PRO GRÁTIS</span><span>·</span><span>SEM CARTÃO DE CRÉDITO</span><span>·</span><span>24.000 BRASILEIROS EM SINCRONIA</span><span>·</span><span>14 DIAS PRO GRÁTIS</span><span>·</span><span>SEM CARTÃO DE CRÉDITO</span><span>·</span><span>24.000 BRASILEIROS EM SINCRONIA</span><span>·</span><span>14 DIAS PRO GRÁTIS</span><span>·</span><span>SEM CARTÃO DE CRÉDITO</span><span>·</span><span>24.000 BRASILEIROS EM SINCRONIA</span><span>·</span><span>14 DIAS PRO GRÁTIS</span><span>·</span><span>SEM CARTÃO DE CRÉDITO</span><span>·</span></div>
+  </div>
+</div>
+
+<header class="phero">
+  <div class="wrap">
+    <p class="eyebrow boot b1"><b>Preços</b> · sem pegadinha</p>
+    <h1 class="boot b2">Um preço simples pra <em>uma vida inteira.</em></h1>
+    <p class="sub boot b3">Comece grátis hoje. Assine o PRO quando o consultor começar a trabalhar por você.</p>
+    <div class="bill boot b4" role="group" aria-label="Período de cobrança">
+      <button type="button" class="on" id="b-mensal">Mensal</button>
+      <button type="button" id="b-anual">Anual</button>
+      <span class="desc num">2 meses grátis</span>
+    </div>
+  </div>
+</header>
+
+<section class="precos" id="planos">
+  <div class="wrap">
+    <div class="pcards rv">
+      <div class="pcard">
+        <div class="pn">Free</div>
+        <div class="pp num">R$&nbsp;0<small>pra sempre</small></div>
+        <ul>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Todas as 8 áreas da vida</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Coach IA com briefing diário</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Life Sync Score</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>50 transações por mês</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Web e mobile, 1 dispositivo</li>
+        </ul>
+        <a class="btn btn-ghost" href="../auth/cadastro.mobile.html">Começar grátis</a>
+        <p class="pfoot">Grátis pra sempre, de verdade.</p>
+      </div>
+      <div class="pcard pro">
+        <span class="tag">RECOMENDADO</span>
+        <div class="pn">PRO</div>
+        <div class="pp num"><span class="mensal">R$&nbsp;24,90<small>por mês</small></span><span class="anual">R$&nbsp;20,75<small>por mês</small></span></div>
+        <ul>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Tudo do Free, sem limites</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Consultor IA que executa por você</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Relatórios completos em PDF</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Cardápio e planos gerados por IA</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Google Calendar bidirecional</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Dispositivos ilimitados</li>
+        </ul>
+        <a class="btn btn-roxo" href="../auth/cadastro.mobile.html">Testar 14 dias grátis</a>
+        <p class="pfoot"><span class="mensal">Sem cartão de crédito no teste.</span><span class="anual">Cobrado R$&nbsp;249 uma vez por ano.</span></p>
+      </div>
+    </div>
+    <p class="hand hand-precos rv">cancela quando quiser, sem drama</p>
+  </div>
+</section>
+
+<section class="cmp">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow"><b>Compare</b> · linha a linha</p>
+      <h2>Tudo que vem em cada plano.</h2>
+      <p class="csub">Sem asterisco escondido.</p>
+    </div>
+    <div class="rv">
+      <div class="crow chead"><span></span><span class="pl num">Free</span><span class="pl pro num">PRO</span></div>
+
+      <div class="cgroup"><p class="eyebrow"><b>01</b> · O essencial</p></div>
+      <div class="crow"><span class="ft">Áreas da vida</span><span class="vv num">8</span><span class="vv pro num">8</span></div>
+      <div class="crow"><span class="ft">Life Sync Score</span><span class="vv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="vv pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+      <div class="crow"><span class="ft">Transações</span><span class="vv num">50/mês</span><span class="vv pro">Sem limite</span></div>
+      <div class="crow"><span class="ft">Dispositivos</span><span class="vv num">1</span><span class="vv pro">Sem limite</span></div>
+
+      <div class="cgroup"><p class="eyebrow"><b>02</b> · Inteligência</p></div>
+      <div class="crow"><span class="ft">Briefing diário do coach</span><span class="vv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="vv pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+      <div class="crow"><span class="ft">Consultor que executa</span><span class="vv"><span class="no">–</span></span><span class="vv pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+      <div class="crow"><span class="ft">Cardápio e planos por IA</span><span class="vv"><span class="no">–</span></span><span class="vv pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+      <div class="crow"><span class="ft">Relatórios em PDF</span><span class="vv"><span class="no">–</span></span><span class="vv pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+
+      <div class="cgroup"><p class="eyebrow"><b>03</b> · Conexões e cuidado</p></div>
+      <div class="crow"><span class="ft">Google Calendar</span><span class="vv"><span class="no">–</span></span><span class="vv pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+      <div class="crow"><span class="ft">Exportar seus dados</span><span class="vv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="vv pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+      <div class="crow"><span class="ft">Criptografia e LGPD</span><span class="vv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="vv pro"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+      <div class="crow"><span class="ft">Suporte</span><span class="vv">E-mail</span><span class="vv pro">Prioritário</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="faqsec" id="faq">
+  <div class="wrap">
+    <div class="rv">
+      <h2>Perguntas comuns</h2>
+      <p class="fsub">O que todo mundo pergunta antes de assinar.</p>
+    </div>
+    <div class="faq rv">
+      <details open>
+        <summary>Posso usar grátis pra sempre?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <p class="ans">Sim. O plano Free dura indefinidamente. PRO desbloqueia limites e as features de IA que executam por você, mas o essencial funciona pra sempre sem custo.</p>
+      </details>
+      <details>
+        <summary>Posso trocar de plano quando quiser?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <p class="ans">Sim. O upgrade vale na hora; no downgrade você mantém o PRO até o fim do período já pago. Nada se perde.</p>
+      </details>
+      <details>
+        <summary>O que acontece se eu cancelar o PRO?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <p class="ans">Sua conta volta pro Free e todos os registros ficam onde estavam. Sem multa, sem retenção forçada.</p>
+      </details>
+      <details>
+        <summary>Quais formas de pagamento?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <p class="ans">Cartão de crédito e Pix. No plano anual, o Pix ganha 5% a mais de desconto.</p>
+      </details>
+      <details>
+        <summary>Meus dados ficam seguros?<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+        <p class="ans">Sim. LGPD-compliant, criptografia em trânsito (TLS 1.3) e em repouso (AES-256). Você exporta ou exclui tudo quando quiser.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final dk rv">
+  <div class="wrap">
+    <h2>Comece grátis.<br><em>O resto é consequência.</em></h2>
+    <p>14 dias de PRO no primeiro acesso. Sem cartão, sem multa pra sair.</p>
+    <a class="btn btn-roxo" href="../auth/cadastro.mobile.html" style="padding:15px 28px;font-size:14px">Criar conta grátis
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+</section>
+
+<footer class="dk">
+  <div class="wrap">
+    <span class="brand">
+      <span class="bs d3" data-bs3d style="--sz:21px" aria-hidden="true"></span>
+      Sync<em>Life</em></span>
+    <p class="foot-tag">Sua vida inteira, organizada em um só lugar. Feito no Brasil, com cuidado.</p>
+    <div class="foot-cols">
+      <div class="foot-col"><h5>Produto</h5><a href="landing-viva.mobile.html#produto">Recursos</a><a href="#">Preços</a><a href="#">Roadmap</a></div>
+      <div class="foot-col"><h5>Empresa</h5><a href="#">Sobre</a><a href="#">Carreiras</a><a href="#">Blog</a></div>
+      <div class="foot-col"><h5>Legal</h5><a href="#">Privacidade</a><a href="#">Termos</a><a href="#">LGPD</a></div>
+    </div>
+    <div class="foot-base">
+      <span>© 2026 SyncLife. Todos os direitos reservados.</span>
+      <span>v0.9.4 · São Paulo, Brasil</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../shared/bussola-3d.js"></script>
+<script src="../shared/public.js"></script>
+<script>
+SLPub.boot();
+(function () {
+  var bm = document.getElementById('b-mensal'), ba = document.getElementById('b-anual');
+  function set(anual) {
+    document.body.classList.toggle('anual', anual);
+    bm.classList.toggle('on', !anual);
+    ba.classList.toggle('on', anual);
+  }
+  bm.addEventListener('click', function () { set(false); });
+  ba.addEventListener('click', function () { set(true); });
+})();
+</script>
+</body>
+</html>

@@ -12,7 +12,7 @@
 - **✅ LANDING DESKTOP APROVADA (r15):** aurora global azul/lilás/roxo passeando atrás das áreas claras · palcos produto/IA sem pin com coreografia na travessia (voo com encaixe × pop de mensageiro) · banda roxa sólida da IA · pricing em 2 cartões iguais · FAQ 2 colunas · wordmark gigante inteiro · copy vendável com números canônicos. Já aprovados antes: marca 3D cromo líquido (DS §5), bússola WebGL (DS §5.6), seção "As oito áreas".
 - **✅ ONDA 0 IMPLEMENTADA em `web/` (2026-07-30):** rota `/` agora renderiza a landing v5 (`LandingV5` = árvores `LandingVivaDesktop` r15 + `LandingVivaMobile` m1, CSS decide qual aparece em 1024px; árvore oculta = E-02 estático). Fundação A no lugar: `styles/{tokens-v5,v5,bussola-3d}.css` escopados sob `.v5`, Inter+Caveat no `layout.tsx`, `lib/v5/{bussola-3d,viva,compass-gl}.ts`, deps gsap+lenis+three. Teste de identidade: desktop DELTA 0px em todas as âncoras (doc 6947px idêntico); mobile idêntico em device (no preview desktop o protótipo perde 15px pra scrollbar nativa; o app usa a scrollbar do globals v3). Servir local: `npx next start -p 3006` (porta 3006; se EADDRINUSE, matar o listener antigo).
 - **✅ MOBILE m1 APROVADO (2026-07-30, tag `poc-landing-viva-mobile-m1`):** `landing/landing-viva.mobile.html` (390×844, dedicado) porta a r15 inteira pro toque: aurora global, arco com régua de sintonia, bússola WebGL (DPR 1) com fallback CSS, coreografia em scrub por elemento (voo com encaixe × pop de mensageiro), pricing empilhado, wordmark inteiro. Scroll nativo, sem Lenis.
-- **Próximo passo: IMPLEMENTAÇÃO da Onda 0 em `web/`** (Fundação A: tokens v5 escopados sob `.v5` + fontes Inter/Caveat via next/font + `<Compass />` + landing real desktop+mobile) + teste de identidade screenshot a screenshot em `next start`. Lembrete de implementação: `document.fonts.load()` explícito antes de SplitText (fix do m1; a desktop r15 tem o padrão latente). Polimento opcional na fila: SplitText no h1 do hero.
+- **Próximo passo: APROVAÇÃO da Onda 1** (público + auth). Os 12 protótipos (6 telas ×2) estão no hub em "em aprovação": pricing, login, cadastro, esqueceu a senha, redefinir senha, onboarding. Feedback → iterar → re-apresentar; com o "aprovado", implementação em `web/` + teste de identidade em `next start`.
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
 ## Status das ondas
@@ -20,7 +20,7 @@
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
 | 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
-| 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | – | – | – | – |
+| 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ⏳ em aprovação | – | – |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
 | 04 | 01 Finanças (8 telas, 2 lotes) | – | – | – | – |
@@ -34,6 +34,32 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-31 · Sessão 18 — Onda 1: protótipos de público + auth (6 telas ×2)
+
+**Escopo:** fase de protótipo da Onda 1 completa: pricing, login, cadastro, esqueceu a senha, redefinir senha e onboarding, cada uma com desktop (1440) e mobile dedicado (390×844).
+
+**Feito:**
+- **`shared/` ganhou 2 arquivos novos** (as telas da onda repetem as mesmas peças; nada das ondas aprovadas foi tocado): `shared/auth.css` (campo com label eyebrow + input objeto radius 12/foco roxo, OAuth pills, divisor editorial, checkbox, força de senha em 4 segmentos coral→neutro→`#44a616`, passos de fluxo, `.win` janela escura E-11, seção de estados do protótipo) e `shared/public.js` (`SLPub.boot()`: gate `.anim` E-02 + classe `.js`, reveals IO, aurora global com a paleta r15, montagem `[data-bs3d]`, olho de senha `[data-eye]`, medidor `[data-strength]`).
+- **Pricing** (`landing/pricing.html` + `.mobile`): página dedicada da família da landing r15 (aurora, pill nav + ticker, Lenis no desktop): hero editorial + **alternador mensal/anual** (PRO 24,90 ↔ 20,75/mês cobrado R$ 249/ano, tag elétrica "2 meses grátis"), os MESMOS 2 pcards aprovados, comparativo linha a linha em hairlines (4 grupos numerados, coluna PRO com pill roxa), FAQ estendida (6 perguntas), CTA final escuro + footer. Hoje `/pricing` no app é só redirect pro `#precos`; essa é a primeira página real.
+- **Login** (`auth/login.html` + `.mobile`): palco formulário × **janela escura do briefing** (E-11/E-07: quote do coach com os números canônicos, score 74 +3, assinatura "Escrito às 07:12 · com base em…"), caligrafia "entre: o dia de hoje já está pronto", nav pill sem ticker (auth é tarefa, não marketing). Estados anotados no fim (credenciais incorretas, e-mail não confirmado + reenviar).
+- **Cadastro** (`auth/cadastro.html` + `.mobile`): mesmo palco; a janela mostra as **8 áreas com os ícones de rumo da marca** (`SLBussola3D.areaIcon`, §5.5) + prova (14 dias PRO · sem cartão · LGPD). Força de senha ao vivo, termos, estados (senhas não coincidem, e-mail já cadastrado, confirmação pendente).
+- **Esqueceu a senha** (`auth/esqueceu-senha.html` + `.mobile`): coluna centrada SEM caixa (E-04), lockup bússola 30px + passos 01/03; "enviar" troca pro estado 02 (selo com check `#44a616` se desenhando, e-mail ecoado, infos hairline 30 min/spam); sem JS os 2 estados ficam empilhados (E-02).
+- **Redefinir senha** (`auth/redefinir-senha.html` + `.mobile`): passo 03 de 03, força + validação viva de confirmação, nota de segurança (sessões antigas desconectadas).
+- **Onboarding** (`auth/onboarding.html` + `.mobile`): a "primeira edição" em modo escuro do app. 4 passos: nome em **input manchete** (display 50px, caret roxo, hand "pode ser apelido") → objetivos em linhas hairline selecionáveis (9, contagem viva) → **as 8 áreas canônicas com ícone de rumo + toggle**, bússola cromo 200px sticky apontando a última área ativada (caminho mais curto §5.4; a bússola nunca fica sem norte: a última área ativa não desliga) → passo 04 com **selo do score inicial 70** (moldura dupla + breathe, spec do dashboard r6) e prosa assinada E-07 que ecoa nome/contagens reais ("Pronto, Thiago. Sua bússola está calibrada." · "6 áreas ativas e 3 objetivos"). Tabs numeradas no topo (eco da modbar da Onda 2), nav fixa embaixo; sem JS = 4 passos empilhados completos.
+- Hub: 6 linhas da Onda 01 com links desktop/mobile e status "em aprovação".
+
+**Bug real pego no QA (o gotcha da r15 de novo):** `padding:X 0 Y` (shorthand) em elementos que TÊM `.wrap` zerava o gutter de 20px no mobile (login/cadastro `.sheet`/`.tease`) e o lateral do onboarding (`.step`). Trocado por `padding-top/bottom` nos 4 arquivos; computado 20px confirmado.
+
+**QA (Playwright, http.server 8123, cache-buster `?v=o1/o1b`):** console 100% limpo em todas as 12 páginas; interações verificadas de verdade (eco de e-mail no estado 02, força f4 "Muito forte", "senhas não coincidem", nome→"Thiago, o que você quer mudar?", contagem 06 áreas, agulha a -45° pela rota curta até a área 08, alternador anual trocando preço e rodapé); sem overflow-x no mobile; **E-02 medido**: com reduce, `.anim` não entra e todo `.rv/.boot` computa opacity 1. Screenshots das dobras no scratchpad (`o1-*.png`).
+
+**Pendências:** ⏳ aprovação do usuário das 6 telas (feedback → iterar). Números de plano (50 transações, R$ 249/ano, suporte prioritário) são ilustrativos como todo indicador de protótipo; bater com `use-plan-limits.ts` na implementação.
+
+**Próximo passo:** apresentar o hub (Onda 01) ao usuário e aguardar veredito tela a tela; com o "aprovado", implementação em `web/` (route público + `(auth)` + onboarding no v5) e teste de identidade.
+
+**Arquivos:** `prototypes/v5/auth/{login,cadastro,esqueceu-senha,redefinir-senha,onboarding}{.html,.mobile.html}` (novos) · `prototypes/v5/landing/{pricing.html,pricing.mobile.html}` (novos) · `prototypes/v5/shared/{auth.css,public.js}` (novos) · `prototypes/v5/index.html` · este handoff.
 
 ---
 

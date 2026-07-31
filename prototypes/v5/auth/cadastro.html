@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Criar conta</title>
+<!-- Onda 1 · Cadastro desktop. Mesmo palco do login (formulário × janela escura E-11);
+     aqui a janela mostra as 8 áreas com os ícones de rumo da marca (§5.5). Força da senha
+     com os 4 segmentos hairline; estados anotados no fim. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/bussola-3d.css">
+<link rel="stylesheet" href="../shared/auth.css">
+<style>
+  .aurora-fix{position:fixed;inset:0;z-index:-1;pointer-events:none;filter:blur(56px) saturate(1.08);opacity:.65}
+  .aurora-fix canvas{width:100%;height:100%;display:block}
+
+  .navwrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:70;width:min(880px,94vw);
+    --t1:#f4f4f4;--t2:#b8b8b8;--line:rgba(255,255,255,.1);color:var(--t1)}
+  nav{display:flex;align-items:center;justify-content:space-between;gap:18px;height:56px;
+    padding:0 10px 0 22px;background:#0d0c0cf2;border:1px solid var(--line);border-radius:16px;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .brand{font:700 18px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:11px}
+  .brand em{font-style:normal;color:var(--roxo)}
+  .nav-cta{display:flex;align-items:center;gap:14px}
+  .nav-cta .alt{font:500 13px var(--int);color:var(--t2)}
+  .nav-cta .alt:hover{color:var(--t1)}
+  nav .btn-ghost{padding:9px 18px;font-size:13px;border-color:rgba(255,255,255,.18);color:#f4f4f4}
+
+  .auth-grid{display:grid;grid-template-columns:minmax(360px,430px) minmax(340px,420px);justify-content:center;
+    gap:clamp(48px,7vw,120px);align-items:center;padding-top:140px;padding-bottom:40px;min-height:92vh}
+  .fcol .eyebrow{margin-bottom:16px}
+  .fcol h1{font:500 clamp(2.2rem,3.4vw,3rem)/1.05 var(--gro);letter-spacing:-.045em;color:var(--t1)}
+  .fcol .sub{font:400 14.5px/1.65 var(--int);color:var(--t2);margin:14px 0 26px;max-width:42ch}
+  .fcol .sub b{color:var(--t1);font-weight:600}
+  .fcol .foot{margin-top:24px;font:400 13.5px var(--int);color:var(--t2)}
+  .fcol .foot a{color:var(--roxo);font-weight:500;border-bottom:1px solid rgba(104,64,255,.35)}
+  form .ckrow{margin:6px 0 20px}
+
+  /* a janela das 8 áreas: os ícones de rumo (bússola pequena, §5.5) + índice canônico */
+  .wcol{display:flex;flex-direction:column;gap:18px}
+  .win .eyebrow{margin-bottom:6px}
+  .arealist{border-top:1px solid var(--line);margin-top:12px}
+  .arow{display:grid;grid-template-columns:40px 1fr auto;gap:13px;align-items:center;
+    padding:8px 2px;border-bottom:1px dashed var(--line)}
+  .arow:last-child{border-bottom:none}
+  .arow .nm{font:500 13.5px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .arow .ix{font:700 10px var(--gro);color:var(--t3)}
+  .wcol .handrow{display:flex;align-items:center;gap:10px;padding-left:8px}
+  .wcol .proof{display:flex;gap:16px;flex-wrap:wrap;padding-left:6px}
+  .wcol .proof span{display:inline-flex;align-items:center;gap:7px;font:500 12px var(--int);color:var(--t3)}
+  .wcol .proof svg{color:var(--roxo)}
+
+  @media (max-width:1023px){
+    .auth-grid{grid-template-columns:minmax(320px,430px);padding-top:120px}
+    .wcol{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="aurora-fix" aria-hidden="true"><canvas id="aurora"></canvas></div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="navwrap">
+  <nav>
+    <a class="brand" href="../landing/landing-viva.html">
+      <span class="bs d3" data-bs3d style="--sz:22px" aria-hidden="true"></span>
+      Sync<em>Life</em></a>
+    <div class="nav-cta">
+      <a class="alt" href="login.html">Já tem conta?</a>
+      <a class="btn btn-ghost" href="login.html">Entrar</a>
+    </div>
+  </nav>
+</div>
+
+<main class="wrap auth-grid">
+  <div class="fcol">
+    <p class="eyebrow boot b1"><b>Criar conta</b> · leva um minuto</p>
+    <h1 class="boot b2">Comece a sincronizar.</h1>
+    <p class="sub boot b2"><b>14 dias de PRO grátis.</b> Sem cartão de crédito, sem pegadinha.</p>
+
+    <div class="boot b3">
+      <div class="oauth">
+        <button type="button" class="btn-oauth">
+          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Google</button>
+        <button type="button" class="btn-oauth">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11.18 0a3.5 3.5 0 0 1-.85 2.55 2.95 2.95 0 0 1-2.37 1.1 3.32 3.32 0 0 1 .85-2.47A3.55 3.55 0 0 1 11.18 0zm3.45 12.05a7.78 7.78 0 0 1-.78 1.4c-.51.74-1 1.48-1.77 1.5-.76.01-1-.45-1.86-.45-.86 0-1.13.43-1.85.46-.74.03-1.31-.8-1.82-1.54-1.05-1.51-1.85-4.27-.77-6.13a2.86 2.86 0 0 1 2.43-1.48c.73-.01 1.42.5 1.86.5.45 0 1.28-.61 2.16-.52a2.94 2.94 0 0 1 2.3 1.25 2.86 2.86 0 0 0-1.37 2.4 2.78 2.78 0 0 0 1.69 2.55c-.04.13-.1.27-.15.4z"/></svg>
+          Apple</button>
+      </div>
+      <div class="divisor">ou com e-mail</div>
+    </div>
+
+    <form class="boot b4" onsubmit="return false">
+      <div class="fld">
+        <label for="nome">Nome</label>
+        <input id="nome" type="text" placeholder="Como prefere ser chamado" autocomplete="name">
+      </div>
+      <div class="fld">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" placeholder="seu@email.com" autocomplete="email">
+      </div>
+      <div class="fld">
+        <label for="senha">Senha</label>
+        <div class="inwrap">
+          <input id="senha" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" data-strength="forca-senha">
+          <button type="button" class="eyebtn" data-eye="senha" aria-label="Mostrar senha">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="forca" id="forca-senha" aria-live="polite"><i></i><i></i><i></i><i></i><span class="flbl"></span></div>
+      </div>
+      <div class="fld">
+        <label for="senha2">Confirmar senha</label>
+        <div class="inwrap">
+          <input id="senha2" type="password" placeholder="Repita a senha" autocomplete="new-password">
+          <button type="button" class="eyebtn" data-eye="senha2" aria-label="Mostrar senha">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <label class="ckrow">
+        <input type="checkbox">
+        <span class="ck"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <span>Li e concordo com os <a href="#">Termos de uso</a> e a <a href="#">Política de privacidade</a>.</span>
+      </label>
+      <button type="submit" class="btn btn-roxo btn-full">Criar conta grátis</button>
+    </form>
+
+    <p class="foot boot b5">Já tem conta? <a href="login.html">Entrar</a></p>
+  </div>
+
+  <div class="wcol boot b4">
+    <div class="win">
+      <div class="tb"><i></i><i></i><i></i><span class="nm">A sua bússola</span><span class="ix num">01 · 08</span></div>
+      <div class="bd">
+        <p class="eyebrow">Oito áreas · uma única interface</p>
+        <div class="arealist">
+          <div class="arow"><span class="aic-slot" data-aic="0"></span><span class="nm">Finanças</span><span class="ix num">01</span></div>
+          <div class="arow"><span class="aic-slot" data-aic="1"></span><span class="nm">Futuro</span><span class="ix num">02</span></div>
+          <div class="arow"><span class="aic-slot" data-aic="2"></span><span class="nm">Tempo</span><span class="ix num">03</span></div>
+          <div class="arow"><span class="aic-slot" data-aic="3"></span><span class="nm">Corpo</span><span class="ix num">04</span></div>
+          <div class="arow"><span class="aic-slot" data-aic="4"></span><span class="nm">Mente</span><span class="ix num">05</span></div>
+          <div class="arow"><span class="aic-slot" data-aic="5"></span><span class="nm">Patrimônio</span><span class="ix num">06</span></div>
+          <div class="arow"><span class="aic-slot" data-aic="6"></span><span class="nm">Carreira</span><span class="ix num">07</span></div>
+          <div class="arow"><span class="aic-slot" data-aic="7"></span><span class="nm">Experiências</span><span class="ix num">08</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="handrow draw rv">
+      <svg class="hand-arrow" width="38" height="24" viewBox="0 0 42 24" aria-hidden="true"><path d="M40 20 C28 4, 15 2, 3 9 M9 3 L3 9 L10 13"/></svg>
+      <span class="hand" style="transform:rotate(-2deg)">você escolhe as suas no primeiro acesso</span>
+    </div>
+    <div class="proof">
+      <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>14 dias PRO grátis</span>
+      <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sem cartão de crédito</span>
+      <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>LGPD-ready</span>
+    </div>
+  </div>
+</main>
+
+<!-- ══ ESTADOS DA TELA (seção do protótipo, não faz parte da página final) ══ -->
+<section class="proto-estados">
+  <div class="wrap" style="--wrap-max:1080px">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div>
+        <h4>Senhas não coincidem</h4>
+        <div class="fld">
+          <label for="senha2-err">Confirmar senha</label>
+          <div class="inwrap">
+            <input id="senha2-err" type="password" value="12345679" class="err">
+            <button type="button" class="eyebtn" aria-label="Mostrar senha">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <p class="msg err">As senhas não coincidem.</p>
+        </div>
+        <h4 style="margin-top:22px">Força da senha (4 níveis)</h4>
+        <div class="forca f1" style="margin-bottom:10px"><i></i><i></i><i></i><i></i><span class="flbl">Fraca</span></div>
+        <div class="forca f2" style="margin-bottom:10px"><i></i><i></i><i></i><i></i><span class="flbl">Média</span></div>
+        <div class="forca f3" style="margin-bottom:10px"><i></i><i></i><i></i><i></i><span class="flbl">Forte</span></div>
+        <div class="forca f4"><i></i><i></i><i></i><i></i><span class="flbl">Muito forte</span></div>
+      </div>
+      <div>
+        <h4>E-mail já cadastrado</h4>
+        <div class="banner-err">
+          <span><b>Esse e-mail já tem conta.</b> Entre com ele ou recupere a senha.</span>
+          <button type="button" class="btn btn-ghost">Ir pro login</button>
+        </div>
+        <h4 style="margin-top:22px">Conta criada · confirmação pendente</h4>
+        <div class="banner-err" style="border-color:#44a616;background:rgba(68,166,22,.06)">
+          <span><b>Conta criada.</b> Enviamos um link de confirmação pro seu e-mail. Vale por 24 horas.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/bussola-3d.js"></script>
+<script src="../shared/public.js"></script>
+<script>
+SLPub.boot();
+// ícones de rumo das 8 áreas (§5.5) na janela
+if (window.SLBussola3D) document.querySelectorAll('[data-aic]').forEach(function (s) {
+  s.appendChild(SLBussola3D.areaIcon(+s.getAttribute('data-aic'), 34));
+});
+</script>
+</body>
+</html>

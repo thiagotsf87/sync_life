@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Nova senha · Mobile</title>
+<!-- Onda 1 · Redefinir senha MOBILE dedicado (390×844). Passo 03 de 03; coluna única sem
+     caixa (E-04); força da senha nos 4 segmentos. Scroll nativo. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/bussola-3d.css">
+<link rel="stylesheet" href="../shared/auth.css">
+<style>
+  body{font-size:14.5px}
+  .aurora-fix{position:fixed;inset:0;z-index:-1;pointer-events:none;filter:blur(48px) saturate(1.08);opacity:.65}
+  .aurora-fix canvas{width:100%;height:100%;display:block}
+
+  .topo{position:fixed;top:14px;left:16px;z-index:70}
+  .topo a{display:inline-flex;align-items:center;gap:7px;font:500 12.5px var(--int);color:var(--t2);
+    border:1px solid var(--line);border-radius:999px;padding:8px 14px;background:rgba(255,255,255,.6);
+    backdrop-filter:blur(8px)}
+
+  .sheet{max-width:390px;margin:0 auto;padding:96px 20px 70px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .lockup{display:inline-flex;align-items:center;gap:10px;font:700 18px var(--gro);letter-spacing:-.02em;color:var(--t1)}
+  .lockup em{font-style:normal;color:var(--roxo)}
+  .sheet .passos{margin:28px auto 26px}
+  .sheet .eyebrow{margin-bottom:12px}
+  .sheet h1{font:500 clamp(1.7rem,8vw,2.1rem)/1.08 var(--gro);letter-spacing:-.04em;color:var(--t1)}
+  .sheet .sub{font:400 13.5px/1.65 var(--int);color:var(--t2);margin-top:11px;max-width:34ch}
+  .sheet form{width:100%;margin-top:24px;text-align:left}
+  .sheet .nota{margin-top:20px;font:400 12px/1.6 var(--int);color:var(--t3);max-width:32ch}
+</style>
+</head>
+<body>
+<div class="aurora-fix" aria-hidden="true"><canvas id="aurora"></canvas></div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="topo">
+  <a href="login.mobile.html">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Login</a>
+</div>
+
+<main class="sheet boot b1">
+  <a class="lockup" href="../landing/landing-viva.mobile.html" aria-label="SyncLife">
+    <span class="bs d3" data-bs3d style="--sz:28px" aria-hidden="true"></span>
+    Sync<em>Life</em></a>
+  <div class="passos" aria-label="Passo 3 de 3"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+  <p class="eyebrow"><b>Recuperar acesso</b> · passo 03 de 03</p>
+  <h1>Escolha a nova senha.</h1>
+  <p class="sub">Uma senha forte protege a sua vida inteira, que agora mora aqui.</p>
+  <form onsubmit="return false">
+    <div class="fld">
+      <label for="senha">Nova senha</label>
+      <div class="inwrap">
+        <input id="senha" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" data-strength="forca-senha">
+        <button type="button" class="eyebtn" data-eye="senha" aria-label="Mostrar senha">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="forca" id="forca-senha" aria-live="polite"><i></i><i></i><i></i><i></i><span class="flbl"></span></div>
+    </div>
+    <div class="fld">
+      <label for="senha2">Confirmar nova senha</label>
+      <div class="inwrap">
+        <input id="senha2" type="password" placeholder="Repita a nova senha" autocomplete="new-password">
+        <button type="button" class="eyebtn" data-eye="senha2" aria-label="Mostrar senha">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <p class="msg err" id="msg-conf" style="display:none">As senhas não coincidem.</p>
+    </div>
+    <button type="submit" class="btn btn-roxo btn-full">Salvar nova senha</button>
+  </form>
+  <p class="nota">Depois de salvar, você entra direto no seu panorama. Sessões antigas são desconectadas por segurança.</p>
+</main>
+
+<script src="../shared/bussola-3d.js"></script>
+<script src="../shared/public.js"></script>
+<script>
+SLPub.boot();
+(function () {
+  var s1 = document.getElementById('senha'), s2 = document.getElementById('senha2'), msg = document.getElementById('msg-conf');
+  function check() {
+    var bad = s2.value && s1.value !== s2.value;
+    s2.classList.toggle('err', bad);
+    msg.style.display = bad ? 'block' : 'none';
+  }
+  s1.addEventListener('input', check); s2.addEventListener('input', check);
+})();
+</script>
+</body>
+</html>
