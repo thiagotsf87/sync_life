@@ -2,7 +2,7 @@
 // Evolução de prototypes/poc-v5/shared/mock-data.js com a numeração CANÔNICA (§5.2 do DS):
 // as 8 áreas são pontos cardeais da bússola; Panorama/Conquistas/Configurações não são áreas.
 window.SL_MOCK = {
-  score: { value: 78, delta: 4, label: 'Life Sync Score' },
+  score: { value: 78, delta: 4, label: 'Life Sync Score' }, // global vem do engine (ponderado), não é média das dims
 
   // ordem canônica das áreas (LEI, §5.2): 01 Finanças no norte, horário até 08 Experiências
   areas: [
@@ -32,6 +32,7 @@ window.SL_MOCK = {
       doneMood: 'Bem',
       doneNote: 'Dia produtivo, treino feito.',
     },
+    // t = hora OU valor (money:true); due = vence em até 3 dias
     hoje: [
       { t: '07:30', tx: 'Fisioterapia' },
       { t: 'R$ 1.200,00', tx: 'Aluguel', tag: 'EM 3 DIAS', due: true, money: true },
@@ -42,7 +43,7 @@ window.SL_MOCK = {
     ],
   },
 
-  // scores por área (ordem canônica; ativas ganham linha rica no Diário)
+  // scores por área (ordem canônica; ativas ganham linha rica no Diário; manter n/nome em sincronia com areas)
   dims: [
     { n: '01', nome: 'Finanças',     meta: 'Saldo R$ 1.840 · lazer no limite', score: 82, tr: 2 },
     { n: '02', nome: 'Futuro',       meta: '3 metas · 61% de média',           score: 74, tr: 1 },
@@ -106,10 +107,10 @@ window.SL_MOCK = {
       'Simular: e se eu poupar R$ 800?',
     ],
     thread: [
-      { de: 'u', tx: 'Quanto ainda posso gastar em lazer esse mês?' },
-      { de: 'a', tx: 'Quase nada: R$ 10 até quinta. Você usou R$ 410 dos R$ 420 do orçamento, e o cinema de ontem (R$ 64) foi o que encostou no teto. A boa notícia: o fechamento projeta R$ 2.120.', fontes: 'Fontes: orçamento Lazer · 34 transações · projeção do mês' },
-      { de: 'u', tx: 'Então antecipa o aporte da Itália pra hoje.' },
-      { de: 'acao', tx: 'Transferência de R$ 580 pra Viagem Itália agendada pra hoje, 16:00. A meta vai a 70% e o saldo projetado segue positivo em R$ 1.540.', done: 'Confirmado por você · 14:04' },
+      { de: 'u', msg: 'Quanto ainda posso gastar em lazer esse mês?' },
+      { de: 'a', msg: 'Quase nada: R$ 10 até quinta. Você usou R$ 410 dos R$ 420 do orçamento, e o cinema de ontem (R$ 64) foi o que encostou no teto. A boa notícia: o fechamento projeta R$ 2.120.', fontes: 'Fontes: orçamento Lazer · 34 transações · projeção do mês' },
+      { de: 'u', msg: 'Então antecipa o aporte da Itália pra hoje.' },
+      { de: 'acao', msg: 'Transferência de R$ 580 pra Viagem Itália agendada pra hoje, 16:00. A meta vai a 70% e o saldo projetado segue positivo em R$ 1.540.', done: 'Confirmado por você · 14:04' },
     ],
   },
   fmtBRL(n) { return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); },
