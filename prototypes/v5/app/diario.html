@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Diário · v5</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+  .ele{color:var(--ele)} .coral{color:var(--coral)}
+
+  /* ─── masthead: saudação + selo da edição ─── */
+  .mast{padding:52px 0 44px;display:flex;justify-content:space-between;align-items:flex-end;gap:36px}
+  .mast h1{font:500 clamp(34px,4.6vw,58px)/1.02 var(--gro);letter-spacing:-.045em;margin-top:14px}
+  .mast .sub{font:400 14.5px var(--int);color:var(--t2);margin-top:14px;max-width:52ch}
+  .selo{flex-shrink:0;border:1px solid var(--line-h);border-radius:16px;padding:20px 24px 18px;text-align:center;min-width:168px;
+    position:relative;transition:border-color .35s var(--ease)}
+  .selo:hover{border-color:rgba(161,255,98,.4)}
+  .selo::after{content:"";position:absolute;inset:5px;border:1px solid var(--line);border-radius:11px;pointer-events:none}
+  .anim .selo{animation:breathe 4.5s var(--ease) infinite}
+  @keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(161,255,98,0)}50%{box-shadow:0 0 26px -6px rgba(161,255,98,.18)}}
+  .selo .k{font:700 9.5px var(--gro);letter-spacing:.24em;color:var(--t3)}
+  .selo .n{font:700 64px/1 var(--gro);letter-spacing:-.05em;margin:8px 0 6px}
+  .selo .d{font:600 11.5px var(--gro);color:var(--ele)}
+  .selo .s{font:400 10.5px var(--int);color:var(--t3);margin-top:3px}
+
+  /* ─── A FOLHA: briefing impresso (banda .lt; filhos usam os tokens normais) ─── */
+  .folha .in{max-width:1180px;margin:0 auto;padding:64px clamp(20px,4vw,56px) 58px;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(36px,5vw,80px)}
+  .folha .eyebrow{color:var(--t2)}
+  .folha h2{font:500 clamp(22px,2.6vw,32px)/1.2 var(--gro);letter-spacing:-.03em;margin:16px 0 18px}
+  .folha .body{font:400 15.5px/1.75 var(--int);color:var(--t2);max-width:62ch}
+  .folha .body + .body{margin-top:14px}
+  .folha .body strong{color:var(--t1);font-weight:600}
+  .folha .body .warn{color:var(--coral);font-weight:600}
+  .folha .ass{display:flex;align-items:center;gap:10px;margin-top:26px;font:400 11.5px var(--int);color:var(--t2)}
+  .folha .ass::before{content:"";width:26px;height:2px;background:var(--roxo)}
+  .recs{border-left:1px solid var(--line);padding-left:clamp(20px,3vw,44px)}
+  .recs .eyebrow{margin-bottom:10px}
+  .rec{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:16px 0;border-bottom:1px dashed var(--line);cursor:pointer}
+  .rec:last-of-type{border-bottom:none}
+  .rec .rn{font:700 13px var(--gro);color:var(--roxo)}
+  .rec h4{font:600 14px var(--int);color:var(--t1);display:flex;align-items:center;gap:8px}
+  .rec h4 svg{opacity:0;transform:translateX(-4px);transition:opacity .3s var(--ease),transform .3s var(--ease);color:var(--roxo);flex-shrink:0}
+  .rec:hover h4 svg{opacity:1;transform:none}
+  .rec p{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:4px}
+  .rec p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+  .ask{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:999px;padding:12px 18px;margin-top:18px;
+    background:var(--s1);width:100%;cursor:pointer;text-align:left;transition:border-color .3s var(--ease)}
+  .ask:hover{border-color:rgba(104,64,255,.5)}
+  .ask span{flex:1;font:400 13px var(--int);color:var(--t2)}
+  .ask svg{color:var(--roxo);flex-shrink:0}
+
+  /* ─── CHECK-IN: banda entre hairlines ─── */
+  .checkin{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(28px,4vw,64px);align-items:center;
+    padding-top:30px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .frase{font:500 20px var(--gro);letter-spacing:-.02em;margin:10px 0 16px}
+
+  /* ─── HOJE: linha do dia ─── */
+  .hoje{border-bottom:1px solid var(--line);padding:26px 0}
+  .hoje .in{display:flex;align-items:baseline;gap:26px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .hoje .in::-webkit-scrollbar{display:none}
+  .hoje .eyebrow{flex-shrink:0}
+  .ev{display:flex;align-items:baseline;gap:9px;white-space:nowrap;flex-shrink:0}
+  .ev time{font:700 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+  .ev span{font:500 13px var(--int);color:var(--t2)}
+  .ev.money span{color:var(--t1)}
+  .ev .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
+  .ev .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
+
+  /* ─── números do mês ─── */
+  .nums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+  .nums > div{padding:34px clamp(16px,2.4vw,34px);border-right:1px solid var(--line)}
+  .nums > div:last-child{border-right:none}
+  .nums .v{font:700 clamp(28px,3.4vw,44px)/1 var(--gro);letter-spacing:-.04em;margin-top:12px}
+  .nums .d{font:500 12px var(--int);margin-top:8px;color:var(--t3)}
+
+  /* ─── suas áreas: índice em duas colunas + linha das outras ─── */
+  .dims-sec{padding:56px 0 8px}
+  .dims-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .dims-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .dims-head a:hover{color:var(--t1)}
+  .dims{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(36px,5vw,80px)}
+  .dimrow{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:baseline;padding:17px 0;border-bottom:1px solid var(--line);
+    transition:padding-left .35s var(--ease)}
+  .dimrow:hover{padding-left:8px}
+  .dimrow .di{font:700 12px var(--gro);color:var(--t3)}
+  .dimrow:hover .di{color:var(--roxo)}
+  .dimrow .nm{font:500 16px var(--gro);letter-spacing:-.01em}
+  .dimrow .mt{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+  .dimrow .sc{font:700 22px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+  .dimrow .tr{font:600 11px var(--gro)}
+  .outras{font:400 12px var(--int);color:var(--t3);padding:14px 0;border-top:1px solid var(--line);margin-top:-1px}
+
+  /* ─── atenção + metas ─── */
+  .aten{padding:44px 0 60px;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(36px,5vw,80px)}
+  .nota{display:grid;grid-template-columns:14px 1fr auto;gap:14px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
+  .nota:last-of-type{border-bottom:none}
+  .nota .mark{width:7px;height:7px;border-radius:50%;background:var(--coral);align-self:center}
+  .nota.ok .mark{background:var(--ele)}
+  .nota .tx{font:400 13.5px var(--int);color:var(--t2)}
+  .nota .tx strong{color:var(--t1);font-weight:600}
+  .nota .v{font:700 13px var(--gro);color:var(--coral)}
+  .nota.ok .v{color:var(--ele)}
+  .metas .mrow{padding:13px 0;border-bottom:1px solid var(--line)}
+  .metas .mrow:last-of-type{border-bottom:none}
+  .metas .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .metas .nm{font:500 13.5px var(--int)}
+  .metas .pct{font:700 13.5px var(--gro)}
+  .metas .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-bottom:6px}
+  .metas .track i{display:block;height:100%;background:var(--t2);border-radius:2px}
+  .metas .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+
+  /* ─── estados: anotação do protótipo (fora do fluxo do app) ─── */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:72px;padding-top:34px;padding-bottom:80px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe .ck-done{margin-top:16px}
+
+  @media (max-width:960px){
+    .mast{flex-direction:column;align-items:flex-start}
+    .folha .in{grid-template-columns:1fr}
+    .recs{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:22px}
+    .checkin{grid-template-columns:1fr}
+    .ck-form{flex-direction:column;align-items:stretch}
+    .nums{grid-template-columns:1fr 1fr}
+    .nums > div:nth-child(2){border-right:none}
+    .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+    .dims{grid-template-columns:1fr}
+    .aten{grid-template-columns:1fr}
+    .bar .date{display:none}
+    .pe-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 31 de julho de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost" type="button">Revisão semanal</button>
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Pergunte ao coach</button>
+    <button class="btn-sm roxo" type="button">+ Nova entrada</button>
+  </div>
+</header>
+<div class="ticker" aria-hidden="true">
+  <div class="tk"><span>SCORE <b>78</b> ▲4</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲4</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲4</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲4</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span></div>
+</div>
+<nav class="modbar" aria-label="Módulos">
+  <div class="in">
+    <a class="on" href="#">Diário</a>
+    <a href="#"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <!-- masthead -->
+  <div class="wrap">
+    <section class="mast boot b1">
+      <div>
+        <p class="eyebrow">Edição nº 208 · seu diário</p>
+        <h1>Boa tarde, Thiago.</h1>
+        <p class="sub">Julho está 83% executado e a poupança segue acima da meta. Uma única atenção hoje: o lazer chegou perto do teto.</p>
+      </div>
+      <div class="selo" role="img" aria-label="Life Sync Score 78, mais 4 esta semana, no ritmo">
+        <div class="k">LIFE SYNC SCORE</div>
+        <div class="n num" data-cnt="78">78</div>
+        <div class="d num">+4 esta semana</div>
+        <div class="s">No ritmo · como melhorar →</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- a folha -->
+  <section class="folha lt boot b2" aria-label="Briefing do coach">
+    <div class="in">
+      <article>
+        <p class="eyebrow"><b>O briefing de hoje</b> · escrito pelo coach</p>
+        <h2>Só o lazer pede atenção. O resto do mês já está ganho.</h2>
+        <p class="body">Suas despesas somam <strong class="num">R$&nbsp;3.160</strong> contra <strong class="num">R$&nbsp;5.000</strong> de receitas, o que projeta um fechamento de <strong class="num">R$&nbsp;2.120</strong> e uma poupança de <strong class="num">37%</strong>, sete pontos acima da sua meta. O ponto de tensão é o orçamento de lazer: <span class="warn">R$&nbsp;410 dos R$&nbsp;420</span> já foram usados, com 4 dias de mês pela frente.</p>
+        <p class="body">No resto da vida, a semana começou bem: <strong>3 treinos</strong> feitos, o aporte automático de quarta está coberto com folga e a Viagem Itália passa de <strong class="num">68%</strong> se você antecipar o aporte de agosto.</p>
+        <div class="draw rv" style="display:flex;align-items:center;gap:8px;margin-top:18px">
+          <svg class="hand-arrow" width="42" height="24" viewBox="0 0 42 24" aria-hidden="true" style="color:var(--coral)"><path d="M40 4 C28 20, 15 22, 3 15 M9 21 L3 15 L10 11"/></svg>
+          <span class="hand" style="transform:rotate(-2deg)">um café a menos e o mês fecha redondo!</span>
+        </div>
+        <p class="ass">Escrito às 14:05, com base no seu julho até aqui: 34 transações, 6 orçamentos e 3 metas.</p>
+      </article>
+      <aside class="recs">
+        <p class="eyebrow">Recomendações de hoje</p>
+        <div class="rec"><span class="rn num">01</span><div><h4>Segurar o lazer até sexta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></h4><p>Restam <b>R$&nbsp;10</b> no orçamento. Um café a menos resolve.</p></div></div>
+        <div class="rec"><span class="rn num">02</span><div><h4>Antecipar o aporte da Itália<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></h4><p>Cabem <b>+R$&nbsp;120</b> sem apertar o fechamento do mês.</p></div></div>
+        <div class="rec"><span class="rn num">03</span><div><h4>Fechar a revisão semanal<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></h4><p>5 minutos hoje mantêm o streak de <b>12 dias</b> vivo.</p></div></div>
+        <button class="ask" data-coach-open data-coach-seed="Pergunte algo sobre o seu mês" type="button">
+          <span>Pergunte algo sobre o seu mês…</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- check-in -->
+  <div class="wrap">
+    <section class="checkin boot b3" aria-label="Check-in do dia">
+      <div>
+        <p class="eyebrow">Check-in</p>
+        <p class="frase">Como foi o dia?</p>
+        <div class="moods">
+          <button class="mood" type="button">Péssimo</button>
+          <button class="mood" type="button">Ruim</button>
+          <button class="mood" type="button">Neutro</button>
+          <button class="mood" type="button">Bem</button>
+          <button class="mood" type="button">Ótimo</button>
+        </div>
+      </div>
+      <div>
+        <div class="ck-form">
+          <input class="ck-note" type="text" placeholder="Uma linha sobre hoje (opcional)">
+          <button class="btn-sm roxo ck-save" type="button">Registrar</button>
+        </div>
+        <div class="ck-done" hidden>Registrado às 21:14 · <b data-out></b></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- hoje -->
+  <section class="hoje boot b4" aria-label="Hoje">
+    <div class="wrap in">
+      <span class="eyebrow">Hoje</span>
+      <span class="ev"><time class="num">07:30</time><span>Fisioterapia</span></span>
+      <span class="ev money"><span class="tag due">EM 3 DIAS</span><span>Aluguel</span><time class="num">R$&nbsp;1.200,00</time></span>
+      <span class="ev"><time class="num">TER 10:00</time><span>1:1 com gestor</span></span>
+      <span class="ev money"><span class="tag">QUA</span><span>Aporte automático</span><time class="num">R$&nbsp;580,00</time></span>
+      <span class="ev"><time class="num">SEX 20:00</time><span>Jantar com Ana</span></span>
+      <span class="ev money"><span class="tag">EM 5 DIAS</span><span>Internet</span><time class="num">R$&nbsp;89,90</time></span>
+    </div>
+  </section>
+
+  <!-- números do mês -->
+  <div class="wrap">
+    <section class="nums boot b5" aria-label="Números do mês">
+      <div><p class="eyebrow">Saldo</p><div class="v num" data-cnt="1840" data-prefix="R$&nbsp;">R$&nbsp;1.840</div><div class="d num ele">+12% vs junho</div></div>
+      <div><p class="eyebrow">Receitas</p><div class="v num" data-cnt="5000" data-prefix="R$&nbsp;">R$&nbsp;5.000</div><div class="d num ele">+8% vs junho</div></div>
+      <div><p class="eyebrow">Despesas</p><div class="v num" data-cnt="3160" data-prefix="R$&nbsp;">R$&nbsp;3.160</div><div class="d num">63% da receita</div></div>
+      <div><p class="eyebrow">Poupança</p><div class="v num" data-cnt="37" data-suffix="%">37%</div><div class="d num">Meta: 30%</div></div>
+    </section>
+
+    <!-- suas áreas -->
+    <section class="dims-sec boot b5" aria-label="Suas áreas">
+      <div class="dims-head">
+        <p class="eyebrow">Suas áreas</p>
+        <a href="#">Ver todas →</a>
+      </div>
+      <div class="dims">
+        <div class="dimrow"><span class="di num">01</span><div><div class="nm">Finanças</div><div class="mt num">Saldo R$&nbsp;1.840 · lazer no limite</div></div><span class="sc num">82<span class="tr ele">▲2</span></span></div>
+        <div class="dimrow"><span class="di num">02</span><div><div class="nm">Futuro</div><div class="mt num">3 metas · 61% de média</div></div><span class="sc num">74<span class="tr ele">▲1</span></span></div>
+        <div class="dimrow"><span class="di num">04</span><div><div class="nm">Corpo</div><div class="mt num">3 atividades · 126 min</div></div><span class="sc num">64<span class="tr ele">▲3</span></span></div>
+        <div class="dimrow"><span class="di num">08</span><div><div class="nm">Experiências</div><div class="mt num">Itália em 92 dias</div></div><span class="sc num">80<span class="tr" style="color:var(--t3)">–</span></span></div>
+      </div>
+      <p class="outras">Outras: 03 Tempo <span class="num">71</span> · 05 Mente <span class="num">58</span> · 06 Patrimônio <span class="num">76</span> · 07 Carreira <span class="num">69</span></p>
+    </section>
+
+    <!-- atenção + metas -->
+    <section class="aten" aria-label="Atenção e metas">
+      <div class="rv">
+        <p class="eyebrow" style="margin-bottom:6px">Atenção</p>
+        <div class="nota"><span class="mark"></span><span class="tx"><strong>Lazer</strong> usou 98% do orçamento, restam R$&nbsp;10 pra 4 dias</span><span class="v num">410 / 420</span></div>
+        <div class="nota"><span class="mark"></span><span class="tx"><strong>Moradia</strong> passou da faixa saudável do mês</span><span class="v num">86%</span></div>
+        <div class="nota ok"><span class="mark"></span><span class="tx"><strong>Aporte de quarta</strong> coberto: saldo projetado segue positivo</span><span class="v num">OK</span></div>
+        <div class="nota ok"><span class="mark"></span><span class="tx"><strong>Streak</strong> de revisões chega a 12 dias hoje</span><span class="v num">12d</span></div>
+      </div>
+      <div class="metas rv">
+        <p class="eyebrow" style="margin-bottom:6px">Metas em andamento</p>
+        <div class="mrow">
+          <div class="r1"><span class="nm">Viagem Itália</span><span class="pct num">68%</span></div>
+          <div class="track"><i style="width:68%"></i></div>
+          <div class="sub">R$&nbsp;8.600 de R$&nbsp;12.700 · dez 2026</div>
+        </div>
+        <div class="mrow">
+          <div class="r1"><span class="nm">Reserva de emergência</span><span class="pct num">80%</span></div>
+          <div class="track"><i style="width:80%"></i></div>
+          <div class="sub">R$&nbsp;14.400 de R$&nbsp;18.000</div>
+        </div>
+        <div class="mrow">
+          <div class="r1"><span class="nm">MBA 2027</span><span class="pct num">34%</span></div>
+          <div class="track"><i style="width:34%"></i></div>
+          <div class="sub">R$&nbsp;3.100 de R$&nbsp;9.000 · mar 2027</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- colofão -->
+  <footer class="colofao">
+    <span>Fechamento projetado de julho: <b class="num">R$&nbsp;2.120</b></span>
+    <div class="r">
+      <span>Streak <b class="num">12 dias</b></span>
+      <span>Badges <b class="num">24/61</b></span>
+      <span>Última sincronização <b class="num">14:05</b></span>
+    </div>
+  </footer>
+</main>
+
+<!-- camada do coach -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Coach">
+  <header class="chead">
+    <p class="eyebrow"><b>Coach</b> · lendo: seu diário de hoje</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o seu dia. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Resumo da minha semana</button>
+        <button class="chip" type="button">Simular: e se eu poupar R$&nbsp;800?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+      </div>
+      <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+      <div class="action" role="status">
+        <div class="al">Ação executada</div>
+        <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+        <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+      </div>
+      <div class="typing" aria-label="Coach digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre a sua vida">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#">Conversa completa →</a>
+</aside>
+
+<!-- estados: anotação do protótipo -->
+<section class="proto-estados">
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Camada do coach · conversa</h4>
+        <aside class="camada" style="position:static;transform:none;height:auto;width:100%;max-width:460px">
+          <header class="chead">
+            <p class="eyebrow"><b>Coach</b> · lendo: seu diário de hoje</p>
+            <button class="x" type="button" aria-label="Fechar">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </header>
+          <div class="cbody">
+            <div class="cthread">
+              <div class="divider">Hoje · 14:02</div>
+              <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+              <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+                <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+              </div>
+              <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+              <div class="action" role="status">
+                <div class="al">Ação executada</div>
+                <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+                <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+              </div>
+              <div class="typing" aria-label="Coach digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+            </div>
+          </div>
+          <div class="cask"><div class="in">
+            <input type="text" placeholder="Pergunte qualquer coisa sobre a sua vida">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </div></div>
+          <span class="cfull">Conversa completa →</span>
+        </aside>
+      </div>
+      <div class="pe">
+        <h4>Camada do coach · vazia</h4>
+        <aside class="camada" style="position:static;transform:none;height:auto;width:100%;max-width:460px">
+          <header class="chead">
+            <p class="eyebrow"><b>Coach</b> · lendo: seu diário de hoje</p>
+            <button class="x" type="button" aria-label="Fechar">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </header>
+          <div class="cbody">
+            <div class="cempty">
+              <p class="hello">Já li o seu dia. O que você quer saber?</p>
+              <div class="csug">
+                <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+                <button class="chip" type="button">Resumo da minha semana</button>
+                <button class="chip" type="button">Simular: e se eu poupar R$&nbsp;800?</button>
+              </div>
+            </div>
+          </div>
+          <div class="cask"><div class="in">
+            <input type="text" placeholder="Pergunte qualquer coisa sobre a sua vida">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </div></div>
+          <span class="cfull">Conversa completa →</span>
+        </aside>
+      </div>
+      <div class="pe">
+        <h4>Check-in · registrado</h4>
+        <div class="checkin" style="display:block;border-bottom:none;padding-top:0;padding-bottom:0">
+          <p class="eyebrow">Check-in</p>
+          <p class="frase">Como foi o dia?</p>
+          <div class="moods">
+            <button class="mood" type="button">Péssimo</button>
+            <button class="mood" type="button">Ruim</button>
+            <button class="mood" type="button">Neutro</button>
+            <button class="mood on" type="button">Bem</button>
+            <button class="mood" type="button">Ótimo</button>
+          </div>
+          <div class="ck-done">Registrado às 21:14 · <b>Bem · "Dia produtivo, treino feito."</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+</body>
+</html>
