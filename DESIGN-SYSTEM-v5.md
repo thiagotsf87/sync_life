@@ -107,8 +107,9 @@ Não há mais "4 temas selecionáveis" como no v3. O v5 define **modo por contex
 - **Landing:** página clara; seções escuras recebem a classe `.dk`, que re-declara as mesmas
   CSS vars (`--bg`, `--s1`, `--line`, `--t1`…) com os valores dark. Os componentes não sabem
   em que modo estão: leem sempre as mesmas vars.
-- **App:** página escura; a banda do briefing ("folha") usa `--paper/--ink/--ink2/--pline`
-  para simular papel impresso.
+- **App:** página escura; a banda clara do briefing ("folha") usa o flip `.lt` (mesma
+  re-declaração de vars do `.dk`, com os valores do tema claro). `--paper/--ink/--ink2/--pline`
+  seguem existindo apenas como tokens **legados** dos protótipos r6; a implementação v5 usa `.lt`.
 - **Objetos sempre escuros:** pill nav (`.navwrap`) e mini-telas (`.scard`) re-declaram as
   vars dark localmente, mesmo em página clara. É isso que dá o contraste de objeto do Osmo.
 
