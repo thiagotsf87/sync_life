@@ -123,4 +123,6 @@
 .camada.sheet.open{transform:none}
 .camada.sheet .handle{width:44px;height:4px;border-radius:2px;background:var(--line-h);margin:10px auto 0}
 
+@media (max-width:960px){.bar .date{display:none}}
+
 @media (prefers-reduced-motion:reduce){.scrim,.camada{transition:none}}

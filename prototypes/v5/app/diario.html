@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="../shared/app.css">
 <style>
   .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
-  .ele{color:var(--ele)} .coral{color:var(--coral)}
+  .ele{color:var(--ele)}
 
   /* ─── masthead: saudação + selo da edição ─── */
   .mast{padding:52px 0 44px;display:flex;justify-content:space-between;align-items:flex-end;gap:36px}
@@ -31,7 +31,7 @@
   .selo .s{font:400 10.5px var(--int);color:var(--t3);margin-top:3px}
 
   /* ─── A FOLHA: briefing impresso (banda .lt; filhos usam os tokens normais) ─── */
-  .folha .in{max-width:1180px;margin:0 auto;padding:64px clamp(20px,4vw,56px) 58px;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(36px,5vw,80px)}
+  .folha > .in{max-width:1180px;margin:0 auto;padding:64px clamp(20px,4vw,56px) 58px;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(36px,5vw,80px)}
   .folha .eyebrow{color:var(--t2)}
   .folha h2{font:500 clamp(22px,2.6vw,32px)/1.2 var(--gro);letter-spacing:-.03em;margin:16px 0 18px}
   .folha .body{font:400 15.5px/1.75 var(--int);color:var(--t2);max-width:62ch}
@@ -62,16 +62,17 @@
   .frase{font:500 20px var(--gro);letter-spacing:-.02em;margin:10px 0 16px}
 
   /* ─── HOJE: linha do dia ─── */
-  .hoje{border-bottom:1px solid var(--line);padding:26px 0}
-  .hoje .in{display:flex;align-items:baseline;gap:26px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
-  .hoje .in::-webkit-scrollbar{display:none}
+  .hoje{border-bottom:1px solid var(--line);padding:26px 0;position:relative}
+  .hoje::after{content:"";position:absolute;top:0;right:0;bottom:0;width:70px;background:linear-gradient(90deg,transparent,var(--bg));pointer-events:none}
+  .hoje > .in{display:flex;align-items:baseline;gap:26px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .hoje > .in::-webkit-scrollbar{display:none}
   .hoje .eyebrow{flex-shrink:0}
   .ev{display:flex;align-items:baseline;gap:9px;white-space:nowrap;flex-shrink:0}
-  .ev time{font:700 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
   .ev span{font:500 13px var(--int);color:var(--t2)}
   .ev.money span{color:var(--t1)}
   .ev .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
   .ev .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
+  .ev time,.ev span.num{font:700 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
 
   /* ─── números do mês ─── */
   .nums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
@@ -119,6 +120,7 @@
   /* ─── estados: anotação do protótipo (fora do fluxo do app) ─── */
   .proto-estados{border-top:3px double var(--line-h);margin-top:72px;padding-top:34px;padding-bottom:80px}
   .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .proto-estados .camada{position:static;transform:none;height:auto;width:100%;max-width:460px;box-shadow:none}
   .pe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
   .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
   .pe .ck-done{margin-top:16px}
@@ -134,7 +136,6 @@
     .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
     .dims{grid-template-columns:1fr}
     .aten{grid-template-columns:1fr}
-    .bar .date{display:none}
     .pe-grid{grid-template-columns:1fr}
   }
 </style>
@@ -249,11 +250,11 @@
     <div class="wrap in">
       <span class="eyebrow">Hoje</span>
       <span class="ev"><time class="num">07:30</time><span>Fisioterapia</span></span>
-      <span class="ev money"><span class="tag due">EM 3 DIAS</span><span>Aluguel</span><time class="num">R$&nbsp;1.200,00</time></span>
+      <span class="ev money"><span class="tag due">EM 3 DIAS</span><span>Aluguel</span><span class="num">R$&nbsp;1.200,00</span></span>
       <span class="ev"><time class="num">TER 10:00</time><span>1:1 com gestor</span></span>
-      <span class="ev money"><span class="tag">QUA</span><span>Aporte automático</span><time class="num">R$&nbsp;580,00</time></span>
+      <span class="ev money"><span class="tag">QUA</span><span>Aporte automático</span><span class="num">R$&nbsp;580,00</span></span>
       <span class="ev"><time class="num">SEX 20:00</time><span>Jantar com Ana</span></span>
-      <span class="ev money"><span class="tag">EM 5 DIAS</span><span>Internet</span><time class="num">R$&nbsp;89,90</time></span>
+      <span class="ev money"><span class="tag">EM 5 DIAS</span><span>Internet</span><span class="num">R$&nbsp;89,90</span></span>
     </div>
   </section>
 
@@ -363,13 +364,13 @@
 </aside>
 
 <!-- estados: anotação do protótipo -->
-<section class="proto-estados">
+<section class="proto-estados" inert>
   <div class="wrap">
     <p class="eyebrow">Estados · anotação do protótipo</p>
     <div class="pe-grid">
       <div class="pe">
         <h4>Camada do coach · conversa</h4>
-        <aside class="camada" style="position:static;transform:none;height:auto;width:100%;max-width:460px">
+        <aside class="camada">
           <header class="chead">
             <p class="eyebrow"><b>Coach</b> · lendo: seu diário de hoje</p>
             <button class="x" type="button" aria-label="Fechar">
@@ -401,7 +402,7 @@
       </div>
       <div class="pe">
         <h4>Camada do coach · vazia</h4>
-        <aside class="camada" style="position:static;transform:none;height:auto;width:100%;max-width:460px">
+        <aside class="camada">
           <header class="chead">
             <p class="eyebrow"><b>Coach</b> · lendo: seu diário de hoje</p>
             <button class="x" type="button" aria-label="Fechar">
