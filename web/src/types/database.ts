@@ -2330,6 +2330,61 @@ export interface Database {
           created_at?: string
         }
       }
+
+      // ─── COACH / DIARIO ────────────────────────────────────────────
+      coach_briefs: {
+        Row: {
+          id: string
+          user_id: string
+          brief_date: string
+          module_id: string
+          payload: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          brief_date: string
+          module_id?: string
+          payload: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          brief_date?: string
+          module_id?: string
+          payload?: Json
+          created_at?: string
+        }
+      }
+
+      daily_checkins: {
+        Row: {
+          id: string
+          user_id: string
+          checkin_date: string
+          mood: number
+          note: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          checkin_date: string
+          mood: number
+          note?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          checkin_date?: string
+          mood?: number
+          note?: string | null
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -2584,3 +2639,12 @@ export type SkillStudyTrackUpdate = Database['public']['Tables']['skill_study_tr
 export type PlanningEvent = Database['public']['Tables']['planning_events']['Row']
 export type PlanningEventInsert = Database['public']['Tables']['planning_events']['Insert']
 export type PlanningEventUpdate = Database['public']['Tables']['planning_events']['Update']
+
+// Coach / Diario
+export type CoachBrief = Database['public']['Tables']['coach_briefs']['Row']
+export type CoachBriefInsert = Database['public']['Tables']['coach_briefs']['Insert']
+export type CoachBriefUpdate = Database['public']['Tables']['coach_briefs']['Update']
+
+export type DailyCheckin = Database['public']['Tables']['daily_checkins']['Row']
+export type DailyCheckinInsert = Database['public']['Tables']['daily_checkins']['Insert']
+export type DailyCheckinUpdate = Database['public']['Tables']['daily_checkins']['Update']
