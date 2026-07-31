@@ -12,6 +12,10 @@ html.v5-scroll, html.v5-scroll body{overflow-x:clip} /* marquees sangram além d
 /* o fundo mora no BODY (como no protótipo): a aurora fixa em z-index:-1 pinta acima do
    fundo do canvas raiz; um background opaco no .v5 a cobriria (negative child < block bg) */
 html.v5-scroll body{background:#f4f4f4}
+html.v5-scroll.v5-dark body{background:#151313} /* telas escuras do app (onboarding) */
+/* utilitário de copy por device (árvore única responsiva: texto do protótipo certo por viewport) */
+.v5 .m-only{display:none}
+@media (max-width:1023px){ .v5 .d-only{display:none} .v5 .m-only{display:inline} }
 .v5{color:var(--t1);font:400 15px/1.6 var(--int);-webkit-font-smoothing:antialiased;min-height:100vh}
 .v5 ::selection{background:var(--roxo);color:#fff}
 .v5 a{color:inherit;text-decoration:none}

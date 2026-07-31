@@ -1,0 +1,86 @@
+/* SyncLife DS v5 — primitivas de formulário das telas públicas/auth (Onda 1).
+   Porte 1:1 de prototypes/v5/shared/auth.css, escopado sob .v5.
+   A seção .proto-estados do protótipo é anotação de aprovação e NÃO entra no app. */
+
+/* ── campo de formulário: label eyebrow + input objeto (radius 12, foco roxo) ── */
+.v5 .fld{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.v5 .fld .lblrow{display:flex;justify-content:space-between;align-items:baseline}
+.v5 .fld label{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+.v5 .fld .lnk{font:500 12px var(--int);color:var(--roxo);cursor:pointer}
+.v5 .fld .lnk:hover{color:var(--roxo-h)}
+.v5 .inwrap{position:relative}
+.v5 .fld input{width:100%;background:var(--s1);border:1px solid var(--line);border-radius:12px;
+  padding:13px 16px;font:400 14.5px var(--int);color:var(--t1);outline:none;
+  transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+.v5 .fld input::placeholder{color:var(--t3)}
+.v5 .fld input:focus{border-color:var(--roxo);box-shadow:0 0 0 3px rgba(104,64,255,.12)}
+.v5 .fld input.err{border-color:var(--coral);box-shadow:0 0 0 3px rgba(248,65,49,.08)}
+.v5 .fld .msg{font:400 12px/1.5 var(--int);color:var(--t3)}
+.v5 .fld .msg.err{color:var(--coral)}
+.v5 .inwrap input{padding-right:44px}
+.v5 .eyebtn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;
+  color:var(--t3);padding:8px;display:flex;transition:color .3s var(--ease)}
+.v5 .eyebtn:hover{color:var(--t1)}
+
+/* ── OAuth + divisor editorial ── */
+.v5 .oauth{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.v5 .btn-oauth{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 16px;cursor:pointer;
+  background:var(--s1);border:1px solid var(--line);border-radius:999px;font:600 13.5px var(--int);color:var(--t1);
+  transition:border-color .3s var(--ease),transform .3s var(--ease)}
+.v5 .btn-oauth:hover{border-color:var(--line-h);transform:translateY(-1px)}
+.v5 .divisor{display:flex;align-items:center;gap:14px;margin:22px 0 20px;
+  font:700 9.5px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+.v5 .divisor::before,.v5 .divisor::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* ── checkbox editorial (termos, manter conectado) ── */
+.v5 .ckrow{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font:400 13px/1.55 var(--int);color:var(--t2)}
+.v5 .ckrow a{color:var(--roxo);border-bottom:1px solid rgba(104,64,255,.35)}
+.v5 .ckrow input{position:absolute;opacity:0;width:0;height:0}
+.v5 .ckrow .ck{flex-shrink:0;width:18px;height:18px;border:1px solid var(--line-h);border-radius:6px;margin-top:1px;
+  display:inline-flex;align-items:center;justify-content:center;background:var(--s1);
+  transition:background .3s var(--ease),border-color .3s var(--ease)}
+.v5 .ckrow .ck svg{opacity:0;transition:opacity .2s var(--ease)}
+.v5 .ckrow input:checked + .ck{background:var(--roxo);border-color:var(--roxo)}
+.v5 .ckrow input:checked + .ck svg{opacity:1}
+.v5 .ckrow input:focus-visible + .ck{box-shadow:0 0 0 3px rgba(104,64,255,.18)}
+
+/* ── força da senha: 4 segmentos hairline (coral → neutro → verde-delta) ── */
+.v5 .forca{display:flex;align-items:center;gap:6px;margin-top:2px;visibility:hidden}
+.v5 .forca.f1,.v5 .forca.f2,.v5 .forca.f3,.v5 .forca.f4{visibility:visible}
+.v5 .forca i{height:3px;flex:1;border-radius:2px;background:var(--s2);transition:background .3s var(--ease)}
+.v5 .forca .flbl{font:600 11px var(--int);color:var(--t3);margin-left:8px;min-width:70px;text-align:right;transition:color .3s var(--ease)}
+.v5 .forca.f1 i:nth-child(1){background:var(--coral)}
+.v5 .forca.f1 .flbl{color:var(--coral)}
+.v5 .forca.f2 i:nth-child(-n+2){background:var(--t3)}
+.v5 .forca.f2 .flbl{color:var(--t2)}
+.v5 .forca.f3 i:nth-child(-n+3){background:#44a616}
+.v5 .forca.f3 .flbl{color:#44a616}
+.v5 .forca.f4 i{background:#44a616}
+.v5 .forca.f4 .flbl{color:#44a616}
+
+/* ── passos de fluxo (recuperação de senha): segmentos finos, roxo = feito ── */
+.v5 .passos{display:flex;gap:8px;width:132px}
+.v5 .passos i{height:2px;flex:1;border-radius:1px;background:var(--s2)}
+.v5 .passos i.on{background:var(--roxo)}
+
+/* ── botão de submit em largura total ── */
+.v5 .btn-full{width:100%;justify-content:center;padding:14px 26px;font-size:14.5px}
+.v5 .btn[disabled]{opacity:.55;cursor:not-allowed;transform:none}
+
+/* ── a janela (objeto escuro, E-11): o produto espiando a tela de auth ── */
+.v5 .win{--t1:#f4f4f4;--t2:#b8b8b8;--t3:#817f7f;--line:rgba(255,255,255,.09);color:var(--t1);
+  background:#1b1918;border:1px solid rgba(255,255,255,.09);border-radius:20px;overflow:hidden;
+  box-shadow:0 34px 70px -24px rgba(21,19,19,.5)}
+.v5 .win .tb{display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line);background:#161414}
+.v5 .win .tb i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12)}
+.v5 .win .tb .nm{font:600 11.5px var(--int);color:var(--t2);margin-left:4px}
+.v5 .win .tb .ix{margin-left:auto;font:700 10px var(--gro);color:var(--t3)}
+.v5 .win .bd{padding:22px 24px}
+
+/* ── banner de estado (erro/aviso do fluxo real) ── */
+.v5 .banner-err{display:flex;flex-direction:column;gap:10px;border-left:2px solid var(--coral);padding:12px 16px;
+  background:rgba(248,65,49,.05);border-radius:0 10px 10px 0;font:400 13px/1.55 var(--int);color:var(--t2);
+  margin-bottom:16px}
+.v5 .banner-err b{color:var(--t1);font-weight:600}
+.v5 .banner-err .btn{align-self:flex-start;padding:8px 16px;font-size:12.5px}
+.v5 .banner-ok{border-left-color:#44a616;background:rgba(68,166,22,.06)}

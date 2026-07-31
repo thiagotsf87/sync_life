@@ -1,0 +1,171 @@
+/* Onda 1 · telas de auth v5 — porte dos protótipos aprovados (tag poc-onda1-publico-auth-r2):
+   auth/{login,cadastro,esqueceu-senha,redefinir-senha}{.html,.mobile.html}.
+   Árvore ÚNICA responsiva: base = protótipo desktop; @media <1024 = protótipo mobile dedicado.
+   Escopos: .av (chrome comum) · .av-split (login+cadastro) · .av-sheet (senhas)
+            .av-login / .av-cad (peças específicas). */
+
+/* ── chrome comum ── */
+.v5 .av{min-height:100vh;font-size:15px}
+.v5 .av .aurora-fix{position:fixed;inset:0;z-index:-1;pointer-events:none;filter:blur(56px) saturate(1.08);opacity:.65}
+.v5 .av .aurora-fix canvas{width:100%;height:100%;display:block}
+
+.v5 .av .navwrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:70;width:min(880px,94vw);
+  --t1:#f4f4f4;--t2:#b8b8b8;--line:rgba(255,255,255,.1);color:var(--t1)}
+.v5 .av nav{display:flex;align-items:center;justify-content:space-between;gap:18px;height:56px;
+  padding:0 10px 0 22px;background:#0d0c0cf2;border:1px solid var(--line);border-radius:16px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.v5 .av .brand{font:700 18px var(--gro);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:11px}
+.v5 .av .brand em{font-style:normal;color:var(--roxo)}
+.v5 .av .brand .bs{--sz:22px}
+.v5 .av .nav-cta{display:flex;align-items:center;gap:14px}
+.v5 .av .nav-cta .alt{font:500 13px var(--int);color:var(--t2)}
+.v5 .av .nav-cta .alt:hover{color:var(--t1)}
+.v5 .av nav .btn-roxo{padding:9px 18px;font-size:13px}
+.v5 .av nav .btn-ghost{padding:9px 18px;font-size:13px;border-color:rgba(255,255,255,.18);color:#f4f4f4}
+
+/* ── login/cadastro: formulário × janela escura ── */
+.v5 .av-split .auth-grid{display:grid;justify-content:center;gap:clamp(48px,7vw,120px);align-items:center;padding-bottom:40px}
+.v5 .av-login .auth-grid{grid-template-columns:minmax(360px,430px) minmax(360px,470px);padding-top:150px;min-height:88vh}
+.v5 .av-cad .auth-grid{grid-template-columns:minmax(360px,430px) minmax(340px,420px);padding-top:140px;min-height:92vh}
+.v5 .av-split .fcol .eyebrow{margin-bottom:16px}
+.v5 .av-split .fcol h1{font:500 clamp(2.2rem,3.4vw,3rem)/1.05 var(--gro);letter-spacing:-.045em;color:var(--t1)}
+.v5 .av-login .fcol .sub{font:400 14.5px/1.65 var(--int);color:var(--t2);margin:14px 0 30px;max-width:40ch}
+.v5 .av-cad .fcol .sub{font:400 14.5px/1.65 var(--int);color:var(--t2);margin:14px 0 26px;max-width:42ch}
+.v5 .av-split .fcol .sub b{color:var(--t1);font-weight:600}
+.v5 .av-login .fcol .foot{margin-top:26px;font:400 13.5px var(--int);color:var(--t2)}
+.v5 .av-cad .fcol .foot{margin-top:24px;font:400 13.5px var(--int);color:var(--t2)}
+.v5 .av-split .fcol .foot a{color:var(--roxo);font-weight:500;border-bottom:1px solid rgba(104,64,255,.35)}
+.v5 .av-split .fcol .foot a:hover{color:var(--roxo-h)}
+.v5 .av-login form .ckrow{margin:4px 0 22px}
+.v5 .av-cad form .ckrow{margin:6px 0 20px}
+
+/* a coluna da janela (só desktop) */
+.v5 .av-split .wcol{display:flex;flex-direction:column;gap:18px}
+.v5 .av-login .win .eyebrow{color:var(--t3);margin-bottom:14px}
+.v5 .av-login .win .quote{font:400 14.5px/1.7 var(--int);color:var(--t1)}
+.v5 .av .win .quote strong{font-family:var(--gro);font-weight:700;letter-spacing:-.02em}
+.v5 .av .win .quote .warn{color:var(--coral);font-weight:600}
+.v5 .av-login .score-row{display:flex;align-items:baseline;gap:14px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.v5 .av-login .score-row .n{font:700 56px/1 var(--gro);letter-spacing:-.06em}
+.v5 .av-login .score-row .meta{display:flex;flex-direction:column;gap:4px}
+.v5 .av .score-row .up{font:600 12.5px var(--gro);color:var(--ele)}
+.v5 .av .score-row .lbl{font:400 11.5px/1.5 var(--int);color:var(--t2)}
+.v5 .av-login .win .rowlist{margin-top:16px;border-top:1px solid var(--line)}
+.v5 .av-login .win .r{display:flex;align-items:center;gap:11px;padding:10px 2px;border-bottom:1px dashed var(--line);
+  font:400 13px var(--int);color:var(--t2)}
+.v5 .av-login .win .r:last-child{border-bottom:none}
+.v5 .av-login .win .r time{font:600 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3);min-width:44px}
+.v5 .av-login .win .r b{color:var(--t1);font-weight:500}
+.v5 .av-login .win .assin{font:400 11px/1.6 var(--int);color:var(--t3);margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.v5 .av-split .wcol .handrow{display:flex;align-items:center;gap:10px;padding-left:8px}
+.v5 .av .handrow svg{color:var(--coral);flex-shrink:0}
+.v5 .av-cad .win .eyebrow{margin-bottom:6px}
+.v5 .av-cad .wcol .arealist{border-top:1px solid var(--line);margin-top:12px}
+.v5 .av-cad .wcol .arow{display:grid;grid-template-columns:40px 1fr auto;gap:13px;align-items:center;
+  padding:8px 2px;border-bottom:1px dashed var(--line)}
+.v5 .av-cad .arow:last-child{border-bottom:none}
+.v5 .av-cad .wcol .arow .nm{font:500 13.5px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.v5 .av-cad .arow .ix{font:700 10px var(--gro);color:var(--t3)}
+.v5 .av-cad .wcol .proof{display:flex;gap:16px;flex-wrap:wrap;padding-left:6px}
+.v5 .av-cad .wcol .proof > span{display:inline-flex;align-items:center;gap:7px;font:500 12px var(--int);color:var(--t3)}
+.v5 .av-cad .proof svg{color:var(--roxo)}
+
+/* o fecho mobile (janela depois do formulário) — só aparece <1024 */
+.v5 .av-split .tease{display:none;padding-top:8px;padding-bottom:60px}
+.v5 .av-split .tease .eyebrow{margin-bottom:16px}
+.v5 .av-login .tease .quote{font:400 13.5px/1.65 var(--int);color:var(--t1)}
+.v5 .av-login .tease .score-row{display:flex;align-items:baseline;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.v5 .av-login .tease .score-row .n{font:700 46px/1 var(--gro);letter-spacing:-.06em}
+.v5 .av-login .tease .score-row .meta{display:flex;flex-direction:column;gap:3px}
+.v5 .av-login .tease .score-row .up{font-size:12px}
+.v5 .av-login .tease .score-row .lbl{font-size:11px}
+.v5 .av-login .tease .assin{font:400 10.5px/1.6 var(--int);color:var(--t3);margin-top:14px;padding-top:11px;border-top:1px solid var(--line)}
+.v5 .av-split .tease .handrow{display:flex;align-items:center;gap:9px;margin-top:14px;padding-left:6px}
+.v5 .av-cad .tease .win .bd{padding:16px 18px}
+.v5 .av-cad .tease .arealist{border-top:none;margin-top:0}
+.v5 .av-cad .tease .arow{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;
+  padding:8px 2px;border-bottom:1px dashed var(--line)}
+.v5 .av-cad .tease .arow .nm{font:500 13px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.v5 .av-cad .tease .proof{display:flex;gap:13px;flex-wrap:wrap;margin-top:16px;padding-left:4px}
+.v5 .av-cad .tease .proof > span{display:inline-flex;align-items:center;gap:6px;font:500 11.5px var(--int);color:var(--t3)}
+
+/* ── esqueceu/redefinir: coluna centrada sem caixa (E-04) ── */
+.v5 .av-sheet .volta{position:fixed;top:22px;left:22px;z-index:70}
+.v5 .av-sheet .volta a{display:inline-flex;align-items:center;gap:8px;font:500 13px var(--int);color:var(--t2);
+  border:1px solid var(--line);border-radius:999px;padding:9px 16px;background:rgba(255,255,255,.6);
+  backdrop-filter:blur(8px);transition:color .3s var(--ease),border-color .3s var(--ease)}
+.v5 .av-sheet .volta a:hover{color:var(--t1);border-color:var(--line-h)}
+.v5 .av-sheet .sheet{max-width:400px;margin:0 auto;padding:120px 20px 80px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.v5 .av-red .sheet{padding-bottom:90px}
+.v5 .av-sheet .lockup{display:inline-flex;align-items:center;gap:11px;font:700 20px var(--gro);letter-spacing:-.02em;color:var(--t1)}
+.v5 .av-sheet .lockup em{font-style:normal;color:var(--roxo)}
+.v5 .av-sheet .lockup .bs{--sz:30px}
+.v5 .av-sheet .sheet .passos{margin:34px auto 30px}
+.v5 .av-sheet .sheet .eyebrow{margin-bottom:14px}
+.v5 .av-sheet .sheet h1{font:500 clamp(1.9rem,3vw,2.5rem)/1.08 var(--gro);letter-spacing:-.04em;color:var(--t1)}
+.v5 .av-sheet .sheet .sub{font:400 14px/1.65 var(--int);color:var(--t2);margin-top:12px;max-width:36ch}
+.v5 .av-sheet .sheet .sub b{color:var(--t1);font-weight:600}
+.v5 .av-sheet .sheet form{width:100%;margin-top:28px;text-align:left}
+.v5 .av-sheet .footlnk{margin-top:26px;font:400 13px var(--int);color:var(--t3)}
+.v5 .av-sheet .footlnk a{color:var(--roxo);font-weight:500;border-bottom:1px solid rgba(104,64,255,.35)}
+.v5 .av-sheet .nota{margin-top:22px;font:400 12.5px/1.6 var(--int);color:var(--t3);max-width:34ch}
+
+.v5 .av .btn .btn-ico{display:inline-flex;align-items:center}
+
+/* estado 2: e-mail enviado */
+.v5 .av-rec .ok-selo{width:64px;height:64px;border-radius:50%;border:1px solid var(--line-h);position:relative;
+  display:flex;align-items:center;justify-content:center;margin:34px 0 22px}
+.v5 .av-rec .ok-selo::after{content:"";position:absolute;inset:5px;border:1px solid var(--line);border-radius:50%}
+.v5 .av-rec .ok-selo svg{color:#44a616}
+.v5 .av .anim .rv .ok-selo .ck{stroke-dasharray:34;stroke-dashoffset:34;transition:stroke-dashoffset .9s var(--ease) .3s}
+.v5 .av .anim .rv.in .ok-selo .ck{stroke-dashoffset:0}
+.v5 .av-rec .infos{width:100%;margin-top:26px;border-top:1px solid var(--line);text-align:left}
+.v5 .av-rec .infos .r{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line);
+  font:400 13px/1.5 var(--int);color:var(--t2)}
+.v5 .av-rec .infos .r svg{flex-shrink:0;color:var(--t3)}
+.v5 .av-rec .infos .r b{color:var(--t1);font-weight:600}
+.v5 .av-rec .reenviar{margin-top:24px}
+
+/* ── mobile dedicado (<1024): valores dos protótipos .mobile.html ── */
+@media (max-width:1023px){
+  .v5 .av{font-size:14.5px}
+  .v5 .av .aurora-fix{filter:blur(48px) saturate(1.08)}
+  .v5 .av .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  .v5 .av .navwrap{top:12px;width:calc(100vw - 24px)}
+  .v5 .av nav{gap:12px;height:52px;padding:0 8px 0 16px;border-radius:14px}
+  .v5 .av .brand{font-size:16.5px;gap:8px}
+  .v5 .av .brand .bs{--sz:21px}
+  .v5 .av .nav-cta .alt{display:none}
+  .v5 .av nav .btn-roxo{padding:8px 15px;font-size:12.5px}
+  .v5 .av nav .btn-ghost{padding:8px 15px;font-size:12.5px}
+
+  .v5 .av-split .auth-grid{grid-template-columns:1fr;gap:0;padding-top:104px;padding-bottom:44px;min-height:0}
+  .v5 .av-split .fcol .eyebrow{margin-bottom:12px}
+  .v5 .av-split .fcol h1{font:500 clamp(1.9rem,9vw,2.3rem)/1.06 var(--gro);letter-spacing:-.045em}
+  .v5 .av-split .fcol .sub{font-size:13.5px;line-height:1.6;margin:12px 0 24px}
+  .v5 .av-split .fcol .foot{margin-top:22px;font-size:13px;text-align:center}
+  .v5 .av-login form .ckrow{margin:4px 0 20px}
+  .v5 .av-cad form .ckrow{margin:6px 0 20px}
+  .v5 .av-split .wcol{display:none}
+  .v5 .av-split .tease{display:block}
+
+  .v5 .av-sheet .volta{top:14px;left:16px}
+  .v5 .av-sheet .volta a{gap:7px;font-size:12.5px;padding:8px 14px}
+  .v5 .av-sheet .sheet{max-width:390px;padding:96px 20px 60px}
+  .v5 .av-red .sheet{padding-bottom:70px}
+  .v5 .av-sheet .lockup{gap:10px;font-size:18px}
+  .v5 .av-sheet .lockup .bs{--sz:28px}
+  .v5 .av-sheet .sheet .passos{margin:28px auto 26px}
+  .v5 .av-sheet .sheet .eyebrow{margin-bottom:12px}
+  .v5 .av-sheet .sheet h1{font:500 clamp(1.7rem,8vw,2.1rem)/1.08 var(--gro)}
+  .v5 .av-sheet .sheet .sub{font-size:13.5px;max-width:34ch;margin-top:11px}
+  .v5 .av-sheet .sheet form{margin-top:24px}
+  .v5 .av-sheet .footlnk{margin-top:24px;font-size:12.5px}
+  .v5 .av-sheet .nota{margin-top:20px;font-size:12px;max-width:32ch}
+  .v5 .av-rec .ok-selo{width:58px;height:58px;margin:26px 0 20px}
+  .v5 .av-rec .infos{margin-top:22px}
+  .v5 .av-rec .infos .r{gap:11px;padding:12px 2px;font-size:12.5px}
+  .v5 .av-rec .reenviar{margin-top:22px}
+  .v5 .av .btn .btn-ico{display:none} /* o protótipo mobile não tem a seta no submit */
+}

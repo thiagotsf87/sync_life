@@ -12,7 +12,7 @@
 - **✅ LANDING DESKTOP APROVADA (r15):** aurora global azul/lilás/roxo passeando atrás das áreas claras · palcos produto/IA sem pin com coreografia na travessia (voo com encaixe × pop de mensageiro) · banda roxa sólida da IA · pricing em 2 cartões iguais · FAQ 2 colunas · wordmark gigante inteiro · copy vendável com números canônicos. Já aprovados antes: marca 3D cromo líquido (DS §5), bússola WebGL (DS §5.6), seção "As oito áreas".
 - **✅ ONDA 0 IMPLEMENTADA em `web/` (2026-07-30):** rota `/` agora renderiza a landing v5 (`LandingV5` = árvores `LandingVivaDesktop` r15 + `LandingVivaMobile` m1, CSS decide qual aparece em 1024px; árvore oculta = E-02 estático). Fundação A no lugar: `styles/{tokens-v5,v5,bussola-3d}.css` escopados sob `.v5`, Inter+Caveat no `layout.tsx`, `lib/v5/{bussola-3d,viva,compass-gl}.ts`, deps gsap+lenis+three. Teste de identidade: desktop DELTA 0px em todas as âncoras (doc 6947px idêntico); mobile idêntico em device (no preview desktop o protótipo perde 15px pra scrollbar nativa; o app usa a scrollbar do globals v3). Servir local: `npx next start -p 3006` (porta 3006; se EADDRINUSE, matar o listener antigo).
 - **✅ MOBILE m1 APROVADO (2026-07-30, tag `poc-landing-viva-mobile-m1`):** `landing/landing-viva.mobile.html` (390×844, dedicado) porta a r15 inteira pro toque: aurora global, arco com régua de sintonia, bússola WebGL (DPR 1) com fallback CSS, coreografia em scrub por elemento (voo com encaixe × pop de mensageiro), pricing empilhado, wordmark inteiro. Scroll nativo, sem Lenis.
-- **Próximo passo: APROVAÇÃO da Onda 1** (público + auth). Os 12 protótipos (6 telas ×2) estão no hub em "em aprovação": pricing, login, cadastro, esqueceu a senha, redefinir senha, onboarding. Feedback → iterar → re-apresentar; com o "aprovado", implementação em `web/` + teste de identidade em `next start`.
+- **✅ ONDA 1 COMPLETA (2026-07-31):** protótipos aprovados (tag `poc-onda1-publico-auth-r2`) e IMPLEMENTADOS em `web/`: `/pricing` (página real, era redirect), `/login`, `/cadastro`, `/esqueceu-senha`, `/redefinir-senha`, `/onboarding`, todos no v5 com a lógica Supabase do v3 preservada. QA de identidade em `next start -p 3006`: pricing delta 0 (doc 3816px idêntico), tipografia exata nas 6, console zero em 12 navegações. **Próximo: Onda 2 (chrome do app + Dashboard, 3 telas ×2 + decisão do chrome mobile), protótipos primeiro.**
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
 ## Status das ondas
@@ -20,7 +20,7 @@
 | Onda | Escopo | Protótipo | Aprovação | Implementação | QA identidade |
 |---|---|---|---|---|---|
 | 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
-| 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ⏳ em aprovação | – | – |
+| 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ✅ **APROVADA (r2, 2026-07-31)** | ✅ `web/` (2026-07-31) | ✅ desktop + mobile ok, console zero |
 | 02 | Chrome do app + Dashboard (3 telas) | – | – | – | – |
 | 03 | Coach | – | – | – | – |
 | 04 | 01 Finanças (8 telas, 2 lotes) | – | – | – | – |
@@ -34,6 +34,36 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-07-31 · Sessão 19 — ✅ APROVAÇÃO da Onda 1 + IMPLEMENTAÇÃO em `web/` + QA de identidade
+
+**Veredito do usuário:** "prototipos aprovados." → tag `poc-onda1-publico-auth-r2`; ciclo do programa seguiu direto pra implementação.
+
+**Implementado (tudo v5, lógica Supabase do v3 preservada):**
+- **Fundação da onda:** `styles/auth-v5.css` (porte do shared/auth.css sob `.v5`) · `v5.css` ganhou `html.v5-scroll.v5-dark body{background:#151313}` (telas escuras) e o utilitário `.d-only/.m-only` (copy do protótipo certo por viewport na árvore única) · `components/auth-v5/chrome.tsx` (useAuthBoot: gate `.anim`+aurora+bússolas+reveals; AreaIconSlot responsivo; Forca; ícones SVG 1:1).
+- **Auth (árvore ÚNICA responsiva — formulários com estado não podem duplicar DOM por causa do autofill):** `LoginV5` (signInWithPassword + checagem de onboarding + OAuth Google + reenviar confirmação; credenciais incorretas = msg inline do protótipo, não-confirmado = banner), `CadastroV5` (signUp + upsert do profile + força de senha + termos; e-mail já cadastrado = banner), `EsqueceuSenhaV5` (resetPasswordForEmail; estado 02 com eco do e-mail e check `#44a616` se desenhando), `RedefinirSenhaV5` (updateUser). CSS: `auth-screens.css` = desktop base + `@media <1024` com os valores dos protótipos mobile dedicados.
+- **`OnboardingV5`** (+`onboarding-v5.css`): guard de sessão + prefill do nome + persistência (profiles: full_name/mode/onboarding_completed/life_moments/active_modules → `/financas`); 4 passos com tabs desktop/prog mobile no mesmo DOM, ícones de rumo por área, bússola apontando a última área ativada (mínimo 1: nunca sem norte), selo 70 com prosa ecoando escolhas reais.
+- **`PricingV5`** (duas árvores `.pv-d`/`.pv-m`, padrão da landing): página real em `/pricing` (substitui o redirect pro `#precos`); alternador mensal/anual por árvore, comparativo, FAQ, Lenis só no desktop.
+- **Rotas:** `(auth)/{login,cadastro,esqueceu-senha,redefinir-senha}/page.tsx` viraram server pages finas com metadata + componente v5; `(auth)/layout.tsx` sem o wrapper v3 (`.auth-page`/tema forçado — loading/error usam Tailwind, seguem ok); `onboarding/{page,layout}.tsx` v5; `pricing/page.tsx` real.
+
+**Bugs reais pegos no QA de identidade (`next start -p 3006` × http.server 8123):**
+1. `.proof span` (4 classes) vencia `.v5 .m-only{display:none}` (2) e mostrava as DUAS copies ("Sem cartão de crédito Sem cartão") → seletor de filho direto `.proof > span`. Lição: com `.d-only/.m-only`, nunca estilizar `span` genérico por descendência.
+2. Seta do submit do esqueceu-senha aparecia no mobile: `style={{display:'inline-flex'}}` inline vencia a media query → classe `.btn-ico` com override no bloco mobile.
+3. **Onboarding SEM `.dk`** no wrapper (o protótipo tem `html.dk`): a tela era clara; parecia escura em QA anterior por VAZAMENTO do tema v3 (`data-theme` aplicado após visitar /dashboard) — falso positivo perigoso. Fix: `.onb dk`. Lição: nunca validar tela v5 logo após navegar pelo app v3 sem full reload limpo.
+
+**QA de identidade (medido):** pricing desktop DELTA 0 (doc 3816px idêntico, cartões 410×456, h1 76.8px/500); login/cadastro tipografia e larguras exatas (delta 7-8px de x = scrollbar do protótipo que tem a seção de estados, documentado); mobile 390 sem overflow-x, h1 35.1px idêntico, tease/wcol alternando certo; onboarding com fluxo completo REAL (login do usuário de QA → prefill "Admin SyncLife" → "Admin, o que você quer mudar?" → agulha -45° na área 08 → "Pronto, Admin."); **console 0 erros/0 warnings em 12 navegações** (6 rotas × 2 viewports).
+
+**Infra/QA (gotchas novos):**
+- Porta 3006: TaskStop não mata o filho do npx; um `next start` velho + `.next` rebuildado = servidor FRANKENSTEIN (markup novo, CSS 404). Sempre matar o listener por PID e subir de novo após build.
+- Supabase produção estava INACTIVE (restore via MCP) e o usuário de QA `admin@synclife.dev` existia mas a `SUPABASE_SERVICE_ROLE_KEY` do `.env.local` está PODRE (Invalid API key; anon ok). Queries logo após restore podem dar 42P01 transitório (banco subindo).
+- Senha de QA sem passar pelo transcript: env → arquivo temporário servido pelo http.server dos protótipos → `page.request.get` → fill → apagar arquivo (o sandbox do run_code não tem require/import de fs).
+- /onboarding tem guard TAMBÉM no middleware (307 sem sessão): QA visual exige login real.
+
+**Pendências:** flag do usuário de QA restaurada (onboarding_completed=true). Estados de erro que dependem de backend (e-mail já cadastrado etc.) validados visualmente via protótipo; fluxo real herdado do v3. Próximo: **Onda 2 — chrome do app + Dashboard** (shell v5 D+M com decisão do chrome mobile, dashboard, review, score), protótipos primeiro.
+
+**Arquivos:** `web/src/styles/{auth-v5.css,v5.css}` · `web/src/components/auth-v5/{chrome.tsx,auth-screens.css,LoginV5,CadastroV5,EsqueceuSenhaV5,RedefinirSenhaV5,OnboardingV5,onboarding-v5.css}` · `web/src/components/pricing-v5/{PricingV5.tsx,pricing-v5.css}` · `web/src/app/{(auth)/*,onboarding/*,pricing/page.tsx}` · `prototypes/v5/index.html` · este handoff.
 
 ---
 
