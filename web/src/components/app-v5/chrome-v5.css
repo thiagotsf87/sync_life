@@ -1,0 +1,20 @@
+/* SyncLife DS v5 — extras do chrome do app (Onda 2) que o app-v5.css
+   (porte do shared/app.css) não cobre:
+   1) gate de blocos desktop-only DENTRO do bar: `.v5 .d-only` (v5.css) empata
+      em especificidade (0-2-0) com `.v5 .btn-sm{display:inline-flex}` do
+      app-v5.css, carregado depois; a regra daqui (0-3-0) garante o sumiço da
+      "Revisão semanal" no mobile;
+   2) compaction mobile do chrome que no protótipo morava no <style> de
+      diario.mobile.html (bar 56px, brand 16px, ticker 24px, alvos de toque).
+   Tudo sob .v5; breakpoint único 1023px (padrão das ondas 0-1). */
+
+@media (max-width:1023px){
+  .v5 .bar .d-only{display:none}
+  .v5 .bar{height:56px;padding:0 18px}
+  .v5 .bar .brand{font-size:16px}
+  .v5 .bar .acts{gap:8px}
+  .v5 .bar .btn-sm.ghost{padding:11px 13px}
+  .v5 .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:1}
+  .v5 .ticker{height:24px}
+  .v5 .camada .csug .chip{padding:11px 16px}
+}
