@@ -115,7 +115,7 @@ window.SL_MOCK = {
     inativas: ['03 Tempo', '05 Mente', '06 Patrimônio', '07 Carreira'],
     melhorias: [
       { titulo: 'Registrar o peso desta semana', detalhe: 'O registro de peso vale 20% do score de Corpo e está pela metade.', onde: 'Corpo' },
-      { titulo: 'Fechar a meta de água de hoje', detalhe: 'Hidratação vale outros 20% de Corpo e é o componente mais baixo da área.', onde: 'Corpo' },
+      { titulo: 'Fechar a meta de água de hoje', detalhe: 'Hidratação vale outros 20% de Corpo e está em 60.', onde: 'Corpo' },
       { titulo: 'Concluir um objetivo do trimestre', detalhe: 'Objetivos concluídos valem metade do score de Futuro, a área de maior peso junto com Finanças.', onde: 'Futuro' },
     ],
   },

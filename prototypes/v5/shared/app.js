@@ -47,7 +47,7 @@ window.SLApp = (function () {
       }
       function close() { camada.classList.remove('open'); scrim.classList.remove('open'); }
       function play() { // chip ou envio: mostra a conversa mock no lugar do estado vazio
-        if (empty) empty.style.display = 'none';
+        if (empty) empty.hidden = true;
         if (thread) thread.hidden = false;
         var cb = camada.querySelector('.cbody'); if (cb) cb.scrollTop = cb.scrollHeight;
       }
