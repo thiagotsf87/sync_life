@@ -77,7 +77,7 @@ window.SL_MOCK = {
       p1: 'Você fechou a semana com R$ 1.850 de entradas contra R$ 940 de saídas, o melhor saldo semanal de julho. O lazer chegou perto do teto de novo, mas dessa vez você segurou: foram R$ 128 em quatro dias, contra R$ 310 na semana anterior.',
       p2: 'Na agenda, 11 dos 14 compromissos saíram e você protegeu 6h30 de foco, uma hora a mais que na semana passada. Corpo foi o único ponto que recuou: dois treinos previstos ficaram para trás e o peso não foi registrado.',
       hand: 'segunda-feira começa com o treino que sobrou!',
-      basedOn: '38 transações, 14 compromissos e 3 metas',
+      basedOn: '12 transações, 14 compromissos e 3 metas',
       assinatura: 'Escrito no domingo, 2 de agosto, às 20:10',
     },
   },
