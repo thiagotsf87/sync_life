@@ -2,7 +2,7 @@
 // Evolução de prototypes/poc-v5/shared/mock-data.js com a numeração CANÔNICA (§5.2 do DS):
 // as 8 áreas são pontos cardeais da bússola; Panorama/Conquistas/Configurações não são áreas.
 window.SL_MOCK = {
-  score: { value: 78, delta: 4, label: 'Life Sync Score' }, // global vem do engine (ponderado), não é média das dims
+  score: { value: 78, delta: 3, label: 'Life Sync Score' }, // global vem do engine (ponderado), não é média das dims
 
   // ordem canônica das áreas (LEI, §5.2): 01 Finanças no norte, horário até 08 Experiências
   areas: [
