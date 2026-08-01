@@ -1,0 +1,224 @@
+/* SyncLife DS v5 — CSS da tela Diário (Onda 2). Porte de
+   prototypes/v5/app/diario.html (base desktop) com a compaction <1024px de
+   prototypes/v5/app/diario.mobile.html num único @media (árvore única
+   responsiva). Tudo sob .v5 .diario (ordem-independente dos globais);
+   keyframes novos prefixados v5d-. A banda "Estados · anotação do protótipo"
+   dos protótipos é anotação e NÃO entra no app. */
+
+/* wrap da tela: 1180px + respiro clamp (vence o .wrap global por especificidade) */
+.v5 .diario .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+/* ── masthead: saudação + selo da edição ── */
+.v5 .diario .mast{padding:52px 0 44px;display:flex;justify-content:space-between;align-items:flex-end;gap:36px}
+.v5 .diario .mast h1{font:500 clamp(34px,4.6vw,58px)/1.02 var(--gro);letter-spacing:-.045em;margin-top:14px}
+.v5 .diario .mast .sub{font:400 14.5px var(--int);color:var(--t2);margin-top:14px;max-width:52ch}
+.v5 .diario .selo{flex-shrink:0;border:1px solid var(--line-h);border-radius:16px;padding:20px 24px 18px;text-align:center;min-width:168px;
+  position:relative;transition:border-color .35s var(--ease)}
+.v5 .diario .selo:hover{border-color:rgba(161,255,98,.4)}
+.v5 .diario .selo::after{content:"";position:absolute;inset:5px;border:1px solid var(--line);border-radius:11px;pointer-events:none}
+.v5 .anim .diario .selo{animation:v5d-breathe 4.5s var(--ease) infinite}
+@keyframes v5d-breathe{0%,100%{box-shadow:0 0 0 0 rgba(161,255,98,0)}50%{box-shadow:0 0 26px -6px rgba(161,255,98,.18)}}
+.v5 .diario .selo .k{font:700 9.5px var(--gro);letter-spacing:.24em;color:var(--t3)}
+.v5 .diario .selo .n{font:700 64px/1 var(--gro);letter-spacing:-.05em;margin:8px 0 6px}
+.v5 .diario .selo .d{font:600 11.5px var(--gro);color:var(--ele)}
+.v5 .diario .selo .s{display:block;font:400 10.5px var(--int);color:var(--t3);margin-top:3px;transition:color .3s var(--ease)}
+.v5 .diario .selo .s:hover{color:var(--t1)}
+
+/* ── A FOLHA: briefing impresso (banda .lt; filhos usam os tokens normais) ── */
+.v5 .diario .folha > .in{max-width:1180px;margin:0 auto;padding:64px clamp(20px,4vw,56px) 58px;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(36px,5vw,80px)}
+.v5 .diario .folha .eyebrow{color:var(--t2)}
+.v5 .diario .folha h2{font:500 clamp(22px,2.6vw,32px)/1.2 var(--gro);letter-spacing:-.03em;margin:16px 0 18px}
+.v5 .diario .folha .body{font:400 15.5px/1.75 var(--int);color:var(--t2);max-width:62ch}
+.v5 .diario .folha .body + .body{margin-top:14px}
+.v5 .diario .folha .body strong{color:var(--t1);font-weight:600}
+.v5 .diario .folha .body .warn{color:var(--coral);font-weight:600}
+.v5 .diario .folha .draw{display:flex;align-items:center;gap:8px;margin-top:18px}
+.v5 .diario .folha .draw .hand-arrow{color:var(--coral)}
+.v5 .diario .folha .draw .hand{transform:rotate(-2deg)}
+.v5 .diario .folha .ass{display:flex;align-items:center;gap:10px;margin-top:26px;font:400 11.5px var(--int);color:var(--t2)}
+.v5 .diario .folha .ass::before{content:"";width:26px;height:2px;background:var(--roxo);flex-shrink:0}
+.v5 .diario .recs{border-left:1px solid var(--line);padding-left:clamp(20px,3vw,44px)}
+.v5 .diario .recs .eyebrow{margin-bottom:10px}
+.v5 .diario .rec{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:16px 0;border-bottom:1px dashed var(--line);cursor:pointer}
+.v5 .diario .rec:last-of-type{border-bottom:none}
+.v5 .diario .rec .rn{font:700 13px var(--gro);color:var(--roxo)}
+.v5 .diario .rec h4{font:600 14px var(--int);color:var(--t1);display:flex;align-items:center;gap:8px}
+.v5 .diario .rec h4 svg{opacity:0;transform:translateX(-4px);transition:opacity .3s var(--ease),transform .3s var(--ease);color:var(--roxo);flex-shrink:0}
+.v5 .diario .rec:hover h4 svg{opacity:1;transform:none}
+.v5 .diario .rec p{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:4px}
+.v5 .diario .rec p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+.v5 .diario .ask{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:999px;padding:12px 18px;margin-top:18px;
+  background:var(--s1);width:100%;cursor:pointer;text-align:left;transition:border-color .3s var(--ease)}
+.v5 .diario .ask:hover{border-color:rgba(104,64,255,.5)}
+.v5 .diario .ask span{flex:1;font:400 13px var(--int);color:var(--t2)}
+.v5 .diario .ask svg{color:var(--roxo);flex-shrink:0}
+
+/* ── CHECK-IN: banda entre hairlines ── */
+.v5 .diario .checkin{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(28px,4vw,64px);align-items:center;
+  padding-top:30px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+.v5 .diario .frase{font:500 20px var(--gro);letter-spacing:-.02em;margin:10px 0 16px}
+.v5 .diario .checkin .mood:disabled{cursor:default}
+.v5 .diario .ck-err{font:400 12px var(--int);color:var(--coral);margin-top:10px}
+
+/* ── HOJE: linha do dia ── */
+.v5 .diario .hoje{border-bottom:1px solid var(--line);padding:26px 0;position:relative}
+.v5 .diario .hoje::after{content:"";position:absolute;top:0;right:0;bottom:0;width:70px;background:linear-gradient(90deg,transparent,var(--bg));pointer-events:none}
+.v5 .diario .hoje > .in{display:flex;align-items:baseline;gap:26px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.v5 .diario .hoje > .in::-webkit-scrollbar{display:none}
+.v5 .diario .hoje .eyebrow{flex-shrink:0}
+.v5 .diario .ev{display:flex;align-items:baseline;gap:9px;white-space:nowrap;flex-shrink:0}
+.v5 .diario .ev span{font:500 13px var(--int);color:var(--t2)}
+.v5 .diario .ev.money span{color:var(--t1)}
+.v5 .diario .ev .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
+.v5 .diario .ev .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
+.v5 .diario .ev time,.v5 .diario .ev span.num{font:700 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+.v5 .diario .ev.quiet span{color:var(--t3)}
+
+/* ── números do mês ── */
+.v5 .diario .nums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.v5 .diario .nums > div{padding:34px clamp(16px,2.4vw,34px);border-right:1px solid var(--line)}
+.v5 .diario .nums > div:last-child{border-right:none}
+.v5 .diario .nums .v{font:700 clamp(28px,3.4vw,44px)/1 var(--gro);letter-spacing:-.04em;margin-top:12px}
+.v5 .diario .nums .d{font:500 12px var(--int);margin-top:8px;color:var(--t3)}
+
+/* ── suas áreas: índice em duas colunas + linha das outras ── */
+.v5 .diario .dims-sec{padding:56px 0 8px}
+.v5 .diario .dims-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.v5 .diario .dims-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+.v5 .diario .dims-head a:hover{color:var(--t1)}
+.v5 .diario .dims{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(36px,5vw,80px)}
+.v5 .diario .dimrow{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:baseline;padding:17px 0;border-bottom:1px solid var(--line);
+  transition:padding-left .35s var(--ease)}
+.v5 .diario .dimrow:hover{padding-left:8px}
+.v5 .diario .dimrow .di{font:700 12px var(--gro);color:var(--t3)}
+.v5 .diario .dimrow:hover .di{color:var(--roxo)}
+.v5 .diario .dimrow .nm{font:500 16px var(--gro);letter-spacing:-.01em}
+.v5 .diario .dimrow .mt{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+.v5 .diario .dimrow .sc{font:700 22px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+.v5 .diario .dimrow .tr{font:600 11px var(--gro)}
+.v5 .diario .tr.coral{color:var(--coral)}
+.v5 .diario .tr.t3{color:var(--t3)}
+.v5 .diario .outras{font:400 12px var(--int);color:var(--t3);padding:14px 0;border-top:1px solid var(--line);margin-top:-1px}
+
+/* ── atenção + metas ── */
+.v5 .diario .aten{padding:44px 0 60px;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(36px,5vw,80px)}
+.v5 .diario .aten .eyebrow{margin-bottom:6px}
+.v5 .diario .nota{display:grid;grid-template-columns:14px 1fr auto;gap:14px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
+.v5 .diario .nota:last-of-type{border-bottom:none}
+.v5 .diario .nota .mark{width:7px;height:7px;border-radius:50%;background:var(--coral);align-self:center}
+/* warn: sem token âmbar no DS v5 — coral atenuado marca a faixa intermediária */
+.v5 .diario .nota.warn .mark{background:var(--coral);opacity:.55}
+.v5 .diario .nota.ok .mark{background:var(--ele)}
+.v5 .diario .nota .tx{font:400 13.5px var(--int);color:var(--t2)}
+.v5 .diario .nota .tx strong{color:var(--t1);font-weight:600}
+.v5 .diario .nota .v{font:700 13px var(--gro);color:var(--coral)}
+.v5 .diario .nota.ok .v{color:var(--ele)}
+.v5 .diario .metas .mrow{padding:13px 0;border-bottom:1px solid var(--line)}
+.v5 .diario .metas .mrow:last-of-type{border-bottom:none}
+.v5 .diario .metas .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.v5 .diario .metas .nm{font:500 13.5px var(--int)}
+.v5 .diario .metas .pct{font:700 13.5px var(--gro)}
+.v5 .diario .metas .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.v5 .diario .metas .track i{display:block;height:100%;background:var(--t2);border-radius:2px}
+.v5 .diario .metas .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+.v5 .diario .vazio{font:400 12.5px var(--int);color:var(--t3);padding:14px 0}
+
+/* ── skeletons (loading honesto; shimmer só com .anim, gate de reduced motion) ── */
+.v5 .diario .sk{display:block;height:12px;border-radius:6px;background:var(--line)}
+.v5 .anim .diario .sk{position:relative;overflow:hidden}
+.v5 .anim .diario .sk::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);animation:v5d-skfx 1.6s linear infinite}
+@keyframes v5d-skfx{to{transform:translateX(100%)}}
+.v5 .diario .sk-h2{height:26px;width:72%;margin:16px 0 18px;border-radius:8px}
+.v5 .diario .sk-l{width:100%;margin-top:10px}
+.v5 .diario .sk-l.c2{width:94%}
+.v5 .diario .sk-l.c3{width:62%}
+.v5 .diario .sk-rec{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:16px 0;border-bottom:1px dashed var(--line)}
+.v5 .diario .sk-rec:last-of-type{border-bottom:none}
+.v5 .diario .sk-rn{width:22px;height:12px}
+.v5 .diario .sk-rt{width:75%;height:13px}
+.v5 .diario .sk-rd{width:95%;height:10px;margin-top:8px}
+.v5 .diario .sk-dim{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:center;padding:17px 0;border-bottom:1px solid var(--line)}
+.v5 .diario .sk-di{width:22px}
+.v5 .diario .sk-nm{width:60%;height:14px}
+.v5 .diario .sk-sc{width:34px;height:18px}
+.v5 .diario .sk-ev{width:180px;align-self:center}
+
+/* ── compaction mobile (<1024px; fonte: diario.mobile.html) ── */
+@media (max-width:1023px){
+  .v5 .diario{font-size:14px}
+  .v5 .diario .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* masthead empilhado + selo em faixa */
+  .v5 .diario .mast{flex-direction:column;align-items:stretch;gap:0;padding:32px 0 28px}
+  .v5 .diario .mast h1{font:500 32px/1.06 var(--gro);letter-spacing:-.04em;margin-top:12px}
+  .v5 .diario .mast .sub{font:400 13.5px/1.65 var(--int);margin-top:12px;max-width:none}
+  .v5 .diario .selo{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"n k" "n d" "n s";column-gap:16px;
+    align-items:center;text-align:left;min-width:0;margin-top:22px;padding:14px 18px;border-radius:14px}
+  .v5 .diario .selo::after{inset:4px;border-radius:10px}
+  .v5 .diario .selo .n{grid-area:n;font:700 40px/1 var(--gro);letter-spacing:-.05em;margin:0}
+  .v5 .diario .selo .k{grid-area:k;font-size:9px}
+  .v5 .diario .selo .d{grid-area:d;font:600 12px var(--gro);margin-top:4px}
+  .v5 .diario .selo .s{grid-area:s}
+
+  /* folha em 1 coluna */
+  .v5 .diario .folha > .in{grid-template-columns:1fr;padding:42px 20px 38px}
+  .v5 .diario .folha h2{font:500 23px/1.25 var(--gro);margin:14px 0 14px}
+  .v5 .diario .folha .body{font:400 14.5px/1.75 var(--int);max-width:none}
+  .v5 .diario .folha .body + .body{margin-top:12px}
+  .v5 .diario .folha .draw{margin-top:16px}
+  .v5 .diario .folha .ass{margin-top:22px;font-size:11px}
+  .v5 .diario .recs{border-left:none;padding-left:0;border-top:1px dashed var(--line);margin-top:28px;padding-top:20px}
+  .v5 .diario .recs .eyebrow{margin-bottom:6px}
+  .v5 .diario .rec{grid-template-columns:30px 1fr;padding:14px 0}
+  .v5 .diario .rec .rn{font-size:12.5px}
+  .v5 .diario .rec h4{font-size:13.5px}
+  .v5 .diario .rec h4 svg{display:none}
+  .v5 .diario .ask{margin-top:14px}
+  .v5 .diario .ask:active{border-color:rgba(104,64,255,.5)}
+
+  /* check-in empilhado + alvos de toque */
+  .v5 .diario .checkin{display:block;padding-top:26px;padding-bottom:26px}
+  .v5 .diario .frase{font:500 19px var(--gro);margin:10px 0 14px}
+  .v5 .diario .mood{padding:12px 17px}
+  .v5 .diario .checkin .btn-sm{padding:12px 20px}
+  .v5 .diario .ck-form{flex-direction:column;align-items:stretch;margin-top:16px}
+  .v5 .diario .checkin .ck-done{margin-top:16px}
+
+  /* hoje */
+  .v5 .diario .hoje{padding:24px 0}
+  .v5 .diario .hoje::after{width:56px}
+  .v5 .diario .hoje > .in{gap:22px;padding-right:40px}
+  .v5 .diario .ev span{font-size:12.5px}
+  .v5 .diario .ev time,.v5 .diario .ev span.num{font-size:11px}
+
+  /* números 2×2 */
+  .v5 .diario .nums{grid-template-columns:1fr 1fr}
+  .v5 .diario .nums > div{padding:22px 16px}
+  .v5 .diario .nums > div:nth-child(2n){border-right:none}
+  .v5 .diario .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .v5 .diario .nums .v{font:700 28px/1 var(--gro);letter-spacing:-.04em;margin-top:10px}
+  .v5 .diario .nums .d{font-size:11.5px;margin-top:7px}
+
+  /* suas áreas em 1 coluna */
+  .v5 .diario .dims-sec{padding:44px 0 6px}
+  .v5 .diario .dims-head{margin-bottom:6px}
+  .v5 .diario .dims-head a{padding:12px 0;margin:-12px 0}
+  .v5 .diario .dims{grid-template-columns:1fr}
+  .v5 .diario .dimrow{grid-template-columns:30px 1fr auto;gap:12px;padding:15px 0}
+  .v5 .diario .dimrow .di{font-size:11.5px}
+  .v5 .diario .dimrow .nm{font-size:15.5px}
+  .v5 .diario .dimrow .sc{font-size:21px}
+  .v5 .diario .outras{line-height:1.7}
+  .v5 .diario .sk-dim{grid-template-columns:30px 1fr auto;gap:12px;padding:15px 0}
+
+  /* atenção + metas empilhados */
+  .v5 .diario .aten{display:flex;flex-direction:column;gap:32px;padding:38px 0 50px}
+  .v5 .diario .nota{gap:12px;padding:13px 0}
+  .v5 .diario .nota .tx{font:400 13px/1.55 var(--int)}
+  .v5 .diario .nota .v{font-size:12.5px}
+
+  /* colofão em coluna */
+  .v5 .diario .colofao{flex-direction:column;align-items:flex-start;gap:8px;padding:20px 20px 30px}
+  .v5 .diario .colofao .r{flex-direction:column;gap:8px}
+}
