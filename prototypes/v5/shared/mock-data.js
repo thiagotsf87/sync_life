@@ -89,7 +89,7 @@ window.SL_MOCK = {
     deltaSemana: 3,
     calculadoEm: 'hoje, às 14:05',
     // 30 dias, mais antigo primeiro (determinístico, sem random)
-    historico: [68, 69, 69, 70, 70, 71, 71, 70, 72, 72, 73, 73, 72, 74, 74, 75, 75, 74, 75, 76, 76, 75, 76, 77, 77, 76, 77, 77, 78, 78],
+    historico: [68, 69, 69, 70, 70, 71, 71, 70, 72, 72, 73, 73, 72, 74, 74, 75, 75, 74, 75, 76, 76, 75, 75, 77, 77, 76, 77, 77, 78, 78],
     areas: [
       { n: '01', nome: 'Finanças', score: 83, peso: 20, contrib: 27.7, componentes: [
         { nome: 'Orçamento do mês', peso: 40, valor: 90 },
