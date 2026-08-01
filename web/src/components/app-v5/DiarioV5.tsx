@@ -63,6 +63,12 @@ function fmtInt(v: number): string {
   return `${v < 0 ? '– ' : ''}R$${NBSP}${abs}`
 }
 
+/** Primeira frase de um parágrafo (até o primeiro ". ", ponto incluso). */
+function primeiraFrase(p: string): string {
+  const i = p.indexOf('. ')
+  return i >= 0 ? p.slice(0, i + 1) : p
+}
+
 // ─── SVGs (1:1 do protótipo) ──────────────────────────────────────────────────
 
 function HandArrow() {
@@ -140,14 +146,20 @@ export function DiarioV5({ userName, accountCreatedAt }: DiarioV5Props) {
   const score = data.score
   const nums = data.nums
 
+  // Delta honesto: null (histórico < 7 dias) não vira "estável"; a linha some.
+  // Negativo usa en-dash (máscara do DS).
   const deltaTxt =
-    score === null
-      ? ''
+    score === null || score.deltaWeek === null
+      ? null
       : score.deltaWeek > 0
         ? `+${score.deltaWeek} esta semana`
         : score.deltaWeek < 0
-          ? `−${Math.abs(score.deltaWeek)} esta semana`
+          ? `–${Math.abs(score.deltaWeek)} esta semana`
           : 'estável'
+
+  // Sub editorial: primeira frase do p1 quando o brief está pronto; sem brief
+  // (loading/erro), frase fixa de estado.
+  const mastSub = brief ? primeiraFrase(brief.p1) : 'Seu dia, lido pelo coach.'
 
   const despLegend =
     nums && nums.receitas > 0
@@ -168,12 +180,12 @@ export function DiarioV5({ userName, accountCreatedAt }: DiarioV5Props) {
             <div>
               <p className="eyebrow" suppressHydrationWarning>Edição nº {edicaoN(accountCreatedAt)} · seu diário</p>
               <h1 suppressHydrationWarning>{saudacao()}, {userName}.</h1>
-              <p className="sub">Seu dia, lido pelo coach.</p>
+              <p className="sub">{mastSub}</p>
             </div>
             <div className="selo">
               <div className="k">LIFE SYNC SCORE</div>
               <div className="n num">{score ? score.total : '–'}</div>
-              {score !== null && <div className="d num">{deltaTxt}</div>}
+              {deltaTxt !== null && <div className="d"><span className="num ele">{deltaTxt}</span></div>}
               <Link className="s" href="/dashboard/score">
                 {score ? `${score.label} · como melhorar →` : 'como melhorar →'}
               </Link>
@@ -205,7 +217,7 @@ export function DiarioV5({ userName, accountCreatedAt }: DiarioV5Props) {
                   <p className="ass">Escrito às {horaSP(brief.generatedAt)}, com base em {brief.basedOn}.</p>
                 </>
               ) : (
-                <p className="body">O briefing de hoje não carregou. Tente recarregar.</p>
+                <p className="body">{briefQ.error ?? 'O briefing de hoje não carregou. Tente recarregar.'}</p>
               )}
             </article>
             {(briefQ.loading || brief) && (

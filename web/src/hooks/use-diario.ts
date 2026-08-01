@@ -15,7 +15,8 @@ import { fmtBRL } from '@/lib/format/currency'
 
 export interface DiarioScore {
   total: number
-  deltaWeek: number
+  /** Null quando ainda não há ~7 dias de histórico (sem delta fabricado). */
+  deltaWeek: number | null
   label: string
 }
 
@@ -152,7 +153,7 @@ export function useDiario(): DiarioData {
   const badgesQ = useBadges()
 
   // ── score ──────────────────────────────────────────────────────────────────
-  const deltaWeek = lifeScore.deltaWeek !== null ? Math.round(lifeScore.deltaWeek) : 0
+  const deltaWeek = lifeScore.deltaWeek !== null ? Math.round(lifeScore.deltaWeek) : null
   const score: DiarioScore | null = scoreEngine.result
     ? {
         total: Math.round(scoreEngine.result.total),
@@ -323,7 +324,7 @@ export function useDiario(): DiarioData {
   const ticker: string[] = []
   if (score) {
     ticker.push(
-      score.deltaWeek !== 0
+      score.deltaWeek !== null && score.deltaWeek !== 0
         ? `SCORE ${score.total} ${score.deltaWeek > 0 ? '▲' : '▼'}${Math.abs(score.deltaWeek)}`
         : `SCORE ${score.total}`,
     )

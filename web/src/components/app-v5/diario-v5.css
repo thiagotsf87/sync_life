@@ -158,7 +158,9 @@
   .v5 .diario .selo::after{inset:4px;border-radius:10px}
   .v5 .diario .selo .n{grid-area:n;font:700 40px/1 var(--gro);letter-spacing:-.05em;margin:0}
   .v5 .diario .selo .k{grid-area:k;font-size:9px}
-  .v5 .diario .selo .d{grid-area:d;font:600 12px var(--gro);margin-top:4px}
+  /* tipografia do protótipo mobile: container Inter 400 t3, delta em .num 600 */
+  .v5 .diario .selo .d{grid-area:d;font:400 12px var(--int);color:var(--t3);margin-top:4px}
+  .v5 .diario .selo .d .num{font-weight:600;font-size:12px}
   .v5 .diario .selo .s{grid-area:s}
 
   /* folha em 1 coluna */
