@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Edição da semana · v5</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* ─── ação da barra em estado ativo (esta é a vista aberta) ─── */
+  .bar .btn-sm[aria-current]{border-color:var(--roxo);color:var(--t1)}
+
+  /* ─── masthead: edição da semana + selo do score ─── */
+  .mast{padding:52px 0 44px;display:flex;justify-content:space-between;align-items:flex-end;gap:36px}
+  .mast h1{font:500 clamp(34px,4.6vw,58px)/1.02 var(--gro);letter-spacing:-.045em;margin-top:14px}
+  .mast .sub{font:400 14.5px var(--int);color:var(--t2);margin-top:14px;max-width:52ch}
+  .selo{flex-shrink:0;border:1px solid var(--line-h);border-radius:16px;padding:20px 24px 18px;text-align:center;min-width:168px;
+    position:relative;transition:border-color .35s var(--ease)}
+  .selo:hover{border-color:rgba(161,255,98,.4)}
+  .selo::after{content:"";position:absolute;inset:5px;border:1px solid var(--line);border-radius:11px;pointer-events:none}
+  .anim .selo{animation:breathe 4.5s var(--ease) infinite}
+  @keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(161,255,98,0)}50%{box-shadow:0 0 26px -6px rgba(161,255,98,.18)}}
+  .selo .k{font:700 9.5px var(--gro);letter-spacing:.24em;color:var(--t3)}
+  .selo .n{font:700 64px/1 var(--gro);letter-spacing:-.05em;margin:8px 0 6px}
+  .selo .d{font:600 11.5px var(--gro);color:var(--ele)}
+  .selo .s{font:400 10.5px var(--int);color:var(--t3);margin-top:3px}
+
+  /* ─── A FOLHA: a carta da semana (banda .lt) ─── */
+  .folha > .in{max-width:1180px;margin:0 auto;padding:64px clamp(20px,4vw,56px) 58px;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(36px,5vw,80px)}
+  .folha .eyebrow{color:var(--t2)}
+  .folha h2{font:500 clamp(22px,2.6vw,32px)/1.2 var(--gro);letter-spacing:-.03em;margin:16px 0 18px}
+  .folha .body{font:400 15.5px/1.75 var(--int);color:var(--t2);max-width:62ch}
+  .folha .body + .body{margin-top:14px}
+  .folha .body strong{color:var(--t1);font-weight:600}
+  .folha .body .warn{color:var(--coral);font-weight:600}
+  .folha .ass{display:flex;align-items:center;gap:10px;margin-top:26px;font:400 11.5px var(--int);color:var(--t2)}
+  .folha .ass::before{content:"";width:26px;height:2px;background:var(--roxo)}
+  .recs{border-left:1px solid var(--line);padding-left:clamp(20px,3vw,44px)}
+  .recs .eyebrow{margin-bottom:10px}
+  .rec{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:16px 0;border-bottom:1px dashed var(--line)}
+  .rec:last-of-type{border-bottom:none}
+  .rec .rn{font:700 13px var(--gro);color:var(--roxo)}
+  .rec h4{font:600 14px var(--int);color:var(--t1)}
+  .rec p{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:4px}
+  .rec p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+
+  /* ─── a semana em números ─── */
+  .nums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+  .nums > div{padding:34px clamp(16px,2.4vw,34px);border-right:1px solid var(--line)}
+  .nums > div:last-child{border-right:none}
+  .nums .v{font:700 clamp(28px,3.4vw,44px)/1 var(--gro);letter-spacing:-.04em;margin-top:12px}
+  .nums .v .de{font-size:.6em;font-weight:500;color:var(--t3);letter-spacing:0}
+  .nums .d{font:500 12px var(--int);margin-top:8px;color:var(--t3)}
+
+  /* ─── o que mudou: índice das áreas ativas ─── */
+  .dims-sec{padding:56px 0 8px}
+  .dims-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .dims-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .dims-head a:hover{color:var(--t1)}
+  .dims{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(36px,5vw,80px)}
+  .dimrow{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:baseline;padding:17px 0;border-bottom:1px solid var(--line);
+    transition:padding-left .35s var(--ease)}
+  .dimrow:hover{padding-left:8px}
+  .dimrow .di{font:700 12px var(--gro);color:var(--t3)}
+  .dimrow:hover .di{color:var(--roxo)}
+  .dimrow .nm{font:500 16px var(--gro);letter-spacing:-.01em}
+  .dimrow .sc{font:700 22px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+  .dimrow .sc .de{font-weight:500;color:var(--t3)}
+  .dimrow .sc .ar{font-size:14px;color:var(--t3);margin:0 -2px}
+  .dimrow .tr{font:600 11px var(--gro)}
+  .dimrow .tr.dn{color:var(--coral)}
+  .outras{font:400 12px var(--int);color:var(--t3);padding:14px 0;border-top:1px solid var(--line);margin-top:-1px}
+
+  /* ─── fechar a semana: banda entre hairlines ─── */
+  .fechar{display:grid;grid-template-columns:1.2fr auto;gap:clamp(24px,4vw,56px);align-items:center;margin-top:48px;
+    padding-top:30px;padding-bottom:30px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .frase{font:500 20px var(--gro);letter-spacing:-.02em;margin:10px 0 8px}
+  .fechar .tx{font:400 13px/1.6 var(--int);color:var(--t2);max-width:52ch}
+  .fechar .btn-sm.roxo{padding:12px 24px}
+  .fechar .btn-sm[disabled]{opacity:.42;cursor:not-allowed}
+  .fechar .razao{margin-top:10px;color:var(--t3)}
+  .conf{display:inline-flex;align-items:center;gap:8px;font:600 12.5px var(--int);color:var(--ele)}
+
+  .colofao a{transition:color .3s var(--ease)}
+  .colofao a:hover{color:var(--t1)}
+
+  /* ─── estados: anotação do protótipo (fora do fluxo do app) ─── */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:72px;padding-top:34px;padding-bottom:80px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe .fechar{grid-template-columns:1fr;gap:18px;margin-top:0;padding-top:22px;padding-bottom:22px}
+  .pe .frase{font-size:17px}
+  .vazio{font:400 13.5px/1.7 var(--int);color:var(--t2);border-left:2px solid var(--line-h);padding-left:14px;margin-top:12px}
+
+  @media (max-width:960px){
+    .mast{flex-direction:column;align-items:flex-start}
+    .folha > .in{grid-template-columns:1fr}
+    .recs{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:22px}
+    .nums{grid-template-columns:1fr 1fr}
+    .nums > div:nth-child(2){border-right:none}
+    .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+    .dims{grid-template-columns:1fr}
+    .fechar{grid-template-columns:1fr}
+    .pe-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Domingo · 2 de agosto de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost" type="button" aria-current="page">Revisão semanal</button>
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Pergunte ao coach</button>
+    <button class="btn-sm roxo" type="button">+ Nova entrada</button>
+  </div>
+</header>
+<div class="ticker" aria-hidden="true">
+  <div class="tk"><span>SCORE <b>78</b> ▲4</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲4</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲4</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲4</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span></div>
+</div>
+<nav class="modbar" aria-label="Módulos">
+  <div class="in">
+    <a class="on" href="diario.html">Diário</a>
+    <a href="#"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <!-- masthead -->
+  <div class="wrap">
+    <section class="mast boot b1">
+      <div>
+        <p class="eyebrow">Edição da semana nº 31 · 27 de julho a 2 de agosto</p>
+        <h1>A semana fechada.</h1>
+        <p class="sub">A semana virou no meio: o que travou na segunda destravou na quinta.</p>
+      </div>
+      <div class="selo" role="img" aria-label="Score no fim da semana 78, mais 3 na semana, consistente">
+        <div class="k">SCORE DA SEMANA</div>
+        <div class="n num" data-cnt="78">78</div>
+        <div class="d num">+3 na semana</div>
+        <div class="s">Consistente</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- a folha: a carta da semana -->
+  <section class="folha lt boot b2" aria-label="A carta da semana">
+    <div class="in">
+      <article>
+        <p class="eyebrow"><b>A carta da semana</b> · escrita pelo coach</p>
+        <h2>A semana virou no meio: o que travou na segunda destravou na quinta.</h2>
+        <p class="body">Você fechou a semana com <strong class="num">R$&nbsp;1.850</strong> de entradas contra <strong class="num">R$&nbsp;940</strong> de saídas, o melhor saldo semanal de julho. O lazer chegou perto do teto de novo, mas dessa vez você segurou: foram <strong class="num">R$&nbsp;128</strong> em quatro dias, contra <strong class="num">R$&nbsp;310</strong> na semana anterior.</p>
+        <p class="body">Na agenda, <strong class="num">11 dos 14</strong> compromissos saíram e você protegeu <strong class="num">6h30</strong> de foco, uma hora a mais que na semana passada. Corpo foi o único ponto que recuou: <span class="warn">dois treinos previstos ficaram para trás</span> e o peso não foi registrado.</p>
+        <div class="draw rv" style="display:flex;align-items:center;gap:8px;margin-top:18px">
+          <svg class="hand-arrow" width="42" height="24" viewBox="0 0 42 24" aria-hidden="true" style="color:var(--coral)"><path d="M40 4 C28 20, 15 22, 3 15 M9 21 L3 15 L10 11"/></svg>
+          <span class="hand" style="transform:rotate(-2deg)">segunda-feira começa com o treino que sobrou!</span>
+        </div>
+        <p class="ass">Escrito no domingo, 2 de agosto, às 20:10, com base em 38 transações, 14 compromissos e 3 metas.</p>
+      </article>
+      <aside class="recs">
+        <p class="eyebrow">A semana em uma linha</p>
+        <div class="rec"><span class="rn num">01</span><div><h4>O melhor saldo semanal de julho</h4><p>Entraram <b>R$&nbsp;1.850</b> e saíram <b>R$&nbsp;940</b>: sobraram <b>R$&nbsp;910</b>.</p></div></div>
+        <div class="rec"><span class="rn num">02</span><div><h4>A agenda saiu quase inteira</h4><p><b>11 de 14</b> compromissos feitos e <b>6h30</b> de foco protegido.</p></div></div>
+        <div class="rec"><span class="rn num">03</span><div><h4>Corpo foi o único que recuou</h4><p>Dois treinos ficaram para trás e o peso não foi registrado: <b>1 ponto</b> a menos.</p></div></div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <!-- a semana em números -->
+    <section class="nums boot b3" aria-label="A semana em números">
+      <div><p class="eyebrow">Entradas</p><div class="v num" data-cnt="1850" data-prefix="R$&nbsp;">R$&nbsp;1.850</div><div class="d num">na semana</div></div>
+      <div><p class="eyebrow">Saídas</p><div class="v num" data-cnt="940" data-prefix="R$&nbsp;">R$&nbsp;940</div><div class="d num">51% do que entrou</div></div>
+      <div><p class="eyebrow">Compromissos</p><div class="v num">11 <span class="de">de</span> 14</div><div class="d num">79% concluídos</div></div>
+      <div><p class="eyebrow">Foco</p><div class="v num">6h30</div><div class="d num ele">1h a mais que a anterior</div></div>
+    </section>
+
+    <!-- o que mudou -->
+    <section class="dims-sec rv" aria-label="O que mudou na semana">
+      <div class="dims-head">
+        <p class="eyebrow">O que mudou</p>
+        <a href="#">Ver a anatomia do número →</a>
+      </div>
+      <div class="dims">
+        <div class="dimrow"><span class="di num">01</span><div class="nm">Finanças</div><span class="sc num"><span class="de">80</span><span class="ar">→</span>83<span class="tr ele">▲3</span></span></div>
+        <div class="dimrow"><span class="di num">02</span><div class="nm">Futuro</div><span class="sc num"><span class="de">75</span><span class="ar">→</span>79<span class="tr ele">▲4</span></span></div>
+        <div class="dimrow"><span class="di num">04</span><div class="nm">Corpo</div><span class="sc num"><span class="de">70</span><span class="ar">→</span>69<span class="tr dn">▼1</span></span></div>
+        <div class="dimrow"><span class="di num">08</span><div class="nm">Experiências</div><span class="sc num"><span class="de">74</span><span class="ar">→</span>78<span class="tr ele">▲4</span></span></div>
+      </div>
+      <p class="outras">Áreas desligadas não entram na conta da semana.</p>
+    </section>
+
+    <!-- fechar a semana -->
+    <section class="fechar rv" aria-label="Fechar a semana">
+      <div>
+        <p class="eyebrow">Fechamento</p>
+        <p class="frase">Guardar esta edição e somar à sua sequência.</p>
+        <p class="tx">Guarda o retrato da semana e conta para as suas conquistas.</p>
+      </div>
+      <div>
+        <button class="btn-sm roxo" type="button">Fechar a semana</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- colofão -->
+  <footer class="colofao">
+    <span>Período coberto <b class="num">27 jul a 2 ago</b></span>
+    <div class="r">
+      <span>Base do cálculo <b class="num">38 transações · 14 compromissos · 3 metas</b></span>
+      <a href="diario.html">Ver o diário de hoje →</a>
+    </div>
+  </footer>
+</main>
+
+<!-- camada do coach -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Coach">
+  <header class="chead">
+    <p class="eyebrow"><b>Coach</b> · lendo: a sua semana</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li a sua semana. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Por que Corpo recuou?</button>
+        <button class="chip" type="button">Quanto sobrou nesta semana?</button>
+        <button class="chip" type="button">O que muda se eu fechar a semana?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Domingo · 20:22</div>
+      <div class="bub u">Por que Corpo recuou?</div>
+      <div class="bub a">Dois treinos previstos não aconteceram e o peso não foi registrado nenhuma vez. Corpo saiu de <strong class="num">70</strong> para <strong class="num">69</strong>: <span class="w">registros de peso</span> é hoje o componente mais fraco da área.
+        <span class="meta">Fontes: 3 atividades · 0 registros de peso · score de Corpo</span>
+      </div>
+      <div class="bub u">E o que puxou o resto pra cima?</div>
+      <div class="bub a">Finanças e Futuro. O saldo da semana ficou em <strong class="num">R$&nbsp;910</strong> e o aporte de quarta entrou no prazo, o que levou a Viagem Itália a <strong class="num">68%</strong>.
+        <span class="meta">Fontes: 38 transações · 3 metas · score por área</span>
+      </div>
+      <div class="typing" aria-label="Coach digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre a sua semana">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#coach">Conversa completa →</a>
+</aside>
+
+<!-- estados: anotação do protótipo -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Fechamento · semana já fechada</h4>
+        <div class="fechar">
+          <div>
+            <p class="eyebrow">Fechamento</p>
+            <p class="frase">Esta edição está guardada.</p>
+            <p class="tx">O retrato da semana já entrou nas suas conquistas.</p>
+          </div>
+          <span class="conf"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Fechada no domingo, 2 de agosto, às 21:30</span>
+        </div>
+      </div>
+      <div class="pe">
+        <h4>Fechamento · semana em curso</h4>
+        <div class="fechar">
+          <div>
+            <p class="eyebrow">Fechamento</p>
+            <p class="frase">Guardar esta edição e somar à sua sequência.</p>
+            <p class="tx">Guarda o retrato da semana e conta para as suas conquistas.</p>
+          </div>
+          <div>
+            <button class="btn-sm roxo" type="button" disabled>Fechar a semana</button>
+            <p class="tx razao">Você pode fechar quando a semana terminar, no domingo.</p>
+          </div>
+        </div>
+      </div>
+      <div class="pe">
+        <h4>O que mudou · sem histórico</h4>
+        <p class="eyebrow">O que mudou</p>
+        <p class="vazio">Ainda não há uma semana anterior para comparar. Na próxima edição isto aqui mostra o que mudou.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+</body>
+</html>
