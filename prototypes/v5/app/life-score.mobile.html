@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Life Sync Score · mobile · v5</title>
+<!-- Onda 2 lote 2 · A anatomia do número MOBILE dedicado (390×844). Chrome compacto (bar 56 + ticker 24 + modbar),
+     masthead com selo em faixa, curva de 30 dias redesenhada para uma caixa de 350×120 (1:1 com o conteúdo),
+     áreas em 1 coluna com score e contribuição na mesma linha, componentes empilhados, camada do coach como
+     bottom sheet. E-02: sem JS, tudo visível e a curva continua desenhada (é markup, não script). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<style>
+  body{font-size:14px}
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* ─── chrome compactado ─── */
+  .bar{height:56px;padding:0 18px}
+  .brand{font-size:16px}
+  .bar .acts{gap:8px}
+  .bar .btn-sm.ghost{padding:11px 13px;min-height:40px}
+  .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:16px}
+  .ticker{height:24px}
+
+  /* ─── masthead empilhado + selo em faixa ─── */
+  .mast{padding:32px 0 26px}
+  .mast h1{font:500 32px/1.06 var(--gro);letter-spacing:-.04em;margin-top:12px}
+  .mast .sub{font:400 13.5px/1.65 var(--int);color:var(--t2);margin-top:12px}
+  .selo{display:flex;align-items:center;gap:16px;border:1px solid var(--line-h);border-radius:14px;
+    padding:14px 18px;margin-top:22px;position:relative}
+  .selo::after{content:"";position:absolute;inset:4px;border:1px solid var(--line);border-radius:10px;pointer-events:none}
+  .selo .n{font:700 40px/1 var(--gro);letter-spacing:-.05em}
+  .selo .k{font:700 9px var(--gro);letter-spacing:.24em;color:var(--t3)}
+  .selo .d{font:400 12px var(--int);color:var(--t3);margin-top:4px}
+  .selo .d .num{font-weight:600;font-size:12px}
+
+  /* ─── a curva: 30 dias em SVG, banda entre hairlines ─── */
+  .curva{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .curva > .in{padding-top:24px;padding-bottom:20px}
+  .cvhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+  .cvhead .var{font:600 11px var(--gro)}
+  .cv{display:block;width:100%;height:auto}
+  .cvfoot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:8px}
+  .cvfoot .num{font-weight:700;font-size:13px;color:var(--t2)}
+  .cvfoot i{font:400 10.5px var(--int);font-style:normal;color:var(--t3);margin-left:6px}
+
+  /* ─── as 8 áreas em 1 coluna: score e contribuição na mesma linha ─── */
+  .dims-sec{padding-top:44px;padding-bottom:6px}
+  .dims-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+  .dims-head a{font:500 12px var(--int);color:var(--t3);padding:13px 0;margin:-13px 0;transition:color .3s var(--ease)}
+  .dims-head a:hover{color:var(--t1)}
+  .dims{display:grid;grid-template-columns:1fr}
+  .dimrow{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line)}
+  .dimrow .di{font:700 11.5px var(--gro);color:var(--t3)}
+  .dimrow .nm{font:500 15.5px var(--gro);letter-spacing:-.01em}
+  .dimrow .ps{font:400 11px var(--int);color:var(--t3);margin-top:3px}
+  .dimrow .ps b{font:600 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t2)}
+  .dimrow .rt{display:flex;align-items:baseline;gap:8px}
+  .dimrow .sc{font:700 21px var(--gro);letter-spacing:-.03em}
+  .dimrow .ct{font:400 10.5px var(--int);color:var(--t3);text-align:right}
+  .dimrow .ct b{font:600 13px var(--gro);font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--t1)}
+  .outras{font:400 12px/1.7 var(--int);color:var(--t3);padding-top:14px;padding-bottom:14px;border-top:1px solid var(--line);margin-top:-1px}
+
+  /* ─── por dentro de cada área: blocos empilhados, barras em largura total ─── */
+  .dentro{padding-top:44px;padding-bottom:6px}
+  .hint{font:400 12.5px/1.65 var(--int);color:var(--t3);margin-top:8px}
+  .dentro-grid{display:grid;grid-template-columns:1fr;row-gap:26px;margin-top:22px}
+  .area{border-top:1px solid var(--line-h);padding-top:14px}
+  .area .ah{display:flex;align-items:baseline;gap:10px;margin-bottom:2px}
+  .area .ah .di{font:700 11.5px var(--gro);color:var(--t3)}
+  .area .ah h3{font:500 16px var(--gro);letter-spacing:-.01em;flex:1}
+  .area .ah .sc{font:700 19px var(--gro);letter-spacing:-.03em}
+  .cp{padding-top:12px;padding-bottom:12px;padding-left:12px;border-left:2px solid transparent;border-bottom:1px solid var(--line)}
+  .cp:last-child{border-bottom:none}
+  .cp.fraco{border-left-color:var(--coral)}
+  .cp .r1{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px}
+  .cp .nm{font:500 13px var(--int)}
+  .cp .v{font:700 13px var(--gro)}
+  .cp .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-bottom:6px}
+  .cp .track i{display:block;height:100%;background:var(--t2);border-radius:2px}
+  .cp .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+
+  /* ─── como melhorar em 1 coluna ─── */
+  .melhorar{padding-top:44px;padding-bottom:10px}
+  .mel{display:grid;grid-template-columns:28px 1fr;gap:10px;padding-top:16px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .mel:last-of-type{border-bottom:none}
+  .mel .rn{font:700 12.5px var(--gro);color:var(--roxo)}
+  .mel h4{font:600 14px var(--int);color:var(--t1)}
+  .mel p{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:4px}
+  .mel .dest{display:inline-flex;align-items:center;min-height:40px;font:600 12.5px var(--int);color:var(--t3);
+    transition:color .3s var(--ease)}
+  .mel .dest:hover{color:var(--roxo)}
+
+  /* ─── colofão em coluna ─── */
+  .colofao{flex-direction:column;align-items:flex-start;gap:8px;padding:20px 20px 30px}
+  .colofao .r{flex-direction:column;align-items:flex-start;gap:8px}
+  .colofao a{padding:13px 0;margin:-13px 0;transition:color .3s var(--ease)}
+  .colofao a:hover{color:var(--t1)}
+
+  /* ─── camada: alvos de toque ─── */
+  .camada .csug .chip{padding:11px 16px;min-height:40px}
+
+  /* ─── estados: anotação do protótipo (fora do fluxo do app) ─── */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:56px;padding-top:30px;padding-bottom:72px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:1fr;gap:30px;margin-top:22px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .vazio{font:400 13.5px/1.7 var(--int);color:var(--t2);border-left:2px solid var(--line-h);padding-left:14px;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Coach</button>
+    <button class="btn-sm roxo" type="button" aria-label="Nova entrada">+</button>
+  </div>
+</header>
+<div class="ticker" aria-hidden="true">
+  <div class="tk"><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span>LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span></div>
+</div>
+<nav class="modbar" aria-label="Módulos">
+  <div class="in">
+    <a class="on" href="diario.mobile.html">Diário</a>
+    <a href="#"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <!-- masthead -->
+  <div class="wrap">
+    <section class="mast boot b1">
+      <p class="eyebrow">Life Sync Score</p>
+      <h1>A anatomia do número.</h1>
+      <p class="sub">Como as suas áreas somam 78 hoje.</p>
+      <div class="selo" role="img" aria-label="Life Sync Score 78, mais 3 esta semana, consistente">
+        <div class="n num" data-cnt="78">78</div>
+        <div>
+          <div class="k">LIFE SYNC SCORE</div>
+          <div class="d"><span class="num ele">+3 esta semana</span> · Consistente</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- a curva -->
+  <section class="curva boot b2" aria-label="Últimos 30 dias">
+    <div class="wrap in">
+      <div class="cvhead">
+        <p class="eyebrow">Últimos 30 dias</p>
+        <span class="var num ele">▲10 no período</span>
+      </div>
+      <svg class="cv" viewBox="0 0 350 120" role="img" aria-label="Curva do Life Sync Score nos últimos 30 dias, de 68 para 78">
+        <defs>
+          <linearGradient id="cvfill" gradientUnits="userSpaceOnUse" x1="0" y1="12" x2="0" y2="110">
+            <stop offset="0" stop-color="#6840ff" stop-opacity=".18"/>
+            <stop offset="1" stop-color="#6840ff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#cvfill)" stroke="none" d="M5 78.89 C6.56 78.25, 13.57 74.75, 16.69 74.11 C19.81 73.47, 25.26 74.75, 28.38 74.11 C31.5 73.47, 36.95 69.97, 40.07 69.33 C43.19 68.7, 48.64 69.97, 51.76 69.33 C54.88 68.7, 60.33 65.19, 63.45 64.56 C66.57 63.92, 72.02 63.92, 75.14 64.56 C78.26 65.19, 83.71 69.97, 86.83 69.33 C89.94 68.7, 95.4 61.05, 98.52 59.78 C101.63 58.5, 107.09 60.41, 110.21 59.78 C113.32 59.14, 118.78 55.64, 121.9 55 C125.01 54.36, 130.47 54.36, 133.59 55 C136.7 55.64, 142.16 60.41, 145.28 59.78 C148.39 59.14, 153.85 51.5, 156.97 50.22 C160.08 48.95, 165.54 50.86, 168.66 50.22 C171.77 49.59, 177.23 46.08, 180.34 45.44 C183.46 44.81, 188.92 44.81, 192.03 45.44 C195.15 46.08, 200.61 50.22, 203.72 50.22 C206.84 50.22, 212.3 46.72, 215.41 45.44 C218.53 44.17, 223.99 41.3, 227.1 40.67 C230.22 40.03, 235.68 40.03, 238.79 40.67 C241.91 41.3, 247.37 44.81, 250.48 45.44 C253.6 46.08, 259.06 46.72, 262.17 45.44 C265.29 44.17, 270.74 37.16, 273.86 35.89 C276.98 34.61, 282.43 35.25, 285.55 35.89 C288.67 36.53, 294.12 40.67, 297.24 40.67 C300.36 40.67, 305.81 36.53, 308.93 35.89 C312.05 35.25, 317.5 36.53, 320.62 35.89 C323.74 35.25, 329.19 31.75, 332.31 31.11 C335.43 30.47, 342.44 31.11, 344 31.11 L344 110 L5 110 Z"/>
+        <line x1="0" y1="110" x2="350" y2="110" stroke="rgba(255,255,255,.12)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+        <path fill="none" stroke="#6840ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M5 78.89 C6.56 78.25, 13.57 74.75, 16.69 74.11 C19.81 73.47, 25.26 74.75, 28.38 74.11 C31.5 73.47, 36.95 69.97, 40.07 69.33 C43.19 68.7, 48.64 69.97, 51.76 69.33 C54.88 68.7, 60.33 65.19, 63.45 64.56 C66.57 63.92, 72.02 63.92, 75.14 64.56 C78.26 65.19, 83.71 69.97, 86.83 69.33 C89.94 68.7, 95.4 61.05, 98.52 59.78 C101.63 58.5, 107.09 60.41, 110.21 59.78 C113.32 59.14, 118.78 55.64, 121.9 55 C125.01 54.36, 130.47 54.36, 133.59 55 C136.7 55.64, 142.16 60.41, 145.28 59.78 C148.39 59.14, 153.85 51.5, 156.97 50.22 C160.08 48.95, 165.54 50.86, 168.66 50.22 C171.77 49.59, 177.23 46.08, 180.34 45.44 C183.46 44.81, 188.92 44.81, 192.03 45.44 C195.15 46.08, 200.61 50.22, 203.72 50.22 C206.84 50.22, 212.3 46.72, 215.41 45.44 C218.53 44.17, 223.99 41.3, 227.1 40.67 C230.22 40.03, 235.68 40.03, 238.79 40.67 C241.91 41.3, 247.37 44.81, 250.48 45.44 C253.6 46.08, 259.06 46.72, 262.17 45.44 C265.29 44.17, 270.74 37.16, 273.86 35.89 C276.98 34.61, 282.43 35.25, 285.55 35.89 C288.67 36.53, 294.12 40.67, 297.24 40.67 C300.36 40.67, 305.81 36.53, 308.93 35.89 C312.05 35.25, 317.5 36.53, 320.62 35.89 C323.74 35.25, 329.19 31.75, 332.31 31.11 C335.43 30.47, 342.44 31.11, 344 31.11"/>
+        <circle cx="344" cy="31.11" r="2.6" fill="#a1ff62"/>
+      </svg>
+      <div class="cvfoot">
+        <span><span class="num">68</span><i>há 30 dias</i></span>
+        <span><span class="num">78</span><i>hoje</i></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <!-- as 8 áreas -->
+    <section class="dims-sec boot b3" aria-label="As 8 áreas">
+      <div class="dims-head">
+        <p class="eyebrow">As 8 áreas</p>
+        <a href="review-semanal.mobile.html">Ver a edição da semana →</a>
+      </div>
+      <div class="dims">
+        <div class="dimrow">
+          <span class="di num">01</span>
+          <div><div class="nm">Finanças</div><div class="ps">peso <b>20%</b></div></div>
+          <span class="rt"><span class="sc num">83</span><span class="ct">contribui <b>27,7</b> de 78</span></span>
+        </div>
+        <div class="dimrow">
+          <span class="di num">02</span>
+          <div><div class="nm">Futuro</div><div class="ps">peso <b>20%</b></div></div>
+          <span class="rt"><span class="sc num">79</span><span class="ct">contribui <b>26,3</b> de 78</span></span>
+        </div>
+        <div class="dimrow">
+          <span class="di num">04</span>
+          <div><div class="nm">Corpo</div><div class="ps">peso <b>15%</b></div></div>
+          <span class="rt"><span class="sc num">69</span><span class="ct">contribui <b>17,3</b> de 78</span></span>
+        </div>
+        <div class="dimrow">
+          <span class="di num">08</span>
+          <div><div class="nm">Experiências</div><div class="ps">peso <b>5%</b></div></div>
+          <span class="rt"><span class="sc num">78</span><span class="ct">contribui <b>6,5</b> de 78</span></span>
+        </div>
+      </div>
+      <p class="outras">Fora da conta: 03 Tempo · 05 Mente · 06 Patrimônio · 07 Carreira, desligadas no onboarding.</p>
+    </section>
+
+    <!-- por dentro de cada área -->
+    <section class="dentro rv" aria-label="Por dentro de cada área">
+      <p class="eyebrow">Por dentro de cada área</p>
+      <p class="hint">Cada componente entra no score da área pelo seu peso interno. O mais fraco de cada uma está marcado em coral: é ali que o número perde.</p>
+      <div class="dentro-grid">
+        <article class="area">
+          <div class="ah"><span class="di num">01</span><h3>Finanças</h3><span class="sc num">83</span></div>
+          <div class="cp">
+            <div class="r1"><span class="nm">Orçamento do mês</span><span class="v num">90</span></div>
+            <div class="track"><i style="width:90%"></i></div>
+            <div class="sub">40% da área</div>
+          </div>
+          <div class="cp fraco">
+            <div class="r1"><span class="nm">Registro de transações</span><span class="v num">75</span></div>
+            <div class="track"><i style="width:75%"></i></div>
+            <div class="sub">30% da área</div>
+          </div>
+          <div class="cp">
+            <div class="r1"><span class="nm">Tendência de saldo</span><span class="v num">80</span></div>
+            <div class="track"><i style="width:80%"></i></div>
+            <div class="sub">30% da área</div>
+          </div>
+        </article>
+        <article class="area">
+          <div class="ah"><span class="di num">02</span><h3>Futuro</h3><span class="sc num">79</span></div>
+          <div class="cp">
+            <div class="r1"><span class="nm">Progresso dos objetivos</span><span class="v num">88</span></div>
+            <div class="track"><i style="width:88%"></i></div>
+            <div class="sub">50% da área</div>
+          </div>
+          <div class="cp fraco">
+            <div class="r1"><span class="nm">Objetivos concluídos no trimestre</span><span class="v num">70</span></div>
+            <div class="track"><i style="width:70%"></i></div>
+            <div class="sub">50% da área</div>
+          </div>
+        </article>
+        <article class="area">
+          <div class="ah"><span class="di num">04</span><h3>Corpo</h3><span class="sc num">69</span></div>
+          <div class="cp">
+            <div class="r1"><span class="nm">Atividades da semana</span><span class="v num">75</span></div>
+            <div class="track"><i style="width:75%"></i></div>
+            <div class="sub">30% da área</div>
+          </div>
+          <div class="cp">
+            <div class="r1"><span class="nm">Consulta agendada</span><span class="v num">80</span></div>
+            <div class="track"><i style="width:80%"></i></div>
+            <div class="sub">30% da área</div>
+          </div>
+          <div class="cp fraco">
+            <div class="r1"><span class="nm">Registros de peso</span><span class="v num">50</span></div>
+            <div class="track"><i style="width:50%"></i></div>
+            <div class="sub">20% da área</div>
+          </div>
+          <div class="cp">
+            <div class="r1"><span class="nm">Hidratação</span><span class="v num">60</span></div>
+            <div class="track"><i style="width:60%"></i></div>
+            <div class="sub">20% da área</div>
+          </div>
+        </article>
+        <article class="area">
+          <div class="ah"><span class="di num">08</span><h3>Experiências</h3><span class="sc num">78</span></div>
+          <div class="cp">
+            <div class="r1"><span class="nm">Viagens planejadas e feitas</span><span class="v num">90</span></div>
+            <div class="track"><i style="width:90%"></i></div>
+            <div class="sub">60% da área</div>
+          </div>
+          <div class="cp fraco">
+            <div class="r1"><span class="nm">Bucket list</span><span class="v num">60</span></div>
+            <div class="track"><i style="width:60%"></i></div>
+            <div class="sub">40% da área</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- como melhorar -->
+    <section class="melhorar rv" aria-label="Como melhorar">
+      <p class="eyebrow">Como melhorar</p>
+      <div class="mel">
+        <span class="rn num">01</span>
+        <div>
+          <h4>Registrar o peso desta semana</h4>
+          <p>O registro de peso vale 20% do score de Corpo e está pela metade.</p>
+          <a class="dest" href="#">→ Corpo</a>
+        </div>
+      </div>
+      <div class="mel">
+        <span class="rn num">02</span>
+        <div>
+          <h4>Fechar a meta de água de hoje</h4>
+          <p>Hidratação vale outros 20% de Corpo e é o componente mais baixo da área.</p>
+          <a class="dest" href="#">→ Corpo</a>
+        </div>
+      </div>
+      <div class="mel">
+        <span class="rn num">03</span>
+        <div>
+          <h4>Concluir um objetivo do trimestre</h4>
+          <p>Objetivos concluídos valem metade do score de Futuro, a área de maior peso junto com Finanças.</p>
+          <a class="dest" href="#">→ Futuro</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- colofão -->
+  <footer class="colofao">
+    <span>Média ponderada das áreas ativas, com os pesos redistribuídos e os valores arredondados.</span>
+    <div class="r">
+      <span>Último cálculo <b class="num">hoje, às 14:05</b></span>
+      <a href="diario.mobile.html">Ver o diário de hoje →</a>
+    </div>
+  </footer>
+</main>
+
+<!-- camada do coach: bottom sheet -->
+<div class="scrim"></div>
+<aside class="camada sheet" aria-label="Coach">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow"><b>Coach</b> · lendo: a composição do seu score</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o seu score. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">O que mais derruba o meu número?</button>
+        <button class="chip" type="button">Por que Finanças pesa mais que Corpo?</button>
+        <button class="chip" type="button">E se eu ligar as áreas desligadas?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:08</div>
+      <div class="bub u">O que mais derruba o meu número?</div>
+      <div class="bub a">Corpo. A área vale <strong class="num">15%</strong> do total e está em <strong class="num">69</strong>, o menor entre as ativas. Dentro dela, <span class="w">registros de peso está em 50</span> e hidratação em <strong class="num">60</strong>: os dois juntos valem 40% da área.
+        <span class="meta">Fontes: score por área · componentes do motor · 30 dias de histórico</span>
+      </div>
+      <div class="bub u">E se eu ligar as quatro que estão desligadas?</div>
+      <div class="bub a">O peso se redistribui: Finanças e Futuro caem de <strong class="num">33%</strong> para <strong class="num">20%</strong> cada e a conta passa a considerar as oito áreas. Com os números de hoje o total ficaria em <strong class="num">74</strong>, porque Mente entra em <strong class="num">58</strong>.
+        <span class="meta">Fontes: pesos do motor · áreas desligadas no onboarding</span>
+      </div>
+      <div class="typing" aria-label="Coach digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte sobre o seu score">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#coach">Conversa completa →</a>
+</aside>
+
+<!-- estados: anotação do protótipo -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>A curva · sem histórico</h4>
+        <p class="eyebrow">Últimos 30 dias</p>
+        <p class="vazio">A curva aparece quando houver pelo menos dois dias registrados.</p>
+      </div>
+      <div class="pe">
+        <h4>As 8 áreas · todas ativas</h4>
+        <p class="eyebrow">As 8 áreas</p>
+        <div class="dims">
+          <div class="dimrow">
+            <span class="di num">01</span>
+            <div><div class="nm">Finanças</div><div class="ps">peso <b>20%</b></div></div>
+            <span class="rt"><span class="sc num">83</span><span class="ct">contribui <b>16,6</b> de 74</span></span>
+          </div>
+          <div class="dimrow">
+            <span class="di num">02</span>
+            <div><div class="nm">Futuro</div><div class="ps">peso <b>20%</b></div></div>
+            <span class="rt"><span class="sc num">79</span><span class="ct">contribui <b>15,8</b> de 74</span></span>
+          </div>
+          <div class="dimrow">
+            <span class="di num">03</span>
+            <div><div class="nm">Tempo</div><div class="ps">peso <b>10%</b></div></div>
+            <span class="rt"><span class="sc num">71</span><span class="ct">contribui <b>7,1</b> de 74</span></span>
+          </div>
+          <div class="dimrow">
+            <span class="di num">04</span>
+            <div><div class="nm">Corpo</div><div class="ps">peso <b>15%</b></div></div>
+            <span class="rt"><span class="sc num">69</span><span class="ct">contribui <b>10,4</b> de 74</span></span>
+          </div>
+          <div class="dimrow">
+            <span class="di num">05</span>
+            <div><div class="nm">Mente</div><div class="ps">peso <b>10%</b></div></div>
+            <span class="rt"><span class="sc num">58</span><span class="ct">contribui <b>5,8</b> de 74</span></span>
+          </div>
+          <div class="dimrow">
+            <span class="di num">06</span>
+            <div><div class="nm">Patrimônio</div><div class="ps">peso <b>10%</b></div></div>
+            <span class="rt"><span class="sc num">76</span><span class="ct">contribui <b>7,6</b> de 74</span></span>
+          </div>
+          <div class="dimrow">
+            <span class="di num">07</span>
+            <div><div class="nm">Carreira</div><div class="ps">peso <b>10%</b></div></div>
+            <span class="rt"><span class="sc num">69</span><span class="ct">contribui <b>6,9</b> de 74</span></span>
+          </div>
+          <div class="dimrow">
+            <span class="di num">08</span>
+            <div><div class="nm">Experiências</div><div class="ps">peso <b>5%</b></div></div>
+            <span class="rt"><span class="sc num">78</span><span class="ct">contribui <b>3,9</b> de 74</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+</body>
+</html>
