@@ -45,15 +45,80 @@ window.SL_MOCK = {
 
   // scores por área (ordem canônica; ativas ganham linha rica no Diário; manter n/nome em sincronia com areas)
   dims: [
-    { n: '01', nome: 'Finanças',     meta: 'Saldo R$ 1.840 · lazer no limite', score: 82, tr: 2 },
-    { n: '02', nome: 'Futuro',       meta: '3 metas · 61% de média',           score: 74, tr: 1 },
+    { n: '01', nome: 'Finanças',     meta: 'Saldo R$ 1.840 · lazer no limite', score: 83, tr: 2 },
+    { n: '02', nome: 'Futuro',       meta: '3 metas · 61% de média',           score: 79, tr: 1 },
     { n: '03', nome: 'Tempo',        meta: '9 eventos · 5/7 dias com foco',    score: 71, tr: 0 },
-    { n: '04', nome: 'Corpo',        meta: '3 atividades · 126 min',           score: 64, tr: 3 },
+    { n: '04', nome: 'Corpo',        meta: '3 atividades · 126 min',           score: 69, tr: 3 },
     { n: '05', nome: 'Mente',        meta: '2 sessões de leitura',             score: 58, tr: -1 },
     { n: '06', nome: 'Patrimônio',   meta: 'R$ 48,2k · +7% no ano',            score: 76, tr: 1 },
     { n: '07', nome: 'Carreira',     meta: 'Roadmap 3/5 marcos',               score: 69, tr: 1 },
-    { n: '08', nome: 'Experiências', meta: 'Itália em 92 dias',                score: 80, tr: 0 },
+    { n: '08', nome: 'Experiências', meta: 'Itália em 92 dias',                score: 78, tr: 0 },
   ],
+
+  // A edição da semana (review semanal): dados da semana fechada
+  semana: {
+    numero: 31,
+    inicio: '27 de julho',
+    fim: '2 de agosto',
+    scoreFim: 78,
+    scoreInicio: 75,
+    fechada: false,
+    fechadaEm: 'domingo, 2 de agosto, às 21:30',
+    nums: { entradas: 1850, saidas: 940, eventosFeitos: 11, eventosTotal: 14, focoHoras: '6h30' },
+    // variação por área ativa na semana (de → para; bate com dims)
+    mudou: [
+      { n: '01', nome: 'Finanças',     de: 80, para: 83 },
+      { n: '02', nome: 'Futuro',       de: 75, para: 79 },
+      { n: '04', nome: 'Corpo',        de: 70, para: 69 },
+      { n: '08', nome: 'Experiências', de: 74, para: 78 },
+    ],
+    carta: {
+      headline: 'A semana virou no meio: o que travou na segunda destravou na quinta.',
+      p1: 'Você fechou a semana com R$ 1.850 de entradas contra R$ 940 de saídas, o melhor saldo semanal de julho. O lazer chegou perto do teto de novo, mas dessa vez você segurou: foram R$ 128 em quatro dias, contra R$ 310 na semana anterior.',
+      p2: 'Na agenda, 11 dos 14 compromissos saíram e você protegeu 6h30 de foco, uma hora a mais que na semana passada. Corpo foi o único ponto que recuou: dois treinos previstos ficaram para trás e o peso não foi registrado.',
+      hand: 'segunda-feira começa com o treino que sobrou!',
+      basedOn: '38 transações, 14 compromissos e 3 metas',
+      assinatura: 'Escrito no domingo, 2 de agosto, às 20:10',
+    },
+  },
+
+  // A anatomia do número (life score): composição real do motor
+  scoreDetalhe: {
+    total: 78,
+    label: 'Consistente',
+    deltaSemana: 3,
+    calculadoEm: 'hoje, às 14:05',
+    // 30 dias, mais antigo primeiro (determinístico, sem random)
+    historico: [68, 69, 69, 70, 70, 71, 71, 70, 72, 72, 73, 73, 72, 74, 74, 75, 75, 74, 75, 76, 76, 75, 76, 77, 77, 76, 77, 77, 78, 78],
+    areas: [
+      { n: '01', nome: 'Finanças', score: 83, peso: 20, contrib: 27.7, componentes: [
+        { nome: 'Orçamento do mês', peso: 40, valor: 90 },
+        { nome: 'Registro de transações', peso: 30, valor: 75 },
+        { nome: 'Tendência de saldo', peso: 30, valor: 80 },
+      ] },
+      { n: '02', nome: 'Futuro', score: 79, peso: 20, contrib: 26.3, componentes: [
+        { nome: 'Progresso dos objetivos', peso: 50, valor: 88 },
+        { nome: 'Objetivos concluídos no trimestre', peso: 50, valor: 70 },
+      ] },
+      { n: '04', nome: 'Corpo', score: 69, peso: 15, contrib: 17.3, componentes: [
+        { nome: 'Atividades da semana', peso: 30, valor: 75 },
+        { nome: 'Consulta agendada', peso: 30, valor: 80 },
+        { nome: 'Registros de peso', peso: 20, valor: 50 },
+        { nome: 'Hidratação', peso: 20, valor: 60 },
+      ] },
+      { n: '08', nome: 'Experiências', score: 78, peso: 5, contrib: 6.5, componentes: [
+        { nome: 'Viagens planejadas e feitas', peso: 60, valor: 90 },
+        { nome: 'Bucket list', peso: 40, valor: 60 },
+      ] },
+    ],
+    // áreas desligadas no onboarding: entram na linha quieta, sem score
+    inativas: ['03 Tempo', '05 Mente', '06 Patrimônio', '07 Carreira'],
+    melhorias: [
+      { titulo: 'Registrar o peso desta semana', detalhe: 'O registro de peso vale 20% do score de Corpo e está pela metade.', onde: 'Corpo' },
+      { titulo: 'Fechar a meta de água de hoje', detalhe: 'Hidratação vale outros 20% de Corpo e é o componente mais baixo da área.', onde: 'Corpo' },
+      { titulo: 'Concluir um objetivo do trimestre', detalhe: 'Objetivos concluídos valem metade do score de Futuro, a área de maior peso junto com Finanças.', onde: 'Futuro' },
+    ],
+  },
 
   financas: {
     receitas: 5000, despesas: 3160, saldoLivre: 1840,
