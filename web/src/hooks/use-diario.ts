@@ -109,16 +109,30 @@ const fmtV5 = (n: number): string => {
   return n < 0 ? `– ${abs}` : abs
 }
 
+/**
+ * Moeda sem centavos (`R$ 1.840`), a máscara do protótipo fora da faixa "Hoje":
+ * números do mês, meta das áreas, subtítulo das metas e colofão. Centavos só
+ * aparecem em contas a vencer, onde o valor exato importa.
+ */
+export const fmtV5Int = (n: number): string => {
+  const abs = Math.round(Math.abs(n)).toLocaleString('pt-BR')
+  return `${n < 0 ? '– ' : ''}R$${NBSP}${abs}`
+}
+
+/** Inteiro puro, sem unidade: par gasto/limite do orçamento (`410 / 420`). */
+const int = (n: number): string => Math.round(n).toLocaleString('pt-BR')
+
 /** Data de hoje (YYYY-MM-DD) no fuso de São Paulo. */
 function spTodayISO(): string {
   return new Date().toLocaleDateString('en-CA', { timeZone: SP_TZ })
 }
 
-/** "dezembro 2026" a partir de YYYY-MM-DD; string vazia se inválida. */
+/** "dez 2026" a partir de YYYY-MM-DD (mês curto do protótipo); '' se inválida. */
 function mesAnoPt(dateStr: string): string {
   const d = new Date(`${dateStr.slice(0, 10)}T00:00:00`)
   if (Number.isNaN(d.getTime())) return ''
-  return `${d.toLocaleDateString('pt-BR', { month: 'long' })} ${d.getFullYear()}`
+  const mes = d.toLocaleDateString('pt-BR', { month: 'short' }).replace(/\.$/, '')
+  return `${mes} ${d.getFullYear()}`
 }
 
 function diasLabel(n: number): string {
@@ -228,7 +242,7 @@ export function useDiario(): DiarioData {
 
     let meta = ''
     if (def.key === 'financas' && nums) {
-      meta = `Saldo ${fmtV5(nums.saldo)}`
+      meta = `Saldo ${fmtV5Int(nums.saldo)}`
       if (maisTenso) meta += ` · ${maisTensoNome} ${maisTenso.pct}%`
     } else if (def.key === 'futuro' && !metasQ.isLoading && !metasQ.error) {
       const goals = metasQ.goals
@@ -262,7 +276,7 @@ export function useDiario(): DiarioData {
       tipo: b.pct > 85 ? 'danger' : 'warn',
       strong: b.category?.name ?? 'Orçamento',
       texto: `usou ${b.pct}% do orçamento`,
-      valor: `${fmtV5(b.gasto)} / ${fmtV5(b.amount)}`,
+      valor: `${int(b.gasto)} / ${int(b.amount)}`,
     })
   }
 
@@ -274,7 +288,7 @@ export function useDiario(): DiarioData {
       strong: o.name,
       texto:
         o.daysLeft <= 0 ? 'vence hoje' : o.daysLeft === 1 ? 'vence amanhã' : `vence em ${o.daysLeft} dias`,
-      valor: fmtV5(o.amount),
+      valor: fmtV5Int(o.amount),
     })
   }
 
@@ -298,7 +312,9 @@ export function useDiario(): DiarioData {
       return {
         nome: g.name,
         pct,
-        sub: `${fmtV5(g.current_amount)} de ${fmtV5(g.target_amount)}` + (prazo ? ` · ${prazo}` : ''),
+        sub:
+          `${fmtV5Int(g.current_amount)} de ${fmtV5Int(g.target_amount)}` +
+          (prazo ? ` · ${prazo}` : ''),
       }
     })
 
@@ -314,7 +330,7 @@ export function useDiario(): DiarioData {
   })
 
   const colofao: DiarioColofao = {
-    saldoMes: nums ? fmtV5(nums.saldo) : '–',
+    saldoMes: nums ? fmtV5Int(nums.saldo) : '–',
     streakDias,
     badges: badgesQ.badges.length > 0 ? `${userBadgesQ.userBadges.length}/${badgesQ.badges.length}` : '–',
     ultimaSinc,

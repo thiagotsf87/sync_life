@@ -33,18 +33,29 @@ interface UseDiarioBriefReturn {
 const SP_TZ = 'America/Sao_Paulo'
 const NBSP = ' '
 
-/** Normaliza "R$ valor" para NBSP pós-R$ (cobre IA e fallback de uma vez). */
-const nbspBRL = (s: string): string => s.replace(/R\$ /g, `R$${NBSP}`)
+/**
+ * Normaliza a prosa que vem do modelo para as regras da casa. Roda no client
+ * (e não só na rota) de propósito: o payload fica cacheado o dia inteiro em
+ * coach_briefs, então corrigir só na geração deixaria o texto do dia torto.
+ * - "R$" sempre colado ao valor por NBSP, com ou sem espaço na origem
+ *   (o modelo escreve tanto "R$ 1.840" quanto "R$1.840");
+ * - em-dash não existe na copy do produto, vira vírgula.
+ */
+const cleanProse = (s: string): string =>
+  s.replace(/R\$\s*(?=\d)/g, `R$${NBSP}`).replace(/\s*—\s*/g, ', ')
+
+/** Fontes do briefing sem pontuação final: quem exibe é que fecha a frase. */
+const cleanBasedOn = (s: string): string => cleanProse(s).replace(/[\s.;,]+$/, '')
 
 function normalizeBrief(raw: DiarioBrief): DiarioBrief {
   return {
     ...raw,
-    headline: nbspBRL(raw.headline),
-    p1: nbspBRL(raw.p1),
-    p2: nbspBRL(raw.p2),
-    hand: nbspBRL(raw.hand),
-    recs: (raw.recs ?? []).map(r => ({ title: nbspBRL(r.title), detail: nbspBRL(r.detail) })),
-    basedOn: nbspBRL(raw.basedOn),
+    headline: cleanProse(raw.headline),
+    p1: cleanProse(raw.p1),
+    p2: cleanProse(raw.p2),
+    hand: cleanProse(raw.hand),
+    recs: (raw.recs ?? []).map(r => ({ title: cleanProse(r.title), detail: cleanProse(r.detail) })),
+    basedOn: cleanBasedOn(raw.basedOn),
   }
 }
 

@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ChromeV5 } from '@/components/app-v5/ChromeV5'
 import { CamadaCoach } from '@/components/app-v5/CamadaCoach'
-import { useDiario } from '@/hooks/use-diario'
+import { fmtV5Int, useDiario } from '@/hooks/use-diario'
 import { useDiarioBrief } from '@/hooks/use-diario-brief'
 import { MOOD_LABELS, useCheckin, type Mood } from '@/hooks/use-checkin'
 import { prefersReduce, setupReveal } from '@/lib/v5/viva'
@@ -25,7 +25,6 @@ interface DiarioV5Props {
 }
 
 const SP_TZ = 'America/Sao_Paulo'
-const NBSP = ' '
 const MOODS: readonly Mood[] = [1, 2, 3, 4, 5]
 const ASK_SEED = 'Pergunte algo sobre o seu mês'
 
@@ -55,12 +54,6 @@ function horaSP(iso: string): string {
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return '--:--'
   return d.toLocaleTimeString('pt-BR', { timeZone: SP_TZ, hour: '2-digit', minute: '2-digit' })
-}
-
-/** Moeda inteira dos cards grandes (formato do protótipo: R$ 1.840, NBSP pós-R$). */
-function fmtInt(v: number): string {
-  const abs = Math.round(Math.abs(v)).toLocaleString('pt-BR')
-  return `${v < 0 ? '– ' : ''}R$${NBSP}${abs}`
 }
 
 /** Primeira frase de um parágrafo (até o primeiro ". ", ponto incluso). */
@@ -346,17 +339,17 @@ export function DiarioV5({ userName, accountCreatedAt }: DiarioV5Props) {
           <section className="nums boot b5" aria-label="Números do mês">
             <div>
               <p className="eyebrow">Saldo</p>
-              <div className="v num">{fmtInt(nums?.saldo ?? 0)}</div>
+              <div className="v num">{fmtV5Int(nums?.saldo ?? 0)}</div>
               <div className="d num">receitas menos despesas</div>
             </div>
             <div>
               <p className="eyebrow">Receitas</p>
-              <div className="v num">{fmtInt(nums?.receitas ?? 0)}</div>
+              <div className="v num">{fmtV5Int(nums?.receitas ?? 0)}</div>
               <div className="d num">este mês</div>
             </div>
             <div>
               <p className="eyebrow">Despesas</p>
-              <div className="v num">{fmtInt(nums?.despesas ?? 0)}</div>
+              <div className="v num">{fmtV5Int(nums?.despesas ?? 0)}</div>
               <div className="d num">{despLegend}</div>
             </div>
             <div>
