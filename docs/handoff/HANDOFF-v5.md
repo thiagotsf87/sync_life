@@ -13,7 +13,7 @@
 - **✅ ONDA 0 IMPLEMENTADA em `web/` (2026-07-30):** rota `/` agora renderiza a landing v5 (`LandingV5` = árvores `LandingVivaDesktop` r15 + `LandingVivaMobile` m1, CSS decide qual aparece em 1024px; árvore oculta = E-02 estático). Fundação A no lugar: `styles/{tokens-v5,v5,bussola-3d}.css` escopados sob `.v5`, Inter+Caveat no `layout.tsx`, `lib/v5/{bussola-3d,viva,compass-gl}.ts`, deps gsap+lenis+three. Teste de identidade: desktop DELTA 0px em todas as âncoras (doc 6947px idêntico); mobile idêntico em device (no preview desktop o protótipo perde 15px pra scrollbar nativa; o app usa a scrollbar do globals v3). Servir local: `npx next start -p 3006` (porta 3006; se EADDRINUSE, matar o listener antigo).
 - **✅ MOBILE m1 APROVADO (2026-07-30, tag `poc-landing-viva-mobile-m1`):** `landing/landing-viva.mobile.html` (390×844, dedicado) porta a r15 inteira pro toque: aurora global, arco com régua de sintonia, bússola WebGL (DPR 1) com fallback CSS, coreografia em scrub por elemento (voo com encaixe × pop de mensageiro), pricing empilhado, wordmark inteiro. Scroll nativo, sem Lenis.
 - **✅ ONDA 1 COMPLETA (2026-07-31):** protótipos aprovados (tag `poc-onda1-publico-auth-r2`) e IMPLEMENTADOS em `web/`: `/pricing` (página real, era redirect), `/login`, `/cadastro`, `/esqueceu-senha`, `/redefinir-senha`, `/onboarding`, todos no v5 com a lógica Supabase do v3 preservada. QA de identidade em `next start -p 3006`: pricing delta 0 (doc 3816px idêntico), tipografia exata nas 6, console zero em 12 navegações.
-- **🔄 ONDA 2 LOTE 1 EM APROVAÇÃO (2026-07-31):** decisão de produto virou spec (`docs/superpowers/specs/2026-07-31-coach-diario-v5-design.md`): Panorama vira **Diário** (rota `/dashboard` mantida, briefing do coach + check-in humor/linha + "Suas áreas" por `profiles.active_modules`) e o **coach vira camada global fora do menu** (gatilho no bar em toda tela, vista cheia `/coach` só via expansão). Protótipos prontos: `app/diario.html` + `.mobile.html` (390×844) e `shared/app.css`+`app.js` (chrome, bolhas, camada, check-in). QA integral limpo, zero fixes (commit fc89ab7). **Próximo: aprovação do usuário no hub; depois implementação em `web/` + lote 2 (Review semanal, Life Score) + Onda 3 (backend N1-N2 do coach).**
+- **✅ ONDA 2 LOTE 1 IMPLEMENTADA em `web/` (2026-08-01):** protótipos aprovados em 2026-07-31 (spec `docs/superpowers/specs/2026-07-31-coach-diario-v5-design.md`) e no ar: `/dashboard` é o **Diário** v5 (briefing cacheado do coach + check-in humor/linha + "Suas áreas" por `profiles.active_modules`) dentro do route group **`(app-v5)`** com chrome próprio (`ChromeV5`) e o **coach como camada global** (`CamadaCoach`, gatilho no bar + ask da folha, streaming do Groq). Backend novo: migration `027_diario_v5.sql` (`coach_briefs` + `daily_checkins`, RLS per-user) e `/api/ai/diario-brief`. `(app)/dashboard/page.tsx` foi DELETADO; `review/` e `score/` seguem no shell v3 (lote 2). Servir: `node node_modules/next/dist/bin/next start -p 3006` (o `npx next start` dá exit 127 neste ambiente). **Próximo: aceite visual do usuário no app real; depois lote 2 (Review semanal, Life Score) + Onda 3 (vista cheia `/coach` + N2).**
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 
 ## Status das ondas
@@ -22,7 +22,7 @@
 |---|---|---|---|---|---|
 | 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ✅ **APROVADA (r2, 2026-07-31)** | ✅ `web/` (2026-07-31) | ✅ desktop + mobile ok, console zero |
-| 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) | ⏳ lote 1 em aprovação (Diário + camada do coach) | – | – |
+| 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) | ✅ **lote 1 APROVADO (2026-07-31)** | ✅ lote 1 em `web/` (2026-08-01) · lote 2 (Review, Life Score) pendente | ✅ desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) |
 | 03 | Coach: vista cheia /coach + backend N1-N2 | – | – | – | – |
 | 04 | 01 Finanças (8 telas, 2 lotes) | – | – | – | – |
 | 05 | 02 Futuro (4) | – | – | – | – |
@@ -35,6 +35,37 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-08-01 · Sessão 21 — Onda 2 lote 1 IMPLEMENTADA em `web/` (Diário + chrome v5 + camada do coach)
+
+**Aprovação:** protótipos da Onda 2 lote 1 aprovados pelo usuário em 2026-07-31; a implementação seguiu o plano `docs/superpowers/plans/2026-07-31-onda2-implementacao-web.md` (commit 2b4de6b), subagent-driven com revisão dupla por task.
+
+**Entregue (commits):**
+- **Backend:** migration `027_diario_v5.sql` com `coach_briefs` + `daily_checkins` (RLS per-user), aplicada no projeto `xmtzpjtbqhgwmebycxmx` (ce6a54a; d95fb83 renomeia o alias `CoachBrief`→`CoachBriefRow` por colisão com CoachHero).
+- **CSS:** `styles/app-v5.css` = porte de `shared/app.css` sob `.v5` + Space Grotesk 400 (b3ca3d5).
+- **IA:** `/api/ai/diario-brief` com cache diário em `coach_briefs`, contexto de panorama enriquecido (score, orçamentos, contas, metas, check-in de ontem), fallback determinístico e `forceFallback` pro kill-switch (26fde4e, 14fa30a).
+- **Hooks:** `use-checkin` / `use-diario-brief` / `use-diario` (4382c54, 41dd87a).
+- **Shell:** route group `(app-v5)` com guard próprio + `AppV5Boot` + `ChromeV5` + `CamadaCoach` com streaming do coach-thread (a6c2602, 2e02a99).
+- **Tela:** `DiarioV5` + `(app-v5)/dashboard/page.tsx`, com `(app)/dashboard/page.tsx` DELETADO e `review/`+`score/` mantidos no v3 (6fadbc7, 008c2c2). Fix de QA na máscara de moeda em be7e456.
+
+**Decisões de escopo:** N1 (brief cacheado) e o check-in foram puxados da Onda 3 pra cá, senão a folha e a banda seriam fake; N2 (thread persistida + fontes citadas) e a vista cheia `/coach` seguem na Onda 3; N3 (cartão "Ação executada" / tool calling) não entrou no app (sprint próprio); `Conversa completa →` renderiza com `aria-disabled` e não navega; `Revisão semanal` e o selo apontam pra `/dashboard/review` e `/dashboard/score`, ainda no shell v3 (lote 2).
+
+**QA de identidade e funcional (Task 7, PASS):** desktop 1440 e mobile 390 comparados aos protótipos por estilo computado com diff CSS regra a regra (0 declarações ausentes; só faltam seletores exclusivos do protótipo e 2 nomes de keyframe prefixados). A camada abre pelo pill e pelo ask com seed, foca o input no desktop e não foca no sheet mobile; pergunta real retornou streaming do Groq (200, não fallback); check-in persistiu e sobreviveu ao reload; brief gerou na primeira carga (linha em `coach_briefs`, payload do Gemini) e voltou com `cached:true` no reload; `/financas` abre o shell v3 e voltar ao Diário mantém o fundo v5 sem vazamento de `data-theme`. Console: 0 erros de JS/React; os 13 erros observados são HTTP 404 do Supabase pra tabelas que NÃO existem neste projeto (drift conhecido: `life_sync_scores`, `agenda_events`, `user_streaks`, `badges`, `user_badges` e outras) — a tela degrada graciosamente e em ambiente com schema completo esses 404 somem.
+
+**Gotchas novos da implementação:**
+- `tokens-v5.css` declara dark como `.v5 .dk` (descendente), então o boot renderiza `<div class="v5"><div class="dk anim">`; `v5 dk` no MESMO elemento renderiza a paleta clara silenciosamente.
+- `npx next start` deu exit 127 neste ambiente; usar `node node_modules/next/dist/bin/next start -p 3006`.
+- `.next/dev/types/validator.ts` stale referencia rota deletada e quebra o build: `rm -rf .next` antes de buildar depois de deletar rota.
+- Regras de CSS de página que empatam especificidade com `app-v5.css` precisam de bump por classe repetida (`.v5 .bar.bar`) pra não depender da ordem de emissão do Next.
+- O payload do Gemini vem com `R$0` colado e pontuação dupla; `use-diario-brief` normaliza NBSP e prosa no client.
+
+**Polish e dívidas registradas (não bloqueantes):** count-up dos números não foi portado (valores estáticos) · ênfases tipográficas dentro de `p1/p2` (o protótipo tem `strong`/`warn`; hoje o texto é puro, sem HTML da IA por segurança) · linha `Outras:` mostra só nomes, sem número nem score, porque o engine não calcula score de área inativa (divergência honesta do protótipo) · selo mobile mantém o link `como melhorar →` que o protótipo dobra no `.d` · `ultimaSinc` usa a hora do render (a coluna `recorded_date` é DATE puro) · branches de `daysLeft<=0` são código morto pela regra do v3 · estado ativo do modbar é hardcoded no Diário, vira prop quando outros módulos migrarem · dívidas de a11y herdadas do protótipo: focus trap na camada, teclado iOS sobre o sheet fixo, `.rec` clicável sem semântica de botão, heading h2→h4 sem h3.
+
+**Próximo passo:** aceite visual do usuário no app real; depois lote 2 da Onda 2 (Review semanal, Life Score detalhado no v5) e Onda 3 (vista cheia `/coach` + N2: `coach_messages` com fontes citadas).
+
+**Arquivos:** `web/supabase/migrations/027_diario_v5.sql` · `web/src/styles/app-v5.css` · `web/src/app/api/ai/diario-brief/route.ts` · `web/src/hooks/{use-checkin,use-diario-brief,use-diario}.ts` · `web/src/lib/coach/context.ts` · `web/src/app/(app-v5)/{layout,dashboard/page}.tsx` · `web/src/components/app-v5/{AppV5Boot,ChromeV5,CamadaCoach,DiarioV5}.tsx` + `{chrome-v5,diario-v5}.css` · `docs/superpowers/plans/2026-07-31-onda2-implementacao-web.md` · `prototypes/v5/index.html` · este handoff.
 
 ---
 
