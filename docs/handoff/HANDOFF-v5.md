@@ -274,10 +274,59 @@ para as próximas.
 
 **QA:** 165 fps · console 0/0 em 2 corpos × 6 estados.
 
-**Próximo passo:** uma referência de **cabeça de perfil** utilizável destrava o "falando" pelo mesmo
-caminho do cérebro (o código já está lá, só falta o dado). Depois: nome → sinal chapado pro miúdo
-(nenhum 3D sobrevive a 38px) → integração no Diário. O lugar da revisão semanal segue **sem decisão**
-desde a sessão 23.
+### Rodada 3 — "O projetado": luz em camadas (Minority Report) · O ROSTO FINALMENTE LÊ
+
+**Veredito do usuário sobre a rodada 2e:** *"Nenhuma forma está correta, nem o cérebro nem o rosto."*
+Correto. Tentei ainda **giros por conjunto-zero de campo de ruído** (a única coisa aqui que é
+genuinamente proceduralizável, porque giro É um labirinto): melhorou a superfície, **não resolveu**.
+Registrado como tentativa medida, não como conserto.
+
+**Diagnóstico final do beco, e ele é meu:** eu pedi **silhuetas**, e silhueta é contorno — contorno
+joga fora tudo que está dentro dele. Só que a identidade de um cérebro (os giros) e de um rosto (as
+feições) mora **dentro**. Silhueta entrega **proporção**, e proporção correta produz exatamente o que
+estava na tela: uma bolha com as medidas certas. Escultura por procedimento tem teto, e o teto é esse.
+
+**A virada veio do usuário:** e se a inspiração fosse **Matrix, Eu Robô, Minority Report**? Escolha
+dele: **Minority Report lidera**. E isso não é troca de gosto, é troca de categoria que **resolve o
+beco por construção**: o personagem deixa de ser escultura e vira **projeção**, e projeção é
+**esquemática por convenção** — ninguém cobra pele de um holograma. Um rosto de linhas no idioma de
+**rastreamento facial** lê como rosto sem nenhuma anatomia.
+
+**`personagem/projetado.html` (novo).** Lâminas de vidro translúcido em profundidade, cada uma com
+conteúdo próprio, que se reorganizam por estado. Vidro azul-frio e luz aditiva; **sem cromo e sem
+neon** (é por isso que Minority Report envelheceu bem). Nada opaco. Não usa nada da linguagem da
+bússola. Linguagem emprestada, desenho autoral — os designs dos filmes têm dono e não foram copiados.
+
+| Estado | O que a peça faz |
+|---|---|
+| dormindo | uma lâmina quase parada, cantos em colchete, varredura lenta. Discreto, que é o requisito |
+| lendo | as lâminas abrem em profundidade e o dado corre por elas, cada uma no seu passo |
+| pensando | as lâminas **deitam** e viram cortes empilhados, leitura de exame. Reaproveita a silhueta do cérebro |
+| **falando** | **o rosto lê**: contorno oval autoral, órbitas, íris, sobrancelha, nariz, boca que abre na amplitude da voz, mais a malha esparsa de marcos |
+| ouvindo | tudo recolhe e sobra um medidor de nível: atenção como quietude |
+| alertando | coral, lâminas desalinhadas, triângulo de alerta |
+
+**Avaliação honesta por estado:** cinco dos seis leem bem. **`pensando` é o mais fraco** — lê como
+pilha de fatias formando um volume, mas a forma do cérebro não fica legível nesse arranjo. Não vou
+chamar de resolvido.
+
+**Decisões de execução que importaram:** o contorno da cabeça é **oval autoral**, não a silhueta
+extraída (`cabeca_frente` trazia ombro e cabelo junto e virava mancha) · a malha de marcos liga pontos
+**por proximidade**, com faixa de distância, senão vira grade em cima da cara · moldura só nos cantos,
+porque quadro inteiro competia com o conteúdo · `orbita.scale 2.3` porque a lâmina tem 1 unidade e a
+peça ocupava 1/4 do quadro.
+
+**Gotcha novo:** o buffer WebGL é limpo a cada quadro, então `drawImage(canvas)` fora do laço de
+render copia vazio. Para montar folha de contato de estados é preciso `renderer.render()` **imediato**
+antes de cada cópia. (A folha de 6 estados num screenshot é o loop de feedback que faltava desde o
+começo desta sessão.)
+
+**QA:** 165 fps · console 0/0 nos 6 estados.
+
+**Próximo passo:** aceite da direção. Se aprovada: consertar `pensando`, decidir o nome, e a boa
+notícia é que **o problema de escala pode ter morrido junto** — uma projeção chapada tem chance real
+de sobreviver a 38px, coisa que nenhum dos 3D conseguiu. Depois: integração no Diário. O lugar da
+revisão semanal segue **sem decisão** desde a sessão 23.
 
 **Arquivos:** `prototypes/v5/personagem/laboratorio.html` (rodada 1) · `prototypes/v5/personagem/laboratorio-3d.html` (rodada 2) · `prototypes/v5/index.html` · este handoff.
 **Nenhum código de `web/` e nenhum protótipo do lote 2 foi tocado.**

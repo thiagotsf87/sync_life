@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · O projetado · v5</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Crect x='14' y='18' width='36' height='10' rx='2' fill='%23cfe6ff' opacity='.9'/%3E%3Crect x='18' y='34' width='28' height='8' rx='2' fill='%236840ff' opacity='.8'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<style>
+  .wrap{--wrap-max:1240px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+  .top{padding:44px 0 26px}
+  .top h1{font:500 clamp(30px,3.8vw,46px)/1.03 var(--gro);letter-spacing:-.04em;margin-top:14px}
+  .top .sub{font:400 15px/1.65 var(--int);color:var(--t2);margin-top:16px;max-width:78ch}
+  .top .sub b{color:var(--t1);font-weight:600}
+
+  .ctl{position:sticky;top:0;z-index:20;background:var(--bg);border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);padding:14px 0;display:flex;flex-wrap:wrap;gap:22px;align-items:center}
+  .grp{display:flex;align-items:center;gap:10px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{font:500 13px var(--int);color:var(--t2);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:8px 15px;cursor:pointer;
+    transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+  .seg button:hover{border-color:var(--line-h);color:var(--t1)}
+  .seg button[aria-pressed="true"]{border-color:var(--roxo);color:var(--t1);background:rgba(104,64,255,.12)}
+  .seg button:focus-visible{outline:2px solid var(--roxo);outline-offset:2px}
+
+  .cena{display:grid;grid-template-columns:1fr 360px;gap:40px;padding:28px 0 56px;align-items:start}
+  @media (max-width:1040px){ .cena{grid-template-columns:1fr} }
+  .palco{position:relative;aspect-ratio:1;max-height:580px;margin:0 auto;width:100%;
+    display:grid;place-items:center;border:1px solid var(--line);border-radius:22px;
+    background:radial-gradient(130% 130% at 50% 32%, #0f1420, #080a10 72%);overflow:hidden}
+  #cv{display:block;width:var(--esc,100%);height:var(--esc,100%);aspect-ratio:1;
+    transition:width .5s var(--ease),height .5s var(--ease)}
+  .semgl{position:absolute;inset:0;display:none;place-items:center;padding:40px;text-align:center;
+    font:400 14px/1.6 var(--int);color:var(--t3)}
+  .palco.falhou .semgl{display:grid}
+  .palco.falhou #cv{display:none}
+  .dica{position:absolute;left:18px;bottom:16px;font:400 11.5px var(--int);color:var(--t3);opacity:.65}
+
+  .ficha h2{font:500 26px var(--gro);letter-spacing:-.03em;margin-bottom:4px}
+  .ficha .kicker{font:700 10.5px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--roxo)}
+  .ficha .tese{font:400 14.5px/1.68 var(--int);color:var(--t2);margin-top:14px}
+  .ficha .tese b{color:var(--t1);font-weight:600}
+  .ficha dl{margin-top:22px;border-top:1px solid var(--line);padding-top:18px;display:grid;gap:11px}
+  .ficha .row{display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:baseline}
+  .ficha dt{font:600 12px var(--int);color:var(--t2)}
+  .ficha dd{font:400 12.8px/1.55 var(--int);color:var(--t3)}
+  .ficha .agora{margin-top:20px;border-left:2px solid var(--roxo);padding-left:14px;
+    font:400 13.5px/1.6 var(--int);color:var(--t2);min-height:46px}
+  .ficha .agora b{color:var(--t1);font-weight:600}
+
+  .fim{border-top:1px solid var(--line);padding:34px 0 80px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  @media (max-width:860px){ .fim{grid-template-columns:1fr} }
+  .fim h3{font:500 19px var(--gro);letter-spacing:-.02em;margin-bottom:12px}
+  .fim p{font:400 14px/1.7 var(--int);color:var(--t2);max-width:64ch}
+  .fim p+p{margin-top:11px}
+  .fim b{color:var(--t1);font-weight:600}
+  .fim .hand{display:block;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow"><b>Onda 03</b> · personagem, rodada 3 · luz em camadas</p>
+    <h1>O projetado</h1>
+    <p class="sub">Direção nova, na gramática de <b>Minority Report</b>: o personagem não é objeto,
+      é <b>projeção</b>. Planos translúcidos em profundidade, arrastados no ar, com conteúdo que muda
+      conforme o estado. Isso resolve o beco das rodadas anteriores por um motivo estrutural:
+      <b>projeção é esquemática por convenção</b>, então um rosto de linhas lê como rosto sem cobrar
+      anatomia, e o cérebro vira <b>diagrama</b> em vez de órgão. Linguagem emprestada, desenho nosso.</p>
+  </header>
+
+  <div class="ctl">
+    <div class="grp">
+      <p class="eyebrow">Estado</p>
+      <div class="seg" id="seg-estado" role="group" aria-label="Estado">
+        <button type="button" data-estado="dorme"  aria-pressed="true">dormindo</button>
+        <button type="button" data-estado="le"     aria-pressed="false">lendo</button>
+        <button type="button" data-estado="pensa"  aria-pressed="false">pensando</button>
+        <button type="button" data-estado="fala"   aria-pressed="false">falando</button>
+        <button type="button" data-estado="ouve"   aria-pressed="false">ouvindo</button>
+        <button type="button" data-estado="alerta" aria-pressed="false">alertando</button>
+      </div>
+    </div>
+    <div class="grp">
+      <div class="seg">
+        <button type="button" id="escala" aria-pressed="false">escala assinatura</button>
+        <button type="button" id="ciclo"  aria-pressed="false">ciclo automático</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cena">
+    <div class="palco" id="palco">
+      <canvas id="cv"></canvas>
+      <div class="semgl">Sem WebGL neste navegador. No produto a peça não monta e a folha do
+        briefing segue sozinha, sem buraco no layout.</div>
+      <p class="dica">arraste para girar</p>
+    </div>
+    <div class="ficha" id="ficha"></div>
+  </div>
+
+  <section class="fim">
+    <div>
+      <h3>O que olhar</h3>
+      <p>Comece por <b>falando</b>. É o teste da tese: o rosto é feito de <b>linha</b>, no idioma de
+        rastreamento facial, e a boca abre na amplitude da voz. Se ele lê como rosto sem ser
+        anatômico, a direção está certa e o beco acabou.</p>
+      <p>Depois <b>pensando</b>: o cérebro entra como <b>corte</b>, empilhado em fatias, do jeito que
+        um exame mostra. É a mesma silhueta que você mandou, lida como diagrama em vez de escultura.</p>
+      <p>E <b>dormindo</b>, que é o que você vê quase sempre: aqui ele precisa quase desaparecer,
+        virar uma lâmina parada com uma varredura lenta.</p>
+    </div>
+    <div>
+      <h3>Decisões de propósito</h3>
+      <p>Sem cromo e sem neon. Minority Report é <b>vidro e luz fria</b>, e é por isso que ela
+        envelheceu bem enquanto o resto da ficção científica daquela época datou.</p>
+      <p>Nenhum plano é opaco: tudo se lê por transparência e sobreposição. É o oposto do objeto
+        sólido das rodadas anteriores, e é o que permite a peça ocupar espaço sem pesar na tela.</p>
+      <p>A <b>bússola continua sendo a marca</b>. Esta peça não usa nada da linguagem dela.</p>
+      <span class="hand rx">projeção não precisa de pele</span>
+    </div>
+  </section>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js" } }
+</script>
+<script type="module">
+const palco = document.getElementById('palco')
+try {
+  const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches
+  const THREE = await import('three')
+  const ESTADOS = ['dorme', 'le', 'pensa', 'fala', 'ouve', 'alerta']
+  let estado = 'dorme'
+
+  let _s = 20260802
+  const rnd = () => { _s = _s + 0x6D2B79F5 | 0; let t = Math.imul(_s ^ _s >>> 15, 1 | _s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 }
+  const mola = (o, k, d, dt) => { o.v += ((o.t - o.p) * k - o.v * d) * dt; o.p += o.v * dt }
+  const M = (p = 0) => ({ p, v: 0, t: p })
+  const voz = t => reduz ? .55 : Math.abs(Math.sin(t * 11.7) * .5 + Math.sin(t * 6.1) * .32 + Math.sin(t * 17.3) * .18)
+  const suave = (a, b, x) => { const u = Math.min(1, Math.max(0, (x - a) / (b - a))); return u * u * (3 - 2 * u) }
+
+  // paleta: vidro azul-frio, não neon. O roxo da marca entra como acento, não como base.
+  const VIDRO = new THREE.Color(0xbcd8f5), ACENTO = new THREE.Color(0x6840ff), CORAL = new THREE.Color(0xf84131)
+
+  /* ─── seções do cérebro: reaproveita a silhueta extraída das suas referências ─── */
+  let SEC = null
+  try {
+    const sil = await (await fetch('refs/silhuetas.json')).json()
+    const poly = (raios, flip) => {
+      const N = raios.length, p = []
+      for (let i = 0; i < N; i++) { const a = (i / N) * Math.PI * 2; p.push([Math.cos(a) * raios[i] * flip, -Math.sin(a) * raios[i]]) }
+      let v0 = Infinity, v1 = -Infinity, u0 = Infinity, u1 = -Infinity
+      for (const [u, v] of p) { v0 = Math.min(v0, v); v1 = Math.max(v1, v); u0 = Math.min(u0, u); u1 = Math.max(u1, u) }
+      const vc = (v0 + v1) / 2, uc = (u0 + u1) / 2, k = 2 / (v1 - v0)
+      return p.map(([u, v]) => [(u - uc) * k, (v - vc) * k])
+    }
+    const ext = (pl, h) => {
+      let lo = Infinity, hi = -Infinity
+      for (let i = 0; i < pl.length; i++) {
+        const [u1, v1] = pl[i], [u2, v2] = pl[(i + 1) % pl.length]
+        if ((v1 <= h && v2 >= h) || (v2 <= h && v1 >= h)) {
+          const t = Math.abs(v2 - v1) < 1e-9 ? 0 : (h - v1) / (v2 - v1)
+          const u = u1 + (u2 - u1) * t; lo = Math.min(lo, u); hi = Math.max(hi, u)
+        }
+      }
+      return lo > hi ? [0, 0] : [lo, hi]
+    }
+    const pl = poly(sil.cerebro_lado.raios, -1), pf = poly(sil.cerebro_frente.raios, 1)
+    SEC = { cerebro: h => [...ext(pl, h), ...ext(pf, h)], cabeca: h => ext(poly(sil.cabeca_frente.raios, 1), h) }
+    const cabPoly = poly(sil.cabeca_frente.raios, 1)
+    SEC.cabecaContorno = cabPoly
+  } catch (e) { console.warn('silhuetas não carregaram; o cérebro cai no genérico:', e.message) }
+
+  /* ─── cena ─── */
+  const canvas = document.getElementById('cv')
+  const S = 620
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
+  renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1))
+  renderer.setSize(S, S, false)
+  const scene = new THREE.Scene()
+  const cam = new THREE.PerspectiveCamera(28, 1, .1, 60)
+  cam.position.set(0, .1, 8.4); cam.lookAt(0, 0, 0)
+  const orbita = new THREE.Group(); scene.add(orbita)
+  orbita.scale.setScalar(2.3)   // a lâmina tem 1 unidade; sem isso a peça ocupa 1/4 do quadro
+
+  /* ─── as lâminas ─── */
+  const NP = 15                     // lâminas de vidro empilhadas em profundidade
+  const CAP = 260                   // capacidade de segmentos por lâmina
+  const laminas = []
+  for (let i = 0; i < NP; i++) {
+    const g = new THREE.Group()
+    const vidro = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({ color: 0x5b86bf, transparent: true, opacity: .04, side: THREE.DoubleSide, depthWrite: false })
+    )
+    g.add(vidro)
+    const pos = new Float32Array(CAP * 6), cor = new Float32Array(CAP * 6)
+    const geo = new THREE.BufferGeometry()
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    geo.setAttribute('color', new THREE.BufferAttribute(cor, 3))
+    geo.setDrawRange(0, 0)
+    const linhas = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({
+      vertexColors: true, transparent: true, opacity: .95, blending: THREE.AdditiveBlending, depthWrite: false,
+    }))
+    g.add(linhas)
+    orbita.add(g)
+    laminas.push({ g, vidro, geo, pos, cor, n: 0, mat: linhas.material })
+  }
+
+  // escrita de segmentos numa lâmina
+  let L = null
+  const abre = i => { L = laminas[i]; L.n = 0 }
+  const seg = (x1, y1, x2, y2, c, b = 1) => {
+    if (L.n >= CAP) return
+    const o = L.n * 6
+    L.pos[o] = x1; L.pos[o + 1] = y1; L.pos[o + 2] = 0
+    L.pos[o + 3] = x2; L.pos[o + 4] = y2; L.pos[o + 5] = 0
+    for (let v = 0; v < 3; v++) { L.cor[o + v] = c.r * b; L.cor[o + 3 + v] = c.g * b }
+    L.cor[o + 2] = c.b * b; L.cor[o + 5] = c.b * b
+    L.cor[o] = c.r * b; L.cor[o + 1] = c.g * b
+    L.cor[o + 3] = c.r * b; L.cor[o + 4] = c.g * b
+    L.n++
+  }
+  const caminho = (pts, c, b = 1, fechar = true) => {
+    for (let i = 0; i < pts.length - 1; i++) seg(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], c, b)
+    if (fechar && pts.length > 2) seg(pts[pts.length - 1][0], pts[pts.length - 1][1], pts[0][0], pts[0][1], c, b)
+  }
+  const fecha = () => { L.geo.setDrawRange(0, L.n * 2); L.geo.attributes.position.needsUpdate = true; L.geo.attributes.color.needsUpdate = true }
+
+  /* ─── conteúdos ─── */
+  // fatia do cérebro na altura h, desenhada como contorno fechado (leitura de exame)
+  function secaoCerebro(h, c, b) {
+    if (!SEC) return
+    const [zb, zf, xl, xr] = SEC.cerebro(h)
+    if (zf - zb < .01) return
+    const zc = (zf + zb) / 2, xc = (xr + xl) / 2, pts = []
+    for (let k = 0; k < 44; k++) {
+      const a = (k / 44) * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a)
+      pts.push([xc + (sa >= 0 ? xr - xc : xc - xl) * sa, zc + (ca >= 0 ? zf - zc : zc - zb) * ca])
+    }
+    caminho(pts, c, b)
+  }
+
+  // rosto no idioma de rastreamento facial: marcos + malha esparsa entre eles.
+  // Não é anatomia, é convenção — e é por isso que lê sem precisar de pele.
+  // O contorno é oval autoral: a silhueta da referência trazia ombro e cabelo junto.
+  const MARCOS = []            // pontos de referência, também usados pela malha
+  function rosto(a, c, b) {
+    const q = a * .2                                   // a mandíbula desce com a voz
+    MARCOS.length = 0
+    // ── contorno: oval que afina no queixo ──
+    const cont = []
+    for (let k = 0; k < 40; k++) {
+      const ang = (k / 40) * Math.PI * 2
+      const cx2 = Math.sin(ang), cy2 = Math.cos(ang)
+      const afina = cy2 < 0 ? 1 - Math.pow(-cy2, 1.7) * .42 : 1        // mandíbula
+      const alonga = cy2 < 0 ? 1 + q * .55 * Math.pow(-cy2, 2) : 1     // queixo desce ao falar
+      cont.push([cx2 * .46 * afina, cy2 * .62 * alonga])
+    }
+    caminho(cont, c, b * .95)
+    for (let k = 0; k < 40; k += 5) MARCOS.push(cont[k])
+
+    for (const sg of [-1, 1]) {
+      const ex = sg * .19, ey = .13
+      // órbita
+      caminho([[ex - .11, ey], [ex - .045, ey + .062], [ex + .045, ey + .062], [ex + .11, ey],
+               [ex + .045, ey - .055], [ex - .045, ey - .055]], c, b * 1.3)
+      // íris
+      caminho([[ex - .033, ey + .004], [ex, ey + .033], [ex + .033, ey + .004], [ex, ey - .028]], c, b * 1.8)
+      // sobrancelha
+      caminho([[ex - .135, ey + .135], [ex - .04, ey + .175], [ex + .095, ey + .152]], c, b, false)
+      MARCOS.push([ex, ey], [ex - .11, ey], [ex + .11, ey], [ex - .04, ey + .175])
+    }
+    // nariz
+    caminho([[0, .17], [0, -.055], [-.062, -.115], [0, -.145], [.062, -.115], [0, -.055]], c, b, false)
+    MARCOS.push([0, .17], [0, -.145], [-.062, -.115], [.062, -.115])
+    // boca: a abertura É a amplitude da voz
+    const my = -.3 - q, ab = .03 + a * .17
+    caminho([[-.17, my], [-.075, my + .045], [0, my + .03], [.075, my + .045], [.17, my],
+             [.075, my - ab], [0, my - ab * 1.25], [-.075, my - ab]], c, b * 1.55)
+    MARCOS.push([-.17, my], [.17, my], [0, my - ab * 1.25])
+
+    // ── malha esparsa entre os marcos: o tell do rastreamento ──
+    // liga cada marco a alguns vizinhos, e só aos próximos, senão vira grade em cima da cara
+    for (let m = 0; m < MARCOS.length; m++) {
+      const [ax, ay] = MARCOS[m]
+      for (let n = m + 1; n < MARCOS.length; n++) {
+        const [bx, by] = MARCOS[n]
+        const d2 = (ax - bx) * (ax - bx) + (ay - by) * (ay - by)
+        if (d2 > .012 && d2 < .055) seg(ax, ay, bx, by, c, b * .16)
+      }
+    }
+    for (const [mx, my2] of MARCOS) seg(mx - .008, my2, mx + .008, my2, c, b * 1.1)   // ponto do marco
+  }
+
+  // fluxo de dado: fileiras de traços curtos correndo, cada lâmina no seu passo
+  function fluxo(t, i, c, b, densi) {
+    const linhasN = 7
+    for (let r = 0; r < linhasN; r++) {
+      const y = .42 - (r / (linhasN - 1)) * .84
+      const v = (.35 + (i % 4) * .22) * (1 + r * .07)
+      for (let k = 0; k < densi; k++) {
+        const u = ((k / densi) + (reduz ? 0 : t * v * .1) + i * .07 + r * .13) % 1
+        const x1 = -.48 + u * .96, w = .012 + ((k * 37 + r * 11 + i * 7) % 5) * .012
+        seg(x1, y, x1 + w, y, c, b * (.35 + ((k * 13 + r * 5) % 7) / 9))
+      }
+    }
+  }
+
+  /* ─── laço ─── */
+  const esp = M(.06), giro = M(0), horiz = M(0), bri = M(.5), largura = M(1)
+  const cSaida = new THREE.Color()
+  let ultimo = performance.now(), troca = 0, auto = false
+
+  function quadro(t, dt) {
+    const a = voz(t)
+    // alvos por estado
+    let espT = .1, horizT = 0, briT = .5, largT = 1, giroT = 0
+    if (estado === 'dorme')       { espT = .02; briT = .22; largT = .95 }
+    else if (estado === 'le')     { espT = .3;  briT = .62; giroT = -.34 }
+    else if (estado === 'pensa')  { espT = .26; horizT = 1; briT = .6; giroT = -.5; largT = .78 }
+    else if (estado === 'fala')   { espT = .09; briT = .55 + a * .5; largT = 1 }
+    else if (estado === 'ouve')   { espT = .04; briT = .4; largT = .8 }
+    else if (estado === 'alerta') { espT = .2; briT = .72; largT = .92 }
+
+    esp.t = espT; horiz.t = horizT; bri.t = briT; largura.t = largT; giro.t = giroT
+    for (const o of [esp, horiz, bri, largura, giro]) reduz ? (o.p = o.t) : mola(o, 20, 7.5, dt)
+
+    const cor = estado === 'alerta' ? CORAL : VIDRO
+    orbita.rotation.y = giro.p + (reduz ? 0 : Math.sin(t * .25) * .05)
+
+    for (let i = 0; i < NP; i++) {
+      const lam = laminas[i], u = NP === 1 ? .5 : i / (NP - 1), cen = u - .5
+      abre(i)
+
+      // posição da lâmina: em profundidade nos estados normais; deitada no "pensando",
+      // que é o gesto de folhear um exame em vez de olhar uma tela
+      const prof = cen * esp.p * NP
+      lam.g.position.set(0, horiz.p * cen * .82, (1 - horiz.p) * prof)
+      lam.g.rotation.x = -horiz.p * Math.PI / 2
+      lam.g.scale.setScalar(largura.p * (1 - Math.abs(cen) * .1 * (1 - horiz.p)))
+      lam.vidro.scale.set(1.02, 1.02, 1)
+
+      const foco = 1 - Math.abs(cen) * 1.4                       // lâmina do meio pesa mais
+      const b = bri.p * (.35 + Math.max(0, foco) * .95)
+      lam.vidro.material.opacity = .02 + b * .05
+      lam.vidro.material.color.copy(cor).multiplyScalar(.5)
+
+      // moldura da lâmina
+      cSaida.copy(cor)
+      // moldura só nos cantos: quadro inteiro competia com o conteúdo
+      for (const [qx, qy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+        seg(qx * .5, qy * .5, qx * .5 - qx * .1, qy * .5, cSaida, b * .3)
+        seg(qx * .5, qy * .5, qx * .5, qy * .5 - qy * .1, cSaida, b * .3)
+      }
+
+      if (estado === 'dorme') {
+        const y = .45 - (((t * .1 + i * .03) % 1)) * .9         // varredura lenta
+        seg(-.5, y, .5, y, cSaida, b * 1.6)
+        for (let r = 0; r < 3; r++) seg(-.36, -.1 + r * .1, -.36 + .3 - r * .08, -.1 + r * .1, cSaida, b * .5)
+      }
+      else if (estado === 'le') {
+        fluxo(t, i, cSaida, b, 16)
+        const y = .5 - (((t * .35 + i * .11) % 1)) * 1
+        seg(-.5, y, .5, y, cSaida, b * 2)                        // varredura rápida
+      }
+      else if (estado === 'pensa') {
+        secaoCerebro(-.96 + u * 1.92, cSaida, b * 1.5)           // fatia do exame
+        seg(-.5, 0, -.42, 0, cSaida, b * .8); seg(.42, 0, .5, 0, cSaida, b * .8)
+      }
+      else if (estado === 'fala') {
+        if (Math.abs(cen) < .12) rosto(a, cSaida, b * 1.5)       // o rosto mora na lâmina central
+        else { fluxo(t, i, cSaida, b * .3, 7) }
+      }
+      else if (estado === 'ouve') {
+        const nv = .06 + a * .34                                  // medidor de nível
+        for (let k = 0; k < 22; k++) {
+          const x1 = -.44 + (k / 21) * .88
+          const h2 = nv * (.35 + Math.abs(Math.sin(k * .9 + t * 2)) * .8) * (Math.abs(cen) < .12 ? 1 : .3)
+          seg(x1, -h2, x1, h2, cSaida, b * (Math.abs(cen) < .12 ? 1.5 : .5))
+        }
+      }
+      else if (estado === 'alerta') {
+        const j = reduz ? 0 : Math.sin(t * 13 + i) * .028
+        lam.g.position.x = j
+        for (let r = 0; r < 5; r++) {
+          const y = .3 - r * .15
+          seg(-.46 + j, y, .46 + j, y, cSaida, b * 1.4)
+        }
+        caminho([[-.13, -.3], [.13, -.3], [0, -.06]], cSaida, b * 2)   // triângulo de alerta
+      }
+      fecha()
+    }
+  }
+
+  const laco = agora => {
+    requestAnimationFrame(laco)
+    const dt = Math.min(.05, (agora - ultimo) / 1000); ultimo = agora
+    if (auto) {
+      troca += dt
+      if (troca > 3.6) {
+        troca = 0
+        estado = ESTADOS[(ESTADOS.indexOf(estado) + 1) % ESTADOS.length]
+        marcar(segEstado, segEstado.querySelector('[data-estado="' + estado + '"]'))
+        pintarFicha()
+      }
+    }
+    quadro(reduz ? 0 : agora / 1000, dt)
+    renderer.render(scene, cam)
+  }
+
+  /* ─── ficha e controles ─── */
+  const AGORA = {
+    dorme:  'Em repouso: uma lâmina quase parada, com uma varredura lenta. É o que você vê quase sempre, então tem que quase desaparecer.',
+    le:     'Lendo: as lâminas se abrem em profundidade e o dado corre por elas, cada uma no seu passo.',
+    pensa:  'Pensando: as lâminas <b>deitam</b> e viram cortes empilhados do cérebro, do jeito que um exame mostra. Diagrama, não órgão.',
+    fala:   'Falando: o rosto aparece na lâmina central, no idioma de <b>rastreamento facial</b>, e a boca abre na amplitude da voz.',
+    ouve:   'Ouvindo: tudo recolhe e sobra um medidor de nível. Atenção lê como quietude.',
+    alerta: 'Alertando: coral, lâminas desalinhadas, o único estado que ele começa sozinho.',
+  }
+  const elFicha = document.getElementById('ficha')
+  function pintarFicha() {
+    elFicha.innerHTML =
+      '<p class="kicker">Rodada 3</p><h2>O projetado</h2>' +
+      '<p class="tese">O personagem é <b>luz em camadas</b>, não objeto. Lâminas de vidro em ' +
+      'profundidade, com conteúdo próprio, que se reorganizam por estado. <b>Projeção é esquemática ' +
+      'por convenção</b>, então o rosto lê sem anatomia e o cérebro lê como corte.</p>' +
+      '<dl>' +
+      '<div class="row"><dt>Material</dt><dd>vidro azul-frio e luz aditiva; sem cromo, sem neon, nada opaco</dd></div>' +
+      '<div class="row"><dt>Rosto</dt><dd>contorno da sua referência de cabeça de frente + marcos e malha de rastreamento; a boca abre na voz</dd></div>' +
+      '<div class="row"><dt>Cérebro</dt><dd>a mesma silhueta que você mandou, agora lida como <b>fatias de exame</b> empilhadas</dd></div>' +
+      '<div class="row"><dt>Marca</dt><dd>não usa nada da linguagem da bússola; ela continua sendo a marca</dd></div>' +
+      '</dl><p class="agora">' + AGORA[estado] + '</p>'
+  }
+  const marcar = (s2, alvo) => [...s2.querySelectorAll('button')].forEach(b => b.setAttribute('aria-pressed', String(b === alvo)))
+  const segEstado = document.getElementById('seg-estado')
+  segEstado.addEventListener('click', e => {
+    const b = e.target.closest('button[data-estado]'); if (!b) return
+    estado = b.dataset.estado; marcar(segEstado, b); auto = false
+    document.getElementById('ciclo').setAttribute('aria-pressed', 'false'); pintarFicha()
+  })
+  const bEsc = document.getElementById('escala')
+  bEsc.addEventListener('click', () => {
+    const on = bEsc.getAttribute('aria-pressed') !== 'true'
+    bEsc.setAttribute('aria-pressed', String(on))
+    canvas.style.setProperty('--esc', on ? '38px' : '100%')
+    bEsc.textContent = on ? 'escala palco' : 'escala assinatura'
+  })
+  const bCiclo = document.getElementById('ciclo')
+  bCiclo.addEventListener('click', () => { auto = !auto; bCiclo.setAttribute('aria-pressed', String(auto)); troca = 0 })
+
+  let arrastando = false, px = 0, py = 0
+  canvas.addEventListener('pointerdown', e => { arrastando = true; px = e.clientX; py = e.clientY; canvas.setPointerCapture(e.pointerId) })
+  canvas.addEventListener('pointerup', e => { arrastando = false; canvas.releasePointerCapture(e.pointerId) })
+  canvas.addEventListener('pointermove', e => {
+    if (!arrastando) return
+    orbita.rotation.y += (e.clientX - px) * .006
+    orbita.rotation.x = Math.max(-1.2, Math.min(1.2, orbita.rotation.x + (e.clientY - py) * .006))
+    px = e.clientX; py = e.clientY
+  })
+
+  window.__lab = { orbita, renderer, scene, cam, canvas }
+  pintarFicha()
+  requestAnimationFrame(laco)
+} catch (e) {
+  palco.classList.add('falhou')
+  console.warn('peça não montou:', e)
+}
+</script>
+</body>
+</html>
