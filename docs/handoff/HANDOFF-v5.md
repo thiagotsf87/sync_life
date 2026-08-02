@@ -17,7 +17,7 @@
 - **⏳ ONDA 2 LOTE 2 PROTOTIPADO, EM APROVAÇÃO (2026-08-01):** spec `docs/superpowers/specs/2026-08-01-onda2-lote2-review-score-design.md` — a `/dashboard/review` vira **"A edição da semana"** (carta semanal do coach sobre dados reais + fechamento explícito que persiste e conta badge; sai o formato de slides e a janela dom 20h–qua) e a `/dashboard/score` vira **"A anatomia do número"** (fonte única `useScoreEngine`, curva de 30 dias, peso e contribuição por área). Protótipos: `app/{review-semanal,life-score}{.html,.mobile.html}`, linkados no hub. QA PASS sem fixes. **Próximo: aceite do usuário no hub; depois implementação do lote 2 em `web/` (migration `028` reconciliando `weekly_reviews` + `/api/ai/review-brief` + as 2 rotas indo pra `(app-v5)`) e Onda 3 (vista cheia `/coach` + N2).**
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 - **🔴 DECISÃO ABERTA que trava o lote 2 (2026-08-01, sessão 23):** o usuário **não aprovou** o lote 2 como está. Dois pedidos: (1) o ponto de acesso da revisão semanal está ruim, e (2) o coach está apagado, sem presença nem personalidade — quer **nome próprio**, representação visual (levantou "simbionte cromado 3D") e **voz** (referência: Jarvis). Análise, direções A/B/C e shortlist de nomes na sessão 23 abaixo. **Nada foi implementado; aguarda a escolha do usuário.**
-- **⏳ SESSÃO 24 (2026-08-02): direção A DESCARTADA pelo usuário; 3 conceitos de personagem prototipados, EM APROVAÇÃO.** A bússola é **instrumento e marca**, não ator — usá-la como avatar do coach colapsa duas identidades que precisam ser distintas ("SyncLife" × "quem escreve pra você"). "Cromado" era sugestão, não decisão: material e forma seguem abertos. Protótipo isolado em `personagem/laboratorio.html` (linkado no hub, Onda 03) com **1 A tinta · 2 A criatura · 3 A presença**, os três nos mesmos 6 estados. **Próximo: escolha do conceito; depois nome, integração no Diário e lugar da revisão semanal.**
+- **⏳ SESSÃO 24 (2026-08-02): direção A DESCARTADA; personagem em 2 rodadas, RODADA 2 (3D) EM APROVAÇÃO.** A bússola é **instrumento e marca**, não ator — usá-la como avatar do coach colapsa duas identidades que precisam ser distintas ("SyncLife" × "quem escreve pra você"). **Rodada 1** (`personagem/laboratorio.html`, 2D): tinta · criatura · presença — **criatura descartada** pelo usuário, tinta foi a preferida mas nenhuma atingiu o alvo. **Rodada 2** (`personagem/laboratorio-3d.html`, three.js 0.185.1): **1 A rede** (grafo de 260 nós com sinais que caminham) · **2 A trança** (fios trançados num nó tórico, material físico com iridescência e rugosidade mapeada) · **3 O núcleo** (casca facetada que abre e mostra o miolo aceso). **Próximo: escolha do corpo; depois nome, o sinal chapado pro miúdo (ver achado de escala), integração no Diário e lugar da revisão semanal.**
 
 ## Status das ondas
 
@@ -26,7 +26,7 @@
 | 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ✅ **APROVADA (r2, 2026-07-31)** | ✅ `web/` (2026-07-31) | ✅ desktop + mobile ok, console zero |
 | 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) · ✅ lote 2: Edição da semana + Life Score, D+M (2026-08-01) | ✅ **lote 1 APROVADO (2026-07-31)** · 🔴 **lote 2 REVISÃO PEDIDA (2026-08-01, sessão 23):** acesso da revisão semanal + presença/nome/voz da IA | ✅ lote 1 em `web/` (2026-08-01) · lote 2 bloqueado até a decisão do personagem | ✅ lote 1 desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) · ✅ lote 2 QA dos protótipos PASS (console 0/0, E-02 com JS off, consistência cruzada nas 6 telas) |
-| 03 | Coach: identidade + vista cheia /coach + backend N1-N2 | ⏳ laboratório de personagem, 3 conceitos × 6 estados (2026-08-02) | ⏳ **em aprovação** (direção A da sessão 23 descartada pelo usuário) | – | ✅ console 0/0 nos 6 estados, claro+escuro, 3 escalas |
+| 03 | Coach: identidade + vista cheia /coach + backend N1-N2 | ✅ rodada 1 2D (tinta/criatura/presença) · ✅ rodada 2 3D (rede/trança/núcleo), 2026-08-02 | 🔴 rodada 1 reprovada (criatura descartada) · ⏳ **rodada 2 em aprovação** | – | ✅ console 0/0 nas duas rodadas, 6 estados, claro+escuro |
 | 04 | 01 Finanças (8 telas, 2 lotes) | – | – | – | – |
 | 05 | 02 Futuro (4) | – | – | – | – |
 | 06 | 03 Tempo (6) | – | – | – | – |
@@ -96,10 +96,52 @@ não expõe `reducedMotion` no `emulate`.
 então `search_items_in_registries` responde "No registries are configured" — inútil até alguém declarar um
 registry. Não foi mexido (fora do escopo e o v5 é escrito à mão).
 
-**Próximo passo:** escolha do conceito no hub. Depois: nome, material definitivo, integração no Diário
-(onde ele mora, em que escala) e o lugar da revisão semanal, que segue **sem decisão** desde a sessão 23.
+### Rodada 2 — 3D (`personagem/laboratorio-3d.html`, novo)
 
-**Arquivos:** `prototypes/v5/personagem/laboratorio.html` (novo) · `prototypes/v5/index.html` · este handoff.
+**Veredito do usuário sobre a rodada 1:** criatura **descartada**; a tinta agradou mais que a presença,
+mas nenhuma chegou lá. Pedido: **mais realista, tridimensional, tecnológico**, no vocabulário de
+**rede neural / simbionte**, com **textura**. Registro: a ressalva do clichê de bolha de IA foi
+reafirmada por mim uma vez e o usuário manteve a direção, então foi executada — mitigando pela forma
+(nenhum dos três é esfera lisa) e não pela recusa.
+
+**Três corpos, três linguagens de material distintas:**
+
+| # | Corpo | Como funciona | Material |
+|---|---|---|---|
+| 1 | **A rede** | grafo real de 260 nós ligados aos vizinhos; os sinais caminham de nó em nó e **o que muda por estado é o critério de escolha do próximo vizinho** (varre, converge, irradia), então o comportamento emerge em vez de ser roteirizado | pontos e arestas aditivos; a matéria é luz |
+| 2 | **A trança** | 5 fios escuros trançados em volta de um **nó tórico** (frames de Frenet sobre a curva base) + 3 fios finos de luz por dentro; o pulso viaja pela UV do tubo | físico: metal escuro, clearcoat, iridescência, **mapa de rugosidade procedural** |
+| 3 | **O núcleo** | casca facetada onde **cada face desliza pela própria normal**; o miolo aceso aparece pelas frestas. Fenda zero ouvindo, máxima alertando | metal escuro fosco com rugosidade mapeada + emissivo interno |
+
+**Alinhamento de versão:** este protótipo já nasce em **three 0.185.1**, igual ao `web/` (`^0.185.1`),
+em vez do 0.170 dos protótipos antigos. Mata o drift anotado na sessão 23 para todo código novo.
+Um canvas por vez (a peça anterior é descartada de verdade no switch), então o teto de 1 peça WebGL
+por página do DS §5.6 continua respeitado.
+
+**Achado que decide uma coisa fora da escolha do corpo:** **nenhum dos três sobrevive a 38px** — os três
+viram uma manchinha. Em 3D o personagem **não pode ser a marca da byline**. Ou ele vive só grande
+(camada do coach, topo da folha), ou ganha um **sinal chapado** que o represente no miúdo. Isso é uma
+decisão a mais, posterior à escolha do corpo, e está anotada na própria página.
+
+**Correções feitas durante o QA (todas eram erro meu, não do conceito):** enquadramento — os três
+estouravam a moldura, resolvido com escala base por peça num envoltório (`peca.base`) mais câmera em
+z=7.4 · os fios de luz da trança orbitavam **por fora** virando uma gaiola verde; a luz agora corre
+**por dentro** via `emissiveMap` de listras com `offset.x` animado na UV do tubo · iridescência saía
+rosa-doce: sem mapa de espessura o three usa o **topo** da faixa como valor único, então `[200,300]` +
+`iridescence: .5` + `envMapIntensity` baixo trouxeram pro violeta da marca · o metal do núcleo lia
+cinza-claro porque o ambiente lavava tudo (`envMapIntensity` .5) · `IcosahedronGeometry.toNonIndexed()`
+emitia aviso porque ela já vem não-indexada.
+
+**Correção de conteúdo:** a ficha do núcleo afirmava "silhueta forte, sobrevive melhor em escala
+pequena". O teste desmentiu e o texto foi trocado — a afirmação estava enviesando a decisão.
+
+**QA:** console **0/0** numa varredura completa de 3 corpos × 6 estados + troca de tema nos dois
+sentidos · claro e escuro OK · o palco tem estado de falha explícito se o WebGL não subir (sem queda
+graciosa possível aqui: o conceito É 3D, e isso está escrito na página).
+
+**Próximo passo:** escolha do corpo no hub. Depois: nome, sinal chapado pro miúdo, integração no Diário
+e o lugar da revisão semanal, que segue **sem decisão** desde a sessão 23.
+
+**Arquivos:** `prototypes/v5/personagem/laboratorio.html` (rodada 1) · `prototypes/v5/personagem/laboratorio-3d.html` (rodada 2) · `prototypes/v5/index.html` · este handoff.
 **Nenhum código de `web/` e nenhum protótipo do lote 2 foi tocado.**
 
 ---
