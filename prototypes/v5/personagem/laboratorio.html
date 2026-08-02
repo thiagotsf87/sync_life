@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Laboratório de personagem · v5</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Ccircle cx='32' cy='34' r='16' fill='%236840ff'/%3E%3Ccircle cx='32' cy='16' r='6' fill='%23f4f4f4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<style>
+  .wrap{--wrap-max:1320px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* ─── cabeçalho ─── */
+  .top{padding:48px 0 30px;border-bottom:1px solid var(--line)}
+  .top h1{font:500 clamp(30px,3.8vw,46px)/1.03 var(--gro);letter-spacing:-.04em;margin-top:14px}
+  .top .sub{font:400 15px/1.65 var(--int);color:var(--t2);margin-top:16px;max-width:74ch}
+  .top .sub b{color:var(--t1);font-weight:600}
+
+  /* ─── barra de controle ─── */
+  .ctl{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
+    padding:16px 0;display:flex;flex-wrap:wrap;gap:26px;align-items:center}
+  .grp{display:flex;align-items:center;gap:10px}
+  .grp>.eyebrow{margin-right:2px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{font:500 13px var(--int);color:var(--t2);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:8px 15px;cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+  .seg button:hover{border-color:var(--line-h);color:var(--t1)}
+  .seg button[aria-pressed="true"]{border-color:var(--roxo);color:var(--t1);background:rgba(104,64,255,.12)}
+  .seg button:focus-visible{outline:2px solid var(--roxo);outline-offset:2px}
+
+  /* ─── grade dos três conceitos ─── */
+  .grade{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;padding:34px 0 60px}
+  @media (max-width:1080px){ .grade{grid-template-columns:1fr;max-width:620px;margin:0 auto} }
+
+  .card{border:1px solid var(--line);border-radius:20px;background:var(--s1);overflow:hidden;
+    display:flex;flex-direction:column;transition:border-color .35s var(--ease)}
+  .card:hover{border-color:var(--line-h)}
+
+  /* o palco: fundo neutro, o personagem sozinho */
+  .palco{position:relative;height:340px;display:grid;place-items:center;
+    background:var(--bg);border-bottom:1px solid var(--line);overflow:hidden}
+  .palco::after{ /* linha da folha, só pra dar chão */
+    content:'';position:absolute;left:10%;right:10%;bottom:74px;height:1px;background:var(--line);pointer-events:none}
+  .peca{position:relative;width:var(--esc,240px);height:var(--esc,240px);transition:width .5s var(--ease),height .5s var(--ease)}
+  .peca svg,.peca canvas{display:block;position:absolute;inset:0;width:100%;height:100%}
+  /* o display:block acima vence o [hidden] da UA: sem esta linha o fallback estático
+     da presença fica empilhado com o canvas (mesma armadilha do lote 1) */
+  .peca [hidden]{display:none!important}
+
+  .card .txt{padding:22px 24px 24px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .card h2{font:500 23px var(--gro);letter-spacing:-.03em}
+  .card .tese{font:400 14px/1.62 var(--int);color:var(--t2)}
+  .card .tese b{color:var(--t1);font-weight:600}
+  .card .meta{margin-top:auto;padding-top:16px;border-top:1px solid var(--line);
+    display:flex;flex-direction:column;gap:7px}
+  .card .meta div{display:flex;gap:10px;font:400 12.5px/1.5 var(--int);color:var(--t3)}
+  .card .meta span:first-child{color:var(--t2);font-weight:600;min-width:64px;flex-shrink:0}
+  .card .agora{font:400 12.5px var(--int);color:var(--t3);display:flex;align-items:center;gap:8px}
+  .card .agora b{font:600 12.5px var(--gro);color:var(--roxo);letter-spacing:.02em}
+
+  /* ─── rodapé: o que observar ─── */
+  .fim{border-top:1px solid var(--line);padding:40px 0 80px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  @media (max-width:860px){ .fim{grid-template-columns:1fr} }
+  .fim h3{font:500 19px var(--gro);letter-spacing:-.02em;margin-bottom:14px}
+  .fim p{font:400 14px/1.7 var(--int);color:var(--t2);max-width:64ch}
+  .fim p+p{margin-top:12px}
+  .fim b{color:var(--t1);font-weight:600}
+  .fim .hand{display:block;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow"><b>Onda 02</b> · laboratório de personagem</p>
+    <h1>Quem escreve o seu diário</h1>
+    <p class="sub">Três conceitos para o ator da aplicação, isolados de propósito: sem chrome, sem Diário,
+      sem nome. Só o personagem passando pelos <b>seis estados</b> que ele vai precisar ter.
+      A bússola continua sendo a marca e não entra aqui. O material é livre nos três, o que muda é
+      <b>a natureza da presença</b>: conteúdo que se transforma, criatura que convive, ou massa que ocupa.</p>
+  </header>
+
+  <div class="ctl">
+    <div class="grp">
+      <p class="eyebrow">Estado</p>
+      <div class="seg" id="seg-estado" role="group" aria-label="Estado do personagem">
+        <button type="button" data-estado="dorme"    aria-pressed="true">dormindo</button>
+        <button type="button" data-estado="le"       aria-pressed="false">lendo</button>
+        <button type="button" data-estado="escreve"  aria-pressed="false">escrevendo</button>
+        <button type="button" data-estado="fala"     aria-pressed="false">falando</button>
+        <button type="button" data-estado="ouve"     aria-pressed="false">ouvindo</button>
+        <button type="button" data-estado="alerta"   aria-pressed="false">alertando</button>
+      </div>
+    </div>
+    <div class="grp">
+      <p class="eyebrow">Escala</p>
+      <div class="seg" id="seg-escala" role="group" aria-label="Escala">
+        <button type="button" data-esc="240" aria-pressed="true">palco</button>
+        <button type="button" data-esc="96"  aria-pressed="false">cartão</button>
+        <button type="button" data-esc="34"  aria-pressed="false">assinatura</button>
+      </div>
+    </div>
+    <div class="grp">
+      <div class="seg">
+        <button type="button" id="ciclo" aria-pressed="false">ciclo automático</button>
+        <button type="button" id="tema"  aria-pressed="false">página clara</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grade">
+
+    <!-- ══════════ 1 · A TINTA ══════════ -->
+    <article class="card">
+      <div class="palco">
+        <div class="peca" id="p-tinta">
+          <svg viewBox="0 0 240 240" aria-label="Conceito 1: a tinta">
+            <defs>
+              <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5.4" result="b"/>
+                <feColorMatrix in="b" mode="matrix" result="g"
+                  values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 30 -14"/>
+              </filter>
+            </defs>
+            <!-- o traço que ela escreve (revelado no estado escrevendo) -->
+            <path id="t-escrita" fill="none" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"
+              d="M40,176 c12,-26 25,-27 30,-7 c5,20 -7,36 -14,27 c-7,-9 5,-42 31,-42 c16,0 11,24 24,24
+                 c13,0 14,-22 27,-22 c13,0 9,22 22,22 c9,0 15,-9 20,-16"/>
+            <!-- a matéria -->
+            <g id="t-massa" filter="url(#goo)">
+              <circle class="tb" cx="120" cy="118" r="34"/>
+              <circle class="tb" cx="120" cy="118" r="9"/>
+              <circle class="tb" cx="120" cy="118" r="8"/>
+              <circle class="tb" cx="120" cy="118" r="7"/>
+              <circle class="tb" cx="120" cy="118" r="6"/>
+              <circle class="tb" cx="120" cy="118" r="5"/>
+              <circle class="tb" cx="120" cy="118" r="5"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <div class="txt">
+        <h2>1 · A tinta</h2>
+        <p class="tese">Matéria líquida sem rosto. Em repouso é uma gota parada na margem da coluna.
+          Quando fala, <b>escorre e vira o texto</b>: as palavras do briefing são ela se desdobrando.
+          Ouvindo, recolhe numa gota tensa. Alertando, sangra uma marca na margem.</p>
+        <div class="meta">
+          <div><span>A favor</span><span>é o próprio conteúdo chegando, então tem presença sem ocupar espaço; nasce do pilar editorial do v5</span></div>
+          <div><span>Contra</span><span>sem rosto, a proximidade é menor; exige que o texto ao redor participe da animação</span></div>
+          <div><span>Custo</span><span>SVG + filtro goo, sem WebGL, sem canvas</span></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ══════════ 2 · A CRIATURA ══════════ -->
+    <article class="card">
+      <div class="palco">
+        <div class="peca" id="p-bicho">
+          <svg viewBox="0 0 240 240" aria-label="Conceito 2: a criatura">
+            <defs>
+              <filter id="nanquim" x="-12%" y="-12%" width="124%" height="124%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/>
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+            </defs>
+            <!-- o traço que ele escreve com o bico -->
+            <path id="b-escrita" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+              d="M52,196 c11,-22 22,-23 26,-6 c4,17 -6,31 -12,23 c-6,-8 4,-36 27,-36 c14,0 9,20 21,20
+                 c11,0 12,-19 23,-19 c11,0 8,19 19,19 c8,0 13,-8 17,-14"/>
+            <g filter="url(#nanquim)">
+              <!-- pés -->
+              <g id="b-pes" stroke-width="4" stroke-linecap="round" fill="none">
+                <path d="M104,186 v10 M104,196 l-7,6 M104,196 l7,6"/>
+                <path d="M136,186 v10 M136,196 l-7,6 M136,196 l7,6"/>
+              </g>
+              <!-- cauda -->
+              <path id="b-cauda" d="M158,142 c22,4 34,16 40,30 c-16,-2 -30,-8 -44,-18 Z"/>
+              <!-- corpo -->
+              <g id="b-corpo">
+                <ellipse cx="120" cy="140" rx="46" ry="50"/>
+                <!-- asa -->
+                <path id="b-asa" d="M140,124 c16,10 20,32 12,52 c-14,-6 -24,-22 -26,-42 Z" opacity=".26"/>
+              </g>
+              <!-- cabeça (gira no pescoço) -->
+              <g id="b-cabeca">
+                <!-- topete -->
+                <g id="b-topete" stroke-width="4.5" stroke-linecap="round" fill="none">
+                  <path d="M108,64 c-4,-14 0,-22 6,-27"/>
+                  <path d="M120,60 c-1,-15 4,-23 11,-27"/>
+                </g>
+                <circle cx="120" cy="90" r="33"/>
+                <!-- bico: mandíbula superior fixa, inferior abre -->
+                <path id="b-bico-s" d="M150,84 l32,7 l-32,10 Z"/>
+                <path id="b-bico-i" d="M150,95 l32,-4 l-30,12 Z"/>
+                <!-- olho -->
+                <circle id="b-olho" cx="132" cy="82" r="10.5"/>
+                <circle id="b-pupila" cx="134" cy="82" r="5"/>
+                <!-- pálpebra: desce da borda de cima e engole o olho na cor da tinta -->
+                <circle id="b-palpebra" cx="132" cy="82" r="11.4"/>
+                <!-- e o traço de olho fechado aparece por cima dela -->
+                <path id="b-sono" d="M124,83 q8,7 16,0" fill="none" stroke-width="3" stroke-linecap="round"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <div class="txt">
+        <h2>2 · A criatura</h2>
+        <p class="tese">Um pássaro de nanquim, desenhado à mão, que <b>pousa na borda da coluna</b>.
+          Tem postura: dorme, inclina a cabeça pra ler, olha pra você quando fala.
+          O bico é a pena: quando escreve, ele mergulha e risca a linha embaixo de si.</p>
+        <div class="meta">
+          <div><span>A favor</span><span>é o único com olhar; proximidade emocional máxima, que foi o pedido literal</span></div>
+          <div><span>Contra</span><span>mascote é compromisso de marca pesado e pode brigar com a seriedade de um produto que fala do seu dinheiro</span></div>
+          <div><span>Custo</span><span>SVG com grupos transformados, sem WebGL</span></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ══════════ 3 · A PRESENÇA ══════════ -->
+    <article class="card">
+      <div class="palco">
+        <div class="peca" id="p-presenca">
+          <!-- fallback estático (E-02: sem JS o palco não fica vazio) -->
+          <svg id="pr-fb" viewBox="0 0 240 240" aria-label="Conceito 3: a presença">
+            <defs>
+              <radialGradient id="prg" cx="50%" cy="48%" r="50%">
+                <stop offset="0%"   stop-color="#000" stop-opacity=".92"/>
+                <stop offset="55%"  stop-color="#000" stop-opacity=".45"/>
+                <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="120" cy="116" r="96" fill="url(#prg)"/>
+            <circle cx="120" cy="116" r="15" fill="#6840ff" opacity=".5"/>
+          </svg>
+          <canvas id="pr-cv" width="480" height="480" hidden></canvas>
+        </div>
+      </div>
+      <div class="txt">
+        <h2>3 · A presença</h2>
+        <p class="tese">Nem objeto nem bicho: uma <b>massa que ocupa o negativo da página</b>.
+          Respira atrás do texto, adensa e acende um núcleo quando fala, dissipa quando cala.
+          Sem contorno fixo, sem rosto. É o mais adulto dos três.</p>
+        <div class="meta">
+          <div><span>A favor</span><span>não compete com nada na tela e envelhece bem; literalmente a "matéria escura" que você levantou</span></div>
+          <div><span>Contra</span><span>é o mais difícil de ler como <i>alguém</i> em vez de ler como gradiente bonito</span></div>
+          <div><span>Custo</span><span>canvas 2D com campo de partículas, sem WebGL</span></div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <section class="fim">
+    <div>
+      <h3>O que olhar</h3>
+      <p><b>Compare o mesmo estado nos três</b>, não os três em estados diferentes. A barra de cima
+        move os três juntos de propósito.</p>
+      <p>Os dois estados que decidem são <b>falando</b> (é o momento Jarvis, onde a presença precisa
+        aparecer) e <b>dormindo</b> (é o que você vai ver 95% do tempo, e é onde mascote cansa).</p>
+      <p>Depois, troque a escala pra <b>assinatura</b>. Um personagem que só funciona a 240px não
+        serve, porque o lugar natural dele no Diário é ao lado da byline.</p>
+    </div>
+    <div>
+      <h3>O que ainda não está aqui</h3>
+      <p>Nome, cor definitiva, e como ele entra no Diário. Tudo isso vem depois de escolher a natureza,
+        porque nome e material seguem o personagem, não o contrário.</p>
+      <p>Os três estão em tinta neutra com o roxo da marca como único acento, justamente pra a escolha
+        não ser por cor.</p>
+      <span class="hand rx">escolha a natureza primeiro, o resto decora ela</span>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches
+  const ESTADOS = ['dorme','le','escreve','fala','ouve','alerta']
+  let estado = 'dorme'
+
+  /* mola crítica reutilizada pelos três: velocidade e overshoot emergem da física,
+     igual à agulha da bússola (lib/v5/compass-gl.ts) */
+  const mola = (o, k, d, dt) => { o.v += ((o.t - o.p) * k - o.v * d) * dt; o.p += o.v * dt }
+  const M = (p = 0) => ({ p, v: 0, t: p })
+
+  /* envelope de fala: soma de senos incomensuráveis, parece voz e não parece metrônomo.
+     Sob reduce devolve um valor fixo, senão "falando" ficaria tremendo mesmo com o relógio parado. */
+  const voz = t => reduz ? .55 : Math.abs(Math.sin(t * 11.7) * .5 + Math.sin(t * 6.1) * .32 + Math.sin(t * 17.3) * .18)
+
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim()
+
+  /* ─────────────── 1 · A TINTA ─────────────── */
+  function criarTinta(root) {
+    const bolhas = [...root.querySelectorAll('.tb')]
+    const traco = root.querySelector('#t-escrita')
+    const nucleo = bolhas[0], satel = bolhas.slice(1)
+    const S = satel.map((_, i) => ({ x: M(120), y: M(118), r: M(6), fase: (i / satel.length) * Math.PI * 2 }))
+    const N = { x: M(120), y: M(118), r: M(34) }
+    const L = traco.getTotalLength()
+    traco.style.strokeDasharray = L
+    let prog = 0
+
+    return {
+      frame(t, dt) {
+        if (reduz) t = 0                                // relógio parado: pose estática por estado (E-02)
+        const cor = estado === 'alerta' ? css('--coral') : css('--t1')
+        const acende = estado === 'fala' || estado === 'escreve'
+        nucleo.parentNode.setAttribute('fill', cor)
+        traco.setAttribute('stroke', estado === 'alerta' ? css('--coral') : css('--roxo'))
+
+        // o núcleo
+        N.x.t = 120; N.y.t = 118; N.r.t = 26
+
+        if (estado === 'dorme') {
+          // gota em repouso: núcleo + um satélite acima formam a ponta da lágrima,
+          // os outros ficam encostados fora de eixo pra a silhueta não virar círculo perfeito
+          N.r.t = 27 + Math.sin(t * .9) * 1.6
+          S.forEach((s, i) => {
+            if (i === 0) { s.x.t = 120; s.y.t = 88 + Math.sin(t * .9) * 2; s.r.t = 11 }
+            else { const a = s.fase * .6 - .5; s.x.t = 120 + Math.cos(a) * 13; s.y.t = 124 + Math.sin(a) * 10; s.r.t = 8 }
+          })
+          prog = 0
+        }
+        else if (estado === 'le') {
+          // vira um filete que varre a linha, como um sublinhado percorrendo o texto
+          const sw = Math.sin(t * 1.15)
+          N.x.t = 120 + sw * 46; N.r.t = 15
+          S.forEach((s, i) => {
+            const off = (i - (S.length - 1) / 2) * 21
+            s.x.t = 120 + sw * 46 - off; s.y.t = 118 + Math.sin(t * 2 + i) * 2.5; s.r.t = 13 - Math.abs(i - 2.5) * 1.6
+          })
+          prog = 0
+        }
+        else if (estado === 'escreve') {
+          // ela percorre a escrita e a escrita aparece atrás dela
+          prog = reduz ? 1 : (prog + dt * .34) % 1.25
+          const q = Math.min(1, prog)
+          traco.style.strokeDashoffset = L * (1 - q)
+          const pt = traco.getPointAtLength(L * q)
+          N.x.t = pt.x; N.y.t = pt.y; N.r.t = 13
+          S.forEach((s, i) => { // cauda: cada satélite atrasa um pouco mais
+            const atras = traco.getPointAtLength(Math.max(0, L * q - (i + 1) * 11))
+            s.x.t = atras.x; s.y.t = atras.y; s.r.t = 11 - i * 1.2
+          })
+        }
+        else if (estado === 'fala') {
+          // a amplitude da voz vira matéria: os satélites descolam de verdade e voltam
+          const a = voz(t)
+          N.r.t = 20 + a * 7
+          S.forEach((s, i) => {
+            const ang = s.fase + t * .55
+            const raio = 30 + a * 62 + Math.sin(t * 3.4 + i) * 5
+            s.x.t = 120 + Math.cos(ang) * raio; s.y.t = 114 + Math.sin(ang) * raio * .8; s.r.t = 11 - a * 3
+          })
+        }
+        else if (estado === 'ouve') {
+          // inverte: vira uma concha voltada pra cima, quase imóvel, esperando
+          N.y.t = 138; N.r.t = 17
+          S.forEach((s, i) => {
+            const ang = -Math.PI + (i / (S.length - 1)) * Math.PI
+            s.x.t = 120 + Math.cos(ang) * 48; s.y.t = 136 + Math.sin(ang) * 40; s.r.t = 11
+          })
+        }
+        else if (estado === 'alerta') {
+          // espinha pra cima e uma gota que se solta e cai na margem
+          N.r.t = 22
+          const cai = (t * .55) % 1
+          S.forEach((s, i) => {
+            if (i === 0) { s.x.t = 120; s.y.t = 66 + Math.sin(t * 7) * 3; s.r.t = 12 }            // a ponta
+            else if (i === 1) { s.x.t = 120; s.y.t = 122 + cai * 78; s.r.t = 10 * (1 - cai * .45) } // a gota que cai
+            else { const a2 = s.fase; s.x.t = 120 + Math.cos(a2) * 14; s.y.t = 118 + Math.sin(a2) * 11; s.r.t = 8 }
+          })
+        }
+
+        if (estado !== 'escreve') traco.style.strokeDashoffset = L
+        const k = estado === 'ouve' ? 26 : 62, d = estado === 'ouve' ? 9 : 8.5
+        for (const o of [N.x, N.y, N.r]) reduz ? (o.p = o.t) : mola(o, k, d, dt)
+        nucleo.setAttribute('cx', N.x.p); nucleo.setAttribute('cy', N.y.p); nucleo.setAttribute('r', Math.max(1, N.r.p))
+        S.forEach((s, i) => {
+          for (const o of [s.x, s.y, s.r]) reduz ? (o.p = o.t) : mola(o, k, d, dt)
+          satel[i].setAttribute('cx', s.x.p); satel[i].setAttribute('cy', s.y.p); satel[i].setAttribute('r', Math.max(1, s.r.p))
+        })
+        nucleo.parentNode.style.opacity = acende ? 1 : .92
+      }
+    }
+  }
+
+  /* ─────────────── 2 · A CRIATURA ─────────────── */
+  function criarBicho(root) {
+    const q = s => root.querySelector(s)
+    const cabeca = q('#b-cabeca'), pupila = q('#b-pupila'), palpebra = q('#b-palpebra'),
+          bicoI = q('#b-bico-i'), corpo = q('#b-corpo'), topete = q('#b-topete'),
+          asa = q('#b-asa'), traco = q('#b-escrita'), olho = q('#b-olho'), cauda = q('#b-cauda'),
+          sono = q('#b-sono')
+    const tinta = [q('#b-corpo').querySelector('ellipse'), q('#b-cabeca').querySelector('circle'),
+                   q('#b-bico-s'), bicoI, cauda]
+    const A = { tilt: M(0), olhar: M(0), bico: M(0), lid: M(0), peito: M(1), topo: M(0), asaR: M(0), y: M(0) }
+    const L = traco.getTotalLength()
+    traco.style.strokeDasharray = L
+    let prog = 0
+
+    return {
+      frame(t, dt) {
+        if (reduz) t = 0                                // relógio parado: pose estática por estado (E-02)
+        const cor = estado === 'alerta' ? css('--coral') : css('--t1')
+        tinta.forEach(e => e && e.setAttribute('fill', cor))
+        topete.setAttribute('stroke', cor); q('#b-pes').setAttribute('stroke', cor)
+        olho.setAttribute('fill', css('--bg')); pupila.setAttribute('fill', estado === 'alerta' ? css('--coral') : css('--roxo'))
+        palpebra.setAttribute('fill', cor); sono.setAttribute('stroke', css('--bg'))
+        traco.setAttribute('stroke', estado === 'alerta' ? css('--coral') : css('--roxo'))
+
+        A.tilt.t = 0; A.olhar.t = 0; A.bico.t = 0; A.lid.t = 0; A.peito.t = 1; A.topo.t = 0; A.asaR.t = 0; A.y.t = 0
+
+        if (estado === 'dorme') {
+          A.lid.t = 1                                   // pálpebra fechada
+          A.tilt.t = 9                                  // cabeça caída
+          A.peito.t = 1 + Math.sin(t * .85) * .028      // respiração
+          A.y.t = Math.sin(t * .85) * 2
+          A.topo.t = 12                                 // topete murcho
+          prog = 0
+        }
+        else if (estado === 'le') {
+          A.tilt.t = 16                                 // inclina pra folha
+          A.olhar.t = Math.sin(t * 1.3) * 4.2           // olhos varrem a linha
+          A.peito.t = 1 + Math.sin(t * 1.4) * .012
+          prog = 0
+        }
+        else if (estado === 'escreve') {
+          // o bico é a pena: mergulha e o traço nasce embaixo dele
+          prog = reduz ? 1 : (prog + dt * .32) % 1.28
+          const p = Math.min(1, prog)
+          traco.style.strokeDashoffset = L * (1 - p)
+          A.tilt.t = 24 + Math.sin(t * 9) * 2.6
+          A.olhar.t = 3
+          A.y.t = 3 + Math.sin(t * 9) * 1.6
+          A.bico.t = 3
+        }
+        else if (estado === 'fala') {
+          const a = voz(t)
+          A.bico.t = 4 + a * 16                         // bico abre no volume
+          A.peito.t = 1 + a * .05                       // peito infla
+          A.tilt.t = -5 + Math.sin(t * 2.2) * 2.4
+          A.olhar.t = -1.5                              // olha pra você
+          A.topo.t = -6
+        }
+        else if (estado === 'ouve') {
+          A.tilt.t = -22                                // cabeça de lado, o gesto universal de escutar
+          A.olhar.t = -3
+          A.topo.t = -14                                // topete em pé
+          A.peito.t = 1 + Math.sin(t * 2.6) * .006      // quase parado
+        }
+        else if (estado === 'alerta') {
+          A.tilt.t = -8 + Math.sin(t * 13) * 1.8
+          A.topo.t = -20
+          A.asaR.t = -26                                // asa meio aberta
+          A.olhar.t = -4
+          A.peito.t = 1.04
+          A.y.t = -4
+        }
+
+        if (estado !== 'escreve') traco.style.strokeDashoffset = L
+        for (const k in A) reduz ? (A[k].p = A[k].t) : mola(A[k], k === 'bico' ? 90 : 40, 8, dt)
+
+        cabeca.setAttribute('transform', `rotate(${A.tilt.p} 120 116) translate(0 ${A.y.p})`)
+        pupila.setAttribute('transform', `translate(${A.olhar.p} ${A.olhar.p * .3})`)
+        // pálpebra desce a partir da borda de cima do olho (132,70.6 é o topo do círculo)
+        palpebra.setAttribute('transform', `translate(132 70.6) scale(1 ${Math.max(.001, A.lid.p)}) translate(-132 -70.6)`)
+        palpebra.style.opacity = A.lid.p > .04 ? 1 : 0
+        sono.style.opacity = Math.max(0, A.lid.p * 1.3 - .3)
+        bicoI.setAttribute('transform', `rotate(${A.bico.p} 150 95)`)
+        corpo.setAttribute('transform', `translate(120 140) scale(${A.peito.p}) translate(-120 -140)`)
+        topete.setAttribute('transform', `rotate(${A.topo.p} 118 88)`)
+        asa.setAttribute('transform', `rotate(${A.asaR.p} 140 124)`)
+      }
+    }
+  }
+
+  /* ─────────────── 3 · A PRESENÇA ─────────────── */
+  function criarPresenca(root) {
+    const cv = root.querySelector('#pr-cv'), fb = root.querySelector('#pr-fb')
+    const ctx = cv.getContext('2d')
+    if (!ctx) return { frame() {} }                     // sem canvas: o fallback SVG fica
+    // SVGElement não herda de HTMLElement, então `fb.hidden = true` só criaria uma
+    // propriedade solta em JS e não escreveria o atributo. Tem que ser setAttribute.
+    fb.setAttribute('hidden', ''); cv.removeAttribute('hidden')
+    const W = cv.width, H = cv.height, cx = W / 2, cy = H * .48
+    const N = 30
+    const gotas = Array.from({ length: N }, (_, i) => ({
+      // o jitter angular estático é o que impede a soma das gotas de virar uma esfera lisa
+      a: (i / N) * Math.PI * 2 + (((i * 61) % 17) / 17 - .5) * .5,
+      r: M(76), fase: i * .77, sem: ((i * 97) % 31) / 31
+    }))
+    // rx/ry dão a FORMA da massa, ox o deslocamento: é o que a faz ter intenção
+    const rx = M(76), ry = M(66), ox = M(0), nuc = M(0), esp = M(1)
+
+    // a mesma escrita cursiva dos outros dois conceitos, pra comparação ser justa.
+    // o comprimento sai do path SVG irmão (o canvas não tem API de medida de traçado).
+    const svgEscrita = document.querySelector('#t-escrita')
+    const pEscrita = new Path2D(svgEscrita.getAttribute('d'))
+    const LE = svgEscrita.getTotalLength()
+    let prog = 0
+
+    return {
+      frame(t, dt) {
+        if (reduz) t = 0                                // relógio parado: pose estática por estado (E-02)
+        ctx.clearRect(0, 0, W, H)
+        const escuro = document.documentElement.classList.contains('dk')
+        let anel = 0, jit = 0, resp = 1.9
+
+        if (estado === 'dorme')        { rx.t = 100; ry.t = 84; ox.t = 0; esp.t = .66; nuc.t = .13; resp = .8 }
+        else if (estado === 'le')      { rx.t = 116; ry.t = 46; ox.t = Math.sin(t * 1.15) * 54; esp.t = .74; nuc.t = .22 }
+        else if (estado === 'escreve') { rx.t = 58;  ry.t = 62; ox.t = 0; esp.t = 1.1;  nuc.t = .5 }
+        else if (estado === 'fala')    { rx.t = 74 + voz(t) * 26; ry.t = 70 + voz(t) * 22; ox.t = 0; esp.t = 1; nuc.t = .45 + voz(t) * .55; anel = 1 }
+        else if (estado === 'ouve')    { rx.t = 46;  ry.t = 46; ox.t = 0; esp.t = 1.35; nuc.t = .3; resp = 0 }
+        else if (estado === 'alerta')  { rx.t = 66;  ry.t = 66; ox.t = 0; esp.t = 1.2;  nuc.t = 1; jit = 1 }
+
+        prog = estado === 'escreve' ? (reduz ? 1 : (prog + dt * .34) % 1.25) : 0
+        for (const o of [rx, ry, ox, nuc, esp]) reduz ? (o.p = o.t) : mola(o, 26, 8, dt)
+
+        const RX = rx.p, RY = ry.p, CX = cx + ox.p
+        const ac = estado === 'alerta' ? '248,65,49' : '104,64,255'
+
+        // 1 · a massa. No claro é tinta escura sobre papel (subtrativa).
+        // No escuro NÃO pode ser "mais preto que o fundo" — some. Vira névoa violeta
+        // aditiva: continua lendo como matéria densa, mas existe sobre o #151313.
+        const tom = escuro ? '54,36,116' : '21,19,19'
+        ctx.globalCompositeOperation = escuro ? 'lighter' : 'source-over'
+        const aBase = (escuro ? .062 : .19) * esp.p
+        gotas.forEach(g => {
+          const ang = g.a + (reduz ? 0 : t * .05)
+          const pulso = reduz ? 0 : Math.sin(t * resp + g.fase) * (estado === 'dorme' ? 11 : 4)
+                                  + (jit ? Math.sin(t * 11 + g.fase) * 5 : 0)
+          const x = CX + Math.cos(ang) * (RX + pulso) * (.3 + g.sem * .7)
+          const y = cy + Math.sin(ang) * (RY + pulso) * (.3 + g.sem * .7)
+          const raio = 46 * (.55 + g.sem * .95)          // lóbulos menores = silhueta com grumo, não bola
+          const gr = ctx.createRadialGradient(x, y, 0, x, y, raio)
+          gr.addColorStop(0, `rgba(${tom},${aBase})`)
+          gr.addColorStop(1, `rgba(${tom},0)`)
+          ctx.fillStyle = gr
+          ctx.beginPath(); ctx.arc(x, y, raio, 0, 7); ctx.fill()
+        })
+
+        // 2 · a coroa: o fio de luz na borda. É ISTO que dá silhueta —
+        // sem ela, a massa é indistinguível de uma vinheta de fundo.
+        ctx.globalCompositeOperation = 'lighter'
+        const rmax = Math.max(RX, RY)
+        // sem parada quase-branca aqui de propósito: um aro nítido transformaria a massa
+        // numa esfera, que é justamente o clichê de bolha de IA que este conceito evita.
+        const co = ctx.createRadialGradient(CX, cy, rmax * .3, CX, cy, rmax * 1.75)
+        co.addColorStop(0,   `rgba(${ac},0)`)
+        co.addColorStop(.45, `rgba(${ac},${(.07 + nuc.p * .11) * esp.p})`)
+        co.addColorStop(1,   `rgba(${ac},0)`)
+        ctx.save(); ctx.translate(CX, cy); ctx.scale(RX / rmax, RY / rmax); ctx.translate(-CX, -cy)
+        ctx.fillStyle = co
+        ctx.beginPath(); ctx.arc(CX, cy, rmax * 1.5, 0, 7); ctx.fill()
+        ctx.restore()
+
+        // 3 · o núcleo: o foco. É o que faz a massa ler como alguém e não como fundo.
+        const rn = 26 + nuc.p * 18
+        const gn = ctx.createRadialGradient(CX, cy, 0, CX, cy, rn * 3.2)
+        gn.addColorStop(0,  `rgba(${ac},${.14 + nuc.p * .44})`)
+        gn.addColorStop(.28, `rgba(${ac},${.06 + nuc.p * .2})`)
+        gn.addColorStop(1,  `rgba(${ac},0)`)
+        ctx.fillStyle = gn
+        ctx.beginPath(); ctx.arc(CX, cy, rn * 2.6, 0, 7); ctx.fill()
+
+        // 4 · a escrita: um filamento desce da massa até a ponta e o traço nasce atrás dele
+        if (estado === 'escreve') {
+          const q = Math.min(1, prog)
+          const pt = svgEscrita.getPointAtLength(LE * q)   // ponto no espaço 240 do viewBox
+          ctx.save(); ctx.scale(2, 2)                      // canvas 480 = viewBox 240 × 2
+          ctx.strokeStyle = `rgba(${ac},.85)`
+          ctx.lineWidth = 2.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round'
+          ctx.setLineDash([LE, LE]); ctx.lineDashOffset = LE * (1 - q)
+          ctx.stroke(pEscrita)
+          ctx.setLineDash([])
+          // o filamento
+          ctx.strokeStyle = `rgba(${ac},.4)`; ctx.lineWidth = 1.4
+          ctx.beginPath()
+          ctx.moveTo(CX / 2, cy / 2)
+          ctx.quadraticCurveTo(CX / 2 + (pt.x - CX / 2) * .35, (cy / 2 + pt.y) / 2, pt.x, pt.y)
+          ctx.stroke()
+          ctx.restore()
+        }
+
+        // 5 · anéis: a voz saindo do núcleo
+        if (anel && !reduz) {
+          for (let i = 0; i < 2; i++) {
+            const f = (t * .7 + i / 2) % 1
+            ctx.strokeStyle = `rgba(${ac},${(1 - f) * .2})`
+            ctx.lineWidth = 2.4 * (1 - f * .6)
+            ctx.beginPath(); ctx.ellipse(CX, cy, 40 + f * 160, (40 + f * 160) * .8, 0, 0, 7); ctx.stroke()
+          }
+        }
+        ctx.globalCompositeOperation = 'source-over'
+      }
+    }
+  }
+
+  const pecas = [
+    criarTinta(document.getElementById('p-tinta')),
+    criarBicho(document.getElementById('p-bicho')),
+    criarPresenca(document.getElementById('p-presenca')),
+  ]
+
+  /* ─── controles ─── */
+  const marcar = (seg, alvo) => [...seg.querySelectorAll('button')]
+    .forEach(b => b.setAttribute('aria-pressed', String(b === alvo)))
+
+  const segEstado = document.getElementById('seg-estado')
+  segEstado.addEventListener('click', e => {
+    const b = e.target.closest('button[data-estado]'); if (!b) return
+    estado = b.dataset.estado; marcar(segEstado, b); auto = false
+    document.getElementById('ciclo').setAttribute('aria-pressed', 'false')
+  })
+
+  const segEscala = document.getElementById('seg-escala')
+  segEscala.addEventListener('click', e => {
+    const b = e.target.closest('button[data-esc]'); if (!b) return
+    marcar(segEscala, b)
+    document.querySelectorAll('.peca').forEach(p => p.style.setProperty('--esc', b.dataset.esc + 'px'))
+  })
+
+  let auto = false
+  const bCiclo = document.getElementById('ciclo')
+  bCiclo.addEventListener('click', () => {
+    auto = !auto; bCiclo.setAttribute('aria-pressed', String(auto)); troca = 0
+  })
+
+  const bTema = document.getElementById('tema')
+  bTema.addEventListener('click', () => {
+    const claro = document.documentElement.classList.toggle('dk') === false
+    bTema.setAttribute('aria-pressed', String(claro))
+    bTema.textContent = claro ? 'página escura' : 'página clara'
+  })
+
+  /* ─── laço único pros três ─── */
+  let ultimo = performance.now(), troca = 0
+  const laco = agora => {
+    requestAnimationFrame(laco)
+    const dt = Math.min(.05, (agora - ultimo) / 1000); ultimo = agora
+    const t = agora / 1000
+    if (auto) {
+      troca += dt
+      if (troca > 3.4) {
+        troca = 0
+        const prox = ESTADOS[(ESTADOS.indexOf(estado) + 1) % ESTADOS.length]
+        estado = prox
+        marcar(segEstado, segEstado.querySelector(`[data-estado="${prox}"]`))
+      }
+    }
+    pecas.forEach(p => p.frame(t, dt))
+  }
+  requestAnimationFrame(laco)
+})()
+</script>
+</body>
+</html>

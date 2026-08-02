@@ -16,6 +16,8 @@
 - **✅ ONDA 2 LOTE 1 IMPLEMENTADA em `web/` (2026-08-01):** protótipos aprovados em 2026-07-31 (spec `docs/superpowers/specs/2026-07-31-coach-diario-v5-design.md`) e no ar: `/dashboard` é o **Diário** v5 (briefing cacheado do coach + check-in humor/linha + "Suas áreas" por `profiles.active_modules`) dentro do route group **`(app-v5)`** com chrome próprio (`ChromeV5`) e o **coach como camada global** (`CamadaCoach`, gatilho no bar + ask da folha, streaming do Groq). Backend novo: migration `027_diario_v5.sql` (`coach_briefs` + `daily_checkins`, RLS per-user) e `/api/ai/diario-brief`. `(app)/dashboard/page.tsx` foi DELETADO; `review/` e `score/` seguem no shell v3 (lote 2). Servir: `node node_modules/next/dist/bin/next start -p 3006` (o `npx next start` dá exit 127 neste ambiente).
 - **⏳ ONDA 2 LOTE 2 PROTOTIPADO, EM APROVAÇÃO (2026-08-01):** spec `docs/superpowers/specs/2026-08-01-onda2-lote2-review-score-design.md` — a `/dashboard/review` vira **"A edição da semana"** (carta semanal do coach sobre dados reais + fechamento explícito que persiste e conta badge; sai o formato de slides e a janela dom 20h–qua) e a `/dashboard/score` vira **"A anatomia do número"** (fonte única `useScoreEngine`, curva de 30 dias, peso e contribuição por área). Protótipos: `app/{review-semanal,life-score}{.html,.mobile.html}`, linkados no hub. QA PASS sem fixes. **Próximo: aceite do usuário no hub; depois implementação do lote 2 em `web/` (migration `028` reconciliando `weekly_reviews` + `/api/ai/review-brief` + as 2 rotas indo pra `(app-v5)`) e Onda 3 (vista cheia `/coach` + N2).**
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
+- **🔴 DECISÃO ABERTA que trava o lote 2 (2026-08-01, sessão 23):** o usuário **não aprovou** o lote 2 como está. Dois pedidos: (1) o ponto de acesso da revisão semanal está ruim, e (2) o coach está apagado, sem presença nem personalidade — quer **nome próprio**, representação visual (levantou "simbionte cromado 3D") e **voz** (referência: Jarvis). Análise, direções A/B/C e shortlist de nomes na sessão 23 abaixo. **Nada foi implementado; aguarda a escolha do usuário.**
+- **⏳ SESSÃO 24 (2026-08-02): direção A DESCARTADA pelo usuário; 3 conceitos de personagem prototipados, EM APROVAÇÃO.** A bússola é **instrumento e marca**, não ator — usá-la como avatar do coach colapsa duas identidades que precisam ser distintas ("SyncLife" × "quem escreve pra você"). "Cromado" era sugestão, não decisão: material e forma seguem abertos. Protótipo isolado em `personagem/laboratorio.html` (linkado no hub, Onda 03) com **1 A tinta · 2 A criatura · 3 A presença**, os três nos mesmos 6 estados. **Próximo: escolha do conceito; depois nome, integração no Diário e lugar da revisão semanal.**
 
 ## Status das ondas
 
@@ -23,8 +25,8 @@
 |---|---|---|---|---|---|
 | 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ✅ **APROVADA (r2, 2026-07-31)** | ✅ `web/` (2026-07-31) | ✅ desktop + mobile ok, console zero |
-| 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) · ✅ lote 2: Edição da semana + Life Score, D+M (2026-08-01) | ✅ **lote 1 APROVADO (2026-07-31)** · ⏳ **lote 2 EM APROVAÇÃO** | ✅ lote 1 em `web/` (2026-08-01) · lote 2 aguarda o aceite | ✅ lote 1 desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) · ✅ lote 2 QA dos protótipos PASS (console 0/0, E-02 com JS off, consistência cruzada nas 6 telas) |
-| 03 | Coach: vista cheia /coach + backend N1-N2 | – | – | – | – |
+| 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) · ✅ lote 2: Edição da semana + Life Score, D+M (2026-08-01) | ✅ **lote 1 APROVADO (2026-07-31)** · 🔴 **lote 2 REVISÃO PEDIDA (2026-08-01, sessão 23):** acesso da revisão semanal + presença/nome/voz da IA | ✅ lote 1 em `web/` (2026-08-01) · lote 2 bloqueado até a decisão do personagem | ✅ lote 1 desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) · ✅ lote 2 QA dos protótipos PASS (console 0/0, E-02 com JS off, consistência cruzada nas 6 telas) |
+| 03 | Coach: identidade + vista cheia /coach + backend N1-N2 | ⏳ laboratório de personagem, 3 conceitos × 6 estados (2026-08-02) | ⏳ **em aprovação** (direção A da sessão 23 descartada pelo usuário) | – | ✅ console 0/0 nos 6 estados, claro+escuro, 3 escalas |
 | 04 | 01 Finanças (8 telas, 2 lotes) | – | – | – | – |
 | 05 | 02 Futuro (4) | – | – | – | – |
 | 06 | 03 Tempo (6) | – | – | – | – |
@@ -36,6 +38,166 @@
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-08-02 · Sessão 24 — Direção A cai; laboratório de personagem com 3 conceitos (em aprovação)
+
+**Decisão do usuário sobre as direções da sessão 23:** **A está descartada.** O argumento dele derruba o
+da sessão anterior: a Bússola da Vida é **instrumento e marca**, e o que se quer é um **ator/personagem**;
+personificar aproxima o usuário, e usar a marca como avatar do coach colapsa duas identidades que precisam
+ficar separadas (um jornal tem cabeçalho e tem colunista, e não são a mesma coisa). Ele também registrou
+que **"cromado" foi sugestão dele, não decisão** — material e forma seguem abertos, e ele levantou
+"matéria escura" como alternativa. Pediu **protótipos só do personagem antes de avançar**.
+
+**Reenquadramento aceito:** A/B/C não eram três alternativas paralelas. **C (nome próprio, byline,
+assinatura em Caveat, voz de escrita) é piso, não opção** — até um simbionte precisa de nome. O que estava
+de fato em aberto era só qual **corpo** senta em cima disso.
+
+**Entregue:** `prototypes/v5/personagem/laboratorio.html` (novo), isolado como pedido — sem chrome, sem
+Diário, sem nome, os três em tinta neutra com o roxo como único acento pra a escolha não ser por cor.
+Controles: 6 estados que movem os três juntos, 3 escalas (palco 240px / cartão 96px / **assinatura 34px**),
+ciclo automático, e alternância claro/escuro. Linkado no hub em Onda 03.
+
+| # | Conceito | Natureza | Custo |
+|---|---|---|---|
+| 1 | **A tinta** | matéria líquida sem rosto; em repouso é uma gota, falando os satélites descolam, escrevendo ela percorre a cursiva e o traço nasce atrás | SVG + filtro goo |
+| 2 | **A criatura** | pássaro de nanquim com olhar e postura; o bico é a pena e risca a linha embaixo de si | SVG com grupos transformados |
+| 3 | **A presença** | massa lobulada que ocupa o negativo da página, com núcleo que acende | canvas 2D |
+
+Nenhum usa WebGL, então o teto de 1 canvas por página (DS §5.6) continua livre pra bússola.
+
+**Achados de QA que importam pra decisão (não são bugs, são informação):**
+- **Escala é o filtro mais duro.** A 34px (o lugar natural dele, ao lado da byline) só a **criatura**
+  sobrevive: silhueta se reconhece. A tinta vira dois pontos soltos e a presença vira borrão.
+- **"Dormindo" é o estado de 95% do tempo** e é onde a presença quase desaparece — coerente com o conceito,
+  mas é o custo real dele.
+- **No escuro, "matéria escura" não pode ser desenhada mais escura que o fundo** (some sobre `#151313`).
+  A massa virou névoa violeta **aditiva**; no claro segue subtrativa como tinta sobre papel.
+- **Coroa nítida transforma a massa em esfera**, que é justamente o clichê de bolha de IA que o conceito 3
+  existe pra evitar. Foi trocada por queda difusa + lóbulos irregulares.
+
+**Bugs achados e corrigidos durante o QA (os dois valem pra implementação futura):**
+- `.peca svg{display:block}` **vence o atributo `hidden` da UA**, então o fallback estático da presença
+  ficava empilhado com o canvas e era ele que aparecia. Mesma armadilha do lote 1; corrigido com
+  `.peca [hidden]{display:none!important}`.
+- **`SVGElement` não herda de `HTMLElement`**, então `svg.hidden = true` cria só uma propriedade solta em
+  JS e **nunca escreve o atributo**. Tem que ser `setAttribute('hidden','')`.
+- Sob `prefers-reduced-motion` os alvos ainda oscilavam com o tempo: agora os três congelam o relógio
+  (`if (reduz) t = 0`) e mostram pose estática por estado, com a escrita completa.
+
+**QA:** console 0 erros e 0 warnings no lab e no hub, com varredura pelos 6 estados · claro e escuro
+verificados · E-02 confirmado pelo caminho estático (os três palcos são SVG/markup e renderam sem o JS
+ter rodado nas rodadas r1-r4). **Reduce foi tratado em código mas não emulado** — o `chrome-devtools` MCP
+não expõe `reducedMotion` no `emulate`.
+
+**MCP verificados nesta sessão:** `chrome-devtools` ✅ (30 tools, usado no QA inteiro) · `magic` ✅ (free,
+2 retrievals/dia) · `shadcn` ⚠️ conecta e lê o `components.json` do `web/`, mas `registries` está **vazio**,
+então `search_items_in_registries` responde "No registries are configured" — inútil até alguém declarar um
+registry. Não foi mexido (fora do escopo e o v5 é escrito à mão).
+
+**Próximo passo:** escolha do conceito no hub. Depois: nome, material definitivo, integração no Diário
+(onde ele mora, em que escala) e o lugar da revisão semanal, que segue **sem decisão** desde a sessão 23.
+
+**Arquivos:** `prototypes/v5/personagem/laboratorio.html` (novo) · `prototypes/v5/index.html` · este handoff.
+**Nenhum código de `web/` e nenhum protótipo do lote 2 foi tocado.**
+
+---
+
+## 2026-08-01 · Sessão 23 — Identidade da IA (nome, corpo, voz) + lugar da revisão semanal · DECISÃO ABERTA
+
+> **Nenhum código ou protótipo foi tocado nesta sessão.** Ela produziu análise e opções; a
+> escolha do usuário está pendente. Ferramental novo foi instalado e validado (ver ao fim).
+
+**Veredito do usuário sobre o lote 2 (não aprovado como está):** (1) o **ponto de acesso da revisão
+semanal** não ficou bom, e ele questiona se ela deve viver dentro do Diário; (2) **faltou impacto no
+Diário** — "o coach está muito apagado, falta presença, destaque e personalidade". Pedidos explícitos:
+dar **nome próprio** à IA (achou "coach" genérico), representá-la visualmente (ideia dele: **simbionte
+em cromo, 3D, se mexendo**), e permitir que ela **comente por voz e receba voz** (referência: Jarvis).
+
+### Diagnóstico da revisão semanal
+Hoje é um **botão fantasma no chrome** (`btn-sm ghost` "Revisão semanal", `diario.html:152`), colado no
+gatilho do coach. Três defeitos: peso morto 6 dias por semana; disputa atenção justamente com a IA, que
+é o que se quer destacar; e trata como *ferramenta* o que é *conteúdo*.
+
+**Proposta (aguarda decisão):** a revisão semanal **não é outra tela, é outra edição do mesmo diário**.
+No dia em que a semana fecha, o próprio Diário muda de forma — masthead vira `Edição da semana · nº 30`,
+a folha vira a carta semanal, o check-in vira o fechamento que persiste e conta badge. Some um item do
+chrome, o produto visivelmente muda de forma 1×/semana (isso é presença de graça), e é editorialmente
+correto no v5 (jornal diário × edição de domingo). A rota `/dashboard/review` continua como permalink e
+arquivo. Alternativas registradas: (b) manter a rota e chamar do colofão; (c) seção "Edições anteriores".
+
+### Diagnóstico da presença da IA
+**Contra o simbionte como objeto separado (3 riscos):** (1) **compete com a marca** — a Bússola da Vida
+já É o objeto cromado 3D vivo, e o §5.6 teto de 1 canvas por página; dois cromos e nenhum lê como "o"
+objeto; (2) **a bolha cromada é o clichê visual da IA desta era** (Siri, Copilot, Gemini, Alexa) — a
+queixa foi "genérico demais", e um orb é a versão visual do mesmo problema; (3) **E-07 diz "IA nunca
+vira widget"** — uma criatura no canto é um widget com rosto.
+
+**Reframe:** o simbionte já existe, é a bússola. Ela é literalmente um organismo que vive dos dados do
+usuário e aponta. Só está muda. O caminho forte é dar **sistema nervoso ao corpo que já existe**.
+
+**Direções (escolha pendente):**
+| Dir | Tese | Custo | Nota |
+|---|---|---|---|
+| **A** *(recomendada)* | **O instrumento é o corpo.** A bússola 3D ganha estados: dormente · lendo (varredura no aro, agulha percorre as 8 áreas) · escrevendo (pivô pulsa, marcação acende) · **falando** (as 24 marcações viram medidor de nível pela amplitude da voz) · ouvindo (agulha treme na mola) · alertando (marcação em coral + agulha aponta sem ser pedida) | baixo — reaproveita `lib/v5/compass-gl.ts`, sem canvas novo | o "falando" é o momento Jarvis sem objeto novo |
+| **B** | Simbionte cromado separado (ideia crua do usuário). Se for por aqui, a única saída pra não ser genérico é **não ser bolha**: tinta cromada que escorre e escreve o diário | alto — 2º canvas, linguagem de movimento do zero | paga os 3 riscos acima |
+| **C** *(recomendada com A)* | **O colunista.** Sem corpo: nome, byline, assinatura em Caveat, voz de escrita própria, TTS | baixo | mais fiel ao pilar "editorial, não painel" |
+
+**Recomendação registrada: A + C.** B fica como exploração.
+
+**Shortlist de nomes:** **Lume** *(recomendado)* — fogo/luz em pt-BR, É a marcação acesa da bússola
+(E-06: elétrico = dado vivo), então nome e tell visual são a mesma coisa; curto, raro, bom wake word ·
+**Tino** — "ter tino" = ter bom senso; nome de gente, quente, brasileiro · **Norte** — **descartar**:
+colide, a bússola já tem um norte (01 Finanças), e é palavra comum demais pra voz · **Prumo** (soa
+objeto) · **Boreal** (ressoa com a aurora da landing) · **Vega** (muito usada por outros produtos).
+
+**Voz — o que é real:** o sentimento Jarvis vem de **latência baixa + resposta curta + interface reagindo
+enquanto ele fala**, não do motor de voz. Ordem sugerida: (1) **TTS do briefing** ("ouvir a edição") —
+maior impacto pelo menor custo, o briefing já é cacheado por dia em `coach_briefs`, então gera-se o áudio
+1×/dia/usuário (~45-70s) e guarda junto; casa com A (ela lê, a bússola aponta cada área citada, o ticker
+destaca o número citado). (2) **STT push-to-talk** na camada, cai na mesma thread; Web Speech API é grátis
+mas irregular no iOS/Safari, server-side é confiável e custa por minuto. (3) **Wake word: não fazer** —
+caro, hostil pra bateria e ruim em background num PWA de navegador.
+
+### Auditoria das 4 libs de animação (verificada no código, não no handoff)
+| Lib | `web/` | protótipos | Onde de fato |
+|---|---|---|---|
+| three.js | ✅ `^0.185.1`, import dinâmico em `lib/v5/compass-gl.ts` | ✅ `three@0.170.0` (CDN) | **só a landing** |
+| GSAP | ✅ `^3.15.0` + ScrollTrigger/SplitText/CustomEase | ✅ `gsap@3.13.0` (CDN) | **só a landing** |
+| Anime.js | ❌ | ❌ | dispensada, confirmado |
+| Motion.dev | ❌ | ❌ | **nunca entrou** (os 7 hits eram `prefers-reduced-motion`) |
+| Lenis | ✅ `^1.3.25` | ✅ `1.1.14` | landing desktop + pricing |
+
+**Achado relevante:** as duas libs em uso vivem **exclusivamente na landing**. Nenhuma tela do app
+(Diário, chrome, camada, review-semanal, life-score) usa qualquer uma delas — tudo é CSS transition sob
+o gate `.anim`. **Isso explica parte do "coach apagado": o cromo 3D, a mola física e a luz pela hora do
+dia só existem na página de marketing; quem já é cliente nunca vê o instrumento vivo.** Se o caminho A
+for escolhido, boa parte do trabalho é *portar pro app o que já foi aprovado na landing*, não criar do zero.
+
+**Novas pendências técnicas:** (1) **drift de versão** protótipo × implementação (three 0.170 × 0.185,
+gsap 3.13 × 3.15) — risco de atribuir ao porte uma diferença que é da lib; alinhar antes da próxima onda.
+(2) **reabrir a decisão do motion.dev** em vez de executá-la por inércia: o GSAP já está instalado e já
+tem a easing assinatura em `CustomEase`; duas libs de animação pro mesmo trabalho é custo sem retorno.
+
+### Ferramental novo (instalado e validado por handshake JSON-RPC)
+- **Node v22.4.1 → v24.18.1 LTS** (winget). Era bloqueio duro: `chrome-devtools-mcp` exige `>=22.12`
+  em toda versão desde a 0.4.0. O npm ficou em 10.8.2 (o instalador não trocou o empacotado); sem impacto.
+- **`.mcp.json` (escopo projeto, commitável, sem segredo):** `chrome-devtools` (30 tools, inclui
+  `lighthouse_audit` e `performance_start_trace` — úteis pra medir o custo do WebGL) e `shadcn`
+  (com `-c C:\Projetos\sync_life\web`, senão não acha o `components.json`). Liberados via
+  `enabledMcpjsonServers` em `.claude/settings.local.json`.
+- **`magic` (21st.dev) foi pro escopo de USUÁRIO** (`~/.claude.json`), porque `.mcp.json` seria commitado
+  e a chave é segredo. Confirmado por busca que `21st_sk_` não aparece no repo.
+- **Skill `web-design-guidelines`** (Vercel) em `.claude/skills/` — auditoria de a11y/foco/teclado/animação
+  em formato `file:line`. É a de maior utilidade real pro nosso QA de identidade.
+- Ressalva: `shadcn` e `magic` têm uso limitado aqui — o v5 é anti-card e escrito à mão, e o magic gera
+  no estilo genérico de landing SaaS, o oposto do DS v5.
+
+**Próximo passo:** decisão do usuário em (1) lugar da revisão semanal e (2) direção A/B/C + nome. Com
+isso, revisar os protótipos do lote 2 antes de qualquer implementação.
+
+**Arquivos:** `.mcp.json` (novo) · `.claude/settings.local.json` · `.claude/skills/web-design-guidelines/SKILL.md` (novo) · este handoff. **Nenhum protótipo ou código de `web/` foi tocado.**
 
 ---
 
