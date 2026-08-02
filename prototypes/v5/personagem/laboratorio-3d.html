@@ -266,6 +266,19 @@ try {
     const gi = mergeVertices(new THREE.IcosahedronGeometry(1, 4))
     const dir = gi.attributes.position.array.slice()
     const NV = dir.length / 3
+    // ── tirar a cara de domo geodésico ──
+    // a icosfera é regular demais pra ler como organismo. Empurra cada vértice de lado
+    // (tangencialmente, pra não inflar a esfera) uns 30% do passo da malha e renormaliza.
+    for (let i = 0; i < NV; i++) {
+      const x = dir[i*3], y = dir[i*3+1], z = dir[i*3+2]
+      let jx = rnd()*2-1, jy = rnd()*2-1, jz = rnd()*2-1
+      const d = jx*x + jy*y + jz*z            // remove a componente radial do empurrão
+      jx -= d*x; jy -= d*y; jz -= d*z
+      const J = .024 / (Math.hypot(jx, jy, jz) || 1)
+      let nx = x + jx*J, ny = y + jy*J, nz = z + jz*J
+      const L = Math.hypot(nx, ny, nz)
+      dir[i*3] = nx/L; dir[i*3+1] = ny/L; dir[i*3+2] = nz/L
+    }
     const atual = new Float32Array(dir), alvo = new Float32Array(dir), rDisp = new Float32Array(NV)
     const idx = gi.index.array, vistos = new Set(), pares = []
     for (let f = 0; f < idx.length; f += 3) {
@@ -275,7 +288,15 @@ try {
         if (!vistos.has(k)) { vistos.add(k); pares.push(i, j) }
       }
     }
-    const NE = pares.length / 2
+    // rede orgânica não é triangulação completa: derruba parte das arestas e dá
+    // brilho próprio a cada uma, senão lê como malha de engenharia
+    const paresVis = [], forcaAr = []
+    for (let e = 0; e < pares.length / 2; e++) {
+      if (rnd() < .28) continue
+      paresVis.push(pares[e*2], pares[e*2+1])
+      forcaAr.push(.35 + rnd() * .95)
+    }
+    const NE = paresVis.length / 2
 
     // painéis sólidos: facetado e translúcido, é daqui que vem a textura da ref. 4
     const geoS = new THREE.BufferGeometry()
@@ -306,8 +327,8 @@ try {
     })))
 
     // núcleo aceso + filamentos saindo dele: é o coração da ref. 3
-    const matNu = new THREE.MeshBasicMaterial({ color: 0x9fd4ff, transparent: true, opacity: .95 })
-    const nucleo = new THREE.Mesh(new THREE.IcosahedronGeometry(.13, 3), matNu)
+    const matNu = new THREE.MeshBasicMaterial({ color: 0x7fc0f5, transparent: true, opacity: .85 })
+    const nucleo = new THREE.Mesh(new THREE.IcosahedronGeometry(.075, 3), matNu)
     g.add(nucleo)
     const NF = 90, iFil = []
     for (let k = 0; k < NF; k++) iFil.push(((rnd() * NV) | 0))
@@ -316,7 +337,7 @@ try {
     geoF.setAttribute('position', new THREE.BufferAttribute(posF, 3))
     geoF.setAttribute('color', new THREE.BufferAttribute(corF, 3))
     g.add(new THREE.LineSegments(geoF, new THREE.LineBasicMaterial({
-      vertexColors: true, transparent: true, opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false,
+      vertexColors: true, transparent: true, opacity: .3, blending: THREE.AdditiveBlending, depthWrite: false,
     })))
 
     /* O PERFIL humano traçado ponto a ponto (altura, avanço em Z), do alto do crânio
@@ -348,7 +369,11 @@ try {
         const dx = dir[i * 3], dy = dir[i * 3 + 1], dz = dir[i * 3 + 2]
         let r = 1, sx = 1, sy = 1, sz = 1, oy = 0, oz = 0
 
-        if (estado === 'dorme') { r += .05 * Math.sin(dy * 3.2 + t * .8); sx = 1.02; sy = .97 }
+        if (estado === 'dorme') {
+          r += .05 * Math.sin(dy * 3.2 + t * .8)
+          r += .035 * Math.sin(dx * 4.1 + dz * 3.3) * Math.cos(dy * 3.7)   // repouso não é esfera perfeita
+          sx = 1.03; sy = .96
+        }
         else if (estado === 'le') {
           sx = 1.22; sy = 1; sz = .58
           r += .12 * Math.sin(dx * 7 - t * 3.2)
@@ -388,6 +413,8 @@ try {
       }
     }
 
+    const pesoNo = new Float32Array(NV)
+    for (let i = 0; i < NV; i++) pesoNo[i] = rnd() < .12 ? 1.5 + rnd() * 1.3 : .45 + rnd() * .6
     const c = new THREE.Color()
     return {
       grupo: g, base: 1.32,
@@ -409,7 +436,7 @@ try {
         matS.opacity = .26 + pulso * .07
         matS.emissive = acento; matS.emissiveIntensity = .06 + pulso * .06
         matNu.color.copy(estado === 'alerta' ? CORAL : new THREE.Color(0x9fd4ff))
-        nucleo.scale.setScalar(.8 + pulso * .5)
+        nucleo.scale.setScalar(.85 + pulso * .35)
 
         const ry = g.rotation.y, cs = Math.cos(ry), sn = Math.sin(ry)
         for (let i = 0; i < NV; i++) {
@@ -418,22 +445,22 @@ try {
           const rim = suave(.3, .95, 1 - Math.abs(zv) / Math.max(.35, Math.hypot(x, y, z)))
           c.copy(AZUL).lerp(acento, rim)
           const rel = Math.max(.08, Math.min(2.4, 1 + (rDisp[i] - 1) * 5))
-          const ganho = ((vivo ? 1.2 : .95) + (vivo ? .4 : .16) * Math.abs(Math.sin(y * 4 + t * 1.6))) * rel
+          const ganho = ((vivo ? 1.2 : .95) + (vivo ? .4 : .16) * Math.abs(Math.sin(y * 4 + t * 1.6))) * rel * pesoNo[i]
           corN[i * 3] = c.r * ganho; corN[i * 3 + 1] = c.g * ganho; corN[i * 3 + 2] = c.b * ganho
         }
         for (let e = 0; e < NE; e++) {
-          const i = pares[e * 2], j = pares[e * 2 + 1]
+          const i = paresVis[e * 2], j = paresVis[e * 2 + 1], f = forcaAr[e] * .6
           posA[e * 6] = atual[i * 3]; posA[e * 6 + 1] = atual[i * 3 + 1]; posA[e * 6 + 2] = atual[i * 3 + 2]
           posA[e * 6 + 3] = atual[j * 3]; posA[e * 6 + 4] = atual[j * 3 + 1]; posA[e * 6 + 5] = atual[j * 3 + 2]
-          for (let v = 0; v < 3; v++) { corA[e * 6 + v] = corN[i * 3 + v] * .6; corA[e * 6 + 3 + v] = corN[j * 3 + v] * .6 }
+          for (let v = 0; v < 3; v++) { corA[e * 6 + v] = corN[i * 3 + v] * f; corA[e * 6 + 3 + v] = corN[j * 3 + v] * f }
         }
         // filamentos: do núcleo até nós da superfície, apagando conforme se afastam
         for (let f = 0; f < NF; f++) {
           const i = iFil[f]
           posF[f * 6] = 0; posF[f * 6 + 1] = 0; posF[f * 6 + 2] = 0
           posF[f * 6 + 3] = atual[i * 3]; posF[f * 6 + 4] = atual[i * 3 + 1]; posF[f * 6 + 5] = atual[i * 3 + 2]
-          const b0 = (.5 + pulso * .5)
-          corF[f * 6] = .62 * b0; corF[f * 6 + 1] = .83 * b0; corF[f * 6 + 2] = 1 * b0
+          const b0 = (.22 + pulso * .3)
+          corF[f * 6] = .38 * b0; corF[f * 6 + 1] = .62 * b0; corF[f * 6 + 2] = 1 * b0
           for (let v = 0; v < 3; v++) corF[f * 6 + 3 + v] = corN[i * 3 + v] * .3
         }
         geoS.attributes.position.needsUpdate = true; geoS.computeVertexNormals()

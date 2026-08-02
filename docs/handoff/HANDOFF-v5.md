@@ -210,10 +210,49 @@ motor de transição não muda). **Não afirmar que o rosto está resolvido.**
 **QA:** **159 fps** no estado mais pesado · console **0/0** varrendo 2 corpos × 6 estados + troca de
 tema nos dois sentidos · claro e escuro OK.
 
-**Próximo passo:** aceite da direção do simbionte (textura + forma base + ideia das transformações).
-Se aprovada, a sequência é: malhas modeladas pros estados → nome → sinal chapado pro miúdo (nenhum 3D
-sobrevive a 38px) → integração no Diário. O lugar da revisão semanal segue **sem decisão** desde a
-sessão 23.
+### Rodada 2d — as formas reprovadas, e o pipeline de silhueta que resolve
+
+**Veredito do usuário:** *"Nenhuma forma está correta. A textura eu gostei. O cérebro nem de longe
+parece um cérebro, e o rosto muito menos: basicamente um círculo com uma área pulsando."* Correto.
+**Textura aprovada, formas reprovadas.**
+
+**Causa raiz (minha, e repetida 4 vezes):** eu estava esculpindo **fórmulas sobre uma esfera**. Cérebro
+e cabeça não são esfera perturbada; nenhuma combinação de gaussianas chega lá. Insisti em calibrar em
+vez de trocar de técnica. Também tinha um loop de feedback ruim: um screenshot por tentativa, chute
+numérico em cima de forma 3D.
+
+**A virada veio do usuário perguntar "o que eu posso fazer pra te ajudar".** Resposta: referências que
+sirvam de **geometria**, não de clima. E daí saiu a ferramenta que destrava tudo.
+
+**`refs/silhueta.html` e `refs/folha.html` (novos):** pegam qualquer referência (SVG, PNG, JPG),
+**desfocam** pra fundir a estrutura interna num corpo sólido, limiarizam e marcham de fora pra dentro
+em 180 direções, devolvendo a **silhueta como tabela de raios** a partir do centro de massa. Reportam
+**rugosidade** pra dizer se a extração ficou limpa. O `folha.html` faz isso em lote, com contorno
+desenhado por cima pra conferência visual.
+- **Isso resolve o caso do SVG vetorizado automaticamente** (1950 paths de manchas de cor, sem contorno
+  único pra ler): a silhueta sai do **raster**, não dos paths. E baixa a exigência sobre o usuário —
+  render neon serve, não precisa ser silhueta chapada; o que importa é o **ângulo**.
+- Gotcha: dentro de um documento SVG, `document.createElement('canvas')` cria no namespace SVG e não
+  tem `getContext`. Tem que ser `createElementNS` com o namespace XHTML.
+
+**`refs/silhuetas.json` (novo):** as 4 vistas necessárias já extraídas e validadas, 180 raios cada —
+`cerebro_lado` (rug .0128) · `cerebro_frente` (.0082) · `cabeca_perfil` (.0145) · `cabeca_frente`
+(.0166). Todas abaixo de .02, que é o limiar de "limpa". **É este arquivo que alimenta a construção
+3D na próxima rodada.** Os SVGs de origem ficam fora do git (`.gitignore` na pasta, asset de terceiro).
+
+**Rede orgânica (pedido do usuário, feito):** a icosfera regular lia como domo geodésico. Agora os
+vértices levam um empurrão **tangencial** de ~30% do passo da malha (tangencial pra não inflar a
+esfera), **28% das arestas são derrubadas** com brilho próprio por aresta, ~12% dos nós pesam 2-3× mais
+que os outros, e o repouso deixou de ser esfera perfeita. Núcleo e filamentos foram baixados porque
+estouravam em branco no centro.
+
+**QA:** 160 fps · console 0/0 em 2 corpos × 6 estados.
+
+**Próximo passo (a rodada que resolve as formas):** construir cérebro e cabeça a partir das **duas
+vistas ortogonais** de `silhuetas.json` — a de lado dá comprimento × altura, a de frente dá largura ×
+altura, e o cruzamento das duas dá o volume. É como se modela de verdade, e substitui a fórmula que
+falhou. Depois: nome → sinal chapado pro miúdo (nenhum 3D sobrevive a 38px) → integração no Diário.
+O lugar da revisão semanal segue **sem decisão** desde a sessão 23.
 
 **Arquivos:** `prototypes/v5/personagem/laboratorio.html` (rodada 1) · `prototypes/v5/personagem/laboratorio-3d.html` (rodada 2) · `prototypes/v5/index.html` · este handoff.
 **Nenhum código de `web/` e nenhum protótipo do lote 2 foi tocado.**

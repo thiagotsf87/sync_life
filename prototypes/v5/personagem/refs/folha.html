@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<title>Folha de contato · silhuetas das refs</title>
+<link rel="stylesheet" href="../../shared/tokens.css">
+<link rel="stylesheet" href="../../shared/base.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  .wrap{--wrap-max:1420px;padding:30px clamp(20px,4vw,44px) 60px}
+  h1{font:500 30px var(--gro);letter-spacing:-.035em;margin:10px 0 8px}
+  .sub{font:400 14px/1.6 var(--int);color:var(--t2);max-width:80ch;margin-bottom:22px}
+  .grade{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:1100px){ .grade{grid-template-columns:repeat(2,1fr)} }
+  figure{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#000}
+  figcaption{font:600 11px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--roxo);
+    padding:9px 13px;background:var(--s1);border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+  figcaption i{font-style:normal;font:400 10px var(--int);letter-spacing:0;text-transform:none;color:var(--t3)}
+  canvas{display:block;width:100%;height:auto;background:#000}
+  .diag{font:400 11px/1.45 var(--int);color:var(--t3);padding:8px 13px;background:var(--s1);
+    border-top:1px solid var(--line)}
+  .diag b{color:var(--t1)}
+  .ok{color:#a1ff62}.ruim{color:var(--coral)}
+  pre{margin-top:24px;background:var(--s1);border:1px solid var(--line);border-radius:12px;
+    padding:16px;font:400 11px/1.55 'IBM Plex Mono',monospace;color:var(--t2);
+    max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow"><b>Onda 03</b> · refs recebidas</p>
+  <h1>Folha de contato com silhueta</h1>
+  <p class="sub">Cada referência passa pelo mesmo caminho: desfoque para fundir a estrutura interna
+    num corpo sólido, limiar para separar do fundo, e marcha de fora para dentro em 180 direções.
+    A linha verde é a silhueta extraída. <b>Rugosidade abaixo de 0,02 é limpa.</b></p>
+  <div class="grade" id="g"></div>
+  <pre id="saida">extraindo…</pre>
+</div>
+
+<script>
+// limiar por arquivo porque o fundo muda: preto puro aceita limiar baixo,
+// azul-marinho escuro precisa subir senão o fundo entra na máscara
+const REFS = [
+  { arq: 'stockcake-neural.svg', vista: 'cérebro · lado',   blur: 9,  lim: 16 },
+  { arq: 'ref2.svg',             vista: 'cérebro · frente', blur: 10, lim: 62 },
+  { arq: 'ref5.svg',             vista: 'cérebro · frente (traço)', blur: 12, lim: 52 },
+  { arq: 'ref3.svg',             vista: 'cabeça · perfil',  blur: 10, lim: 40 },
+  { arq: 'ref4.svg',             vista: 'cabeça · frente',  blur: 10, lim: 38 },
+  { arq: 'ref1.svg',             vista: 'cérebro · 3/4 (fundo claro)', blur: 9, lim: 16, inverter: true },
+]
+const N = 180
+
+async function extrair(cfg) {
+  const img = new Image()
+  await new Promise((ok, err) => { img.onload = ok; img.onerror = err; img.src = cfg.arq })
+  const W = 700, H = Math.max(1, Math.round(W * (img.naturalHeight / img.naturalWidth)))
+  const off = document.createElement('canvas'); off.width = W; off.height = H
+  const go = off.getContext('2d')
+  go.fillStyle = cfg.inverter ? '#fff' : '#000'; go.fillRect(0, 0, W, H)
+  go.filter = cfg.blur ? `blur(${cfg.blur}px)` : 'none'
+  go.drawImage(img, 0, 0, W, H)
+  const d = go.getImageData(0, 0, W, H).data
+  const dentro = (x, y) => {
+    const i = (y * W + x) * 4, L = (d[i] + d[i + 1] + d[i + 2]) / 3
+    return cfg.inverter ? L < 255 - cfg.lim : L > cfg.lim
+  }
+  let sx = 0, sy = 0, n = 0
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (dentro(x, y)) { sx += x; sy += y; n++ }
+  if (!n) return { erro: 'máscara vazia' }
+  const cx = sx / n, cy = sy / n
+  const cru = [], Rmax = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy))
+  for (let k = 0; k < N; k++) {
+    const a = (k / N) * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a)
+    let seg = 0, posto = false
+    for (let r = Rmax; r > 2; r -= 1) {
+      const x = Math.round(cx + ca * r), y = Math.round(cy + sa * r)
+      if (x < 0 || y < 0 || x >= W || y >= H) continue
+      if (dentro(x, y)) { if (++seg >= 4) { cru.push(r + cfg.blur * .45); posto = true; break } } else seg = 0
+    }
+    if (!posto) cru.push(0)
+  }
+  const raios = cru.map((_, i) => { let s = 0; for (let j = -2; j <= 2; j++) s += cru[(i + j + N) % N]; return s / 5 })
+  const rmax = Math.max(...raios), norm = raios.map(r => r / rmax)
+  let v = 0; for (let i = 0; i < N; i++) v += Math.abs(norm[i] - norm[(i + 1) % N])
+  let minx = 1e9, maxx = -1e9, miny = 1e9, maxy = -1e9
+  for (let k = 0; k < N; k++) {
+    const a = (k / N) * Math.PI * 2
+    const x = Math.cos(a) * raios[k], y = Math.sin(a) * raios[k]
+    minx = Math.min(minx, x); maxx = Math.max(maxx, x); miny = Math.min(miny, y); maxy = Math.max(maxy, y)
+  }
+  return { img, W, H, cx, cy, raios, n, rug: v / N, prop: (maxx - minx) / (maxy - miny), norm }
+}
+
+(async () => {
+  const host = document.getElementById('g'), fora = []
+  for (const cfg of REFS) {
+    const fig = document.createElement('figure')
+    fig.innerHTML = `<figcaption>${cfg.arq}<i>${cfg.vista}</i></figcaption>`
+    const cv = document.createElement('canvas'); fig.appendChild(cv)
+    const dg = document.createElement('p'); dg.className = 'diag'; fig.appendChild(dg)
+    host.appendChild(fig)
+
+    let r
+    try { r = await extrair(cfg) } catch (e) { dg.textContent = 'falhou: ' + e.message; continue }
+    if (r.erro) { dg.textContent = r.erro; continue }
+
+    cv.width = r.W; cv.height = r.H
+    const g = cv.getContext('2d')
+    g.fillStyle = cfg.inverter ? '#fff' : '#000'; g.fillRect(0, 0, r.W, r.H)
+    g.globalAlpha = .5; g.drawImage(r.img, 0, 0, r.W, r.H); g.globalAlpha = 1
+    g.strokeStyle = '#a1ff62'; g.lineWidth = 3; g.beginPath()
+    for (let k = 0; k <= N; k++) {
+      const i = k % N, a = (i / N) * Math.PI * 2
+      const x = r.cx + Math.cos(a) * r.raios[i], y = r.cy + Math.sin(a) * r.raios[i]
+      k ? g.lineTo(x, y) : g.moveTo(x, y)
+    }
+    g.closePath(); g.stroke()
+    g.fillStyle = '#6840ff'; g.beginPath(); g.arc(r.cx, r.cy, 6, 0, 7); g.fill()
+
+    const cls = r.rug < .02 ? 'ok' : r.rug < .045 ? '' : 'ruim'
+    dg.innerHTML = `rugosidade <b class="${cls}">${r.rug.toFixed(4)}</b> · proporção <b>${r.prop.toFixed(2)}</b> · ` +
+      `<b>${r.n.toLocaleString('pt-BR')}</b> px · blur ${cfg.blur} / limiar ${cfg.lim}`
+    fora.push({ arq: cfg.arq, vista: cfg.vista, rugosidade: +r.rug.toFixed(4), proporcao: +r.prop.toFixed(3),
+                raios: r.norm.map(x => +x.toFixed(4)) })
+  }
+  document.getElementById('saida').textContent = JSON.stringify(fora, null, 1)
+  window.__silhuetas = fora
+})()
+</script>
+</body>
+</html>
