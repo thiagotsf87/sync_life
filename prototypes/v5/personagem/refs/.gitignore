@@ -1,0 +1,8 @@
+# referencias visuais sao locais: nao versionamos asset de terceiro
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.glb
+*.obj
+!silhueta.html

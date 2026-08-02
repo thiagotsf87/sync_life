@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<title>Extrator de silhueta · refs do personagem</title>
+<link rel="stylesheet" href="../../shared/tokens.css">
+<link rel="stylesheet" href="../../shared/base.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  .wrap{--wrap-max:1280px;padding:38px clamp(20px,4vw,56px) 70px}
+  h1{font:500 34px var(--gro);letter-spacing:-.035em;margin:12px 0 10px}
+  .sub{font:400 14.5px/1.65 var(--int);color:var(--t2);max-width:78ch}
+  .sub b{color:var(--t1);font-weight:600}
+  .ctl{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:22px 0 8px}
+  input,select{font:400 13px var(--int);background:var(--s1);color:var(--t1);
+    border:1px solid var(--line);border-radius:9px;padding:9px 12px}
+  input{min-width:280px}
+  button{font:600 13px var(--int);background:var(--roxo);color:#fff;border:none;
+    border-radius:999px;padding:10px 20px;cursor:pointer}
+  .telas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+  @media (max-width:1000px){ .telas{grid-template-columns:1fr} }
+  figure{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#000}
+  figcaption{font:600 11px var(--gro);letter-spacing:.16em;text-transform:uppercase;
+    color:var(--t3);padding:10px 14px;background:var(--s1);border-bottom:1px solid var(--line)}
+  canvas{display:block;width:100%;height:auto}
+  pre{margin-top:22px;background:var(--s1);border:1px solid var(--line);border-radius:12px;
+    padding:16px;font:400 11.5px/1.6 'IBM Plex Mono',monospace;color:var(--t2);
+    max-height:340px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+  .aviso{margin-top:16px;border-left:2px solid var(--coral);padding-left:14px;
+    font:400 13.5px/1.6 var(--int);color:var(--t2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow"><b>Onda 03</b> · ferramenta</p>
+  <h1>Extrator de silhueta</h1>
+  <p class="sub">Pega qualquer referência (SVG, PNG, JPG), funde a estrutura interna com desfoque,
+    limiariza e devolve a <b>silhueta como tabela de raios</b> a partir do centro de massa. É esse
+    vetor que alimenta a construção 3D do personagem. Serve inclusive para SVG vetorizado
+    automaticamente, onde não existe um contorno único para ler.</p>
+
+  <div class="ctl">
+    <input id="arq" value="stockcake-neural.svg">
+    <label class="sub">desfoque <input id="blur" type="number" value="9" min="0" max="40" style="min-width:70px"></label>
+    <label class="sub">limiar <input id="lim" type="number" value="16" min="1" max="200" style="min-width:70px"></label>
+    <button id="ir">Extrair</button>
+  </div>
+
+  <div class="telas">
+    <figure><figcaption>Original</figcaption><canvas id="c1"></canvas></figure>
+    <figure><figcaption>Máscara (desfoque + limiar)</figcaption><canvas id="c2"></canvas></figure>
+    <figure><figcaption>Silhueta extraída</figcaption><canvas id="c3"></canvas></figure>
+  </div>
+
+  <p class="aviso" id="diag">Escolha um arquivo e clique em extrair.</p>
+  <pre id="saida"></pre>
+</div>
+
+<script>
+const $ = s => document.querySelector(s)
+const N = 180
+
+async function extrair() {
+  const nome = $('#arq').value.trim()
+  const desf = +$('#blur').value, limiar = +$('#lim').value
+  const img = new Image()
+  img.crossOrigin = 'anonymous'
+  try {
+    await new Promise((ok, err) => { img.onload = ok; img.onerror = () => err(new Error('não carregou ' + nome)); img.src = nome })
+  } catch (e) { $('#diag').textContent = e.message; return }
+
+  const W = 1024, H = Math.max(1, Math.round(W * (img.naturalHeight / img.naturalWidth)))
+  const pinta = (cv, fn) => { cv.width = W; cv.height = H; const g = cv.getContext('2d'); fn(g); return g }
+
+  pinta($('#c1'), g => { g.fillStyle = '#000'; g.fillRect(0, 0, W, H); g.drawImage(img, 0, 0, W, H) })
+
+  // máscara: o desfoque funde rede/pontilhado num corpo sólido antes do limiar
+  const off = document.createElement('canvas'); off.width = W; off.height = H
+  const go = off.getContext('2d')
+  go.filter = desf ? `blur(${desf}px)` : 'none'
+  go.drawImage(img, 0, 0, W, H)
+  const d = go.getImageData(0, 0, W, H).data
+  const dentro = (x, y) => { const i = (y * W + x) * 4; return d[i + 3] > 8 && (d[i] + d[i + 1] + d[i + 2]) / 3 > limiar }
+
+  let sx = 0, sy = 0, n = 0
+  const g2 = pinta($('#c2'), g => { g.fillStyle = '#000'; g.fillRect(0, 0, W, H) })
+  const mask = g2.createImageData(W, H)
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = (y * W + x) * 4
+    if (dentro(x, y)) { sx += x; sy += y; n++; mask.data[i] = 104; mask.data[i+1] = 64; mask.data[i+2] = 255; mask.data[i+3] = 255 }
+    else mask.data[i + 3] = 255
+  }
+  if (!n) { $('#diag').textContent = 'máscara vazia: baixe o limiar.'; return }
+  g2.putImageData(mask, 0, 0)
+  const cx = sx / n, cy = sy / n
+
+  // marcha de fora pra dentro; exige 5 pixels seguidos pra ignorar respingo solto
+  const cru = [], Rmax = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy))
+  for (let k = 0; k < N; k++) {
+    const a = (k / N) * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a)
+    let seg = 0, posto = false
+    for (let r = Rmax; r > 2; r -= 1) {
+      const x = Math.round(cx + ca * r), y = Math.round(cy + sa * r)
+      if (x < 0 || y < 0 || x >= W || y >= H) continue
+      if (dentro(x, y)) { if (++seg >= 5) { cru.push(r + desf * .45); posto = true; break } } else seg = 0
+    }
+    if (!posto) cru.push(0)
+  }
+  const raios = cru.map((_, i) => { let s = 0; for (let j = -2; j <= 2; j++) s += cru[(i + j + N) % N]; return s / 5 })
+  const rmax = Math.max(...raios)
+
+  pinta($('#c3'), g => {
+    g.fillStyle = '#000'; g.fillRect(0, 0, W, H)
+    g.globalAlpha = .5; g.drawImage(img, 0, 0, W, H); g.globalAlpha = 1
+    g.strokeStyle = '#a1ff62'; g.lineWidth = 3; g.beginPath()
+    for (let k = 0; k <= N; k++) {
+      const i = k % N, a = (i / N) * Math.PI * 2
+      const x = cx + Math.cos(a) * raios[i], y = cy + Math.sin(a) * raios[i]
+      k ? g.lineTo(x, y) : g.moveTo(x, y)
+    }
+    g.closePath(); g.stroke()
+    g.fillStyle = '#6840ff'; g.beginPath(); g.arc(cx, cy, 8, 0, 7); g.fill()
+  })
+
+  let variacao = 0
+  const norm = raios.map(r => r / rmax)
+  for (let i = 0; i < N; i++) variacao += Math.abs(norm[i] - norm[(i + 1) % N])
+  const rug = variacao / N
+  $('#diag').textContent =
+    `${n.toLocaleString('pt-BR')} px na máscara · centro em (${Math.round(cx)}, ${Math.round(cy)}) · ` +
+    `raio máximo ${Math.round(rmax)}px · rugosidade ${rug.toFixed(4)} ` +
+    (rug < .02 ? '(limpa)' : rug < .045 ? '(aceitável, tente mais desfoque)' : '(RUIDOSA: suba o desfoque ou o limiar)')
+
+  // proporção: quanto o desenho é mais largo que alto, pra o 3D não achatar errado
+  let minx = 1e9, maxx = -1e9, miny = 1e9, maxy = -1e9
+  for (let k = 0; k < N; k++) {
+    const a = (k / N) * Math.PI * 2
+    const x = cx + Math.cos(a) * raios[k], y = cy + Math.sin(a) * raios[k]
+    minx = Math.min(minx, x); maxx = Math.max(maxx, x); miny = Math.min(miny, y); maxy = Math.max(maxy, y)
+  }
+  $('#saida').textContent = JSON.stringify({
+    fonte: nome, amostras: N, ordem: 'ângulo 0 = direita, sentido horário na tela (y para baixo)',
+    proporcao: +((maxx - minx) / (maxy - miny)).toFixed(3),
+    raios: norm.map(r => +r.toFixed(4)),
+  }, null, 1)
+}
+
+$('#ir').addEventListener('click', extrair)
+addEventListener('DOMContentLoaded', extrair)
+</script>
+</body>
+</html>
