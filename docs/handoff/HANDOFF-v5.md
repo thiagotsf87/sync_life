@@ -138,8 +138,82 @@ pequena". O teste desmentiu e o texto foi trocado — a afirmação estava envie
 sentidos · claro e escuro OK · o palco tem estado de falha explícito se o WebGL não subir (sem queda
 graciosa possível aqui: o conceito É 3D, e isso está escrito na página).
 
-**Próximo passo:** escolha do corpo no hub. Depois: nome, sinal chapado pro miúdo, integração no Diário
-e o lugar da revisão semanal, que segue **sem decisão** desde a sessão 23.
+### Rodada 2b — o conceito 1 refeito a partir de referência do usuário
+
+**Veredito:** "o núcleo é o menos pior". O usuário anexou uma **referência visual** (membrana
+triangulada densa, vértices acesos, azul no centro e magenta na silhueta) e especificou o que quer do
+comportamento: **a forma muda por estado** — "quando estiver pensando ficar em formato de cérebro,
+quando estiver falando moldar um rosto e movimentar a boca como se estivesse realmente falando".
+
+**"A rede" foi substituída por "A malha".** Não era ajuste: o antigo era um grafo esparso solto no
+volume; o pedido é uma **superfície triangulada**. Agora é uma icosfera indexada (detalhe 5, 10242
+vértices) onde **cada vértice tem destino próprio por estado**, com topologia fixa, então a transição
+é só interpolar. Formas: esfera dormindo · lente achatada com varredura lendo · **cérebro** pensando
+(fissura longitudinal, duas oitavas de giros, cerebelo) · **rosto** falando (órbitas, globos, nariz,
+queixo e **boca cuja abertura é a amplitude da voz**) · parábola côncava ouvindo · espinhos alertando.
+
+**O estado "escrevendo" virou "pensando"** em todos os três corpos, porque é a palavra do usuário e é
+o estado que vira cérebro; gerar o briefing é a mesma coisa.
+
+**Três problemas de fundo resolvidos (valem pra qualquer implementação futura disso):**
+1. **Relevo radial visto de frente não aparece em wireframe puro** — só muda profundidade, e sem luz
+   o rosto nunca fecha. Resolvido dando **casca sombreada** (`MeshStandardMaterial` com normais
+   recomputadas por quadro) e, principalmente, **mapeando deslocamento em brilho** no wireframe: o que
+   sobe acende, o que afunda apaga.
+2. **Albedo preto não sombreia.** Com a casca em `0x0d0a16` não havia gradiente nenhum; subiu pra
+   `0x241d3a`, escuro o bastante pra não competir com a malha e claro o bastante pra ter sombra.
+3. **Feição menor que o passo da malha não desenha.** No detalhe 4 uma órbita de raio .12 cobria 2-3
+   vértices. Subiu pra detalhe 5 e as feições foram ampliadas: é uma **máscara estilizada**, não um
+   rosto realista, e isso é decisão de projeto, não limitação temporária.
+
+**Limite honesto, escrito também na própria página:** cérebro e rosto são esculpidos **por fórmula**
+sobre uma esfera deformada, então hoje leem como **sugestão** — reconhece-se órbita, nariz, boca e
+giros, mas não é um rosto convincente, e o cérebro lê mais como massa dobrada que como cérebro. Se a
+direção for aprovada, o passo seguinte é trocar a fórmula por **malhas modeladas como alvos de morph**,
+e aí a fidelidade deixa de ser o limite. **Não afirmar que o rosto está resolvido.**
+
+**QA:** **166 fps** medido no estado mais pesado (rosto, detalhe 5, normais recomputadas por quadro),
+então há folga larga · console **0/0** numa varredura de 3 corpos × 6 estados + troca de tema nos dois
+sentidos · claro e escuro OK.
+
+### Rodada 2c — "O simbionte": um corpo só, com referências visuais do usuário
+
+**Correções do usuário nesta rodada (duas, em sequência):**
+1. **"O núcleo é o menos pior"** + 4 referências visuais (rede triangulada densa · cérebro wireframe ·
+   **rosto de perfil** wireframe · poliedro facetado com brilho neon). Primeira tentativa minha:
+   casca facetada por fora com a forma morfando por dentro.
+2. **Rejeitado:** *"Não quero que o cérebro fique dentro de outra coisa, ou o rosto, não vai ficar
+   legal; a 4ª imagem é só referência para textura."* Especificação final: **um corpo só**, forma base
+   da **referência 3** (esfera de nós com núcleo aceso e filamentos), **textura da referência 4**
+   (sólida, 3D, cores do DS), que **se molda conforme o estado ou a interação**.
+
+**Estado atual (`personagem/laboratorio-3d.html`, 2 corpos):**
+- **1 · O simbionte** — icosfera indexada (detalhe 4) com **painéis sólidos facetados translúcidos**
+  (`flatShading`, opacity ~.3, violeta do DS), arestas e nós acesos, **núcleo emissivo no centro** e
+  **90 filamentos** do núcleo até a superfície. Sem casca externa, sem anel, nada aninhado. Morfa em:
+  esfera · lente com varredura · cérebro · cabeça de perfil · côncavo · espinhos.
+- **2 · A trança** — mantida como alternativa de material (nó tórico com iridescência).
+
+**Três achados técnicos desta rodada (todos custaram uma iteração cada, valem pra implementação):**
+1. **Deslocamento radial não faz perfil.** No alto do crânio o raio aponta pra cima, então empurrar
+   "pra frente" no raio nunca vira testa-nariz-queixo. O perfil tem que empurrar **no eixo Z**.
+2. **Gaussianas soltas viram espinho, não silhueta.** Trocadas por uma **tabela de 22 pontos**
+   (altura, avanço) traçando o perfil humano do crânio ao pescoço, com interpolação suavizada.
+3. **Feição menor que o passo da malha não desenha** (já visto na rodada 2b) e **relevo visto de
+   frente não aparece em wireframe** — daí o rosto sair **de perfil** (silhueta lê, relevo não).
+
+**Limite honesto, escrito também na página:** cérebro e cabeça saem de **fórmula sobre uma esfera**,
+então são **aproximação** — dá pra ler a intenção, não pra chamar de retrato. O caminho pra fidelidade
+real é trocar a fórmula por **malhas modeladas como alvos de morph** (a topologia já é fixa, então o
+motor de transição não muda). **Não afirmar que o rosto está resolvido.**
+
+**QA:** **159 fps** no estado mais pesado · console **0/0** varrendo 2 corpos × 6 estados + troca de
+tema nos dois sentidos · claro e escuro OK.
+
+**Próximo passo:** aceite da direção do simbionte (textura + forma base + ideia das transformações).
+Se aprovada, a sequência é: malhas modeladas pros estados → nome → sinal chapado pro miúdo (nenhum 3D
+sobrevive a 38px) → integração no Diário. O lugar da revisão semanal segue **sem decisão** desde a
+sessão 23.
 
 **Arquivos:** `prototypes/v5/personagem/laboratorio.html` (rodada 1) · `prototypes/v5/personagem/laboratorio-3d.html` (rodada 2) · `prototypes/v5/index.html` · este handoff.
 **Nenhum código de `web/` e nenhum protótipo do lote 2 foi tocado.**

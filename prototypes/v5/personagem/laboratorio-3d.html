@@ -74,19 +74,20 @@
   <header class="top">
     <p class="eyebrow"><b>Onda 03</b> · personagem, rodada 2 · 3D</p>
     <h1>O simbionte</h1>
-    <p class="sub">Rodada 2 depois do descarte da criatura. Agora em <b>3D real</b>, com material,
-      reflexo e textura: três corpos para a mesma inteligência, no vocabulário de
-      <b>rede neural e organismo técnico</b>. Um canvas de cada vez, então o teto de uma peça WebGL
-      por página continua livre para a bússola. Os seis estados são os mesmos da rodada 1.</p>
+    <p class="sub">O conceito 1 é <b>um corpo só</b>: esfera de nós com núcleo aceso e filamentos
+      (forma base), em painéis sólidos facetados nas cores do DS (textura), que <b>se molda</b>
+      conforme o estado em vez de virar outro objeto. Nada fica dentro de nada. O estado não é um
+      parâmetro, é uma <b>silhueta</b>: cérebro quando pensa, cabeça de perfil quando fala.
+      "Escrevendo" virou <b>pensando</b>, que é a mesma coisa aqui e é a palavra certa pro cérebro.
+      Um canvas de cada vez, então o teto de uma peça WebGL por página continua livre pra bússola.</p>
   </header>
 
   <div class="ctl">
     <div class="grp">
       <p class="eyebrow">Corpo</p>
       <div class="seg forte" id="seg-peca" role="group" aria-label="Conceito">
-        <button type="button" data-peca="rede"  aria-pressed="true">1 · A rede</button>
+        <button type="button" data-peca="simbionte" aria-pressed="true">1 · O simbionte</button>
         <button type="button" data-peca="tranca" aria-pressed="false">2 · A trança</button>
-        <button type="button" data-peca="nucleo" aria-pressed="false">3 · O núcleo</button>
       </div>
     </div>
     <div class="grp">
@@ -94,7 +95,7 @@
       <div class="seg" id="seg-estado" role="group" aria-label="Estado">
         <button type="button" data-estado="dorme"   aria-pressed="true">dormindo</button>
         <button type="button" data-estado="le"      aria-pressed="false">lendo</button>
-        <button type="button" data-estado="escreve" aria-pressed="false">escrevendo</button>
+        <button type="button" data-estado="pensa" aria-pressed="false">pensando</button>
         <button type="button" data-estado="fala"    aria-pressed="false">falando</button>
         <button type="button" data-estado="ouve"    aria-pressed="false">ouvindo</button>
         <button type="button" data-estado="alerta"  aria-pressed="false">alertando</button>
@@ -112,7 +113,7 @@
   <div class="cena">
     <div class="palco" id="palco">
       <canvas id="cv"></canvas>
-      <div class="semgl">Sem WebGL neste navegador. Os três corpos desta rodada dependem de 3D real,
+      <div class="semgl">Sem WebGL neste navegador. Os corpos desta rodada dependem de 3D real,
         então aqui não há queda graciosa possível: no produto, a peça não monta e a folha do briefing
         segue sozinha, sem buraco no layout.</div>
       <p class="dica">arraste para girar</p>
@@ -124,8 +125,13 @@
   <section class="fim">
     <div>
       <h3>O que olhar</h3>
-      <p>Julgue <b>material</b> primeiro: reflexo, textura, como a luz corre. É o que separa
-        "tecnológico" de "bonitinho", e é a coisa que a rodada 1 não tinha.</p>
+      <p>No simbionte, julgue <b>textura e forma base</b> primeiro: painel sólido, aresta acesa,
+        núcleo e filamentos. É o que veio das suas referências e é o que decide se a direção está certa.</p>
+      <p>Depois julgue as <b>transformações</b> pelo que elas comunicam, não pelo acabamento.
+        Cérebro e cabeça saem de fórmula sobre a esfera, então hoje são <b>aproximação</b>: dá pra
+        ler a intenção, não pra chamar de retrato. Se a direção for aprovada, o passo seguinte é
+        trocar a fórmula por <b>malhas modeladas</b> como alvos de morph, e a fidelidade deixa de
+        ser o limite. Não vou dizer que isso já está resolvido.</p>
       <p>Depois <b>falando</b> e <b>dormindo</b>, na mesma ordem de antes: um é o momento em que ele
         precisa aparecer, o outro é o que você vê 95% do tempo.</p>
       <p>Por último, aperte <b>escala assinatura</b> e leve o achado a sério: <b>nenhum dos três
@@ -160,9 +166,10 @@ try {
   const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches
   const THREE = await import('three')
   const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js')
+  const { mergeVertices } = await import('three/addons/utils/BufferGeometryUtils.js')
 
-  const ESTADOS = ['dorme', 'le', 'escreve', 'fala', 'ouve', 'alerta']
-  let estado = 'dorme', pecaAtual = 'rede'
+  const ESTADOS = ['dorme', 'le', 'pensa', 'fala', 'ouve', 'alerta']
+  let estado = 'dorme', pecaAtual = 'simbionte'
 
   /* determinístico de propósito: mesma peça em toda carga, senão QA por screenshot não fecha */
   let _s = 20260802
@@ -246,132 +253,196 @@ try {
   const orbita = new THREE.Group(); scene.add(orbita)   // recebe o arraste do usuário
   const corpo = new THREE.Group(); orbita.add(corpo)    // recebe a peça ativa
 
-  /* ══════════════ 1 · A REDE ══════════════
-     Um grafo de verdade: os sinais caminham de nó em nó escolhendo o próximo vizinho.
-     A escolha do vizinho é o que muda por estado, então o comportamento é legível
-     (varre, converge, irradia) sem nenhuma animação roteirizada. */
-  function criarRede() {
+  /* ══════════════ 1 · O SIMBIONTE ══════════════
+     UM corpo só, sem nada aninhado. Forma base: esfera de nós com núcleo aceso e
+     filamentos saindo dele (ref. 3). Textura: painéis sólidos facetados com aresta de
+     neon (ref. 4), nas cores do DS. E ela se molda conforme o estado. */
+  function criarSimbionte() {
     const g = new THREE.Group()
-    const N = 260, nos = []
-    for (let i = 0; i < N; i++) {
-      const y = 1 - (i / (N - 1)) * 2
-      const rr = Math.sqrt(Math.max(0, 1 - y * y))
-      const th = i * 2.399963229
-      // lóbulos: o raio modulado é o que impede a leitura de bola
-      const mod = 1 + .30 * Math.sin(3 * th) * Math.cos(2.1 * y * Math.PI) + .16 * Math.sin(4.5 * y * Math.PI)
-      const R = 1.28 * mod
-      nos.push(new THREE.Vector3(Math.cos(th) * rr * R * 1.12, y * R * .92, Math.sin(th) * rr * R * .72))
+    const AZUL = new THREE.Color(0x35b0ff), ROXO2 = new THREE.Color(0x6840ff)
+    const suave = (a, b, x) => { const u = Math.min(1, Math.max(0, (x - a) / (b - a))); return u * u * (3 - 2 * u) }
+    const gauss = (d2, s) => Math.exp(-d2 / s)
+
+    const gi = mergeVertices(new THREE.IcosahedronGeometry(1, 4))
+    const dir = gi.attributes.position.array.slice()
+    const NV = dir.length / 3
+    const atual = new Float32Array(dir), alvo = new Float32Array(dir), rDisp = new Float32Array(NV)
+    const idx = gi.index.array, vistos = new Set(), pares = []
+    for (let f = 0; f < idx.length; f += 3) {
+      const a = idx[f], b = idx[f + 1], c2 = idx[f + 2]
+      for (const [i, j] of [[a, b], [b, c2], [c2, a]]) {
+        const k = i < j ? i + ':' + j : j + ':' + i
+        if (!vistos.has(k)) { vistos.add(k); pares.push(i, j) }
+      }
     }
-    // arestas: 2 vizinhos mais próximos por nó, sem repetir par
-    const viz = Array.from({ length: N }, () => []), pares = new Set(), arestas = []
-    for (let i = 0; i < N; i++) {
-      const d = []
-      for (let j = 0; j < N; j++) if (j !== i) d.push([nos[i].distanceToSquared(nos[j]), j])
-      d.sort((a, b) => a[0] - b[0])
-      for (let k = 0; k < 2; k++) {
-        const j = d[k][1], chave = i < j ? i + ':' + j : j + ':' + i
-        if (!viz[i].includes(j)) viz[i].push(j)
-        if (!viz[j].includes(i)) viz[j].push(i)
-        if (!pares.has(chave)) { pares.add(chave); arestas.push([i, j]) }
+    const NE = pares.length / 2
+
+    // painéis sólidos: facetado e translúcido, é daqui que vem a textura da ref. 4
+    const geoS = new THREE.BufferGeometry()
+    geoS.setAttribute('position', new THREE.BufferAttribute(atual, 3))
+    geoS.setIndex(new THREE.BufferAttribute(idx.slice(), 1))
+    const matS = new THREE.MeshStandardMaterial({
+      // painel sólido, mas translúcido: a textura vem daqui e a rede continua legível.
+      // Opaco demais tampa filamentos e núcleo, que são a forma base da referência 3.
+      color: 0x1d1758, roughness: .34, metalness: .62, envMapIntensity: .8,
+      flatShading: true, transparent: true, opacity: .3, side: THREE.DoubleSide, depthWrite: false,
+    })
+    g.add(new THREE.Mesh(geoS, matS))
+
+    const posA = new Float32Array(NE * 6), corA = new Float32Array(NE * 6)
+    const geoA = new THREE.BufferGeometry()
+    geoA.setAttribute('position', new THREE.BufferAttribute(posA, 3))
+    geoA.setAttribute('color', new THREE.BufferAttribute(corA, 3))
+    g.add(new THREE.LineSegments(geoA, new THREE.LineBasicMaterial({
+      vertexColors: true, transparent: true, opacity: .9, blending: THREE.AdditiveBlending, depthWrite: false,
+    })))
+    const corN = new Float32Array(NV * 3)
+    const geoN = new THREE.BufferGeometry()
+    geoN.setAttribute('position', new THREE.BufferAttribute(atual, 3))
+    geoN.setAttribute('color', new THREE.BufferAttribute(corN, 3))
+    g.add(new THREE.Points(geoN, new THREE.PointsMaterial({
+      size: .042, map: PONTO, vertexColors: true, transparent: true,
+      blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    })))
+
+    // núcleo aceso + filamentos saindo dele: é o coração da ref. 3
+    const matNu = new THREE.MeshBasicMaterial({ color: 0x9fd4ff, transparent: true, opacity: .95 })
+    const nucleo = new THREE.Mesh(new THREE.IcosahedronGeometry(.13, 3), matNu)
+    g.add(nucleo)
+    const NF = 90, iFil = []
+    for (let k = 0; k < NF; k++) iFil.push(((rnd() * NV) | 0))
+    const posF = new Float32Array(NF * 6), corF = new Float32Array(NF * 6)
+    const geoF = new THREE.BufferGeometry()
+    geoF.setAttribute('position', new THREE.BufferAttribute(posF, 3))
+    geoF.setAttribute('color', new THREE.BufferAttribute(corF, 3))
+    g.add(new THREE.LineSegments(geoF, new THREE.LineBasicMaterial({
+      vertexColors: true, transparent: true, opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false,
+    })))
+
+    /* O PERFIL humano traçado ponto a ponto (altura, avanço em Z), do alto do crânio
+       até o pescoço. Gaussiana solta vira espinho; silhueta só fecha com curva contínua. */
+    const PERFIL = [
+      [1.00, .00], [.86, .03], [.72, .07], [.58, .11], [.46, .145],
+      [.38, .155], [.32, .12], [.26, .125],
+      [.16, .19], [.06, .27], [.01, .30],
+      [-.05, .16], [-.11, .13],
+      [-.17, .18], [-.24, .145],
+      [-.31, .175], [-.40, .10],
+      [-.52, .155], [-.64, .10], [-.76, -.02],
+      [-.88, -.12], [-1.00, -.16],
+    ]
+    function perfil(y) {
+      if (y >= PERFIL[0][0]) return PERFIL[0][1]
+      for (let i = 1; i < PERFIL.length; i++) {
+        if (y >= PERFIL[i][0]) {
+          const [ya, za] = PERFIL[i - 1], [yb, zb] = PERFIL[i]
+          const u = (y - yb) / (ya - yb)
+          return zb + (za - zb) * (u * u * (3 - 2 * u))
+        }
+      }
+      return PERFIL[PERFIL.length - 1][1]
+    }
+
+    function formar(t, a) {
+      for (let i = 0; i < NV; i++) {
+        const dx = dir[i * 3], dy = dir[i * 3 + 1], dz = dir[i * 3 + 2]
+        let r = 1, sx = 1, sy = 1, sz = 1, oy = 0, oz = 0
+
+        if (estado === 'dorme') { r += .05 * Math.sin(dy * 3.2 + t * .8); sx = 1.02; sy = .97 }
+        else if (estado === 'le') {
+          sx = 1.22; sy = 1; sz = .58
+          r += .12 * Math.sin(dx * 7 - t * 3.2)
+        }
+        else if (estado === 'pensa') {                 // cérebro
+          sx = .92; sy = .84; sz = 1.22
+          r -= .34 * gauss(dx * dx, .014) * Math.max(0, dy + .02)
+          r += .1 * Math.sin(dx * 9 + 3 * Math.sin(dz * 7)) * Math.cos(dy * 8 + 2 * Math.sin(dx * 6))
+          r += .08 * Math.sin(dz * 12 + 2 * Math.sin(dy * 9)) * Math.cos(dx * 8)
+          r += .22 * gauss((dz + .48) * (dz + .48) + (dy + .6) * (dy + .6), .08)
+          r -= .14 * gauss((dz - .05) * (dz - .05) + (dy + .88) * (dy + .88), .04)
+        }
+        else if (estado === 'fala') {                  // cabeça de perfil
+          sx = .78; sy = 1.1; sz = .84
+          // o perfil empurra em Z, NÃO no raio: no alto da cabeça o raio aponta pra cima,
+          // então deslocamento radial nunca vira testa-nariz-queixo.
+          const frente = suave(-.05, .5, dz)
+          const q = a * .26 * suave(-.2, -.62, dy)     // mandíbula desce e leva as feições junto
+          oz = perfil(dy + q) * frente
+          oy = -q * frente
+          r -= .12 * Math.max(0, -dy - .5) * (1 - frente * .35)
+        }
+        else if (estado === 'ouve') {
+          sx = 1.1; sy = 1.1; sz = .8
+          r -= .46 * suave(0, .75, dz) * Math.max(0, 1 - (dx * dx + dy * dy) * .9)
+        }
+        else if (estado === 'alerta') {
+          const s = Math.sin(dx * 5.5) * Math.sin(dy * 5.5) * Math.sin(dz * 5.5)
+          const pico = Math.max(0, s); r += .5 * pico * pico * (1 + .22 * Math.sin(t * 9))
+          sx = sy = sz = .94
+        }
+
+        rDisp[i] = r + oz * .9
+        alvo[i * 3] = dx * r * sx
+        alvo[i * 3 + 1] = dy * r * sy + oy
+        alvo[i * 3 + 2] = dz * r * sz + oz
       }
     }
 
-    const posNo = new Float32Array(N * 3), corNo = new Float32Array(N * 3)
-    nos.forEach((p, i) => { posNo[i * 3] = p.x; posNo[i * 3 + 1] = p.y; posNo[i * 3 + 2] = p.z })
-    const gNo = new THREE.BufferGeometry()
-    gNo.setAttribute('position', new THREE.BufferAttribute(posNo, 3))
-    gNo.setAttribute('color', new THREE.BufferAttribute(corNo, 3))
-    const mNo = new THREE.PointsMaterial({
-      size: .085, map: PONTO, vertexColors: true, transparent: true,
-      blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-    })
-    g.add(new THREE.Points(gNo, mNo))
-
-    const posAr = new Float32Array(arestas.length * 6)
-    arestas.forEach(([a, b], i) => {
-      posAr.set([nos[a].x, nos[a].y, nos[a].z, nos[b].x, nos[b].y, nos[b].z], i * 6)
-    })
-    const gAr = new THREE.BufferGeometry()
-    gAr.setAttribute('position', new THREE.BufferAttribute(posAr, 3))
-    const mAr = new THREE.LineBasicMaterial({
-      color: 0x4a3d7a, transparent: true, opacity: .3,
-      blending: THREE.AdditiveBlending, depthWrite: false,
-    })
-    g.add(new THREE.LineSegments(gAr, mAr))
-
-    const MAXS = 90
-    const posSi = new Float32Array(MAXS * 3), corSi = new Float32Array(MAXS * 3)
-    const gSi = new THREE.BufferGeometry()
-    gSi.setAttribute('position', new THREE.BufferAttribute(posSi, 3))
-    gSi.setAttribute('color', new THREE.BufferAttribute(corSi, 3))
-    const mSi = new THREE.PointsMaterial({
-      size: .2, map: PONTO, vertexColors: true, transparent: true,
-      blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-    })
-    g.add(new THREE.Points(gSi, mSi))
-    gSi.setDrawRange(0, 0)
-
-    const sinais = [], flash = new Float32Array(N)
-    const novo = () => { const a = (rnd() * N) | 0; return { a, b: viz[a][(rnd() * viz[a].length) | 0], t: 0 } }
-
-    // o vizinho escolhido é o comportamento: fora, dentro, ou pra um lado
-    function proximo(de, modo) {
-      const v = viz[de]
-      if (modo === 'fora')   return v.reduce((m, j) => nos[j].lengthSq() > nos[m].lengthSq() ? j : m, v[0])
-      if (modo === 'dentro') return v.reduce((m, j) => nos[j].lengthSq() < nos[m].lengthSq() ? j : m, v[0])
-      if (modo === 'varre')  return v.reduce((m, j) => nos[j].x > nos[m].x ? j : m, v[0])
-      if (modo === 'baixo')  return v.reduce((m, j) => nos[j].y < nos[m].y ? j : m, v[0])
-      return v[(rnd() * v.length) | 0]
-    }
-
-    const esc = M(1), bri = M(.1)
+    const c = new THREE.Color()
     return {
-      grupo: g, base: .64,
+      grupo: g, base: 1.32,
       passo(t, dt) {
         const a = voz(t)
-        let alvo = 10, vel = .55, modo = 'aleatorio', cor = ROXO, brilho = .12, escala = 1
-        if (estado === 'dorme')        { alvo = 8;  vel = .32; brilho = .07; escala = 1 }
-        else if (estado === 'le')      { alvo = 46; vel = 1.5; modo = 'varre';  brilho = .18 }
-        else if (estado === 'escreve') { alvo = 40; vel = 1.2; modo = 'baixo';  brilho = .2; escala = .9 }
-        else if (estado === 'fala')    { alvo = 30 + a * 58; vel = .8 + a * 1.9; modo = 'fora'; brilho = .16 + a * .3; escala = 1 + a * .06 }
-        else if (estado === 'ouve')    { alvo = 16; vel = 1.1; modo = 'dentro'; brilho = .14; escala = .84 }
-        else if (estado === 'alerta')  { alvo = 70; vel = 2.4; cor = CORAL; brilho = .3 }
-        if (estado === 'alerta') cor = CORAL
-        else if (estado === 'fala' || estado === 'escreve') cor = ELE
+        formar(t, a)
+        const k = reduz ? 1 : Math.min(1, dt * (estado === 'fala' ? 22 : 9))
+        for (let i = 0; i < atual.length; i++) atual[i] += (alvo[i] - atual[i]) * k
 
-        esc.t = escala; bri.t = brilho
-        for (const o of [esc, bri]) reduz ? (o.p = o.t) : mola(o, 24, 8, dt)
-        g.scale.setScalar(esc.p)
-        mAr.color.copy(cor).multiplyScalar(.55); mAr.opacity = .18 + bri.p
+        // falando quase de perfil, que é onde a cabeça lê; ouvindo, de frente pra você
+        const alvoGiro = estado === 'fala' ? -1.15 : estado === 'ouve' ? 0 : null
+        if (alvoGiro === null) { if (!reduz) g.rotation.y += dt * .13 }
+        else g.rotation.y += (alvoGiro - g.rotation.y) * Math.min(1, dt * 2.6)
 
-        while (sinais.length < Math.min(MAXS, alvo | 0)) sinais.push(novo())
-        while (sinais.length > alvo) sinais.pop()
+        const acento = estado === 'alerta' ? CORAL : ROXO2
+        const vivo = estado === 'pensa' || estado === 'fala'
+        const pulso = estado === 'fala' ? .5 + a * 1.5 : estado === 'alerta' ? 1.6 : vivo ? .9 : .45
+        matS.color.copy(estado === 'alerta' ? new THREE.Color(0x4a1622) : new THREE.Color(0x1d1758))
+        matS.opacity = .26 + pulso * .07
+        matS.emissive = acento; matS.emissiveIntensity = .06 + pulso * .06
+        matNu.color.copy(estado === 'alerta' ? CORAL : new THREE.Color(0x9fd4ff))
+        nucleo.scale.setScalar(.8 + pulso * .5)
 
-        for (let i = 0; i < N; i++) flash[i] = Math.max(0, flash[i] - dt * 2.6)
-        let n = 0
-        for (const s of sinais) {
-          s.t += dt * vel * (reduz ? 0 : 1)
-          if (s.t >= 1) { s.t = 0; flash[s.b] = 1; s.a = s.b; s.b = proximo(s.a, modo) }
-          const A = nos[s.a], B = nos[s.b], u = s.t
-          posSi[n * 3] = A.x + (B.x - A.x) * u
-          posSi[n * 3 + 1] = A.y + (B.y - A.y) * u
-          posSi[n * 3 + 2] = A.z + (B.z - A.z) * u
-          corSi[n * 3] = cor.r; corSi[n * 3 + 1] = cor.g; corSi[n * 3 + 2] = cor.b
-          n++
+        const ry = g.rotation.y, cs = Math.cos(ry), sn = Math.sin(ry)
+        for (let i = 0; i < NV; i++) {
+          const x = atual[i * 3], y = atual[i * 3 + 1], z = atual[i * 3 + 2]
+          const zv = x * sn + z * cs
+          const rim = suave(.3, .95, 1 - Math.abs(zv) / Math.max(.35, Math.hypot(x, y, z)))
+          c.copy(AZUL).lerp(acento, rim)
+          const rel = Math.max(.08, Math.min(2.4, 1 + (rDisp[i] - 1) * 5))
+          const ganho = ((vivo ? 1.2 : .95) + (vivo ? .4 : .16) * Math.abs(Math.sin(y * 4 + t * 1.6))) * rel
+          corN[i * 3] = c.r * ganho; corN[i * 3 + 1] = c.g * ganho; corN[i * 3 + 2] = c.b * ganho
         }
-        gSi.setDrawRange(0, n)
-        gSi.attributes.position.needsUpdate = true; gSi.attributes.color.needsUpdate = true
-
-        for (let i = 0; i < N; i++) {
-          const f = bri.p + flash[i] * .9
-          corNo[i * 3] = cor.r * f; corNo[i * 3 + 1] = cor.g * f; corNo[i * 3 + 2] = cor.b * f
+        for (let e = 0; e < NE; e++) {
+          const i = pares[e * 2], j = pares[e * 2 + 1]
+          posA[e * 6] = atual[i * 3]; posA[e * 6 + 1] = atual[i * 3 + 1]; posA[e * 6 + 2] = atual[i * 3 + 2]
+          posA[e * 6 + 3] = atual[j * 3]; posA[e * 6 + 4] = atual[j * 3 + 1]; posA[e * 6 + 5] = atual[j * 3 + 2]
+          for (let v = 0; v < 3; v++) { corA[e * 6 + v] = corN[i * 3 + v] * .6; corA[e * 6 + 3 + v] = corN[j * 3 + v] * .6 }
         }
-        gNo.attributes.color.needsUpdate = true
-        if (!reduz) g.rotation.y += dt * (estado === 'ouve' ? .04 : .16)
+        // filamentos: do núcleo até nós da superfície, apagando conforme se afastam
+        for (let f = 0; f < NF; f++) {
+          const i = iFil[f]
+          posF[f * 6] = 0; posF[f * 6 + 1] = 0; posF[f * 6 + 2] = 0
+          posF[f * 6 + 3] = atual[i * 3]; posF[f * 6 + 4] = atual[i * 3 + 1]; posF[f * 6 + 5] = atual[i * 3 + 2]
+          const b0 = (.5 + pulso * .5)
+          corF[f * 6] = .62 * b0; corF[f * 6 + 1] = .83 * b0; corF[f * 6 + 2] = 1 * b0
+          for (let v = 0; v < 3; v++) corF[f * 6 + 3 + v] = corN[i * 3 + v] * .3
+        }
+        geoS.attributes.position.needsUpdate = true; geoS.computeVertexNormals()
+        geoN.attributes.position.needsUpdate = true; geoN.attributes.color.needsUpdate = true
+        geoA.attributes.position.needsUpdate = true; geoA.attributes.color.needsUpdate = true
+        geoF.attributes.position.needsUpdate = true; geoF.attributes.color.needsUpdate = true
       },
     }
   }
-
   /* ══════════════ 2 · A TRANÇA ══════════════
      Fios trançados em volta de um nó tórico. Material físico com iridescência e mapa
      de rugosidade procedural: é o corpo com mais matéria dos três. Os fios de luz
@@ -430,7 +501,7 @@ try {
         let escala = 1, i0 = .5, cor = ROXO, giro = .18, ach = 1
         if (estado === 'dorme')        { escala = .96; i0 = .18; giro = .05 }
         else if (estado === 'le')      { escala = 1;   i0 = .55; giro = .5; ach = .82 }
-        else if (estado === 'escreve') { escala = .9;  i0 = .8;  giro = .3; cor = ELE }
+        else if (estado === 'pensa') { escala = .9;  i0 = .8;  giro = .3; cor = ELE }
         else if (estado === 'fala')    { escala = 1 + a * .09; i0 = .6 + a * 1.5; giro = .26; cor = ELE }
         else if (estado === 'ouve')    { escala = .82; i0 = .4;  giro = .02 }
         else if (estado === 'alerta')  { escala = 1.03; i0 = 1.9; giro = .9; cor = CORAL }
@@ -454,88 +525,16 @@ try {
     }
   }
 
-  /* ══════════════ 3 · O NÚCLEO ══════════════
-     Casca facetada que se abre: cada face desliza pela própria normal e o núcleo
-     aceso aparece pelas frestas. Metal escuro com mapa de rugosidade. */
-  function criarNucleo() {
-    const g = new THREE.Group()
-    // precisa ser não-indexada pra cada face poder deslizar sozinha; a icosaédrica já vem assim,
-    // então só converte se algum dia deixar de vir (chamar direto emite aviso no console)
-    const bruta = new THREE.IcosahedronGeometry(1.32, 1)
-    const src = bruta.index ? bruta.toNonIndexed() : bruta
-    const base = src.attributes.position.array.slice()
-    const nFaces = base.length / 9
-    const normais = new Float32Array(nFaces * 3), semente = new Float32Array(nFaces)
-    const vA = new THREE.Vector3(), vB = new THREE.Vector3(), vC = new THREE.Vector3(), nrm = new THREE.Vector3()
-    for (let f = 0; f < nFaces; f++) {
-      const o = f * 9
-      vA.fromArray(base, o); vB.fromArray(base, o + 3); vC.fromArray(base, o + 6)
-      nrm.copy(vA).add(vB).add(vC).divideScalar(3).normalize()
-      normais.set([nrm.x, nrm.y, nrm.z], f * 3)
-      semente[f] = rnd()
-    }
-    const geo = new THREE.BufferGeometry()
-    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(base), 3))
-    geo.computeVertexNormals()
-    const matCasca = new THREE.MeshPhysicalMaterial({
-      // envMapIntensity baixo: senão o ambiente lava o metal e ele lê cinza-claro, não escuro
-      color: 0x14121a, metalness: .98, roughness: .38, roughnessMap: RUIDO, envMapIntensity: .5,
-      clearcoat: .9, clearcoatRoughness: .24, side: THREE.DoubleSide,
-    })
-    g.add(new THREE.Mesh(geo, matCasca))
-
-    const matNucleo = new THREE.MeshStandardMaterial({
-      color: 0x1a1430, emissive: 0x6840ff, emissiveIntensity: 1, roughness: .5, metalness: .1,
-    })
-    const nucleo = new THREE.Mesh(new THREE.IcosahedronGeometry(.66, 3), matNucleo)
-    g.add(nucleo)
-
-    const pos = geo.attributes.position.array
-    const fenda = M(0), inten = M(.4)
-    return {
-      grupo: g, base: .62,
-      passo(t, dt) {
-        const a = voz(t)
-        let f0 = .06, i0 = .3, cor = ROXO, giro = .16
-        if (estado === 'dorme')        { f0 = .02; i0 = .12; giro = .05 }
-        else if (estado === 'le')      { f0 = .3;  i0 = .45; giro = .5 }
-        else if (estado === 'escreve') { f0 = .16; i0 = .8;  giro = .22; cor = ELE }
-        else if (estado === 'fala')    { f0 = .18 + a * .5; i0 = .5 + a * 1.7; giro = .2; cor = ELE }
-        else if (estado === 'ouve')    { f0 = .0;  i0 = .5;  giro = .02 }
-        else if (estado === 'alerta')  { f0 = .42; i0 = 2;   giro = .8; cor = CORAL }
-
-        fenda.t = f0; inten.t = i0
-        for (const o of [fenda, inten]) reduz ? (o.p = o.t) : mola(o, 20, 7.5, dt)
-
-        for (let f = 0; f < nFaces; f++) {
-          const d = fenda.p * (.45 + semente[f] * 1.1)
-            + (reduz ? 0 : Math.sin(t * 1.6 + semente[f] * 9) * fenda.p * .22)
-          const nx = normais[f * 3] * d, ny = normais[f * 3 + 1] * d, nz = normais[f * 3 + 2] * d
-          for (let v = 0; v < 3; v++) {
-            const i = f * 9 + v * 3
-            pos[i] = base[i] + nx; pos[i + 1] = base[i + 1] + ny; pos[i + 2] = base[i + 2] + nz
-          }
-        }
-        geo.attributes.position.needsUpdate = true
-
-        matNucleo.emissive.copy(cor)
-        matNucleo.emissiveIntensity = .2 + inten.p * .95
-        nucleo.scale.setScalar(.94 + inten.p * .07)
-        if (!reduz) { g.rotation.y += dt * giro; g.rotation.x = Math.sin(t * .27) * .2 }
-      },
-    }
-  }
-
   /* ─── fichas ─── */
   const FICHAS = {
-    rede: {
-      kicker: 'Conceito 1', nome: 'A rede',
-      tese: 'Um <b>grafo real</b>, não um enfeite: 260 nós ligados aos vizinhos, e os sinais caminham de nó em nó escolhendo o próximo. O que muda por estado é o <b>critério de escolha</b>, então o comportamento emerge em vez de ser roteirizado.',
+    simbionte: {
+      kicker: 'Conceito 1', nome: 'O simbionte',
+      tese: '<b>Um corpo só</b>, nada aninhado. Forma base da referência 3: esfera de nós com <b>núcleo aceso</b> e filamentos saindo dele. Textura da referência 4: <b>painéis sólidos facetados</b> com aresta de neon, nas cores do DS. E ela <b>se molda</b> conforme o estado, sem virar outro objeto.',
       linhas: [
-        ['Material', 'pontos e arestas aditivos, sem sólido; a matéria é a luz'],
-        ['Estados', 'lendo varre num sentido, ouvindo converge pro centro, falando irradia pra fora, alertando enlouquece em coral'],
-        ['A favor', 'é o mais literalmente "rede neural" e o único onde a estrutura conta o que ele faz: ligar suas áreas'],
-        ['Contra', 'é luz, não matéria: menos peso físico que os outros dois'],
+        ['Material', 'painel sólido translúcido com facetas, aresta acesa, núcleo e filamentos por dentro'],
+        ['Formas', 'esfera em repouso · lente varrendo lendo · cérebro pensando · cabeça de perfil falando · côncavo ouvindo · espinhos alertando'],
+        ['Perfil', 'a cabeça aparece <b>de lado</b> de propósito: testa, nariz, lábio e queixo são silhueta, e silhueta lê; de frente, rosto exige relevo que malha não entrega'],
+        ['Onde ainda não chegou', 'cérebro e cabeça saem de fórmula sobre a esfera, então são <b>aproximação</b>; com malhas modeladas como alvos de morph a fidelidade sobe muito'],
       ],
     },
     tranca: {
@@ -562,7 +561,7 @@ try {
   const AGORA = {
     dorme:   'Em repouso. É o que você vê na maior parte do tempo, então aqui ele tem que ser discreto sem sumir.',
     le:      'Lendo seus dados. O movimento tem um <b>sentido</b>, que é o que diferencia ler de só se mexer.',
-    escreve: 'Escrevendo o briefing. Tudo converge pra baixo, na direção de onde o texto nasce.',
+    pensa:   'Pensando, que aqui é o mesmo que gerar o briefing. Na malha, vira <b>cérebro</b>.',
     fala:    'Falando. A intensidade segue a amplitude da voz, então a peça vira o medidor de nível.',
     ouve:    'Ouvindo você. Contrai e quase para: atenção lê como <b>quietude</b>, não como agitação.',
     alerta:  'Alertando. Coral, rápido, sem ser pedido. É o único estado que ele inicia sozinho.',
@@ -577,7 +576,7 @@ try {
   }
 
   /* ─── troca de peça: descarta a anterior de verdade ─── */
-  const FABRICA = { rede: criarRede, tranca: criarTranca, nucleo: criarNucleo }
+  const FABRICA = { simbionte: criarSimbionte, tranca: criarTranca }
   let peca = null, envoltorio = null
   function montar(nome) {
     if (envoltorio) {
@@ -600,7 +599,7 @@ try {
     corpo.add(envoltorio)
     pintarFicha()
   }
-  montar('rede')
+  montar('simbionte')
 
   /* ─── controles ─── */
   const marcar = (seg, alvo) => [...seg.querySelectorAll('button')]
