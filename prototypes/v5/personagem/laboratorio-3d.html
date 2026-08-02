@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Personagem 3D · v5</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Ccircle cx='32' cy='32' r='17' fill='none' stroke='%236840ff' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23a1ff62'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<style>
+  .wrap{--wrap-max:1240px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  .top{padding:44px 0 26px}
+  .top h1{font:500 clamp(30px,3.8vw,46px)/1.03 var(--gro);letter-spacing:-.04em;margin-top:14px}
+  .top .sub{font:400 15px/1.65 var(--int);color:var(--t2);margin-top:16px;max-width:76ch}
+  .top .sub b{color:var(--t1);font-weight:600}
+
+  .ctl{position:sticky;top:0;z-index:20;background:var(--bg);border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);padding:14px 0;display:flex;flex-wrap:wrap;gap:22px;align-items:center}
+  .grp{display:flex;align-items:center;gap:10px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{font:500 13px var(--int);color:var(--t2);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:8px 15px;cursor:pointer;
+    transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+  .seg button:hover{border-color:var(--line-h);color:var(--t1)}
+  .seg button[aria-pressed="true"]{border-color:var(--roxo);color:var(--t1);background:rgba(104,64,255,.12)}
+  .seg button:focus-visible{outline:2px solid var(--roxo);outline-offset:2px}
+  .seg.forte button{font-family:var(--gro);font-weight:600;letter-spacing:-.01em}
+
+  /* ─── o palco: um canvas só, grande, porque material se julga no tamanho ─── */
+  .cena{display:grid;grid-template-columns:1fr 380px;gap:40px;padding:30px 0 56px;align-items:start}
+  @media (max-width:1040px){ .cena{grid-template-columns:1fr} }
+
+  .palco{position:relative;aspect-ratio:1;max-height:560px;margin:0 auto;width:100%;
+    display:grid;place-items:center;border:1px solid var(--line);border-radius:22px;
+    background:radial-gradient(120% 120% at 50% 30%, var(--s1), var(--bg) 70%);overflow:hidden}
+  #cv{display:block;width:var(--esc,100%);height:var(--esc,100%);aspect-ratio:1;
+    transition:width .5s var(--ease),height .5s var(--ease)}
+  .semgl{position:absolute;inset:0;display:none;place-items:center;padding:40px;text-align:center;
+    font:400 14px/1.6 var(--int);color:var(--t3)}
+  .palco.falhou .semgl{display:grid}
+  .palco.falhou #cv{display:none}
+  .dica{position:absolute;left:18px;bottom:16px;font:400 11.5px var(--int);color:var(--t3);opacity:.7}
+
+  /* ─── ficha do conceito ativo ─── */
+  .ficha h2{font:500 26px var(--gro);letter-spacing:-.03em;margin-bottom:4px}
+  .ficha .kicker{font:700 10.5px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--roxo)}
+  .ficha .tese{font:400 14.5px/1.68 var(--int);color:var(--t2);margin-top:14px}
+  .ficha .tese b{color:var(--t1);font-weight:600}
+  .ficha dl{margin-top:22px;border-top:1px solid var(--line);padding-top:18px;display:grid;gap:11px}
+  .ficha .row{display:grid;grid-template-columns:88px 1fr;gap:14px;align-items:baseline}
+  .ficha dt{font:600 12px var(--int);color:var(--t2)}
+  .ficha dd{font:400 12.8px/1.55 var(--int);color:var(--t3)}
+  .ficha .agora{margin-top:20px;border-left:2px solid var(--roxo);padding-left:14px;
+    font:400 13.5px/1.6 var(--int);color:var(--t2);min-height:46px}
+  .ficha .agora b{color:var(--t1);font-weight:600}
+
+  .fim{border-top:1px solid var(--line);padding:34px 0 80px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  @media (max-width:860px){ .fim{grid-template-columns:1fr} }
+  .fim h3{font:500 19px var(--gro);letter-spacing:-.02em;margin-bottom:12px}
+  .fim p{font:400 14px/1.7 var(--int);color:var(--t2);max-width:64ch}
+  .fim p+p{margin-top:11px}
+  .fim b{color:var(--t1);font-weight:600}
+  .fim .hand{display:block;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow"><b>Onda 03</b> · personagem, rodada 2 · 3D</p>
+    <h1>O simbionte</h1>
+    <p class="sub">Rodada 2 depois do descarte da criatura. Agora em <b>3D real</b>, com material,
+      reflexo e textura: três corpos para a mesma inteligência, no vocabulário de
+      <b>rede neural e organismo técnico</b>. Um canvas de cada vez, então o teto de uma peça WebGL
+      por página continua livre para a bússola. Os seis estados são os mesmos da rodada 1.</p>
+  </header>
+
+  <div class="ctl">
+    <div class="grp">
+      <p class="eyebrow">Corpo</p>
+      <div class="seg forte" id="seg-peca" role="group" aria-label="Conceito">
+        <button type="button" data-peca="rede"  aria-pressed="true">1 · A rede</button>
+        <button type="button" data-peca="tranca" aria-pressed="false">2 · A trança</button>
+        <button type="button" data-peca="nucleo" aria-pressed="false">3 · O núcleo</button>
+      </div>
+    </div>
+    <div class="grp">
+      <p class="eyebrow">Estado</p>
+      <div class="seg" id="seg-estado" role="group" aria-label="Estado">
+        <button type="button" data-estado="dorme"   aria-pressed="true">dormindo</button>
+        <button type="button" data-estado="le"      aria-pressed="false">lendo</button>
+        <button type="button" data-estado="escreve" aria-pressed="false">escrevendo</button>
+        <button type="button" data-estado="fala"    aria-pressed="false">falando</button>
+        <button type="button" data-estado="ouve"    aria-pressed="false">ouvindo</button>
+        <button type="button" data-estado="alerta"  aria-pressed="false">alertando</button>
+      </div>
+    </div>
+    <div class="grp">
+      <div class="seg">
+        <button type="button" id="escala" aria-pressed="false">escala assinatura</button>
+        <button type="button" id="ciclo"  aria-pressed="false">ciclo automático</button>
+        <button type="button" id="tema"   aria-pressed="false">página clara</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cena">
+    <div class="palco" id="palco">
+      <canvas id="cv"></canvas>
+      <div class="semgl">Sem WebGL neste navegador. Os três corpos desta rodada dependem de 3D real,
+        então aqui não há queda graciosa possível: no produto, a peça não monta e a folha do briefing
+        segue sozinha, sem buraco no layout.</div>
+      <p class="dica">arraste para girar</p>
+    </div>
+
+    <div class="ficha" id="ficha"></div>
+  </div>
+
+  <section class="fim">
+    <div>
+      <h3>O que olhar</h3>
+      <p>Julgue <b>material</b> primeiro: reflexo, textura, como a luz corre. É o que separa
+        "tecnológico" de "bonitinho", e é a coisa que a rodada 1 não tinha.</p>
+      <p>Depois <b>falando</b> e <b>dormindo</b>, na mesma ordem de antes: um é o momento em que ele
+        precisa aparecer, o outro é o que você vê 95% do tempo.</p>
+      <p>Por último, aperte <b>escala assinatura</b> e leve o achado a sério: <b>nenhum dos três
+        sobrevive a 38px</b>, os três viram uma manchinha. Isso não reprova a rodada, mas decide uma
+        coisa: em 3D o personagem <b>não pode ser a marca da byline</b>. Ou ele vive só grande, na
+        camada e no topo da folha, ou ganha um sinal chapado que o represente no miúdo. É uma decisão
+        a mais, e ela vem depois da escolha do corpo.</p>
+    </div>
+    <div>
+      <h3>O que estou evitando de propósito</h3>
+      <p>Nenhum dos três é uma <b>esfera lisa</b>. A bolha cromada é o clichê visual de IA desta era, e
+        é nela que mora o "genérico" que você recusou. Os três têm estrutura legível: grafo, trança,
+        faceta.</p>
+      <p>Nenhum usa a linguagem da bússola. Cromo espelhado e agulha continuam sendo <b>marca</b>;
+        o personagem tem material próprio.</p>
+      <span class="hand rx">se parecer com a Siri, eu errei</span>
+    </div>
+  </section>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+const palco = document.getElementById('palco')
+try {
+  const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches
+  const THREE = await import('three')
+  const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js')
+
+  const ESTADOS = ['dorme', 'le', 'escreve', 'fala', 'ouve', 'alerta']
+  let estado = 'dorme', pecaAtual = 'rede'
+
+  /* determinístico de propósito: mesma peça em toda carga, senão QA por screenshot não fecha */
+  let _s = 20260802
+  const rnd = () => {
+    _s = _s + 0x6D2B79F5 | 0
+    let t = Math.imul(_s ^ _s >>> 15, 1 | _s)
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t
+    return ((t ^ t >>> 14) >>> 0) / 4294967296
+  }
+  const mola = (o, k, d, dt) => { o.v += ((o.t - o.p) * k - o.v * d) * dt; o.p += o.v * dt }
+  const M = (p = 0) => ({ p, v: 0, t: p })
+  const voz = t => reduz ? .55 : Math.abs(Math.sin(t * 11.7) * .5 + Math.sin(t * 6.1) * .32 + Math.sin(t * 17.3) * .18)
+
+  const ROXO = new THREE.Color(0x6840ff), ELE = new THREE.Color(0xa1ff62), CORAL = new THREE.Color(0xf84131)
+
+  /* ─── textura procedural: é o que dá "textura" de verdade no material ─── */
+  function texRuido(size = 256, contraste = .5) {
+    const c = document.createElement('canvas'); c.width = c.height = size
+    const g = c.getContext('2d'), img = g.createImageData(size, size), d = img.data
+    const base = new Float32Array(size * size)
+    for (let i = 0; i < base.length; i++) base[i] = rnd()
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+      // duas oitavas somadas dão grão fino sobre mancha larga
+      const fino = base[y * size + x]
+      const gx = (x >> 4) * 16, gy = (y >> 4) * 16
+      const largo = base[(gy % size) * size + (gx % size)]
+      const v = 128 + (fino * .45 + largo * .55 - .5) * 255 * contraste
+      const i = (y * size + x) * 4
+      d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255
+    }
+    g.putImageData(img, 0, 0)
+    const tex = new THREE.CanvasTexture(c)
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+    return tex
+  }
+  function texPonto(size = 64) {
+    const c = document.createElement('canvas'); c.width = c.height = size
+    const g = c.getContext('2d'), r = size / 2
+    const grad = g.createRadialGradient(r, r, 0, r, r, r)
+    grad.addColorStop(0, 'rgba(255,255,255,1)')
+    grad.addColorStop(.35, 'rgba(255,255,255,.55)')
+    grad.addColorStop(1, 'rgba(255,255,255,0)')
+    g.fillStyle = grad; g.fillRect(0, 0, size, size)
+    return new THREE.CanvasTexture(c)
+  }
+  /* listra que corre ao longo do tubo: é assim que a luz "viaja" pela trança.
+     A UV u da TubeGeometry acompanha o comprimento, então basta animar offset.x. */
+  function texListra(n = 512) {
+    const c = document.createElement('canvas'); c.width = n; c.height = 4
+    const g = c.getContext('2d')
+    g.fillStyle = '#000'; g.fillRect(0, 0, n, 4)
+    for (let k = 0; k < 3; k++) {
+      const x = (k + .5) / 3 * n, w = n * .085
+      const gr = g.createLinearGradient(x - w, 0, x + w, 0)
+      gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(.5, '#fff'); gr.addColorStop(1, 'rgba(0,0,0,0)')
+      g.fillStyle = gr; g.fillRect(x - w, 0, w * 2, 4)
+    }
+    const t = new THREE.CanvasTexture(c)
+    t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping
+    return t
+  }
+  const RUIDO = texRuido(), PONTO = texPonto(), LISTRA = texListra()
+
+  /* ─── cena única, compartilhada pelos três corpos ─── */
+  const canvas = document.getElementById('cv')
+  const S = 560
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
+  renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1))
+  renderer.setSize(S, S, false)
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.1
+
+  const scene = new THREE.Scene()
+  const cam = new THREE.PerspectiveCamera(30, 1, .1, 60)
+  cam.position.set(0, .35, 7.4); cam.lookAt(0, 0, 0)
+  const pmrem = new THREE.PMREMGenerator(renderer)
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0).texture
+  const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(2.6, 3.4, 3.2); scene.add(key)
+  const fill = new THREE.DirectionalLight(0x9db4ff, .55); fill.position.set(-3, -1.4, 1.6); scene.add(fill)
+
+  const orbita = new THREE.Group(); scene.add(orbita)   // recebe o arraste do usuário
+  const corpo = new THREE.Group(); orbita.add(corpo)    // recebe a peça ativa
+
+  /* ══════════════ 1 · A REDE ══════════════
+     Um grafo de verdade: os sinais caminham de nó em nó escolhendo o próximo vizinho.
+     A escolha do vizinho é o que muda por estado, então o comportamento é legível
+     (varre, converge, irradia) sem nenhuma animação roteirizada. */
+  function criarRede() {
+    const g = new THREE.Group()
+    const N = 260, nos = []
+    for (let i = 0; i < N; i++) {
+      const y = 1 - (i / (N - 1)) * 2
+      const rr = Math.sqrt(Math.max(0, 1 - y * y))
+      const th = i * 2.399963229
+      // lóbulos: o raio modulado é o que impede a leitura de bola
+      const mod = 1 + .30 * Math.sin(3 * th) * Math.cos(2.1 * y * Math.PI) + .16 * Math.sin(4.5 * y * Math.PI)
+      const R = 1.28 * mod
+      nos.push(new THREE.Vector3(Math.cos(th) * rr * R * 1.12, y * R * .92, Math.sin(th) * rr * R * .72))
+    }
+    // arestas: 2 vizinhos mais próximos por nó, sem repetir par
+    const viz = Array.from({ length: N }, () => []), pares = new Set(), arestas = []
+    for (let i = 0; i < N; i++) {
+      const d = []
+      for (let j = 0; j < N; j++) if (j !== i) d.push([nos[i].distanceToSquared(nos[j]), j])
+      d.sort((a, b) => a[0] - b[0])
+      for (let k = 0; k < 2; k++) {
+        const j = d[k][1], chave = i < j ? i + ':' + j : j + ':' + i
+        if (!viz[i].includes(j)) viz[i].push(j)
+        if (!viz[j].includes(i)) viz[j].push(i)
+        if (!pares.has(chave)) { pares.add(chave); arestas.push([i, j]) }
+      }
+    }
+
+    const posNo = new Float32Array(N * 3), corNo = new Float32Array(N * 3)
+    nos.forEach((p, i) => { posNo[i * 3] = p.x; posNo[i * 3 + 1] = p.y; posNo[i * 3 + 2] = p.z })
+    const gNo = new THREE.BufferGeometry()
+    gNo.setAttribute('position', new THREE.BufferAttribute(posNo, 3))
+    gNo.setAttribute('color', new THREE.BufferAttribute(corNo, 3))
+    const mNo = new THREE.PointsMaterial({
+      size: .085, map: PONTO, vertexColors: true, transparent: true,
+      blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    })
+    g.add(new THREE.Points(gNo, mNo))
+
+    const posAr = new Float32Array(arestas.length * 6)
+    arestas.forEach(([a, b], i) => {
+      posAr.set([nos[a].x, nos[a].y, nos[a].z, nos[b].x, nos[b].y, nos[b].z], i * 6)
+    })
+    const gAr = new THREE.BufferGeometry()
+    gAr.setAttribute('position', new THREE.BufferAttribute(posAr, 3))
+    const mAr = new THREE.LineBasicMaterial({
+      color: 0x4a3d7a, transparent: true, opacity: .3,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+    })
+    g.add(new THREE.LineSegments(gAr, mAr))
+
+    const MAXS = 90
+    const posSi = new Float32Array(MAXS * 3), corSi = new Float32Array(MAXS * 3)
+    const gSi = new THREE.BufferGeometry()
+    gSi.setAttribute('position', new THREE.BufferAttribute(posSi, 3))
+    gSi.setAttribute('color', new THREE.BufferAttribute(corSi, 3))
+    const mSi = new THREE.PointsMaterial({
+      size: .2, map: PONTO, vertexColors: true, transparent: true,
+      blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    })
+    g.add(new THREE.Points(gSi, mSi))
+    gSi.setDrawRange(0, 0)
+
+    const sinais = [], flash = new Float32Array(N)
+    const novo = () => { const a = (rnd() * N) | 0; return { a, b: viz[a][(rnd() * viz[a].length) | 0], t: 0 } }
+
+    // o vizinho escolhido é o comportamento: fora, dentro, ou pra um lado
+    function proximo(de, modo) {
+      const v = viz[de]
+      if (modo === 'fora')   return v.reduce((m, j) => nos[j].lengthSq() > nos[m].lengthSq() ? j : m, v[0])
+      if (modo === 'dentro') return v.reduce((m, j) => nos[j].lengthSq() < nos[m].lengthSq() ? j : m, v[0])
+      if (modo === 'varre')  return v.reduce((m, j) => nos[j].x > nos[m].x ? j : m, v[0])
+      if (modo === 'baixo')  return v.reduce((m, j) => nos[j].y < nos[m].y ? j : m, v[0])
+      return v[(rnd() * v.length) | 0]
+    }
+
+    const esc = M(1), bri = M(.1)
+    return {
+      grupo: g, base: .64,
+      passo(t, dt) {
+        const a = voz(t)
+        let alvo = 10, vel = .55, modo = 'aleatorio', cor = ROXO, brilho = .12, escala = 1
+        if (estado === 'dorme')        { alvo = 8;  vel = .32; brilho = .07; escala = 1 }
+        else if (estado === 'le')      { alvo = 46; vel = 1.5; modo = 'varre';  brilho = .18 }
+        else if (estado === 'escreve') { alvo = 40; vel = 1.2; modo = 'baixo';  brilho = .2; escala = .9 }
+        else if (estado === 'fala')    { alvo = 30 + a * 58; vel = .8 + a * 1.9; modo = 'fora'; brilho = .16 + a * .3; escala = 1 + a * .06 }
+        else if (estado === 'ouve')    { alvo = 16; vel = 1.1; modo = 'dentro'; brilho = .14; escala = .84 }
+        else if (estado === 'alerta')  { alvo = 70; vel = 2.4; cor = CORAL; brilho = .3 }
+        if (estado === 'alerta') cor = CORAL
+        else if (estado === 'fala' || estado === 'escreve') cor = ELE
+
+        esc.t = escala; bri.t = brilho
+        for (const o of [esc, bri]) reduz ? (o.p = o.t) : mola(o, 24, 8, dt)
+        g.scale.setScalar(esc.p)
+        mAr.color.copy(cor).multiplyScalar(.55); mAr.opacity = .18 + bri.p
+
+        while (sinais.length < Math.min(MAXS, alvo | 0)) sinais.push(novo())
+        while (sinais.length > alvo) sinais.pop()
+
+        for (let i = 0; i < N; i++) flash[i] = Math.max(0, flash[i] - dt * 2.6)
+        let n = 0
+        for (const s of sinais) {
+          s.t += dt * vel * (reduz ? 0 : 1)
+          if (s.t >= 1) { s.t = 0; flash[s.b] = 1; s.a = s.b; s.b = proximo(s.a, modo) }
+          const A = nos[s.a], B = nos[s.b], u = s.t
+          posSi[n * 3] = A.x + (B.x - A.x) * u
+          posSi[n * 3 + 1] = A.y + (B.y - A.y) * u
+          posSi[n * 3 + 2] = A.z + (B.z - A.z) * u
+          corSi[n * 3] = cor.r; corSi[n * 3 + 1] = cor.g; corSi[n * 3 + 2] = cor.b
+          n++
+        }
+        gSi.setDrawRange(0, n)
+        gSi.attributes.position.needsUpdate = true; gSi.attributes.color.needsUpdate = true
+
+        for (let i = 0; i < N; i++) {
+          const f = bri.p + flash[i] * .9
+          corNo[i * 3] = cor.r * f; corNo[i * 3 + 1] = cor.g * f; corNo[i * 3 + 2] = cor.b * f
+        }
+        gNo.attributes.color.needsUpdate = true
+        if (!reduz) g.rotation.y += dt * (estado === 'ouve' ? .04 : .16)
+      },
+    }
+  }
+
+  /* ══════════════ 2 · A TRANÇA ══════════════
+     Fios trançados em volta de um nó tórico. Material físico com iridescência e mapa
+     de rugosidade procedural: é o corpo com mais matéria dos três. Os fios de luz
+     correm por dentro da trança girando em relação aos fios escuros. */
+  function criarTranca() {
+    const g = new THREE.Group()
+    const SEG = 240, P = 2, Q = 3
+    const pts = []
+    for (let i = 0; i < SEG; i++) {
+      const u = i / SEG, ang = u * Math.PI * 2
+      const r = .95 + .34 * Math.cos(Q * ang)
+      pts.push(new THREE.Vector3(r * Math.cos(P * ang), r * Math.sin(P * ang) * .82, .55 * Math.sin(Q * ang)))
+    }
+    const base = new THREE.CatmullRomCurve3(pts, true, 'catmullrom', .5)
+    const fr = base.computeFrenetFrames(SEG, true)
+
+    const fio = (fase, raio, torcoes) => {
+      const p = []
+      for (let i = 0; i <= SEG; i++) {
+        const k = i % SEG, u = k / SEG
+        const a = u * Math.PI * 2 * torcoes + fase
+        p.push(base.getPointAt(u).clone()
+          .addScaledVector(fr.normals[k], Math.cos(a) * raio)
+          .addScaledVector(fr.binormals[k], Math.sin(a) * raio))
+      }
+      return new THREE.CatmullRomCurve3(p, true, 'catmullrom', .5)
+    }
+
+    const matEscuro = new THREE.MeshPhysicalMaterial({
+      color: 0x0f0d16, metalness: .9, roughness: .3, roughnessMap: RUIDO,
+      clearcoat: 1, clearcoatRoughness: .18, envMapIntensity: .5,
+      // sem mapa de espessura o three usa o TOPO da faixa como valor único, então é ele que
+      // define a cor. 300nm cai no azul-violeta; iridescência a meio pau deixa o escuro aparecer.
+      iridescence: .5, iridescenceIOR: 1.7, iridescenceThicknessRange: [200, 300],
+    })
+    for (let i = 0; i < 5; i++) {
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(fio(i * Math.PI * 2 / 5, .19, 6), SEG, .062, 12, true), matEscuro))
+    }
+    // os fios de luz correm POR DENTRO do feixe (offset menor), e o pulso viaja pela UV
+    const matsLuz = [], texs = []
+    for (let i = 0; i < 3; i++) {
+      const tx = LISTRA.clone(); tx.needsUpdate = true; tx.repeat.set(2, 1); tx.offset.x = i / 3
+      const m = new THREE.MeshStandardMaterial({
+        color: 0x0d0b12, emissive: 0x6840ff, emissiveMap: tx, emissiveIntensity: 1.4,
+        metalness: .3, roughness: .5,
+      })
+      matsLuz.push(m); texs.push(tx)
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(fio(i * Math.PI * 2 / 3 + .5, .105, 6), SEG, .019, 8, true), m))
+    }
+
+    const esc = M(1), inten = M(.5), achata = M(1)
+    return {
+      grupo: g, base: .88,
+      passo(t, dt) {
+        const a = voz(t)
+        let escala = 1, i0 = .5, cor = ROXO, giro = .18, ach = 1
+        if (estado === 'dorme')        { escala = .96; i0 = .18; giro = .05 }
+        else if (estado === 'le')      { escala = 1;   i0 = .55; giro = .5; ach = .82 }
+        else if (estado === 'escreve') { escala = .9;  i0 = .8;  giro = .3; cor = ELE }
+        else if (estado === 'fala')    { escala = 1 + a * .09; i0 = .6 + a * 1.5; giro = .26; cor = ELE }
+        else if (estado === 'ouve')    { escala = .82; i0 = .4;  giro = .02 }
+        else if (estado === 'alerta')  { escala = 1.03; i0 = 1.9; giro = .9; cor = CORAL }
+
+        esc.t = escala; inten.t = i0; achata.t = ach
+        for (const o of [esc, inten, achata]) reduz ? (o.p = o.t) : mola(o, 22, 8, dt)
+        g.scale.set(esc.p, esc.p * achata.p, esc.p)
+        matsLuz.forEach(m => {
+          m.emissive.copy(cor)
+          m.emissiveIntensity = .35 + inten.p * 1.7
+        })
+        // o pulso viaja ao longo do fio, que é o que lê como "corrente por dentro"
+        if (!reduz) texs.forEach((tx, i) => { tx.offset.x -= dt * (.09 + inten.p * .3) * (1 + i * .12) })
+        matEscuro.iridescenceIOR = 1.62 + inten.p * .22
+        matEscuro.envMapIntensity = .42 + inten.p * .22
+        if (!reduz) {
+          g.rotation.y += dt * giro
+          g.rotation.x = Math.sin(t * .22) * .16
+        }
+      },
+    }
+  }
+
+  /* ══════════════ 3 · O NÚCLEO ══════════════
+     Casca facetada que se abre: cada face desliza pela própria normal e o núcleo
+     aceso aparece pelas frestas. Metal escuro com mapa de rugosidade. */
+  function criarNucleo() {
+    const g = new THREE.Group()
+    // precisa ser não-indexada pra cada face poder deslizar sozinha; a icosaédrica já vem assim,
+    // então só converte se algum dia deixar de vir (chamar direto emite aviso no console)
+    const bruta = new THREE.IcosahedronGeometry(1.32, 1)
+    const src = bruta.index ? bruta.toNonIndexed() : bruta
+    const base = src.attributes.position.array.slice()
+    const nFaces = base.length / 9
+    const normais = new Float32Array(nFaces * 3), semente = new Float32Array(nFaces)
+    const vA = new THREE.Vector3(), vB = new THREE.Vector3(), vC = new THREE.Vector3(), nrm = new THREE.Vector3()
+    for (let f = 0; f < nFaces; f++) {
+      const o = f * 9
+      vA.fromArray(base, o); vB.fromArray(base, o + 3); vC.fromArray(base, o + 6)
+      nrm.copy(vA).add(vB).add(vC).divideScalar(3).normalize()
+      normais.set([nrm.x, nrm.y, nrm.z], f * 3)
+      semente[f] = rnd()
+    }
+    const geo = new THREE.BufferGeometry()
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(base), 3))
+    geo.computeVertexNormals()
+    const matCasca = new THREE.MeshPhysicalMaterial({
+      // envMapIntensity baixo: senão o ambiente lava o metal e ele lê cinza-claro, não escuro
+      color: 0x14121a, metalness: .98, roughness: .38, roughnessMap: RUIDO, envMapIntensity: .5,
+      clearcoat: .9, clearcoatRoughness: .24, side: THREE.DoubleSide,
+    })
+    g.add(new THREE.Mesh(geo, matCasca))
+
+    const matNucleo = new THREE.MeshStandardMaterial({
+      color: 0x1a1430, emissive: 0x6840ff, emissiveIntensity: 1, roughness: .5, metalness: .1,
+    })
+    const nucleo = new THREE.Mesh(new THREE.IcosahedronGeometry(.66, 3), matNucleo)
+    g.add(nucleo)
+
+    const pos = geo.attributes.position.array
+    const fenda = M(0), inten = M(.4)
+    return {
+      grupo: g, base: .62,
+      passo(t, dt) {
+        const a = voz(t)
+        let f0 = .06, i0 = .3, cor = ROXO, giro = .16
+        if (estado === 'dorme')        { f0 = .02; i0 = .12; giro = .05 }
+        else if (estado === 'le')      { f0 = .3;  i0 = .45; giro = .5 }
+        else if (estado === 'escreve') { f0 = .16; i0 = .8;  giro = .22; cor = ELE }
+        else if (estado === 'fala')    { f0 = .18 + a * .5; i0 = .5 + a * 1.7; giro = .2; cor = ELE }
+        else if (estado === 'ouve')    { f0 = .0;  i0 = .5;  giro = .02 }
+        else if (estado === 'alerta')  { f0 = .42; i0 = 2;   giro = .8; cor = CORAL }
+
+        fenda.t = f0; inten.t = i0
+        for (const o of [fenda, inten]) reduz ? (o.p = o.t) : mola(o, 20, 7.5, dt)
+
+        for (let f = 0; f < nFaces; f++) {
+          const d = fenda.p * (.45 + semente[f] * 1.1)
+            + (reduz ? 0 : Math.sin(t * 1.6 + semente[f] * 9) * fenda.p * .22)
+          const nx = normais[f * 3] * d, ny = normais[f * 3 + 1] * d, nz = normais[f * 3 + 2] * d
+          for (let v = 0; v < 3; v++) {
+            const i = f * 9 + v * 3
+            pos[i] = base[i] + nx; pos[i + 1] = base[i + 1] + ny; pos[i + 2] = base[i + 2] + nz
+          }
+        }
+        geo.attributes.position.needsUpdate = true
+
+        matNucleo.emissive.copy(cor)
+        matNucleo.emissiveIntensity = .2 + inten.p * .95
+        nucleo.scale.setScalar(.94 + inten.p * .07)
+        if (!reduz) { g.rotation.y += dt * giro; g.rotation.x = Math.sin(t * .27) * .2 }
+      },
+    }
+  }
+
+  /* ─── fichas ─── */
+  const FICHAS = {
+    rede: {
+      kicker: 'Conceito 1', nome: 'A rede',
+      tese: 'Um <b>grafo real</b>, não um enfeite: 260 nós ligados aos vizinhos, e os sinais caminham de nó em nó escolhendo o próximo. O que muda por estado é o <b>critério de escolha</b>, então o comportamento emerge em vez de ser roteirizado.',
+      linhas: [
+        ['Material', 'pontos e arestas aditivos, sem sólido; a matéria é a luz'],
+        ['Estados', 'lendo varre num sentido, ouvindo converge pro centro, falando irradia pra fora, alertando enlouquece em coral'],
+        ['A favor', 'é o mais literalmente "rede neural" e o único onde a estrutura conta o que ele faz: ligar suas áreas'],
+        ['Contra', 'é luz, não matéria: menos peso físico que os outros dois'],
+      ],
+    },
+    tranca: {
+      kicker: 'Conceito 2', nome: 'A trança',
+      tese: 'Fios trançados em volta de um <b>nó tórico</b>, em material físico com iridescência, verniz e mapa de rugosidade procedural. Fios de luz correm por dentro girando em relação aos escuros. É o corpo com mais matéria dos três, e o mais perto do "simbionte".',
+      linhas: [
+        ['Material', 'metal escuro, clearcoat, iridescência que muda de cor pelo ângulo, textura de rugosidade'],
+        ['Estados', 'a trança aperta e afrouxa, achata pra ler, contrai pra ouvir; a luz acelera ou trava'],
+        ['A favor', 'é o mais tridimensional e o mais texturizado; lê como organismo técnico e não como interface'],
+        ['Contra', 'geometria fixa: ele gira e pulsa, mas não muda de forma como os outros dois'],
+      ],
+    },
+    nucleo: {
+      kicker: 'Conceito 3', nome: 'O núcleo',
+      tese: 'Uma casca facetada que <b>se abre</b>: cada face desliza pela própria normal e o núcleo aceso aparece pelas frestas. Fechado quando escuta, aberto quando fala. É o mais legível dos três a distância.',
+      linhas: [
+        ['Material', 'metal escuro fosco com rugosidade mapeada, núcleo emissivo por dentro'],
+        ['Estados', 'a fenda é o estado: zero ouvindo, máxima alertando; o núcleo acende junto'],
+        ['A favor', 'a fenda é um estado legível de longe e sem cor: dá pra saber o que ele está fazendo só pela abertura'],
+        ['Contra', 'poliedro que abre e fecha é uma figura já vista; depende do material pra não ser genérico'],
+      ],
+    },
+  }
+  const AGORA = {
+    dorme:   'Em repouso. É o que você vê na maior parte do tempo, então aqui ele tem que ser discreto sem sumir.',
+    le:      'Lendo seus dados. O movimento tem um <b>sentido</b>, que é o que diferencia ler de só se mexer.',
+    escreve: 'Escrevendo o briefing. Tudo converge pra baixo, na direção de onde o texto nasce.',
+    fala:    'Falando. A intensidade segue a amplitude da voz, então a peça vira o medidor de nível.',
+    ouve:    'Ouvindo você. Contrai e quase para: atenção lê como <b>quietude</b>, não como agitação.',
+    alerta:  'Alertando. Coral, rápido, sem ser pedido. É o único estado que ele inicia sozinho.',
+  }
+  const elFicha = document.getElementById('ficha')
+  function pintarFicha() {
+    const f = FICHAS[pecaAtual]
+    elFicha.innerHTML =
+      '<p class="kicker">' + f.kicker + '</p><h2>' + f.nome + '</h2><p class="tese">' + f.tese + '</p>' +
+      '<dl>' + f.linhas.map(l => '<div class="row"><dt>' + l[0] + '</dt><dd>' + l[1] + '</dd></div>').join('') + '</dl>' +
+      '<p class="agora">' + AGORA[estado] + '</p>'
+  }
+
+  /* ─── troca de peça: descarta a anterior de verdade ─── */
+  const FABRICA = { rede: criarRede, tranca: criarTranca, nucleo: criarNucleo }
+  let peca = null, envoltorio = null
+  function montar(nome) {
+    if (envoltorio) {
+      corpo.remove(envoltorio)
+      envoltorio.traverse(o => {
+        if (o.geometry) o.geometry.dispose()
+        if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+          // as listras são clones por fio; as texturas compartilhadas não podem cair
+          if (m.emissiveMap && m.emissiveMap !== LISTRA) m.emissiveMap.dispose()
+          m.dispose()
+        })
+      })
+    }
+    pecaAtual = nome
+    peca = FABRICA[nome]()
+    // envoltório só pra normalizar o tamanho na moldura: a peça segue livre pra escalar por estado
+    envoltorio = new THREE.Group()
+    envoltorio.scale.setScalar(peca.base)
+    envoltorio.add(peca.grupo)
+    corpo.add(envoltorio)
+    pintarFicha()
+  }
+  montar('rede')
+
+  /* ─── controles ─── */
+  const marcar = (seg, alvo) => [...seg.querySelectorAll('button')]
+    .forEach(b => b.setAttribute('aria-pressed', String(b === alvo)))
+
+  const segPeca = document.getElementById('seg-peca')
+  segPeca.addEventListener('click', e => {
+    const b = e.target.closest('button[data-peca]'); if (!b) return
+    marcar(segPeca, b); montar(b.dataset.peca)
+  })
+  const segEstado = document.getElementById('seg-estado')
+  segEstado.addEventListener('click', e => {
+    const b = e.target.closest('button[data-estado]'); if (!b) return
+    estado = b.dataset.estado; marcar(segEstado, b); auto = false
+    document.getElementById('ciclo').setAttribute('aria-pressed', 'false')
+    pintarFicha()
+  })
+
+  const bEsc = document.getElementById('escala')
+  bEsc.addEventListener('click', () => {
+    const on = bEsc.getAttribute('aria-pressed') !== 'true'
+    bEsc.setAttribute('aria-pressed', String(on))
+    canvas.style.setProperty('--esc', on ? '38px' : '100%')
+    bEsc.textContent = on ? 'escala palco' : 'escala assinatura'
+  })
+  let auto = false
+  const bCiclo = document.getElementById('ciclo')
+  bCiclo.addEventListener('click', () => { auto = !auto; bCiclo.setAttribute('aria-pressed', String(auto)); troca = 0 })
+  const bTema = document.getElementById('tema')
+  bTema.addEventListener('click', () => {
+    const claro = document.documentElement.classList.toggle('dk') === false
+    bTema.setAttribute('aria-pressed', String(claro))
+    bTema.textContent = claro ? 'página escura' : 'página clara'
+    renderer.toneMappingExposure = claro ? .92 : 1.1
+  })
+
+  /* arraste pra girar: material só se julga virando a peça */
+  let arrastando = false, px = 0, py = 0
+  canvas.addEventListener('pointerdown', e => { arrastando = true; px = e.clientX; py = e.clientY; canvas.setPointerCapture(e.pointerId) })
+  canvas.addEventListener('pointerup', e => { arrastando = false; canvas.releasePointerCapture(e.pointerId) })
+  canvas.addEventListener('pointermove', e => {
+    if (!arrastando) return
+    orbita.rotation.y += (e.clientX - px) * .006
+    orbita.rotation.x = Math.max(-1.1, Math.min(1.1, orbita.rotation.x + (e.clientY - py) * .006))
+    px = e.clientX; py = e.clientY
+  })
+
+  /* ─── laço ─── */
+  let ultimo = performance.now(), troca = 0
+  const laco = agora => {
+    requestAnimationFrame(laco)
+    const dt = Math.min(.05, (agora - ultimo) / 1000); ultimo = agora
+    const t = agora / 1000
+    if (auto) {
+      troca += dt
+      if (troca > 3.6) {
+        troca = 0
+        estado = ESTADOS[(ESTADOS.indexOf(estado) + 1) % ESTADOS.length]
+        marcar(segEstado, segEstado.querySelector('[data-estado="' + estado + '"]'))
+        pintarFicha()
+      }
+    }
+    peca.passo(reduz ? 0 : t, dt)
+    renderer.render(scene, cam)
+  }
+  requestAnimationFrame(laco)
+} catch (e) {
+  palco.classList.add('falhou')
+  console.warn('peça 3D não montou:', e)
+}
+</script>
+</body>
+</html>
