@@ -17,7 +17,8 @@
 - **⏳ ONDA 2 LOTE 2 PROTOTIPADO, EM APROVAÇÃO (2026-08-01):** spec `docs/superpowers/specs/2026-08-01-onda2-lote2-review-score-design.md` — a `/dashboard/review` vira **"A edição da semana"** (carta semanal do coach sobre dados reais + fechamento explícito que persiste e conta badge; sai o formato de slides e a janela dom 20h–qua) e a `/dashboard/score` vira **"A anatomia do número"** (fonte única `useScoreEngine`, curva de 30 dias, peso e contribuição por área). Protótipos: `app/{review-semanal,life-score}{.html,.mobile.html}`, linkados no hub. QA PASS sem fixes. **Próximo: aceite do usuário no hub; depois implementação do lote 2 em `web/` (migration `028` reconciliando `weekly_reviews` + `/api/ai/review-brief` + as 2 rotas indo pra `(app-v5)`) e Onda 3 (vista cheia `/coach` + N2).**
 - **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
 - **🔴 DECISÃO ABERTA que trava o lote 2 (2026-08-01, sessão 23):** o usuário **não aprovou** o lote 2 como está. Dois pedidos: (1) o ponto de acesso da revisão semanal está ruim, e (2) o coach está apagado, sem presença nem personalidade — quer **nome próprio**, representação visual (levantou "simbionte cromado 3D") e **voz** (referência: Jarvis). Análise, direções A/B/C e shortlist de nomes na sessão 23 abaixo. **Nada foi implementado; aguarda a escolha do usuário.**
-- **⏳ SESSÃO 24 (2026-08-02): direção A DESCARTADA; personagem em 2 rodadas, RODADA 2 (3D) EM APROVAÇÃO.** A bússola é **instrumento e marca**, não ator — usá-la como avatar do coach colapsa duas identidades que precisam ser distintas ("SyncLife" × "quem escreve pra você"). **Rodada 1** (`personagem/laboratorio.html`, 2D): tinta · criatura · presença — **criatura descartada** pelo usuário, tinta foi a preferida mas nenhuma atingiu o alvo. **Rodada 2** (`personagem/laboratorio-3d.html`, three.js 0.185.1): **1 A rede** (grafo de 260 nós com sinais que caminham) · **2 A trança** (fios trançados num nó tórico, material físico com iridescência e rugosidade mapeada) · **3 O núcleo** (casca facetada que abre e mostra o miolo aceso). **Próximo: escolha do corpo; depois nome, o sinal chapado pro miúdo (ver achado de escala), integração no Diário e lugar da revisão semanal.**
+- **⏳ SESSÃO 24 · RECOMEÇO E ESCOLHA (2026-08-02): O ENXAME está de pé, com 6 estados e 3 escalas, EM APROVAÇÃO.** Depois de 5 rodadas reprovadas (cérebro e rosto por procedimento), o usuário mandou recomeçar do zero. **Reenquadramento que destravou:** aliveness não é problema de forma, é de comportamento — Jarvis não tem forma, HAL é um círculo, Eve são dois traços. Daí `personagem/vida.js`, o **contrato de vida** com os sete sinais (respiração · atenção · antecipação · inércia · assimetria · esforço · recuperação), implementação única consumida por qualquer forma. Três corpos abstratos foram construídos lado a lado com o MESMO contrato (`personagem/vivo.html`): Enxame, Lente, Matéria. **O usuário escolheu o Enxame** ("foque no enxame, to gostando"). `personagem/enxame.html` é o laboratório dedicado: seis estados do coach (repouso · ouvindo · pensando · falando · alerta · comemorando), cada um com **silhueta própria** e não só escala, mais as três escalas de uso (240 cartão · 96 bolha · 34 selo, o de 34 julgado dentro de uma linha de fala real). Corpo **roxo** (marca), coração **coral** (que o DS já define como a voz do coach); o elétrico ficou de fora de propósito, é da marcação acesa da bússola. 165 fps com 4 instâncias, console 0/0, claro e escuro. **Próximo: aceite do usuário; depois nome, integração no Diário e lugar da revisão semanal.**
+- **SESSÃO 24 · rodadas 1-3 (histórico): direção A DESCARTADA; personagem em 2 rodadas, rodada 2 (3D) reprovada.** A bússola é **instrumento e marca**, não ator — usá-la como avatar do coach colapsa duas identidades que precisam ser distintas ("SyncLife" × "quem escreve pra você"). **Rodada 1** (`personagem/laboratorio.html`, 2D): tinta · criatura · presença — **criatura descartada** pelo usuário, tinta foi a preferida mas nenhuma atingiu o alvo. **Rodada 2** (`personagem/laboratorio-3d.html`, three.js 0.185.1): **1 A rede** (grafo de 260 nós com sinais que caminham) · **2 A trança** (fios trançados num nó tórico, material físico com iridescência e rugosidade mapeada) · **3 O núcleo** (casca facetada que abre e mostra o miolo aceso). **Próximo: escolha do corpo; depois nome, o sinal chapado pro miúdo (ver achado de escala), integração no Diário e lugar da revisão semanal.**
 
 ## Status das ondas
 
@@ -26,7 +27,7 @@
 | 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ✅ **APROVADA (r2, 2026-07-31)** | ✅ `web/` (2026-07-31) | ✅ desktop + mobile ok, console zero |
 | 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) · ✅ lote 2: Edição da semana + Life Score, D+M (2026-08-01) | ✅ **lote 1 APROVADO (2026-07-31)** · 🔴 **lote 2 REVISÃO PEDIDA (2026-08-01, sessão 23):** acesso da revisão semanal + presença/nome/voz da IA | ✅ lote 1 em `web/` (2026-08-01) · lote 2 bloqueado até a decisão do personagem | ✅ lote 1 desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) · ✅ lote 2 QA dos protótipos PASS (console 0/0, E-02 com JS off, consistência cruzada nas 6 telas) |
-| 03 | Coach: identidade + vista cheia /coach + backend N1-N2 | ✅ rodada 1 2D (tinta/criatura/presença) · ✅ rodada 2 3D (rede/trança/núcleo), 2026-08-02 | 🔴 rodada 1 reprovada (criatura descartada) · ⏳ **rodada 2 em aprovação** | – | ✅ console 0/0 nas duas rodadas, 6 estados, claro+escuro |
+| 03 | Coach: identidade + vista cheia /coach + backend N1-N2 | ✅ **O Enxame** (`personagem/enxame.html`): 6 estados + 3 escalas, sobre o contrato `vida.js` (2026-08-02) · histórico: r1 2D, r2 3D, r3 projetado, r4 três corpos | 🔴 r1-r3 reprovadas · ✅ **forma escolhida pelo usuário na r4 (Enxame)** · ⏳ **estados em aprovação** | – | ✅ console 0/0, 165 fps com 4 instâncias, claro+escuro, `prefers-reduced-motion` sem movimento |
 | 04 | 01 Finanças (8 telas, 2 lotes) | – | – | – | – |
 | 05 | 02 Futuro (4) | – | – | – | – |
 | 06 | 03 Tempo (6) | – | – | – | – |
@@ -95,6 +96,57 @@ não expõe `reducedMotion` no `emulate`.
 2 retrievals/dia) · `shadcn` ⚠️ conecta e lê o `components.json` do `web/`, mas `registries` está **vazio**,
 então `search_items_in_registries` responde "No registries are configured" — inútil até alguém declarar um
 registry. Não foi mexido (fora do escopo e o v5 é escrito à mão).
+
+### Rodada 5 — recomeço do zero: o contrato de vida, três corpos, e o Enxame escolhido
+
+Depois de cinco reprovações seguidas o usuário mandou apagar tudo sobre cérebro e rosto e recomeçar.
+**A causa raiz das cinco:** eu insistia em código desenhar coisas que o olho humano tem detector treinado
+pra reprovar. Rosto com 2% de erro não fica quase bom, fica horrível. **A saída** veio das próprias
+referências dele: Jarvis não tem forma nenhuma (anéis, partículas e luz), HAL é um círculo, Eve são dois
+traços. Logo, **aliveness é problema de comportamento, não de anatomia** — e comportamento é justamente o
+que código faz bem.
+
+**`personagem/vida.js` (novo, fonte única):** os sete sinais — 01 respiração (nunca para) · 02 atenção
+(se orienta pra você) · 03 antecipação (130ms recuando antes de ir) · 04 inércia (mola subamortecida,
+zeta ~.59) · 05 assimetria (ruído baixo em tudo) · 06 esforço (o estado tem peso) · 07 recuperação (volta
+pela mesma mola). Mais `Mistura`, que dá **uma mola por parâmetro de estado**: partes do corpo chegam
+antes das outras, e é isso que separa transição de corpo de crossfade. Consumido por `vivo.html` e
+`enxame.html`.
+
+**`personagem/vivo.html` (rodada 4):** Enxame · Lente · Matéria, mesmo contrato, só a forma muda.
+**O usuário escolheu o Enxame.** A Lente e a Matéria ficam como registro da comparação.
+
+**`personagem/enxame.html` (rodada 5, o que está em aprovação):** 6 estados × 3 escalas.
+Corpo roxo (marca) com coração coral (o DS já define coral como a voz do coach); o elétrico `#a1ff62`
+ficou **deliberadamente de fora**, é a língua da bússola.
+
+**Achados que valem pra implementação:**
+- **Raio comum produz casca de bola.** Cada ponto precisa do seu raio-alvo (`camada[i]`, expoente < 1
+  pra adensar o miolo), senão o bando sai como uma esfera de pontinhos.
+- **Sortear o núcleo por índice quebra**, porque o índice já define a latitude na espiral de Fibonacci:
+  os 12% iniciais caíram todos num polo e o miolo saiu como um risco branco atravessado. Tem que ser hash.
+- **Empilhar sprite aditivo satura em branco.** O coração virou peça própria (um `Sprite` controlado), e
+  os pontos pararam de precisar estourar.
+- **Giro uniforme faz anéis coerentes**, e anel de pontos brilhantes lê como arame. **Rotação diferencial**
+  (velocidade angular por camada) cisalha o anel e o que sobra é braço espiral, que é o que bando faz.
+- **Campo de turbulência suave move vizinhos em bloco.** Precisa de fase por ponto (`i * .017`), senão o
+  miolo anda rígido.
+- **Estado precisa de silhueta, não de escala.** Os seis saíram idênticos em tamanhos diferentes até
+  entrarem `anel` (achata contra o plano da órbita, vira disco) e `oco` (esvazia o miolo, vira casca).
+- **Achatar em Z é invisível de frente:** disco virado pra câmera continua círculo. Sem inclinar o objeto,
+  "ouvindo" saía idêntico a "repouso".
+- **`metalness` alto sem environment map renderiza quase preto** (engoliu as lâminas da íris na Lente).
+  A saída certa aqui não foi acrescentar PMREM e sim baixar o metal: verniz sobre corpo fosco lê macio, e
+  macio é o que separa o coach da bússola, que é cromo espelhado. De quebra sumiu o warning de shader que
+  o PMREM dispara no ANGLE.
+- **Aditivo não sobrevive ao tema claro:** somar coral sobre branco dá branco. O coração tem duas texturas
+  e troca de blending por tema.
+
+**QA:** console 0/0 · 165 fps com as 4 instâncias simultâneas · claro e escuro · `prefers-reduced-motion`
+sem movimento nenhum (pose por estado, redesenhada só na troca) · `noscript` explícito.
+Ganchos de QA: `window.__enxame.{estado,tema,pecas}` e `window.__vivo.{estado,tema,pecas}`.
+**Gotcha da folha de contato:** o buffer WebGL some no fim do quadro, então antes de cada `drawImage` é
+preciso chamar `peca.quadro(...)` na hora; sem isso a folha sai vazia.
 
 ### Rodada 2 — 3D (`personagem/laboratorio-3d.html`, novo)
 

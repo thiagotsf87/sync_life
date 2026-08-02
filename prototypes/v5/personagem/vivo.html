@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Três corpos vivos · v5</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%236840ff' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23f84131'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<style>
+  .wrap{--wrap-max:1320px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+  .top{padding:44px 0 26px}
+  .top .eyebrow{font:600 11px/1 var(--int);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
+  .top h1{font:500 clamp(30px,3.8vw,46px)/1.03 var(--gro);letter-spacing:-.04em;margin-top:14px}
+  .top .sub{font:400 15px/1.65 var(--int);color:var(--t2);margin-top:16px;max-width:80ch}
+  .top .sub b{color:var(--t1);font-weight:600}
+
+  /* ── controles ─────────────────────────────────────────────────── */
+  .ctl{position:sticky;top:0;z-index:20;background:var(--bg);border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);padding:14px 0;display:flex;flex-wrap:wrap;gap:22px;align-items:center}
+  .grp{display:flex;align-items:center;gap:10px}
+  .grp>span{font:600 10px/1 var(--int);letter-spacing:.15em;text-transform:uppercase;color:var(--t3)}
+  .seg{display:flex;gap:6px}
+  .seg button{font:500 13px var(--int);color:var(--t2);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:8px 15px;cursor:pointer;
+    transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+  .seg button:hover{border-color:var(--line-h);color:var(--t1)}
+  .seg button[aria-pressed="true"]{border-color:var(--roxo);color:var(--t1);background:rgba(104,64,255,.14)}
+  .seg button:focus-visible{outline:2px solid var(--roxo);outline-offset:2px}
+  .dica{font:400 12px/1.5 var(--int);color:var(--t3);margin-left:auto;max-width:34ch}
+
+  /* ── palcos ────────────────────────────────────────────────────── */
+  .palcos{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:28px 0 8px}
+  @media (max-width:1080px){.palcos{grid-template-columns:1fr;max-width:520px}}
+
+  .peca{border:1px solid var(--line);border-radius:16px;background:var(--s1);overflow:hidden;
+    transition:border-color .4s var(--ease)}
+  .peca:hover{border-color:var(--line-h)}
+  .palco{position:relative;aspect-ratio:1;background:
+    radial-gradient(circle at 50% 46%,rgba(104,64,255,.09),transparent 62%)}
+  .palco canvas{display:block;width:100%;height:100%}
+  .palco .fps{position:absolute;right:10px;top:9px;font:500 10px/1 var(--int);color:var(--t3);
+    letter-spacing:.04em;background:rgba(0,0,0,.28);padding:4px 7px;border-radius:5px}
+  html:not(.dk) .palco .fps{background:rgba(255,255,255,.6)}
+
+  .peca .txt{padding:16px 18px 18px;border-top:1px solid var(--line)}
+  .peca h2{font:500 19px/1.2 var(--gro);letter-spacing:-.02em}
+  .peca .ref{font:400 11px/1 var(--int);color:var(--t3);margin-top:5px}
+  .peca p{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .peca .olhe{font:400 13px/1.55 var(--int);color:var(--t1);margin-top:10px;
+    border-left:2px solid var(--coral);padding-left:10px}
+  .peca .olhe b{font:600 10px/1 var(--int);letter-spacing:.14em;text-transform:uppercase;
+    color:var(--coral);display:block;margin-bottom:5px}
+
+  /* ── contrato ──────────────────────────────────────────────────── */
+  .contrato{margin:34px 0 60px;border-top:1px solid var(--line);padding-top:26px}
+  .contrato h3{font:500 18px/1.2 var(--gro);letter-spacing:-.02em}
+  .contrato>p{font:400 13px/1.65 var(--int);color:var(--t2);margin-top:9px;max-width:80ch}
+  .sinais{display:grid;grid-template-columns:repeat(auto-fit,minmax(226px,1fr));gap:14px;margin-top:20px}
+  .sinal{border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .sinal .n{font:500 11px/1 var(--gro);color:var(--roxo);letter-spacing:.04em}
+  .sinal h4{font:600 13px/1.3 var(--int);margin-top:7px}
+  .sinal p{font:400 12px/1.55 var(--int);color:var(--t3);margin-top:5px}
+
+  .semjs{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:22px 0;
+    font:400 13px/1.6 var(--int);color:var(--t2)}
+
+  @media (prefers-reduced-motion:reduce){
+    .peca,.seg button{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <p class="eyebrow">Onda 03 · personagem · rodada 4</p>
+    <h1>Três corpos, um mesmo comportamento</h1>
+    <p class="sub">
+      Aliveness não vem da anatomia, vem de <b>sete sinais de comportamento</b>. Os três conceitos
+      abaixo rodam exatamente a mesma implementação desses sinais, a classe <b>Vida</b>. O que muda
+      entre eles é só a forma. Se um parecer mais vivo que o outro, é mérito da forma, não do código,
+      e é isso que a comparação está medindo.
+      Passe o mouse sobre qualquer peça: os três olham pra você.
+    </p>
+  </header>
+
+  <noscript>
+    <div class="semjs">
+      Sem JavaScript os três palcos ficam vazios, porque o conceito em teste <em>é</em> movimento.
+      A tela em volta continua legível e navegável. Na aplicação, a versão sem script cai
+      no selo estático da marca.
+    </div>
+  </noscript>
+
+  <div class="ctl">
+    <div class="grp">
+      <span>Estado</span>
+      <div class="seg" id="segEstado">
+        <button data-e="0" aria-pressed="true">Repouso</button>
+        <button data-e="1" aria-pressed="false">Pensando</button>
+      </div>
+    </div>
+    <div class="grp">
+      <span>Tema</span>
+      <div class="seg" id="segTema">
+        <button data-t="dk" aria-pressed="true">Escuro</button>
+        <button data-t="lt" aria-pressed="false">Claro</button>
+      </div>
+    </div>
+    <p class="dica">O estado troca nos três ao mesmo tempo. Repare no caminho entre um e outro, não só no destino.</p>
+  </div>
+
+  <section class="palcos">
+
+    <article class="peca">
+      <div class="palco"><canvas id="cvEnxame"></canvas><span class="fps" id="fpsEnxame">–</span></div>
+      <div class="txt">
+        <h2>O Enxame</h2>
+        <p class="ref">Murmuração de estorninhos · rede neural</p>
+        <p>Não tem forma fixa, tem coesão. Cada ponto obedece a um campo: mola pra uma casca,
+           giro tangencial, deriva de ruído. É barato e nunca fica com a forma errada,
+           porque não existe forma certa.</p>
+        <p class="olhe"><b>Olhe para</b>Ao pensar ele contrai e acelera. Dá pra ver a computação
+           acontecendo por dentro, em vez de um ícone que só avisa que ela existe.</p>
+      </div>
+    </article>
+
+    <article class="peca">
+      <div class="palco"><canvas id="cvLente"></canvas><span class="fps" id="fpsLente">–</span></div>
+      <div class="txt">
+        <h2>A Lente</h2>
+        <p class="ref">HAL 9000 · Eve · núcleo de Portal</p>
+        <p>Um objeto mecânico: aro, anéis concêntricos e íris de nove lâminas.
+           Antropomórfico sem ser rosto, então não tem como cair no vale da estranheza.
+           E uma íris continua legível a 34px, o que já resolve o selo pequeno.</p>
+        <p class="olhe"><b>Olhe para</b>Ele inclina na sua direção. Atenção é o sinal de vida mais
+           forte que existe, e essa forma é feita só disso.</p>
+      </div>
+    </article>
+
+    <article class="peca">
+      <div class="palco"><canvas id="cvMateria"></canvas><span class="fps" id="fpsMateria">–</span></div>
+      <div class="txt">
+        <h2>A Matéria</h2>
+        <p class="ref">Simbionte · matéria escura</p>
+        <p>Não é criatura, é substância que se comporta. Superfície implícita marchada na GPU,
+           com tensão superficial de verdade: os lóbulos fundem e separam, e a luz viaja por dentro
+           do corpo em vez de bater na casca.</p>
+        <p class="olhe"><b>Olhe para</b>Um bojo se forma do seu lado antes do resto do corpo chegar.
+           É o custo mais alto dos três, veja o contador de quadros.</p>
+      </div>
+    </article>
+
+  </section>
+
+  <section class="contrato">
+    <h3>O contrato de vida</h3>
+    <p>Uma classe só, <code>Vida</code>, consumida pelos três. Trocar a forma não deveria exigir
+       reescrever nenhum destes sete sinais, e é assim que dá pra apostar numa forma sem apostar
+       no comportamento junto.</p>
+    <div class="sinais">
+      <div class="sinal"><p class="n">01</p><h4>Respiração</h4><p>Nunca para. Parado por completo lê como quebrado, não como em repouso.</p></div>
+      <div class="sinal"><p class="n">02</p><h4>Atenção</h4><p>Se orienta pra você. É o que dá alma pra uma luminária da Pixar.</p></div>
+      <div class="sinal"><p class="n">03</p><h4>Antecipação</h4><p>130ms de recuo antes de agir. Sem isso, a transição vira corte.</p></div>
+      <div class="sinal"><p class="n">04</p><h4>Inércia</h4><p>Mola subamortecida: passa do alvo e assenta. Nunca interpolação linear.</p></div>
+      <div class="sinal"><p class="n">05</p><h4>Assimetria</h4><p>Ruído baixo em tudo. Simetria perfeita é a assinatura do inanimado.</p></div>
+      <div class="sinal"><p class="n">06</p><h4>Esforço</h4><p>Pensar custa: adensa, acelera, tensiona. O estado tem peso.</p></div>
+      <div class="sinal"><p class="n">07</p><h4>Recuperação</h4><p>Depois do pico volta ao repouso, e nunca exatamente igual.</p></div>
+    </div>
+  </section>
+
+</div>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://unpkg.com/three@0.185.1/build/three.module.js",
+  "three/addons/":"https://unpkg.com/three@0.185.1/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three'
+
+const REDUZ = matchMedia('(prefers-reduced-motion: reduce)').matches
+const raiz = document.documentElement
+
+// paleta v5. O elétrico (#a1ff62) fica de fora de propósito: ele é da marcação
+// acesa da bússola, e o coach não pode falar a língua da marca.
+const ROXO  = new THREE.Color('#6840ff')
+const CORAL = new THREE.Color('#f84131')
+
+// ── O contrato de vida ─────────────────────────────────────────────────
+// Os sete sinais, uma implementação só. Os três conceitos consomem daqui,
+// então a diferença entre eles é forma pura.
+class Vida {
+  constructor (semente) {
+    this.s = semente
+    this.t = 0
+    this.fase = semente * 3.1
+    this.resp = .5                        // 01
+    this.esf = 0; this.esfV = 0           // 06 + 04 + 07
+    this.preparo = 0; this.ultAlvo = 0    // 03
+    this.mx = 0; this.my = 0; this.mvx = 0; this.mvy = 0   // 02
+  }
+  passo (dt, alvo, ax, ay) {
+    if (REDUZ) { this.esf = alvo; this.resp = .5; this.mx = this.my = 0; return }
+    this.t += dt
+    // 03 antecipação: antes de subir ele recua. Sem esse recuo a troca vira corte.
+    if (alvo !== this.ultAlvo) { this.preparo = .13; this.ultAlvo = alvo }
+    this.preparo = Math.max(0, this.preparo - dt)
+    const a = this.preparo > 0 ? (alvo > .5 ? -.24 : .24) : alvo
+    // 04 inércia: mola subamortecida (zeta ~.59), passa do alvo e assenta.
+    //    07 recuperação cai de graça daqui: a volta usa a mesma mola.
+    this.esfV += ((a - this.esf) * 52 - this.esfV * 8.5) * dt
+    this.esf += this.esfV * dt
+    // 01 respiração, acelerada por 06 esforço. Fase acumulada, senão muda de
+    //    frequência dando salto.
+    this.fase += dt * (1.22 + this.esf * 1.75)
+    this.resp = .5 + .5 * (Math.sin(this.fase) * .74 + Math.sin(this.fase * .61 + this.s) * .26)
+    // 02 atenção: chega com atraso, e cada peça tem o seu tempo de reação.
+    this.mvx += ((ax - this.mx) * 30 - this.mvx * 9) * dt; this.mx += this.mvx * dt
+    this.mvy += ((ay - this.my) * 30 - this.mvy * 9) * dt; this.my += this.mvy * dt
+  }
+  // 05 assimetria: ruído determinístico e barato. Congela junto com o relógio
+  //    quando reduz, então a irregularidade fica mas o movimento some.
+  ruido (k, f) {
+    return Math.sin(this.t * f + k * 12.9898 + this.s) * .62 +
+           Math.sin(this.t * f * 1.63 + k * 78.233) * .38
+  }
+}
+
+// ── ponteiro global ────────────────────────────────────────────────────
+const PT = { x: null, y: null }
+addEventListener('pointermove', e => { PT.x = e.clientX; PT.y = e.clientY }, { passive: true })
+addEventListener('pointerleave', () => { PT.x = PT.y = null }, { passive: true })
+
+// ── infra comum de palco ───────────────────────────────────────────────
+// Cada peça tem seu contexto. Três contextos WebGL num documento é seguro,
+// e evita a ginástica de scissor pra misturar perspectiva com ortográfica.
+function palco (cv, tetoDpr) {
+  const ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, powerPreference: 'high-performance' })
+  const cx = { ren, l: 0, a: 0, retangulo: null }
+  const medir = () => {
+    const r = cv.parentElement.getBoundingClientRect()
+    cx.retangulo = r
+    const l = Math.max(1, Math.round(r.width)), a = Math.max(1, Math.round(r.height))
+    if (l === cx.l && a === cx.a) return false
+    cx.l = l; cx.a = a
+    ren.setPixelRatio(Math.min(devicePixelRatio, tetoDpr))
+    ren.setSize(l, a, false)
+    return true
+  }
+  medir()
+  new ResizeObserver(() => { medir(); cx.mudou && cx.mudou() }).observe(cv.parentElement)
+  addEventListener('scroll', () => { cx.retangulo = cv.parentElement.getBoundingClientRect() }, { passive: true })
+  cx.mira = () => {
+    if (PT.x === null || !cx.retangulo) return [0, 0]
+    const r = cx.retangulo
+    const x = (PT.x - (r.left + r.width / 2)) / (r.width / 2)
+    const y = -(PT.y - (r.top + r.height / 2)) / (r.height / 2)
+    const lim = v => Math.max(-1.5, Math.min(1.5, v))
+    return [lim(x), lim(y)]
+  }
+  return cx
+}
+
+// ═══ 1. O ENXAME ═══════════════════════════════════════════════════════
+function criarEnxame (cv) {
+  const cx = palco(cv, 2)
+  const cena = new THREE.Scene()
+  const cam = new THREE.PerspectiveCamera(42, 1, .1, 60); cam.position.z = 6.4
+  const vida = new Vida(1.7)
+
+  const N = 2400
+  const pos = new Float32Array(N * 3), vel = new Float32Array(N * 3), cor = new Float32Array(N * 3)
+  const peso = new Float32Array(N)   // 05: nem todo ponto pesa igual
+
+  // Cada ponto tem o SEU raio-alvo, não um raio comum. Casca única vira bola de
+  // pontinhos, que foi exatamente o que apareceu na primeira renderização.
+  // Expoente < 1 empilha mais gente no miolo: bando tem núcleo, não é oco.
+  const camada = new Float32Array(N)
+  for (let i = 0; i < N; i++) {
+    const u = ((i * 9301 + 49297) % 233280) / 233280
+    camada[i] = .18 + Math.pow(u, .58) * .9
+    peso[i] = .5 + ((i * 7919) % 1000) / 1000 * 1.1
+  }
+
+  // semeadura em espiral de Fibonacci: distribui sem adensar os polos
+  const plantar = R => {
+    for (let i = 0; i < N; i++) {
+      const i3 = i * 3
+      const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(Math.max(0, 1 - y * y))
+      const th = i * 2.399963, rr = R * camada[i]
+      pos[i3] = Math.cos(th) * r * rr
+      pos[i3 + 1] = y * rr
+      pos[i3 + 2] = Math.sin(th) * r * rr
+      vel[i3] = vel[i3 + 1] = vel[i3 + 2] = 0
+    }
+  }
+  plantar(1.85)
+
+  const geo = new THREE.BufferGeometry()
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+  geo.setAttribute('color', new THREE.BufferAttribute(cor, 3))
+
+  // sprite redondo e macio: ponto quadrado entrega na hora que é engine, não bicho
+  const tc = document.createElement('canvas'); tc.width = tc.height = 64
+  const g2 = tc.getContext('2d')
+  const grad = g2.createRadialGradient(32, 32, 0, 32, 32, 32)
+  grad.addColorStop(0, 'rgba(255,255,255,1)')
+  grad.addColorStop(.35, 'rgba(255,255,255,.55)')
+  grad.addColorStop(1, 'rgba(255,255,255,0)')
+  g2.fillStyle = grad; g2.fillRect(0, 0, 64, 64)
+  const tex = new THREE.CanvasTexture(tc)
+
+  const mat = new THREE.PointsMaterial({
+    size: .105, map: tex, vertexColors: true, transparent: true,
+    depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true, opacity: .95,
+  })
+  cena.add(new THREE.Points(geo, mat))
+
+  return {
+    cx, fps: 0,
+    quadro (dt, alvo, claro) {
+      vida.passo(dt, alvo, ...cx.mira())
+      const e = vida.esf
+      // 06 esforço: pensando ele adensa e acelera. 01 respiração modula o raio.
+      const R = (1.9 - e * .78) * (.94 + vida.resp * .12)
+      const giro = .5 + e * 3.6
+      const ax = vida.mx * .82, ay = vida.my * .82          // 02 a massa vai até você
+
+      if (REDUZ) { plantar(R) }
+      else {
+        const p = Math.min(dt, .033), T = vida.t
+        for (let i = 0; i < N; i++) {
+          const i3 = i * 3
+          const x = pos[i3] - ax, y = pos[i3 + 1] - ay, z = pos[i3 + 2]
+          const d = Math.sqrt(x * x + y * y + z * z) || 1e-4
+          // mola pro raio-alvo DESTE ponto: é o que segura o bando junto sem achatá-lo
+          const f = (R * camada[i] - d) * (11 + e * 24) * p
+          vel[i3] += (x / d) * f; vel[i3 + 1] += (y / d) * f; vel[i3 + 2] += (z / d) * f
+          // giro tangencial em torno de um eixo inclinado, mais rápido sob esforço
+          vel[i3] += -z * giro * p * .6; vel[i3 + 2] += x * giro * p * .6
+          // campo turbulento: o que faz nascer filamento e vazio dentro do bando.
+          // Sem isso o conjunto fica homogêneo e lê como partícula de tela de proteção.
+          const tb = .8 + e * 2.6
+          vel[i3] += Math.sin(y * 2.9 - z * 2.1 + T * .8) * tb * p
+          vel[i3 + 1] += Math.sin(z * 3.1 - x * 2.4 + T * 1.1) * tb * p
+          vel[i3 + 2] += Math.sin(x * 2.7 - y * 3.3 + T * .95) * tb * p
+          const arr = 1 - (2.6 + e * 2.4) * p                // arrasto
+          vel[i3] *= arr; vel[i3 + 1] *= arr; vel[i3 + 2] *= arr
+          pos[i3] += vel[i3] * p; pos[i3 + 1] += vel[i3 + 1] * p; pos[i3 + 2] += vel[i3 + 2] * p
+        }
+      }
+      // cor por profundidade no bando: núcleo quente, periferia fria
+      for (let i = 0; i < N; i++) {
+        const i3 = i * 3
+        const dc = Math.sqrt(pos[i3] ** 2 + pos[i3 + 1] ** 2 + pos[i3 + 2] ** 2)
+        const q = Math.min(1, Math.max(0, (dc - .28) / (R * 1.05)))
+        const b = (claro ? .55 : 1) * peso[i] * (.62 + (1 - q) * (1.05 + e * .9))
+        cor[i3] = (CORAL.r * (1 - q) + ROXO.r * q) * b
+        cor[i3 + 1] = (CORAL.g * (1 - q) + ROXO.g * q) * b
+        cor[i3 + 2] = (CORAL.b * (1 - q) + ROXO.b * q) * b
+      }
+      geo.attributes.position.needsUpdate = true
+      geo.attributes.color.needsUpdate = true
+      mat.blending = claro ? THREE.NormalBlending : THREE.AdditiveBlending
+      mat.opacity = claro ? .8 : .95
+      if (cam.aspect !== cx.l / cx.a) { cam.aspect = cx.l / cx.a; cam.updateProjectionMatrix() }
+      cx.ren.render(cena, cam)
+    },
+  }
+}
+
+// ═══ 2. A LENTE ════════════════════════════════════════════════════════
+function criarLente (cv) {
+  const cx = palco(cv, 2)
+  const cena = new THREE.Scene()
+  const cam = new THREE.PerspectiveCamera(36, 1, .1, 60); cam.position.z = 5.2
+  const vida = new Vida(.4)
+  const grupo = new THREE.Group(); cena.add(grupo)
+
+  // Metal alto sem environment map renderiza quase preto, e foi o que engoliu as
+  // lâminas na primeira renderização. A saída não é acrescentar um ambiente e sim
+  // baixar o metal: verniz sobre corpo fosco lê macio, e macio é justamente o que
+  // separa o coach da bússola, que é cromo espelhado.
+  const metal = (c, m, r, cc = .55) => new THREE.MeshPhysicalMaterial({
+    color: c, metalness: m, roughness: r, clearcoat: cc, clearcoatRoughness: .28,
+  })
+  const mAro = metal(0x3a3358, .25, .38, .85)
+  const mAnel = metal(0x4a3f78, .2, .32, .7)
+  const mLam = metal(0x2e2848, .12, .5, .45)
+
+  const aro = new THREE.Mesh(new THREE.TorusGeometry(1.2, .055, 18, 110), mAro); grupo.add(aro)
+  const fundo = new THREE.Mesh(new THREE.CircleGeometry(1.18, 72),
+    new THREE.MeshStandardMaterial({ color: 0x0d0b16, metalness: .2, roughness: .9 }))
+  fundo.position.z = -.16; grupo.add(fundo)
+
+  // três anéis internos: parados no repouso, giroscópio ao pensar
+  const anel = (r, t, s) => { const m = new THREE.Mesh(new THREE.TorusGeometry(r, t, 12, 86), mAnel); grupo.add(m); m.userData.v = s; return m }
+  const a1 = anel(.98, .019, 1), a2 = anel(.8, .015, -1), a3 = anel(.63, .012, 1)
+
+  // íris de nove lâminas. O pivô fica na borda e a lâmina aponta PRA DENTRO:
+  // em rotação = ângulo do pivô, as pontas se encontram no centro (fechada);
+  // somar abertura gira a ponta e abre o furo. Larga no pivô e afilada na ponta,
+  // senão sobra vão entre lâminas na borda.
+  const NL = 9, Rp = 1.02
+  const forma = new THREE.Shape()
+  forma.moveTo(0, .35)
+  forma.lineTo(-.5, .25)
+  forma.quadraticCurveTo(-.95, .16, -1.05, -.02)
+  forma.quadraticCurveTo(-.92, -.2, -.48, -.29)
+  forma.lineTo(0, -.35)
+  forma.closePath()
+  const gLam = new THREE.ExtrudeGeometry(forma, { depth: .035, bevelEnabled: false })
+  const laminas = []
+  for (let k = 0; k < NL; k++) {
+    const th = (k / NL) * Math.PI * 2
+    const m = new THREE.Mesh(gLam, mLam)
+    m.position.set(Math.cos(th) * Rp, Math.sin(th) * Rp, -.03 + k * .0035)
+    m.userData.th = th
+    grupo.add(m); laminas.push(m)
+  }
+
+  // núcleo: a luz viva, na cor da voz do coach
+  const nucleo = new THREE.Mesh(new THREE.SphereGeometry(.15, 32, 24),
+    new THREE.MeshStandardMaterial({ color: 0x2a1030, emissive: CORAL, emissiveIntensity: 1.1, roughness: .5 }))
+  nucleo.position.z = -.13; grupo.add(nucleo)   // atrás das lâminas: a íris fecha por cima dele
+
+  const luzNucleo = new THREE.PointLight(CORAL, 2.2, 6); luzNucleo.position.set(0, 0, .1); grupo.add(luzNucleo)
+  cena.add(new THREE.AmbientLight(0xffffff, .28))
+  const chave = new THREE.DirectionalLight(ROXO, 3.1); chave.position.set(-2.4, 3, 2.6); cena.add(chave)
+  const contra = new THREE.DirectionalLight(0xffffff, 1.1); contra.position.set(2.6, -1.4, -2); cena.add(contra)
+
+  return {
+    cx, fps: 0,
+    quadro (dt, alvo, claro) {
+      vida.passo(dt, alvo, ...cx.mira())
+      const e = vida.esf, r = vida.resp
+      // 01 respiração vira dilatação da íris. 06 esforço fecha a íris, mas não
+      // até apagar o núcleo: fechar de todo lê como olho cego, não como foco.
+      const abert = Math.max(0, Math.min(1, (.64 + r * .15) * (1 - e * .66)))
+      for (let k = 0; k < NL; k++) {
+        // 05 assimetria: cada lâmina fecha com um atraso próprio
+        laminas[k].rotation.z = laminas[k].userData.th + abert * .92 + vida.ruido(k, .5) * .014
+      }
+      // anéis: quase parados em repouso, giroscópio sob esforço
+      a1.rotation.z += dt * (.28 + e * 3.2) * a1.userData.v
+      a2.rotation.x += dt * (.1 + e * 2.6) * a2.userData.v; a2.rotation.z = e * 1.15
+      a3.rotation.y += dt * (.14 + e * 3) * a3.userData.v; a3.rotation.x = e * .95
+      // 02 atenção: o corpo inteiro inclina pra você. É o sinal principal desta forma.
+      grupo.rotation.y = vida.mx * .42
+      grupo.rotation.x = -vida.my * .34
+      grupo.position.x = vida.mx * .12; grupo.position.y = vida.my * .1
+      // núcleo pulsa com a respiração e queima sob esforço
+      const s = .8 + r * .3 + e * .35
+      nucleo.scale.setScalar(s)
+      nucleo.material.emissiveIntensity = .75 + r * .5 + e * 1.9
+      luzNucleo.intensity = (1.4 + r * .8 + e * 3) * (claro ? .6 : 1)
+      chave.intensity = claro ? 4.4 : 3.1
+      if (cam.aspect !== cx.l / cx.a) { cam.aspect = cx.l / cx.a; cam.updateProjectionMatrix() }
+      cx.ren.render(cena, cam)
+    },
+  }
+}
+
+// ═══ 3. A MATÉRIA ══════════════════════════════════════════════════════
+function criarMateria (cv) {
+  const cx = palco(cv, 1.5)     // marcha de raio custa: teto de dpr mais baixo
+  const cena = new THREE.Scene()
+  const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
+  const vida = new Vida(2.3)
+
+  const uni = {
+    uT: { value: 0 }, uEsf: { value: 0 }, uResp: { value: .5 },
+    uMira: { value: new THREE.Vector2() }, uClaro: { value: 0 },
+  }
+
+  const mat = new THREE.ShaderMaterial({
+    uniforms: uni, transparent: true,
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv * 2.0 - 1.0; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+    fragmentShader: `
+      precision highp float;
+      varying vec2 vUv;
+      uniform float uT, uEsf, uResp, uClaro;
+      uniform vec2 uMira;
+
+      const vec3 ROXO  = vec3(.408, .251, 1.0);
+      const vec3 CORAL = vec3(.973, .255, .192);
+
+      // união macia: é ela que dá tensão superficial. Sem isso são bolas coladas.
+      float smin(float a, float b, float k){
+        float h = clamp(.5 + .5 * (b - a) / k, 0.0, 1.0);
+        return mix(b, a, h) - k * h * (1.0 - h);
+      }
+
+      float mapa(vec3 p){
+        float e = uEsf;
+        // 01 respiração: o corpo inteiro incha e desincha, sempre.
+        float d = length(p) - (.5 + uResp * .07 - e * .05);
+        // 06 esforço: os lóbulos revolvem por dentro, rápido, e o corpo se fecha.
+        float v = .34 + e * 2.7;
+        for (int i = 0; i < 4; i++){
+          float f = float(i);
+          float a = uT * v * (.62 + f * .21) + f * 1.93;
+          float rr = (.44 - e * .15) + .055 * sin(uT * (.8 + f * .37) + f);
+          vec3 c = vec3(cos(a) * rr, sin(a * .83 + f) * rr * .74, sin(a) * rr);
+          d = smin(d, length(p - c) - (.25 - e * .04), .3 - e * .09);
+        }
+        // 02 atenção: um bojo se forma do seu lado antes do resto do corpo chegar.
+        //    Com a mira em zero ele encolhe e some dentro do corpo, que é o certo:
+        //    na primeira versão sobrava um caroço permanente virado pra câmera.
+        float ma = clamp(length(uMira), 0.0, 1.2);
+        vec3 m = normalize(vec3(uMira, .85)) * .5;
+        d = smin(d, length(p - m) - (.05 + ma * .17), .38);
+        return d;
+      }
+
+      vec3 normal(vec3 p){
+        vec2 h = vec2(.0022, 0.0);
+        return normalize(vec3(mapa(p + h.xyy) - mapa(p - h.xyy),
+                              mapa(p + h.yxy) - mapa(p - h.yxy),
+                              mapa(p + h.yyx) - mapa(p - h.yyx)));
+      }
+
+      void main(){
+        vec3 ro = vec3(0.0, 0.0, 2.6);
+        vec3 rd = normalize(vec3(vUv * 1.05, -2.0));
+        float t = 0.0, dmin = 1e9;
+        bool bateu = false;
+        for (int i = 0; i < 68; i++){
+          vec3 p = ro + rd * t;
+          float d = mapa(p);
+          dmin = min(dmin, d);
+          if (d < .0025){ bateu = true; break; }
+          t += d * .88;
+          if (t > 5.0) break;
+        }
+        if (!bateu){
+          // halo: o corpo emite antes da borda, senão o recorte fica de adesivo
+          float g = exp(-dmin * 5.2) * (.16 + uEsf * .2);
+          gl_FragColor = vec4(mix(ROXO, CORAL, .3) * g, g * (uClaro > .5 ? .5 : .85));
+          return;
+        }
+        vec3 p = ro + rd * t;
+        vec3 n = normal(p);
+        vec3 ldir = normalize(vec3(-.45, .72, .6));
+        float dif = max(dot(n, ldir), 0.0);
+        float bri = pow(max(dot(reflect(-ldir, n), -rd), 0.0), 26.0);
+        float fres = pow(1.0 - max(dot(n, -rd), 0.0), 2.2);
+        // luz por dentro: mede quanto corpo existe atrás deste ponto. Onde é fino
+        // a luz atravessa e acende. É o que separa matéria viva de casca de plástico,
+        // e era o que faltava na primeira versão (o termo saturava em quase zero).
+        float grossura = -mapa(p - n * .28);
+        float dentro = exp(-max(grossura, 0.0) * 4.0);
+        vec3 c = ROXO * (.14 + dif * .34)
+               + CORAL * dentro * (.42 + uEsf * .5)
+               + mix(ROXO, CORAL, .45) * fres * (.5 + uEsf * .5)
+               + vec3(1.0, .84, .8) * bri * .4;
+        c = mix(c, c * .72 + vec3(.04), uClaro);
+        gl_FragColor = vec4(c, 1.0);
+      }`,
+  })
+  cena.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat))
+
+  return {
+    cx, fps: 0,
+    quadro (dt, alvo, claro) {
+      vida.passo(dt, alvo, ...cx.mira())
+      // com reduz o relógio fica parado, mas o estado ainda muda a forma:
+      // uma pose por estado, sem animação nenhuma entre elas.
+      uni.uT.value = REDUZ ? (alvo > .5 ? 4.2 : 1.1) : vida.t
+      uni.uEsf.value = vida.esf
+      uni.uResp.value = vida.resp
+      uni.uMira.value.set(vida.mx, vida.my)
+      uni.uClaro.value = claro ? 1 : 0
+      cx.ren.render(cena, cam)
+    },
+  }
+}
+
+// ── orquestra ──────────────────────────────────────────────────────────
+const pecas = [
+  { p: criarEnxame(document.getElementById('cvEnxame')), fps: document.getElementById('fpsEnxame'), q: 0, ac: 0 },
+  { p: criarLente(document.getElementById('cvLente')), fps: document.getElementById('fpsLente'), q: 0, ac: 0 },
+  { p: criarMateria(document.getElementById('cvMateria')), fps: document.getElementById('fpsMateria'), q: 0, ac: 0 },
+]
+
+let estado = 0
+let claro = false
+let ultimo = performance.now()
+
+function desenhar (dt) {
+  for (const it of pecas) {
+    const t0 = performance.now()
+    it.p.quadro(dt, estado, claro)
+    it.ac += performance.now() - t0
+    it.q++
+  }
+}
+
+let acumulado = 0
+function laco (agora) {
+  const dt = Math.min((agora - ultimo) / 1000, .05)
+  ultimo = agora
+  if (!REDUZ) {
+    desenhar(dt)
+    acumulado += dt
+    if (acumulado > 1) {
+      for (const it of pecas) {
+        it.fps.textContent = Math.round(it.q / acumulado) + ' fps · ' + (it.ac / it.q).toFixed(1) + ' ms'
+        it.q = 0; it.ac = 0
+      }
+      acumulado = 0
+    }
+    requestAnimationFrame(laco)
+  }
+}
+
+// com reduz: uma pose por estado, redesenhada só quando o estado muda.
+function poseUnica () {
+  for (let i = 0; i < 3; i++) desenhar(1 / 60)
+  for (const it of pecas) { it.fps.textContent = 'estático'; it.q = 0; it.ac = 0 }
+}
+
+if (REDUZ) poseUnica()
+else requestAnimationFrame(laco)
+
+// ── controles ──────────────────────────────────────────────────────────
+function segmento (id, aplicar) {
+  const el = document.getElementById(id)
+  el.addEventListener('click', ev => {
+    const b = ev.target.closest('button'); if (!b) return
+    for (const o of el.querySelectorAll('button')) o.setAttribute('aria-pressed', String(o === b))
+    aplicar(b)
+  })
+}
+segmento('segEstado', b => { estado = Number(b.dataset.e); if (REDUZ) poseUnica() })
+segmento('segTema', b => {
+  claro = b.dataset.t === 'lt'
+  raiz.classList.toggle('dk', !claro)
+  if (REDUZ) poseUnica()
+})
+
+// atalho de QA: a folha de contato precisa de um jeito de forçar estado sem clique
+window.__vivo = {
+  estado: v => { estado = v; if (REDUZ) poseUnica() },
+  tema: v => { claro = v === 'lt'; raiz.classList.toggle('dk', !claro); if (REDUZ) poseUnica() },
+  pecas,
+}
+</script>
+</body>
+</html>

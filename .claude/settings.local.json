@@ -1,6 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "bypassPermissions",
     "allow": [
       "Bash(*)",
       "Write(*)",
@@ -13,7 +12,17 @@
       "mcp__playwright-test__browser_navigate",
       "mcp__playwright-test__browser_open",
       "PowerShell(Start-Process \"C:\\\\Projetos\\\\sync_life\\\\docs\\\\prototypes-v4\\\\mockup-scene.html\"; Start-Sleep 1; Start-Process \"C:\\\\Projetos\\\\sync_life\\\\docs\\\\prototypes-v4\\\\interactive-dashboard.html\")",
-      "Skill(update-config)"
-    ]
-  }
+      "Skill(update-config)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8127 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { $p=Get-CimInstance Win32_Process -Filter \"ProcessId=$\\($_.OwningProcess\\)\"; \"PID $\\($p.ProcessId\\) :: $\\($p.CommandLine\\)\" }; \"--- todas as http.server ---\"; Get-CimInstance Win32_Process -Filter \"Name like 'python%'\" | ForEach-Object { \"PID $\\($_.ProcessId\\) :: $\\($_.CommandLine\\)\" })",
+      "WebSearch",
+      "mcp__chrome-devtools__*",
+      "mcp__shadcn__*",
+      "mcp__magic__*"
+    ],
+    "defaultMode": "bypassPermissions"
+  },
+  "enabledMcpjsonServers": [
+    "chrome-devtools",
+    "shadcn"
+  ]
 }
