@@ -34,8 +34,16 @@
   .cena{display:grid;grid-template-columns:1fr 320px;gap:26px;align-items:start;padding:30px 0 10px}
   @media (max-width:940px){.cena{grid-template-columns:1fr}}
 
-  .palco{position:relative;aspect-ratio:1;max-height:560px;border:1px solid var(--line);border-radius:18px;
-    background:radial-gradient(circle at 50% 47%,rgba(104,64,255,.1),transparent 64%);overflow:hidden}
+  /* O enxame é OBJETO SEMPRE ESCURO (DS v5 §2.2, mesma regra da pill nav e das
+     mini-telas): carrega a própria chapa escura mesmo em página clara. Não é
+     preferência, é limite do meio — luz aditiva não brilha sobre fundo claro,
+     lá só dá pra subtrair. */
+  .chapa{background-color:#151313;
+    background-image:radial-gradient(circle at 50% 47%,rgba(104,64,255,.14),transparent 64%)}
+  html:not(.dk) .chapa{border-color:rgba(21,19,19,.16)}
+
+  .palco{position:relative;aspect-ratio:1;max-height:560px;border:1px solid var(--line);
+    border-radius:18px;overflow:hidden}
   .palco canvas{display:block;width:100%;height:100%}
   .palco .fps{position:absolute;right:12px;top:11px;font:500 10px/1 var(--int);color:var(--t3);
     background:rgba(0,0,0,.3);padding:5px 8px;border-radius:5px}
@@ -57,8 +65,7 @@
   .escalas>p{font:400 13px/1.65 var(--int);color:var(--t2);margin-top:9px;max-width:78ch}
   .fila{display:flex;gap:34px;align-items:flex-end;flex-wrap:wrap;margin-top:24px}
   .amostra{text-align:center}
-  .amostra .caixa{border:1px solid var(--line);border-radius:14px;overflow:hidden;
-    background:radial-gradient(circle at 50% 47%,rgba(104,64,255,.1),transparent 66%)}
+  .amostra .caixa{border:1px solid var(--line);border-radius:14px;overflow:hidden}
   .amostra canvas{display:block;width:100%;height:100%}
   .amostra .rot{font:400 11px/1.4 var(--int);color:var(--t3);margin-top:10px}
   .amostra .rot b{display:block;color:var(--t1);font-weight:600;font-size:12px}
@@ -66,8 +73,8 @@
   /* linha do coach: o selo pequeno julgado no lugar onde ele vai viver */
   .linha{flex:1;min-width:300px;border:1px solid var(--line);border-radius:14px;padding:15px 17px;
     background:var(--s1);display:flex;gap:13px;align-items:flex-start}
-  .linha .selo{width:34px;height:34px;flex:none;border-radius:9px;overflow:hidden;
-    background:radial-gradient(circle at 50% 48%,rgba(104,64,255,.2),transparent 70%)}
+  /* o selo é a prova da regra: chapa escura de 34px dentro de um cartão claro */
+  .linha .selo{width:34px;height:34px;flex:none;border-radius:9px;overflow:hidden}
   .linha .selo canvas{display:block;width:100%;height:100%}
   .linha .fala .quem{font:600 10px/1 var(--int);letter-spacing:.14em;text-transform:uppercase;color:var(--t3)}
   .linha .fala p{font:400 13px/1.6 var(--int);color:var(--t1);margin-top:7px}
@@ -121,16 +128,17 @@
       </div>
     </div>
     <div class="grp">
-      <span>Tema</span>
+      <span>Página</span>
       <div class="seg" id="segTema">
-        <button data-t="dk" aria-pressed="true">Escuro</button>
-        <button data-t="lt" aria-pressed="false">Claro</button>
+        <button data-t="dk" aria-pressed="true">Escura</button>
+        <button data-t="lt" aria-pressed="false">Clara</button>
       </div>
     </div>
+    <p class="dica">A página muda, o enxame não: ele leva a própria chapa escura junto.</p>
   </div>
 
   <section class="cena">
-    <div class="palco"><canvas id="cvPalco"></canvas><span class="fps" id="fps">–</span></div>
+    <div class="palco chapa"><canvas id="cvPalco"></canvas><span class="fps" id="fps">–</span></div>
     <div class="leitura">
       <h2 id="ttlEstado">Repouso</h2>
       <p class="frase" id="txtEstado"></p>
@@ -152,18 +160,20 @@
     <h3>Nas três escalas</h3>
     <p>O selo pequeno é onde conceito de partícula costuma morrer: 34px de poeira não lê como nada.
        A saída aqui é o núcleo. Quanto menor a peça, menos pontos e mais peso no miolo, até sobrar
-       um ponto de luz com quatro satélites. Todas as amostras rodam o estado escolhido acima.</p>
+       um ponto de luz com quatro satélites. Todas as amostras rodam o estado escolhido acima.
+       Troque a página pra clara e olhe o selo de 34px dentro do cartão branco: ele continua em chapa
+       escura, que é a regra dos objetos sempre escuros.</p>
     <div class="fila">
       <div class="amostra">
-        <div class="caixa" style="width:240px;height:240px"><canvas id="cv240"></canvas></div>
+        <div class="caixa chapa" style="width:240px;height:240px"><canvas id="cv240"></canvas></div>
         <p class="rot"><b>240px</b>cartão, hero do diário</p>
       </div>
       <div class="amostra">
-        <div class="caixa" style="width:96px;height:96px"><canvas id="cv96"></canvas></div>
+        <div class="caixa chapa" style="width:96px;height:96px"><canvas id="cv96"></canvas></div>
         <p class="rot"><b>96px</b>bolha do coach</p>
       </div>
       <div class="linha">
-        <div class="selo"><canvas id="cv34"></canvas></div>
+        <div class="selo chapa"><canvas id="cv34"></canvas></div>
         <div class="fala">
           <p class="quem">Coach · 34px em uso</p>
           <p>Você fechou a semana com R$ 412 a menos em delivery. Foi a maior queda desde março,
@@ -186,6 +196,9 @@
           quem não distingue vermelho de roxo.</li>
       <li><b>Ouvindo achata.</b> O bando vira antena virada pra você, e desacelera. É o oposto de
           pensando, que fecha e acelera.</li>
+      <li><b>Ele nunca é claro.</b> Luz aditiva não brilha sobre fundo claro, lá só dá pra subtrair.
+          Então o enxame não se adapta ao tema: ele é objeto sempre escuro, como a pill nav e as
+          mini-telas do DS, e leva a própria chapa pra dentro da folha clara do briefing.</li>
       <li><b>Um contrato só.</b> Os sete sinais moram em <code>vida.js</code> e valem pra qualquer forma.
           Se o Enxame cair depois, o comportamento sobrevive.</li>
     </ul>
@@ -292,35 +305,24 @@ function criarEnxame (cv, perfil) {
   // em branco e o miolo saía como um risco rígido na tela. Um brilho só, com
   // tamanho controlado, lê como coração e é exatamente o que sobra quando a peça
   // encolhe pra 34px. Coral porque no DS coral já é a voz do coach.
-  //
-  // Duas texturas porque o coração não sobrevive à troca de tema com uma só:
-  // somar coral sobre fundo branco dá branco, então no claro ele precisa de
-  // mistura normal e de um miolo saturado, sem o branco quente do escuro.
-  const texNucleo = paraClaro => {
-    const c = document.createElement('canvas'); c.width = c.height = 128
-    const g = c.getContext('2d')
-    const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64)
-    if (paraClaro) {
-      gr.addColorStop(0, 'rgba(196,28,16,.96)'); gr.addColorStop(.2, 'rgba(248,65,49,.62)')
-      gr.addColorStop(.58, 'rgba(248,65,49,.13)'); gr.addColorStop(1, 'rgba(248,65,49,0)')
-    } else {
-      gr.addColorStop(0, 'rgba(255,238,230,.92)'); gr.addColorStop(.16, 'rgba(248,65,49,.66)')
-      gr.addColorStop(.52, 'rgba(248,65,49,.15)'); gr.addColorStop(1, 'rgba(248,65,49,0)')
-    }
-    g.fillStyle = gr; g.fillRect(0, 0, 128, 128)
-    return new THREE.CanvasTexture(c)
-  }
-  const texEscuro = texNucleo(false), texClaro = texNucleo(true)
+  const tn = document.createElement('canvas'); tn.width = tn.height = 128
+  const gn = tn.getContext('2d')
+  const grn = gn.createRadialGradient(64, 64, 0, 64, 64, 64)
+  grn.addColorStop(0, 'rgba(255,238,230,.92)'); grn.addColorStop(.16, 'rgba(248,65,49,.66)')
+  grn.addColorStop(.52, 'rgba(248,65,49,.15)'); grn.addColorStop(1, 'rgba(248,65,49,0)')
+  gn.fillStyle = grn; gn.fillRect(0, 0, 128, 128)
   const nucleo = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: texEscuro, transparent: true, depthWrite: false,
+    map: new THREE.CanvasTexture(tn), transparent: true, depthWrite: false,
     blending: THREE.AdditiveBlending, opacity: .9,
   }))
   cena.add(nucleo)
-  let ultimoTema = false
 
   return {
     cx, mist,
-    quadro (dt, estado, claro) {
+    // sem ramo pra tema claro: o enxame só existe sobre chapa escura (ver .chapa
+    // no CSS). Tentar adaptá-lo ao claro custava as duas texturas de núcleo, a
+    // troca de blending e o corte de brilho, e entregava uma versão pior.
+    quadro (dt, estado) {
       const alvo = ESTADOS[estado]
       // o esforço genérico serve de trilho pra respiração e antecipação;
       // o detalhe do estado vem da mistura
@@ -388,7 +390,7 @@ function criarEnxame (cv, perfil) {
         const i3 = i * 3
         const dc = Math.sqrt(pos[i3] ** 2 + pos[i3 + 1] ** 2 + pos[i3 + 2] ** 2)
         const q = Math.max(0, Math.min(1, (dc - .22 * R) / (R * (.6 + calor * .55))))
-        const b = (claro ? .55 : 1) * peso[i] * (.4 + (1 - q) * (.95 + calor * .9))
+        const b = peso[i] * (.4 + (1 - q) * (.95 + calor * .9))
         cor[i3] = (CORAL.r * (1 - q) + ROXO.r * q) * b
         cor[i3 + 1] = (CORAL.g * (1 - q) + ROXO.g * q) * b
         cor[i3 + 2] = (CORAL.b * (1 - q) + ROXO.b * q) * b
@@ -399,19 +401,11 @@ function criarEnxame (cv, perfil) {
       pontos.rotation.x = achata * 1.0 + anel * .44
       geo.attributes.position.needsUpdate = true
       geo.attributes.color.needsUpdate = true
-      mat.blending = claro ? THREE.NormalBlending : THREE.AdditiveBlending
-      mat.opacity = claro ? .82 : .95
       // o coração respira e esquenta com o estado, e acompanha a atenção junto
       // com o resto do bando
       nucleo.position.set(ax, ay, 0)
-      nucleo.scale.setScalar((claro ? .58 : .78) * compacto + (vida.resp * .2 + calor * .55) * compacto)
-      nucleo.material.opacity = (claro ? .8 : .9) * (.62 + calor * .45)
-      if (claro !== ultimoTema) {
-        ultimoTema = claro
-        nucleo.material.map = claro ? texClaro : texEscuro
-        nucleo.material.blending = claro ? THREE.NormalBlending : THREE.AdditiveBlending
-        nucleo.material.needsUpdate = true
-      }
+      nucleo.scale.setScalar((.78 + vida.resp * .2 + calor * .55) * compacto)
+      nucleo.material.opacity = .9 * (.62 + calor * .45)
       if (cam.aspect !== cx.l / cx.a) { cam.aspect = cx.l / cx.a; cam.updateProjectionMatrix() }
       cx.ren.render(cena, cam)
     },
@@ -433,7 +427,7 @@ let claro = false
 let ultimo = performance.now(), acum = 0, quadros = 0
 const elFps = document.getElementById('fps')
 
-function desenhar (dt) { for (const p of pecas) p.quadro(dt, estado, claro) }
+function desenhar (dt) { for (const p of pecas) p.quadro(dt, estado) }
 
 function laco (agora) {
   const dt = Math.min((agora - ultimo) / 1000, .05); ultimo = agora
