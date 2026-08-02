@@ -5,23 +5,65 @@
 > Regras invioláveis: fidelidade ao `DESIGN-SYSTEM-v5.md` (protótipos vencem em divergência); protótipo → aprovação
 > explícita do usuário → implementação → teste de identidade; mobile = protótipo dedicado por tela; handoff toda sessão.
 
-## Retomada rápida (pra nova sessão)
+## Onde estamos
 
-- **Branch:** `poc/ds-v5`. Servir: `python -m http.server 8123` em `prototypes/v5/` → hub em `http://localhost:8123/`. (QA: validar com `?v=rN` por causa do cache do http.server.)
-- **Dois protótipos de landing:** `landing/landing.html` = **r4 segura** (congelada, tag `poc-landing-r4`) · `landing/landing-viva.html` = **r15 APROVADA em 2026-07-30** (tag `poc-landing-viva-r15`).
-- **✅ LANDING DESKTOP APROVADA (r15):** aurora global azul/lilás/roxo passeando atrás das áreas claras · palcos produto/IA sem pin com coreografia na travessia (voo com encaixe × pop de mensageiro) · banda roxa sólida da IA · pricing em 2 cartões iguais · FAQ 2 colunas · wordmark gigante inteiro · copy vendável com números canônicos. Já aprovados antes: marca 3D cromo líquido (DS §5), bússola WebGL (DS §5.6), seção "As oito áreas".
-- **✅ ONDA 0 IMPLEMENTADA em `web/` (2026-07-30):** rota `/` agora renderiza a landing v5 (`LandingV5` = árvores `LandingVivaDesktop` r15 + `LandingVivaMobile` m1, CSS decide qual aparece em 1024px; árvore oculta = E-02 estático). Fundação A no lugar: `styles/{tokens-v5,v5,bussola-3d}.css` escopados sob `.v5`, Inter+Caveat no `layout.tsx`, `lib/v5/{bussola-3d,viva,compass-gl}.ts`, deps gsap+lenis+three. Teste de identidade: desktop DELTA 0px em todas as âncoras (doc 6947px idêntico); mobile idêntico em device (no preview desktop o protótipo perde 15px pra scrollbar nativa; o app usa a scrollbar do globals v3). Servir local: `npx next start -p 3006` (porta 3006; se EADDRINUSE, matar o listener antigo).
-- **✅ MOBILE m1 APROVADO (2026-07-30, tag `poc-landing-viva-mobile-m1`):** `landing/landing-viva.mobile.html` (390×844, dedicado) porta a r15 inteira pro toque: aurora global, arco com régua de sintonia, bússola WebGL (DPR 1) com fallback CSS, coreografia em scrub por elemento (voo com encaixe × pop de mensageiro), pricing empilhado, wordmark inteiro. Scroll nativo, sem Lenis.
-- **✅ ONDA 1 COMPLETA (2026-07-31):** protótipos aprovados (tag `poc-onda1-publico-auth-r2`) e IMPLEMENTADOS em `web/`: `/pricing` (página real, era redirect), `/login`, `/cadastro`, `/esqueceu-senha`, `/redefinir-senha`, `/onboarding`, todos no v5 com a lógica Supabase do v3 preservada. QA de identidade em `next start -p 3006`: pricing delta 0 (doc 3816px idêntico), tipografia exata nas 6, console zero em 12 navegações.
-- **✅ ONDA 2 LOTE 1 IMPLEMENTADA em `web/` (2026-08-01):** protótipos aprovados em 2026-07-31 (spec `docs/superpowers/specs/2026-07-31-coach-diario-v5-design.md`) e no ar: `/dashboard` é o **Diário** v5 (briefing cacheado do coach + check-in humor/linha + "Suas áreas" por `profiles.active_modules`) dentro do route group **`(app-v5)`** com chrome próprio (`ChromeV5`) e o **coach como camada global** (`CamadaCoach`, gatilho no bar + ask da folha, streaming do Groq). Backend novo: migration `027_diario_v5.sql` (`coach_briefs` + `daily_checkins`, RLS per-user) e `/api/ai/diario-brief`. `(app)/dashboard/page.tsx` foi DELETADO; `review/` e `score/` seguem no shell v3 (lote 2). Servir: `node node_modules/next/dist/bin/next start -p 3006` (o `npx next start` dá exit 127 neste ambiente).
-- **⏳ ONDA 2 LOTE 2 PROTOTIPADO, EM APROVAÇÃO (2026-08-01):** spec `docs/superpowers/specs/2026-08-01-onda2-lote2-review-score-design.md` — a `/dashboard/review` vira **"A edição da semana"** (carta semanal do coach sobre dados reais + fechamento explícito que persiste e conta badge; sai o formato de slides e a janela dom 20h–qua) e a `/dashboard/score` vira **"A anatomia do número"** (fonte única `useScoreEngine`, curva de 30 dias, peso e contribuição por área). Protótipos: `app/{review-semanal,life-score}{.html,.mobile.html}`, linkados no hub. QA PASS sem fixes. **Próximo: aceite do usuário no hub; depois implementação do lote 2 em `web/` (migration `028` reconciliando `weekly_reviews` + `/api/ai/review-brief` + as 2 rotas indo pra `(app-v5)`) e Onda 3 (vista cheia `/coach` + N2).**
-- **Stack decidida:** three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro); anime.js dispensada. Token pendente: verde-delta no claro `#44a616` (agora também no ticker/marquee).
-- **🔴 DECISÃO ABERTA que trava o lote 2 (2026-08-01, sessão 23):** o usuário **não aprovou** o lote 2 como está. Dois pedidos: (1) o ponto de acesso da revisão semanal está ruim, e (2) o coach está apagado, sem presença nem personalidade — quer **nome próprio**, representação visual (levantou "simbionte cromado 3D") e **voz** (referência: Jarvis). Análise, direções A/B/C e shortlist de nomes na sessão 23 abaixo. **Nada foi implementado; aguarda a escolha do usuário.**
-- **⏳ SESSÃO 24 · RECOMEÇO E ESCOLHA (2026-08-02): O ENXAME está de pé, com 6 estados e 3 escalas, EM APROVAÇÃO.** Depois de 5 rodadas reprovadas (cérebro e rosto por procedimento), o usuário mandou recomeçar do zero. **Reenquadramento que destravou:** aliveness não é problema de forma, é de comportamento — Jarvis não tem forma, HAL é um círculo, Eve são dois traços. Daí `personagem/vida.js`, o **contrato de vida** com os sete sinais (respiração · atenção · antecipação · inércia · assimetria · esforço · recuperação), implementação única consumida por qualquer forma. Três corpos abstratos foram construídos lado a lado com o MESMO contrato (`personagem/vivo.html`): Enxame, Lente, Matéria. **O usuário escolheu o Enxame** ("foque no enxame, to gostando"). `personagem/enxame.html` é o laboratório dedicado: seis estados do coach (repouso · ouvindo · pensando · falando · alerta · comemorando), cada um com **silhueta própria** e não só escala, mais as três escalas de uso (240 cartão · 96 bolha · 34 selo, o de 34 julgado dentro de uma linha de fala real). Corpo **roxo** (marca), coração **coral** (que o DS já define como a voz do coach); o elétrico ficou de fora de propósito, é da marcação acesa da bússola. 165 fps com 4 instâncias, console 0/0. **Decisão do usuário (2026-08-02): o coach é objeto sempre escuro.** Ele reprovou o enxame no tema claro, e a saída não foi adaptar e sim aplicar a regra que o DS já tem (§2.2, objetos sempre escuros): o enxame leva a própria chapa escura pra dentro da página clara, inclusive no selo de 34px. O render não conhece mais tema. **✅ FORMA APROVADA pelo usuário em 2026-08-02** (enxame + 6 estados + 3 escalas + regra do objeto escuro).
-- **✅ NOME DECIDIDO (2026-08-02): `Sy`, pronúncia "sai".** Escolha do usuário, depois de 9 candidatas minhas reprovadas. É a contração de **Sy**ncLife, então não há colisão externa possível e a ligação com a marca é estrutural. Rima com o corpo por acaso: o coração coral é o único ponto fixo de um corpo sem forma fixa. **Grafia travada: `Sy`** (nunca SY nem sy). **Regra de copy: sem artigo.** Nunca "o Sy" nem "a Sy" — português obriga a escolher gênero no artigo, e a decisão de enquadramento diz que ele é presença, não pessoa. Na prática Sy é sujeito ou vocativo, nunca objeto com preposição contraída ("Sy achou uma coisa", "pergunte ao Sy" ✅ · "o Sy disse" ❌). **Dois riscos abertos:** (1) a leitura padrão em pt-BR de "Sy" é "si", não "sai" (o Y vira /i/: Sylvia→Silvia), então a pronúncia **tem que ser ensinada no onboarding e na primeira edição**, e o TTS precisa de fonema explícito, senão o nome se fixa falado de dois jeitos; (2) "sai" é palavra comum do português (ele sai, sai daqui), o que é risco de wake word e de leitura estranha no TTS — medir antes de investir em voz.
-- **✅ ENQUADRAMENTO DECIDIDO (2026-08-02): o editorial é o formato da saída, não a identidade do personagem.** O usuário questionou se a pegada editorial fazia sentido. Separação que resolveu: o editorial do **produto** (O Diário, A edição da semana, marca-texto, notas de margem, banda de imprensa) é a espinha do DS v5, aprovado e já implementado em `web/` nas Ondas 0, 1 e lote 1 da 2 — fica intacto. O editorial da **identidade do coach** (nomeá-lo com objeto de redação, descrevê-lo como colunista) cai. Sy é **presença**, não ofício: entrega uma edição, mas não é jornalista. Isso resolveu a fricção real entre um corpo de enxame que respira e reage e um vocabulário de quem escreve.
-**Próximo: integração de Sy no Diário e lugar da revisão semanal (é o que destrava o lote 2).**
-- **SESSÃO 24 · rodadas 1-3 (histórico): direção A DESCARTADA; personagem em 2 rodadas, rodada 2 (3D) reprovada.** A bússola é **instrumento e marca**, não ator — usá-la como avatar do coach colapsa duas identidades que precisam ser distintas ("SyncLife" × "quem escreve pra você"). **Rodada 1** (`personagem/laboratorio.html`, 2D): tinta · criatura · presença — **criatura descartada** pelo usuário, tinta foi a preferida mas nenhuma atingiu o alvo. **Rodada 2** (`personagem/laboratorio-3d.html`, three.js 0.185.1): **1 A rede** (grafo de 260 nós com sinais que caminham) · **2 A trança** (fios trançados num nó tórico, material físico com iridescência e rugosidade mapeada) · **3 O núcleo** (casca facetada que abre e mostra o miolo aceso). **Próximo: escolha do corpo; depois nome, o sinal chapado pro miúdo (ver achado de escala), integração no Diário e lugar da revisão semanal.**
+**Ondas 00 e 01 fechadas e no ar em `web/`.** Landing (r15 desktop + m1 mobile), marca 3D, pricing,
+login, cadastro, senhas e onboarding, todas com teste de identidade passado.
+
+**Onda 02 pela metade.** O lote 1 (`/dashboard` = o Diário, chrome v5 e a camada do coach) está no ar.
+O **lote 2 está parado** desde 2026-08-01: a Edição da semana teve **revisão pedida** (o ponto de acesso
+não ficou bom) e o Life Score espera aceite junto com o lote.
+
+**Onda 03 destravou.** A identidade do coach fechou em 2026-08-02: ele se chama **Sy** e o corpo é **o
+Enxame**. Falta a vista cheia da conversa e o backend N1-N2.
+
+**Ondas 04 a 14 não começaram.**
+
+## Decisões fechadas (não reabrir sem motivo novo)
+
+| Decisão | O que ficou | Quando |
+|---|---|---|
+| **Nome do coach** | **`Sy`**, pronúncia "sai", da contração de **Sy**ncLife. Grafia travada (nunca SY nem sy). **Sem artigo**: nunca "o Sy" nem "a Sy". Sy é sujeito ou vocativo, nunca objeto com preposição contraída. "Sy achou uma coisa" ✅ · "pergunte ao Sy" ✅ · "o Sy disse" ❌ | 2026-08-02 |
+| **Corpo do coach** | **O Enxame**: bando sem forma fixa com coração coral. 6 estados (repouso, ouvindo, pensando, falando, alerta, comemorando), cada um com silhueta própria e não só escala. Corpo roxo (marca), coração coral (a voz do coach no DS). O elétrico `#a1ff62` fica **fora**, é da marcação acesa da bússola | 2026-08-02 |
+| **Superfície do coach** | Sy é **objeto sempre escuro** (DS §2.2, mesma regra da pill nav e das mini-telas): carrega a própria chapa escura pra dentro de página clara, inclusive no selo de 34px. Luz aditiva não brilha sobre fundo claro. O render não conhece tema | 2026-08-02 |
+| **Enquadramento** | O editorial é o **formato da saída**, não a identidade do personagem. O Diário e a Edição da semana ficam intactos; Sy entrega uma edição mas **não é colunista**, é presença | 2026-08-02 |
+| **A bússola é marca, não ator** | Usá-la como avatar do coach colapsaria duas identidades que precisam ficar distintas | 2026-08-02 |
+| **Contrato de vida** | Os 7 sinais moram em `personagem/vida.js`, implementação única. Trocar a forma não pode significar reescrever comportamento | 2026-08-02 |
+| **Stack de animação** | three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro). anime.js dispensada | 2026-07-31 |
+
+## Aberto agora
+
+- **O lugar da revisão semanal.** Aberto desde a sessão 23 e é o que trava o lote 2. Hoje é um botão
+  fantasma no chrome. A proposta registrada (vira outra edição do mesmo diário, em vez de tela separada)
+  **nunca foi aceita nem recusada**.
+- **Integração de Sy no Diário.** Com corpo e nome definidos, falta decidir onde o enxame aparece, em que
+  tamanho, e o que ele faz enquanto você lê. Tem uma decisão de layout embutida: a folha do briefing é
+  clara e Sy precisa da chapa escura dentro dela.
+- **Riscos do nome, a medir antes de investir em voz:** a leitura padrão de "Sy" em pt-BR é "si", não
+  "sai" (o Y vira /i/: Sylvia→Silvia), então a pronúncia tem que ser **ensinada no onboarding e na
+  primeira edição** e o TTS precisa de fonema explícito; e "sai" é palavra comum do português, o que é
+  risco de wake word.
+- **Token pendente:** verde-delta no claro `#44a616` (também no ticker e no marquee).
+
+## Próxima sessão (pauta do usuário)
+
+**Rever o Diário como cockpit de Sy.** O usuário pediu análise de <https://github.com/hectorg2211/jarvis>,
+um cockpit de interação por voz em que o assistente executa as atividades pedidas. A ideia é explorar esse
+formato pro Diário: **Sy dá um resumo da situação, recebe orientações e executa ações dentro do SyncLife.**
+Isso conversa direto com os dois itens abertos acima, então vale resolver os três na mesma rodada.
+
+## Como rodar
+
+| O quê | Comando |
+|---|---|
+| Protótipos | `python -m http.server 8123` dentro de `prototypes/v5/`, hub em `http://localhost:8123/` |
+| App | `node node_modules/next/dist/bin/next start -p 3006` dentro de `web/` |
+
+Gotchas de ambiente: `npx next start` dá **exit 127** aqui, por isso o caminho completo do bin · no QA de
+protótipo, validar com `?v=rN` por causa do cache do `http.server` · nunca usar `curl` em localhost no
+MINGW64, trava a sessão · o terminal roda com CWD em `web/`, então é `git add src/...` e não `web/src/...`.
+
+Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1` · `poc-onda1-publico-auth-r2`.
 
 ## Status das ondas
 
@@ -29,8 +71,8 @@
 |---|---|---|---|---|---|
 | 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ✅ **APROVADA (r2, 2026-07-31)** | ✅ `web/` (2026-07-31) | ✅ desktop + mobile ok, console zero |
-| 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) · ✅ lote 2: Edição da semana + Life Score, D+M (2026-08-01) | ✅ **lote 1 APROVADO (2026-07-31)** · 🔴 **lote 2 REVISÃO PEDIDA (2026-08-01, sessão 23):** acesso da revisão semanal + presença/nome/voz da IA | ✅ lote 1 em `web/` (2026-08-01) · lote 2 bloqueado até a decisão do personagem | ✅ lote 1 desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) · ✅ lote 2 QA dos protótipos PASS (console 0/0, E-02 com JS off, consistência cruzada nas 6 telas) |
-| 03 | Coach: identidade + vista cheia /coach + backend N1-N2 | ✅ **O Enxame** (`personagem/enxame.html`): 6 estados + 3 escalas, sobre o contrato `vida.js` (2026-08-02) · histórico: r1 2D, r2 3D, r3 projetado, r4 três corpos | 🔴 r1-r3 reprovadas · ✅ **forma escolhida pelo usuário na r4 (Enxame)** · ⏳ **estados em aprovação** | – | ✅ console 0/0, 165 fps com 4 instâncias, claro+escuro, `prefers-reduced-motion` sem movimento |
+| 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) · ✅ lote 2: Edição da semana + Life Score, D+M (2026-08-01) | ✅ **lote 1 APROVADO (2026-07-31)** · 🔴 **lote 2: Edição da semana em REVISÃO PEDIDA** (acesso ruim) · ⏳ Life Score só esperando aceite, não foi criticado | ✅ lote 1 em `web/` (2026-08-01) · lote 2 parado | ✅ lote 1 desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) · ✅ lote 2 QA dos protótipos PASS (console 0/0, E-02 com JS off, consistência cruzada nas 6 telas) |
+| 03 | Coach **Sy**: identidade + vista cheia + backend N1-N2 | ✅ **Sy, o Enxame** (`personagem/enxame.html`): 6 estados + 3 escalas sobre o contrato `vida.js` (2026-08-02). Rodadas 1 a 4 no Arquivo do hub | ✅ **IDENTIDADE APROVADA (2026-08-02):** forma, nome, enquadramento e regra de superfície · ⏳ falta a vista cheia da conversa | – (nada em `web/` ainda) | ✅ console 0/0, 165 fps com 4 instâncias, claro+escuro, `prefers-reduced-motion` sem movimento |
 | 04 | 01 Finanças (8 telas, 2 lotes) | – | – | – | – |
 | 05 | 02 Futuro (4) | – | – | – | – |
 | 06 | 03 Tempo (6) | – | – | – | – |
@@ -45,60 +87,15 @@
 
 ---
 
-## 2026-08-02 · Sessão 24 — Direção A cai; laboratório de personagem com 3 conceitos (em aprovação)
+## 2026-08-02 · Sessão 24 — O personagem fecha: Sy, o Enxame (forma, nome e enquadramento APROVADOS)
 
-**Decisão do usuário sobre as direções da sessão 23:** **A está descartada.** O argumento dele derruba o
-da sessão anterior: a Bússola da Vida é **instrumento e marca**, e o que se quer é um **ator/personagem**;
-personificar aproxima o usuário, e usar a marca como avatar do coach colapsa duas identidades que precisam
-ficar separadas (um jornal tem cabeçalho e tem colunista, e não são a mesma coisa). Ele também registrou
-que **"cromado" foi sugestão dele, não decisão** — material e forma seguem abertos, e ele levantou
-"matéria escura" como alternativa. Pediu **protótipos só do personagem antes de avançar**.
+> Sessão longa, com 5 reprovações antes do acerto. As rodadas abaixo estão em ordem **decrescente**
+> (a que valeu primeiro). O que ficou de pé está na Rodada 5; as rodadas 1 a 4 ficam registradas
+> porque o motivo de cada reprovação evita que alguém refaça o caminho.
 
-**Reenquadramento aceito:** A/B/C não eram três alternativas paralelas. **C (nome próprio, byline,
-assinatura em Caveat, voz de escrita) é piso, não opção** — até um simbionte precisa de nome. O que estava
-de fato em aberto era só qual **corpo** senta em cima disso.
-
-**Entregue:** `prototypes/v5/personagem/laboratorio.html` (novo), isolado como pedido — sem chrome, sem
-Diário, sem nome, os três em tinta neutra com o roxo como único acento pra a escolha não ser por cor.
-Controles: 6 estados que movem os três juntos, 3 escalas (palco 240px / cartão 96px / **assinatura 34px**),
-ciclo automático, e alternância claro/escuro. Linkado no hub em Onda 03.
-
-| # | Conceito | Natureza | Custo |
-|---|---|---|---|
-| 1 | **A tinta** | matéria líquida sem rosto; em repouso é uma gota, falando os satélites descolam, escrevendo ela percorre a cursiva e o traço nasce atrás | SVG + filtro goo |
-| 2 | **A criatura** | pássaro de nanquim com olhar e postura; o bico é a pena e risca a linha embaixo de si | SVG com grupos transformados |
-| 3 | **A presença** | massa lobulada que ocupa o negativo da página, com núcleo que acende | canvas 2D |
-
-Nenhum usa WebGL, então o teto de 1 canvas por página (DS §5.6) continua livre pra bússola.
-
-**Achados de QA que importam pra decisão (não são bugs, são informação):**
-- **Escala é o filtro mais duro.** A 34px (o lugar natural dele, ao lado da byline) só a **criatura**
-  sobrevive: silhueta se reconhece. A tinta vira dois pontos soltos e a presença vira borrão.
-- **"Dormindo" é o estado de 95% do tempo** e é onde a presença quase desaparece — coerente com o conceito,
-  mas é o custo real dele.
-- **No escuro, "matéria escura" não pode ser desenhada mais escura que o fundo** (some sobre `#151313`).
-  A massa virou névoa violeta **aditiva**; no claro segue subtrativa como tinta sobre papel.
-- **Coroa nítida transforma a massa em esfera**, que é justamente o clichê de bolha de IA que o conceito 3
-  existe pra evitar. Foi trocada por queda difusa + lóbulos irregulares.
-
-**Bugs achados e corrigidos durante o QA (os dois valem pra implementação futura):**
-- `.peca svg{display:block}` **vence o atributo `hidden` da UA**, então o fallback estático da presença
-  ficava empilhado com o canvas e era ele que aparecia. Mesma armadilha do lote 1; corrigido com
-  `.peca [hidden]{display:none!important}`.
-- **`SVGElement` não herda de `HTMLElement`**, então `svg.hidden = true` cria só uma propriedade solta em
-  JS e **nunca escreve o atributo**. Tem que ser `setAttribute('hidden','')`.
-- Sob `prefers-reduced-motion` os alvos ainda oscilavam com o tempo: agora os três congelam o relógio
-  (`if (reduz) t = 0`) e mostram pose estática por estado, com a escrita completa.
-
-**QA:** console 0 erros e 0 warnings no lab e no hub, com varredura pelos 6 estados · claro e escuro
-verificados · E-02 confirmado pelo caminho estático (os três palcos são SVG/markup e renderam sem o JS
-ter rodado nas rodadas r1-r4). **Reduce foi tratado em código mas não emulado** — o `chrome-devtools` MCP
-não expõe `reducedMotion` no `emulate`.
-
-**MCP verificados nesta sessão:** `chrome-devtools` ✅ (30 tools, usado no QA inteiro) · `magic` ✅ (free,
-2 retrievals/dia) · `shadcn` ⚠️ conecta e lê o `components.json` do `web/`, mas `registries` está **vazio**,
-então `search_items_in_registries` responde "No registries are configured" — inútil até alguém declarar um
-registry. Não foi mexido (fora do escopo e o v5 é escrito à mão).
+**As quatro decisões desta sessão** (detalhe em "Decisões fechadas", no topo do arquivo): o corpo é
+**o Enxame** · o nome é **Sy** · o editorial é **formato da saída, não identidade** · Sy é
+**objeto sempre escuro**.
 
 ### Rodada 5 — recomeço do zero: o contrato de vida, três corpos, e o Enxame escolhido
 
@@ -154,184 +151,6 @@ sem movimento nenhum (pose por estado, redesenhada só na troca) · `noscript` e
 Ganchos de QA: `window.__enxame.{estado,tema,pecas}` e `window.__vivo.{estado,tema,pecas}`.
 **Gotcha da folha de contato:** o buffer WebGL some no fim do quadro, então antes de cada `drawImage` é
 preciso chamar `peca.quadro(...)` na hora; sem isso a folha sai vazia.
-
-### Rodada 2 — 3D (`personagem/laboratorio-3d.html`, novo)
-
-**Veredito do usuário sobre a rodada 1:** criatura **descartada**; a tinta agradou mais que a presença,
-mas nenhuma chegou lá. Pedido: **mais realista, tridimensional, tecnológico**, no vocabulário de
-**rede neural / simbionte**, com **textura**. Registro: a ressalva do clichê de bolha de IA foi
-reafirmada por mim uma vez e o usuário manteve a direção, então foi executada — mitigando pela forma
-(nenhum dos três é esfera lisa) e não pela recusa.
-
-**Três corpos, três linguagens de material distintas:**
-
-| # | Corpo | Como funciona | Material |
-|---|---|---|---|
-| 1 | **A rede** | grafo real de 260 nós ligados aos vizinhos; os sinais caminham de nó em nó e **o que muda por estado é o critério de escolha do próximo vizinho** (varre, converge, irradia), então o comportamento emerge em vez de ser roteirizado | pontos e arestas aditivos; a matéria é luz |
-| 2 | **A trança** | 5 fios escuros trançados em volta de um **nó tórico** (frames de Frenet sobre a curva base) + 3 fios finos de luz por dentro; o pulso viaja pela UV do tubo | físico: metal escuro, clearcoat, iridescência, **mapa de rugosidade procedural** |
-| 3 | **O núcleo** | casca facetada onde **cada face desliza pela própria normal**; o miolo aceso aparece pelas frestas. Fenda zero ouvindo, máxima alertando | metal escuro fosco com rugosidade mapeada + emissivo interno |
-
-**Alinhamento de versão:** este protótipo já nasce em **three 0.185.1**, igual ao `web/` (`^0.185.1`),
-em vez do 0.170 dos protótipos antigos. Mata o drift anotado na sessão 23 para todo código novo.
-Um canvas por vez (a peça anterior é descartada de verdade no switch), então o teto de 1 peça WebGL
-por página do DS §5.6 continua respeitado.
-
-**Achado que decide uma coisa fora da escolha do corpo:** **nenhum dos três sobrevive a 38px** — os três
-viram uma manchinha. Em 3D o personagem **não pode ser a marca da byline**. Ou ele vive só grande
-(camada do coach, topo da folha), ou ganha um **sinal chapado** que o represente no miúdo. Isso é uma
-decisão a mais, posterior à escolha do corpo, e está anotada na própria página.
-
-**Correções feitas durante o QA (todas eram erro meu, não do conceito):** enquadramento — os três
-estouravam a moldura, resolvido com escala base por peça num envoltório (`peca.base`) mais câmera em
-z=7.4 · os fios de luz da trança orbitavam **por fora** virando uma gaiola verde; a luz agora corre
-**por dentro** via `emissiveMap` de listras com `offset.x` animado na UV do tubo · iridescência saía
-rosa-doce: sem mapa de espessura o three usa o **topo** da faixa como valor único, então `[200,300]` +
-`iridescence: .5` + `envMapIntensity` baixo trouxeram pro violeta da marca · o metal do núcleo lia
-cinza-claro porque o ambiente lavava tudo (`envMapIntensity` .5) · `IcosahedronGeometry.toNonIndexed()`
-emitia aviso porque ela já vem não-indexada.
-
-**Correção de conteúdo:** a ficha do núcleo afirmava "silhueta forte, sobrevive melhor em escala
-pequena". O teste desmentiu e o texto foi trocado — a afirmação estava enviesando a decisão.
-
-**QA:** console **0/0** numa varredura completa de 3 corpos × 6 estados + troca de tema nos dois
-sentidos · claro e escuro OK · o palco tem estado de falha explícito se o WebGL não subir (sem queda
-graciosa possível aqui: o conceito É 3D, e isso está escrito na página).
-
-### Rodada 2b — o conceito 1 refeito a partir de referência do usuário
-
-**Veredito:** "o núcleo é o menos pior". O usuário anexou uma **referência visual** (membrana
-triangulada densa, vértices acesos, azul no centro e magenta na silhueta) e especificou o que quer do
-comportamento: **a forma muda por estado** — "quando estiver pensando ficar em formato de cérebro,
-quando estiver falando moldar um rosto e movimentar a boca como se estivesse realmente falando".
-
-**"A rede" foi substituída por "A malha".** Não era ajuste: o antigo era um grafo esparso solto no
-volume; o pedido é uma **superfície triangulada**. Agora é uma icosfera indexada (detalhe 5, 10242
-vértices) onde **cada vértice tem destino próprio por estado**, com topologia fixa, então a transição
-é só interpolar. Formas: esfera dormindo · lente achatada com varredura lendo · **cérebro** pensando
-(fissura longitudinal, duas oitavas de giros, cerebelo) · **rosto** falando (órbitas, globos, nariz,
-queixo e **boca cuja abertura é a amplitude da voz**) · parábola côncava ouvindo · espinhos alertando.
-
-**O estado "escrevendo" virou "pensando"** em todos os três corpos, porque é a palavra do usuário e é
-o estado que vira cérebro; gerar o briefing é a mesma coisa.
-
-**Três problemas de fundo resolvidos (valem pra qualquer implementação futura disso):**
-1. **Relevo radial visto de frente não aparece em wireframe puro** — só muda profundidade, e sem luz
-   o rosto nunca fecha. Resolvido dando **casca sombreada** (`MeshStandardMaterial` com normais
-   recomputadas por quadro) e, principalmente, **mapeando deslocamento em brilho** no wireframe: o que
-   sobe acende, o que afunda apaga.
-2. **Albedo preto não sombreia.** Com a casca em `0x0d0a16` não havia gradiente nenhum; subiu pra
-   `0x241d3a`, escuro o bastante pra não competir com a malha e claro o bastante pra ter sombra.
-3. **Feição menor que o passo da malha não desenha.** No detalhe 4 uma órbita de raio .12 cobria 2-3
-   vértices. Subiu pra detalhe 5 e as feições foram ampliadas: é uma **máscara estilizada**, não um
-   rosto realista, e isso é decisão de projeto, não limitação temporária.
-
-**Limite honesto, escrito também na própria página:** cérebro e rosto são esculpidos **por fórmula**
-sobre uma esfera deformada, então hoje leem como **sugestão** — reconhece-se órbita, nariz, boca e
-giros, mas não é um rosto convincente, e o cérebro lê mais como massa dobrada que como cérebro. Se a
-direção for aprovada, o passo seguinte é trocar a fórmula por **malhas modeladas como alvos de morph**,
-e aí a fidelidade deixa de ser o limite. **Não afirmar que o rosto está resolvido.**
-
-**QA:** **166 fps** medido no estado mais pesado (rosto, detalhe 5, normais recomputadas por quadro),
-então há folga larga · console **0/0** numa varredura de 3 corpos × 6 estados + troca de tema nos dois
-sentidos · claro e escuro OK.
-
-### Rodada 2c — "O simbionte": um corpo só, com referências visuais do usuário
-
-**Correções do usuário nesta rodada (duas, em sequência):**
-1. **"O núcleo é o menos pior"** + 4 referências visuais (rede triangulada densa · cérebro wireframe ·
-   **rosto de perfil** wireframe · poliedro facetado com brilho neon). Primeira tentativa minha:
-   casca facetada por fora com a forma morfando por dentro.
-2. **Rejeitado:** *"Não quero que o cérebro fique dentro de outra coisa, ou o rosto, não vai ficar
-   legal; a 4ª imagem é só referência para textura."* Especificação final: **um corpo só**, forma base
-   da **referência 3** (esfera de nós com núcleo aceso e filamentos), **textura da referência 4**
-   (sólida, 3D, cores do DS), que **se molda conforme o estado ou a interação**.
-
-**Estado atual (`personagem/laboratorio-3d.html`, 2 corpos):**
-- **1 · O simbionte** — icosfera indexada (detalhe 4) com **painéis sólidos facetados translúcidos**
-  (`flatShading`, opacity ~.3, violeta do DS), arestas e nós acesos, **núcleo emissivo no centro** e
-  **90 filamentos** do núcleo até a superfície. Sem casca externa, sem anel, nada aninhado. Morfa em:
-  esfera · lente com varredura · cérebro · cabeça de perfil · côncavo · espinhos.
-- **2 · A trança** — mantida como alternativa de material (nó tórico com iridescência).
-
-**Três achados técnicos desta rodada (todos custaram uma iteração cada, valem pra implementação):**
-1. **Deslocamento radial não faz perfil.** No alto do crânio o raio aponta pra cima, então empurrar
-   "pra frente" no raio nunca vira testa-nariz-queixo. O perfil tem que empurrar **no eixo Z**.
-2. **Gaussianas soltas viram espinho, não silhueta.** Trocadas por uma **tabela de 22 pontos**
-   (altura, avanço) traçando o perfil humano do crânio ao pescoço, com interpolação suavizada.
-3. **Feição menor que o passo da malha não desenha** (já visto na rodada 2b) e **relevo visto de
-   frente não aparece em wireframe** — daí o rosto sair **de perfil** (silhueta lê, relevo não).
-
-**Limite honesto, escrito também na página:** cérebro e cabeça saem de **fórmula sobre uma esfera**,
-então são **aproximação** — dá pra ler a intenção, não pra chamar de retrato. O caminho pra fidelidade
-real é trocar a fórmula por **malhas modeladas como alvos de morph** (a topologia já é fixa, então o
-motor de transição não muda). **Não afirmar que o rosto está resolvido.**
-
-**QA:** **159 fps** no estado mais pesado · console **0/0** varrendo 2 corpos × 6 estados + troca de
-tema nos dois sentidos · claro e escuro OK.
-
-### Rodada 2d — as formas reprovadas, e o pipeline de silhueta que resolve
-
-**Veredito do usuário:** *"Nenhuma forma está correta. A textura eu gostei. O cérebro nem de longe
-parece um cérebro, e o rosto muito menos: basicamente um círculo com uma área pulsando."* Correto.
-**Textura aprovada, formas reprovadas.**
-
-**Causa raiz (minha, e repetida 4 vezes):** eu estava esculpindo **fórmulas sobre uma esfera**. Cérebro
-e cabeça não são esfera perturbada; nenhuma combinação de gaussianas chega lá. Insisti em calibrar em
-vez de trocar de técnica. Também tinha um loop de feedback ruim: um screenshot por tentativa, chute
-numérico em cima de forma 3D.
-
-**A virada veio do usuário perguntar "o que eu posso fazer pra te ajudar".** Resposta: referências que
-sirvam de **geometria**, não de clima. E daí saiu a ferramenta que destrava tudo.
-
-**`refs/silhueta.html` e `refs/folha.html` (novos):** pegam qualquer referência (SVG, PNG, JPG),
-**desfocam** pra fundir a estrutura interna num corpo sólido, limiarizam e marcham de fora pra dentro
-em 180 direções, devolvendo a **silhueta como tabela de raios** a partir do centro de massa. Reportam
-**rugosidade** pra dizer se a extração ficou limpa. O `folha.html` faz isso em lote, com contorno
-desenhado por cima pra conferência visual.
-- **Isso resolve o caso do SVG vetorizado automaticamente** (1950 paths de manchas de cor, sem contorno
-  único pra ler): a silhueta sai do **raster**, não dos paths. E baixa a exigência sobre o usuário —
-  render neon serve, não precisa ser silhueta chapada; o que importa é o **ângulo**.
-- Gotcha: dentro de um documento SVG, `document.createElement('canvas')` cria no namespace SVG e não
-  tem `getContext`. Tem que ser `createElementNS` com o namespace XHTML.
-
-**`refs/silhuetas.json` (novo):** as 4 vistas necessárias já extraídas e validadas, 180 raios cada —
-`cerebro_lado` (rug .0128) · `cerebro_frente` (.0082) · `cabeca_perfil` (.0145) · `cabeca_frente`
-(.0166). Todas abaixo de .02, que é o limiar de "limpa". **É este arquivo que alimenta a construção
-3D na próxima rodada.** Os SVGs de origem ficam fora do git (`.gitignore` na pasta, asset de terceiro).
-
-**Rede orgânica (pedido do usuário, feito):** a icosfera regular lia como domo geodésico. Agora os
-vértices levam um empurrão **tangencial** de ~30% do passo da malha (tangencial pra não inflar a
-esfera), **28% das arestas são derrubadas** com brilho próprio por aresta, ~12% dos nós pesam 2-3× mais
-que os outros, e o repouso deixou de ser esfera perfeita. Núcleo e filamentos foram baixados porque
-estouravam em branco no centro.
-
-**QA:** 160 fps · console 0/0 em 2 corpos × 6 estados.
-
-### Rodada 2e — cérebro construído pelas duas vistas; cabeça bloqueada em referência
-
-**Construção por duas vistas ortogonais, implementada.** Para cada vértice: a altura vem do próprio
-vértice, a **seção naquela altura** sai das duas silhuetas (a de lado dá o par frente/trás em Z, a de
-frente dá o par esquerda/direita em X), e o **azimute** decide de que lado da seção o vértice cai.
-Meia-elipse **por quadrante**, para a assimetria da forma real sobreviver (lobo frontal na frente,
-occipital atrás). Extensões pré-calculadas numa LUT de 129 alturas: sem isso seriam ~3,7 M operações
-por quadro, com isso é O(1) por vértice.
-
-- **Cérebro: FUNCIONANDO.** A silhueta extraída manda na forma — lobo frontal, calota, occipital,
-  temporal e tronco aparecem porque estão na referência, não porque eu chutei. Fissura e giros entram
-  como **relevo por cima** da forma construída, não como a forma.
-- **Cabeça: bloqueada, e não por esforço.** O `ref3.svg` **não serve como fonte de perfil**: nele a
-  cabeça é um recorte escuro de contorno fino, então o que o limiar acha de mais brilhante é o reflexo
-  da calota e as bolhas flutuantes, nunca nariz/lábio/queixo. Varredura de desfoque 10→34 confirmou:
-  em nenhum ponto o contorno pega o rosto. Isolar o maior componente conectado também não resolve,
-  porque o desfoque necessário já funde as bolhas na cabeça. **`cabeca_perfil` foi removida do
-  `silhuetas.json`** (com `_nota` explicando) e o estado "falando" cai no aproximado, declarado na
-  ficha da peça. **Falta uma referência de perfil com a cabeça clara contra fundo uniforme.**
-
-**Melhoria no extrator:** `folha.html` ganhou isolamento do **maior componente conectado** (rotulagem
-por BFS 8-vizinhos), útil para referências com sujeira solta em volta. Não salvou o `ref3`, mas fica
-para as próximas.
-
-**QA:** 165 fps · console 0/0 em 2 corpos × 6 estados.
 
 ### Rodada 3 — "O projetado": luz em camadas (Minority Report) · O ROSTO FINALMENTE LÊ
 
@@ -392,7 +211,242 @@ revisão semanal segue **sem decisão** desde a sessão 23.
 
 ---
 
-## 2026-08-01 · Sessão 23 — Identidade da IA (nome, corpo, voz) + lugar da revisão semanal · DECISÃO ABERTA
+### Rodada 2e — cérebro construído pelas duas vistas; cabeça bloqueada em referência
+
+**Construção por duas vistas ortogonais, implementada.** Para cada vértice: a altura vem do próprio
+vértice, a **seção naquela altura** sai das duas silhuetas (a de lado dá o par frente/trás em Z, a de
+frente dá o par esquerda/direita em X), e o **azimute** decide de que lado da seção o vértice cai.
+Meia-elipse **por quadrante**, para a assimetria da forma real sobreviver (lobo frontal na frente,
+occipital atrás). Extensões pré-calculadas numa LUT de 129 alturas: sem isso seriam ~3,7 M operações
+por quadro, com isso é O(1) por vértice.
+
+- **Cérebro: FUNCIONANDO.** A silhueta extraída manda na forma — lobo frontal, calota, occipital,
+  temporal e tronco aparecem porque estão na referência, não porque eu chutei. Fissura e giros entram
+  como **relevo por cima** da forma construída, não como a forma.
+- **Cabeça: bloqueada, e não por esforço.** O `ref3.svg` **não serve como fonte de perfil**: nele a
+  cabeça é um recorte escuro de contorno fino, então o que o limiar acha de mais brilhante é o reflexo
+  da calota e as bolhas flutuantes, nunca nariz/lábio/queixo. Varredura de desfoque 10→34 confirmou:
+  em nenhum ponto o contorno pega o rosto. Isolar o maior componente conectado também não resolve,
+  porque o desfoque necessário já funde as bolhas na cabeça. **`cabeca_perfil` foi removida do
+  `silhuetas.json`** (com `_nota` explicando) e o estado "falando" cai no aproximado, declarado na
+  ficha da peça. **Falta uma referência de perfil com a cabeça clara contra fundo uniforme.**
+
+**Melhoria no extrator:** `folha.html` ganhou isolamento do **maior componente conectado** (rotulagem
+por BFS 8-vizinhos), útil para referências com sujeira solta em volta. Não salvou o `ref3`, mas fica
+para as próximas.
+
+**QA:** 165 fps · console 0/0 em 2 corpos × 6 estados.
+
+### Rodada 2d — as formas reprovadas, e o pipeline de silhueta que resolve
+
+**Veredito do usuário:** *"Nenhuma forma está correta. A textura eu gostei. O cérebro nem de longe
+parece um cérebro, e o rosto muito menos: basicamente um círculo com uma área pulsando."* Correto.
+**Textura aprovada, formas reprovadas.**
+
+**Causa raiz (minha, e repetida 4 vezes):** eu estava esculpindo **fórmulas sobre uma esfera**. Cérebro
+e cabeça não são esfera perturbada; nenhuma combinação de gaussianas chega lá. Insisti em calibrar em
+vez de trocar de técnica. Também tinha um loop de feedback ruim: um screenshot por tentativa, chute
+numérico em cima de forma 3D.
+
+**A virada veio do usuário perguntar "o que eu posso fazer pra te ajudar".** Resposta: referências que
+sirvam de **geometria**, não de clima. E daí saiu a ferramenta que destrava tudo.
+
+**`refs/silhueta.html` e `refs/folha.html` (novos):** pegam qualquer referência (SVG, PNG, JPG),
+**desfocam** pra fundir a estrutura interna num corpo sólido, limiarizam e marcham de fora pra dentro
+em 180 direções, devolvendo a **silhueta como tabela de raios** a partir do centro de massa. Reportam
+**rugosidade** pra dizer se a extração ficou limpa. O `folha.html` faz isso em lote, com contorno
+desenhado por cima pra conferência visual.
+- **Isso resolve o caso do SVG vetorizado automaticamente** (1950 paths de manchas de cor, sem contorno
+  único pra ler): a silhueta sai do **raster**, não dos paths. E baixa a exigência sobre o usuário —
+  render neon serve, não precisa ser silhueta chapada; o que importa é o **ângulo**.
+- Gotcha: dentro de um documento SVG, `document.createElement('canvas')` cria no namespace SVG e não
+  tem `getContext`. Tem que ser `createElementNS` com o namespace XHTML.
+
+**`refs/silhuetas.json` (novo):** as 4 vistas necessárias já extraídas e validadas, 180 raios cada —
+`cerebro_lado` (rug .0128) · `cerebro_frente` (.0082) · `cabeca_perfil` (.0145) · `cabeca_frente`
+(.0166). Todas abaixo de .02, que é o limiar de "limpa". **É este arquivo que alimenta a construção
+3D na próxima rodada.** Os SVGs de origem ficam fora do git (`.gitignore` na pasta, asset de terceiro).
+
+**Rede orgânica (pedido do usuário, feito):** a icosfera regular lia como domo geodésico. Agora os
+vértices levam um empurrão **tangencial** de ~30% do passo da malha (tangencial pra não inflar a
+esfera), **28% das arestas são derrubadas** com brilho próprio por aresta, ~12% dos nós pesam 2-3× mais
+que os outros, e o repouso deixou de ser esfera perfeita. Núcleo e filamentos foram baixados porque
+estouravam em branco no centro.
+
+**QA:** 160 fps · console 0/0 em 2 corpos × 6 estados.
+
+### Rodada 2c — "O simbionte": um corpo só, com referências visuais do usuário
+
+**Correções do usuário nesta rodada (duas, em sequência):**
+1. **"O núcleo é o menos pior"** + 4 referências visuais (rede triangulada densa · cérebro wireframe ·
+   **rosto de perfil** wireframe · poliedro facetado com brilho neon). Primeira tentativa minha:
+   casca facetada por fora com a forma morfando por dentro.
+2. **Rejeitado:** *"Não quero que o cérebro fique dentro de outra coisa, ou o rosto, não vai ficar
+   legal; a 4ª imagem é só referência para textura."* Especificação final: **um corpo só**, forma base
+   da **referência 3** (esfera de nós com núcleo aceso e filamentos), **textura da referência 4**
+   (sólida, 3D, cores do DS), que **se molda conforme o estado ou a interação**.
+
+**Estado atual (`personagem/laboratorio-3d.html`, 2 corpos):**
+- **1 · O simbionte** — icosfera indexada (detalhe 4) com **painéis sólidos facetados translúcidos**
+  (`flatShading`, opacity ~.3, violeta do DS), arestas e nós acesos, **núcleo emissivo no centro** e
+  **90 filamentos** do núcleo até a superfície. Sem casca externa, sem anel, nada aninhado. Morfa em:
+  esfera · lente com varredura · cérebro · cabeça de perfil · côncavo · espinhos.
+- **2 · A trança** — mantida como alternativa de material (nó tórico com iridescência).
+
+**Três achados técnicos desta rodada (todos custaram uma iteração cada, valem pra implementação):**
+1. **Deslocamento radial não faz perfil.** No alto do crânio o raio aponta pra cima, então empurrar
+   "pra frente" no raio nunca vira testa-nariz-queixo. O perfil tem que empurrar **no eixo Z**.
+2. **Gaussianas soltas viram espinho, não silhueta.** Trocadas por uma **tabela de 22 pontos**
+   (altura, avanço) traçando o perfil humano do crânio ao pescoço, com interpolação suavizada.
+3. **Feição menor que o passo da malha não desenha** (já visto na rodada 2b) e **relevo visto de
+   frente não aparece em wireframe** — daí o rosto sair **de perfil** (silhueta lê, relevo não).
+
+**Limite honesto, escrito também na página:** cérebro e cabeça saem de **fórmula sobre uma esfera**,
+então são **aproximação** — dá pra ler a intenção, não pra chamar de retrato. O caminho pra fidelidade
+real é trocar a fórmula por **malhas modeladas como alvos de morph** (a topologia já é fixa, então o
+motor de transição não muda). **Não afirmar que o rosto está resolvido.**
+
+**QA:** **159 fps** no estado mais pesado · console **0/0** varrendo 2 corpos × 6 estados + troca de
+tema nos dois sentidos · claro e escuro OK.
+
+### Rodada 2b — o conceito 1 refeito a partir de referência do usuário
+
+**Veredito:** "o núcleo é o menos pior". O usuário anexou uma **referência visual** (membrana
+triangulada densa, vértices acesos, azul no centro e magenta na silhueta) e especificou o que quer do
+comportamento: **a forma muda por estado** — "quando estiver pensando ficar em formato de cérebro,
+quando estiver falando moldar um rosto e movimentar a boca como se estivesse realmente falando".
+
+**"A rede" foi substituída por "A malha".** Não era ajuste: o antigo era um grafo esparso solto no
+volume; o pedido é uma **superfície triangulada**. Agora é uma icosfera indexada (detalhe 5, 10242
+vértices) onde **cada vértice tem destino próprio por estado**, com topologia fixa, então a transição
+é só interpolar. Formas: esfera dormindo · lente achatada com varredura lendo · **cérebro** pensando
+(fissura longitudinal, duas oitavas de giros, cerebelo) · **rosto** falando (órbitas, globos, nariz,
+queixo e **boca cuja abertura é a amplitude da voz**) · parábola côncava ouvindo · espinhos alertando.
+
+**O estado "escrevendo" virou "pensando"** em todos os três corpos, porque é a palavra do usuário e é
+o estado que vira cérebro; gerar o briefing é a mesma coisa.
+
+**Três problemas de fundo resolvidos (valem pra qualquer implementação futura disso):**
+1. **Relevo radial visto de frente não aparece em wireframe puro** — só muda profundidade, e sem luz
+   o rosto nunca fecha. Resolvido dando **casca sombreada** (`MeshStandardMaterial` com normais
+   recomputadas por quadro) e, principalmente, **mapeando deslocamento em brilho** no wireframe: o que
+   sobe acende, o que afunda apaga.
+2. **Albedo preto não sombreia.** Com a casca em `0x0d0a16` não havia gradiente nenhum; subiu pra
+   `0x241d3a`, escuro o bastante pra não competir com a malha e claro o bastante pra ter sombra.
+3. **Feição menor que o passo da malha não desenha.** No detalhe 4 uma órbita de raio .12 cobria 2-3
+   vértices. Subiu pra detalhe 5 e as feições foram ampliadas: é uma **máscara estilizada**, não um
+   rosto realista, e isso é decisão de projeto, não limitação temporária.
+
+**Limite honesto, escrito também na própria página:** cérebro e rosto são esculpidos **por fórmula**
+sobre uma esfera deformada, então hoje leem como **sugestão** — reconhece-se órbita, nariz, boca e
+giros, mas não é um rosto convincente, e o cérebro lê mais como massa dobrada que como cérebro. Se a
+direção for aprovada, o passo seguinte é trocar a fórmula por **malhas modeladas como alvos de morph**,
+e aí a fidelidade deixa de ser o limite. **Não afirmar que o rosto está resolvido.**
+
+**QA:** **166 fps** medido no estado mais pesado (rosto, detalhe 5, normais recomputadas por quadro),
+então há folga larga · console **0/0** numa varredura de 3 corpos × 6 estados + troca de tema nos dois
+sentidos · claro e escuro OK.
+
+### Rodada 2 — 3D (`personagem/laboratorio-3d.html`, novo)
+
+**Veredito do usuário sobre a rodada 1:** criatura **descartada**; a tinta agradou mais que a presença,
+mas nenhuma chegou lá. Pedido: **mais realista, tridimensional, tecnológico**, no vocabulário de
+**rede neural / simbionte**, com **textura**. Registro: a ressalva do clichê de bolha de IA foi
+reafirmada por mim uma vez e o usuário manteve a direção, então foi executada — mitigando pela forma
+(nenhum dos três é esfera lisa) e não pela recusa.
+
+**Três corpos, três linguagens de material distintas:**
+
+| # | Corpo | Como funciona | Material |
+|---|---|---|---|
+| 1 | **A rede** | grafo real de 260 nós ligados aos vizinhos; os sinais caminham de nó em nó e **o que muda por estado é o critério de escolha do próximo vizinho** (varre, converge, irradia), então o comportamento emerge em vez de ser roteirizado | pontos e arestas aditivos; a matéria é luz |
+| 2 | **A trança** | 5 fios escuros trançados em volta de um **nó tórico** (frames de Frenet sobre a curva base) + 3 fios finos de luz por dentro; o pulso viaja pela UV do tubo | físico: metal escuro, clearcoat, iridescência, **mapa de rugosidade procedural** |
+| 3 | **O núcleo** | casca facetada onde **cada face desliza pela própria normal**; o miolo aceso aparece pelas frestas. Fenda zero ouvindo, máxima alertando | metal escuro fosco com rugosidade mapeada + emissivo interno |
+
+**Alinhamento de versão:** este protótipo já nasce em **three 0.185.1**, igual ao `web/` (`^0.185.1`),
+em vez do 0.170 dos protótipos antigos. Mata o drift anotado na sessão 23 para todo código novo.
+Um canvas por vez (a peça anterior é descartada de verdade no switch), então o teto de 1 peça WebGL
+por página do DS §5.6 continua respeitado.
+
+**Achado que decide uma coisa fora da escolha do corpo:** **nenhum dos três sobrevive a 38px** — os três
+viram uma manchinha. Em 3D o personagem **não pode ser a marca da byline**. Ou ele vive só grande
+(camada do coach, topo da folha), ou ganha um **sinal chapado** que o represente no miúdo. Isso é uma
+decisão a mais, posterior à escolha do corpo, e está anotada na própria página.
+
+**Correções feitas durante o QA (todas eram erro meu, não do conceito):** enquadramento — os três
+estouravam a moldura, resolvido com escala base por peça num envoltório (`peca.base`) mais câmera em
+z=7.4 · os fios de luz da trança orbitavam **por fora** virando uma gaiola verde; a luz agora corre
+**por dentro** via `emissiveMap` de listras com `offset.x` animado na UV do tubo · iridescência saía
+rosa-doce: sem mapa de espessura o three usa o **topo** da faixa como valor único, então `[200,300]` +
+`iridescence: .5` + `envMapIntensity` baixo trouxeram pro violeta da marca · o metal do núcleo lia
+cinza-claro porque o ambiente lavava tudo (`envMapIntensity` .5) · `IcosahedronGeometry.toNonIndexed()`
+emitia aviso porque ela já vem não-indexada.
+
+**Correção de conteúdo:** a ficha do núcleo afirmava "silhueta forte, sobrevive melhor em escala
+pequena". O teste desmentiu e o texto foi trocado — a afirmação estava enviesando a decisão.
+
+**QA:** console **0/0** numa varredura completa de 3 corpos × 6 estados + troca de tema nos dois
+sentidos · claro e escuro OK · o palco tem estado de falha explícito se o WebGL não subir (sem queda
+graciosa possível aqui: o conceito É 3D, e isso está escrito na página).
+
+### Rodada 1 — 2D: tinta, criatura e presença (reprovada; criatura descartada pelo usuário)
+
+**Decisão do usuário sobre as direções da sessão 23:** **A está descartada.** O argumento dele derruba o
+da sessão anterior: a Bússola da Vida é **instrumento e marca**, e o que se quer é um **ator/personagem**;
+personificar aproxima o usuário, e usar a marca como avatar do coach colapsa duas identidades que precisam
+ficar separadas (um jornal tem cabeçalho e tem colunista, e não são a mesma coisa). Ele também registrou
+que **"cromado" foi sugestão dele, não decisão** — material e forma seguem abertos, e ele levantou
+"matéria escura" como alternativa. Pediu **protótipos só do personagem antes de avançar**.
+
+**Reenquadramento aceito:** A/B/C não eram três alternativas paralelas. **C (nome próprio, byline,
+assinatura em Caveat, voz de escrita) é piso, não opção** — até um simbionte precisa de nome. O que estava
+de fato em aberto era só qual **corpo** senta em cima disso.
+
+**Entregue:** `prototypes/v5/personagem/laboratorio.html` (novo), isolado como pedido — sem chrome, sem
+Diário, sem nome, os três em tinta neutra com o roxo como único acento pra a escolha não ser por cor.
+Controles: 6 estados que movem os três juntos, 3 escalas (palco 240px / cartão 96px / **assinatura 34px**),
+ciclo automático, e alternância claro/escuro. Linkado no hub em Onda 03.
+
+| # | Conceito | Natureza | Custo |
+|---|---|---|---|
+| 1 | **A tinta** | matéria líquida sem rosto; em repouso é uma gota, falando os satélites descolam, escrevendo ela percorre a cursiva e o traço nasce atrás | SVG + filtro goo |
+| 2 | **A criatura** | pássaro de nanquim com olhar e postura; o bico é a pena e risca a linha embaixo de si | SVG com grupos transformados |
+| 3 | **A presença** | massa lobulada que ocupa o negativo da página, com núcleo que acende | canvas 2D |
+
+Nenhum usa WebGL, então o teto de 1 canvas por página (DS §5.6) continua livre pra bússola.
+
+**Achados de QA que importam pra decisão (não são bugs, são informação):**
+- **Escala é o filtro mais duro.** A 34px (o lugar natural dele, ao lado da byline) só a **criatura**
+  sobrevive: silhueta se reconhece. A tinta vira dois pontos soltos e a presença vira borrão.
+- **"Dormindo" é o estado de 95% do tempo** e é onde a presença quase desaparece — coerente com o conceito,
+  mas é o custo real dele.
+- **No escuro, "matéria escura" não pode ser desenhada mais escura que o fundo** (some sobre `#151313`).
+  A massa virou névoa violeta **aditiva**; no claro segue subtrativa como tinta sobre papel.
+- **Coroa nítida transforma a massa em esfera**, que é justamente o clichê de bolha de IA que o conceito 3
+  existe pra evitar. Foi trocada por queda difusa + lóbulos irregulares.
+
+**Bugs achados e corrigidos durante o QA (os dois valem pra implementação futura):**
+- `.peca svg{display:block}` **vence o atributo `hidden` da UA**, então o fallback estático da presença
+  ficava empilhado com o canvas e era ele que aparecia. Mesma armadilha do lote 1; corrigido com
+  `.peca [hidden]{display:none!important}`.
+- **`SVGElement` não herda de `HTMLElement`**, então `svg.hidden = true` cria só uma propriedade solta em
+  JS e **nunca escreve o atributo**. Tem que ser `setAttribute('hidden','')`.
+- Sob `prefers-reduced-motion` os alvos ainda oscilavam com o tempo: agora os três congelam o relógio
+  (`if (reduz) t = 0`) e mostram pose estática por estado, com a escrita completa.
+
+**QA:** console 0 erros e 0 warnings no lab e no hub, com varredura pelos 6 estados · claro e escuro
+verificados · E-02 confirmado pelo caminho estático (os três palcos são SVG/markup e renderam sem o JS
+ter rodado nas rodadas r1-r4). **Reduce foi tratado em código mas não emulado** — o `chrome-devtools` MCP
+não expõe `reducedMotion` no `emulate`.
+
+**MCP verificados nesta sessão:** `chrome-devtools` ✅ (30 tools, usado no QA inteiro) · `magic` ✅ (free,
+2 retrievals/dia) · `shadcn` ⚠️ conecta e lê o `components.json` do `web/`, mas `registries` está **vazio**,
+então `search_items_in_registries` responde "No registries are configured" — inútil até alguém declarar um
+registry. Não foi mexido (fora do escopo e o v5 é escrito à mão).
+
+## 2026-08-01 · Sessão 23 — Identidade da IA (nome, corpo, voz) + lugar da revisão semanal
+
+> **Resolvida na sessão 24**, exceto o lugar da revisão semanal, que segue aberto. As direções A/B/C e a shortlist de nomes abaixo estão **superadas**: A caiu (a bússola é marca, não ator) e nenhum dos nomes da lista foi o escolhido. Ficam como registro do raciocínio.
 
 > **Nenhum código ou protótipo foi tocado nesta sessão.** Ela produziu análise e opções; a
 > escolha do usuário está pendente. Ferramental novo foi instalado e validado (ver ao fim).

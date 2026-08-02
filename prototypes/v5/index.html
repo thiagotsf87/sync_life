@@ -38,10 +38,18 @@
   .st.planejada{color:var(--t3)} .st.planejada i{background:var(--t3);opacity:.5}
   .st.rascunho{color:var(--t2)} .st.rascunho i{background:var(--t2)}
   .st.aprovacao{color:var(--coral)} .st.aprovacao i{background:var(--coral)}
+  .st.revisao{color:var(--coral)} .st.revisao i{background:var(--coral);box-shadow:0 0 0 3px rgba(248,65,49,.22)}
   .st.aprovado{color:var(--ele)} .st.aprovado i{background:var(--ele)}
   .st.implementado{color:var(--roxo)} .st.implementado i{background:var(--roxo)}
   .st.qa{color:var(--ele)} .st.qa i{background:var(--ele);box-shadow:0 0 0 3px rgba(161,255,98,.18)}
   .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:20px;padding:14px 0;border-top:1px solid var(--line)}
+
+  /* nota da onda: o que está travado ou bloqueando, logo abaixo do título */
+  .onda .nota{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:10px;
+    border-left:2px solid var(--roxo);padding-left:11px;max-width:88ch}
+  .onda .nota b{color:var(--t1);font-weight:600}
+  .onda.arquivo h2 .on{color:var(--t3)}
+  .onda.arquivo td{opacity:.72}
   .colofao{border-top:1px solid var(--line);margin-top:40px;padding:24px clamp(20px,4vw,56px);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
     font:400 12.5px var(--int);color:var(--t3)}
   .colofao b{color:var(--t2);font-weight:600;font-family:var(--gro)}
@@ -67,9 +75,10 @@
       <span class="st planejada"><i></i>planejada</span>
       <span class="st rascunho"><i></i>rascunho</span>
       <span class="st aprovacao"><i></i>em aprovação</span>
+      <span class="st revisao"><i></i>revisão pedida</span>
       <span class="st aprovado"><i></i>aprovada</span>
       <span class="st implementado"><i></i>implementada</span>
-      <span class="st qa"><i></i>QA de identidade ok</span>
+      <span class="st qa"><i></i>no ar em web/ + QA ok</span>
     </div>
   </section>
 
@@ -84,15 +93,19 @@
 <script>
 (function () {
   // status: planejada | rascunho | aprovacao | aprovado | implementado | qa
-  var ST_LABEL = { planejada: 'planejada', rascunho: 'rascunho', aprovacao: 'em aprovação', aprovado: 'aprovada', implementado: 'implementada', qa: 'QA ok' };
+  var ST_LABEL = { planejada: 'planejada', rascunho: 'rascunho', aprovacao: 'em aprovação',
+    revisao: 'revisão pedida', aprovado: 'aprovada', implementado: 'implementada', qa: 'no ar + QA ok' };
   var ONDAS = [
-    { n: '00', titulo: 'Landing v2 + marca', tam: 'M', telas: [
-      ['Landing (r4, versão segura)', 'landing/landing.html', 'landing/landing.mobile.html', 'aprovacao'],
+    { n: '00', titulo: 'Landing + marca', tam: 'M',
+      nota: 'Fechada. A landing viva r15 e o mobile m1 estão <b>no ar em <code>web/</code></b> na rota <code>/</code>, com delta 0px no teste de identidade. A r4 foi congelada e saiu daqui pro Arquivo.',
+      telas: [
       ['Landing VIVA · desktop (r15)', 'landing/landing-viva.html', null, 'qa'],
       ['Landing VIVA · mobile dedicado (m1)', null, 'landing/landing-viva.mobile.html', 'qa'],
-      ['Marca 3D · cromo líquido (spec, rodada 7)', 'marca/marca-3d.html', null, 'aprovado'],
+      ['Marca 3D · cromo líquido (bússola WebGL + lockup)', 'marca/marca-3d.html', null, 'qa'],
     ]},
-    { n: '01', titulo: 'Público + auth', tam: 'M', telas: [
+    { n: '01', titulo: 'Público + auth', tam: 'M',
+      nota: 'Fechada. As 6 telas estão <b>no ar em <code>web/</code></b> com a lógica Supabase do v3 preservada.',
+      telas: [
       ['Pricing', 'landing/pricing.html', 'landing/pricing.mobile.html', 'qa'],
       ['Login', 'auth/login.html', 'auth/login.mobile.html', 'qa'],
       ['Cadastro', 'auth/cadastro.html', 'auth/cadastro.mobile.html', 'qa'],
@@ -100,19 +113,19 @@
       ['Redefinir senha', 'auth/redefinir-senha.html', 'auth/redefinir-senha.mobile.html', 'qa'],
       ['Onboarding', 'auth/onboarding.html', 'auth/onboarding.mobile.html', 'qa'],
     ]},
-    { n: '02', titulo: 'Chrome do app + Diário', tam: 'L', telas: [
-      ['Diário (chrome novo + check-in + suas áreas)', 'app/diario.html', 'app/diario.mobile.html', 'implementado'],
-      ['Camada do coach (dentro do Diário: gatilho no bar e ask da folha)', 'app/diario.html', 'app/diario.mobile.html', 'implementado'],
-      ['Edição da semana (review semanal)', 'app/review-semanal.html', 'app/review-semanal.mobile.html', 'aprovacao'],
+    { n: '02', titulo: 'Chrome do app + Diário', tam: 'L',
+      nota: 'Lote 1 <b>no ar em <code>web/</code></b> (<code>/dashboard</code> é o Diário). O <b>lote 2 está parado</b> por dois motivos: o ponto de acesso da Edição da semana não ficou bom, e ele dependia da identidade do coach, que só fechou agora na Onda 03. O Life Score em si não foi criticado, está só esperando aceite junto com o lote. <b>Próxima sessão reabre o Diário</b> como cockpit de Sy.',
+      telas: [
+      ['Diário (chrome + check-in + suas áreas)', 'app/diario.html', 'app/diario.mobile.html', 'qa'],
+      ['Camada do coach (gatilho no bar + ask da folha)', 'app/diario.html', 'app/diario.mobile.html', 'qa'],
+      ['Edição da semana (revisão semanal)', 'app/review-semanal.html', 'app/review-semanal.mobile.html', 'revisao'],
       ['Life Score · a anatomia do número', 'app/life-score.html', 'app/life-score.mobile.html', 'aprovacao'],
     ]},
-    { n: '03', titulo: 'Coach (identidade + vista cheia /coach + backend N1-N2)', tam: 'M', telas: [
-      ['Personagem · O Enxame (6 estados + 3 escalas)', 'personagem/enxame.html', null, 'aprovacao'],
-      ['Personagem · rodada 4: os três corpos lado a lado', 'personagem/vivo.html', null, 'qa'],
-      ['Personagem · rodada 3: O projetado (luz em camadas) · histórico', 'personagem/projetado.html', null, 'rascunho'],
-      ['Extrator de silhueta das referências (ferramenta)', 'personagem/refs/folha.html', null, 'qa'],
-      ['Personagem 3D · rodada 2 (simbionte, trança) · histórico', 'personagem/laboratorio-3d.html', null, 'rascunho'],
-      ['Personagem rodada 1 (tinta, criatura, presença) · histórico', 'personagem/laboratorio.html', null, 'rascunho'],
+    { n: '03', titulo: 'Coach: Sy (identidade + vista cheia + backend N1-N2)', tam: 'M',
+      nota: 'Quatro decisões fechadas em 2026-08-02, não reabrir sem motivo novo: <b>(1) o corpo é o Enxame</b>, bando sem forma fixa com coração coral; <b>(2) o nome é Sy</b>, pronúncia "sai", grafia travada, <b>sem artigo</b> (nunca "o Sy"); <b>(3) o editorial é o formato da saída, não a identidade</b>, Sy entrega uma edição mas não é colunista; <b>(4) Sy é objeto sempre escuro</b> (DS §2.2), leva a própria chapa pra dentro de página clara. Riscos abertos: a leitura padrão de "Sy" em pt-BR é "si", então a pronúncia tem que ser ensinada no onboarding e o TTS precisa de fonema explícito.',
+      telas: [
+      ['Sy · o Enxame (6 estados + 3 escalas)', 'personagem/enxame.html', null, 'aprovado'],
+      ['Diário como cockpit de Sy (voz + ações)', null, null, 'planejada'],
       ['Conversa completa (vista cheia da camada)', null, null, 'planejada'],
     ]},
     { n: '04', titulo: '01 · Finanças', tam: 'XL', telas: [
@@ -170,6 +183,19 @@
       ['Assets finais da marca (SVG, ICO, PNG)', null, null, 'planejada'],
       ['Remoção do v3 + DS v5.1', null, null, 'planejada'],
     ]},
+    // Fora da esteira: nada aqui vai virar tela. Ficam porque registram uma decisão
+    // ou porque são ferramenta, e sumir com eles faria alguém refazer o caminho.
+    { n: '––', titulo: 'Arquivo', tam: 'FORA DA ESTEIRA', arquivo: true,
+      nota: 'Nada aqui está na fila. São caminhos já decididos e ferramentas de apoio, mantidos pra ninguém repetir a mesma investigação. As 5 rodadas de personagem que foram reprovadas estão contadas com o motivo no handoff.',
+      telas: [
+      ['Landing r4 · congelada como versão segura (tag <code>poc-landing-r4</code>)', 'landing/landing.html', 'landing/landing.mobile.html', 'rascunho'],
+      ['Personagem r4 · os três corpos lado a lado (Enxame venceu)', 'personagem/vivo.html', null, 'rascunho'],
+      ['Personagem r3 · O projetado, luz em camadas', 'personagem/projetado.html', null, 'rascunho'],
+      ['Personagem r2 · 3D, simbionte e trança', 'personagem/laboratorio-3d.html', null, 'rascunho'],
+      ['Personagem r1 · 2D, tinta, criatura e presença', 'personagem/laboratorio.html', null, 'rascunho'],
+      ['Ferramenta · extrator de silhueta em lote', 'personagem/refs/folha.html', null, 'rascunho'],
+      ['Ferramenta · extrator de silhueta, avulso', 'personagem/refs/silhueta.html', null, 'rascunho'],
+    ]},
   ];
 
   function link(href, label) {
@@ -177,8 +203,11 @@
   }
   var host = document.getElementById('ondas');
   host.innerHTML = ONDAS.map(function (o) {
-    return '<section class="onda"><h2><span class="on num">ONDA ' + o.n + '</span>' + o.titulo +
-      '<span class="tam">' + o.tam + '</span></h2><table><thead><tr><th style="width:44%">Tela</th><th>Desktop</th><th>Mobile</th><th style="width:150px">Status</th></tr></thead><tbody>' +
+    return '<section class="onda' + (o.arquivo ? ' arquivo' : '') + '">' +
+      '<h2><span class="on num">' + (o.arquivo ? '' : 'ONDA ') + o.n + '</span>' + o.titulo +
+      '<span class="tam">' + o.tam + '</span></h2>' +
+      (o.nota ? '<p class="nota">' + o.nota + '</p>' : '') +
+      '<table><thead><tr><th style="width:44%">Tela</th><th>Desktop</th><th>Mobile</th><th style="width:150px">Status</th></tr></thead><tbody>' +
       o.telas.map(function (t) {
         return '<tr><td style="color:var(--t1)">' + t[0] + '</td>' +
           '<td>' + link(t[1], 'abrir') + '</td>' +
