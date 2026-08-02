@@ -248,11 +248,36 @@ estouravam em branco no centro.
 
 **QA:** 160 fps · console 0/0 em 2 corpos × 6 estados.
 
-**Próximo passo (a rodada que resolve as formas):** construir cérebro e cabeça a partir das **duas
-vistas ortogonais** de `silhuetas.json` — a de lado dá comprimento × altura, a de frente dá largura ×
-altura, e o cruzamento das duas dá o volume. É como se modela de verdade, e substitui a fórmula que
-falhou. Depois: nome → sinal chapado pro miúdo (nenhum 3D sobrevive a 38px) → integração no Diário.
-O lugar da revisão semanal segue **sem decisão** desde a sessão 23.
+### Rodada 2e — cérebro construído pelas duas vistas; cabeça bloqueada em referência
+
+**Construção por duas vistas ortogonais, implementada.** Para cada vértice: a altura vem do próprio
+vértice, a **seção naquela altura** sai das duas silhuetas (a de lado dá o par frente/trás em Z, a de
+frente dá o par esquerda/direita em X), e o **azimute** decide de que lado da seção o vértice cai.
+Meia-elipse **por quadrante**, para a assimetria da forma real sobreviver (lobo frontal na frente,
+occipital atrás). Extensões pré-calculadas numa LUT de 129 alturas: sem isso seriam ~3,7 M operações
+por quadro, com isso é O(1) por vértice.
+
+- **Cérebro: FUNCIONANDO.** A silhueta extraída manda na forma — lobo frontal, calota, occipital,
+  temporal e tronco aparecem porque estão na referência, não porque eu chutei. Fissura e giros entram
+  como **relevo por cima** da forma construída, não como a forma.
+- **Cabeça: bloqueada, e não por esforço.** O `ref3.svg` **não serve como fonte de perfil**: nele a
+  cabeça é um recorte escuro de contorno fino, então o que o limiar acha de mais brilhante é o reflexo
+  da calota e as bolhas flutuantes, nunca nariz/lábio/queixo. Varredura de desfoque 10→34 confirmou:
+  em nenhum ponto o contorno pega o rosto. Isolar o maior componente conectado também não resolve,
+  porque o desfoque necessário já funde as bolhas na cabeça. **`cabeca_perfil` foi removida do
+  `silhuetas.json`** (com `_nota` explicando) e o estado "falando" cai no aproximado, declarado na
+  ficha da peça. **Falta uma referência de perfil com a cabeça clara contra fundo uniforme.**
+
+**Melhoria no extrator:** `folha.html` ganhou isolamento do **maior componente conectado** (rotulagem
+por BFS 8-vizinhos), útil para referências com sujeira solta em volta. Não salvou o `ref3`, mas fica
+para as próximas.
+
+**QA:** 165 fps · console 0/0 em 2 corpos × 6 estados.
+
+**Próximo passo:** uma referência de **cabeça de perfil** utilizável destrava o "falando" pelo mesmo
+caminho do cérebro (o código já está lá, só falta o dado). Depois: nome → sinal chapado pro miúdo
+(nenhum 3D sobrevive a 38px) → integração no Diário. O lugar da revisão semanal segue **sem decisão**
+desde a sessão 23.
 
 **Arquivos:** `prototypes/v5/personagem/laboratorio.html` (rodada 1) · `prototypes/v5/personagem/laboratorio-3d.html` (rodada 2) · `prototypes/v5/index.html` · este handoff.
 **Nenhum código de `web/` e nenhum protótipo do lote 2 foi tocado.**

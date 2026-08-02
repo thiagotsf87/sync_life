@@ -45,8 +45,8 @@ const REFS = [
   { arq: 'stockcake-neural.svg', vista: 'cérebro · lado',   blur: 9,  lim: 16 },
   { arq: 'ref2.svg',             vista: 'cérebro · frente', blur: 10, lim: 62 },
   { arq: 'ref5.svg',             vista: 'cérebro · frente (traço)', blur: 12, lim: 52 },
-  { arq: 'ref3.svg',             vista: 'cabeça · perfil',  blur: 10, lim: 40 },
-  { arq: 'ref4.svg',             vista: 'cabeça · frente',  blur: 10, lim: 38 },
+  { arq: 'ref3.svg',             vista: 'cabeça · perfil',  blur: 10, lim: 40, isolar: true },
+  { arq: 'ref4.svg',             vista: 'cabeça · frente',  blur: 10, lim: 38, isolar: true },
   { arq: 'ref1.svg',             vista: 'cérebro · 3/4 (fundo claro)', blur: 9, lim: 16, inverter: true },
 ]
 const N = 180
@@ -65,8 +65,38 @@ async function extrair(cfg) {
     const i = (y * W + x) * 4, L = (d[i] + d[i + 1] + d[i + 2]) / 3
     return cfg.inverter ? L < 255 - cfg.lim : L > cfg.lim
   }
+  // máscara em bitmap, pra poder isolar componente e reusar na marcha
+  const M = new Uint8Array(W * H)
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (dentro(x, y)) M[y * W + x] = 1
+
+  if (cfg.isolar) {
+    // bolha solta em volta do objeto inflava a silhueta. Rotula os componentes e
+    // mantém só o maior: preserva nariz e queixo, coisa que desfoque grande comeria.
+    const lab = new Int32Array(W * H).fill(-1)
+    const fila = new Int32Array(W * H)
+    let melhor = -1, melhorTam = 0
+    for (let p0 = 0, id = 0; p0 < M.length; p0++) {
+      if (!M[p0] || lab[p0] >= 0) continue
+      let ini = 0, fim = 0, tam = 0
+      fila[fim++] = p0; lab[p0] = id
+      while (ini < fim) {
+        const q = fila[ini++]; tam++
+        const qx = q % W, qy = (q / W) | 0
+        for (let dy2 = -1; dy2 <= 1; dy2++) for (let dx2 = -1; dx2 <= 1; dx2++) {
+          const nx = qx + dx2, ny = qy + dy2
+          if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
+          const r2 = ny * W + nx
+          if (M[r2] && lab[r2] < 0) { lab[r2] = id; fila[fim++] = r2 }
+        }
+      }
+      if (tam > melhorTam) { melhorTam = tam; melhor = id }
+      id++
+    }
+    for (let q = 0; q < M.length; q++) if (lab[q] !== melhor) M[q] = 0
+  }
+
   let sx = 0, sy = 0, n = 0
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (dentro(x, y)) { sx += x; sy += y; n++ }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (M[y * W + x]) { sx += x; sy += y; n++ }
   if (!n) return { erro: 'máscara vazia' }
   const cx = sx / n, cy = sy / n
   const cru = [], Rmax = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy))
@@ -76,7 +106,7 @@ async function extrair(cfg) {
     for (let r = Rmax; r > 2; r -= 1) {
       const x = Math.round(cx + ca * r), y = Math.round(cy + sa * r)
       if (x < 0 || y < 0 || x >= W || y >= H) continue
-      if (dentro(x, y)) { if (++seg >= 4) { cru.push(r + cfg.blur * .45); posto = true; break } } else seg = 0
+      if (M[y * W + x]) { if (++seg >= 4) { cru.push(r + cfg.blur * .45); posto = true; break } } else seg = 0
     }
     if (!posto) cru.push(0)
   }
