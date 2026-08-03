@@ -15,12 +15,16 @@ O **lote 2 está parado** desde 2026-08-01. O lugar da Edição da semana **deix
 virou uma apresentação de Sy dentro do próprio Diário (ver a maquete da bancada). O Life Score segue
 esperando aceite.
 
-**Onda 03 é a frente ativa.** A identidade fechou em 2026-08-02: **Sy**, corpo **o Enxame**. Agora existe
-a **maquete da bancada** (`app/diario-bancada.html`), que redesenha o Diário como a sala onde Sy mora,
-com voz real ligada. Ela está **em refino, não aprovada**: o usuário gostou da bancada e pediu ajustes,
-que foram aplicados em três rodadas na mesma sessão. Em 2026-08-03 o **Google Cloud TTS entrou como
-provedor de voz** (a opção C). A maquete agora só espera a **chave do GCP** pra destravar os três votos
-e a decisão de gênero da voz.
+**Onda 03 é a frente ativa, e a bancada está APROVADA (2026-08-03).** A identidade fechou em 2026-08-02
+(**Sy**, corpo **o Enxame**) e a **bancada** (`app/diario-bancada.html`) fechou em 2026-08-03, com voz do
+Google Cloud TTS ouvida e aprovada em pt-BR nativo. Os três votos foram dados: a bancada, **check-in na
+conversa** e **`/coach` vira arquivo da conversa**.
+
+**Atenção ao escopo do aceite: é de FORMA, não de conteúdo.** O que Sy de fato traz no Diário é frente
+própria e continua aberta (ver "Aberto agora"). Aberto também: **gênero da voz** e **duração**.
+
+**O próximo entregável é o mobile dedicado 390×844**, que é o que falta pra maquete virar protótipo
+completo da onda e liberar a implementação em `web/`.
 
 **Ondas 04 a 14 não começaram.**
 
@@ -41,6 +45,9 @@ e a decisão de gênero da voz.
 | **Confirmação de ação** | Irreversível pede licença antes; reversível Sy faz e avisa, com desfazer à mão | 2026-08-02 |
 | **Provedor de voz** | **Google Cloud TTS.** Vozes pt-BR nativas (sem o problema de sotaque), 1 milhão de caracteres grátis por mês, e aceita chamada direta do navegador (CORS verificado). Escolhido contra ElevenLabs Starter por resolver o sotaque na raiz e por ser o mesmo provedor da produção | 2026-08-02 |
 | **Sy fala conclusão, a lâmina mostra a cifra** | O sintetizador lê "R$ 2.120" como "dois mil cento e vinte reais": 8 caracteres viram 28 falados. Número se mostra, não se recita. Tirar os números das falas cortou 18% da duração sem tirar nada da tela | 2026-08-02 |
+| **A bancada está APROVADA** | O desenho da maquete vira o protótipo da onda: dois estados (apresentação e assentado), lâmina × recorte com vidas opostas, ações com licença, Sy 280px apresentando e 164px no repouso. Aprovado como **forma**; o conteúdo continua frente própria (ver "Aberto agora") | 2026-08-03 |
+| **Check-in na conversa** | Sy pergunta e você responde na própria linha de comando, não num bloco separado de fichas. É coerente com a mecânica do portão: o check-in **é** o aceno que abre a edição, então ele mora onde a conversa mora. O modo "em bloco" segue no painel da maquete só como registro da comparação | 2026-08-03 |
+| **`/coach` vira arquivo da conversa** | No Diário a conversa é a própria página, então a camada lateral perde função ali. `/coach` deixa de ser "onde se fala com Sy" e passa a ser **onde se relê o que já foi falado**. Isso muda o que a rota precisa entregar nas ondas seguintes: histórico e busca, não uma segunda caixa de entrada | 2026-08-03 |
 
 ## Aberto agora
 
@@ -51,9 +58,6 @@ e a decisão de gênero da voz.
   separado. As falas do protótipo são **preenchimento para julgar o modelo**, não a copy final nem o
   modelo de conteúdo. Não tratar como decidido.
 
-- **Os três votos da maquete da bancada**, que o usuário ainda não deu: (1) a bancada em si, elogiada mas
-  ainda em refino; (2) **check-in na conversa ou em bloco**; (3) **`/coach` vira arquivo da conversa**, já
-  que no Diário a conversa é a própria página e a camada lateral perde função ali.
 - **A duração da apresentação.** Com voz medida, 25,2s no sintetizador do Windows. O corte disponível é
   fundir os tempos 2 e 3, que leva pra perto de 17s. **Não acelerar a digitação:** ela segue a duração real
   do áudio de propósito, e descolar quebra a lei 2.
@@ -74,16 +78,18 @@ e a decisão de gênero da voz.
 
 ## Próxima sessão (pauta do usuário)
 
-**O Google Cloud TTS está ligado e já foi ouvido** (sessão 26, 2026-08-03). A chave foi criada, a
-apresentação rodou com voz pt-BR nativa e o veredito do usuário foi **"a voz ficou boa"**. Sobra a
-decisão, que é dele:
+**A bancada foi aprovada em 2026-08-03** e o desktop está fechado. O caminho agora é construção:
 
-1. **Dar os três votos abertos** (a bancada, check-in na conversa ou em bloco, `/coach` vira arquivo)
-   e **decidir o gênero da voz**. O painel lista as vozes pt-BR do Google com o gênero no rótulo,
-   premium primeiro, e toca amostra na hora em que você troca: dá pra comparar sem rodar a apresentação.
-2. Decidir também **a duração** (fundir os tempos 2 e 3 leva de 25,2s pra perto de 17s) e **a altura da
-   bancada no assentado** (encurtar a frase da próxima ação, ou Sy encolher mais no repouso).
-3. Com os votos, fechar a maquete e virar protótipo definitivo da onda (desktop + mobile dedicado 390×844).
+1. **Mobile dedicado 390×844 da bancada.** É o entregável que falta pra Onda 03 ter protótipo completo.
+   Regra do programa: mobile é protótipo próprio, não o desktop espremido. Os problemas reais a resolver
+   são a bancada com Sy e a fala na mesma dobra, a linha de comando com teclado aberto, e a lâmina e o
+   recorte numa coluna só.
+2. **Duas decisões pequenas que não bloqueiam o mobile:** gênero da voz (o painel toca amostra na troca)
+   e duração (fundir os tempos 2 e 3 leva de 25,2s pra perto de 17s).
+3. **Teste barato que ficou pendente e agora é possível:** ouvir como o TTS pronuncia "Sy". A leitura
+   padrão em pt-BR é "si", não "sai". Se sair errado, precisa de fonema explícito e a copy do onboarding
+   muda, porque é lá que a pronúncia é ensinada. Mexe numa decisão de marca já fechada, então vale medir.
+4. Depois do mobile: implementação em `web/` e teste de identidade.
 
 **Por que o ElevenLabs caiu:** no plano grátis a API **bloqueia as vozes da biblioteca**
 (`paid_plan_required`), inclusive as que já estão salvas na conta. Sobram só as 21 vozes premade, todas de
@@ -110,7 +116,7 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
 | 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ✅ **APROVADA (r2, 2026-07-31)** | ✅ `web/` (2026-07-31) | ✅ desktop + mobile ok, console zero |
 | 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) · ✅ lote 2: Edição da semana + Life Score, D+M (2026-08-01) | ✅ **lote 1 APROVADO (2026-07-31)** · 🟡 **lote 2: o lugar da Edição da semana foi RESOLVIDO** em 2026-08-02 (vira apresentação de Sy no Diário, ver Onda 03); o conteúdo do protótipo sobrevive, a moldura de tela separada cai · ⏳ Life Score só esperando aceite, não foi criticado | ✅ lote 1 em `web/` (2026-08-01) · lote 2 parado | ✅ lote 1 desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) · ✅ lote 2 QA dos protótipos PASS (console 0/0, E-02 com JS off, consistência cruzada nas 6 telas) |
-| 03 | Coach **Sy**: identidade + **a bancada** + vista cheia + backend N1-N2 | ✅ **Sy, o Enxame** (`personagem/enxame.html`) + **maquete da bancada** (`app/diario-bancada.html`, 2026-08-02): dois estados do Diário, lâmina × recorte, ações com licença, voz real · ✅ **Google Cloud TTS ligado (2026-08-03)** | ✅ **IDENTIDADE APROVADA (2026-08-02)** · 🟡 **bancada em refino**: elogiada, 3 rodadas de ajuste aplicadas, faltam os 3 votos (bancada, check-in, `/coach`) + gênero da voz, todos **esperando a chave do GCP** | – (nada em `web/` ainda) | ✅ console 0/0 em 18 recargas · fluxos de ação, licença, desfazer e portão verificados por DOM · sincronia de voz medida · ✅ voz: troca de provedor, chave inválida, degradação sem chave e 15 asserções de lógica pura (`window.__voz`) · ✅ **síntese real ouvida em voz pt-BR nativa e aprovada** pelo usuário (2026-08-03) · ✅ altura da bancada travada: oscilação 0px em apresentando, assentado, durante a digitação e em corrida real |
+| 03 | Coach **Sy**: identidade + **a bancada** + vista cheia + backend N1-N2 | ✅ **Sy, o Enxame** (`personagem/enxame.html`) + **maquete da bancada** (`app/diario-bancada.html`, 2026-08-02): dois estados do Diário, lâmina × recorte, ações com licença, voz real · ✅ **Google Cloud TTS ligado (2026-08-03)** | ✅ **IDENTIDADE APROVADA (2026-08-02)** · ✅ **BANCADA APROVADA (2026-08-03)**: os três votos dados (a bancada, check-in **na conversa**, `/coach` vira arquivo) + voz ouvida e aprovada. Aprovado como **forma**; conteúdo é frente própria. Aberto ainda: gênero da voz e duração | – (nada em `web/` ainda) | ✅ console 0/0 em 18 recargas · fluxos de ação, licença, desfazer e portão verificados por DOM · sincronia de voz medida · ✅ voz: troca de provedor, chave inválida, degradação sem chave e 15 asserções de lógica pura (`window.__voz`) · ✅ **síntese real ouvida em voz pt-BR nativa e aprovada** pelo usuário (2026-08-03) · ✅ altura da bancada travada: oscilação 0px em apresentando, assentado, durante a digitação e em corrida real |
 | 04 | 01 Finanças (8 telas, 2 lotes) | – | – | – | – |
 | 05 | 02 Futuro (4) | – | – | – | – |
 | 06 | 03 Tempo (6) | – | – | – | – |
