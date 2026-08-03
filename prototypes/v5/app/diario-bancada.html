@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Diário como bancada de Sy · maquete de decisão</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23f84131'/%3E%3Ccircle cx='18' cy='22' r='2' fill='%236840ff'/%3E%3Ccircle cx='46' cy='26' r='2' fill='%236840ff'/%3E%3Ccircle cx='24' cy='45' r='2' fill='%236840ff'/%3E%3Ccircle cx='44' cy='44' r='2' fill='%236840ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* ════════════════════════════════════════════════════════════════════
+     A BANCADA — o objeto em julgamento nesta maquete.
+
+     Metáfora: no DS v5 tudo é estúdio e jornal, e "cockpit" brigava com isso.
+     Bancada é onde o apresentador senta pra apresentar a edição, então serve
+     pros dois mundos e justifica a chapa escura sem inventar exceção nova.
+
+     A página do Diário JÁ é escura, então a chapa de Sy não se separa por cor.
+     Ela se separa por três coisas: o filete, o halo roxo do campo e a luz
+     aditiva do próprio enxame. Card com fundo mais claro seria contra o DS.
+     ════════════════════════════════════════════════════════════════════ */
+  .bancada{margin-top:30px;border:1px solid var(--line-h);border-radius:20px;position:relative;overflow:hidden;
+    background-color:#151313;
+    background-image:radial-gradient(circle at 130px 52%,rgba(104,64,255,.20),transparent 60%)}
+  .bancada .bin{display:grid;grid-template-columns:164px minmax(0,1fr) auto;gap:clamp(20px,3vw,44px);
+    align-items:center;padding:26px clamp(22px,3vw,38px) 28px}
+  /* 164px é medido, não escolhido a olho: em 200px a frase da próxima ação
+     quebrava em 3 linhas e a chapa ia a 368px. Encolher Sy alarga a coluna da
+     fala, e em 164px a frase cai pra 2 linhas e a bancada fecha em 288px. Abaixo
+     disso a chapa NÃO baixa mais (quem passa a mandar é o bloco da fala), então
+     encolher além disso seria perder presença de Sy de graça. */
+  .bc-sy{width:164px;height:164px;flex:none;position:relative}
+  .bc-sy canvas{display:block;width:100%;height:100%}
+  .bc-fala{min-width:0}
+  .bc-fala .eyebrow b{color:var(--coral)}
+  .bc-fala h1{font:500 clamp(24px,2.9vw,38px)/1.14 var(--gro);letter-spacing:-.038em;margin:13px 0 0;
+    min-height:2.3em;text-wrap:balance}
+  .bc-cur{display:inline-block;width:2px;height:.86em;background:var(--coral);vertical-align:-.06em;margin-left:3px}
+  .anim .bc-cur{animation:sl-cur 1s steps(2,end) infinite}
+  @keyframes sl-cur{0%,49%{opacity:1}50%,100%{opacity:0}}
+  .bc-fala h1.pronto .bc-cur{display:none}
+  /* Bancada é móvel, e móvel não muda de tamanho a cada frase. A altura da fala
+     é travada por medição (ver `travar` no script), não pelo min-height de 2.3em
+     acima: 2.3em cobre 2 linhas, e as falas reais ocupam 3. A chapa variava 93px
+     entre a fala mais longa e o check-in, letra a letra enquanto Sy digitava.
+     Sem `transition` em min-height de propósito: altura travada estala, e a troca
+     de estado já carrega movimento pelo `.bin` e pelo Sy, que transicionam .7s. */
+
+  /* a linha de comando: ÚNICA superfície de entrada do produto (lei 2) */
+  .bc-linha{display:flex;align-items:center;gap:11px;border:1px solid var(--line-h);border-radius:999px;
+    padding:11px 12px 11px 20px;margin-top:20px;background:rgba(244,244,244,.035);
+    transition:border-color .3s var(--ease),background .3s var(--ease)}
+  .bc-linha:focus-within{border-color:rgba(104,64,255,.62);background:rgba(104,64,255,.06)}
+  .bc-linha.ouvindo{border-color:rgba(248,65,49,.6);background:rgba(248,65,49,.06)}
+  .bc-linha input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--t1);font:400 14px var(--int)}
+  .bc-linha input::placeholder{color:var(--t3)}
+  .bc-ico{width:36px;height:36px;flex:none;border-radius:50%;border:1px solid var(--line);background:transparent;
+    color:var(--t2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+    transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+  .bc-ico:hover{border-color:var(--line-h);color:var(--t1)}
+  .bc-ico.mic.on{border-color:var(--coral);color:var(--coral);background:rgba(248,65,49,.1)}
+  .bc-ico.env{background:var(--roxo);border-color:var(--roxo);color:#fff}
+  .bc-ico.env:hover{background:var(--roxo-h);border-color:var(--roxo-h)}
+  .bc-ico:focus-visible{outline:2px solid var(--roxo);outline-offset:2px}
+
+  .bc-sug{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+  .bc-sug button{font:500 12px var(--int);color:var(--t2);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:7px 14px;cursor:pointer;text-align:left;
+    transition:border-color .3s var(--ease),color .3s var(--ease)}
+  .bc-sug button:hover{border-color:rgba(104,64,255,.55);color:var(--t1)}
+  .bc-sug button.mood.on{border-color:var(--roxo);color:var(--t1)}
+
+  /* voz: indicador de que Sy está lendo em voz alta. Mudo tira ISTO e nada mais
+     (lei 2: modalidade é porta, não caminho) */
+  .bc-voz{display:none;align-items:center;gap:8px;margin-top:12px;font:500 10.5px var(--gro);
+    letter-spacing:.18em;text-transform:uppercase;color:var(--coral)}
+  .bc-voz.on{display:inline-flex}
+  .bc-voz i{display:block;width:3px;border-radius:2px;background:var(--coral)}
+  .anim .bc-voz i{animation:sl-nivel .62s var(--ease) infinite alternate;animation-delay:calc(var(--i)*.09s)}
+  @keyframes sl-nivel{from{height:4px;opacity:.45}to{height:15px;opacity:1}}
+
+  .bancada .selo{flex-shrink:0}
+
+  /* ── ESTADO 1 · apresentando ──
+     Sy cresce e tudo em volta recua. A edição não existe ainda: durante a
+     apresentação ele É o briefing, e a folha embaixo seria eco do que ele
+     acabou de dizer. Foi esse eco que apareceu na primeira rodada. */
+  .bancada .bc-sy{transition:width .7s var(--ease),height .7s var(--ease)}
+  .bancada .bin{transition:grid-template-columns .7s var(--ease),padding .7s var(--ease)}
+  .bancada .bc-linha,.bancada .bc-sug,.bancada .selo{transition:opacity .6s var(--ease)}
+  .bancada.apresentando .bin{grid-template-columns:280px minmax(0,1fr) auto;padding-top:34px;padding-bottom:36px}
+  .bancada.apresentando .bc-sy{width:280px;height:280px}
+  .bancada.apresentando .bc-fala h1{font-size:clamp(27px,3.3vw,43px)}
+  .bancada.apresentando .bc-linha,
+  .bancada.apresentando .bc-sug,
+  .bancada.apresentando .selo{opacity:.4}
+  /* recuar não é desligar: dá pra interromper a apresentação digitando */
+  .bancada.apresentando .bc-linha:focus-within{opacity:1}
+
+  /* ── a LÂMINA: o que Sy mostra enquanto fala ──
+     Mesmo lugar do recorte, vida diferente. A lâmina é substituída a cada frase
+     e some quando a edição assenta; o recorte é resposta a uma pergunta sua e
+     fica. O filete neutro contra o roxo é o que separa passageiro de permanente. */
+  .lamina{border-left-color:var(--t3)}
+  .lamina .rc-top .eyebrow b{color:var(--t2)}
+  .lamina .rc-x{display:none}
+  .lamina .rc-pe .rc-fonte{color:var(--t3)}
+
+  /* mini bancada: Sy continua alcançável depois que a bancada rola pra fora */
+  .bmini{position:fixed;top:64px;left:0;right:0;z-index:58;border-bottom:1px solid var(--line);
+    background:rgba(21,19,19,.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    transform:translateY(-140%);transition:transform .45s var(--ease)}
+  .bmini.on{transform:none}
+  .bmini .min{display:flex;align-items:center;gap:13px;max-width:1180px;margin:0 auto;
+    padding:9px clamp(20px,4vw,56px)}
+  .bmini .selo34{width:34px;height:34px;flex:none;border-radius:9px;overflow:hidden;
+    background-color:#151313;background-image:radial-gradient(circle at 50% 47%,rgba(104,64,255,.22),transparent 64%)}
+  .bmini .selo34 canvas{display:block;width:100%;height:100%}
+  .bmini form{flex:1;display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:999px;
+    padding:7px 8px 7px 16px;transition:border-color .3s var(--ease)}
+  .bmini form:focus-within{border-color:rgba(104,64,255,.6)}
+  .bmini input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--t1);font:400 13px var(--int)}
+  .bmini input::placeholder{color:var(--t3)}
+  .bmini .bc-ico{width:30px;height:30px}
+
+  /* trilha: lei 5, Sy pode levar mas nunca perder */
+  .trilha{display:none;align-items:center;gap:9px;font:500 11.5px var(--int);color:var(--t3);
+    border-left:1px solid var(--line);padding-left:13px;white-space:nowrap}
+  .trilha.on{display:inline-flex}
+  .trilha a{color:var(--t1);border-bottom:1px solid var(--line-h);padding-bottom:1px}
+  .trilha a:hover{border-bottom-color:var(--roxo)}
+
+  /* ─── RECORTES: o segundo verbo da materialização ───
+     Um recorte é uma RESPOSTA, nunca uma tela encolhida. A entrada é impressão
+     (varredura da esquerda pra direita), não holograma: o DS v5 é editorial,
+     e scanline de ficção científica brigaria com ele. */
+  .recortes{display:flex;flex-direction:column;gap:11px;margin-top:16px}
+  .recortes:empty{margin-top:0}
+  /* as lâminas se despedem quando a edição assume o lugar delas.
+     Só as lâminas: um recorte que você pediu no meio da apresentação fica. */
+  .lamina.saindo{opacity:0;transition:opacity .45s var(--ease)}
+  .recorte{position:relative;overflow:hidden;border:1px solid var(--line);border-left:3px solid var(--roxo);
+    border-radius:12px;background:#1b1918;padding:17px 20px 18px}
+  .recorte.acao{border-left-color:var(--ele)}
+  .recorte.aviso{border-left-color:var(--coral)}
+  .rc-top{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+  .rc-top .eyebrow b{color:var(--roxo)}
+  .recorte.acao .rc-top .eyebrow b{color:var(--ele)}
+  .recorte.aviso .rc-top .eyebrow b{color:var(--coral)}
+  .rc-x{background:none;border:none;color:var(--t3);cursor:pointer;font:400 17px/1 var(--int);padding:0 2px;
+    transition:color .3s var(--ease)}
+  .rc-x:hover{color:var(--t1)}
+  .recorte p{font:400 13.5px/1.65 var(--int);color:var(--t2);margin-top:11px;max-width:74ch}
+  .recorte p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+  .recorte p .w{color:var(--coral);font-weight:600}
+  .rc-obj{margin-top:14px;max-width:520px}
+  .rc-obj .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+  .rc-obj .nm{font:500 12.5px var(--int);color:var(--t2)}
+  .rc-obj .pct{font:700 14px var(--gro);font-variant-numeric:tabular-nums}
+  .rc-obj .track{height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
+  .rc-obj .track i{display:block;height:100%;border-radius:2px;background:var(--coral)}
+  .rc-obj .track i.ok{background:var(--ele)}
+  .anim .rc-obj .track i{animation:sl-encher .9s var(--ease) backwards .2s}
+  @keyframes sl-encher{from{width:0}}
+  .rc-obj .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3);margin-top:7px}
+  .lm-nums{display:flex;gap:clamp(26px,4vw,56px);flex-wrap:wrap;margin-top:14px}
+  .lm-nums div{display:flex;flex-direction:column;gap:5px}
+  .lm-nums span{font:700 9.5px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+  .lm-nums b{font:700 clamp(24px,2.6vw,34px)/1 var(--gro);letter-spacing:-.035em;color:var(--t1)}
+  .lm-nums b.ele{color:var(--ele)}
+  .lm-areas{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(22px,3vw,46px);margin-top:10px}
+  .lm-areas > div{display:grid;grid-template-columns:24px 1fr auto;gap:4px 11px;align-items:baseline;
+    padding:10px 0;border-bottom:1px solid var(--line)}
+  .lm-areas .di{font:700 10.5px var(--gro);color:var(--t3)}
+  .lm-areas .nm{font:500 14.5px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .lm-areas .sc{font:700 18px var(--gro);letter-spacing:-.03em;display:inline-flex;align-items:baseline;gap:6px}
+  .lm-areas .sc em{font:600 10px var(--gro);font-style:normal;color:var(--ele)}
+  .lm-areas .sc em.zero{color:var(--t3)}
+  .lm-areas .mt{grid-column:2/-1;font:400 11px var(--int);color:var(--t3)}
+
+  /* o pedido pra seguir: a edição só abre quando VOCÊ manda. Sy termina de
+     apresentar e espera, em vez de emendar a folha por cima da própria fala. */
+  .seguir{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:16px}
+  .seguir[hidden]{display:none}
+  .seguir span{font:400 12.5px var(--int);color:var(--t3)}
+  .anim .seguir{animation:sl-imprimir .5s var(--ease) backwards}
+  .rc-pe{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:14px}
+  .rc-src{font:500 12px var(--int);color:var(--t3);display:inline-flex;align-items:center;gap:6px;
+    transition:color .3s var(--ease);cursor:pointer;background:none;border:none;padding:0}
+  .rc-src:hover{color:var(--t1)}
+  .rc-src b{color:var(--roxo);font-weight:600}
+  /* a confirmação de ação irreversível (lei 9) não pode ser um link tímido */
+  .rc-src[data-ok]{border:1px solid var(--roxo);background:rgba(104,64,255,.18);border-radius:999px;
+    padding:8px 17px;color:var(--t1)}
+  .rc-src[data-ok]:hover{background:var(--roxo);border-color:var(--roxo);color:#fff}
+  .rc-src[data-ok] b{color:inherit}
+  .rc-fonte{font:500 10px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3)}
+  .anim .recorte{animation:sl-imprimir .5s var(--ease) backwards}
+  @keyframes sl-imprimir{from{clip-path:inset(0 100% 0 0);opacity:.35}to{clip-path:inset(0 0 0 0);opacity:1}}
+  .anim .recorte::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(161,255,98,.16),transparent);
+    animation:sl-varrer .6s var(--ease) forwards}
+  @keyframes sl-varrer{from{transform:translateX(-105%)}to{transform:translateX(105%)}}
+  @media (prefers-reduced-motion:reduce){.recorte::after{display:none}}
+
+  /* ─── ACENDER: o primeiro verbo. O objeto já está na edição, Sy cita, ele pisca.
+     Custo quase zero e nenhum deslocamento de layout. ─── */
+  .acender{animation:sl-acender 1.7s var(--ease);border-radius:10px}
+  @keyframes sl-acender{
+    0%,100%{box-shadow:0 0 0 0 rgba(104,64,255,0);background-color:transparent}
+    20%{box-shadow:0 0 0 1px rgba(104,64,255,.75),0 0 38px -10px rgba(104,64,255,.8);
+        background-color:rgba(104,64,255,.07)}
+    70%{box-shadow:0 0 0 1px rgba(104,64,255,.28);background-color:rgba(104,64,255,.03)}
+  }
+  .ticker .tk span.on{background:#151313;color:var(--ele);border-radius:3px}
+
+  /* ─── a montagem da edição (a abertura, 1× por dia) ─── */
+  .anim main.montando [data-blk]{opacity:0;transform:translateY(24px)}
+  .anim main.montando [data-blk].posto{opacity:1;transform:none;
+    transition:opacity .65s var(--ease),transform .65s var(--ease)}
+  .pular{position:fixed;left:20px;bottom:20px;z-index:70;display:none;
+    background:rgba(26,23,23,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .pular.on{display:inline-flex}
+
+  /* ═══ estilos herdados do Diário (diario.html) ═══ */
+  .mast{padding:52px 0 44px;display:flex;justify-content:space-between;align-items:flex-end;gap:36px}
+  .mast h1{font:500 clamp(34px,4.6vw,58px)/1.02 var(--gro);letter-spacing:-.045em;margin-top:14px}
+  .mast .sub{font:400 14.5px var(--int);color:var(--t2);margin-top:14px;max-width:52ch}
+  .selo{flex-shrink:0;border:1px solid var(--line-h);border-radius:16px;padding:20px 24px 18px;text-align:center;min-width:168px;
+    position:relative;transition:border-color .35s var(--ease)}
+  .selo:hover{border-color:rgba(161,255,98,.4)}
+  .selo::after{content:"";position:absolute;inset:5px;border:1px solid var(--line);border-radius:11px;pointer-events:none}
+  .anim .selo{animation:breathe 4.5s var(--ease) infinite}
+  @keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(161,255,98,0)}50%{box-shadow:0 0 26px -6px rgba(161,255,98,.18)}}
+  .selo .k{font:700 9.5px var(--gro);letter-spacing:.24em;color:var(--t3)}
+  .selo .n{font:700 64px/1 var(--gro);letter-spacing:-.05em;margin:8px 0 6px}
+  .selo .d{font:600 11.5px var(--gro);color:var(--ele)}
+  .selo .s{font:400 10.5px var(--int);color:var(--t3);margin-top:3px}
+  .bancada .selo .n{font-size:52px}
+  .bancada .selo{min-width:150px;padding:16px 20px 14px}
+
+  .folha > .in{max-width:1180px;margin:0 auto;padding:64px clamp(20px,4vw,56px) 58px;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(36px,5vw,80px)}
+  .folha .eyebrow{color:var(--t2)}
+  .folha h2{font:500 clamp(22px,2.6vw,32px)/1.2 var(--gro);letter-spacing:-.03em;margin:16px 0 18px}
+  .folha .body{font:400 15.5px/1.75 var(--int);color:var(--t2);max-width:62ch}
+  .folha .body + .body{margin-top:14px}
+  .folha .body strong{color:var(--t1);font-weight:600}
+  .folha .body .warn{color:var(--coral);font-weight:600}
+  .folha .ass{display:flex;align-items:center;gap:10px;margin-top:26px;font:400 11.5px var(--int);color:var(--t2)}
+  .folha .ass::before{content:"";width:26px;height:2px;background:var(--roxo)}
+  /* o selo de 34px dentro da folha CLARA é a prova da regra do objeto sempre escuro */
+  .folha .assin{display:flex;align-items:center;gap:11px;margin-top:24px}
+  .folha .assin .selo34{width:34px;height:34px;flex:none;border-radius:9px;overflow:hidden;
+    background-color:#151313;background-image:radial-gradient(circle at 50% 47%,rgba(104,64,255,.24),transparent 64%)}
+  .folha .assin .selo34 canvas{display:block;width:100%;height:100%}
+  .folha .assin .qm{font:600 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+  .recs{border-left:1px solid var(--line);padding-left:clamp(20px,3vw,44px)}
+  .recs .eyebrow{margin-bottom:10px}
+  .rec{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:16px 0;border-bottom:1px dashed var(--line);cursor:pointer}
+  .rec:last-of-type{border-bottom:none}
+  .rec .rn{font:700 13px var(--gro);color:var(--roxo)}
+  .rec h4{font:600 14px var(--int);color:var(--t1);display:flex;align-items:center;gap:8px}
+  .rec h4 svg{opacity:0;transform:translateX(-4px);transition:opacity .3s var(--ease),transform .3s var(--ease);color:var(--roxo);flex-shrink:0}
+  .rec:hover h4 svg{opacity:1;transform:none}
+  .rec p{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:4px}
+  .rec p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+
+  .checkin{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(28px,4vw,64px);align-items:center;
+    padding-top:30px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+  .frase{font:500 20px var(--gro);letter-spacing:-.02em;margin:10px 0 16px}
+
+  .hoje{border-bottom:1px solid var(--line);padding:26px 0;position:relative}
+  .hoje::after{content:"";position:absolute;top:0;right:0;bottom:0;width:70px;background:linear-gradient(90deg,transparent,var(--bg));pointer-events:none}
+  .hoje > .in{display:flex;align-items:baseline;gap:26px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .hoje > .in::-webkit-scrollbar{display:none}
+  .hoje .eyebrow{flex-shrink:0}
+  .ev{display:flex;align-items:baseline;gap:9px;white-space:nowrap;flex-shrink:0}
+  .ev span{font:500 13px var(--int);color:var(--t2)}
+  .ev.money span{color:var(--t1)}
+  .ev .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
+  .ev .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
+  .ev time,.ev span.num{font:700 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+
+  .nums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+  .nums > div{padding:34px clamp(16px,2.4vw,34px);border-right:1px solid var(--line)}
+  .nums > div:last-child{border-right:none}
+  .nums .v{font:700 clamp(28px,3.4vw,44px)/1 var(--gro);letter-spacing:-.04em;margin-top:12px}
+  .nums .d{font:500 12px var(--int);margin-top:8px;color:var(--t3)}
+
+  .dims-sec{padding:56px 0 8px}
+  .dims-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .dims-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .dims-head a:hover{color:var(--t1)}
+  .dims{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(36px,5vw,80px)}
+  .dimrow{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:baseline;padding:17px 0;border-bottom:1px solid var(--line);
+    transition:padding-left .35s var(--ease)}
+  .dimrow:hover{padding-left:8px}
+  .dimrow .di{font:700 12px var(--gro);color:var(--t3)}
+  .dimrow:hover .di{color:var(--roxo)}
+  .dimrow .nm{font:500 16px var(--gro);letter-spacing:-.01em}
+  .dimrow .mt{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+  .dimrow .sc{font:700 22px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+  .dimrow .tr{font:600 11px var(--gro)}
+  .outras{font:400 12px var(--int);color:var(--t3);padding:14px 0;border-top:1px solid var(--line);margin-top:-1px}
+
+  .aten{padding:44px 0 60px;display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(36px,5vw,80px)}
+  .nota{display:grid;grid-template-columns:14px 1fr auto;gap:14px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
+  .nota:last-of-type{border-bottom:none}
+  .nota .mark{width:7px;height:7px;border-radius:50%;background:var(--coral);align-self:center}
+  .nota.ok .mark{background:var(--ele)}
+  .nota .tx{font:400 13.5px var(--int);color:var(--t2)}
+  .nota .tx strong{color:var(--t1);font-weight:600}
+  .nota .v{font:700 13px var(--gro);color:var(--coral)}
+  .nota.ok .v{color:var(--ele)}
+  .metas .mrow{padding:13px 0;border-bottom:1px solid var(--line)}
+  .metas .mrow:last-of-type{border-bottom:none}
+  .metas .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .metas .nm{font:500 13.5px var(--int)}
+  .metas .pct{font:700 13.5px var(--gro)}
+  .metas .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-bottom:6px}
+  .metas .track i{display:block;height:100%;background:var(--t2);border-radius:2px}
+  .metas .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+
+  /* ═══ painel da maquete: NÃO é produto, é o instrumento de decisão ═══ */
+  .mq{position:fixed;right:16px;bottom:16px;z-index:95;width:302px;max-width:calc(100vw - 32px);
+    border:1px solid var(--line-h);border-radius:16px;background:rgba(26,23,23,.97);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    box-shadow:0 22px 60px -26px rgba(0,0,0,.85);max-height:calc(100vh - 32px);display:flex;flex-direction:column}
+  .mq > header{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:13px 15px;border-bottom:1px solid var(--line);cursor:pointer}
+  .mq > header .eyebrow b{color:var(--ele)}
+  .mq > header .tg{background:none;border:none;color:var(--t3);cursor:pointer;font:400 15px/1 var(--int)}
+  .mq .mqb{padding:14px 15px 16px;overflow-y:auto;display:grid;gap:15px}
+  .mq.fechado .mqb{display:none}
+  .mqg > span{font:600 9.5px var(--int);letter-spacing:.16em;text-transform:uppercase;color:var(--t3);display:block;margin-bottom:8px}
+  .mqs{display:flex;gap:6px;flex-wrap:wrap}
+  .mqs button{font:500 12px var(--int);color:var(--t2);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:7px 13px;cursor:pointer;
+    transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+  .mqs button:hover{border-color:var(--line-h);color:var(--t1)}
+  .mqs button[aria-pressed="true"]{border-color:var(--roxo);color:var(--t1);background:rgba(104,64,255,.16)}
+  .mqs button:focus-visible{outline:2px solid var(--roxo);outline-offset:2px}
+  .mqa{display:grid;gap:6px}
+  .mqa button{font:500 12.5px var(--int);color:var(--t2);background:transparent;border:1px solid var(--line);
+    border-radius:9px;padding:9px 12px;cursor:pointer;text-align:left;
+    transition:border-color .3s var(--ease),color .3s var(--ease)}
+  .mqa button:hover{border-color:rgba(104,64,255,.55);color:var(--t1)}
+  .mq .nota-mq{font:400 11.5px/1.55 var(--int);color:var(--t3);border-top:1px solid var(--line);padding-top:12px}
+  .mq .nota-mq b{color:var(--t2);font-weight:600}
+  /* painel de voz de nuvem (Google e ElevenLabs): a chave mora no localStorage
+     DESTA máquina e nunca num arquivo, senão ela ia parar no repositório no
+     primeiro commit. Um bloco só serve os dois provedores */
+  .mqn{display:grid;gap:8px;margin-top:9px;padding-top:10px;border-top:1px dashed var(--line)}
+  .mqn[hidden]{display:none}
+  .mqn input,.mqn select{width:100%;background:#151313;border:1px solid var(--line);border-radius:8px;
+    padding:8px 11px;color:var(--t1);font:400 12px var(--int);outline:none}
+  .mqn input:focus,.mqn select:focus{border-color:rgba(104,64,255,.6)}
+  .mqn .linha{display:flex;gap:6px}
+  .mqn .linha input{flex:1}
+  .mqn button{font:600 11.5px var(--int);color:var(--t1);background:rgba(104,64,255,.18);
+    border:1px solid var(--roxo);border-radius:8px;padding:8px 12px;cursor:pointer;white-space:nowrap}
+  .mqn button:hover{background:var(--roxo)}
+  .mqn .est{font:400 11px/1.5 var(--int);color:var(--t3)}
+  .mqn .est b{color:var(--t2);font-weight:600}
+  .mqn .est.erro{color:var(--coral)}
+  .mqn .barra{height:3px;background:var(--s2);border-radius:2px;overflow:hidden}
+  .mqn .barra i{display:block;height:100%;background:var(--ele);border-radius:2px;transition:width .4s var(--ease)}
+  .mqn .barra i.cheio{background:var(--coral)}
+
+  .semjs{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:22px 0;
+    font:400 13px/1.6 var(--int);color:var(--t2)}
+
+  @media (max-width:960px){
+    .bancada .bin{grid-template-columns:1fr;justify-items:start}
+    .bc-sy{width:150px;height:150px}
+    .mast{flex-direction:column;align-items:flex-start}
+    .folha .in{grid-template-columns:1fr}
+    .recs{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:22px}
+    .checkin{grid-template-columns:1fr}
+    .ck-form{flex-direction:column;align-items:stretch}
+    .nums{grid-template-columns:1fr 1fr}
+    .nums > div:nth-child(2){border-right:none}
+    .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+    .dims{grid-template-columns:1fr}
+    .aten{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ═══ chrome ═══ -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 31 de julho de 2026</span>
+  <div class="acts">
+    <!-- o botão fantasma "Revisão semanal" morreu: a edição da semana é uma
+         apresentação de Sy, não uma ferramenta no chrome (lei 6) -->
+    <button class="btn-sm ghost" type="button" data-mq-legado hidden>Revisão semanal</button>
+    <button class="btn-sm ghost coach-pill" type="button" data-mq-legado hidden data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Pergunte ao coach</button>
+    <button class="btn-sm roxo" type="button">+ Nova entrada</button>
+  </div>
+</header>
+<div class="ticker" aria-hidden="true">
+  <div class="tk"><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span data-tk="lazer">LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span data-tk="lazer">LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span data-tk="lazer">LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span data-tk="lazer">LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span></div>
+</div>
+<nav class="modbar" aria-label="Módulos">
+  <div class="in">
+    <a class="on" href="#">Diário</a>
+    <a href="#"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<!-- mini bancada: Sy alcançável em qualquer altura da página -->
+<div class="bmini" id="bmini" aria-label="Sy">
+  <div class="min">
+    <div class="selo34 chapa"><canvas id="cvMini"></canvas></div>
+    <form id="fmMini">
+      <input type="text" placeholder="Pergunte ou peça alguma coisa" aria-label="Falar com Sy">
+      <button class="bc-ico env" type="submit" aria-label="Enviar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </form>
+    <span class="trilha" id="trilha">
+      Sy trouxe você do Diário · <a href="#" data-voltar>voltar</a>
+    </span>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+
+    <!-- ═══════════ A BANCADA (o objeto em julgamento) ═══════════ -->
+    <section class="bancada" id="bancada" aria-label="Sy">
+      <div class="bin">
+        <div class="bc-sy chapa"><canvas id="cvSy"></canvas></div>
+        <div class="bc-fala">
+          <p class="eyebrow"><b>Sy</b> · edição nº 208 · 14:05</p>
+          <!-- A fala de Sy é o DELTA, nunca o título da folha: ele abre pelo que mudou
+               desde a sua última visita, e a folha continua sendo o texto escrito.
+               Repetir a manchete aqui foi o primeiro defeito visível da maquete.
+               Já vem escrita no HTML pra bancada dizer algo sem JS (E-02). -->
+          <h1 id="bcFala">Restam R$&nbsp;10 de lazer até sexta. É a única coisa que precisa de você hoje.<span class="bc-cur" aria-hidden="true"></span></h1>
+          <p class="bc-voz" id="bcVoz" aria-hidden="true">
+            <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i>
+            lendo em voz alta
+          </p>
+          <form class="bc-linha" id="fmSy">
+            <input type="text" id="inSy" placeholder="Pergunte ou peça alguma coisa" aria-label="Falar com Sy">
+            <button class="bc-ico mic" type="button" id="btMic" aria-label="Falar por voz" title="Falar por voz">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+            </button>
+            <button class="bc-ico" type="button" id="btMudo" aria-pressed="true" aria-label="Voz de Sy" title="Voz de Sy: desligada">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+            </button>
+            <button class="bc-ico env" type="submit" aria-label="Enviar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </form>
+          <div class="bc-sug" id="bcSug">
+            <button type="button" data-p="lazer">Quanto ainda posso gastar em lazer?</button>
+            <button type="button" data-p="semana">Como foi minha semana?</button>
+            <button type="button" data-p="almoco">Lancei R$&nbsp;40 no almoço</button>
+          </div>
+        </div>
+        <div class="selo" role="img" aria-label="Life Sync Score 78, mais 3 esta semana">
+          <div class="k">LIFE SYNC SCORE</div>
+          <div class="n num">78</div>
+          <div class="d num">+3 esta semana</div>
+          <div class="s">Consistente</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- masthead antigo, pra comparar com a bancada -->
+    <section class="mast" id="mast" hidden>
+      <div>
+        <p class="eyebrow">Edição nº 208 · seu diário</p>
+        <h1>Boa tarde, Thiago.</h1>
+        <p class="sub">Julho está 83% executado e a poupança segue acima da meta. Uma única atenção hoje: o lazer chegou perto do teto.</p>
+      </div>
+      <div class="selo" role="img" aria-label="Life Sync Score 78, mais 3 esta semana, consistente">
+        <div class="k">LIFE SYNC SCORE</div>
+        <div class="n num">78</div>
+        <div class="d num">+3 esta semana</div>
+        <div class="s">Consistente · como melhorar →</div>
+      </div>
+    </section>
+
+    <!-- onde as lâminas e os recortes são impressos -->
+    <div class="recortes" id="recortes" aria-live="polite" aria-label="O que Sy mostra"></div>
+    <div class="seguir" id="seguir" hidden>
+      <button class="btn-sm roxo" type="button" id="btSeguir">Ver a edição de hoje ↓</button>
+      <span>ou responda o check-in aí em cima</span>
+    </div>
+  </div>
+
+  <!-- a folha -->
+  <section class="folha lt" data-blk="folha" aria-label="Briefing de hoje">
+    <div class="in">
+      <article>
+        <!-- sem byline: a tela inteira é de Sy, assinar cada seção seria redundante.
+             O que sobra é a marca dele no fim, que também é a prova da regra do
+             objeto sempre escuro dentro da folha clara. -->
+        <p class="eyebrow"><b>O briefing de hoje</b> · 14:05</p>
+        <h2>Só o lazer pede atenção. O resto do mês já está ganho.</h2>
+        <p class="body">Suas despesas somam <strong class="num">R$&nbsp;3.160</strong> contra <strong class="num">R$&nbsp;5.000</strong> de receitas, o que projeta um fechamento de <strong class="num">R$&nbsp;2.120</strong> e uma poupança de <strong class="num">37%</strong>, sete pontos acima da sua meta. O ponto de tensão é o orçamento de lazer: <span class="warn">R$&nbsp;410 dos R$&nbsp;420</span> já foram usados, com 4 dias de mês pela frente.</p>
+        <p class="body">No resto da vida, a semana começou bem: <strong>3 treinos</strong> feitos, o aporte automático de quarta está coberto com folga e a Viagem Itália passa de <strong class="num">68%</strong> se você antecipar o aporte de agosto.</p>
+        <div class="draw rv" style="display:flex;align-items:center;gap:8px;margin-top:18px">
+          <svg class="hand-arrow" width="42" height="24" viewBox="0 0 42 24" aria-hidden="true" style="color:var(--coral)"><path d="M40 4 C28 20, 15 22, 3 15 M9 21 L3 15 L10 11"/></svg>
+          <span class="hand" style="transform:rotate(-2deg)">um café a menos e o mês fecha redondo!</span>
+        </div>
+        <!-- a prova da regra: chapa escura de 34px dentro da folha CLARA -->
+        <div class="assin">
+          <div class="selo34"><canvas id="cvAssin"></canvas></div>
+          <span class="qm">Com base em 34 transações, 6 orçamentos e 3 metas</span>
+        </div>
+      </article>
+      <aside class="recs">
+        <p class="eyebrow">Recomendações de hoje</p>
+        <div class="rec"><span class="rn num">01</span><div><h4>Segurar o lazer até sexta<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></h4><p>Restam <b>R$&nbsp;10</b> no orçamento. Um café a menos resolve.</p></div></div>
+        <div class="rec"><span class="rn num">02</span><div><h4>Antecipar o aporte da Itália<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></h4><p>Cabem <b>+R$&nbsp;120</b> sem apertar o fechamento do mês.</p></div></div>
+        <div class="rec"><span class="rn num">03</span><div><h4>Fechar a revisão semanal<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></h4><p>5 minutos hoje mantêm o streak de <b>12 dias</b> vivo.</p></div></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- check-in em bloco (alternativa B) -->
+  <div class="wrap">
+    <section class="checkin" id="ckBloco" data-blk="checkin" hidden aria-label="Check-in do dia">
+      <div>
+        <p class="eyebrow">Check-in</p>
+        <p class="frase">Como foi o dia?</p>
+        <div class="moods">
+          <button class="mood" type="button">Péssimo</button>
+          <button class="mood" type="button">Ruim</button>
+          <button class="mood" type="button">Neutro</button>
+          <button class="mood" type="button">Bem</button>
+          <button class="mood" type="button">Ótimo</button>
+        </div>
+      </div>
+      <div>
+        <div class="ck-form">
+          <input class="ck-note" type="text" placeholder="Uma linha sobre hoje (opcional)">
+          <button class="btn-sm roxo ck-save" type="button">Registrar</button>
+        </div>
+        <div class="ck-done" hidden>Registrado às 21:14 · <b data-out></b></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- hoje -->
+  <section class="hoje" data-blk="hoje" aria-label="Hoje">
+    <div class="wrap in">
+      <span class="eyebrow">Hoje</span>
+      <span class="ev"><time class="num">07:30</time><span>Fisioterapia</span></span>
+      <span class="ev money"><span class="tag due">EM 3 DIAS</span><span>Aluguel</span><span class="num">R$&nbsp;1.200,00</span></span>
+      <span class="ev"><time class="num">TER 10:00</time><span>1:1 com gestor</span></span>
+      <span class="ev money"><span class="tag">QUA</span><span>Aporte automático</span><span class="num">R$&nbsp;580,00</span></span>
+      <span class="ev"><time class="num">SEX 20:00</time><span>Jantar com Ana</span></span>
+      <span class="ev money"><span class="tag">EM 5 DIAS</span><span>Internet</span><span class="num">R$&nbsp;89,90</span></span>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <!-- números do mês -->
+    <section class="nums" data-blk="nums" aria-label="Números do mês">
+      <div><p class="eyebrow">Saldo</p><div class="v num" id="vSaldo">R$&nbsp;1.840</div><div class="d num ele">+12% vs junho</div></div>
+      <div><p class="eyebrow">Receitas</p><div class="v num">R$&nbsp;5.000</div><div class="d num ele">+8% vs junho</div></div>
+      <div id="boxDespesas"><p class="eyebrow">Despesas</p><div class="v num" id="vDespesas">R$&nbsp;3.160</div><div class="d num" id="dDespesas">63% da receita</div></div>
+      <div><p class="eyebrow">Poupança</p><div class="v num">37%</div><div class="d num">Meta: 30%</div></div>
+    </section>
+
+    <!-- suas áreas -->
+    <section class="dims-sec" data-blk="dims" aria-label="Suas áreas">
+      <div class="dims-head">
+        <p class="eyebrow">Suas áreas</p>
+        <a href="#">Ver todas →</a>
+      </div>
+      <div class="dims">
+        <div class="dimrow" id="dimFin"><span class="di num">01</span><div><div class="nm">Finanças</div><div class="mt num">Saldo R$&nbsp;1.840 · lazer no limite</div></div><span class="sc num">83<span class="tr ele">▲2</span></span></div>
+        <div class="dimrow"><span class="di num">02</span><div><div class="nm">Futuro</div><div class="mt num">3 metas · 61% de média</div></div><span class="sc num">79<span class="tr ele">▲1</span></span></div>
+        <div class="dimrow"><span class="di num">04</span><div><div class="nm">Corpo</div><div class="mt num">3 atividades · 126 min</div></div><span class="sc num">69<span class="tr ele">▲3</span></span></div>
+        <div class="dimrow"><span class="di num">08</span><div><div class="nm">Experiências</div><div class="mt num">Itália em 92 dias</div></div><span class="sc num">78<span class="tr" style="color:var(--t3)">–</span></span></div>
+      </div>
+      <p class="outras">Outras: 03 Tempo <span class="num">71</span> · 05 Mente <span class="num">58</span> · 06 Patrimônio <span class="num">76</span> · 07 Carreira <span class="num">69</span></p>
+    </section>
+
+    <!-- atenção + metas -->
+    <section class="aten" data-blk="aten" aria-label="Atenção e metas">
+      <div>
+        <p class="eyebrow" style="margin-bottom:6px">Atenção</p>
+        <div class="nota" id="notaLazer"><span class="mark"></span><span class="tx"><strong>Lazer</strong> usou 98% do orçamento, restam R$&nbsp;10 pra 4 dias</span><span class="v num">410 / 420</span></div>
+        <div class="nota"><span class="mark"></span><span class="tx"><strong>Moradia</strong> passou da faixa saudável do mês</span><span class="v num">86%</span></div>
+        <div class="nota ok"><span class="mark"></span><span class="tx"><strong>Aporte de quarta</strong> coberto: saldo projetado segue positivo</span><span class="v num">OK</span></div>
+        <div class="nota ok"><span class="mark"></span><span class="tx"><strong>Streak</strong> de revisões chega a 12 dias hoje</span><span class="v num">12d</span></div>
+      </div>
+      <div class="metas">
+        <p class="eyebrow" style="margin-bottom:6px">Metas em andamento</p>
+        <div class="mrow" id="metaItalia">
+          <div class="r1"><span class="nm">Viagem Itália</span><span class="pct num">68%</span></div>
+          <div class="track"><i style="width:68%"></i></div>
+          <div class="sub">R$&nbsp;8.600 de R$&nbsp;12.700 · dez 2026</div>
+        </div>
+        <div class="mrow">
+          <div class="r1"><span class="nm">Reserva de emergência</span><span class="pct num">80%</span></div>
+          <div class="track"><i style="width:80%"></i></div>
+          <div class="sub">R$&nbsp;14.400 de R$&nbsp;18.000</div>
+        </div>
+        <div class="mrow">
+          <div class="r1"><span class="nm">MBA 2027</span><span class="pct num">34%</span></div>
+          <div class="track"><i style="width:34%"></i></div>
+          <div class="sub">R$&nbsp;3.100 de R$&nbsp;9.000 · mar 2027</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <noscript>
+    <div class="wrap"><div class="semjs">
+      Sem JavaScript a edição aparece inteira e montada, e a bancada fica sem o corpo de Sy.
+      É o fallback E-02: nenhum conteúdo depende de script.
+    </div></div>
+  </noscript>
+
+  <footer class="colofao">
+    <span>Fechamento projetado de julho: <b class="num">R$&nbsp;2.120</b></span>
+    <div class="r">
+      <span>Streak <b class="num">12 dias</b></span>
+      <span>Badges <b class="num">24/61</b></span>
+      <span>Última sincronização <b class="num">14:05</b></span>
+    </div>
+  </footer>
+</main>
+
+<button class="btn-sm ghost pular" id="btPular" type="button">Pular a apresentação</button>
+
+<!-- camada do coach, só existe no modo "sem bancada" (pra comparar) -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Coach">
+  <header class="chead">
+    <p class="eyebrow"><b>Coach</b> · lendo: seu diário de hoje</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o seu dia. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Resumo da minha semana</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento.
+        <span class="meta">Fontes: orçamento Lazer · 34 transações</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre a sua vida">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+</aside>
+
+<!-- ═══ painel da maquete ═══ -->
+<div class="mq" id="mq">
+  <header id="mqHead">
+    <p class="eyebrow"><b>Maquete</b> · decisão da bancada</p>
+    <button class="tg" type="button" aria-label="Recolher">–</button>
+  </header>
+  <div class="mqb">
+    <div class="mqg">
+      <span>1 · A bancada</span>
+      <div class="mqs" id="sgBancada">
+        <button data-v="com" aria-pressed="true">Com bancada</button>
+        <button data-v="sem" aria-pressed="false">Diário de hoje</button>
+      </div>
+    </div>
+    <div class="mqg">
+      <span>1b · Momento do dia</span>
+      <div class="mqs" id="sgMomento">
+        <button data-v="apresentacao" aria-pressed="true">Primeiro acesso</button>
+        <button data-v="assentada" aria-pressed="false">Acessos seguintes</button>
+      </div>
+    </div>
+    <div class="mqg">
+      <span>2 · Check-in</span>
+      <div class="mqs" id="sgCheck">
+        <button data-v="conversa" aria-pressed="true">Na conversa</button>
+        <button data-v="bloco" aria-pressed="false">Em bloco</button>
+      </div>
+    </div>
+    <div class="mqg">
+      <span>3 · Registro de Sy</span>
+      <div class="mqs" id="sgReg">
+        <button data-v="ator" aria-pressed="true">Ator (Diário)</button>
+        <button data-v="copiloto" aria-pressed="false">Copiloto</button>
+      </div>
+    </div>
+    <div class="mqg">
+      <span>4 · Voz de Sy</span>
+      <div class="mqs" id="sgVoz">
+        <button data-v="off" aria-pressed="true">Mudo</button>
+        <button data-v="m" aria-pressed="false">Nav. grave</button>
+        <button data-v="f" aria-pressed="false">Nav. aguda</button>
+        <button data-v="gg" aria-pressed="false">Google</button>
+        <button data-v="11" aria-pressed="false">ElevenLabs</button>
+      </div>
+      <div class="mqn" id="mqn" hidden>
+        <div class="linha">
+          <input type="password" id="inChave" placeholder="Cole sua API key" autocomplete="off" spellcheck="false">
+          <button type="button" id="btConectar">Conectar</button>
+        </div>
+        <select id="selVoz" aria-label="Voz de Sy"><option>Conecte pra listar as vozes</option></select>
+        <div class="mqs" id="sgModelo" hidden>
+          <button data-v="eleven_multilingual_v2" aria-pressed="true">Alta</button>
+          <button data-v="eleven_flash_v2_5" aria-pressed="false">Econômica (metade)</button>
+        </div>
+        <button type="button" id="btPre">Pré-gerar as falas da apresentação</button>
+        <div class="barra"><i id="barraCota" style="width:0%"></i></div>
+        <p class="est" id="estNuvem">A chave fica só no navegador desta máquina, nunca num arquivo do projeto.</p>
+      </div>
+    </div>
+    <div class="mqg">
+      <span>Testar</span>
+      <div class="mqa">
+        <button type="button" data-a="abertura">Rodar a apresentação de novo</button>
+        <button type="button" data-a="lazer">Perguntar: quanto posso gastar em lazer?</button>
+        <button type="button" data-a="almoco">Mandar: lancei R$&nbsp;40 no almoço</button>
+        <button type="button" data-a="italia">Pedir: antecipa o aporte da Itália</button>
+        <button type="button" data-a="semana">Perguntar: como foi minha semana?</button>
+        <button type="button" data-a="levar">Pedir: me mostra o Life Score</button>
+      </div>
+    </div>
+    <p class="nota-mq">
+      No <b>primeiro acesso</b> Sy fala em quatro tempos e cada tempo deixa uma <b>lâmina</b>
+      na tela, que <b>não some</b> quando ele passa pro assunto seguinte. No fim ele para e
+      espera: a edição só abre quando você responde o check-in ou pede pra ver.
+      Nos <b>acessos seguintes</b> a tela já nasce assentada.
+      Em <b>voz</b>, "Nav." é o sintetizador do Windows, feio e só pro ritmo. <b>Google</b> e
+      <b>ElevenLabs</b> pedem sua chave, que fica <b>só neste navegador</b>. O Google tem as vozes
+      pt-BR nativas, que é o ponto: no ElevenLabs grátis só sobram locutores de inglês puxando o
+      português pro europeu. Cada fala é gerada uma vez e vai pro cache, então replay não gasta
+      cota. A digitação segue a duração real do áudio, e por isso o tempo da apresentação é o
+      mesmo no mudo, que era o ponto da lei 2.
+    </p>
+  </div>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}
+</script>
+<script type="module">
+import { REDUZ } from '../personagem/vida.js'
+import { criarEnxame } from '../personagem/enxame.js'
+
+const raiz = document.documentElement
+if (!REDUZ) raiz.classList.add('anim')
+const $ = s => document.querySelector(s)
+const $$ = s => Array.from(document.querySelectorAll(s))
+
+// estado do painel da maquete. Declarado no topo de propósito: o
+// IntersectionObserver lá embaixo lê estas variáveis e pode disparar antes do
+// fim do módulo, o que daria ReferenceError se elas ficassem no fim.
+let modo = 'com', modoCheck = 'conversa', registro = 'ator'
+
+/* ── o corpo de Sy em três escalas na mesma página ─────────────────────
+   Menos pontos conforme a peça encolhe: a 34px o que sobra é o núcleo. */
+const pecas = [
+  criarEnxame($('#cvSy'),    { n: 1300, tam: .175, semente: 2.4 }),
+  criarEnxame($('#cvMini'),  { n: 190,  tam: .7, compacto: .78, dpr: 3, semente: 4.6 }),
+  criarEnxame($('#cvAssin'), { n: 190,  tam: .7, compacto: .78, dpr: 3, semente: 5.9 }),
+]
+let estado = 'repouso'
+const sy = v => { estado = v }
+
+let ultimo = performance.now()
+function laco (agora) {
+  const dt = Math.min((agora - ultimo) / 1000, .05); ultimo = agora
+  for (const p of pecas) p.quadro(dt, estado)
+  requestAnimationFrame(laco)
+}
+if (REDUZ) { for (let i = 0; i < 3; i++) for (const p of pecas) p.quadro(1 / 60, estado) }
+else requestAnimationFrame(laco)
+
+/* ── voz de saída: Web Speech API do próprio navegador ────────────────
+   Grátis, sem chave, com voz pt-BR nativa no Windows. NÃO é a voz final do
+   produto: serve pra julgar o RITMO, que era o que não dava pra avaliar sem
+   som. Muda por padrão, e ligar no botão já é o gesto de usuário que o Chrome
+   exige pra deixar falar. */
+// Sy é sem gênero por decisão de marca, e o sintetizador só oferece vozes
+// gendradas. Em vez de sortear uma, o painel deixa ouvir as duas: a escolha
+// (ou a recusa das duas) é decisão de marca, não detalhe de implementação.
+const sintese = window.speechSynthesis || null
+let vozes = { m: null, f: null }
+function escolherVoz () {
+  if (!sintese) return
+  const pt = sintese.getVoices().filter(v => /^pt/i.test(v.lang))
+  vozes.m = pt.find(v => /daniel|antonio|ricardo/i.test(v.name)) || pt[0] || null
+  vozes.f = pt.find(v => /maria|francisca|luciana|joana/i.test(v.name)) || pt[1] || pt[0] || null
+}
+escolherVoz()
+if (sintese) sintese.addEventListener('voiceschanged', escolherVoz)
+
+// provedor: off · m/f (sintetizador do navegador) · gg (Google) · 11 (ElevenLabs)
+let provedor = 'off', ultimoProvedor = 'gg'
+const eVoz = () => provedor !== 'off'
+const eNuvem = p => p === 'gg' || p === '11'
+const btMudo = $('#btMudo'), elVoz = $('#bcVoz')
+function pintarVoz () {
+  elVoz.classList.toggle('on', eVoz() && estado === 'falando')
+  btMudo.classList.toggle('env', eVoz())
+  btMudo.setAttribute('aria-pressed', String(!eVoz()))
+  btMudo.title = eVoz() ? 'Voz de Sy: ligada' : 'Voz de Sy: desligada'
+}
+
+/* ══ voz de nuvem: Google Cloud TTS e ElevenLabs ══════════════════════
+   Três cuidados que cota pequena exige, e que valem igual nos dois:
+   1. A CHAVE mora no localStorage desta máquina. Em arquivo ela ia pro
+      repositório no primeiro commit. No Google ela vai no cabeçalho
+      `X-Goog-Api-Key` e NUNCA em `?key=`: query string vaza em log de rede,
+      histórico e referer. O CORS dos dois foi verificado do navegador, GET e
+      POST, então protótipo estático não precisa de backend pra voz.
+   2. O ÁUDIO É CACHEADO no Cache API por (voz + modelo + texto). Sem isso cada
+      replay da apresentação queimaria 269 caracteres de novo, e vinte replays
+      testando já comeriam metade do mês.
+   3. O GASTO é contado e mostrado, porque cota que você não vê é cota que
+      estoura sem aviso. ════════════════════════════════════════════════ */
+const CACHE_AUDIO = 'sy-audio-v1'
+// estado por provedor, em chaves separadas: escolher o Google não pode apagar
+// a chave do ElevenLabs (as chaves `sy.11.*` que já existem seguem valendo)
+const nuv = {
+  gg: { chave: '', voz: '', modelo: '', gasto: 0 },
+  '11': { chave: '', voz: '', modelo: 'eleven_multilingual_v2', gasto: 0 },
+}
+for (const p of Object.keys(nuv)) {
+  const s = nuv[p]
+  s.chave = localStorage.getItem('sy.' + p + '.chave') || ''
+  s.voz = localStorage.getItem('sy.' + p + '.voz') || ''
+  s.modelo = localStorage.getItem('sy.' + p + '.modelo') || s.modelo
+  s.gasto = +(localStorage.getItem('sy.' + p + '.gasto') || 0)
+}
+const gravar = (p, campo) => localStorage.setItem('sy.' + p + '.' + campo, nuv[p][campo])
+// qual provedor de nuvem o painel está mostrando (o de voz pode estar em mudo)
+let painel = nuv.gg.chave ? 'gg' : (nuv['11'].chave ? '11' : 'gg')
+
+const memo = new Map()                 // reserva pra quando o Cache API não existir
+const duracoes = new Map()             // texto → ms reais do áudio, pra digitação casar exata
+
+/* ── Google Cloud TTS ────────────────────────────────────────────────── */
+// Cota grátis por mês, POR FAMÍLIA de voz, lida na tabela viva de preços do
+// Google em 2026-08-03 (a busca devolve números velhos: dava WaveNet como 1 M).
+//   Chirp3-HD 1 M, US$ 30/M depois · Neural2 1 M, US$ 16/M · Polyglot 1 M, US$ 16/M
+//   Studio 1 M, US$ 160/M (a mais cara de longe) · WaveNet e Standard 4 M, US$ 4/M
+// O default de 1 M cobre família nova que o Google lance sem a gente saber.
+const COTA_GG = { Standard: 4e6, Wavenet: 4e6, Neural2: 1e6, Polyglot: 1e6, Studio: 1e6 }
+const familiaDe = v => (/^pt-BR-([A-Za-z0-9]+)/.exec(v || '') || [])[1] || ''
+const cotaGG = v => { const f = familiaDe(v); return /^Chirp/i.test(f) ? 1e6 : (COTA_GG[f] || 1e6) }
+// premium primeiro: a decisão de gênero e de timbre se toma na melhor voz
+const PESO = { Neural2: 1, Studio: 2, Polyglot: 3, Wavenet: 4, Standard: 5 }
+const pesoGG = v => { const f = familiaDe(v); return /^Chirp/i.test(f) ? 0 : (PESO[f] ?? 6) }
+const GEN = { FEMALE: 'feminina', MALE: 'masculina', NEUTRAL: 'neutra' }
+async function erroGoogle (r) {
+  let m = ''
+  try { m = (await r.json()).error.message } catch (e) {}
+  // "referer <empty>" é críptico e custa uma sessão inteira pra decifrar: quer
+  // dizer que o navegador não mandou Referer nenhum, e sem Referer nenhuma
+  // restrição de site do Google pode casar. Quase sempre é a página aberta como
+  // arquivo (file://), que não tem origem pra mandar.
+  if (/referer <empty>/i.test(m)) {
+    m += (location.protocol === 'file:'
+      ? ' → A página está aberta como ARQUIVO (file://), que não tem origem pra mandar. Abra por http://localhost:8123.'
+      : ' → O navegador não mandou Referer. Ou tire a restrição de site da chave, ou confira se a origem ' +
+        location.origin + ' está na lista.')
+  }
+  return 'Google ' + r.status + (m ? ' · ' + m : '')
+}
+function base64ProBlob (b64) {
+  const bin = atob(b64 || '')
+  const arr = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i)
+  return new Blob([arr], { type: 'audio/mpeg' })
+}
+
+/* ── os dois provedores atrás da mesma porta ─────────────────────────── */
+const NUVENS = {
+  gg: {
+    nome: 'Google Cloud TTS',
+    async vozes (k) {
+      // referrerPolicy explícito: a restrição de site da chave só casa se o
+      // navegador mandar Referer, e a política padrão pode não mandar. 'origin'
+      // garante `http://localhost:8123/`, que é o que a restrição espera
+      const r = await fetch('https://texttospeech.googleapis.com/v1/voices?languageCode=pt-BR',
+        { headers: { 'X-Goog-Api-Key': k }, referrerPolicy: 'origin' })
+      if (!r.ok) throw new Error(await erroGoogle(r))
+      const j = await r.json()
+      return (j.voices || [])
+        .filter(v => (v.languageCodes || []).includes('pt-BR'))
+        .sort((a, b) => pesoGG(a.name) - pesoGG(b.name) || a.name.localeCompare(b.name))
+        .map(v => ({
+          id: v.name,
+          // gênero no rótulo de propósito: Sy é sem gênero por decisão de marca,
+          // e a escolha (ou a recusa das duas) precisa ser ouvida, não deduzida
+          rotulo: v.name.split('-').slice(2).join(' ') + ' · ' + (GEN[v.ssmlGender] || '—'),
+        }))
+    },
+    async gerar (txt, s) {
+      const r = await fetch('https://texttospeech.googleapis.com/v1/text:synthesize', {
+        method: 'POST',
+        headers: { 'X-Goog-Api-Key': s.chave, 'Content-Type': 'application/json' },
+        referrerPolicy: 'origin',
+        // corpo mínimo de propósito: rate fica em 1 porque a lei 2 proíbe
+        // acelerar a fala pra encurtar a apresentação, e as vozes Chirp
+        // rejeitam parte dos ajustes de audioConfig
+        body: JSON.stringify({
+          input: { text: txt },
+          voice: { languageCode: 'pt-BR', name: s.voz },
+          audioConfig: { audioEncoding: 'MP3' },
+        }),
+      })
+      if (!r.ok) throw new Error(await erroGoogle(r))
+      return base64ProBlob((await r.json()).audioContent)
+    },
+    cota: s => cotaGG(s.voz),
+    dica: 'A chave fica só no navegador desta máquina, nunca num arquivo do projeto. ' +
+      'Ela viaja no cabeçalho, não na URL.',
+  },
+  '11': {
+    nome: 'ElevenLabs',
+    async vozes (k) {
+      const r = await fetch('https://api.elevenlabs.io/v1/voices', { headers: { 'xi-api-key': k } })
+      if (!r.ok) {
+        let d = ''
+        try { d = (await r.json()).detail.message } catch (e) {}
+        throw new Error('ElevenLabs ' + r.status + (d ? ' · ' + d : ''))
+      }
+      return ((await r.json()).voices || []).map(v => ({ id: v.voice_id, rotulo: v.name }))
+    },
+    async gerar (txt, s) {
+      const r = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + s.voz + '?output_format=mp3_44100_128', {
+        method: 'POST',
+        headers: { 'xi-api-key': s.chave, 'Content-Type': 'application/json' },
+        // language_code só existe no Flash v2.5 (o multilingual v2 detecta sozinho).
+        // No plano grátis as vozes brasileiras da biblioteca são bloqueadas por API,
+        // então forçar 'pt' numa voz premade é o único ajuste possível de sotaque:
+        // o timbre continua de locutor inglês, mas as regras de pronúncia mudam.
+        body: JSON.stringify(Object.assign({ text: txt, model_id: s.modelo,
+          voice_settings: { stability: .45, similarity_boost: .8, style: .1, use_speaker_boost: true } },
+          s.modelo === 'eleven_flash_v2_5' ? { language_code: 'pt' } : {})),
+      })
+      if (!r.ok) throw new Error('ElevenLabs ' + r.status + ': ' + (await r.text()).slice(0, 120))
+      return await r.blob()
+    },
+    cota: () => 10000,
+    dica: 'A chave fica só no navegador desta máquina, nunca num arquivo do projeto.',
+  },
+}
+
+// a voz do Google e a do ElevenLabs nunca colidem de id (uma é `pt-BR-Chirp3-HD-Aoede`,
+// a outra é hexadecimal), então a chave de cache continua a mesma e o áudio já
+// gerado antes desta sessão sobrevive
+const idDoAudio = (txt, p) => 'https://sy-audio.local/' +
+  encodeURIComponent(nuv[p].voz + '|' + nuv[p].modelo + '|' + txt)
+async function doCache (txt, p) {
+  const k = idDoAudio(txt, p)
+  try { const c = await caches.open(CACHE_AUDIO); const r = await c.match(k); if (r) return await r.blob() } catch (e) {}
+  return memo.get(k) || null
+}
+async function proCache (txt, p, blob) {
+  const k = idDoAudio(txt, p)
+  try { const c = await caches.open(CACHE_AUDIO); await c.put(k, new Response(blob, { headers: { 'Content-Type': 'audio/mpeg' } })); return } catch (e) {}
+  memo.set(k, blob)
+}
+async function audioNuvem (txt, p) {
+  const cache = await doCache(txt, p)
+  if (cache) return cache
+  const s = nuv[p]
+  if (!s.chave || !s.voz) throw new Error('Falta a chave ou a voz')
+  const blob = await NUVENS[p].gerar(txt, s)
+  s.gasto += txt.length
+  gravar(p, 'gasto')
+  pintarGasto()
+  await proCache(txt, p, blob)
+  return blob
+}
+// mede a duração real do mp3 e guarda: com ela a digitação não precisa estimar
+function medir (blob, txt) {
+  return new Promise(res => {
+    const a = new Audio(URL.createObjectURL(blob))
+    a.onloadedmetadata = () => { if (isFinite(a.duration)) duracoes.set(txt, a.duration * 1000); URL.revokeObjectURL(a.src); res() }
+    a.onerror = () => res()
+  })
+}
+// pré-carrega tudo antes de começar: gap no meio da apresentação atrapalha
+// justamente a coisa que a voz veio pra deixar julgar, que é o ritmo
+async function preparar (txts, p, aoProgredir) {
+  let feitos = 0
+  for (const t of txts) {
+    try { const b = await audioNuvem(t, p); await medir(b, t) } catch (e) { avisar(e.message, true); return false }
+    if (aoProgredir) aoProgredir(++feitos / txts.length)
+  }
+  return true
+}
+
+let tocando = null
+function falar (txt, aoFim) {
+  if (!eVoz()) { if (aoFim) aoFim(); return }
+  let feito = false
+  const fim = () => { if (feito) return; feito = true; clearTimeout(salva); if (aoFim) aoFim() }
+  const salva = setTimeout(fim, (duracoes.get(txt) || txt.length / 6 * 1000) + 4000)
+  temporizadores.push(salva)
+
+  if (eNuvem(provedor)) {
+    // sem chave não adianta tentar: a rejeição chegaria assíncrona e atropelaria
+    // a mensagem do painel, que foi exatamente o que confundiu no primeiro teste
+    const s = nuv[provedor]
+    if (!s.chave || !s.voz) { avisar('Conecte a chave e escolha uma voz pra ouvir Sy.', true); fim(); return }
+    if (tocando) { tocando.pause(); tocando = null }
+    audioNuvem(txt, provedor).then(blob => {
+      if (feito) return
+      const a = new Audio(URL.createObjectURL(blob))
+      tocando = a
+      a.onloadedmetadata = () => { if (isFinite(a.duration)) duracoes.set(txt, a.duration * 1000) }
+      a.onended = fim
+      a.onerror = fim
+      a.play().catch(fim)
+    }).catch(e => { avisar(e.message, true); fim() })
+    return
+  }
+
+  if (!sintese) { fim(); return }
+  sintese.cancel()
+  const u = new SpeechSynthesisUtterance(txt)
+  const v = vozes[provedor]
+  if (v) u.voice = v
+  // rate 1.6, medido nesta máquina e não chutado: a voz do Windows sai a 11,9
+  // caracteres por segundo em rate 1, 14,7 em 1.6 e 16,4 em 2.2 (retorno
+  // decrescente forte). Locução natural em pt-BR fica em 14 a 15 c/s.
+  u.lang = 'pt-BR'; u.rate = 1.6; u.pitch = 1; u.volume = 1
+  const t0 = performance.now()
+  u.onend = () => { duracoes.set(txt, performance.now() - t0); fim() }
+  u.onerror = fim
+  sintese.speak(u)
+}
+// CPS só é usado quando ainda não existe duração medida daquela frase
+let CPS = 12
+const duracaoDe = txt => duracoes.get(txt) || null
+
+/* ── fala da bancada ──────────────────────────────────────────────────
+   O ritmo da digitação é o ritmo da FALA (~15 caracteres por segundo em
+   pt-BR), não uma constante de animação. Com isso a apresentação leva o mesmo
+   tempo com voz e no mudo, que é a lei 2 virando código, e o "rápido demais"
+   de quem só lê some junto. */
+const elFala = $('#bcFala'), cursor = elFala.querySelector('.bc-cur')
+let tmDigita = null, geracao = 0
+// calar() invalida a fala em curso. A geração existe porque `cancel()` dispara o
+// onend da fala cancelada: sem ela, pular a apresentação ressuscitava o tempo
+// seguinte pelo callback de uma fala que já tinha sido descartada.
+function calar () {
+  geracao++; clearTimeout(tmDigita)
+  if (sintese) sintese.cancel()
+  if (tocando) { tocando.pause(); tocando = null }
+}
+
+/* ── a altura da bancada não segue o texto ───────────────────────────────
+   A medida é feita num clone fora da tela com a MESMA tipografia e a MESMA
+   largura da coluna. Não dá pra contar linhas: a fonte é `clamp()` e a quebra
+   depende da largura, então "reserve 3 linhas" erra em algum viewport. O piso
+   só cresce dentro de um mesmo layout; quem zera é quem troca o layout. */
+let molde = null, piso = 0, falaAtual = ''
+function alturaDe (txt) {
+  const cs = getComputedStyle(elFala)
+  if (!molde) {
+    molde = document.createElement('h1')
+    molde.setAttribute('aria-hidden', 'true')
+    molde.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;margin:0'
+    document.body.appendChild(molde)
+  }
+  molde.style.fontFamily = cs.fontFamily; molde.style.fontSize = cs.fontSize
+  molde.style.fontWeight = cs.fontWeight; molde.style.lineHeight = cs.lineHeight
+  molde.style.letterSpacing = cs.letterSpacing; molde.style.textWrap = cs.textWrap
+  molde.style.width = elFala.getBoundingClientRect().width + 'px'
+  molde.textContent = txt
+  return molde.offsetHeight
+}
+function travar (txts) {
+  if (elFala.getBoundingClientRect().width < 1) return   // sem layout, medida não vale
+  piso = Math.max(piso, ...txts.map(alturaDe))
+  elFala.style.minHeight = piso + 'px'
+}
+// quem troca o layout chama isto: a coluna da fala muda de largura junto com a
+// bancada (`.bin` transiciona 700ms), então a medida boa só existe depois
+function remedir (txts) {
+  piso = 0
+  travar(txts)
+  temporizadores.push(setTimeout(() => travar(txts), 760))  // sem zerar: só cresce
+}
+let tmResize = null
+addEventListener('resize', () => {
+  clearTimeout(tmResize)
+  tmResize = setTimeout(() => { piso = 0; travar([falaAtual || FALA_REPOUSO]) }, 180)
+})
+
+function dizer (txt, aoFim) {
+  calar()
+  const g = geracao
+  elFala.classList.remove('pronto')
+  if (!txt) { elFala.textContent = ''; elFala.appendChild(cursor); if (aoFim) aoFim(); return }
+  // trava ANTES de digitar: a caixa já nasce do tamanho final da frase inteira
+  falaAtual = txt
+  travar([txt])
+
+  // O tempo só termina quando o texto acabou de sair E a fala acabou de sair.
+  // Quem for mais lento manda. No mudo só existe o texto, então `falar` devolve
+  // na hora e a conta fecha igual.
+  let vezes = 0
+  const parte = () => { if (g === geracao && ++vezes >= 2 && aoFim) aoFim() }
+  falar(txt, parte)
+
+  if (REDUZ) {
+    elFala.textContent = txt; elFala.appendChild(cursor); elFala.classList.add('pronto')
+    parte(); return
+  }
+  // duração real do áudio quando ela já foi medida; estimativa só na primeira vez
+  const dur = duracaoDe(txt) || Math.max(1100, txt.length / CPS * 1000)
+  const t0 = performance.now()
+  ;(function passo () {
+    const p = Math.min(1, (performance.now() - t0) / dur)
+    elFala.textContent = txt.slice(0, Math.round(txt.length * p)); elFala.appendChild(cursor)
+    if (p < 1) { tmDigita = setTimeout(passo, 40); return }
+    elFala.classList.add('pronto'); parte()
+  })()
+}
+
+/* ── os dois verbos da materialização ────────────────────────────────── */
+function acender (sel) {
+  const el = typeof sel === 'string' ? $(sel) : sel
+  if (!el) return
+  el.classList.remove('acender'); void el.offsetWidth; el.classList.add('acender')
+  setTimeout(() => el.classList.remove('acender'), 1800)
+}
+function acenderTicker (chave) {
+  const alvos = $$(`.ticker [data-tk="${chave}"]`)
+  alvos.forEach(a => a.classList.add('on'))
+  setTimeout(() => alvos.forEach(a => a.classList.remove('on')), 2600)
+}
+
+const elRec = $('#recortes')
+function recortar (html, tipo = '') {
+  const art = document.createElement('article')
+  art.className = 'recorte' + (tipo ? ' ' + tipo : '')
+  art.innerHTML = html
+  elRec.prepend(art)
+  const x = art.querySelector('.rc-x')
+  if (x) x.addEventListener('click', () => art.remove())
+  return art
+}
+
+/* ── o repertório: cada resposta traz o objeto visual junto (lei 3) ──── */
+const RESPOSTAS = {
+  lazer: {
+    fala: 'Quase nada: restam R$ 10 até quinta.',
+    faz () {
+      acender('#notaLazer'); acenderTicker('lazer')
+      recortar(`
+        <div class="rc-top"><p class="eyebrow"><b>Recorte</b> · orçamento de lazer</p>
+          <button class="rc-x" type="button" aria-label="Dispensar">×</button></div>
+        <p>Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span>, e o cinema de ontem
+           (<b>R$&nbsp;64</b>) foi o que encostou no teto. Sobram <b>R$&nbsp;10</b> pra 4 dias.</p>
+        <div class="rc-obj">
+          <div class="r1"><span class="nm">Lazer · julho</span><span class="pct num" style="color:var(--coral)">98%</span></div>
+          <div class="track"><i style="width:98%"></i></div>
+          <div class="sub">R$&nbsp;410 de R$&nbsp;420 · fecha em 4 dias</div>
+        </div>
+        <div class="rc-pe">
+          <button class="rc-src" type="button">Ver em <b>01 Finanças</b> →</button>
+          <span class="rc-fonte">Fontes: orçamento Lazer · 34 transações</span>
+        </div>`)
+    },
+  },
+  almoco: {
+    fala: 'Lançado. Despesas de julho vão a R$ 3.200.',
+    faz () {
+      $('#vDespesas').innerHTML = 'R$&nbsp;3.200'
+      $('#dDespesas').textContent = '64% da receita'
+      acender('#boxDespesas')
+      const art = recortar(`
+        <div class="rc-top"><p class="eyebrow"><b>Feito</b> · lançamento registrado</p>
+          <button class="rc-x" type="button" aria-label="Dispensar">×</button></div>
+        <p>Despesa de <b>R$&nbsp;40,00</b> em <b>Alimentação</b>, hoje às 14:06.
+           Julho passa a <b>R$&nbsp;3.200</b> e o fechamento projetado vai pra <b>R$&nbsp;2.080</b>.</p>
+        <div class="rc-pe">
+          <button class="rc-src" type="button" data-desfazer>↩ Desfazer</button>
+          <button class="rc-src" type="button">Ver em <b>01 Finanças</b> →</button>
+        </div>`, 'acao')
+      const und = art.querySelector('[data-desfazer]')
+      und.addEventListener('click', () => {
+        $('#vDespesas').innerHTML = 'R$&nbsp;3.160'
+        $('#dDespesas').textContent = '63% da receita'
+        acender('#boxDespesas'); art.remove()
+      })
+    },
+  },
+  italia: {
+    // ação que mexe em meta: pede licença antes (lei 9)
+    fala: 'Posso antecipar, mas isso mexe numa meta. Confirma?',
+    estadoFinal: 'ouvindo',
+    faz () {
+      acender('#metaItalia')
+      const art = recortar(`
+        <div class="rc-top"><p class="eyebrow"><b>Preciso da sua licença</b> · aporte de agosto</p>
+          <button class="rc-x" type="button" aria-label="Dispensar">×</button></div>
+        <p>Transferir <b>R$&nbsp;580,00</b> pra <b>Viagem Itália</b> hoje às 16:00.
+           A meta vai de <b>68%</b> pra <b>73%</b> e o saldo projetado continua positivo em <b>R$&nbsp;1.540</b>.</p>
+        <div class="rc-obj">
+          <div class="r1"><span class="nm">Viagem Itália · depois da ação</span><span class="pct num" style="color:var(--ele)">73%</span></div>
+          <div class="track"><i class="ok" style="width:73%"></i></div>
+          <div class="sub">R$&nbsp;9.180 de R$&nbsp;12.700 · dez 2026</div>
+        </div>
+        <div class="rc-pe">
+          <button class="rc-src" type="button" data-ok><b>Confirmar</b></button>
+          <button class="rc-src" type="button" data-nao>Agora não</button>
+        </div>`, 'aviso')
+      art.querySelector('[data-nao]').addEventListener('click', () => art.remove())
+      art.querySelector('[data-ok]').addEventListener('click', () => {
+        art.remove()
+        sy('comemora'); pintarVoz()
+        const m = $('#metaItalia')
+        m.querySelector('.pct').textContent = '73%'
+        m.querySelector('.track i').style.width = '73%'
+        acender(m)
+        recortar(`
+          <div class="rc-top"><p class="eyebrow"><b>Feito</b> · aporte antecipado</p>
+            <button class="rc-x" type="button" aria-label="Dispensar">×</button></div>
+          <p>Transferência de <b>R$&nbsp;580,00</b> agendada pra hoje, 16:00. Confirmado por você às 14:07.</p>
+          <div class="rc-pe"><button class="rc-src" type="button">Ver em <b>02 Futuro</b> →</button></div>`, 'acao')
+        setTimeout(() => { sy('repouso'); pintarVoz() }, 2600)
+      })
+    },
+  },
+  semana: {
+    // lei 6: a edição da semana é uma apresentação, não uma tela
+    fala: 'A semana fechou ontem. Quer que eu apresente a edição?',
+    estadoFinal: 'ouvindo',
+    faz () {
+      const art = recortar(`
+        <div class="rc-top"><p class="eyebrow"><b>Edição da semana</b> · nº 30, de 24 a 30 de julho</p>
+          <button class="rc-x" type="button" aria-label="Dispensar">×</button></div>
+        <p>Score subiu <b>3</b> pontos, você economizou <b>R$&nbsp;412</b> em delivery e fechou
+           <b>3</b> dos 4 hábitos. Falta o fechamento da semana, que conta pro streak de <b>12 dias</b>.</p>
+        <div class="rc-pe">
+          <button class="rc-src" type="button" data-abrir><b>Apresentar a edição</b> →</button>
+          <span class="rc-fonte">O Diário troca de forma: a folha vira a carta da semana</span>
+        </div>`)
+      art.querySelector('[data-abrir]').addEventListener('click', () => {
+        art.remove()
+        dizer('Edição da semana nº 30. Foi a sua melhor semana desde março.')
+        sy('falando'); pintarVoz()
+        $('.folha .eyebrow').innerHTML = '<b>A edição da semana</b> · nº 30, 24 a 30 de julho'
+        $('.folha h2').textContent = 'A melhor semana desde março, e ela veio de duas noites.'
+        acender('.folha h2')
+        recortar(`
+          <div class="rc-top"><p class="eyebrow"><b>Fechamento da semana</b> · conta pro streak</p>
+            <button class="rc-x" type="button" aria-label="Dispensar">×</button></div>
+          <p>Este é o único passo que persiste: ele grava a revisão e mantém o streak vivo.</p>
+          <div class="rc-pe"><button class="rc-src" type="button"><b>Fechar a semana</b> →</button></div>`, 'acao')
+      })
+    },
+  },
+  levar: {
+    // lei 5: pode levar, nunca perder
+    fala: 'Abrindo o Life Score. Eu vou junto e comento o que aparecer.',
+    faz () {
+      $('#trilha').classList.add('on')
+      $('#bmini').classList.add('on')
+      recortar(`
+        <div class="rc-top"><p class="eyebrow"><b>Sy leva você</b> · destino real</p>
+          <button class="rc-x" type="button" aria-label="Dispensar">×</button></div>
+        <p>Nesta maquete a navegação não sai da página. O que ela mostra é a regra:
+           o destino é uma <b>URL de verdade</b> (<b>/dashboard/score</b>), Sy encolhe pro registro
+           de copiloto e a <b>trilha de volta</b> fica visível lá em cima.</p>
+        <div class="rc-pe">
+          <span class="rc-fonte">Use o alternador 3 do painel pra ver o registro copiloto inteiro</span>
+        </div>`)
+    },
+  },
+}
+
+/* ── o roteiro de uma pergunta ────────────────────────────────────────── */
+let ocupado = false
+function perguntar (chave) {
+  const r = RESPOSTAS[chave]; if (!r || ocupado) return
+  ocupado = true
+  sairDoCheckin()          // perguntar outra coisa tira o check-in da linha
+  sy('pensando'); pintarVoz()
+  dizer('')
+  setTimeout(() => {
+    sy('falando'); pintarVoz()
+    dizer(r.fala, () => {
+      r.faz()
+      setTimeout(() => { sy(r.estadoFinal || 'repouso'); pintarVoz(); ocupado = false }, 900)
+    })
+  }, REDUZ ? 0 : 620)
+}
+
+/* ── entrada: as duas portas caem no mesmo lugar ──────────────────────── */
+function texto (t) {
+  const s = t.toLowerCase()
+  if (/lazer|gastar/.test(s)) return 'lazer'
+  if (/almoç|lancei|lançar|gastei/.test(s)) return 'almoco'
+  if (/itáli|italia|aporte|antecip/.test(s)) return 'italia'
+  if (/semana|revis/.test(s)) return 'semana'
+  if (/score|life|mostra|abre|leva/.test(s)) return 'levar'
+  return 'lazer'
+}
+function enviar (campo) {
+  const v = campo.value.trim(); if (!v) return
+  campo.value = ''
+  perguntar(texto(v))
+}
+$('#fmSy').addEventListener('submit', e => { e.preventDefault(); enviar($('#inSy')) })
+$('#fmMini').addEventListener('submit', e => { e.preventDefault(); enviar($('#fmMini input')) })
+// um ouvinte só na régua de sugestões: ela alterna entre os atalhos de pergunta
+// e as fichas de humor do check-in, e dois ouvintes empilhariam a cada rodada
+$('#bcSug').addEventListener('click', e => {
+  const p = e.target.closest('button[data-p]')
+  if (p) return perguntar(p.dataset.p)
+  const m = e.target.closest('button[data-m]')
+  if (m) responderCheckin(m)
+})
+
+/* microfone: encena a porta de voz. Transcreve na MESMA linha e cai no MESMO
+   roteiro, que é a lei 2 em forma de código. */
+const btMic = $('#btMic')
+btMic.addEventListener('click', () => {
+  if (ocupado) return
+  const campo = $('#inSy'), frase = 'Quanto ainda posso gastar em lazer?'
+  btMic.classList.add('on'); $('#fmSy').classList.add('ouvindo')
+  sy('ouvindo'); pintarVoz()
+  let i = 0
+  ;(function passo () {
+    if (i >= frase.length) {
+      setTimeout(() => {
+        btMic.classList.remove('on'); $('#fmSy').classList.remove('ouvindo')
+        campo.value = ''; perguntar('lazer')
+      }, 420)
+      return
+    }
+    i += 1
+    campo.value = frase.slice(0, i)
+    setTimeout(passo, REDUZ ? 0 : 34)
+  })()
+})
+
+/* ── check-in na conversa: Sy pergunta, você responde na mesma linha ──── */
+const SUG_PADRAO = $('#bcSug').innerHTML
+const PERGUNTA_CHECKIN = 'E aí, como foi o dia?'
+function sairDoCheckin () {
+  $('#bcSug').innerHTML = SUG_PADRAO
+  $('#inSy').placeholder = 'Pergunte ou peça alguma coisa'
+}
+function pedirCheckin () {
+  if (modoCheck !== 'conversa') { acender('#ckBloco'); return }
+  sy('ouvindo'); pintarVoz()
+  dizer(PERGUNTA_CHECKIN)
+  $('#bcSug').innerHTML = ['Péssimo', 'Ruim', 'Neutro', 'Bem', 'Ótimo']
+    .map(m => `<button type="button" class="mood" data-m="${m}">${m}</button>`).join('')
+  $('#inSy').placeholder = 'Uma linha sobre hoje (opcional)'
+}
+function responderCheckin (b) {
+  const nota = $('#inSy').value.trim()
+  recortar(`
+    <div class="rc-top"><p class="eyebrow"><b>Check-in</b> · registrado às 21:14</p>
+      <button class="rc-x" type="button" aria-label="Dispensar">×</button></div>
+    <p><b>${b.dataset.m}</b>${nota ? ' · “' + nota + '”' : ''}</p>`, 'acao')
+  $('#inSy').value = ''
+  sairDoCheckin()
+  dizer('Anotado. Vou deixar a edição de hoje aqui embaixo.')
+  sy('repouso'); pintarVoz()
+  // responder o check-in É o aceno pra seguir: quem interage não precisa de
+  // um segundo clique pra ver a edição
+  if (aguardandoSeguir) assentar()
+}
+
+/* ══ A TELA TEM DOIS ESTADOS, e essa é a decisão desta rodada ══════════
+   ESTADO 1 · apresentação (primeiro acesso do dia): Sy grande, tudo em volta
+   recuado, a edição ainda NÃO existe. Ele fala em três tempos e cada tempo põe
+   uma LÂMINA embaixo dele. Mostrar a folha aqui seria repetir por escrito o que
+   ele acabou de dizer em voz alta, que foi o defeito da primeira rodada.
+   ESTADO 2 · edição assentada (fim da apresentação e todo acesso seguinte):
+   Sy encolhe, a edição inteira aparece, e a folha vira o REGISTRO escrito do
+   que ele apresentou. Sem assinatura: a tela é toda dele. ═══════════════ */
+const elMain = document.querySelector('main')
+const bancada = $('#bancada')
+let temporizadores = []
+function limpar () { temporizadores.forEach(clearTimeout); temporizadores = [] }
+function blocos () { return $$('main [data-blk]').filter(b => !b.hidden) }
+
+// no repouso a fala não é resumo (a folha já é isso), é a próxima ação
+const FALA_REPOUSO = 'Restam R$ 10 de lazer até sexta. É a única coisa que precisa de você hoje.'
+
+// Os tempos são os mesmos assuntos que a folha traz por escrito, na mesma
+// ordem: o que mudou, como está o mês, como estão as SUAS áreas (as que você
+// escolheu no onboarding), e o que precisa de você. A folha depois é o registro.
+const TEMPOS = [
+  { fala: 'Boa tarde. Desde ontem mudou uma coisa: o lazer encostou no teto.',
+    faz: () => acenderTicker('lazer'),
+    lamina: `
+      <div class="rc-top"><p class="eyebrow"><b>Ao vivo</b> · orçamento de lazer</p></div>
+      <div class="rc-obj">
+        <div class="r1"><span class="nm">Lazer · julho</span><span class="pct num" style="color:var(--coral)">98%</span></div>
+        <div class="track"><i style="width:98%"></i></div>
+        <div class="sub">R$&nbsp;410 de R$&nbsp;420 · restam R$&nbsp;10 pra 4 dias</div>
+      </div>` },
+  // REGRA DE COPY DA VOZ: Sy fala a conclusão, a lâmina mostra a cifra.
+  // O sintetizador lê "R$ 2.120" como "dois mil cento e vinte reais": 8
+  // caracteres escritos viram 28 falados, e um briefing denso em número fica
+  // lento por construção. Tirar os números da fala cortou um terço da duração
+  // sem tirar uma informação sequer da tela.
+  { fala: 'Fora isso, julho já está ganho, e a poupança fecha acima da sua meta.',
+    lamina: `
+      <div class="rc-top"><p class="eyebrow"><b>Ao vivo</b> · fechamento projetado de julho</p></div>
+      <div class="lm-nums">
+        <div><span>Fechamento</span><b class="num">R$&nbsp;2.120</b></div>
+        <div><span>Poupança</span><b class="num ele">37%</b></div>
+        <div><span>Sua meta</span><b class="num">30%</b></div>
+        <div><span>Saldo hoje</span><b class="num">R$&nbsp;1.840</b></div>
+      </div>` },
+  { fala: 'Nas suas quatro áreas, três subiram. Só Experiências ficou parada.',
+    lamina: `
+      <div class="rc-top"><p class="eyebrow"><b>Ao vivo</b> · suas áreas, o número principal de cada uma</p></div>
+      <div class="lm-areas">
+        <div><span class="di num">01</span><span class="nm">Finanças</span><span class="sc num">83<em>▲2</em></span>
+             <span class="mt num">Saldo R$&nbsp;1.840 · lazer no limite</span></div>
+        <div><span class="di num">02</span><span class="nm">Futuro</span><span class="sc num">79<em>▲1</em></span>
+             <span class="mt num">3 metas · 61% de média</span></div>
+        <div><span class="di num">04</span><span class="nm">Corpo</span><span class="sc num">69<em>▲3</em></span>
+             <span class="mt num">3 atividades · 126 min</span></div>
+        <div><span class="di num">08</span><span class="nm">Experiências</span><span class="sc num">78<em class="zero">–</em></span>
+             <span class="mt num">Itália em 92 dias · 68% da meta</span></div>
+      </div>` },
+  { fala: 'Segure o lazer até sexta e o mês fecha redondo.',
+    lamina: `
+      <div class="rc-top"><p class="eyebrow"><b>Ao vivo</b> · o que precisa de você hoje</p></div>
+      <p>Um café a menos resolve os <b>R$&nbsp;10</b> que faltam. E, se quiser adiantar,
+         cabem <b>+R$&nbsp;120</b> no aporte da Itália sem apertar o fechamento.</p>` },
+]
+
+// as lâminas se ACUMULAM: falar e apagar obriga a decorar, e o que Sy mostrou
+// tem que continuar na tela quando ele passa pro assunto seguinte
+function lamina (html) {
+  const art = document.createElement('article')
+  art.className = 'recorte lamina'
+  art.innerHTML = html
+  elRec.appendChild(art)
+  if (!REDUZ) art.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+}
+
+// a edição fica ESPERANDO: Sy termina de apresentar e para. Emendar a folha
+// logo depois da fala é o que fazia ele competir com o próprio resumo.
+let aguardandoSeguir = false
+function pedirSeguir () { aguardandoSeguir = true; $('#seguir').hidden = false }
+
+// estado 2 imediato: usado pelo "pular", pelos alternadores e por reduced-motion
+function porTudo () {
+  limpar(); calar()
+  aguardandoSeguir = false
+  $('#seguir').hidden = true
+  bancada.classList.remove('apresentando')
+  elRec.innerHTML = ''
+  blocos().forEach(b => b.classList.add('posto'))
+  elMain.classList.remove('montando')
+  elFala.textContent = FALA_REPOUSO; elFala.appendChild(cursor); elFala.classList.add('pronto')
+  falaAtual = FALA_REPOUSO; remedir([FALA_REPOUSO])
+  sairDoCheckin()
+  $('#btPular').classList.remove('on')
+  sy('repouso'); pintarVoz(); ocupado = false
+}
+
+// a edição assentando: as lâminas se despedem e a página toma forma escalonada.
+// Rápido de propósito, pra não virar uma segunda apresentação.
+function assentar () {
+  aguardandoSeguir = false
+  $('#seguir').hidden = true
+  bancada.classList.remove('apresentando')
+  // assentar encolhe a fonte e alarga a coluna: o piso da apresentação não vale
+  // mais, e manter deixaria um vão morto embaixo da frase
+  remedir([falaAtual || FALA_REPOUSO])
+  const lams = $$('#recortes .lamina')
+  lams.forEach(l => l.classList.add('saindo'))
+  temporizadores.push(setTimeout(() => lams.forEach(l => l.remove()), 460))
+  const bs = blocos()
+  bs.forEach((b, k) => temporizadores.push(setTimeout(() => b.classList.add('posto'), 250 + k * 120)))
+  temporizadores.push(setTimeout(() => elMain.classList.remove('montando'), 250 + bs.length * 120 + 650))
+}
+
+function abertura () {
+  limpar()
+  elRec.innerHTML = ''
+  $('#seguir').hidden = true
+  sairDoCheckin()      // fichas de humor de uma rodada anterior não podem sobrar:
+  aguardandoSeguir = false // responder no meio da apresentação furava o portão
+  ocupado = true
+  if (REDUZ) { porTudo(); pedirCheckin(); return }
+  bancada.classList.add('apresentando')
+  // a chapa já nasce do tamanho da fala mais alta da apresentação inteira, então
+  // ela não mexe uma vez sequer entre o primeiro tempo e o check-in
+  remedir(TEMPOS.map(t => t.fala).concat([PERGUNTA_CHECKIN]))
+  elMain.classList.add('montando')
+  blocos().forEach(b => b.classList.remove('posto'))
+  $('#btPular').classList.add('on')
+  sy('pensando'); pintarVoz(); dizer('')
+  let i = 0
+  const proximo = () => {
+    if (i >= TEMPOS.length) {
+      $('#btPular').classList.remove('on')
+      pedirCheckin(); pedirSeguir(); ocupado = false
+      return
+    }
+    const t = TEMPOS[i++]
+    sy('falando'); pintarVoz()
+    dizer(t.fala, () => {
+      lamina(t.lamina)
+      if (t.faz) t.faz()
+      temporizadores.push(setTimeout(proximo, 900))
+    })
+  }
+  // com voz de nuvem, gera tudo ANTES de começar. Um gap no meio da fala
+  // estraga justamente a coisa que a voz veio deixar julgar, que é o ritmo.
+  if (eNuvem(provedor)) {
+    elFala.textContent = 'Preparando a voz…'; elFala.appendChild(cursor)
+    preparar(TEMPOS.map(t => t.fala).concat([PERGUNTA_CHECKIN]), provedor)
+      .then(() => temporizadores.push(setTimeout(proximo, 200)))
+  } else temporizadores.push(setTimeout(proximo, 560))
+}
+$('#btPular').addEventListener('click', () => { porTudo(); pedirCheckin() })
+$('#btSeguir').addEventListener('click', () => { assentar(); sy('repouso'); pintarVoz() })
+
+/* ── mini bancada: aparece quando a bancada sai de vista ──────────────── */
+const bmini = $('#bmini')
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (registro === 'copiloto') return
+    bmini.classList.toggle('on', !e.isIntersecting && modo === 'com')
+  })
+}, { rootMargin: '-70px 0px 0px 0px' })
+obs.observe($('#bancada'))
+
+/* ── painel da maquete ────────────────────────────────────────────────── */
+// uma função só decide quem aparece, senão os três alternadores brigam entre si
+function pintarLayout () {
+  const cop = registro === 'copiloto', com = modo === 'com'
+  $('#bancada').hidden = cop || !com
+  $('#mast').hidden = com && !cop
+  $$('[data-mq-legado]').forEach(el => { el.hidden = com })
+  $('#trilha').classList.toggle('on', cop)
+  bmini.classList.toggle('on', cop)
+}
+function segmento (id, aplicar) {
+  const el = $(id)
+  el.addEventListener('click', ev => {
+    const b = ev.target.closest('button'); if (!b) return
+    el.querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', String(o === b)))
+    aplicar(b.dataset.v)
+  })
+}
+segmento('#sgBancada', v => {
+  modo = v; pintarLayout()
+  if (v === 'sem') elRec.innerHTML = ''
+  if (v === 'com' && registro === 'ator') abertura(); else porTudo()
+})
+segmento('#sgMomento', v => { if (v === 'apresentacao') abertura(); else porTudo() })
+/* ── painel de voz ───────────────────────────────────────────────────── */
+const AMOSTRA = 'Restam dez reais de lazer até sexta.'
+const listas = { gg: [], '11': [] }      // vozes já carregadas, por provedor
+function pintarSegVoz () {
+  $('#sgVoz').querySelectorAll('button')
+    .forEach(o => o.setAttribute('aria-pressed', String(o.dataset.v === provedor)))
+  $('#mqn').hidden = !eNuvem(provedor)
+}
+function aplicarProvedor (v, comAmostra) {
+  provedor = v
+  if (v !== 'off') ultimoProvedor = v; else calar()
+  if (eNuvem(v) && v !== painel) {
+    painel = v
+    duracoes.clear()                     // outro provedor, outras durações
+    pintarPainel()
+    if (nuv[v].chave && !listas[v].length) conectar()
+  }
+  pintarVoz(); pintarSegVoz()
+  // ouvir na hora: sem amostra só dá pra julgar o timbre na próxima apresentação
+  if (comAmostra && v !== 'off') falar(AMOSTRA)
+}
+segmento('#sgVoz', v => aplicarProvedor(v, true))
+// o alto-falante da bancada e o painel mexem na mesma chave
+btMudo.addEventListener('click', () => aplicarProvedor(provedor === 'off' ? ultimoProvedor : 'off', false))
+
+function avisar (msg, erro) {
+  const el = $('#estNuvem')
+  el.textContent = msg
+  el.classList.toggle('erro', !!erro)
+}
+// o painel é um só e serve os dois provedores. O que muda entre eles: a lista de
+// vozes, o segmento de modelo (que só o ElevenLabs tem) e o tamanho da cota
+function pintarPainel () {
+  const p = painel, s = nuv[p]
+  $('#sgModelo').hidden = p !== '11'
+  $('#inChave').placeholder = 'Cole sua API key do ' + (p === 'gg' ? 'Google' : 'ElevenLabs')
+  const sel = $('#selVoz')
+  if (listas[p].length) {
+    sel.innerHTML = listas[p].map(v => '<option value="' + v.id + '">' + v.rotulo + '</option>').join('')
+    if (s.voz && Array.from(sel.options).some(o => o.value === s.voz)) sel.value = s.voz
+    else { s.voz = sel.value; gravar(p, 'voz') }
+  } else sel.innerHTML = '<option>Conecte pra listar as vozes</option>'
+  pintarGasto()
+}
+function pintarGasto () {
+  const p = painel, s = nuv[p], cota = NUVENS[p].cota(s)
+  const pct = Math.min(100, Math.round(s.gasto / cota * 100))
+  const b = $('#barraCota')
+  b.style.width = pct + '%'
+  b.classList.toggle('cheio', pct >= 80)
+  avisar(NUVENS[p].nome + ': ' + s.gasto.toLocaleString('pt-BR') + ' de ' +
+    cota.toLocaleString('pt-BR') + ' caracteres gerados (contagem local desta máquina). ' +
+    'Fala repetida sai do cache e não gasta de novo.')
+}
+async function conectar () {
+  const p = painel, s = nuv[p]
+  const k = $('#inChave').value.trim() || s.chave
+  if (!k) return avisar('Cole a chave primeiro.', true)
+  avisar('Conectando…')
+  try {
+    const lista = await NUVENS[p].vozes(k)
+    if (!lista.length) throw new Error('nenhuma voz pt-BR nesta chave')
+    s.chave = k; gravar(p, 'chave'); $('#inChave').value = ''
+    listas[p] = lista
+    pintarPainel()
+    avisar(lista.length + ' vozes carregadas. Escolha uma e pré-gere as falas.')
+  } catch (e) {
+    avisar('Não consegui conectar: ' + e.message.replace(/\.$/, '') + '. Confira a chave.', true)
+  }
+}
+$('#btConectar').addEventListener('click', conectar)
+$('#inChave').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); conectar() } })
+$('#selVoz').addEventListener('change', e => {
+  const p = painel
+  nuv[p].voz = e.target.value; gravar(p, 'voz')
+  duracoes.clear()                       // outra voz, outras durações
+  pintarGasto()                          // no Google a cota grátis muda com a família da voz
+  if (provedor === p) falar(AMOSTRA)
+})
+segmento('#sgModelo', v => { nuv['11'].modelo = v; gravar('11', 'modelo'); duracoes.clear() })
+$('#btPre').addEventListener('click', async () => {
+  const p = painel, s = nuv[p]
+  if (!s.chave || !s.voz) return avisar('Conecte a chave e escolha uma voz antes.', true)
+  const txts = TEMPOS.map(t => t.fala).concat([PERGUNTA_CHECKIN, AMOSTRA])
+  avisar('Gerando ' + txts.length + ' falas…')
+  const ok = await preparar(txts, p, pr => { $('#barraCota').style.width = Math.round(pr * 100) + '%' })
+  if (ok) { pintarGasto(); avisar('Pronto. As ' + txts.length + ' falas estão em cache: a apresentação não vai gaguejar e replay não gasta cota.') }
+})
+pintarPainel()
+if (nuv[painel].chave) conectar()
+segmento('#sgCheck', v => {
+  modoCheck = v
+  $('#ckBloco').hidden = v !== 'bloco'
+  if (v === 'bloco') $('#ckBloco').classList.add('posto')
+})
+segmento('#sgReg', v => { registro = v; pintarLayout(); porTudo() })
+$('.mqa').addEventListener('click', e => {
+  const b = e.target.closest('button[data-a]'); if (!b) return
+  if (b.dataset.a === 'abertura') abertura(); else perguntar(b.dataset.a)
+})
+$('#mqHead').addEventListener('click', () => $('#mq').classList.toggle('fechado'))
+$('#trilha').addEventListener('click', e => {
+  if (!e.target.closest('[data-voltar]')) return
+  e.preventDefault()
+  $('#sgReg').querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', String(o.dataset.v === 'ator')))
+  registro = 'ator'; pintarLayout()
+  scrollTo({ top: 0, behavior: REDUZ ? 'auto' : 'smooth' })
+})
+
+/* ── camada legada (só no modo "sem bancada") ─────────────────────────── */
+const camada = $('.camada'), scrim = $('.scrim')
+const abrirCamada = () => { camada.classList.add('open'); scrim.classList.add('open') }
+const fecharCamada = () => { camada.classList.remove('open'); scrim.classList.remove('open') }
+$$('[data-coach-open]').forEach(el => el.addEventListener('click', abrirCamada))
+camada.querySelectorAll('.csug .chip').forEach(ch => ch.addEventListener('click', () => {
+  camada.querySelector('.cempty').hidden = true
+  camada.querySelector('.cthread').hidden = false
+}))
+$('.camada .chead .x').addEventListener('click', fecharCamada)
+scrim.addEventListener('click', fecharCamada)
+addEventListener('keydown', e => { if (e.key === 'Escape') fecharCamada() })
+
+/* ── check-in em bloco: wiring do app.js, replicado aqui ──────────────── */
+const ck = $('#ckBloco')
+let humor = null
+ck.querySelectorAll('.mood').forEach(p => p.addEventListener('click', () => {
+  ck.querySelectorAll('.mood').forEach(q => q.classList.remove('on'))
+  p.classList.add('on'); humor = p.textContent.trim()
+}))
+ck.querySelector('.ck-save').addEventListener('click', () => {
+  if (!humor) return
+  const nota = ck.querySelector('.ck-note')
+  ck.querySelector('[data-out]').textContent = humor + (nota.value ? ' · "' + nota.value + '"' : '')
+  ck.querySelector('.ck-form').hidden = true
+  ck.querySelector('.ck-done').hidden = false
+})
+
+pintarVoz()
+abertura()
+
+/* atalho de QA */
+window.__maquete = { perguntar, abertura, porTudo, sy: v => { sy(v); pintarVoz() } }
+// ganchos de QA da voz: a lógica de cota e de rótulo não dá pra ver na tela sem
+// uma chave válida, então fica testável sem queimar cota
+window.__voz = { familiaDe, cotaGG, pesoGG, base64ProBlob, nuv, listas, painel: () => painel }
+</script>
+</body>
+</html>

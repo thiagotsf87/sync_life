@@ -11,11 +11,16 @@
 login, cadastro, senhas e onboarding, todas com teste de identidade passado.
 
 **Onda 02 pela metade.** O lote 1 (`/dashboard` = o Diário, chrome v5 e a camada do coach) está no ar.
-O **lote 2 está parado** desde 2026-08-01: a Edição da semana teve **revisão pedida** (o ponto de acesso
-não ficou bom) e o Life Score espera aceite junto com o lote.
+O **lote 2 está parado** desde 2026-08-01. O lugar da Edição da semana **deixou de estar aberto**: ela
+virou uma apresentação de Sy dentro do próprio Diário (ver a maquete da bancada). O Life Score segue
+esperando aceite.
 
-**Onda 03 destravou.** A identidade do coach fechou em 2026-08-02: ele se chama **Sy** e o corpo é **o
-Enxame**. Falta a vista cheia da conversa e o backend N1-N2.
+**Onda 03 é a frente ativa.** A identidade fechou em 2026-08-02: **Sy**, corpo **o Enxame**. Agora existe
+a **maquete da bancada** (`app/diario-bancada.html`), que redesenha o Diário como a sala onde Sy mora,
+com voz real ligada. Ela está **em refino, não aprovada**: o usuário gostou da bancada e pediu ajustes,
+que foram aplicados em três rodadas na mesma sessão. Em 2026-08-03 o **Google Cloud TTS entrou como
+provedor de voz** (a opção C). A maquete agora só espera a **chave do GCP** pra destravar os três votos
+e a decisão de gênero da voz.
 
 **Ondas 04 a 14 não começaram.**
 
@@ -30,15 +35,37 @@ Enxame**. Falta a vista cheia da conversa e o backend N1-N2.
 | **A bússola é marca, não ator** | Usá-la como avatar do coach colapsaria duas identidades que precisam ficar distintas | 2026-08-02 |
 | **Contrato de vida** | Os 7 sinais moram em `personagem/vida.js`, implementação única. Trocar a forma não pode significar reescrever comportamento | 2026-08-02 |
 | **Stack de animação** | three.js (peça viva) + GSAP (landing) + motion.dev (app React, futuro). anime.js dispensada | 2026-07-31 |
+| **O Diário é a sala de Sy** | O Diário deixa de ser "o dashboard" e vira o lugar onde Sy mora e é **ator**. Nas outras 67 telas ele é **copiloto**. Regra de dois registros, vale pras 68 telas sem decidir tela a tela | 2026-08-02 |
+| **As 6 leis do cockpit** | 1 Sy oferece o caminho curto e nunca bloqueia o longo (saber/fazer × Sy faz/você faz) · 2 **modalidade é porta, não caminho**: voz e texto entram no mesmo lugar e a voz de saída nunca diz nada que não esteja escrito · 3 toda resposta com número traz o objeto visual junto · 4 ator no Diário, copiloto no resto · 5 todo destino é URL real com caminho de volta visível · 6 a Edição da semana é uma apresentação, não uma tela | 2026-08-02 |
+| **Disciplina que contamina as ondas 04-14** | **Toda tela daqui pra frente entrega o pacote de contexto dela pro Sy.** Sem isso, "Sy traduz o que você está vendo" vira retrofit em 60 telas | 2026-08-02 |
+| **Confirmação de ação** | Irreversível pede licença antes; reversível Sy faz e avisa, com desfazer à mão | 2026-08-02 |
+| **Provedor de voz** | **Google Cloud TTS.** Vozes pt-BR nativas (sem o problema de sotaque), 1 milhão de caracteres grátis por mês, e aceita chamada direta do navegador (CORS verificado). Escolhido contra ElevenLabs Starter por resolver o sotaque na raiz e por ser o mesmo provedor da produção | 2026-08-02 |
+| **Sy fala conclusão, a lâmina mostra a cifra** | O sintetizador lê "R$ 2.120" como "dois mil cento e vinte reais": 8 caracteres viram 28 falados. Número se mostra, não se recita. Tirar os números das falas cortou 18% da duração sem tirar nada da tela | 2026-08-02 |
 
 ## Aberto agora
 
-- **O lugar da revisão semanal.** Aberto desde a sessão 23 e é o que trava o lote 2. Hoje é um botão
-  fantasma no chrome. A proposta registrada (vira outra edição do mesmo diário, em vez de tela separada)
-  **nunca foi aceita nem recusada**.
-- **Integração de Sy no Diário.** Com corpo e nome definidos, falta decidir onde o enxame aparece, em que
-  tamanho, e o que ele faz enquanto você lê. Tem uma decisão de layout embutida: a folha do briefing é
-  clara e Sy precisa da chapa escura dentro dela.
+- **O CONTEÚDO do Diário é frente própria, e não foi aprovado** (registro do usuário, 2026-08-03).
+  Tudo que a Onda 03 fechou até aqui é **forma**: a bancada, os dois estados, lâmina × recorte, a voz,
+  a altura. **O que Sy de fato traz** (com que critério ele escolhe o assunto, o que vira lâmina, o que
+  entra na folha, em que ordem, com que recorte editorial) fica **para retomar depois**, como assunto
+  separado. As falas do protótipo são **preenchimento para julgar o modelo**, não a copy final nem o
+  modelo de conteúdo. Não tratar como decidido.
+
+- **Os três votos da maquete da bancada**, que o usuário ainda não deu: (1) a bancada em si, elogiada mas
+  ainda em refino; (2) **check-in na conversa ou em bloco**; (3) **`/coach` vira arquivo da conversa**, já
+  que no Diário a conversa é a própria página e a camada lateral perde função ali.
+- **A duração da apresentação.** Com voz medida, 25,2s no sintetizador do Windows. O corte disponível é
+  fundir os tempos 2 e 3, que leva pra perto de 17s. **Não acelerar a digitação:** ela segue a duração real
+  do áudio de propósito, e descolar quebra a lei 2.
+- ~~A bancada fica alta no estado assentado.~~ **RESOLVIDO em 2026-08-03:** Sy encolheu de 200px pra
+  164px no repouso, a coluna da fala alargou, a frase caiu de 3 linhas pra 2 e a bancada foi de 368px
+  pra 288px. Falta só o aceite visual.
+- **Gênero da voz.** Sy é sem artigo e sem gênero por decisão de marca, e todo TTS oferece vozes gendradas.
+  A maquete deixa ouvir sem escolher: lista as vozes pt-BR do Google **rotuladas com o gênero**, premium
+  primeiro. A decisão continua aberta, e agora dá pra tomar ouvindo.
+- **Contradição na grafia de Sy, no próprio handoff:** a regra diz "sem artigo, nunca objeto com preposição
+  contraída", e logo abaixo marca "pergunte ao Sy" como correto. A maquete evita as duas formas. Decidir
+  qual vale antes da copy definitiva.
 - **Riscos do nome, a medir antes de investir em voz:** a leitura padrão de "Sy" em pt-BR é "si", não
   "sai" (o Y vira /i/: Sylvia→Silvia), então a pronúncia tem que ser **ensinada no onboarding e na
   primeira edição** e o TTS precisa de fonema explícito; e "sai" é palavra comum do português, o que é
@@ -47,10 +74,21 @@ Enxame**. Falta a vista cheia da conversa e o backend N1-N2.
 
 ## Próxima sessão (pauta do usuário)
 
-**Rever o Diário como cockpit de Sy.** O usuário pediu análise de <https://github.com/hectorg2211/jarvis>,
-um cockpit de interação por voz em que o assistente executa as atividades pedidas. A ideia é explorar esse
-formato pro Diário: **Sy dá um resumo da situação, recebe orientações e executa ações dentro do SyncLife.**
-Isso conversa direto com os dois itens abertos acima, então vale resolver os três na mesma rodada.
+**O Google Cloud TTS está ligado e já foi ouvido** (sessão 26, 2026-08-03). A chave foi criada, a
+apresentação rodou com voz pt-BR nativa e o veredito do usuário foi **"a voz ficou boa"**. Sobra a
+decisão, que é dele:
+
+1. **Dar os três votos abertos** (a bancada, check-in na conversa ou em bloco, `/coach` vira arquivo)
+   e **decidir o gênero da voz**. O painel lista as vozes pt-BR do Google com o gênero no rótulo,
+   premium primeiro, e toca amostra na hora em que você troca: dá pra comparar sem rodar a apresentação.
+2. Decidir também **a duração** (fundir os tempos 2 e 3 leva de 25,2s pra perto de 17s) e **a altura da
+   bancada no assentado** (encurtar a frase da próxima ação, ou Sy encolher mais no repouso).
+3. Com os votos, fechar a maquete e virar protótipo definitivo da onda (desktop + mobile dedicado 390×844).
+
+**Por que o ElevenLabs caiu:** no plano grátis a API **bloqueia as vozes da biblioteca**
+(`paid_plan_required`), inclusive as que já estão salvas na conta. Sobram só as 21 vozes premade, todas de
+locutores nativos de inglês, que falam português puxando pro europeu. Verificado com o ID público e com o
+ID da própria biblioteca do usuário, nos dois modelos. Destravar custaria o Starter, ~US$ 5/mês.
 
 ## Como rodar
 
@@ -71,8 +109,8 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
 |---|---|---|---|---|---|
 | 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ✅ **APROVADA (r2, 2026-07-31)** | ✅ `web/` (2026-07-31) | ✅ desktop + mobile ok, console zero |
-| 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) · ✅ lote 2: Edição da semana + Life Score, D+M (2026-08-01) | ✅ **lote 1 APROVADO (2026-07-31)** · 🔴 **lote 2: Edição da semana em REVISÃO PEDIDA** (acesso ruim) · ⏳ Life Score só esperando aceite, não foi criticado | ✅ lote 1 em `web/` (2026-08-01) · lote 2 parado | ✅ lote 1 desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) · ✅ lote 2 QA dos protótipos PASS (console 0/0, E-02 com JS off, consistência cruzada nas 6 telas) |
-| 03 | Coach **Sy**: identidade + vista cheia + backend N1-N2 | ✅ **Sy, o Enxame** (`personagem/enxame.html`): 6 estados + 3 escalas sobre o contrato `vida.js` (2026-08-02). Rodadas 1 a 4 no Arquivo do hub | ✅ **IDENTIDADE APROVADA (2026-08-02):** forma, nome, enquadramento e regra de superfície · ⏳ falta a vista cheia da conversa | – (nada em `web/` ainda) | ✅ console 0/0, 165 fps com 4 instâncias, claro+escuro, `prefers-reduced-motion` sem movimento |
+| 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) · ✅ lote 2: Edição da semana + Life Score, D+M (2026-08-01) | ✅ **lote 1 APROVADO (2026-07-31)** · 🟡 **lote 2: o lugar da Edição da semana foi RESOLVIDO** em 2026-08-02 (vira apresentação de Sy no Diário, ver Onda 03); o conteúdo do protótipo sobrevive, a moldura de tela separada cai · ⏳ Life Score só esperando aceite, não foi criticado | ✅ lote 1 em `web/` (2026-08-01) · lote 2 parado | ✅ lote 1 desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) · ✅ lote 2 QA dos protótipos PASS (console 0/0, E-02 com JS off, consistência cruzada nas 6 telas) |
+| 03 | Coach **Sy**: identidade + **a bancada** + vista cheia + backend N1-N2 | ✅ **Sy, o Enxame** (`personagem/enxame.html`) + **maquete da bancada** (`app/diario-bancada.html`, 2026-08-02): dois estados do Diário, lâmina × recorte, ações com licença, voz real · ✅ **Google Cloud TTS ligado (2026-08-03)** | ✅ **IDENTIDADE APROVADA (2026-08-02)** · 🟡 **bancada em refino**: elogiada, 3 rodadas de ajuste aplicadas, faltam os 3 votos (bancada, check-in, `/coach`) + gênero da voz, todos **esperando a chave do GCP** | – (nada em `web/` ainda) | ✅ console 0/0 em 18 recargas · fluxos de ação, licença, desfazer e portão verificados por DOM · sincronia de voz medida · ✅ voz: troca de provedor, chave inválida, degradação sem chave e 15 asserções de lógica pura (`window.__voz`) · ✅ **síntese real ouvida em voz pt-BR nativa e aprovada** pelo usuário (2026-08-03) · ✅ altura da bancada travada: oscilação 0px em apresentando, assentado, durante a digitação e em corrida real |
 | 04 | 01 Finanças (8 telas, 2 lotes) | – | – | – | – |
 | 05 | 02 Futuro (4) | – | – | – | – |
 | 06 | 03 Tempo (6) | – | – | – | – |
@@ -84,6 +122,237 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-08-03 · Sessão 26 — Google Cloud TTS ligado na maquete (a opção C virou código)
+
+> Sessão curta e de uma coisa só: o passo 1 da pauta. **Nada em `web/` foi tocado** e
+> **nada da bancada mudou de desenho** — só a camada de voz. A maquete continua **em refino**,
+> esperando os mesmos três votos, que agora dependem só da chave do usuário.
+
+### O que entrou
+
+O painel de voz virou **um bloco só servindo dois provedores**. O segmento ganhou **Google** ao lado
+de ElevenLabs (Google primeiro, porque é a decisão), e o que muda entre eles é só a lista de vozes, o
+segmento de modelo (que só o ElevenLabs tem) e o tamanho da cota. A disciplina dos três cuidados
+continua idêntica: chave só no `localStorage`, áudio cacheado no Cache API por (voz + modelo + texto),
+gasto contado e à vista.
+
+**Estado por provedor, em chaves separadas.** Escolher o Google não apaga a chave do ElevenLabs: cada
+um tem `sy.<provedor>.{chave,voz,modelo,gasto}`, e as chaves `sy.11.*` que já existiam seguem valendo.
+A chave de cache não mudou de formato de propósito — id de voz do Google (`pt-BR-Chirp3-HD-Aoede`) e do
+ElevenLabs (hexadecimal) não colidem, então **o áudio já gerado em sessões passadas sobreviveu**.
+
+**As vozes vêm da API, filtradas em pt-BR, premium primeiro** (Chirp3-HD → Neural2 → Studio → Polyglot
+→ WaveNet → Standard) e **rotuladas com o gênero**. Isso é de propósito: Sy é sem gênero por decisão de
+marca, e a escolha (ou a recusa das duas) tem que ser **ouvida**, não deduzida de um nome de voz.
+
+**O corpo do `synthesize` é mínimo** — `audioEncoding: MP3` e nada mais. Sem `speakingRate`, porque a
+lei "não acelerar a digitação" quer rate 1; e sem `pitch`, porque as vozes Chirp rejeitam parte dos
+ajustes de `audioConfig`. Corpo mínimo é também o menor número de modos de rejeição.
+
+### Gotchas novos (LEI)
+
+9. **A chave do Google vai no cabeçalho `X-Goog-Api-Key`, nunca em `?key=`.** Query string vaza em log
+   de rede, histórico e referer. **Verificado empiricamente** com chave falsa antes de escrever o
+   provedor: o preflight passa e a resposta é legível, em GET (`/v1/voices`) e em POST
+   (`/v1/text:synthesize`). Era isso que decidia a implementação, por isso foi testado primeiro.
+10. **A cota grátis do Google é por família de voz, não uma só**, e o contador troca de teto quando
+    você troca de voz. Números lidos na **tabela viva** da página de preços em 2026-08-03:
+    Chirp3-HD 1 M (US$ 30/M depois) · Neural2 1 M (US$ 16/M) · Polyglot 1 M (US$ 16/M) ·
+    Studio 1 M (**US$ 160/M**, a mais cara de longe) · WaveNet e Standard 4 M (US$ 4/M).
+    **A WaveNet foi repreçada pro SKU da Standard** e hoje custa US$ 4/M, não os US$ 16/M antigos.
+    Ler a página viva não foi preciosismo: **o WebFetch trunca a tabela e a busca devolve os números
+    velhos** (dava WaveNet como 1 M grátis). Foi preciso abrir no navegador e ler o DOM.
+11. **`audioContent` vem em base64, não em binário.** Diferente do ElevenLabs, que devolve o mp3 no
+    corpo. Precisa de `atob` → `Uint8Array` → `Blob('audio/mpeg')`, senão o `<audio>` recebe texto.
+12. **Chave recusada não pode ser gravada.** O `localStorage` só recebe a chave **depois** da API
+    responder com vozes. Testado com chave inválida: mensagem limpa na tela e `sy.gg.*` continua vazio.
+13. **`Requests from referer <empty> are blocked` quer dizer protótipo aberto como `file://`.** Página
+    aberta como arquivo não tem origem pra mandar, e sem `Referer` **nenhuma** restrição de site do
+    Google pode casar, por mais certa que a lista esteja. Custou uma rodada de diagnóstico. A maquete
+    agora traduz esse erro sozinha, e as duas chamadas ao Google mandam `referrerPolicy: 'origin'`
+    explícito, porque a política padrão do navegador nem sempre manda `Referer`.
+14. **Transição de CSS não avança em página oculta (`document.hidden`), e `getComputedStyle` devolve o
+    valor DE PARTIDA indefinidamente.** Envenenou três medições nesta sessão e quase virou dois
+    diagnósticos errados: o `min-height` parecia preso em 82,44px, e Sy parecia **não crescer** pra
+    280px no apresentando (a regra sempre esteve certa, e o CSSOM confirmou que ela existia e casava).
+    **Regra de QA: antes de medir qualquer propriedade que tenha `transition`, desligue a transição**
+    (`el.style.transition='none'` + reflow forçado), senão a medida é do estado anterior. Aqui isso vale
+    pro `min-height` da fala, pro `grid-template-columns` do `.bin` e pro `width` do Sy, os três.
+15. **QA de protótipo: `requestAnimationFrame` não roda em aba de segundo plano** e o `setTimeout` é
+    afunilado pra ~1s, o que subamostra qualquer medição por tempo e estoura o limite da ferramenta.
+    Para medir layout, ou frontear a aba, ou (melhor) medir **de forma síncrona**: escrever cada texto
+    no elemento e ler a altura no mesmo laço, que nenhum timer consegue interleave.
+
+### A voz rodou, e a bancada parou de respirar
+
+**O usuário ouviu e aprovou: "a voz ficou boa".** Primeira vez que a apresentação foi julgada com som
+nativo. Os três votos e o gênero continuam abertos.
+
+Ouvindo, ele achou um defeito que só aparece em movimento: **a chapa da bancada crescia e encolhia
+conforme o tamanho da frase**, letra a letra enquanto Sy digitava. Medido antes do conserto: a fala
+oscilava **93px** entre a frase mais longa (3 linhas, 140px) e o check-in (1 linha, 47px). O
+`min-height:2.3em` que existia cobria só **2** linhas.
+
+**O conserto é medir, não contar linha.** A fonte é `clamp()` e a quebra depende da largura, então
+"reserve 3 linhas" erra em algum viewport. Um clone fora da tela recebe a mesma tipografia e a mesma
+largura da coluna, mede cada frase, e a altura trava na maior. A trava é aplicada **antes** de digitar,
+então a caixa já nasce do tamanho final. `abertura()` trava na frase mais alta da apresentação inteira,
+então ela não mexe uma vez sequer do primeiro tempo ao check-in. Quem troca de layout (assentar, repouso,
+resize) zera o piso e remede, porque a fonte e a largura da coluna mudam junto.
+
+**Resultado medido:** oscilação **0px** com 7 frases no estado apresentando, **0px** com 7 no assentado,
+**0px** em 12 pontos de amostra durante a digitação de uma frase de 3 linhas, e **0px** numa corrida real
+da apresentação (12 amostras, 5 frases diferentes). A única variação que sobrou é entre apresentando e
+assentado, que é a transição de estado desenhada, não o texto.
+
+### Sy encolhe no repouso: 164px, medido
+
+Travar estabilizou mas não encurtou, e a bancada seguia **alta** no assentado. O usuário aprovou aplicar
+a preferência que já estava registrada: Sy encolhe, em vez de encurtar a frase.
+
+**O tamanho saiu de medição, não de olho.** Encolher Sy alarga a coluna da fala, e a pergunta é em que
+ponto a frase da próxima ação cai de 3 linhas pra 2:
+
+| Sy | Coluna da fala | Frase | Bancada |
+|---|---|---|---|
+| 200 (antes) | 578px | 3 linhas | 368px |
+| 180 | 598px | 2 linhas | 327px |
+| **164 (agora)** | 614px | 2 linhas | **288px** |
+| 148 e abaixo | 630px+ | 2 linhas | 288px, não baixa mais |
+
+**164px é o ponto ótimo:** abaixo dele quem passa a mandar na altura é o bloco da fala, então a chapa
+para de encolher e só se perde presença de Sy. Resultado: **368px → 288px, 22% mais baixa**, com
+oscilação **0** em 5 frases. O apresentando não muda (Sy 280px, bancada 401px, oscilação 0).
+
+### QA (feito, sem chave válida — esse é o limite honesto)
+
+Console **0/0** em todo o exercício. Verificado por DOM: troca de provedor repinta o painel inteiro
+(placeholder, lista, segmento de modelo, cota) · chave inválida dá mensagem específica do Google e
+**não grava nada** · pré-gerar sem chave avisa em vez de tentar · voltar pro ElevenLabs restaura a
+lista, o segmento e o **gasto próprio dele** · mudo esconde o painel · a apresentação com Google
+selecionado e sem chave **degrada pra mudo com aviso, não trava** · apresentação no mudo segue
+rodando · pular segue caindo no check-in.
+
+Lógica pura testada pelo gancho novo `window.__voz` (15 asserções, todas passando): família extraída
+do nome da voz, cota por família, ordenação premium-primeiro, e o base64 → Blob (tipo, tamanho e os
+bytes de cabeçalho ID3, mais o caso de entrada vazia).
+
+**O que NÃO foi verificado, e não dá pra verificar aqui:** a síntese de verdade. Ela precisa de uma
+chave válida, e a chave depende do usuário criar o projeto no GCP. O timbre, a duração real das falas
+em voz nativa e a pronúncia de "Sy" continuam **não medidos**.
+
+### Risco a registrar
+
+Chave de API dentro do navegador é exposta por construção. Pra maquete em `localhost` está certo, e a
+restrição por referenciador e por API reduz o estrago. **Em produção a chamada tem que ir pro
+servidor** — o que também casa com o roteiro das APIs de IA, que já são route handlers.
+
+### Arquivos
+
+- `prototypes/v5/app/diario-bancada.html` — só a camada de voz e o painel. O desenho da bancada,
+  os dois estados, lâmina × recorte e os fluxos de ação não foram tocados.
+- este handoff.
+
+---
+
+## 2026-08-02 · Sessão 25 — A bancada: o Diário vira a sala de Sy (maquete de decisão, em refino)
+
+> Sessão de desenho, não de implementação. **Nada em `web/` foi tocado.** O usuário disse
+> explicitamente que não conseguia aprovar a bancada por descrição, então a sessão virou
+> construção de uma **maquete de decisão** e três rodadas de refino em cima dela.
+
+### A pesquisa que abriu a sessão (pedido do usuário)
+
+O `hectorg2211/jarvis` que ele mandou é **um arquivo Python**: detecta duas palmas por pico de
+amplitude, toca uma saudação do ElevenLabs e abre Spotify, Chrome e Cursor. Sem interface, sem LLM,
+sem function calling. Pedido dele, pesquisei projetos mais completos. Saíram **três famílias**:
+
+1. **Assistentes de desktop** (DawoodTouseef, novik133/KDE, Hasan-Ikbal, kishanrajput23). O "Jarvis"
+   deles é controlar o computador. A tela é chat escuro + onda de áudio. **Não serve.**
+2. **Cockpit de voz no navegador** ([eadmin2/jarvis_ai](https://github.com/eadmin2/jarvis_ai)). O mais
+   útil: anel central, transcrição ao vivo, **painéis convocados pelo agente**, cartão de aprovação
+   antes de operação perigosa, STOP e Esc sempre à mão, boot cinematográfico. JS puro + FastAPI +
+   faster-whisper + ElevenLabs em streaming, round-trip 3 a 5s.
+3. **HUD que apresenta um cenário** ([calesthio/Crucix](https://github.com/calesthio/Crucix)). 27 fontes,
+   globo WebGL, **painel de delta** (o que mudou desde a última varredura) e alertas em três níveis.
+
+**O achado desconfortável:** o Crucix embute um botão **"VISUALS LITE"** que desliga a própria estética.
+Scanline e blur são caros e viram ruído na segunda semana. Conclusão levada pro desenho: o que faz
+parecer Jarvis não é a scanline, são quatro **comportamentos** (leu tudo antes de você chegar · mostra o
+que olha enquanto fala · age e pede licença no irreversível · pode ser interrompido).
+
+### O que a conversa fechou
+
+O Diário deixa de ser "o dashboard" e vira **a sala onde Sy mora**. Detalhe em "Decisões fechadas", no
+topo: os dois registros (ator/copiloto), as 6 leis, a disciplina do pacote de contexto por tela, e a
+regra de confirmação. A Edição da semana **parou de ser um problema em aberto**: virou uma apresentação
+de Sy, e o botão fantasma do chrome morre.
+
+### A maquete: `prototypes/v5/app/diario-bancada.html`
+
+Desktop só, de propósito: mobile dedicado depois dos votos, senão faz duas vezes. Painel flutuante no
+canto (instrumento, não produto) com 5 alternadores e 6 ações de teste.
+
+**A bancada** é uma chapa escura ancorada no topo com o Enxame, a fala de Sy e a linha de comando. O nome
+resolve a briga entre "cockpit" e o DS editorial: bancada é onde o apresentador senta.
+
+**Dois verbos de materialização, e só dois.** *Acender* (o objeto já está na edição, pisca quando Sy cita,
+custo quase zero) e *recortar* (a resposta entra impressa embaixo da bancada). A entrada do recorte é
+**impressão**, varredura da esquerda pra direita, não holograma: scanline de ficção científica brigaria
+com o DS.
+
+**A tela tem dois estados** (isso veio da rodada 2 de feedback): na **apresentação** Sy cresce pra 280px,
+tudo em volta recua pra 40% e **a edição não existe**; ele fala em quatro tempos e cada um deixa uma
+**lâmina** na tela. No fim ele **para e espera**. A edição só abre quando você responde o check-in (que É
+o aceno) ou pede pra ver. Nos acessos seguintes a tela já nasce assentada, e aí a folha é o **registro
+escrito** do que ele disse, **sem byline**.
+
+**Lâmina × recorte** têm vidas opostas de propósito: lâmina é passageira (filete neutro, "ao vivo", some
+quando a edição assenta), recorte é permanente (filete roxo, veio de pergunta sua, tem dispensar). Ao
+assentar, **só as lâminas saem**; um recorte pedido no meio fica.
+
+### A voz
+
+Pedido do usuário: "sem a voz fica difícil avaliar em sua plenitude". Entrou via **Web Speech API** e
+depois **ElevenLabs**, com chave em `localStorage`, cache de áudio e contador de cota à vista.
+
+**Decisão final: Google Cloud TTS** (opção C), porque no grátis do ElevenLabs a API **bloqueia as vozes da
+biblioteca**, inclusive as já salvas na conta, e sobram só locutores nativos de inglês puxando o português
+pro europeu. Detalhe e números em "Próxima sessão".
+
+### Gotchas novos (LEI)
+
+1. **`speechSynthesis.cancel()` dispara o `onend` da fala cancelada.** Sem um contador de geração,
+   pular a apresentação **ressuscitava** o tempo seguinte pelo callback de uma fala já descartada.
+2. **TTS expande número.** "R$ 2.120" é lido como "dois mil cento e vinte reais": 8 caracteres viram 28
+   falados. Qualquer modelo de caracteres-por-segundo erra feio em copy financeira. Daí a lei "Sy fala
+   conclusão, a lâmina mostra a cifra", que cortou a apresentação de 30,8s pra 25,2s sem tirar nada da tela.
+3. **Curva de rate do SAPI pt-BR, medida:** 11,9 c/s em rate 1 · 14,7 em 1.6 · 16,4 em 2.2. Retorno
+   decrescente forte; 1.6 é o ponto que representa locução natural.
+4. **ElevenLabs grátis bloqueia voz de biblioteca via API** (`paid_plan_required`), mesmo depois de
+   adicioná-la à conta. Verificado com o ID público e com o da biblioteca do usuário, nos dois modelos.
+5. **ElevenLabs e Google TTS aceitam chamada direta do navegador** (CORS verificado nos dois). Protótipo
+   estático não precisa de backend pra voz.
+6. **Cache API funciona em `http://localhost`** (é contexto seguro). Cachear áudio por
+   `voz|modelo|texto` é obrigatório com cota pequena: sem isso cada replay queima a apresentação inteira.
+7. **Estado de check-in vaza entre rodadas.** `abertura()` precisa limpar as fichas de humor, senão dava
+   pra responder no meio da apresentação e furar o portão. (Achado testando, corrigido.)
+8. **Nunca acelerar a digitação pra encurtar a apresentação.** Ela segue a duração real do áudio de
+   propósito; descolar quebra a lei 2. O corte é menos tempos ou frases mais curtas.
+
+### Arquivos
+
+- **novo** `prototypes/v5/personagem/enxame.js` — o renderizador do Enxame extraído do `enxame.html`,
+  porque a partir da bancada ele vive em três escalas na mesma página. `vida.js` continua sendo o
+  comportamento, `enxame.js` passa a ser a forma.
+- `prototypes/v5/personagem/enxame.html` — agora importa o módulo. **Re-verificado: 4 instâncias, 165 fps,
+  console limpo, idêntico ao aprovado.**
+- **novo** `prototypes/v5/app/diario-bancada.html` — a maquete.
+- `prototypes/v5/index.html` — a linha "Diário como cockpit de Sy" virou link pra maquete, em aprovação.
+- este handoff.
 
 ---
 
