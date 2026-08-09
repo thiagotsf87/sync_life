@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<!-- interactive-widget=resizes-content: sem isso o teclado do celular NÃO encolhe
+     o viewport, ele sobe por cima. Com isso o `100dvh` do palco vira a altura real
+     que sobrou, e o teclado deixa de ser caso especial: o layout se acomoda em flex -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+<title>SyncLife · Diário como bancada de Sy · mobile · v5</title>
+<!-- Onda 03 · a bancada MOBILE dedicada (390×844). O desktop foi aprovado em
+     2026-08-03 e este NÃO é ele espremido: a apresentação vira TELA CHEIA, um
+     tempo por dobra, e as lâminas anteriores vão pra uma pilha em vez de
+     empilharem na página (em 390 de largura cabe UMA lâmina abaixo de Sy).
+     O CONTEÚDO é o mesmo do desktop, importado de `bancada.roteiro.js`. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23f84131'/%3E%3Ccircle cx='18' cy='22' r='2' fill='%236840ff'/%3E%3Ccircle cx='46' cy='26' r='2' fill='%236840ff'/%3E%3Ccircle cx='24' cy='45' r='2' fill='%236840ff'/%3E%3Ccircle cx='44' cy='44' r='2' fill='%236840ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<style>
+  body{font-size:14px}
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* ─── chrome compacto (mesma medida da Onda 02) ─── */
+  .bar{height:56px;padding:0 18px}
+  .brand{font-size:16px}
+  .bar .acts{gap:8px}
+  .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:1}
+  .ticker{height:24px}
+  /* na apresentação não se navega: a modbar sai e devolve 44px pro palco */
+  body.emcena .modbar{display:none}
+
+  /* ═══════════════════════════════════════════════════════════════════
+     O PALCO — a diferença inteira entre este arquivo e o desktop.
+
+     No desktop as lâminas empilham embaixo da bancada porque sobra altura.
+     Em 390×844 sobra espaço pra UMA. Então aqui a apresentação deixa de ser
+     página e vira momento: o palco trava na altura da tela, cada tempo ocupa
+     uma dobra, e a lâmina que sai desce pra uma PILHA em vez de sumir.
+
+     O estado ASSENTADO é o padrão (sem classe nenhuma). `.emcena` é o
+     modificador. É isso que segura o E-02: sem JS nada trava, nada esconde,
+     e a página nasce inteira e rolável.
+     ═══════════════════════════════════════════════════════════════════ */
+  .palco{padding:0 20px}
+  body.emcena .palco{
+    /* 80px = barra 56 + ticker 24. dvh e não vh porque vh no iOS mede a tela
+       com a barra do navegador recolhida, e a última dobra ficaria cortada */
+    height:calc(100dvh - 80px);
+    display:flex;flex-direction:column;overflow:hidden}
+
+  .bancada{margin-top:18px;border:1px solid var(--line-h);border-radius:20px;position:relative;
+    padding:16px 16px 18px;
+    background-color:#151313;
+    background-image:radial-gradient(circle at 70px 30%,rgba(104,64,255,.20),transparent 62%)}
+  body.emcena .bancada{margin-top:12px;margin-bottom:12px;flex:1;min-height:0;
+    display:flex;flex-direction:column;padding:18px 16px 16px}
+
+  /* ── ASSENTADO: Sy e a fala lado a lado ──
+     Empilhar daria a fala em 322px de largura e 2 linhas, mas a chapa iria a
+     262px. Lado a lado a frase quebra em 3 linhas num vão de 210px e a chapa
+     fecha em ~196px, que é 25% mais baixa. A altura ganha, porque a queixa do
+     desktop era exatamente a bancada alta. */
+  .bin{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:center}
+  /* na cena Sy é centrado, mas a fala continua alinhada à esquerda: três linhas
+     de 22px centradas viram bloco decorativo e a leitura fica mais lenta */
+  body.emcena .bin{display:block}
+
+  .bc-sy{width:96px;height:96px;flex:none;position:relative;transition:width .5s var(--ease),height .5s var(--ease)}
+  .bc-sy canvas{display:block;width:100%;height:100%}
+  /* Na cena Sy é grande e CENTRADO, e encolhe junto com a altura disponível.
+     A medida é uma FRAÇÃO do palco, não um `min()` com teto fixo: com
+     `min(180px, 42vh)` Sy só começava a encolher abaixo de 428px de viewport,
+     e o teclado aberto (508px num iPhone 14) empurrava a linha de comando pra
+     525px, ou seja, pra FORA da tela. Medido, não suposto.
+     23dvh dá 180px em 844 e 117px com o teclado aberto. 72px é o piso: abaixo
+     disso o coração do enxame para de ler. */
+  body.emcena .bc-sy{width:clamp(72px,23dvh,180px);height:clamp(72px,23dvh,180px);margin:0 auto}
+  /* pouca altura é quase sempre teclado aberto, e aí a fala precisa ocupar
+     menos sem sumir. As sugestões NÃO saem: é nelas que moram as fichas de
+     humor do check-in, e é justamente digitando a nota que o teclado está lá */
+  @media (max-height:640px){
+    body.emcena .bc-fala{margin-top:10px}
+    body.emcena .bc-fala h1{font-size:19px}
+  }
+
+  .bc-fala{min-width:0}
+  .bc-fala .eyebrow b{color:var(--coral)}
+  .bc-fala .eyebrow{font-size:9.5px}
+  .bc-fala h1{font:500 16px/1.28 var(--gro);letter-spacing:-.03em;margin:7px 0 0;text-wrap:balance}
+  body.emcena .bc-fala{margin-top:14px}
+  body.emcena .bc-fala h1{font:500 clamp(20px,5.6vw,24px)/1.24 var(--gro);letter-spacing:-.035em}
+  .bc-cur{display:inline-block;width:2px;height:.86em;background:var(--coral);vertical-align:-.06em;margin-left:3px}
+  .anim .bc-cur{animation:sl-cur 1s steps(2,end) infinite}
+  @keyframes sl-cur{0%,49%{opacity:1}50%,100%{opacity:0}}
+  .bc-fala h1.pronto .bc-cur{display:none}
+  /* a altura da fala é travada por MEDIÇÃO (ver `travar`), nunca por contagem de
+     linha: a fonte é clamp() e a quebra depende da largura, então "reserve 3
+     linhas" erra em algum viewport. Sem transition de propósito: altura travada
+     estala, e o movimento já vem do Sy e do palco */
+
+  /* Na cena, QUEM CEDE ALTURA é só a lâmina. Sem isto o flex espremia os
+     últimos filhos: as fichas de humor caíam pra 2px de altura e o portão saía
+     da tela com o teclado aberto. Medido, não suposto. */
+  body.emcena .bancada > *{flex:none}
+  body.emcena .bancada > .lam{flex:1;min-height:0}
+  /* Enquanto você DIGITA, o portão e a alça saem de cena. Não é truque de
+     layout, é a regra certa: quem está escrevendo a nota do check-in está
+     respondendo, e responder já abre a edição. Navegar a pilha no meio de uma
+     frase também não é coisa que acontece. Eles voltam quando o campo perde o
+     foco, que é quando o teclado fecha. */
+  body.emcena.digitando .seguir,
+  body.emcena.digitando .alca{display:none}
+
+  /* ── O SLOT DA LÂMINA: uma por vez, e a anterior desce pra pilha ── */
+  .lam{display:none}
+  body.emcena .lam{display:block;flex:1;min-height:0;overflow-y:auto;margin-top:14px;
+    scrollbar-width:none;-ms-overflow-style:none}
+  body.emcena .lam::-webkit-scrollbar{display:none}
+  .lam .recorte{margin:0}
+  /* a lâmina que sai não morre, é guardada: desce na direção da alça e some */
+  .guardando{opacity:0;transform:translateY(16px);
+    transition:opacity .3s var(--ease),transform .3s var(--ease)}
+
+  /* ── A ALÇA DA PILHA: a concessão do modelo de tela cheia ──
+     Acumular continua valendo, só que fora da dobra. A alça é a prova de que
+     nada foi jogado fora, e um toque traz tudo de volta. */
+  .alca{display:flex;align-items:center;gap:10px;width:100%;margin-top:10px;
+    background:none;border:none;border-top:1px solid var(--line);padding:11px 2px 0;cursor:pointer;
+    font:500 11.5px var(--int);color:var(--t3);text-align:left}
+  .alca[hidden]{display:none}
+  .alca .pts{display:flex;gap:5px;flex:none}
+  .alca .pts i{width:5px;height:5px;border-radius:50%;background:var(--line-h);display:block;
+    transition:background .35s var(--ease)}
+  .alca .pts i.on{background:var(--roxo)}
+  .alca .rot{flex:1}
+  .alca b{color:var(--t2);font-weight:600}
+  .alca .ver{color:var(--roxo);font-weight:600;flex:none}
+  .anim .alca.pulsa .pts{animation:sl-pulsa .5s var(--ease)}
+  @keyframes sl-pulsa{50%{transform:scale(1.35)}}
+
+  /* ── a linha de comando: única superfície de entrada (lei 2) ──
+     Na cena ela fica no PÉ do palco, que é onde o polegar alcança e onde o
+     teclado nasce. Assentada ela é parte da chapa. */
+  .bc-linha{display:flex;align-items:center;gap:8px;border:1px solid var(--line-h);border-radius:999px;
+    padding:8px 8px 8px 16px;margin-top:14px;background:rgba(244,244,244,.035);
+    transition:border-color .3s var(--ease),background .3s var(--ease)}
+  .bc-linha:focus-within{border-color:rgba(104,64,255,.62);background:rgba(104,64,255,.06)}
+  .bc-linha.ouvindo{border-color:rgba(248,65,49,.6);background:rgba(248,65,49,.06)}
+  .bc-linha input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--t1);
+    font:400 15px var(--int)}   /* 15px: abaixo disso o iOS dá zoom ao focar */
+  .bc-linha input::placeholder{color:var(--t3)}
+  .bc-ico{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--line);background:transparent;
+    color:var(--t2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+    transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+  .bc-ico.mic.on{border-color:var(--coral);color:var(--coral);background:rgba(248,65,49,.1)}
+  .bc-ico.env{background:var(--roxo);border-color:var(--roxo);color:#fff}
+  .bc-ico:focus-visible{outline:2px solid var(--roxo);outline-offset:2px}
+
+  /* as sugestões rolam na horizontal: em 350px três chips não cabem em linha,
+     e quebrar em três fileiras comeria a dobra inteira */
+  .bc-sug{display:flex;gap:8px;margin-top:11px;overflow-x:auto;
+    scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px}
+  .bc-sug::-webkit-scrollbar{display:none}
+  .bc-sug button{flex:none;font:500 12.5px var(--int);color:var(--t2);background:transparent;
+    border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;white-space:nowrap;
+    transition:border-color .3s var(--ease),color .3s var(--ease)}
+  .bc-sug button.mood.on{border-color:var(--roxo);color:var(--t1)}
+
+  .bc-voz{display:none;align-items:center;gap:8px;margin-top:10px;font:500 10px var(--gro);
+    letter-spacing:.18em;text-transform:uppercase;color:var(--coral)}
+  body.emcena .bc-voz{justify-content:center}
+  .bc-voz.on{display:inline-flex}
+  body.emcena .bc-voz.on{display:flex}
+  .bc-voz i{display:block;width:3px;border-radius:2px;background:var(--coral)}
+  .anim .bc-voz i{animation:sl-nivel .62s var(--ease) infinite alternate;animation-delay:calc(var(--i)*.09s)}
+  @keyframes sl-nivel{from{height:4px;opacity:.45}to{height:15px;opacity:1}}
+
+  /* o selo do Life Score sai da bancada e vira faixa, como na Onda 02: em 390
+     ele não cabe como terceira coluna sem espremer a fala */
+  .selo{display:flex;align-items:center;gap:16px;border:1px solid var(--line-h);border-radius:14px;
+    padding:13px 17px;margin-top:12px;position:relative}
+  .selo::after{content:"";position:absolute;inset:4px;border:1px solid var(--line);border-radius:10px;pointer-events:none}
+  .selo .n{font:700 38px/1 var(--gro);letter-spacing:-.05em}
+  .selo .k{font:700 9px var(--gro);letter-spacing:.24em;color:var(--t3)}
+  .selo .d{font:400 12px var(--int);color:var(--t3);margin-top:4px}
+  body.emcena .selo{display:none}      /* na cena a edição não existe */
+
+  /* ─── recortes e lâminas ─── */
+  .recortes{display:flex;flex-direction:column;gap:11px;margin-top:14px}
+  .recortes:empty{margin-top:0}
+  body.emcena .recortes{display:none}
+  .recorte{position:relative;overflow:hidden;border:1px solid var(--line);border-left:3px solid var(--roxo);
+    border-radius:12px;background:#1b1918;padding:15px 16px 16px}
+  .recorte.lamina{border-left-color:var(--t3)}
+  .recorte.lamina .rc-top .eyebrow b{color:var(--t2)}
+  .recorte.lamina .rc-x{display:none}
+  .recorte.acao{border-left-color:var(--ele)}
+  .recorte.aviso{border-left-color:var(--coral)}
+  .rc-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .rc-top .eyebrow{font-size:9.5px}
+  .rc-top .eyebrow b{color:var(--roxo)}
+  .recorte.acao .rc-top .eyebrow b{color:var(--ele)}
+  .recorte.aviso .rc-top .eyebrow b{color:var(--coral)}
+  .rc-x{background:none;border:none;color:var(--t3);cursor:pointer;font:400 20px/1 var(--int);
+    padding:4px 6px;margin:-4px -6px}   /* alvo de toque de 28px sem crescer a caixa */
+  .recorte p{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .recorte p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+  .recorte p .w{color:var(--coral);font-weight:600}
+  .rc-obj{margin-top:12px}
+  .rc-obj .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+  .rc-obj .nm{font:500 12.5px var(--int);color:var(--t2)}
+  .rc-obj .pct{font:700 14px var(--gro);font-variant-numeric:tabular-nums}
+  .rc-obj .track{height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
+  .rc-obj .track i{display:block;height:100%;border-radius:2px;background:var(--coral)}
+  .rc-obj .track i.ok{background:var(--ele)}
+  .anim .rc-obj .track i{animation:sl-encher .9s var(--ease) backwards .2s}
+  @keyframes sl-encher{from{width:0}}
+  .rc-obj .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3);margin-top:7px}
+  /* os quatro números do fechamento em 2×2: em linha eles saem da tela */
+  .lm-nums{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;margin-top:13px}
+  .lm-nums div{display:flex;flex-direction:column;gap:4px}
+  .lm-nums span{font:700 9px var(--gro);letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+  .lm-nums b{font:700 24px/1 var(--gro);letter-spacing:-.035em;color:var(--t1)}
+  .lm-nums b.ele{color:var(--ele)}
+  /* as áreas em 1 coluna: é o mesmo HTML do desktop, só o grid muda */
+  .lm-areas{display:grid;grid-template-columns:1fr;margin-top:8px}
+  .lm-areas > div{display:grid;grid-template-columns:22px 1fr auto;gap:3px 10px;align-items:baseline;
+    padding:9px 0;border-bottom:1px solid var(--line)}
+  .lm-areas > div:last-child{border-bottom:none}
+  .lm-areas .di{font:700 10px var(--gro);color:var(--t3)}
+  .lm-areas .nm{font:500 14px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .lm-areas .sc{font:700 17px var(--gro);letter-spacing:-.03em;display:inline-flex;align-items:baseline;gap:5px}
+  .lm-areas .sc em{font:600 10px var(--gro);font-style:normal;color:var(--ele)}
+  .lm-areas .sc em.zero{color:var(--t3)}
+  .lm-areas .mt{grid-column:2/-1;font:400 10.5px var(--int);color:var(--t3)}
+  .rc-pe{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
+  .rc-src{font:500 12.5px var(--int);color:var(--t3);display:inline-flex;align-items:center;gap:6px;
+    cursor:pointer;background:none;border:none;padding:8px 0;margin:-8px 0}
+  .rc-src b{color:var(--roxo);font-weight:600}
+  .rc-src[data-ok]{border:1px solid var(--roxo);background:rgba(104,64,255,.18);border-radius:999px;
+    padding:9px 18px;margin:0;color:var(--t1)}
+  .rc-src[data-ok] b{color:inherit}
+  .rc-fonte{font:500 10px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3)}
+  /* a entrada é IMPRESSÃO, varredura da esquerda pra direita. Não é holograma:
+     o DS v5 é editorial e scanline de ficção científica brigaria com ele */
+  .anim .recorte{animation:sl-imprimir .5s var(--ease) backwards}
+  @keyframes sl-imprimir{from{clip-path:inset(0 100% 0 0);opacity:.35}to{clip-path:inset(0 0 0 0);opacity:1}}
+  .anim .recorte::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(161,255,98,.16),transparent);
+    animation:sl-varrer .6s var(--ease) forwards}
+  @keyframes sl-varrer{from{transform:translateX(-105%)}to{transform:translateX(105%)}}
+  @media (prefers-reduced-motion:reduce){.recorte::after{display:none}}
+
+  /* ─── acender: o objeto já está na edição, Sy cita, ele pisca ─── */
+  .acender{animation:sl-acender 1.7s var(--ease);border-radius:10px}
+  @keyframes sl-acender{
+    0%,100%{box-shadow:0 0 0 0 rgba(104,64,255,0);background-color:transparent}
+    20%{box-shadow:0 0 0 1px rgba(104,64,255,.75),0 0 38px -10px rgba(104,64,255,.8);
+        background-color:rgba(104,64,255,.07)}
+    70%{box-shadow:0 0 0 1px rgba(104,64,255,.28);background-color:rgba(104,64,255,.03)}
+  }
+  .ticker .tk span.on{background:#151313;color:var(--ele);border-radius:3px}
+
+  /* ─── o portão: a edição só abre quando VOCÊ manda ─── */
+  .seguir{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}
+  .seguir[hidden]{display:none}
+  .seguir span{font:400 12px var(--int);color:var(--t3)}
+  .seguir .btn-sm{padding:11px 16px}
+
+  /* ─── a montagem da edição ─── */
+  .anim main.montando [data-blk]{opacity:0;transform:translateY(20px)}
+  .anim main.montando [data-blk].posto{opacity:1;transform:none;
+    transition:opacity .6s var(--ease),transform .6s var(--ease)}
+  .pular{position:fixed;top:88px;right:14px;z-index:70;display:none;
+    background:rgba(26,23,23,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .pular.on{display:inline-flex}
+
+  /* ─── a folha da pilha: tudo que Sy já mostrou, de volta num toque ─── */
+  .lona{position:fixed;inset:0;z-index:88;background:rgba(11,10,10,.66);opacity:0;pointer-events:none;
+    transition:opacity .35s var(--ease)}
+  .lona.on{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:90;max-height:84dvh;
+    background:var(--bg);border-top:1px solid var(--line-h);border-radius:20px 20px 0 0;
+    transform:translateY(101%);transition:transform .42s var(--ease);
+    display:flex;flex-direction:column}
+  .sheet.on{transform:none}
+  .sheet > header{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:16px 20px 12px;border-bottom:1px solid var(--line);flex:none;position:relative}
+  .sheet > header::before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);
+    width:38px;height:4px;border-radius:2px;background:var(--line-h)}
+  .sheet .x{background:none;border:none;color:var(--t3);font:400 21px/1 var(--int);cursor:pointer;padding:6px 8px;margin:-6px -8px}
+  .sheet .corpo{padding:16px 20px 28px;overflow-y:auto;display:flex;flex-direction:column;gap:11px}
+  .sheet .corpo:empty::after{content:"Sy ainda não mostrou nada.";font:400 13px var(--int);color:var(--t3)}
+
+  /* ═══ painel da maquete: instrumento, não produto ═══
+     No mobile ele é folha de baixo. Os alternadores de decisão do desktop não
+     vêm junto de propósito: a bancada, o check-in na conversa e o registro já
+     foram decididos em 2026-08-03. O que sobra aqui é o que ainda está ABERTO,
+     que é a voz (gênero e duração), mais os testes de fluxo. */
+  .mq-abre{position:fixed;right:14px;bottom:14px;z-index:80;
+    border:1px solid var(--line-h);border-radius:999px;background:rgba(26,23,23,.96);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    color:var(--t2);font:600 11px var(--gro);letter-spacing:.14em;text-transform:uppercase;
+    padding:11px 16px;cursor:pointer}
+  body.emcena .mq-abre{bottom:auto;top:88px;left:14px;right:auto}
+  .mqg{display:grid;gap:8px}
+  .mqg > span{font:600 9.5px var(--int);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
+  .mqs{display:flex;gap:6px;flex-wrap:wrap}
+  .mqs button{font:500 12.5px var(--int);color:var(--t2);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:9px 14px;cursor:pointer;
+    transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+  .mqs button[aria-pressed="true"]{border-color:var(--roxo);color:var(--t1);background:rgba(104,64,255,.16)}
+  .mqs button:focus-visible{outline:2px solid var(--roxo);outline-offset:2px}
+  .mqa{display:grid;gap:6px}
+  .mqa button{font:500 13px var(--int);color:var(--t2);background:transparent;border:1px solid var(--line);
+    border-radius:9px;padding:11px 13px;cursor:pointer;text-align:left}
+  .mqn{display:grid;gap:8px;padding-top:10px;border-top:1px dashed var(--line)}
+  .mqn[hidden]{display:none}
+  .mqn input,.mqn select{width:100%;background:#151313;border:1px solid var(--line);border-radius:8px;
+    padding:11px;color:var(--t1);font:400 15px var(--int);outline:none}
+  .mqn input:focus,.mqn select:focus{border-color:rgba(104,64,255,.6)}
+  .mqn .linha{display:flex;gap:6px}
+  .mqn .linha input{flex:1}
+  .mqn button{font:600 12.5px var(--int);color:var(--t1);background:rgba(104,64,255,.18);
+    border:1px solid var(--roxo);border-radius:8px;padding:11px 13px;cursor:pointer;white-space:nowrap}
+  .mqn .est{font:400 11.5px/1.5 var(--int);color:var(--t3)}
+  .mqn .est b{color:var(--t2);font-weight:600}
+  .mqn .est.erro{color:var(--coral)}
+  .mqn .barra{height:3px;background:var(--s2);border-radius:2px;overflow:hidden}
+  .mqn .barra i{display:block;height:100%;background:var(--ele);border-radius:2px;transition:width .4s var(--ease)}
+  .mqn .barra i.cheio{background:var(--coral)}
+  .nota-mq{font:400 11.5px/1.6 var(--int);color:var(--t3);border-top:1px solid var(--line);padding-top:12px}
+  .nota-mq b{color:var(--t2);font-weight:600}
+
+  /* ─── mini bancada: Sy alcançável depois que a chapa rola pra fora ─── */
+  .bmini{position:fixed;top:80px;left:0;right:0;z-index:58;border-bottom:1px solid var(--line);
+    background:rgba(21,19,19,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    transform:translateY(-160%);transition:transform .45s var(--ease)}
+  .bmini.on{transform:none}
+  body.emcena .bmini{display:none}
+  .bmini .min{display:flex;align-items:center;gap:10px;padding:8px 16px}
+  .bmini .selo34{width:32px;height:32px;flex:none;border-radius:9px;overflow:hidden;
+    background-color:#151313;background-image:radial-gradient(circle at 50% 47%,rgba(104,64,255,.22),transparent 64%)}
+  .bmini .selo34 canvas{display:block;width:100%;height:100%}
+  .bmini form{flex:1;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;
+    padding:6px 6px 6px 14px}
+  .bmini form:focus-within{border-color:rgba(104,64,255,.6)}
+  .bmini input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--t1);font:400 15px var(--int)}
+  .bmini .bc-ico{width:30px;height:30px}
+  .trilha{display:none}
+
+  /* ═══ a edição, em 1 coluna (herdado de diario.mobile.html, Onda 02) ═══ */
+  .folha > .in{padding:40px 20px 34px}
+  .folha .eyebrow{color:var(--t2)}
+  .folha h2{font:500 23px/1.25 var(--gro);letter-spacing:-.03em;margin:14px 0 14px}
+  .folha .body{font:400 14.5px/1.75 var(--int);color:var(--t2)}
+  .folha .body + .body{margin-top:12px}
+  .folha .body strong{color:var(--t1);font-weight:600}
+  .folha .body .warn{color:var(--coral);font-weight:600}
+  /* o selo de 34px dentro da folha CLARA é a prova da regra do objeto sempre
+     escuro (DS §2.2): Sy leva a própria chapa pra dentro de página clara */
+  .folha .assin{display:flex;align-items:center;gap:11px;margin-top:20px}
+  .folha .assin .selo34{width:34px;height:34px;flex:none;border-radius:9px;overflow:hidden;
+    background-color:#151313;background-image:radial-gradient(circle at 50% 47%,rgba(104,64,255,.24),transparent 64%)}
+  .folha .assin .selo34 canvas{display:block;width:100%;height:100%}
+  .folha .assin .qm{font:600 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
+  .recs{border-top:1px dashed var(--line);margin-top:26px;padding-top:18px}
+  .recs .eyebrow{margin-bottom:6px}
+  .rec{display:grid;grid-template-columns:30px 1fr;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line)}
+  .rec:last-of-type{border-bottom:none}
+  .rec .rn{font:700 12.5px var(--gro);color:var(--roxo)}
+  .rec h4{font:600 13.5px var(--int);color:var(--t1)}
+  .rec p{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:4px}
+  .rec p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+
+  .hoje{border-bottom:1px solid var(--line);padding:24px 0;position:relative}
+  .hoje::after{content:"";position:absolute;top:0;right:0;bottom:0;width:56px;background:linear-gradient(90deg,transparent,var(--bg));pointer-events:none}
+  .hoje > .in{display:flex;align-items:baseline;gap:22px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-right:40px}
+  .hoje > .in::-webkit-scrollbar{display:none}
+  .hoje .eyebrow{flex-shrink:0}
+  .ev{display:flex;align-items:baseline;gap:9px;white-space:nowrap;flex-shrink:0}
+  .ev span{font:500 12.5px var(--int);color:var(--t2)}
+  .ev.money span{color:var(--t1)}
+  .ev .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
+  .ev .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
+  .ev time,.ev span.num{font:700 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+
+  .nums{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+  .nums > div{padding:22px 16px;border-right:1px solid var(--line)}
+  .nums > div:nth-child(2n){border-right:none}
+  .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .nums .v{font:700 28px/1 var(--gro);letter-spacing:-.04em;margin-top:10px}
+  .nums .d{font:500 11.5px var(--int);margin-top:7px;color:var(--t3)}
+
+  .dims-sec{padding:44px 0 6px}
+  .dims-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .dims-head a{font:500 12px var(--int);color:var(--t3);padding:12px 0;margin:-12px 0}
+  .dims{display:grid;grid-template-columns:1fr}
+  .dimrow{display:grid;grid-template-columns:30px 1fr auto;gap:12px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line)}
+  .dimrow .di{font:700 11.5px var(--gro);color:var(--t3)}
+  .dimrow .nm{font:500 15.5px var(--gro);letter-spacing:-.01em}
+  .dimrow .mt{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+  .dimrow .sc{font:700 21px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+  .dimrow .tr{font:600 11px var(--gro)}
+  .outras{font:400 12px/1.7 var(--int);color:var(--t3);padding:14px 0;border-top:1px solid var(--line);margin-top:-1px}
+
+  .aten{padding:38px 0 50px;display:flex;flex-direction:column;gap:32px}
+  .nota{display:grid;grid-template-columns:14px 1fr auto;gap:12px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line)}
+  .nota:last-of-type{border-bottom:none}
+  .nota .mark{width:7px;height:7px;border-radius:50%;background:var(--coral);align-self:center}
+  .nota.ok .mark{background:var(--ele)}
+  .nota .tx{font:400 13px/1.55 var(--int);color:var(--t2)}
+  .nota .tx strong{color:var(--t1);font-weight:600}
+  .nota .v{font:700 12.5px var(--gro);color:var(--coral)}
+  .nota.ok .v{color:var(--ele)}
+  .metas .mrow{padding:13px 0;border-bottom:1px solid var(--line)}
+  .metas .mrow:last-of-type{border-bottom:none}
+  .metas .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .metas .nm{font:500 13.5px var(--int)}
+  .metas .pct{font:700 13.5px var(--gro)}
+  .metas .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-bottom:6px}
+  .metas .track i{display:block;height:100%;background:var(--t2);border-radius:2px}
+  .metas .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+
+  .colofao{flex-direction:column;align-items:flex-start;gap:8px;padding:20px 20px 30px}
+  .colofao .r{flex-direction:column;gap:8px}
+  body.emcena .colofao{display:none}
+
+  .semjs{border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin:20px 0;
+    font:400 13px/1.6 var(--int);color:var(--t2)}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ═══ chrome ═══ -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <div class="acts">
+    <!-- o botão fantasma "Revisão semanal" não existe: a edição da semana é uma
+         apresentação de Sy, não uma ferramenta no chrome (lei 6) -->
+    <button class="btn-sm roxo" type="button" aria-label="Nova entrada">+</button>
+  </div>
+</header>
+<div class="ticker" aria-hidden="true">
+  <div class="tk"><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span data-tk="lazer">LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span data-tk="lazer">LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span data-tk="lazer">LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span><span>SCORE <b>78</b> ▲3</span><span>·</span><span>POUPANÇA <b>37%</b></span><span>·</span><span data-tk="lazer">LAZER <b>98%</b> DO ORÇAMENTO</span><span>·</span><span>ITÁLIA EM <b>92 DIAS</b></span><span>·</span></div>
+</div>
+<nav class="modbar" aria-label="Módulos">
+  <div class="in">
+    <a class="on" href="#">Diário</a>
+    <a href="#"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<div class="bmini" id="bmini" aria-label="Sy">
+  <div class="min">
+    <div class="selo34 chapa"><canvas id="cvMini"></canvas></div>
+    <form id="fmMini">
+      <input type="text" placeholder="Pergunte ou peça" aria-label="Falar com Sy">
+      <button class="bc-ico env" type="submit" aria-label="Enviar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </form>
+    <span class="trilha" id="trilha"></span>
+  </div>
+</div>
+
+<main>
+  <div class="palco" id="palco">
+
+    <!-- ═══════════ A BANCADA ═══════════ -->
+    <section class="bancada" id="bancada" aria-label="Sy">
+      <div class="bin">
+        <div class="bc-sy chapa"><canvas id="cvSy"></canvas></div>
+        <div class="bc-fala">
+          <p class="eyebrow"><b>Sy</b> · edição nº 208 · 14:05</p>
+          <!-- já vem escrita no HTML pra bancada dizer algo sem JS (E-02). A fala
+               de Sy é o DELTA, nunca o título da folha -->
+          <h1 id="bcFala">Restam R$&nbsp;10 de lazer até sexta. É a única coisa que precisa de você hoje.<span class="bc-cur" aria-hidden="true"></span></h1>
+          <p class="bc-voz" id="bcVoz" aria-hidden="true">
+            <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i>
+            lendo em voz alta
+          </p>
+        </div>
+      </div>
+
+      <!-- o slot da lâmina do tempo corrente. Só existe na apresentação -->
+      <div class="lam" id="lam" aria-live="polite" aria-label="O que Sy está mostrando"></div>
+
+      <!-- a alça: a prova de que nada foi jogado fora -->
+      <button class="alca" id="alca" type="button" hidden aria-label="Ver o que Sy já mostrou">
+        <span class="pts" id="alcaPts" aria-hidden="true"></span>
+        <span class="rot"><b id="alcaN">0</b> na pilha</span>
+        <span class="ver">ver ↑</span>
+      </button>
+
+      <form class="bc-linha" id="fmSy">
+        <input type="text" id="inSy" placeholder="Pergunte ou peça alguma coisa" aria-label="Falar com Sy">
+        <button class="bc-ico mic" type="button" id="btMic" aria-label="Falar por voz">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+        </button>
+        <button class="bc-ico" type="button" id="btMudo" aria-pressed="true" aria-label="Voz de Sy">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+        </button>
+        <button class="bc-ico env" type="submit" aria-label="Enviar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </form>
+      <!-- as três sugestões ficam no HTML, não no módulo: sem JS elas precisam
+           existir na marcação (E-02) -->
+      <div class="bc-sug" id="bcSug">
+        <button type="button" data-p="lazer">Quanto ainda posso gastar em lazer?</button>
+        <button type="button" data-p="semana">Como foi minha semana?</button>
+        <button type="button" data-p="almoco">Lancei R$&nbsp;40 no almoço</button>
+      </div>
+
+      <!-- o portão mora DENTRO da chapa, não embaixo dela: no celular a última
+           dobra é disputada, e jogado pra fora ele encostava na borda da tela.
+           Aqui ele fica onde a conversa está, que é de onde o aceno sai -->
+      <div class="seguir" id="seguir" hidden>
+        <button class="btn-sm roxo" type="button" id="btSeguir">Ver a edição de hoje ↓</button>
+        <span>ou responda o check-in</span>
+      </div>
+    </section>
+
+    <div class="selo" role="img" aria-label="Life Sync Score 78, mais 3 esta semana, consistente">
+      <div class="n num">78</div>
+      <div>
+        <div class="k">LIFE SYNC SCORE</div>
+        <div class="d"><span class="num ele">+3 esta semana</span> · Consistente</div>
+      </div>
+    </div>
+
+    <div class="recortes" id="recortes" aria-live="polite" aria-label="O que Sy mostrou"></div>
+  </div>
+
+  <!-- a folha -->
+  <section class="folha lt" data-blk="folha" aria-label="Briefing de hoje">
+    <div class="in">
+      <article>
+        <!-- sem byline: a tela inteira é de Sy -->
+        <p class="eyebrow"><b>O briefing de hoje</b> · 14:05</p>
+        <h2>Só o lazer pede atenção. O resto do mês já está ganho.</h2>
+        <p class="body">Suas despesas somam <strong class="num">R$&nbsp;3.160</strong> contra <strong class="num">R$&nbsp;5.000</strong> de receitas, o que projeta um fechamento de <strong class="num">R$&nbsp;2.120</strong> e uma poupança de <strong class="num">37%</strong>, sete pontos acima da sua meta. O ponto de tensão é o orçamento de lazer: <span class="warn">R$&nbsp;410 dos R$&nbsp;420</span> já foram usados, com 4 dias de mês pela frente.</p>
+        <p class="body">No resto da vida, a semana começou bem: <strong>3 treinos</strong> feitos, o aporte automático de quarta está coberto com folga e a Viagem Itália passa de <strong class="num">68%</strong> se você antecipar o aporte de agosto.</p>
+        <div class="draw rv" style="display:flex;align-items:center;gap:8px;margin-top:16px">
+          <svg class="hand-arrow" width="42" height="24" viewBox="0 0 42 24" aria-hidden="true" style="color:var(--coral)"><path d="M40 4 C28 20, 15 22, 3 15 M9 21 L3 15 L10 11"/></svg>
+          <span class="hand" style="transform:rotate(-2deg)">um café a menos e o mês fecha redondo!</span>
+        </div>
+        <div class="assin">
+          <div class="selo34"><canvas id="cvAssin"></canvas></div>
+          <span class="qm">Com base em 34 transações, 6 orçamentos e 3 metas</span>
+        </div>
+      </article>
+      <aside class="recs">
+        <p class="eyebrow">Recomendações de hoje</p>
+        <div class="rec"><span class="rn num">01</span><div><h4>Segurar o lazer até sexta</h4><p>Restam <b>R$&nbsp;10</b> no orçamento. Um café a menos resolve.</p></div></div>
+        <div class="rec"><span class="rn num">02</span><div><h4>Antecipar o aporte da Itália</h4><p>Cabem <b>+R$&nbsp;120</b> sem apertar o fechamento do mês.</p></div></div>
+        <div class="rec"><span class="rn num">03</span><div><h4>Fechar a revisão semanal</h4><p>5 minutos hoje mantêm o streak de <b>12 dias</b> vivo.</p></div></div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="hoje" data-blk="hoje" aria-label="Hoje">
+    <div class="wrap in">
+      <span class="eyebrow">Hoje</span>
+      <span class="ev"><time class="num">07:30</time><span>Fisioterapia</span></span>
+      <span class="ev money"><span class="tag due">EM 3 DIAS</span><span>Aluguel</span><span class="num">R$&nbsp;1.200,00</span></span>
+      <span class="ev"><time class="num">TER 10:00</time><span>1:1 com gestor</span></span>
+      <span class="ev money"><span class="tag">QUA</span><span>Aporte automático</span><span class="num">R$&nbsp;580,00</span></span>
+      <span class="ev"><time class="num">SEX 20:00</time><span>Jantar com Ana</span></span>
+      <span class="ev money"><span class="tag">EM 5 DIAS</span><span>Internet</span><span class="num">R$&nbsp;89,90</span></span>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section class="nums" data-blk="nums" aria-label="Números do mês">
+      <div><p class="eyebrow">Saldo</p><div class="v num" id="vSaldo">R$&nbsp;1.840</div><div class="d num ele">+12% vs junho</div></div>
+      <div><p class="eyebrow">Receitas</p><div class="v num">R$&nbsp;5.000</div><div class="d num ele">+8% vs junho</div></div>
+      <div id="boxDespesas"><p class="eyebrow">Despesas</p><div class="v num" id="vDespesas">R$&nbsp;3.160</div><div class="d num" id="dDespesas">63% da receita</div></div>
+      <div><p class="eyebrow">Poupança</p><div class="v num">37%</div><div class="d num">Meta: 30%</div></div>
+    </section>
+
+    <section class="dims-sec" data-blk="dims" aria-label="Suas áreas">
+      <div class="dims-head">
+        <p class="eyebrow">Suas áreas</p>
+        <a href="#">Ver todas →</a>
+      </div>
+      <div class="dims">
+        <div class="dimrow" id="dimFin"><span class="di num">01</span><div><div class="nm">Finanças</div><div class="mt num">Saldo R$&nbsp;1.840 · lazer no limite</div></div><span class="sc num">83<span class="tr ele">▲2</span></span></div>
+        <div class="dimrow"><span class="di num">02</span><div><div class="nm">Futuro</div><div class="mt num">3 metas · 61% de média</div></div><span class="sc num">79<span class="tr ele">▲1</span></span></div>
+        <div class="dimrow"><span class="di num">04</span><div><div class="nm">Corpo</div><div class="mt num">3 atividades · 126 min</div></div><span class="sc num">69<span class="tr ele">▲3</span></span></div>
+        <div class="dimrow"><span class="di num">08</span><div><div class="nm">Experiências</div><div class="mt num">Itália em 92 dias</div></div><span class="sc num">78<span class="tr" style="color:var(--t3)">–</span></span></div>
+      </div>
+      <p class="outras">Outras: 03 Tempo <span class="num">71</span> · 05 Mente <span class="num">58</span> · 06 Patrimônio <span class="num">76</span> · 07 Carreira <span class="num">69</span></p>
+    </section>
+
+    <section class="aten" data-blk="aten" aria-label="Atenção e metas">
+      <div>
+        <p class="eyebrow" style="margin-bottom:6px">Atenção</p>
+        <div class="nota" id="notaLazer"><span class="mark"></span><span class="tx"><strong>Lazer</strong> usou 98% do orçamento, restam R$&nbsp;10 pra 4 dias</span><span class="v num">410 / 420</span></div>
+        <div class="nota"><span class="mark"></span><span class="tx"><strong>Moradia</strong> passou da faixa saudável do mês</span><span class="v num">86%</span></div>
+        <div class="nota ok"><span class="mark"></span><span class="tx"><strong>Aporte de quarta</strong> coberto: saldo projetado segue positivo</span><span class="v num">OK</span></div>
+        <div class="nota ok"><span class="mark"></span><span class="tx"><strong>Streak</strong> de revisões chega a 12 dias hoje</span><span class="v num">12d</span></div>
+      </div>
+      <div class="metas">
+        <p class="eyebrow" style="margin-bottom:6px">Metas em andamento</p>
+        <div class="mrow" id="metaItalia">
+          <div class="r1"><span class="nm">Viagem Itália</span><span class="pct num">68%</span></div>
+          <div class="track"><i style="width:68%"></i></div>
+          <div class="sub">R$&nbsp;8.600 de R$&nbsp;12.700 · dez 2026</div>
+        </div>
+        <div class="mrow">
+          <div class="r1"><span class="nm">Reserva de emergência</span><span class="pct num">80%</span></div>
+          <div class="track"><i style="width:80%"></i></div>
+          <div class="sub">R$&nbsp;14.400 de R$&nbsp;18.000</div>
+        </div>
+        <div class="mrow">
+          <div class="r1"><span class="nm">MBA 2027</span><span class="pct num">34%</span></div>
+          <div class="track"><i style="width:34%"></i></div>
+          <div class="sub">R$&nbsp;3.100 de R$&nbsp;9.000 · mar 2027</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <noscript>
+    <div class="wrap"><div class="semjs">
+      Sem JavaScript a edição aparece inteira e rolável, a bancada fica sem o corpo de Sy
+      e a apresentação não trava a tela. É o fallback E-02: nenhum conteúdo depende de script.
+    </div></div>
+  </noscript>
+
+  <footer class="colofao">
+    <span>Fechamento projetado de julho: <b class="num">R$&nbsp;2.120</b></span>
+    <div class="r">
+      <span>Streak <b class="num">12 dias</b></span>
+      <span>Badges <b class="num">24/61</b></span>
+      <span>Última sincronização <b class="num">14:05</b></span>
+    </div>
+  </footer>
+</main>
+
+<button class="btn-sm ghost pular" id="btPular" type="button">Pular</button>
+
+<!-- ═══ a folha da pilha ═══ -->
+<div class="lona" id="lonaPilha"></div>
+<aside class="sheet" id="folhaPilha" aria-label="O que Sy já mostrou">
+  <header>
+    <p class="eyebrow"><b>Na pilha</b> · o que Sy já mostrou</p>
+    <button class="x" type="button" id="fecharPilha" aria-label="Fechar">×</button>
+  </header>
+  <div class="corpo" id="fpCorpo"></div>
+</aside>
+
+<!-- ═══ painel da maquete ═══ -->
+<button class="mq-abre" id="mqAbre" type="button">Maquete</button>
+<div class="lona" id="lonaMq"></div>
+<div class="sheet" id="mq" aria-label="Painel da maquete">
+  <header>
+    <p class="eyebrow"><b>Maquete</b> · a bancada no celular</p>
+    <button class="x" type="button" id="fecharMq" aria-label="Fechar">×</button>
+  </header>
+  <div class="corpo">
+    <div class="mqg">
+      <span>Momento do dia</span>
+      <div class="mqs" id="sgMomento">
+        <button data-v="apresentacao" aria-pressed="true">Primeiro acesso</button>
+        <button data-v="assentada" aria-pressed="false">Acessos seguintes</button>
+      </div>
+    </div>
+    <div class="mqg">
+      <span>Voz de Sy</span>
+      <div class="mqs" id="sgVoz">
+        <button data-v="off" aria-pressed="true">Mudo</button>
+        <button data-v="m" aria-pressed="false">Nav. grave</button>
+        <button data-v="f" aria-pressed="false">Nav. aguda</button>
+        <button data-v="gg" aria-pressed="false">Google</button>
+        <button data-v="11" aria-pressed="false">ElevenLabs</button>
+      </div>
+      <div class="mqn" id="mqn" hidden>
+        <div class="linha">
+          <input type="password" id="inChave" placeholder="Cole sua API key" autocomplete="off" spellcheck="false">
+          <button type="button" id="btConectar">Conectar</button>
+        </div>
+        <select id="selVoz" aria-label="Voz de Sy"><option>Conecte pra listar as vozes</option></select>
+        <div class="mqs" id="sgModelo" hidden>
+          <button data-v="eleven_multilingual_v2" aria-pressed="true">Alta</button>
+          <button data-v="eleven_flash_v2_5" aria-pressed="false">Econômica</button>
+        </div>
+        <button type="button" id="btPre">Pré-gerar as falas da apresentação</button>
+        <div class="barra"><i id="barraCota" style="width:0%"></i></div>
+        <p class="est" id="estNuvem">A chave fica só no navegador desta máquina, nunca num arquivo do projeto.</p>
+      </div>
+    </div>
+    <div class="mqg">
+      <span>Testar</span>
+      <div class="mqa">
+        <button type="button" data-a="abertura">Rodar a apresentação de novo</button>
+        <button type="button" data-a="lazer">Perguntar: quanto posso gastar em lazer?</button>
+        <button type="button" data-a="almoco">Mandar: lancei R$&nbsp;40 no almoço</button>
+        <button type="button" data-a="italia">Pedir: antecipa o aporte da Itália</button>
+        <button type="button" data-a="semana">Perguntar: como foi minha semana?</button>
+        <button type="button" data-a="levar">Pedir: me mostra o Life Score</button>
+      </div>
+    </div>
+    <p class="nota-mq">
+      Esta é a apresentação <b>de celular</b>, não o desktop espremido. No
+      <b>primeiro acesso</b> a tela trava na altura do aparelho e cada tempo ocupa
+      uma dobra: Sy grande, a fala embaixo e <b>uma lâmina por vez</b>. A lâmina
+      anterior não some, ela <b>desce pra pilha</b>, e a alça acima da linha de
+      comando traz tudo de volta num toque. No fim Sy para e espera: a edição só
+      abre quando você responde o check-in ou pede pra ver.
+      Os alternadores de decisão do desktop não vêm aqui porque já foram
+      decididos. O que sobra é o que continua <b>aberto</b>, que é a voz.
+      Em voz, "Nav." é o sintetizador do navegador, feio e só pro ritmo.
+      <b>Google</b> e <b>ElevenLabs</b> pedem sua chave, que fica <b>só neste
+      navegador</b> e é a <b>mesma</b> que você já conectou no desktop.
+    </p>
+  </div>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}
+</script>
+<script type="module">
+import { REDUZ } from '../personagem/vida.js'
+import { criarEnxame } from '../personagem/enxame.js'
+// O CONTEÚDO é o mesmo do desktop, sem uma linha de diferença. O que este
+// arquivo tem de próprio é a APRESENTAÇÃO: o palco de tela cheia e a pilha.
+import { criarRoteiro, texto, recorteCheckin, FALA_REPOUSO, PERGUNTA_CHECKIN,
+  FALA_POS_CHECKIN, MOODS, AMOSTRA } from './bancada.roteiro.js'
+
+const raiz = document.documentElement
+if (!REDUZ) raiz.classList.add('anim')
+const $ = s => document.querySelector(s)
+const $$ = s => Array.from(document.querySelectorAll(s))
+const corpo = document.body
+
+/* ── o corpo de Sy em três escalas ───────────────────────────────────── */
+const pecas = [
+  criarEnxame($('#cvSy'),    { n: 1300, tam: .175, semente: 2.4 }),
+  criarEnxame($('#cvMini'),  { n: 190,  tam: .7, compacto: .78, dpr: 3, semente: 4.6 }),
+  criarEnxame($('#cvAssin'), { n: 190,  tam: .7, compacto: .78, dpr: 3, semente: 5.9 }),
+]
+let estado = 'repouso'
+const sy = v => { estado = v }
+
+let ultimo = performance.now()
+function laco (agora) {
+  const dt = Math.min((agora - ultimo) / 1000, .05); ultimo = agora
+  for (const p of pecas) p.quadro(dt, estado)
+  requestAnimationFrame(laco)
+}
+if (REDUZ) { for (let i = 0; i < 3; i++) for (const p of pecas) p.quadro(1 / 60, estado) }
+else requestAnimationFrame(laco)
+
+/* ══ voz ══════════════════════════════════════════════════════════════
+   Copiada do desktop de propósito, não extraída: é instrumentação fechada e
+   descartável. Em produção a síntese vai pro servidor (chave de API dentro do
+   navegador só se sustenta em maquete), então este bloco inteiro morre no
+   caminho pro `web/` e um módulo compartilhado só criaria dependência entre
+   duas coisas que vão pro lixo juntas. ═══════════════════════════════ */
+const sintese = window.speechSynthesis || null
+let vozes = { m: null, f: null }
+function escolherVoz () {
+  if (!sintese) return
+  const pt = sintese.getVoices().filter(v => /^pt/i.test(v.lang))
+  vozes.m = pt.find(v => /daniel|antonio|ricardo/i.test(v.name)) || pt[0] || null
+  vozes.f = pt.find(v => /maria|francisca|luciana|joana/i.test(v.name)) || pt[1] || pt[0] || null
+}
+escolherVoz()
+if (sintese) sintese.addEventListener('voiceschanged', escolherVoz)
+
+let provedor = 'off', ultimoProvedor = 'gg'
+const eVoz = () => provedor !== 'off'
+const eNuvem = p => p === 'gg' || p === '11'
+const btMudo = $('#btMudo'), elVoz = $('#bcVoz')
+function pintarVoz () {
+  elVoz.classList.toggle('on', eVoz() && estado === 'falando')
+  btMudo.classList.toggle('env', eVoz())
+  btMudo.setAttribute('aria-pressed', String(!eVoz()))
+}
+
+const CACHE_AUDIO = 'sy-audio-v1'
+// as MESMAS chaves do desktop: quem já conectou lá não reconecta aqui, e o
+// áudio já gerado continua valendo (a chave de cache é voz+modelo+texto)
+const nuv = {
+  gg: { chave: '', voz: '', modelo: '', gasto: 0 },
+  '11': { chave: '', voz: '', modelo: 'eleven_multilingual_v2', gasto: 0 },
+}
+for (const p of Object.keys(nuv)) {
+  const s = nuv[p]
+  s.chave = localStorage.getItem('sy.' + p + '.chave') || ''
+  s.voz = localStorage.getItem('sy.' + p + '.voz') || ''
+  s.modelo = localStorage.getItem('sy.' + p + '.modelo') || s.modelo
+  s.gasto = +(localStorage.getItem('sy.' + p + '.gasto') || 0)
+}
+const gravar = (p, campo) => localStorage.setItem('sy.' + p + '.' + campo, nuv[p][campo])
+let painel = nuv.gg.chave ? 'gg' : (nuv['11'].chave ? '11' : 'gg')
+
+const memo = new Map()
+const duracoes = new Map()
+
+// cota grátis por FAMÍLIA de voz, lida na tabela viva de preços do Google
+const COTA_GG = { Standard: 4e6, Wavenet: 4e6, Neural2: 1e6, Polyglot: 1e6, Studio: 1e6 }
+const familiaDe = v => (/^pt-BR-([A-Za-z0-9]+)/.exec(v || '') || [])[1] || ''
+const cotaGG = v => { const f = familiaDe(v); return /^Chirp/i.test(f) ? 1e6 : (COTA_GG[f] || 1e6) }
+const PESO = { Neural2: 1, Studio: 2, Polyglot: 3, Wavenet: 4, Standard: 5 }
+const pesoGG = v => { const f = familiaDe(v); return /^Chirp/i.test(f) ? 0 : (PESO[f] ?? 6) }
+const GEN = { FEMALE: 'feminina', MALE: 'masculina', NEUTRAL: 'neutra' }
+async function erroGoogle (r) {
+  let m = ''
+  try { m = (await r.json()).error.message } catch (e) {}
+  if (/referer <empty>/i.test(m)) {
+    m += (location.protocol === 'file:'
+      ? ' → A página está aberta como ARQUIVO (file://), que não tem origem pra mandar. Abra por http://localhost:8123.'
+      : ' → O navegador não mandou Referer. Ou tire a restrição de site da chave, ou confira se a origem ' +
+        location.origin + ' está na lista.')
+  }
+  return 'Google ' + r.status + (m ? ' · ' + m : '')
+}
+// audioContent vem em base64, não em binário como no ElevenLabs
+function base64ProBlob (b64) {
+  const bin = atob(b64 || '')
+  const arr = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i)
+  return new Blob([arr], { type: 'audio/mpeg' })
+}
+
+const NUVENS = {
+  gg: {
+    nome: 'Google Cloud TTS',
+    async vozes (k) {
+      // a chave vai no cabeçalho e NUNCA em ?key=: query string vaza em log de
+      // rede, histórico e referer. referrerPolicy explícito porque a restrição
+      // de site da chave só casa se o navegador mandar Referer
+      const r = await fetch('https://texttospeech.googleapis.com/v1/voices?languageCode=pt-BR',
+        { headers: { 'X-Goog-Api-Key': k }, referrerPolicy: 'origin' })
+      if (!r.ok) throw new Error(await erroGoogle(r))
+      const j = await r.json()
+      return (j.voices || [])
+        .filter(v => (v.languageCodes || []).includes('pt-BR'))
+        .sort((a, b) => pesoGG(a.name) - pesoGG(b.name) || a.name.localeCompare(b.name))
+        .map(v => ({
+          id: v.name,
+          rotulo: v.name.split('-').slice(2).join(' ') + ' · ' + (GEN[v.ssmlGender] || '—'),
+        }))
+    },
+    async gerar (txt, s) {
+      const r = await fetch('https://texttospeech.googleapis.com/v1/text:synthesize', {
+        method: 'POST',
+        headers: { 'X-Goog-Api-Key': s.chave, 'Content-Type': 'application/json' },
+        referrerPolicy: 'origin',
+        body: JSON.stringify({
+          input: { text: txt },
+          voice: { languageCode: 'pt-BR', name: s.voz },
+          audioConfig: { audioEncoding: 'MP3' },
+        }),
+      })
+      if (!r.ok) throw new Error(await erroGoogle(r))
+      return base64ProBlob((await r.json()).audioContent)
+    },
+    cota: s => cotaGG(s.voz),
+  },
+  '11': {
+    nome: 'ElevenLabs',
+    async vozes (k) {
+      const r = await fetch('https://api.elevenlabs.io/v1/voices', { headers: { 'xi-api-key': k } })
+      if (!r.ok) {
+        let d = ''
+        try { d = (await r.json()).detail.message } catch (e) {}
+        throw new Error('ElevenLabs ' + r.status + (d ? ' · ' + d : ''))
+      }
+      return ((await r.json()).voices || []).map(v => ({ id: v.voice_id, rotulo: v.name }))
+    },
+    async gerar (txt, s) {
+      const r = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + s.voz + '?output_format=mp3_44100_128', {
+        method: 'POST',
+        headers: { 'xi-api-key': s.chave, 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.assign({ text: txt, model_id: s.modelo,
+          voice_settings: { stability: .45, similarity_boost: .8, style: .1, use_speaker_boost: true } },
+          s.modelo === 'eleven_flash_v2_5' ? { language_code: 'pt' } : {})),
+      })
+      if (!r.ok) throw new Error('ElevenLabs ' + r.status + ': ' + (await r.text()).slice(0, 120))
+      return await r.blob()
+    },
+    cota: () => 10000,
+  },
+}
+
+const idDoAudio = (txt, p) => 'https://sy-audio.local/' +
+  encodeURIComponent(nuv[p].voz + '|' + nuv[p].modelo + '|' + txt)
+async function doCache (txt, p) {
+  const k = idDoAudio(txt, p)
+  try { const c = await caches.open(CACHE_AUDIO); const r = await c.match(k); if (r) return await r.blob() } catch (e) {}
+  return memo.get(k) || null
+}
+async function proCache (txt, p, blob) {
+  const k = idDoAudio(txt, p)
+  try { const c = await caches.open(CACHE_AUDIO); await c.put(k, new Response(blob, { headers: { 'Content-Type': 'audio/mpeg' } })); return } catch (e) {}
+  memo.set(k, blob)
+}
+async function audioNuvem (txt, p) {
+  const cache = await doCache(txt, p)
+  if (cache) return cache
+  const s = nuv[p]
+  if (!s.chave || !s.voz) throw new Error('Falta a chave ou a voz')
+  const blob = await NUVENS[p].gerar(txt, s)
+  s.gasto += txt.length
+  gravar(p, 'gasto')
+  pintarGasto()
+  await proCache(txt, p, blob)
+  return blob
+}
+function medir (blob, txt) {
+  return new Promise(res => {
+    const a = new Audio(URL.createObjectURL(blob))
+    a.onloadedmetadata = () => { if (isFinite(a.duration)) duracoes.set(txt, a.duration * 1000); URL.revokeObjectURL(a.src); res() }
+    a.onerror = () => res()
+  })
+}
+async function preparar (txts, p, aoProgredir) {
+  let feitos = 0
+  for (const t of txts) {
+    try { const b = await audioNuvem(t, p); await medir(b, t) } catch (e) { avisar(e.message, true); return false }
+    if (aoProgredir) aoProgredir(++feitos / txts.length)
+  }
+  return true
+}
+
+let tocando = null
+function falar (txt, aoFim) {
+  if (!eVoz()) { if (aoFim) aoFim(); return }
+  let feito = false
+  const fim = () => { if (feito) return; feito = true; clearTimeout(salva); if (aoFim) aoFim() }
+  const salva = setTimeout(fim, (duracoes.get(txt) || txt.length / 6 * 1000) + 4000)
+  temporizadores.push(salva)
+
+  if (eNuvem(provedor)) {
+    const s = nuv[provedor]
+    if (!s.chave || !s.voz) { avisar('Conecte a chave e escolha uma voz pra ouvir Sy.', true); fim(); return }
+    if (tocando) { tocando.pause(); tocando = null }
+    audioNuvem(txt, provedor).then(blob => {
+      if (feito) return
+      const a = new Audio(URL.createObjectURL(blob))
+      tocando = a
+      a.onloadedmetadata = () => { if (isFinite(a.duration)) duracoes.set(txt, a.duration * 1000) }
+      a.onended = fim
+      a.onerror = fim
+      a.play().catch(fim)
+    }).catch(e => { avisar(e.message, true); fim() })
+    return
+  }
+
+  if (!sintese) { fim(); return }
+  sintese.cancel()
+  const u = new SpeechSynthesisUtterance(txt)
+  const v = vozes[provedor]
+  if (v) u.voice = v
+  u.lang = 'pt-BR'; u.rate = 1.6; u.pitch = 1; u.volume = 1
+  const t0 = performance.now()
+  u.onend = () => { duracoes.set(txt, performance.now() - t0); fim() }
+  u.onerror = fim
+  sintese.speak(u)
+}
+let CPS = 12
+const duracaoDe = txt => duracoes.get(txt) || null
+
+/* ── a fala ───────────────────────────────────────────────────────────
+   A digitação segue a duração REAL do áudio, e não uma constante de animação:
+   é a lei 2 virando código, e é por isso que a apresentação leva o mesmo tempo
+   com voz e no mudo. Nunca acelerar pra encurtar. */
+const elFala = $('#bcFala'), cursor = elFala.querySelector('.bc-cur')
+let tmDigita = null, geracao = 0
+// a geração existe porque cancel() dispara o onend da fala cancelada: sem ela,
+// pular a apresentação ressuscitava o tempo seguinte pelo callback de uma fala
+// que já tinha sido descartada
+function calar () {
+  geracao++; clearTimeout(tmDigita)
+  if (sintese) sintese.cancel()
+  if (tocando) { tocando.pause(); tocando = null }
+}
+
+/* ── a altura da fala não segue o texto ──────────────────────────────
+   Medida num clone fora da tela com a MESMA tipografia e a MESMA largura da
+   coluna. Contar linha não serve: a fonte é clamp() e a quebra depende da
+   largura, então "reserve 3 linhas" erra em algum viewport. No mobile isso
+   importa mais que no desktop, porque a coluna muda MUITO entre os dois
+   estados (322px na cena, ~210px assentada). */
+let molde = null, piso = 0, falaAtual = ''
+function alturaDe (txt) {
+  const cs = getComputedStyle(elFala)
+  if (!molde) {
+    molde = document.createElement('h1')
+    molde.setAttribute('aria-hidden', 'true')
+    molde.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;margin:0'
+    document.body.appendChild(molde)
+  }
+  molde.style.fontFamily = cs.fontFamily; molde.style.fontSize = cs.fontSize
+  molde.style.fontWeight = cs.fontWeight; molde.style.lineHeight = cs.lineHeight
+  molde.style.letterSpacing = cs.letterSpacing; molde.style.textWrap = cs.textWrap
+  molde.style.width = elFala.getBoundingClientRect().width + 'px'
+  molde.textContent = txt
+  return molde.offsetHeight
+}
+function travar (txts) {
+  if (elFala.getBoundingClientRect().width < 1) return
+  piso = Math.max(piso, ...txts.map(alturaDe))
+  elFala.style.minHeight = piso + 'px'
+}
+function remedir (txts) {
+  piso = 0
+  travar(txts)
+  temporizadores.push(setTimeout(() => travar(txts), 620))
+}
+let tmResize = null
+// no celular o resize dispara com o teclado abrindo e com a barra do navegador
+// recolhendo, então remedir aqui não é luxo
+addEventListener('resize', () => {
+  clearTimeout(tmResize)
+  tmResize = setTimeout(() => { piso = 0; travar([falaAtual || FALA_REPOUSO]) }, 180)
+})
+
+function dizer (txt, aoFim) {
+  calar()
+  const g = geracao
+  elFala.classList.remove('pronto')
+  if (!txt) { elFala.textContent = ''; elFala.appendChild(cursor); if (aoFim) aoFim(); return }
+  falaAtual = txt
+  travar([txt])
+
+  let vezes = 0
+  const parte = () => { if (g === geracao && ++vezes >= 2 && aoFim) aoFim() }
+  falar(txt, parte)
+
+  if (REDUZ) {
+    elFala.textContent = txt; elFala.appendChild(cursor); elFala.classList.add('pronto')
+    parte(); return
+  }
+  const dur = duracaoDe(txt) || Math.max(1100, txt.length / CPS * 1000)
+  const t0 = performance.now()
+  ;(function passo () {
+    const p = Math.min(1, (performance.now() - t0) / dur)
+    elFala.textContent = txt.slice(0, Math.round(txt.length * p)); elFala.appendChild(cursor)
+    if (p < 1) { tmDigita = setTimeout(passo, 40); return }
+    elFala.classList.add('pronto'); parte()
+  })()
+}
+
+/* ── acender: o primeiro verbo ────────────────────────────────────────
+   Na cena o objeto aceso está atrás do palco e não aparece, e isso está certo:
+   quando a edição assentar ele já vai estar com o valor novo. */
+function acender (sel) {
+  const el = typeof sel === 'string' ? $(sel) : sel
+  if (!el) return
+  el.classList.remove('acender'); void el.offsetWidth; el.classList.add('acender')
+  setTimeout(() => el.classList.remove('acender'), 1800)
+}
+function acenderTicker (chave) {
+  const alvos = $$(`.ticker [data-tk="${chave}"]`)
+  alvos.forEach(a => a.classList.add('on'))
+  setTimeout(() => alvos.forEach(a => a.classList.remove('on')), 2600)
+}
+
+/* ══ A PILHA — o que este arquivo tem que o desktop não tem ════════════
+   No desktop as lâminas ficam todas na tela. Aqui cabe UMA por vez, então a
+   que sai desce pra pilha em vez de sumir: acumular continua valendo, só que
+   fora da dobra. Os elementos são GUARDADOS, nunca re-renderizados a partir do
+   HTML: um recorte de ação carrega listeners (desfazer, confirmar) que
+   morreriam num innerHTML de volta. ═══════════════════════════════════ */
+const elLam = $('#lam'), elRec = $('#recortes'), fpCorpo = $('#fpCorpo')
+const alca = $('#alca'), alcaPts = $('#alcaPts'), alcaN = $('#alcaN')
+const emCena = () => corpo.classList.contains('emcena')
+
+function pintarAlca (tempoAtual) {
+  const n = fpCorpo.children.length
+  alcaN.textContent = n
+  alca.hidden = !emCena() || n === 0
+  if (typeof tempoAtual === 'number') {
+    alcaPts.innerHTML = TEMPOS.map((_, k) =>
+      `<i class="${k < tempoAtual ? 'on' : ''}"></i>`).join('')
+  }
+  if (n > 0) {
+    alca.classList.remove('pulsa'); void alca.offsetWidth; alca.classList.add('pulsa')
+  }
+}
+// desce pra pilha: some na direção da alça, e só então é destacada do palco
+function guardar (el) {
+  el.classList.add('guardando')
+  const mover = () => {
+    // Se a edição assentou nesses 300ms, este elemento já foi julgado e tirado
+    // do palco, e reinseri-lo aqui RESSUSCITARIA uma lâmina depois da pilha
+    // esvaziar. Mesma armadilha do `cancel()` que dispara o onend da fala já
+    // descartada: o conserto é perguntar se o elemento ainda está onde estava,
+    // não confiar que o temporizador foi cancelado.
+    if (el.parentElement !== elLam) return
+    el.classList.remove('guardando'); fpCorpo.prepend(el); pintarAlca()
+  }
+  if (REDUZ) return mover()
+  temporizadores.push(setTimeout(mover, 300))
+}
+// no palco vive UM item de cada vez. Quem estava lá desce.
+function porNoPalco (art) {
+  const antes = elLam.firstElementChild
+  if (antes) guardar(antes)
+  elLam.appendChild(art)
+  if (!REDUZ) elLam.scrollTop = 0
+}
+
+function ligarX (art) {
+  const x = art.querySelector('.rc-x')
+  if (x) x.addEventListener('click', () => { art.remove(); pintarAlca() })
+  return art
+}
+// o verbo que o roteiro chama. A diferença mobile mora aqui e em nenhum outro
+// lugar: na cena o recorte ocupa o palco, assentada ele empilha na página.
+function recortar (html, tipo = '') {
+  const art = document.createElement('article')
+  art.className = 'recorte' + (tipo ? ' ' + tipo : '')
+  art.innerHTML = html
+  ligarX(art)
+  if (emCena()) porNoPalco(art); else elRec.prepend(art)
+  return art
+}
+function lamina (html) {
+  const art = document.createElement('article')
+  art.className = 'recorte lamina'
+  art.innerHTML = html
+  porNoPalco(art)
+}
+
+const lonaPilha = $('#lonaPilha'), folhaPilha = $('#folhaPilha')
+const abrirPilha = () => { folhaPilha.classList.add('on'); lonaPilha.classList.add('on') }
+const fecharPilha = () => { folhaPilha.classList.remove('on'); lonaPilha.classList.remove('on') }
+alca.addEventListener('click', abrirPilha)
+$('#fecharPilha').addEventListener('click', fecharPilha)
+lonaPilha.addEventListener('click', fecharPilha)
+
+/* ── o roteiro: conteúdo do módulo, verbos desta apresentação ─────────── */
+const syEstado = v => { sy(v); pintarVoz() }
+const { TEMPOS, RESPOSTAS } = criarRoteiro({ $, acender, acenderTicker, recortar, dizer, syEstado })
+
+/* ── o roteiro de uma pergunta ────────────────────────────────────────── */
+let ocupado = false
+function perguntar (chave) {
+  const r = RESPOSTAS[chave]; if (!r || ocupado) return
+  ocupado = true
+  sairDoCheckin()
+  syEstado('pensando')
+  dizer('')
+  setTimeout(() => {
+    syEstado('falando')
+    dizer(r.fala, () => {
+      r.faz()
+      setTimeout(() => { syEstado(r.estadoFinal || 'repouso'); ocupado = false }, 900)
+    })
+  }, REDUZ ? 0 : 620)
+}
+
+/* ── entrada: as duas portas caem no mesmo lugar (lei 2) ──────────────── */
+function enviar (campo) {
+  const v = campo.value.trim(); if (!v) return
+  campo.value = ''
+  campo.blur()                 // fecha o teclado: no celular ele tapa a resposta
+  perguntar(texto(v))
+}
+// `digitando` é o sinal de teclado aberto que o CSS usa pra recolher o portão e
+// a alça. Focar o campo é o gesto que abre o teclado, então é o gatilho honesto
+$('#inSy').addEventListener('focus', () => corpo.classList.add('digitando'))
+$('#inSy').addEventListener('blur', () => corpo.classList.remove('digitando'))
+$('#fmSy').addEventListener('submit', e => { e.preventDefault(); enviar($('#inSy')) })
+$('#fmMini').addEventListener('submit', e => { e.preventDefault(); enviar($('#fmMini input')) })
+// um ouvinte só na régua: ela alterna entre atalhos de pergunta e fichas de humor
+$('#bcSug').addEventListener('click', e => {
+  const p = e.target.closest('button[data-p]')
+  if (p) return perguntar(p.dataset.p)
+  const m = e.target.closest('button[data-m]')
+  if (m) responderCheckin(m)
+})
+
+/* microfone: encena a porta de voz. Transcreve na MESMA linha e cai no MESMO
+   roteiro, que é a lei 2 em forma de código. */
+const btMic = $('#btMic')
+btMic.addEventListener('click', () => {
+  if (ocupado) return
+  const campo = $('#inSy'), frase = 'Quanto ainda posso gastar em lazer?'
+  btMic.classList.add('on'); $('#fmSy').classList.add('ouvindo')
+  syEstado('ouvindo')
+  let i = 0
+  ;(function passo () {
+    if (i >= frase.length) {
+      setTimeout(() => {
+        btMic.classList.remove('on'); $('#fmSy').classList.remove('ouvindo')
+        campo.value = ''; perguntar('lazer')
+      }, 420)
+      return
+    }
+    i += 1
+    campo.value = frase.slice(0, i)
+    setTimeout(passo, REDUZ ? 0 : 34)
+  })()
+})
+
+/* ── check-in na conversa: Sy pergunta, você responde na mesma linha ──── */
+const SUG_PADRAO = $('#bcSug').innerHTML
+function sairDoCheckin () {
+  $('#bcSug').innerHTML = SUG_PADRAO
+  $('#inSy').placeholder = 'Pergunte ou peça alguma coisa'
+}
+function pedirCheckin () {
+  syEstado('ouvindo')
+  dizer(PERGUNTA_CHECKIN)
+  $('#bcSug').innerHTML = MOODS
+    .map(m => `<button type="button" class="mood" data-m="${m}">${m}</button>`).join('')
+  $('#inSy').placeholder = 'Uma linha sobre hoje (opcional)'
+}
+function responderCheckin (b) {
+  const nota = $('#inSy').value.trim()
+  recortar(recorteCheckin(b.dataset.m, nota), 'acao')
+  $('#inSy').value = ''
+  sairDoCheckin()
+  dizer(FALA_POS_CHECKIN)
+  syEstado('repouso')
+  // responder o check-in É o aceno pra seguir
+  if (aguardandoSeguir) assentar()
+}
+
+/* ══ OS DOIS ESTADOS DA TELA ═══════════════════════════════════════════
+   ESTADO 1 · a apresentação, em TELA CHEIA. O palco trava na altura do
+   aparelho, a edição não existe, e cada tempo ocupa a dobra: Sy grande em
+   cima, a fala embaixo dele, UMA lâmina no meio e a linha de comando no pé.
+   ESTADO 2 · a edição assentada. O palco solta a altura, a página vira o
+   Diário rolável, Sy encolhe pra 96px ao lado da fala, e o que era permanente
+   na pilha desce pra página. ═══════════════════════════════════════════ */
+const elMain = document.querySelector('main')
+const bancada = $('#bancada')
+let temporizadores = []
+function limpar () { temporizadores.forEach(clearTimeout); temporizadores = [] }
+function blocos () { return $$('main [data-blk]') }
+
+let aguardandoSeguir = false
+function pedirSeguir () { aguardandoSeguir = true; $('#seguir').hidden = false }
+
+// ao assentar, só as LÂMINAS saem. Um recorte que você pediu no meio da
+// apresentação veio de você, então desce pra página junto com a edição.
+function esvaziarPilha () {
+  const guardados = [...fpCorpo.children, ...elLam.children]
+  // de trás pra frente porque `prepend` inverte, e a ordem de leitura importa
+  for (const el of guardados.reverse()) {
+    if (el.classList.contains('lamina')) el.remove()
+    else elRec.prepend(el)
+  }
+  fpCorpo.innerHTML = ''
+  elLam.innerHTML = ''
+  fecharPilha()
+  pintarAlca()
+}
+
+function sairDeCena () {
+  corpo.classList.remove('emcena')
+  bancada.classList.remove('apresentando')
+  $('#btPular').classList.remove('on')
+  $('#seguir').hidden = true
+  aguardandoSeguir = false
+}
+
+// estado 2 imediato: usado pelo pular, pelo alternador e por reduced-motion
+function porTudo () {
+  limpar(); calar()
+  sairDeCena()
+  fpCorpo.innerHTML = ''; elLam.innerHTML = ''; elRec.innerHTML = ''
+  fecharPilha(); pintarAlca(0)
+  blocos().forEach(b => b.classList.add('posto'))
+  elMain.classList.remove('montando')
+  elFala.textContent = FALA_REPOUSO; elFala.appendChild(cursor); elFala.classList.add('pronto')
+  falaAtual = FALA_REPOUSO
+  sairDoCheckin()
+  syEstado('repouso'); ocupado = false
+  // a coluna da fala muda de 322px pra ~210px ao sair da cena, então o piso da
+  // apresentação não vale mais: manter deixaria um vão morto embaixo da frase
+  remedir([FALA_REPOUSO])
+}
+
+// a edição assentando: o palco solta a altura e a página toma forma escalonada
+function assentar () {
+  sairDeCena()
+  esvaziarPilha()
+  remedir([falaAtual || FALA_REPOUSO])
+  const bs = blocos()
+  bs.forEach((b, k) => temporizadores.push(setTimeout(() => b.classList.add('posto'), 200 + k * 110)))
+  temporizadores.push(setTimeout(() => elMain.classList.remove('montando'), 200 + bs.length * 110 + 600))
+}
+
+function abertura () {
+  limpar()
+  elRec.innerHTML = ''; fpCorpo.innerHTML = ''; elLam.innerHTML = ''
+  fecharPilha()
+  $('#seguir').hidden = true
+  sairDoCheckin()          // fichas de uma rodada anterior não podem sobrar:
+  aguardandoSeguir = false // responder no meio da apresentação furava o portão
+  ocupado = true
+  if (REDUZ) { porTudo(); pedirCheckin(); return }
+  corpo.classList.add('emcena')
+  bancada.classList.add('apresentando')
+  pintarAlca(0)
+  // a chapa já nasce do tamanho da fala mais alta da apresentação inteira, pra
+  // não mexer uma vez sequer do primeiro tempo até o check-in
+  remedir(TEMPOS.map(t => t.fala).concat([PERGUNTA_CHECKIN]))
+  elMain.classList.add('montando')
+  blocos().forEach(b => b.classList.remove('posto'))
+  $('#btPular').classList.add('on')
+  syEstado('pensando'); dizer('')
+  let i = 0
+  const proximo = () => {
+    if (i >= TEMPOS.length) {
+      $('#btPular').classList.remove('on')
+      pedirCheckin(); pedirSeguir(); ocupado = false
+      return
+    }
+    const t = TEMPOS[i++]
+    syEstado('falando')
+    dizer(t.fala, () => {
+      lamina(t.lamina)
+      pintarAlca(i - 1)
+      if (t.faz) t.faz()
+      temporizadores.push(setTimeout(proximo, 900))
+    })
+  }
+  // com voz de nuvem, gera tudo ANTES de começar: um gap no meio da fala
+  // estraga justamente o que a voz veio deixar julgar, que é o ritmo
+  if (eNuvem(provedor)) {
+    elFala.textContent = 'Preparando a voz…'; elFala.appendChild(cursor)
+    preparar(TEMPOS.map(t => t.fala).concat([PERGUNTA_CHECKIN]), provedor)
+      .then(() => temporizadores.push(setTimeout(proximo, 200)))
+  } else temporizadores.push(setTimeout(proximo, 560))
+}
+$('#btPular').addEventListener('click', () => { porTudo(); pedirCheckin() })
+$('#btSeguir').addEventListener('click', () => { assentar(); syEstado('repouso') })
+
+/* ── mini bancada: aparece quando a chapa sai de vista ────────────────── */
+const bmini = $('#bmini')
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => bmini.classList.toggle('on', !e.isIntersecting && !emCena()))
+}, { rootMargin: '-84px 0px 0px 0px' })
+obs.observe(bancada)
+
+/* ── painel da maquete ────────────────────────────────────────────────── */
+function segmento (id, aplicar) {
+  const el = $(id)
+  el.addEventListener('click', ev => {
+    const b = ev.target.closest('button'); if (!b) return
+    el.querySelectorAll('button').forEach(o => o.setAttribute('aria-pressed', String(o === b)))
+    aplicar(b.dataset.v)
+  })
+}
+segmento('#sgMomento', v => { if (v === 'apresentacao') abertura(); else porTudo() })
+
+const lonaMq = $('#lonaMq'), mq = $('#mq')
+const abrirMq = () => { mq.classList.add('on'); lonaMq.classList.add('on') }
+const fecharMq = () => { mq.classList.remove('on'); lonaMq.classList.remove('on') }
+$('#mqAbre').addEventListener('click', abrirMq)
+$('#fecharMq').addEventListener('click', fecharMq)
+lonaMq.addEventListener('click', fecharMq)
+addEventListener('keydown', e => { if (e.key === 'Escape') { fecharMq(); fecharPilha() } })
+
+/* ── painel de voz ───────────────────────────────────────────────────── */
+const listas = { gg: [], '11': [] }
+function pintarSegVoz () {
+  $('#sgVoz').querySelectorAll('button')
+    .forEach(o => o.setAttribute('aria-pressed', String(o.dataset.v === provedor)))
+  $('#mqn').hidden = !eNuvem(provedor)
+}
+function aplicarProvedor (v, comAmostra) {
+  provedor = v
+  if (v !== 'off') ultimoProvedor = v; else calar()
+  if (eNuvem(v) && v !== painel) {
+    painel = v
+    duracoes.clear()
+    pintarPainel()
+    if (nuv[v].chave && !listas[v].length) conectar()
+  }
+  pintarVoz(); pintarSegVoz()
+  if (comAmostra && v !== 'off') falar(AMOSTRA)
+}
+segmento('#sgVoz', v => aplicarProvedor(v, true))
+btMudo.addEventListener('click', () => aplicarProvedor(provedor === 'off' ? ultimoProvedor : 'off', false))
+
+function avisar (msg, erro) {
+  const el = $('#estNuvem')
+  el.textContent = msg
+  el.classList.toggle('erro', !!erro)
+}
+function pintarPainel () {
+  const p = painel, s = nuv[p]
+  $('#sgModelo').hidden = p !== '11'
+  $('#inChave').placeholder = 'Cole sua API key do ' + (p === 'gg' ? 'Google' : 'ElevenLabs')
+  const sel = $('#selVoz')
+  if (listas[p].length) {
+    sel.innerHTML = listas[p].map(v => '<option value="' + v.id + '">' + v.rotulo + '</option>').join('')
+    if (s.voz && Array.from(sel.options).some(o => o.value === s.voz)) sel.value = s.voz
+    else { s.voz = sel.value; gravar(p, 'voz') }
+  } else sel.innerHTML = '<option>Conecte pra listar as vozes</option>'
+  pintarGasto()
+}
+function pintarGasto () {
+  const p = painel, s = nuv[p], cota = NUVENS[p].cota(s)
+  const pct = Math.min(100, Math.round(s.gasto / cota * 100))
+  const b = $('#barraCota')
+  b.style.width = pct + '%'
+  b.classList.toggle('cheio', pct >= 80)
+  avisar(NUVENS[p].nome + ': ' + s.gasto.toLocaleString('pt-BR') + ' de ' +
+    cota.toLocaleString('pt-BR') + ' caracteres gerados (contagem local desta máquina). ' +
+    'Fala repetida sai do cache e não gasta de novo.')
+}
+async function conectar () {
+  const p = painel, s = nuv[p]
+  const k = $('#inChave').value.trim() || s.chave
+  if (!k) return avisar('Cole a chave primeiro.', true)
+  avisar('Conectando…')
+  try {
+    const lista = await NUVENS[p].vozes(k)
+    if (!lista.length) throw new Error('nenhuma voz pt-BR nesta chave')
+    // a chave só é gravada DEPOIS da API responder: chave recusada não entra
+    s.chave = k; gravar(p, 'chave'); $('#inChave').value = ''
+    listas[p] = lista
+    pintarPainel()
+    avisar(lista.length + ' vozes carregadas. Escolha uma e pré-gere as falas.')
+  } catch (e) {
+    avisar('Não consegui conectar: ' + e.message.replace(/\.$/, '') + '. Confira a chave.', true)
+  }
+}
+$('#btConectar').addEventListener('click', conectar)
+$('#inChave').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); conectar() } })
+$('#selVoz').addEventListener('change', e => {
+  const p = painel
+  nuv[p].voz = e.target.value; gravar(p, 'voz')
+  duracoes.clear()
+  pintarGasto()               // no Google a cota grátis muda com a família da voz
+  if (provedor === p) falar(AMOSTRA)
+})
+segmento('#sgModelo', v => { nuv['11'].modelo = v; gravar('11', 'modelo'); duracoes.clear() })
+$('#btPre').addEventListener('click', async () => {
+  const p = painel, s = nuv[p]
+  if (!s.chave || !s.voz) return avisar('Conecte a chave e escolha uma voz antes.', true)
+  const txts = TEMPOS.map(t => t.fala).concat([PERGUNTA_CHECKIN, AMOSTRA])
+  avisar('Gerando ' + txts.length + ' falas…')
+  const ok = await preparar(txts, p, pr => { $('#barraCota').style.width = Math.round(pr * 100) + '%' })
+  if (ok) { pintarGasto(); avisar('Pronto. As ' + txts.length + ' falas estão em cache: a apresentação não vai gaguejar e replay não gasta cota.') }
+})
+pintarPainel()
+if (nuv[painel].chave) conectar()
+
+$('.mqa').addEventListener('click', e => {
+  const b = e.target.closest('button[data-a]'); if (!b) return
+  fecharMq()
+  if (b.dataset.a === 'abertura') abertura(); else perguntar(b.dataset.a)
+})
+
+pintarVoz()
+abertura()
+
+/* atalhos de QA */
+window.__maquete = { perguntar, abertura, porTudo, assentar, sy: v => syEstado(v) }
+window.__mob = {
+  emCena, abrirPilha, fecharPilha,
+  napilha: () => fpCorpo.children.length,
+  noPalco: () => elLam.children.length,
+  naPagina: () => elRec.children.length,
+}
+window.__voz = { familiaDe, cotaGG, pesoGG, base64ProBlob, nuv, listas, painel: () => painel }
+</script>
+</body>
+</html>

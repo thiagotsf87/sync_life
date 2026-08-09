@@ -23,8 +23,9 @@ conversa** e **`/coach` vira arquivo da conversa**.
 **Atenção ao escopo do aceite: é de FORMA, não de conteúdo.** O que Sy de fato traz no Diário é frente
 própria e continua aberta (ver "Aberto agora"). Aberto também: **gênero da voz** e **duração**.
 
-**O próximo entregável é o mobile dedicado 390×844**, que é o que falta pra maquete virar protótipo
-completo da onda e liberar a implementação em `web/`.
+**O mobile dedicado 390×844 está no ar** (`app/diario-bancada.mobile.html`, 2026-08-09) e **espera aceite
+visual**. Com ele a Onda 03 tem protótipo completo nos dois formatos, e o que falta pra liberar a
+implementação em `web/` é o aceite.
 
 **Ondas 04 a 14 não começaram.**
 
@@ -48,6 +49,9 @@ completo da onda e liberar a implementação em `web/`.
 | **A bancada está APROVADA** | O desenho da maquete vira o protótipo da onda: dois estados (apresentação e assentado), lâmina × recorte com vidas opostas, ações com licença, Sy 280px apresentando e 164px no repouso. Aprovado como **forma**; o conteúdo continua frente própria (ver "Aberto agora") | 2026-08-03 |
 | **Check-in na conversa** | Sy pergunta e você responde na própria linha de comando, não num bloco separado de fichas. É coerente com a mecânica do portão: o check-in **é** o aceno que abre a edição, então ele mora onde a conversa mora. O modo "em bloco" segue no painel da maquete só como registro da comparação | 2026-08-03 |
 | **`/coach` vira arquivo da conversa** | No Diário a conversa é a própria página, então a camada lateral perde função ali. `/coach` deixa de ser "onde se fala com Sy" e passa a ser **onde se relê o que já foi falado**. Isso muda o que a rota precisa entregar nas ondas seguintes: histórico e busca, não uma segunda caixa de entrada | 2026-08-03 |
+| **Conteúdo é um só, apresentação é por dispositivo** | O que Sy **diz e mostra** é idêntico em desktop e mobile e mora em `app/bancada.roteiro.js`. O que muda por aparelho é **como** ele acende, imprime e empilha. Cada página passa os próprios verbos pra `criarRoteiro({ $, acender, acenderTicker, recortar, dizer, syEstado })`. Vale pras 68 telas: quando a frente de conteúdo for retomada, ela edita **um** arquivo | 2026-08-09 |
+| **A apresentação mobile é tela cheia** | Em 390×844 cabe Sy grande + **uma** lâmina. Então a apresentação deixa de ser página e vira momento: o palco trava em `100dvh - 80`, cada tempo ocupa uma dobra, e a lâmina que sai **desce pra uma pilha** com alça acima da linha de comando. Acumular continua valendo, só que fora da dobra. Escolhido contra "bancada sticky que colapsa" e "deck horizontal de lâminas" | 2026-08-09 |
+| **Enquanto você digita, o portão e a alça saem** | Com o teclado aberto (508px de viewport útil) não cabem Sy, fala, lâmina, alça, linha, fichas **e** portão. A regra não é de layout, é de produto: quem está escrevendo a nota do check-in está respondendo, e responder já abre a edição. Voltam no blur | 2026-08-09 |
 
 ## Aberto agora
 
@@ -74,22 +78,29 @@ completo da onda e liberar a implementação em `web/`.
   "sai" (o Y vira /i/: Sylvia→Silvia), então a pronúncia tem que ser **ensinada no onboarding e na
   primeira edição** e o TTS precisa de fonema explícito; e "sai" é palavra comum do português, o que é
   risco de wake word.
+- **Perguntar no meio da apresentação não funciona, nos dois arquivos** (achado em 2026-08-09, testando o
+  mobile). O desenho diz que dá pra interromper Sy digitando, e o CSS até prepara isso
+  (`.apresentando .bc-linha:focus-within{opacity:1}`), mas `perguntar()` começa com `if (!r || ocupado)
+  return` e `ocupado` fica `true` da primeira fala até o check-in. Efeito colateral: a regra "um recorte
+  que você pediu no meio da apresentação fica quando a edição assenta" **não tem como ser alcançada hoje**.
+  É comportamento pré-existente do desktop aprovado, **não foi mexido**: consertar é decidir se
+  interromper cancela a apresentação, a pausa, ou enfileira. Decisão de produto, não de código.
 - **Token pendente:** verde-delta no claro `#44a616` (também no ticker e no marquee).
 
 ## Próxima sessão (pauta do usuário)
 
-**A bancada foi aprovada em 2026-08-03** e o desktop está fechado. O caminho agora é construção:
+**O mobile está no ar e o desktop segue aprovado.** O que falta:
 
-1. **Mobile dedicado 390×844 da bancada.** É o entregável que falta pra Onda 03 ter protótipo completo.
-   Regra do programa: mobile é protótipo próprio, não o desktop espremido. Os problemas reais a resolver
-   são a bancada com Sy e a fala na mesma dobra, a linha de comando com teclado aberto, e a lâmina e o
-   recorte numa coluna só.
-2. **Duas decisões pequenas que não bloqueiam o mobile:** gênero da voz (o painel toca amostra na troca)
-   e duração (fundir os tempos 2 e 3 leva de 25,2s pra perto de 17s).
-3. **Teste barato que ficou pendente e agora é possível:** ouvir como o TTS pronuncia "Sy". A leitura
-   padrão em pt-BR é "si", não "sai". Se sair errado, precisa de fonema explícito e a copy do onboarding
-   muda, porque é lá que a pronúncia é ensinada. Mexe numa decisão de marca já fechada, então vale medir.
-4. Depois do mobile: implementação em `web/` e teste de identidade.
+1. **Aceite visual do mobile** (`app/diario-bancada.mobile.html`, 390×844). Rodar a apresentação de ponta
+   a ponta no celular ou no bezel, abrir a pilha, responder o check-in. O modelo de tela cheia é o que
+   está em julgamento, e ele é a única coisa que o desktop não tem.
+2. **Duas decisões pequenas, que agora dá pra tomar nos dois formatos:** gênero da voz (o painel toca
+   amostra na troca, e a chave do desktop já vale no mobile) e duração (fundir os tempos 2 e 3 leva de
+   25,2s pra perto de 17s).
+3. **Teste barato que continua pendente:** ouvir como o TTS pronuncia "Sy". A leitura padrão em pt-BR é
+   "si", não "sai". Se sair errado, precisa de fonema explícito e a copy do onboarding muda, porque é lá
+   que a pronúncia é ensinada. Mexe numa decisão de marca já fechada, então vale medir.
+4. Depois do aceite: implementação em `web/` e teste de identidade.
 
 **Por que o ElevenLabs caiu:** no plano grátis a API **bloqueia as vozes da biblioteca**
 (`paid_plan_required`), inclusive as que já estão salvas na conta. Sobram só as 21 vozes premade, todas de
@@ -116,7 +127,7 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
 | 00 | Landing v2 + marca 3D | ✅ viva r15 + mobile m1 (r4 segura preservada) | ✅ **COMPLETA: desktop r15 + mobile m1 (2026-07-30)** | ✅ `web/` (2026-07-30) | ✅ desktop delta 0px · mobile ok (nota scrollbar) |
 | 01 | Público + auth (pricing, login, cadastro, senhas, onboarding) | ✅ 6 telas ×2 (2026-07-31) | ✅ **APROVADA (r2, 2026-07-31)** | ✅ `web/` (2026-07-31) | ✅ desktop + mobile ok, console zero |
 | 02 | Chrome do app + Dashboard (3 telas) | ✅ lote 1: Diário + camada do coach (2026-07-31) · ✅ lote 2: Edição da semana + Life Score, D+M (2026-08-01) | ✅ **lote 1 APROVADO (2026-07-31)** · 🟡 **lote 2: o lugar da Edição da semana foi RESOLVIDO** em 2026-08-02 (vira apresentação de Sy no Diário, ver Onda 03); o conteúdo do protótipo sobrevive, a moldura de tela separada cai · ⏳ Life Score só esperando aceite, não foi criticado | ✅ lote 1 em `web/` (2026-08-01) · lote 2 parado | ✅ lote 1 desktop 1440 + mobile 390 (diff CSS regra a regra, 0 ausentes) · ✅ lote 2 QA dos protótipos PASS (console 0/0, E-02 com JS off, consistência cruzada nas 6 telas) |
-| 03 | Coach **Sy**: identidade + **a bancada** + vista cheia + backend N1-N2 | ✅ **Sy, o Enxame** (`personagem/enxame.html`) + **maquete da bancada** (`app/diario-bancada.html`, 2026-08-02): dois estados do Diário, lâmina × recorte, ações com licença, voz real · ✅ **Google Cloud TTS ligado (2026-08-03)** | ✅ **IDENTIDADE APROVADA (2026-08-02)** · ✅ **BANCADA APROVADA (2026-08-03)**: os três votos dados (a bancada, check-in **na conversa**, `/coach` vira arquivo) + voz ouvida e aprovada. Aprovado como **forma**; conteúdo é frente própria. Aberto ainda: gênero da voz e duração | – (nada em `web/` ainda) | ✅ console 0/0 em 18 recargas · fluxos de ação, licença, desfazer e portão verificados por DOM · sincronia de voz medida · ✅ voz: troca de provedor, chave inválida, degradação sem chave e 15 asserções de lógica pura (`window.__voz`) · ✅ **síntese real ouvida em voz pt-BR nativa e aprovada** pelo usuário (2026-08-03) · ✅ altura da bancada travada: oscilação 0px em apresentando, assentado, durante a digitação e em corrida real |
+| 03 | Coach **Sy**: identidade + **a bancada** + vista cheia + backend N1-N2 | ✅ **Sy, o Enxame** (`personagem/enxame.html`) + **bancada desktop** (`app/diario-bancada.html`, 2026-08-02) + ✅ **mobile dedicado 390×844** (`app/diario-bancada.mobile.html`, 2026-08-09): apresentação em tela cheia, um tempo por dobra, pilha com alça · ✅ **Google Cloud TTS ligado (2026-08-03)** | ✅ **IDENTIDADE APROVADA (2026-08-02)** · ✅ **BANCADA DESKTOP APROVADA (2026-08-03)**: os três votos dados (a bancada, check-in **na conversa**, `/coach` vira arquivo) + voz ouvida e aprovada. Aprovado como **forma**; conteúdo é frente própria. ⏳ **mobile esperando aceite visual**. Aberto ainda: gênero da voz e duração | – (nada em `web/` ainda) | ✅ console 0/0 em 18 recargas · fluxos de ação, licença, desfazer e portão verificados por DOM · sincronia de voz medida · ✅ voz: troca de provedor, chave inválida, degradação sem chave e 15 asserções de lógica pura (`window.__voz`) · ✅ **síntese real ouvida em voz pt-BR nativa e aprovada** pelo usuário (2026-08-03) · ✅ altura da bancada travada: oscilação 0px em apresentando, assentado, durante a digitação e em corrida real · **MOBILE (2026-08-09):** console 0/0 · conteúdo provado idêntico ao aprovado por diff contra `git HEAD` · fala 81px e palco 764px com oscilação **0px** na corrida inteira · pilha, alça e migração de recorte verificadas por DOM · teclado (508px) com tudo dentro da dobra · `prefers-reduced-motion` e E-02 sem JS OK · desktop re-verificado depois da extração |
 | 04 | 01 Finanças (8 telas, 2 lotes) | – | – | – | – |
 | 05 | 02 Futuro (4) | – | – | – | – |
 | 06 | 03 Tempo (6) | – | – | – | – |
@@ -128,6 +139,142 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
 | 12 | Conquistas (2) | – | – | – | – |
 | 13 | Configurações (7) | – | – | – | – |
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
+
+---
+
+## 2026-08-09 · Sessão 27 — A bancada no celular: a apresentação vira tela cheia
+
+> O entregável que faltava pra Onda 03 ter protótipo completo. **Nada em `web/` foi tocado.**
+> O desktop foi mexido em um lugar só, pra tirar o conteúdo de dentro dele, e re-verificado depois.
+
+### A regra que o usuário fixou, e que muda as ondas 04-14
+
+**"O conteúdo da bancada deve ser o mesmo para desktop e mobile. A diferença é só na apresentação."**
+
+Isso resolveu uma decisão de arquitetura que eu tinha colocado mal. Eu havia argumentado que duas cópias
+das falas eram risco de **produção**, e não são: o roteiro é mock, em produção ele vem da API (o
+`coach-brief` já existe com schema Zod) e a síntese vai pro servidor. O motivo certo é outro e tem data
+marcada: **a frente de conteúdo do Diário está aberta**, e quando ela for retomada é exatamente essas
+falas que vão ser reescritas, rodada após rodada. Com duas cópias, cada rodada é feita duas vezes.
+
+**`app/bancada.roteiro.js` (novo).** Fábrica, não constante, porque as respostas **agem** na página:
+acendem um objeto, imprimem um recorte, mexem num valor da edição. Esses verbos são apresentação e mudam
+entre os dois formatos, então cada página passa os seus:
+`criarRoteiro({ $, acender, acenderTicker, recortar, dizer, syEstado })`. O texto e o HTML das lâminas
+ficam no módulo. O corte cai exato onde o usuário desenhou.
+
+O HTML da lâmina também é compartilhado: o `lm-areas` é o mesmo markup nos dois, e só o
+`grid-template-columns` muda de `1fr 1fr` pra `1fr`. Apresentação é CSS, conteúdo é o módulo.
+
+**O que NÃO foi extraído, e por quê.** A camada de voz (350 linhas) foi **copiada**. É instrumentação
+fechada: o provedor já foi decidido, o QA já passou, e ela morre inteira quando a chamada virar route
+handler. Arrancá-la do desktop seria um refactor de verdade (`provedor`, `nuv`, `duracaoDe` e `tocando`
+estão amarrados no `dizer()`) num artefato aprovado, por um módulo que vai pro lixo. Preço honesto da
+cópia: bug de voz conserta nos dois lugares.
+
+**Prova de que a extração não mexeu no conteúdo.** Script comparando o arquivo aprovado em `git HEAD`
+com o módulo: 9 falas, 12 blocos de HTML de lâmina/recorte, as 3 constantes soltas e as 5 rotas do
+roteador de intenção, **todos idênticos**. O check pegou uma coisa que eu tinha deixado passar: o recorte
+do check-in tinha ficado na página, e ele é conteúdo. Virou `recorteCheckin(humor, nota)` no módulo.
+
+### A apresentação mobile: um tempo por dobra
+
+Em 390×844, com Sy a 180px e a fala em 3 linhas, cabe **uma** lâmina na dobra. E "as lâminas se acumulam"
+é decisão fechada, então substituir estava fora. Foram três caminhos ao usuário: bancada sticky que
+colapsa, deck horizontal com swipe, e apresentação em tela cheia. **Ele escolheu a tela cheia.**
+
+O palco trava em `calc(100dvh - 80px)` enquanto os quatro tempos rodam. `dvh` e não `vh` porque no iOS
+`vh` mede a tela com a barra do navegador recolhida e a última dobra sairia cortada. A modbar some (não
+se navega no meio de uma apresentação) e devolve 44px.
+
+**A pilha é a concessão.** A lâmina que sai não morre: desce 16px, some em 300ms e vai pra uma pilha,
+com uma alça acima da linha de comando (`●●●○ · 3 na pilha · ver ↑`) que abre uma folha com tudo que Sy
+já mostrou. Acumular continua valendo, só que fora da dobra.
+
+**Os elementos são guardados, nunca re-renderizados a partir do HTML.** Um recorte de ação carrega
+listeners (desfazer, confirmar) que morreriam num `innerHTML` de volta. Verificado: depois de guardar,
+abrir a pilha e assentar, o botão **Desfazer** ainda funciona.
+
+**O estado assentado** é o padrão do CSS, sem classe nenhuma, e `.emcena` é o modificador. É isso que
+segura o E-02: sem JS nada trava, nada esconde, e a página nasce inteira e rolável.
+
+### As medidas (nenhuma escolhida a olho)
+
+**Sy assentado, varrendo o tamanho:**
+
+| Sy | Coluna da fala | Frase | Chapa |
+|---|---|---|---|
+| 72 e 80 | 215 / 207px | 3 linhas | **234px, não baixa mais** |
+| 88 | 199px | 3 linhas | 242px |
+| **96 (agora)** | 191px | 3 linhas | **250px** |
+| 104 | 183px | **4 linhas** | 258px |
+
+96px é o **maior Sy que não custa uma quarta linha**. O piso da chapa é 234px em Sy 80, mas descer de 96
+pra 80 compra só 16px numa tela de 844 e custa 17% do tamanho de Sy, então não vale. Fica em 96, e o
+número 234 fica registrado caso o aceite peça mais baixo. Chapa mobile **250px** contra 288px no desktop.
+
+**Altura travada, medida na corrida real:** fala **81px** e palco **764px**, valor único do primeiro tempo
+ao check-in. Oscilação **0px**, igual ao desktop.
+
+### Três bugs achados medindo, não olhando
+
+1. **O teclado empurrava a linha de comando pra fora da tela.** Com `min(180px, 42vh)`, Sy só começava a
+   encolher abaixo de 428px de viewport, e com o teclado aberto (508px) a linha terminava em **525px**.
+   Virou `clamp(72px, 23dvh, 180px)`: 180px em 844, **117px** com o teclado aberto.
+2. **O flex esmagava os filhos fixos.** As fichas de humor caíam pra **2px** de altura e o portão saía da
+   tela. Agora só a lâmina cede altura (`body.emcena .bancada > *{flex:none}`).
+3. **Um temporizador ressuscitava lâmina depois da edição assentar.** Responder o check-in imprime um
+   recorte e chama `assentar()` no mesmo instante, mas a lâmina anterior ainda estava nos 300ms da
+   animação de guardar: a pilha esvaziava e 300ms depois o `setTimeout` reinseria a lâmina.
+   Mesma família do gotcha nº 1 (o `cancel()` que dispara o `onend` da fala descartada), e o conserto é o
+   mesmo: perguntar se o elemento ainda está onde estava, em vez de confiar que o timer foi cancelado.
+
+### O que descobri e NÃO consertei
+
+**Perguntar no meio da apresentação não funciona, e nunca funcionou, nos dois arquivos.** `perguntar()`
+abre com `if (!r || ocupado) return`, e `ocupado` fica `true` da primeira fala até o check-in. O desenho
+diz o contrário ("recuar não é desligar: dá pra interromper digitando") e o CSS até prepara isso. Efeito
+colateral: a regra "um recorte pedido no meio fica quando a edição assenta" não tem como ser alcançada
+hoje. Deixei registrado em "Aberto agora" em vez de consertar: é comportamento do desktop **aprovado**, e
+o conserto é decidir se interromper cancela, pausa ou enfileira, o que é decisão de produto.
+
+### Gotchas novos (LEI)
+
+16. **`min(Npx, Xvh)` não serve pra encolher com o teclado.** Ele só começa a agir quando `Xvh < Npx`, ou
+    seja, num viewport já pequeno demais. O que responde de forma contínua é `clamp(min, Xdvh, max)`.
+17. **`interactive-widget=resizes-content` no viewport é o que faz o teclado encolher o layout** em vez de
+    subir por cima. Sem isso, `100dvh` continua sendo a tela inteira e o rodapé da cena fica embaixo do
+    teclado.
+18. **Em coluna flex, filho sem `flex:none` é esmagado antes de estourar.** O sintoma não é overflow, é um
+    elemento com 2px de altura que parece ter sumido por outro motivo. Sempre declarar quem cede.
+19. **Elemento em trânsito por `setTimeout` precisa checar se ainda está onde estava.** Qualquer animação
+    de "sai daqui e entra ali" vira ressurreição se o estado mudar no meio.
+20. **Teste com foco, não com resize.** Medir a 508px sem focar o campo mediu um estado que não existe
+    (no aparelho, viewport curto **é** teclado aberto), e deu dois falsos negativos.
+
+### QA
+
+Console **0/0** nas duas páginas. Verificado por DOM: apresentação completa com 4 tempos e 4 lâminas ·
+alça e pilha com ordem correta · responder o check-in abre a edição e o recorte sobrevive · pedir uma
+ação no portão e abrir pelo botão também sobrevive, com o Desfazer vivo · pular não deixa sobra ·
+lâminas todas removidas ao assentar · teclado (508px) com fala, lâmina, linha e fichas dentro da dobra ·
+`prefers-reduced-motion` cai direto no assentado, sem `anim`, com os 5 blocos postos ·
+**E-02 sem JavaScript**: fala de Sy, bancada, selo, folha, números, áreas, atenção e as 3 sugestões
+todas visíveis, nenhum bloco em opacidade 0, página com 2958px roláveis.
+
+**Desktop re-verificado depois da extração:** console 0/0, apresentação de ponta a ponta, repertório,
+check-in, portão e sugestões restauradas.
+
+**O que não foi verificado:** a voz de verdade no mobile, que depende da chave do usuário. A chave é a
+mesma do desktop (`sy.gg.*` no `localStorage`), então quem já conectou lá não reconecta aqui.
+
+### Arquivos
+
+- **novo** `prototypes/v5/app/bancada.roteiro.js` — o conteúdo de Sy, consumido pelos dois formatos.
+- **novo** `prototypes/v5/app/diario-bancada.mobile.html` — a bancada em 390×844.
+- `prototypes/v5/app/diario-bancada.html` — só perdeu o conteúdo pro módulo. Desenho intocado.
+- `prototypes/v5/index.html` — a linha da bancada agora aponta desktop e mobile.
+- este handoff.
 
 ---
 
