@@ -122,6 +122,7 @@ web/
 | [`docs/README.md`](docs/README.md) | Índice completo de specs, features e E2E |
 | [`docs/AUDITORIA-COMPLETA-2026-03.md`](docs/AUDITORIA-COMPLETA-2026-03.md) | Auditoria de mar/2026 (referência histórica) |
 | [`web/README.md`](web/README.md) | Quick start focado no app Next.js |
+| [`docs/MCP-BUSINESSMAP.md`](docs/MCP-BUSINESSMAP.md) | Servidor MCP do Businessmap (Kanbanize): setup e autenticação |
 
 ---
 

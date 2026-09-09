@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "businessmap": {
+      "type": "http",
+      "url": "https://rennersa.kanbanize.com/baiApi/v1/mcp"
+    }
+  }
+}
