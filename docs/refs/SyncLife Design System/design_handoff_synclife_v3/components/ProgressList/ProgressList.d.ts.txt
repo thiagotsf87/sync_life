@@ -1,0 +1,40 @@
+import * as React from 'react';
+
+export interface ProgressRow {
+  /** Row name shown next to the colour dot. */
+  label: string;
+  /** Current value (drives the bar fill against `target`). */
+  current: number;
+  /** Target value the bar fills toward. */
+  target: number;
+  /** Bar / dot colour (usually a domain token). */
+  color: string;
+  /** Unit appended to numeric current/target (e.g. "%", "h"). */
+  unit?: string;
+  /** Small muted note after the label. */
+  sub?: string;
+  /** Override the rendered current value (e.g. "R$ 1,2k"). */
+  currentLabel?: string;
+  /** Override the rendered target value. */
+  targetLabel?: string;
+  /** "Less is better": over 100% reads as danger, near as warning. */
+  invert?: boolean;
+  /** Show a check when complete (non-inverted rows only). */
+  check?: boolean;
+  /** Short status badge after the label. */
+  badge?: string;
+  /** Badge colour (defaults to warning). */
+  badgeColor?: string;
+}
+
+export interface ProgressListProps {
+  /** Card heading. */
+  title: string;
+  /** Optional right-aligned sub-heading. */
+  sub?: string;
+  /** The goal rows, top to bottom. */
+  rows: ProgressRow[];
+}
+
+/** A card of labelled goal bars (current / target) — the progress block from every module screen. */
+export function ProgressList(props: ProgressListProps): React.ReactElement;

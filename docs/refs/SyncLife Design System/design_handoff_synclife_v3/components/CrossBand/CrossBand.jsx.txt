@@ -1,0 +1,47 @@
+import React from 'react';
+
+const Spark = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+    <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/>
+  </svg>
+);
+const ArrowRight = ({ size = 11 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+  </svg>
+);
+
+/**
+ * CrossBand — SyncLife's signature cross-module insight. One sentence that ties two
+ * life domains together with a causal fact, plus an optional action. This is what makes
+ * the modules feel like one connected system rather than isolated tools.
+ */
+export function CrossBand({ segments = [], action = 'Ver conexões', onAction }) {
+  return (
+    <div style={{
+      padding: '14px 20px', borderRadius: 14,
+      background: 'linear-gradient(90deg, var(--sl-accent-soft, rgba(124,220,232,0.12)) 0%, transparent 72%)',
+      border: '1px solid var(--sl-line-accent, rgba(124,220,232,0.28))',
+      display: 'flex', alignItems: 'center', gap: 16,
+      fontFamily: 'var(--sl-font-body, sans-serif)',
+    }}>
+      <div style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--sl-bg-base, #0B0F14)', border: '1px solid var(--sl-line-accent, rgba(124,220,232,0.28))', color: 'var(--sl-accent, #7CDCE8)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <Spark/>
+      </div>
+      <div style={{ flex: 1, fontSize: 13.5, color: 'var(--sl-fg-secondary, #A7B0BC)', lineHeight: 1.5 }}>
+        {segments.map((s, i) =>
+          s.color ? <span key={i} style={{ color: s.color, fontWeight: 600 }}>{s.text}</span>
+          : s.bold ? <strong key={i} style={{ color: 'var(--sl-fg-primary, #E7ECF1)' }}>{s.text}</strong>
+          : <span key={i}>{s.text}</span>
+        )}
+      </div>
+      {action && (
+        <button onClick={onAction} style={{ padding: '7px 14px', borderRadius: 999, background: 'transparent', border: '1px solid var(--sl-line-strong, rgba(255,255,255,0.12))', color: 'var(--sl-fg-primary, #E7ECF1)', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0, fontFamily: 'inherit' }}>
+          {action} <ArrowRight/>
+        </button>
+      )}
+    </div>
+  );
+}

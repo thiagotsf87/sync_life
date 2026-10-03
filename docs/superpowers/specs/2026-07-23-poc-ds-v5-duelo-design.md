@@ -6,7 +6,7 @@
 
 ## 1. Contexto e motivação
 
-O SyncLife está no meio do redesign v4 Coach-led (branch `redesign/visual-refresh-v4`, Finanças já recomposto no padrão P-A). O usuário quer explorar uma repaginação completa de layout, visual, anatomia e estrutura, inspirada em três referências premiadas cujos tokens foram extraídos em `poc-novo-ds/`:
+O SyncLife está no meio do redesign v4 Coach-led (branch `redesign/visual-refresh-v4`, Finanças já recomposto no padrão P-A). O usuário quer explorar uma repaginação completa de layout, visual, anatomia e estrutura, inspirada em três referências premiadas cujos tokens foram extraídos em `docs/refs/poc-novo-ds/`:
 
 - **Osmo** (osmo.supply): dark quente, neutros de 14 passos, tri-acento (roxo `#6840ff`, verde elétrico `#a1ff62`, coral `#f84131`), tipografia display enorme, easing assinatura, único com tokens de chrome de app.
 - **Jeton** (jeton.com): minimalismo radical mono + 1 acento, tipografia fluida `clamp()`, Lenis smooth scroll. Eliminada no funil (usuário escolheu A e C).

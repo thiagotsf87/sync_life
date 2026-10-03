@@ -1,0 +1,130 @@
+{
+  "$description": "Jeton (jeton.com) design tokens — W3C DTCG. Nuxt/Vue, Sequel Sans, fluid clamp() typography, Lenis smooth scroll. No 3D. NOTE: exact clamp() min/max per step were summarized in source analysis, not captured verbatim; verify against jeton.com CSS before production.",
+  "color": {
+    "$type": "color",
+    "brand": {
+      "$value": "#f73b20",
+      "$description": "orange brand primary"
+    },
+    "black": {
+      "$value": "#000000"
+    },
+    "white": {
+      "$value": "#ffffff"
+    }
+  },
+  "font": {
+    "family": {
+      "$type": "fontFamily",
+      "sans": {
+        "$value": [
+          "Sequel Sans",
+          "Arial",
+          "sans-serif"
+        ]
+      }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "regular": {
+        "$value": 400
+      },
+      "book": {
+        "$value": 450
+      },
+      "medium": {
+        "$value": 500
+      },
+      "semibold": {
+        "$value": 600
+      }
+    }
+  },
+  "typography": {
+    "$type": "typography",
+    "title-1": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "clamp(4rem, 6vw, 8rem)"
+      }
+    },
+    "title-2": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "clamp(3rem, 4.5vw, 5.5rem)"
+      }
+    },
+    "title-3": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "clamp(2.25rem, 3vw, 3.5rem)"
+      }
+    },
+    "body": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "clamp(1rem, 1.2vw, 1.25rem)",
+        "fontWeight": 450
+      }
+    },
+    "caption": {
+      "$value": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "clamp(0.75rem, 0.9vw, 0.875rem)"
+      }
+    }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "xs": {
+      "$value": "clamp(0.5rem, 1vw, 1rem)"
+    },
+    "s": {
+      "$value": "clamp(1rem, 2vw, 2rem)"
+    },
+    "m": {
+      "$value": "clamp(2rem, 4vw, 4rem)"
+    },
+    "l": {
+      "$value": "clamp(4rem, 8vw, 8rem)"
+    },
+    "xl": {
+      "$value": "clamp(6rem, 12vw, 12rem)"
+    }
+  },
+  "grid": {
+    "columns": {
+      "$type": "number",
+      "$value": 16
+    }
+  },
+  "motion": {
+    "duration": {
+      "$type": "duration",
+      "fast": {
+        "$value": "300ms"
+      },
+      "base": {
+        "$value": "600ms"
+      },
+      "slow": {
+        "$value": "1000ms"
+      }
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "smooth": {
+        "$value": [
+          0.23,
+          1,
+          0.32,
+          1
+        ]
+      }
+    },
+    "scroll": {
+      "$type": "other",
+      "$value": "Lenis smooth scroll"
+    }
+  }
+}

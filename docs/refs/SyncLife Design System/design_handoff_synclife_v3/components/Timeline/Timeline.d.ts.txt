@@ -1,0 +1,26 @@
+import * as React from 'react';
+
+export interface TimelineItem {
+  /** Left column marker (date, month, "Q3"...). */
+  when: string;
+  /** Milestone title. */
+  title: string;
+  /** Secondary line under the title. */
+  meta?: string;
+  /** Completed — node fills with accent and shows a check. */
+  done?: boolean;
+  /** The active milestone — node is ringed and an "AGORA" tag appears. */
+  current?: boolean;
+  /** Ring colour for a pending (not done, not current) node. */
+  color?: string;
+}
+
+export interface TimelineProps {
+  /** Optional card heading. */
+  title?: string;
+  /** Milestones, top to bottom. */
+  items: TimelineItem[];
+}
+
+/** A vertical milestone / roadmap timeline with connector nodes — the timeline block from module screens. */
+export function Timeline(props: TimelineProps): React.ReactElement;

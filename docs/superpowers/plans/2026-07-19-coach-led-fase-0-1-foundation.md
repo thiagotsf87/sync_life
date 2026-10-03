@@ -200,7 +200,7 @@ git commit -m "feat(coach): KbdChip — atalho de teclado em mono"
 
 ## Task 3: `KpiStrip`
 
-Referência de markup: `SyncLife Design System/design_handoff_synclife_v3/components/KpiStrip/KpiStrip.jsx.txt` (cyan). Remapear: `--sl-bg-surface`→`--sl-s1`, `--sl-line-subtle`→`--sl-border`, `--sl-fg-muted`→`--sl-t4`, `--sl-fg-primary`→`--sl-t1`, `--sl-fg-tertiary`→`--sl-t3`, valor em `.sl-num-strong` (G-02), ícone Lucide `ArrowUpRight` (G-07). Convenção: 1º valor é a âncora (≥30px).
+Referência de markup: `docs/refs/SyncLife Design System/design_handoff_synclife_v3/components/KpiStrip/KpiStrip.jsx.txt` (cyan). Remapear: `--sl-bg-surface`→`--sl-s1`, `--sl-line-subtle`→`--sl-border`, `--sl-fg-muted`→`--sl-t4`, `--sl-fg-primary`→`--sl-t1`, `--sl-fg-tertiary`→`--sl-t3`, valor em `.sl-num-strong` (G-02), ícone Lucide `ArrowUpRight` (G-07). Convenção: 1º valor é a âncora (≥30px).
 
 **Files:**
 - Create: `web/src/components/coach/KpiStrip.tsx`

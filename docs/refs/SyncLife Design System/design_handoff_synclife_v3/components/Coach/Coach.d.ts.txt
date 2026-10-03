@@ -1,0 +1,28 @@
+import * as React from 'react';
+
+export interface CoachSuggestion {
+  /** Button label shown to the user. */
+  label: string;
+  /** Coach's reply, pushed into the thread when clicked. */
+  reply: string;
+  /** Render as the filled primary action (max one). */
+  primary?: boolean;
+}
+
+export interface CoachProps {
+  /** Narrative posture. Drives the default headline, tone colour and suggestions. */
+  mode?: 'proativo' | 'neutro' | 'alerta';
+  /** Small uppercase label above the headline. */
+  eyebrow?: string;
+  /** Headline as [before, emphasis, after]; emphasis renders in the tone colour. */
+  headline?: [string, string, string];
+  /** Tone/accent colour for the proactive & neutral modes. */
+  accent?: string;
+  /** Override the default suggested actions. */
+  suggestions?: CoachSuggestion[];
+  /** Placeholder for the ask input. */
+  placeholder?: string;
+}
+
+/** SyncLife's AI narrator — the core conversational surface of every module. */
+export function Coach(props: CoachProps): React.ReactElement;

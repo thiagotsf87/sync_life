@@ -1,0 +1,331 @@
+{
+  "$description": "Osmo (osmo.supply) design tokens — W3C DTCG. Webflow + Slater. No 3D.",
+  "color": {
+    "$type": "color",
+    "purple": {
+      "$value": "#6840ff"
+    },
+    "coral": {
+      "$value": "#f84131"
+    },
+    "electric": {
+      "$value": "#a1ff62"
+    },
+    "neutral": {
+      "100": {
+        "$value": "#ffffff"
+      },
+      "200": {
+        "$value": "#f4f4f4"
+      },
+      "300": {
+        "$value": "#eaeaea"
+      },
+      "400": {
+        "$value": "#e1e1e1"
+      },
+      "450": {
+        "$value": "#d8d8d8"
+      },
+      "475": {
+        "$value": "#b8b8b8"
+      },
+      "500": {
+        "$value": "#817f7f"
+      },
+      "525": {
+        "$value": "#4f4c4c"
+      },
+      "550": {
+        "$value": "#393636"
+      },
+      "600": {
+        "$value": "#312e2e"
+      },
+      "700": {
+        "$value": "#2a2727"
+      },
+      "800": {
+        "$value": "#201d1d"
+      },
+      "900": {
+        "$value": "#151313"
+      },
+      "950": {
+        "$value": "#000000"
+      }
+    },
+    "light": {
+      "$value": "{color.neutral.200}"
+    },
+    "dark": {
+      "$value": "{color.neutral.800}"
+    },
+    "white": {
+      "$value": "{color.neutral.100}"
+    },
+    "black": {
+      "$value": "{color.neutral.900}"
+    }
+  },
+  "font": {
+    "family": {
+      "$type": "fontFamily",
+      "body": {
+        "$value": [
+          "Haffer VF",
+          "Arial",
+          "sans-serif"
+        ]
+      },
+      "heading": {
+        "$value": [
+          "Haffer XH",
+          "Arial",
+          "sans-serif"
+        ]
+      },
+      "mono": {
+        "$value": [
+          "Haffer Mono",
+          "Arial",
+          "sans-serif"
+        ]
+      },
+      "display": {
+        "$value": [
+          "Brisa Pro",
+          "Arial",
+          "sans-serif"
+        ]
+      },
+      "webfont": {
+        "$value": [
+          "Inter",
+          "sans-serif"
+        ]
+      }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "regular": {
+        "$value": 400
+      },
+      "medium": {
+        "$value": 500
+      },
+      "bold": {
+        "$value": 700
+      },
+      "bodyAxis": {
+        "$value": 460
+      }
+    }
+  },
+  "typography": {
+    "$type": "typography",
+    "body": {
+      "$value": {
+        "fontFamily": "{font.family.body}",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "fontWeight": 400,
+        "letterSpacing": "-0.01em"
+      }
+    },
+    "h1": {
+      "$value": {
+        "fontFamily": "{font.family.heading}",
+        "fontSize": "7em",
+        "lineHeight": 1,
+        "fontWeight": 400,
+        "letterSpacing": "-0.06em"
+      }
+    },
+    "h2": {
+      "$value": {
+        "fontFamily": "{font.family.heading}",
+        "fontSize": "5em",
+        "lineHeight": 1,
+        "fontWeight": 400,
+        "letterSpacing": "-0.04em"
+      }
+    },
+    "h3": {
+      "$value": {
+        "fontFamily": "{font.family.heading}",
+        "fontSize": "3.875em",
+        "lineHeight": 1,
+        "fontWeight": 400,
+        "letterSpacing": "-0.04em"
+      }
+    },
+    "h4": {
+      "$value": {
+        "fontFamily": "{font.family.heading}",
+        "fontSize": "2.5em",
+        "lineHeight": 1.05,
+        "fontWeight": 400,
+        "letterSpacing": "-0.03em"
+      }
+    },
+    "h5": {
+      "$value": {
+        "fontFamily": "{font.family.heading}",
+        "fontSize": "1.875em",
+        "lineHeight": 1.08,
+        "fontWeight": 400,
+        "letterSpacing": "-0.03em"
+      }
+    },
+    "h6": {
+      "$value": {
+        "fontFamily": "{font.family.heading}",
+        "fontSize": "1.25em",
+        "lineHeight": 1.08,
+        "fontWeight": 400,
+        "letterSpacing": "-0.03em"
+      }
+    }
+  },
+  "gap": {
+    "$type": "dimension",
+    "xxs": {
+      "$value": "0.5em"
+    },
+    "xs": {
+      "$value": "0.75em"
+    },
+    "s": {
+      "$value": "1em"
+    },
+    "sm": {
+      "$value": "1.25em"
+    },
+    "m": {
+      "$value": "1.5em"
+    },
+    "l": {
+      "$value": "1.875em"
+    },
+    "xl": {
+      "$value": "2em"
+    },
+    "xxl": {
+      "$value": "2.5em"
+    }
+  },
+  "padding": {
+    "$type": "dimension",
+    "xs": {
+      "$value": "3.75em"
+    },
+    "s": {
+      "$value": "5em"
+    },
+    "m": {
+      "$value": "7.5em"
+    },
+    "l": {
+      "$value": "10em"
+    },
+    "xl": {
+      "$value": "12.5em"
+    },
+    "container": {
+      "$value": "1.875em"
+    }
+  },
+  "size": {
+    "$type": "dimension",
+    "btnHeight": {
+      "$value": "2.5em"
+    },
+    "inputHeight": {
+      "$value": "3em"
+    },
+    "navBarHeight": {
+      "$value": "4.625em"
+    },
+    "strokeWeight": {
+      "$value": "1px"
+    },
+    "sidebarWidth": {
+      "$value": "19em"
+    },
+    "sidebarWidthCollapsed": {
+      "$value": "5.5em"
+    },
+    "contentMaxWidth": {
+      "$value": "60em"
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "xs": {
+      "$value": "0.25em"
+    },
+    "sm": {
+      "$value": "0.375em"
+    },
+    "md": {
+      "$value": "0.5em"
+    },
+    "lg": {
+      "$value": "0.875em"
+    },
+    "xl": {
+      "$value": "1em"
+    },
+    "pill": {
+      "$value": "50em"
+    },
+    "circle": {
+      "$value": "50%"
+    }
+  },
+  "shadow": {
+    "$type": "shadow",
+    "soft": {
+      "$value": {
+        "offsetX": "0",
+        "offsetY": "0.25em",
+        "blur": "0.5em",
+        "spread": "0",
+        "color": "#0000000a"
+      }
+    },
+    "modal": {
+      "$value": {
+        "offsetX": "0",
+        "offsetY": "1em",
+        "blur": "2em",
+        "spread": "0",
+        "color": "#00000033"
+      }
+    }
+  },
+  "duration": {
+    "$type": "duration",
+    "half": {
+      "$value": "300ms"
+    },
+    "double": {
+      "$value": "1200ms"
+    },
+    "ease": {
+      "$value": "400ms"
+    }
+  },
+  "easing": {
+    "$type": "cubicBezier",
+    "signature": {
+      "$value": [
+        0.625,
+        0.05,
+        0,
+        1
+      ]
+    }
+  }
+}

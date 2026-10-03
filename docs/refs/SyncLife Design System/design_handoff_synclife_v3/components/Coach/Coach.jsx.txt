@@ -1,0 +1,130 @@
+import React from 'react';
+
+const Spark = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+    <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/>
+  </svg>
+);
+const Send = ({ size = 13 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+  </svg>
+);
+
+/**
+ * Coach — SyncLife's AI narrator. The core interactive surface of the app:
+ * states the user's situation in one sentence, offers 1–3 suggested actions,
+ * and answers back inline in a thread. Not a static insight card.
+ */
+export function Coach({
+  mode = 'proativo',
+  eyebrow = 'Coach · maio 2026',
+  headline,
+  accent = 'var(--sl-accent, #7CDCE8)',
+  suggestions,
+  placeholder = 'Pergunte ao Coach…',
+}) {
+  const React_ = (typeof React !== 'undefined' && React) || window.React;
+  const { useState, useRef, useEffect } = React_;
+
+  const defaults = {
+    proativo: {
+      headline: headline || ['Você fecha maio em ', 'R$ 1.840 positivo', '. No ritmo, bate a meta anual dois meses antes.'],
+      tone: accent,
+      suggestions: suggestions || [
+        { primary: true, label: 'Cortar R$ 100 de Lazer', reply: 'Feito. Criei um limite de R$ 400/mês em Lazer. Isso adianta sua meta em ~3 semanas.' },
+        { label: 'Onde gasto mais', reply: 'Moradia R$ 1.200, Mercado R$ 640 e Lazer R$ 472. Só Lazer passou do previsto.' },
+        { label: 'Projeção até dez', reply: 'Você acumula R$ 22.080 até dezembro, R$ 4.080 acima da meta de reserva.' },
+      ],
+    },
+    neutro: {
+      headline: headline || ['Saldo do mês: ', 'R$ 1.840', '. Receitas R$ 5.000, despesas R$ 3.160.'],
+      tone: accent,
+      suggestions: suggestions || [
+        { primary: true, label: 'Ver extrato', reply: 'Abrindo o extrato de maio: 47 transações.' },
+        { label: 'Comparar com abril', reply: 'Saldo caiu de R$ 2.020 para R$ 1.840, puxado por Lazer.' },
+      ],
+    },
+    alerta: {
+      headline: headline || ['Atenção: ', 'Lazer passou 118% do previsto', '. Se não ajustar, maio fecha R$ 210 abaixo da meta.'],
+      tone: 'var(--sl-warning, #E8B86A)',
+      suggestions: suggestions || [
+        { primary: true, label: 'Congelar Lazer', reply: 'Congelei Lazer até dia 31. Recupera R$ 210 e mantém a meta.' },
+        { label: 'O que estourou?', reply: 'iFood: R$ 288 em 8 pedidos nos últimos 20 dias.' },
+      ],
+    },
+  };
+  const cfg = defaults[mode] || defaults.proativo;
+
+  const [thread, setThread] = useState([]);
+  const [asking, setAsking] = useState(false);
+  const scrollRef = useRef(null);
+  useEffect(() => { setThread([]); }, [mode]);
+  useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [thread, asking]);
+
+  const ask = (s) => {
+    setThread(t => [...t, { role: 'user', text: s.label }]);
+    setAsking(true);
+    setTimeout(() => { setThread(t => [...t, { role: 'coach', text: s.reply }]); setAsking(false); }, 600);
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', fontFamily: 'var(--sl-font-body, sans-serif)', color: 'var(--sl-fg-primary, #E7ECF1)' }}>
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+        <span style={{ width: 28, height: 28, borderRadius: 999, background: 'var(--sl-accent-soft, rgba(124,220,232,0.12))', border: `1px solid ${cfg.tone}`, color: cfg.tone, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Spark/>
+        </span>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: cfg.tone, textTransform: 'uppercase' }}>{eyebrow}</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, marginLeft: 4, fontSize: 10, color: 'var(--sl-fg-muted, #4A535F)' }}>
+          <span style={{ width: 6, height: 6, borderRadius: 999, background: cfg.tone }}/>online
+        </span>
+      </div>
+
+      <h1 style={{ fontFamily: 'var(--sl-font-display, sans-serif)', fontWeight: 500, fontSize: 34, lineHeight: 1.18, letterSpacing: '-0.02em', margin: 0, maxWidth: '22ch' }}>
+        {cfg.headline[0]}<span style={{ color: cfg.tone, fontWeight: 600 }}>{cfg.headline[1]}</span>{cfg.headline[2]}
+      </h1>
+
+      {(thread.length > 0 || asking) && (
+        <div ref={scrollRef} style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 180, overflowY: 'auto', paddingRight: 6 }}>
+          {thread.map((m, i) => (
+            <div key={i} style={{
+              alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '78%',
+              padding: '10px 14px', borderRadius: 14,
+              background: m.role === 'user' ? 'var(--sl-bg-elevated, #171E27)' : 'var(--sl-accent-soft, rgba(124,220,232,0.12))',
+              border: `1px solid ${m.role === 'user' ? 'var(--sl-line-subtle, rgba(255,255,255,0.07))' : cfg.tone}`,
+              color: m.role === 'user' ? 'var(--sl-fg-secondary, #A7B0BC)' : 'var(--sl-fg-primary, #E7ECF1)',
+              fontSize: 13.5, lineHeight: 1.55,
+              borderBottomRightRadius: m.role === 'user' ? 4 : 14,
+              borderBottomLeftRadius: m.role === 'coach' ? 4 : 14,
+            }}>{m.text}</div>
+          ))}
+          {asking && (
+            <div style={{ alignSelf: 'flex-start', padding: '12px 16px', borderRadius: 14, background: 'var(--sl-accent-soft, rgba(124,220,232,0.12))', border: `1px solid ${cfg.tone}`, display: 'inline-flex', gap: 4 }}>
+              {[0,1,2].map(i => <span key={i} style={{ width: 6, height: 6, borderRadius: 999, background: cfg.tone, opacity: 0.5 + i * 0.2 }}/>)}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: 8, marginTop: 22, flexWrap: 'wrap' }}>
+        {cfg.suggestions.map((s, i) => (
+          <button key={i} onClick={() => ask(s)} style={s.primary ? {
+            display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 18px', borderRadius: 999,
+            background: cfg.tone, color: 'var(--sl-fg-inverted, #0B0F14)', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          } : {
+            padding: '10px 16px', borderRadius: 999, background: 'transparent', color: 'var(--sl-fg-secondary, #A7B0BC)',
+            border: '1px solid var(--sl-line-strong, rgba(255,255,255,0.12))', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          }}>{s.primary && <Spark/>}{s.label}</button>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px', borderRadius: 14, maxWidth: 520, background: 'var(--sl-bg-surface, #11161D)', border: '1px solid var(--sl-line-subtle, rgba(255,255,255,0.07))' }}>
+        <span style={{ color: cfg.tone }}><Spark/></span>
+        <input placeholder={placeholder} style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'var(--sl-fg-primary, #E7ECF1)', fontFamily: 'inherit', fontSize: 13 }}/>
+        <button style={{ width: 28, height: 28, borderRadius: 8, background: cfg.tone, color: 'var(--sl-fg-inverted, #0B0F14)', border: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><Send/></button>
+      </div>
+    </div>
+  );
+}

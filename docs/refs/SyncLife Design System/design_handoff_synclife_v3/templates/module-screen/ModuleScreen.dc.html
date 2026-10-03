@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="Module Screen" description="Tela de módulo Coach-led: título, faixa de KPIs, sussurro do Coach, banda cross-module e blocos de dados (metas, linha do tempo, alocação)." -->
+<helmet><script src="./ds-base.js"></script></helmet>
+<div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;background:var(--sl-bg-base);color:var(--sl-fg-primary);font-family:var(--sl-font-body)">
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--sl-line-subtle,rgba(255,255,255,0.07));flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:12px;min-width:0">
+      <span style="font-family:var(--sl-font-display);font-size:15px;font-weight:600;letter-spacing:-0.01em"><span style="color:var(--sl-fg-primary)">Sync</span><span style="color:var(--sl-accent)">Life</span></span>
+      <span style="margin-left:8px;font-size:12px;color:var(--sl-fg-tertiary,#6B7482);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">› <span style="color:var(--sl-accent)">Patrimônio</span> › Evolução</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <button style="display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:var(--sl-accent-soft,rgba(52,211,153,0.14));border:1px solid var(--sl-line-strong,rgba(255,255,255,0.16));color:var(--sl-accent);font-size:12px;font-weight:600;cursor:pointer">✦ Coach <span style="font-family:var(--sl-font-mono,monospace);font-size:10px;opacity:.7">⌘J</span></button>
+      <div style="width:34px;height:34px;border-radius:999px;background:var(--sl-accent);display:inline-flex;align-items:center;justify-content:center;color:#0B0F14;font-family:var(--sl-font-display);font-weight:700;font-size:13px">A</div>
+    </div>
+  </header>
+  <div style="flex:1;display:flex;overflow:hidden">
+    <nav style="width:210px;flex-shrink:0;border-right:1px solid var(--sl-line-subtle,rgba(255,255,255,0.07));padding:20px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto">
+      <div style="font-size:9.5px;font-weight:700;letter-spacing:0.16em;color:var(--sl-fg-muted,#4A535F);padding:0 10px 8px;text-transform:uppercase">Patrimônio</div>
+      <button style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;border:none;background:var(--sl-accent-soft,rgba(52,211,153,0.14));color:var(--sl-fg-primary);font-size:13px;font-weight:600;cursor:pointer;text-align:left;font-family:var(--sl-font-body)">Evolução</button>
+      <button style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;border:none;background:transparent;color:var(--sl-fg-secondary,#A9B2BD);font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:var(--sl-font-body)">Carteira</button>
+      <button style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;border:none;background:transparent;color:var(--sl-fg-secondary,#A9B2BD);font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:var(--sl-font-body)">Alocação</button>
+      <button style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;border:none;background:transparent;color:var(--sl-fg-secondary,#A9B2BD);font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:var(--sl-font-body)">Proventos</button>
+      <button style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;border:none;background:transparent;color:var(--sl-fg-secondary,#A9B2BD);font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:var(--sl-font-body)">Relatório</button>
+    </nav>
+    <main style="flex:1;overflow-y:auto">
+      <div style="padding:24px 40px 40px;max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+        <header>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.14em;color:var(--sl-fg-tertiary,#6B7482);text-transform:uppercase;margin-bottom:6px">Patrimônio · 2026</div>
+          <h1 style="font-family:var(--sl-font-display);font-weight:600;font-size:30px;letter-spacing:-0.02em;margin:0;color:var(--sl-fg-primary)">Evolução</h1>
+        </header>
+        <x-import component-from-global-scope="SyncLifeDesignSystem_e19451.KpiStrip" dc-props="{{ kpiProps }}" hint-size="100%,120px"></x-import>
+        <x-import component-from-global-scope="SyncLifeDesignSystem_e19451.CoachWhisper" dc-props="{{ whisperProps }}" hint-size="100%,64px"></x-import>
+        <x-import component-from-global-scope="SyncLifeDesignSystem_e19451.CrossBand" dc-props="{{ crossProps }}" hint-size="100%,72px"></x-import>
+        <x-import component-from-global-scope="SyncLifeDesignSystem_e19451.ProgressList" dc-props="{{ progressProps }}" hint-size="100%,260px"></x-import>
+        <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;align-items:start">
+          <x-import component-from-global-scope="SyncLifeDesignSystem_e19451.Timeline" dc-props="{{ timelineProps }}" hint-size="100%,360px"></x-import>
+          <x-import component-from-global-scope="SyncLifeDesignSystem_e19451.Donut" dc-props="{{ donutProps }}" hint-size="100%,240px"></x-import>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const A = 'var(--sl-accent)';
+    return {
+      kpiProps: { items: [
+        { label: 'Patrimônio total', value: 'R$ 184k', delta: '+R$ 6,2k no mês', up: true, tone: A },
+        { label: 'Rentabilidade', value: '+9,4%', delta: '12 meses', up: true },
+        { label: 'Aporte do mês', value: 'R$ 2,4k', delta: 'meta R$ 2k' },
+        { label: 'Liquidez', value: '38%', delta: 'reserva ok' },
+      ] },
+      whisperProps: { bold: 'Seu aporte subiu 20% este mês', text: 'e pode acelerar sua meta de casa própria (Futuro) em 3 meses.', action: 'Ver em Futuro' },
+      crossProps: { segments: [
+        { text: 'Meses com mais ' }, { text: 'foco protegido', color: '#7C9CF5' },
+        { text: ' renderam ' }, { text: 'R$ 380 a mais', bold: true },
+        { text: ' em aportes: disciplina em ' }, { text: 'Tempo', color: '#7C9CF5' },
+        { text: ' vira ' }, { text: 'Patrimônio', color: A }, { text: '.' },
+      ], action: 'Ver conexões' },
+      progressProps: { title: 'Metas de patrimônio', sub: '2 no ritmo', rows: [
+        { label: 'Casa própria', current: 64000, target: 80000, currentLabel: 'R$ 64k', targetLabel: 'R$ 80k', color: A },
+        { label: 'Independência', current: 184000, target: 1200000, currentLabel: 'R$ 184k', targetLabel: 'R$ 1,2M', color: '#7C9CF5' },
+        { label: 'Taxa de custódia', current: 0.9, target: 0.6, currentLabel: '0,9%', targetLabel: '0,6%', color: '#E8B85C', invert: true, badge: 'ALTA', badgeColor: 'var(--sl-danger)' },
+      ] },
+      timelineProps: { title: 'Rumo à independência', items: [
+        { when: '2024', title: 'Primeiros R$ 100k', done: true },
+        { when: '2026', title: 'R$ 184k acumulados', meta: 'no ritmo de +9,4%/ano', current: true },
+        { when: '2031', title: 'Meio milhão', meta: 'projeção mantendo aportes' },
+        { when: '2040', title: 'Independência financeira', color: '#7C9CF5' },
+      ] },
+      donutProps: { title: 'Alocação atual', center: 'R$184k', centerSub: 'total', slices: [
+        { label: 'Renda fixa', share: 42, color: A },
+        { label: 'Ações BR', share: 23, color: '#7C9CF5' },
+        { label: 'Exterior', share: 20, color: '#E8B85C' },
+        { label: 'FIIs', share: 15, color: '#C58BF2' },
+      ] },
+    };
+  }
+}
+</script>
+</body>
+</html>

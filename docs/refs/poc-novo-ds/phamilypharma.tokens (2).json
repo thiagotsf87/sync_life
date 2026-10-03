@@ -1,0 +1,322 @@
+{
+  "$description": "Phamily Pharma (phamilypharma.com) design tokens — W3C DTCG. ITCSS/BEM, Anton (display) + Poppins (body). Root font-size 10px (1rem=10px). No 3D. Typography computed at desktop (>=1025px); some use clamp() and scale down on smaller viewports.",
+  "color": {
+    "$type": "color",
+    "brand": {
+      "green": {
+        "$value": "#09543d",
+        "$description": "primary"
+      },
+      "greenDark": {
+        "$value": "#04261c"
+      },
+      "brown": {
+        "$value": "#461e10",
+        "$description": "secondary"
+      },
+      "brownDark": {
+        "$value": "#1c0c07"
+      },
+      "cream": {
+        "$value": "#fffdf7"
+      },
+      "pink": {
+        "$value": "#ffa9e9"
+      }
+    },
+    "accent": {
+      "blue": {
+        "$value": "#3d3ef3"
+      },
+      "yellow": {
+        "$value": "#ffc200"
+      },
+      "orange": {
+        "$value": "#f45c24"
+      },
+      "lime": {
+        "$value": "#ccf337"
+      },
+      "magenta": {
+        "$value": "#dc3f81"
+      },
+      "violet": {
+        "$value": "#6d0596"
+      }
+    },
+    "neutral": {
+      "white": {
+        "$value": "#ffffff"
+      },
+      "black": {
+        "$value": "#1e1e1e"
+      },
+      "border": {
+        "$value": "#b1b1b1"
+      }
+    },
+    "semantic": {
+      "error": {
+        "$value": "{color.accent.orange}"
+      },
+      "success": {
+        "$value": "{color.brand.green}"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "$type": "fontFamily",
+      "display": {
+        "$value": [
+          "Anton",
+          "Arial",
+          "sans-serif"
+        ],
+        "$description": "headings, uppercase"
+      },
+      "body": {
+        "$value": [
+          "Poppins",
+          "Helvetica Neue",
+          "Helvetica",
+          "Arial",
+          "sans-serif"
+        ]
+      }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "regular": {
+        "$value": 400
+      },
+      "semibold": {
+        "$value": 600
+      },
+      "bold": {
+        "$value": 700
+      }
+    }
+  },
+  "typography": {
+    "$type": "typography",
+    "tx-xxl": {
+      "$value": {
+        "fontFamily": "{font.family.display}",
+        "fontSize": "11.322rem",
+        "lineHeight": "0.93",
+        "fontWeight": 400,
+        "letterSpacing": "-0.13rem",
+        "textTransform": "uppercase"
+      }
+    },
+    "tx-xl": {
+      "$value": {
+        "fontFamily": "{font.family.display}",
+        "fontSize": "clamp(6.5rem, 5vw, 7.5rem)",
+        "lineHeight": "0.93",
+        "fontWeight": 400,
+        "letterSpacing": "-0.075rem",
+        "textTransform": "uppercase"
+      }
+    },
+    "tx-l": {
+      "$value": {
+        "fontFamily": "{font.family.display}",
+        "fontSize": "4.6rem",
+        "lineHeight": "0.93",
+        "fontWeight": 400,
+        "letterSpacing": "-0.046rem",
+        "textTransform": "uppercase"
+      }
+    },
+    "tx-m": {
+      "$value": {
+        "fontFamily": "{font.family.body}",
+        "fontSize": "3.6rem",
+        "lineHeight": "1.2",
+        "fontWeight": 400,
+        "letterSpacing": "-0.036rem"
+      }
+    },
+    "tx-s": {
+      "$value": {
+        "fontFamily": "{font.family.body}",
+        "fontSize": "2.6rem",
+        "lineHeight": "1.2",
+        "fontWeight": 400
+      }
+    },
+    "tx-xs": {
+      "$value": {
+        "fontFamily": "{font.family.body}",
+        "fontSize": "2rem",
+        "lineHeight": "1.2",
+        "fontWeight": 600
+      }
+    },
+    "tx-p": {
+      "$value": {
+        "fontFamily": "{font.family.body}",
+        "fontSize": "1.6rem",
+        "lineHeight": "1.5",
+        "fontWeight": 400
+      }
+    },
+    "tx-ps": {
+      "$value": {
+        "fontFamily": "{font.family.body}",
+        "fontSize": "1.4rem",
+        "lineHeight": "1.5",
+        "fontWeight": 400
+      }
+    }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "3xs": {
+      "$value": "0.3rem"
+    },
+    "2xs": {
+      "$value": "0.5rem"
+    },
+    "xs": {
+      "$value": "0.75rem"
+    },
+    "s": {
+      "$value": "1rem"
+    },
+    "sm": {
+      "$value": "1.5rem"
+    },
+    "m": {
+      "$value": "2.25rem"
+    },
+    "l": {
+      "$value": "3rem"
+    },
+    "xl": {
+      "$value": "6rem"
+    },
+    "xxl": {
+      "$value": "9rem"
+    },
+    "3xl": {
+      "$value": "12rem"
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "sm": {
+      "$value": "0.4rem"
+    },
+    "input": {
+      "$value": "1rem"
+    },
+    "md": {
+      "$value": "1.5rem"
+    },
+    "lg": {
+      "$value": "3rem"
+    },
+    "tag": {
+      "$value": "4rem"
+    },
+    "pill": {
+      "$value": "10rem"
+    },
+    "circle": {
+      "$value": "50%"
+    }
+  },
+  "shadow": {
+    "$type": "shadow",
+    "soft": {
+      "$value": {
+        "offsetX": "0",
+        "offsetY": "0",
+        "blur": "100px",
+        "spread": "0",
+        "color": "#0000001a"
+      }
+    },
+    "thumb": {
+      "$value": {
+        "offsetX": "0",
+        "offsetY": "2px",
+        "blur": "5px",
+        "spread": "0",
+        "color": "#00000033"
+      }
+    }
+  },
+  "grid": {
+    "breakpoints": {
+      "$type": "dimension",
+      "sm": {
+        "$value": "641px"
+      },
+      "md": {
+        "$value": "768px"
+      },
+      "lg": {
+        "$value": "980px"
+      },
+      "xl": {
+        "$value": "1025px"
+      },
+      "max": {
+        "$value": "1440px"
+      }
+    }
+  },
+  "motion": {
+    "duration": {
+      "$type": "duration",
+      "fast": {
+        "$value": "150ms"
+      },
+      "base": {
+        "$value": "300ms"
+      },
+      "slow": {
+        "$value": "500ms"
+      }
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "smooth": {
+        "$value": [
+          0.23,
+          1,
+          0.32,
+          1
+        ]
+      },
+      "overshootSoft": {
+        "$value": [
+          0.17,
+          0.67,
+          0.3,
+          1.1
+        ]
+      },
+      "overshootStrong": {
+        "$value": [
+          0.17,
+          0.67,
+          0.3,
+          1.33
+        ]
+      },
+      "material": {
+        "$value": [
+          0,
+          0,
+          0.2,
+          1
+        ]
+      }
+    }
+  }
+}

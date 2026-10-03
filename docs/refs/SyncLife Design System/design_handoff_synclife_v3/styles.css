@@ -1,0 +1,7 @@
+/* ============================================================
+   SyncLife Design System — root stylesheet
+   Single entry point for consumers. Imports the full token
+   closure so linking this one file pulls in everything.
+   ============================================================ */
+
+@import url('colors_and_type.css');

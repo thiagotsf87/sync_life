@@ -1,0 +1,24 @@
+import * as React from 'react';
+
+export interface DonutSlice {
+  /** Legend label. */
+  label: string;
+  /** Percentage of the ring (should sum to ~100 across slices). */
+  share: number;
+  /** Slice + legend-dot colour. */
+  color: string;
+}
+
+export interface DonutProps {
+  /** Optional card heading. */
+  title?: string;
+  /** Big value in the ring's centre. */
+  center: string;
+  /** Small caption under the centre value. */
+  centerSub?: string;
+  /** The slices, drawn clockwise from 12 o'clock. */
+  slices: DonutSlice[];
+}
+
+/** A conic-gradient share donut with centred value and legend — the donut block from module screens. */
+export function Donut(props: DonutProps): React.ReactElement;

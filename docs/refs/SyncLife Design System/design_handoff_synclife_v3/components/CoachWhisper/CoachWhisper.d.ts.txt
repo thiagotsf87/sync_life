@@ -1,0 +1,17 @@
+import * as React from 'react';
+
+export interface CoachWhisperProps {
+  /** The lead fact, rendered bold in the primary colour. */
+  bold: string;
+  /** The rest of the whisper — the context and recommendation. */
+  text: string;
+  /** Action button label. Omit to hide the button. */
+  action?: string;
+  /** Click handler for the action. */
+  onAction?: () => void;
+  /** Visual treatment: 'soft' dashed inline hint (default) or 'solid' filled callout. */
+  variant?: 'soft' | 'solid';
+}
+
+/** The inline Coach whisper — a short, contextual nudge dropped inside lists, charts and forms. */
+export function CoachWhisper(props: CoachWhisperProps): React.ReactElement;

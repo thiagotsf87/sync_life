@@ -1,0 +1,22 @@
+import * as React from 'react';
+
+export interface Kpi {
+  /** Small uppercase label above the value. */
+  label: string;
+  /** The metric itself (string so it can carry units, currency, ranges). */
+  value: string;
+  /** Secondary delta / context line under the value. */
+  delta?: string;
+  /** Render the delta in the positive (accent/success) treatment with an arrow. */
+  up?: boolean;
+  /** Override the value colour (e.g. a domain or status token). */
+  tone?: string;
+}
+
+export interface KpiStripProps {
+  /** The metrics to show, left to right. */
+  items: Kpi[];
+}
+
+/** A single hairline-divided row of headline metrics — the KPI band atop every module screen. */
+export function KpiStrip(props: KpiStripProps): React.ReactElement;

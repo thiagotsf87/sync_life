@@ -1,0 +1,41 @@
+import React from 'react';
+
+const Spark = ({ size = 13 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+    <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/>
+  </svg>
+);
+
+/**
+ * CoachWhisper — the Coach's quietest voice (level 3 of the Coach system).
+ * A short contextual nudge that lives inside a list, chart or form: one bold fact,
+ * a recommendation, and an optional action. Never a modal, never blocking.
+ */
+export function CoachWhisper({ bold, text, action, onAction, variant = 'soft' }) {
+  const solid = variant === 'solid';
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 12, padding: '11px 15px', borderRadius: 12,
+      background: solid
+        ? 'var(--sl-accent-soft, rgba(124,220,232,0.12))'
+        : 'linear-gradient(90deg, var(--sl-accent-soft, rgba(124,220,232,0.12)) 0%, transparent 74%)',
+      border: `1px ${solid ? 'solid' : 'dashed'} var(--sl-line-accent, rgba(124,220,232,0.28))`,
+      fontSize: 13, color: 'var(--sl-fg-secondary, #A7B0BC)', fontFamily: 'var(--sl-font-body, sans-serif)',
+    }}>
+      <span style={{ width: 26, height: 26, borderRadius: 8, background: 'var(--sl-bg-base, #0B0F14)', border: '1px solid var(--sl-line-accent, rgba(124,220,232,0.28))', color: 'var(--sl-accent, #7CDCE8)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <Spark/>
+      </span>
+      <span style={{ flex: 1, lineHeight: 1.5 }}>
+        <strong style={{ color: 'var(--sl-fg-primary, #E7ECF1)' }}>{bold}</strong> {text}
+      </span>
+      {action && (
+        <button onClick={onAction} style={{
+          flexShrink: 0, padding: '7px 13px', borderRadius: 999,
+          background: 'var(--sl-accent, #7CDCE8)', border: 'none', color: 'var(--sl-fg-inverted, #0B0F14)',
+          fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+        }}>{action}</button>
+      )}
+    </div>
+  );
+}

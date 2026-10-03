@@ -1,0 +1,55 @@
+import React from 'react';
+
+const Check = ({ size = 13 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--sl-accent, #34D399)"
+    strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
+
+/**
+ * ProgressList — a card of labelled goal bars (current / target), each with a
+ * colour dot, optional sub-label and badge. Bars turn accent when complete;
+ * set `invert` for "less is better" metrics (over target reads as danger).
+ */
+export function ProgressList({ title, sub, rows = [] }) {
+  return (
+    <div style={{
+      background: 'var(--sl-bg-surface, #11161D)', border: '1px solid var(--sl-line-subtle, rgba(255,255,255,0.07))',
+      borderRadius: 16, padding: 22, display: 'flex', flexDirection: 'column', gap: 4,
+      fontFamily: 'var(--sl-font-body, sans-serif)',
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+        <h3 style={{ fontFamily: 'var(--sl-font-display, sans-serif)', fontSize: 16, fontWeight: 600, margin: 0, color: 'var(--sl-fg-primary, #E7ECF1)', letterSpacing: '-0.01em' }}>{title}</h3>
+        {sub && <span style={{ fontSize: 11.5, color: 'var(--sl-fg-tertiary, #6B7482)' }}>{sub}</span>}
+      </div>
+      {rows.map((r, i) => {
+        const pct = Math.round((r.current / r.target) * 100);
+        const good = r.invert ? pct < 100 : pct >= 100;
+        const near = r.invert ? pct >= 90 : false;
+        const bar = r.invert
+          ? (pct >= 100 ? 'var(--sl-danger, #F2726B)' : near ? 'var(--sl-warning, #E8B85C)' : r.color)
+          : (pct >= 100 ? 'var(--sl-accent, #34D399)' : r.color);
+        return (
+          <div key={i} style={{ padding: '13px 0', borderTop: i === 0 ? 'none' : '1px solid var(--sl-line-subtle, rgba(255,255,255,0.07))' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 9 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9, fontSize: 13.5, fontWeight: 500, color: 'var(--sl-fg-primary, #E7ECF1)' }}>
+                <span style={{ width: 9, height: 9, borderRadius: 3, background: r.color }}/>{r.label}
+                {r.sub && <span style={{ fontSize: 10.5, color: 'var(--sl-fg-muted, #4A535F)' }}>· {r.sub}</span>}
+                {good && !r.invert && r.check && <Check size={13}/>}
+                {r.badge && <span style={{ fontSize: 9.5, fontWeight: 700, color: r.badgeColor || 'var(--sl-warning, #E8B85C)', letterSpacing: '0.06em' }}>{r.badge}</span>}
+              </span>
+              <span style={{ fontFamily: 'var(--sl-font-mono, monospace)', fontSize: 12.5, color: 'var(--sl-fg-secondary, #A9B2BD)' }}>
+                <span style={{ color: 'var(--sl-fg-primary, #E7ECF1)', fontWeight: 600 }}>{r.currentLabel != null ? r.currentLabel : r.current + (r.unit || '')}</span>
+                <span style={{ color: 'var(--sl-fg-muted, #4A535F)' }}> / {r.targetLabel != null ? r.targetLabel : r.target + (r.unit || '')}</span>
+              </span>
+            </div>
+            <div style={{ height: 8, borderRadius: 999, background: 'var(--sl-bg-elevated, rgba(255,255,255,0.05))', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${Math.min(100, pct)}%`, background: bar, borderRadius: 999 }}/>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}

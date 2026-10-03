@@ -1,0 +1,22 @@
+import * as React from 'react';
+
+export interface CrossSegment {
+  /** The text run. */
+  text: string;
+  /** Colour this run as a module reference (pass a domain token or hex). */
+  color?: string;
+  /** Render this run bold in the primary text colour (for emphasised numbers/facts). */
+  bold?: boolean;
+}
+
+export interface CrossBandProps {
+  /** The narrative, as coloured/bold/plain runs read left to right. */
+  segments: CrossSegment[];
+  /** Call-to-action label on the right. Omit to hide the button. */
+  action?: string;
+  /** Click handler for the action button. */
+  onAction?: () => void;
+}
+
+/** The cross-module storytelling band — one sentence that connects two life domains with a causal insight. */
+export function CrossBand(props: CrossBandProps): React.ReactElement;
