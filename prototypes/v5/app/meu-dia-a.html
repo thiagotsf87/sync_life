@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Meu dia · v5 A</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* ─── Sy, 40px, quieto ─── */
+  .sy40{width:40px;height:40px;flex:none;border-radius:11px;overflow:hidden;background:#0f0d0d;display:inline-block}
+  .sy40 canvas{display:block;width:100%;height:100%}
+
+  /* ─── topo: Sy fala à esquerda, o número quieto à direita ─── */
+  .topo{padding:46px 0 40px;display:grid;grid-template-columns:1fr 220px;gap:clamp(36px,5vw,88px);align-items:start;border-bottom:1px solid var(--line)}
+  .sy{display:grid;grid-template-columns:40px 1fr;gap:18px;align-items:start}
+  .sy .fala{font:500 clamp(18px,1.6vw,21px)/1.5 var(--gro);letter-spacing:-.018em;color:var(--t1);max-width:58ch}
+  .sy .fala b{font-weight:600}
+  .sy .fala b.w{color:var(--coral)}
+  .fontes{font:400 11.5px var(--int);color:var(--t3);margin-top:12px}
+  .ask{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:999px;padding:12px 18px;margin-top:20px;
+    background:var(--s1);width:100%;max-width:520px;cursor:pointer;text-align:left;transition:border-color .3s var(--ease)}
+  .ask:hover{border-color:rgba(104,64,255,.5)}
+  .ask span{flex:1;font:400 13px var(--int);color:var(--t2)}
+  .ask svg{color:var(--roxo);flex-shrink:0}
+  .score{text-align:right;padding-top:4px}
+  .score .v{font:700 44px/1 var(--gro);letter-spacing:-.045em}
+  .score .l{font:400 12px var(--int);color:var(--t3);margin-top:8px}
+  .score .l .num{font-weight:700;font-size:11.5px}
+  .score a{display:inline-block;font:500 12px var(--int);color:var(--t2);margin-top:10px;transition:color .3s var(--ease)}
+  .score a:hover{color:var(--t1)}
+
+  /* ─── pede você hoje: lista densa ─── */
+  .pede{padding:34px 0 0}
+  .pede > .eyebrow{margin-bottom:2px}
+  .row{display:grid;grid-template-columns:40px 1fr auto auto;gap:18px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);
+    transition:padding-left .35s var(--ease)}
+  .row:hover{padding-left:8px}
+  .row .ix{font:700 12px var(--gro);color:var(--roxo)}
+  .row .tx{font:400 14.5px var(--int);color:var(--t1)}
+  .row .tx strong{font-weight:600}
+  .row .sub{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+  .row .val{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap;min-width:120px;text-align:right}
+  .row .val .ele{color:var(--ele)}
+  .row.warn .val{color:var(--coral)}
+  .row .act{min-width:124px;justify-content:center}
+  .prox{display:flex;align-items:baseline;gap:18px;padding:18px 0 0;border-left:2px solid var(--roxo);padding-left:16px;margin-top:22px}
+  .prox .eyebrow{color:var(--roxo);flex-shrink:0;position:relative;top:-1px}
+  .prox p{font:400 14.5px/1.5 var(--int);color:var(--t2)}
+  .prox p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+
+  /* ─── check-in ─── */
+  .checkin{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(28px,4vw,64px);align-items:center;
+    margin-top:44px;padding-top:30px;padding-bottom:30px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .frase{font:500 20px var(--gro);letter-spacing:-.02em;margin:10px 0 16px}
+
+  /* ─── hoje ─── */
+  .hoje{border-bottom:1px solid var(--line);padding:24px 0;position:relative}
+  .hoje::after{content:"";position:absolute;top:0;right:0;bottom:0;width:70px;background:linear-gradient(90deg,transparent,var(--bg));pointer-events:none}
+  .hoje > .in{display:flex;align-items:baseline;gap:26px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .hoje > .in::-webkit-scrollbar{display:none}
+  .hoje .eyebrow{flex-shrink:0}
+  .ev{display:flex;align-items:baseline;gap:9px;white-space:nowrap;flex-shrink:0}
+  .ev span{font:500 13px var(--int);color:var(--t2)}
+  .ev.money span{color:var(--t1)}
+  .ev .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
+  .ev .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
+  .ev time,.ev span.num{font:700 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+
+  /* ─── suas áreas ─── */
+  .dims-sec{padding:48px 0 8px}
+  .dims-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .dims-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .dims-head a:hover{color:var(--t1)}
+  .dims{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(36px,5vw,80px)}
+  .dimrow{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:baseline;padding:17px 0;border-bottom:1px solid var(--line);
+    transition:padding-left .35s var(--ease)}
+  .dimrow:hover{padding-left:8px}
+  .dimrow .di{font:700 12px var(--gro);color:var(--t3)}
+  .dimrow:hover .di{color:var(--roxo)}
+  .dimrow .nm{font:500 16px var(--gro);letter-spacing:-.01em}
+  .dimrow .mt{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+  .dimrow .sc{font:700 22px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+  .dimrow .tr{font:600 11px var(--gro)}
+  .outras{font:400 12px var(--int);color:var(--t3);padding:14px 0;border-top:1px solid var(--line);margin-top:-1px}
+
+  /* ─── números do mês ─── */
+  .nums{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:40px}
+  .nums > div{padding:30px clamp(16px,2.4vw,34px);border-right:1px solid var(--line)}
+  .nums > div:first-child{padding-left:0}
+  .nums > div:last-child{border-right:none}
+  .nums .v{font:700 clamp(26px,3vw,38px)/1 var(--gro);letter-spacing:-.04em;margin-top:12px}
+  .nums .d{font:500 12px var(--int);margin-top:8px;color:var(--t3)}
+
+  /* ─── sua semana: uma linha ─── */
+  .semana{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:20px 0 56px;flex-wrap:wrap}
+  .semana p{font:400 13.5px var(--int);color:var(--t2)}
+  .semana p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+  .semana a{font:500 12.5px var(--int);color:var(--t2);transition:color .3s var(--ease);white-space:nowrap}
+  .semana a:hover{color:var(--t1)}
+
+  @media (max-width:960px){
+    .topo{grid-template-columns:1fr}
+    .score{text-align:left}
+    .row{grid-template-columns:40px 1fr;row-gap:8px}
+    .row .val{grid-column:2;text-align:left;min-width:0}
+    .row .act{grid-column:2;justify-self:start}
+    .checkin{grid-template-columns:1fr}
+    .ck-form{flex-direction:column;align-items:stretch}
+    .nums{grid-template-columns:1fr 1fr}
+    .nums > div:nth-child(2){border-right:none}
+    .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+    .nums > div:nth-child(3){padding-left:0}
+    .dims{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button">+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a class="on" href="meu-dia-a.html">Meu dia</a>
+    <a href="financas-a.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <!-- topo: Sy fala, o número quieto -->
+    <section class="topo boot b1" aria-label="Sy sobre o seu dia">
+      <div class="sy">
+        <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+        <div>
+          <p class="fala">Boa tarde, Thiago. Desde ontem mudou uma coisa: o lazer encostou no teto, restam <b class="num w">R$&nbsp;10</b> até quinta. Fora isso, outubro já está ganho e a poupança fecha acima da meta. A proposta do curso de inglês continua esperando você.</p>
+          <p class="fontes">Atualizado às 7h12 · fontes: orçamento Lazer, 34 transações, agenda da semana</p>
+          <button class="ask" data-coach-open type="button">
+            <span>Pergunte ou registre algo</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="score" role="img" aria-label="Life Sync Score 78, mais 3 na semana">
+        <div class="v num" data-cnt="78">78</div>
+        <div class="l">Life Sync Score · <span class="num ele">+3</span> na semana</div>
+        <a href="life-score.html">Entender o número →</a>
+      </div>
+    </section>
+
+    <!-- pede você hoje -->
+    <section class="pede boot b2" aria-label="Pede você hoje">
+      <p class="eyebrow">Pede você hoje</p>
+
+      <div class="row">
+        <span class="ix num">05</span>
+        <div>
+          <div class="tx"><strong>A proposta do curso de inglês</strong> continua em aberto</div>
+          <div class="sub">Mente · Tempo · Finanças · Carreira · Futuro · meta Fluência até 2027 · 2 noites por semana</div>
+        </div>
+        <span class="val num">R$&nbsp;180/mês</span>
+        <button class="btn-sm ghost act" type="button" data-coach-open data-coach-seed="Vale fechar o curso de inglês por R$ 180 por mês, 2 noites por semana?">Decidir</button>
+      </div>
+
+      <div class="row warn">
+        <span class="ix num">01</span>
+        <div>
+          <div class="tx"><strong>Lazer</strong> encostou no teto: restam R$&nbsp;10 até quinta</div>
+          <div class="sub">98% do orçamento usado, 4 dias de janela</div>
+        </div>
+        <span class="val num">R$&nbsp;410 de R$&nbsp;420</span>
+        <a class="btn-sm ghost act" href="financas-a.html#orcamentos">Ver orçamento</a>
+      </div>
+
+      <div class="row">
+        <span class="ix num">04</span>
+        <div>
+          <div class="tx"><strong>Fisioterapia</strong> hoje, no início da manhã</div>
+          <div class="sub">Leve o laudo da última sessão</div>
+        </div>
+        <span class="val num">07:30</span>
+        <a class="btn-sm ghost act" href="#hoje">Abrir agenda</a>
+      </div>
+
+      <div class="row">
+        <span class="ix num">01</span>
+        <div>
+          <div class="tx"><strong>Aluguel</strong> vence em 3 dias</div>
+          <div class="sub">Saldo projetado segue positivo depois do pagamento</div>
+        </div>
+        <span class="val num">R$&nbsp;1.200,00</span>
+        <a class="btn-sm ghost act" href="financas-a.html#recorrentes">Ver recorrentes</a>
+      </div>
+
+      <div class="row">
+        <span class="ix num">04</span>
+        <div>
+          <div class="tx"><strong>3 das 4 áreas subiram</strong> desde o seu último acesso</div>
+          <div class="sub">01 Finanças +2 · 02 Futuro +1 · 04 Corpo +3 · 08 Experiências parada</div>
+        </div>
+        <span class="val num">78 <span class="ele">+3</span></span>
+        <a class="btn-sm ghost act" href="#areas">Ver áreas</a>
+      </div>
+
+      <div class="prox">
+        <span class="eyebrow">Próxima ação</span>
+        <p>Segure o lazer até sexta e o mês fecha com <b class="num">R$&nbsp;2.120</b>.</p>
+      </div>
+    </section>
+
+    <!-- check-in -->
+    <section class="checkin boot b3" aria-label="Check-in do dia">
+      <div>
+        <p class="eyebrow">Check-in</p>
+        <p class="frase">Como foi o dia?</p>
+        <div class="moods">
+          <button class="mood" type="button">Péssimo</button>
+          <button class="mood" type="button">Ruim</button>
+          <button class="mood" type="button">Neutro</button>
+          <button class="mood" type="button">Bem</button>
+          <button class="mood" type="button">Ótimo</button>
+        </div>
+      </div>
+      <div>
+        <div class="ck-form">
+          <input class="ck-note" type="text" placeholder="Uma linha sobre hoje (opcional)">
+          <button class="btn-sm roxo ck-save" type="button">Registrar</button>
+        </div>
+        <div class="ck-done" hidden>Registrado às 21:14 · <b data-out></b></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- hoje -->
+  <section class="hoje boot b4" id="hoje" aria-label="Hoje">
+    <div class="wrap in">
+      <span class="eyebrow">Hoje</span>
+      <span class="ev"><time class="num">07:30</time><span>Fisioterapia</span></span>
+      <span class="ev money"><span class="tag due">EM 3 DIAS</span><span>Aluguel</span><span class="num">R$&nbsp;1.200,00</span></span>
+      <span class="ev"><time class="num">TER 10:00</time><span>1:1 com gestor</span></span>
+      <span class="ev money"><span class="tag">QUA</span><span>Aporte automático</span><span class="num">R$&nbsp;580,00</span></span>
+      <span class="ev"><time class="num">SEX 20:00</time><span>Jantar com Ana</span></span>
+      <span class="ev money"><span class="tag">EM 5 DIAS</span><span>Internet</span><span class="num">R$&nbsp;89,90</span></span>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <!-- suas áreas -->
+    <section class="dims-sec boot b5" id="areas" aria-label="Suas áreas">
+      <div class="dims-head">
+        <p class="eyebrow">Suas áreas</p>
+        <a href="#">Ver todas →</a>
+      </div>
+      <div class="dims">
+        <a class="dimrow" href="financas-a.html"><span class="di num">01</span><div><div class="nm">Finanças</div><div class="mt num">Saldo R$&nbsp;1.840 · lazer no limite</div></div><span class="sc num">83<span class="tr ele">▲2</span></span></a>
+        <div class="dimrow"><span class="di num">02</span><div><div class="nm">Futuro</div><div class="mt num">3 metas · 61% de média</div></div><span class="sc num">79<span class="tr ele">▲1</span></span></div>
+        <div class="dimrow"><span class="di num">04</span><div><div class="nm">Corpo</div><div class="mt num">3 atividades · 126 min</div></div><span class="sc num">69<span class="tr ele">▲3</span></span></div>
+        <div class="dimrow"><span class="di num">08</span><div><div class="nm">Experiências</div><div class="mt num">Itália em 92 dias</div></div><span class="sc num">78<span class="tr" style="color:var(--t3)">–</span></span></div>
+      </div>
+      <p class="outras">Outras: 03 Tempo <span class="num">71</span> · 05 Mente <span class="num">58</span> · 06 Patrimônio <span class="num">76</span> · 07 Carreira <span class="num">69</span></p>
+    </section>
+
+    <!-- números do mês -->
+    <section class="nums rv" aria-label="Números do mês">
+      <div><p class="eyebrow">Saldo livre</p><div class="v num" data-cnt="1840" data-prefix="R$&nbsp;">R$&nbsp;1.840</div><div class="d num ele">+12% vs setembro</div></div>
+      <div><p class="eyebrow">Receitas</p><div class="v num" data-cnt="5000" data-prefix="R$&nbsp;">R$&nbsp;5.000</div><div class="d num ele">+8% vs setembro</div></div>
+      <div><p class="eyebrow">Despesas</p><div class="v num" data-cnt="3160" data-prefix="R$&nbsp;">R$&nbsp;3.160</div><div class="d num">63% da receita</div></div>
+      <div><p class="eyebrow">Poupança</p><div class="v num" data-cnt="37" data-suffix="%">37%</div><div class="d num">Meta: 30%</div></div>
+    </section>
+
+    <!-- sua semana: uma linha -->
+    <section class="semana rv" aria-label="Sua semana">
+      <p>Sua semana: score de <b class="num">75</b> para <b class="num">78</b>, <b class="num">11 de 14</b> compromissos feitos, <b class="num">6h30</b> de foco. Fecha domingo às 21:30.</p>
+      <a href="review-semanal.html">Ver a semana →</a>
+    </section>
+  </div>
+
+  <!-- rodapé -->
+  <footer class="colofao">
+    <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+    <div class="r">
+      <span>Streak <b class="num">12 dias</b></span>
+      <span>Badges <b class="num">24/61</b></span>
+      <span>Última sincronização às <b class="num">14:05</b></span>
+    </div>
+  </footer>
+</main>
+
+<!-- camada de Sy -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: o seu dia</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o seu dia. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Resumo da minha semana</button>
+        <button class="chip" type="button">Simular: e se eu poupar R$&nbsp;800?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+      </div>
+      <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+      <div class="action" role="status">
+        <div class="al">Ação executada</div>
+        <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+        <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+      </div>
+      <div class="typing" aria-label="Sy digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre a sua vida">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script type="module">
+import { REDUZ } from '../personagem/vida.js'
+import { criarEnxame } from '../personagem/enxame.js'
+const pecas = [...document.querySelectorAll('.sy40 canvas')].map((cv, i) =>
+  criarEnxame(cv, { n: 190, tam: .7, compacto: .78, dpr: 3, semente: 4.6 + i }))
+// único estado além de repouso: ouvindo, enquanto o input de Sy tem foco
+let estado = 'repouso'
+const cask = document.querySelector('.camada .cask')
+if (cask) {
+  cask.addEventListener('focusin', () => { estado = 'ouvindo' })
+  cask.addEventListener('focusout', () => { estado = 'repouso' })
+}
+let ultimo = performance.now()
+function laco (agora) { const dt = Math.min((agora - ultimo) / 1000, .05); ultimo = agora
+  for (const p of pecas) p.quadro(dt, estado); requestAnimationFrame(laco) }
+if (REDUZ) { for (let i = 0; i < 3; i++) for (const p of pecas) p.quadro(1 / 60, 'repouso') } else requestAnimationFrame(laco)
+</script>
+</body>
+</html>

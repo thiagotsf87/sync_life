@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Meu dia · versão C</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* ─── Sy, 40px, quieto ─── */
+  .sy40{width:40px;height:40px;flex:none;border-radius:11px;overflow:hidden;background:#0f0d0d;display:inline-block}
+  .sy40 canvas{display:block;width:100%;height:100%}
+
+  /* ─── topo: título curto + número com rótulo ─── */
+  .top{padding:40px 0 28px;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;border-bottom:1px solid var(--line)}
+  .top h1{font:500 32px/1.05 var(--gro);letter-spacing:-.035em;margin-top:10px}
+  .top .sub{font:400 13.5px var(--int);color:var(--t2);margin-top:8px}
+  .score{text-align:right;flex-shrink:0}
+  .score .v{font:700 44px/1 var(--gro);letter-spacing:-.05em;display:block}
+  .score .l{display:block;font:500 11.5px var(--int);color:var(--t3);margin-top:7px}
+  .score .l b{font-weight:600}
+  .score a{display:inline-block;font:500 11.5px var(--int);color:var(--t3);margin-top:5px;transition:color .3s var(--ease)}
+  .score a:hover{color:var(--t1)}
+
+  /* ─── corpo: conversa 1.45fr / lateral 1fr ─── */
+  .casa{display:grid;grid-template-columns:1.45fr 1fr;gap:clamp(36px,5vw,72px);align-items:start}
+
+  /* conversa */
+  .conv{display:flex;flex-direction:column;min-height:calc(100vh - 230px)}
+  .thread{display:flex;flex-direction:column;gap:14px;padding:30px 0 10px}
+  .divider{display:flex;align-items:center;gap:14px;font:700 9.5px var(--gro);letter-spacing:.2em;color:var(--t3);text-transform:uppercase;margin:2px 0 6px}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+  .msg{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start}
+  .msg .sy40{margin-top:2px}
+  .msg .col{display:flex;flex-direction:column;gap:10px;align-items:flex-start;min-width:0}
+  .msg.cont{grid-template-columns:1fr;padding-left:54px}
+  .msg .bub.a,.msg .action{max-width:520px}
+  .thread > .bub.u{margin:4px 0}
+  .bub.a .meta{letter-spacing:.12em}
+  .bub.a .meta .num{letter-spacing:.06em}
+
+  /* objetos de dado dentro da conversa (E-04: card só porque é objeto) */
+  .obj{width:100%;max-width:520px;border:1px solid var(--line);border-radius:14px;background:var(--s1);padding:16px 18px 15px;
+    transition:border-color .3s var(--ease)}
+  .obj:hover{border-color:var(--line-h)}
+  .obj .eyebrow{font-size:9.5px;letter-spacing:.2em}
+  .obj .eyebrow b{color:var(--roxo)}
+  .obj .r1{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-top:10px}
+  .obj .nm{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .obj .vl{font:700 14px var(--gro);letter-spacing:-.02em;color:var(--t1)}
+  .obj .vl.w{color:var(--coral)}
+  .obj .vl small{font-weight:500;color:var(--t3);font-size:12px}
+  .obj .track{height:4px;background:var(--s2);border-radius:2px;overflow:hidden;margin:10px 0 10px}
+  .obj .track i{display:block;height:100%;width:var(--w);border-radius:2px;background:var(--t2)}
+  .obj .track.w i{background:var(--coral)}
+  .obj .foot{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .obj .foot p{font:400 12.5px/1.55 var(--int);color:var(--t2)}
+  .obj .foot p strong{color:var(--t1);font-weight:600}
+  .obj .go{font:500 12px var(--int);color:var(--roxo);white-space:nowrap;transition:color .3s var(--ease)}
+  .obj .go:hover{color:var(--roxo-h)}
+  .obj .areas{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:9px;font:600 10.5px var(--gro);color:var(--t3);letter-spacing:.02em}
+  .obj .areas span b{color:var(--roxo);font-weight:700;margin-right:4px}
+  .obj .dl{display:grid;grid-template-columns:auto 1fr;gap:5px 16px;margin-top:12px;font:400 12.5px/1.5 var(--int);color:var(--t2)}
+  .obj .dl dt{color:var(--t3)}
+  .obj .dl dd{color:var(--t1)}
+  .obj .acts{display:flex;gap:8px;margin-top:14px}
+
+  /* check-in como mensagem */
+  .ckbub{max-width:100%;width:100%;padding:15px 18px 16px}
+  .ckbub .frase{font:500 16px var(--gro);letter-spacing:-.015em;color:var(--t1);margin-bottom:12px}
+  .ckbub .ck-form{margin-top:12px}
+  .ckbub .ck-done{margin-top:10px}
+
+  /* input fixo ao pé da coluna */
+  .say-wrap{position:sticky;bottom:0;margin-top:auto;padding:22px 0 24px;
+    background:linear-gradient(180deg,rgba(21,19,19,0) 0%,var(--bg) 40%)}
+  .say{display:flex;align-items:center;gap:11px;background:#1b1918;border:1px solid var(--line-h);border-radius:999px;padding:13px 19px;
+    transition:border-color .3s var(--ease)}
+  .say:focus-within{border-color:rgba(104,64,255,.55)}
+  .say input{flex:1;background:none;border:none;outline:none;color:var(--t1);font:400 13.5px var(--int);min-width:0}
+  .say input::placeholder{color:var(--t3)}
+  .say button{background:none;border:none;color:var(--roxo);cursor:pointer;display:inline-flex;padding:2px;transition:color .3s var(--ease)}
+  .say button:hover{color:var(--roxo-h)}
+  .say-hint{font:400 11px var(--int);color:var(--t3);margin-top:9px;padding-left:20px}
+
+  /* lateral: tudo em hairline */
+  .side{padding-top:30px}
+  .blk{padding:0 0 22px;margin-bottom:22px;border-bottom:1px solid var(--line)}
+  .blk:last-child{border-bottom:none}
+  .bh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .bh a{font:500 11.5px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .bh a:hover{color:var(--t1)}
+  .hrow{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .hrow:last-of-type{border-bottom:none}
+  .hrow time,.hrow .tag{font:700 10.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3);letter-spacing:.04em}
+  .hrow .tag.due{color:var(--coral)}
+  .hrow .tx{font:500 13px var(--int);color:var(--t2)}
+  .hrow .v{font:600 12.5px var(--gro);letter-spacing:-.02em;color:var(--t1)}
+  .arow{display:grid;grid-template-columns:26px 1fr auto;gap:12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line);
+    transition:padding-left .35s var(--ease)}
+  .arow:hover{padding-left:6px}
+  .arow:last-of-type{border-bottom:none}
+  .arow .di{font:700 11px var(--gro);color:var(--t3)}
+  .arow:hover .di{color:var(--roxo)}
+  .arow .nm{font:500 14px var(--gro);letter-spacing:-.01em}
+  .arow .mt{font:400 11px var(--int);color:var(--t3);margin-top:2px}
+  .arow .sc{font:700 18px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:6px}
+  .arow .tr{font:600 10.5px var(--gro)}
+  .outras{font:400 11.5px var(--int);color:var(--t3);padding-top:10px}
+  .n2{display:grid;grid-template-columns:1fr 1fr}
+  .n2 > div{padding:12px 0 12px 14px;border-left:1px solid var(--line)}
+  .n2 > div:nth-child(odd){padding-left:0;border-left:none}
+  .n2 > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .n2 .v{font:700 24px/1 var(--gro);letter-spacing:-.04em;margin-top:8px}
+  .n2 .d{font:500 11px var(--int);margin-top:6px;color:var(--t3)}
+  .sem{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding-top:6px}
+  .sem p{font:400 13px/1.55 var(--int);color:var(--t2)}
+  .sem p b{color:var(--t1);font-weight:600}
+  .sem a{font:500 12px var(--int);color:var(--roxo);white-space:nowrap}
+  .sem a:hover{color:var(--roxo-h)}
+
+  @media (max-width:960px){
+    .top{flex-direction:column;align-items:flex-start}
+    .score{text-align:left}
+    .casa{grid-template-columns:1fr}
+    .conv{min-height:0}
+    .msg.cont{padding-left:0}
+    .bub{max-width:100%}
+    .ck-form{flex-direction:column;align-items:stretch}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button">+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a class="on" href="meu-dia-c.html">Meu dia</a>
+    <a href="financas-c.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <!-- topo -->
+  <header class="top boot b1">
+    <div>
+      <p class="eyebrow">Sexta · 3 de outubro</p>
+      <h1>Meu dia</h1>
+      <p class="sub">Uma atenção, uma decisão em aberto, o resto do mês em ordem.</p>
+    </div>
+    <div class="score">
+      <span class="v num" data-cnt="78">78</span>
+      <span class="l">Life Sync Score · <b class="num ele">+3</b> na semana</span>
+      <a href="life-score.html">Entender o número →</a>
+    </div>
+  </header>
+
+  <div class="casa">
+    <!-- a conversa é a casa -->
+    <section class="conv" aria-label="Conversa com Sy">
+      <div class="thread" id="thread">
+        <div class="divider boot b2">Hoje · 07:12</div>
+
+        <!-- 1. Sy abre o dia -->
+        <div class="msg boot b2">
+          <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+          <div class="col">
+            <div class="bub a">Boa tarde, Thiago. Desde ontem mudou uma coisa: o lazer encostou no teto, restam <strong class="num">R$&nbsp;10</strong> até quinta. Fora isso, outubro já está ganho e a poupança fecha acima da meta. A proposta do curso de inglês continua esperando você.
+              <span class="meta">Atualizado às <span class="num">7h12</span> · fontes: orçamento Lazer, 34 transações, agenda da semana</span>
+            </div>
+
+            <!-- objeto: lazer -->
+            <div class="obj">
+              <p class="eyebrow"><b>01</b> · Finanças · orçamento do mês</p>
+              <div class="r1"><span class="nm">Lazer</span><span class="vl w num">R$&nbsp;410 <small>de R$&nbsp;420</small></span></div>
+              <div class="track w"><i style="--w:98%"></i></div>
+              <div class="foot">
+                <p>Restam <strong class="num">R$&nbsp;10</strong> até quinta. Segure o lazer até sexta e o mês fecha com <strong class="num">R$&nbsp;2.120</strong>.</p>
+                <a class="go" href="financas-c.html">Ver orçamento →</a>
+              </div>
+            </div>
+
+            <!-- objeto: proposta do curso -->
+            <div class="obj" id="curso">
+              <p class="eyebrow"><b>Decisão pendente</b> · toca 5 áreas</p>
+              <div class="r1"><span class="nm">Proposta do curso de inglês</span><span class="vl num">R$&nbsp;180<small>/mês</small></span></div>
+              <dl class="dl">
+                <dt>Ritmo</dt><dd>2 noites por semana</dd>
+                <dt>Meta ligada</dt><dd>Fluência até 2027</dd>
+              </dl>
+              <div class="areas"><span><b>05</b>Mente</span><span><b>03</b>Tempo</span><span><b>01</b>Finanças</span><span><b>07</b>Carreira</span><span><b>02</b>Futuro</span></div>
+              <div class="acts">
+                <button class="btn-sm roxo" type="button" data-ver-proposta>Ver proposta</button>
+                <button class="btn-sm ghost" type="button" data-depois>Depois</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Sy pergunta: check-in -->
+        <div class="msg boot b3">
+          <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+          <div class="col">
+            <div class="bub a ckbub checkin" aria-label="Check-in do dia">
+              <p class="frase">Como foi o dia?</p>
+              <div class="moods">
+                <button class="mood" type="button">Péssimo</button>
+                <button class="mood" type="button">Ruim</button>
+                <button class="mood" type="button">Neutro</button>
+                <button class="mood" type="button">Bem</button>
+                <button class="mood" type="button">Ótimo</button>
+              </div>
+              <div class="ck-form">
+                <input class="ck-note" type="text" placeholder="Uma linha sobre hoje (opcional)">
+                <button class="btn-sm roxo ck-save" type="button">Registrar</button>
+              </div>
+              <div class="ck-done" hidden>Registrado às 21:14 · <b data-out></b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- input fixo ao pé da coluna -->
+      <div class="say-wrap boot b4">
+        <form class="say" id="say">
+          <input type="text" id="say-in" placeholder="Pergunte ou registre algo" aria-label="Escreva para Sy" autocomplete="off">
+          <button type="submit" aria-label="Enviar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </form>
+        <p class="say-hint">Sy lê suas 4 áreas ativas. Pergunte sobre o mês, a semana ou registre um gasto em uma linha.</p>
+      </div>
+    </section>
+
+    <!-- lateral -->
+    <aside class="side">
+      <section class="blk boot b3" aria-label="Hoje">
+        <div class="bh"><p class="eyebrow">Hoje</p><a href="#">Agenda →</a></div>
+        <div class="hrow"><time class="num">07:30</time><span class="tx">Fisioterapia</span><span></span></div>
+        <div class="hrow"><span class="tag due">EM 3 DIAS</span><span class="tx">Aluguel</span><span class="v num">R$&nbsp;1.200,00</span></div>
+        <div class="hrow"><time class="num">TER 10:00</time><span class="tx">1:1 com gestor</span><span></span></div>
+        <div class="hrow"><span class="tag">QUA</span><span class="tx">Aporte automático</span><span class="v num">R$&nbsp;580,00</span></div>
+        <div class="hrow"><time class="num">SEX 20:00</time><span class="tx">Jantar com Ana</span><span></span></div>
+        <div class="hrow"><span class="tag">EM 5 DIAS</span><span class="tx">Internet</span><span class="v num">R$&nbsp;89,90</span></div>
+      </section>
+
+      <section class="blk rv" aria-label="Suas áreas">
+        <div class="bh"><p class="eyebrow">Suas áreas</p><a href="#">Ver todas →</a></div>
+        <div class="arow"><span class="di num">01</span><div><div class="nm">Finanças</div><div class="mt num">Saldo R$&nbsp;1.840 · lazer no limite</div></div><span class="sc num">83<span class="tr ele">▲2</span></span></div>
+        <div class="arow"><span class="di num">02</span><div><div class="nm">Futuro</div><div class="mt num">3 metas · 61% de média</div></div><span class="sc num">79<span class="tr ele">▲1</span></span></div>
+        <div class="arow"><span class="di num">04</span><div><div class="nm">Corpo</div><div class="mt num">3 atividades · 126 min</div></div><span class="sc num">69<span class="tr ele">▲3</span></span></div>
+        <div class="arow"><span class="di num">08</span><div><div class="nm">Experiências</div><div class="mt num">Itália em 92 dias</div></div><span class="sc num">78<span class="tr" style="color:var(--t3)">–</span></span></div>
+        <p class="outras">Outras: 03 Tempo <span class="num">71</span> · 05 Mente <span class="num">58</span> · 06 Patrimônio <span class="num">76</span> · 07 Carreira <span class="num">69</span></p>
+      </section>
+
+      <section class="blk rv" aria-label="Números do mês">
+        <div class="bh"><p class="eyebrow">Números do mês</p><a href="financas-c.html">Finanças →</a></div>
+        <div class="n2">
+          <div><p class="eyebrow">Saldo livre</p><div class="v num" data-cnt="1840" data-prefix="R$&nbsp;">R$&nbsp;1.840</div><div class="d num ele">+12% vs mês anterior</div></div>
+          <div><p class="eyebrow">Receitas</p><div class="v num" data-cnt="5000" data-prefix="R$&nbsp;">R$&nbsp;5.000</div><div class="d num ele">+8% vs mês anterior</div></div>
+          <div><p class="eyebrow">Despesas</p><div class="v num" data-cnt="3160" data-prefix="R$&nbsp;">R$&nbsp;3.160</div><div class="d num">63% da receita</div></div>
+          <div><p class="eyebrow">Poupança</p><div class="v num" data-cnt="37" data-suffix="%">37%</div><div class="d num">Meta: 30%</div></div>
+        </div>
+      </section>
+
+      <section class="blk rv" aria-label="Sua semana">
+        <p class="eyebrow">Sua semana</p>
+        <div class="sem">
+          <p>Semana <b class="num">31</b>: score de <b class="num">75</b> para <b class="num">78</b>, <b class="num">11</b> de <b class="num">14</b> compromissos feitos e <b class="num">6h30</b> de foco.</p>
+          <a href="review-semanal.html">Ver a semana →</a>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+  <div class="r">
+    <span>Streak <b class="num">12 dias</b></span>
+    <span>Badges <b class="num">24/61</b></span>
+    <span>Última sincronização às <b class="num">14:05</b></span>
+  </div>
+</footer>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+  SLApp.boot()
+  ;(function () {
+    var thread = document.getElementById('thread')
+    var say = document.getElementById('say'), inp = document.getElementById('say-in')
+    var M = window.SL_MOCK, T = M.coach.thread
+    var NB = ' '
+    function money (s) { // "R$ 410" → <strong class="num">R$&nbsp;410</strong>
+      return s.replace(/R\$ ?([\d.,]+)/g, function (_, n) { return '<strong class="num">R$' + NB + n + '</strong>' })
+    }
+    function bubU (txt) {
+      var b = document.createElement('div'); b.className = 'bub u'; b.textContent = txt; thread.appendChild(b); return b
+    }
+    function msgA (innerHTML, comAvatar) {
+      var m = document.createElement('div'); m.className = 'msg' + (comAvatar ? '' : ' cont')
+      if (comAvatar) {
+        var av = document.createElement('span'); av.className = 'sy40'; av.setAttribute('aria-hidden', 'true')
+        var cv = document.createElement('canvas'); av.appendChild(cv); m.appendChild(av)
+      }
+      var col = document.createElement('div'); col.className = 'col'; col.innerHTML = innerHTML
+      m.appendChild(col); thread.appendChild(m)
+      if (comAvatar && window.SyAvatar) window.SyAvatar.ligar(m.querySelector('canvas'))
+      return m
+    }
+    function rolar () { inp.scrollIntoView({ block: 'end' }) }
+
+    // bar: "Fale com Sy" rola até o input e foca (sem camada nesta versão)
+    document.querySelectorAll('[data-coach-open]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var seed = el.getAttribute('data-coach-seed'); if (seed) inp.value = seed
+        inp.focus({ preventScroll: true }); rolar()
+      })
+    })
+
+    // envio: bolha do usuário + resposta mock
+    var vez = 0
+    say.addEventListener('submit', function (e) {
+      e.preventDefault()
+      var txt = inp.value.trim(); if (!txt) return
+      bubU(txt); inp.value = ''
+      var r = vez % 2 === 0 ? T[1] : T[3]; vez++
+      if (r.de === 'acao') {
+        msgA('<div class="action" role="status"><div class="al">Ação executada</div><p>' + money(r.msg).replace(/<strong class="num">/g, '<b class="num">').replace(/<\/strong>/g, '</b>') + '</p>' +
+          '<span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' + r.done + '</span></div>', true)
+      } else {
+        msgA('<div class="bub a">' + money(r.msg) + (r.fontes ? '<span class="meta">' + r.fontes + '</span>' : '') + '</div>', true)
+      }
+      rolar()
+    })
+
+    // proposta do curso
+    var curso = document.getElementById('curso')
+    curso.querySelector('[data-ver-proposta]').addEventListener('click', function () {
+      bubU('Quero ver a proposta do curso de inglês')
+      msgA('<div class="bub a">Curso de inglês: <strong class="num">R$' + NB + '180</strong> por mês, 2 noites por semana, ligado à meta <strong>Fluência até 2027</strong>. Cabe no mês: o saldo livre projetado fica em <strong class="num">R$' + NB + '1.660</strong> depois da mensalidade, e a poupança segue acima dos <strong class="num">30%</strong>.' +
+        '<span class="meta">Fontes: proposta recebida · orçamento de outubro · meta Fluência até 2027</span></div>', true)
+      curso.querySelector('.acts').innerHTML = '<button class="btn-sm roxo" type="button" data-aceitar>Aceitar</button><button class="btn-sm ghost" type="button" data-depois>Depois</button>'
+      ligarDepois(); rolar()
+    })
+    function ligarDepois () {
+      var d = curso.querySelector('[data-depois]'); if (!d) return
+      d.addEventListener('click', function () {
+        curso.hidden = true
+        msgA('<div class="bub a">Fica para amanhã.</div>', false); rolar()
+      })
+      var a = curso.querySelector('[data-aceitar]')
+      if (a) a.addEventListener('click', function () {
+        curso.hidden = true
+        msgA('<div class="action" role="status"><div class="al">Decisão registrada</div><p>Curso de inglês aceito: <b class="num">R$' + NB + '180</b> por mês a partir de novembro, 2 noites por semana. A meta <b>Fluência até 2027</b> ganhou o primeiro marco.</p></div>', false); rolar()
+      })
+    }
+    ligarDepois()
+  })()
+</script>
+
+<!-- Sy, o Enxame: 40px, repouso; ouvindo só enquanto o input tem foco -->
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<script type="module">
+import { REDUZ } from '../personagem/vida.js'
+import { criarEnxame } from '../personagem/enxame.js'
+const pecas = []
+let n = 0
+function ligar (cv) {
+  try {
+    const p = criarEnxame(cv, { n: 190, tam: .7, compacto: .78, dpr: 3, semente: 4.6 + n++ })
+    pecas.push(p)
+    if (REDUZ) for (let i = 0; i < 3; i++) p.quadro(1 / 60, 'repouso')
+  } catch (e) { /* sem WebGL o quadrado escuro fica */ }
+}
+document.querySelectorAll('.sy40 canvas').forEach(ligar)
+window.SyAvatar = { ligar }
+let estado = 'repouso'
+const say = document.getElementById('say')
+say.addEventListener('focusin', () => { estado = 'ouvindo' })
+say.addEventListener('focusout', () => { estado = 'repouso' })
+let ultimo = performance.now()
+function laco (agora) {
+  const dt = Math.min((agora - ultimo) / 1000, .05); ultimo = agora
+  for (const p of pecas) p.quadro(dt, estado)
+  requestAnimationFrame(laco)
+}
+if (!REDUZ) requestAnimationFrame(laco)
+</script>
+</body>
+</html>

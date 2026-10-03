@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Meu dia · B</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* ─── Sy, o Enxame pequeno (40px, repouso) ─── */
+  .sy40{width:40px;height:40px;flex:none;border-radius:11px;overflow:hidden;background:#0f0d0d;display:inline-block}
+  .sy40 canvas{display:block;width:100%;height:100%}
+
+  /* ─── topo: uma linha. Enxame + frase + score à direita ─── */
+  .topo{padding:40px 0 30px;border-bottom:1px solid var(--line)}
+  .topo .k{margin-bottom:18px}
+  .topo .linha{display:flex;align-items:flex-start;gap:18px}
+  .topo .fala{flex:1;min-width:0}
+  .topo .fala p{font:400 17.5px/1.5 var(--int);color:var(--t1);letter-spacing:-.005em;max-width:68ch}
+  .topo .fala p .num{font-weight:600}
+  .topo .fala p .w{color:var(--coral);font-weight:600}
+  .topo .fala p.fontes{font:400 11.5px var(--int);color:var(--t3);margin-top:9px}
+  .fontes .num{color:var(--t3);font-weight:500}
+  .score{flex:none;text-align:right;padding-left:28px;border-left:1px solid var(--line);align-self:stretch;display:flex;flex-direction:column;justify-content:center;min-width:150px}
+  .score .v{font:700 40px/1 var(--gro);letter-spacing:-.05em;display:flex;align-items:baseline;justify-content:flex-end;gap:9px}
+  .score .v .d{font:600 14px var(--gro);color:var(--ele);letter-spacing:-.01em}
+  .score .l{font:400 11.5px var(--int);color:var(--t3);margin-top:7px}
+  .score a{color:var(--t3);transition:color .3s var(--ease)}
+  .score a:hover{color:var(--t1)}
+
+  /* ─── decisão pendente: faixa de 1 linha ─── */
+  .decisao{display:grid;grid-template-columns:auto auto 1fr auto;gap:18px;align-items:baseline;padding:17px 0;border-bottom:1px solid var(--line)}
+  .decisao .k{font:700 10.5px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+  .decisao .idx{font:700 11.5px var(--gro);color:var(--roxo);letter-spacing:.06em;white-space:nowrap}
+  .decisao .tx{font:400 14px var(--int);color:var(--t2);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .decisao .tx strong{color:var(--t1);font-weight:600}
+  .acao{display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;padding:0;font:600 12.5px var(--int);color:var(--roxo);white-space:nowrap;transition:color .3s var(--ease)}
+  .acao:hover{color:var(--roxo-h)}
+  .acao svg{transition:transform .3s var(--ease)}
+  .acao:hover svg{transform:translateX(3px)}
+
+  /* ─── grade 2×2 das áreas ativas: hairline e espaço, nada de caixa ─── */
+  .grade{display:grid;grid-template-columns:1fr 1fr}
+  .cel{padding:30px 0 28px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+  .cel:nth-child(odd){border-right:1px solid var(--line);padding-right:clamp(24px,3.4vw,48px)}
+  .cel:nth-child(even){padding-left:clamp(24px,3.4vw,48px)}
+  .cel .eyebrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .cel .eyebrow .sc{font:600 10.5px var(--gro);letter-spacing:.02em;color:var(--t3);text-transform:none}
+  .cel .big{font:700 32px/1 var(--gro);letter-spacing:-.045em;margin-top:18px;color:var(--t1);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .cel .big small{font:400 13px var(--int);letter-spacing:0;color:var(--t3)}
+  .cel .tend{font:500 12.5px var(--int);color:var(--t3);margin-top:9px;display:flex;align-items:baseline;gap:7px}
+  .cel .tend b{font:700 12px var(--gro);letter-spacing:-.01em;color:var(--ele)}
+  .cel .tend b.flat{color:var(--t3)}
+  .cel .tend{margin-bottom:20px}
+  .pede{margin-top:auto;padding-top:16px;display:grid;grid-template-columns:7px 1fr auto;gap:12px;align-items:baseline;border-top:1px dashed var(--line)}
+  .pede .mark{width:7px;height:7px;border-radius:50%;background:var(--ele);align-self:center}
+  .pede .mark.warn{background:var(--coral)}
+  .pede .tx{font:400 13.5px/1.5 var(--int);color:var(--t2);min-width:0}
+  .pede .tx b{color:var(--t1);font-weight:600}
+  .pede .tx b.num{font-weight:600}
+  .pede .tx .w{color:var(--coral);font-weight:600}
+
+  /* ─── hoje ─── */
+  .hoje{border-bottom:1px solid var(--line);padding:24px 0;position:relative}
+  .hoje::after{content:"";position:absolute;top:0;right:0;bottom:0;width:70px;background:linear-gradient(90deg,transparent,var(--bg));pointer-events:none}
+  .hoje > .in{display:flex;align-items:baseline;gap:26px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .hoje > .in::-webkit-scrollbar{display:none}
+  .hoje .eyebrow{flex-shrink:0}
+  .ev{display:flex;align-items:baseline;gap:9px;white-space:nowrap;flex-shrink:0}
+  .ev span{font:500 13px var(--int);color:var(--t2)}
+  .ev.money span{color:var(--t1)}
+  .ev .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
+  .ev .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
+  .ev time,.ev span.num{font:700 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+
+  /* ─── check-in ─── */
+  .checkin{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(28px,4vw,64px);align-items:center;padding-top:28px;padding-bottom:28px;border-bottom:1px solid var(--line)}
+  .frase{font:500 20px var(--gro);letter-spacing:-.02em;margin:10px 0 16px}
+
+  /* ─── outras áreas: linha quieta ─── */
+  .outras{font:400 12.5px var(--int);color:var(--t3);padding:16px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .outras .num{color:var(--t2)}
+  .outras a{color:var(--t3);transition:color .3s var(--ease)}
+  .outras a:hover{color:var(--t1)}
+
+  /* ─── números do mês ─── */
+  .nums-head{display:flex;justify-content:space-between;align-items:baseline;padding-top:34px;margin-bottom:4px}
+  .nums-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .nums-head a:hover{color:var(--t1)}
+  .nums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+  .nums > div{padding:26px clamp(16px,2.4vw,34px) 30px;border-right:1px solid var(--line)}
+  .nums > div:first-child{padding-left:0}
+  .nums > div:last-child{border-right:none}
+  .nums .v{font:700 clamp(26px,3vw,36px)/1 var(--gro);letter-spacing:-.04em;margin-top:12px}
+  .nums .d{font:500 12px var(--int);margin-top:8px;color:var(--t3)}
+
+  /* ─── sua semana: uma linha ─── */
+  .semana{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:baseline;padding:17px 0 60px}
+  .semana .tx{font:400 13.5px var(--int);color:var(--t2)}
+  .semana .tx b{color:var(--t1);font-weight:600}
+
+  @media (max-width:960px){
+    .topo .linha{flex-wrap:wrap}
+    .score{border-left:none;padding-left:0;text-align:left;width:100%;align-items:flex-start}
+    .score .v{justify-content:flex-start}
+    .decisao{grid-template-columns:auto 1fr;row-gap:8px}
+    .decisao .tx{white-space:normal;grid-column:1/-1}
+    .grade{grid-template-columns:1fr}
+    .cel:nth-child(odd){border-right:none;padding-right:0}
+    .cel:nth-child(even){padding-left:0}
+    .checkin{grid-template-columns:1fr}
+    .ck-form{flex-direction:column;align-items:stretch}
+    .nums{grid-template-columns:1fr 1fr}
+    .nums > div:nth-child(2){border-right:none}
+    .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+    .nums > div:nth-child(3){padding-left:0}
+    .semana{grid-template-columns:1fr;row-gap:8px}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button">+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a class="on" href="meu-dia-b.html">Meu dia</a>
+    <a href="financas-b.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <!-- topo: uma linha -->
+    <section class="topo boot b1" aria-label="Sy e score">
+      <p class="eyebrow k">Meu dia · sexta, 3 de outubro</p>
+      <div class="linha">
+        <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+        <div class="fala">
+          <p>Boa tarde, Thiago: desde ontem só uma coisa mudou, o lazer encostou no teto e restam <span class="w num">R$&nbsp;10</span> até quinta.</p>
+          <p class="fontes">Atualizado às <span class="num">7h12</span> · fontes: orçamento Lazer, <span class="num">34</span> transações, agenda da semana</p>
+        </div>
+        <div class="score">
+          <div class="v num"><span data-cnt="78">78</span><span class="d">+3</span></div>
+          <div class="l">Life Sync Score · +3 na semana · <a href="#">Entender o número →</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- decisão pendente: toca 5 áreas, por isso fica acima da grade -->
+    <section class="decisao boot b2" aria-label="Decisão pendente">
+      <span class="k">Decisão</span>
+      <span class="idx num">01 · 02 · 03 · 05 · 07</span>
+      <p class="tx"><strong>A proposta do curso de inglês continua em aberto.</strong> <span class="num">R$&nbsp;180</span>/mês, 2 noites por semana, fluência até 2027.</p>
+      <button class="acao" type="button" data-coach-open data-coach-seed="Quero decidir sobre a proposta do curso de inglês">Decidir<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    </section>
+
+    <!-- grade 2×2 -->
+    <section class="grade boot b3" aria-label="Suas áreas ativas">
+      <div class="cel">
+        <p class="eyebrow"><span><b>01</b> · Finanças</span><span class="sc num">score 83</span></p>
+        <div class="big"><span class="num" data-cnt="1840" data-prefix="R$&nbsp;">R$&nbsp;1.840</span><small>saldo livre em outubro</small></div>
+        <div class="tend"><b class="num">▲2</b> na semana · poupança de <span class="num">37%</span> contra meta de <span class="num">30%</span></div>
+        <div class="pede">
+          <span class="mark warn"></span>
+          <span class="tx">Lazer em <span class="w num">R$&nbsp;410 de R$&nbsp;420</span>: segure até sexta e o mês fecha com <b class="num">R$&nbsp;2.120</b></span>
+          <a class="acao" href="financas-b.html">Ver orçamento<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        </div>
+      </div>
+      <div class="cel">
+        <p class="eyebrow"><span><b>02</b> · Futuro</span><span class="sc num">score 79</span></p>
+        <div class="big"><span class="num" data-cnt="61" data-suffix="%">61%</span><small>média das 3 metas</small></div>
+        <div class="tend"><b class="num">▲1</b> na semana · Viagem Itália em <span class="num">68%</span></div>
+        <div class="pede">
+          <span class="mark"></span>
+          <span class="tx">O aporte automático de quarta, <b class="num">R$&nbsp;580</b>, pode ser antecipado para a Itália</span>
+          <a class="acao" href="#">Ver metas<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        </div>
+      </div>
+      <div class="cel">
+        <p class="eyebrow"><span><b>04</b> · Corpo</span><span class="sc num">score 69</span></p>
+        <div class="big"><span class="num">3 de 7</span><small>treinos na semana</small></div>
+        <div class="tend"><b class="num">▲3</b> na semana · <span class="num">126</span> min em 3 atividades</div>
+        <div class="pede">
+          <span class="mark"></span>
+          <span class="tx"><b>Fisioterapia hoje às <span class="num">07:30</span></b>, e hoje é dia de treino</span>
+          <a class="acao" href="#">Abrir agenda<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        </div>
+      </div>
+      <div class="cel">
+        <p class="eyebrow"><span><b>08</b> · Experiências</span><span class="sc num">score 78</span></p>
+        <div class="big"><span class="num">92 dias</span><small>para a Itália</small></div>
+        <div class="tend"><b class="num flat">–</b> sem mudança na semana · <span class="num">R$&nbsp;8.600</span> de <span class="num">R$&nbsp;12.700</span> guardados</div>
+        <div class="pede">
+          <span class="mark"></span>
+          <span class="tx">O roteiro de Positano ainda está aberto</span>
+          <a class="acao" href="#">Fechar roteiro<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- hoje -->
+  <section class="hoje boot b4" aria-label="Hoje">
+    <div class="wrap in">
+      <span class="eyebrow">Hoje</span>
+      <span class="ev"><time class="num">07:30</time><span>Fisioterapia</span></span>
+      <span class="ev money"><span class="tag due">EM 3 DIAS</span><span>Aluguel</span><span class="num">R$&nbsp;1.200,00</span></span>
+      <span class="ev"><time class="num">TER 10:00</time><span>1:1 com gestor</span></span>
+      <span class="ev money"><span class="tag">QUA</span><span>Aporte automático</span><span class="num">R$&nbsp;580,00</span></span>
+      <span class="ev"><time class="num">SEX 20:00</time><span>Jantar com Ana</span></span>
+      <span class="ev money"><span class="tag">EM 5 DIAS</span><span>Internet</span><span class="num">R$&nbsp;89,90</span></span>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <!-- check-in -->
+    <section class="checkin boot b5" aria-label="Check-in do dia">
+      <div>
+        <p class="eyebrow">Check-in</p>
+        <p class="frase">Como foi o dia?</p>
+        <div class="moods">
+          <button class="mood" type="button">Péssimo</button>
+          <button class="mood" type="button">Ruim</button>
+          <button class="mood" type="button">Neutro</button>
+          <button class="mood" type="button">Bem</button>
+          <button class="mood" type="button">Ótimo</button>
+        </div>
+      </div>
+      <div>
+        <div class="ck-form">
+          <input class="ck-note" type="text" placeholder="Uma linha sobre hoje (opcional)">
+          <button class="btn-sm roxo ck-save" type="button">Registrar</button>
+        </div>
+        <div class="ck-done" hidden>Registrado às 21:14 · <b data-out></b></div>
+      </div>
+    </section>
+
+    <!-- outras áreas: linha quieta -->
+    <p class="outras rv">
+      <span>Outras áreas: 03 Tempo <span class="num">71</span> · 05 Mente <span class="num">58</span> · 06 Patrimônio <span class="num">76</span> · 07 Carreira <span class="num">69</span></span>
+      <a href="#">Ver todas →</a>
+    </p>
+
+    <!-- números do mês -->
+    <section class="rv" aria-label="Números do mês">
+      <div class="nums-head">
+        <p class="eyebrow">Números de outubro</p>
+        <a href="financas-b.html">Ver Finanças →</a>
+      </div>
+      <div class="nums">
+        <div><p class="eyebrow">Saldo livre</p><div class="v num" data-cnt="1840" data-prefix="R$&nbsp;">R$&nbsp;1.840</div><div class="d num">37% da receita</div></div>
+        <div><p class="eyebrow">Receitas</p><div class="v num" data-cnt="5000" data-prefix="R$&nbsp;">R$&nbsp;5.000</div><div class="d">Salário e renda extra</div></div>
+        <div><p class="eyebrow">Despesas</p><div class="v num" data-cnt="3160" data-prefix="R$&nbsp;">R$&nbsp;3.160</div><div class="d num">63% da receita</div></div>
+        <div><p class="eyebrow">Poupança</p><div class="v num" data-cnt="37" data-suffix="%">37%</div><div class="d num ele">7 pontos acima da meta de 30%</div></div>
+      </div>
+    </section>
+
+    <!-- sua semana: uma linha -->
+    <section class="semana rv" aria-label="Sua semana">
+      <span class="eyebrow">Sua semana</span>
+      <p class="tx"><b class="num">11 de 14</b> compromissos feitos, <b class="num">6h30</b> de foco protegido, entradas de <b class="num">R$&nbsp;1.850</b> contra <b class="num">R$&nbsp;940</b> de saídas.</p>
+      <a class="acao" href="#">Ver a semana<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </section>
+  </div>
+
+  <!-- rodapé -->
+  <footer class="colofao">
+    <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+    <div class="r">
+      <span>Streak <b class="num">12 dias</b></span>
+      <span>Badges <b class="num">24/61</b></span>
+      <span>Última sincronização às <b class="num">14:05</b></span>
+    </div>
+  </footer>
+</main>
+
+<!-- camada de Sy -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: o seu dia</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o seu dia. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Resumo da minha semana</button>
+        <button class="chip" type="button">Simular: e se eu poupar R$&nbsp;800?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+      </div>
+      <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+      <div class="action" role="status">
+        <div class="al">Ação executada</div>
+        <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+        <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+      </div>
+      <div class="typing" aria-label="Sy digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre a sua vida">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<script type="module">
+import { REDUZ } from '../personagem/vida.js'
+import { criarEnxame } from '../personagem/enxame.js'
+const pecas = [...document.querySelectorAll('.sy40 canvas')].map((cv, i) =>
+  criarEnxame(cv, { n: 190, tam: .7, compacto: .78, dpr: 3, semente: 4.6 + i }))
+// único estado além de repouso: ouvindo, enquanto o input de Sy tem foco
+let estado = 'repouso'
+const inp = document.querySelector('.camada .cask input')
+if (inp) {
+  inp.addEventListener('focus', () => { estado = 'ouvindo' })
+  inp.addEventListener('blur', () => { estado = 'repouso' })
+}
+let ultimo = performance.now()
+function laco (agora) { const dt = Math.min((agora - ultimo) / 1000, .05); ultimo = agora
+  for (const p of pecas) p.quadro(dt, estado); requestAnimationFrame(laco) }
+if (REDUZ) { for (let i = 0; i < 3; i++) for (const p of pecas) p.quadro(1 / 60, 'repouso') } else requestAnimationFrame(laco)
+</script>
+</body>
+</html>

@@ -113,7 +113,17 @@
       ['Redefinir senha', 'auth/redefinir-senha.html', 'auth/redefinir-senha.mobile.html', 'qa'],
       ['Onboarding', 'auth/onboarding.html', 'auth/onboarding.mobile.html', 'qa'],
     ]},
-    { n: '02', titulo: 'Chrome do app + Diário', tam: 'L',
+    { n: '02', titulo: 'REABERTA · Meu dia + Finanças sem metáfora (3 versões para escolha)', tam: 'L',
+      nota: '<b>Virada de 2026-10-03:</b> o app sai do estilo revista (sem banda clara, selo, caligrafia, ticker, encenação de Sy). Fica a base do DS v5 e o chrome. Três versões de desktop (1440) da tela inicial <b>Meu dia</b> e da <b>Finanças</b> correspondente, construídas sobre o mesmo mock e o mesmo brief (<code>docs/superpowers/plans/2026-10-03-meu-dia-versoes-brief.md</code>). <b>Escolha vendo</b>: a vencedora ganha mobile dedicado e reescreve a anatomia do DS. Landing e auth não entram na revisão.',
+      telas: [
+      ['A · Sy fala, a lista responde · Meu dia', 'app/meu-dia-a.html', null, 'aprovacao'],
+      ['A · Finanças (Sy em 1 ou 2 linhas no topo)', 'app/financas-a.html', null, 'aprovacao'],
+      ['B · Blocos por área · Meu dia', 'app/meu-dia-b.html', null, 'aprovacao'],
+      ['B · Finanças (Sy é um bloco da grade)', 'app/financas-b.html', null, 'aprovacao'],
+      ['C · A conversa é a casa · Meu dia', 'app/meu-dia-c.html', null, 'aprovacao'],
+      ['C · Finanças (conversa encaixada à direita)', 'app/financas-c.html', null, 'aprovacao'],
+    ]},
+    { n: '02·v1', titulo: 'Chrome do app + Diário (versão revista, REABERTA em 2026-10-03)', tam: 'L',
       nota: 'Lote 1 <b>no ar em <code>web/</code></b> (<code>/dashboard</code> é o Diário). O <b>lote 2 está parado</b> por dois motivos: o ponto de acesso da Edição da semana não ficou bom, e ele dependia da identidade do coach, que só fechou agora na Onda 03. O Life Score em si não foi criticado, está só esperando aceite junto com o lote. <b>Próxima sessão reabre o Diário</b> como cockpit de Sy.',
       telas: [
       ['Diário (chrome + check-in + suas áreas)', 'app/diario.html', 'app/diario.mobile.html', 'qa'],
@@ -121,7 +131,7 @@
       ['Edição da semana (revisão semanal)', 'app/review-semanal.html', 'app/review-semanal.mobile.html', 'revisao'],
       ['Life Score · a anatomia do número', 'app/life-score.html', 'app/life-score.mobile.html', 'aprovacao'],
     ]},
-    { n: '03', titulo: 'Coach: Sy (identidade + vista cheia + backend N1-N2)', tam: 'M',
+    { n: '03', titulo: 'Sy (identidade aprovada; bancada REABERTA em 2026-10-03, sem encenação)', tam: 'M',
       nota: 'Quatro decisões fechadas em 2026-08-02, não reabrir sem motivo novo: <b>(1) o corpo é o Enxame</b>, bando sem forma fixa com coração coral; <b>(2) o nome é Sy</b>, pronúncia "sai", grafia travada, <b>sem artigo</b> (nunca "o Sy"); <b>(3) o editorial é o formato da saída, não a identidade</b>, Sy entrega uma edição mas não é colunista; <b>(4) Sy é objeto sempre escuro</b> (DS §2.2), leva a própria chapa pra dentro de página clara. Riscos abertos: a leitura padrão de "Sy" em pt-BR é "si", então a pronúncia tem que ser ensinada no onboarding e o TTS precisa de fonema explícito.',
       telas: [
       ['Sy · o Enxame (6 estados + 3 escalas)', 'personagem/enxame.html', null, 'aprovado'],
