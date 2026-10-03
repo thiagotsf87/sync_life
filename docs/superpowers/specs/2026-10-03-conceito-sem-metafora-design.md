@@ -1,7 +1,17 @@
 # SyncLife sem metáfora: Meu dia · Áreas · Sy
 
 **Data:** 2026-10-03
-**Status:** aprovado em conversa, aguardando revisão do texto
+**Status:** SUPERADA NO ALCANCE em 2026-10-03, mesma sessão. O usuário esclareceu que a mudança não é só de
+palavras: sai **tudo que é estilo revista** (bandas claras no meio da página, selo com moldura dupla,
+caligrafia, ticker, cabeçalho com frase longa, a encenação de Sy em tempos com lâminas e portão). Fica a
+base (tokens, Inter e Space Grotesk, hairlines, tri-acento, Bússola, chrome com áreas numeradas), e ficam
+a landing e as telas de auth como estão. Enxame continua, pequeno e quieto. Os protótipos do app (Diário,
+bancada, Sua semana, Life Score) são REABERTOS e o programa volta à Onda 02. O caminho é prototipar
+versões de Meu dia e de uma tela de área para o usuário escolher vendo, não especificar em texto.
+Continuam válidos desta spec: §2 (menos a linha "Bancada e leis do cockpit continuam"), §3, §4.1
+(critério de seleção, agora como regra de conteúdo e não de apresentação), §5, §6.1, §6.2 (fluxo e
+backend, sem a lâmina como forma obrigatória), §7.1 e §9. Os §4.2, §7.2, §7.3, §8 e §11 estão errados e
+serão reescritos depois da escolha dos protótipos.
 **Branch alvo:** `poc/ds-v5`
 **Origem:** o usuário aprovou o visual, as cores, as fontes e a estrutura do DS v5, mas rejeitou o tema de
 jornal (edição, folha, manchete, colofão, "a IA é o redator"). Pediu um produto **sem metáfora**, em que a

@@ -10,25 +10,28 @@
 **Ondas 00 e 01 fechadas e no ar em `web/`.** Landing (r15 desktop + m1 mobile), marca 3D, pricing,
 login, cadastro, senhas e onboarding, todas com teste de identidade passado.
 
-**Onda 02 pela metade.** O lote 1 (`/dashboard` = o Diário, chrome v5 e a camada do coach) está no ar.
-O **lote 2 está parado** desde 2026-08-01. O lugar da Edição da semana **deixou de estar aberto**: ela
-virou uma apresentação de Sy dentro do próprio Diário (ver a maquete da bancada). O Life Score segue
-esperando aceite.
+**VIRADA EM 2026-10-03: o app sai do estilo revista. O programa volta à Onda 02.** O usuário aprovou a
+base do DS v5 (tokens, Inter + Space Grotesk, hairlines, tri-acento, Bússola, chrome com áreas numeradas)
+e rejeitou o tema de jornal **e os dispositivos de revista**: bandas claras no meio da página, selo com
+moldura dupla, caligrafia, ticker, cabeçalho com frase longa e a encenação de Sy (tempos, lâminas, portão,
+voz). Ele quer um produto **sem metáfora**, em que a pessoa organize o dia, os objetivos e a vida, com Sy
+como presença que conecta as áreas, responde e age. Spec: `docs/superpowers/specs/2026-10-03-conceito-sem-
+metafora-design.md` (ler o status no topo: o alcance foi corrigido na mesma sessão).
 
-**Onda 03 é a frente ativa, e a bancada está APROVADA (2026-08-03).** A identidade fechou em 2026-08-02
-(**Sy**, corpo **o Enxame**) e a **bancada** (`app/diario-bancada.html`) fechou em 2026-08-03, com voz do
-Google Cloud TTS ouvida e aprovada em pt-BR nativo. Os três votos foram dados: a bancada, **check-in na
-conversa** e **`/coach` vira arquivo da conversa**.
+**O que isso reabre:** Diário, bancada (desktop e mobile, que tinham sido aprovados como forma), Sua
+semana e Life Score. O `/dashboard` que está em `web/` será refeito. **O que fica:** landing e auth como
+estão (decisão explícita), chrome, camada, check-in, Enxame **pequeno e quieto** (40px, repouso), as
+decisões de identidade (Sy, sem artigo), check-in na conversa, `/coach` como arquivo da conversa, e a
+fatia do N3 (uma intenção, cinco áreas) como escopo da Onda 03.
 
-**Atenção ao escopo do aceite: é de FORMA, não de conteúdo.** O que Sy de fato traz no Diário é frente
-própria e continua aberta (ver "Aberto agora"). Aberto também: **gênero da voz** e **duração**.
+**Frente ativa: escolha entre três versões de Meu dia + Finanças** (desktop, 1440), em
+`prototypes/v5/app/{meu-dia,financas}-{a,b,c}.html`, brief em
+`docs/superpowers/plans/2026-10-03-meu-dia-versoes-brief.md`. A: Sy fala, a lista responde · B: blocos
+por área · C: a conversa é a casa. O usuário escolhe vendo; a vencedora ganha mobile dedicado e reabre a
+anatomia do DS (§1, §6.2, §6.3, §6.4).
 
-**O mobile dedicado 390×844 está APROVADO visualmente** (`app/diario-bancada.mobile.html`, entregue
-2026-08-09, aceite em 2026-10-03). A bancada fecha nos dois formatos. Voz (gênero, duração) e a
-pronúncia de "Sy" foram **adiadas pelo usuário** para depois, não bloqueiam. Falta prototipar a vista
-cheia `/coach` (arquivo da conversa) para a Onda 03 ter escopo completo.
-
-**Ondas 04 a 14 não começaram.**
+**Ondas 00 e 01 fechadas e no ar em `web/`** (não entram na revisão). **Ondas 04 a 14 não começaram.**
+Voz (gênero, duração) e pronúncia de "Sy": adiadas pelo usuário, não bloqueiam.
 
 ## Decisões fechadas (não reabrir sem motivo novo)
 
@@ -52,6 +55,12 @@ cheia `/coach` (arquivo da conversa) para a Onda 03 ter escopo completo.
 | **`/coach` vira arquivo da conversa** | No Diário a conversa é a própria página, então a camada lateral perde função ali. `/coach` deixa de ser "onde se fala com Sy" e passa a ser **onde se relê o que já foi falado**. Isso muda o que a rota precisa entregar nas ondas seguintes: histórico e busca, não uma segunda caixa de entrada | 2026-08-03 |
 | **Conteúdo é um só, apresentação é por dispositivo** | O que Sy **diz e mostra** é idêntico em desktop e mobile e mora em `app/bancada.roteiro.js`. O que muda por aparelho é **como** ele acende, imprime e empilha. Cada página passa os próprios verbos pra `criarRoteiro({ $, acender, acenderTicker, recortar, dizer, syEstado })`. Vale pras 68 telas: quando a frente de conteúdo for retomada, ela edita **um** arquivo | 2026-08-09 |
 | **A apresentação mobile é tela cheia** | Em 390×844 cabe Sy grande + **uma** lâmina. Então a apresentação deixa de ser página e vira momento: o palco trava em `100dvh - 80`, cada tempo ocupa uma dobra, e a lâmina que sai **desce pra uma pilha** com alça acima da linha de comando. Acumular continua valendo, só que fora da dobra. Escolhido contra "bancada sticky que colapsa" e "deck horizontal de lâminas" | 2026-08-09 |
+| **Sem metáfora** | O app não é jornal, bordo nem estúdio. É o que faz: **Meu dia** (o que merece atenção agora) · **Áreas** (onde você organiza e aprofunda) · **Sy** (quem conecta, responde e age). Sai tudo que é estilo revista: bandas claras no meio da página, selo com moldura dupla, caligrafia, ticker, cabeçalho com frase longa, encenação de Sy. Fica a base do DS v5 e o chrome. **Landing e auth ficam como estão** | 2026-10-03 |
+| **Tela inicial = "Meu dia"** | Rota `/dashboard` intacta. "Diário" sai de toda copy visível. Conteúdo escolhido por gatilhos com prioridade (spec §4.1): decisão pendente → risco em janela curta → compromisso de hoje com preparo → mudança desde o último acesso → próxima ação | 2026-10-03 |
+| **Grafia de Sy, contradição resolvida** | "Sy", "com Sy", "para Sy", "Fale com Sy" ✅ · "o Sy", "ao Sy", "do Sy", "pergunte ao Sy" ❌ (a linha de 2026-08-02 que aceitava "pergunte ao Sy" está revogada) | 2026-10-03 |
+| **"Assessor" é palavra interna** | Descreve o papel de Sy nas conversas de produto. Nunca na UI nem no marketing: "Meu Assessor" ocupa a palavra no Brasil | 2026-10-03 |
+| **Enxame pequeno e quieto** | Sy continua tendo corpo, como avatar de 40px em `repouso` (e `ouvindo` com o input em foco). Sem palco, sem crescer, sem voz nesta fase | 2026-10-03 |
+| **Fatia do N3 na Onda 03** | Uma intenção composta ("quero começar um curso de inglês") de ponta a ponta, tocando `study_tracks`, `agenda_events`, `recurring_transactions`, `skills`, `goals`, com arquitetura planejar/aplicar (sem tool calling), escolha de registros como confirmação e Desfazer único. Restante do N3: sprint próprio | 2026-10-03 |
 | **Enquanto você digita, o portão e a alça saem** | Com o teclado aberto (508px de viewport útil) não cabem Sy, fala, lâmina, alça, linha, fichas **e** portão. A regra não é de layout, é de produto: quem está escrevendo a nota do check-in está respondendo, e responder já abre a edição. Voltam no blur | 2026-08-09 |
 
 ## Aberto agora
@@ -142,6 +151,52 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
 | 14 | Varredura final (modais, assets, remoção v3, DS v5.1) | – | – | – | – |
 
 ---
+
+## 2026-10-03 · Sessão 28 — Fim do estilo revista: Meu dia, Áreas, Sy, em três versões
+
+> Sessão de retomada depois de 2 meses. Nada em `web/` foi tocado. Trabalho só local (sem push) por
+> decisão do usuário; `prototypes/codex-diario/` é estudo paralelo do Codex e fica fora de tudo.
+
+### O que aconteceu, na ordem
+
+1. **Limpeza:** 3 pendências antigas commitadas (fix do `coach-brief` que trocava caractere de controle por
+   nada, plano da fase 4 v4, material de referência movido da raiz para `docs/refs/`).
+2. **Ambiente:** `web/` buildado e servido em `next start -p 3006`. O Supabase estava **INACTIVE** (plano
+   grátis pausa por inatividade): restaurado, auth voltou em 170s. Lentidão e "senha não funciona" eram isso.
+3. **Aceite:** o mobile da bancada (`app/diario-bancada.mobile.html`) foi aprovado visualmente. Voz e
+   pronúncia adiadas.
+4. **A virada.** O usuário: "esse tema de noticiário não combina com a proposta". Eu propus 3 temas
+   (Bordo, Estúdio, Companhia); ele respondeu que **não quer metáfora nenhuma**, quer um produto em que a
+   pessoa se identifique, organize o dia, os objetivos e a vida, com um "assessor" que facilita, e pediu
+   análise imparcial de uma proposta do Codex (3 camadas) e benchmark do app **Meu Assessor**.
+5. **Benchmark:** Meu Assessor é secretária executiva por WhatsApp (6 personas, Open Finance, Google
+   Agenda, NF, cobrança, R$ 29,90/mês, público de autônomos). Entra: conversa como porta de captura,
+   perguntas em linguagem natural, briefing matinal, Open Finance no futuro. Fica fora: personas, funções de
+   negócio, WhatsApp como produto. **"Assessor" não vira palavra de UI nem de marketing** (marca ocupada).
+   O que ele não faz é a tese do SyncLife: conectar áreas.
+6. **Proposta do Codex (Meu dia · Áreas · Sy):** adotada. Camada 1 e 2 confirmam decisões já tomadas em
+   palavras melhores; a camada 3 (uma intenção organiza várias áreas) é o diferencial e é N3 antecipado. A
+   tabela de áreas foi corrigida (Patrimônio é o que fica, Finanças é o que passa pelo mês).
+7. **Spec escrita** com alcance errado (só palavras + critério, encaixada na Onda 03). O usuário corrigiu:
+   **sai tudo que é estilo revista**, reabre protótipos, volta à Onda 02. Status da spec corrigido no topo.
+8. **Quatro decisões colhidas:** landing e auth ficam como estão · Meu dia **não** é "versão simples", é
+   sem metáfora com usabilidade melhor, **construir versões para escolher** · Enxame pequeno e quieto ·
+   Sy nas áreas: "preciso ver para ter ideia".
+9. **Brief e construção:** `docs/superpowers/plans/2026-10-03-meu-dia-versoes-brief.md` define o que fica,
+   o que sai, chrome comum (sem ticker, "Fale com Sy", modbar com "Meu dia"), Enxame 40px, conteúdo pelo
+   critério de gatilhos (§4.1 da spec), as 3 anatomias e o QA. Três agentes em paralelo, um por versão.
+
+### Decisões novas (ver tabela "Decisões fechadas")
+
+Sem metáfora · três camadas · "Meu dia" · grafia de Sy resolvida ("com Sy" ✅, "ao Sy" ❌) · "assessor" é
+palavra interna · fatia N3 na Onda 03 · landing/auth intocadas · Enxame 40px quieto.
+
+### Gotchas da sessão
+
+- Supabase grátis pausa o projeto depois de semanas parado; sintoma no app é lentidão extrema + login
+  falhando, não erro claro. `get_project` → `INACTIVE` → `restore_project` → ~3 min.
+- Processo em background da sessão morre em 30 min por padrão: subir `next start` com timeout de 2h.
+- `preview_start` do painel recusa `cwd` em `launch.json` neste ambiente; subir pelo terminal e abrir a URL.
 
 ## 2026-08-09 · Sessão 27 — A bancada no celular: a apresentação vira tela cheia
 
