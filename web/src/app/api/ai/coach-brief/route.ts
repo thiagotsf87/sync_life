@@ -20,9 +20,9 @@ const InputSchema = z.object({ moduleId: z.string(), period: z.string() })
 
 type Brief = z.infer<typeof BriefSchema>
 
-/** Remove caracteres de controle ASCII (viram tofu no client; acentos ficam) e colapsa espaços repetidos. */
+/** Troca caracteres de controle ASCII por espaço (viram tofu no client; acentos ficam) e colapsa espaços repetidos. */
 // eslint-disable-next-line no-control-regex
-const clean = (s: string) => s.replace(/[\x00-\x1F\x7F]/g, '').replace(/ {2,}/g, ' ').trim()
+const clean = (s: string) => s.replace(/[\x00-\x1F\x7F]/g, ' ').replace(/ {2,}/g, ' ').trim()
 
 /**
  * Saneia o output do modelo e garante o contrato do hero: emphasis ⊂ headline.text.
