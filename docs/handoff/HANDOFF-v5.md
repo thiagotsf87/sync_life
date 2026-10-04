@@ -34,7 +34,7 @@ quieto. Publicada também como artifact privado para leitura no celular:
 https://claude.ai/artifact/CNmYcHzfWBJ2DDcCBzLqrd
 
 **Próximo: o PLANO DE ROLLOUT** `docs/superpowers/plans/2026-10-03-rollout-ds-v5-sem-metafora.md` (9 fases,
-63 telas D+M, 4 templates, 36 modais → sheets), escrito a pedido do usuário e **aguardando aprovação dele**.
+63 telas D+M, 4 templates, 36 modais → sheets), **APROVADO pelo usuário em 2026-10-03** ("Aprovado o plano pode começar").
 Substitui as Ondas 02 a 14. Fase 0 = mobiles de D e A + templates T2/T3/T4 + DS/spec reescritos + mock em outubro.
 
 **Ondas 00 e 01 fechadas e no ar em `web/`** (não entram na revisão). **Ondas 04 a 14 não começaram.**
