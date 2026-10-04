@@ -4,7 +4,7 @@
 
 **Goal:** colocar no ar, em `web/`, as 7 telas aprovadas da Fase 1 (Meu dia D, Finanças hub A, Life Score v2, Sua semana, arquivo da conversa, intenção composta, chrome mobile com bottom bar), com Sy real (briefing por gatilhos, conversa persistida com fontes, uma intenção composta de ponta a ponta), teste de identidade protótipo × rota em desktop e mobile, e as rotas v3 correspondentes deletadas.
 
-**Architecture:** route group `(app-v5)` cresce módulo a módulo (URLs intactas); cada tela é um Server Component fino + componente client que agrega os hooks v3 reais (sem lógica de negócio nova fora de `lib/`); CSS do protótipo portado 1:1 para arquivos sob `.v5` (`styles/app-v5.css` para as peças compartilhadas da Fase 0, `components/app-v5/<tela>.css` para o específico); Sy = `lib/coach/context.ts` (pacote de contexto por área) + rotas em `/api/ai/*` e `/api/intencao/*` com Zod; dados novos em 2 migrations (`028_fase1_sy.sql`, `029_weekly_reviews_fix.sql`) aplicadas no projeto de homologação.
+**Architecture:** route group `(app-v5)` cresce módulo a módulo (URLs intactas); cada tela é um Server Component fino + componente client que agrega os hooks v3 reais (sem lógica de negócio nova fora de `lib/`); CSS do protótipo portado 1:1 para arquivos sob `.v5` (`styles/app-v5.css` para as peças compartilhadas da Fase 0, `components/app-v5/<tela>.css` para o específico); Sy = `lib/coach/context.ts` (pacote de contexto por área) + rotas em `/api/ai/*` e `/api/intencao/*` com Zod; dados novos em 2 migrations (`028_fase1_sy.sql`, `029_weekly_reviews_fix.sql`) aplicadas no projeto de homologação `bculmhmoxxpjlcilkgmp` (produção é `xmtzpjtbqhgwmebycxmx`, só com ok explícito do usuário).
 
 **Tech Stack:** Next.js 16 App Router, React 19, TS strict, Supabase SSR (`as unknown as { from }` para schema drift), Vercel AI SDK (Gemini 2.5 Flash `generateObject`, Groq Llama 3.3 `streamText`), Zod, three.js (Enxame via `lib/v5`), Playwright (identidade), Vitest (lógica pura).
 
@@ -227,7 +227,7 @@ BEGIN
 END $$;
 ```
   Conferir antes de rodar: `skills.updated_at` e `agenda_events.updated_at` existem? (`grep -n updated_at supabase/migrations/004_*.sql supabase/migrations/005_*.sql`). Se não existirem, a cláusula `updated_at = created_at` sai dessas tabelas (como já está acima para `skills` e `agenda_events`). `agenda_events.type` não tem CHECK no banco; `'estudo'` precisa estar no enum TS de `use-agenda.ts:10` (se não estiver, usar `'pessoal'`).
-- [ ] **Step 2: aplicar em homolog** via MCP Supabase `apply_migration` no projeto `xmtzpjtbqhgwmebycxmx` (restaurar se `INACTIVE`). Verificar com `list_tables` que `coach_messages` e `intencoes` existem e com `execute_sql` `select proname from pg_proc where proname like '%intencao%'`.
+- [ ] **Step 2: aplicar em homolog** via MCP Supabase `apply_migration` no projeto de homologação `bculmhmoxxpjlcilkgmp` (restaurar se `INACTIVE`); produção `xmtzpjtbqhgwmebycxmx` só com ok explícito. Verificar com `list_tables` que `coach_messages` e `intencoes` existem e com `execute_sql` `select proname from pg_proc where proname like '%intencao%'`.
 - [ ] **Step 3: commit** `feat(db): migration 028, conversa persistida e intencoes`.
 
 ### Task 5: Migration 029 (weekly_reviews consertada)
