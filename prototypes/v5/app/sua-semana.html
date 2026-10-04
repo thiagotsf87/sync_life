@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Sua semana · T3</title>
+<!-- Fase 1 · Sua semana (rota /dashboard/review), template T3 · Detalhe. Substitui review-semanal.html (histórico, não editar).
+     Um objeto (a semana 40, 29 set a 5 out), suas partes, sua ação: cabeçalho com voltar "← Meu dia" + eyebrow + título curto
+     + pílula de estado → número principal (score 75 → 78, 1 por dobra, E-05) → Sy em 3 frases com fontes → números da semana
+     (4 colunas hairline) → o que mudou (áreas ativas, de → para) → o que ficou para a próxima → fechamento (persiste em
+     weekly_reviews e conta para o streak; sem modal) → rodapé. Sem laboratório: não há decisão com efeito em mais de uma área aqui.
+     Chrome e peças de shared/app.css; inline só o que é desta tela. E-02: sem JS, tudo visível. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* ── T3 · cabeçalho do objeto: voltar + eyebrow + título + estado ── */
+  .voltar{display:inline-flex;align-items:center;gap:8px;margin-top:28px;font:500 12.5px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .voltar:hover{color:var(--t1)}
+  .objeto{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;padding:22px 0 30px;border-bottom:1px solid var(--line)}
+  .objeto .nome{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
+  .objeto h1{font:500 32px/1.1 var(--gro);letter-spacing:-.035em}
+  .pill-q.ok{border-color:rgba(161,255,98,.4);color:var(--ele)}
+  .pill-q.off{color:var(--t3);border-color:var(--line)}
+
+  /* ── T3 · número principal (score da semana, de → para) + Sy em 3 frases ── */
+  .principal{display:grid;grid-template-columns:1.3fr 1fr;gap:clamp(36px,5vw,80px);padding:36px 0 36px;border-bottom:1px solid var(--line);align-items:start}
+  .sc{display:flex;align-items:baseline;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .sc .from{font:500 22px/1 var(--gro);letter-spacing:-.03em;color:var(--t3)}
+  .sc .ar{font:400 20px/1 var(--gro);color:var(--t3)}
+  .sc .to{font:700 44px/1 var(--gro);letter-spacing:-.045em}
+  .sc .to.dn{color:var(--coral)}
+  .sc .tr{font:600 13px var(--gro);color:var(--ele)}
+  .sc .tr.dn{color:var(--coral)}
+  .sc .pill-q{margin-left:4px;position:relative;top:-4px}
+  .principal .resumo{font:400 14px var(--int);color:var(--t2);margin-top:14px}
+  .principal .resumo b{color:var(--t1);font-weight:600}
+  .principal .sy{margin-top:0;max-width:none}
+  .principal .sy .fala{font-size:16px}
+
+  /* ── T3 · seções por hairline ── */
+  .secao{padding:40px 0 40px;border-bottom:1px solid var(--line)}
+  .secao-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .secao-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .secao-head a:hover{color:var(--t1)}
+  /* o que mudou: índice · nome + motivo · de → para · tendência */
+  .mud{display:grid;grid-template-columns:34px 1fr auto;gap:14px 16px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line);transition:padding-left .35s var(--ease)}
+  .mud:last-of-type{border-bottom:none}
+  .mud:hover{padding-left:8px}
+  .mud .di{font:700 12px var(--gro);color:var(--t3)}
+  .mud:hover .di{color:var(--roxo)}
+  .mud .nm{font:500 16px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .mud .pq{font:400 12px/1.5 var(--int);color:var(--t3);margin-top:3px}
+  .mud .sc{margin-top:0;gap:7px;flex-wrap:nowrap}
+  .mud .sc .from{font-size:15px}
+  .mud .sc .ar{font-size:13px}
+  .mud .sc .to{font:700 22px/1 var(--gro);letter-spacing:-.03em}
+  .mud .sc .tr{font-size:11px;margin-left:2px}
+  .outras{font:400 12px var(--int);color:var(--t3);padding:14px 0 0;border-top:none;margin-top:0}
+  /* o que ficou: reaproveita .row (índice em roxo + texto + valor + ação) */
+  .secao .row:last-of-type{border-bottom:none}
+
+  /* ── fechamento: a única ação da tela; sem modal; persiste em weekly_reviews ── */
+  .fechar{display:grid;grid-template-columns:1fr auto;gap:clamp(24px,4vw,56px);align-items:center;padding:34px 0 34px;border-bottom:1px solid var(--line)}
+  .fechar h2{font:500 22px/1.2 var(--gro);letter-spacing:-.025em;margin-top:10px}
+  .fechar .tx{font:400 13px/1.6 var(--int);color:var(--t2);max-width:52ch;margin-top:8px}
+  .fechar .tx b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+  .fechar .btn-sm.roxo{padding:12px 24px}
+  .fechar .btn-sm[disabled]{opacity:.42;cursor:not-allowed}
+  .conf{display:inline-flex;align-items:center;gap:9px;font:600 13px var(--int);color:var(--ele);white-space:nowrap}
+  .conf svg{flex-shrink:0}
+  .conf .num{font-weight:700}
+
+  /* ── anotação do protótipo (fora do fluxo, inert) ── */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:48px;padding-top:34px;padding-bottom:80px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe .principal{display:block;padding:0;border-bottom:none}
+  .pe .sy{margin-top:22px}
+  .pe .fechar{grid-template-columns:1fr;gap:16px;padding:22px 0;margin-top:22px;border-top:1px solid var(--line)}
+  .pe .fechar h2{font-size:18px}
+  .pe .vazio{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;margin-top:22px;font:400 13px/1.6 var(--int);color:var(--t3)}
+  .pe .vazio .num{color:var(--t2)}
+  .pe-nota{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:14px}
+  .pe-nota .pill-q{margin:0 2px}
+  .le{margin-top:40px}
+  .le ul{list-style:none;margin-top:12px;border-top:1px solid var(--line)}
+  .le li{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:11px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.5 var(--int);color:var(--t2)}
+  .le li code{font:600 12px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+
+  @media (max-width:960px){
+    .objeto{flex-direction:column;align-items:flex-start}
+    .principal{grid-template-columns:1fr}
+    .fechar{grid-template-columns:1fr}
+    .pe-grid{grid-template-columns:1fr}
+    .le li{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="meu-dia-d.html">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Domingo · 5 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button">+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a class="on" href="meu-dia-d.html">Meu dia</a>
+    <a href="financas-a.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 1. cabeçalho do objeto -->
+  <a class="voltar boot b1" id="voltar" href="meu-dia-d.html">← Meu dia</a>
+  <header class="objeto boot b1">
+    <div>
+      <p class="eyebrow">Sua semana · <span class="num">29 set a 5 out</span></p>
+      <div class="nome">
+        <h1>A semana virou no meio</h1>
+        <span class="pill-q" id="estado">Fecha domingo às 21:30</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. número principal + Sy -->
+  <section class="principal boot b2" aria-label="Score da semana">
+    <div>
+      <p class="eyebrow">Score da semana</p>
+      <div class="sc num" role="img" aria-label="Life Sync Score de 75 para 78, mais 3 na semana">
+        <span class="from">75</span><span class="ar" aria-hidden="true">→</span><span class="to" data-cnt="78">78</span><span class="tr">▲3</span>
+        <span class="pill-q ok" id="pillNum" hidden>Fechada</span>
+      </div>
+      <p class="resumo"><b class="num">11 de 14</b> compromissos · <b class="num">6h30</b> de foco</p>
+    </div>
+    <div class="sy">
+      <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+      <div>
+        <p class="fala">Você fechou a semana com <b class="num">R$&nbsp;1.850</b> de entradas contra <b class="num">R$&nbsp;940</b> de saídas, o melhor saldo semanal de outubro, e segurou o lazer em <b class="num">R$&nbsp;128</b> contra <span class="num">R$&nbsp;310</span> na anterior. Na agenda, <b class="num">11 dos 14</b> compromissos saíram e você protegeu <b class="num">6h30</b> de foco, uma hora a mais. Corpo foi o único que recuou, <b class="num w">1 ponto</b>: dois treinos ficaram para trás e o peso não foi registrado.</p>
+        <p class="fontes">Atualizado no domingo às 20:10 · fontes: 12 transações, 14 compromissos e 3 metas</p>
+        <button class="falar" type="button" data-coach-open data-coach-seed="Sobre a semana de 29 set a 5 out: ">Falar com Sy sobre a semana →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. números da semana -->
+  <section class="nums boot b3" aria-label="Números da semana">
+    <div><p class="eyebrow">Entradas</p><div class="v num" data-cnt="1850" data-prefix="R$&nbsp;">R$&nbsp;1.850</div><div class="d num">na semana</div></div>
+    <div><p class="eyebrow">Saídas</p><div class="v num" data-cnt="940" data-prefix="R$&nbsp;">R$&nbsp;940</div><div class="d num">51% do que entrou</div></div>
+    <div><p class="eyebrow">Compromissos</p><div class="v num">11/14</div><div class="d num">79% feitos</div></div>
+    <div><p class="eyebrow">Foco</p><div class="v num">6h30</div><div class="d num ele">1h a mais que a anterior</div></div>
+  </section>
+
+  <!-- 4. o que mudou -->
+  <section class="secao rv" id="mudou" aria-label="O que mudou na semana">
+    <div class="secao-head"><p class="eyebrow">O que mudou</p><a href="life-score.html" title="Life Score, Fase 1">Entender o número →</a></div>
+    <div class="mud">
+      <span class="di num">01</span>
+      <div><div class="nm">Finanças</div><div class="pq">Melhor saldo semanal de outubro: sobraram <span class="num">R$&nbsp;910</span>.</div></div>
+      <span class="sc num"><span class="from">80</span><span class="ar" aria-hidden="true">→</span><span class="to">83</span><span class="tr">▲3</span></span>
+    </div>
+    <div class="mud">
+      <span class="di num">02</span>
+      <div><div class="nm">Futuro</div><div class="pq">O aporte de quarta entrou no prazo e Viagem Itália chegou a <span class="num">68%</span>.</div></div>
+      <span class="sc num"><span class="from">75</span><span class="ar" aria-hidden="true">→</span><span class="to">79</span><span class="tr">▲4</span></span>
+    </div>
+    <div class="mud">
+      <span class="di num">04</span>
+      <div><div class="nm">Corpo</div><div class="pq">Dois treinos previstos ficaram para trás e o peso não foi registrado.</div></div>
+      <span class="sc num"><span class="from">70</span><span class="ar" aria-hidden="true">→</span><span class="to dn">69</span><span class="tr dn">▼1</span></span>
+    </div>
+    <div class="mud">
+      <span class="di num">08</span>
+      <div><div class="nm">Experiências</div><div class="pq">O roteiro de Positano avançou; hospedagem reservada, viagem em <span class="num">92</span> dias.</div></div>
+      <span class="sc num"><span class="from">74</span><span class="ar" aria-hidden="true">→</span><span class="to">78</span><span class="tr">▲4</span></span>
+    </div>
+    <p class="outras">Áreas desligadas (03 Tempo · 05 Mente · 06 Patrimônio · 07 Carreira) não entram na conta da semana.</p>
+  </section>
+
+  <!-- 5. o que ficou para a próxima -->
+  <section class="secao rv" id="ficou" aria-label="O que ficou para a próxima semana">
+    <div class="secao-head"><p class="eyebrow">O que ficou para a próxima</p></div>
+    <div class="row warn">
+      <span class="ix num">04</span>
+      <div>
+        <div class="tx"><strong>Dois treinos previstos</strong> ficaram para trás</div>
+        <div class="sub">Corpo · treino B e treino C · segunda começa com o que sobrou</div>
+      </div>
+      <span class="val num">2 de 4</span>
+      <a class="btn-sm ghost act" href="#" title="04 Corpo, Fase 4">Abrir área</a>
+    </div>
+    <div class="row warn">
+      <span class="ix num">04</span>
+      <div>
+        <div class="tx"><strong>Registrar o peso</strong></div>
+        <div class="sub">Corpo · nenhum registro na semana · vale <span class="num">20%</span> do score da área</div>
+      </div>
+      <span class="val num">0 registros</span>
+      <a class="btn-sm ghost act" href="#" title="04 Corpo, Fase 4">Abrir área</a>
+    </div>
+    <div class="row">
+      <span class="ix num">08</span>
+      <div>
+        <div class="tx"><strong>Fechar o roteiro de Positano</strong></div>
+        <div class="sub">Experiências · hospedagem reservada, roteiro em aberto</div>
+      </div>
+      <span class="val num">em 92 dias</span>
+      <a class="btn-sm ghost act" href="#" title="08 Experiências, Fase 6">Abrir área</a>
+    </div>
+  </section>
+
+  <!-- 6. fechamento -->
+  <section class="fechar rv" id="fechamento" aria-label="Fechar a semana">
+    <div>
+      <p class="eyebrow">Fechamento</p>
+      <h2>Fechar a semana</h2>
+      <p class="tx">Fechar registra o que você viu; nada é alterado nas áreas. Conta para o streak de <b class="num">12 dias</b> e você pode reler esta semana quando quiser.</p>
+    </div>
+    <div>
+      <button class="btn-sm roxo" type="button" id="fechar">Fechar a semana</button>
+      <span class="conf" id="fechado" role="status" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Semana fechada às <span class="num">21:30</span> · conta para o streak de <span class="num">12 dias</span></span>
+    </div>
+  </section>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Semana <b class="num">40 · 29 set a 5 out</b></span>
+  <div class="r">
+    <span>Base do cálculo <b class="num">12 transações · 14 compromissos · 3 metas</b></span>
+    <span>Última sincronização às <b class="num">20:10</b></span>
+    <a href="meu-dia-d.html">Voltar para Meu dia →</a>
+  </div>
+</footer>
+
+<!-- camada de Sy -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: a sua semana</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li a sua semana. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Por que Corpo recuou?</button>
+        <button class="chip" type="button">Quanto sobrou nesta semana?</button>
+        <button class="chip" type="button">O que muda se eu fechar a semana?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Domingo · 20:22</div>
+      <div class="bub u">Por que Corpo recuou?</div>
+      <div class="bub a">Dois treinos previstos não aconteceram e o peso não foi registrado nenhuma vez. Corpo saiu de <strong class="num">70</strong> para <strong class="num">69</strong>: <span class="w">registros de peso</span> é hoje o componente mais fraco da área.
+        <span class="meta">Fontes: 3 atividades · 0 registros de peso · score de Corpo</span>
+      </div>
+      <div class="bub u">E o que puxou o resto pra cima?</div>
+      <div class="bub a">Finanças e Futuro. O saldo da semana ficou em <strong class="num">R$&nbsp;910</strong> e o aporte de quarta entrou no prazo, o que levou a Viagem Itália a <strong class="num">68%</strong>.
+        <span class="meta">Fontes: 12 transações · 3 metas · score por área</span>
+      </div>
+      <div class="typing" aria-label="Sy digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre a sua semana">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Semana já fechada · botão vira status, número ganha pílula</h4>
+        <div class="principal">
+          <p class="eyebrow">Score da semana</p>
+          <div class="sc num"><span class="from">75</span><span class="ar">→</span><span class="to">78</span><span class="tr">▲3</span><span class="pill-q ok">Fechada</span></div>
+          <p class="resumo"><b class="num">11 de 14</b> compromissos · <b class="num">6h30</b> de foco</p>
+        </div>
+        <div class="fechar">
+          <div>
+            <p class="eyebrow">Fechamento</p>
+            <p class="tx">Você pode reler esta semana quando quiser, com os números do jeito que estavam.</p>
+          </div>
+          <span class="conf"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Semana fechada às <span class="num">21:30</span> · conta para o streak de <span class="num">12 dias</span></span>
+        </div>
+        <p class="pe-nota">A pílula do cabeçalho passa a <span class="pill-q ok">Fechada</span>. Sy continua no topo, com a mesma leitura; a camada responde com os dados congelados no fechamento.</p>
+      </div>
+      <div class="pe">
+        <h4>Sem dados suficientes · sem número, sem Sy</h4>
+        <div class="principal">
+          <p class="eyebrow">Score da semana</p>
+          <div class="sc num"><span class="to" style="color:var(--t3)">–</span></div>
+          <p class="resumo"><b class="num">3 de 4</b> compromissos até agora</p>
+        </div>
+        <p class="vazio">Faltam <span class="num">3 dias</span> para a semana ter leitura. O score da semana e o que mudou aparecem a partir de quinta, com pelo menos <span class="num">4</span> dias de registros.</p>
+        <div class="fechar">
+          <div>
+            <p class="eyebrow">Fechamento</p>
+            <p class="tx">Você pode fechar quando a semana terminar, no domingo.</p>
+          </div>
+          <button class="btn-sm roxo" type="button" disabled>Fechar a semana</button>
+        </div>
+        <p class="pe-nota">Pílula <span class="pill-q off">Em curso</span>. Sy não aparece (não há o que ler); os números da semana mostram só o acumulado até hoje.</p>
+      </div>
+      <div class="pe">
+        <h4>Semana que caiu · número em coral, Sy diz o que pesou</h4>
+        <div class="principal">
+          <p class="eyebrow">Score da semana</p>
+          <div class="sc num"><span class="from">78</span><span class="ar">→</span><span class="to dn">74</span><span class="tr dn">▼4</span></div>
+          <p class="resumo"><b class="num">8 de 14</b> compromissos · <b class="num">3h10</b> de foco</p>
+          <div class="sy">
+            <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+            <div>
+              <p class="fala">A semana recuou <b class="num w">4 pontos</b>, quase tudo em Tempo e Corpo: <b class="num">6 dos 14</b> compromissos não saíram e o foco caiu para <b class="num">3h10</b>. Finanças seguiu estável.</p>
+              <p class="fontes">Atualizado no domingo às 20:10 · fontes: 9 transações, 14 compromissos e 3 metas</p>
+            </div>
+          </div>
+        </div>
+        <p class="pe-nota">Só o número final e a tendência ficam em coral; o <span class="num">78</span> de origem continua em cinza. "O que mudou" ordena as áreas da maior queda para a menor.</p>
+      </div>
+    </div>
+
+    <div class="le">
+      <p class="eyebrow">O que Sy lê aqui</p>
+      <ul>
+        <li><code>weekly_reviews</code><span>a semana 40: período, score de abertura e de fechamento, hora do fechamento, estado (em curso, fechada); é onde "Fechar a semana" grava</span></li>
+        <li><code>life_sync_scores</code><span>os scores por área no início e no fim da semana: de onde saem o 75 → 78 e cada linha de "O que mudou"</span></li>
+        <li><code>agenda_events</code><span>os 14 compromissos da semana e os 11 concluídos, em 03 Tempo</span></li>
+        <li><code>focus_sessions</code><span>as sessões que somam 6h30 de foco, comparadas com a semana anterior</span></li>
+        <li><code>transactions</code><span>as 12 transações da semana: R$&nbsp;1.850 de entradas, R$&nbsp;940 de saídas, o lazer em R$&nbsp;128</span></li>
+        <li><code>user_streaks</code><span>o streak de 12 dias que o fechamento alimenta; só conta uma vez por semana</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+SLApp.boot()
+
+// ── fechar a semana: a única ação da tela. Sem modal: o botão vira status (role=status),
+// a pílula do cabeçalho passa a "Fechada" e o número ganha a pílula. Persiste em weekly_reviews e conta para o streak.
+;(function () {
+  var btn = document.getElementById('fechar'), done = document.getElementById('fechado')
+  var estado = document.getElementById('estado'), pill = document.getElementById('pillNum')
+  if (!btn) return
+  btn.addEventListener('click', function () {
+    btn.hidden = true
+    done.hidden = false
+    estado.textContent = 'Fechada'
+    estado.classList.add('ok')
+    pill.hidden = false
+  })
+})()
+</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+</body>
+</html>
