@@ -33,9 +33,9 @@ do check-in de humor, e **acordo de atenção com Sy** (quando ele pode sugerir)
 quieto. Publicada também como artifact privado para leitura no celular:
 https://claude.ai/artifact/CNmYcHzfWBJ2DDcCBzLqrd
 
-**Próximo:** mobile dedicado 390×844 das duas telas → aceite → reescrever DS §1/§6.2/§6.3/§6.4 e a spec
-(§4.2, §7.2, §7.3, §8, §11) com a anatomia da D → implementação em `web/` (refazer `/dashboard`). Brief das
-versões: `docs/superpowers/plans/2026-10-03-meu-dia-versoes-brief.md`.
+**Próximo: o PLANO DE ROLLOUT** `docs/superpowers/plans/2026-10-03-rollout-ds-v5-sem-metafora.md` (9 fases,
+63 telas D+M, 4 templates, 36 modais → sheets), escrito a pedido do usuário e **aguardando aprovação dele**.
+Substitui as Ondas 02 a 14. Fase 0 = mobiles de D e A + templates T2/T3/T4 + DS/spec reescritos + mock em outubro.
 
 **Ondas 00 e 01 fechadas e no ar em `web/`** (não entram na revisão). **Ondas 04 a 14 não começaram.**
 Voz (gênero, duração) e pronúncia de "Sy": adiadas pelo usuário, não bloqueiam.
