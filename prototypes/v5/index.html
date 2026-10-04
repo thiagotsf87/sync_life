@@ -63,12 +63,12 @@
     <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
     <span class="wm">Sync<em>Life</em></span></a>
   <span class="date">DS v5 · Estúdio · Hub de protótipos</span>
-  <span class="eyebrow">Redesign completo</span>
+  <span class="eyebrow">Rollout sem metáfora · 9 fases</span>
 </header>
 
 <main class="wrap">
   <section class="mast">
-    <p class="eyebrow"><b>Onda a onda</b> · protótipo → aprovação → implementação → QA de identidade</p>
+    <p class="eyebrow"><b>Fase a fase</b> · protótipo desktop → mobile dedicado → aprovação → implementação → QA de identidade</p>
     <h1>Todas as telas do SyncLife, <em>no DS v5</em>.</h1>
     <p class="sub">Este hub é a interface de aprovação: cada tela tem protótipo desktop e mobile dedicados. Nada é implementado antes do "aprovado". Fonte de verdade: <b>DESIGN-SYSTEM-v5.md</b>; em divergência, os protótipos vencem.</p>
     <div class="legend">
@@ -96,14 +96,14 @@
   var ST_LABEL = { planejada: 'planejada', rascunho: 'rascunho', aprovacao: 'em aprovação',
     revisao: 'revisão pedida', aprovado: 'aprovada', implementado: 'implementada', qa: 'no ar + QA ok' };
   var ONDAS = [
-    { n: '00', titulo: 'Landing + marca', tam: 'M',
+    { n: '00', titulo: 'Landing + marca (fora do rollout: fica como está)', tam: 'M',
       nota: 'Fechada. A landing viva r15 e o mobile m1 estão <b>no ar em <code>web/</code></b> na rota <code>/</code>, com delta 0px no teste de identidade. A r4 foi congelada e saiu daqui pro Arquivo.',
       telas: [
       ['Landing VIVA · desktop (r15)', 'landing/landing-viva.html', null, 'qa'],
       ['Landing VIVA · mobile dedicado (m1)', null, 'landing/landing-viva.mobile.html', 'qa'],
       ['Marca 3D · cromo líquido (bússola WebGL + lockup)', 'marca/marca-3d.html', null, 'qa'],
     ]},
-    { n: '01', titulo: 'Público + auth', tam: 'M',
+    { n: '01', titulo: 'Público + auth (fora do rollout: fica como está)', tam: 'M',
       nota: 'Fechada. As 6 telas estão <b>no ar em <code>web/</code></b> com a lógica Supabase do v3 preservada.',
       telas: [
       ['Pricing', 'landing/pricing.html', 'landing/pricing.mobile.html', 'qa'],
@@ -113,92 +113,131 @@
       ['Redefinir senha', 'auth/redefinir-senha.html', 'auth/redefinir-senha.mobile.html', 'qa'],
       ['Onboarding', 'auth/onboarding.html', 'auth/onboarding.mobile.html', 'qa'],
     ]},
-    { n: '02', titulo: 'Meu dia + Finanças sem metáfora · desktop e mobile APROVADOS', tam: 'L',
-      nota: '<b>Virada de 2026-10-03:</b> o app sai do estilo revista (sem banda clara, selo, caligrafia, ticker, encenação de Sy). Fica a base do DS v5 e o chrome. Três versões de desktop (1440) da tela inicial <b>Meu dia</b> e da <b>Finanças</b> correspondente, construídas sobre o mesmo mock e o mesmo brief (<code>docs/superpowers/plans/2026-10-03-meu-dia-versoes-brief.md</code>). <b>Veredito (2026-10-03):</b> <b>Meu dia D e Finanças A APROVADAS</b> em desktop. Nenhuma das três primeiras Meu dia agradou. A <b>D</b> traz as ideias do estudo Espaço do Codex (margem de vida como número principal, uma escolha com vários efeitos e prévia reversível, ritmo autodeclarado no lugar do check-in, acordo de atenção com Sy), com o Life Score mantido e o visual v5 da Finanças A. Landing e auth não entram na revisão.',
+    { n: '0', fase: true, titulo: 'Fundação do modelo sem metáfora', tam: 'M',
+      nota: '<b>Plano de rollout aprovado em 2026-10-03</b> (<code>docs/superpowers/plans/2026-10-03-rollout-ds-v5-sem-metafora.md</code>): 9 fases, 63 telas em desktop e mobile, 4 templates, 36 modais que viram sheets. Sai tudo que é estilo revista; fica a base do DS v5 e o chrome. Landing e auth (Ondas 00 e 01) não entram. A Fase 0 fixa o que todas as outras copiam.',
       telas: [
-      ['D · Margem de vida + laboratório de escolhas · Meu dia · desktop e mobile APROVADOS (2026-10-03)', 'app/meu-dia-d.html', 'app/meu-dia-d.mobile.html', 'aprovado'],
-      ['A · Finanças (Sy em 1 ou 2 linhas no topo) · desktop e mobile APROVADOS (2026-10-03)', 'app/financas-a.html', 'app/financas-a.mobile.html', 'aprovado'],
-      ['A · Sy fala, a lista responde · Meu dia (não aprovada)', 'app/meu-dia-a.html', null, 'revisao'],
-      ['B · Blocos por área · Meu dia (não aprovada)', 'app/meu-dia-b.html', null, 'revisao'],
-      ['B · Finanças (Sy é um bloco da grade)', 'app/financas-b.html', null, 'aprovacao'],
-      ['C · A conversa é a casa · Meu dia (não aprovada)', 'app/meu-dia-c.html', null, 'revisao'],
-      ['C · Finanças (conversa encaixada à direita)', 'app/financas-c.html', null, 'aprovacao'],
+      ['Sy · o Enxame (identidade aprovada em 2026-08-02; no modelo novo vive em 40px, repouso e ouvindo)', 'personagem/enxame.html', null, 'aprovado'],
+      ['Meu dia · versão D · margem de vida, laboratório, ritmo, acordo com Sy', 'app/meu-dia-d.html', 'app/meu-dia-d.mobile.html', 'aprovado'],
+      ['Finanças · versão A · template T1 de área (Sy em 1 ou 2 linhas no topo)', 'app/financas-a.html', 'app/financas-a.mobile.html', 'aprovado'],
+      ['Mock ancorado em 3 de outubro de 2026 (shared/mock-data.js)', null, null, 'aprovado'],
+      ['Peças extraídas para shared/ (sy40, margem, laboratório, ritmo, lista, agenda, acordo) com diff zero', null, null, 'rascunho'],
+      ['T2 · Lista + captura (espécime: transações)', null, null, 'planejada'],
+      ['T3 · Detalhe (espécime: detalhe de uma meta)', null, null, 'planejada'],
+      ['T4 · Formulário (espécime: nova meta, com SaveBar)', null, null, 'planejada'],
+      ['DS §1/§4/§6/§7/E-07/E-10 e spec reescritos', null, null, 'rascunho'],
+      ['Versões recusadas: Meu dia A (lista), B (blocos), C (conversa)', 'app/meu-dia-a.html', null, 'revisao'],
+      ['Versões recusadas: Finanças B e C', 'app/financas-b.html', null, 'revisao'],
     ]},
-    { n: '02·v1', titulo: 'Chrome do app + Diário (versão revista, REABERTA em 2026-10-03)', tam: 'L',
-      nota: 'Lote 1 <b>no ar em <code>web/</code></b> (<code>/dashboard</code> é o Diário). O <b>lote 2 está parado</b> por dois motivos: o ponto de acesso da Edição da semana não ficou bom, e ele dependia da identidade do coach, que só fechou agora na Onda 03. O Life Score em si não foi criticado, está só esperando aceite junto com o lote. <b>Próxima sessão reabre o Diário</b> como cockpit de Sy.',
+    { n: '1', fase: true, titulo: 'Núcleo: Meu dia, Finanças hub, Sy (N1 por gatilhos, N2 persistido, N3 em uma intenção)', tam: 'XL',
+      nota: 'A casa nova no ar. Implementação em <code>web/</code>: <code>/dashboard</code> refeito, <code>(app-v5)/financas</code>, Life Score e Sua semana sem selo nem encenação, <code>/coach</code> como arquivo da conversa, chrome completo com bottom bar mobile, intenção composta do curso de inglês (planejar/aplicar/desfazer).',
       telas: [
-      ['Diário (chrome + check-in + suas áreas)', 'app/diario.html', 'app/diario.mobile.html', 'qa'],
-      ['Camada do coach (gatilho no bar + ask da folha)', 'app/diario.html', 'app/diario.mobile.html', 'qa'],
-      ['Edição da semana (revisão semanal)', 'app/review-semanal.html', 'app/review-semanal.mobile.html', 'revisao'],
-      ['Life Score · a anatomia do número', 'app/life-score.html', 'app/life-score.mobile.html', 'aprovacao'],
+      ['Meu dia (D) em web/', 'app/meu-dia-d.html', 'app/meu-dia-d.mobile.html', 'aprovado'],
+      ['Finanças hub (A) em web/', 'app/financas-a.html', 'app/financas-a.mobile.html', 'aprovado'],
+      ['Life Score · a anatomia do número (refazer sem selo)', 'app/life-score.html', 'app/life-score.mobile.html', 'revisao'],
+      ['Sua semana (ex Edição da semana; vira tela T3)', 'app/review-semanal.html', 'app/review-semanal.mobile.html', 'revisao'],
+      ['Arquivo da conversa (/coach)', null, null, 'planejada'],
+      ['Intenção composta: curso de inglês (cartão de proposta)', null, null, 'planejada'],
+      ['Chrome: bar, modbar, camada, bottom bar mobile', null, null, 'planejada'],
     ]},
-    { n: '03', titulo: 'Sy (identidade aprovada; bancada REABERTA em 2026-10-03, sem encenação)', tam: 'M',
-      nota: 'Quatro decisões fechadas em 2026-08-02, não reabrir sem motivo novo: <b>(1) o corpo é o Enxame</b>, bando sem forma fixa com coração coral; <b>(2) o nome é Sy</b>, pronúncia "sai", grafia travada, <b>sem artigo</b> (nunca "o Sy"); <b>(3) o editorial é o formato da saída, não a identidade</b>, Sy entrega uma edição mas não é colunista; <b>(4) Sy é objeto sempre escuro</b> (DS §2.2), leva a própria chapa pra dentro de página clara. Riscos abertos: a leitura padrão de "Sy" em pt-BR é "si", então a pronúncia tem que ser ensinada no onboarding e o TTS precisa de fonema explícito.',
+    { n: '2', fase: true, titulo: '01 · Finanças, subtelas (7 telas, 5 modais)', tam: 'L',
+      nota: 'T2 Transações e Recorrentes · Orçamentos com laboratório · Planejamento com laboratório · Calendário · Relatórios · Importar (T4, 3 passos). Modais viram sheets.',
       telas: [
-      ['Sy · o Enxame (6 estados + 3 escalas)', 'personagem/enxame.html', null, 'aprovado'],
-      ['Diário como bancada de Sy · desktop aprovado + mobile dedicado', 'app/diario-bancada.html', 'app/diario-bancada.mobile.html', 'aprovacao'],
-      ['Conversa completa (vista cheia da camada)', null, null, 'planejada'],
+      ['Transações (T2)', null, null, 'planejada'],
+      ['Orçamentos (T2 + laboratório)', null, null, 'planejada'],
+      ['Recorrentes (T2)', null, null, 'planejada'],
+      ['Planejamento (T3 + laboratório)', null, null, 'planejada'],
+      ['Calendário (T3)', null, null, 'planejada'],
+      ['Relatórios (T1 reduzido)', null, null, 'planejada'],
+      ['Importar extrato (T4)', null, null, 'planejada'],
     ]},
-    { n: '04', titulo: '01 · Finanças', tam: 'XL', telas: [
-      ['Visão geral', null, null, 'planejada'], ['Transações', null, null, 'planejada'],
-      ['Orçamentos', null, null, 'planejada'], ['Recorrentes', null, null, 'planejada'],
-      ['Planejamento', null, null, 'planejada'], ['Calendário', null, null, 'planejada'],
-      ['Relatórios', null, null, 'planejada'], ['Importar extrato', null, null, 'planejada'],
+    { n: '3', fase: true, titulo: '03 · Tempo e 02 · Futuro (11 telas)', tam: 'XL',
+      nota: 'Vêm cedo porque a margem de Meu dia depende da agenda e o laboratório depende das metas. /futuro/nova e /novo viram uma só.',
+      telas: [
+      ['Tempo hub (T1 + laboratório)', null, null, 'planejada'],
+      ['Agenda diária (T2)', null, null, 'planejada'],
+      ['Agenda semanal (T3)', null, null, 'planejada'],
+      ['Agenda mensal (T3)', null, null, 'planejada'],
+      ['Novo evento (T4)', null, null, 'planejada'],
+      ['Modo foco (tela própria)', null, null, 'planejada'],
+      ['Review do tempo (T3)', null, null, 'planejada'],
+      ['Futuro hub (T1 + laboratório)', null, null, 'planejada'],
+      ['Novo objetivo (T4)', null, null, 'planejada'],
+      ['Detalhe do objetivo (T3 + laboratório)', null, null, 'planejada'],
+      ['Check-in semanal (T4 curto)', null, null, 'planejada'],
     ]},
-    { n: '05', titulo: '02 · Futuro', tam: 'M', telas: [
-      ['Objetivos (hub)', null, null, 'planejada'], ['Novo objetivo', null, null, 'planejada'],
-      ['Detalhe do objetivo', null, null, 'planejada'], ['Check-in semanal', null, null, 'planejada'],
+    { n: '4', fase: true, titulo: '04 · Corpo e 05 · Mente (12 telas)', tam: 'L',
+      nota: '/corpo/coach deixa de ser rota: é a camada com contexto de Corpo. Timer compartilha com Modo foco.',
+      telas: [
+      ['Corpo hub (T1)', null, null, 'planejada'],
+      ['Atividades (T2)', null, null, 'planejada'],
+      ['Cardápio com IA (T3 + laboratório, Sy inline)', null, null, 'planejada'],
+      ['Peso e medidas (T2 + gráfico)', null, null, 'planejada'],
+      ['Saúde preventiva (T2)', null, null, 'planejada'],
+      ['Mente hub (T1)', null, null, 'planejada'],
+      ['Biblioteca (T2)', null, null, 'planejada'],
+      ['Sessões (T2)', null, null, 'planejada'],
+      ['Timer (tela própria)', null, null, 'planejada'],
+      ['Trilhas (T2)', null, null, 'planejada'],
+      ['Detalhe da trilha (T3)', null, null, 'planejada'],
     ]},
-    { n: '06', titulo: '03 · Tempo', tam: 'L', telas: [
-      ['Visão do tempo (hub)', null, null, 'planejada'], ['Agenda diária', null, null, 'planejada'],
-      ['Agenda semanal', null, null, 'planejada'], ['Agenda mensal', null, null, 'planejada'],
-      ['Modo foco', null, null, 'planejada'], ['Review semanal', null, null, 'planejada'],
+    { n: '5', fase: true, titulo: '06 · Patrimônio e 07 · Carreira (11 telas)', tam: 'L',
+      nota: 'Simulador IF é o laboratório em tela cheia.',
+      telas: [
+      ['Patrimônio hub (T1)', null, null, 'planejada'],
+      ['Carteira (T2)', null, null, 'planejada'],
+      ['Detalhe do ativo (T3)', null, null, 'planejada'],
+      ['Evolução (T3)', null, null, 'planejada'],
+      ['Proventos (T2)', null, null, 'planejada'],
+      ['Simulador IF (laboratório)', null, null, 'planejada'],
+      ['Carreira hub (T1)', null, null, 'planejada'],
+      ['Perfil profissional (T4)', null, null, 'planejada'],
+      ['Habilidades (T2)', null, null, 'planejada'],
+      ['Histórico (T2)', null, null, 'planejada'],
+      ['Roadmap (T3 + laboratório)', null, null, 'planejada'],
     ]},
-    { n: '07', titulo: '04 · Corpo', tam: 'L', telas: [
-      ['Visão do corpo (hub)', null, null, 'planejada'], ['Atividades físicas', null, null, 'planejada'],
-      ['Cardápio com IA', null, null, 'planejada'], ['Coach do corpo', null, null, 'planejada'],
-      ['Peso e medidas', null, null, 'planejada'], ['Saúde preventiva', null, null, 'planejada'],
+    { n: '6', fase: true, titulo: '08 · Experiências e Conquistas (9 telas)', tam: 'L',
+      nota: 'Detalhe da viagem com laboratório (orçamento × meta × lazer). Conquistas sem gradiente e sem selo.',
+      telas: [
+      ['Experiências hub (T1)', null, null, 'planejada'],
+      ['Minhas viagens (T2)', null, null, 'planejada'],
+      ['Detalhe da viagem (T3 + laboratório)', null, null, 'planejada'],
+      ['Nova viagem (T4, Sy inline)', null, null, 'planejada'],
+      ['Bucket list (T2)', null, null, 'planejada'],
+      ['Memórias (T2)', null, null, 'planejada'],
+      ['Passaporte (T3)', null, null, 'planejada'],
+      ['Conquistas hub (T3)', null, null, 'planejada'],
+      ['Ranking (T2)', null, null, 'planejada'],
     ]},
-    { n: '08', titulo: '05 · Mente', tam: 'L', telas: [
-      ['Visão da mente (hub)', null, null, 'planejada'], ['Biblioteca', null, null, 'planejada'],
-      ['Sessões', null, null, 'planejada'], ['Timer', null, null, 'planejada'],
-      ['Trilhas', null, null, 'planejada'], ['Detalhe da trilha', null, null, 'planejada'],
+    { n: '7', fase: true, titulo: 'Configurações e Sy (8 telas + onboarding)', tam: 'M',
+      nota: 'Única rota nova do plano: /configuracoes/sy (acordo de atenção, horário do resumo, prioridades declaradas). Tema claro no app se decide em Aparência. Onboarding ganha o acordo e a pronúncia de Sy, com aprovação explícita.',
+      telas: [
+      ['Configurações hub (T4)', null, null, 'planejada'],
+      ['Aparência (T4)', null, null, 'planejada'],
+      ['Categorias (T2)', null, null, 'planejada'],
+      ['Contas (T2)', null, null, 'planejada'],
+      ['Integrações (T2)', null, null, 'planejada'],
+      ['Notificações (T4)', null, null, 'planejada'],
+      ['Sy (T4, nova)', null, null, 'planejada'],
+      ['Meu plano (T4)', null, null, 'planejada'],
+      ['Onboarding: passo do acordo com Sy', null, null, 'planejada'],
     ]},
-    { n: '09', titulo: '06 · Patrimônio', tam: 'L', telas: [
-      ['Visão do patrimônio (hub)', null, null, 'planejada'], ['Carteira', null, null, 'planejada'],
-      ['Detalhe do ativo', null, null, 'planejada'], ['Evolução', null, null, 'planejada'],
-      ['Proventos', null, null, 'planejada'], ['Simulador IF', null, null, 'planejada'],
-    ]},
-    { n: '10', titulo: '07 · Carreira', tam: 'M', telas: [
-      ['Visão de carreira (hub)', null, null, 'planejada'], ['Perfil profissional', null, null, 'planejada'],
-      ['Habilidades', null, null, 'planejada'], ['Histórico', null, null, 'planejada'],
-      ['Roadmap', null, null, 'planejada'],
-    ]},
-    { n: '11', titulo: '08 · Experiências', tam: 'L', telas: [
-      ['Visão de experiências (hub)', null, null, 'planejada'], ['Minhas viagens', null, null, 'planejada'],
-      ['Detalhe da viagem', null, null, 'planejada'], ['Nova viagem', null, null, 'planejada'],
-      ['Bucket list', null, null, 'planejada'], ['Memórias', null, null, 'planejada'],
-      ['Passaporte', null, null, 'planejada'],
-    ]},
-    { n: '12', titulo: 'Conquistas', tam: 'S', telas: [
-      ['Conquistas (hub)', null, null, 'planejada'], ['Ranking', null, null, 'planejada'],
-    ]},
-    { n: '13', titulo: 'Configurações', tam: 'M', telas: [
-      ['Configurações (hub)', null, null, 'planejada'], ['Aparência', null, null, 'planejada'],
-      ['Categorias', null, null, 'planejada'], ['Contas', null, null, 'planejada'],
-      ['Integrações', null, null, 'planejada'], ['Notificações', null, null, 'planejada'],
-      ['Meu plano', null, null, 'planejada'],
-    ]},
-    { n: '14', titulo: 'Varredura final', tam: 'M', telas: [
-      ['Modais e estados vazios restantes', null, null, 'planejada'],
-      ['Assets finais da marca (SVG, ICO, PNG)', null, null, 'planejada'],
-      ['Remoção do v3 + DS v5.1', null, null, 'planejada'],
+    { n: '8', fase: true, titulo: 'Varredura e fechamento', tam: 'M',
+      nota: 'Estados vazios e de erro, modais restantes, renomear nomes internos (.folha, .colofao, diario*), remoção do v3, assets da marca, DS v5.1, CLAUDE.md reescrito.',
+      telas: [
+      ['Estados vazios e de erro de todas as telas', null, null, 'planejada'],
+      ['Modais restantes do v3', null, null, 'planejada'],
+      ['Nomes internos', null, null, 'planejada'],
+      ['Remoção do v3', null, null, 'planejada'],
+      ['Assets da marca', null, null, 'planejada'],
+      ['DS v5.1 + CLAUDE.md', null, null, 'planejada'],
     ]},
     // Fora da esteira: nada aqui vai virar tela. Ficam porque registram uma decisão
     // ou porque são ferramenta, e sumir com eles faria alguém refazer o caminho.
     { n: '––', titulo: 'Arquivo', tam: 'FORA DA ESTEIRA', arquivo: true,
       nota: 'Nada aqui está na fila. São caminhos já decididos e ferramentas de apoio, mantidos pra ninguém repetir a mesma investigação. As 5 rodadas de personagem que foram reprovadas estão contadas com o motivo no handoff.',
       telas: [
+      ['Diário editorial (Onda 02 lote 1, no ar em web/ até a Fase 1 substituir; estilo revista, REABERTO em 2026-10-03)', 'app/diario.html', 'app/diario.mobile.html', 'rascunho'],
+      ['Bancada de Sy (Onda 03; aprovada como forma e depois REABERTA em 2026-10-03: a encenação saiu do modelo)', 'app/diario-bancada.html', 'app/diario-bancada.mobile.html', 'rascunho'],
       ['Landing r4 · congelada como versão segura (tag <code>poc-landing-r4</code>)', 'landing/landing.html', 'landing/landing.mobile.html', 'rascunho'],
       ['Personagem r4 · os três corpos lado a lado (Enxame venceu)', 'personagem/vivo.html', null, 'rascunho'],
       ['Personagem r3 · O projetado, luz em camadas', 'personagem/projetado.html', null, 'rascunho'],
@@ -215,7 +254,7 @@
   var host = document.getElementById('ondas');
   host.innerHTML = ONDAS.map(function (o) {
     return '<section class="onda' + (o.arquivo ? ' arquivo' : '') + '">' +
-      '<h2><span class="on num">' + (o.arquivo ? '' : 'ONDA ') + o.n + '</span>' + o.titulo +
+      '<h2><span class="on num">' + (o.arquivo ? '' : (o.fase ? 'FASE ' : 'ONDA ')) + o.n + '</span>' + o.titulo +
       '<span class="tam">' + o.tam + '</span></h2>' +
       (o.nota ? '<p class="nota">' + o.nota + '</p>' : '') +
       '<table><thead><tr><th style="width:44%">Tela</th><th>Desktop</th><th>Mobile</th><th style="width:150px">Status</th></tr></thead><tbody>' +
