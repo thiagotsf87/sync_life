@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk mob">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>SyncLife · Suas conversas com Sy · mobile · v5</title>
+<!-- Fase 1 · arquivo da conversa (rota interna /coach) MOBILE dedicado (390×844), template T2 aplicado a conversas.
+     1 coluna: cabeçalho curto → busca + filtros em scroll-x → a lista de dias É a tela. Tocar num dia abre a thread em
+     tela cheia (cabeçalho sticky com voltar); é navegação dentro da página com `hidden`, não é camada nem sheet.
+     No fim do dia de hoje não há input: o gatilho "Fale com Sy" abre a camada normal (sheet).
+     E-02: sem JS, a lista e o dia de hoje ficam visíveis, empilhados. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<style>
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* T2 · cabeçalho curto: sem a unidade Sy */
+  html.mob .titulo{padding:28px 0 18px;border-bottom:none}
+  .titulo .sub{font:400 13.5px/1.55 var(--int);color:var(--t2);margin-top:10px}
+
+  /* alvos de toque >= 40px: ajustes de 1 a 2px sobre o chrome compartilhado (o shared mede 39px; candidatos a shared) */
+  html.mob .brand{min-height:40px}
+  html.mob .bar .btn-sm{min-height:40px}
+  html.mob .bar .btn-sm.roxo{min-width:40px;justify-content:center}
+  html.mob .btn-sm{min-height:40px}
+  html.mob .camada .csug .chip{min-height:40px}
+  html.mob .camada .cask .in{padding-top:0;padding-bottom:0}
+  html.mob .camada .cask input{min-height:44px}
+  html.mob .camada .cfull{min-height:40px;display:flex;align-items:center;justify-content:center;padding-top:0;padding-bottom:env(safe-area-inset-bottom)}
+
+  /* T2 · busca em pílula (largura total) + filtros em scroll-x (chips + select-pílula) */
+  .busca{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:0 15px;height:44px;transition:border-color .3s var(--ease)}
+  .busca:focus-within{border-color:rgba(104,64,255,.55)}
+  .busca svg{color:var(--t3);flex:none}
+  .busca input{background:none;border:none;outline:none;color:var(--t1);font:400 14px var(--int);width:100%;min-width:0;height:100%}
+  .busca input::placeholder{color:var(--t3)}
+  .filtros{display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;margin:12px -20px 0;padding:0 20px 16px;border-bottom:1px solid var(--line)}
+  .filtros::-webkit-scrollbar{display:none}
+  .filtros .chip{min-height:40px;white-space:nowrap;flex:none;font-size:13px}
+  .filtros .sep{width:1px;height:20px;background:var(--line);flex:none;margin:0 2px}
+  .filtros .sel{margin-top:0;flex:none}
+  .filtros .sel select{min-height:40px;border-radius:999px;padding:8px 34px 8px 14px;font:500 13px var(--int);background:transparent;color:var(--t2)}
+  .filtros .sel::after{right:14px}
+
+  /* arquivo em 1 coluna: a lista de dias é a tela */
+  .arquivo{display:block}
+  .dias{padding:4px 0 24px}
+  .dias > .eyebrow{padding:14px 0 4px}
+  .dia-row{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);cursor:pointer;
+    padding:16px 0 16px 12px;min-height:64px;border-left:2px solid transparent;color:var(--t2);font-family:var(--int)}
+  .dia-row.on{border-left-color:var(--roxo);color:var(--t1)}
+  .dia-row:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px;border-radius:6px}
+  .dia-row .dd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+  .dia-row.on .dd,.dia-row.hoje .dd b{color:var(--roxo)}
+  .dia-row .fr{font:400 14px/1.5 var(--int);margin-top:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .dia-row .cnt{display:flex;align-items:center;gap:10px;font:500 11px var(--gro);letter-spacing:.02em;color:var(--t3);margin-top:8px}
+  .sb{font:700 9px var(--gro);letter-spacing:.14em;padding:4px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3);white-space:nowrap;text-transform:uppercase}
+  .sb.aberta{color:var(--roxo);border-color:rgba(104,64,255,.5)}
+  .sb.aplicada{color:var(--ele);border-color:rgba(161,255,98,.4)}
+  .sb.desfeita{color:var(--t3);border-color:var(--line-h)}
+  .sem-resultado{font:400 13.5px var(--int);color:var(--t3);padding:24px 0 4px}
+  .sem-resultado button{background:none;border:none;color:var(--t2);font:600 13px var(--int);cursor:pointer;padding:0 8px;margin-left:8px;min-height:40px}
+
+  /* a thread em tela cheia: cabeçalho sticky sob o bar, com voltar */
+  html.mob main.ver-thread .titulo,html.mob main.ver-thread .filtros-wrap{display:none}
+  .threads{padding:0 0 40px;min-width:0}
+  .thread{display:flex;flex-direction:column;gap:12px}
+  .th{position:sticky;top:56px;z-index:50;margin:0 -20px;padding:10px 20px 14px;background:rgba(21,19,19,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .th .voltar{display:inline-flex;align-items:center;min-height:40px;background:none;border:none;color:var(--t2);font:600 13px var(--int);cursor:pointer;padding:0;margin-bottom:2px}
+  .th .voltar:active{color:var(--t1)}
+  .th h2{font:500 19px/1.25 var(--gro);letter-spacing:-.025em;margin-top:6px}
+  .th .cnt{display:block;font:500 11px var(--gro);letter-spacing:.02em;color:var(--t3);margin-top:6px}
+  .ent{display:flex;flex-direction:column;gap:10px}
+  .thread .divider{display:flex;align-items:center;gap:12px;font:700 9.5px var(--gro);letter-spacing:.2em;color:var(--t3);text-transform:uppercase;margin:8px 0 0}
+  .thread .divider::before,.thread .divider::after{content:"";flex:1;height:1px;background:var(--line)}
+  .thread .bub{max-width:88%;padding:12px 15px;font-size:13.5px}
+  .thread .action{max-width:92%}
+  .thread .bub.a .meta{letter-spacing:.1em}
+
+  /* entrada de intenção: cartão com estado em pílula; o Desfazer mora aqui */
+  .intent{align-self:stretch;border:1px solid var(--line);border-left:3px solid var(--roxo);border-radius:12px;padding:14px 14px 12px;background:#1b1918}
+  .intent[data-estado=aplicada]{border-left-color:var(--ele)}
+  .intent[data-estado=desfeita]{border-left-color:var(--t3)}
+  .intent .ih{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .intent .ih h3{font:500 16px/1.3 var(--gro);letter-spacing:-.02em;color:var(--t1);margin-top:6px}
+  .intent .ih .eyebrow b{color:var(--roxo)}
+  .est{flex:none;font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;border:1px solid var(--line-h);border-radius:999px;padding:5px 10px;white-space:nowrap;color:var(--t3)}
+  .est.aberta{color:var(--roxo);border-color:rgba(104,64,255,.5)}
+  .est.aplicada{color:var(--ele);border-color:rgba(161,255,98,.4)}
+  .est.desfeita{color:var(--t3);border-color:var(--line-h)}
+  .intent .lead{font:400 12.5px/1.55 var(--int);color:var(--t2);margin-top:8px}
+  .regs{list-style:none;margin-top:12px;border-top:1px solid var(--line)}
+  .regs li{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font:400 13px/1.45 var(--int);color:var(--t2)}
+  .regs .ix{font:700 11px var(--gro);color:var(--roxo)}
+  .regs b{color:var(--t1);font-weight:600}
+  .regs a{display:inline-flex;align-items:center;min-height:40px;padding:0 4px;font:500 12.5px var(--int);color:var(--t3);white-space:nowrap}
+  .intent[data-estado=desfeita] .regs li{color:var(--t3);text-decoration:line-through}
+  .intent[data-estado=desfeita] .regs li b{color:var(--t3)}
+  .intent[data-estado=desfeita] .regs .ix{color:var(--t3)}
+  .intent[data-estado=desfeita] .regs a{display:none}
+  .ifoot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;font:400 12px/1.5 var(--int);color:var(--t3);flex-wrap:wrap}
+  .ifoot .done{display:inline-flex;align-items:center;gap:7px;font:600 11.5px var(--int);color:var(--ele)}
+  .ifoot .done svg{flex:none}
+  .ifoot .acts{display:flex;gap:8px;align-items:center}
+  .confirma{border-left:3px solid var(--coral);padding:10px 14px;margin-top:12px;font:400 13px/1.55 var(--int);color:var(--t2)}
+  .confirma b{color:var(--t1);font-weight:600}
+  .confirma button{background:none;border:none;font:600 13.5px var(--int);cursor:pointer;padding:0 4px;color:var(--t2);min-height:40px;margin-right:14px}
+  .confirma button.sim{color:var(--coral)}
+
+  /* fim do dia de hoje: nenhum input; o gatilho abre a camada (sheet) */
+  .continuar{border-top:1px solid var(--line);margin-top:8px;padding-top:18px;font:400 13.5px var(--int);color:var(--t2)}
+  .continuar .btn-sm{margin-top:10px}
+  .fim{font:400 12px/1.5 var(--int);color:var(--t3);border-top:1px solid var(--line);margin-top:8px;padding-top:16px}
+
+  /* anotação do protótipo (fora do fluxo, inert) */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:40px;padding-top:30px;padding-bottom:72px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:1fr;gap:34px;margin-top:22px}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+  .pe .vazio{font:500 16px/1.4 var(--gro);letter-spacing:-.01em;color:var(--t1);margin-bottom:14px}
+  .pe .vazio small{display:block;font:400 12.5px/1.55 var(--int);color:var(--t3);margin-top:6px}
+  .fontes-sy{margin-top:40px}
+  .fontes-sy h3{font:500 20px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+  .fontes-sy p{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .fontes-sy p b{color:var(--t1);font-weight:600}
+  .fontes-sy ul{list-style:none;margin-top:14px}
+  .fontes-sy li{padding:12px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.55 var(--int);color:var(--t2)}
+  .fontes-sy li code{display:block;font:600 12.5px var(--gro);color:var(--t1);letter-spacing:-.01em;margin-bottom:4px}
+  .fontes-sy li code[data-tabela]::before{content:attr(data-tabela)}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button" aria-label="Registrar">+</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a href="meu-dia-d.mobile.html">Meu dia</a>
+    <a href="financas-a.mobile.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main id="topo">
+  <div class="wrap">
+
+    <!-- 1. cabeçalho curto -->
+    <header class="titulo boot b1">
+      <p class="eyebrow"><b>Sy</b></p>
+      <h1>Suas conversas com Sy</h1>
+      <p class="sub">Tudo o que vocês já falaram, por dia. Nada aqui é uma segunda caixa de entrada: para falar, use Fale com Sy.</p>
+    </header>
+
+    <!-- 2. busca + filtros -->
+    <div class="boot b2 filtros-wrap">
+      <label class="busca">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>
+        <input id="f-q" type="search" placeholder="Buscar nas conversas" aria-label="Buscar nas conversas">
+      </label>
+      <div class="filtros" role="toolbar" aria-label="Filtros">
+      <button class="chip on" type="button" data-tipo="tudo" aria-pressed="true">Tudo</button>
+      <button class="chip" type="button" data-tipo="pergunta" aria-pressed="false">Perguntas</button>
+      <button class="chip" type="button" data-tipo="acao" aria-pressed="false">Ações</button>
+      <button class="chip" type="button" data-tipo="intencao" aria-pressed="false">Intenções</button>
+      <span class="sep" aria-hidden="true"></span>
+      <div class="sel">
+        <select id="f-area" aria-label="Por área">
+          <option value="todas">Por área: todas</option>
+          <option value="01">01 Finanças</option><option value="02">02 Futuro</option><option value="03">03 Tempo</option><option value="04">04 Corpo</option>
+          <option value="05">05 Mente</option><option value="06">06 Patrimônio</option><option value="07">07 Carreira</option><option value="08">08 Experiências</option>
+        </select>
+      </div>
+      </div>
+    </div>
+
+    <!-- 3. arquivo: dias | o dia selecionado -->
+    <section class="arquivo boot b3" aria-label="Arquivo da conversa">
+
+      <aside class="dias" id="dias" aria-label="Dias">
+        <p class="eyebrow">Por dia · <span class="num" id="n-dias">5</span> dias</p>
+        <button class="dia-row on hoje" type="button" data-dia="2026-10-03" aria-pressed="true">
+          <span class="dd"><span><b>Hoje</b> · sexta, 3 out</span></span>
+          <span class="fr">Outubro está 4 pontos acima de setembro.</span>
+          <span class="cnt"><span data-cnt-dia>3 entradas</span></span>
+        </button>
+        <button class="dia-row" type="button" data-dia="2026-10-02" aria-pressed="false">
+          <span class="dd"><span>Quinta · 2 out</span></span>
+          <span class="fr">Aporte de R$&nbsp;300 confirmado, 2 dias antes do planejado.</span>
+          <span class="cnt"><span data-cnt-dia>3 entradas</span><span class="sb aberta" data-sb="i-ingles">Em aberto</span></span>
+        </button>
+        <button class="dia-row" type="button" data-dia="2026-09-30" aria-pressed="false">
+          <span class="dd"><span>Terça · 30 set</span></span>
+          <span class="fr">A semana começou com as manhãs livres de reunião.</span>
+          <span class="cnt"><span data-cnt-dia>2 entradas</span></span>
+        </button>
+        <button class="dia-row" type="button" data-dia="2026-09-26" aria-pressed="false">
+          <span class="dd"><span>Sexta · 26 set</span></span>
+          <span class="fr">Quero treinar 3 vezes por semana até a viagem.</span>
+          <span class="cnt"><span data-cnt-dia>3 entradas</span><span class="sb aplicada" data-sb="i-treino">Aplicada</span></span>
+        </button>
+        <button class="dia-row" type="button" data-dia="2026-09-22" aria-pressed="false">
+          <span class="dd"><span>Segunda · 22 set</span></span>
+          <span class="fr">Simular: e se eu poupar R$&nbsp;800?</span>
+          <span class="cnt"><span data-cnt-dia>3 entradas</span><span class="sb desfeita" data-sb="i-leitura">Desfeita</span></span>
+        </button>
+        <p class="sem-resultado" id="sem-resultado" hidden>Nada com essa busca.<button type="button" id="limpar">Limpar</button></p>
+      </aside>
+
+      <div class="threads" id="threads">
+
+        <!-- hoje · 3 de outubro -->
+        <article class="thread" data-dia="2026-10-03" aria-label="Sexta, 3 de outubro">
+          <header class="th">
+            <div>
+              <button class="voltar" type="button" data-voltar>← Todos os dias</button>
+              <p class="eyebrow"><b>Hoje</b> · sexta, 3 de outubro</p>
+              <h2>Um ajuste pequeno no lazer.</h2>
+            </div>
+            <span class="cnt" data-cnt-th>3 entradas</span>
+          </header>
+
+          <div class="ent" data-tipo="nota" data-areas="01 02 03">
+            <div class="divider">07:12 · dentro do seu acordo</div>
+            <div class="bub a">Outubro está <strong class="num">4</strong> pontos acima de setembro. As manhãs protegidas seguraram o foco e o aporte da Itália rendeu antes da média. O único ponto solto é o lazer: <span class="w">R$&nbsp;410 de R$&nbsp;420</span>, com 4 dias até quinta.
+              <span class="meta">Fontes: 3 orçamentos · 34 transações · 3 metas</span>
+            </div>
+          </div>
+
+          <div class="ent" data-tipo="pergunta" data-areas="01">
+            <div class="divider">14:02</div>
+            <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+            <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+              <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+            </div>
+          </div>
+
+          <div class="ent" data-tipo="acao" data-areas="01 02">
+            <div class="divider">14:04</div>
+            <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+            <div class="action" role="status">
+              <div class="al">Ação executada</div>
+              <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+              <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+            </div>
+          </div>
+
+          <div class="continuar">
+            <span>Para continuar, abra</span>
+            <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+              <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+              Fale com Sy</button>
+          </div>
+        </article>
+
+        <!-- quinta · 2 de outubro -->
+        <article class="thread" data-dia="2026-10-02" aria-label="Quinta, 2 de outubro" hidden>
+          <header class="th">
+            <div>
+              <button class="voltar" type="button" data-voltar>← Todos os dias</button>
+              <p class="eyebrow">Quinta · 2 de outubro</p>
+              <h2>Um aporte adiantado e uma intenção em aberto.</h2>
+            </div>
+            <span class="cnt" data-cnt-th>3 entradas</span>
+          </header>
+
+          <div class="ent" data-tipo="acao" data-areas="01 06">
+            <div class="divider">09:15</div>
+            <div class="bub u">Faz o aporte do CDB hoje mesmo.</div>
+            <div class="action" role="status">
+              <div class="al">Ação executada</div>
+              <p>Aporte de <b class="num">R$&nbsp;300</b> no <b>CDB</b> confirmado, <b class="num">2</b> dias antes do planejado. O saldo projetado de outubro segue em <b class="num">R$&nbsp;2.120</b>.</p>
+              <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 09:15</span>
+            </div>
+          </div>
+
+          <div class="ent" data-tipo="pergunta" data-areas="05 03 01 07 02">
+            <div class="divider">20:40</div>
+            <div class="bub u">Quero começar um curso de inglês.</div>
+            <div class="bub a">Suas noites de terça e quinta estão livres depois das 20h, a margem do mês comporta e a meta Fluência até 2027 já existe. Dá para começar agora: <strong class="num">2</strong> noites por semana por <strong class="num">R$&nbsp;180</strong> por mês, e o saldo livre de outubro cai de <strong class="num">R$&nbsp;1.840</strong> para <strong class="num">R$&nbsp;1.660</strong>. Os registros ficam abaixo, prontos para você escolher.
+              <span class="meta">Fontes: agenda da semana · orçamento Educação · meta Fluência até 2027 · habilidades</span>
+            </div>
+          </div>
+
+          <div class="ent" data-tipo="intencao" data-areas="05 03 01 07 02">
+            <div class="divider">20:41</div>
+            <section class="intent" id="i-ingles" data-estado="aberta" aria-label="Intenção: começar um curso de inglês">
+              <div class="ih">
+                <div>
+                  <p class="eyebrow">Intenção · <b>05 · 03 · 01 · 07 · 02</b></p>
+                  <h3>Começar um curso de inglês</h3>
+                </div>
+                <span class="est aberta" data-est>Em aberto</span>
+              </div>
+              <p class="lead">Caminho proposto: começar agora. Nada foi criado ainda. Amanhã isso entra em Meu dia como o que pede você.</p>
+              <ul class="regs">
+                <li><span class="ix num">05</span><span><b>Mente</b> · trilha Inglês, <span class="num">R$&nbsp;180</span> por mês</span><span></span></li>
+                <li><span class="ix num">03</span><span><b>Tempo</b> · 2 noites por semana, terça e quinta às <span class="num">20:00</span></span><span></span></li>
+                <li><span class="ix num">01</span><span><b>Finanças</b> · recorrente Educação, <span class="num">R$&nbsp;180</span> por mês</span><span></span></li>
+                <li><span class="ix num">07</span><span><b>Carreira</b> · habilidade Inglês ligada à trilha</span><span></span></li>
+                <li><span class="ix num">02</span><span><b>Futuro</b> · entra na meta Fluência até 2027</span><span></span></li>
+              </ul>
+              <div class="ifoot">
+                <span>Sy não cobra. Decida quando fizer sentido.</span>
+                <div class="acts"><button class="btn-sm ghost" type="button" data-coach-open data-coach-seed="Vale fechar o curso de inglês por R$ 180 por mês, 2 noites por semana?">Decidir</button></div>
+              </div>
+            </section>
+          </div>
+          <p class="fim">Fim do dia. Para continuar qualquer assunto, use Fale com Sy.</p>
+        </article>
+
+        <!-- terça · 30 de setembro -->
+        <article class="thread" data-dia="2026-09-30" aria-label="Terça, 30 de setembro" hidden>
+          <header class="th">
+            <div>
+              <button class="voltar" type="button" data-voltar>← Todos os dias</button>
+              <p class="eyebrow">Terça · 30 de setembro</p>
+              <h2>O salário entrou e outubro abriu com margem.</h2>
+            </div>
+            <span class="cnt" data-cnt-th>2 entradas</span>
+          </header>
+
+          <div class="ent" data-tipo="nota" data-areas="03 01">
+            <div class="divider">07:12 · dentro do seu acordo</div>
+            <div class="bub a">A semana começou com as manhãs livres de reunião. Bom sinal: nas semanas com foco protegido, você aportou <strong class="num">R$&nbsp;380</strong> a mais.
+              <span class="meta">Fontes: agenda da semana · 12 aportes</span>
+            </div>
+          </div>
+
+          <div class="ent" data-tipo="pergunta" data-areas="01">
+            <div class="divider">12:30</div>
+            <div class="bub u">Quanto entrou hoje?</div>
+            <div class="bub a"><strong class="num">R$&nbsp;4.150</strong> de salário. Depois do aluguel de <strong class="num">R$&nbsp;1.200</strong> e dos recorrentes, outubro abre com <strong class="num">R$&nbsp;1.840</strong> livres e a poupança em <strong class="num">37%</strong>, acima da meta de <strong class="num">30%</strong>.
+              <span class="meta">Fontes: 1 transação · 4 recorrentes · orçamento de outubro</span>
+            </div>
+          </div>
+          <p class="fim">Fim do dia. Para continuar qualquer assunto, use Fale com Sy.</p>
+        </article>
+
+        <!-- sexta · 26 de setembro -->
+        <article class="thread" data-dia="2026-09-26" aria-label="Sexta, 26 de setembro" hidden>
+          <header class="th">
+            <div>
+              <button class="voltar" type="button" data-voltar>← Todos os dias</button>
+              <p class="eyebrow">Sexta · 26 de setembro</p>
+              <h2>Três treinos por semana viraram registro.</h2>
+            </div>
+            <span class="cnt" data-cnt-th>3 entradas</span>
+          </header>
+
+          <div class="ent" data-tipo="pergunta" data-areas="04 03 02">
+            <div class="divider">18:20</div>
+            <div class="bub u">Quero treinar 3 vezes por semana até a viagem.</div>
+            <div class="bub a">Suas manhãs estão cheias, mas o meio-dia de segunda, quarta e sexta está livre. Cabe: <strong class="num">3</strong> treinos de <strong class="num">45</strong> min às <strong class="num">12:30</strong>, e a sequência vira uma meta em Futuro, com a Itália em <strong class="num">99</strong> dias como prazo.
+              <span class="meta">Fontes: agenda da semana · 3 atividades de Corpo · 3 metas</span>
+            </div>
+          </div>
+
+          <div class="ent" data-tipo="intencao" data-areas="04 03 02">
+            <div class="divider">18:24</div>
+            <section class="intent" id="i-treino" data-estado="aplicada" aria-label="Intenção: treinar 3 vezes por semana até a Itália">
+              <div class="ih">
+                <div>
+                  <p class="eyebrow">Intenção · <b>04 · 03 · 02</b></p>
+                  <h3>Treinar 3 vezes por semana até a Itália</h3>
+                </div>
+                <span class="est aplicada" data-est>Aplicada</span>
+              </div>
+              <p class="lead">Caminho escolhido: meio-dia, três vezes. Criar registros é reversível, então Sy fez e avisou.</p>
+              <ul class="regs">
+                <li><span class="ix num">04</span><span><b>Corpo</b> · rotina Treino B, <span class="num">3</span> vezes por semana</span><a href="#">Ver →</a></li>
+                <li><span class="ix num">03</span><span><b>Tempo</b> · 3 blocos de <span class="num">45</span> min, seg, qua e sex às <span class="num">12:30</span></span><a href="#">Ver →</a></li>
+                <li><span class="ix num">02</span><span><b>Futuro</b> · meta 3 treinos por semana, até <span class="num">3 de janeiro</span></span><a href="#">Ver →</a></li>
+              </ul>
+              <div class="ifoot">
+                <span class="done" data-ifoot><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Feito · 3 registros em 3 áreas · 18:24</span>
+                <div class="acts"><button class="btn-sm ghost" type="button" data-desfazer>Desfazer</button></div>
+              </div>
+              <div class="confirma" role="status" hidden>
+                <span>Desfazer os <b>3 registros</b>? Eles saem de Corpo, Tempo e Futuro. Nada mais muda.</span>
+                <button class="sim" type="button" data-conf-sim>Desfazer</button>
+                <button type="button" data-conf-nao>Manter</button>
+              </div>
+            </section>
+          </div>
+
+          <div class="ent" data-tipo="acao" data-areas="03 08">
+            <div class="divider">21:05</div>
+            <div class="bub u">Marca o jantar com a Ana na próxima sexta, 20h.</div>
+            <div class="action" role="status">
+              <div class="al">Ação executada</div>
+              <p><b>Jantar com Ana</b> entrou na agenda: sexta, <b class="num">3 de outubro</b>, às <b class="num">20:00</b>. Lazer estimado em <b class="num">R$&nbsp;120</b>, dentro do orçamento de outubro.</p>
+              <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 21:05</span>
+            </div>
+          </div>
+          <p class="fim">Fim do dia. Para continuar qualquer assunto, use Fale com Sy.</p>
+        </article>
+
+        <!-- segunda · 22 de setembro -->
+        <article class="thread" data-dia="2026-09-22" aria-label="Segunda, 22 de setembro" hidden>
+          <header class="th">
+            <div>
+              <button class="voltar" type="button" data-voltar>← Todos os dias</button>
+              <p class="eyebrow">Segunda · 22 de setembro</p>
+              <h2>Uma simulação e uma intenção desfeita.</h2>
+            </div>
+            <span class="cnt" data-cnt-th>3 entradas</span>
+          </header>
+
+          <div class="ent" data-tipo="pergunta" data-areas="01 02">
+            <div class="divider">08:40</div>
+            <div class="bub u">Simular: e se eu poupar R$&nbsp;800?</div>
+            <div class="bub a">Com <strong class="num">R$&nbsp;800</strong> por mês em vez de <strong class="num">R$&nbsp;580</strong>, a Itália fecha em <strong class="num">5</strong> meses em vez de 7. O custo: o lazer cai para <strong class="num">R$&nbsp;200</strong> e a poupança sobe para <strong class="num">41%</strong>. É uma simulação, nada foi alterado.
+              <span class="meta">Fontes: meta Viagem Itália · 3 orçamentos · projeção do mês</span>
+            </div>
+          </div>
+
+          <div class="ent" data-tipo="pergunta" data-areas="05 03">
+            <div class="divider">22:10</div>
+            <div class="bub u">Quero ler 20 minutos antes de dormir.</div>
+            <div class="bub a">Suas noites terminam por volta das 23h. Cabe um bloco das <strong class="num">22:30</strong> às <strong class="num">22:50</strong>, todo dia, e a sessão entra em Mente como leitura. Registros abaixo.
+              <span class="meta">Fontes: agenda da semana · 2 sessões de leitura</span>
+            </div>
+          </div>
+
+          <div class="ent" data-tipo="intencao" data-areas="05 03">
+            <div class="divider">22:12</div>
+            <section class="intent" id="i-leitura" data-estado="desfeita" aria-label="Intenção: ler 20 minutos antes de dormir">
+              <div class="ih">
+                <div>
+                  <p class="eyebrow">Intenção · <b>05 · 03</b></p>
+                  <h3>Ler 20 minutos antes de dormir</h3>
+                </div>
+                <span class="est desfeita" data-est>Desfeita</span>
+              </div>
+              <p class="lead">Caminho escolhido: todo dia, 20 minutos. Aplicada às 22:12 e desfeita por você na manhã seguinte.</p>
+              <ul class="regs">
+                <li><span class="ix num">05</span><span><b>Mente</b> · sessão de leitura, <span class="num">20</span> min por dia</span><span></span></li>
+                <li><span class="ix num">03</span><span><b>Tempo</b> · bloco diário das <span class="num">22:30</span> às <span class="num">22:50</span></span><span></span></li>
+              </ul>
+              <div class="ifoot">
+                <span data-ifoot>Desfeita por você · 23 set, 07:40 · os 2 registros saíram de Mente e Tempo.</span>
+              </div>
+            </section>
+          </div>
+          <p class="fim">Fim do dia. Para continuar qualquer assunto, use Fale com Sy.</p>
+        </article>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- rodapé -->
+  <footer class="colofao">
+    <span><b class="num">5</b> dias de conversa · <b class="num">14</b> entradas desde 22 de setembro</span>
+    <div class="r">
+      <span>Intenções: <b class="num">1</b> aplicada · <b class="num">1</b> em aberto · <b class="num">1</b> desfeita</span>
+      <span>Última sincronização às <b class="num">14:05</b></span>
+    </div>
+  </footer>
+</main>
+
+<!-- camada de Sy: sheet -->
+<div class="scrim"></div>
+<aside class="camada sheet" aria-label="Sy">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: as suas conversas</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o seu dia. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Resumo da minha semana</button>
+        <button class="chip" type="button">Simular: e se eu poupar R$&nbsp;800?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+      </div>
+      <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+      <div class="action" role="status">
+        <div class="al">Ação executada</div>
+        <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+        <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#topo">Conversa completa →</a>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Sem conversas ainda</h4>
+        <p class="vazio">Sy ainda não falou com você.<small>Comece por Fale com Sy. O que vocês falarem aparece aqui, por dia.</small></p>
+        <button class="btn-sm ghost coach-pill" type="button">
+          <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+          Fale com Sy</button>
+      </div>
+      <div class="pe">
+        <h4>Busca sem resultado</h4>
+        <p class="vazio">Nada com "viagem".<small>A lista de dias esvazia. A busca continua no campo, com Limpar ao lado.</small></p>
+        <p class="sem-resultado">Nada com essa busca.<button type="button">Limpar</button></p>
+      </div>
+      <div class="pe">
+        <h4>Intenção desfeita</h4>
+        <section class="intent" data-estado="desfeita">
+          <div class="ih">
+            <div>
+              <p class="eyebrow">Intenção · <b>04 · 03 · 02</b></p>
+              <h3>Treinar 3 vezes por semana até a Itália</h3>
+            </div>
+            <span class="est desfeita">Desfeita</span>
+          </div>
+          <ul class="regs">
+            <li><span class="ix num">04</span><span><b>Corpo</b> · rotina Treino B</span><span></span></li>
+            <li><span class="ix num">03</span><span><b>Tempo</b> · 3 blocos de 45 min</span><span></span></li>
+            <li><span class="ix num">02</span><span><b>Futuro</b> · meta 3 treinos por semana</span><span></span></li>
+          </ul>
+          <div class="ifoot"><span>Desfeita por você · agora · os 3 registros saíram de Corpo, Tempo e Futuro.</span></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="fontes-sy">
+      <p class="eyebrow"><b>Sy</b> · arquivo</p>
+      <h3>O que Sy lê aqui</h3>
+      <p><b>Esta tela não entrega a Sy um pacote de contexto novo.</b> Ela lê o próprio histórico: o que já foi dito, feito e desfeito. Nenhuma área expõe dados extras por aqui.</p>
+      <ul>
+        <li><code data-tabela="coach_messages"></code><span>Cada mensagem sua e cada resposta de Sy, com hora e fontes citadas. É o que vira bolha, divisor de hora e resultado de busca.</span></li>
+        <li><code>intencoes</code><span>Cada intenção com a proposta, os registros criados e o estado (aplicada, desfeita, em aberto). É daqui que o Desfazer age.</span></li>
+        <li><code data-tabela="coach_briefs"></code><span>O texto da manhã que Sy escreveu dentro do seu acordo, um por dia. Entra como a primeira entrada do dia.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script>
+(function () {
+  var mob = document.documentElement.classList.contains('mob');
+  var dias = document.getElementById('dias'), threads = document.getElementById('threads'), main = document.querySelector('main');
+  var rows = [].slice.call(dias.querySelectorAll('.dia-row'));
+  var arts = [].slice.call(threads.querySelectorAll('.thread'));
+  var semRes = document.getElementById('sem-resultado');
+  var filtro = { tipo: 'tudo', area: 'todas', q: '' };
+  var atual = '2026-10-03';
+
+  function plural(n) { return n + (n === 1 ? ' entrada' : ' entradas'); }
+  function passa(ent) {
+    if (filtro.tipo !== 'tudo' && ent.dataset.tipo !== filtro.tipo) return false;
+    if (filtro.area !== 'todas' && (' ' + ent.dataset.areas + ' ').indexOf(' ' + filtro.area + ' ') < 0) return false;
+    if (filtro.q && ent.textContent.toLowerCase().replace(/ /g, ' ').indexOf(filtro.q) < 0) return false;
+    return true;
+  }
+  function aplicar() {
+    var filtrando = filtro.tipo !== 'tudo' || filtro.area !== 'todas' || !!filtro.q;
+    var visiveis = [];
+    arts.forEach(function (a) {
+      var ents = a.querySelectorAll('.ent'), vis = 0;
+      ents.forEach(function (e) { var ok = passa(e); e.hidden = !ok; if (ok) vis++; });
+      var cnt = filtrando ? vis + ' de ' + plural(ents.length) : plural(ents.length);
+      a.querySelector('[data-cnt-th]').textContent = cnt;
+      var row = dias.querySelector('.dia-row[data-dia="' + a.dataset.dia + '"]');
+      row.hidden = vis === 0;
+      row.querySelector('[data-cnt-dia]').textContent = cnt;
+      if (vis) visiveis.push(a.dataset.dia);
+    });
+    document.getElementById('n-dias').textContent = visiveis.length;
+    semRes.hidden = visiveis.length > 0;
+    if (!visiveis.length) { arts.forEach(function (a) { a.hidden = true; }); return; }
+    if (visiveis.indexOf(atual) < 0) atual = visiveis[0];
+    mostrar(atual, false);
+  }
+  function mostrar(dia, navegar) {
+    atual = dia;
+    rows.forEach(function (r) { var on = r.dataset.dia === dia; r.classList.toggle('on', on); r.setAttribute('aria-pressed', on); });
+    arts.forEach(function (a) { a.hidden = a.dataset.dia !== dia; });
+    if (mob && navegar) {
+      dias.hidden = true; threads.hidden = false; main.classList.add('ver-thread');
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  }
+  function voltar() {
+    if (!mob) return;
+    threads.hidden = true; dias.hidden = false; main.classList.remove('ver-thread');
+    var r = dias.querySelector('.dia-row.on'); if (r) r.focus({ preventScroll: true });
+  }
+
+  rows.forEach(function (r) { r.addEventListener('click', function () { mostrar(r.dataset.dia, true); }); });
+  document.querySelectorAll('[data-voltar]').forEach(function (b) { b.addEventListener('click', voltar); });
+  if (mob) { threads.hidden = true; } // a lista de dias é a tela; tocar num dia abre a thread
+
+  // filtros
+  document.querySelectorAll('.filtros .chip[data-tipo]').forEach(function (c) {
+    c.addEventListener('click', function () {
+      document.querySelectorAll('.filtros .chip[data-tipo]').forEach(function (q) { q.classList.remove('on'); q.setAttribute('aria-pressed', 'false'); });
+      c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); filtro.tipo = c.dataset.tipo; aplicar();
+    });
+  });
+  document.getElementById('f-area').addEventListener('change', function () { filtro.area = this.value; aplicar(); });
+  var q = document.getElementById('f-q');
+  q.addEventListener('input', function () { filtro.q = this.value.trim().toLowerCase(); aplicar(); });
+  document.getElementById('limpar').addEventListener('click', function () {
+    q.value = ''; filtro.q = ''; aplicar(); q.focus({ preventScroll: true });
+  });
+
+  // desfazer uma intenção aplicada: pede confirmação inline, depois vira Desfeita
+  document.querySelectorAll('.intent[data-estado=aplicada]').forEach(function (it) {
+    var conf = it.querySelector('.confirma'), btn = it.querySelector('[data-desfazer]');
+    if (!conf || !btn) return;
+    btn.addEventListener('click', function () { conf.hidden = false; conf.querySelector('[data-conf-sim]').focus({ preventScroll: true }); });
+    conf.querySelector('[data-conf-nao]').addEventListener('click', function () { conf.hidden = true; btn.focus({ preventScroll: true }); });
+    conf.querySelector('[data-conf-sim]').addEventListener('click', function () {
+      var n = it.querySelectorAll('.regs li').length;
+      var areas = [].map.call(it.querySelectorAll('.regs li b'), function (b) { return b.textContent; });
+      var lista = areas.length > 1 ? areas.slice(0, -1).join(', ') + ' e ' + areas[areas.length - 1] : areas[0];
+      it.dataset.estado = 'desfeita';
+      var est = it.querySelector('[data-est]'); est.textContent = 'Desfeita'; est.className = 'est desfeita';
+      conf.hidden = true;
+      var foot = it.querySelector('.ifoot');
+      foot.innerHTML = '<span data-ifoot>Desfeita por você · agora · ' + (n === 1 ? 'o registro saiu de ' : 'os ' + n + ' registros saíram de ') + lista + '.</span>';
+      var sb = dias.querySelector('.sb[data-sb="' + it.id + '"]'); if (sb) { sb.textContent = 'Desfeita'; sb.className = 'sb desfeita'; }
+      it.focus && it.setAttribute('tabindex', '-1'); it.focus({ preventScroll: true });
+    });
+  });
+})();
+</script>
+</body>
+</html>
