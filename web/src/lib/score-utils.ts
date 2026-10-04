@@ -4,11 +4,21 @@
 
 export type ModuleKey = 'financas' | 'futuro' | 'corpo' | 'mente' | 'patrimonio' | 'carreira' | 'tempo' | 'experiencias'
 
+/** Um componente do score de uma área, com o peso interno que ele tem na fórmula. */
+export interface ComponenteDetalhe {
+  chave: string          // mesma chave de `components`
+  nome: string           // nome legível (pt-BR)
+  peso: number           // peso interno na área (0-1), o mesmo da fórmula
+  valor: number          // 0-100
+}
+
 export interface ModuleScoreDetail {
   module: ModuleKey
   score: number          // 0-100
   weight: number         // peso original
   components: Record<string, number> // sub-scores detalhados
+  /** componentes com nome e peso interno (só leitura; não entra no cálculo) */
+  detalhes?: ComponenteDetalhe[]
 }
 
 export interface LifeScoreResult {

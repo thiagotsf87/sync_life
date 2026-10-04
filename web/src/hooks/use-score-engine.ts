@@ -123,6 +123,11 @@ async function calcFinancasScore(sb: SbClient, userId: string): Promise<ModuleSc
     score,
     weight: WEIGHTS.financas,
     components: { budgetScore, registrationScore, trendScore },
+    detalhes: [
+      { chave: 'budgetScore', nome: 'Orçamento do mês', peso: 0.4, valor: budgetScore },
+      { chave: 'registrationScore', nome: 'Registro de transações', peso: 0.3, valor: registrationScore },
+      { chave: 'trendScore', nome: 'Tendência de saldo', peso: 0.3, valor: trendScore },
+    ],
   }
 }
 
@@ -169,6 +174,10 @@ async function calcFuturoScore(sb: SbClient, userId: string): Promise<ModuleScor
     score,
     weight: WEIGHTS.futuro,
     components: { progressScore, completedScore },
+    detalhes: [
+      { chave: 'progressScore', nome: 'Progresso dos objetivos', peso: 0.5, valor: progressScore },
+      { chave: 'completedScore', nome: 'Objetivos concluídos no trimestre', peso: 0.5, valor: completedScore },
+    ],
   }
 }
 
@@ -234,6 +243,12 @@ async function calcCorpoScore(sb: SbClient, userId: string): Promise<ModuleScore
     score,
     weight: WEIGHTS.corpo,
     components: { activityScore, appointmentScore, weightScore, hydrationScore },
+    detalhes: [
+      { chave: 'activityScore', nome: 'Atividades da semana', peso: 0.3, valor: activityScore },
+      { chave: 'appointmentScore', nome: 'Consulta agendada', peso: 0.3, valor: appointmentScore },
+      { chave: 'weightScore', nome: 'Registros de peso', peso: 0.2, valor: weightScore },
+      { chave: 'hydrationScore', nome: 'Hidratação', peso: 0.2, valor: hydrationScore },
+    ],
   }
 }
 
@@ -277,6 +292,11 @@ async function calcMenteScore(sb: SbClient, userId: string): Promise<ModuleScore
     score,
     weight: WEIGHTS.mente,
     components: { hoursScore, streakScore, tracksScore },
+    detalhes: [
+      { chave: 'hoursScore', nome: 'Horas de estudo na semana', peso: 0.5, valor: hoursScore },
+      { chave: 'streakScore', nome: 'Sequência de dias', peso: 0.3, valor: streakScore },
+      { chave: 'tracksScore', nome: 'Trilhas ativas', peso: 0.2, valor: tracksScore },
+    ],
   }
 }
 
@@ -313,6 +333,10 @@ async function calcPatrimonioScore(sb: SbClient, userId: string): Promise<Module
     score,
     weight: WEIGHTS.patrimonio,
     components: { contribScore, diversScore },
+    detalhes: [
+      { chave: 'contribScore', nome: 'Aportes do mês', peso: 0.5, valor: contribScore },
+      { chave: 'diversScore', nome: 'Diversificação', peso: 0.5, valor: diversScore },
+    ],
   }
 }
 
@@ -351,6 +375,10 @@ async function calcCarreiraScore(sb: SbClient, userId: string): Promise<ModuleSc
     score,
     weight: WEIGHTS.carreira,
     components: { roadmapScore, skillsScore },
+    detalhes: [
+      { chave: 'roadmapScore', nome: 'Passos do roadmap em andamento', peso: 0.5, valor: roadmapScore },
+      { chave: 'skillsScore', nome: 'Habilidades em evolução', peso: 0.5, valor: skillsScore },
+    ],
   }
 }
 
@@ -388,6 +416,10 @@ async function calcTempoScore(sb: SbClient, userId: string): Promise<ModuleScore
     score,
     weight: WEIGHTS.tempo,
     components: { completionScore, consistencyScore },
+    detalhes: [
+      { chave: 'completionScore', nome: 'Compromissos concluídos', peso: 0.5, valor: completionScore },
+      { chave: 'consistencyScore', nome: 'Constância da agenda', peso: 0.5, valor: consistencyScore },
+    ],
   }
 }
 
@@ -421,6 +453,10 @@ async function calcExperienciasScore(sb: SbClient, userId: string): Promise<Modu
     score,
     weight: WEIGHTS.experiencias,
     components: { tripScore, bucketScore },
+    detalhes: [
+      { chave: 'tripScore', nome: 'Viagens planejadas e feitas', peso: 0.6, valor: tripScore },
+      { chave: 'bucketScore', nome: 'Bucket list', peso: 0.4, valor: bucketScore },
+    ],
   }
 }
 
