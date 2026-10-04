@@ -409,14 +409,17 @@ html.mob body{font-size:14px}
 html.mob .bar{height:56px;padding:0 18px}
 html.mob .brand{font-size:16px}
 html.mob .bar .acts{gap:8px}
-html.mob .bar .btn-sm.ghost{padding:11px 13px}
-html.mob .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:1}
+/* alvos de toque >= 40px (medido: ghost 39, roxo 38-39, brand 21, chips 39, cfull 26) */
+html.mob .bar .btn-sm.ghost{padding:11px 13px;min-height:40px}
+html.mob .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:1;min-height:40px;min-width:40px;justify-content:center}
+html.mob .brand{min-height:40px;align-items:center}
+html.mob .camada .cfull{min-height:40px;display:flex;align-items:center;justify-content:center}
 html.mob .modbar a{padding:14px 13px}
 html.mob input,html.mob select,html.mob button{scroll-margin-top:76px} /* o bar é sticky: foco nunca fica escondido embaixo dele */
 html.mob .colofao{flex-direction:column;align-items:flex-start;gap:8px;padding:20px 20px 30px}
 html.mob .colofao .r{flex-direction:column;gap:8px}
 html.mob .camada.sheet{height:clamp(420px,86dvh,760px)}
-html.mob .camada .csug .chip{padding:11px 16px}
+html.mob .camada .csug .chip{padding:11px 16px;min-height:40px}
 html.mob .camada .chead .x{width:40px;height:40px}
 
 /* cabeçalho: score vira linha abaixo do título */
