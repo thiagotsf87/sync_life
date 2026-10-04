@@ -1,13 +1,15 @@
 'use client'
 
-// Onda 2 · camada do coach — porte de prototypes/v5/app/diario.html (aside
-// lateral) e diario.mobile.html (bottom sheet <1024px). Componente CONTROLADO:
-// o dono (DiarioV5) manda open/seed/suggestions/onClose. Conversa stateless
-// via /api/ai/coach-thread (stream de texto; persistência de thread = Onda 3).
-// SEM cartão "Ação executada" (N3) e SEM fontes citadas nesta onda.
+// Camada de Sy (Fase 1): porte de prototypes/v5/app/meu-dia-d.html (aside
+// lateral) e meu-dia-d.mobile.html (bottom sheet <1024px). Componente CONTROLADO:
+// a tela dona manda open/seed/suggestions/onClose/moduleId/leitura. A conversa é
+// persistida pelo servidor em /api/ai/coach-thread (coach_messages) e as fontes
+// chegam no header x-sy-fontes, nunca no texto do modelo.
 
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from 'react'
+import Link from 'next/link'
 import { COACH_OS_ENABLED } from '@/lib/flags'
+import type { ModuleId } from '@/types/shell'
 import './chrome-v5.css'
 
 interface CamadaCoachProps {
@@ -15,6 +17,12 @@ interface CamadaCoachProps {
   seed: string
   suggestions: string[]
   onClose: () => void
+  /** Módulo cujo pacote de contexto Sy lê (default panorama, a tela Meu dia). */
+  moduleId?: ModuleId
+  /** Complemento do eyebrow "Sy · lendo: …" (default "o seu dia"). */
+  leitura?: string
+  /** Saudação do estado vazio (default "Já li o seu dia. O que você quer saber?"). */
+  saudacao?: string
 }
 
 interface Msg {
@@ -23,6 +31,8 @@ interface Msg {
   content: string
   /** bolha gerada no client (kill-switch, erros): renderiza, mas fica FORA do payload do modelo */
   local?: boolean
+  /** fontes citadas pelo servidor (header x-sy-fontes), só em respostas de Sy */
+  fontes?: string[]
 }
 
 const FALLBACK_SUGESTOES = [
@@ -32,7 +42,7 @@ const FALLBACK_SUGESTOES = [
 ]
 
 const ERRO_RESPOSTA = 'Não consegui responder agora. Tente de novo em instantes.'
-const COACH_DESLIGADO = 'O coach está desligado no momento.'
+const COACH_DESLIGADO = 'Sy está desligado no momento.'
 
 const dotStyle = (i: number) => ({ '--i': i } as CSSProperties)
 
@@ -52,7 +62,10 @@ function SendIcon() {
   )
 }
 
-export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachProps) {
+export function CamadaCoach({
+  open, seed, suggestions, onClose,
+  moduleId = 'panorama', leitura = 'o seu dia', saudacao = 'Já li o seu dia. O que você quer saber?',
+}: CamadaCoachProps) {
   const [sheet, setSheet] = useState(false)
   const [messages, setMessages] = useState<Msg[]>([])
   const [input, setInput] = useState('')
@@ -165,7 +178,7 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
             .filter((m) => !m.local)
             .slice(-20)
             .map(({ role, content }) => ({ role, content })),
-          moduleId: 'panorama',
+          moduleId,
         }),
         signal: ctrl.signal,
       })
@@ -173,6 +186,11 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
         pushLocal(ERRO_RESPOSTA)
         return
       }
+      let fontes: string[] = []
+      try {
+        const raw = res.headers.get('x-sy-fontes')
+        if (raw) fontes = (JSON.parse(decodeURIComponent(raw)) as unknown[]).filter((f): f is string => typeof f === 'string')
+      } catch { fontes = [] }
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
       let acc = ''
@@ -184,6 +202,9 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
       }
       acc += decoder.decode()
       if (acc && started) push(acc)
+      if (started && fontes.length > 0) {
+        setMessages((prev) => prev.map((m) => (m.id === asstId ? { ...m, fontes } : m)))
+      }
       if (!started) {
         if (acc) push(acc)
         else pushLocal(ERRO_RESPOSTA)
@@ -212,12 +233,12 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
         className={'camada' + (sheet ? ' sheet' : '') + (open ? ' open' : '')}
         role="dialog"
         aria-modal="true"
-        aria-label="Coach"
+        aria-label="Sy"
         inert={!open}
       >
         {sheet && <div className="handle" />}
         <header className="chead">
-          <p className="eyebrow"><b>Coach</b> · lendo: seu diário de hoje</p>
+          <p className="eyebrow"><b>Sy</b> · lendo: {leitura}</p>
           <button className="x" type="button" aria-label="Fechar" onClick={onClose}>
             <XIcon />
           </button>
@@ -225,7 +246,7 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
         <div className="cbody" ref={cbodyRef}>
           {messages.length === 0 ? (
             <div className="cempty">
-              <p className="hello">Já li o seu dia. O que você quer saber?</p>
+              <p className="hello">{saudacao}</p>
               <div className="csug">
                 {chips.map((c, i) => (
                   <button key={`${i}:${c}`} className="chip" type="button" onClick={() => void send(c)}>
@@ -238,10 +259,15 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
             <div className="cthread">
               <div className="divider">Hoje · {threadStart}</div>
               {messages.map((m) => (
-                <div key={m.id} className={m.role === 'user' ? 'bub u' : 'bub a'}>{m.content}</div>
+                <div key={m.id} className={m.role === 'user' ? 'bub u' : 'bub a'}>
+                  {m.content}
+                  {m.fontes && m.fontes.length > 0 && (
+                    <span className="meta">Fontes: {m.fontes.join(' · ')}</span>
+                  )}
+                </div>
               ))}
               {typing && (
-                <div className="typing" aria-label="Coach digitando">
+                <div className="typing" aria-label="Sy digitando">
                   <i style={dotStyle(0)} /><i style={dotStyle(1)} /><i style={dotStyle(2)} />
                 </div>
               )}
@@ -260,15 +286,9 @@ export function CamadaCoach({ open, seed, suggestions, onClose }: CamadaCoachPro
             <SendIcon />
           </div>
         </form>
-        <a
-          className="cfull"
-          href="#"
-          aria-disabled="true"
-          title="Disponível na próxima onda"
-          onClick={(e) => e.preventDefault()}
-        >
+        <Link className="cfull" href="/coach">
           Conversa completa →
-        </a>
+        </Link>
       </aside>
     </>
   )
