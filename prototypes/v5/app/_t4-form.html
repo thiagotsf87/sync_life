@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Nova meta · T4 Formulário</title>
+<!-- Fase 0 · Template T4 (Formulário), espécime "Nova meta" (02 Futuro), desktop 1440.
+     Pitch: editar confortável, salvar óbvio. Cabeçalho com voltar → coluna de leitura (720px) com
+     4 seções numeradas (G-09: só porque há mais de 3) separadas por hairline → SaveBar sticky que
+     aparece com alteração não salva. Zona de perigo só existe em edição: está na anotação de Estados.
+     Sy aparece uma vez, na linha viva da seção 02 (recalcula enquanto você digita); o resto é pela camada.
+     Sem ticker, sem banda clara, sem selo, sem Caveat. E-02: sem JS a página está completa, o formulário
+     renderiza com os valores do espécime e a linha viva mostra a frase estática. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<link rel="stylesheet" href="../shared/auth.css"><!-- primitivas de formulário aprovadas na Onda 01 (.fld, .proto-estados) -->
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  html{color-scheme:dark} /* controles nativos (date picker, select) no escuro do app */
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+  main{padding-bottom:140px} /* respiro para a SaveBar não cobrir a última seção */
+
+  /* ── cabeçalho T4: voltar + eyebrow + título (reaproveita .titulo do T1) ── */
+  .voltar{display:inline-flex;align-items:center;gap:6px;font:500 12.5px var(--int);color:var(--t2);margin-bottom:18px;transition:color .3s var(--ease)}
+  .voltar:hover{color:var(--t1)}
+  .titulo .sub{font:400 14px/1.6 var(--int);color:var(--t2);margin-top:10px;max-width:52ch}
+
+  /* ── coluna de leitura + seções numeradas (hairline entre elas) ── */
+  .form-col{max-width:720px}
+  .fsec{padding:36px 0 34px;border-bottom:1px solid var(--line)}
+  .fsec:last-of-type{border-bottom:none}
+  .fsec > .eyebrow{color:var(--roxo)}
+  .fsec .lead{font:400 13px/1.6 var(--int);color:var(--t3);margin:8px 0 22px;max-width:56ch}
+  .f2{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+
+  /* campos: extensões das primitivas de auth.css para o que o formulário de meta precisa */
+  .fld.big input{font:500 20px/1.2 var(--gro);letter-spacing:-.02em;padding:15px 18px}
+  .fld textarea{width:100%;min-height:84px;resize:vertical;background:var(--s1);border:1px solid var(--line);border-radius:12px;
+    padding:13px 16px;font:400 14.5px/1.55 var(--int);color:var(--t1);outline:none;transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+  .fld textarea::placeholder{color:var(--t3)}
+  .fld textarea:focus{border-color:var(--roxo);box-shadow:0 0 0 3px rgba(104,64,255,.12)}
+  .fld .sel{margin-top:0}
+  .fld .sel select:focus{border-color:var(--roxo);box-shadow:0 0 0 3px rgba(104,64,255,.12)}
+  .fld .opt{font:500 10px var(--int);letter-spacing:.04em;text-transform:none;color:var(--t3)}
+  .pre{position:relative}
+  .pre::before{content:"R$";position:absolute;left:16px;top:50%;transform:translateY(-50%);font:500 14px var(--gro);color:var(--t3);pointer-events:none}
+  .pre input{padding-left:44px}
+  .fld input.num{font-weight:500}
+  .fld input[type=date]{min-height:46px}
+  .fld input[type=date]::-webkit-calendar-picker-indicator{opacity:.55;cursor:pointer}
+
+  /* pílulas de escolha única (categoria, frequência): .chip de base.css com aria-pressed */
+  .pills{display:flex;flex-wrap:wrap;gap:9px}
+  .pills .chip[aria-pressed=true]{border-color:var(--roxo);color:var(--t1)}
+
+  /* linha viva de Sy (reaproveita .sy + .fala do T1; a única presença de Sy na página) */
+  .sy.viva{margin:6px 0 4px;align-items:center}
+  .sy.viva .fala{font-size:16px}
+  .sy.viva .fala b.ok{color:var(--ele)}
+
+  /* ── SaveBar: pílula escura fixa no rodapé; aparece com alteração não salva ── */
+  .savebar{position:fixed;left:50%;bottom:22px;z-index:70;display:flex;align-items:center;gap:22px;
+    background:#0d0c0cf2;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid var(--line-h);border-radius:999px;padding:8px 8px 8px 22px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,.7);
+    transform:translate(-50%,140%);visibility:hidden;transition:transform .55s var(--ease),visibility 0s linear .55s} /* fora da tela E fora do tab */
+  .savebar.on{transform:translate(-50%,0);visibility:visible;transition-delay:0s}
+  .savebar .sb-txt{font:500 13px var(--int);color:var(--t2);white-space:nowrap}
+  .savebar .sb-txt b{color:var(--t1);font-weight:700}
+  .savebar .sb-acts{display:flex;gap:8px}
+  .savebar .btn-sm{padding:10px 18px}
+  .savebar .sb-ok{font:500 13px var(--int);color:var(--ele);padding:10px 14px 10px 0;white-space:nowrap}
+  .savebar.saved .sb-txt,.savebar.saved .sb-acts{display:none}
+  @media (prefers-reduced-motion:reduce){.savebar{transition:none}}
+
+  /* ── zona de perigo (só em edição; aqui, na anotação de Estados) ── */
+  .perigo{border-top:1px solid rgba(248,65,49,.45);padding-top:24px;margin-top:8px}
+  .perigo > .eyebrow{color:var(--coral)}
+  .perigo p{font:400 13.5px/1.6 var(--int);color:var(--t2);margin:10px 0 16px;max-width:56ch}
+  .perigo p b{color:var(--t1);font-weight:600}
+  .btn-sm.perigo-btn{background:transparent;border:1px solid rgba(248,65,49,.5);color:var(--coral);padding:10px 18px}
+  .btn-sm.perigo-btn:hover{border-color:var(--coral)}
+  .btn-sm.perigo-solid{background:var(--coral);border:none;color:#fff;padding:10px 18px}
+  .confirma{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .confirma span{font:500 13px var(--int);color:var(--t1)}
+
+  /* ── estados: anotação do protótipo (base em auth.css; o que é só desta tela fica aqui) ── */
+  .proto-estados .pe{min-width:0}
+  .proto-estados .pe-grid{grid-template-columns:1fr 1fr}
+  .proto-estados .pe.full{grid-column:1 / -1}
+  .proto-estados .savebar{position:static;transform:none;visibility:visible;display:inline-flex;margin-top:10px}
+  .proto-estados .sb-oculta{font:400 12.5px/1.6 var(--int);color:var(--t3);border-left:2px solid var(--line-h);padding-left:14px;margin-top:10px;max-width:46ch}
+  .proto-estados .fld{max-width:340px}
+  .proto-estados h4 .eyebrow{display:inline;margin-left:8px}
+  .le{list-style:none;margin-top:16px;max-width:720px}
+  .le li{display:grid;grid-template-columns:230px 1fr;gap:18px;padding:12px 0;border-bottom:1px solid var(--line);font:400 13px/1.55 var(--int);color:var(--t2)}
+  .le li:last-child{border-bottom:none}
+  .le code{font:600 12.5px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+
+  @media (max-width:960px){
+    html:not(.mob) .f2{grid-template-columns:1fr}
+    html:not(.mob) .proto-estados .pe-grid{grid-template-columns:1fr}
+    html:not(.mob) .le li{grid-template-columns:1fr;gap:4px}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button">+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a href="meu-dia-d.html">Meu dia</a>
+    <a href="financas-a.html"><span class="n">01</span>Finanças</a>
+    <a class="on" href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <!-- cabeçalho -->
+    <header class="titulo boot b1">
+      <a class="voltar" href="#">← 02 Futuro</a>
+      <p class="eyebrow"><b>02</b> · Futuro</p>
+      <h1>Nova meta</h1>
+      <p class="sub">Dê um nome, diga quanto e até quando. O resto você ajusta depois, sem perder nada.</p>
+    </header>
+
+    <form class="form-col" id="meta" novalidate autocomplete="off">
+
+      <!-- 01 · o que você quer -->
+      <section class="fsec boot b2" aria-labelledby="s1">
+        <p class="eyebrow" id="s1"><b>01</b> · O que você quer</p>
+        <p class="lead">Um nome curto, do jeito que você fala dela.</p>
+
+        <div class="fld big">
+          <div class="lblrow"><label for="nome">Nome da meta</label></div>
+          <input id="nome" name="nome" type="text" value="Viagem Itália" placeholder="Ex.: Viagem Itália" data-initial="Viagem Itália" aria-describedby="nome-msg">
+          <span class="msg" id="nome-msg" aria-live="polite"></span>
+        </div>
+
+        <div class="fld">
+          <div class="lblrow"><label id="cat-l">Categoria</label></div>
+          <div class="pills" role="group" aria-labelledby="cat-l" data-field="categoria" data-initial="viagem">
+            <button type="button" class="chip" data-v="viagem" aria-pressed="true">Viagem</button>
+            <button type="button" class="chip" data-v="reserva" aria-pressed="false">Reserva</button>
+            <button type="button" class="chip" data-v="estudo" aria-pressed="false">Estudo</button>
+            <button type="button" class="chip" data-v="compra" aria-pressed="false">Compra</button>
+            <button type="button" class="chip" data-v="outra" aria-pressed="false">Outra</button>
+          </div>
+        </div>
+
+        <div class="fld">
+          <div class="lblrow"><label for="desc">Descrição <span class="opt">· opcional</span></label></div>
+          <textarea id="desc" name="desc" placeholder="Pra que serve essa meta, em uma ou duas linhas." data-initial="Roma, Florença e a costa Amalfitana. Duas semanas em janeiro.">Roma, Florença e a costa Amalfitana. Duas semanas em janeiro.</textarea>
+        </div>
+      </section>
+
+      <!-- 02 · quanto e até quando -->
+      <section class="fsec boot b3" aria-labelledby="s2">
+        <p class="eyebrow" id="s2"><b>02</b> · Quanto e até quando</p>
+        <p class="lead">Com valor e prazo, a linha abaixo mostra se o ritmo fecha.</p>
+
+        <div class="f2">
+          <div class="fld">
+            <div class="lblrow"><label for="alvo">Valor alvo</label></div>
+            <div class="pre"><input id="alvo" name="alvo" class="num" type="text" inputmode="decimal" value="12.700" data-initial="12.700" aria-describedby="alvo-msg"></div>
+            <span class="msg" id="alvo-msg" aria-live="polite"></span>
+          </div>
+          <div class="fld">
+            <div class="lblrow"><label for="guardado">Já guardado</label></div>
+            <div class="pre"><input id="guardado" name="guardado" class="num" type="text" inputmode="decimal" value="8.600" data-initial="8.600"></div>
+            <span class="msg">Conta como primeiro aporte, hoje.</span>
+          </div>
+        </div>
+        <div class="f2">
+          <div class="fld">
+            <div class="lblrow"><label for="prazo">Data alvo</label></div>
+            <input id="prazo" name="prazo" class="num" type="date" value="2026-12-31" min="2026-10-04" data-initial="2026-12-31">
+          </div>
+        </div>
+
+        <div class="sy viva" aria-live="polite">
+          <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+          <p class="fala" id="viva">Com <b class="num">R$&nbsp;580</b> por semana você chega em <b class="num">25 de novembro</b>, <b class="num ok">36 dias</b> antes do prazo.</p>
+        </div>
+      </section>
+
+      <!-- 03 · como vai chegar lá -->
+      <section class="fsec boot b4" aria-labelledby="s3">
+        <p class="eyebrow" id="s3"><b>03</b> · Como vai chegar lá</p>
+        <p class="lead">O aporte vira um recorrente em 01 Finanças, na conta que você escolher.</p>
+
+        <div class="f2">
+          <div class="fld">
+            <div class="lblrow"><label for="aporte">Aporte recorrente</label></div>
+            <div class="pre"><input id="aporte" name="aporte" class="num" type="text" inputmode="decimal" value="580" data-initial="580"></div>
+          </div>
+          <div class="fld">
+            <div class="lblrow"><label for="dia">Dia</label></div>
+            <div class="sel"><select id="dia" name="dia" data-initial="3">
+              <option value="1">Segunda</option><option value="2">Terça</option><option value="3" selected>Quarta</option>
+              <option value="4">Quinta</option><option value="5">Sexta</option><option value="6">Sábado</option><option value="0">Domingo</option>
+            </select></div>
+          </div>
+        </div>
+
+        <div class="fld">
+          <div class="lblrow"><label id="freq-l">Frequência</label></div>
+          <div class="pills" role="group" aria-labelledby="freq-l" data-field="freq" data-initial="semanal">
+            <button type="button" class="chip" data-v="semanal" aria-pressed="true">Semanal</button>
+            <button type="button" class="chip" data-v="quinzenal" aria-pressed="false">Quinzenal</button>
+            <button type="button" class="chip" data-v="mensal" aria-pressed="false">Mensal</button>
+          </div>
+        </div>
+
+        <div class="fld">
+          <div class="lblrow"><label for="conta">Conta de origem</label></div>
+          <div class="sel"><select id="conta" name="conta" data-initial="cc-nubank">
+            <option value="cc-nubank" selected>Nubank · conta corrente</option>
+            <option value="cc-itau">Itaú · conta corrente</option>
+            <option value="cdb">CDB liquidez diária</option>
+          </select></div>
+          <span class="msg">Saldo livre hoje: <span class="num">R$&nbsp;1.840</span>. O aporte cabe.</span>
+        </div>
+      </section>
+
+      <!-- 04 · ligações -->
+      <section class="fsec boot b5" aria-labelledby="s4">
+        <p class="eyebrow" id="s4"><b>04</b> · Ligações</p>
+        <p class="lead">Ligar a meta a um objetivo e a uma viagem deixa Sy ler as três coisas juntas.</p>
+
+        <div class="f2">
+          <div class="fld">
+            <div class="lblrow"><label for="objetivo">Objetivo existente</label></div>
+            <div class="sel"><select id="objetivo" name="objetivo" data-initial="">
+              <option value="" selected>Nenhum</option>
+              <option value="obj-1">Viver um ano fora</option>
+              <option value="obj-2">Reserva de 12 meses</option>
+              <option value="obj-3">MBA 2027</option>
+            </select></div>
+          </div>
+          <div class="fld">
+            <div class="lblrow"><label for="viagem">Viagem <span class="opt">· opcional</span></label></div>
+            <div class="sel"><select id="viagem" name="viagem" data-initial="trip-ita">
+              <option value="">Nenhuma</option>
+              <option value="trip-ita" selected>Itália · 3 de janeiro de 2027</option>
+              <option value="trip-pat">Patagônia · sem data</option>
+            </select></div>
+            <span class="msg">Em 08 Experiências, o orçamento da viagem passa a ler esta meta.</span>
+          </div>
+        </div>
+      </section>
+    </form>
+  </div>
+</main>
+
+<!-- SaveBar (aparece com alteração não salva; estática na anotação de Estados) -->
+<div class="savebar" id="savebar" role="region" aria-label="Alterações não salvas">
+  <span class="sb-txt" id="sb-txt"><b class="num">1</b> campo alterado</span>
+  <div class="sb-acts">
+    <button type="button" class="btn-sm ghost" id="sb-discard">Descartar</button>
+    <button type="button" class="btn-sm roxo" id="sb-save">Salvar meta</button>
+  </div>
+  <span class="sb-ok" id="sb-ok" role="status" hidden>Salvo.</span>
+</div>
+
+<!-- camada de Sy -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: a nova meta</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o que você preencheu. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Esse aporte cabe no meu mês?</button>
+        <button class="chip" type="button">E se eu quiser chegar em novembro?</button>
+        <button class="chip" type="button">Quanto a viagem já tem reservado?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Esse aporte cabe no meu mês?</div>
+      <div class="bub a">Cabe. <strong class="num">R$&nbsp;580</strong> por semana dá <strong class="num">R$&nbsp;2.320</strong> no mês, e o seu saldo livre de outubro é <strong class="num">R$&nbsp;1.840</strong> depois dos recorrentes: o aporte já está contado nele. O único orçamento no limite é o lazer, <span class="w">R$&nbsp;10 até quinta</span>, e ele não muda com a meta.
+        <span class="meta">Fontes: saldo livre de outubro · 3 recorrentes · orçamento Lazer</span>
+      </div>
+      <div class="typing" aria-label="Sy digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre a meta">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<!-- estados: anotação do protótipo (fora do fluxo, não faz parte da tela) -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+
+      <div class="pe full">
+        <h4>Editar meta · zona de perigo <span class="eyebrow">só existe ao editar, nunca ao criar</span></h4>
+        <div class="pe-grid" style="margin-top:0">
+          <div>
+            <div class="perigo">
+              <p class="eyebrow">Zona de perigo</p>
+              <p>Excluir esta meta apaga <b class="num">14 aportes</b> registrados e pausa o recorrente ligado a ela em 01 Finanças. A viagem continua.</p>
+              <button type="button" class="btn-sm perigo-btn">Excluir meta</button>
+            </div>
+          </div>
+          <div>
+            <div class="perigo">
+              <p class="eyebrow">Zona de perigo · etapa 2</p>
+              <p>Tem certeza? Essa ação não volta. Os <b class="num">14 aportes</b> saem do histórico de 02 Futuro.</p>
+              <div class="confirma">
+                <button type="button" class="btn-sm perigo-solid">Excluir de vez</button>
+                <button type="button" class="btn-sm ghost">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pe">
+        <h4>Erro de validação · 2 campos</h4>
+        <div class="fld big">
+          <div class="lblrow"><label>Nome da meta</label></div>
+          <input type="text" class="err" value="" placeholder="Ex.: Viagem Itália">
+          <span class="msg err">Faltou o nome.</span>
+        </div>
+        <div class="fld">
+          <div class="lblrow"><label>Valor alvo</label></div>
+          <div class="pre"><input class="num err" type="text" value=""></div>
+          <span class="msg err">Faltou o valor alvo.</span>
+        </div>
+      </div>
+
+      <div class="pe">
+        <h4>Linha viva · sem dados suficientes</h4>
+        <div class="sy viva">
+          <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+          <p class="fala">Preencha valor, prazo e aporte para ver o ritmo.</p>
+        </div>
+        <h4 style="margin-top:26px">Linha viva · ritmo não fecha</h4>
+        <div class="sy viva">
+          <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+          <p class="fala">Com <b class="num">R$&nbsp;300</b> por semana você chega em <b class="num">3 de janeiro</b>, <b class="num w">3 dias</b> depois do prazo.</p>
+        </div>
+      </div>
+
+      <div class="pe full">
+        <h4>SaveBar · 3 estados</h4>
+        <div class="pe-grid" style="margin-top:0;grid-template-columns:1fr 1fr 1fr">
+          <div>
+            <p class="eyebrow">Oculta</p>
+            <p class="sb-oculta">Nenhuma alteração: a pílula fica fora da tela, abaixo da dobra. O formulário não tem botão de salvar visível.</p>
+          </div>
+          <div>
+            <p class="eyebrow">Com alterações</p>
+            <div class="savebar on">
+              <span class="sb-txt"><b class="num">3</b> campos alterados</span>
+              <div class="sb-acts">
+                <button type="button" class="btn-sm ghost">Descartar</button>
+                <button type="button" class="btn-sm roxo">Salvar meta</button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="eyebrow">Salvo</p>
+            <div class="savebar on saved">
+              <span class="sb-ok" role="status">Salvo.</span>
+            </div>
+            <p class="sb-oculta">Fica <span class="num">2 s</span> e some.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pe full">
+        <h4>O que Sy lê aqui</h4>
+        <ul class="le">
+          <li><code>goals</code><span>A meta em si: nome, categoria, valor alvo, já guardado, data alvo, estado.</span></li>
+          <li><code>goal_contributions</code><span>Cada aporte lançado na meta, com data e conta de origem. É o que move o percentual.</span></li>
+          <li><code>objectives</code><span>O objetivo de longo prazo ao qual a meta se liga (seção 04), para Sy ler meta e objetivo juntos.</span></li>
+          <li><code>user_accounts</code><span>As contas do usuário e o saldo livre: de onde sai o aporte e se ele cabe.</span></li>
+          <li><code>recurring_transactions</code><span>O recorrente criado pela seção 03, lido por 01 Finanças como conta a vencer.</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+<script>
+// T4 · formulário: alterações não salvas, SaveBar, validação inline e a linha viva de Sy.
+// Candidato a shared/form.js na Fase 0; por enquanto inline, igual nos dois arquivos do espécime.
+(function () {
+  var form = document.getElementById('meta'); if (!form) return;
+  var HOJE = new Date(2026, 9, 3); // mock ancorado em sexta, 3 de outubro de 2026
+  var bar = document.getElementById('savebar'), txt = document.getElementById('sb-txt'), ok = document.getElementById('sb-ok');
+  var viva = document.getElementById('viva');
+  var MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  var NBSP = ' ';
+
+  // ── leitura dos campos ──
+  var inputs = [].slice.call(form.querySelectorAll('input, textarea, select'));
+  var groups = [].slice.call(form.querySelectorAll('.pills[data-field]'));
+  function gval(g) { var on = g.querySelector('[aria-pressed=true]'); return on ? on.getAttribute('data-v') : ''; }
+  function parseNum(v) { v = String(v || '').replace(/[^\d,]/g, '').replace(',', '.'); var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+  function fmt(n) { return n.toLocaleString('pt-BR', { maximumFractionDigits: 2 }); }
+  function brl(n) { return 'R$' + NBSP + fmt(n); }
+  function changed() {
+    var c = 0;
+    inputs.forEach(function (el) { if (el.value !== (el.getAttribute('data-initial') || '')) c++; });
+    groups.forEach(function (g) { if (gval(g) !== (g.getAttribute('data-initial') || '')) c++; });
+    return c;
+  }
+
+  // ── SaveBar ──
+  var okTimer = null;
+  function refreshBar() {
+    var c = changed();
+    if (okTimer) return; // "Salvo." tem a vez por 2s
+    bar.classList.remove('saved'); ok.hidden = true;
+    if (c > 0) {
+      txt.innerHTML = '<b class="num">' + c + '</b> ' + (c === 1 ? 'campo alterado' : 'campos alterados');
+      bar.classList.add('on');
+    } else bar.classList.remove('on');
+  }
+  function snapshot() {
+    inputs.forEach(function (el) { el.setAttribute('data-initial', el.value); });
+    groups.forEach(function (g) { g.setAttribute('data-initial', gval(g)); });
+  }
+  function setErr(id, msg) {
+    var el = document.getElementById(id), m = document.getElementById(id + '-msg');
+    if (!el || !m) return;
+    el.classList.toggle('err', !!msg); m.classList.toggle('err', !!msg); m.textContent = msg || '';
+  }
+  function validate() {
+    var first = null;
+    var nome = document.getElementById('nome');
+    if (!nome.value.trim()) { setErr('nome', 'Faltou o nome.'); first = first || nome; } else setErr('nome', '');
+    var alvo = document.getElementById('alvo');
+    if (parseNum(alvo.value) <= 0) { setErr('alvo', 'Faltou o valor alvo.'); first = first || alvo; } else setErr('alvo', '');
+    if (first) first.focus();
+    return !first;
+  }
+  document.getElementById('sb-save').addEventListener('click', function () {
+    if (!validate()) return;
+    snapshot();
+    bar.classList.add('saved'); ok.hidden = false; bar.classList.add('on');
+    okTimer = setTimeout(function () { okTimer = null; bar.classList.remove('on'); setTimeout(function () { bar.classList.remove('saved'); ok.hidden = true; }, 400); }, 2000);
+  });
+  document.getElementById('sb-discard').addEventListener('click', function () {
+    inputs.forEach(function (el) { el.value = el.getAttribute('data-initial') || ''; });
+    groups.forEach(function (g) {
+      var ini = g.getAttribute('data-initial');
+      [].forEach.call(g.querySelectorAll('.chip'), function (ch) { ch.setAttribute('aria-pressed', ch.getAttribute('data-v') === ini ? 'true' : 'false'); });
+    });
+    setErr('nome', ''); setErr('alvo', '');
+    fillDia(); recalc(); refreshBar();
+  });
+
+  // ── pílulas (categoria, frequência) ──
+  groups.forEach(function (g) {
+    g.addEventListener('click', function (e) {
+      var ch = e.target.closest('.chip'); if (!ch) return;
+      [].forEach.call(g.querySelectorAll('.chip'), function (c) { c.setAttribute('aria-pressed', 'false'); });
+      ch.setAttribute('aria-pressed', 'true');
+      if (g.getAttribute('data-field') === 'freq') fillDia();
+      recalc(); refreshBar();
+    });
+  });
+
+  // ── select "Dia": dia da semana (semanal/quinzenal) ou dia do mês (mensal) ──
+  var dia = document.getElementById('dia');
+  var SEM = [['1','Segunda'],['2','Terça'],['3','Quarta'],['4','Quinta'],['5','Sexta'],['6','Sábado'],['0','Domingo']];
+  function freq() { return gval(form.querySelector('.pills[data-field=freq]')); }
+  function fillDia() {
+    var mensal = freq() === 'mensal', cur = dia.value, html = '';
+    if (mensal) { for (var d = 1; d <= 28; d++) html += '<option value="' + d + '">Dia ' + d + '</option>'; }
+    else SEM.forEach(function (o) { html += '<option value="' + o[0] + '">' + o[1] + '</option>'; });
+    dia.innerHTML = html;
+    var okv = [].some.call(dia.options, function (o) { return o.value === cur; });
+    dia.value = okv ? cur : (mensal ? '5' : '3');
+  }
+
+  // ── a linha viva ──
+  function addDays(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function chegada(n) { // data do n-ésimo aporte a partir de hoje
+    var f = freq(), dsel = parseInt(dia.value, 10);
+    if (f === 'mensal') {
+      var y = HOJE.getFullYear(), m = HOJE.getMonth();
+      if (dsel <= HOJE.getDate()) m++;
+      return new Date(y, m + (n - 1), dsel);
+    }
+    var delta = (dsel - HOJE.getDay() + 7) % 7 || 7; // próxima ocorrência, estritamente depois de hoje
+    return addDays(HOJE, delta + (f === 'quinzenal' ? 14 : 7) * (n - 1));
+  }
+  function fmtData(d) { return d.getDate() + ' de ' + MESES[d.getMonth()] + (d.getFullYear() !== HOJE.getFullYear() ? ' de ' + d.getFullYear() : ''); }
+  function recalc() {
+    var alvo = parseNum(document.getElementById('alvo').value), guard = parseNum(document.getElementById('guardado').value);
+    var ap = parseNum(document.getElementById('aporte').value), prazoV = document.getElementById('prazo').value;
+    var prazo = prazoV ? new Date(prazoV + 'T12:00:00') : null;
+    if (!alvo || !prazo || !ap) { viva.textContent = 'Preencha valor, prazo e aporte para ver o ritmo.'; return; }
+    var resta = alvo - guard;
+    if (resta <= 0) { viva.innerHTML = 'Você já tem <b class="num">' + brl(alvo) + '</b>. Falta só marcar a meta como concluída.'; return; }
+    var n = Math.ceil(resta / ap), d = chegada(n);
+    var dias = Math.round((prazo - new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12)) / 864e5);
+    var per = { semanal: 'por semana', quinzenal: 'a cada duas semanas', mensal: 'por mês' }[freq()];
+    var fim = dias > 0 ? '<b class="num ok">' + dias + (dias === 1 ? ' dia' : ' dias') + '</b> antes do prazo.'
+            : dias < 0 ? '<b class="num w">' + (-dias) + (dias === -1 ? ' dia' : ' dias') + '</b> depois do prazo.'
+            : 'bem no prazo.';
+    viva.innerHTML = 'Com <b class="num">' + brl(ap) + '</b> ' + per + ' você chega em <b class="num">' + fmtData(d) + '</b>, ' + fim;
+  }
+
+  // ── wiring ──
+  inputs.forEach(function (el) {
+    el.addEventListener('input', function () { if (el.id === 'nome' || el.id === 'alvo') setErr(el.id, ''); recalc(); refreshBar(); });
+    el.addEventListener('change', function () { recalc(); refreshBar(); });
+  });
+  ['alvo', 'guardado', 'aporte'].forEach(function (id) {
+    var el = document.getElementById(id);
+    el.addEventListener('blur', function () { var n = parseNum(el.value); el.value = n ? fmt(n) : ''; refreshBar(); });
+  });
+  recalc(); refreshBar();
+})();
+</script>
+</body>
+</html>

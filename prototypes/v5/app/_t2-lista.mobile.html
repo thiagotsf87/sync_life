@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk mob">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>SyncLife · Transações · T2 · mobile · v5</title>
+<!-- Fase 0 · template T2 (Lista + captura) MOBILE dedicado (390×844), espécime: transações de Finanças.
+     1 coluna: cabeçalho curto → busca + filtros em scroll-x → lista em linhas agrupada por dia → rodapé.
+     A captura vira botão + fixo (56px, roxo, sobre a safe-area) que abre um sheet próprio (.sheet-form);
+     tocar numa linha abre o mesmo sheet em modo edição. O + do bar abre o mesmo sheet.
+     Sy só pela camada (sheet). E-02: sem JS a lista está completa. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* T2 · cabeçalho curto: sem a unidade Sy; sub de 1 linha */
+  html.mob .titulo{padding:28px 0 20px;border-bottom:none}
+  .titulo .sub{font:400 13.5px/1.5 var(--int);color:var(--t2);margin-top:10px}
+  .titulo .sub .num{color:var(--t1);font-weight:600}
+
+  /* T2 · busca em pílula (largura total) + filtros em scroll-x */
+  .busca{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:0 15px;height:44px;transition:border-color .3s var(--ease)}
+  .busca:focus-within{border-color:rgba(104,64,255,.55)}
+  .busca svg{color:var(--t3);flex:none}
+  .busca input{background:none;border:none;outline:none;color:var(--t1);font:400 14px var(--int);width:100%;min-width:0;height:100%}
+
+  /* alvos de toque >= 40px: ajustes de 1 a 2px sobre o chrome compartilhado (o shared mede 39px; candidatos a shared) */
+  html.mob .brand{min-height:40px}
+  html.mob .bar .btn-sm{min-height:40px}
+  html.mob .bar .btn-sm.roxo{min-width:40px;justify-content:center}
+  html.mob .camada .csug .chip{min-height:40px}
+  html.mob .camada .cask .in{padding-top:0;padding-bottom:0}
+  html.mob .camada .cask input{min-height:44px}
+  html.mob .camada .cfull{min-height:40px;display:flex;align-items:center;justify-content:center;padding-top:0;padding-bottom:env(safe-area-inset-bottom)}
+  .busca input::placeholder{color:var(--t3)}
+  .filtros{display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;margin:12px -20px 0;padding:0 20px 16px;border-bottom:1px solid var(--line)}
+  .filtros::-webkit-scrollbar{display:none}
+  .filtros .chip{min-height:40px;white-space:nowrap;flex:none;font-size:13px}
+  .filtros .sep{width:1px;height:20px;background:var(--line);flex:none;margin:0 2px}
+
+  /* T2 · lista em linhas agrupada por dia (.dia é o divisor); linhas reusam `html.mob .sec .tx` do shared */
+  html.mob .sec.lista{padding:0 0 4px;border-bottom:none}
+  .dia{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:22px 0 6px;border-bottom:1px solid var(--line)}
+  .dia .st{font:700 11px var(--gro);color:var(--t3);white-space:nowrap}
+  .dia .st.in{color:var(--ele)}
+  .lista .tx{cursor:pointer;min-height:48px}
+  .lista .tx:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px;border-radius:6px}
+  .lista .tx.nova{background:rgba(161,255,98,.12);box-shadow:inset 3px 0 0 var(--ele)}
+  .anim .lista .tx{transition:padding-left .35s var(--ease),background 1.8s var(--ease),box-shadow 1.8s var(--ease)}
+  .sem-resultado{font:400 13px var(--int);color:var(--t3);padding:24px 0 4px}
+  .lista-foot{display:flex;flex-direction:column;gap:6px;padding:16px 0 0;border-top:1px solid var(--line);font:400 12.5px/1.6 var(--int);color:var(--t3)}
+  .lista-foot a{color:var(--t2);display:inline-flex;align-items:center;min-height:40px}
+  .lista-foot .tot b{color:var(--t1);font-weight:700}
+  .lista-foot .tot b.ele{color:var(--ele)}
+  .pergunte{padding:16px 0 110px} /* espaço para o botão + fixo não cobrir o link */
+  .pergunte .falar{margin-top:0}
+
+  /* T2 · botão + fixo (56px, roxo, sobre a safe-area) */
+  .fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;background:var(--roxo);color:#fff;border:none;
+    display:grid;place-items:center;z-index:70;cursor:pointer;box-shadow:0 14px 34px -12px rgba(104,64,255,.65);transition:background .3s var(--ease),transform .3s var(--ease)}
+  .fab:hover{background:var(--roxo-h)}
+  .fab:active{transform:scale(.96)}
+
+  /* T2 · sheet de captura/edição (próprio; mesmo visual do sheet de Sy, sem ser a camada) */
+  .sheet-form{position:fixed;left:0;right:0;bottom:0;z-index:80;max-height:clamp(420px,86dvh,760px);background:var(--s1);border-top:1px solid var(--line-h);border-radius:22px 22px 0 0;
+    display:flex;flex-direction:column;transform:translateY(105%);visibility:hidden;transition:transform .55s var(--ease),visibility 0s .55s;box-shadow:0 -24px 60px -30px rgba(0,0,0,.6)}
+  .sheet-form.open{transform:none;visibility:visible;transition-delay:0s}
+  .sheet-form .handle{width:44px;height:4px;border-radius:2px;background:var(--line-h);margin:10px auto 0}
+  .sheet-form .shead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px 16px;border-bottom:1px solid var(--line)}
+  .sheet-form .shead h2{font:500 19px var(--gro);letter-spacing:-.02em;margin-top:6px}
+  .sheet-form .x{background:none;border:1px solid var(--line);border-radius:999px;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;flex:none}
+  .sheet-form .sbody{flex:1;overflow-y:auto;padding:18px 20px 6px;display:flex;flex-direction:column;gap:16px}
+  .sheet-form .f .eyebrow{display:block;margin-bottom:8px}
+  .sheet-form .ck-note{width:100%;display:block;padding:13px 16px;font-size:14px}
+  .sheet-form input[type=date]{color-scheme:dark}
+  .sheet-form .sel{margin-top:0}
+  .sheet-form .tipo{display:flex;gap:8px}
+  .sheet-form .tipo .chip{min-height:44px;flex:1;justify-content:center;font-size:13.5px}
+  .sheet-form .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .sheet-form .sfoot{padding:14px 20px calc(18px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+  .sheet-form .acts{display:flex;gap:10px}
+  .sheet-form .acts .btn-sm{min-height:48px;justify-content:center;font-size:14px}
+  .sheet-form .acts .roxo{flex:1}
+  .btn-sm.ghost.perigo{color:var(--coral);border-color:rgba(248,65,49,.35);padding:12px 18px}
+  .confirma{border-left:3px solid var(--coral);padding:10px 14px;font:400 13px/1.6 var(--int);color:var(--t2)}
+  .confirma b{color:var(--t1);font-weight:600}
+  .confirma .cb{display:flex;gap:18px;margin-top:4px}
+  .confirma button{background:none;border:none;font:600 13.5px var(--int);cursor:pointer;padding:0;color:var(--t2);min-height:40px}
+  .confirma button.sim{color:var(--coral)}
+  .sheet-form .sfoot output{font:600 12.5px var(--int);color:var(--ele);text-align:center;min-height:1em}
+  @media (prefers-reduced-motion:reduce){.sheet-form{transition:none}}
+
+  /* anotação do protótipo (fora do fluxo, inert) */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:40px;padding-top:30px;padding-bottom:72px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:1fr;gap:34px;margin-top:22px}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+  .pe .vazio{font:500 16px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .pe .vazio small{display:block;font:400 12.5px/1.55 var(--int);color:var(--t3);margin-top:6px}
+  .pe .fab-demo{display:flex;align-items:center;gap:14px;margin-top:14px;font:400 12.5px var(--int);color:var(--t2)}
+  .pe .fab-demo .fab{position:static;box-shadow:0 0 0 2px rgba(104,64,255,.45)}
+  .pe .skel span{display:block;height:10px;border-radius:5px;background:var(--s2)}
+  .pe .skel .ds{width:60%}.pe .skel .ct{width:45%}.pe .skel .v{width:64px}
+  .anim .pe .skel span{animation:pulso 1.4s var(--ease) infinite alternate}
+  @keyframes pulso{from{opacity:.55}to{opacity:1}}
+  .pe .erro{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-left:3px solid var(--coral);padding:10px 14px;font:400 13px var(--int);color:var(--coral)}
+  .pe .erro button{background:none;border:none;color:var(--t1);font:600 12.5px var(--int);cursor:pointer;padding:0;white-space:nowrap}
+  .fontes-sy{margin-top:40px}
+  .fontes-sy h3{font:500 20px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+  .fontes-sy p{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .fontes-sy ul{list-style:none;margin-top:14px}
+  .fontes-sy li{padding:12px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.55 var(--int);color:var(--t2)}
+  .fontes-sy li code{display:block;font:600 12.5px var(--gro);color:var(--t1);letter-spacing:-.01em;margin-bottom:4px}
+  .fontes-sy li code small{font:400 11.5px var(--int);color:var(--t3)}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button" aria-label="Registrar" data-abrir-captura>+</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a href="meu-dia-d.mobile.html">Meu dia</a>
+    <a class="on" href="financas-a.mobile.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 1. cabeçalho curto -->
+  <header class="titulo boot b1">
+    <p class="eyebrow"><b>01</b> · Finanças</p>
+    <h1>Transações · outubro</h1>
+    <p class="sub"><span class="num" id="h-count">34</span> transações · entradas <span class="num">R$&nbsp;5.000</span> · saídas <span class="num">R$&nbsp;3.160</span></p>
+  </header>
+
+  <!-- 2. busca + filtros em scroll-x -->
+  <div class="boot b2">
+    <label class="busca">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>
+      <input id="f-q" type="search" placeholder="Buscar na descrição" aria-label="Buscar na descrição">
+    </label>
+    <div class="filtros" role="toolbar" aria-label="Filtros">
+      <button class="chip on" type="button" data-tipo="todas" aria-pressed="true">Todas</button>
+      <button class="chip" type="button" data-tipo="in" aria-pressed="false">Entradas</button>
+      <button class="chip" type="button" data-tipo="out" aria-pressed="false">Saídas</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button class="chip" type="button" data-cat="Mercado" aria-pressed="false">Mercado</button>
+      <button class="chip" type="button" data-cat="Lazer" aria-pressed="false">Lazer</button>
+      <button class="chip" type="button" data-cat="Transporte" aria-pressed="false">Transporte</button>
+      <button class="chip" type="button" data-cat="Saúde" aria-pressed="false">Saúde</button>
+      <button class="chip" type="button" data-cat="Investimento" aria-pressed="false">Investimento</button>
+      <button class="chip" type="button" data-cat="Renda" aria-pressed="false">Renda</button>
+      <button class="chip" type="button" data-cat="Renda extra" aria-pressed="false">Renda extra</button>
+      <button class="chip" type="button" data-cat="Moradia" aria-pressed="false">Moradia</button>
+    </div>
+  </div>
+
+  <!-- 3. lista em linhas agrupada por dia -->
+  <section class="sec lista rv" id="lista" aria-label="Transações">
+    <div class="grupo" data-date="2026-10-03">
+      <div class="dia"><p class="eyebrow">Sexta · 3 out</p><span class="st num">– R$&nbsp;182,40</span></div>
+      <div class="tx" role="button" tabindex="0" data-id="t1" data-date="2026-10-03" data-desc="Mercado Central" data-cat="Mercado" data-valor="-182.4" aria-label="Editar Mercado Central, – R$ 182,40"><span class="d num">3 out</span><span class="ds">Mercado Central</span><span class="v num">– R$&nbsp;182,40</span><span class="ct">Mercado</span></div>
+    </div>
+    <div class="grupo" data-date="2026-10-02">
+      <div class="dia"><p class="eyebrow">Quinta · 2 out</p><span class="st num in">+ R$&nbsp;550,00</span></div>
+      <div class="tx in" role="button" tabindex="0" data-id="t2" data-date="2026-10-02" data-desc="Freela landing page" data-cat="Renda extra" data-valor="850" aria-label="Editar Freela landing page, + R$ 850,00"><span class="d num">2 out</span><span class="ds">Freela landing page</span><span class="v num">+ R$&nbsp;850,00</span><span class="ct">Renda extra</span></div>
+      <div class="tx" role="button" tabindex="0" data-id="t3" data-date="2026-10-02" data-desc="Aporte CDB" data-cat="Investimento" data-valor="-300" aria-label="Editar Aporte CDB, – R$ 300,00"><span class="d num">2 out</span><span class="ds">Aporte CDB</span><span class="v num">– R$&nbsp;300,00</span><span class="ct">Investimento</span></div>
+    </div>
+    <div class="grupo" data-date="2026-10-01">
+      <div class="dia"><p class="eyebrow">Quarta · 1 out</p><span class="st num">– R$&nbsp;64,90</span></div>
+      <div class="tx" role="button" tabindex="0" data-id="t4" data-date="2026-10-01" data-desc="Farmácia" data-cat="Saúde" data-valor="-64.9" aria-label="Editar Farmácia, – R$ 64,90"><span class="d num">1 out</span><span class="ds">Farmácia</span><span class="v num">– R$&nbsp;64,90</span><span class="ct">Saúde</span></div>
+    </div>
+    <div class="grupo" data-date="2026-09-30">
+      <div class="dia"><p class="eyebrow">Terça · 30 set</p><span class="st num in">+ R$&nbsp;4.150,00</span></div>
+      <div class="tx in" role="button" tabindex="0" data-id="t5" data-date="2026-09-30" data-desc="Salário" data-cat="Renda" data-valor="4150" aria-label="Editar Salário, + R$ 4.150,00"><span class="d num">30 set</span><span class="ds">Salário</span><span class="v num">+ R$&nbsp;4.150,00</span><span class="ct">Renda</span></div>
+    </div>
+    <div class="grupo" data-date="2026-09-29">
+      <div class="dia"><p class="eyebrow">Segunda · 29 set</p><span class="st num">– R$&nbsp;128,00</span></div>
+      <div class="tx" role="button" tabindex="0" data-id="t6" data-date="2026-09-29" data-desc="Restaurante japonês" data-cat="Lazer" data-valor="-128" aria-label="Editar Restaurante japonês, – R$ 128,00"><span class="d num">29 set</span><span class="ds">Restaurante japonês</span><span class="v num">– R$&nbsp;128,00</span><span class="ct">Lazer</span></div>
+    </div>
+    <div class="grupo" data-date="2026-09-28">
+      <div class="dia"><p class="eyebrow">Domingo · 28 set</p><span class="st num">– R$&nbsp;84,80</span></div>
+      <div class="tx" role="button" tabindex="0" data-id="t7" data-date="2026-09-28" data-desc="Uber" data-cat="Transporte" data-valor="-24.9" aria-label="Editar Uber, – R$ 24,90"><span class="d num">28 set</span><span class="ds">Uber</span><span class="v num">– R$&nbsp;24,90</span><span class="ct">Transporte</span></div>
+      <div class="tx" role="button" tabindex="0" data-id="t8" data-date="2026-09-28" data-desc="Livraria" data-cat="Lazer" data-valor="-59.9" aria-label="Editar Livraria, – R$ 59,90"><span class="d num">28 set</span><span class="ds">Livraria</span><span class="v num">– R$&nbsp;59,90</span><span class="ct">Lazer</span></div>
+    </div>
+    <p class="sem-resultado" id="sem-resultado" hidden>Nada com esse filtro.</p>
+  </section>
+
+  <!-- 4. rodapé da lista -->
+  <div class="lista-foot rv">
+    <span class="tot">Entradas <b class="num" id="f-ent">+ R$&nbsp;5.000,00</b> · Saídas <b class="num" id="f-sai">– R$&nbsp;760,10</b></span>
+    <span class="tot">Saldo do período <b class="num ele" id="f-saldo">+ R$&nbsp;4.239,90</b></span>
+    <span><span class="num" id="f-count">8 de 34</span> · <a href="financas-a.mobile.html#transacoes">Ver todas →</a></span>
+  </div>
+
+  <!-- Sy: só pela camada -->
+  <div class="pergunte rv">
+    <button class="falar" type="button" data-coach-open data-coach-seed="Sobre estas transações: ">Perguntar sobre estas transações →</button>
+  </div>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+  <div class="r">
+    <span>34 transações <b class="num">em outubro</b></span>
+    <span>Última sincronização às <b class="num">14:05</b></span>
+  </div>
+</footer>
+
+<!-- botão + fixo -->
+<button class="fab" type="button" aria-label="Registrar transação" data-abrir-captura>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<!-- camada de Sy: sheet (precisa vir antes do .sheet-form no DOM: app.js pega o primeiro .camada) -->
+<div class="scrim"></div>
+<aside class="camada sheet" aria-label="Sy">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: suas transações</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li as suas 34 transações de outubro. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Onde foi o maior gasto da semana?</button>
+        <button class="chip" type="button">O que ainda vai sair este mês?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+      </div>
+      <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+      <div class="action" role="status">
+        <div class="al">Ação executada</div>
+        <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+        <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte sobre estas transações">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<!-- sheet de captura / edição (próprio; não é a camada de Sy) -->
+<aside class="sheet-form" id="sheet" role="dialog" aria-modal="true" aria-labelledby="s-titulo">
+  <div class="handle"></div>
+  <header class="shead">
+    <div>
+      <p class="eyebrow"><b>01</b> · Transação</p>
+      <h2 id="s-titulo">Nova transação</h2>
+    </div>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <form id="sform" class="sbody" autocomplete="off">
+    <div class="f">
+      <label class="eyebrow" for="s-desc">Descrição</label>
+      <input class="ck-note" id="s-desc" name="desc" type="text" placeholder="Ex.: Mercado Central" required>
+    </div>
+    <div class="f">
+      <span class="eyebrow">Tipo</span>
+      <div class="tipo" role="group" aria-label="Tipo">
+        <button class="chip on" type="button" data-tipo="out" aria-pressed="true">Saída</button>
+        <button class="chip" type="button" data-tipo="in" aria-pressed="false">Entrada</button>
+      </div>
+    </div>
+    <div class="f2">
+      <div class="f">
+        <label class="eyebrow" for="s-valor">Valor</label>
+        <input class="ck-note num" id="s-valor" name="valor" type="text" inputmode="decimal" placeholder="0,00" required>
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="s-data">Data</label>
+        <input class="ck-note num" id="s-data" name="data" type="date" value="2026-10-03">
+      </div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="s-cat">Categoria</label>
+      <div class="sel">
+        <select id="s-cat" name="cat">
+          <option>Mercado</option><option>Moradia</option><option>Lazer</option><option>Transporte</option>
+          <option>Saúde</option><option>Investimento</option><option>Renda</option><option>Renda extra</option>
+        </select>
+      </div>
+    </div>
+  </form>
+  <div class="sfoot">
+    <div class="confirma" id="s-confirma" hidden role="status">
+      <span>Excluir <b id="s-conf-nome">esta transação</b>? Não dá para desfazer.</span>
+      <div class="cb"><button class="sim" type="button" id="s-conf-sim">Excluir</button><button type="button" id="s-conf-nao">Cancelar</button></div>
+    </div>
+    <div class="acts">
+      <button class="btn-sm ghost perigo" type="button" id="s-excluir" hidden>Excluir</button>
+      <button class="btn-sm roxo" type="submit" form="sform" id="s-salvar">Registrar</button>
+    </div>
+    <output id="s-out" aria-live="polite"></output>
+  </div>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Vazio · captura em destaque</h4>
+        <p class="vazio">Nenhuma transação em outubro ainda<small>Toque em + para registrar a primeira. Sy passa a ler o mês a partir dela.</small></p>
+        <div class="fab-demo"><span class="fab" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span><span>O botão + ganha um halo roxo enquanto a lista está vazia.</span></div>
+      </div>
+      <div class="pe">
+        <h4>Carregando · 3 linhas esqueleto</h4>
+        <div class="sec lista" aria-hidden="true">
+          <div class="tx skel"><span class="d"></span><span class="ds"></span><span class="v"></span><span class="ct"></span></div>
+          <div class="tx skel"><span class="d"></span><span class="ds"></span><span class="v"></span><span class="ct"></span></div>
+          <div class="tx skel"><span class="d"></span><span class="ds"></span><span class="v"></span><span class="ct"></span></div>
+        </div>
+      </div>
+      <div class="pe">
+        <h4>Erro · linha coral</h4>
+        <div class="erro" role="alert"><span>Não consegui carregar.</span><button type="button">Tentar de novo</button></div>
+      </div>
+    </div>
+
+    <div class="fontes-sy">
+      <p class="eyebrow"><b>01</b> · Finanças</p>
+      <h3>O que Sy lê aqui</h3>
+      <p>Pacote de contexto que esta tela entrega a Sy (o que <code>buildModuleContext</code> expõe para Finanças). É daqui que saem as fontes citadas sob cada resposta na camada.</p>
+      <ul>
+        <li><code>transactions <small>(outubro)</small></code><span>O que entrou e saiu, por dia e por categoria. É a base do saldo livre, dos subtotais do dia e de qualquer "onde foi o maior gasto".</span></li>
+        <li><code>budgets</code><span>O teto de cada categoria. Diz a Sy quanto ainda cabe em lazer, mercado ou moradia antes de comentar um gasto novo.</span></li>
+        <li><code>recurring_transactions</code><span>O que ainda vai sair (aluguel em 3 dias, internet em 5). Permite projetar o fechamento do mês, não só o saldo de hoje.</span></li>
+        <li><code>user_accounts</code><span>De onde o dinheiro sai e onde fica. Separa aporte de gasto e dá o saldo por conta quando a pergunta é "dá para antecipar?".</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+<script>
+(function () {
+  var M = window.SL_MOCK, NB = ' ';
+  var MES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  var DIAS = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+  var ENTRADA = ['Renda', 'Renda extra'];
+  var lista = document.getElementById('lista'), base = 34, seq = 100;
+  var filtro = { tipo: 'todas', cat: 'todas', q: '' };
+
+  function brl(n) { return M.fmtBRL(Math.abs(n)).replace('R$ ', 'R$' + NB); }
+  function assinado(n) { return (n < 0 ? '– ' : '+ ') + brl(n); }
+  function dataCurta(iso) { var p = iso.split('-'); return parseInt(p[2], 10) + ' ' + MES[parseInt(p[1], 10) - 1]; }
+  // calendário do mock: 3 de outubro de 2026 é sexta (deslocamento de 1 dia sobre o calendário real)
+  function diaSemana(iso) { var d = new Date(iso + 'T12:00:00'); var n = DIAS[(d.getDay() + 6) % 7]; return n.charAt(0).toUpperCase() + n.slice(1); }
+  function parseValor(s) { s = String(s).replace(/[R$\s ]/g, '').replace(/\./g, '').replace(',', '.'); var n = parseFloat(s); return isNaN(n) ? 0 : Math.abs(n); }
+  function valorCampo(n) { return M.fmtBRL(Math.abs(n)).replace('R$ ', ''); }
+
+  function pintar(el) {
+    var v = parseFloat(el.dataset.valor);
+    el.classList.toggle('in', v > 0);
+    el.querySelector('.d').textContent = dataCurta(el.dataset.date);
+    el.querySelector('.ds').textContent = el.dataset.desc;
+    el.querySelector('.ct').textContent = el.dataset.cat;
+    el.querySelector('.v').textContent = assinado(v);
+    el.setAttribute('aria-label', 'Editar ' + el.dataset.desc + ', ' + assinado(v).replace(NB, ' '));
+  }
+  function linha(t) {
+    var el = document.createElement('div');
+    el.className = 'tx'; el.setAttribute('role', 'button'); el.tabIndex = 0;
+    el.dataset.id = t.id; el.dataset.date = t.date; el.dataset.desc = t.desc; el.dataset.cat = t.cat; el.dataset.valor = t.valor;
+    el.innerHTML = '<span class="d num"></span><span class="ds"></span><span class="v num"></span><span class="ct"></span>';
+    pintar(el); return el;
+  }
+  function grupo(iso) {
+    var g = lista.querySelector('.grupo[data-date="' + iso + '"]');
+    if (g) return g;
+    g = document.createElement('div'); g.className = 'grupo'; g.dataset.date = iso;
+    g.innerHTML = '<div class="dia"><p class="eyebrow">' + diaSemana(iso) + ' · ' + dataCurta(iso) + '</p><span class="st num"></span></div>';
+    var ref = null;
+    lista.querySelectorAll('.grupo').forEach(function (x) { if (!ref && x.dataset.date < iso) ref = x; });
+    lista.insertBefore(g, ref || document.getElementById('sem-resultado'));
+    return g;
+  }
+  function colocar(el) { var g = grupo(el.dataset.date); g.insertBefore(el, g.querySelector('.dia').nextSibling); }
+  function passa(r) {
+    var v = parseFloat(r.dataset.valor);
+    if (filtro.tipo === 'in' && v <= 0) return false;
+    if (filtro.tipo === 'out' && v > 0) return false;
+    if (filtro.cat !== 'todas' && r.dataset.cat !== filtro.cat) return false;
+    if (filtro.q && r.dataset.desc.toLowerCase().indexOf(filtro.q) < 0) return false;
+    return true;
+  }
+  function recalc() {
+    var n = 0, ent = 0, sai = 0;
+    lista.querySelectorAll('.grupo').forEach(function (g) {
+      var rows = g.querySelectorAll('.tx');
+      if (!rows.length) { g.remove(); return; }
+      var s = 0, vis = 0;
+      rows.forEach(function (r) {
+        var v = parseFloat(r.dataset.valor), ok = passa(r);
+        r.hidden = !ok;
+        if (ok) { s += v; vis++; n++; if (v > 0) ent += v; else sai += v; }
+      });
+      g.hidden = !vis;
+      var st = g.querySelector('.st'); st.textContent = assinado(s); st.classList.toggle('in', s > 0);
+    });
+    document.getElementById('sem-resultado').hidden = n > 0;
+    document.getElementById('f-count').textContent = n + ' de ' + base;
+    document.getElementById('f-ent').textContent = '+ ' + brl(ent);
+    document.getElementById('f-sai').textContent = '– ' + brl(sai);
+    var saldo = ent + sai, fs = document.getElementById('f-saldo');
+    fs.textContent = assinado(saldo); fs.classList.toggle('ele', saldo > 0);
+    document.getElementById('h-count').textContent = base;
+  }
+  function destacar(el) {
+    el.classList.add('nova');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.remove('nova'); }); });
+  }
+
+  // filtros: tipo (exclusivo) e categoria (um por vez; tocar de novo limpa)
+  document.querySelectorAll('.filtros .chip[data-tipo]').forEach(function (c) {
+    c.addEventListener('click', function () {
+      document.querySelectorAll('.filtros .chip[data-tipo]').forEach(function (q) { q.classList.remove('on'); q.setAttribute('aria-pressed', 'false'); });
+      c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); filtro.tipo = c.dataset.tipo; recalc();
+    });
+  });
+  document.querySelectorAll('.filtros .chip[data-cat]').forEach(function (c) {
+    c.addEventListener('click', function () {
+      var ligar = !c.classList.contains('on');
+      document.querySelectorAll('.filtros .chip[data-cat]').forEach(function (q) { q.classList.remove('on'); q.setAttribute('aria-pressed', 'false'); });
+      if (ligar) { c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); }
+      filtro.cat = ligar ? c.dataset.cat : 'todas'; recalc();
+    });
+  });
+  document.getElementById('f-q').addEventListener('input', function () { filtro.q = this.value.trim().toLowerCase(); recalc(); });
+
+  // sheet de captura / edição
+  var sheet = document.getElementById('sheet'), scrim = document.querySelector('.scrim'), camada = document.querySelector('.camada');
+  var form = document.getElementById('sform'), confirma = document.getElementById('s-confirma'), out = document.getElementById('s-out');
+  var titulo = document.getElementById('s-titulo'), btnExcluir = document.getElementById('s-excluir'), btnSalvar = document.getElementById('s-salvar');
+  var atual = null, tipo = 'out';
+  function setTipo(t) {
+    tipo = t;
+    sheet.querySelectorAll('.tipo .chip').forEach(function (c) { var on = c.dataset.tipo === t; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); });
+  }
+  function abrirSheet() { confirma.hidden = true; out.textContent = ''; sheet.classList.add('open'); scrim.classList.add('open'); }
+  function abrirNovo() {
+    atual = null; form.reset(); form.data.value = '2026-10-03'; setTipo('out');
+    titulo.textContent = 'Nova transação'; btnSalvar.textContent = 'Registrar'; btnExcluir.hidden = true;
+    abrirSheet(); form.desc.focus({ preventScroll: true });
+  }
+  function abrirEdicao(el) {
+    atual = el; var v = parseFloat(el.dataset.valor);
+    form.desc.value = el.dataset.desc; form.valor.value = valorCampo(v); form.cat.value = el.dataset.cat; form.data.value = el.dataset.date;
+    setTipo(v > 0 ? 'in' : 'out');
+    titulo.textContent = 'Editar transação'; btnSalvar.textContent = 'Salvar'; btnExcluir.hidden = false;
+    document.getElementById('s-conf-nome').textContent = el.dataset.desc;
+    abrirSheet();
+  }
+  function fechar() {
+    if (!sheet.classList.contains('open')) return;
+    sheet.classList.remove('open');
+    if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open');
+    if (atual) atual.focus({ preventScroll: true });
+    atual = null;
+  }
+  document.querySelectorAll('[data-abrir-captura]').forEach(function (b) { b.addEventListener('click', abrirNovo); });
+  lista.addEventListener('click', function (e) { var r = e.target.closest('.tx'); if (r) abrirEdicao(r); });
+  lista.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('tx')) { e.preventDefault(); abrirEdicao(e.target); }
+  });
+  sheet.querySelector('.x').addEventListener('click', fechar);
+  scrim.addEventListener('click', fechar);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
+  sheet.querySelectorAll('.tipo .chip').forEach(function (c) { c.addEventListener('click', function () { setTipo(c.dataset.tipo); }); });
+  form.cat.addEventListener('change', function () { if (ENTRADA.indexOf(this.value) >= 0) setTipo('in'); });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var desc = form.desc.value.trim(), val = parseValor(form.valor.value), cat = form.cat.value, date = form.data.value || '2026-10-03';
+    if (!desc || !val) { (desc ? form.valor : form.desc).focus(); return; }
+    var sinal = tipo === 'in' ? 1 : -1;
+    if (atual) {
+      atual.dataset.desc = desc; atual.dataset.cat = cat; atual.dataset.valor = sinal * val;
+      if (date !== atual.dataset.date) { atual.dataset.date = date; colocar(atual); }
+      pintar(atual); recalc(); destacar(atual); fechar();
+      return;
+    }
+    var el = linha({ id: 'n' + (seq++), date: date, desc: desc, cat: cat, valor: sinal * val });
+    colocar(el); base++; recalc(); destacar(el);
+    out.textContent = 'Registrado.';
+    setTimeout(fechar, 650);
+  });
+  btnExcluir.addEventListener('click', function () { confirma.hidden = false; document.getElementById('s-conf-sim').focus(); });
+  document.getElementById('s-conf-nao').addEventListener('click', function () { confirma.hidden = true; });
+  document.getElementById('s-conf-sim').addEventListener('click', function () {
+    if (!atual) return;
+    var r = atual; atual = null; r.remove(); base--; recalc();
+    sheet.classList.remove('open'); if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open');
+  });
+})();
+</script>
+</body>
+</html>

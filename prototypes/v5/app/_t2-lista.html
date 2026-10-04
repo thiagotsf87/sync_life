@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Transações · T2 · v5</title>
+<!-- Fase 0 · template T2 (Lista + captura), espécime: transações de Finanças. Desktop 1440.
+     Cabeçalho curto → filtros em pílula → captura inline (1 linha) → lista densa agrupada por dia → rodapé.
+     Sy só pela camada (bar + link discreto no fim). Sem laboratório, sem KPI strip, sem paginação.
+     Edição de uma linha: painel lateral próprio (.painel), nunca modal. E-02: sem JS a lista está completa. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* T2 · cabeçalho curto: sem a unidade Sy; sub de 1 linha com o total do mês */
+  .titulo{padding:44px 0 26px}
+  .titulo .sub{font:400 14px var(--int);color:var(--t2);margin-top:12px}
+  .titulo .sub .num{color:var(--t1);font-weight:600}
+
+  /* T2 · filtros em pílula (reusa .chip da marca) + categoria em select-pílula + busca em pílula */
+  .filtros{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:18px 0 16px}
+  .filtros .chip{padding:8px 14px;font-size:12px}
+  .filtros .sep{width:1px;height:20px;background:var(--line);margin:0 4px}
+  .filtros .sel{margin-top:0}
+  .filtros .sel select{border-radius:999px;padding:8px 34px 8px 14px;font:500 12px var(--int);background:transparent;color:var(--t2)}
+  .filtros .sel select:hover{color:var(--t1)}
+  .filtros .sel::after{right:14px}
+  .busca{margin-left:auto;display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:0 15px;height:36px;min-width:240px;transition:border-color .3s var(--ease)}
+  .busca:hover{border-color:var(--line-h)}
+  .busca:focus-within{border-color:rgba(104,64,255,.55)}
+  .busca svg{color:var(--t3);flex:none}
+  .busca input{background:none;border:none;outline:none;color:var(--t1);font:400 12.5px var(--int);width:100%;height:100%}
+  .busca input::placeholder{color:var(--t3)}
+
+  /* T2 · captura inline: 1 linha, Enter registra (campos reusam .ck-note e .sel do shared) */
+  .captura{display:grid;grid-template-columns:1fr 150px 190px 160px auto;gap:10px;align-items:center;padding:16px 0 14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .captura .ck-note{width:100%;min-width:0;height:44px;padding:0 16px}
+  .captura .ck-note.num{font-size:14px}
+  .captura input[type=date]{color-scheme:dark}
+  .captura .sel{margin-top:0}
+  .captura .sel select{height:44px;padding:0 40px 0 16px}
+  .captura .btn-sm.roxo{height:44px;padding:0 20px;font-size:13px;justify-content:center}
+  .cap-foot{grid-column:1/-1;display:flex;justify-content:space-between;gap:16px;font:400 11.5px var(--int);color:var(--t3)}
+  .cap-foot output{color:var(--ele);font-weight:600;min-height:1em}
+
+  /* T2 · lista densa agrupada por dia: .dia é o divisor (dia da semana à esquerda, subtotal à direita) */
+  .trans{padding:0;border-bottom:none}
+  .dia{display:grid;grid-template-columns:52px 1fr 130px 110px;gap:16px;align-items:baseline;padding:24px 0 8px;border-bottom:1px solid var(--line)}
+  .dia .eyebrow{grid-column:1/3}
+  .dia .st{grid-column:4;font:700 11px var(--gro);color:var(--t3);text-align:right;white-space:nowrap}
+  .dia .st.in{color:var(--ele)}
+  .trans .tx{cursor:pointer}
+  .trans .tx:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px;border-radius:6px}
+  .trans .tx.nova{background:rgba(161,255,98,.12);box-shadow:inset 3px 0 0 var(--ele)}
+  .anim .trans .tx{transition:padding-left .35s var(--ease),background 1.8s var(--ease),box-shadow 1.8s var(--ease)}
+  .sem-resultado{font:400 13px var(--int);color:var(--t3);padding:28px 0 8px}
+  .lista-foot{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding:18px 0 0;border-top:1px solid var(--line);font:400 12.5px var(--int);color:var(--t3)}
+  .lista-foot a{color:var(--t2);transition:color .3s var(--ease)}
+  .lista-foot a:hover{color:var(--t1)}
+  .lista-foot .tot b{color:var(--t1);font-weight:700}
+  .lista-foot .tot b.ele{color:var(--ele)}
+  .pergunte{padding:28px 0 64px}
+  .pergunte .falar{margin-top:0}
+
+  /* T2 · painel lateral de edição (mesmo visual da camada de Sy; peça própria, candidata a shared) */
+  .painel{position:fixed;top:0;right:0;bottom:0;width:min(420px,92vw);background:var(--s1);border-left:1px solid var(--line);z-index:80;
+    display:flex;flex-direction:column;transform:translateX(105%);visibility:hidden;transition:transform .55s var(--ease),visibility 0s .55s;box-shadow:-24px 0 60px -30px rgba(0,0,0,.6)}
+  .painel.open{transform:none;visibility:visible;transition-delay:0s}
+  .painel .phead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
+  .painel .phead h2{font:500 17px var(--gro);letter-spacing:-.02em;margin-top:6px}
+  .painel .x{background:none;border:1px solid var(--line);border-radius:999px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease)}
+  .painel .x:hover{border-color:var(--line-h);color:var(--t1)}
+  .painel .pbody{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:18px}
+  .painel .f .eyebrow{display:block;margin-bottom:8px}
+  .painel .ck-note{width:100%;display:block}
+  .painel input[type=date]{color-scheme:dark}
+  .painel .sel{margin-top:0}
+  .painel .tipo{display:flex;gap:8px}
+  .painel .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .painel .pfoot{padding:16px 22px 20px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+  .painel .acts{display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .btn-sm.ghost.perigo{color:var(--coral);border-color:rgba(248,65,49,.35)}
+  .btn-sm.ghost.perigo:hover{border-color:var(--coral);color:var(--coral)}
+  .confirma{border-left:3px solid var(--coral);padding:10px 14px;font:400 12.5px/1.6 var(--int);color:var(--t2);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+  .confirma b{color:var(--t1);font-weight:600}
+  .confirma button{background:none;border:none;font:600 12.5px var(--int);cursor:pointer;padding:0;color:var(--t2)}
+  .confirma button.sim{color:var(--coral)}
+  .confirma button:hover{text-decoration:underline}
+  @media (prefers-reduced-motion:reduce){.painel{transition:none}}
+
+  /* anotação do protótipo (fora do fluxo, inert) */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:72px;padding-top:34px;padding-bottom:80px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe .captura{grid-template-columns:1fr;border-color:rgba(104,64,255,.55);border-radius:14px;padding:14px;gap:8px}
+  .pe .vazio{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1);margin-bottom:10px}
+  .pe .vazio small{display:block;font:400 12.5px var(--int);color:var(--t3);margin-top:6px}
+  .pe .skel span{display:block;height:10px;border-radius:5px;background:var(--s2)}
+  .pe .skel .ds{width:60%}.pe .skel .ct{width:70%}.pe .skel .v{margin-left:auto;width:80%}
+  .anim .pe .skel span{animation:pulso 1.4s var(--ease) infinite alternate}
+  @keyframes pulso{from{opacity:.55}to{opacity:1}}
+  .pe .erro{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-left:3px solid var(--coral);padding:10px 14px;font:400 13px var(--int);color:var(--coral)}
+  .pe .erro button{background:none;border:none;color:var(--t1);font:600 12.5px var(--int);cursor:pointer;padding:0;white-space:nowrap}
+  .fontes-sy{margin-top:44px;max-width:760px}
+  .fontes-sy h3{font:500 22px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+  .fontes-sy p{font:400 13.5px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .fontes-sy ul{list-style:none;margin-top:18px}
+  .fontes-sy li{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:13px 0;border-bottom:1px solid var(--line);font:400 13px/1.55 var(--int);color:var(--t2)}
+  .fontes-sy li code{font:600 12.5px var(--gro);color:var(--t1);letter-spacing:-.01em}
+  .fontes-sy li code small{font:400 11.5px var(--int);color:var(--t3)}
+  @media (max-width:960px){
+    .captura{grid-template-columns:1fr 1fr}
+    .busca{margin-left:0;width:100%}
+    .pe-grid{grid-template-columns:1fr}
+    .fontes-sy li{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button" data-foco-captura>+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a href="meu-dia-d.html">Meu dia</a>
+    <a class="on" href="financas-a.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <!-- 1. cabeçalho curto -->
+    <header class="titulo boot b1">
+      <p class="eyebrow"><b>01</b> · Finanças</p>
+      <h1>Transações · outubro</h1>
+      <p class="sub"><span class="num" id="h-count">34</span> transações em outubro · entradas <span class="num">R$&nbsp;5.000</span> · saídas <span class="num">R$&nbsp;3.160</span></p>
+    </header>
+
+    <!-- 2. filtros em pílula -->
+    <div class="filtros boot b2" role="toolbar" aria-label="Filtros">
+      <button class="chip on" type="button" data-tipo="todas" aria-pressed="true">Todas</button>
+      <button class="chip" type="button" data-tipo="in" aria-pressed="false">Entradas</button>
+      <button class="chip" type="button" data-tipo="out" aria-pressed="false">Saídas</button>
+      <span class="sep" aria-hidden="true"></span>
+      <div class="sel">
+        <select id="f-cat" aria-label="Categoria">
+          <option value="todas">Todas as categorias</option>
+          <option>Mercado</option><option>Moradia</option><option>Lazer</option><option>Transporte</option>
+          <option>Saúde</option><option>Investimento</option><option>Renda</option><option>Renda extra</option>
+        </select>
+      </div>
+      <label class="busca">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>
+        <input id="f-q" type="search" placeholder="Buscar na descrição" aria-label="Buscar na descrição">
+      </label>
+    </div>
+
+    <!-- 3. captura inline -->
+    <form class="captura boot b3" id="captura" aria-label="Registrar transação" autocomplete="off">
+      <input class="ck-note" name="desc" id="cap-desc" type="text" placeholder="Descrição" aria-label="Descrição" required>
+      <input class="ck-note num" name="valor" type="text" inputmode="decimal" placeholder="0,00" aria-label="Valor em reais" required>
+      <div class="sel">
+        <select name="cat" aria-label="Categoria">
+          <option>Mercado</option><option>Moradia</option><option>Lazer</option><option>Transporte</option>
+          <option>Saúde</option><option>Investimento</option><option>Renda</option><option>Renda extra</option>
+        </select>
+      </div>
+      <input class="ck-note num" name="data" type="date" value="2026-10-03" aria-label="Data">
+      <button class="btn-sm roxo" type="submit">Registrar</button>
+      <div class="cap-foot">
+        <span>Enter registra · Renda e Renda extra entram como entrada</span>
+        <output id="cap-out" aria-live="polite"></output>
+      </div>
+    </form>
+
+    <!-- 4. lista densa agrupada por dia -->
+    <section class="trans rv" id="lista" aria-label="Transações">
+      <div class="grupo" data-date="2026-10-03">
+        <div class="dia"><p class="eyebrow">Sexta</p><span class="st num">– R$&nbsp;182,40</span></div>
+        <div class="tx" role="button" tabindex="0" data-id="t1" data-date="2026-10-03" data-desc="Mercado Central" data-cat="Mercado" data-valor="-182.4" aria-label="Editar Mercado Central, – R$ 182,40"><span class="d num">3 out</span><span class="ds">Mercado Central</span><span class="ct">Mercado</span><span class="v num">– R$&nbsp;182,40</span></div>
+      </div>
+      <div class="grupo" data-date="2026-10-02">
+        <div class="dia"><p class="eyebrow">Quinta</p><span class="st num in">+ R$&nbsp;550,00</span></div>
+        <div class="tx in" role="button" tabindex="0" data-id="t2" data-date="2026-10-02" data-desc="Freela landing page" data-cat="Renda extra" data-valor="850" aria-label="Editar Freela landing page, + R$ 850,00"><span class="d num">2 out</span><span class="ds">Freela landing page</span><span class="ct">Renda extra</span><span class="v num">+ R$&nbsp;850,00</span></div>
+        <div class="tx" role="button" tabindex="0" data-id="t3" data-date="2026-10-02" data-desc="Aporte CDB" data-cat="Investimento" data-valor="-300" aria-label="Editar Aporte CDB, – R$ 300,00"><span class="d num">2 out</span><span class="ds">Aporte CDB</span><span class="ct">Investimento</span><span class="v num">– R$&nbsp;300,00</span></div>
+      </div>
+      <div class="grupo" data-date="2026-10-01">
+        <div class="dia"><p class="eyebrow">Quarta</p><span class="st num">– R$&nbsp;64,90</span></div>
+        <div class="tx" role="button" tabindex="0" data-id="t4" data-date="2026-10-01" data-desc="Farmácia" data-cat="Saúde" data-valor="-64.9" aria-label="Editar Farmácia, – R$ 64,90"><span class="d num">1 out</span><span class="ds">Farmácia</span><span class="ct">Saúde</span><span class="v num">– R$&nbsp;64,90</span></div>
+      </div>
+      <div class="grupo" data-date="2026-09-30">
+        <div class="dia"><p class="eyebrow">Terça</p><span class="st num in">+ R$&nbsp;4.150,00</span></div>
+        <div class="tx in" role="button" tabindex="0" data-id="t5" data-date="2026-09-30" data-desc="Salário" data-cat="Renda" data-valor="4150" aria-label="Editar Salário, + R$ 4.150,00"><span class="d num">30 set</span><span class="ds">Salário</span><span class="ct">Renda</span><span class="v num">+ R$&nbsp;4.150,00</span></div>
+      </div>
+      <div class="grupo" data-date="2026-09-29">
+        <div class="dia"><p class="eyebrow">Segunda</p><span class="st num">– R$&nbsp;128,00</span></div>
+        <div class="tx" role="button" tabindex="0" data-id="t6" data-date="2026-09-29" data-desc="Restaurante japonês" data-cat="Lazer" data-valor="-128" aria-label="Editar Restaurante japonês, – R$ 128,00"><span class="d num">29 set</span><span class="ds">Restaurante japonês</span><span class="ct">Lazer</span><span class="v num">– R$&nbsp;128,00</span></div>
+      </div>
+      <div class="grupo" data-date="2026-09-28">
+        <div class="dia"><p class="eyebrow">Domingo</p><span class="st num">– R$&nbsp;84,80</span></div>
+        <div class="tx" role="button" tabindex="0" data-id="t7" data-date="2026-09-28" data-desc="Uber" data-cat="Transporte" data-valor="-24.9" aria-label="Editar Uber, – R$ 24,90"><span class="d num">28 set</span><span class="ds">Uber</span><span class="ct">Transporte</span><span class="v num">– R$&nbsp;24,90</span></div>
+        <div class="tx" role="button" tabindex="0" data-id="t8" data-date="2026-09-28" data-desc="Livraria" data-cat="Lazer" data-valor="-59.9" aria-label="Editar Livraria, – R$ 59,90"><span class="d num">28 set</span><span class="ds">Livraria</span><span class="ct">Lazer</span><span class="v num">– R$&nbsp;59,90</span></div>
+      </div>
+      <p class="sem-resultado" id="sem-resultado" hidden>Nada com esse filtro.</p>
+    </section>
+
+    <!-- 5. rodapé da lista -->
+    <div class="lista-foot rv">
+      <span><span class="num" id="f-count">8 de 34</span> · <a href="financas-a.html#transacoes">Ver todas →</a></span>
+      <span class="tot">Entradas <b class="num" id="f-ent">+ R$&nbsp;5.000,00</b> · Saídas <b class="num" id="f-sai">– R$&nbsp;760,10</b> · Saldo do período <b class="num ele" id="f-saldo">+ R$&nbsp;4.239,90</b></span>
+    </div>
+
+    <!-- Sy: só pela camada -->
+    <div class="pergunte rv">
+      <button class="falar" type="button" data-coach-open data-coach-seed="Sobre estas transações: ">Perguntar sobre estas transações →</button>
+    </div>
+  </div>
+
+  <!-- rodapé -->
+  <footer class="colofao">
+    <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+    <div class="r">
+      <span>34 transações <b class="num">em outubro</b></span>
+      <span>Última sincronização às <b class="num">14:05</b></span>
+    </div>
+  </footer>
+</main>
+
+<!-- camada de Sy (precisa vir antes do .painel no DOM: app.js pega o primeiro .camada) -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: suas transações</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li as suas 34 transações de outubro. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Onde foi o maior gasto da semana?</button>
+        <button class="chip" type="button">O que ainda vai sair este mês?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+      </div>
+      <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+      <div class="action" role="status">
+        <div class="al">Ação executada</div>
+        <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+        <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+      </div>
+      <div class="typing" aria-label="Sy digitando"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte sobre estas transações">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<!-- painel lateral de edição (próprio; não é a camada de Sy) -->
+<aside class="painel" id="painel" role="dialog" aria-modal="true" aria-labelledby="p-titulo">
+  <header class="phead">
+    <div>
+      <p class="eyebrow"><b>01</b> · Transação</p>
+      <h2 id="p-titulo">Editar transação</h2>
+    </div>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <form id="pform" class="pbody" autocomplete="off">
+    <div class="f">
+      <label class="eyebrow" for="p-desc">Descrição</label>
+      <input class="ck-note" id="p-desc" name="desc" type="text" required>
+    </div>
+    <div class="f">
+      <span class="eyebrow">Tipo</span>
+      <div class="tipo" role="group" aria-label="Tipo">
+        <button class="chip" type="button" data-tipo="out" aria-pressed="true">Saída</button>
+        <button class="chip" type="button" data-tipo="in" aria-pressed="false">Entrada</button>
+      </div>
+    </div>
+    <div class="f2">
+      <div class="f">
+        <label class="eyebrow" for="p-valor">Valor</label>
+        <input class="ck-note num" id="p-valor" name="valor" type="text" inputmode="decimal" required>
+      </div>
+      <div class="f">
+        <label class="eyebrow" for="p-data">Data</label>
+        <input class="ck-note num" id="p-data" name="data" type="date">
+      </div>
+    </div>
+    <div class="f">
+      <label class="eyebrow" for="p-cat">Categoria</label>
+      <div class="sel">
+        <select id="p-cat" name="cat">
+          <option>Mercado</option><option>Moradia</option><option>Lazer</option><option>Transporte</option>
+          <option>Saúde</option><option>Investimento</option><option>Renda</option><option>Renda extra</option>
+        </select>
+      </div>
+    </div>
+  </form>
+  <div class="pfoot">
+    <div class="confirma" id="p-confirma" hidden role="status">
+      <span>Excluir <b id="p-conf-nome">esta transação</b>? Não dá para desfazer.</span>
+      <button class="sim" type="button" id="p-conf-sim">Excluir</button>
+      <button type="button" id="p-conf-nao">Cancelar</button>
+    </div>
+    <div class="acts">
+      <button class="btn-sm ghost perigo" type="button" id="p-excluir">Excluir</button>
+      <button class="btn-sm roxo" type="submit" form="pform">Salvar</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Vazio · captura em destaque</h4>
+        <p class="vazio">Nenhuma transação em outubro ainda<small>Registre a primeira abaixo. Sy passa a ler o mês a partir dela.</small></p>
+        <form class="captura">
+          <input class="ck-note" type="text" placeholder="Descrição" aria-label="Descrição">
+          <input class="ck-note num" type="text" inputmode="decimal" placeholder="0,00" aria-label="Valor em reais">
+          <div class="sel"><select aria-label="Categoria"><option>Mercado</option></select></div>
+          <input class="ck-note num" type="date" value="2026-10-03" aria-label="Data">
+          <button class="btn-sm roxo" type="button">Registrar</button>
+        </form>
+      </div>
+      <div class="pe">
+        <h4>Carregando · 3 linhas esqueleto</h4>
+        <div class="trans" aria-hidden="true">
+          <div class="tx skel"><span class="d"></span><span class="ds"></span><span class="ct"></span><span class="v"></span></div>
+          <div class="tx skel"><span class="d"></span><span class="ds"></span><span class="ct"></span><span class="v"></span></div>
+          <div class="tx skel"><span class="d"></span><span class="ds"></span><span class="ct"></span><span class="v"></span></div>
+        </div>
+      </div>
+      <div class="pe">
+        <h4>Erro · linha coral</h4>
+        <div class="erro" role="alert"><span>Não consegui carregar.</span><button type="button">Tentar de novo</button></div>
+      </div>
+    </div>
+
+    <div class="fontes-sy">
+      <p class="eyebrow"><b>01</b> · Finanças</p>
+      <h3>O que Sy lê aqui</h3>
+      <p>Pacote de contexto que esta tela entrega a Sy (o que <code>buildModuleContext</code> expõe para Finanças). É daqui que saem as fontes citadas sob cada resposta na camada.</p>
+      <ul>
+        <li><code>transactions <small>(outubro)</small></code><span>O que entrou e saiu, por dia e por categoria. É a base do saldo livre, dos subtotais do dia e de qualquer "onde foi o maior gasto".</span></li>
+        <li><code>budgets</code><span>O teto de cada categoria. Diz a Sy quanto ainda cabe em lazer, mercado ou moradia antes de comentar um gasto novo.</span></li>
+        <li><code>recurring_transactions</code><span>O que ainda vai sair (aluguel em 3 dias, internet em 5). Permite projetar o fechamento do mês, não só o saldo de hoje.</span></li>
+        <li><code>user_accounts</code><span>De onde o dinheiro sai e onde fica. Separa aporte de gasto e dá o saldo por conta quando a pergunta é "dá para antecipar?".</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+<script>
+(function () {
+  var M = window.SL_MOCK, NB = ' ';
+  var MES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  var DIAS = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+  var ENTRADA = ['Renda', 'Renda extra'];
+  var lista = document.getElementById('lista'), base = 34, seq = 100;
+  var filtro = { tipo: 'todas', cat: 'todas', q: '' };
+
+  function brl(n) { return M.fmtBRL(Math.abs(n)).replace('R$ ', 'R$' + NB); }
+  function assinado(n) { return (n < 0 ? '– ' : '+ ') + brl(n); }
+  function dataCurta(iso) { var p = iso.split('-'); return parseInt(p[2], 10) + ' ' + MES[parseInt(p[1], 10) - 1]; }
+  // calendário do mock: 3 de outubro de 2026 é sexta (deslocamento de 1 dia sobre o calendário real)
+  function diaSemana(iso) { var d = new Date(iso + 'T12:00:00'); var n = DIAS[(d.getDay() + 6) % 7]; return n.charAt(0).toUpperCase() + n.slice(1); }
+  function parseValor(s) { s = String(s).replace(/[R$\s ]/g, '').replace(/\./g, '').replace(',', '.'); var n = parseFloat(s); return isNaN(n) ? 0 : Math.abs(n); }
+  function valorCampo(n) { return M.fmtBRL(Math.abs(n)).replace('R$ ', ''); }
+
+  function pintar(el) {
+    var v = parseFloat(el.dataset.valor);
+    el.classList.toggle('in', v > 0);
+    el.querySelector('.d').textContent = dataCurta(el.dataset.date);
+    el.querySelector('.ds').textContent = el.dataset.desc;
+    el.querySelector('.ct').textContent = el.dataset.cat;
+    el.querySelector('.v').textContent = assinado(v);
+    el.setAttribute('aria-label', 'Editar ' + el.dataset.desc + ', ' + assinado(v).replace(NB, ' '));
+  }
+  function linha(t) {
+    var el = document.createElement('div');
+    el.className = 'tx'; el.setAttribute('role', 'button'); el.tabIndex = 0;
+    el.dataset.id = t.id; el.dataset.date = t.date; el.dataset.desc = t.desc; el.dataset.cat = t.cat; el.dataset.valor = t.valor;
+    el.innerHTML = '<span class="d num"></span><span class="ds"></span><span class="ct"></span><span class="v num"></span>';
+    pintar(el); return el;
+  }
+  function grupo(iso) {
+    var g = lista.querySelector('.grupo[data-date="' + iso + '"]');
+    if (g) return g;
+    g = document.createElement('div'); g.className = 'grupo'; g.dataset.date = iso;
+    g.innerHTML = '<div class="dia"><p class="eyebrow">' + diaSemana(iso) + '</p><span class="st num"></span></div>';
+    var ref = null;
+    lista.querySelectorAll('.grupo').forEach(function (x) { if (!ref && x.dataset.date < iso) ref = x; });
+    lista.insertBefore(g, ref || document.getElementById('sem-resultado'));
+    return g;
+  }
+  function colocar(el) { var g = grupo(el.dataset.date); g.insertBefore(el, g.querySelector('.dia').nextSibling); }
+  function passa(r) {
+    var v = parseFloat(r.dataset.valor);
+    if (filtro.tipo === 'in' && v <= 0) return false;
+    if (filtro.tipo === 'out' && v > 0) return false;
+    if (filtro.cat !== 'todas' && r.dataset.cat !== filtro.cat) return false;
+    if (filtro.q && r.dataset.desc.toLowerCase().indexOf(filtro.q) < 0) return false;
+    return true;
+  }
+  function recalc() {
+    var n = 0, ent = 0, sai = 0;
+    lista.querySelectorAll('.grupo').forEach(function (g) {
+      var rows = g.querySelectorAll('.tx');
+      if (!rows.length) { g.remove(); return; }
+      var s = 0, vis = 0;
+      rows.forEach(function (r) {
+        var v = parseFloat(r.dataset.valor), ok = passa(r);
+        r.hidden = !ok;
+        if (ok) { s += v; vis++; n++; if (v > 0) ent += v; else sai += v; }
+      });
+      g.hidden = !vis;
+      var st = g.querySelector('.st'); st.textContent = assinado(s); st.classList.toggle('in', s > 0);
+    });
+    document.getElementById('sem-resultado').hidden = n > 0;
+    document.getElementById('f-count').textContent = n + ' de ' + base;
+    document.getElementById('f-ent').textContent = '+ ' + brl(ent);
+    document.getElementById('f-sai').textContent = '– ' + brl(sai);
+    var saldo = ent + sai, fs = document.getElementById('f-saldo');
+    fs.textContent = assinado(saldo); fs.classList.toggle('ele', saldo > 0);
+    document.getElementById('h-count').textContent = base;
+  }
+  function destacar(el) {
+    el.classList.add('nova');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.remove('nova'); }); });
+  }
+
+  // filtros
+  document.querySelectorAll('.filtros .chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      document.querySelectorAll('.filtros .chip').forEach(function (q) { q.classList.remove('on'); q.setAttribute('aria-pressed', 'false'); });
+      c.classList.add('on'); c.setAttribute('aria-pressed', 'true'); filtro.tipo = c.dataset.tipo; recalc();
+    });
+  });
+  document.getElementById('f-cat').addEventListener('change', function () { filtro.cat = this.value; recalc(); });
+  document.getElementById('f-q').addEventListener('input', function () { filtro.q = this.value.trim().toLowerCase(); recalc(); });
+
+  // captura inline
+  var cap = document.getElementById('captura'), out = document.getElementById('cap-out');
+  cap.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var desc = cap.desc.value.trim(), val = parseValor(cap.valor.value), cat = cap.cat.value, date = cap.data.value || '2026-10-03';
+    if (!desc || !val) { (desc ? cap.valor : cap.desc).focus(); return; }
+    var el = linha({ id: 'n' + (seq++), date: date, desc: desc, cat: cat, valor: (ENTRADA.indexOf(cat) >= 0 ? 1 : -1) * val });
+    colocar(el); base++; recalc(); destacar(el);
+    cap.desc.value = ''; cap.valor.value = ''; cap.desc.focus();
+    out.textContent = 'Registrado.'; clearTimeout(out._t); out._t = setTimeout(function () { out.textContent = ''; }, 2200);
+  });
+  document.querySelectorAll('[data-foco-captura]').forEach(function (b) {
+    b.addEventListener('click', function () { cap.desc.focus(); cap.scrollIntoView({ block: 'center', behavior: 'smooth' }); });
+  });
+
+  // painel de edição
+  var painel = document.getElementById('painel'), scrim = document.querySelector('.scrim'), camada = document.querySelector('.camada');
+  var form = document.getElementById('pform'), confirma = document.getElementById('p-confirma'), atual = null, tipo = 'out';
+  function setTipo(t) {
+    tipo = t;
+    painel.querySelectorAll('.tipo .chip').forEach(function (c) { var on = c.dataset.tipo === t; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); });
+  }
+  function abrir(el) {
+    atual = el; var v = parseFloat(el.dataset.valor);
+    form.desc.value = el.dataset.desc; form.valor.value = valorCampo(v); form.cat.value = el.dataset.cat; form.data.value = el.dataset.date;
+    setTipo(v > 0 ? 'in' : 'out'); confirma.hidden = true;
+    document.getElementById('p-conf-nome').textContent = el.dataset.desc;
+    painel.classList.add('open'); scrim.classList.add('open');
+    form.desc.focus({ preventScroll: true });
+  }
+  function fechar() {
+    if (!painel.classList.contains('open')) return;
+    painel.classList.remove('open');
+    if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open');
+    if (atual) atual.focus({ preventScroll: true });
+    atual = null;
+  }
+  lista.addEventListener('click', function (e) { var r = e.target.closest('.tx'); if (r) abrir(r); });
+  lista.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('tx')) { e.preventDefault(); abrir(e.target); }
+  });
+  painel.querySelector('.x').addEventListener('click', fechar);
+  scrim.addEventListener('click', fechar);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
+  painel.querySelectorAll('.tipo .chip').forEach(function (c) { c.addEventListener('click', function () { setTipo(c.dataset.tipo); }); });
+  form.cat.addEventListener('change', function () { if (ENTRADA.indexOf(this.value) >= 0) setTipo('in'); });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); if (!atual) return;
+    var val = parseValor(form.valor.value); if (!form.desc.value.trim() || !val) { form.desc.focus(); return; }
+    atual.dataset.desc = form.desc.value.trim(); atual.dataset.cat = form.cat.value;
+    atual.dataset.valor = (tipo === 'in' ? 1 : -1) * val;
+    var novaData = form.data.value || atual.dataset.date;
+    if (novaData !== atual.dataset.date) { atual.dataset.date = novaData; colocar(atual); }
+    pintar(atual); recalc(); destacar(atual); fechar();
+  });
+  document.getElementById('p-excluir').addEventListener('click', function () { confirma.hidden = false; document.getElementById('p-conf-sim').focus(); });
+  document.getElementById('p-conf-nao').addEventListener('click', function () { confirma.hidden = true; });
+  document.getElementById('p-conf-sim').addEventListener('click', function () {
+    if (!atual) return;
+    var r = atual; atual = null; r.remove(); base--; recalc();
+    painel.classList.remove('open'); if (!camada || !camada.classList.contains('open')) scrim.classList.remove('open');
+  });
+})();
+</script>
+</body>
+</html>
