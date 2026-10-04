@@ -1,4 +1,5 @@
 // Dados mockados do DS v5 (Onda 0+). Fonte única de todos os protótipos v5.
+// Ancorado em SEXTA, 3 DE OUTUBRO DE 2026 (Fase 0 do rollout sem metáfora, 2026-10-03). Antes era julho.
 // Evolução de prototypes/poc-v5/shared/mock-data.js com a numeração CANÔNICA (§5.2 do DS):
 // as 8 áreas são pontos cardeais da bússola; Panorama/Conquistas/Configurações não são áreas.
 window.SL_MOCK = {
@@ -11,7 +12,7 @@ window.SL_MOCK = {
     { n: '03', nome: 'Tempo', foco: 'proteger o bloco de foco de amanhã' },
     { n: '04', nome: 'Corpo', foco: 'hoje é dia de treino, 3 de 7 na semana' },
     { n: '05', nome: 'Mente', foco: '20 minutos de leitura antes de dormir' },
-    { n: '06', nome: 'Patrimônio', foco: 'reinvestir os proventos de julho' },
+    { n: '06', nome: 'Patrimônio', foco: 'reinvestir os proventos de setembro' },
     { n: '07', nome: 'Carreira', foco: 'preparar a 1:1 de terça' },
     { n: '08', nome: 'Experiências', foco: 'fechar o roteiro de Positano' },
   ],
@@ -24,7 +25,7 @@ window.SL_MOCK = {
   diario: {
     edicao: 208,
     saudacao: 'Boa tarde, Thiago.',
-    sub: 'Julho está 83% executado e a poupança segue acima da meta. Uma única atenção hoje: o lazer chegou perto do teto.',
+    sub: 'Outubro está 83% executado e a poupança segue acima da meta. Uma única atenção hoje: o lazer chegou perto do teto.',
     checkin: {
       done: false,
       opcoes: ['Péssimo', 'Ruim', 'Neutro', 'Bem', 'Ótimo'],
@@ -57,13 +58,13 @@ window.SL_MOCK = {
 
   // A edição da semana (review semanal): dados da semana fechada
   semana: {
-    numero: 31,
-    inicio: '27 de julho',
-    fim: '2 de agosto',
+    numero: 40,
+    inicio: '29 de setembro',
+    fim: '5 de outubro',
     scoreFim: 78,
     scoreInicio: 75,
     fechada: false,
-    fechadaEm: 'domingo, 2 de agosto, às 21:30',
+    fechadaEm: 'domingo, 5 de outubro, às 21:30',
     nums: { entradas: 1850, saidas: 940, eventosFeitos: 11, eventosTotal: 14, focoHoras: '6h30' },
     // variação por área ativa na semana (de → para; bate com dims)
     mudou: [
@@ -74,11 +75,11 @@ window.SL_MOCK = {
     ],
     carta: {
       headline: 'A semana virou no meio: o que travou na segunda destravou na quinta.',
-      p1: 'Você fechou a semana com R$ 1.850 de entradas contra R$ 940 de saídas, o melhor saldo semanal de julho. O lazer chegou perto do teto de novo, mas dessa vez você segurou: foram R$ 128 em quatro dias, contra R$ 310 na semana anterior.',
+      p1: 'Você fechou a semana com R$ 1.850 de entradas contra R$ 940 de saídas, o melhor saldo semanal de outubro. O lazer chegou perto do teto de novo, mas dessa vez você segurou: foram R$ 128 em quatro dias, contra R$ 310 na semana anterior.',
       p2: 'Na agenda, 11 dos 14 compromissos saíram e você protegeu 6h30 de foco, uma hora a mais que na semana passada. Corpo foi o único ponto que recuou: dois treinos previstos ficaram para trás e o peso não foi registrado.',
       hand: 'segunda-feira começa com o treino que sobrou!',
       basedOn: '12 transações, 14 compromissos e 3 metas',
-      assinatura: 'Escrito no domingo, 2 de agosto, às 20:10',
+      assinatura: 'Atualizado no domingo, 5 de outubro, às 20:10',
     },
   },
 
@@ -126,14 +127,14 @@ window.SL_MOCK = {
     sparkSaldo: [42, 48, 45, 52, 58, 54, 61, 66, 63, 71, 74, 78],
   },
   transacoes: [
-    { d: '23 jul', desc: 'Mercado Central', cat: 'Mercado', valor: -182.4 },
-    { d: '22 jul', desc: 'Freela landing page', cat: 'Renda extra', valor: 850 },
-    { d: '22 jul', desc: 'Aporte CDB', cat: 'Investimento', valor: -300 },
-    { d: '21 jul', desc: 'Farmácia', cat: 'Saúde', valor: -64.9 },
-    { d: '20 jul', desc: 'Salário', cat: 'Renda', valor: 4150 },
-    { d: '19 jul', desc: 'Restaurante japonês', cat: 'Lazer', valor: -128 },
-    { d: '18 jul', desc: 'Uber', cat: 'Transporte', valor: -24.9 },
-    { d: '18 jul', desc: 'Livraria', cat: 'Lazer', valor: -59.9 },
+    { d: '3 out', desc: 'Mercado Central', cat: 'Mercado', valor: -182.4 },
+    { d: '2 out', desc: 'Freela landing page', cat: 'Renda extra', valor: 850 },
+    { d: '2 out', desc: 'Aporte CDB', cat: 'Investimento', valor: -300 },
+    { d: '1 out', desc: 'Farmácia', cat: 'Saúde', valor: -64.9 },
+    { d: '30 set', desc: 'Salário', cat: 'Renda', valor: 4150 },
+    { d: '29 set', desc: 'Restaurante japonês', cat: 'Lazer', valor: -128 },
+    { d: '28 set', desc: 'Uber', cat: 'Transporte', valor: -24.9 },
+    { d: '28 set', desc: 'Livraria', cat: 'Lazer', valor: -59.9 },
   ],
   gastosPorCategoria: [
     { nome: 'Moradia', valor: 1240 },
@@ -153,7 +154,7 @@ window.SL_MOCK = {
     { hora: '19:00', titulo: 'Aula de espanhol', modulo: 'Mente' },
   ],
   coach: {
-    briefing: 'Julho está 4 pontos acima de junho. As manhãs protegidas seguraram o foco, o aporte antecipado rendeu antes da média e o único ponto solto é o orçamento de lazer, que passou do limite por R$ 8. Um ajuste pequeno hoje evita um corte grande na semana que vem.',
+    briefing: 'Outubro está 4 pontos acima de setembro. As manhãs protegidas seguraram o foco, o aporte antecipado rendeu antes da média e o único ponto solto é o orçamento de lazer, que passou do limite por R$ 8. Um ajuste pequeno hoje evita um corte grande na semana que vem.',
     cross: 'Semanas com foco protegido renderam R$ 380 a mais em aportes.',
     acoes: [
       { titulo: 'Revisar o orçamento de lazer', modulo: 'Finanças', impacto: 'fecha o mês em 39% poupado' },
