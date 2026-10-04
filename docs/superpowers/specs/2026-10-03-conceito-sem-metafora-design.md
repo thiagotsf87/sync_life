@@ -1,17 +1,17 @@
 # SyncLife sem metáfora: Meu dia · Áreas · Sy
 
 **Data:** 2026-10-03
-**Status:** SUPERADA NO ALCANCE em 2026-10-03, mesma sessão. O usuário esclareceu que a mudança não é só de
-palavras: sai **tudo que é estilo revista** (bandas claras no meio da página, selo com moldura dupla,
-caligrafia, ticker, cabeçalho com frase longa, a encenação de Sy em tempos com lâminas e portão). Fica a
-base (tokens, Inter e Space Grotesk, hairlines, tri-acento, Bússola, chrome com áreas numeradas), e ficam
-a landing e as telas de auth como estão. Enxame continua, pequeno e quieto. Os protótipos do app (Diário,
-bancada, Sua semana, Life Score) são REABERTOS e o programa volta à Onda 02. O caminho é prototipar
-versões de Meu dia e de uma tela de área para o usuário escolher vendo, não especificar em texto.
-Continuam válidos desta spec: §2 (menos a linha "Bancada e leis do cockpit continuam"), §3, §4.1
-(critério de seleção, agora como regra de conteúdo e não de apresentação), §5, §6.1, §6.2 (fluxo e
-backend, sem a lâmina como forma obrigatória), §7.1 e §9. Os §4.2, §7.2, §7.3, §8 e §11 estão errados e
-serão reescritos depois da escolha dos protótipos.
+**Status:** VIGENTE desde 2026-10-03; alcance corrigido na mesma sessão (sai o estilo revista: bandas
+claras no meio da página, selo com moldura dupla, caligrafia, ticker, cabeçalho com frase longa, a
+encenação de Sy em tempos com lâminas e portão; fica a base do DS v5, e ficam a landing e as telas de auth
+como estão). Anatomia aprovada em `prototypes/v5/app/meu-dia-d.html` e `app/financas-a.html` (desktop e
+mobile dedicado, 2026-10-03); rollout em `docs/superpowers/plans/2026-10-03-rollout-ds-v5-sem-metafora.md`
+(9 fases, substitui as Ondas 02 a 14). Os §4.2, §7.2, §7.3, §8 e §11 foram reescritos em 2026-10-03 com a
+anatomia da D. Continuam como escritos: §2, §3, §4.1 (critério de seleção, como regra de conteúdo e não de
+apresentação), §5, §6, §7.1 e §9, com "Onda 03" corrigido para "Fase 1". Nota de leitura: a linha "Bancada
+e leis do cockpit continuam" do §2 e as menções a "lâmina" e "recorte" no §6.2 descrevem uma forma
+superada; o fluxo e o backend da intenção continuam válidos, e a forma visual da proposta é o cartão no
+padrão do laboratório (DS §6.4). Enxame continua, pequeno e quieto (40px).
 **Branch alvo:** `poc/ds-v5`
 **Origem:** o usuário aprovou o visual, as cores, as fontes e a estrutura do DS v5, mas rejeitou o tema de
 jornal (edição, folha, manchete, colofão, "a IA é o redator"). Pediu um produto **sem metáfora**, em que a
@@ -48,7 +48,7 @@ O tema mora nas palavras e no §1, não no desenho.
 | **Sem metáfora** | O produto não é jornal, não é bordo, não é estúdio. É o que ele faz: organizar o dia, as áreas e a vida, com Sy ligando as partes. Nenhuma palavra visível pode exigir que a pessoa entenda uma analogia |
 | **Três camadas** | **Meu dia** (o que merece atenção agora) · **Áreas** (onde você organiza e aprofunda) · **Sy** (quem conecta as áreas e age com você). É o enquadramento do Codex, adotado com as correções do §5 |
 | **Nome da tela inicial** | **Meu dia**. Rota `/dashboard` intacta (regra do programa). "Diário" sai de toda copy visível |
-| **Fatia do N3 entra na Onda 03** | Uma única intenção composta, de ponta a ponta, prototipada e implementada: "quero começar um curso de inglês". O restante do N3 continua no sprint próprio pós-ondas |
+| **Fatia do N3 entra na Fase 1** | Uma única intenção composta, de ponta a ponta, prototipada e implementada: "quero começar um curso de inglês". O restante do N3 continua no sprint próprio depois do rollout |
 | **Grafia de Sy, contradição resolvida** | Sem artigo e sem contração: "Sy", "com Sy", "para Sy", "Fale com Sy" ✅ · "o Sy", "ao Sy", "do Sy", "pergunte ao Sy" ❌. O handoff marcava "pergunte ao Sy" como correto; não é mais |
 | **"Assessor" é palavra interna** | Descreve o papel de Sy nesta spec e nas conversas de produto. **Não** vira substantivo de marketing nem rótulo na UI: "Meu Assessor" já ocupa a palavra no mercado brasileiro (250 mil usuários, influenciadores). Na UI Sy é só Sy |
 | **Uma identidade, não personas** | Mantida a decisão de 2026-08-02. O Meu Assessor usa seis personas; o SyncLife não copia isso |
@@ -97,34 +97,56 @@ Regras: só áreas em `profiles.active_modules` disparam gatilhos 2 a 5; priorid
 monetário ou menor prazo. Sem nenhum gatilho, Sy diz isso em uma frase e a edição assenta direto ("Nada
 pede você hoje. Como foi o dia?"). Sy nunca cobra check-in perdido (regra de 2026-07-31, inviolável).
 
-### 4.2 Estrutura (não muda, só renomeia)
+### 4.2 Estrutura (reescrita em 2026-10-03 com a anatomia aprovada de `app/meu-dia-d.html`)
 
-A ordem vertical aprovada da bancada e do Diário fica. O que cada bloco passa a ser, em palavras do produto:
+Substituído em 2026-10-03: a versão anterior deste item mantinha a ordem da bancada (cabeçalho com selo,
+Sy apresentando em tempos, lâminas e recortes, check-in de humor, colofão). Saiu com o estilo revista.
+A anatomia completa, com medidas, está no DS §6.2; aqui fica a estrutura em palavras do produto.
 
-1. **Cabeçalho:** eyebrow com a data por extenso (`Sexta, 3 de outubro`), saudação, selo do **Life Sync
-   Score**. Nenhum número de edição.
-2. **Sy apresentando** (estado 1) ou **Sy assentado** com a conversa (estado 2). O briefing escrito que
-   fica depois da apresentação é o registro do que Sy falou, com hora e fontes (`Atualizado às 7h12 ·
-   fontes: orçamento Lazer, 34 transações, agenda da semana`). E-07 continua valendo: prosa com fontes.
-3. **Lâminas e recortes:** nomes mantidos. São de oficina (impressão), não de jornal.
-4. **Check-in na conversa** (decisão de 2026-08-03).
-5. **Hoje:** linha do dia (eventos e contas).
-6. **Números do mês**, **Suas áreas**, **Atenção e metas**: iguais.
-7. **Rodapé:** última sincronização, streak, badges. A palavra "colofão" sai.
+1. **Cabeçalho curto:** eyebrow com a data (`Sexta · 3 de outubro`), título de até 6 palavras (`Hoje pode
+   caber menos.`), uma frase de sub. À direita, o **Life Sync Score quieto**: o número, `+3 na semana`,
+   `Entender o número →`. Sem selo, sem número de edição, sem saudação longa.
+2. **Sua margem hoje**, ao lado do **ritmo**. A margem é o número principal da tela: o anel do tempo
+   livre (`2h30 sem compromisso`), a frase `Tempo livre também é um plano.`, a linha do dia das 14h às 22h
+   com a janela livre marcada, e três números no rodapé (lazer que resta até quinta, compromissos à frente,
+   meta em foco). O ritmo substitui o check-in de humor: `Como está seu ritmo hoje?` com três respostas
+   (`Mais lento` · `No meu ritmo` · `Com energia`), nota opcional de uma linha e `Registrar`. Opcional,
+   não muda os dados, nunca cobrado; persiste onde o check-in persistia.
+3. **Uma escolha, mais de um efeito** (o laboratório): a decisão real do dia que toca mais de uma área
+   (`E se o jantar de hoje fosse diferente?`), 2 ou 3 cenários, 3 efeitos com número, a explicação de Sy
+   (Enxame 40px ao lado), `De onde vêm esses efeitos?`, `Experimentar no meu dia →` com prévia local e
+   `Desfazer`. Nada é lançado. Só aparece quando há decisão real; é também a forma visual da intenção
+   composta (§6.2).
+4. **Pede você hoje:** lista curta (no máximo 4 linhas) montada pelo critério do §4.1: índice da área em
+   roxo, texto, valor, ação (`Decidir` abre a camada com a pergunta semeada; `Ver orçamento` leva à área).
+5. **O dia continua seu**, ao lado de **Seu acordo com Sy**: a agenda vertical do dia com o espaço livre
+   marcado como `Protegido`; e o acordo de atenção, com Enxame 40px e a pergunta `Quando Sy pode trazer
+   sugestões?` (`Quando eu pedir` · `Quando algo importante mudar`, padrão · `Em um resumo por dia`).
+6. **Suas áreas:** linha rica só para as áreas ativas; as demais em `Outras: …`.
+7. **Números do mês:** quatro números em hairline.
+8. **Sua semana:** uma linha de prosa com `Ver a semana →`.
+9. **Rodapé:** fechamento projetado, streak, badges, última sincronização. A palavra "colofão" não aparece.
 
-**Sua semana** (antes "Edição da semana"): continua sendo um momento de apresentação dentro de Meu dia, nunca
-tela separada (lei 6). Eyebrow `Sua semana · 29 set a 5 out`. O fechamento continua persistindo em
-`weekly_reviews` e contando para o streak.
+Sy na tela: dois Enxames de 40px (laboratório e acordo) e a camada pelo gatilho `Fale com Sy`. Nenhuma
+apresentação, nenhum texto longo de Sy no topo. E-07 continua valendo: onde Sy escreve, vem hora e fontes
+(`Atualizado às 7h12 · fontes: …`).
 
-**Life Score** (`/dashboard/score`): sem mudança de conceito; "A anatomia do número" fica. Protótipo
-continua esperando aceite.
+**Sua semana** (`/dashboard/review`): vira tela, template T3 (rollout, decisão 1), não apresentação. Em
+Meu dia aparece como uma linha. O fechamento continua persistindo em `weekly_reviews` e contando para o
+streak. Eyebrow `Sua semana · 29 set a 5 out`.
+
+**Life Score** (`/dashboard/score`): tela T3 com Sy em uma linha ("o que mais pesou"); "A anatomia do
+número" fica como conceito. O protótipo `life-score*.html` é refeito sem selo na Fase 1.
+
+**Mobile (390×844):** mesma ordem, uma dobra por bloco, números 2×2, efeitos empilhados, cenários em
+linhas de toque inteiro, camada como sheet. `app/meu-dia-d.mobile.html`, aprovado em 2026-10-03.
 
 ## 5. Camada 2 · Áreas
 
 As oito áreas continuam sendo a estrutura, com a numeração canônica (LEI §5.2). Conquistas e Configurações
 não são áreas e não entram na tabela. A coluna "o que acrescenta às decisões" é a **definição do pacote de
 contexto** que cada área entrega a Sy: é o que `buildModuleContext` precisa expor por área, e é o que o
-protótipo de cada tela, da Onda 04 em diante, precisa listar numa seção "O que Sy lê aqui".
+protótipo de cada tela, em toda fase do rollout, precisa listar numa seção "O que Sy lê aqui".
 
 | Área | O que acrescenta às decisões | Fontes reais (tabelas) |
 |---|---|---|
@@ -153,13 +175,13 @@ Estado da escada depois desta spec:
 | Nível | Estado | Onde |
 |---|---|---|
 | N1 Narrar | No ar (`/api/ai/diario-brief`, cache diário em `coach_briefs`) | passa a seguir o critério do §4.1 |
-| N2 Responder | Thread stateless; persistência e fontes citadas pendentes | Onda 03 (já previsto) |
-| N3 Executar | Não existe | **Onda 03: uma intenção** (§6.2). Restante: sprint próprio |
+| N2 Responder | Thread stateless; persistência e fontes citadas pendentes | Fase 1 do rollout |
+| N3 Executar | Não existe | **Fase 1: uma intenção** (§6.2). Restante: sprint próprio |
 | N4 Provocar | Parcial (whisper, cross, digest semanal) | pós-ondas |
 
 ### 6.2 A fatia do N3: uma intenção, cinco áreas
 
-**Intenção escolhida:** "Quero começar um curso de inglês." Única da whitelist nesta onda. Qualquer outra
+**Intenção escolhida:** "Quero começar um curso de inglês." Única da whitelist nesta fase. Qualquer outra
 intenção composta recebe resposta N2 normal, sem promessa de ação.
 
 **Por que essa:** toca cinco áreas com dados que já existem no banco (`study_tracks` já tem `cost` e
@@ -216,7 +238,7 @@ o usuário validou.
 Sem mudança de decisão (2026-08-03): histórico contínuo com divisores de data, busca, e os recortes que
 cada conversa deixou. As intenções aparecem como entradas com o estado (`aplicada`, `desfeita`, `em
 aberto`) e o Desfazer continua acessível ali. Protótipo desktop + mobile ainda não existem: entram na
-Onda 03.
+Fase 1 do rollout, como template T2 (lista de conversas + busca).
 
 ## 7. Vocabulário
 
@@ -237,75 +259,87 @@ Onda 03.
 | Recomendações de hoje | **O que fazer hoje** | coluna de recs |
 | Saúde do mês (selo de módulo) | mantém | telas de módulo |
 
-### 7.2 O que fica
+### 7.2 O que fica (corrigido em 2026-10-03)
 
-Lâmina, recorte, ticker ("ao vivo"), caligrafia de Sy, selo, números 01 a 08, "Suas áreas", "Hoje",
-"Números do mês", "Atenção", "Metas", check-in, Life Sync Score, Conquistas.
+**Fica:** o anel da margem, o laboratório ("uma escolha, mais de um efeito"), o ritmo autodeclarado, o
+acordo de atenção, a lista "Pede você hoje", a agenda do dia com o espaço livre protegido, "Números do
+mês", "Suas áreas" (com `Outras: …`), "Sua semana" em uma linha, o Enxame 40px (`repouso` e `ouvindo`),
+a camada de Sy, o chrome com as áreas numeradas 01 a 08, o Life Sync Score como número quieto,
+Conquistas, hairlines, tri-acento, Inter + Space Grotesk, a Bússola.
+
+**Sai** (substituído em 2026-10-03: a versão anterior deste item mantinha lâmina, recorte, ticker,
+caligrafia e selo): lâmina e recorte, ticker ("ao vivo"), caligrafia de Sy (`.hand`, Caveat), selo com
+moldura, banda clara `.lt`, cabeçalho com frase longa, apresentação em tempos, voz, portão, check-in de
+humor em 5 pílulas, "Hoje" como linha scroll-x, "Atenção" como bloco, recomendações numeradas.
 
 ### 7.3 Nomes internos
 
-Classes CSS (`.folha`, `.mast`, `.colofao`, `.selo`), nomes de arquivo (`diario.html`, `diario-bancada*`,
-`bancada.roteiro.js`, `use-diario`, `DiarioV5`, `/api/ai/diario-brief`) e a tabela `coach_briefs`
-**não são renomeados agora**. Renomear é tarefa da Onda 14 (varredura), para não gerar diff estrutural
-numa mudança de copy. A regra: nenhuma string visível ao usuário pode conter as palavras da coluna "Hoje"
-do §7.1.
+Classes CSS (`.folha`, `.mast`, `.colofao`, `.selo`, `.checkin`, `.coach-pill`), nomes de arquivo
+(`diario.html`, `diario-bancada*`, `bancada.roteiro.js`, `use-diario`, `DiarioV5`, `/api/ai/diario-brief`),
+a rota `/coach` e a tabela `coach_briefs` **não são renomeados agora**. Renomear é tarefa da **Fase 8** do
+rollout (varredura), para não gerar diff estrutural no meio das fases: `.folha`→`.sy-texto`,
+`.colofao`→`.rodape`, `diario*`→`meu-dia*`, `use-diario`→`use-meu-dia`, `DiarioV5`→`MeuDia`;
+`coach_briefs` fica (tabela, migração desnecessária). A regra até lá: nenhuma string visível ao usuário
+pode conter as palavras da coluna "Hoje" do §7.1 nem as proibidas pelo rollout (regra 7). Os protótipos
+`diario*.html`, `review-semanal*` e `life-score*` que ainda carregam o estilo revista são histórico: não
+são apagados nem corrigidos, e não são referência. (Antes: "Onda 14"; corrigido em 2026-10-03.)
 
-## 8. Impacto nos documentos e no programa
+## 8. Impacto nos documentos e no programa (reescrito em 2026-10-03)
+
+O programa de 15 ondas foi substituído, a partir da Onda 02, pelo **plano de rollout**
+`docs/superpowers/plans/2026-10-03-rollout-ds-v5-sem-metafora.md` (9 fases, 63 telas em desktop e mobile,
+4 templates, 36 modais convertidos em sheets). Esta spec é documento de apoio dele: conceito (§2),
+critério de gatilhos (§4.1), pacote de contexto por área (§5), intenção composta (§6.2).
 
 ### 8.1 `DESIGN-SYSTEM-v5.md`
 
-- **§1 Conceito:** reescrever. Sai "publicação editorial", "a IA é o redator", "matéria de capa". Entra:
-  três camadas (Meu dia · Áreas · Sy), e os cinco pilares passam a ser: hairline em vez de card; Sy é
-  presença, não widget; um número grande por dobra; ritmo claro/escuro; interação com física.
-- **§4.5:** "Selo de edição" vira "Selo do score".
-- **§6.2:** título "Meu dia (rota /dashboard)"; incluir o critério de seleção do §4.1 desta spec; ordem
-  vertical com os nomes do §7.1.
-- **§6.3:** "Masthead editorial" vira "Cabeçalho"; "manchete-frase" vira "primeira frase de Sy";
-  acrescentar a seção obrigatória "O que Sy lê aqui" (pacote de contexto, §5).
-- **§6.4:** trocar "coach" por "Sy" na prosa; gatilho `Fale com Sy`; acrescentar a lâmina de proposta e
-  o Desfazer como estados do N3.
-- **§7 Inventário:** `.colofao` descrito como rodapé; `.folha` como "banda clara com o texto de Sy".
-- **E-07:** "Briefing assinado (`Escrito às…`)" vira "Texto de Sy com hora e fontes (`Atualizado às…
-  · fontes: …`)".
-- **§11:** marcar "Veredito do Diário/finanças/coach como conjunto" como substituído por esta spec.
+Reescrito na Fase 0 (feito em 2026-10-03): §1 conceito (três camadas, cinco pilares, estudo "Espaço"),
+§2.2 (`.lt` só na landing), §4 dispositivos (app × landing), §6.1 chrome sem ticker, §6.2 Meu dia
+(anatomia da D + critério do §4.1 + mobile), §6.3 T1 + §6.3.1 a §6.3.3 (T2 a T4, a prototipar) + §6.3.4
+"O que Sy lê aqui" (tabela do §5), §6.4 Sy (40px, camada, laboratório, intenção, acordo, `/coach`), §7
+inventário, E-07, E-10, regras de copy, §11. Faltam as medidas reais de T2/T3/T4 (quando os espécimes
+forem aprovados) e o DS v5.1 da Fase 8.
 
-### 8.2 Protótipos aprovados (varredura de copy, sem mexer em layout)
+### 8.2 Protótipos
 
-`app/diario.html`, `app/diario.mobile.html`, `app/diario-bancada.html`, `app/diario-bancada.mobile.html`,
-`app/bancada.roteiro.js`, `app/review-semanal*.html`, `app/life-score*.html`, `shared/app.js` (seed do
-gatilho), `index.html` (hub). Landing e auth: conferir se "edição" aparece; se sim, trocar. O smoke visual
-do hub é obrigatório depois (regra do programa para mudança em `shared/`).
+Os protótipos do estilo revista (`app/diario*.html`, `app/diario-bancada*`, `app/bancada.roteiro.js`,
+`app/review-semanal*.html`, `app/life-score*.html`) **não recebem varredura de copy**: são substituídos,
+tela a tela, pelo ciclo do rollout (Meu dia D e Finanças A já aprovados em desktop e mobile; Sua semana e
+Life Score refeitos na Fase 1). Landing e auth ficam como estão. O hub `index.html` é reorganizado por
+fases na Fase 0. Mudança em `shared/` continua exigindo smoke visual do hub.
 
-### 8.3 Programa de ondas (handoff)
+### 8.3 Programa (rollout)
 
-- **Onda 03 passa a ter:** bancada D+M (aprovada) · copy sem metáfora (re-aprovação só de texto) ·
-  protótipo do fluxo da intenção D+M · protótipo de `/coach` arquivo D+M · implementação em `web/`:
-  N1 com o critério do §4.1, N2 persistido com fontes, bancada, intenção (§6.2), `/coach`.
-- **Onda 02 lote 2:** "Edição da semana" vira "Sua semana" (apresentação). Life Score sem mudança.
-- **Ondas 04 a 14:** cada protótipo de tela ganha a seção "O que Sy lê aqui" (§5). Onda 14 renomeia
-  nomes internos (§7.3).
+- **Fase 0, fundação:** mobiles de D e A (aprovados), mock re-ancorado em outubro, peças extraídas para
+  `shared/`, templates T2/T3/T4 D+M, DS e spec (este documento), hub por fases.
+- **Fase 1, núcleo:** Meu dia, Finanças hub, Life Score, Sua semana, `/coach` como arquivo, intenção
+  composta (§6.2), chrome desktop e mobile. Em `web/`: N1 com o critério do §4.1, N2 persistido com
+  fontes, N3 com uma intenção (`intencoes`, `/api/ai/intencao`, `/api/intencao/aplicar`, `/desfazer`).
+- **Fases 2 a 7:** as oito áreas, Conquistas e Configurações (inclusive `/configuracoes/sy`, o acordo de
+  atenção); cada protótipo com "O que Sy lê aqui" (§5) e "Estados".
+- **Fase 8:** nomes internos (§7.3), remoção do v3, DS v5.1, CLAUDE.md.
 
 ### 8.4 Memória do projeto
 
 Registrar: sem metáfora; três camadas; "Meu dia"; grafia de Sy resolvida; "assessor" é palavra interna;
-fatia N3 na Onda 03.
+Meu dia D e Finanças A aprovadas (D+M); rollout em 9 fases; fatia N3 na Fase 1.
 
 ## 9. Fora de escopo
 
 - Outras intenções compostas (viagem, mudança de emprego, dieta): sprint do N3, com a mesma arquitetura
   planejar/aplicar e a whitelist crescendo uma tabela por vez.
 - Open Finance, WhatsApp como canal, personas: não.
-- Renomear classes, arquivos, hooks, rotas de API e tabelas: Onda 14.
+- Renomear classes, arquivos, hooks, rotas de API e tabelas: Fase 8 do rollout.
 - Tema claro/escuro selecionável, gênero da voz, duração da apresentação, pronúncia de "Sy": adiados pelo
   usuário, continuam no "Aberto agora" do handoff.
 - Conteúdo definitivo das falas de Sy: o §4.1 dá o **critério**; a copy final de cada gatilho é escrita
-  no protótipo da Onda 03 e aprovada lá.
+  no protótipo da Fase 1 e aprovada lá.
 
 ## 10. Riscos
 
 | Risco | Mitigação |
 |---|---|
-| A fatia N3 incha a Onda 03 | Whitelist de **uma** intenção e **cinco** tabelas; padrão planejar/aplicar sem tool calling; qualquer outra intenção cai em N2 |
+| A fatia N3 incha a Fase 1 | Whitelist de **uma** intenção e **cinco** tabelas; padrão planejar/aplicar sem tool calling; qualquer outra intenção cai em N2 |
 | O modelo inventa payload | Zod por tabela no servidor; campo inválido descarta o registro, nunca corrige; tabelas e colunas são decididas no código |
 | Desfazer apaga coisa editada | Só apaga se `updated_at = created_at`; o resto fica e Sy avisa |
 | Critério do §4.1 gera dia vazio ou repetitivo | Prioridade 5 garante uma frase; prioridade 4 só dispara com mudança real desde o último acesso; QA com 5 cenários de mock (dinheiro, agenda, viagem, nada, decisão pendente) |
@@ -313,16 +347,28 @@ fatia N3 na Onda 03.
 | Varredura de copy quebra identidade visual | Zero mudança de CSS; teste de identidade compara screenshot antes e depois, só texto pode diferir |
 | Colisão com a marca Meu Assessor | "assessor" nunca aparece na UI nem no marketing |
 
-## 11. Critérios de aceite
+## 11. Critérios de aceite (coerentes com o plano de rollout, 2026-10-03)
 
-1. `grep` nos **nós de texto** (não em classes nem em nomes de arquivo) dos protótipos listados no §8.2 e das
-   rotas v5 em `web/` não encontra: edição, edições, manchete, folha, colofão, jornal, byline, redação,
-   redator, diário, "ao Sy", "o Sy", "do Sy", assessor.
-2. DS atualizado conforme §8.1, sem contradição com os protótipos aprovados.
-3. Protótipo do fluxo da intenção aprovado em desktop e mobile: proposta com 2 ou 3 caminhos, escolha de
-   registros, lâmina Feito com links reais, Desfazer.
-4. Em `web/`: a intenção cria os registros escolhidos nas tabelas do §6.2, cada link abre o registro, o
-   Desfazer remove tudo que não foi editado, e a intenção em aberto reaparece em Meu dia no dia seguinte.
-5. Cinco cenários de mock do §4.1 produzem apresentações diferentes e nenhuma delas cobra check-in.
-6. Teste de identidade da copy: screenshots antes e depois diferem só em texto.
-7. Handoff e memória atualizados; hub sem regressão visual.
+1. Nenhum protótipo aprovado e nenhuma rota v5 em `web/` contém, em **nós de texto** (não em classes nem
+   em nomes de arquivo), as palavras: edição, edições, manchete, folha, colofão, jornal, byline, redação,
+   redator, diário, coach, assessor, "o Sy", "ao Sy", "do Sy". Nenhum `.ticker`, `.lt`, `.selo`, `.hand`,
+   `.hl` no DOM das telas do app; Caveat não carregada.
+2. DS reescrito conforme §8.1, sem contradição com `app/meu-dia-d*.html` e `app/financas-a*.html`;
+   checklist "O que Sy lê aqui" no DS §6.3.
+3. Fase 0 fechada: mobiles de D e A aprovados (feito em 2026-10-03), templates T2/T3/T4 aprovados em
+   desktop e mobile, peças em `shared/` com diff de screenshot zero, hub por fases.
+4. Toda tela prototipada a partir da Fase 1 traz as seções "O que Sy lê aqui" e "Estados"; sem elas não
+   entra em aprovação.
+5. Protótipo da intenção composta aprovado em desktop e mobile: cartão de proposta no padrão do
+   laboratório com 2 ou 3 caminhos, registros marcáveis, estado `Feito` com links reais e um único
+   Desfazer.
+6. Em `web/` (Fase 1): a intenção cria os registros escolhidos nas tabelas do §6.2, cada link abre o
+   registro, o Desfazer remove tudo que não foi editado, e a intenção em aberto reaparece em Meu dia como
+   gatilho de prioridade 1 no dia seguinte.
+7. Cinco cenários de mock do §4.1 (dinheiro, agenda, viagem, nada, decisão pendente) produzem listas
+   "Pede você hoje" diferentes e nenhuma delas cobra check-in ou ritmo.
+8. Laboratório só nas 9 telas marcadas no rollout §4; cada um com "De onde vêm esses efeitos?" e fontes
+   reais.
+9. Teste de identidade por tela, desktop e mobile, em `next start`: screenshot do protótipo contra a
+   rota, delta aceitável só em texto dinâmico.
+10. Handoff, hub e memória atualizados a cada sessão.
