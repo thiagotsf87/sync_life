@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dk">
+<html lang="pt-BR" class="dk mob">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
@@ -16,103 +16,7 @@
 <link rel="stylesheet" href="../shared/app.css">
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
 <style>
-  body{font-size:14px}
   .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
-
-  /* ─── chrome compactado ─── */
-  .bar{height:56px;padding:0 18px}
-  .brand{font-size:16px}
-  .bar .acts{gap:8px}
-  .bar .btn-sm.ghost{padding:11px 13px}
-  .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:1}
-  .modbar a{padding:14px 13px}
-  input,select,button{scroll-margin-top:76px}
-
-  /* ─── Sy, 40px, quieto ─── */
-  .sy40{width:40px;height:40px;flex:none;border-radius:11px;overflow:hidden;background:#0f0d0d;display:inline-block}
-  .sy40 canvas{display:block;width:100%;height:100%}
-
-  /* ─── título + a unidade Sy ─── */
-  .titulo{padding:28px 0 24px;border-bottom:1px solid var(--line)}
-  .titulo h1{font:500 28px/1.1 var(--gro);letter-spacing:-.035em;margin-top:10px}
-  .sy{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start;margin-top:20px}
-  .sy .fala{font:500 16px/1.5 var(--gro);letter-spacing:-.015em;color:var(--t1)}
-  .sy .fala b{font-weight:600}
-  .sy .fala b.w{color:var(--coral)}
-  .fontes{font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:8px}
-  .falar{display:inline-flex;align-items:center;background:none;border:none;cursor:pointer;padding:0;margin-top:6px;min-height:40px;font:500 13px var(--int);color:var(--t2)}
-
-  /* ─── números do mês 2×2 ─── */
-  .nums{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
-  .nums > div{padding:20px 14px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .nums > div:nth-child(odd){padding-left:0}
-  .nums > div:nth-child(even){border-right:none;padding-right:0}
-  .nums > div:nth-child(n+3){border-bottom:none}
-  .nums .v{font:700 24px/1 var(--gro);letter-spacing:-.04em;margin-top:10px}
-  .nums .d{font:500 11.5px var(--int);margin-top:7px;color:var(--t3)}
-
-  /* ─── seções empilhadas ─── */
-  .sec{padding:26px 0 24px;border-bottom:1px solid var(--line)}
-  .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-  .sec-head a{font:500 12px var(--int);color:var(--t3);min-height:40px;display:inline-flex;align-items:center}
-
-  .orc{display:grid;grid-template-columns:1fr auto;gap:6px 12px;padding:13px 0 14px;border-bottom:1px solid var(--line)}
-  .orc .nm{font:500 14px var(--int);color:var(--t1)}
-  .orc .v{font:700 12.5px var(--gro);color:var(--t2);text-align:right;white-space:nowrap}
-  .orc .v b{color:var(--t1)}
-  .orc .track{grid-column:1/-1;height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
-  .orc .track i{display:block;height:100%;width:var(--w);background:var(--t2);border-radius:2px}
-  .orc.warn .track i{background:var(--coral)}
-  .orc.warn .v,.orc.warn .v b{color:var(--coral)}
-  .orc .sub{grid-column:1/-1;font:400 11.5px var(--int);color:var(--t3)}
-  .cats{font:400 12px/1.7 var(--int);color:var(--t3);padding:12px 0 0}
-  .cats .num{color:var(--t2)}
-  .prox{border-left:2px solid var(--roxo);padding-left:14px;margin-top:18px}
-  .prox .eyebrow{color:var(--roxo)}
-  .prox p{font:400 13.5px/1.5 var(--int);color:var(--t2);margin-top:6px}
-  .prox p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
-
-  .fluxo .chart{margin-top:12px}
-  .fluxo svg{display:block;width:100%;height:140px}
-  .fluxo .leg{display:flex;justify-content:space-between;font:700 9.5px var(--gro);letter-spacing:.12em;color:var(--t3);margin-top:8px;text-transform:uppercase}
-  .fluxo .prosa{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:12px}
-  .fluxo .prosa b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
-
-  .tx{display:grid;grid-template-columns:44px 1fr auto;gap:4px 12px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
-  .tx:last-of-type{border-bottom:none}
-  .tx .d{font:700 10.5px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
-  .tx .ds{font:500 14px var(--int);color:var(--t1)}
-  .tx .ct{grid-column:2;font:400 11.5px var(--int);color:var(--t3)}
-  .tx .v{font:700 13px var(--gro);color:var(--t2);text-align:right;white-space:nowrap;grid-row:1 / span 2;grid-column:3;align-self:center}
-  .tx.in .v{color:var(--ele)}
-
-  .metas .mrow{padding:12px 0;border-bottom:1px solid var(--line)}
-  .metas .mrow:last-of-type{border-bottom:none}
-  .metas .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-  .metas .nm{font:500 13.5px var(--int)}
-  .metas .pct{font:700 13.5px var(--gro)}
-  .metas .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-bottom:6px}
-  .metas .track i{display:block;height:100%;background:var(--t2);border-radius:2px}
-  .metas .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
-  .rec{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
-  .rec .nm{font:500 13.5px var(--int);color:var(--t1)}
-  .rec .when{font:400 11.5px var(--int);color:var(--t3);margin-top:3px;display:flex;align-items:baseline;gap:8px}
-  .rec .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:3px 7px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
-  .rec .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
-  .rec .v{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap}
-  .agenda{font:400 12px/1.6 var(--int);color:var(--t3);padding:12px 0 0}
-  .agenda .num{color:var(--t2)}
-  .sec.last{border-bottom:none;padding-bottom:40px}
-
-  /* ─── rodapé em coluna ─── */
-  .colofao{flex-direction:column;align-items:flex-start;gap:8px;padding:20px 20px 30px}
-  .colofao .r{flex-direction:column;gap:8px}
-
-  /* ─── camada: sheet ─── */
-  .camada.sheet{height:clamp(420px,86dvh,760px)}
-  .camada .csug .chip{padding:11px 16px}
-  .camada .chead .x{width:40px;height:40px}
-  .camada .cfull{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
@@ -320,21 +224,6 @@
 <script src="../shared/mock-data.js"></script>
 <script src="../shared/app.js"></script>
 <script>SLApp.boot()</script>
-<script type="module">
-import { REDUZ } from '../personagem/vida.js'
-import { criarEnxame } from '../personagem/enxame.js'
-const pecas = [...document.querySelectorAll('.sy40 canvas')].map((cv, i) =>
-  criarEnxame(cv, { n: 190, tam: .7, compacto: .78, dpr: 3, semente: 4.6 + i }))
-let estado = 'repouso'
-const cask = document.querySelector('.camada .cask')
-if (cask) {
-  cask.addEventListener('focusin', () => { estado = 'ouvindo' })
-  cask.addEventListener('focusout', () => { estado = 'repouso' })
-}
-let ultimo = performance.now()
-function laco (agora) { const dt = Math.min((agora - ultimo) / 1000, .05); ultimo = agora
-  for (const p of pecas) p.quadro(dt, estado); requestAnimationFrame(laco) }
-if (REDUZ) { for (let i = 0; i < 3; i++) for (const p of pecas) p.quadro(1 / 60, 'repouso') } else requestAnimationFrame(laco)
-</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
 </body>
 </html>

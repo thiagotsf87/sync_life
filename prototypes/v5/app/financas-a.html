@@ -14,100 +14,6 @@
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
 <style>
   .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
-
-  /* ─── Sy, 40px, quieto ─── */
-  .sy40{width:40px;height:40px;flex:none;border-radius:11px;overflow:hidden;background:#0f0d0d;display:inline-block}
-  .sy40 canvas{display:block;width:100%;height:100%}
-
-  /* ─── título + a unidade Sy ─── */
-  .titulo{padding:44px 0 36px;border-bottom:1px solid var(--line)}
-  .titulo h1{font:500 clamp(28px,2.6vw,34px)/1.1 var(--gro);letter-spacing:-.035em;margin-top:12px}
-  .sy{display:grid;grid-template-columns:40px 1fr;gap:18px;align-items:start;margin-top:26px;max-width:720px}
-  .sy .fala{font:500 17px/1.5 var(--gro);letter-spacing:-.015em;color:var(--t1)}
-  .sy .fala b{font-weight:600}
-  .sy .fala b.w{color:var(--coral)}
-  .fontes{font:400 11.5px var(--int);color:var(--t3);margin-top:10px}
-  .falar{display:inline-block;background:none;border:none;cursor:pointer;padding:0;margin-top:12px;font:500 12.5px var(--int);color:var(--t2);transition:color .3s var(--ease)}
-  .falar:hover{color:var(--t1)}
-
-  /* ─── números do mês ─── */
-  .nums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
-  .nums > div{padding:30px clamp(16px,2.4vw,34px);border-right:1px solid var(--line)}
-  .nums > div:first-child{padding-left:0}
-  .nums > div:last-child{border-right:none}
-  .nums .v{font:700 clamp(26px,3vw,40px)/1 var(--gro);letter-spacing:-.04em;margin-top:12px}
-  .nums .d{font:500 12px var(--int);margin-top:8px;color:var(--t3)}
-
-  /* ─── duas colunas: orçamentos | fluxo ─── */
-  .duo{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(36px,5vw,80px);padding:40px 0 44px;border-bottom:1px solid var(--line)}
-  .duo > div > .eyebrow{margin-bottom:4px}
-  .orc{display:grid;grid-template-columns:1fr auto;gap:6px 16px;padding:14px 0 15px;border-bottom:1px solid var(--line);
-    transition:padding-left .35s var(--ease)}
-  .orc:hover{padding-left:6px}
-  .orc .nm{font:500 14px var(--int);color:var(--t1)}
-  .orc .v{font:700 13px var(--gro);color:var(--t2);text-align:right;white-space:nowrap}
-  .orc .v b{color:var(--t1)}
-  .orc .track{grid-column:1/-1;height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
-  .orc .track i{display:block;height:100%;width:var(--w);background:var(--t2);border-radius:2px}
-  .orc.warn .track i{background:var(--coral)}
-  .orc.warn .v,.orc.warn .v b{color:var(--coral)}
-  .orc .sub{grid-column:1/-1;font:400 11.5px var(--int);color:var(--t3)}
-  .cats{font:400 12px var(--int);color:var(--t3);padding:14px 0 0}
-  .cats .num{color:var(--t2)}
-  .prox{display:flex;align-items:baseline;gap:18px;border-left:2px solid var(--roxo);padding-left:16px;margin-top:24px}
-  .prox .eyebrow{color:var(--roxo);flex-shrink:0;position:relative;top:-1px}
-  .prox p{font:400 14px/1.5 var(--int);color:var(--t2)}
-  .prox p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
-
-  .fluxo .chart{margin-top:16px;position:relative}
-  .fluxo svg{display:block;width:100%;height:170px}
-  .fluxo .leg{display:flex;justify-content:space-between;font:700 10px var(--gro);letter-spacing:.14em;color:var(--t3);margin-top:8px;text-transform:uppercase}
-  .fluxo .prosa{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:14px}
-  .fluxo .prosa b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
-
-  /* ─── transações ─── */
-  .trans{padding:40px 0 44px;border-bottom:1px solid var(--line)}
-  .trans-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-  .trans-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
-  .trans-head a:hover{color:var(--t1)}
-  .tx{display:grid;grid-template-columns:52px 1fr 130px 110px;gap:16px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);
-    transition:padding-left .35s var(--ease)}
-  .tx:last-of-type{border-bottom:none}
-  .tx:hover{padding-left:6px}
-  .tx .d{font:700 11px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
-  .tx .ds{font:500 14px var(--int);color:var(--t1)}
-  .tx .ct{font:400 12px var(--int);color:var(--t3)}
-  .tx .v{font:700 13.5px var(--gro);color:var(--t2);text-align:right;white-space:nowrap}
-  .tx.in .v{color:var(--ele)}
-
-  /* ─── metas | recorrentes ─── */
-  .duo2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,5vw,80px);padding:40px 0 60px}
-  .duo2 > div > .eyebrow{margin-bottom:6px}
-  .metas .mrow{padding:13px 0;border-bottom:1px solid var(--line)}
-  .metas .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-  .metas .nm{font:500 13.5px var(--int)}
-  .metas .pct{font:700 13.5px var(--gro)}
-  .metas .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-bottom:6px}
-  .metas .track i{display:block;height:100%;background:var(--t2);border-radius:2px}
-  .metas .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
-  .rec{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line)}
-  .rec .nm{font:500 13.5px var(--int);color:var(--t1)}
-  .rec .when{font:400 11.5px var(--int);color:var(--t3);margin-top:3px;display:flex;align-items:baseline;gap:8px}
-  .rec .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
-  .rec .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
-  .rec .v{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap}
-  .agenda{font:400 12px var(--int);color:var(--t3);padding:14px 0 0}
-  .agenda .num{color:var(--t2)}
-
-  @media (max-width:960px){
-    .nums{grid-template-columns:1fr 1fr}
-    .nums > div:nth-child(2){border-right:none}
-    .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
-    .nums > div:nth-child(3){padding-left:0}
-    .duo,.duo2{grid-template-columns:1fr}
-    .tx{grid-template-columns:52px 1fr 110px}
-    .tx .ct{display:none}
-  }
 </style>
 </head>
 <body>
@@ -321,22 +227,6 @@
 <script src="../shared/mock-data.js"></script>
 <script src="../shared/app.js"></script>
 <script>SLApp.boot()</script>
-<script type="module">
-import { REDUZ } from '../personagem/vida.js'
-import { criarEnxame } from '../personagem/enxame.js'
-const pecas = [...document.querySelectorAll('.sy40 canvas')].map((cv, i) =>
-  criarEnxame(cv, { n: 190, tam: .7, compacto: .78, dpr: 3, semente: 4.6 + i }))
-// único estado além de repouso: ouvindo, enquanto o input de Sy tem foco
-let estado = 'repouso'
-const cask = document.querySelector('.camada .cask')
-if (cask) {
-  cask.addEventListener('focusin', () => { estado = 'ouvindo' })
-  cask.addEventListener('focusout', () => { estado = 'repouso' })
-}
-let ultimo = performance.now()
-function laco (agora) { const dt = Math.min((agora - ultimo) / 1000, .05); ultimo = agora
-  for (const p of pecas) p.quadro(dt, estado); requestAnimationFrame(laco) }
-if (REDUZ) { for (let i = 0; i < 3; i++) for (const p of pecas) p.quadro(1 / 60, 'repouso') } else requestAnimationFrame(laco)
-</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
 </body>
 </html>

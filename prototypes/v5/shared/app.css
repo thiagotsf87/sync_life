@@ -129,3 +129,438 @@ html{-webkit-tap-highlight-color:transparent}
 @media (max-width:960px){.bar .date{display:none}}
 
 @media (prefers-reduced-motion:reduce){.scrim,.camada{transition:none}}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Fase 0 · peças do modelo sem metáfora (extraídas de meu-dia-d e financas-a)
+   Valor DESKTOP é o padrão. O que difere no mobile dedicado (390×844) fica no
+   bloco `html.mob …` no fim desta seção: a página mobile declara <html class="dk mob">.
+   Regra de ouro: a página só tem inline o que é específico dela (idealmente só .wrap).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Sy, 40px, quieto (Enxame; laço em shared/sy40.js) ── */
+.sy40{width:40px;height:40px;flex:none;border-radius:11px;overflow:hidden;background:#0f0d0d;display:inline-block}
+.sy40 canvas{display:block;width:100%;height:100%}
+
+/* ── cabeçalho curto + score quieto à direita (Meu dia) ── */
+.cab{padding:40px 0 26px;display:flex;justify-content:space-between;align-items:flex-end;gap:32px}
+.cab h1{font:500 32px/1.1 var(--gro);letter-spacing:-.035em;margin-top:10px}
+.cab .sub{font:400 14px var(--int);color:var(--t2);margin-top:8px;max-width:52ch}
+.score{text-align:right;flex-shrink:0}
+.score .v{font:700 44px/1 var(--gro);letter-spacing:-.045em}
+.score .l{font:400 12px var(--int);color:var(--t3);margin-top:8px}
+.score .l .num{font-weight:700;font-size:11.5px}
+.score a{display:inline-block;font:500 12px var(--int);color:var(--t2);margin-top:8px;transition:color .3s var(--ease)}
+.score a:hover{color:var(--t1)}
+
+/* ── a margem de hoje: anel + linha do dia + rodapé de 3 números ── */
+.margem{display:grid;grid-template-columns:1.55fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.margem > section{padding:34px 0 32px}
+.margem > section:first-child{padding-right:clamp(28px,4vw,64px);border-right:1px solid var(--line)}
+.margem > section:last-child{padding-left:clamp(28px,4vw,64px)}
+.mhead{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.pill-q{font:600 10px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.livre{display:grid;grid-template-columns:132px 1fr;gap:28px;align-items:center;margin-top:22px}
+.anel{position:relative;width:132px;height:132px}
+.anel svg{display:block;width:100%;height:100%;transform:rotate(-90deg)}
+.anel .trk{fill:none;stroke:var(--line-h);stroke-width:2}
+.anel .arc{fill:none;stroke:var(--ele);stroke-width:3;stroke-linecap:round;stroke-dasharray:377;stroke-dashoffset:calc(377 - 377 * var(--p,.3125));transition:stroke-dashoffset .9s var(--ease)}
+.anel .c{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.anel .c strong{font:700 34px/1 var(--gro);letter-spacing:-.045em;display:block}
+.anel .c small{font:400 10.5px var(--int);color:var(--t3);display:block;margin-top:5px}
+.livre h2{font:500 clamp(20px,2vw,26px)/1.25 var(--gro);letter-spacing:-.025em;max-width:16ch}
+.livre p{font:400 13.5px/1.6 var(--int);color:var(--t2);margin-top:10px;max-width:40ch}
+.linha-dia{display:flex;gap:4px;height:6px;margin-top:26px}
+.linha-dia i{flex:1;border-radius:3px;background:var(--s2)}
+.linha-dia i.on{background:var(--ele)}
+.linha-dia i.prep{background:rgba(161,255,98,.38)}
+.horas{display:flex;justify-content:space-between;font:700 9.5px var(--gro);letter-spacing:.14em;color:var(--t3);margin-top:8px;text-transform:uppercase}
+.mfoot{display:flex;gap:clamp(24px,3vw,44px);border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
+.mfoot strong{display:block;font:700 22px/1 var(--gro);letter-spacing:-.03em}
+.mfoot strong.w{color:var(--coral)}
+.mfoot span{display:block;font:400 11.5px var(--int);color:var(--t3);margin-top:6px}
+
+/* ── o ritmo (3 pílulas + nota; reaproveita o wiring .checkin do app.js) ── */
+.checkin{display:block}
+.checkin h2{font:500 22px/1.25 var(--gro);letter-spacing:-.025em;margin:12px 0 8px}
+.checkin > p{font:400 13px/1.6 var(--int);color:var(--t2);max-width:36ch}
+.checkin .moods{margin-top:18px}
+.checkin .ck-form{margin-top:14px}
+.ck-nota{border-top:1px solid var(--line);margin-top:18px;padding-top:14px;font:400 12.5px/1.6 var(--int);color:var(--t3)}
+.ck-nota b{color:var(--t1);font-weight:600}
+.checkin small{display:block;font:400 10.5px var(--int);color:var(--t3);margin-top:14px}
+.ck-done{margin-top:14px}
+
+/* ── cabeça de seção (eyebrow + h2 à esquerda, nota à direita) ──
+   Atenção: `.sec-head p` alcança também o p.eyebrow dentro dela (comportamento aprovado em Meu dia). */
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:44px 0 18px}
+.sec-head h2{font:500 24px/1.2 var(--gro);letter-spacing:-.03em;margin-top:8px}
+.sec-head p{font:400 12.5px var(--int);color:var(--t3)}
+
+/* ── laboratório: uma escolha, mais de um efeito (lógica em shared/lab.js) ── */
+.lab{display:grid;grid-template-columns:1fr 1.6fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.lab > div{padding:28px 0}
+.lab .perg{padding-right:clamp(24px,3.5vw,52px);border-right:1px solid var(--line)}
+.lab .efei{padding-left:clamp(24px,3.5vw,52px)}
+.perg h3{font:500 21px/1.3 var(--gro);letter-spacing:-.025em;margin:10px 0 8px}
+.perg p{font:400 13px/1.6 var(--int);color:var(--t2)}
+.opcoes{display:grid;gap:8px;margin-top:18px}
+.opc{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:12px;
+  background:transparent;color:var(--t2);font:500 13px var(--int);cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+.opc:hover{border-color:var(--line-h);color:var(--t1)}
+.opc[aria-pressed=true]{border-color:var(--roxo);color:var(--t1);background:rgba(104,64,255,.08)}
+.opc .n{font:700 12px var(--gro);color:var(--t3)}
+.opc[aria-pressed=true] .n{color:var(--roxo)}
+.efei .et{display:flex;justify-content:space-between;align-items:baseline}
+.efei .et b{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.imp{display:grid;grid-template-columns:repeat(3,1fr);margin:22px 0 18px}
+.imp > div{padding:0 18px;border-left:1px solid var(--line)}
+.imp > div:first-child{padding-left:0;border-left:none}
+.imp label{font:400 11.5px var(--int);color:var(--t3)}
+.imp strong{display:block;font:700 26px/1 var(--gro);letter-spacing:-.035em;margin:8px 0 6px}
+.imp strong.w{color:var(--coral)}
+.imp strong.ok{color:var(--ele)}
+.imp small{display:block;font:400 11px/1.5 var(--int);color:var(--t3)}
+.expl{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start;font:400 13.5px/1.65 var(--int);color:var(--t2);min-height:62px}
+.expl p b{color:var(--t1);font-weight:600}
+.evid{border-top:1px solid var(--line);margin-top:16px;padding-top:12px}
+.evid summary{font:500 12px var(--int);color:var(--t3);cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px}
+.evid summary::before{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform .3s var(--ease)}
+.evid[open] summary::before{transform:rotate(45deg)}
+.evid p{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:8px;max-width:64ch}
+.aplicar{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
+.aplicar span{font:400 11.5px var(--int);color:var(--t3)}
+.recibo{margin-top:14px;border-left:3px solid var(--ele);padding:10px 14px;font:400 12.5px/1.6 var(--int);color:var(--t2);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.recibo b{color:var(--t1);font-weight:600}
+.recibo button{background:none;border:none;color:var(--roxo);font:600 12.5px var(--int);cursor:pointer;padding:0}
+.recibo button:hover{text-decoration:underline}
+
+/* ── pede você hoje (lista curta) ── */
+.pede{padding:8px 0 0}
+.row{display:grid;grid-template-columns:40px 1fr auto auto;gap:18px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);transition:padding-left .35s var(--ease)}
+.row:hover{padding-left:8px}
+.row .ix{font:700 12px var(--gro);color:var(--roxo)}
+.row .tx{font:400 14.5px var(--int);color:var(--t1)}
+.row .tx strong{font-weight:600}
+.row .sub{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+.row .val{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap;min-width:120px;text-align:right}
+.row.warn .val{color:var(--coral)}
+.row .act{min-width:124px;justify-content:center}
+
+/* ── o dia continua seu (agenda) + acordo com Sy ── */
+.baixo{display:grid;grid-template-columns:1.15fr 1fr;gap:clamp(36px,5vw,80px);margin-top:48px}
+.baixo h2{font:500 22px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+.ag{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line)}
+.ag time{font:700 12px var(--gro);color:var(--t3)}
+.ag strong{font:500 14px var(--int);color:var(--t1);display:block}
+.ag small{font:400 11.5px var(--int);color:var(--t3);display:block;margin-top:3px}
+.ag .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3);white-space:nowrap;text-transform:uppercase}
+.ag .tag.ok{border-color:rgba(161,255,98,.4);color:var(--ele)}
+.ag.livre strong{color:var(--ele)}
+.presenca .sh{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:center;margin-top:8px}
+.presenca h2{margin:0}
+.presenca > p{font:400 13.5px/1.65 var(--int);color:var(--t2);margin-top:14px;max-width:44ch}
+.presenca label{display:block;font:700 10.5px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--t3);margin-top:22px}
+.sel{position:relative;margin-top:10px}
+.sel select{width:100%;appearance:none;-webkit-appearance:none;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:12px 40px 12px 16px;color:var(--t1);font:500 13.5px var(--int);outline:none;cursor:pointer;transition:border-color .3s var(--ease)}
+.sel select:hover{border-color:var(--line-h)}
+.sel select:focus{border-color:rgba(104,64,255,.55)}
+.sel::after{content:"";position:absolute;right:18px;top:50%;width:7px;height:7px;border-right:1.5px solid var(--t3);border-bottom:1.5px solid var(--t3);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.presenca .hint{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:12px;min-height:40px}
+.presenca .hint b{color:var(--t2);font-weight:600}
+
+/* ── suas áreas ── */
+.dims-sec{padding:48px 0 8px}
+.dims-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.dims-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+.dims-head a:hover{color:var(--t1)}
+.dims{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(36px,5vw,80px)}
+.dimrow{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:baseline;padding:17px 0;border-bottom:1px solid var(--line);transition:padding-left .35s var(--ease)}
+.dimrow:hover{padding-left:8px}
+.dimrow .di{font:700 12px var(--gro);color:var(--t3)}
+.dimrow:hover .di{color:var(--roxo)}
+.dimrow .nm{font:500 16px var(--gro);letter-spacing:-.01em}
+.dimrow .mt{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+.dimrow .sc{font:700 22px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+.dimrow .tr{font:600 11px var(--gro)}
+.outras{font:400 12px var(--int);color:var(--t3);padding:14px 0;border-top:1px solid var(--line);margin-top:-1px}
+
+/* ── números do mês (4 colunas hairline; padrão T1, vem logo após um bloco com hairline embaixo) ── */
+.nums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.nums > div{padding:30px clamp(16px,2.4vw,34px);border-right:1px solid var(--line)}
+.nums > div:first-child{padding-left:0}
+.nums > div:last-child{border-right:none}
+.nums .v{font:700 clamp(26px,3vw,40px)/1 var(--gro);letter-spacing:-.04em;margin-top:12px}
+.nums .d{font:500 12px var(--int);margin-top:8px;color:var(--t3)}
+
+/* ── sua semana (uma linha + link) ── */
+.semana{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:20px 0 56px;flex-wrap:wrap}
+.semana p{font:400 13.5px var(--int);color:var(--t2)}
+.semana p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+.semana a{font:500 12.5px var(--int);color:var(--t2);transition:color .3s var(--ease);white-space:nowrap}
+.semana a:hover{color:var(--t1)}
+
+/* ── T1 · título da área + a unidade Sy (40px + 1 ou 2 linhas + fontes + falar) ── */
+.titulo{padding:44px 0 36px;border-bottom:1px solid var(--line)}
+.titulo h1{font:500 clamp(28px,2.6vw,34px)/1.1 var(--gro);letter-spacing:-.035em;margin-top:12px}
+.sy{display:grid;grid-template-columns:40px 1fr;gap:18px;align-items:start;margin-top:26px;max-width:720px}
+.sy .fala{font:500 17px/1.5 var(--gro);letter-spacing:-.015em;color:var(--t1)}
+.sy .fala b{font-weight:600}
+.sy .fala b.w{color:var(--coral)}
+.fontes{font:400 11.5px var(--int);color:var(--t3);margin-top:10px}
+.falar{display:inline-block;background:none;border:none;cursor:pointer;padding:0;margin-top:12px;font:500 12.5px var(--int);color:var(--t2);transition:color .3s var(--ease)}
+.falar:hover{color:var(--t1)}
+
+/* ── T1 · zona de evidência em 2 colunas: orçamentos | fluxo ── */
+.duo{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(36px,5vw,80px);padding:40px 0 44px;border-bottom:1px solid var(--line)}
+.duo > div > .eyebrow{margin-bottom:4px}
+.orc{display:grid;grid-template-columns:1fr auto;gap:6px 16px;padding:14px 0 15px;border-bottom:1px solid var(--line);
+  transition:padding-left .35s var(--ease)}
+.orc:hover{padding-left:6px}
+.orc .nm{font:500 14px var(--int);color:var(--t1)}
+.orc .v{font:700 13px var(--gro);color:var(--t2);text-align:right;white-space:nowrap}
+.orc .v b{color:var(--t1)}
+.orc .track{grid-column:1/-1;height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
+.orc .track i{display:block;height:100%;width:var(--w);background:var(--t2);border-radius:2px}
+.orc.warn .track i{background:var(--coral)}
+.orc.warn .v,.orc.warn .v b{color:var(--coral)}
+.orc .sub{grid-column:1/-1;font:400 11.5px var(--int);color:var(--t3)}
+.cats{font:400 12px var(--int);color:var(--t3);padding:14px 0 0}
+.cats .num{color:var(--t2)}
+.prox{display:flex;align-items:baseline;gap:18px;border-left:2px solid var(--roxo);padding-left:16px;margin-top:24px}
+.prox .eyebrow{color:var(--roxo);flex-shrink:0;position:relative;top:-1px}
+.prox p{font:400 14px/1.5 var(--int);color:var(--t2)}
+.prox p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+.fluxo .chart{margin-top:16px;position:relative}
+.fluxo svg{display:block;width:100%;height:170px}
+.fluxo .leg{display:flex;justify-content:space-between;font:700 10px var(--gro);letter-spacing:.14em;color:var(--t3);margin-top:8px;text-transform:uppercase}
+.fluxo .prosa{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:14px}
+.fluxo .prosa b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+
+/* ── T1 · lista densa de transações ──
+   Escopo `:where(.trans,.sec)` (especificidade zero): a linha .tx só existe dentro do bloco de lista
+   (.trans no desktop, .sec no mobile), porque em Meu dia `.row .tx` é o texto da linha. */
+.trans{padding:40px 0 44px;border-bottom:1px solid var(--line)}
+.trans-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.trans-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+.trans-head a:hover{color:var(--t1)}
+:where(.trans,.sec) .tx{display:grid;grid-template-columns:52px 1fr 130px 110px;gap:16px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);
+  transition:padding-left .35s var(--ease)}
+:where(.trans,.sec) .tx:last-of-type{border-bottom:none}
+:where(.trans,.sec) .tx:hover{padding-left:6px}
+:where(.trans,.sec) .tx .d{font:700 11px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+:where(.trans,.sec) .tx .ds{font:500 14px var(--int);color:var(--t1)}
+:where(.trans,.sec) .tx .ct{font:400 12px var(--int);color:var(--t3)}
+:where(.trans,.sec) .tx .v{font:700 13.5px var(--gro);color:var(--t2);text-align:right;white-space:nowrap}
+:where(.trans,.sec) .tx.in .v{color:var(--ele)}
+
+/* ── T1 · apoio em 2 colunas: metas | recorrentes ── */
+.duo2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,5vw,80px);padding:40px 0 60px}
+.duo2 > div > .eyebrow{margin-bottom:6px}
+.metas .mrow{padding:13px 0;border-bottom:1px solid var(--line)}
+.metas .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.metas .nm{font:500 13.5px var(--int)}
+.metas .pct{font:700 13.5px var(--gro)}
+.metas .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.metas .track i{display:block;height:100%;background:var(--t2);border-radius:2px}
+.metas .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+.rec{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line)}
+.rec .nm{font:500 13.5px var(--int);color:var(--t1)}
+.rec .when{font:400 11.5px var(--int);color:var(--t3);margin-top:3px;display:flex;align-items:baseline;gap:8px}
+.rec .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
+.rec .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
+.rec .v{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap}
+.agenda{font:400 12px var(--int);color:var(--t3);padding:14px 0 0}
+.agenda .num{color:var(--t2)}
+
+/* ── desktop estreito (até 960): só para as páginas desktop; o mobile é tela dedicada (html.mob) ── */
+@media (max-width:960px){
+  html:not(.mob) .cab{flex-direction:column;align-items:flex-start}
+  html:not(.mob) .score{text-align:left}
+  html:not(.mob) .margem,html:not(.mob) .lab,html:not(.mob) .baixo{grid-template-columns:1fr}
+  html:not(.mob) .margem > section:first-child,html:not(.mob) .lab .perg{border-right:none;border-bottom:1px solid var(--line);padding-right:0}
+  html:not(.mob) .margem > section:last-child,html:not(.mob) .lab .efei{padding-left:0}
+  html:not(.mob) .imp{grid-template-columns:1fr}
+  html:not(.mob) .imp > div{padding:10px 0;border-left:none;border-top:1px solid var(--line)}
+  html:not(.mob) .imp > div:first-child{border-top:none}
+  html:not(.mob) .row{grid-template-columns:40px 1fr;row-gap:8px}
+  html:not(.mob) .row .val{grid-column:2;text-align:left;min-width:0}
+  html:not(.mob) .row .act{grid-column:2;justify-self:start}
+  html:not(.mob) .ck-form{flex-direction:column;align-items:stretch}
+  html:not(.mob) .nums{grid-template-columns:1fr 1fr}
+  html:not(.mob) .nums > div:nth-child(2){border-right:none}
+  html:not(.mob) .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  html:not(.mob) .nums > div:nth-child(3){padding-left:0}
+  html:not(.mob) .dims{grid-template-columns:1fr}
+  html:not(.mob) .duo,html:not(.mob) .duo2{grid-template-columns:1fr}
+  html:not(.mob) .trans .tx{grid-template-columns:52px 1fr 110px}
+  html:not(.mob) .trans .tx .ct{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){.anel .arc{transition:none}}
+
+/* ═══ MOBILE DEDICADO (html.mob): 1 coluna, uma dobra por bloco, chrome compacto ═══
+   Cada regra aqui só muda o que difere do desktop; onde o desktop fixa algo que o
+   mobile não tinha (grid, flex, max-width, min-width), a regra devolve o valor neutro.
+   Nunca repetir aqui uma cor igual à do padrão: `html.mob .x .y` ganharia dos modificadores
+   (.warn, .livre, .in) que dependem dela. */
+html.mob body{font-size:14px}
+
+/* chrome compactado */
+html.mob .bar{height:56px;padding:0 18px}
+html.mob .brand{font-size:16px}
+html.mob .bar .acts{gap:8px}
+html.mob .bar .btn-sm.ghost{padding:11px 13px}
+html.mob .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:1}
+html.mob .modbar a{padding:14px 13px}
+html.mob input,html.mob select,html.mob button{scroll-margin-top:76px} /* o bar é sticky: foco nunca fica escondido embaixo dele */
+html.mob .colofao{flex-direction:column;align-items:flex-start;gap:8px;padding:20px 20px 30px}
+html.mob .colofao .r{flex-direction:column;gap:8px}
+html.mob .camada.sheet{height:clamp(420px,86dvh,760px)}
+html.mob .camada .csug .chip{padding:11px 16px}
+html.mob .camada .chead .x{width:40px;height:40px}
+
+/* cabeçalho: score vira linha abaixo do título */
+html.mob .cab{padding:28px 0 22px;display:block;justify-content:normal;align-items:normal;gap:normal}
+html.mob .cab h1{font:500 28px/1.1 var(--gro);letter-spacing:-.035em;margin-top:10px}
+html.mob .cab .sub{font:400 13.5px/1.6 var(--int);color:var(--t2);margin-top:10px;max-width:none}
+html.mob .score{display:flex;align-items:baseline;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);text-align:start;flex-shrink:1}
+html.mob .score .v{font:700 34px/1 var(--gro);letter-spacing:-.045em}
+html.mob .score .l{font:400 12px/1.4 var(--int);color:var(--t3);flex:1;min-width:0;margin-top:0}
+html.mob .score a{font:500 12px var(--int);color:var(--t2);white-space:nowrap;margin-top:0}
+
+/* a margem de hoje */
+html.mob .margem{padding:26px 0 24px;display:block;grid-template-columns:none}
+html.mob .mhead{align-items:center;gap:12px}
+html.mob .pill-q{padding:5px 10px;white-space:nowrap}
+html.mob .livre{grid-template-columns:108px 1fr;gap:18px;margin-top:20px}
+html.mob .anel{width:108px;height:108px}
+html.mob .anel .c strong{font:700 28px/1 var(--gro);letter-spacing:-.045em}
+html.mob .anel .c small{font:400 10px var(--int);color:var(--t3);margin-top:4px}
+html.mob .livre h2{font:500 19px/1.25 var(--gro);letter-spacing:-.025em;max-width:none}
+html.mob .livre p{font:400 12.5px/1.55 var(--int);color:var(--t2);margin-top:8px;max-width:none}
+html.mob .linha-dia{margin-top:20px}
+html.mob .horas{font:700 9px var(--gro);letter-spacing:.12em;color:var(--t3);margin-top:8px;text-transform:uppercase}
+html.mob .mfoot{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;padding-top:16px}
+html.mob .mfoot strong{font:700 19px/1 var(--gro);letter-spacing:-.03em}
+html.mob .mfoot span{font:400 10.5px/1.35 var(--int);color:var(--t3);margin-top:6px}
+
+/* o ritmo */
+html.mob .checkin{padding:26px 0 24px;border-bottom:1px solid var(--line)}
+html.mob .checkin h2{font:500 20px/1.25 var(--gro);letter-spacing:-.025em;margin:10px 0 8px}
+html.mob .checkin > p{font:400 12.5px/1.6 var(--int);color:var(--t2);max-width:none}
+html.mob .checkin .moods{margin-top:16px}
+html.mob .mood{padding:11px 15px;font-size:13px}
+html.mob .checkin .ck-form{flex-direction:column;align-items:stretch;margin-top:12px;gap:8px}
+html.mob .ck-note{padding:13px 16px}
+html.mob .btn-sm.roxo.ck-save{padding:12px 18px;justify-content:center}
+html.mob .ck-nota{margin-top:16px;padding-top:12px}
+html.mob .checkin small{font:400 10.5px/1.5 var(--int);color:var(--t3);margin-top:12px}
+html.mob .ck-done{margin-top:12px}
+
+/* cabeça de seção empilhada (eyebrow, h2, p) */
+html.mob .sec-head{display:block;justify-content:normal;align-items:normal;gap:normal;margin:0;padding:30px 0 16px}
+html.mob .sec-head h2{font:500 21px/1.2 var(--gro);letter-spacing:-.03em;margin-top:8px}
+html.mob .sec-head p{font:400 12px/1.5 var(--int);color:var(--t3);margin-top:8px}
+
+/* laboratório: pergunta e efeitos empilhados */
+html.mob .lab{display:block;grid-template-columns:none}
+html.mob .lab .perg{padding:22px 0 20px;border-right:none;border-bottom:1px dashed var(--line)}
+html.mob .lab .efei{padding:20px 0 24px}
+html.mob .perg h3{font:500 18px/1.3 var(--gro);letter-spacing:-.02em;margin:8px 0 6px}
+html.mob .perg p{font:400 12.5px/1.6 var(--int);color:var(--t2)}
+html.mob .opcoes{margin-top:16px}
+html.mob .opc{min-height:46px;font:500 13.5px var(--int)}
+html.mob .efei .et{gap:10px}
+html.mob .imp{display:block;grid-template-columns:none;margin:14px 0 16px}
+html.mob .imp > div{display:grid;grid-template-columns:1fr auto;column-gap:14px;align-items:baseline;padding:11px 0;border-left:none;border-bottom:1px solid var(--line)}
+html.mob .imp > div:last-child{border-bottom:none}
+html.mob .imp label{font:400 12.5px var(--int);color:var(--t2)}
+html.mob .imp strong{font:700 20px/1 var(--gro);letter-spacing:-.03em;text-align:right;margin:0}
+html.mob .imp small{grid-column:1 / -1;font:400 11px/1.4 var(--int);color:var(--t3);margin-top:2px}
+html.mob .expl{gap:12px;font:400 13px/1.6 var(--int);color:var(--t2);min-height:0}
+html.mob .evid{margin-top:14px}
+html.mob .evid summary{font:500 12.5px var(--int);color:var(--t3);min-height:40px}
+html.mob .evid p{margin-top:6px;max-width:none}
+html.mob .aplicar{display:block;align-items:normal;gap:normal;margin-top:14px;flex-wrap:nowrap}
+html.mob .aplicar .btn-sm{width:100%;justify-content:center;padding:13px 18px;font-size:13.5px}
+html.mob .aplicar span{display:block;font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:10px;text-align:center}
+html.mob .recibo{display:block;gap:normal;align-items:normal;flex-wrap:nowrap}
+html.mob .recibo button{display:block;font:600 13px var(--int);padding:8px 0 0;min-height:40px}
+
+/* pede você hoje: valor e ação descem para uma 2ª linha (.r2) */
+html.mob .pede .eyebrow{padding:26px 0 6px}
+html.mob .row{grid-template-columns:34px 1fr;gap:6px 12px;align-items:normal;padding:14px 0}
+html.mob .row .ix{padding-top:2px}
+html.mob .row .tx{font:400 14px/1.45 var(--int)}
+html.mob .row .sub{font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:3px}
+html.mob .row .r2{grid-column:2;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:4px}
+html.mob .row .val{font:700 13px var(--gro);min-width:auto;text-align:start}
+html.mob .row .act{padding:11px 14px;min-height:40px;min-width:auto;justify-content:normal}
+html.mob .dims-head a,html.mob .dims-head .eyebrow{min-height:40px;display:inline-flex;align-items:center}
+
+/* o dia continua seu + acordo com Sy, empilhados */
+html.mob .dia{padding:30px 0 6px}
+html.mob .dia h2,html.mob .presenca h2{font:500 20px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+html.mob .ag{grid-template-columns:46px 1fr auto;gap:12px;padding:14px 0}
+html.mob .ag strong{font:500 13.5px var(--int)}
+html.mob .ag small{font:400 11.5px/1.4 var(--int);color:var(--t3);margin-top:3px}
+html.mob .ag .tag{padding:4px 8px}
+html.mob .presenca{padding:30px 0 28px;border-top:1px solid var(--line);margin-top:24px}
+html.mob .presenca .sh{gap:12px}
+html.mob .presenca .sh h2{margin:0}
+html.mob .presenca > p{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:12px;max-width:none}
+html.mob .presenca label{margin-top:18px}
+html.mob .sel select{padding:13px 40px 13px 16px;font:500 14px var(--int)}
+html.mob .presenca .hint{font:400 12.5px/1.6 var(--int);color:var(--t3);min-height:0} /* repete o padrão para seguir ganhando de `html.mob .presenca > p` */
+
+/* suas áreas / números 2×2 / semana */
+html.mob .dims-sec{padding:28px 0 8px;border-top:1px solid var(--line)}
+html.mob .dims-head{margin-bottom:6px}
+html.mob .dimrow{grid-template-columns:32px 1fr auto;gap:12px;padding:15px 0}
+html.mob .dimrow .di{font:700 11.5px var(--gro)}
+html.mob .dimrow .nm{font:500 15.5px var(--gro);letter-spacing:-.01em}
+html.mob .dimrow .sc{font:700 21px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+html.mob .outras{font:400 12px/1.7 var(--int);color:var(--t3)}
+html.mob .nums{grid-template-columns:1fr 1fr}
+html.mob .nums > div{padding:20px 14px;border-bottom:1px solid var(--line)}
+html.mob .nums > div:nth-child(odd){padding-left:0}
+html.mob .nums > div:nth-child(even){border-right:none;padding-right:0}
+html.mob .nums > div:nth-child(n+3){border-bottom:none}
+html.mob .nums .v{font:700 24px/1 var(--gro);letter-spacing:-.04em;margin-top:10px}
+html.mob .nums .d{font:500 11.5px var(--int);margin-top:7px;color:var(--t3)}
+html.mob .semana{display:block;justify-content:normal;align-items:normal;gap:normal;padding:18px 0 40px;flex-wrap:nowrap}
+html.mob .semana p{font:400 13px/1.6 var(--int);color:var(--t2)}
+html.mob .semana a{display:inline-block;font:500 12.5px var(--int);color:var(--t2);margin-top:10px;min-height:40px;line-height:40px;white-space:normal}
+
+/* T1 mobile: título + Sy, seções empilhadas (.sec), listas em 1 coluna */
+html.mob .titulo{padding:28px 0 24px}
+html.mob .titulo h1{font:500 28px/1.1 var(--gro);letter-spacing:-.035em;margin-top:10px}
+html.mob .sy{gap:14px;margin-top:20px;max-width:none}
+html.mob .sy .fala{font:500 16px/1.5 var(--gro);letter-spacing:-.015em;color:var(--t1)}
+html.mob .fontes{font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:8px}
+html.mob .falar{display:inline-flex;align-items:center;margin-top:6px;min-height:40px;font:500 13px var(--int);color:var(--t2)}
+html.mob .sec{padding:26px 0 24px;border-bottom:1px solid var(--line)}
+html.mob .sec.last{border-bottom:none;padding-bottom:40px}
+/* cabeça de seção do T1 mobile (eyebrow + link na mesma linha): devolve ao p.eyebrow o que `.sec-head p` tira */
+html.mob .sec > .sec-head{display:flex;justify-content:space-between;align-items:center;gap:normal;margin:0 0 4px;padding:0}
+html.mob .sec > .sec-head > .eyebrow{font:700 10.5px var(--gro);color:var(--t3);margin-top:0}
+html.mob .sec > .sec-head a{font:500 12px var(--int);color:var(--t3);min-height:40px;display:inline-flex;align-items:center}
+html.mob .orc{gap:6px 12px;padding:13px 0 14px}
+html.mob .orc .v{font:700 12.5px var(--gro)}
+html.mob .cats{font:400 12px/1.7 var(--int);color:var(--t3);padding:12px 0 0}
+html.mob .prox{display:block;align-items:normal;gap:normal;padding-left:14px;margin-top:18px}
+html.mob .prox .eyebrow{flex-shrink:1;position:static;top:auto}
+html.mob .prox p{font:400 13.5px/1.5 var(--int);color:var(--t2);margin-top:6px}
+html.mob .fluxo .chart{margin-top:12px;position:static}
+html.mob .fluxo svg{height:140px}
+html.mob .fluxo .leg{font:700 9.5px var(--gro);letter-spacing:.12em;color:var(--t3);margin-top:8px;text-transform:uppercase}
+html.mob .fluxo .prosa{margin-top:12px}
+html.mob .sec .tx{grid-template-columns:44px 1fr auto;gap:4px 12px;padding:12px 0}
+html.mob .sec .tx .d{font:700 10.5px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+html.mob .sec .tx .ct{grid-column:2;font:400 11.5px var(--int);color:var(--t3)}
+html.mob .sec .tx .v{font:700 13px var(--gro);grid-row:1 / span 2;grid-column:3;align-self:center}
+html.mob .metas .mrow{padding:12px 0}
+html.mob .metas .mrow:last-of-type{border-bottom:none}
+html.mob .rec{gap:12px;padding:14px 0}
+html.mob .rec .tag{padding:3px 7px}
+html.mob .agenda{font:400 12px/1.6 var(--int);color:var(--t3);padding:12px 0 0}

@@ -179,6 +179,36 @@ window.SL_MOCK = {
       { de: 'acao', msg: 'Transferência de R$ 580 pra Viagem Itália agendada pra hoje, 16:00. A meta vai a 70% e o saldo projetado segue positivo em R$ 1.540.', done: 'Confirmado por você · 14:04' },
     ],
   },
+  // Laboratório de Meu dia (uma escolha, mais de um efeito): config de shared/lab.js, igual no desktop e no mobile.
+  // Números batem com orcamentos (Lazer 410 de 420), diario.hoje (jantar sex 20h) e a meta Viagem Itália (8.600 de 12.700).
+  lab: {
+    consts: { lazer: 10, teto: 420, janela: 150, dia: 480, segJanela: 4, fora: 120, ita: 8600, itaMeta: 12700 },
+    inicial: 'fora',
+    cenarios: {
+      fora:    { nome: 'Sair para jantar',  ag: 'Jantar com Ana', agSub: 'fora', custo: 120, prep: 0,
+        copy: 'Você preserva a janela livre e sai para jantar. <b>O lazer do mês estoura</b>, e isso é uma escolha legítima: a experiência pode valer o gasto. Sy só mostra o efeito.' },
+      casa:    { nome: 'Cozinhar em casa',  ag: 'Jantar em casa com Ana', agSub: 'em casa', custo: 55, prep: 50,
+        copy: 'Você troca <b>50 minutos</b> da janela por <b>R$ 65</b> de diferença. O lazer ainda passa do teto, mas por pouco, e a diferença poderia ir para a Itália, se essa for a prioridade.' },
+      simples: { nome: 'Fazer algo simples', ag: 'Jantar simples com Ana', agSub: 'simples', custo: 35, prep: 20,
+        copy: 'A opção de menor custo, com <b>20 minutos</b> de preparo. Você preserva <b>2h10</b> livres e <b>R$ 85</b> que poderiam ir para outra prioridade.' },
+    },
+    textos: {
+      semPressa: 'Sem pressa', comPreparo: 'Com preparo',
+      livre: 'Espaço livre', livreComPreparo: 'Espaço livre + preparo do jantar',
+      recibo: 'entrou na prévia do seu dia. Nenhuma conta ou agenda foi alterada.',
+    },
+    ritmo: {
+      lento:   '<b>Seu ritmo foi ouvido.</b> Nenhuma atividade extra entra nas sugestões de hoje. Você pode comparar as opções sem assumir mais um compromisso.',
+      normal:  '<b>O dia pode seguir assim.</b> Explore uma mudança só se ela fizer sentido para você.',
+      energia: '<b>Energia não precisa virar obrigação.</b> A janela livre continua disponível para o que você escolher.',
+    },
+    acordo: {
+      pedir:  '<b>Sy fica disponível.</b> Seu dia abre direto, sem apresentação, e nada chega sem você pedir.',
+      mudar:  '<b>Exemplo de gatilho:</b> um compromisso novo elimina a sua janela livre, ou o lazer passa do teto. Mudanças pequenas aguardam.',
+      resumo: '<b>Um resumo por dia,</b> no horário que você escolher nas configurações. Sempre com a opção de pular.',
+    },
+  },
+
   fmtBRL(n) { return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); },
   fmtBRL0(n) { return 'R$ ' + n.toLocaleString('pt-BR', { maximumFractionDigits: 0 }); },
 };
