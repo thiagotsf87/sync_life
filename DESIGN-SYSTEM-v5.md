@@ -489,6 +489,15 @@ de verdade** (three.js, referência em `prototypes/v5/landing/landing-viva.html`
 - Substituído em 2026-10-03: item "Diário" (agora "Meu dia"), gatilho "Pergunte ao coach" (agora
   "Fale com Sy") e o ticker do dia.
 
+
+**Mobile, aprovado em 2026-10-04 (bottom bar):** barra fixa de 56px + safe-area, fundo `rgba(21,19,19,.92)` com blur e
+hairline em cima, 5 itens em grade `1fr 1fr auto 1fr 1fr`: Meu dia · 01 Finanças · **Fale com Sy** no centro como pílula
+escura com o Enxame em 34px (sem FAB roxo) · Áreas (abre um sheet com as 8 áreas numeradas + Conquistas + Configurações)
+· Registrar. Com a bottom bar, o `modbar` superior **some** no mobile e o bar fica só com a marca e o `+`. O gatilho
+"Fale com Sy" portanto **sai do bar superior no mobile** e vive só na bottom bar (decisão do usuário, 2026-10-04; no
+desktop continua no bar). Protótipo de referência: `app/_intencao.mobile.html`; CSS proposto na seção `inert` dele,
+a entrar em `shared/app.css` sob `html.mob` na implementação da Fase 1.
+
 ### 6.2 Meu dia (rota /dashboard)
 
 A tela em que Sy mostra o que merece atenção agora, com a **sua margem** como número principal.
