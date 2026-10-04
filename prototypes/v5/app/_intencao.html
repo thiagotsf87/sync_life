@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Meu dia · intenção composta · Fase 1</title>
+<!-- Fase 1 · espécime da INTENÇÃO COMPOSTA ("Quero começar um curso de inglês") dentro de Meu dia e da camada de Sy.
+     Base: cópia de app/meu-dia-d.html (aprovado em 2026-10-03). O que muda: a linha "A proposta do curso de inglês continua
+     em aberto" (Pede você hoje) abre, em `Decidir`, a camada JÁ COM A PROPOSTA (bolha de Sy + cartão no padrão do laboratório:
+     3 caminhos .opc, registros marcáveis por área com valor editável, efeito por área, "De onde vêm esses efeitos?",
+     `Criar N registros`). Criar é reversível: marcar e clicar É a confirmação (spec §6.2, passo 4). Resultado: cartão
+     `Feito · N registros em N áreas` com links reais e um único Desfazer (confirmação inline → `Desfeito · nada mudou`).
+     Nada é encenado: o cabeçalho e a camada não mudam de texto. No fim, seção inert: o cartão fora da camada (E-02),
+     Estados e "O que Sy lê aqui". CSS inline só do que não existe em shared/app.css (.prop, .regs, .impl, .feito). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+  /* específico de Meu dia: os números vêm depois de "o dia continua seu" (sem hairline acima) e 2px menores que no T1 */
+  .nums{border-top:1px solid var(--line);margin-top:40px}
+  .nums .v{font-size:clamp(26px,3vw,38px)}
+
+  /* ── intenção composta: cartão de proposta no padrão do laboratório (só o que não existe no shared) ── */
+  .cint .bub,.cint .prop,.cint .action,.cint .desfeito{align-self:stretch}
+  .cint .bub{max-width:88%}
+  .cint .bub.u{align-self:flex-end}
+  .cint .bub.a{align-self:flex-start}
+  .prop{border-top:1px solid var(--line);padding-top:16px;margin-top:4px}
+  .prop h3,.prop-lab h3{font:500 19px/1.25 var(--gro);letter-spacing:-.02em;margin-top:8px}
+  .prop .pp,.prop-lab .pp{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:6px}
+  .prop .opcoes{margin-top:14px}
+  .prop .pbody{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+  .prop .et,.prop-lab .et{display:flex;justify-content:space-between;align-items:baseline}
+  .prop .et b,.prop-lab .et b{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .regs{margin-top:8px}
+  .reg{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border-bottom:1px solid var(--line)}
+  .reg:last-child{border-bottom:none}
+  .rk{position:relative;display:grid;grid-template-columns:18px 26px 1fr;gap:10px;align-items:start;padding:11px 0;cursor:pointer;min-height:44px}
+  .rk input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer}
+  .rk i{width:18px;height:18px;border:1px solid var(--line-h);border-radius:5px;margin-top:1px;display:grid;place-items:center;transition:background .3s var(--ease),border-color .3s var(--ease)}
+  .rk i::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);opacity:0}
+  .rk input:checked ~ i{background:var(--roxo);border-color:var(--roxo)}
+  .rk input:checked ~ i::after{opacity:1}
+  .rk input:focus-visible ~ i{outline:2px solid var(--roxo);outline-offset:2px}
+  .rk .ix{font:700 12px var(--gro);color:var(--roxo);padding-top:2px}
+  .rk .rt{font:400 13.5px/1.45 var(--int);color:var(--t1)}
+  .rk .rt b{font-weight:600}
+  .rk .rt small{display:block;font:400 11px var(--int);color:var(--t3);margin-top:2px}
+  .reg.off .rt,.reg.off .ix{color:var(--t3)}
+  .rval{display:inline-flex;align-items:center;gap:5px;font:500 11.5px var(--int);color:var(--t3);white-space:nowrap}
+  .rval input{width:72px;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--t1);font:600 12.5px var(--gro);letter-spacing:-.01em;outline:none;text-align:right;transition:border-color .3s var(--ease)}
+  .rval input.txt{width:112px;text-align:left;font:500 12px var(--int)}
+  .rval input:focus{border-color:rgba(104,64,255,.55)}
+  .reg.off .rval{opacity:.4;pointer-events:none}
+  .pe2{margin-top:18px}
+  .impl{list-style:none;margin-top:6px}
+  .impl li{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.5 var(--int);color:var(--t2)}
+  .impl li:last-child{border-bottom:none}
+  .impl li .ix{font:700 12px var(--gro);color:var(--roxo);padding-top:1px}
+  .impl li b{color:var(--t1);font-weight:600}
+  .impl li.off{color:var(--t3)}
+  .impl li.off .ix{color:var(--t3)}
+  .aplicar .btn-sm[disabled]{opacity:.45;cursor:default}
+  /* Feito: reaproveita .action (borda esquerda elétrica) */
+  .action.feito{max-width:none}
+  .feito ul{list-style:none;margin-top:8px}
+  .feito li a{display:grid;grid-template-columns:26px 1fr auto;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.5 var(--int);color:var(--t2);transition:color .3s var(--ease)}
+  .feito li:last-child a{border-bottom:none}
+  .feito li a:hover{color:var(--t1)}
+  .feito li a .ix{font:700 12px var(--gro);color:var(--roxo);padding-top:1px}
+  .feito li a .go{color:var(--t3)}
+  .feito .fr{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px;font:500 11.5px var(--int);color:var(--t3)}
+  .feito .fr button{background:none;border:none;color:var(--roxo);font:600 12.5px var(--int);cursor:pointer;padding:0}
+  .feito .fr button:hover{text-decoration:underline}
+  .confirma{margin-top:10px;border-left:3px solid var(--line-h);padding:8px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font:400 12.5px/1.5 var(--int);color:var(--t2)}
+  .confirma p{flex:1 1 100%}
+  .confirma p b{color:var(--t1);font-weight:600;font-family:var(--gro)}
+  .desfeito{border-left:3px solid var(--line-h);padding:10px 14px;font:400 12.5px/1.6 var(--int);color:var(--t2)}
+  .desfeito b{display:block;color:var(--t1);font-weight:600}
+
+  /* ── anotação do protótipo (fora do fluxo, inert) ── */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:48px;padding-top:34px;padding-bottom:80px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pt{font:500 22px/1.2 var(--gro);letter-spacing:-.025em;margin-top:28px}
+  .pn{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:10px;max-width:78ch}
+  /* o cartão fora da camada: a peça .lab do shared, com a proposta dentro */
+  .prop-lab .perg .bub{display:block;margin-top:12px;max-width:92%}
+  .prop-lab .perg .bub.u{margin-left:auto}
+  .prop-lab .perg .opcoes{margin-top:18px}
+  .pe-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe .pede{padding:0}
+  .pe .row:last-child{border-bottom:none}
+  .pe .demo{display:flex;flex-direction:column;gap:12px}
+  .pe .cask .in{display:flex;align-items:center;gap:11px;background:#1b1918;border:1px solid var(--line-h);border-radius:999px;padding:13px 19px;max-width:300px}
+  .pe .cask input{flex:1;background:none;border:none;outline:none;color:var(--t1);font:400 13.5px var(--int);min-width:0}
+  .pe .cask input::placeholder{color:var(--t3)}
+  .pe .cask svg{color:var(--roxo);flex-shrink:0}
+  .pe-nota{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:14px}
+  .le{margin-top:40px}
+  .le ul{list-style:none;margin-top:12px;border-top:1px solid var(--line)}
+  .le li{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:11px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.5 var(--int);color:var(--t2)}
+  .le li code{font:600 12px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+
+  @media (max-width:960px){
+    .pe-grid{grid-template-columns:1fr}
+    .le li{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button">+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a class="on" href="_intencao.html">Meu dia</a>
+    <a href="financas-a.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- cabeçalho -->
+  <section class="cab boot b1">
+    <div>
+      <p class="eyebrow">Sexta · 3 de outubro</p>
+      <h1>Hoje pode caber menos.</h1>
+      <p class="sub">Uma sexta com uma janela livre à tarde, uma atenção no lazer e um jantar que você pode decidir como quiser.</p>
+    </div>
+    <div class="score" role="img" aria-label="Life Sync Score 78, mais 3 na semana">
+      <div class="v num" data-cnt="78">78</div>
+      <div class="l">Life Sync Score · <span class="num ele">+3</span> na semana</div>
+      <a href="life-score.html">Entender o número →</a>
+    </div>
+  </section>
+
+  <!-- 1. a margem de hoje + o seu ritmo -->
+  <div class="margem boot b2">
+    <section aria-label="Sua margem hoje">
+      <div class="mhead">
+        <p class="eyebrow">Sua margem hoje · <b>14h às 22h</b></p>
+        <span class="pill-q" id="statusDia">Sem pressa</span>
+      </div>
+      <div class="livre">
+        <div class="anel" id="anel" style="--p:.3125">
+          <svg viewBox="0 0 132 132" aria-hidden="true"><circle class="trk" cx="66" cy="66" r="60"/><circle class="arc" cx="66" cy="66" r="60"/></svg>
+          <div class="c"><div><strong class="num" id="tempoLivre">2h30</strong><small>sem compromisso</small></div></div>
+        </div>
+        <div>
+          <h2>Tempo livre também é um plano.</h2>
+          <p id="livreCopy">Há uma janela de <b class="num">150</b> minutos na sua agenda, das 16h30 às 19h. Você decide se quer ocupá-la.</p>
+        </div>
+      </div>
+      <div class="linha-dia" id="linhaDia" aria-label="Agenda das 14h às 22h"><i></i><i></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+      <div class="horas"><span>14:00</span><span id="janelaLabel">16:30 a 19:00 · livre</span><span>22:00</span></div>
+      <div class="mfoot">
+        <div><strong class="num w" id="lazerLivre">R$&nbsp;10</strong><span>de lazer até quinta</span></div>
+        <div><strong class="num">2</strong><span>compromissos à frente</span></div>
+        <div><strong class="num" id="itaMeta">68%</strong><span>da meta Itália</span></div>
+      </div>
+    </section>
+
+    <section class="checkin" aria-label="Seu ritmo hoje">
+      <p class="eyebrow">O que a agenda não sabe</p>
+      <h2>Como está seu ritmo hoje?</h2>
+      <p>Ter tempo disponível não diz quanto você quer fazer. Responder é opcional e não muda o que a tela mostra.</p>
+      <div class="moods" role="group" aria-label="Seu ritmo hoje">
+        <button class="mood" type="button" data-r="lento">Mais lento</button>
+        <button class="mood" type="button" data-r="normal">No meu ritmo</button>
+        <button class="mood" type="button" data-r="energia">Com energia</button>
+      </div>
+      <div class="ck-form">
+        <input class="ck-note" type="text" placeholder="Uma linha sobre hoje (opcional)">
+        <button class="btn-sm roxo ck-save" type="button">Registrar</button>
+      </div>
+      <div class="ck-done" hidden>Registrado às 21:14 · <b data-out></b></div>
+      <p class="ck-nota" id="ritmoNota">Você pode seguir sem responder. <b>Seu dia continua aqui.</b></p>
+      <small>Autodeclaração, só sua. Não é avaliação de saúde e Sy nunca cobra o que ficou em branco.</small>
+    </section>
+  </div>
+
+  <!-- 2. laboratório -->
+  <div class="sec-head boot b3">
+    <div>
+      <p class="eyebrow">Uma escolha, mais de um efeito</p>
+      <h2>E se o jantar de hoje fosse diferente?</h2>
+    </div>
+    <p>Experimente antes de decidir. Nada é lançado.</p>
+  </div>
+  <section class="lab boot b3" aria-label="Laboratório de possibilidades">
+    <div class="perg">
+      <p class="eyebrow"><b>03 · 01 · 08</b> · Tempo, Finanças, Experiências</p>
+      <h3>Jantar com Ana, hoje às 20h.</h3>
+      <p>Compare tempo, dinheiro e o que sobra para a Itália. Nenhuma opção é a certa: a prioridade é sua.</p>
+      <div class="opcoes" role="group" aria-label="Cenários para o jantar">
+        <button class="opc" type="button" data-cen="fora" aria-pressed="true"><span>Sair para jantar</span><span class="n num">R$&nbsp;120</span></button>
+        <button class="opc" type="button" data-cen="casa" aria-pressed="false"><span>Cozinhar em casa</span><span class="n num">R$&nbsp;55</span></button>
+        <button class="opc" type="button" data-cen="simples" aria-pressed="false"><span>Fazer algo simples</span><span class="n num">R$&nbsp;35</span></button>
+      </div>
+    </div>
+    <div class="efei">
+      <div class="et"><b id="cenTitulo">Sair para jantar</b><span class="eyebrow">Simulação</span></div>
+      <div class="imp" aria-live="polite">
+        <div><label>Lazer até quinta</label><strong class="num w" id="impLazer">– R$&nbsp;110</strong><small id="impLazerNota">passa R$&nbsp;110 do teto de R$&nbsp;420</small></div>
+        <div><label>Tempo livre que sobra</label><strong class="num" id="impTempo">2h30</strong><small id="impTempoNota">nenhum preparo na janela</small></div>
+        <div><label>Possível aporte Itália</label><strong class="num" id="impAporte">R$&nbsp;0</strong><small>diferença frente a jantar fora</small></div>
+      </div>
+      <div class="expl">
+        <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+        <p id="cenCopy">Você preserva a janela livre e sai para jantar. <b>O lazer do mês estoura</b>, e isso é uma escolha legítima: a experiência pode valer o gasto. Sy só mostra o efeito.</p>
+      </div>
+      <details class="evid">
+        <summary>De onde vêm esses efeitos?</summary>
+        <p>Orçamento de lazer: <span class="num">R$&nbsp;410 de R$&nbsp;420</span> usados, restam <span class="num">R$&nbsp;10</span> até quinta. Jantar fora estimado em <span class="num">R$&nbsp;120</span> (média dos seus últimos 3 jantares da categoria Lazer); em casa <span class="num">R$&nbsp;55</span> e 50 min de preparo; simples <span class="num">R$&nbsp;35</span> e 20 min. Aporte possível = <span class="num">R$&nbsp;120</span> menos o custo escolhido; a meta Itália está em <span class="num">R$&nbsp;8.600 de R$&nbsp;12.700</span>.</p>
+        <p>O aporte é uma possibilidade, não uma transferência. Deslocamento e preferências não foram modelados. Fontes: orçamento Lazer, 34 transações, meta Viagem Itália, agenda de hoje.</p>
+      </details>
+      <div class="aplicar">
+        <button class="btn-sm roxo" type="button" id="aplicar">Experimentar no meu dia →</button>
+        <span>Prévia local, com desfazer. Nenhuma conta ou agenda muda.</span>
+      </div>
+      <div class="recibo" id="recibo" role="status" hidden><span id="reciboTxt"></span><button type="button" id="desfazer">Desfazer</button></div>
+    </div>
+  </section>
+
+  <!-- 3. pede você hoje -->
+  <section class="pede boot b4" aria-label="Pede você hoje">
+    <div class="sec-head" style="margin-bottom:4px"><div><p class="eyebrow">Pede você hoje</p></div></div>
+    <div class="row" id="rowCurso">
+      <span class="ix num">05</span>
+      <div>
+        <div class="tx"><strong>A proposta do curso de inglês</strong> continua em aberto</div>
+        <div class="sub">Mente · Tempo · Finanças · Carreira · Futuro · 2 noites por semana · meta Fluência até 2027</div>
+      </div>
+      <span class="val num">R$&nbsp;180/mês</span>
+      <button class="btn-sm ghost act" type="button" data-coach-open data-int-open>Decidir</button>
+    </div>
+    <div class="row warn">
+      <span class="ix num">01</span>
+      <div>
+        <div class="tx"><strong>Lazer</strong> encostou no teto: restam R$&nbsp;10 até quinta</div>
+        <div class="sub">98% do orçamento usado, 4 dias de janela. Segure até sexta e o mês fecha com R$&nbsp;2.120.</div>
+      </div>
+      <span class="val num">R$&nbsp;410 de R$&nbsp;420</span>
+      <a class="btn-sm ghost act" href="financas-a.html#orcamentos">Ver orçamento</a>
+    </div>
+    <div class="row">
+      <span class="ix num">01</span>
+      <div>
+        <div class="tx"><strong>Aluguel</strong> vence em 3 dias</div>
+        <div class="sub">Saldo projetado segue positivo depois do pagamento</div>
+      </div>
+      <span class="val num">R$&nbsp;1.200,00</span>
+      <a class="btn-sm ghost act" href="financas-a.html#recorrentes">Ver recorrentes</a>
+    </div>
+  </section>
+
+  <!-- 4. o dia continua seu + presença de Sy -->
+  <div class="baixo boot b5">
+    <section aria-label="O dia continua seu">
+      <p class="eyebrow">Hoje</p>
+      <h2>O dia continua seu.</h2>
+      <div class="ag"><time class="num">07:30</time><div><strong>Fisioterapia</strong><small>Corpo · feita</small></div><span class="tag ok">Feita</span></div>
+      <div class="ag"><time class="num">15:00</time><div><strong>Bloco de foco</strong><small>Projeto pessoal · 50 min · até 16h30</small></div><span class="tag">A seguir</span></div>
+      <div class="ag livre"><time class="num">16:30</time><div><strong id="agLivre">Espaço livre</strong><small id="agLivreSub">150 min sem tarefa sugerida</small></div><span class="tag ok">Protegido</span></div>
+      <div class="ag"><time class="num">20:00</time><div><strong id="agJantar">Jantar com Ana</strong><small id="agJantarSub">Plano atual · fora · R$&nbsp;120 estimados</small></div><span class="tag">Lazer</span></div>
+    </section>
+
+    <section class="presenca" aria-label="Presença de Sy">
+      <p class="eyebrow">Seu acordo com Sy</p>
+      <div class="sh">
+        <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+        <h2>Presença, do seu jeito.</h2>
+      </div>
+      <p>Sy liga os pontos entre as suas áreas e mostra o efeito das suas escolhas. Você define quando essa ajuda entra. Fora disso, Sy espera.</p>
+      <label for="syModo">Quando Sy pode trazer sugestões?</label>
+      <div class="sel">
+        <select id="syModo">
+          <option value="pedir">Quando eu pedir</option>
+          <option value="mudar" selected>Quando algo importante mudar</option>
+          <option value="resumo">Em um resumo por dia</option>
+        </select>
+      </div>
+      <p class="hint" id="syHint"><b>Exemplo de gatilho:</b> um compromisso novo elimina a sua janela livre, ou o lazer passa do teto. Mudanças pequenas aguardam.</p>
+    </section>
+  </div>
+
+  <!-- suas áreas -->
+  <section class="dims-sec rv" id="areas" aria-label="Suas áreas">
+    <div class="dims-head">
+      <p class="eyebrow">Suas áreas</p>
+      <a href="#">Ver todas →</a>
+    </div>
+    <div class="dims">
+      <a class="dimrow" href="financas-a.html"><span class="di num">01</span><div><div class="nm">Finanças</div><div class="mt num">Saldo R$&nbsp;1.840 · lazer no limite</div></div><span class="sc num">83<span class="tr ele">▲2</span></span></a>
+      <div class="dimrow"><span class="di num">02</span><div><div class="nm">Futuro</div><div class="mt num">3 metas · 61% de média</div></div><span class="sc num">79<span class="tr ele">▲1</span></span></div>
+      <div class="dimrow"><span class="di num">04</span><div><div class="nm">Corpo</div><div class="mt num">3 atividades · 126 min</div></div><span class="sc num">69<span class="tr ele">▲3</span></span></div>
+      <div class="dimrow"><span class="di num">08</span><div><div class="nm">Experiências</div><div class="mt num">Itália em 92 dias</div></div><span class="sc num">78<span class="tr" style="color:var(--t3)">–</span></span></div>
+    </div>
+    <p class="outras">Outras: 03 Tempo <span class="num">71</span> · 05 Mente <span class="num">58</span> · 06 Patrimônio <span class="num">76</span> · 07 Carreira <span class="num">69</span></p>
+  </section>
+
+  <!-- números do mês -->
+  <section class="nums rv" aria-label="Números do mês">
+    <div><p class="eyebrow">Saldo livre</p><div class="v num" data-cnt="1840" data-prefix="R$&nbsp;">R$&nbsp;1.840</div><div class="d num ele">+12% vs setembro</div></div>
+    <div><p class="eyebrow">Receitas</p><div class="v num" data-cnt="5000" data-prefix="R$&nbsp;">R$&nbsp;5.000</div><div class="d num ele">+8% vs setembro</div></div>
+    <div><p class="eyebrow">Despesas</p><div class="v num" data-cnt="3160" data-prefix="R$&nbsp;">R$&nbsp;3.160</div><div class="d num">63% da receita</div></div>
+    <div><p class="eyebrow">Poupança</p><div class="v num" data-cnt="37" data-suffix="%">37%</div><div class="d num">Meta: 30%</div></div>
+  </section>
+
+  <!-- sua semana -->
+  <section class="semana rv" aria-label="Sua semana">
+    <p>Sua semana: score de <b class="num">75</b> para <b class="num">78</b>, <b class="num">11 de 14</b> compromissos feitos, <b class="num">6h30</b> de foco. Fecha domingo às 21:30.</p>
+    <a href="review-semanal.html">Ver a semana →</a>
+  </section>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+  <div class="r">
+    <span>Streak <b class="num">12 dias</b></span>
+    <span>Badges <b class="num">24/61</b></span>
+    <span>Última sincronização às <b class="num">14:05</b></span>
+  </div>
+</footer>
+
+<!-- camada de Sy -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: o seu dia</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o seu dia. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Resumo da minha semana</button>
+        <button class="chip" type="button">Simular: e se eu poupar R$&nbsp;800?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+      </div>
+      <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+      <div class="action" role="status">
+        <div class="al">Ação executada</div>
+        <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+        <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+      </div>
+    </div>
+
+    <!-- intenção composta: a proposta já pronta (nunca um chat em branco) -->
+    <div class="cthread cint" id="cint" hidden>
+      <div class="divider">Ontem · 21:40</div>
+      <div class="bub u">Quero começar um curso de inglês</div>
+      <div class="bub a">Li suas cinco áreas. Dá para começar de três jeitos.
+        <span class="meta">Fontes: agenda da semana · saldo livre de outubro · vaga em Carreira · meta Fluência · trilhas de Mente</span>
+      </div>
+      <section class="prop" id="prop" aria-label="Proposta: curso de inglês">
+        <p class="eyebrow"><b>05 · 03 · 01 · 07 · 02</b> · Mente, Tempo, Finanças, Carreira, Futuro</p>
+        <h3>Proposta · curso de inglês</h3>
+        <p class="pp">Três caminhos, com o efeito em cada área antes de qualquer registro. Marque o que quer criar; o resto fica de fora.</p>
+        <div class="opcoes" role="group" aria-label="Caminhos">
+          <button class="opc" type="button" data-cam="agora" aria-pressed="true"><span>Começar agora, 2 noites</span><span class="n num">R$&nbsp;180/mês</span></button>
+          <button class="opc" type="button" data-cam="menor" aria-pressed="false"><span>Carga menor, 1 noite</span><span class="n num">R$&nbsp;120/mês</span></button>
+          <button class="opc" type="button" data-cam="esperar" aria-pressed="false"><span>Esperar a Itália passar</span><span class="n num">janeiro</span></button>
+        </div>
+        <div class="pbody">
+          <div class="et"><b id="camTitulo">Começar agora, 2 noites</b><span class="eyebrow">Registros</span></div>
+          <div class="regs" id="regs" role="group" aria-label="Registros a criar">
+            <div class="reg" data-area="05"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">05</span><span class="rt">Mente · trilha "Inglês para conversação", meta até<small>study_tracks · categoria idiomas</small></span></label><span class="rval"><input class="txt" type="text" value="2027" aria-label="Prazo da trilha"></span></div>
+            <div class="reg" data-area="03"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">03</span><span class="rt">Tempo · 2 eventos por semana,<small>agenda_events · recorrência semanal</small></span></label><span class="rval"><input class="txt" type="text" value="ter e qui 20h" aria-label="Dias e horário"></span></div>
+            <div class="reg" data-area="01"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">01</span><span class="rt">Finanças · recorrente mensal, categoria Educação<small>recurring_transactions · despesa</small></span></label><span class="rval">R$&nbsp;<input type="text" inputmode="numeric" value="180" aria-label="Valor mensal em reais">/mês</span></div>
+            <div class="reg" data-area="07"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">07</span><span class="rt">Carreira · habilidade Inglês ligada à vaga cadastrada<small>skills · vínculo com a trilha</small></span></label></div>
+            <div class="reg" data-area="02"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">02</span><span class="rt">Futuro · entra na meta Fluência até 2027<small>goals · vínculo com a meta existente</small></span></label></div>
+          </div>
+          <p class="eyebrow pe2">Efeito por área</p>
+          <ul class="impl" id="impl" aria-live="polite">
+            <li data-area="05"><span class="ix num">05</span><span>Mente · primeira trilha de idiomas; hoje a área tem <b>2 sessões de leitura</b> e nenhuma trilha ativa</span></li>
+            <li data-area="03"><span class="ix num">03</span><span>Tempo · <b class="num">2 das 3</b> noites livres ficam ocupadas</span></li>
+            <li data-area="01"><span class="ix num">01</span><span>Finanças · margem de outubro cai de <b class="num">R$&nbsp;1.840</b> para <b class="num">R$&nbsp;1.660</b></span></li>
+            <li data-area="07"><span class="ix num">07</span><span>Carreira · a vaga cadastrada pede inglês; a habilidade passa a constar no seu perfil</span></li>
+            <li data-area="02"><span class="ix num">02</span><span>Futuro · a meta Fluência ganha ritmo: <b class="num">2 noites</b> por semana</span></li>
+          </ul>
+          <details class="evid">
+            <summary>De onde vêm esses efeitos?</summary>
+            <p>Agenda da semana: <span class="num">3</span> noites livres depois das 19h (seg, ter, qui). Saldo livre de outubro: <span class="num">R$&nbsp;1.840</span>; Educação sem gasto no mês. Carreira: a vaga cadastrada lista inglês entre os requisitos. Futuro: a meta Fluência até 2027 existe e está sem ritmo. Mente: nenhuma trilha de idiomas.</p>
+            <p>O preço (<span class="num">R$&nbsp;180</span>) e a carga (2 noites) vieram de você; o resto Sy assumiu e deixou editável. Não modelado: deslocamento, provas, feriados. Fontes: agenda, 34 transações, orçamentos, habilidades, metas, trilhas.</p>
+          </details>
+          <div class="aplicar">
+            <button class="btn-sm roxo" type="button" id="criar">Criar 5 registros</button>
+            <span>Reversível. Um Desfazer remove tudo que você não editou depois.</span>
+          </div>
+        </div>
+      </section>
+      <div class="action feito" id="feito" role="status" hidden>
+        <div class="al">Feito · <span id="feitoN">5 registros em 5 áreas</span></div>
+        <ul id="feitoLinks"></ul>
+        <div class="fr"><span>Criado às 14:12</span><button type="button" id="desfazerInt">Desfazer</button></div>
+        <div class="confirma" id="confInt" hidden>
+          <p>Remover os <b id="confN">5</b> registros? Nada que você editou depois é apagado.</p>
+          <button class="btn-sm ghost" type="button" id="desfSim">Sim, desfazer</button>
+          <button class="btn-sm ghost" type="button" id="desfNao">Manter</button>
+        </div>
+      </div>
+      <div class="desfeito" id="desfeito" role="status" hidden><b>Desfeito · nada mudou</b>Os registros foram removidos e a proposta voltou para "Pede você hoje".</div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre a sua vida">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<!-- ═══ anotação do protótipo: o cartão fora da camada (E-02) + estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Anotação do protótipo · fora do fluxo</p>
+
+    <h3 class="pt">O cartão de proposta fora da camada</h3>
+    <p class="pn">Quando a intenção entra pela linha de comando de Sy em Meu dia ("Quero começar um curso de inglês"), a mesma proposta aparece no lugar do laboratório do dia, no padrão dele: pergunta à esquerda, registros e efeitos à direita. Um laboratório por tela (E-05); o do jantar volta quando a proposta é respondida. Sem JS, este cartão aberto é o estado de referência (E-02).</p>
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Uma intenção, cinco áreas</p>
+        <h2>Quero começar um curso de inglês.</h2>
+      </div>
+      <p>Marque o que quer criar. Criar é reversível.</p>
+    </div>
+    <section class="lab prop-lab" aria-label="Proposta: curso de inglês">
+      <div class="perg">
+        <p class="eyebrow"><b>05 · 03 · 01 · 07 · 02</b> · Mente, Tempo, Finanças, Carreira, Futuro</p>
+        <div class="bub u">Quero começar um curso de inglês</div>
+        <div class="bub a">Li suas cinco áreas. Dá para começar de três jeitos.<span class="meta">Fontes: agenda da semana · saldo livre · vaga em Carreira · meta Fluência · trilhas</span></div>
+        <div class="opcoes" role="group" aria-label="Caminhos">
+          <button class="opc" type="button" aria-pressed="true"><span>Começar agora, 2 noites</span><span class="n num">R$&nbsp;180/mês</span></button>
+          <button class="opc" type="button" aria-pressed="false"><span>Carga menor, 1 noite</span><span class="n num">R$&nbsp;120/mês</span></button>
+          <button class="opc" type="button" aria-pressed="false"><span>Esperar a Itália passar</span><span class="n num">janeiro</span></button>
+        </div>
+      </div>
+      <div class="efei">
+        <div class="et"><b>Começar agora, 2 noites</b><span class="eyebrow">Registros</span></div>
+        <div class="regs" role="group" aria-label="Registros a criar">
+          <div class="reg"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">05</span><span class="rt">Mente · trilha "Inglês para conversação", meta até<small>study_tracks · categoria idiomas</small></span></label><span class="rval"><input class="txt" type="text" value="2027" aria-label="Prazo da trilha"></span></div>
+          <div class="reg"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">03</span><span class="rt">Tempo · 2 eventos por semana,<small>agenda_events · recorrência semanal</small></span></label><span class="rval"><input class="txt" type="text" value="ter e qui 20h" aria-label="Dias e horário"></span></div>
+          <div class="reg"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">01</span><span class="rt">Finanças · recorrente mensal, categoria Educação<small>recurring_transactions · despesa</small></span></label><span class="rval">R$&nbsp;<input type="text" inputmode="numeric" value="180" aria-label="Valor mensal em reais">/mês</span></div>
+          <div class="reg"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">07</span><span class="rt">Carreira · habilidade Inglês ligada à vaga cadastrada<small>skills · vínculo com a trilha</small></span></label></div>
+          <div class="reg"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">02</span><span class="rt">Futuro · entra na meta Fluência até 2027<small>goals · vínculo com a meta existente</small></span></label></div>
+        </div>
+        <p class="eyebrow pe2">Efeito por área</p>
+        <ul class="impl">
+          <li><span class="ix num">05</span><span>Mente · primeira trilha de idiomas; hoje a área tem <b>2 sessões de leitura</b> e nenhuma trilha ativa</span></li>
+          <li><span class="ix num">03</span><span>Tempo · <b class="num">2 das 3</b> noites livres ficam ocupadas</span></li>
+          <li><span class="ix num">01</span><span>Finanças · margem de outubro cai de <b class="num">R$&nbsp;1.840</b> para <b class="num">R$&nbsp;1.660</b></span></li>
+          <li><span class="ix num">07</span><span>Carreira · a vaga cadastrada pede inglês; a habilidade passa a constar no seu perfil</span></li>
+          <li><span class="ix num">02</span><span>Futuro · a meta Fluência ganha ritmo: <b class="num">2 noites</b> por semana</span></li>
+        </ul>
+        <details class="evid" open>
+          <summary>De onde vêm esses efeitos?</summary>
+          <p>Agenda da semana: <span class="num">3</span> noites livres depois das 19h (seg, ter, qui). Saldo livre de outubro: <span class="num">R$&nbsp;1.840</span>; Educação sem gasto no mês. Carreira: a vaga cadastrada lista inglês entre os requisitos. Futuro: a meta Fluência até 2027 existe e está sem ritmo. Mente: nenhuma trilha de idiomas.</p>
+          <p>O preço (<span class="num">R$&nbsp;180</span>) e a carga (2 noites) vieram de você; o resto Sy assumiu e deixou editável. Não modelado: deslocamento, provas, feriados. Fontes: agenda, 34 transações, orçamentos, habilidades, metas, trilhas.</p>
+        </details>
+        <div class="aplicar">
+          <button class="btn-sm roxo" type="button">Criar 5 registros</button>
+          <span>Reversível. Um Desfazer remove tudo que você não editou depois.</span>
+        </div>
+      </div>
+    </section>
+
+    <h3 class="pt">Estados</h3>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Em aberto, no dia seguinte · gatilho de prioridade 1</h4>
+        <section class="pede" aria-label="Pede você hoje">
+          <p class="eyebrow">Pede você hoje</p>
+          <div class="row">
+            <span class="ix num">05</span>
+            <div>
+              <div class="tx"><strong>A proposta do curso de inglês</strong> continua em aberto</div>
+              <div class="sub">Mente · Tempo · Finanças · Carreira · Futuro · 2 noites por semana · meta Fluência até 2027</div>
+            </div>
+            <span class="val num">R$&nbsp;180/mês</span>
+            <button class="btn-sm ghost act" type="button">Decidir</button>
+          </div>
+        </section>
+        <p class="pe-nota">A proposta que você não respondeu volta como primeira linha de "Pede você hoje" (spec §4.1, prioridade 1), com a mesma ação: Decidir reabre a camada já na proposta, com os caminhos e os valores que você deixou. Sem contador de dias, sem lembrete fora do acordo de atenção: Sy não cobra.</p>
+      </div>
+      <div class="pe">
+        <h4>Falta um dado · Sy pergunta uma coisa antes de propor</h4>
+        <div class="demo">
+          <div class="bub u">Quero começar um curso de inglês</div>
+          <div class="bub a">Antes de propor, uma coisa: <strong>quanto custa por mês?</strong> Noites, horário e meta Sy assume e deixa editável.</div>
+          <form class="cask"><div class="in"><input type="text" placeholder="R$ por mês" aria-label="Quanto custa por mês"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div></form>
+        </div>
+        <p class="pe-nota">Uma pergunta só (spec §6.2, passo 3), quando falta custo ou carga horária. Sem resposta, a intenção fica em aberto e não vira proposta; nada é assumido no lugar do dado que falta.</p>
+      </div>
+      <div class="pe">
+        <h4>Feito · links reais e um único Desfazer</h4>
+        <div class="action feito" role="status">
+          <div class="al">Feito · 5 registros em 5 áreas</div>
+          <ul>
+            <li><a href="#"><span class="ix num">05</span><span>Mente · trilha "Inglês para conversação" · meta até 2027</span><span class="go">→</span></a></li>
+            <li><a href="#"><span class="ix num">03</span><span>Tempo · 2 eventos por semana, ter e qui 20h</span><span class="go">→</span></a></li>
+            <li><a href="financas-a.html#recorrentes"><span class="ix num">01</span><span>Finanças · recorrente R$&nbsp;180/mês, Educação</span><span class="go">→</span></a></li>
+            <li><a href="#"><span class="ix num">07</span><span>Carreira · habilidade Inglês ligada à vaga</span><span class="go">→</span></a></li>
+            <li><a href="#"><span class="ix num">02</span><span>Futuro · meta Fluência até 2027</span><span class="go">→</span></a></li>
+          </ul>
+          <div class="fr"><span>Criado às 14:12</span><button type="button">Desfazer</button></div>
+          <div class="confirma">
+            <p>Remover os <b>5</b> registros? Nada que você editou depois é apagado.</p>
+            <button class="btn-sm ghost" type="button">Sim, desfazer</button>
+            <button class="btn-sm ghost" type="button">Manter</button>
+          </div>
+        </div>
+        <p class="pe-nota">Cada linha abre o registro criado (Finanças já existe: recorrentes). As telas de Mente, Tempo, Carreira e Futuro entram nas Fases 3 a 5; até lá o link fica em "#" com um title explicando. O Desfazer pede confirmação inline, nunca modal.</p>
+      </div>
+      <div class="pe">
+        <h4>Desfeito · nada mudou</h4>
+        <div class="desfeito" role="status"><b>Desfeito · nada mudou</b>Os registros foram removidos e a proposta voltou para "Pede você hoje".</div>
+        <p class="pe-nota">Depois do Desfazer confirmado: saem só os registros que não foram editados depois (updated_at igual a created_at); se algum foi, ele fica e Sy diz qual. A linha volta para "Pede você hoje" e a intenção aparece como "desfeita" no arquivo da conversa.</p>
+      </div>
+    </div>
+
+    <div class="le">
+      <p class="eyebrow">O que Sy lê aqui</p>
+      <ul>
+        <li><code>study_tracks</code><span>as trilhas de 05 Mente: hoje nenhuma de idiomas. É onde a trilha "Inglês para conversação" nasce (<code>name</code>, <code>category='idiomas'</code>, <code>cost</code>, <code>target_date</code>, <code>linked_skill_id</code>)</span></li>
+        <li><code>agenda_events</code><span>a agenda da semana em 03 Tempo: as 3 noites livres depois das 19h vêm daqui, e os 2 eventos recorrentes (ter e qui 20h) entram aqui</span></li>
+        <li><code>recurring_transactions</code><span>as recorrentes de 01 Finanças: a margem projetada do mês e a nova despesa mensal (<code>type='despesa'</code>, <code>amount</code>, <code>frequency='monthly'</code>, categoria Educação)</span></li>
+        <li><code>skills</code><span>as habilidades de 07 Carreira: a vaga cadastrada pede inglês; a habilidade Inglês é criada se não existe e ligada à trilha</span></li>
+        <li><code>goals</code><span>as metas de 02 Futuro: a meta Fluência até 2027 existe; a intenção vincula a trilha a ela em vez de criar outra</span></li>
+        <li><code>intencoes</code><span>a própria intenção: texto, proposta (JSONB), o que foi aplicado (ids criados) e o estado (em aberto · aplicada · desfeita). É daqui que sai o gatilho de prioridade 1 no dia seguinte e o Desfazer único</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script src="../shared/lab.js"></script>
+<script>SLApp.boot(); SLLab.boot(SL_MOCK.lab)</script>
+<script>
+// ── intenção composta (Fase 1): proposta pronta na camada, registros marcáveis, Criar reversível, Desfazer único.
+// Config própria desta página; os números batem com o mock (saldo livre 1.840, 3 noites livres) e com o brief §5 (R$ 180, 2 noites, Fluência 2027).
+;(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s) }
+  var NB = ' '
+  var brl = function (n) { return 'R$' + NB + Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) }
+  var P = $('#prop'); if (!P) return
+  var MOB = document.documentElement.classList.contains('mob')
+  var camada = $('.camada'), empty = $('.camada .cempty'), thread = $('.camada .cthread:not(.cint)'), cint = $('#cint')
+  var row = $('#rowCurso'), feito = $('#feito'), desfeito = $('#desfeito'), conf = $('#confInt')
+  var MARGEM = 1840
+  var CAM = {
+    agora:   { nome: 'Começar agora, 2 noites', custo: 180, noites: 2, hor: 'ter e qui 20h', espera: false },
+    menor:   { nome: 'Carga menor, 1 noite',    custo: 120, noites: 1, hor: 'ter 20h',       espera: false },
+    esperar: { nome: 'Esperar a Itália passar', custo: 180, noites: 2, hor: 'ter e qui 20h', espera: true },
+  }
+  var HREF = { '01': (MOB ? 'financas-a.mobile.html' : 'financas-a.html') + '#recorrentes' }
+  var TITLE = { '05': 'Trilha em Mente: a tela entra na Fase 4 do rollout', '03': 'Eventos em Tempo: a tela entra na Fase 3', '07': 'Habilidade em Carreira: a tela entra na Fase 5', '02': 'Meta em Futuro: a tela entra na Fase 3' }
+  var sel = 'agora', aplicado = false
+
+  function regsDe (c) {
+    var r = []
+    r.push({ area: '05', nome: 'Mente', tx: 'trilha "Inglês para conversação", meta até', sub: 'study_tracks · categoria idiomas' + (c.espera ? ' · início em janeiro' : ''),
+      edit: { v: '2027', cls: 'txt', aria: 'Prazo da trilha' }, feito: function (v) { return 'trilha "Inglês para conversação" · meta até ' + v } })
+    if (!c.espera) r.push({ area: '03', nome: 'Tempo', tx: c.noites + (c.noites > 1 ? ' eventos' : ' evento') + ' por semana,', sub: 'agenda_events · recorrência semanal',
+      edit: { v: c.hor, cls: 'txt', aria: 'Dias e horário' }, feito: function (v) { return c.noites + (c.noites > 1 ? ' eventos' : ' evento') + ' por semana, ' + v } })
+    r.push({ area: '01', nome: 'Finanças', tx: 'recorrente mensal, categoria Educação', sub: 'recurring_transactions · despesa' + (c.espera ? ' · a partir de janeiro' : ''),
+      edit: { v: String(c.custo), cls: 'brl', aria: 'Valor mensal em reais' }, feito: function (v) { return 'recorrente ' + brl(v) + '/mês, Educação' } })
+    r.push({ area: '07', nome: 'Carreira', tx: 'habilidade Inglês ligada à vaga cadastrada', sub: 'skills · vínculo com a trilha', feito: function () { return 'habilidade Inglês ligada à vaga' } })
+    r.push({ area: '02', nome: 'Futuro', tx: 'entra na meta Fluência até 2027', sub: 'goals · vínculo com a meta existente', feito: function () { return 'meta Fluência até 2027' } })
+    return r
+  }
+  function impDe (c, custo) {
+    var n = c.noites
+    return [
+      { area: '05', on: 'Mente · primeira trilha de idiomas; hoje a área tem <b>2 sessões de leitura</b> e nenhuma trilha ativa', off: 'Mente · sem a trilha, o curso não aparece em Mente' },
+      { area: '03', on: c.espera ? 'Tempo · nada muda até janeiro; as <b class="num">3</b> noites livres continuam' : 'Tempo · <b class="num">' + n + ' das 3</b> noites livres ' + (n > 1 ? 'ficam ocupadas' : 'fica ocupada'), off: 'Tempo · sem os eventos, a agenda não reserva as noites' },
+      { area: '01', on: c.espera ? 'Finanças · a margem de outubro não muda; de janeiro em diante, <b class="num">' + brl(custo) + '/mês</b>' : 'Finanças · margem de outubro cai de <b class="num">R$' + NB + '1.840</b> para <b class="num">' + brl(MARGEM - custo) + '</b>', off: 'Finanças · sem a recorrente, a projeção do mês não vê o curso' },
+      { area: '07', on: 'Carreira · a vaga cadastrada pede inglês; a habilidade passa a constar no seu perfil', off: 'Carreira · a vaga continua marcando inglês como faltando' },
+      { area: '02', on: c.espera ? 'Futuro · a meta Fluência começa a andar em janeiro, <b class="num">3 meses</b> depois' : 'Futuro · a meta Fluência ganha ritmo: <b class="num">' + n + (n > 1 ? ' noites' : ' noite') + '</b> por semana', off: 'Futuro · a meta Fluência segue sem ritmo' },
+    ]
+  }
+  var REGS = []
+  function render () {
+    var c = CAM[sel]; REGS = regsDe(c)
+    $('#camTitulo').textContent = c.nome
+    P.querySelectorAll('[data-cam]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.cam === sel)) })
+    $('#regs').innerHTML = REGS.map(function (r) {
+      var rv = ''
+      if (r.edit) rv = r.edit.cls === 'brl'
+        ? '<span class="rval">R$' + NB + '<input type="text" inputmode="numeric" value="' + r.edit.v + '" aria-label="' + r.edit.aria + '">/mês</span>'
+        : '<span class="rval"><input class="txt" type="text" value="' + r.edit.v + '" aria-label="' + r.edit.aria + '"></span>'
+      return '<div class="reg" data-area="' + r.area + '"><label class="rk"><input type="checkbox" checked><i aria-hidden="true"></i><span class="ix num">' + r.area + '</span><span class="rt">' + r.nome + ' · ' + r.tx + '<small>' + r.sub + '</small></span></label>' + rv + '</div>'
+    }).join('')
+    $('#regs').querySelectorAll('input[type=checkbox]').forEach(function (i) { i.addEventListener('change', refresh) })
+    $('#regs').querySelectorAll('.rval input').forEach(function (i) { i.addEventListener('input', refresh) })
+    refresh()
+  }
+  function marcados () {
+    return Array.prototype.filter.call($('#regs').querySelectorAll('.reg'), function (el) { return el.querySelector('input[type=checkbox]').checked })
+  }
+  function valor (area) {
+    var el = $('#regs').querySelector('.reg[data-area="' + area + '"] .rval input')
+    return el ? el.value.trim() : ''
+  }
+  function refresh () {
+    var c = CAM[sel]
+    var custo = parseInt(String(valor('01')).replace(/\D/g, ''), 10); if (!custo && custo !== 0) custo = c.custo
+    var regs = $('#regs').querySelectorAll('.reg'), on = {}
+    regs.forEach(function (el) { var ck = el.querySelector('input[type=checkbox]').checked; el.classList.toggle('off', !ck); on[el.dataset.area] = ck })
+    $('#impl').innerHTML = impDe(c, custo).map(function (i) {
+      var temReg = i.area in on, off = temReg && !on[i.area]
+      return '<li data-area="' + i.area + '"' + (off ? ' class="off"' : '') + '><span class="ix num">' + i.area + '</span><span>' + (off ? i.off : i.on) + '</span></li>'
+    }).join('')
+    var n = marcados().length, btn = $('#criar')
+    btn.textContent = n === 0 ? 'Marque ao menos um registro' : 'Criar ' + n + (n === 1 ? ' registro' : ' registros')
+    btn.disabled = n === 0
+  }
+  function abrir () {
+    if (empty) empty.hidden = true
+    if (thread) thread.hidden = true
+    cint.hidden = false
+    desfeito.hidden = true
+    if (!aplicado) { P.hidden = false; feito.hidden = true }
+    var cb = $('.camada .cbody'); if (cb) cb.scrollTop = 0
+  }
+  function criar () {
+    var m = marcados(); if (!m.length) return
+    var areas = m.map(function (el) { return el.dataset.area })
+    $('#feitoLinks').innerHTML = REGS.filter(function (r) { return areas.indexOf(r.area) >= 0 }).map(function (r) {
+      var href = HREF[r.area] || '#', title = HREF[r.area] ? '' : ' title="' + TITLE[r.area] + '"'
+      return '<li><a href="' + href + '"' + title + '><span class="ix num">' + r.area + '</span><span>' + r.nome + ' · ' + r.feito(valor(r.area)) + '</span><span class="go">→</span></a></li>'
+    }).join('')
+    var n = m.length
+    $('#feitoN').textContent = n + (n === 1 ? ' registro em 1 área' : ' registros em ' + n + ' áreas')
+    $('#confN').textContent = n
+    aplicado = true
+    P.hidden = true; conf.hidden = true; feito.hidden = false; desfeito.hidden = true
+    if (row) row.hidden = true
+    $('#desfazerInt').focus()
+  }
+  function pedirConfirmacao () { conf.hidden = false; $('#desfNao').focus() }
+  function manter () { conf.hidden = true; $('#desfazerInt').focus() }
+  function desfazer () {
+    aplicado = false
+    feito.hidden = true; conf.hidden = true; desfeito.hidden = false
+    if (row) row.hidden = false
+    sel = 'agora'; render()
+  }
+
+  P.querySelectorAll('[data-cam]').forEach(function (b) { b.addEventListener('click', function () { sel = b.dataset.cam; render() }) })
+  $('#criar').addEventListener('click', criar)
+  $('#desfazerInt').addEventListener('click', pedirConfirmacao)
+  $('#desfSim').addEventListener('click', desfazer)
+  $('#desfNao').addEventListener('click', manter)
+  document.querySelectorAll('[data-int-open]').forEach(function (el) { el.addEventListener('click', abrir) })
+  // porta pela linha de comando: a mesma intenção digitada na camada abre a mesma proposta
+  var ask = $('.camada .cask')
+  if (ask) ask.addEventListener('submit', function () {
+    var inp = ask.querySelector('input')
+    if (inp && /ingl[eê]s/i.test(inp.value)) { inp.value = ''; abrir() }
+  })
+  render()
+})()
+</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+</body>
+</html>
