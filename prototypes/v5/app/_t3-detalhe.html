@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyncLife · Viagem Itália · T3 Detalhe</title>
+<!-- Fase 0 · template T3 · Detalhe (espécime: detalhe de uma meta de Finanças, "Viagem Itália").
+     Um objeto, suas partes, suas ações: cabeçalho com voltar + nome + estado → número principal (1 por dobra, E-05)
+     → Sy em 1 linha → laboratório (aporte × prazo) → seções por hairline (Aportes · Marcos · Ligações) → ações no fim;
+     a irreversível (Excluir) pede licença inline em duas etapas, nunca modal. Chrome e peças de shared/app.css. E-02: sem JS, tudo visível. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+
+  /* ── T3 · cabeçalho do objeto: voltar + eyebrow + nome + estado + ações secundárias ── */
+  .voltar{display:inline-flex;align-items:center;gap:8px;margin-top:28px;font:500 12.5px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .voltar:hover{color:var(--t1)}
+  .voltar b{font:700 10.5px var(--gro);color:var(--t3)}
+  .objeto{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;padding:22px 0 30px;border-bottom:1px solid var(--line)}
+  .objeto .nome{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
+  .objeto h1{font:500 32px/1.1 var(--gro);letter-spacing:-.035em}
+  .objeto .acts{display:flex;gap:8px;flex-shrink:0}
+  .pill-q.ok{border-color:rgba(161,255,98,.4);color:var(--ele)}
+  .pill-q.off{color:var(--t3);border-color:var(--line)}
+
+  /* ── T3 · número principal (1 por dobra) + Sy em 1 linha ── */
+  .principal{display:grid;grid-template-columns:1.3fr 1fr;gap:clamp(36px,5vw,80px);padding:36px 0 36px;border-bottom:1px solid var(--line);align-items:start}
+  .principal .pct{font:700 44px/1 var(--gro);letter-spacing:-.045em;margin-top:12px}
+  .principal .pct.ok{color:var(--ele)}
+  .principal .de{font:400 14px var(--int);color:var(--t2);margin-top:10px}
+  .principal .de b{color:var(--t1);font-weight:600}
+  .principal .track{height:4px;background:var(--s2);border-radius:2px;overflow:hidden;margin-top:16px}
+  .principal .track i{display:block;height:100%;width:var(--w);background:var(--t2);border-radius:2px}
+  .principal .track.ok i{background:var(--ele)}
+  .principal .falta{font:400 12.5px var(--int);color:var(--t3);margin-top:10px}
+  .principal .falta .num{color:var(--t2)}
+  .principal .sy{margin-top:0;max-width:none}
+  .principal .sy .fala{font-size:16px}
+
+  /* ── T3 · laboratório: só o que difere de Meu dia (a peça .lab é do shared) ── */
+  .lab .imp strong.w{color:var(--coral)}
+
+  /* ── T3 · seções por hairline ── */
+  .secao{padding:40px 0 40px;border-bottom:1px solid var(--line)}
+  .secao-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .secao-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+  .secao-head a:hover{color:var(--t1)}
+  .secao .nota{font:400 12px var(--int);color:var(--t3);padding:14px 0 0}
+  .secao .nota .num{color:var(--t2)}
+  /* aportes: a lista densa .tx vive dentro de .trans no shared; aqui o escopo é .secao */
+  .aportes .tx{display:grid;grid-template-columns:52px 1fr 150px 110px;gap:16px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);transition:padding-left .35s var(--ease)}
+  .aportes .tx:last-of-type{border-bottom:none}
+  .aportes .tx:hover{padding-left:6px}
+  .aportes .tx .d{font:700 11px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+  .aportes .tx .ds{font:500 14px var(--int);color:var(--t1)}
+  .aportes .tx .ct{font:400 12px var(--int);color:var(--t3)}
+  .aportes .tx .v{font:700 13.5px var(--gro);color:var(--ele);text-align:right;white-space:nowrap}
+  .aportes .tx.extra .ds::after{content:"extra";font:700 9px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3);border:1px solid var(--line);border-radius:999px;padding:2px 7px;margin-left:10px;vertical-align:middle}
+  /* marcos: 3 linhas com check */
+  .marco{display:grid;grid-template-columns:28px 1fr auto;gap:14px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line)}
+  .marco:last-of-type{border-bottom:none}
+  .marco .ck{width:22px;height:22px;border-radius:50%;border:1px solid var(--line-h);display:grid;place-items:center;color:transparent}
+  .marco.feito .ck{border-color:var(--ele);color:var(--ele)}
+  .marco strong{font:500 14px var(--int);color:var(--t1);display:block}
+  .marco small{font:400 11.5px var(--int);color:var(--t3);display:block;margin-top:3px}
+  .marco .v{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap}
+  .marco.feito .v{color:var(--t1)}
+  /* ligações: reaproveita .row (índice da área em roxo + texto + valor + ação) */
+  .secao .row:last-of-type{border-bottom:none}
+
+  /* ── T3 · ações no fim; a irreversível pede licença em duas etapas, inline ── */
+  .acoes{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:34px 0;flex-wrap:wrap}
+  .acoes p{font:400 13px var(--int);color:var(--t3);max-width:52ch}
+  .perigo{border-top:1px solid var(--line);padding:30px 0 64px;display:grid;grid-template-columns:1fr auto;gap:18px 40px;align-items:start}
+  .perigo .eyebrow{color:var(--coral);grid-column:1/-1}
+  .perigo p{font:400 13px/1.6 var(--int);color:var(--t2);max-width:56ch}
+  .perigo p b{color:var(--t1);font-weight:600;font-family:var(--gro)}
+  .btn-sm.coral{background:transparent;border:1px solid rgba(248,65,49,.45);color:var(--coral);padding:8px 15px}
+  .btn-sm.coral:hover{border-color:var(--coral);background:rgba(248,65,49,.08)}
+  .btn-sm.coral.solid{background:var(--coral);border-color:var(--coral);color:#fff}
+  .btn-sm.coral.solid:hover{background:#ff5747}
+  .confirma{grid-column:1/-1;border-left:3px solid var(--coral);padding:10px 14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .confirma p{max-width:none}
+  .excluido{grid-column:1/-1;border-left:3px solid var(--line-h);padding:10px 14px;font:400 12.5px/1.6 var(--int);color:var(--t2)}
+
+  /* ── anotação do protótipo (fora do fluxo, inert) ── */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:48px;padding-top:34px;padding-bottom:80px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:26px;align-items:start}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe .principal{display:block;padding:0;border-bottom:none}
+  .pe .sy{margin-top:22px}
+  .pe .vazio{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;font:400 13px var(--int);color:var(--t3)}
+  .pe .vazio .btn-sm{margin-top:14px}
+  .pe-eb{margin-top:22px}
+  .pe-nota{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:14px}
+  .pe-nota .pill-q{margin:0 2px}
+  .le{margin-top:40px}
+  .le ul{list-style:none;margin-top:12px;border-top:1px solid var(--line)}
+  .le li{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:11px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.5 var(--int);color:var(--t2)}
+  .le li code{font:600 12px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+
+  @media (max-width:960px){
+    .objeto{flex-direction:column;align-items:flex-start}
+    .principal{grid-template-columns:1fr}
+    .secao .tx{grid-template-columns:52px 1fr 110px}
+    .aportes .tx .ct{display:none}
+    .perigo{grid-template-columns:1fr}
+    .pe-grid{grid-template-columns:1fr}
+    .le li{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <span class="date">Sexta · 3 de outubro de 2026</span>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button">+ Registrar</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a href="meu-dia-d.html">Meu dia</a>
+    <a href="financas-a.html"><span class="n">01</span>Finanças</a>
+    <a class="on" href="#" title="02 Futuro, Fase 3"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 1. cabeçalho do objeto -->
+  <a class="voltar boot b1" id="voltar" href="#" title="02 Futuro, Fase 3">← <b>02</b> Futuro</a>
+  <header class="objeto boot b1">
+    <div>
+      <p class="eyebrow"><b>02</b> · Futuro · meta</p>
+      <div class="nome">
+        <h1>Viagem Itália</h1>
+        <span class="pill-q" id="estado">Em andamento</span>
+      </div>
+    </div>
+    <div class="acts">
+      <a class="btn-sm ghost" href="#" title="Editar meta, Fase 3 (T4)">Editar</a>
+      <button class="btn-sm ghost" type="button">Pausar</button>
+    </div>
+  </header>
+
+  <!-- 2. número principal + Sy em 1 linha -->
+  <section class="principal boot b2" aria-label="Progresso da meta">
+    <div>
+      <p class="eyebrow">Progresso</p>
+      <div class="pct num" id="pct" data-cnt="68" data-suffix="%">68%</div>
+      <p class="de"><b class="num">R$&nbsp;8.600</b> de <span class="num">R$&nbsp;12.700</span></p>
+      <div class="track" id="track" style="--w:68%" role="img" aria-label="68% da meta"><i></i></div>
+      <p class="falta" id="falta">faltam <span class="num">R$&nbsp;4.100</span> · <span class="num">89</span> dias · no ritmo atual fecha em <span class="num">25 de novembro</span></p>
+    </div>
+    <div class="sy">
+      <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+      <div>
+        <p class="fala" id="syFala">No ritmo de <b class="num">R$&nbsp;580</b> por semana você chega <b class="num">36 dias</b> antes do prazo.</p>
+        <p class="fontes">Atualizado às 7h12 · fontes: 15 aportes, recorrente Aporte automático, viagem Positano</p>
+        <button class="falar" type="button" data-coach-open data-coach-seed="Sobre a meta Viagem Itália: ">Falar com Sy sobre esta meta →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. laboratório: aporte × prazo -->
+  <div class="sec-head boot b3">
+    <div>
+      <p class="eyebrow">Uma escolha, mais de um efeito</p>
+      <h2>E se o aporte fosse diferente?</h2>
+    </div>
+    <p>Experimente antes de decidir. Nada é lançado.</p>
+  </div>
+  <section class="lab boot b3" aria-label="Laboratório de aportes">
+    <div class="perg">
+      <p class="eyebrow"><b>02 · 01 · 08</b> · Futuro, Finanças, Experiências</p>
+      <h3>Aporte automático de <span class="num">R$&nbsp;580</span>, toda quarta.</h3>
+      <p>Compare prazo, saldo do mês e folga. Nenhuma opção é a certa: a prioridade é sua.</p>
+      <div class="opcoes" role="group" aria-label="Cenários de aporte">
+        <button class="opc" type="button" data-cen="manter" aria-pressed="true"><span>Manter <span class="num">R$&nbsp;580</span></span><span class="n num">por semana</span></button>
+        <button class="opc" type="button" data-cen="subir" aria-pressed="false"><span>Subir para <span class="num">R$&nbsp;700</span></span><span class="n num">+ R$&nbsp;120</span></button>
+        <button class="opc" type="button" data-cen="pausar" aria-pressed="false"><span>Pausar 1 mês</span><span class="n num">R$&nbsp;0 em outubro</span></button>
+      </div>
+    </div>
+    <div class="efei">
+      <div class="et"><b id="cenTitulo">Manter <span class="num">R$&nbsp;580</span></b><span class="eyebrow">Simulação</span></div>
+      <div class="imp" aria-live="polite">
+        <div><label>Data de conclusão</label><strong class="num" id="impData">25 nov</strong><small id="impDataNota">36 dias antes do prazo</small></div>
+        <div><label>Saldo livre do mês</label><strong class="num" id="impSaldo">R$&nbsp;1.840</strong><small id="impSaldoNota">igual ao de hoje</small></div>
+        <div><label>Folga até o prazo</label><strong class="num" id="impFolga">36 dias</strong><small id="impFolgaNota">prazo: 31 de dezembro</small></div>
+      </div>
+      <div class="expl">
+        <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+        <p id="cenCopy">Você mantém o que já está programado. <b>A meta fecha em 25 de novembro</b>, 36 dias antes do prazo e antes da viagem, e o saldo livre de outubro continua em R$&nbsp;1.840.</p>
+      </div>
+      <details class="evid">
+        <summary>De onde vêm esses efeitos?</summary>
+        <p>Faltam <span class="num">R$&nbsp;4.100</span> para <span class="num">R$&nbsp;12.700</span>. O ritmo atual é o aporte automático de <span class="num">R$&nbsp;580</span> às quartas; a data de conclusão é projetada a partir dele e das <span class="num">4</span> quartas que restam em outubro (<span class="num">7, 14, 21 e 28</span>). Subir para <span class="num">R$&nbsp;700</span> tira <span class="num">R$&nbsp;480</span> do saldo livre de outubro; pausar devolve <span class="num">R$&nbsp;2.320</span>. O prazo da meta é <span class="num">31 de dezembro</span> (<span class="num">89</span> dias); a viagem sai em <span class="num">92</span> dias, <span class="num">3 de janeiro</span>.</p>
+        <p>Rendimento do valor guardado, aportes extras e variação do câmbio não foram modelados. Fontes: 15 aportes, recorrente Aporte automático, saldo livre de outubro, viagem Positano.</p>
+      </details>
+      <div class="aplicar">
+        <button class="btn-sm roxo" type="button" id="aplicar">Experimentar nesta meta →</button>
+        <span>Prévia local, com desfazer. O aporte automático não muda.</span>
+      </div>
+      <div class="recibo" id="recibo" role="status" hidden><span id="reciboTxt"></span><button type="button" id="desfazer">Desfazer</button></div>
+    </div>
+  </section>
+
+  <!-- 4. seções por hairline -->
+  <section class="secao aportes rv" id="aportes" aria-label="Aportes">
+    <div class="secao-head"><p class="eyebrow">Aportes · últimos 6</p><a href="#" title="Lista completa, Fase 3 (T2)">Ver todos os 15 →</a></div>
+    <div class="tx"><span class="d num">30 set</span><span class="ds">Aporte automático</span><span class="ct">Recorrente · quarta</span><span class="v num">+ R$&nbsp;580,00</span></div>
+    <div class="tx"><span class="d num">23 set</span><span class="ds">Aporte automático</span><span class="ct">Recorrente · quarta</span><span class="v num">+ R$&nbsp;580,00</span></div>
+    <div class="tx extra"><span class="d num">20 set</span><span class="ds">Aporte extra</span><span class="ct">Manual · freela</span><span class="v num">+ R$&nbsp;400,00</span></div>
+    <div class="tx"><span class="d num">16 set</span><span class="ds">Aporte automático</span><span class="ct">Recorrente · quarta</span><span class="v num">+ R$&nbsp;580,00</span></div>
+    <div class="tx"><span class="d num">9 set</span><span class="ds">Aporte automático</span><span class="ct">Recorrente · quarta</span><span class="v num">+ R$&nbsp;580,00</span></div>
+    <div class="tx"><span class="d num">2 set</span><span class="ds">Aporte automático</span><span class="ct">Recorrente · quarta</span><span class="v num">+ R$&nbsp;580,00</span></div>
+    <p class="nota"><span class="num">15</span> aportes desde junho · próximo automático na quarta, <span class="num">7 de outubro</span></p>
+  </section>
+
+  <section class="secao rv" id="marcos" aria-label="Marcos">
+    <div class="secao-head"><p class="eyebrow">Marcos</p></div>
+    <div class="marco feito">
+      <span class="ck" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <div><strong>Um quarto do caminho</strong><small>Feito em <span class="num">12 de julho</span></small></div>
+      <span class="v num">R$&nbsp;3.175</span>
+    </div>
+    <div class="marco feito">
+      <span class="ck" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <div><strong>Metade</strong><small>Feito em <span class="num">2 de setembro</span></small></div>
+      <span class="v num">R$&nbsp;6.350</span>
+    </div>
+    <div class="marco">
+      <span class="ck" aria-hidden="true"></span>
+      <div><strong>Três quartos</strong><small id="marco75">Previsto para <span class="num">14 de outubro</span>, em 2 aportes</small></div>
+      <span class="v num">R$&nbsp;9.525</span>
+    </div>
+  </section>
+
+  <section class="secao rv" id="ligacoes" aria-label="Ligações com outras áreas">
+    <div class="secao-head"><p class="eyebrow">Ligações</p></div>
+    <div class="row">
+      <span class="ix num">01</span>
+      <div>
+        <div class="tx"><strong>Aporte automático</strong> alimenta esta meta</div>
+        <div class="sub">Finanças · recorrente toda quarta · conta principal</div>
+      </div>
+      <span class="val num" id="ligAporte">R$&nbsp;580,00</span>
+      <a class="btn-sm ghost act" href="financas-a.html#recorrentes">Ver recorrente</a>
+    </div>
+    <div class="row">
+      <span class="ix num">08</span>
+      <div>
+        <div class="tx"><strong>Viagem Positano</strong> depende desta meta</div>
+        <div class="sub">Experiências · roteiro em aberto · hospedagem reservada</div>
+      </div>
+      <span class="val num">em 92 dias</span>
+      <a class="btn-sm ghost act" href="#" title="08 Experiências, Fase 6">Ver viagem</a>
+    </div>
+  </section>
+
+  <!-- 5. ações no fim -->
+  <section class="acoes rv" aria-label="Ações da meta">
+    <p>Concluir fecha a meta com o valor atual e encerra o aporte automático. Dá para reabrir depois.</p>
+    <button class="btn-sm roxo" type="button" id="concluir">Concluir meta</button>
+  </section>
+  <section class="perigo rv" aria-label="Zona irreversível" id="perigo">
+    <p class="eyebrow">Irreversível</p>
+    <p>Excluir apaga a meta, os <b class="num">15</b> aportes registrados e os marcos. O dinheiro já transferido continua na sua conta; só o histórico desta meta se perde.</p>
+    <button class="btn-sm coral" type="button" id="excluir" aria-expanded="false" aria-controls="confirma">Excluir meta</button>
+    <div class="confirma" id="confirma" hidden>
+      <p>Tem certeza? Não dá para desfazer.</p>
+      <button class="btn-sm coral solid" type="button" id="excluirSim">Sim, excluir a meta</button>
+      <button class="btn-sm ghost" type="button" id="excluirNao">Cancelar</button>
+    </div>
+    <p class="excluido" id="excluido" role="status" hidden>Meta excluída. Protótipo: aqui você voltaria para 02 Futuro.</p>
+  </section>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Meta criada em <b class="num">1 de junho de 2026</b></span>
+  <div class="r">
+    <span>Prazo <b class="num">31 de dezembro</b></span>
+    <span>Última sincronização às <b class="num">14:05</b></span>
+  </div>
+</footer>
+
+<!-- camada de Sy -->
+<div class="scrim"></div>
+<aside class="camada" aria-label="Sy">
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: esta meta</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li a meta Viagem Itália. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Dá para fechar antes da viagem?</button>
+        <button class="chip" type="button">Quanto o aporte pesa no mês?</button>
+        <button class="chip" type="button">Simular: e se eu guardar R$&nbsp;800 por semana?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Dá para fechar antes da viagem?</div>
+      <div class="bub a">Dá: no ritmo de <strong class="num">R$&nbsp;580</strong> por semana a meta fecha em <strong class="num">25 de novembro</strong>, <strong class="num">36 dias</strong> antes do prazo e antes de você embarcar. Se quiser folga maior, <span class="w">R$&nbsp;700</span> por semana adianta para 11 de novembro, mas tira R$&nbsp;480 do saldo livre de outubro.
+        <span class="meta">Fontes: 15 aportes · recorrente Aporte automático · viagem Positano</span>
+      </div>
+      <div class="bub u">Então antecipa o aporte desta semana pra hoje.</div>
+      <div class="action" role="status">
+        <div class="al">Ação executada</div>
+        <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">72%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+        <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa sobre esta meta">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe-grid">
+      <div class="pe">
+        <h4>Meta concluída · número em elétrico, ações somem</h4>
+        <div class="principal">
+          <p class="eyebrow">Progresso</p>
+          <div class="pct num ok">100%</div>
+          <p class="de"><b class="num">R$&nbsp;12.700</b> de <span class="num">R$&nbsp;12.700</span></p>
+          <div class="track ok" style="--w:100%"><i></i></div>
+          <p class="falta">concluída em <span class="num">25 de novembro</span> · <span class="num">36</span> dias antes do prazo</p>
+          <div class="sy">
+            <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+            <div>
+              <p class="fala">Fechou <b class="num">36 dias</b> antes do prazo. O aporte automático foi encerrado; o valor está na conta principal.</p>
+              <p class="fontes">Atualizado às 7h12 · fontes: 22 aportes, recorrente encerrada</p>
+            </div>
+          </div>
+        </div>
+        <p class="pe-nota">Pílula <span class="pill-q ok">Concluída</span>. Sem laboratório, sem "Concluir meta", sem "Pausar". "Excluir" continua, com a mesma licença em duas etapas.</p>
+      </div>
+      <div class="pe">
+        <h4>Meta pausada · pílula cinza, Sy diz o que muda</h4>
+        <div class="principal">
+          <p class="eyebrow">Progresso</p>
+          <div class="pct num">68%</div>
+          <p class="de"><b class="num">R$&nbsp;8.600</b> de <span class="num">R$&nbsp;12.700</span></p>
+          <div class="track" style="--w:68%"><i></i></div>
+          <p class="falta">faltam <span class="num">R$&nbsp;4.100</span> · aporte pausado desde <span class="num">7 de outubro</span></p>
+          <div class="sy">
+            <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+            <div>
+              <p class="fala">Pausada, a meta não recebe o aporte das quartas. Se retomar em 4 de novembro, fecha em <b class="num">23 de dezembro</b>, 8 dias antes do prazo: cabe, mas sem folga.</p>
+              <p class="fontes">Atualizado às 7h12 · fontes: 15 aportes, recorrente pausada, viagem Positano</p>
+            </div>
+          </div>
+        </div>
+        <p class="pe-nota">Pílula <span class="pill-q off">Pausada</span>. A ação secundária vira "Retomar"; o laboratório fica, com "Pausar 1 mês" trocado por "Retomar agora".</p>
+      </div>
+      <div class="pe">
+        <h4>Sem aportes ainda · lista vazia</h4>
+        <div class="principal">
+          <p class="eyebrow">Progresso</p>
+          <div class="pct num">0%</div>
+          <p class="de"><b class="num">R$&nbsp;0</b> de <span class="num">R$&nbsp;12.700</span></p>
+          <div class="track" style="--w:0%"><i></i></div>
+          <p class="falta">faltam <span class="num">R$&nbsp;12.700</span> · sem ritmo ainda</p>
+        </div>
+        <p class="eyebrow pe-eb">Aportes</p>
+        <div class="vazio">
+          Nenhum aporte registrado. O ritmo e a data de conclusão aparecem depois do primeiro.
+          <div><button class="btn-sm roxo" type="button">Registrar o primeiro aporte</button></div>
+        </div>
+        <p class="pe-nota">Sy não aparece (não há o que ler). O laboratório também não: sem ritmo não há efeito a comparar.</p>
+      </div>
+    </div>
+
+    <div class="le">
+      <p class="eyebrow">O que Sy lê aqui</p>
+      <ul>
+        <li><code>goals</code><span>a meta: nome, valor alvo, valor atual, prazo, estado (em andamento, pausada, concluída)</span></li>
+        <li><code>goal_contributions</code><span>os 15 aportes: data, valor, origem (recorrente ou manual), de onde saem os marcos e o ritmo</span></li>
+        <li><code>objectives</code><span>o objetivo de longo prazo a que esta meta pertence (Itália em 2026, 08 Experiências)</span></li>
+        <li><code>recurring_transactions</code><span>o aporte automático de R$&nbsp;580 às quartas, em 01 Finanças: é o cenário "manter" do laboratório</span></li>
+        <li><code>trips</code><span>a viagem Positano em 92 dias: a data que a conclusão precisa respeitar</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+SLApp.boot()
+
+// ── laboratório desta meta (aporte × prazo). Config própria: a de shared/lab.js é a de Meu dia.
+// Prévia local: muda a linha do ritmo, a frase de Sy, a ligação com Finanças e o marco previsto; Desfazer devolve o HTML de origem.
+;(function () {
+  var $ = function (s) { return document.querySelector(s) }
+  var CEN = {
+    manter: { nome: 'Manter <span class="num">R$ 580</span>', data: '25 nov', dataNota: '36 dias antes do prazo', saldo: 'R$ 1.840', saldoNota: 'igual ao de hoje', saldoCls: '',
+      folga: '36 dias', folgaNota: 'prazo: 31 de dezembro', folgaCls: '',
+      copy: 'Você mantém o que já está programado. <b>A meta fecha em 25 de novembro</b>, 36 dias antes do prazo e antes da viagem, e o saldo livre de outubro continua em R$ 1.840.',
+      falta: 'faltam <span class="num">R$ 4.100</span> · <span class="num">89</span> dias · prévia: com <span class="num">R$ 580</span> por semana fecha em <span class="num">25 de novembro</span>',
+      fala: 'No ritmo de <b class="num">R$ 580</b> por semana você chega <b class="num">36 dias</b> antes do prazo.',
+      lig: 'R$ 580,00', marco: 'Previsto para <span class="num">14 de outubro</span>, em 2 aportes' },
+    subir: { nome: 'Subir para <span class="num">R$ 700</span>', data: '11 nov', dataNota: '50 dias antes do prazo', saldo: 'R$ 1.360', saldoNota: '– R$ 480 em outubro (4 quartas)', saldoCls: 'w',
+      folga: '50 dias', folgaNota: '14 dias a mais que hoje', folgaCls: 'ok',
+      copy: 'Você adianta a meta em <b>14 dias</b> e paga isso com <b>R$ 480 a menos</b> de saldo livre em outubro. Com o lazer no teto, a margem do mês fica mais curta: é uma troca, não um ganho.',
+      falta: 'faltam <span class="num">R$ 4.100</span> · <span class="num">89</span> dias · prévia: com <span class="num">R$ 700</span> por semana fecha em <span class="num">11 de novembro</span>',
+      fala: 'Com <b class="num">R$ 700</b> por semana você chega <b class="num">50 dias</b> antes do prazo, e outubro fecha com <b class="num w">R$ 1.360</b> livres.',
+      lig: 'R$ 700,00', marco: 'Previsto para <span class="num">14 de outubro</span>, em 2 aportes' },
+    pausar: { nome: 'Pausar 1 mês', data: '23 dez', dataNota: '8 dias antes do prazo', saldo: 'R$ 4.160', saldoNota: '+ R$ 2.320 em outubro', saldoCls: 'ok',
+      folga: '8 dias', folgaNota: 'retoma em 4 de novembro', folgaCls: 'w',
+      copy: 'Você libera <b>R$ 2.320</b> em outubro e a meta ainda fecha em <b>23 de dezembro</b>, 8 dias antes do prazo e antes da viagem. A folga fica curta: um aporte que falhe em novembro ou dezembro passa do prazo.',
+      falta: 'faltam <span class="num">R$ 4.100</span> · <span class="num">89</span> dias · prévia: com o aporte pausado em outubro fecha em <span class="num">23 de dezembro</span>',
+      fala: 'Com o aporte pausado em outubro a meta fecha em <b class="num">23 de dezembro</b>, <b class="num">8 dias</b> antes do prazo e ainda antes da viagem.',
+      lig: 'pausado em outubro', marco: 'Previsto para <span class="num">11 de novembro</span>, em 2 aportes' },
+  }
+  var sel = 'manter'
+  var origem = { falta: $('#falta').innerHTML, fala: $('#syFala').innerHTML, lig: $('#ligAporte').textContent, marco: $('#marco75').innerHTML, estado: $('#estado').textContent }
+  function escolher (k) {
+    sel = k; var c = CEN[k]
+    document.querySelectorAll('[data-cen]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.cen === k)) })
+    $('#cenTitulo').innerHTML = c.nome
+    $('#impData').textContent = c.data; $('#impDataNota').textContent = c.dataNota
+    $('#impSaldo').textContent = c.saldo; $('#impSaldo').className = 'num ' + c.saldoCls; $('#impSaldoNota').textContent = c.saldoNota
+    $('#impFolga').textContent = c.folga; $('#impFolga').className = 'num ' + c.folgaCls; $('#impFolgaNota').textContent = c.folgaNota
+    $('#cenCopy').innerHTML = c.copy
+  }
+  function aplicar () {
+    var c = CEN[sel]
+    $('#falta').innerHTML = c.falta
+    $('#syFala').innerHTML = c.fala
+    $('#ligAporte').textContent = c.lig
+    $('#marco75').innerHTML = c.marco
+    $('#estado').textContent = 'Em andamento · prévia'
+    $('#reciboTxt').innerHTML = '<b>' + c.nome + '</b> entrou na prévia desta meta. O aporte automático e a meta não foram alterados.'
+    $('#recibo').hidden = false
+  }
+  function desfazer () {
+    $('#falta').innerHTML = origem.falta
+    $('#syFala').innerHTML = origem.fala
+    $('#ligAporte').textContent = origem.lig
+    $('#marco75').innerHTML = origem.marco
+    $('#estado').textContent = origem.estado
+    $('#recibo').hidden = true
+    escolher('manter'); $('#aplicar').focus()
+  }
+  document.querySelectorAll('[data-cen]').forEach(function (b) { b.addEventListener('click', function () { escolher(b.dataset.cen) }) })
+  $('#aplicar').addEventListener('click', aplicar)
+  $('#desfazer').addEventListener('click', desfazer)
+
+  // ── excluir: licença em duas etapas, inline (nunca modal)
+  var ex = $('#excluir'), conf = $('#confirma'), done = $('#excluido')
+  ex.addEventListener('click', function () { conf.hidden = false; ex.setAttribute('aria-expanded', 'true'); $('#excluirNao').focus() })
+  $('#excluirNao').addEventListener('click', function () { conf.hidden = true; ex.setAttribute('aria-expanded', 'false'); ex.focus() })
+  $('#excluirSim').addEventListener('click', function () { conf.hidden = true; ex.hidden = true; done.hidden = false })
+})()
+</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+</body>
+</html>
