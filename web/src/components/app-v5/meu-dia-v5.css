@@ -1,0 +1,14 @@
+/* SyncLife DS v5 · Meu dia D (Fase 1). Só o que o protótipo tem inline
+   (prototypes/v5/app/meu-dia-d.html e .mobile.html): o .wrap da tela e os 2
+   ajustes de .nums. Todas as peças vêm de styles/app-v5.css. */
+
+.v5 .wrap.meu-dia{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+/* específico de Meu dia: os números vêm depois de "suas áreas" (sem hairline acima) e 2px menores que no T1 */
+.v5 .meu-dia .nums{border-top:1px solid var(--line);margin-top:40px}
+.v5 .dk:not(.mob) .meu-dia .nums .v{font-size:clamp(26px,3vw,38px)}
+/* inline do protótipo desktop: <div class="sec-head" style="margin-bottom:4px"> em "Pede você hoje" */
+.v5 .meu-dia .pede > .sec-head{margin-bottom:4px}
+
+/* mobile dedicado (meu-dia-d.mobile.html) */
+.v5 .mob .wrap.meu-dia{--wrap-max:100%;padding-left:20px;padding-right:20px}
+.v5 .mob .meu-dia .nums{margin-top:24px}

@@ -7,8 +7,11 @@ import { useBadges, useLifeScore, useStreak, useUserBadges } from '@/hooks/use-p
 import { useBudgets } from '@/hooks/use-budgets'
 import type { BudgetWithSpend } from '@/hooks/use-budgets'
 import { useAgenda } from '@/hooks/use-agenda'
+import type { AgendaEvent } from '@/hooks/use-agenda'
 import { useRecorrentes } from '@/hooks/use-recorrentes'
+import type { UpcomingOccurrence } from '@/hooks/use-recorrentes'
 import { calcProgress, useMetas } from '@/hooks/use-metas'
+import type { Goal } from '@/hooks/use-metas'
 import { fmtBRL } from '@/lib/format/currency'
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
@@ -69,8 +72,24 @@ export interface DiarioColofao {
   ultimaSinc: string
 }
 
+/**
+ * Dados crus que o Diário já carrega, expostos para quem compõe por cima
+ * (use-meu-dia) sem disparar as mesmas queries de novo.
+ */
+export interface DiarioBase {
+  budgets: BudgetWithSpend[]
+  budgetsLoading: boolean
+  /** Eventos da semana corrente (useAgenda mode week). */
+  eventosSemana: AgendaEvent[]
+  agendaLoading: boolean
+  contas: UpcomingOccurrence[]
+  goals: Goal[]
+  history: ReturnType<typeof useLifeScore>['history']
+}
+
 export interface DiarioData {
   loading: boolean
+  base: DiarioBase
   score: DiarioScore | null
   nums: DiarioNums | null
   hoje: DiarioHojeItem[]
@@ -371,5 +390,15 @@ export function useDiario(): DiarioData {
     userBadgesQ.loading ||
     badgesQ.loading
 
-  return { loading, score, nums, hoje, areas, atencao, metas, colofao, ticker }
+  const base: DiarioBase = {
+    budgets: budgetsQ.budgets,
+    budgetsLoading: budgetsQ.isLoading,
+    eventosSemana: agenda.events,
+    agendaLoading: agenda.loading,
+    contas: recorrentes.upcomingOccurrences,
+    goals: metasQ.goals,
+    history: lifeScore.history,
+  }
+
+  return { loading, base, score, nums, hoje, areas, atencao, metas, colofao, ticker }
 }

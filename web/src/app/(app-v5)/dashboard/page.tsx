@@ -1,14 +1,13 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { DiarioV5 } from '@/components/app-v5/DiarioV5'
+import { MeuDiaV5 } from '@/components/app-v5/MeuDiaV5'
 
-export const metadata: Metadata = { title: 'SyncLife · Diário' }
+export const metadata: Metadata = { title: 'SyncLife · Meu dia' }
 
-// Onda 2 · /dashboard vira o Diário v5. Server fino: resolve UMA vez o nome
+// Fase 1 · /dashboard é Meu dia D. Server fino: resolve UMA vez o nome
 // (profiles.preferred_name ?? full_name → primeiro nome; fallback: parte local
-// do e-mail) e a data de criação da conta (nº da edição), e delega o resto pro
-// componente client (dados via hooks).
+// do e-mail) e delega o resto pro componente client (dados via hooks).
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -33,5 +32,5 @@ export default async function DashboardPage() {
 
   const userName = nome ? nome.split(/\s+/)[0] : (user.email?.split('@')[0] ?? 'você')
 
-  return <DiarioV5 userName={userName} accountCreatedAt={user.created_at} />
+  return <MeuDiaV5 userName={userName} />
 }
