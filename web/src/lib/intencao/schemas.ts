@@ -50,6 +50,8 @@ export const RegRecorrente = z.object({
   name: Nome,
   amount: z.number().positive(),
   day_of_month: z.number().int().min(1).max(31),
+  /** primeira cobrança; ausente = hoje (o caminho "esperar" manda janeiro) */
+  start_date: DataISO.optional(),
   rotulo: Rotulo,
   href: Href,
 })

@@ -81,6 +81,7 @@ DECLARE
   uid      UUID  := auth.uid();
   track    UUID;
   skill    UUID;
+  skill_nova BOOLEAN := false;
   n_skills INT;
 BEGIN
   IF uid IS NULL THEN
@@ -113,9 +114,17 @@ BEGIN
     WHERE e.value->>'tabela' = 'skills'
     LIMIT 1;
 
-    INSERT INTO skills (user_id, name, category)
-    VALUES (uid, r->>'name', 'language')
-    RETURNING id INTO skill;
+    -- reaproveita a habilidade se o usuario ja tem uma com o mesmo nome
+    -- (nesse caso ela nao entra no "aplicado" como criada, para o desfazer nao apaga-la)
+    SELECT id INTO skill FROM skills
+    WHERE user_id = uid AND lower(name) = lower(r->>'name')
+    LIMIT 1;
+    IF skill IS NULL THEN
+      INSERT INTO skills (user_id, name, category)
+      VALUES (uid, r->>'name', 'language')
+      RETURNING id INTO skill;
+      skill_nova := true;
+    END IF;
   END IF;
 
   -- Passo 2: o resto, na ordem recebida (a skill entra na lista na posicao original)
@@ -123,6 +132,10 @@ BEGIN
     CASE r->>'tabela'
       WHEN 'skills' THEN
         novo := skill;
+        -- habilidade que ja existia: liga a trilha, mas nao entra no "aplicado"
+        IF NOT skill_nova THEN
+          CONTINUE;
+        END IF;
 
       WHEN 'study_tracks' THEN
         INSERT INTO study_tracks (user_id, name, category, target_date, cost, linked_skill_id)
@@ -146,7 +159,7 @@ BEGIN
           'expense',
           'monthly',
           (r->>'day_of_month')::int,
-          current_date
+          COALESCE((r->>'start_date')::date, current_date)
         )
         RETURNING id INTO novo;
 
