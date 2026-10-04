@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk mob">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>SyncLife · Life Sync Score · mobile · v5</title>
+<!-- Fase 1 · Life Score MOBILE dedicado (390×844), template T3. Mesmo conteúdo de life-score-v2.html em 1 coluna:
+     cabeçalho sticky com voltar → nome + estado → número principal (78 em 34px) → Sy em 1 linha → curva (140px)
+     → as 8 áreas (ativas em linha rica, inativas na linha quieta) → por dentro de cada área → como melhorar → rodapé.
+     Sem selo, sem ticker, sem banda clara. Camada de Sy como sheet. Alvos de toque >= 40px. E-02: sem JS, tudo visível.
+     Substitui app/life-score.mobile.html (mantido como histórico). -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* ── T3 mobile · cabeçalho sticky do objeto (gruda sob o bar de 56px; igual a _t3-detalhe.mobile.html) ── */
+  .subbar{position:sticky;top:56px;z-index:50;display:flex;align-items:center;gap:12px;height:48px;margin:0 -20px;padding:0 20px;
+    background:rgba(21,19,19,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .subbar .voltar{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding-right:6px;font:500 13px var(--int);color:var(--t2)}
+  .subbar .curto{font:500 14px var(--gro);letter-spacing:-.02em;color:var(--t1);margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .objeto{padding:24px 0 22px;border-bottom:1px solid var(--line)}
+  .objeto .nome{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px}
+  .objeto h1{font:500 28px/1.1 var(--gro);letter-spacing:-.035em}
+  .pill-q.ok{border-color:rgba(161,255,98,.4);color:var(--ele)}
+
+  /* ── T3 mobile · número principal (34px) + Sy ── */
+  .principal{padding:24px 0 24px;border-bottom:1px solid var(--line)}
+  .principal .pct{font:700 34px/1 var(--gro);letter-spacing:-.045em;margin-top:10px}
+  .principal .de{font:400 13.5px var(--int);color:var(--t2);margin-top:8px}
+  .principal .de b{font-weight:600}
+  .principal .de b.w{color:var(--coral)}
+  .principal .falta{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:8px}
+  .principal .falta .num{color:var(--t2)}
+  .principal .sy{margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
+
+  /* ── a curva: 140px ── */
+  .cvhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+  .cvhead .var{font:600 11px var(--gro)}
+  .cv{display:block;width:100%;height:140px}
+  .cvfoot{display:flex;justify-content:space-between;font:700 9.5px var(--gro);letter-spacing:.12em;color:var(--t3);margin-top:8px;text-transform:uppercase}
+  .cvfoot .num{color:var(--t2);font-size:12px;letter-spacing:-.02em}
+  .curva .prosa{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:12px}
+  .curva .prosa b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+
+  /* ── seções empilhadas (.sec do shared dá padding e hairline) ── */
+  .hint{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:6px}
+
+  /* as 8 áreas: score + tendência à direita; peso e contribuição na 2ª linha */
+  .areas .dimrow{grid-template-columns:32px 1fr auto;gap:4px 12px}
+  .areas .dimrow .rt{display:flex;align-items:baseline;gap:7px;grid-column:3;grid-row:1}
+  .areas .dimrow .mt{grid-column:2 / 4;grid-row:2;font:400 11.5px var(--int);color:var(--t3)}
+  .areas .dimrow .mt b{font:600 11.5px var(--gro);font-variant-numeric:tabular-nums;color:var(--t2)}
+  .areas .dimrow .mt b.ct{font-size:13px;color:var(--t1)}
+
+  /* por dentro de cada área: blocos empilhados; reaproveita .metas .mrow */
+  .area{border-top:1px solid var(--line-h);padding-top:14px;margin-top:22px}
+  .area:first-of-type{margin-top:18px}
+  .area .ah{display:flex;align-items:baseline;gap:10px;margin-bottom:2px}
+  .area .ah .di{font:700 11.5px var(--gro);color:var(--t3)}
+  .area .ah h3{font:500 16px var(--gro);letter-spacing:-.01em;flex:1}
+  .area .ah .sc{font:700 19px var(--gro);letter-spacing:-.03em}
+  .area .ah .sc small{font:400 11px var(--int);color:var(--t3);margin-left:6px;letter-spacing:0}
+  .metas .mrow.fraco .track i{background:var(--coral)}
+  .metas .mrow.fraco .pct{color:var(--coral)}
+
+  /* como melhorar: .row do shared (mobile: .r2 com valor + ação); o ganho em elétrico */
+  .melhorar .row .val{color:var(--ele)}
+  .melhorar .row:last-of-type{border-bottom:none}
+  .melhorar .nota{font:400 12px/1.6 var(--int);color:var(--t3);padding:12px 0 0}
+  /* dentro de .sec o shared trata .tx como linha de lista; aqui .row .tx é o texto da linha */
+  .sec .row .tx,.sec .row .tx:hover{display:block;padding:0;border-bottom:none}
+
+  /* ── anotação do protótipo (fora do fluxo, inert) ── */
+  .proto-estados{border-top:3px double var(--line-h);margin-top:24px;padding-top:30px;padding-bottom:72px}
+  .proto-estados > .wrap > .eyebrow{color:var(--coral)}
+  .pe{margin-top:26px}
+  .pe h4{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);margin-bottom:14px}
+  .pe .principal{padding:0;border-bottom:none}
+  .pe .vazio{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;font:400 13px/1.6 var(--int);color:var(--t3)}
+  .pe-nota{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:14px}
+  .pe-nota .pill-q{margin:0 2px}
+  .le{margin-top:36px}
+  .le ul{list-style:none;margin-top:12px;border-top:1px solid var(--line)}
+  .le li{padding:11px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.5 var(--int);color:var(--t2)}
+  .le li code{font:600 12px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .le li span{display:block;margin-top:3px}
+  .le li .k{margin-top:0}
+
+  /* alvo de toque do input do sheet (medido 16px): a pílula mantém os ~44px de altura */
+  .camada .cask .in{padding-top:1px;padding-bottom:1px}
+  .camada .cask input{min-height:40px}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button" aria-label="Registrar">+</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a class="on" href="meu-dia-d.mobile.html">Meu dia</a>
+    <a href="financas-a.mobile.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 1. cabeçalho sticky: voltar + nome curto -->
+  <div class="subbar">
+    <a class="voltar" id="voltar" href="meu-dia-d.mobile.html">← Meu dia</a>
+    <span class="curto">Life Sync Score</span>
+  </div>
+  <header class="objeto boot b1">
+    <p class="eyebrow">Life Sync Score</p>
+    <div class="nome">
+      <h1>A anatomia do número</h1>
+      <span class="pill-q ok">Consistente</span>
+    </div>
+  </header>
+
+  <!-- 2. número principal + Sy -->
+  <section class="principal boot b2" aria-label="Life Sync Score de hoje">
+    <p class="eyebrow">Hoje</p>
+    <div class="pct num" data-cnt="78">78</div>
+    <p class="de"><b class="num ele">+3</b> na semana · de <span class="num">75</span> para <span class="num">78</span></p>
+    <p class="falta">calculado hoje às <span class="num">14:05</span> · média ponderada das <span class="num">4</span> áreas ativas</p>
+    <div class="sy">
+      <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+      <div>
+        <p class="fala">O que mais pesou esta semana foi Corpo, <b class="num ele">+3</b>: três atividades e a consulta marcada.</p>
+        <p class="fontes">Calculado às 14:05 · fontes: 4 áreas ativas, 11 componentes, 30 dias de histórico</p>
+        <button class="falar" type="button" data-coach-open data-coach-seed="Sobre o meu score: ">Falar com Sy sobre o score →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. a curva de 30 dias -->
+  <section class="sec curva boot b3" aria-label="Últimos 30 dias">
+    <div class="cvhead">
+      <p class="eyebrow">Últimos 30 dias</p>
+      <span class="var num ele">+10 no período</span>
+    </div>
+    <svg class="cv" viewBox="0 0 350 140" preserveAspectRatio="none" role="img" aria-label="Curva do Life Sync Score nos últimos 30 dias, de 68 para 78">
+      <defs><linearGradient id="cvfill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a1ff62" stop-opacity=".22"/><stop offset="1" stop-color="#a1ff62" stop-opacity="0"/></linearGradient></defs>
+      <line x1="0" y1="14" x2="350" y2="14" stroke="rgba(255,255,255,.08)" vector-effect="non-scaling-stroke"/>
+      <line x1="0" y1="71" x2="350" y2="71" stroke="rgba(255,255,255,.08)" vector-effect="non-scaling-stroke"/>
+      <line x1="0" y1="128" x2="350" y2="128" stroke="rgba(255,255,255,.12)" vector-effect="non-scaling-stroke"/>
+      <path fill="url(#cvfill)" stroke="none" d="M5.00 111.71 C6.95 110.36 12.82 104.93 16.72 103.57 C20.63 102.21 24.54 104.93 28.45 103.57 C32.36 102.21 36.26 96.79 40.17 95.43 C44.08 94.07 47.99 96.79 51.90 95.43 C55.80 94.07 59.71 88.64 63.62 87.29 C67.53 85.93 71.44 85.93 75.34 87.29 C79.25 88.64 83.16 96.79 87.07 95.43 C90.98 94.07 94.89 81.86 98.79 79.14 C102.70 76.43 106.61 80.50 110.52 79.14 C114.43 77.79 118.33 72.36 122.24 71.00 C126.15 69.64 130.06 69.64 133.97 71.00 C137.87 72.36 141.78 80.50 145.69 79.14 C149.60 77.79 153.51 65.57 157.41 62.86 C161.32 60.14 165.23 64.21 169.14 62.86 C173.05 61.50 176.95 56.07 180.86 54.71 C184.77 53.36 188.68 53.36 192.59 54.71 C196.49 56.07 200.40 62.86 204.31 62.86 C208.22 62.86 212.13 57.43 216.03 54.71 C219.94 52.00 223.85 47.93 227.76 46.57 C231.67 45.21 235.57 45.21 239.48 46.57 C243.39 47.93 247.30 53.36 251.21 54.71 C255.11 56.07 259.02 57.43 262.93 54.71 C266.84 52.00 270.75 41.14 274.66 38.43 C278.56 35.71 282.47 37.07 286.38 38.43 C290.29 39.79 294.20 46.57 298.10 46.57 C302.01 46.57 305.92 39.79 309.83 38.43 C313.74 37.07 317.64 39.79 321.55 38.43 C325.46 37.07 329.37 31.64 333.28 30.29 C337.18 28.93 343.05 30.29 345.00 30.29 L345.00 128 L5.00 128 Z"/>
+      <path fill="none" stroke="#a1ff62" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M5.00 111.71 C6.95 110.36 12.82 104.93 16.72 103.57 C20.63 102.21 24.54 104.93 28.45 103.57 C32.36 102.21 36.26 96.79 40.17 95.43 C44.08 94.07 47.99 96.79 51.90 95.43 C55.80 94.07 59.71 88.64 63.62 87.29 C67.53 85.93 71.44 85.93 75.34 87.29 C79.25 88.64 83.16 96.79 87.07 95.43 C90.98 94.07 94.89 81.86 98.79 79.14 C102.70 76.43 106.61 80.50 110.52 79.14 C114.43 77.79 118.33 72.36 122.24 71.00 C126.15 69.64 130.06 69.64 133.97 71.00 C137.87 72.36 141.78 80.50 145.69 79.14 C149.60 77.79 153.51 65.57 157.41 62.86 C161.32 60.14 165.23 64.21 169.14 62.86 C173.05 61.50 176.95 56.07 180.86 54.71 C184.77 53.36 188.68 53.36 192.59 54.71 C196.49 56.07 200.40 62.86 204.31 62.86 C208.22 62.86 212.13 57.43 216.03 54.71 C219.94 52.00 223.85 47.93 227.76 46.57 C231.67 45.21 235.57 45.21 239.48 46.57 C243.39 47.93 247.30 53.36 251.21 54.71 C255.11 56.07 259.02 57.43 262.93 54.71 C266.84 52.00 270.75 41.14 274.66 38.43 C278.56 35.71 282.47 37.07 286.38 38.43 C290.29 39.79 294.20 46.57 298.10 46.57 C302.01 46.57 305.92 39.79 309.83 38.43 C313.74 37.07 317.64 39.79 321.55 38.43 C325.46 37.07 329.37 31.64 333.28 30.29 C337.18 28.93 343.05 30.29 345.00 30.29"/>
+      <circle cx="345" cy="30.29" r="4" fill="#a1ff62"/>
+    </svg>
+    <div class="cvfoot"><span>Há 30 dias · <span class="num">68</span></span><span>Hoje · <span class="num">78</span></span></div>
+    <p class="prosa">De <b>68</b> para <b>78</b> em <b>30</b> dias, sem recuo maior que <b>1</b> ponto. Os três saltos de 2 pontos coincidem com semanas em que Finanças e Corpo subiram juntas.</p>
+  </section>
+
+  <!-- 4. as 8 áreas -->
+  <section class="sec areas rv" id="areas" aria-label="As 8 áreas">
+    <div class="sec-head"><p class="eyebrow">As 8 áreas</p><a href="meu-dia-d.mobile.html#areas">Em Meu dia →</a></div>
+    <p class="hint">Cada área ativa entra com o seu peso; o das desligadas é redistribuído. A contribuição é o que cada uma soma aos <span class="num">78</span>.</p>
+    <a class="dimrow" href="financas-a.mobile.html">
+      <span class="di num">01</span><div class="nm">Finanças</div>
+      <span class="rt"><span class="sc num">83</span><span class="tr num ele">▲2</span></span>
+      <div class="mt">peso <b class="num">20%</b> · contribui <b class="ct num">27,7</b> pts</div>
+    </a>
+    <div class="dimrow">
+      <span class="di num">02</span><div class="nm">Futuro</div>
+      <span class="rt"><span class="sc num">79</span><span class="tr num ele">▲1</span></span>
+      <div class="mt">peso <b class="num">20%</b> · contribui <b class="ct num">26,3</b> pts</div>
+    </div>
+    <div class="dimrow">
+      <span class="di num">04</span><div class="nm">Corpo</div>
+      <span class="rt"><span class="sc num">69</span><span class="tr num ele">▲3</span></span>
+      <div class="mt">peso <b class="num">15%</b> · contribui <b class="ct num">17,3</b> pts</div>
+    </div>
+    <div class="dimrow">
+      <span class="di num">08</span><div class="nm">Experiências</div>
+      <span class="rt"><span class="sc num">78</span><span class="tr num" style="color:var(--t3)">–</span></span>
+      <div class="mt">peso <b class="num">5%</b> · contribui <b class="ct num">6,5</b> pts</div>
+    </div>
+    <p class="outras">Outras: 03 Tempo · 05 Mente · 06 Patrimônio · 07 Carreira · sem peso: desligadas no onboarding. As parcelas somam <span class="num">77,8</span>; o número que você vê é o arredondamento.</p>
+  </section>
+
+  <!-- 5. por dentro de cada área -->
+  <section class="sec dentro rv" id="dentro" aria-label="Por dentro de cada área">
+    <div class="sec-head"><p class="eyebrow">Por dentro de cada área</p></div>
+    <p class="hint">Cada componente entra no score da área pelo seu peso interno. O mais fraco de cada uma está em coral: é ali que o número perde.</p>
+    <article class="area">
+      <div class="ah"><span class="di num">01</span><h3>Finanças</h3><span class="sc num">83<small>peso 20%</small></span></div>
+      <div class="metas">
+        <div class="mrow"><div class="r1"><span class="nm">Orçamento do mês</span><span class="pct num">90</span></div><div class="track"><i style="width:90%"></i></div><div class="sub">40% da área</div></div>
+        <div class="mrow fraco"><div class="r1"><span class="nm">Registro de transações</span><span class="pct num">75</span></div><div class="track"><i style="width:75%"></i></div><div class="sub">30% da área</div></div>
+        <div class="mrow"><div class="r1"><span class="nm">Tendência de saldo</span><span class="pct num">80</span></div><div class="track"><i style="width:80%"></i></div><div class="sub">30% da área</div></div>
+      </div>
+    </article>
+    <article class="area">
+      <div class="ah"><span class="di num">02</span><h3>Futuro</h3><span class="sc num">79<small>peso 20%</small></span></div>
+      <div class="metas">
+        <div class="mrow"><div class="r1"><span class="nm">Progresso dos objetivos</span><span class="pct num">88</span></div><div class="track"><i style="width:88%"></i></div><div class="sub">50% da área</div></div>
+        <div class="mrow fraco"><div class="r1"><span class="nm">Objetivos concluídos no trimestre</span><span class="pct num">70</span></div><div class="track"><i style="width:70%"></i></div><div class="sub">50% da área</div></div>
+      </div>
+    </article>
+    <article class="area">
+      <div class="ah"><span class="di num">04</span><h3>Corpo</h3><span class="sc num">69<small>peso 15%</small></span></div>
+      <div class="metas">
+        <div class="mrow"><div class="r1"><span class="nm">Atividades da semana</span><span class="pct num">75</span></div><div class="track"><i style="width:75%"></i></div><div class="sub">30% da área</div></div>
+        <div class="mrow"><div class="r1"><span class="nm">Consulta agendada</span><span class="pct num">80</span></div><div class="track"><i style="width:80%"></i></div><div class="sub">30% da área</div></div>
+        <div class="mrow fraco"><div class="r1"><span class="nm">Registros de peso</span><span class="pct num">50</span></div><div class="track"><i style="width:50%"></i></div><div class="sub">20% da área</div></div>
+        <div class="mrow"><div class="r1"><span class="nm">Hidratação</span><span class="pct num">60</span></div><div class="track"><i style="width:60%"></i></div><div class="sub">20% da área</div></div>
+      </div>
+    </article>
+    <article class="area">
+      <div class="ah"><span class="di num">08</span><h3>Experiências</h3><span class="sc num">78<small>peso 5%</small></span></div>
+      <div class="metas">
+        <div class="mrow"><div class="r1"><span class="nm">Viagens planejadas e feitas</span><span class="pct num">90</span></div><div class="track"><i style="width:90%"></i></div><div class="sub">60% da área</div></div>
+        <div class="mrow fraco"><div class="r1"><span class="nm">Bucket list</span><span class="pct num">60</span></div><div class="track"><i style="width:60%"></i></div><div class="sub">40% da área</div></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 6. como melhorar -->
+  <section class="sec melhorar last rv" id="melhorar" aria-label="Como melhorar">
+    <div class="sec-head"><p class="eyebrow">Como melhorar</p></div>
+    <div class="row">
+      <span class="ix num">04</span>
+      <div>
+        <div class="tx"><strong>Registrar o peso desta semana</strong></div>
+        <div class="sub">O registro de peso vale 20% do score de Corpo e está pela metade.</div>
+      </div>
+      <div class="r2"><span class="val num">até +2,5 pts</span><a class="btn-sm ghost act" href="#" title="04 Corpo, Fase 4">Abrir área</a></div>
+    </div>
+    <div class="row">
+      <span class="ix num">04</span>
+      <div>
+        <div class="tx"><strong>Fechar a meta de água de hoje</strong></div>
+        <div class="sub">Hidratação vale outros 20% de Corpo e está em 60.</div>
+      </div>
+      <div class="r2"><span class="val num">até +2 pts</span><a class="btn-sm ghost act" href="#" title="04 Corpo, Fase 4">Abrir área</a></div>
+    </div>
+    <div class="row">
+      <span class="ix num">02</span>
+      <div>
+        <div class="tx"><strong>Concluir um objetivo do trimestre</strong></div>
+        <div class="sub">Objetivos concluídos valem metade do score de Futuro, a área de maior peso junto com Finanças.</div>
+      </div>
+      <div class="r2"><span class="val num">até +5 pts</span><a class="btn-sm ghost act" href="#" title="02 Futuro, Fase 3">Abrir área</a></div>
+    </div>
+    <p class="nota">Ganho estimado se o componente chegar a <span class="num">100</span>, com os pesos de hoje. Nada é lançado daqui: cada ação acontece na própria área.</p>
+  </section>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Média ponderada das áreas ativas, com os pesos redistribuídos.</span>
+  <div class="r">
+    <span>Semana <b class="num">40</b> · fecha domingo às <b class="num">21:30</b></span>
+    <span>Último cálculo hoje às <b class="num">14:05</b></span>
+  </div>
+</footer>
+
+<!-- camada de Sy: sheet -->
+<div class="scrim"></div>
+<aside class="camada sheet" aria-label="Sy">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: o seu score</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o seu score. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">O que mais derruba o meu número?</button>
+        <button class="chip" type="button">Por que Finanças pesa mais que Corpo?</button>
+        <button class="chip" type="button">E se eu ligar as áreas desligadas?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:08</div>
+      <div class="bub u">O que mais derruba o meu número?</div>
+      <div class="bub a">Corpo. A área vale <strong class="num">15%</strong> do total e está em <strong class="num">69</strong>, o menor entre as ativas. Dentro dela, <span class="w">registros de peso está em 50</span> e hidratação em <strong class="num">60</strong>: os dois juntos valem 40% da área.
+        <span class="meta">Fontes: score por área · componentes do motor · 30 dias de histórico</span>
+      </div>
+      <div class="bub u">E se eu ligar as quatro que estão desligadas?</div>
+      <div class="bub a">O peso se redistribui: Finanças e Futuro caem de <strong class="num">33%</strong> para <strong class="num">20%</strong> cada e a conta passa a considerar as oito áreas. Com os números de hoje o total ficaria em <strong class="num">74</strong>, porque Mente entra em <strong class="num">58</strong>.
+        <span class="meta">Fontes: pesos do motor · áreas desligadas no onboarding</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte sobre o seu score">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<!-- ═══ anotação do protótipo: estados + o que Sy lê aqui (fora do fluxo) ═══ -->
+<section class="proto-estados" inert>
+  <div class="wrap">
+    <p class="eyebrow">Estados · anotação do protótipo</p>
+    <div class="pe">
+      <h4>Sem histórico ainda · curva vazia</h4>
+      <div class="cvhead"><p class="eyebrow">Últimos 30 dias</p></div>
+      <p class="vazio">A curva aparece a partir do 7º dia. Até lá, o número de hoje é o que existe.</p>
+      <p class="pe-nota">O número principal e as áreas aparecem normalmente; "+3 na semana" vira "primeira semana". Sy fala só do que pesou hoje.</p>
+    </div>
+    <div class="pe">
+      <h4>Score caiu · delta em coral, Sy diz o que caiu</h4>
+      <div class="principal">
+        <p class="eyebrow">Hoje</p>
+        <div class="pct num">76</div>
+        <p class="de"><b class="num w">–2</b> na semana · de <span class="num">78</span> para <span class="num">76</span></p>
+        <p class="falta">calculado hoje às <span class="num">14:05</span> · média ponderada das <span class="num">4</span> áreas ativas</p>
+        <div class="sy">
+          <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+          <div>
+            <p class="fala">O que mais pesou esta semana foi Corpo, <b class="num w">–2</b>: dois treinos ficaram para trás e o peso não foi registrado.</p>
+            <p class="fontes">Calculado às 14:05 · fontes: 4 áreas ativas, 11 componentes, 30 dias de histórico</p>
+          </div>
+        </div>
+      </div>
+      <p class="pe-nota">Pílula <span class="pill-q">Em queda</span> no lugar de "Consistente" quando o delta da semana é negativo. A curva termina em descida; o dot final continua elétrico (é o dado vivo, não um alerta).</p>
+    </div>
+    <div class="pe areas">
+      <h4>Todas as 8 áreas ativas · lista sem a linha "Outras"</h4>
+      <div class="dimrow"><span class="di num">01</span><div class="nm">Finanças</div><span class="rt"><span class="sc num">83</span><span class="tr num ele">▲2</span></span><div class="mt">peso <b class="num">20%</b> · contribui <b class="ct num">16,6</b> pts</div></div>
+      <div class="dimrow"><span class="di num">02</span><div class="nm">Futuro</div><span class="rt"><span class="sc num">79</span><span class="tr num ele">▲1</span></span><div class="mt">peso <b class="num">20%</b> · contribui <b class="ct num">15,8</b> pts</div></div>
+      <div class="dimrow"><span class="di num">03</span><div class="nm">Tempo</div><span class="rt"><span class="sc num">71</span><span class="tr num" style="color:var(--t3)">–</span></span><div class="mt">peso <b class="num">10%</b> · contribui <b class="ct num">7,1</b> pts</div></div>
+      <div class="dimrow"><span class="di num">04</span><div class="nm">Corpo</div><span class="rt"><span class="sc num">69</span><span class="tr num ele">▲3</span></span><div class="mt">peso <b class="num">15%</b> · contribui <b class="ct num">10,4</b> pts</div></div>
+      <div class="dimrow"><span class="di num">05</span><div class="nm">Mente</div><span class="rt"><span class="sc num">58</span><span class="tr num" style="color:var(--coral)">▼1</span></span><div class="mt">peso <b class="num">10%</b> · contribui <b class="ct num">5,8</b> pts</div></div>
+      <div class="dimrow"><span class="di num">06</span><div class="nm">Patrimônio</div><span class="rt"><span class="sc num">76</span><span class="tr num ele">▲1</span></span><div class="mt">peso <b class="num">10%</b> · contribui <b class="ct num">7,6</b> pts</div></div>
+      <div class="dimrow"><span class="di num">07</span><div class="nm">Carreira</div><span class="rt"><span class="sc num">69</span><span class="tr num ele">▲1</span></span><div class="mt">peso <b class="num">10%</b> · contribui <b class="ct num">6,9</b> pts</div></div>
+      <div class="dimrow"><span class="di num">08</span><div class="nm">Experiências</div><span class="rt"><span class="sc num">78</span><span class="tr num" style="color:var(--t3)">–</span></span><div class="mt">peso <b class="num">5%</b> · contribui <b class="ct num">3,9</b> pts</div></div>
+      <p class="pe-nota">Sem redistribuição: os pesos do motor valem na íntegra e as parcelas somam <span class="num">74,1</span>, logo o número é <span class="num">74</span>. "Por dentro de cada área" ganha 8 blocos e a nota "sem peso: desligadas no onboarding" some.</p>
+    </div>
+
+    <div class="le">
+      <p class="eyebrow">O que Sy lê aqui</p>
+      <ul>
+        <li><span class="k"><code>life_sync_scores</code></span><span>o score de hoje e os 30 dias de histórico: total, delta da semana, score e contribuição por área, componentes do motor, hora do cálculo</span></li>
+        <li><span class="k"><code>profiles.active_modules</code></span><span>quais das 8 áreas estão ligadas: define quem entra na conta e como os pesos se redistribuem</span></li>
+        <li><span class="k"><code>transactions</code>, <code>budgets</code></span><span>01 Finanças: Orçamento do mês, Registro de transações e Tendência de saldo</span></li>
+        <li><span class="k"><code>goals</code>, <code>goal_contributions</code></span><span>02 Futuro: Progresso dos objetivos e Objetivos concluídos no trimestre</span></li>
+        <li><span class="k"><code>weight_entries</code>, <code>daily_water_intake</code>, <code>medical_appointments</code></span><span>04 Corpo: Atividades da semana, Consulta agendada, Registros de peso, Hidratação</span></li>
+        <li><span class="k"><code>trips</code>, <code>bucket_list_items</code></span><span>08 Experiências: Viagens planejadas e feitas, Bucket list</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>SLApp.boot()</script>
+<script type="module">import { ligarSy40 } from '../shared/sy40.js'; ligarSy40()</script>
+</body>
+</html>
