@@ -35,7 +35,7 @@ https://claude.ai/artifact/CNmYcHzfWBJ2DDcCBzLqrd
 
 **Próximo: o PLANO DE ROLLOUT** `docs/superpowers/plans/2026-10-03-rollout-ds-v5-sem-metafora.md` (9 fases,
 63 telas D+M, 4 templates, 36 modais → sheets), **APROVADO pelo usuário em 2026-10-03** ("Aprovado o plano pode começar").
-Substitui as Ondas 02 a 14. **Fase 0 em andamento:** mobiles de D (`app/meu-dia-d.mobile.html`) e A (`app/financas-a.mobile.html`) ENTREGUES em 2026-10-03, QA headless PASS (console 0, sem overflow em 390, alvos ≥ 40px, sheet, teclado), **aguardando aceite** (artifacts privados pro celular: D mobile https://claude.ai/artifact/CGEroAi6Lk3Gfnfhd8RT5G). Faltam: mock em outubro, peças pra `shared/`, templates T2/T3/T4 D+M, DS/spec, hub por fases.
+Substitui as Ondas 02 a 14. **Fase 0 em andamento:** mobiles de D (`app/meu-dia-d.mobile.html`) e A (`app/financas-a.mobile.html`) ENTREGUES em 2026-10-03, QA headless PASS (console 0, sem overflow em 390, alvos ≥ 40px, sheet, teclado), **APROVADOS pelo usuário em 2026-10-03** (artifacts: D mobile https://claude.ai/artifact/CGEroAi6Lk3Gfnfhd8RT5G · A mobile https://claude.ai/artifact/XXmoGtsj69HPm72z5MhQ7o). Faltam: mock em outubro, peças pra `shared/`, templates T2/T3/T4 D+M, DS/spec, hub por fases.
 
 **Ondas 00 e 01 fechadas e no ar em `web/`** (não entram na revisão). **Ondas 04 a 14 não começaram.**
 Voz (gênero, duração) e pronúncia de "Sy": adiadas pelo usuário, não bloqueiam.
