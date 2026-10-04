@@ -1,0 +1,124 @@
+/* Sua semana (Fase 1, Task 14) · CSS específico da tela, porte 1:1 do <style> inline de
+   prototypes/v5/app/sua-semana.html (desktop) e sua-semana.mobile.html (mobile dedicado).
+   Escopo: a raiz `main.ss-v5`. Desktop sob `.v5 .dk:not(.mob)`; o `html.mob` do protótipo vira
+   `.v5 .mob` (AppV5Boot); o `html.fechada` vira `main.ss-v5.fechada`. Peças compartilhadas
+   (.sy, .nums, .row, .pill-q, .outras, .colofao, .sec) ficam em styles/app-v5.css.
+   Fora do porte: a anotação de estados do protótipo (.proto-estados/.pe/.le). */
+
+/* ── desktop ── */
+.v5 .dk:not(.mob) .ss-v5.wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+.v5 .dk:not(.mob) .ss-v5 .voltar{display:inline-flex;align-items:center;gap:8px;margin-top:28px;font:500 12.5px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+.v5 .dk:not(.mob) .ss-v5 .voltar:hover{color:var(--t1)}
+.v5 .dk:not(.mob) .ss-v5 .objeto{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;padding:22px 0 30px;border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .ss-v5 .objeto .nome{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
+.v5 .dk:not(.mob) .ss-v5 .objeto h1{font:500 32px/1.1 var(--gro);letter-spacing:-.035em}
+.v5 .dk:not(.mob) .ss-v5 .pill-q.ok{border-color:rgba(161,255,98,.4);color:var(--ele)}
+.v5 .dk:not(.mob) .ss-v5 .pill-q.off{color:var(--t3);border-color:var(--line)}
+.v5 .dk:not(.mob) .ss-v5 .principal{display:grid;grid-template-columns:1.3fr 1fr;gap:clamp(36px,5vw,80px);padding:36px 0 36px;border-bottom:1px solid var(--line);align-items:start}
+.v5 .dk:not(.mob) .ss-v5 .sc{display:flex;align-items:baseline;gap:12px;margin-top:12px;flex-wrap:wrap}
+.v5 .dk:not(.mob) .ss-v5 .sc .from{font:500 22px/1 var(--gro);letter-spacing:-.03em;color:var(--t3)}
+.v5 .dk:not(.mob) .ss-v5 .sc .ar{font:400 20px/1 var(--gro);color:var(--t3)}
+.v5 .dk:not(.mob) .ss-v5 .sc .to{font:700 44px/1 var(--gro);letter-spacing:-.045em}
+.v5 .dk:not(.mob) .ss-v5 .sc .to.dn{color:var(--coral)}
+.v5 .dk:not(.mob) .ss-v5 .sc .tr{font:600 13px var(--gro);color:var(--ele)}
+.v5 .dk:not(.mob) .ss-v5 .sc .tr.dn{color:var(--coral)}
+.v5 .dk:not(.mob) .ss-v5 .sc .pill-q{margin-left:4px;position:relative;top:-4px}
+.v5 .dk:not(.mob) .ss-v5 .principal .resumo{font:400 14px var(--int);color:var(--t2);margin-top:14px}
+.v5 .dk:not(.mob) .ss-v5 .principal .resumo b{color:var(--t1);font-weight:600}
+.v5 .dk:not(.mob) .ss-v5 .principal .sy{margin-top:0;max-width:none}
+.v5 .dk:not(.mob) .ss-v5 .principal .sy .fala{font-size:16px}
+.v5 .dk:not(.mob) .ss-v5 .secao{padding:40px 0 40px;border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .ss-v5 .secao-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.v5 .dk:not(.mob) .ss-v5 .secao-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+.v5 .dk:not(.mob) .ss-v5 .secao-head a:hover{color:var(--t1)}
+.v5 .dk:not(.mob) .ss-v5 .mud{display:grid;grid-template-columns:34px 1fr auto;gap:14px 16px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line);transition:padding-left .35s var(--ease)}
+.v5 .dk:not(.mob) .ss-v5 .mud:last-of-type{border-bottom:none}
+.v5 .dk:not(.mob) .ss-v5 .mud:hover{padding-left:8px}
+.v5 .dk:not(.mob) .ss-v5 .mud .di{font:700 12px var(--gro);color:var(--t3)}
+.v5 .dk:not(.mob) .ss-v5 .mud:hover .di{color:var(--roxo)}
+.v5 .dk:not(.mob) .ss-v5 .mud .nm{font:500 16px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.v5 .dk:not(.mob) .ss-v5 .mud .pq{font:400 12px/1.5 var(--int);color:var(--t3);margin-top:3px}
+.v5 .dk:not(.mob) .ss-v5 .mud .sc{margin-top:0;gap:7px;flex-wrap:nowrap}
+.v5 .dk:not(.mob) .ss-v5 .mud .sc .from{font-size:15px}
+.v5 .dk:not(.mob) .ss-v5 .mud .sc .ar{font-size:13px}
+.v5 .dk:not(.mob) .ss-v5 .mud .sc .to{font:700 22px/1 var(--gro);letter-spacing:-.03em}
+.v5 .dk:not(.mob) .ss-v5 .mud .sc .tr{font-size:11px;margin-left:2px}
+.v5 .dk:not(.mob) .ss-v5 .outras{font:400 12px var(--int);color:var(--t3);padding:14px 0 0;border-top:none;margin-top:0}
+.v5 .dk:not(.mob) .ss-v5 .secao .row:last-of-type{border-bottom:none}
+.v5 .dk:not(.mob) .ss-v5 .fechar{display:grid;grid-template-columns:1fr auto;gap:clamp(24px,4vw,56px);align-items:center;padding:34px 0 34px;border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .ss-v5 .fechar h2{font:500 22px/1.2 var(--gro);letter-spacing:-.025em;margin-top:10px}
+.v5 .dk:not(.mob) .ss-v5 .fechar .tx{font:400 13px/1.6 var(--int);color:var(--t2);max-width:52ch;margin-top:8px}
+.v5 .dk:not(.mob) .ss-v5 .fechar .tx b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+.v5 .dk:not(.mob) .ss-v5 .fechar .btn-sm.roxo{padding:12px 24px}
+.v5 .dk:not(.mob) .ss-v5 .fechar .btn-sm[disabled]{opacity:.42;cursor:not-allowed}
+.v5 .dk:not(.mob) .ss-v5 .conf{display:inline-flex;align-items:center;gap:9px;font:600 13px var(--int);color:var(--ele);white-space:nowrap}
+.v5 .dk:not(.mob) .ss-v5 .conf svg{flex-shrink:0}
+.v5 .dk:not(.mob) .ss-v5 .conf .num{font-weight:700}
+@media (max-width:960px){
+  .v5 .dk:not(.mob) .ss-v5 .objeto{flex-direction:column;align-items:flex-start}
+  .v5 .dk:not(.mob) .ss-v5 .principal{grid-template-columns:1fr}
+  .v5 .dk:not(.mob) .ss-v5 .fechar{grid-template-columns:1fr}
+}
+
+
+/* estados reais que o protótipo só anota: sem número (–) e sem dados antes de quinta */
+.v5 .dk:not(.mob) .ss-v5 .sc .to.vz{color:var(--t3)}
+.v5 .dk:not(.mob) .ss-v5 .vazio{border-bottom:1px solid var(--line);padding:22px 0;font:400 13px/1.6 var(--int);color:var(--t3)}
+.v5 .dk:not(.mob) .ss-v5 .vazio .num{color:var(--t2)}
+.v5 .dk:not(.mob) .ss-v5 .erro{font:400 12px var(--int);color:var(--coral);margin-top:10px}
+
+/* ── mobile dedicado ── */
+.v5 .mob .ss-v5.wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+/* espaço para a barra de ações fixa, que no app fica ACIMA da bottom bar (56px) */
+.v5 .mob main.ss-v5.wrap{padding-bottom:calc(56px + 84px + env(safe-area-inset-bottom))}
+.v5 .mob main.ss-v5.wrap.fechada{padding-bottom:calc(56px + env(safe-area-inset-bottom))}
+.v5 .mob .ss-v5 .subbar{position:sticky;top:56px;z-index:50;display:flex;align-items:center;gap:12px;height:48px;margin:0 -20px;padding:0 20px; background:rgba(21,19,19,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.v5 .mob .ss-v5 .subbar .voltar{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding-right:6px;font:500 13px var(--int);color:var(--t2)}
+.v5 .mob .ss-v5 .subbar .curto{font:500 14px var(--gro);letter-spacing:-.02em;color:var(--t1);margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v5 .mob .ss-v5 .objeto{padding:24px 0 22px;border-bottom:1px solid var(--line)}
+.v5 .mob .ss-v5 .objeto .nome{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px}
+.v5 .mob .ss-v5 .objeto h1{font:500 28px/1.1 var(--gro);letter-spacing:-.035em}
+.v5 .mob .ss-v5 .pill-q.ok{border-color:rgba(161,255,98,.4);color:var(--ele)}
+.v5 .mob .ss-v5 .pill-q.off{color:var(--t3);border-color:var(--line)}
+.v5 .mob .ss-v5 .principal{padding:24px 0 24px;border-bottom:1px solid var(--line)}
+.v5 .mob .ss-v5 .sc{display:flex;align-items:baseline;gap:10px;margin-top:10px;flex-wrap:wrap}
+.v5 .mob .ss-v5 .sc .from{font:500 20px/1 var(--gro);letter-spacing:-.03em;color:var(--t3)}
+.v5 .mob .ss-v5 .sc .ar{font:400 18px/1 var(--gro);color:var(--t3)}
+.v5 .mob .ss-v5 .sc .to{font:700 44px/1 var(--gro);letter-spacing:-.045em}
+.v5 .mob .ss-v5 .sc .to.dn{color:var(--coral)}
+.v5 .mob .ss-v5 .sc .tr{font:600 12.5px var(--gro);color:var(--ele)}
+.v5 .mob .ss-v5 .sc .tr.dn{color:var(--coral)}
+.v5 .mob .ss-v5 .sc .pill-q{margin-left:2px;position:relative;top:-4px}
+.v5 .mob .ss-v5 .principal .resumo{font:400 13.5px/1.5 var(--int);color:var(--t2);margin-top:12px}
+.v5 .mob .ss-v5 .principal .resumo b{color:var(--t1);font-weight:600}
+.v5 .mob .ss-v5 .principal .sy{margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
+.v5 .mob .ss-v5 .mud{display:grid;grid-template-columns:32px 1fr auto;gap:4px 12px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
+.v5 .mob .ss-v5 .mud:last-of-type{border-bottom:none}
+.v5 .mob .ss-v5 .mud .di{font:700 11.5px var(--gro);color:var(--t3);padding-top:2px}
+.v5 .mob .ss-v5 .mud .nm{font:500 15.5px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.v5 .mob .ss-v5 .mud .pq{grid-column:2 / -1;font:400 12px/1.5 var(--int);color:var(--t3)}
+.v5 .mob .ss-v5 .mud .sc{margin-top:0;gap:6px;flex-wrap:nowrap;align-self:center}
+.v5 .mob .ss-v5 .mud .sc .from{font-size:14px}
+.v5 .mob .ss-v5 .mud .sc .ar{font-size:12px}
+.v5 .mob .ss-v5 .mud .sc .to{font:700 21px/1 var(--gro);letter-spacing:-.03em}
+.v5 .mob .ss-v5 .mud .sc .tr{font-size:11px}
+.v5 .mob .ss-v5 .outras{font:400 12px/1.7 var(--int);color:var(--t3);padding:12px 0 0;border-top:none;margin-top:0}
+.v5 .mob .ss-v5 .sec .row:last-of-type{border-bottom:none}
+.v5 .mob .ss-v5 .sec .row .tx,.v5 .mob .ss-v5 .sec .row .tx:hover{display:block;padding:0;border-bottom:none;gap:normal}
+/* protótipo: bottom 0 + safe-area; no app a bottom bar ocupa o rodapé, a barra sobe 56px */
+.v5 .mob .ss-v5 .acoes-fixas{position:fixed;left:0;right:0;bottom:calc(56px + env(safe-area-inset-bottom));z-index:55;padding:12px 20px; background:rgba(21,19,19,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+.v5 .mob .ss-v5 .acoes-fixas .btn-sm{width:100%;justify-content:center;min-height:46px;font-size:13.5px}
+.v5 .mob .ss-v5 .acoes-fixas .btn-sm[disabled]{opacity:.42;cursor:not-allowed}
+.v5 .mob .ss-v5 .fechamento{padding:26px 0 30px}
+.v5 .mob .ss-v5 .fechamento h2{font:500 20px/1.2 var(--gro);letter-spacing:-.025em;margin-top:10px}
+.v5 .mob .ss-v5 .fechamento .tx{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:8px}
+.v5 .mob .ss-v5 .fechamento .tx b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+.v5 .mob .ss-v5 .conf{display:flex;align-items:flex-start;gap:9px;margin-top:16px;font:600 13px/1.5 var(--int);color:var(--ele)}
+.v5 .mob .ss-v5 .conf svg{flex-shrink:0;margin-top:3px}
+.v5 .mob .ss-v5 .conf .num{font-weight:700}
+
+
+.v5 .mob .ss-v5 .sc .to.vz{color:var(--t3)}
+.v5 .mob .ss-v5 .vazio{border-bottom:1px solid var(--line);padding:20px 0;font:400 13px/1.6 var(--int);color:var(--t3)}
+.v5 .mob .ss-v5 .vazio .num{color:var(--t2)}
+.v5 .mob .ss-v5 .erro{font:400 12px var(--int);color:var(--coral);margin-top:10px}
