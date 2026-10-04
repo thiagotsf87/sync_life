@@ -24,11 +24,18 @@ estão (decisão explícita), chrome, camada, check-in, Enxame **pequeno e quiet
 decisões de identidade (Sy, sem artigo), check-in na conversa, `/coach` como arquivo da conversa, e a
 fatia do N3 (uma intenção, cinco áreas) como escopo da Onda 03.
 
-**Frente ativa: escolha entre três versões de Meu dia + Finanças** (desktop, 1440), em
-`prototypes/v5/app/{meu-dia,financas}-{a,b,c}.html`, brief em
-`docs/superpowers/plans/2026-10-03-meu-dia-versoes-brief.md`. A: Sy fala, a lista responde · B: blocos
-por área · C: a conversa é a casa. O usuário escolhe vendo; a vencedora ganha mobile dedicado e reabre a
-anatomia do DS (§1, §6.2, §6.3, §6.4).
+**✅ APROVADOS em desktop (2026-10-03): Meu dia D (`app/meu-dia-d.html`) e Finanças A (`app/financas-a.html`).**
+As três primeiras Meu dia (A lista, B blocos, C conversa) foram recusadas: "não senti nenhuma das ideias
+propostas aplicadas". A D nasceu das ideias do estudo **Espaço** do Codex (`prototypes/codex-diario/espaco.html`,
+fora do git): margem de vida como número principal (tempo livre do dia + lazer + meta), **uma escolha com
+mais de um efeito** (laboratório do jantar com prévia reversível e Desfazer), **ritmo autodeclarado** no lugar
+do check-in de humor, e **acordo de atenção com Sy** (quando ele pode sugerir). Life Score mantido como número
+quieto. Publicada também como artifact privado para leitura no celular:
+https://claude.ai/artifact/CNmYcHzfWBJ2DDcCBzLqrd
+
+**Próximo:** mobile dedicado 390×844 das duas telas → aceite → reescrever DS §1/§6.2/§6.3/§6.4 e a spec
+(§4.2, §7.2, §7.3, §8, §11) com a anatomia da D → implementação em `web/` (refazer `/dashboard`). Brief das
+versões: `docs/superpowers/plans/2026-10-03-meu-dia-versoes-brief.md`.
 
 **Ondas 00 e 01 fechadas e no ar em `web/`** (não entram na revisão). **Ondas 04 a 14 não começaram.**
 Voz (gênero, duração) e pronúncia de "Sy": adiadas pelo usuário, não bloqueiam.
@@ -61,6 +68,7 @@ Voz (gênero, duração) e pronúncia de "Sy": adiadas pelo usuário, não bloqu
 | **"Assessor" é palavra interna** | Descreve o papel de Sy nas conversas de produto. Nunca na UI nem no marketing: "Meu Assessor" ocupa a palavra no Brasil | 2026-10-03 |
 | **Enxame pequeno e quieto** | Sy continua tendo corpo, como avatar de 40px em `repouso` (e `ouvindo` com o input em foco). Sem palco, sem crescer, sem voz nesta fase | 2026-10-03 |
 | **Fatia do N3 na Onda 03** | Uma intenção composta ("quero começar um curso de inglês") de ponta a ponta, tocando `study_tracks`, `agenda_events`, `recurring_transactions`, `skills`, `goals`, com arquitetura planejar/aplicar (sem tool calling), escolha de registros como confirmação e Desfazer único. Restante do N3: sprint próprio | 2026-10-03 |
+| **Meu dia D + Finanças A aprovadas (desktop)** | Anatomia de Meu dia: cabeçalho curto + score quieto → **margem de hoje** (anel do tempo livre, linha do dia, lazer, compromissos, meta) ao lado do **ritmo** (3 opções, opcional) → **laboratório** (2 a 3 cenários, 3 efeitos, hipóteses abertas, Experimentar/Desfazer) → Pede você hoje (lista curta) → O dia continua seu + **acordo com Sy** → Suas áreas → Números → Sua semana. Sy = Enxame 40px em dois lugares, nunca protagonista. Finanças A: Sy em 1 ou 2 linhas no topo e nada mais | 2026-10-03 |
 | **Enquanto você digita, o portão e a alça saem** | Com o teclado aberto (508px de viewport útil) não cabem Sy, fala, lâmina, alça, linha, fichas **e** portão. A regra não é de layout, é de produto: quem está escrevendo a nota do check-in está respondendo, e responder já abre a edição. Voltam no blur | 2026-08-09 |
 
 ## Aberto agora
@@ -182,7 +190,8 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
 8. **Quatro decisões colhidas:** landing e auth ficam como estão · Meu dia **não** é "versão simples", é
    sem metáfora com usabilidade melhor, **construir versões para escolher** · Enxame pequeno e quieto ·
    Sy nas áreas: "preciso ver para ter ideia".
-9. **Brief e construção:** `docs/superpowers/plans/2026-10-03-meu-dia-versoes-brief.md` define o que fica,
+9. **Veredito:** Finanças A aprovada; Meu dia A/B/C recusadas. O usuário mandou ler os protótipos do Codex e apontou o Espaço. **Meu dia D** construída com as 4 ideias dele no visual v5 e **aprovada** no mesmo dia (via artifact, pelo celular).
+10. **Brief e construção:** `docs/superpowers/plans/2026-10-03-meu-dia-versoes-brief.md` define o que fica,
    o que sai, chrome comum (sem ticker, "Fale com Sy", modbar com "Meu dia"), Enxame 40px, conteúdo pelo
    critério de gatilhos (§4.1 da spec), as 3 anatomias e o QA. Três agentes em paralelo, um por versão.
 
