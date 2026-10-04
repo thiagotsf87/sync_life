@@ -4,9 +4,6 @@
 .v5{-webkit-tap-highlight-color:transparent}
 .v5 .ele{color:var(--ele)}
 
-.v5 .lt{--bg:#f4f4f4;--s1:#ffffff;--s2:#eceaea;--line:rgba(21,19,19,.14);--line-h:rgba(21,19,19,.28);
-  --t1:#151313;--t2:#4f4c4c;--t3:#6b6868;background:var(--bg);color:var(--t1)}
-
 /* ── bar ── */
 .v5 .bar{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
   padding:0 clamp(20px,4vw,56px);position:sticky;top:0;background:rgba(21,19,19,.85);
@@ -25,13 +22,6 @@
 .v5 .coach-pill{border-color:rgba(104,64,255,.5);color:var(--t1)}
 .v5 .coach-pill:hover{border-color:var(--roxo)}
 .v5 .coach-pill svg{flex-shrink:0}
-
-/* ── ticker ── */
-.v5 .ticker{overflow:hidden;background:var(--ele);height:28px;display:flex;align-items:center;white-space:nowrap}
-.v5 .ticker .tk{display:inline-block;font:700 10px var(--gro);letter-spacing:.16em;color:#151313}
-.v5 .anim .ticker .tk{animation:v5d-mqtk 46s linear infinite}
-@keyframes v5d-mqtk{from{transform:translateX(0)}to{transform:translateX(-25%)}}
-.v5 .ticker span{padding:0 18px}
 
 /* ── modbar (Diário/Conquistas/Config SEM número; sem item Coach) ── */
 .v5 .modbar{border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
@@ -128,3 +118,470 @@
 @media (max-width:1023px){.v5 .bar .date{display:none}}
 
 @media (prefers-reduced-motion:reduce){.v5 .scrim,.v5 .camada{transition:none}}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Fase 0 · peças do modelo sem metáfora (extraídas de meu-dia-d e financas-a)
+   Valor DESKTOP é o padrão. O que difere no mobile dedicado (390×844) fica no
+   bloco `html.mob …` no fim desta seção: a página mobile declara <html class="dk mob">.
+   Regra de ouro: a página só tem inline o que é específico dela (idealmente só .wrap).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Sy, 40px, quieto (Enxame; laço em shared/sy40.js) ── */
+.v5 .sy40{width:40px;height:40px;flex:none;border-radius:11px;overflow:hidden;background:#0f0d0d;display:inline-block}
+.v5 .sy40 canvas{display:block;width:100%;height:100%}
+
+/* ── cabeçalho curto + score quieto à direita (Meu dia) ── */
+.v5 .cab{padding:40px 0 26px;display:flex;justify-content:space-between;align-items:flex-end;gap:32px}
+.v5 .cab h1{font:500 32px/1.1 var(--gro);letter-spacing:-.035em;margin-top:10px}
+.v5 .cab .sub{font:400 14px var(--int);color:var(--t2);margin-top:8px;max-width:52ch}
+.v5 .score{text-align:right;flex-shrink:0}
+.v5 .score .v{font:700 44px/1 var(--gro);letter-spacing:-.045em}
+.v5 .score .l{font:400 12px var(--int);color:var(--t3);margin-top:8px}
+.v5 .score .l .num{font-weight:700;font-size:11.5px}
+.v5 .score a{display:inline-block;font:500 12px var(--int);color:var(--t2);margin-top:8px;transition:color .3s var(--ease)}
+.v5 .score a:hover{color:var(--t1)}
+
+/* ── a margem de hoje: anel + linha do dia + rodapé de 3 números ── */
+.v5 .margem{display:grid;grid-template-columns:1.55fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.v5 .margem > section{padding:34px 0 32px}
+.v5 .margem > section:first-child{padding-right:clamp(28px,4vw,64px);border-right:1px solid var(--line)}
+.v5 .margem > section:last-child{padding-left:clamp(28px,4vw,64px)}
+.v5 .mhead{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.v5 .pill-q{font:600 10px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.v5 .livre{display:grid;grid-template-columns:132px 1fr;gap:28px;align-items:center;margin-top:22px}
+.v5 .anel{position:relative;width:132px;height:132px}
+.v5 .anel svg{display:block;width:100%;height:100%;transform:rotate(-90deg)}
+.v5 .anel .trk{fill:none;stroke:var(--line-h);stroke-width:2}
+.v5 .anel .arc{fill:none;stroke:var(--ele);stroke-width:3;stroke-linecap:round;stroke-dasharray:377;stroke-dashoffset:calc(377 - 377 * var(--p,.3125));transition:stroke-dashoffset .9s var(--ease)}
+.v5 .anel .c{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.v5 .anel .c strong{font:700 34px/1 var(--gro);letter-spacing:-.045em;display:block}
+.v5 .anel .c small{font:400 10.5px var(--int);color:var(--t3);display:block;margin-top:5px}
+.v5 .livre h2{font:500 clamp(20px,2vw,26px)/1.25 var(--gro);letter-spacing:-.025em;max-width:16ch}
+.v5 .livre p{font:400 13.5px/1.6 var(--int);color:var(--t2);margin-top:10px;max-width:40ch}
+.v5 .linha-dia{display:flex;gap:4px;height:6px;margin-top:26px}
+.v5 .linha-dia i{flex:1;border-radius:3px;background:var(--s2)}
+.v5 .linha-dia i.on{background:var(--ele)}
+.v5 .linha-dia i.prep{background:rgba(161,255,98,.38)}
+.v5 .horas{display:flex;justify-content:space-between;font:700 9.5px var(--gro);letter-spacing:.14em;color:var(--t3);margin-top:8px;text-transform:uppercase}
+.v5 .mfoot{display:flex;gap:clamp(24px,3vw,44px);border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
+.v5 .mfoot strong{display:block;font:700 22px/1 var(--gro);letter-spacing:-.03em}
+.v5 .mfoot strong.w{color:var(--coral)}
+.v5 .mfoot span{display:block;font:400 11.5px var(--int);color:var(--t3);margin-top:6px}
+
+/* ── o ritmo (3 pílulas + nota; reaproveita o wiring .checkin do app.js) ── */
+.v5 .checkin{display:block}
+.v5 .checkin h2{font:500 22px/1.25 var(--gro);letter-spacing:-.025em;margin:12px 0 8px}
+.v5 .checkin > p{font:400 13px/1.6 var(--int);color:var(--t2);max-width:36ch}
+.v5 .checkin .moods{margin-top:18px}
+.v5 .checkin .ck-form{margin-top:14px}
+.v5 .ck-nota{border-top:1px solid var(--line);margin-top:18px;padding-top:14px;font:400 12.5px/1.6 var(--int);color:var(--t3)}
+.v5 .ck-nota b{color:var(--t1);font-weight:600}
+.v5 .checkin small{display:block;font:400 10.5px var(--int);color:var(--t3);margin-top:14px}
+.v5 .ck-done{margin-top:14px}
+
+/* ── cabeça de seção (eyebrow + h2 à esquerda, nota à direita) ──
+   Atenção: `.sec-head p` alcança também o p.eyebrow dentro dela (comportamento aprovado em Meu dia). */
+.v5 .sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:44px 0 18px}
+.v5 .sec-head h2{font:500 24px/1.2 var(--gro);letter-spacing:-.03em;margin-top:8px}
+.v5 .sec-head p{font:400 12.5px var(--int);color:var(--t3)}
+
+/* ── laboratório: uma escolha, mais de um efeito (lógica em shared/lab.js) ── */
+.v5 .lab{display:grid;grid-template-columns:1fr 1.6fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.v5 .lab > div{padding:28px 0}
+.v5 .lab .perg{padding-right:clamp(24px,3.5vw,52px);border-right:1px solid var(--line)}
+.v5 .lab .efei{padding-left:clamp(24px,3.5vw,52px)}
+.v5 .perg h3{font:500 21px/1.3 var(--gro);letter-spacing:-.025em;margin:10px 0 8px}
+.v5 .perg p{font:400 13px/1.6 var(--int);color:var(--t2)}
+.v5 .opcoes{display:grid;gap:8px;margin-top:18px}
+.v5 .opc{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:12px;
+  background:transparent;color:var(--t2);font:500 13px var(--int);cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+.v5 .opc:hover{border-color:var(--line-h);color:var(--t1)}
+.v5 .opc[aria-pressed=true]{border-color:var(--roxo);color:var(--t1);background:rgba(104,64,255,.08)}
+.v5 .opc .n{font:700 12px var(--gro);color:var(--t3)}
+.v5 .opc[aria-pressed=true] .n{color:var(--roxo)}
+.v5 .efei .et{display:flex;justify-content:space-between;align-items:baseline}
+.v5 .efei .et b{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.v5 .imp{display:grid;grid-template-columns:repeat(3,1fr);margin:22px 0 18px}
+.v5 .imp > div{padding:0 18px;border-left:1px solid var(--line)}
+.v5 .imp > div:first-child{padding-left:0;border-left:none}
+.v5 .imp label{font:400 11.5px var(--int);color:var(--t3)}
+.v5 .imp strong{display:block;font:700 26px/1 var(--gro);letter-spacing:-.035em;margin:8px 0 6px}
+.v5 .imp strong.w{color:var(--coral)}
+.v5 .imp strong.ok{color:var(--ele)}
+.v5 .imp small{display:block;font:400 11px/1.5 var(--int);color:var(--t3)}
+.v5 .expl{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start;font:400 13.5px/1.65 var(--int);color:var(--t2);min-height:62px}
+.v5 .expl p b{color:var(--t1);font-weight:600}
+.v5 .evid{border-top:1px solid var(--line);margin-top:16px;padding-top:12px}
+.v5 .evid summary{font:500 12px var(--int);color:var(--t3);cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px}
+.v5 .evid summary::before{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform .3s var(--ease)}
+.v5 .evid[open] summary::before{transform:rotate(45deg)}
+.v5 .evid p{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:8px;max-width:64ch}
+.v5 .aplicar{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
+.v5 .aplicar span{font:400 11.5px var(--int);color:var(--t3)}
+.v5 .recibo{margin-top:14px;border-left:3px solid var(--ele);padding:10px 14px;font:400 12.5px/1.6 var(--int);color:var(--t2);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.v5 .recibo b{color:var(--t1);font-weight:600}
+.v5 .recibo button{background:none;border:none;color:var(--roxo);font:600 12.5px var(--int);cursor:pointer;padding:0}
+.v5 .recibo button:hover{text-decoration:underline}
+
+/* ── pede você hoje (lista curta) ── */
+.v5 .pede{padding:8px 0 0}
+.v5 .row{display:grid;grid-template-columns:40px 1fr auto auto;gap:18px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);transition:padding-left .35s var(--ease)}
+.v5 .row:hover{padding-left:8px}
+.v5 .row .ix{font:700 12px var(--gro);color:var(--roxo)}
+.v5 .row .tx{font:400 14.5px var(--int);color:var(--t1)}
+.v5 .row .tx strong{font-weight:600}
+.v5 .row .sub{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+.v5 .row .val{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap;min-width:120px;text-align:right}
+.v5 .row.warn .val{color:var(--coral)}
+.v5 .row .act{min-width:124px;justify-content:center}
+
+/* ── o dia continua seu (agenda) + acordo com Sy ── */
+.v5 .baixo{display:grid;grid-template-columns:1.15fr 1fr;gap:clamp(36px,5vw,80px);margin-top:48px}
+.v5 .baixo h2{font:500 22px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+.v5 .ag{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line)}
+.v5 .ag time{font:700 12px var(--gro);color:var(--t3)}
+.v5 .ag strong{font:500 14px var(--int);color:var(--t1);display:block}
+.v5 .ag small{font:400 11.5px var(--int);color:var(--t3);display:block;margin-top:3px}
+.v5 .ag .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3);white-space:nowrap;text-transform:uppercase}
+.v5 .ag .tag.ok{border-color:rgba(161,255,98,.4);color:var(--ele)}
+.v5 .ag.livre strong{color:var(--ele)}
+.v5 .presenca .sh{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:center;margin-top:8px}
+.v5 .presenca h2{margin:0}
+.v5 .presenca > p{font:400 13.5px/1.65 var(--int);color:var(--t2);margin-top:14px;max-width:44ch}
+.v5 .presenca label{display:block;font:700 10.5px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--t3);margin-top:22px}
+.v5 .sel{position:relative;margin-top:10px}
+.v5 .sel select{width:100%;appearance:none;-webkit-appearance:none;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:12px 40px 12px 16px;color:var(--t1);font:500 13.5px var(--int);outline:none;cursor:pointer;transition:border-color .3s var(--ease)}
+.v5 .sel select:hover{border-color:var(--line-h)}
+.v5 .sel select:focus{border-color:rgba(104,64,255,.55)}
+.v5 .sel::after{content:"";position:absolute;right:18px;top:50%;width:7px;height:7px;border-right:1.5px solid var(--t3);border-bottom:1.5px solid var(--t3);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.v5 .presenca .hint{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:12px;min-height:40px}
+.v5 .presenca .hint b{color:var(--t2);font-weight:600}
+
+/* ── suas áreas ── */
+.v5 .dims-sec{padding:48px 0 8px}
+.v5 .dims-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.v5 .dims-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+.v5 .dims-head a:hover{color:var(--t1)}
+.v5 .dims{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(36px,5vw,80px)}
+.v5 .dimrow{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:baseline;padding:17px 0;border-bottom:1px solid var(--line);transition:padding-left .35s var(--ease)}
+.v5 .dimrow:hover{padding-left:8px}
+.v5 .dimrow .di{font:700 12px var(--gro);color:var(--t3)}
+.v5 .dimrow:hover .di{color:var(--roxo)}
+.v5 .dimrow .nm{font:500 16px var(--gro);letter-spacing:-.01em}
+.v5 .dimrow .mt{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+.v5 .dimrow .sc{font:700 22px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+.v5 .dimrow .tr{font:600 11px var(--gro)}
+.v5 .outras{font:400 12px var(--int);color:var(--t3);padding:14px 0;border-top:1px solid var(--line);margin-top:-1px}
+
+/* ── números do mês (4 colunas hairline; padrão T1, vem logo após um bloco com hairline embaixo) ── */
+.v5 .nums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.v5 .nums > div{padding:30px clamp(16px,2.4vw,34px);border-right:1px solid var(--line)}
+.v5 .nums > div:first-child{padding-left:0}
+.v5 .nums > div:last-child{border-right:none}
+.v5 .nums .v{font:700 clamp(26px,3vw,40px)/1 var(--gro);letter-spacing:-.04em;margin-top:12px}
+.v5 .nums .d{font:500 12px var(--int);margin-top:8px;color:var(--t3)}
+
+/* ── sua semana (uma linha + link) ── */
+.v5 .semana{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:20px 0 56px;flex-wrap:wrap}
+.v5 .semana p{font:400 13.5px var(--int);color:var(--t2)}
+.v5 .semana p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+.v5 .semana a{font:500 12.5px var(--int);color:var(--t2);transition:color .3s var(--ease);white-space:nowrap}
+.v5 .semana a:hover{color:var(--t1)}
+
+/* ── T1 · título da área + a unidade Sy (40px + 1 ou 2 linhas + fontes + falar) ── */
+.v5 .titulo{padding:44px 0 36px;border-bottom:1px solid var(--line)}
+.v5 .titulo h1{font:500 clamp(28px,2.6vw,34px)/1.1 var(--gro);letter-spacing:-.035em;margin-top:12px}
+.v5 .sy{display:grid;grid-template-columns:40px 1fr;gap:18px;align-items:start;margin-top:26px;max-width:720px}
+.v5 .sy .fala{font:500 17px/1.5 var(--gro);letter-spacing:-.015em;color:var(--t1)}
+.v5 .sy .fala b{font-weight:600}
+.v5 .sy .fala b.w{color:var(--coral)}
+.v5 .fontes{font:400 11.5px var(--int);color:var(--t3);margin-top:10px}
+.v5 .falar{display:inline-block;background:none;border:none;cursor:pointer;padding:0;margin-top:12px;font:500 12.5px var(--int);color:var(--t2);transition:color .3s var(--ease)}
+.v5 .falar:hover{color:var(--t1)}
+
+/* ── T1 · zona de evidência em 2 colunas: orçamentos | fluxo ── */
+.v5 .duo{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(36px,5vw,80px);padding:40px 0 44px;border-bottom:1px solid var(--line)}
+.v5 .duo > div > .eyebrow{margin-bottom:4px}
+.v5 .orc{display:grid;grid-template-columns:1fr auto;gap:6px 16px;padding:14px 0 15px;border-bottom:1px solid var(--line);
+  transition:padding-left .35s var(--ease)}
+.v5 .orc:hover{padding-left:6px}
+.v5 .orc .nm{font:500 14px var(--int);color:var(--t1)}
+.v5 .orc .v{font:700 13px var(--gro);color:var(--t2);text-align:right;white-space:nowrap}
+.v5 .orc .v b{color:var(--t1)}
+.v5 .orc .track{grid-column:1/-1;height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
+.v5 .orc .track i{display:block;height:100%;width:var(--w);background:var(--t2);border-radius:2px}
+.v5 .orc.warn .track i{background:var(--coral)}
+.v5 .orc.warn .v,.v5 .orc.warn .v b{color:var(--coral)}
+.v5 .orc .sub{grid-column:1/-1;font:400 11.5px var(--int);color:var(--t3)}
+.v5 .cats{font:400 12px var(--int);color:var(--t3);padding:14px 0 0}
+.v5 .cats .num{color:var(--t2)}
+.v5 .prox{display:flex;align-items:baseline;gap:18px;border-left:2px solid var(--roxo);padding-left:16px;margin-top:24px}
+.v5 .prox .eyebrow{color:var(--roxo);flex-shrink:0;position:relative;top:-1px}
+.v5 .prox p{font:400 14px/1.5 var(--int);color:var(--t2)}
+.v5 .prox p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+.v5 .fluxo .chart{margin-top:16px;position:relative}
+.v5 .fluxo svg{display:block;width:100%;height:170px}
+.v5 .fluxo .leg{display:flex;justify-content:space-between;font:700 10px var(--gro);letter-spacing:.14em;color:var(--t3);margin-top:8px;text-transform:uppercase}
+.v5 .fluxo .prosa{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:14px}
+.v5 .fluxo .prosa b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+
+/* ── T1 · lista densa de transações ──
+   Escopo `:where(.trans,.sec)` (especificidade zero): a linha .tx só existe dentro do bloco de lista
+   (.trans no desktop, .sec no mobile), porque em Meu dia `.row .tx` é o texto da linha. */
+.v5 .trans{padding:40px 0 44px;border-bottom:1px solid var(--line)}
+.v5 .trans-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.v5 .trans-head a{font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+.v5 .trans-head a:hover{color:var(--t1)}
+.v5 :where(.trans,.sec) .tx{display:grid;grid-template-columns:52px 1fr 130px 110px;gap:16px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);
+  transition:padding-left .35s var(--ease)}
+.v5 :where(.trans,.sec) .tx:last-of-type{border-bottom:none}
+.v5 :where(.trans,.sec) .tx:hover{padding-left:6px}
+.v5 :where(.trans,.sec) .tx .d{font:700 11px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+.v5 :where(.trans,.sec) .tx .ds{font:500 14px var(--int);color:var(--t1)}
+.v5 :where(.trans,.sec) .tx .ct{font:400 12px var(--int);color:var(--t3)}
+.v5 :where(.trans,.sec) .tx .v{font:700 13.5px var(--gro);color:var(--t2);text-align:right;white-space:nowrap}
+.v5 :where(.trans,.sec) .tx.in .v{color:var(--ele)}
+
+/* ── T1 · apoio em 2 colunas: metas | recorrentes ── */
+.v5 .duo2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,5vw,80px);padding:40px 0 60px}
+.v5 .duo2 > div > .eyebrow{margin-bottom:6px}
+.v5 .metas .mrow{padding:13px 0;border-bottom:1px solid var(--line)}
+.v5 .metas .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.v5 .metas .nm{font:500 13.5px var(--int)}
+.v5 .metas .pct{font:700 13.5px var(--gro)}
+.v5 .metas .track{height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.v5 .metas .track i{display:block;height:100%;background:var(--t2);border-radius:2px}
+.v5 .metas .sub{font:400 11px var(--gro);font-variant-numeric:tabular-nums;color:var(--t3)}
+.v5 .rec{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line)}
+.v5 .rec .nm{font:500 13.5px var(--int);color:var(--t1)}
+.v5 .rec .when{font:400 11.5px var(--int);color:var(--t3);margin-top:3px;display:flex;align-items:baseline;gap:8px}
+.v5 .rec .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--t3)}
+.v5 .rec .tag.due{border-color:rgba(248,65,49,.4);color:var(--coral)}
+.v5 .rec .v{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap}
+.v5 .agenda{font:400 12px var(--int);color:var(--t3);padding:14px 0 0}
+.v5 .agenda .num{color:var(--t2)}
+
+/* ── desktop estreito (até 960): só para as páginas desktop; o mobile é tela dedicada (html.mob) ── */
+@media (max-width:960px){
+  .v5 .dk:not(.mob) .cab{flex-direction:column;align-items:flex-start}
+  .v5 .dk:not(.mob) .score{text-align:left}
+  .v5 .dk:not(.mob) .margem,.v5 .dk:not(.mob) .lab,.v5 .dk:not(.mob) .baixo{grid-template-columns:1fr}
+  .v5 .dk:not(.mob) .margem > section:first-child,.v5 .dk:not(.mob) .lab .perg{border-right:none;border-bottom:1px solid var(--line);padding-right:0}
+  .v5 .dk:not(.mob) .margem > section:last-child,.v5 .dk:not(.mob) .lab .efei{padding-left:0}
+  .v5 .dk:not(.mob) .imp{grid-template-columns:1fr}
+  .v5 .dk:not(.mob) .imp > div{padding:10px 0;border-left:none;border-top:1px solid var(--line)}
+  .v5 .dk:not(.mob) .imp > div:first-child{border-top:none}
+  .v5 .dk:not(.mob) .row{grid-template-columns:40px 1fr;row-gap:8px}
+  .v5 .dk:not(.mob) .row .val{grid-column:2;text-align:left;min-width:0}
+  .v5 .dk:not(.mob) .row .act{grid-column:2;justify-self:start}
+  .v5 .dk:not(.mob) .ck-form{flex-direction:column;align-items:stretch}
+  .v5 .dk:not(.mob) .nums{grid-template-columns:1fr 1fr}
+  .v5 .dk:not(.mob) .nums > div:nth-child(2){border-right:none}
+  .v5 .dk:not(.mob) .nums > div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .v5 .dk:not(.mob) .nums > div:nth-child(3){padding-left:0}
+  .v5 .dk:not(.mob) .dims{grid-template-columns:1fr}
+  .v5 .dk:not(.mob) .duo,.v5 .dk:not(.mob) .duo2{grid-template-columns:1fr}
+  .v5 .dk:not(.mob) .trans .tx{grid-template-columns:52px 1fr 110px}
+  .v5 .dk:not(.mob) .trans .tx .ct{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){.v5 .anel .arc{transition:none}}
+
+/* ═══ MOBILE DEDICADO (html.mob): 1 coluna, uma dobra por bloco, chrome compacto ═══
+   Cada regra aqui só muda o que difere do desktop; onde o desktop fixa algo que o
+   mobile não tinha (grid, flex, max-width, min-width), a regra devolve o valor neutro.
+   Nunca repetir aqui uma cor igual à do padrão: `html.mob .x .y` ganharia dos modificadores
+   (.warn, .livre, .in) que dependem dela. */
+.v5 .mob{font-size:14px}
+
+/* chrome compactado */
+.v5 .mob .bar{height:56px;padding:0 18px}
+.v5 .mob .brand{font-size:16px}
+.v5 .mob .bar .acts{gap:8px}
+/* alvos de toque >= 40px (medido: ghost 39, roxo 38-39, brand 21, chips 39, cfull 26) */
+.v5 .mob .bar .btn-sm.ghost{padding:11px 13px;min-height:40px}
+.v5 .mob .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:1;min-height:40px;min-width:40px;justify-content:center}
+.v5 .mob .brand{min-height:40px;align-items:center}
+.v5 .mob .camada .cfull{min-height:40px;display:flex;align-items:center;justify-content:center}
+.v5 .mob .modbar a{padding:14px 13px}
+.v5 .mob input,.v5 .mob select,.v5 .mob button{scroll-margin-top:76px} /* o bar é sticky: foco nunca fica escondido embaixo dele */
+.v5 .mob .colofao{flex-direction:column;align-items:flex-start;gap:8px;padding:20px 20px 30px}
+.v5 .mob .colofao .r{flex-direction:column;gap:8px}
+.v5 .mob .camada.sheet{height:clamp(420px,86dvh,760px)}
+.v5 .mob .camada .csug .chip{padding:11px 16px;min-height:40px}
+.v5 .mob .camada .chead .x{width:40px;height:40px}
+
+/* cabeçalho: score vira linha abaixo do título */
+.v5 .mob .cab{padding:28px 0 22px;display:block;justify-content:normal;align-items:normal;gap:normal}
+.v5 .mob .cab h1{font:500 28px/1.1 var(--gro);letter-spacing:-.035em;margin-top:10px}
+.v5 .mob .cab .sub{font:400 13.5px/1.6 var(--int);color:var(--t2);margin-top:10px;max-width:none}
+.v5 .mob .score{display:flex;align-items:baseline;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);text-align:start;flex-shrink:1}
+.v5 .mob .score .v{font:700 34px/1 var(--gro);letter-spacing:-.045em}
+.v5 .mob .score .l{font:400 12px/1.4 var(--int);color:var(--t3);flex:1;min-width:0;margin-top:0}
+.v5 .mob .score a{font:500 12px var(--int);color:var(--t2);white-space:nowrap;margin-top:0}
+
+/* a margem de hoje */
+.v5 .mob .margem{padding:26px 0 24px;display:block;grid-template-columns:none}
+.v5 .mob .mhead{align-items:center;gap:12px}
+.v5 .mob .pill-q{padding:5px 10px;white-space:nowrap}
+.v5 .mob .livre{grid-template-columns:108px 1fr;gap:18px;margin-top:20px}
+.v5 .mob .anel{width:108px;height:108px}
+.v5 .mob .anel .c strong{font:700 28px/1 var(--gro);letter-spacing:-.045em}
+.v5 .mob .anel .c small{font:400 10px var(--int);color:var(--t3);margin-top:4px}
+.v5 .mob .livre h2{font:500 19px/1.25 var(--gro);letter-spacing:-.025em;max-width:none}
+.v5 .mob .livre p{font:400 12.5px/1.55 var(--int);color:var(--t2);margin-top:8px;max-width:none}
+.v5 .mob .linha-dia{margin-top:20px}
+.v5 .mob .horas{font:700 9px var(--gro);letter-spacing:.12em;color:var(--t3);margin-top:8px;text-transform:uppercase}
+.v5 .mob .mfoot{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;padding-top:16px}
+.v5 .mob .mfoot strong{font:700 19px/1 var(--gro);letter-spacing:-.03em}
+.v5 .mob .mfoot span{font:400 10.5px/1.35 var(--int);color:var(--t3);margin-top:6px}
+
+/* o ritmo */
+.v5 .mob .checkin{padding:26px 0 24px;border-bottom:1px solid var(--line)}
+.v5 .mob .checkin h2{font:500 20px/1.25 var(--gro);letter-spacing:-.025em;margin:10px 0 8px}
+.v5 .mob .checkin > p{font:400 12.5px/1.6 var(--int);color:var(--t2);max-width:none}
+.v5 .mob .checkin .moods{margin-top:16px}
+.v5 .mob .mood{padding:11px 15px;font-size:13px}
+.v5 .mob .checkin .ck-form{flex-direction:column;align-items:stretch;margin-top:12px;gap:8px}
+.v5 .mob .ck-note{padding:13px 16px}
+.v5 .mob .btn-sm.roxo.ck-save{padding:12px 18px;justify-content:center}
+.v5 .mob .ck-nota{margin-top:16px;padding-top:12px}
+.v5 .mob .checkin small{font:400 10.5px/1.5 var(--int);color:var(--t3);margin-top:12px}
+.v5 .mob .ck-done{margin-top:12px}
+
+/* cabeça de seção empilhada (eyebrow, h2, p) */
+.v5 .mob .sec-head{display:block;justify-content:normal;align-items:normal;gap:normal;margin:0;padding:30px 0 16px}
+.v5 .mob .sec-head h2{font:500 21px/1.2 var(--gro);letter-spacing:-.03em;margin-top:8px}
+.v5 .mob .sec-head p{font:400 12px/1.5 var(--int);color:var(--t3);margin-top:8px}
+
+/* laboratório: pergunta e efeitos empilhados */
+.v5 .mob .lab{display:block;grid-template-columns:none}
+.v5 .mob .lab .perg{padding:22px 0 20px;border-right:none;border-bottom:1px dashed var(--line)}
+.v5 .mob .lab .efei{padding:20px 0 24px}
+.v5 .mob .perg h3{font:500 18px/1.3 var(--gro);letter-spacing:-.02em;margin:8px 0 6px}
+.v5 .mob .perg p{font:400 12.5px/1.6 var(--int);color:var(--t2)}
+.v5 .mob .opcoes{margin-top:16px}
+.v5 .mob .opc{min-height:46px;font:500 13.5px var(--int)}
+.v5 .mob .efei .et{gap:10px}
+.v5 .mob .imp{display:block;grid-template-columns:none;margin:14px 0 16px}
+.v5 .mob .imp > div{display:grid;grid-template-columns:1fr auto;column-gap:14px;align-items:baseline;padding:11px 0;border-left:none;border-bottom:1px solid var(--line)}
+.v5 .mob .imp > div:last-child{border-bottom:none}
+.v5 .mob .imp label{font:400 12.5px var(--int);color:var(--t2)}
+.v5 .mob .imp strong{font:700 20px/1 var(--gro);letter-spacing:-.03em;text-align:right;margin:0}
+.v5 .mob .imp small{grid-column:1 / -1;font:400 11px/1.4 var(--int);color:var(--t3);margin-top:2px}
+.v5 .mob .expl{gap:12px;font:400 13px/1.6 var(--int);color:var(--t2);min-height:0}
+.v5 .mob .evid{margin-top:14px}
+.v5 .mob .evid summary{font:500 12.5px var(--int);color:var(--t3);min-height:40px}
+.v5 .mob .evid p{margin-top:6px;max-width:none}
+.v5 .mob .aplicar{display:block;align-items:normal;gap:normal;margin-top:14px;flex-wrap:nowrap}
+.v5 .mob .aplicar .btn-sm{width:100%;justify-content:center;padding:13px 18px;font-size:13.5px}
+.v5 .mob .aplicar span{display:block;font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:10px;text-align:center}
+.v5 .mob .recibo{display:block;gap:normal;align-items:normal;flex-wrap:nowrap}
+.v5 .mob .recibo button{display:block;font:600 13px var(--int);padding:8px 0 0;min-height:40px}
+
+/* pede você hoje: valor e ação descem para uma 2ª linha (.r2) */
+.v5 .mob .pede .eyebrow{padding:26px 0 6px}
+.v5 .mob .row{grid-template-columns:34px 1fr;gap:6px 12px;align-items:normal;padding:14px 0}
+.v5 .mob .row .ix{padding-top:2px}
+.v5 .mob .row .tx{font:400 14px/1.45 var(--int)}
+.v5 .mob .row .sub{font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:3px}
+.v5 .mob .row .r2{grid-column:2;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:4px}
+.v5 .mob .row .val{font:700 13px var(--gro);min-width:auto;text-align:start}
+.v5 .mob .row .act{padding:11px 14px;min-height:40px;min-width:auto;justify-content:normal}
+.v5 .mob .dims-head a,.v5 .mob .dims-head .eyebrow{min-height:40px;display:inline-flex;align-items:center}
+
+/* o dia continua seu + acordo com Sy, empilhados */
+.v5 .mob .dia{padding:30px 0 6px}
+.v5 .mob .dia h2,.v5 .mob .presenca h2{font:500 20px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+.v5 .mob .ag{grid-template-columns:46px 1fr auto;gap:12px;padding:14px 0}
+.v5 .mob .ag strong{font:500 13.5px var(--int)}
+.v5 .mob .ag small{font:400 11.5px/1.4 var(--int);color:var(--t3);margin-top:3px}
+.v5 .mob .ag .tag{padding:4px 8px}
+.v5 .mob .presenca{padding:30px 0 28px;border-top:1px solid var(--line);margin-top:24px}
+.v5 .mob .presenca .sh{gap:12px}
+.v5 .mob .presenca .sh h2{margin:0}
+.v5 .mob .presenca > p{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:12px;max-width:none}
+.v5 .mob .presenca label{margin-top:18px}
+.v5 .mob .sel select{padding:13px 40px 13px 16px;font:500 14px var(--int)}
+.v5 .mob .presenca .hint{font:400 12.5px/1.6 var(--int);color:var(--t3);min-height:0} /* repete o padrão para seguir ganhando de `html.mob .presenca > p` */
+
+/* suas áreas / números 2×2 / semana */
+.v5 .mob .dims-sec{padding:28px 0 8px;border-top:1px solid var(--line)}
+.v5 .mob .dims-head{margin-bottom:6px}
+.v5 .mob .dimrow{grid-template-columns:32px 1fr auto;gap:12px;padding:15px 0}
+.v5 .mob .dimrow .di{font:700 11.5px var(--gro)}
+.v5 .mob .dimrow .nm{font:500 15.5px var(--gro);letter-spacing:-.01em}
+.v5 .mob .dimrow .sc{font:700 21px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+.v5 .mob .outras{font:400 12px/1.7 var(--int);color:var(--t3)}
+.v5 .mob .nums{grid-template-columns:1fr 1fr}
+.v5 .mob .nums > div{padding:20px 14px;border-bottom:1px solid var(--line)}
+.v5 .mob .nums > div:nth-child(odd){padding-left:0}
+.v5 .mob .nums > div:nth-child(even){border-right:none;padding-right:0}
+.v5 .mob .nums > div:nth-child(n+3){border-bottom:none}
+.v5 .mob .nums .v{font:700 24px/1 var(--gro);letter-spacing:-.04em;margin-top:10px}
+.v5 .mob .nums .d{font:500 11.5px var(--int);margin-top:7px;color:var(--t3)}
+.v5 .mob .semana{display:block;justify-content:normal;align-items:normal;gap:normal;padding:18px 0 40px;flex-wrap:nowrap}
+.v5 .mob .semana p{font:400 13px/1.6 var(--int);color:var(--t2)}
+.v5 .mob .semana a{display:inline-block;font:500 12.5px var(--int);color:var(--t2);margin-top:10px;min-height:40px;line-height:40px;white-space:normal}
+
+/* T1 mobile: título + Sy, seções empilhadas (.sec), listas em 1 coluna */
+.v5 .mob .titulo{padding:28px 0 24px}
+.v5 .mob .titulo h1{font:500 28px/1.1 var(--gro);letter-spacing:-.035em;margin-top:10px}
+.v5 .mob .sy{gap:14px;margin-top:20px;max-width:none}
+.v5 .mob .sy .fala{font:500 16px/1.5 var(--gro);letter-spacing:-.015em;color:var(--t1)}
+.v5 .mob .fontes{font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:8px}
+.v5 .mob .falar{display:inline-flex;align-items:center;margin-top:6px;min-height:40px;font:500 13px var(--int);color:var(--t2)}
+.v5 .mob .sec{padding:26px 0 24px;border-bottom:1px solid var(--line)}
+.v5 .mob .sec.last{border-bottom:none;padding-bottom:40px}
+/* cabeça de seção do T1 mobile (eyebrow + link na mesma linha): devolve ao p.eyebrow o que `.sec-head p` tira */
+.v5 .mob .sec > .sec-head{display:flex;justify-content:space-between;align-items:center;gap:normal;margin:0 0 4px;padding:0}
+.v5 .mob .sec > .sec-head > .eyebrow{font:700 10.5px var(--gro);color:var(--t3);margin-top:0}
+.v5 .mob .sec > .sec-head a{font:500 12px var(--int);color:var(--t3);min-height:40px;display:inline-flex;align-items:center}
+.v5 .mob .orc{gap:6px 12px;padding:13px 0 14px}
+.v5 .mob .orc .v{font:700 12.5px var(--gro)}
+.v5 .mob .cats{font:400 12px/1.7 var(--int);color:var(--t3);padding:12px 0 0}
+.v5 .mob .prox{display:block;align-items:normal;gap:normal;padding-left:14px;margin-top:18px}
+.v5 .mob .prox .eyebrow{flex-shrink:1;position:static;top:auto}
+.v5 .mob .prox p{font:400 13.5px/1.5 var(--int);color:var(--t2);margin-top:6px}
+.v5 .mob .fluxo .chart{margin-top:12px;position:static}
+.v5 .mob .fluxo svg{height:140px}
+.v5 .mob .fluxo .leg{font:700 9.5px var(--gro);letter-spacing:.12em;color:var(--t3);margin-top:8px;text-transform:uppercase}
+.v5 .mob .fluxo .prosa{margin-top:12px}
+.v5 .mob .sec .tx{grid-template-columns:44px 1fr auto;gap:4px 12px;padding:12px 0}
+.v5 .mob .sec .tx .d{font:700 10.5px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+.v5 .mob .sec .tx .ct{grid-column:2;font:400 11.5px var(--int);color:var(--t3)}
+.v5 .mob .sec .tx .v{font:700 13px var(--gro);grid-row:1 / span 2;grid-column:3;align-self:center}
+.v5 .mob .metas .mrow{padding:12px 0}
+.v5 .mob .metas .mrow:last-of-type{border-bottom:none}
+.v5 .mob .rec{gap:12px;padding:14px 0}
+.v5 .mob .rec .tag{padding:3px 7px}
+.v5 .mob .agenda{font:400 12px/1.6 var(--int);color:var(--t3);padding:12px 0 0}
+
+/* ── chrome mobile: bottom bar (Fase 1) · sem FAB; Sy no centro como pílula ── */
+.v5 .mob main{padding-bottom:calc(56px + env(safe-area-inset-bottom))}
+.v5 .mob .bbar{position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(56px + env(safe-area-inset-bottom));
+  padding:0 6px env(safe-area-inset-bottom);display:grid;grid-template-columns:1fr 1fr auto 1fr 1fr;align-items:center;
+  background:rgba(21,19,19,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+.v5 .mob .bbar a,.v5 .mob .bbar button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  height:48px;min-height:48px;min-width:48px;background:none;border:none;border-radius:12px;padding:0 2px;cursor:pointer;
+  color:var(--t3);font:500 10px/1 var(--int);transition:color .3s var(--ease)}
+.v5 .mob .bbar a:hover,.v5 .mob .bbar button:hover{color:var(--t1)}
+.v5 .mob .bbar .on{color:var(--t1)}
+.v5 .mob .bbar .on::before{content:"";position:absolute;top:-1px;left:50%;width:22px;height:2px;background:var(--roxo);transform:translateX(-50%)}
+.v5 .mob .bbar .g{font:700 13px/1 var(--gro);letter-spacing:-.02em;height:18px;display:flex;align-items:center}
+.v5 .mob .bbar .on .g{color:var(--roxo)}
+.v5 .mob .bbar svg{width:18px;height:18px;display:block}
+.v5 .mob .bbar .sypill{flex-direction:row;gap:8px;height:44px;min-height:44px;padding:4px 14px 4px 5px;margin:0 4px;
+  border:1px solid rgba(104,64,255,.5);border-radius:999px;background:#0f0d0d;color:var(--t1);font:600 11.5px/1 var(--int)}
+.v5 .mob .bbar .sypill:hover{border-color:var(--roxo)}
+.v5 .mob .bbar .sy40{width:34px;height:34px;border-radius:10px}
+/* sheet de Áreas: a peça .camada.sheet, mais baixa, com linhas de toque inteiro */
+.v5 .mob .camada.sheet.areas{height:auto;max-height:86dvh}
+.v5 .mob .areas .cbody{gap:0;padding:4px 22px 22px}
+.v5 .mob .arow{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;min-height:50px;padding:0;border-bottom:1px solid var(--line);
+  font:500 15px var(--int);color:var(--t1);transition:padding-left .35s var(--ease)}
+.v5 .mob .arow:last-child{border-bottom:none}
+.v5 .mob .arow .n{font:700 11.5px var(--gro);color:var(--roxo)}
+.v5 .mob .arow .sc{font:700 14px var(--gro);letter-spacing:-.02em;color:var(--t2)}
+.v5 .mob .arow small{font:400 11.5px var(--int);color:var(--t3);margin-left:8px}
+.v5 .mob .asep{height:10px;border-bottom:1px solid var(--line-h);margin-bottom:6px}
