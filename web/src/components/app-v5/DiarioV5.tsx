@@ -164,7 +164,7 @@ export function DiarioV5({ userName, accountCreatedAt }: DiarioV5Props) {
   return (
     <>
       <div className="grain" aria-hidden="true" />
-      <ChromeV5 ticker={data.ticker} onCoachOpen={openCoach} />
+      <ChromeV5 ativo="meu-dia" onCoachOpen={openCoach} />
 
       <main className="diario" ref={mainRef}>
         {/* 1 · masthead */}

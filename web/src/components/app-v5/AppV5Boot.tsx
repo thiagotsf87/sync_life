@@ -7,7 +7,9 @@
 //    removidas no cleanup pra não vazar pro app v3;
 // 2) gate de motion .anim no ROOT INTERNO da árvore — convenção da casa: o .dk
 //    e o .anim moram num filho do .v5 (os seletores aninham como `.v5 .dk` e
-//    `.v5 .anim ...`); sem JS ou com prefers-reduced-motion, tudo fica visível.
+//    `.v5 .anim ...`); sem JS ou com prefers-reduced-motion, tudo fica visível;
+// 3) classe .mob no mesmo root interno quando a viewport tem até 1023px (Fase 1:
+//    bottom bar, modbar fora, bar só com brand e +). Sem JS: desktop.
 
 import { useEffect, useRef } from 'react'
 import { prefersReduce } from '@/lib/v5/viva'
@@ -20,8 +22,14 @@ export function AppV5Boot({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.classList.add('v5-scroll', 'v5-dark')
-    if (root.current && !prefersReduce()) root.current.classList.add('anim')
+    const el = root.current
+    if (el && !prefersReduce()) el.classList.add('anim')
+    const mq = window.matchMedia('(max-width:1023px)')
+    const aplicarMob = () => { el?.classList.toggle('mob', mq.matches) }
+    aplicarMob()
+    mq.addEventListener('change', aplicarMob)
     return () => {
+      mq.removeEventListener('change', aplicarMob)
       document.documentElement.classList.remove('v5-scroll', 'v5-dark')
     }
   }, [])

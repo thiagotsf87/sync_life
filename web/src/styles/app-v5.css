@@ -558,6 +558,11 @@
 .v5 .mob .agenda{font:400 12px/1.6 var(--int);color:var(--t3);padding:12px 0 0}
 
 /* ── chrome mobile: bottom bar (Fase 1) · sem FAB; Sy no centro como pílula ── */
+/* gates por classe (.mob no root interno via AppV5Boot): !important vence `.v5 .btn-sm{display:inline-flex}`
+   e `.v5 .modbar`; sem JS não há .mob e vale o desktop */
+.v5 .mob .d-only{display:none!important}
+.v5 .dk:not(.mob) .m-only{display:none!important}
+.v5 .bbar{display:none}
 .v5 .mob main{padding-bottom:calc(56px + env(safe-area-inset-bottom))}
 .v5 .mob .bbar{position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(56px + env(safe-area-inset-bottom));
   padding:0 6px env(safe-area-inset-bottom);display:grid;grid-template-columns:1fr 1fr auto 1fr 1fr;align-items:center;

@@ -1,30 +1,39 @@
 'use client'
 
-// Onda 2 · chrome do app v5 — porte 1:1 de prototypes/v5/app/diario.html
-// (e diario.mobile.html pra compaction <1024px, via chrome-v5.css):
-// bar (brand bússola + data + ações) + ticker (marquee, itens 4×) + modbar
-// (Diário ativo + 01-08 nas rotas v3 + Conquistas + Configurações; SEM Coach).
+// Fase 1 · chrome do app v5, porte 1:1 de prototypes/v5/app/financas-a.html (bar e
+// modbar) e de _intencao.mobile.html (mobile): bar (brand bússola + data + Fale
+// com Sy + Registrar) + modbar (Meu dia + 01 a 08 + Conquistas + Configurações).
+// No mobile (.mob no root interno, via AppV5Boot) o bar fica só com brand e +,
+// o modbar sai e entram a bottom bar e o sheet de Áreas.
 
-import { Fragment, useSyncExternalStore } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
+import type { ModuleId } from '@/types/shell'
+import { BottomBar } from './BottomBar'
+import { SheetAreas, type AreaScores } from './SheetAreas'
 import './chrome-v5.css'
 
+export type AtivoV5 = 'meu-dia' | ModuleId
+
 interface ChromeV5Props {
-  ticker: string[]
+  ativo: AtivoV5
   onCoachOpen: () => void
+  onAreasOpen?: () => void
+  /** score por área para o sheet de Áreas (áreas sem score ficam sem número) */
+  scores?: AreaScores
 }
 
 const SP_TZ = 'America/Sao_Paulo'
 
-const MODULOS: { n: string; nome: string; href: string }[] = [
-  { n: '01', nome: 'Finanças', href: '/financas' },
-  { n: '02', nome: 'Futuro', href: '/futuro' },
-  { n: '03', nome: 'Tempo', href: '/tempo' },
-  { n: '04', nome: 'Corpo', href: '/corpo' },
-  { n: '05', nome: 'Mente', href: '/mente' },
-  { n: '06', nome: 'Patrimônio', href: '/patrimonio' },
-  { n: '07', nome: 'Carreira', href: '/carreira' },
-  { n: '08', nome: 'Experiências', href: '/experiencias' },
+const MODULOS: { id: ModuleId; n: string; nome: string; href: string }[] = [
+  { id: 'financas', n: '01', nome: 'Finanças', href: '/financas' },
+  { id: 'futuro', n: '02', nome: 'Futuro', href: '/futuro' },
+  { id: 'tempo', n: '03', nome: 'Tempo', href: '/tempo' },
+  { id: 'corpo', n: '04', nome: 'Corpo', href: '/corpo' },
+  { id: 'mente', n: '05', nome: 'Mente', href: '/mente' },
+  { id: 'patrimonio', n: '06', nome: 'Patrimônio', href: '/patrimonio' },
+  { id: 'carreira', n: '07', nome: 'Carreira', href: '/carreira' },
+  { id: 'experiencias', n: '08', nome: 'Experiências', href: '/experiencias' },
 ]
 
 // data client-only sem setState em effect: no servidor renderiza vazio estável
@@ -71,13 +80,16 @@ function CoachBussola() {
   )
 }
 
-export function ChromeV5({ ticker, onCoachOpen }: ChromeV5Props) {
+export function ChromeV5({ ativo, onCoachOpen, onAreasOpen, scores }: ChromeV5Props) {
   const hoje = useSyncExternalStore(noopSubscribe, hojePorExtenso, serverDate)
+  const [areasOpen, setAreasOpen] = useState(false)
 
-  // marquee do protótipo: itens duplicados 4× com separador · (loop de -25%)
-  const loop = ticker.length > 0
-    ? [...ticker, ...ticker, ...ticker, ...ticker]
-    : []
+  const abrirAreas = () => {
+    setAreasOpen(true)
+    onAreasOpen?.()
+  }
+
+  const cls = (on: boolean) => (on ? 'on' : undefined)
 
   return (
     <>
@@ -88,44 +100,60 @@ export function ChromeV5({ ticker, onCoachOpen }: ChromeV5Props) {
         </Link>
         <span className="date">{hoje}</span>
         <div className="acts">
-          <Link className="btn-sm ghost d-only" href="/dashboard/review">Revisão semanal</Link>
-          <button className="btn-sm ghost coach-pill" type="button" onClick={onCoachOpen}>
+          <button className="btn-sm ghost coach-pill d-only" type="button" onClick={onCoachOpen}>
             <CoachBussola />
-            <span className="d-only">Pergunte ao coach</span>
-            <span className="m-only">Coach</span>
+            Fale com Sy
           </button>
-          <Link className="btn-sm roxo" href="/financas" aria-label="Nova entrada">
-            <span className="d-only">+ Nova entrada</span>
+          <Link className="btn-sm roxo" href="/financas/transacoes" aria-label="Registrar">
+            <span className="d-only">+ Registrar</span>
             <span className="m-only">+</span>
           </Link>
         </div>
       </header>
 
-      <div className="ticker" aria-hidden="true">
-        {loop.length > 0 && (
-          <div className="tk">
-            {loop.map((item, i) => (
-              <Fragment key={i}>
-                <span>{item}</span>
-                <span>·</span>
-              </Fragment>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <nav className="modbar" aria-label="Módulos">
+      <nav className="modbar d-only" aria-label="Áreas">
         <div className="in">
-          <Link className="on" href="/dashboard">Diário</Link>
+          <Link
+            className={cls(ativo === 'meu-dia')}
+            href="/dashboard"
+            aria-current={ativo === 'meu-dia' ? 'page' : undefined}
+          >
+            Meu dia
+          </Link>
           {MODULOS.map((m) => (
-            <Link key={m.href} href={m.href}>
+            <Link
+              key={m.href}
+              className={cls(ativo === m.id)}
+              href={m.href}
+              aria-current={ativo === m.id ? 'page' : undefined}
+            >
               <span className="n">{m.n}</span>{m.nome}
             </Link>
           ))}
-          <Link href="/conquistas">Conquistas</Link>
-          <Link href="/configuracoes">Configurações</Link>
+          <Link
+            className={cls(ativo === 'conquistas')}
+            href="/conquistas"
+            aria-current={ativo === 'conquistas' ? 'page' : undefined}
+          >
+            Conquistas
+          </Link>
+          <Link
+            className={cls(ativo === 'configuracoes')}
+            href="/configuracoes"
+            aria-current={ativo === 'configuracoes' ? 'page' : undefined}
+          >
+            Configurações
+          </Link>
         </div>
       </nav>
+
+      <BottomBar
+        ativo={ativo}
+        onCoachOpen={onCoachOpen}
+        onAreasOpen={abrirAreas}
+        areasOpen={areasOpen}
+      />
+      <SheetAreas open={areasOpen} onClose={() => setAreasOpen(false)} scores={scores} />
     </>
   )
 }
