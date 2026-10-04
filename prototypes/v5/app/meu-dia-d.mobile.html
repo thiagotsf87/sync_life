@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>SyncLife · Meu dia · mobile · v5 D</title>
+<!-- Fase 0 · Meu dia D MOBILE dedicado (390×844). Mesmo conteúdo da desktop (meu-dia-d.html),
+     apresentação em 1 coluna: uma dobra por bloco. Sem ticker, sem banda clara, sem selo, sem encenação.
+     Camada de Sy como bottom sheet. E-02: sem JS, tudo visível e estático. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/app.css">
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.185.1/build/three.module.js"}}</script>
+<style>
+  body{font-size:14px}
+  .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+  /* ─── chrome compactado ─── */
+  .bar{height:56px;padding:0 18px}
+  .brand{font-size:16px}
+  .bar .acts{gap:8px}
+  .bar .btn-sm.ghost{padding:11px 13px}
+  .bar .btn-sm.roxo{padding:12px 14px;font-size:15px;line-height:1}
+  .modbar a{padding:14px 13px}
+
+  /* ─── Sy, 40px, quieto ─── */
+  .sy40{width:40px;height:40px;flex:none;border-radius:11px;overflow:hidden;background:#0f0d0d;display:inline-block}
+  .sy40 canvas{display:block;width:100%;height:100%}
+
+  /* ─── cabeçalho ─── */
+  .cab{padding:28px 0 22px}
+  .cab h1{font:500 28px/1.1 var(--gro);letter-spacing:-.035em;margin-top:10px}
+  .cab .sub{font:400 13.5px/1.6 var(--int);color:var(--t2);margin-top:10px}
+  .score{display:flex;align-items:baseline;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+  .score .v{font:700 34px/1 var(--gro);letter-spacing:-.045em}
+  .score .l{font:400 12px/1.4 var(--int);color:var(--t3);flex:1;min-width:0}
+  .score .l .num{font-weight:700;font-size:11.5px}
+  .score a{font:500 12px var(--int);color:var(--t2);white-space:nowrap}
+
+  /* ─── 1. a margem de hoje ─── */
+  .margem{padding:26px 0 24px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .mhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .pill-q{font:600 10px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3);border:1px solid var(--line);border-radius:999px;padding:5px 10px;white-space:nowrap}
+  .livre{display:grid;grid-template-columns:108px 1fr;gap:18px;align-items:center;margin-top:20px}
+  .anel{position:relative;width:108px;height:108px}
+  .anel svg{display:block;width:100%;height:100%;transform:rotate(-90deg)}
+  .anel .trk{fill:none;stroke:var(--line-h);stroke-width:2}
+  .anel .arc{fill:none;stroke:var(--ele);stroke-width:3;stroke-linecap:round;stroke-dasharray:377;stroke-dashoffset:calc(377 - 377 * var(--p,.3125));transition:stroke-dashoffset .9s var(--ease)}
+  .anel .c{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+  .anel .c strong{font:700 28px/1 var(--gro);letter-spacing:-.045em;display:block}
+  .anel .c small{font:400 10px var(--int);color:var(--t3);display:block;margin-top:4px}
+  .livre h2{font:500 19px/1.25 var(--gro);letter-spacing:-.025em}
+  .livre p{font:400 12.5px/1.55 var(--int);color:var(--t2);margin-top:8px}
+  .linha-dia{display:flex;gap:4px;height:6px;margin-top:20px}
+  .linha-dia i{flex:1;border-radius:3px;background:var(--s2)}
+  .linha-dia i.on{background:var(--ele)}
+  .linha-dia i.prep{background:rgba(161,255,98,.38)}
+  .horas{display:flex;justify-content:space-between;font:700 9px var(--gro);letter-spacing:.12em;color:var(--t3);margin-top:8px;text-transform:uppercase}
+  .mfoot{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;border-top:1px solid var(--line);margin-top:20px;padding-top:16px}
+  .mfoot strong{display:block;font:700 19px/1 var(--gro);letter-spacing:-.03em}
+  .mfoot strong.w{color:var(--coral)}
+  .mfoot span{display:block;font:400 10.5px/1.35 var(--int);color:var(--t3);margin-top:6px}
+
+  /* ─── 2. o seu ritmo (no lugar do check-in; wiring .checkin do app.js) ─── */
+  .checkin{display:block;padding:26px 0 24px;border-bottom:1px solid var(--line)}
+  .checkin h2{font:500 20px/1.25 var(--gro);letter-spacing:-.025em;margin:10px 0 8px}
+  .checkin > p{font:400 12.5px/1.6 var(--int);color:var(--t2)}
+  .checkin .moods{margin-top:16px}
+  .mood{padding:11px 15px;font-size:13px}
+  .checkin .ck-form{flex-direction:column;align-items:stretch;margin-top:12px;gap:8px}
+  .ck-note{padding:13px 16px}
+  input,select,button,.opc{scroll-margin-top:76px} /* o bar é sticky: foco nunca fica escondido embaixo dele */
+  .btn-sm.roxo.ck-save{padding:12px 18px;justify-content:center}
+  .ck-nota{border-top:1px solid var(--line);margin-top:16px;padding-top:12px;font:400 12.5px/1.6 var(--int);color:var(--t3)}
+  .ck-nota b{color:var(--t1);font-weight:600}
+  .checkin small{display:block;font:400 10.5px/1.5 var(--int);color:var(--t3);margin-top:12px}
+  .ck-done{margin-top:12px}
+
+  /* ─── 3. laboratório ─── */
+  .sec-head{padding:30px 0 16px}
+  .sec-head h2{font:500 21px/1.2 var(--gro);letter-spacing:-.03em;margin-top:8px}
+  .sec-head p{font:400 12px/1.5 var(--int);color:var(--t3);margin-top:8px}
+  .lab{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .lab .perg{padding:22px 0 20px;border-bottom:1px dashed var(--line)}
+  .lab .efei{padding:20px 0 24px}
+  .perg h3{font:500 18px/1.3 var(--gro);letter-spacing:-.02em;margin:8px 0 6px}
+  .perg p{font:400 12.5px/1.6 var(--int);color:var(--t2)}
+  .opcoes{display:grid;gap:8px;margin-top:16px}
+  .opc{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;min-height:46px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;
+    background:transparent;color:var(--t2);font:500 13.5px var(--int);cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease),background .3s var(--ease)}
+  .opc[aria-pressed=true]{border-color:var(--roxo);color:var(--t1);background:rgba(104,64,255,.08)}
+  .opc .n{font:700 12px var(--gro);color:var(--t3)}
+  .opc[aria-pressed=true] .n{color:var(--roxo)}
+  .efei .et{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .efei .et b{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+  .imp{margin:14px 0 16px}
+  .imp > div{display:grid;grid-template-columns:1fr auto;column-gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line)}
+  .imp > div:last-child{border-bottom:none}
+  .imp label{font:400 12.5px var(--int);color:var(--t2)}
+  .imp strong{font:700 20px/1 var(--gro);letter-spacing:-.03em;text-align:right}
+  .imp strong.w{color:var(--coral)}
+  .imp strong.ok{color:var(--ele)}
+  .imp small{grid-column:1 / -1;font:400 11px/1.4 var(--int);color:var(--t3);margin-top:2px}
+  .expl{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;font:400 13px/1.6 var(--int);color:var(--t2)}
+  .expl p b{color:var(--t1);font-weight:600}
+  .evid{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .evid summary{font:500 12.5px var(--int);color:var(--t3);cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px;min-height:40px}
+  .evid summary::before{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform .3s var(--ease)}
+  .evid[open] summary::before{transform:rotate(45deg)}
+  .evid p{font:400 12px/1.6 var(--int);color:var(--t3);margin-top:6px}
+  .aplicar{margin-top:14px}
+  .aplicar .btn-sm{width:100%;justify-content:center;padding:13px 18px;font-size:13.5px}
+  .aplicar span{display:block;font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:10px;text-align:center}
+  .recibo{margin-top:14px;border-left:3px solid var(--ele);padding:10px 14px;font:400 12.5px/1.6 var(--int);color:var(--t2)}
+  .recibo b{color:var(--t1);font-weight:600}
+  .recibo button{display:block;background:none;border:none;color:var(--roxo);font:600 13px var(--int);cursor:pointer;padding:8px 0 0;min-height:40px}
+
+  /* ─── 4. pede você hoje ─── */
+  .pede{padding:8px 0 0}
+  .pede .eyebrow{padding:26px 0 6px}
+  .row{display:grid;grid-template-columns:34px 1fr;gap:6px 12px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .row .ix{font:700 12px var(--gro);color:var(--roxo);padding-top:2px}
+  .row .tx{font:400 14px/1.45 var(--int);color:var(--t1)}
+  .row .tx strong{font-weight:600}
+  .row .sub{font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:3px}
+  .row .r2{grid-column:2;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:4px}
+  .row .val{font:700 13px var(--gro);color:var(--t2);white-space:nowrap}
+  .row.warn .val{color:var(--coral)}
+  .row .act{padding:11px 14px;min-height:40px}
+  .camada .chead .x{width:40px;height:40px}
+  .dims-head a,.dims-head .eyebrow{min-height:40px;display:inline-flex;align-items:center}
+
+  /* ─── 5. o dia continua seu ─── */
+  .dia{padding:30px 0 6px}
+  .dia h2,.presenca h2{font:500 20px/1.2 var(--gro);letter-spacing:-.025em;margin-top:8px}
+  .ag{display:grid;grid-template-columns:46px 1fr auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+  .ag time{font:700 12px var(--gro);color:var(--t3)}
+  .ag strong{font:500 13.5px var(--int);color:var(--t1);display:block}
+  .ag small{font:400 11.5px/1.4 var(--int);color:var(--t3);display:block;margin-top:3px}
+  .ag .tag{font:700 9px var(--gro);letter-spacing:.14em;padding:4px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3);white-space:nowrap;text-transform:uppercase}
+  .ag .tag.ok{border-color:rgba(161,255,98,.4);color:var(--ele)}
+  .ag.livre strong{color:var(--ele)}
+
+  /* ─── 6. presença de Sy ─── */
+  .presenca{padding:30px 0 28px;border-top:1px solid var(--line);margin-top:24px}
+  .presenca .sh{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center;margin-top:8px}
+  .presenca .sh h2{margin:0}
+  .presenca > p{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:12px}
+  .presenca label{display:block;font:700 10.5px var(--gro);letter-spacing:.22em;text-transform:uppercase;color:var(--t3);margin-top:18px}
+  .sel{position:relative;margin-top:10px}
+  .sel select{width:100%;appearance:none;-webkit-appearance:none;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:13px 40px 13px 16px;color:var(--t1);font:500 14px var(--int);outline:none}
+  .sel select:focus{border-color:rgba(104,64,255,.55)}
+  .sel::after{content:"";position:absolute;right:18px;top:50%;width:7px;height:7px;border-right:1.5px solid var(--t3);border-bottom:1.5px solid var(--t3);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+  .presenca .hint{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:12px}
+  .presenca .hint b{color:var(--t2);font-weight:600}
+
+  /* ─── suas áreas / números / semana ─── */
+  .dims-sec{padding:28px 0 8px;border-top:1px solid var(--line)}
+  .dims-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .dims-head a{font:500 12px var(--int);color:var(--t3)}
+  .dimrow{display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line)}
+  .dimrow .di{font:700 11.5px var(--gro);color:var(--t3)}
+  .dimrow .nm{font:500 15.5px var(--gro);letter-spacing:-.01em}
+  .dimrow .mt{font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+  .dimrow .sc{font:700 21px var(--gro);letter-spacing:-.03em;display:flex;align-items:baseline;gap:7px}
+  .dimrow .tr{font:600 11px var(--gro)}
+  .outras{font:400 12px/1.7 var(--int);color:var(--t3);padding:14px 0;border-top:1px solid var(--line);margin-top:-1px}
+  .nums{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:24px}
+  .nums > div{padding:20px 14px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .nums > div:nth-child(odd){padding-left:0}
+  .nums > div:nth-child(even){border-right:none;padding-right:0}
+  .nums > div:nth-child(n+3){border-bottom:none}
+  .nums .v{font:700 24px/1 var(--gro);letter-spacing:-.04em;margin-top:10px}
+  .nums .d{font:500 11.5px var(--int);margin-top:7px;color:var(--t3)}
+  .semana{padding:18px 0 40px}
+  .semana p{font:400 13px/1.6 var(--int);color:var(--t2)}
+  .semana p b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+  .semana a{display:inline-block;font:500 12.5px var(--int);color:var(--t2);margin-top:10px;min-height:40px;line-height:40px}
+
+  /* ─── rodapé em coluna ─── */
+  .colofao{flex-direction:column;align-items:flex-start;gap:8px;padding:20px 20px 30px}
+  .colofao .r{flex-direction:column;gap:8px}
+
+  /* ─── camada: sheet ─── */
+  .camada.sheet{height:clamp(420px,86dvh,760px)}
+  .camada .csug .chip{padding:11px 16px}
+  .camada .cfull{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+
+  @media (prefers-reduced-motion:reduce){.anel .arc{transition:none}}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- chrome -->
+<header class="bar">
+  <a class="brand" href="#">
+    <svg width="19" height="19" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="2" x2="32" y2="11" stroke="#a1ff62" stroke-width="7" stroke-linecap="round"/><polygon points="32,8 40,34 24,34" fill="#6840ff"/><polygon points="32,58 24,34 40,34" fill="#f4f4f4" opacity=".35"/></svg>
+    <span class="wm">Sync<em>Life</em></span></a>
+  <div class="acts">
+    <button class="btn-sm ghost coach-pill" type="button" data-coach-open>
+      <svg width="15" height="15" viewBox="0 0 64 64" aria-hidden="true"><line x1="32" y1="5" x2="32" y2="12" stroke="#a1ff62" stroke-width="4.5" stroke-linecap="round"/><line x1="59" y1="32" x2="52" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="32" y1="59" x2="32" y2="52" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><line x1="5" y1="32" x2="12" y2="32" stroke="#f4f4f4" stroke-width="4.5" stroke-linecap="round" opacity=".5"/><polygon points="32,8 38,32 26,32" fill="#6840ff"/><polygon points="32,55 26,32 38,32" fill="#f4f4f4" opacity=".3"/><circle cx="32" cy="32" r="3.5" fill="#151313"/></svg>
+      Fale com Sy</button>
+    <button class="btn-sm roxo" type="button" aria-label="Registrar">+</button>
+  </div>
+</header>
+<nav class="modbar" aria-label="Áreas">
+  <div class="in">
+    <a class="on" href="meu-dia-d.mobile.html">Meu dia</a>
+    <a href="financas-a.mobile.html"><span class="n">01</span>Finanças</a>
+    <a href="#"><span class="n">02</span>Futuro</a>
+    <a href="#"><span class="n">03</span>Tempo</a>
+    <a href="#"><span class="n">04</span>Corpo</a>
+    <a href="#"><span class="n">05</span>Mente</a>
+    <a href="#"><span class="n">06</span>Patrimônio</a>
+    <a href="#"><span class="n">07</span>Carreira</a>
+    <a href="#"><span class="n">08</span>Experiências</a>
+    <a href="#">Conquistas</a>
+    <a href="#">Configurações</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- cabeçalho -->
+  <section class="cab boot b1">
+    <p class="eyebrow">Sexta · 3 de outubro</p>
+    <h1>Hoje pode caber menos.</h1>
+    <p class="sub">Uma janela livre à tarde, uma atenção no lazer e um jantar que você decide como quiser.</p>
+    <div class="score" role="img" aria-label="Life Sync Score 78, mais 3 na semana">
+      <div class="v num" data-cnt="78">78</div>
+      <div class="l">Life Sync Score · <span class="num ele">+3</span> na semana</div>
+      <a href="life-score.mobile.html">Entender →</a>
+    </div>
+  </section>
+
+  <!-- 1. a margem de hoje -->
+  <section class="margem boot b2" aria-label="Sua margem hoje">
+    <div class="mhead">
+      <p class="eyebrow">Sua margem · <b>14h às 22h</b></p>
+      <span class="pill-q" id="statusDia">Sem pressa</span>
+    </div>
+    <div class="livre">
+      <div class="anel" id="anel" style="--p:.3125">
+        <svg viewBox="0 0 132 132" aria-hidden="true"><circle class="trk" cx="66" cy="66" r="60"/><circle class="arc" cx="66" cy="66" r="60"/></svg>
+        <div class="c"><div><strong class="num" id="tempoLivre">2h30</strong><small>sem compromisso</small></div></div>
+      </div>
+      <div>
+        <h2>Tempo livre também é um plano.</h2>
+        <p id="livreCopy">Há <b class="num">150</b> minutos livres das 16h30 às 19h. Você decide o que fazer com eles.</p>
+      </div>
+    </div>
+    <div class="linha-dia" id="linhaDia" aria-label="Agenda das 14h às 22h"><i></i><i></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+    <div class="horas"><span>14:00</span><span id="janelaLabel">16:30 a 19:00 · livre</span><span>22:00</span></div>
+    <div class="mfoot">
+      <div><strong class="num w" id="lazerLivre">R$&nbsp;10</strong><span>de lazer até quinta</span></div>
+      <div><strong class="num">2</strong><span>compromissos à frente</span></div>
+      <div><strong class="num" id="itaMeta">68%</strong><span>da meta Itália</span></div>
+    </div>
+  </section>
+
+  <!-- 2. o seu ritmo -->
+  <section class="checkin boot b3" aria-label="Seu ritmo hoje">
+    <p class="eyebrow">O que a agenda não sabe</p>
+    <h2>Como está seu ritmo hoje?</h2>
+    <p>Ter tempo disponível não diz quanto você quer fazer. Responder é opcional e não muda o que a tela mostra.</p>
+    <div class="moods" role="group" aria-label="Seu ritmo hoje">
+      <button class="mood" type="button" data-r="lento">Mais lento</button>
+      <button class="mood" type="button" data-r="normal">No meu ritmo</button>
+      <button class="mood" type="button" data-r="energia">Com energia</button>
+    </div>
+    <div class="ck-form">
+      <input class="ck-note" type="text" placeholder="Uma linha sobre hoje (opcional)">
+      <button class="btn-sm roxo ck-save" type="button">Registrar</button>
+    </div>
+    <div class="ck-done" hidden>Registrado às 21:14 · <b data-out></b></div>
+    <p class="ck-nota" id="ritmoNota">Você pode seguir sem responder. <b>Seu dia continua aqui.</b></p>
+    <small>Autodeclaração, só sua. Não é avaliação de saúde e Sy nunca cobra o que ficou em branco.</small>
+  </section>
+
+  <!-- 3. laboratório -->
+  <div class="sec-head boot b4">
+    <p class="eyebrow">Uma escolha, mais de um efeito</p>
+    <h2>E se o jantar de hoje fosse diferente?</h2>
+    <p>Experimente antes de decidir. Nada é lançado.</p>
+  </div>
+  <section class="lab boot b4" aria-label="Laboratório de possibilidades">
+    <div class="perg">
+      <p class="eyebrow"><b>03 · 01 · 08</b> · Tempo, Finanças, Experiências</p>
+      <h3>Jantar com Ana, hoje às 20h.</h3>
+      <p>Compare tempo, dinheiro e o que sobra para a Itália. Nenhuma opção é a certa: a prioridade é sua.</p>
+      <div class="opcoes" role="group" aria-label="Cenários para o jantar">
+        <button class="opc" type="button" data-cen="fora" aria-pressed="true"><span>Sair para jantar</span><span class="n num">R$&nbsp;120</span></button>
+        <button class="opc" type="button" data-cen="casa" aria-pressed="false"><span>Cozinhar em casa</span><span class="n num">R$&nbsp;55</span></button>
+        <button class="opc" type="button" data-cen="simples" aria-pressed="false"><span>Fazer algo simples</span><span class="n num">R$&nbsp;35</span></button>
+      </div>
+    </div>
+    <div class="efei">
+      <div class="et"><b id="cenTitulo">Sair para jantar</b><span class="eyebrow">Simulação</span></div>
+      <div class="imp" aria-live="polite">
+        <div><label>Lazer até quinta</label><strong class="num w" id="impLazer">– R$&nbsp;110</strong><small id="impLazerNota">passa R$&nbsp;110 do teto de R$&nbsp;420</small></div>
+        <div><label>Tempo livre que sobra</label><strong class="num" id="impTempo">2h30</strong><small id="impTempoNota">nenhum preparo na janela</small></div>
+        <div><label>Possível aporte Itália</label><strong class="num" id="impAporte">R$&nbsp;0</strong><small>diferença frente a jantar fora</small></div>
+      </div>
+      <div class="expl">
+        <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+        <p id="cenCopy">Você preserva a janela livre e sai para jantar. <b>O lazer do mês estoura</b>, e isso é uma escolha legítima: a experiência pode valer o gasto. Sy só mostra o efeito.</p>
+      </div>
+      <details class="evid">
+        <summary>De onde vêm esses efeitos?</summary>
+        <p>Orçamento de lazer: <span class="num">R$&nbsp;410 de R$&nbsp;420</span> usados, restam <span class="num">R$&nbsp;10</span> até quinta. Jantar fora estimado em <span class="num">R$&nbsp;120</span> (média dos seus últimos 3 jantares da categoria Lazer); em casa <span class="num">R$&nbsp;55</span> e 50 min de preparo; simples <span class="num">R$&nbsp;35</span> e 20 min. Aporte possível = <span class="num">R$&nbsp;120</span> menos o custo escolhido; a meta Itália está em <span class="num">R$&nbsp;8.600 de R$&nbsp;12.700</span>.</p>
+        <p>O aporte é uma possibilidade, não uma transferência. Deslocamento e preferências não foram modelados. Fontes: orçamento Lazer, 34 transações, meta Viagem Itália, agenda de hoje.</p>
+      </details>
+      <div class="aplicar">
+        <button class="btn-sm roxo" type="button" id="aplicar">Experimentar no meu dia →</button>
+        <span>Prévia local, com desfazer. Nenhuma conta ou agenda muda.</span>
+      </div>
+      <div class="recibo" id="recibo" role="status" hidden><span id="reciboTxt"></span><button type="button" id="desfazer">Desfazer</button></div>
+    </div>
+  </section>
+
+  <!-- 4. pede você hoje -->
+  <section class="pede boot b5" aria-label="Pede você hoje">
+    <p class="eyebrow">Pede você hoje</p>
+    <div class="row">
+      <span class="ix num">05</span>
+      <div>
+        <div class="tx"><strong>A proposta do curso de inglês</strong> continua em aberto</div>
+        <div class="sub">Mente · Tempo · Finanças · Carreira · Futuro · 2 noites por semana</div>
+      </div>
+      <div class="r2"><span class="val num">R$&nbsp;180/mês</span><button class="btn-sm ghost act" type="button" data-coach-open data-coach-seed="Vale fechar o curso de inglês por R$ 180 por mês, 2 noites por semana?">Decidir</button></div>
+    </div>
+    <div class="row warn">
+      <span class="ix num">01</span>
+      <div>
+        <div class="tx"><strong>Lazer</strong> encostou no teto: restam R$&nbsp;10 até quinta</div>
+        <div class="sub">98% usado, 4 dias de janela. Segure até sexta e o mês fecha com R$&nbsp;2.120.</div>
+      </div>
+      <div class="r2"><span class="val num">R$&nbsp;410 de R$&nbsp;420</span><a class="btn-sm ghost act" href="financas-a.mobile.html#orcamentos">Ver orçamento</a></div>
+    </div>
+    <div class="row">
+      <span class="ix num">01</span>
+      <div>
+        <div class="tx"><strong>Aluguel</strong> vence em 3 dias</div>
+        <div class="sub">Saldo projetado segue positivo depois do pagamento</div>
+      </div>
+      <div class="r2"><span class="val num">R$&nbsp;1.200,00</span><a class="btn-sm ghost act" href="financas-a.mobile.html#recorrentes">Ver recorrentes</a></div>
+    </div>
+  </section>
+
+  <!-- 5. o dia continua seu -->
+  <section class="dia rv" aria-label="O dia continua seu">
+    <p class="eyebrow">Hoje</p>
+    <h2>O dia continua seu.</h2>
+    <div class="ag"><time class="num">07:30</time><div><strong>Fisioterapia</strong><small>Corpo · feita</small></div><span class="tag ok">Feita</span></div>
+    <div class="ag"><time class="num">15:00</time><div><strong>Bloco de foco</strong><small>Projeto pessoal · 50 min · até 16h30</small></div><span class="tag">A seguir</span></div>
+    <div class="ag livre"><time class="num">16:30</time><div><strong id="agLivre">Espaço livre</strong><small id="agLivreSub">150 min sem tarefa sugerida</small></div><span class="tag ok">Protegido</span></div>
+    <div class="ag"><time class="num">20:00</time><div><strong id="agJantar">Jantar com Ana</strong><small id="agJantarSub">Plano atual · fora · R$&nbsp;120 estimados</small></div><span class="tag">Lazer</span></div>
+  </section>
+
+  <!-- 6. presença de Sy -->
+  <section class="presenca rv" aria-label="Presença de Sy">
+    <p class="eyebrow">Seu acordo com Sy</p>
+    <div class="sh">
+      <span class="sy40" aria-hidden="true"><canvas></canvas></span>
+      <h2>Presença, do seu jeito.</h2>
+    </div>
+    <p>Sy liga os pontos entre as suas áreas e mostra o efeito das suas escolhas. Você define quando essa ajuda entra. Fora disso, Sy espera.</p>
+    <label for="syModo">Quando Sy pode trazer sugestões?</label>
+    <div class="sel">
+      <select id="syModo">
+        <option value="pedir">Quando eu pedir</option>
+        <option value="mudar" selected>Quando algo importante mudar</option>
+        <option value="resumo">Em um resumo por dia</option>
+      </select>
+    </div>
+    <p class="hint" id="syHint"><b>Exemplo de gatilho:</b> um compromisso novo elimina a sua janela livre, ou o lazer passa do teto. Mudanças pequenas aguardam.</p>
+  </section>
+
+  <!-- suas áreas -->
+  <section class="dims-sec rv" id="areas" aria-label="Suas áreas">
+    <div class="dims-head">
+      <p class="eyebrow">Suas áreas</p>
+      <a href="#">Ver todas →</a>
+    </div>
+    <a class="dimrow" href="financas-a.mobile.html"><span class="di num">01</span><div><div class="nm">Finanças</div><div class="mt num">Saldo R$&nbsp;1.840 · lazer no limite</div></div><span class="sc num">83<span class="tr ele">▲2</span></span></a>
+    <div class="dimrow"><span class="di num">02</span><div><div class="nm">Futuro</div><div class="mt num">3 metas · 61% de média</div></div><span class="sc num">79<span class="tr ele">▲1</span></span></div>
+    <div class="dimrow"><span class="di num">04</span><div><div class="nm">Corpo</div><div class="mt num">3 atividades · 126 min</div></div><span class="sc num">69<span class="tr ele">▲3</span></span></div>
+    <div class="dimrow"><span class="di num">08</span><div><div class="nm">Experiências</div><div class="mt num">Itália em 92 dias</div></div><span class="sc num">78<span class="tr" style="color:var(--t3)">–</span></span></div>
+    <p class="outras">Outras: 03 Tempo <span class="num">71</span> · 05 Mente <span class="num">58</span> · 06 Patrimônio <span class="num">76</span> · 07 Carreira <span class="num">69</span></p>
+  </section>
+
+  <!-- números do mês -->
+  <section class="nums rv" aria-label="Números do mês">
+    <div><p class="eyebrow">Saldo livre</p><div class="v num" data-cnt="1840" data-prefix="R$&nbsp;">R$&nbsp;1.840</div><div class="d num ele">+12% vs setembro</div></div>
+    <div><p class="eyebrow">Receitas</p><div class="v num" data-cnt="5000" data-prefix="R$&nbsp;">R$&nbsp;5.000</div><div class="d num ele">+8% vs setembro</div></div>
+    <div><p class="eyebrow">Despesas</p><div class="v num" data-cnt="3160" data-prefix="R$&nbsp;">R$&nbsp;3.160</div><div class="d num">63% da receita</div></div>
+    <div><p class="eyebrow">Poupança</p><div class="v num" data-cnt="37" data-suffix="%">37%</div><div class="d num">Meta: 30%</div></div>
+  </section>
+
+  <!-- sua semana -->
+  <section class="semana rv" aria-label="Sua semana">
+    <p>Sua semana: score de <b class="num">75</b> para <b class="num">78</b>, <b class="num">11 de 14</b> compromissos feitos, <b class="num">6h30</b> de foco. Fecha domingo às 21:30.</p>
+    <a href="review-semanal.mobile.html">Ver a semana →</a>
+  </section>
+</main>
+
+<!-- rodapé -->
+<footer class="colofao">
+  <span>Fechamento projetado de outubro: <b class="num">R$&nbsp;2.120</b></span>
+  <div class="r">
+    <span>Streak <b class="num">12 dias</b></span>
+    <span>Badges <b class="num">24/61</b></span>
+    <span>Última sincronização às <b class="num">14:05</b></span>
+  </div>
+</footer>
+
+<!-- camada de Sy: sheet -->
+<div class="scrim"></div>
+<aside class="camada sheet" aria-label="Sy">
+  <div class="handle"></div>
+  <header class="chead">
+    <p class="eyebrow"><b>Sy</b> · lendo: o seu dia</p>
+    <button class="x" type="button" aria-label="Fechar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </header>
+  <div class="cbody">
+    <div class="cempty">
+      <p class="hello">Já li o seu dia. O que você quer saber?</p>
+      <div class="csug">
+        <button class="chip" type="button">Quanto ainda posso gastar em lazer?</button>
+        <button class="chip" type="button">Resumo da minha semana</button>
+        <button class="chip" type="button">Simular: e se eu poupar R$&nbsp;800?</button>
+      </div>
+    </div>
+    <div class="cthread" hidden>
+      <div class="divider">Hoje · 14:02</div>
+      <div class="bub u">Quanto ainda posso gastar em lazer esse mês?</div>
+      <div class="bub a">Quase nada: <strong class="num">R$&nbsp;10</strong> até quinta. Você usou <span class="w">R$&nbsp;410 dos R$&nbsp;420</span> do orçamento, e o cinema de ontem (<strong class="num">R$&nbsp;64</strong>) foi o que encostou no teto. A boa notícia: o fechamento projeta <strong class="num">R$&nbsp;2.120</strong>.
+        <span class="meta">Fontes: orçamento Lazer · 34 transações · projeção do mês</span>
+      </div>
+      <div class="bub u">Então antecipa o aporte da Itália pra hoje.</div>
+      <div class="action" role="status">
+        <div class="al">Ação executada</div>
+        <p>Transferência de <b class="num">R$&nbsp;580</b> pra <b>Viagem Itália</b> agendada pra hoje, 16:00. A meta vai a <b class="num">70%</b> e o saldo projetado segue positivo em <b class="num">R$&nbsp;1.540</b>.</p>
+        <span class="done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirmado por você · 14:04</span>
+      </div>
+    </div>
+  </div>
+  <form class="cask"><div class="in">
+    <input type="text" placeholder="Pergunte qualquer coisa">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+  </div></form>
+  <a class="cfull" href="#sy">Conversa completa →</a>
+</aside>
+
+<script src="../shared/mock-data.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+SLApp.boot()
+
+// ── laboratório: uma escolha, mais de um efeito (prévia local, com desfazer) ──
+// Mesma lógica da desktop (meu-dia-d.html). Quando as peças forem para shared/, vira um módulo só.
+;(function () {
+  var $ = function (s) { return document.querySelector(s) }
+  var NB = ' '
+  var brl = function (n) { return 'R$' + NB + Math.abs(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) }
+  var hm = function (min) { return Math.floor(min / 60) + 'h' + String(min % 60).padStart(2, '0') }
+  var LAZER = 10, JANELA = 150, FORA = 120, ITA = 8600, ITA_META = 12700
+  var CEN = {
+    fora:    { nome: 'Sair para jantar',  ag: 'Jantar com Ana', agSub: 'fora', custo: 120, prep: 0,
+      copy: 'Você preserva a janela livre e sai para jantar. <b>O lazer do mês estoura</b>, e isso é uma escolha legítima: a experiência pode valer o gasto. Sy só mostra o efeito.' },
+    casa:    { nome: 'Cozinhar em casa',  ag: 'Jantar em casa com Ana', agSub: 'em casa', custo: 55, prep: 50,
+      copy: 'Você troca <b>50 minutos</b> da janela por <b>R$' + NB + '65</b> de diferença. O lazer ainda passa do teto, mas por pouco, e a diferença poderia ir para a Itália, se essa for a prioridade.' },
+    simples: { nome: 'Fazer algo simples', ag: 'Jantar simples com Ana', agSub: 'simples', custo: 35, prep: 20,
+      copy: 'A opção de menor custo, com <b>20 minutos</b> de preparo. Você preserva <b>2h10</b> livres e <b>R$' + NB + '85</b> que poderiam ir para outra prioridade.' },
+  }
+  var sel = 'fora'
+  function escolher (k) {
+    sel = k; var c = CEN[k]
+    document.querySelectorAll('[data-cen]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.cen === k)) })
+    $('#cenTitulo').textContent = c.nome
+    var lz = LAZER - c.custo, el = $('#impLazer')
+    el.textContent = (lz < 0 ? '– ' : '') + brl(lz); el.className = 'num ' + (lz < 0 ? 'w' : 'ok')
+    $('#impLazerNota').textContent = lz < 0 ? 'passa ' + brl(lz) + ' do teto de R$' + NB + '420' : 'dentro do teto de R$' + NB + '420'
+    $('#impTempo').textContent = hm(JANELA - c.prep)
+    $('#impTempoNota').textContent = c.prep ? c.prep + ' min de preparo na janela' : 'nenhum preparo na janela'
+    var ap = FORA - c.custo, ae = $('#impAporte')
+    ae.textContent = brl(ap); ae.className = 'num ' + (ap > 0 ? 'ok' : '')
+    $('#cenCopy').innerHTML = c.copy
+  }
+  function aplicar (k) {
+    var c = CEN[k], livre = JANELA - c.prep, lz = LAZER - c.custo
+    $('#tempoLivre').textContent = hm(livre)
+    $('#anel').style.setProperty('--p', (livre / 480).toFixed(4))
+    $('#livreCopy').innerHTML = '<b class="num">' + livre + '</b> minutos continuam livres depois dessa escolha' + (c.prep ? ', com ' + c.prep + ' min de preparo dentro da janela.' : '.')
+    $('#janelaLabel').textContent = c.prep ? 'janela de 150 min · ' + c.prep + ' min de preparo' : '16:30 a 19:00 · livre'
+    document.querySelectorAll('#linhaDia i')[4].className = c.prep ? 'prep' : 'on'
+    $('#lazerLivre').textContent = (lz < 0 ? '– ' : '') + brl(lz)
+    $('#statusDia').textContent = c.prep ? 'Com preparo' : 'Sem pressa'
+    var ap = FORA - c.custo
+    $('#itaMeta').textContent = Math.round((ITA + ap) / ITA_META * 100) + '%'
+    $('#agLivre').textContent = c.prep ? 'Espaço livre + preparo do jantar' : 'Espaço livre'
+    $('#agLivreSub').textContent = livre + ' min livres' + (c.prep ? ' · ' + c.prep + ' min de preparo' : ' sem tarefa sugerida')
+    $('#agJantar').textContent = c.ag
+    $('#agJantarSub').textContent = 'Prévia · ' + c.agSub + ' · ' + brl(c.custo) + ' estimados'
+    $('#reciboTxt').innerHTML = '<b>' + c.nome + '</b> entrou na prévia do seu dia. Nenhuma conta ou agenda foi alterada.'
+    $('#recibo').hidden = false
+  }
+  function desfazer () {
+    $('#tempoLivre').textContent = '2h30'
+    $('#anel').style.setProperty('--p', '.3125')
+    $('#livreCopy').innerHTML = 'Há <b class="num">150</b> minutos livres das 16h30 às 19h. Você decide o que fazer com eles.'
+    $('#janelaLabel').textContent = '16:30 a 19:00 · livre'
+    document.querySelectorAll('#linhaDia i')[4].className = 'on'
+    $('#lazerLivre').textContent = brl(LAZER)
+    $('#statusDia').textContent = 'Sem pressa'
+    $('#itaMeta').textContent = '68%'
+    $('#agLivre').textContent = 'Espaço livre'
+    $('#agLivreSub').textContent = '150 min sem tarefa sugerida'
+    $('#agJantar').textContent = 'Jantar com Ana'
+    $('#agJantarSub').innerHTML = 'Plano atual · fora · R$' + NB + '120 estimados'
+    $('#recibo').hidden = true
+    escolher('fora'); $('#aplicar').focus()
+  }
+  document.querySelectorAll('[data-cen]').forEach(function (b) { b.addEventListener('click', function () { escolher(b.dataset.cen) }) })
+  $('#aplicar').addEventListener('click', function () { aplicar(sel) })
+  $('#desfazer').addEventListener('click', desfazer)
+
+  // ── ritmo autodeclarado: muda só a nota, nunca os dados ──
+  var NOTA = {
+    lento:   '<b>Seu ritmo foi ouvido.</b> Nenhuma atividade extra entra nas sugestões de hoje. Você pode comparar as opções sem assumir mais um compromisso.',
+    normal:  '<b>O dia pode seguir assim.</b> Explore uma mudança só se ela fizer sentido para você.',
+    energia: '<b>Energia não precisa virar obrigação.</b> A janela livre continua disponível para o que você escolher.',
+  }
+  document.querySelectorAll('.mood[data-r]').forEach(function (b) {
+    b.addEventListener('click', function () { $('#ritmoNota').innerHTML = NOTA[b.dataset.r] })
+  })
+
+  // ── acordo de atenção com Sy ──
+  var HINT = {
+    pedir:  '<b>Sy fica disponível.</b> Seu dia abre direto, sem apresentação, e nada chega sem você pedir.',
+    mudar:  '<b>Exemplo de gatilho:</b> um compromisso novo elimina a sua janela livre, ou o lazer passa do teto. Mudanças pequenas aguardam.',
+    resumo: '<b>Um resumo por dia,</b> no horário que você escolher nas configurações. Sempre com a opção de pular.',
+  }
+  $('#syModo').addEventListener('change', function (e) { $('#syHint').innerHTML = HINT[e.target.value] })
+})()
+</script>
+<script type="module">
+import { REDUZ } from '../personagem/vida.js'
+import { criarEnxame } from '../personagem/enxame.js'
+const pecas = [...document.querySelectorAll('.sy40 canvas')].map((cv, i) =>
+  criarEnxame(cv, { n: 190, tam: .7, compacto: .78, dpr: 3, semente: 4.6 + i }))
+let estado = 'repouso'
+const cask = document.querySelector('.camada .cask')
+if (cask) {
+  cask.addEventListener('focusin', () => { estado = 'ouvindo' })
+  cask.addEventListener('focusout', () => { estado = 'repouso' })
+}
+let ultimo = performance.now()
+function laco (agora) { const dt = Math.min((agora - ultimo) / 1000, .05); ultimo = agora
+  for (const p of pecas) p.quadro(dt, estado); requestAnimationFrame(laco) }
+if (REDUZ) { for (let i = 0; i < 3; i++) for (const p of pecas) p.quadro(1 / 60, 'repouso') } else requestAnimationFrame(laco)
+</script>
+</body>
+</html>
