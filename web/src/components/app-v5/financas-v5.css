@@ -1,0 +1,19 @@
+/* SyncLife DS v5 · Finanças hub (T1), Fase 1 · Task 12. As peças (.titulo, .sy,
+   .nums, .duo, .orc, .cats, .prox, .fluxo, .trans/.tx, .duo2, .metas, .rec,
+   .agenda, .colofao e o mobile sob .v5 .mob) estão em styles/app-v5.css. Aqui
+   só o que é desta tela: o .wrap inline dos protótipos e os estados. */
+
+/* wrap: financas-a.html (1180px + respiro clamp) e financas-a.mobile.html (100% + 20px) */
+.v5 .financas .wrap{--wrap-max:1180px;padding-left:clamp(20px,4vw,56px);padding-right:clamp(20px,4vw,56px)}
+.v5 .mob .financas .wrap{--wrap-max:100%;padding-left:20px;padding-right:20px}
+
+/* carregando: hairlines quietas, sem spinner */
+.v5 .financas .sk{display:block;height:12px;border-radius:6px;background:var(--line)}
+.v5 .financas .sk.l1{width:min(560px,92%);height:16px;margin-top:4px}
+.v5 .financas .sk.l2{width:min(320px,60%);margin-top:12px}
+.v5 .financas .sk-rows{padding:30px 0 44px}
+.v5 .financas .sk-row{height:52px;border-bottom:1px solid var(--line)}
+.v5 .financas .sk-row:last-child{border-bottom:none}
+
+/* linha quieta de lista vazia (mesma voz do .agenda) */
+.v5 .financas .quieto{font:400 12.5px/1.6 var(--int);color:var(--t3);padding:14px 0 0}
