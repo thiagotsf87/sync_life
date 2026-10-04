@@ -339,6 +339,13 @@ export function useMeuDia(): MeuDiaData {
 
   // ── intenções em aberto ────────────────────────────────────────────────────
   const [intencoesRaw, setIntencoesRaw] = useState<(IntencaoAberta & { proposta: unknown })[]>([])
+  // aplicar/desfazer na camada (use-intencao) dispara sy:intencao-mudou: recarrega as em aberto
+  const [intencoesVersao, setIntencoesVersao] = useState(0)
+  useEffect(() => {
+    const onMudou = () => setIntencoesVersao(v => v + 1)
+    window.addEventListener('sy:intencao-mudou', onMudou)
+    return () => window.removeEventListener('sy:intencao-mudou', onMudou)
+  }, [])
   useEffect(() => {
     let vivo = true
     const sb = createClient() as unknown as {
@@ -359,7 +366,7 @@ export function useMeuDia(): MeuDiaData {
       }
     })()
     return () => { vivo = false }
-  }, [])
+  }, [intencoesVersao])
 
   const intencoes: IntencaoAberta[] = intencoesRaw.map(({ id, texto, created_at }) => ({ id, texto, created_at }))
 

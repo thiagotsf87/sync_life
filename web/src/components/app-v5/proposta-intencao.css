@@ -1,0 +1,87 @@
+/* SyncLife DS v5 · cartão de proposta da intenção composta, Fase 1 · Task 17.
+   Porte 1:1 do <style> inline de prototypes/v5/app/_intencao.html (desktop) e
+   _intencao.mobile.html (`html.mob` → `.v5 .mob`): .prop, .regs, .impl, .feito,
+   .confirma, .desfeito. As peças .opcoes/.opc, .evid, .aplicar, .action e .bub
+   vêm de styles/app-v5.css. Tudo sob `.cint` (o bloco da intenção dentro da
+   .cthread da camada) para não colidir com os cartões do arquivo da conversa. */
+
+.v5 .cint{display:flex;flex-direction:column;gap:12px}
+.v5 .cint .bub,.v5 .cint .prop,.v5 .cint .action,.v5 .cint .desfeito{align-self:stretch}
+.v5 .cint .bub{max-width:88%}
+.v5 .cint .bub.u{align-self:flex-end}
+.v5 .cint .bub.a{align-self:flex-start}
+.v5 .cint .divider{display:flex;align-items:center;gap:14px;font:700 9.5px var(--gro);letter-spacing:.2em;color:var(--t3);text-transform:uppercase}
+.v5 .cint .divider::before,.v5 .cint .divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.v5 .cint .prop{border-top:1px solid var(--line);padding-top:16px;margin-top:4px}
+.v5 .cint .prop h3{font:500 19px/1.25 var(--gro);letter-spacing:-.02em;margin-top:8px}
+.v5 .cint .prop .pp{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:6px}
+.v5 .cint .prop .opcoes{margin-top:14px}
+.v5 .cint .prop .pbody{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+.v5 .cint .prop .et{display:flex;justify-content:space-between;align-items:baseline}
+.v5 .cint .prop .et b{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.v5 .cint .regs{margin-top:8px}
+.v5 .cint .reg{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border-bottom:1px solid var(--line)}
+.v5 .cint .reg:last-child{border-bottom:none}
+.v5 .cint .rk{position:relative;display:grid;grid-template-columns:18px 26px 1fr;gap:10px;align-items:start;padding:11px 0;cursor:pointer;min-height:44px}
+.v5 .cint .rk input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer}
+.v5 .cint .rk i{width:18px;height:18px;border:1px solid var(--line-h);border-radius:5px;margin-top:1px;display:grid;place-items:center;transition:background .3s var(--ease),border-color .3s var(--ease)}
+.v5 .cint .rk i::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);opacity:0}
+.v5 .cint .rk input:checked ~ i{background:var(--roxo);border-color:var(--roxo)}
+.v5 .cint .rk input:checked ~ i::after{opacity:1}
+.v5 .cint .rk input:focus-visible ~ i{outline:2px solid var(--roxo);outline-offset:2px}
+.v5 .cint .rk .ix{font:700 12px var(--gro);color:var(--roxo);padding-top:2px}
+.v5 .cint .rk .rt{font:400 13.5px/1.45 var(--int);color:var(--t1)}
+.v5 .cint .rk .rt b{font-weight:600}
+.v5 .cint .rk .rt small{display:block;font:400 11px var(--int);color:var(--t3);margin-top:2px}
+/* o nome interno da tabela entra via attr(): fica fora do innerText (a regra de copy vale para o produto) */
+.v5 .cint .rk .rt small[data-sub]::before{content:attr(data-sub)}
+.v5 .cint .reg.off .rt,.v5 .cint .reg.off .ix{color:var(--t3)}
+.v5 .cint .rval{display:inline-flex;align-items:center;gap:5px;font:500 11.5px var(--int);color:var(--t3);white-space:nowrap}
+.v5 .cint .rval input{width:72px;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--t1);font:600 12.5px var(--gro);letter-spacing:-.01em;outline:none;text-align:right;transition:border-color .3s var(--ease)}
+.v5 .cint .rval input.txt{width:112px;text-align:left;font:500 12px var(--int)}
+.v5 .cint .rval input:focus{border-color:rgba(104,64,255,.55)}
+.v5 .cint .reg.off .rval{opacity:.4;pointer-events:none}
+.v5 .cint .pe2{margin-top:18px}
+.v5 .cint .impl{list-style:none;margin-top:6px}
+.v5 .cint .impl li{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.5 var(--int);color:var(--t2)}
+.v5 .cint .impl li:last-child{border-bottom:none}
+.v5 .cint .impl li .ix{font:700 12px var(--gro);color:var(--roxo);padding-top:1px}
+.v5 .cint .impl li b{color:var(--t1);font-weight:600}
+.v5 .cint .impl li.off{color:var(--t3)}
+.v5 .cint .impl li.off .ix,.v5 .cint .impl li.off b{color:var(--t3)}
+.v5 .cint .aplicar .btn-sm[disabled]{opacity:.45;cursor:default}
+.v5 .cint .perr{font:400 12.5px/1.5 var(--int);color:var(--coral);margin-top:10px}
+
+/* Feito: reaproveita .action (borda esquerda elétrica) */
+.v5 .cint .action.feito{max-width:none}
+.v5 .cint .feito ul{list-style:none;margin-top:8px}
+.v5 .cint .feito li a{display:grid;grid-template-columns:26px 1fr auto;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font:400 12.5px/1.5 var(--int);color:var(--t2);transition:color .3s var(--ease)}
+.v5 .cint .feito li:last-child a{border-bottom:none}
+.v5 .cint .feito li a:hover{color:var(--t1)}
+.v5 .cint .feito li a .ix{font:700 12px var(--gro);color:var(--roxo);padding-top:1px}
+.v5 .cint .feito li a .go{color:var(--t3)}
+.v5 .cint .feito .fr{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px;font:500 11.5px var(--int);color:var(--t3)}
+.v5 .cint .feito .fr button{background:none;border:none;color:var(--roxo);font:600 12.5px var(--int);cursor:pointer;padding:0}
+.v5 .cint .feito .fr button:hover{text-decoration:underline}
+.v5 .cint .confirma{margin-top:10px;border-left:3px solid var(--line-h);padding:8px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font:400 12.5px/1.5 var(--int);color:var(--t2)}
+.v5 .cint .confirma p{flex:1 1 100%}
+.v5 .cint .confirma p b{color:var(--t1);font-weight:600;font-family:var(--gro)}
+.v5 .cint .confirma .btn-sm[disabled]{opacity:.45;cursor:default}
+.v5 .cint .desfeito{border-left:3px solid var(--line-h);padding:10px 14px;font:400 12.5px/1.6 var(--int);color:var(--t2)}
+.v5 .cint .desfeito b{display:block;color:var(--t1);font-weight:600}
+
+/* ═══ mobile dedicado (_intencao.mobile.html) ═══ */
+.v5 .mob .cint .prop h3{font:500 18px/1.3 var(--gro)}
+.v5 .mob .cint .prop .et{gap:10px}
+.v5 .mob .cint .reg{gap:10px}
+.v5 .mob .cint .rk{padding:12px 0;min-height:48px}
+.v5 .mob .cint .rval input{width:66px;min-height:40px;font:600 13px var(--gro)}
+.v5 .mob .cint .rval input.txt{width:104px;font:500 12.5px var(--int)}
+.v5 .mob .cint .impl li{padding:9px 0}
+.v5 .mob .cint .feito li a{align-items:center;min-height:44px;padding:6px 0}
+.v5 .mob .cint .feito li a .ix{padding-top:0}
+.v5 .mob .cint .feito .fr{margin-top:8px}
+.v5 .mob .cint .feito .fr button{font:600 13px var(--int);padding:0 4px;min-height:40px}
+.v5 .mob .cint .confirma{margin-top:8px}
+.v5 .mob .cint .confirma .btn-sm{min-height:40px;padding:10px 16px}

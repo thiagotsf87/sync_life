@@ -5,11 +5,20 @@
 // a tela dona manda open/seed/suggestions/onClose/moduleId/leitura. A conversa é
 // persistida pelo servidor em /api/ai/coach-thread (coach_messages) e as fontes
 // chegam no header x-sy-fontes, nunca no texto do modelo.
+// Task 17 (_intencao.html): antes do coach-thread, uma intenção composta vira
+// proposta pela /api/ai/intencao e o cartão <PropostaIntencao/> entra no thread
+// no lugar da resposta do modelo. O seed "Decidir: <texto>" (Meu dia, arquivo da
+// conversa) reabre a intenção em aberto mais recente com esse texto, sem modelo.
 
-import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from 'react'
+import { Fragment, useEffect, useRef, useState, type CSSProperties, type FormEvent } from 'react'
 import Link from 'next/link'
 import { COACH_OS_ENABLED } from '@/lib/flags'
+import { useIntencao, type IntencaoAtual } from '@/hooks/use-intencao'
+import { classificarIntencao } from '@/lib/intencao/classificar'
+import { falaDaProposta } from '@/lib/intencao/rotas'
+import { diaSP, horaSP, rotuloDiaLista } from '@/lib/conversa/agrupar'
 import type { ModuleId } from '@/types/shell'
+import { PropostaIntencao } from './PropostaIntencao'
 import './chrome-v5.css'
 
 interface CamadaCoachProps {
@@ -33,6 +42,10 @@ interface Msg {
   local?: boolean
   /** fontes citadas pelo servidor (header x-sy-fontes), só em respostas de Sy */
   fontes?: string[]
+  /** divisor de hora próprio (a intenção reaberta mostra o dia em que nasceu) */
+  divider?: string
+  /** fala de Sy que apresenta uma proposta: o cartão da intenção vem logo abaixo */
+  intencaoId?: string
 }
 
 const FALLBACK_SUGESTOES = [
@@ -43,6 +56,16 @@ const FALLBACK_SUGESTOES = [
 
 const ERRO_RESPOSTA = 'Não consegui responder agora. Tente de novo em instantes.'
 const COACH_DESLIGADO = 'Sy está desligado no momento.'
+const DECIDIR = 'Decidir: '
+
+/** "Hoje · 14:02", "Ontem · 21:40" ou "Sexta · 2 out · 21:40" (fuso de SP). */
+function dividerDe(iso: string): string {
+  const dia = diaSP(iso)
+  const hoje = diaSP(new Date().toISOString())
+  const ontem = diaSP(new Date(Date.now() - 86_400_000).toISOString())
+  const quando = dia === hoje ? 'Hoje' : dia === ontem ? 'Ontem' : rotuloDiaLista(dia, hoje).resto
+  return `${quando} · ${horaSP(iso)}`
+}
 
 const dotStyle = (i: number) => ({ '--i': i } as CSSProperties)
 
@@ -72,15 +95,21 @@ export function CamadaCoach({
   const [typing, setTyping] = useState(false)
   const [busy, setBusy] = useState(false)
   const [threadStart, setThreadStart] = useState<string | null>(null)
+  const intencao = useIntencao()
 
   const inputRef = useRef<HTMLInputElement>(null)
   const cbodyRef = useRef<HTMLDivElement>(null)
+  const cintRef = useRef<HTMLDivElement>(null)
   const prevFocusRef = useRef<HTMLElement | null>(null)
   const wasOpenRef = useRef(false)
   const seedRef = useRef(seed)
   seedRef.current = seed
   const nextIdRef = useRef(1)
   const abortRef = useRef<AbortController | null>(null)
+  const messagesRef = useRef<Msg[]>([])
+  messagesRef.current = messages
+  const carregarAbertaRef = useRef(intencao.carregarAbertaPorTexto)
+  carregarAbertaRef.current = intencao.carregarAbertaPorTexto
 
   // aborta um stream pendente SÓ no desmonte do componente
   // (fechar/reabrir a camada preserva a conversa e o stream em andamento)
@@ -97,15 +126,42 @@ export function CamadaCoach({
     return () => mq.removeEventListener('change', apply)
   }, [])
 
-  // abrir: guarda quem tinha o foco, semeia o input e foca (só fora do sheet);
-  // fechar: devolve o foco pra quem estava com ele
+  /** fala de Sy + cartão da proposta, no fim do thread */
+  const mostrarProposta = (it: IntencaoAtual, pergunta: Msg | null) => {
+    const fala: Msg = {
+      id: nextIdRef.current++,
+      role: 'assistant',
+      content: falaDaProposta(it.proposta),
+      fontes: it.fontes,
+      intencaoId: it.id,
+    }
+    setMessages((prev) => [...prev, ...(pergunta ? [pergunta] : []), fala])
+  }
+
+  // abrir: guarda quem tinha o foco, semeia o input (ou reabre a intenção do
+  // "Decidir: …") e foca (só fora do sheet); fechar: devolve o foco
   useEffect(() => {
     if (open && !wasOpenRef.current) {
       prevFocusRef.current =
         document.activeElement instanceof HTMLElement ? document.activeElement : null
-      setInput(seedRef.current)
-      if (!window.matchMedia('(max-width:1023px)').matches) {
-        inputRef.current?.focus({ preventScroll: true })
+      const s = seedRef.current
+      if (s.startsWith(DECIDIR) && s.length > DECIDIR.length) {
+        const texto = s.slice(DECIDIR.length)
+        setInput('')
+        void (async () => {
+          const it = await carregarAbertaRef.current(texto)
+          if (!it) { setInput(s); return }
+          // a mesma intenção já está no thread: o cartão continua lá
+          if (messagesRef.current.some((m) => m.intencaoId === it.id)) return
+          mostrarProposta(it, {
+            id: nextIdRef.current++, role: 'user', content: it.texto, divider: dividerDe(it.criadaEm),
+          })
+        })()
+      } else {
+        setInput(s)
+        if (!window.matchMedia('(max-width:1023px)').matches) {
+          inputRef.current?.focus({ preventScroll: true })
+        }
       }
     } else if (!open && wasOpenRef.current) {
       prevFocusRef.current?.focus({ preventScroll: true })
@@ -122,10 +178,18 @@ export function CamadaCoach({
     return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
-  // auto-scroll do corpo pro fim a cada chunk/mensagem
+  // auto-scroll do corpo pro fim a cada chunk/mensagem; com proposta nova,
+  // para no começo do cartão (o protótipo abre a camada já na proposta)
   useEffect(() => {
     const el = cbodyRef.current
-    if (el) el.scrollTop = el.scrollHeight
+    if (!el) return
+    const ultima = messages[messages.length - 1]
+    const cint = cintRef.current
+    if (ultima?.intencaoId && cint) {
+      el.scrollTop = Math.max(0, cint.offsetTop - el.offsetTop - 22)
+    } else {
+      el.scrollTop = el.scrollHeight
+    }
   }, [messages, typing])
 
   async function send(raw: string) {
@@ -153,6 +217,20 @@ export function CamadaCoach({
 
     setBusy(true)
     setTyping(true)
+
+    // intenção composta: a mesma regex do servidor decide se vale perguntar à
+    // /api/ai/intencao (evita gastar o rate limit em toda mensagem); se virar
+    // proposta, o cartão entra no lugar da resposta do modelo
+    if (classificarIntencao(text)) {
+      const it = await intencao.propor(text, moduleId)
+      if (it) {
+        setTyping(false)
+        setBusy(false)
+        mostrarProposta(it, null)
+        return
+      }
+    }
+
     const asstId = nextIdRef.current++
     let started = false
     const push = (content: string) => {
@@ -225,6 +303,8 @@ export function CamadaCoach({
   }
 
   const chips = suggestions.length > 0 ? suggestions : FALLBACK_SUGESTOES
+  // o cartão vivo acompanha só a última proposta do thread (a que o hook carrega)
+  const ultimaProposta = [...messages].reverse().find((m) => m.intencaoId)?.intencaoId
 
   return (
     <>
@@ -257,15 +337,32 @@ export function CamadaCoach({
             </div>
           ) : (
             <div className="cthread">
-              <div className="divider">Hoje · {threadStart}</div>
-              {messages.map((m) => (
-                <div key={m.id} className={m.role === 'user' ? 'bub u' : 'bub a'}>
-                  {m.content}
-                  {m.fontes && m.fontes.length > 0 && (
-                    <span className="meta">Fontes: {m.fontes.join(' · ')}</span>
-                  )}
-                </div>
-              ))}
+              {!messages[0].divider && <div className="divider">Hoje · {threadStart}</div>}
+              {messages.map((m) => {
+                const bolha = (
+                  <div className={m.role === 'user' ? 'bub u' : 'bub a'}>
+                    {m.content}
+                    {m.fontes && m.fontes.length > 0 && (
+                      <span className="meta">Fontes: {m.fontes.join(' · ')}</span>
+                    )}
+                  </div>
+                )
+                if (m.intencaoId) {
+                  const viva = m.intencaoId === ultimaProposta && intencao.atual?.id === m.intencaoId
+                  return (
+                    <div key={m.id} className="cint" ref={viva ? cintRef : undefined}>
+                      {bolha}
+                      {viva && <PropostaIntencao ctl={intencao} />}
+                    </div>
+                  )
+                }
+                return (
+                  <Fragment key={m.id}>
+                    {m.divider && <div className="divider">{m.divider}</div>}
+                    {bolha}
+                  </Fragment>
+                )
+              })}
               {typing && (
                 <div className="typing" aria-label="Sy digitando">
                   <i style={dotStyle(0)} /><i style={dotStyle(1)} /><i style={dotStyle(2)} />
