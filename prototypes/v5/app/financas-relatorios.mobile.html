@@ -4,10 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>SyncLife · Finanças · Relatórios · mobile · v5</title>
-<!-- Fase 2 · Relatórios MOBILE dedicado (390×844). T1 reduzido em 1 coluna:
-     subbar (voltar + título curto) → cabeçalho com período em pílulas (scroll-x) + Sy → números 2×2 → receitas × despesas →
-     categorias → poupança × meta → top 5 → mês a mês recolhido → exportar → Mais em Finanças. Bottom bar + sheets (Sy, Áreas).
-     Gráficos simplificados (sem minilinha, sem rótulo de zona); tooltip por toque. Sem JS: completo no período padrão (E-02). -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -248,6 +244,7 @@
     <a class="voltar" href="financas-a.mobile.html">← Finanças</a>
     <span class="curto">Relatórios</span>
   </div>
+  <nav class="subnav" aria-label="Telas de Finanças"><a href="financas-a.mobile.html">Visão geral</a><a href="financas-transacoes.mobile.html">Transações</a><a href="financas-orcamentos.mobile.html">Orçamentos</a><a href="financas-recorrentes.mobile.html">Recorrentes</a><a href="financas-planejamento.mobile.html">Planejamento</a><a href="financas-calendario.mobile.html">Calendário</a><a href="financas-relatorios.mobile.html" aria-current="page">Relatórios</a><a href="financas-importar.mobile.html">Importar</a></nav>
 
   <!-- 1. cabeçalho curto -->
   <header class="titulo boot b1">
@@ -332,8 +329,6 @@
     <span data-csv-ok role="status"></span>
   </div>
 
-  <p class="mais">Mais em Finanças:<br>
-    <a href="financas-transacoes.mobile.html">Transações</a><a href="financas-orcamentos.mobile.html">Orçamentos</a><a href="financas-recorrentes.mobile.html">Recorrentes</a><a href="financas-planejamento.mobile.html">Planejamento</a><a href="financas-calendario.mobile.html">Calendário</a><a href="financas-importar.mobile.html">Importar extrato</a></p>
 </main>
 
 <!-- ═══ anotação do protótipo ═══ -->

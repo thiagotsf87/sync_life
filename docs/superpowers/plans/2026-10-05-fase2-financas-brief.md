@@ -50,9 +50,11 @@ fica inline na página, num bloco comentado `/* candidata a shared */`.
    de painéis e modais, teclado testado com foco nos campos do sheet.
 7. Irreversível pede licença **inline** (`.confirma`), nunca modal. Vale para excluir em todas as telas.
 8. Sem JS ou com `prefers-reduced-motion`, a página fica completa e estática.
-9. Navegação dentro de Finanças: o eyebrow `01 · Finanças` do cabeçalho é link para o hub (`financas-a.html` /
-   `.mobile.html`); no desktop um voltar `← Finanças · outubro` acima do cabeçalho; no mobile, a `.subbar`. No fim de cada
-   tela, uma linha `Mais em Finanças:` com as outras subtelas (links para os arquivos desta fase).
+9. Navegação dentro da área (decidida na aprovação da Fase 2, 2026-10-05): **faixa de subtelas** (`.subnav`, no shared) como primeira
+   coisa dentro do `.wrap` de TODAS as telas da área, hub incluído: pílulas Visão geral · Transações · Orçamentos · Recorrentes ·
+   Planejamento · Calendário · Relatórios · Importar, a atual com `aria-current="page"`. Mobile: rola na horizontal, 40px, e a atual
+   é centralizada. Substitui a linha "Mais em Finanças" do rodapé. O padrão se repete nas demais áreas: Visão geral + as subtelas
+   da área. Atalhos contextuais (ver orçamento em Meu dia, Ajustar no hub) continuam além da faixa.
 
 ## 4. Tela a tela
 

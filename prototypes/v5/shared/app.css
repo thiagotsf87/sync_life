@@ -632,3 +632,15 @@ html.mob .asep{height:10px;border-bottom:1px solid var(--line-h);margin-bottom:6
 .confirma button.sim{color:var(--coral)}
 .confirma button:hover{text-decoration:underline}
 @media (prefers-reduced-motion:reduce){.painel{transition:none}}
+
+/* ── Fase 2 · faixa de subtelas da área (navegação interna; vale para todas as áreas nas próximas fases) ──
+   Primeira coisa dentro do .wrap, em todas as telas da área, hub incluído. A tela atual leva aria-current="page".
+   Mobile: rola na horizontal, alvos de 40px, sangra até as bordas como a .subbar. */
+.subnav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:18px 0 14px;border-bottom:1px solid var(--line)}
+.subnav::-webkit-scrollbar{display:none}
+.subnav a{flex:none;display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border:1px solid var(--line);border-radius:999px;
+  font:500 12.5px var(--int);color:var(--t2);white-space:nowrap;transition:color .3s var(--ease),border-color .3s var(--ease),background .3s var(--ease)}
+.subnav a:hover{color:var(--t1);border-color:var(--line-h)}
+.subnav a[aria-current="page"]{color:var(--t1);border-color:rgba(104,64,255,.55);background:rgba(104,64,255,.12)}
+html.mob .subnav{margin:0 -20px;padding:10px 20px}
+html.mob .subnav a{min-height:40px}

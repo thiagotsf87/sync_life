@@ -4,11 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>SyncLife · Orçamentos · mobile · v5</title>
-<!-- Fase 2 · Finanças · Orçamentos MOBILE dedicado (390×844). T2 com linhas de barra (.orc), 1 coluna.
-     subbar sticky (← Finanças) → cabeçalho com mês e Sy em 1 linha → números 2×2 → filtros em scroll-x → envelopes
-     → fora de envelope + 50-30-20 → laboratório empilhado → Mais em Finanças → rodapé → bottom bar.
-     Captura e edição num só sheet (.sheet-form): Registrar da bottom bar e o + do bar abrem "Novo envelope"; tocar numa linha abre a edição.
-     Sem modbar (bottom bar no lugar). A camada de Sy vem antes do #sheetAreas no DOM. E-02: sem JS a página está completa. -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -188,6 +183,7 @@
     <a class="voltar" href="financas-a.mobile.html">← Finanças</a>
     <span class="curto">Orçamentos</span>
   </div>
+  <nav class="subnav" aria-label="Telas de Finanças"><a href="financas-a.mobile.html">Visão geral</a><a href="financas-transacoes.mobile.html">Transações</a><a href="financas-orcamentos.mobile.html" aria-current="page">Orçamentos</a><a href="financas-recorrentes.mobile.html">Recorrentes</a><a href="financas-planejamento.mobile.html">Planejamento</a><a href="financas-calendario.mobile.html">Calendário</a><a href="financas-relatorios.mobile.html">Relatórios</a><a href="financas-importar.mobile.html">Importar</a></nav>
 
   <!-- 2. cabeçalho + mês + Sy em 1 linha -->
   <header class="titulo boot b1">
@@ -286,18 +282,6 @@
     </div>
   </section>
 
-  <!-- 7. mais em Finanças -->
-  <nav class="mais rv" aria-label="Mais em Finanças">
-    <p class="eyebrow">Mais em Finanças</p>
-    <div class="links">
-      <a href="financas-transacoes.mobile.html">Transações</a>
-      <a href="financas-recorrentes.mobile.html">Recorrentes</a>
-      <a href="financas-planejamento.mobile.html">Planejamento</a>
-      <a href="financas-calendario.mobile.html">Calendário</a>
-      <a href="financas-relatorios.mobile.html">Relatórios</a>
-      <a href="financas-importar.mobile.html">Importar extrato</a>
-    </div>
-  </nav>
 </main>
 
 <!-- rodapé -->

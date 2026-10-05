@@ -4,11 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SyncLife · Recorrentes · v5</title>
-<!-- Fase 2 · Finanças · Recorrentes (T2, brief §4.3). Desktop 1440.
-     Voltar → cabeçalho curto (4 números quietos + % da renda comprometida) → filtros em pílula → captura inline
-     → lista agrupada por frequência | próximos 30 dias ao lado → Mais em Finanças → rodapé.
-     Sy só pela camada. Edição no .painel (shared); excluir com .confirma inline. Fonte: SL_MOCK.fin.recorrentes.
-     E-02: sem JS a página está completa (o HTML entre os marcadores gen: é a mesma saída do render). -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -188,6 +183,7 @@
 
 <main>
   <div class="wrap">
+    <nav class="subnav" aria-label="Telas de Finanças"><a href="financas-a.html">Visão geral</a><a href="financas-transacoes.html">Transações</a><a href="financas-orcamentos.html">Orçamentos</a><a href="financas-recorrentes.html" aria-current="page">Recorrentes</a><a href="financas-planejamento.html">Planejamento</a><a href="financas-calendario.html">Calendário</a><a href="financas-relatorios.html">Relatórios</a><a href="financas-importar.html">Importar</a></nav>
     <a class="voltar boot b1" href="financas-a.html">← Finanças · outubro</a>
 
     <!-- 1. cabeçalho curto -->
@@ -248,14 +244,6 @@
       <button class="falar" type="button" data-coach-open data-coach-seed="Sobre as recorrentes: ">Perguntar sobre as recorrentes →</button>
     </div>
 
-    <nav class="mais-fin" aria-label="Mais em Finanças">Mais em Finanças:
-      <a href="financas-transacoes.html">Transações</a>
-      <a href="financas-orcamentos.html">Orçamentos</a>
-      <a href="financas-planejamento.html">Planejamento</a>
-      <a href="financas-calendario.html">Calendário</a>
-      <a href="financas-relatorios.html">Relatórios</a>
-      <a href="financas-importar.html">Importar extrato</a>
-    </nav>
   </div>
 
   <!-- rodapé -->

@@ -4,12 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>SyncLife · Recorrentes · mobile · v5</title>
-<!-- Fase 2 · Finanças · Recorrentes (T2, brief §4.3) MOBILE dedicado (390×844).
-     Bar (marca + "+") → .subbar sticky (← Finanças · Recorrentes) → cabeçalho curto → 4 números 2×2 + % da renda
-     → filtros em scroll-x → próximos 30 dias → lista agrupada por frequência → Mais em Finanças → rodapé → bottom bar.
-     Tocar numa linha abre o sheet de edição (salvar, pausar/retomar, excluir com .confirma). O "+" do bar e o
-     Registrar da bottom bar abrem o mesmo sheet em modo captura. Sy só pela camada (sheet).
-     E-02: sem JS a página está completa (o HTML entre os marcadores gen: é a mesma saída do render). -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -169,6 +163,7 @@
     <a class="voltar" href="financas-a.mobile.html">← Finanças</a>
     <span class="curto">Recorrentes</span>
   </div>
+  <nav class="subnav" aria-label="Telas de Finanças"><a href="financas-a.mobile.html">Visão geral</a><a href="financas-transacoes.mobile.html">Transações</a><a href="financas-orcamentos.mobile.html">Orçamentos</a><a href="financas-recorrentes.mobile.html" aria-current="page">Recorrentes</a><a href="financas-planejamento.mobile.html">Planejamento</a><a href="financas-calendario.mobile.html">Calendário</a><a href="financas-relatorios.mobile.html">Relatórios</a><a href="financas-importar.mobile.html">Importar</a></nav>
 
   <!-- 1. cabeçalho curto -->
   <header class="titulo boot b1">
@@ -207,16 +202,6 @@
     <button class="falar" type="button" data-coach-open data-coach-seed="Sobre as recorrentes: ">Perguntar sobre as recorrentes →</button>
   </div>
 
-  <nav class="mais-fin" aria-label="Mais em Finanças">Mais em Finanças:
-    <div class="ln">
-      <a href="financas-transacoes.mobile.html">Transações</a>
-      <a href="financas-orcamentos.mobile.html">Orçamentos</a>
-      <a href="financas-planejamento.mobile.html">Planejamento</a>
-      <a href="financas-calendario.mobile.html">Calendário</a>
-      <a href="financas-relatorios.mobile.html">Relatórios</a>
-      <a href="financas-importar.mobile.html">Importar extrato</a>
-    </div>
-  </nav>
 </main>
 
 <!-- rodapé -->

@@ -4,12 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>SyncLife · Calendário · Finanças · mobile</title>
-<!-- Fase 2 · Finanças · Calendário MOBILE dedicado (390×844; brief §4.5). T3 variante "grade mensal":
-     .subbar sticky (voltar + Calendário) → cabeçalho com ‹ mês › e Hoje → números do mês (saldo até hoje grande + 2×2)
-     → grade compacta dom a sáb (células de 52px de altura, alvo de toque inteiro) com saldo da semana → legenda
-     → lista do dia selecionado embaixo → Mais em Finanças. Captura e edição em sheet; o Registrar da bottom bar (e o +
-     do bar) abrem a captura já com o dia selecionado (o v3 não deixava adicionar no mobile). Sy pela camada (sheet).
-     Bottom bar de _intencao.mobile.html (CSS e wiring no shared). E-02: sem JS a grade e o dia de hoje já estão no HTML. -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -219,6 +213,7 @@
     <a class="voltar" href="financas-a.mobile.html">← Finanças</a>
     <span class="curto">Calendário · outubro</span>
   </div>
+  <nav class="subnav" aria-label="Telas de Finanças"><a href="financas-a.mobile.html">Visão geral</a><a href="financas-transacoes.mobile.html">Transações</a><a href="financas-orcamentos.mobile.html">Orçamentos</a><a href="financas-recorrentes.mobile.html">Recorrentes</a><a href="financas-planejamento.mobile.html">Planejamento</a><a href="financas-calendario.mobile.html" aria-current="page">Calendário</a><a href="financas-relatorios.mobile.html">Relatórios</a><a href="financas-importar.mobile.html">Importar</a></nav>
   <header class="objeto boot b1">
     <p class="eyebrow"><a href="financas-a.mobile.html"><b>01</b>&nbsp;· Finanças</a></p>
     <h1>Calendário</h1>
@@ -264,16 +259,6 @@
   <!-- 4. o dia selecionado -->
   <section class="dpanel" id="dpanel" aria-label="Dia selecionado" aria-live="polite"><!--dia:ini--><div class="dhead"><div><p class="eyebrow">Sexta</p><h2>3 de outubro</h2></div><span class="pill-q hj">Hoje</span></div><div class="dnums"><div><span class="eyebrow">Entradas</span><b class="num">R$&nbsp;0,00</b></div><div><span class="eyebrow">Saídas</span><b class="num">R$&nbsp;232,40</b></div><div><span class="eyebrow">Saldo do dia</span><b class="num">– R$&nbsp;232,40</b></div></div><ul class="ditens"><li><button class="it" type="button" data-id="i0" aria-label="Mercado Central, Saída · Mercado, – R$&nbsp;182,40, editar"><i class="pt saida"></i><span class="ds">Mercado Central<small>Saída · Mercado</small></span><span class="v num">– R$&nbsp;182,40</span></button></li><li><a class="it resto" href="financas-transacoes.html"><i class="pt saida"></i><span class="ds">Outros lançamentos do dia<small>Ver em Transações →</small></span><span class="v num">– R$&nbsp;50,00</span></a></li></ul><p class="dacum"><span>Saldo do mês até aqui</span><b class="num">+ R$&nbsp;1.840,00</b></p><div class="dacts"><button class="btn-sm roxo" type="button" data-add="tx" data-dia="3">+ Transação neste dia</button><button class="btn-sm ghost" type="button" data-add="plan" data-dia="3">+ Evento planejado</button></div><p class="dacts-nota" id="dactsNota"></p><button class="falar" type="button" data-coach-open="" data-coach-seed="Sobre 3 de outubro: ">Falar com Sy sobre este dia →</button><!--dia:fim--></section>
 
-  <!-- 5. mais em finanças -->
-  <nav class="mais" aria-label="Mais em Finanças">
-    <span>Mais em Finanças:</span>
-    <a href="financas-transacoes.mobile.html">Transações</a>
-    <a href="financas-orcamentos.mobile.html">Orçamentos</a>
-    <a href="financas-recorrentes.mobile.html">Recorrentes</a>
-    <a href="financas-planejamento.mobile.html">Planejamento</a>
-    <a href="financas-relatorios.mobile.html">Relatórios</a>
-    <a href="financas-importar.mobile.html">Importar extrato</a>
-  </nav>
 </main>
 
 <!-- rodapé -->

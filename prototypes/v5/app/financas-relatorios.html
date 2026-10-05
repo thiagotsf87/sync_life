@@ -4,11 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SyncLife · Finanças · Relatórios · v5</title>
-<!-- Fase 2 · Relatórios (brief §4.6). Template T1 reduzido, só evidência:
-     voltar → cabeçalho curto (período em pílulas + Sy em 1 linha) → 4 números hairline → evidência em 2 colunas
-     (receitas × despesas | categorias) → (poupança × meta | top 5) → mês a mês recolhido → exportar → Mais em Finanças.
-     Trocar o período re-renderiza na hora (sem botão Gerar). Sem JS: nasce completo no período padrão (E-02).
-     Gerado a partir de um template + rel.js (o HTML de cada bloco [data-r] é a saída do mesmo render, pré-calculada). -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23151313'/%3E%3Cline x1='32' y1='6' x2='32' y2='13' stroke='%23a1ff62' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='32,10 39,34 25,34' fill='%236840ff'/%3E%3Cpolygon points='32,57 25,34 39,34' fill='%23575353'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -214,6 +209,7 @@
 
 <main data-rel>
   <div class="wrap">
+    <nav class="subnav" aria-label="Telas de Finanças"><a href="financas-a.html">Visão geral</a><a href="financas-transacoes.html">Transações</a><a href="financas-orcamentos.html">Orçamentos</a><a href="financas-recorrentes.html">Recorrentes</a><a href="financas-planejamento.html">Planejamento</a><a href="financas-calendario.html">Calendário</a><a href="financas-relatorios.html" aria-current="page">Relatórios</a><a href="financas-importar.html">Importar</a></nav>
     <a class="voltar-top" href="financas-a.html">← Finanças · outubro</a>
 
     <!-- 1. cabeçalho curto: período em pílulas + Sy em 1 linha -->
@@ -307,8 +303,6 @@
       <span data-csv-ok role="status"></span>
     </div>
 
-    <p class="mais">Mais em Finanças:
-      <a href="financas-transacoes.html">Transações</a><a href="financas-orcamentos.html">Orçamentos</a><a href="financas-recorrentes.html">Recorrentes</a><a href="financas-planejamento.html">Planejamento</a><a href="financas-calendario.html">Calendário</a><a href="financas-importar.html">Importar extrato</a></p>
   </div>
 </main>
 

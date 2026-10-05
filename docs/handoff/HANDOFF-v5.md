@@ -177,7 +177,9 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
 **As 7 telas foram APROVADAS pelo usuário**, com os pontos para decidir como propostos. Dúvida levantada na aprovação:
 **como se chega a cada subtela.** Diagnóstico: do hub, o desktop só leva a Transações e o mobile a Transações, Orçamentos e
 Recorrentes; Planejamento, Calendário, Relatórios e Importar só aparecem no rodapé "Mais em Finanças" de outra subtela.
-Proposta em aberto (decisão do usuário): navegação interna da área (ver resposta da sessão).
+**Resolvido (usuário disse "pode"):** faixa de subtelas `.subnav` (shared/app.css + app.js) no topo de TODAS as telas da área, hub
+incluído; substitui o rodapé "Mais em Finanças" nas 14 subtelas. Na implementação vira um componente `SubnavArea` por área
+(Fases 3 a 7 repetem o padrão: Visão geral + subtelas). Teste: todos os links resolvem, a atual fica visível no mobile, 40px de alvo.
 
 ### Limitações conhecidas do mock (no app os dados reais decidem)
 - `SL_MOCK.transacoes` põe o Salário em 30/set, mas o hub conta os R$ 4.150 em outubro; Aluguel aparece pago (Moradia 1.240)

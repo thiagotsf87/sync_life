@@ -79,6 +79,20 @@ window.SLApp = (function () {
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fecharA(); });
     }
 
+    // ── faixa de subtelas: a tela atual aparece inteira, sem mexer na rolagem da página ──
+    // Roda de novo quando as fontes chegam: as pílulas mudam de largura e o centro muda junto.
+    var centrarSubnav = function () {
+      document.querySelectorAll('.subnav').forEach(function (n) {
+        var on = n.querySelector('[aria-current="page"]');
+        if (!on) return;
+        var nb = n.getBoundingClientRect(), ob = on.getBoundingClientRect();
+        n.scrollLeft = Math.max(0, ob.left - nb.left + n.scrollLeft - (nb.width - ob.width) / 2);
+      });
+    };
+    centrarSubnav();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(centrarSubnav);
+    window.addEventListener('load', centrarSubnav);
+
     // ── check-in ──
     var ck = document.querySelector('.checkin');
     if (ck) {
