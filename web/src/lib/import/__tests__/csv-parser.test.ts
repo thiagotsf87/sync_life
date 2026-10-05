@@ -119,6 +119,26 @@ describe('mapTransactions', () => {
     expect(result[0].amount).toBe(150)
   })
 
+  it.each([
+    ['4150.00', 4150], ['-182.40', 182.4], ['100.50', 100.5], ['0.99', 0.99],   // ponto decimal (Nubank, planilhas em inglês)
+    ['4.150,00', 4150], ['-1.234,56', 1234.56], ['1.234.567,89', 1234567.89],  // milhar com ponto e vírgula decimal (BR)
+    ['182,40', 182.4], ['R$ 1.200,00', 1200], ['4.150', 4150],                  // vírgula decimal simples, moeda, milhar sem decimais
+  ])('lê o valor %s como %d (valor absoluto)', (bruto, esperado) => {
+    const rows = [{ date: '2024-01-15', title: 'Teste', amount: bruto }]
+    const result = mapTransactions(rows, mapping)
+    expect(result).toHaveLength(1)
+    expect(result[0].amount).toBeCloseTo(esperado, 2)
+  })
+
+  it('o sinal decide o tipo também com ponto decimal', () => {
+    const rows = [
+      { date: '2024-01-15', title: 'Salário', amount: '4150.00' },
+      { date: '2024-01-16', title: 'Mercado', amount: '-182.40' },
+    ]
+    const result = mapTransactions(rows, mapping)
+    expect(result.map(r => [r.type, r.amount])).toEqual([['income', 4150], ['expense', 182.4]])
+  })
+
   it('handles DD/MM/YYYY date format', () => {
     const rows = [{ date: '15/01/2024', title: 'Test', amount: '100' }]
     const result = mapTransactions(rows, mapping)
@@ -204,21 +224,11 @@ describe('mapTransactions', () => {
   })
 
   it('handles plain decimal format (US style)', () => {
-    // "100.50" matches the Brazilian regex because "100" is 1-3 digits, then ".50" —
-    // BUT .50 is not a 3-digit group so it should not match. Let's test what actually happens.
-    // The regex is: \d{1,3}(\.\d{3})*(,\d{1,2})?$
-    // "100.50" -- "100" is \d{1,3}, then ".50" tries to match (\.\d{3})* but "50" is only 2 digits, fails.
-    // Then (,\d{1,2})? tries to match ".50" but it uses comma, not dot. Fails.
-    // Actually the full regex test: /\d{1,3}(\.\d{3})*(,\d{1,2})?$/.test("100.50") → let me check
-    // Actually "100.50" → the regex first part \d{1,3} matches "100", (\.\d{3})* zero matches,
-    // (,\d{1,2})? zero matches, $ tests at position 3 but the string continues to ".50"
-    // The regex would test if ANY substring ending at $ matches — but since test uses full match...
-    // Actually .test() returns true if the pattern matches ANYWHERE. "100.50" has "50" at the end
-    // which matches \d{1,3}. So the regex IS true. Then dots are removed: "10050" → parseFloat = 10050.
-    // So "100.50" becomes 10050 in the parser. This is the expected behavior for the Brazilian parser.
+    // Regressão: a regex do formato BR não era ancorada no início e tratava o ponto decimal como milhar
+    // ("100.50" virava 10050 e "4150.00" virava 415000). O ponto é decimal quando não forma grupos de 3 dígitos.
     const rows = [{ date: '2024-01-15', title: 'Test', amount: '100.50' }]
     const result = mapTransactions(rows, mapping)
-    expect(result[0].amount).toBe(10050)
+    expect(result[0].amount).toBe(100.5)
   })
 
   it('processes multiple rows correctly', () => {

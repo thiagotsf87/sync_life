@@ -1,0 +1,156 @@
+/* SyncLife DS v5 · Finanças > Transações (T2 r2), Fase 2. Porte 1:1 de
+   prototypes/v5/app/financas-transacoes.html (desktop) e .mobile.html (mobile).
+   As peças comuns (bar, ck-note, sel, btn-sm, falar, colofao, subnav, painel, confirma,
+   subtela/subbar/voltar, .trans/.tx e `.mob .sec .tx`) estão em styles/app-v5.css; aqui só
+   o que é desta tela. Desktop: `.v5 .dk:not(.mob) .transacoes`; mobile: `.v5 .mob .transacoes`.
+   O painel e o sheet moram fora do <main>: o que é deles fica sob `.painel .tx-form`
+   (o Calendário também importa este arquivo ao usar o TransacaoPainel). */
+
+/* chip do base.css do protótipo (não existe global em web/) */
+.v5 .transacoes .chip,.v5 .painel .tx-form .chip{font:500 12.5px var(--int);color:var(--t2);border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;background:transparent;
+  display:inline-flex;align-items:baseline;gap:7px;transition:border-color .3s var(--ease),color .3s var(--ease)}
+.v5 .transacoes .chip:hover,.v5 .painel .tx-form .chip:hover{border-color:var(--line-h);color:var(--t1)}
+.v5 .transacoes .chip.on,.v5 .painel .tx-form .chip.on{border-color:var(--roxo);color:var(--t1)}
+
+/* T2 · cabeçalho curto: sem a unidade Sy; sub de 1 linha com o total do mês */
+.v5 .transacoes .titulo{padding:44px 0 26px}
+.v5 .transacoes .voltar + .titulo{padding-top:18px}
+.v5 .transacoes .titulo .eyebrow a{color:inherit;transition:color .3s var(--ease)}
+.v5 .transacoes .titulo .eyebrow a:hover{color:var(--t1)}
+.v5 .transacoes .titulo .sub{font:400 14px var(--int);color:var(--t2);margin-top:12px}
+.v5 .transacoes .titulo .sub .num{color:var(--t1);font-weight:600}
+.v5 .transacoes .tline{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.v5 .transacoes .mesnav{display:flex;align-items:center;gap:6px}
+.v5 .transacoes .mesnav .mn{width:36px;height:36px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--t2);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;transition:border-color .3s var(--ease),color .3s var(--ease)}
+.v5 .transacoes .mesnav .mn:hover:not(:disabled){border-color:var(--line-h);color:var(--t1)}
+.v5 .transacoes .mesnav .mn:disabled{opacity:.35;cursor:default}
+.v5 .transacoes .mesnav .ml{font:500 15px var(--gro);letter-spacing:-.015em;color:var(--t1);min-width:150px;text-align:center}
+.v5 .transacoes .mesnav .hoje{background:none;border:none;cursor:pointer;padding:0 0 0 8px;font:500 12.5px var(--int);color:var(--roxo)}
+.v5 .transacoes .mesnav .hoje:hover{text-decoration:underline}
+
+/* T2 · filtros em pílula (chip da marca) + categoria e ordem em select-pílula + busca em pílula */
+.v5 .transacoes .filtros{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:18px 0 16px}
+.v5 .transacoes .filtros .chip{padding:8px 14px;font-size:12px}
+.v5 .transacoes .filtros .sep{width:1px;height:20px;background:var(--line);margin:0 4px}
+.v5 .transacoes .filtros .sel{margin-top:0}
+.v5 .transacoes .filtros .sel select{border-radius:999px;padding:8px 34px 8px 14px;font:500 12px var(--int);background:transparent;color:var(--t2)}
+.v5 .transacoes .filtros .sel select:hover{color:var(--t1)}
+.v5 .transacoes .filtros .sel::after{right:14px}
+.v5 .transacoes .busca{margin-left:auto;display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:0 15px;height:36px;min-width:220px;transition:border-color .3s var(--ease)}
+.v5 .transacoes .busca:hover{border-color:var(--line-h)}
+.v5 .transacoes .busca:focus-within{border-color:rgba(104,64,255,.55)}
+.v5 .transacoes .busca svg{color:var(--t3);flex:none}
+.v5 .transacoes .busca input{background:none;border:none;outline:none;color:var(--t1);font:400 12.5px var(--int);width:100%;height:100%}
+.v5 .transacoes .busca input::placeholder{color:var(--t3)}
+
+/* T2 · captura inline: 1 linha, Enter registra (campos reusam .ck-note e .sel do shared) */
+.v5 .transacoes .captura{display:grid;grid-template-columns:1fr 150px 190px 160px auto;gap:10px;align-items:center;padding:16px 0 14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.v5 .transacoes .captura .ck-note{width:100%;min-width:0;height:44px;padding:0 16px}
+.v5 .transacoes .captura .ck-note.num{font-size:14px}
+.v5 .transacoes .captura input[type=date]{color-scheme:dark}
+.v5 .transacoes .captura .sel{margin-top:0}
+.v5 .transacoes .captura .sel select{height:44px;padding:0 40px 0 16px}
+.v5 .transacoes .captura .btn-sm.roxo{height:44px;padding:0 20px;font-size:13px;justify-content:center}
+.v5 .transacoes .captura.destaque{border-color:rgba(104,64,255,.55)}
+.v5 .transacoes .cap-foot{grid-column:1/-1;display:flex;justify-content:space-between;gap:16px;font:400 11.5px var(--int);color:var(--t3)}
+.v5 .transacoes .cap-foot output{color:var(--ele);font-weight:600;min-height:1em;margin-left:auto}
+.v5 .transacoes .cap-foot .link{background:none;border:none;padding:0;cursor:pointer;font:500 11.5px var(--int);color:var(--t2);transition:color .3s var(--ease)}
+.v5 .transacoes .cap-foot .link:hover{color:var(--t1)}
+
+/* T2 · lista densa agrupada por dia: .dia é o divisor (dia da semana à esquerda, subtotal à direita) */
+.v5 .transacoes .trans{padding:0;border-bottom:none}
+.v5 .transacoes .dia{display:grid;grid-template-columns:52px 1fr 130px 110px;gap:16px;align-items:baseline;padding:24px 0 8px;border-bottom:1px solid var(--line)}
+.v5 .transacoes .dia .eyebrow{grid-column:1/3}
+.v5 .transacoes .dia .st{grid-column:4;font:700 11px var(--gro);color:var(--t3);text-align:right;white-space:nowrap}
+.v5 .transacoes .dia .st.in{color:var(--ele)}
+.v5 .transacoes .grupo.plano{padding-top:10px}
+.v5 .transacoes .tx{cursor:pointer}
+.v5 .transacoes .tx:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px;border-radius:6px}
+.v5 .transacoes .tx.nova{background:rgba(161,255,98,.12);box-shadow:inset 3px 0 0 var(--ele)}
+.v5 .anim .transacoes .tx{transition:padding-left .35s var(--ease),background 1.8s var(--ease),box-shadow 1.8s var(--ease),opacity .3s var(--ease)}
+/* selos na linha (mesma pílula do .rec .tag do hub) */
+.v5 .transacoes .tx .ds .tag{display:inline-block;margin-left:8px;vertical-align:2px;font:700 9px var(--gro);letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--t3);white-space:nowrap}
+.v5 .transacoes .tx.prev{opacity:.55}
+.v5 .transacoes .tx.prev:hover,.v5 .transacoes .tx.prev:focus-visible{opacity:.85}
+.v5 .transacoes .tx.tr .v{color:var(--t2)}
+.v5 .transacoes .ver-prev{background:none;border:none;cursor:pointer;padding:12px 0 2px;font:500 12px var(--int);color:var(--t3);transition:color .3s var(--ease)}
+.v5 .transacoes .ver-prev:hover{color:var(--t1)}
+.v5 .transacoes .sem-resultado{font:400 13px var(--int);color:var(--t3);padding:28px 0 8px}
+.v5 .transacoes .mais-wrap{display:flex;justify-content:center;padding:22px 0 20px}
+.v5 .transacoes .lista-foot{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding:18px 0 0;border-top:1px solid var(--line);font:400 12.5px var(--int);color:var(--t3)}
+.v5 .transacoes .lista-foot .tot b{color:var(--t1);font-weight:700}
+.v5 .transacoes .lista-foot .tot b.ele{color:var(--ele)}
+.v5 .transacoes .pergunte{padding:28px 0 64px}
+.v5 .transacoes .pergunte .falar{margin-top:0}
+
+/* estados honestos: vazio, carregando (esqueleto), erro com "Tentar de novo" */
+.v5 .transacoes .vazio{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1);padding:26px 0 6px}
+.v5 .transacoes .vazio small{display:block;font:400 12.5px var(--int);color:var(--t3);margin-top:6px}
+.v5 .transacoes .tx.skel{cursor:default;pointer-events:none}
+.v5 .transacoes .tx.skel span{display:block;height:10px;border-radius:5px;background:var(--s2)}
+.v5 .transacoes .tx.skel .ds{width:60%}
+.v5 .transacoes .tx.skel .ct{width:70%}
+.v5 .transacoes .tx.skel .v{margin-left:auto;width:80%}
+.v5 .anim .transacoes .tx.skel span{animation:tx-pulso 1.4s var(--ease) infinite alternate}
+@keyframes tx-pulso{from{opacity:.55}to{opacity:1}}
+.v5 .transacoes .erro{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-left:3px solid var(--coral);padding:10px 14px;margin-top:26px;font:400 13px var(--int);color:var(--coral)}
+.v5 .transacoes .erro button{background:none;border:none;color:var(--t1);font:600 12.5px var(--int);cursor:pointer;padding:0;white-space:nowrap}
+.v5 .transacoes .trocando{opacity:.6;transition:opacity .2s var(--ease)}
+
+@media (max-width:1100px){
+  .v5 .dk:not(.mob) .transacoes .captura{grid-template-columns:1fr 1fr}
+  .v5 .dk:not(.mob) .transacoes .busca{margin-left:0;width:100%}
+}
+
+/* ═══ painel de edição: só os campos que Transações acrescenta à peça .painel do shared ═══ */
+.v5 .painel .tx-form{display:contents}
+.v5 .painel .tx-form .tipo .chip{flex:1;justify-content:center}
+.v5 .painel .tx-form textarea.ck-note{resize:vertical;min-height:72px;font:400 13px/1.5 var(--int)}
+.v5 .painel .tx-form .aviso{border-left:3px solid var(--roxo);padding:8px 12px;font:400 12.5px/1.55 var(--int);color:var(--t2)}
+.v5 .painel .tx-form .aviso b{color:var(--t1);font-weight:600}
+.v5 .painel .tx-form .erro-campo,.v5 .painel .pfoot .erro-campo{font:500 12px var(--int);color:var(--coral);margin-top:8px}
+.v5 .painel .tx-form .erro-campo a{color:var(--t1);text-decoration:underline}
+.v5 .painel .pfoot .erro-campo{margin-top:0}
+
+/* ═══ mobile dedicado ═══ */
+.v5 .mob .transacoes .titulo{padding:24px 0 20px;border-bottom:none}
+.v5 .mob .transacoes .titulo .eyebrow a{display:inline-flex;align-items:center;min-height:40px;margin:-12px 0 -10px}
+.v5 .mob .transacoes .titulo .sub{font:400 13.5px/1.5 var(--int);margin-top:10px}
+.v5 .mob .transacoes .mesnav{margin-top:14px;flex-wrap:wrap}
+.v5 .mob .transacoes .mesnav .mn{width:40px;height:40px;flex:none}
+.v5 .mob .transacoes .mesnav .ml{min-width:138px}
+.v5 .mob .transacoes .mesnav .hoje{min-height:40px;padding:0 0 0 6px;font-size:13px}
+
+.v5 .mob .transacoes .busca{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:0 15px;height:44px;margin:0;min-width:0;transition:border-color .3s var(--ease)}
+.v5 .mob .transacoes .busca input{font:400 14px var(--int);min-width:0}
+.v5 .mob .transacoes .filtros{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:12px -20px 0;padding:0 20px 16px;border-bottom:1px solid var(--line)}
+.v5 .mob .transacoes .filtros::-webkit-scrollbar{display:none}
+.v5 .mob .transacoes .filtros .chip{min-height:40px;white-space:nowrap;flex:none;font-size:13px;align-items:center}
+.v5 .mob .transacoes .filtros .sep{flex:none;margin:0 2px}
+.v5 .mob .transacoes .filtros .sel{flex:none}
+.v5 .mob .transacoes .filtros .sel select{min-height:40px;padding:0 36px 0 15px;font-size:13px}
+.v5 .mob .transacoes .filtros .sel::after{right:15px}
+
+.v5 .mob .transacoes .sec.lista{padding:0 0 4px;border-bottom:none}
+.v5 .mob .transacoes .dia{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:22px 0 6px}
+.v5 .mob .transacoes .dia .st{font:700 11px var(--gro)}
+.v5 .mob .transacoes .grupo.plano{padding-top:8px}
+.v5 .mob .transacoes .lista .tx{min-height:48px}
+.v5 .mob .transacoes .tx .ds .tag{margin-left:7px;font-size:8.5px;letter-spacing:.12em;padding:2px 6px}
+.v5 .mob .transacoes .ver-prev{min-height:44px;padding:0;font-size:13px}
+.v5 .mob .transacoes .sem-resultado{padding:24px 0 4px}
+.v5 .mob .transacoes .mais-wrap{padding:18px 0 16px}
+.v5 .mob .transacoes .mais-wrap .btn-sm{width:100%;justify-content:center;min-height:44px;font-size:13.5px}
+.v5 .mob .transacoes .lista-foot{flex-direction:column;align-items:flex-start;gap:6px;padding:16px 0 0;line-height:1.6}
+.v5 .mob .transacoes .pergunte{padding:10px 0 28px}
+.v5 .mob .transacoes .tx.skel .ct{width:45%}
+.v5 .mob .transacoes .tx.skel .v{width:64px}
+
+/* sheet: o painel vira bottom sheet no mobile (CSS comum); aqui só o que o formulário pede */
+.v5 .mob .painel .tx-form .tipo .chip{min-height:44px;font-size:13px;padding-left:8px;padding-right:8px}
+.v5 .mob .painel .tx-form textarea.ck-note{resize:none;min-height:76px;font:400 14px/1.5 var(--int)}
+.v5 .mob .painel .tx-form .aviso{font-size:13px}
+.v5 .mob .painel .tx-form .erro-campo{font-size:12.5px}
+.v5 .mob .painel .pfoot .confirma{display:block}

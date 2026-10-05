@@ -34,6 +34,20 @@ function normalizeKey(s: string): string {
   return s.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
 }
 
+/** Nome do banco quando o cabeçalho bate com um perfil específico (os genéricos não contam). */
+export function detectBankName(headers: string[]): string | null {
+  const normalizedHeaders = headers.map(normalizeKey)
+  for (const profile of BANK_PROFILES) {
+    if (profile.name.startsWith('Generic')) continue
+    if (
+      normalizedHeaders.includes(normalizeKey(profile.dateCol)) &&
+      normalizedHeaders.includes(normalizeKey(profile.descCol)) &&
+      normalizedHeaders.includes(normalizeKey(profile.amountCol))
+    ) return profile.name
+  }
+  return null
+}
+
 export function detectBankProfile(headers: string[]): ColumnMapping | null {
   const normalizedHeaders = headers.map(normalizeKey)
 
@@ -86,14 +100,15 @@ function parseAmount(raw: string): number | null {
   let cleaned = raw.trim()
   // Remove currency symbols
   cleaned = cleaned.replace(/[R$€£\s]/g, '')
-  // Handle Brazilian format: 1.234,56 → 1234.56
-  if (/\d{1,3}(\.\d{3})*(,\d{1,2})?$/.test(cleaned)) {
+  // Formato brasileiro com milhar: 1.234,56 e 4.150 → 1234.56 e 4150 (ponto de milhar + vírgula decimal opcional)
+  if (/^[-+]?\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(cleaned)) {
     cleaned = cleaned.replace(/\./g, '').replace(',', '.')
   }
-  // Handle plain comma decimal: 1234,56 → 1234.56
-  else if (/^\-?\d+(,\d{1,2})$/.test(cleaned)) {
+  // Vírgula decimal simples: 1234,56 → 1234.56
+  else if (/^[-+]?\d+,\d{1,2}$/.test(cleaned)) {
     cleaned = cleaned.replace(',', '.')
   }
+  // Senão o ponto é decimal (exportações do Nubank e de planilhas em inglês): -182.40, 4150.00, 100
   const num = parseFloat(cleaned)
   return isNaN(num) ? null : num
 }

@@ -1,0 +1,190 @@
+/* Fase 2 · Planejamento (T3) · CSS da tela, porte 1:1 do <style> inline de
+   prototypes/v5/app/financas-planejamento.html (desktop) e financas-planejamento.mobile.html (mobile dedicado).
+   Escopo: a raiz `main.pl-v5` (SubtelaV5 põe a classe no <main>). Desktop sob `.v5 .dk:not(.mob)`, mobile sob `.v5 .mob`
+   (a classe `.mob` vem do AppV5Boot). Peças comuns (.subnav, .painel, .confirma, .subtela, .subbar, .sy, .lab, .sec-head,
+   .opc, .imp, .recibo, .colofao, .btn-sm, .chip, .sel, .ck-note) ficam em styles/app-v5.css.
+   O painel de evento (EventoPlanejadoPainel) mora FORA do <main>: os extras dele usam `.v5 .painel`, sem `.pl-v5`.
+   Fora do porte: a anotação de estados do protótipo (.proto-estados). */
+
+/* ── pedaços iguais em desktop e mobile ── */
+.v5 .pl-v5 .principal .pill-q.prev{color:var(--roxo);border-color:rgba(104,64,255,.5)}
+.v5 .pl-v5 .principal .big{font:700 44px/1 var(--gro);letter-spacing:-.045em}
+.v5 .pl-v5 .principal .big.w{color:var(--coral)}
+.v5 .pl-v5 .principal .de b{color:var(--t1);font-weight:600}
+.v5 .pl-v5 .principal .de b.w{color:var(--coral)}
+.v5 .pl-v5 .principal .mini strong{display:block;font:700 18px/1 var(--gro);letter-spacing:-.03em}
+.v5 .pl-v5 .principal .mini strong.w{color:var(--coral)}
+.v5 .pl-v5 .principal .mini span{display:block;color:var(--t3)}
+.v5 .pl-v5 .curva .leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.v5 .pl-v5 .curva .leg i.in{background:var(--ele)}
+.v5 .pl-v5 .curva .leg i.out{background:var(--coral)}
+.v5 .pl-v5 .curva .leg i.cr{background:transparent;border:1.5px solid var(--coral)}
+.v5 .pl-v5 .chart{position:relative;outline:none}
+.v5 .pl-v5 .chart svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+.v5 .anim .pl-v5 .chart path{transition:d .7s var(--ease)}
+.v5 .anim .pl-v5 .chart .zero,.v5 .anim .pl-v5 .chart .clipr{transition:all .7s var(--ease)}
+.v5 .pl-v5 .chart .ov{position:absolute;inset:0;pointer-events:none}
+.v5 .pl-v5 .chart .pt{position:absolute;width:0;height:0}
+.v5 .anim .pl-v5 .chart .pt{transition:left .7s var(--ease),top .7s var(--ease)}
+.v5 .pl-v5 .chart .ev{position:absolute;border-radius:50%;background:var(--coral);box-shadow:0 0 0 3px var(--bg)}
+.v5 .pl-v5 .chart .ev.in{background:var(--ele)}
+.v5 .pl-v5 .chart .ev.prev{background:var(--roxo)}
+.v5 .pl-v5 .chart .ring{position:absolute;border-radius:50%;border:1.5px solid var(--coral)}
+.v5 .pl-v5 .chart .rot{position:absolute;white-space:nowrap;font:700 9.5px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3);transform:translate(-50%,0)}
+.v5 .pl-v5 .chart .rot.mn .num{letter-spacing:-.01em;text-transform:none;color:var(--t2)}
+.v5 .pl-v5 .chart .hoje{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line-h)}
+.v5 .pl-v5 .chart .hoje span{position:absolute;top:-2px;font:700 9.5px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t2);white-space:nowrap}
+.v5 .pl-v5 .chart .dot0{position:absolute;border-radius:50%;background:var(--t1)}
+.v5 .pl-v5 .chart .zr{position:absolute;right:0;font:700 9.5px var(--gro);letter-spacing:.14em;color:var(--t3);transform:translateY(-120%)}
+.v5 .pl-v5 .chart .guia{position:absolute;top:0;bottom:0;border-left:1px solid var(--line-h);opacity:0}
+.v5 .pl-v5 .chart .guia.on{opacity:1}
+/* limite do plano FREE: do 8º vértice em diante a curva fica apagada, com o convite */
+.v5 .pl-v5 .chart .free-chart{position:absolute;top:0;bottom:0;right:0;z-index:2;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;
+  background:rgba(21,19,19,.7);color:var(--t1);font:600 12px var(--int);text-align:right}
+.v5 .pl-v5 .chart .free-chart:hover span{text-decoration:underline}
+.v5 .pl-v5 .eixo{position:relative}
+.v5 .pl-v5 .eixo span{position:absolute;transform:translateX(-50%);font:700 9.5px var(--gro);letter-spacing:.12em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+.v5 .pl-v5 .eixo span.ano{color:var(--t2)}
+.v5 .pl-v5 .eixo span.cr{color:var(--coral)}
+.v5 .pl-v5 .eixo span.cr::after{content:" · crítico"}
+.v5 .pl-v5 .curva .prosa b{color:var(--t1);font-weight:600;font-family:var(--gro);letter-spacing:-.01em}
+.v5 .pl-v5 .curva .prosa b.w{color:var(--coral)}
+.v5 .pl-v5 .imp label b{font:700 11px var(--gro);color:var(--roxo);margin-right:6px}
+.v5 .pl-v5 .evrow .d{font:700 11px var(--gro);letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+.v5 .pl-v5 .evrow strong{display:block;font:500 14px var(--int);color:var(--t1)}
+.v5 .pl-v5 .evrow small{display:block;font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:2px}
+.v5 .pl-v5 .evrow .v{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap}
+.v5 .pl-v5 .evrow.in .v{color:var(--ele)}
+.v5 .pl-v5 .etq{display:inline-block;font:700 9px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3);border:1px solid var(--line);border-radius:999px;padding:3px 8px;white-space:nowrap}
+.v5 .pl-v5 .etq.ok{color:var(--ele);border-color:rgba(161,255,98,.4)}
+.v5 .pl-v5 .etq.prev{color:var(--roxo);border-color:rgba(104,64,255,.5)}
+.v5 .pl-v5 .lista-foot{color:var(--t3)}
+.v5 .pl-v5 .lista-foot b{color:var(--t1);font-weight:700}
+.v5 .pl-v5 .lista-foot b.ele{color:var(--ele)}
+.v5 .pl-v5 .lista-foot output{color:var(--ele);font-weight:600;min-height:1em}
+.v5 .pl-v5 .vazio-l{font:400 13px/1.6 var(--int);color:var(--t3)}
+/* esqueleto e erro (estados da tela) */
+.v5 .pl-v5 .pl-esq{padding:36px 0;border-bottom:1px solid var(--line)}
+.v5 .pl-v5 .pl-esq span{display:block;height:10px;border-radius:5px;background:var(--s2);margin:10px 0}
+.v5 .pl-v5 .pl-erro{border-left:3px solid var(--coral);padding:10px 14px;margin-top:18px;font:400 13px var(--int);color:var(--coral)}
+.v5 .pl-v5 .pl-erro button{background:none;border:none;cursor:pointer;padding:0;color:var(--t1);font:600 13px var(--int);text-decoration:underline}
+
+/* ── desktop ── */
+.v5 .dk:not(.mob) .pl-v5 .objeto{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;padding:22px 0 30px;border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .pl-v5 .objeto a.eyebrow{transition:color .3s var(--ease)}
+.v5 .dk:not(.mob) .pl-v5 .objeto a.eyebrow:hover{color:var(--t1)}
+.v5 .dk:not(.mob) .pl-v5 .objeto h1{font:500 32px/1.1 var(--gro);letter-spacing:-.035em;margin-top:12px}
+.v5 .dk:not(.mob) .pl-v5 .cenarios{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.v5 .dk:not(.mob) .pl-v5 .cenarios .rot{font:400 12px var(--int);color:var(--t3);margin-right:4px}
+.v5 .dk:not(.mob) .pl-v5 .cenarios .chip{padding:8px 15px;font-size:12.5px}
+.v5 .dk:not(.mob) .pl-v5 .principal{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(36px,5vw,80px);padding:36px 0;border-bottom:1px solid var(--line);align-items:start}
+.v5 .dk:not(.mob) .pl-v5 .principal .eb{display:flex;align-items:center;gap:12px}
+.v5 .dk:not(.mob) .pl-v5 .principal .big{margin-top:12px}
+.v5 .dk:not(.mob) .pl-v5 .principal .de{font:400 14px/1.6 var(--int);color:var(--t2);margin-top:12px;max-width:52ch}
+.v5 .dk:not(.mob) .pl-v5 .principal .mini{display:flex;gap:28px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);max-width:420px}
+.v5 .dk:not(.mob) .pl-v5 .principal .mini span{font:400 11.5px var(--int);margin-top:6px}
+.v5 .dk:not(.mob) .pl-v5 .principal .sy{margin-top:0;max-width:none}
+.v5 .dk:not(.mob) .pl-v5 .principal .sy .fala{font-size:16px}
+.v5 .dk:not(.mob) .pl-v5 .curva{padding:36px 0 34px;border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .pl-v5 .curva-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.v5 .dk:not(.mob) .pl-v5 .curva-head .leg{display:flex;gap:18px;font:400 11.5px var(--int);color:var(--t3)}
+.v5 .dk:not(.mob) .pl-v5 .chart{height:240px;margin-top:22px;cursor:crosshair}
+.v5 .dk:not(.mob) .pl-v5 .chart:focus-visible{box-shadow:0 0 0 2px rgba(104,64,255,.6);border-radius:6px}
+.v5 .dk:not(.mob) .pl-v5 .chart .ev{left:-4px;width:8px;height:8px;top:calc(-4px + var(--o,0) * 12px)}
+.v5 .dk:not(.mob) .pl-v5 .chart .ring{left:-9px;top:-9px;width:18px;height:18px}
+.v5 .dk:not(.mob) .pl-v5 .chart .rot.mn{top:14px}
+.v5 .dk:not(.mob) .pl-v5 .chart .rot.mn .num{font-size:11px}
+.v5 .dk:not(.mob) .pl-v5 .chart .hoje span{left:8px}
+.v5 .dk:not(.mob) .pl-v5 .chart .dot0{left:-4px;top:-4px;width:8px;height:8px}
+.v5 .dk:not(.mob) .pl-v5 .chart .guia{transition:opacity .2s}
+/* tooltip do gráfico (G-01) */
+.v5 .dk:not(.mob) .pl-v5 .tip{position:absolute;z-index:3;width:220px;background:var(--s1);border:1px solid var(--line-h);border-radius:12px;padding:12px 14px;
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.7);pointer-events:none;opacity:0;transform:translateY(-100%);transition:opacity .2s}
+.v5 .dk:not(.mob) .pl-v5 .tip.on{opacity:1}
+.v5 .dk:not(.mob) .pl-v5 .tip .t{font:700 10px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
+.v5 .dk:not(.mob) .pl-v5 .tip .v{font:700 20px/1 var(--gro);letter-spacing:-.03em;margin-top:8px}
+.v5 .dk:not(.mob) .pl-v5 .tip .v.w{color:var(--coral)}
+.v5 .dk:not(.mob) .pl-v5 .tip ul{list-style:none;margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.v5 .dk:not(.mob) .pl-v5 .tip li{display:flex;justify-content:space-between;gap:12px;font:400 12px/1.7 var(--int);color:var(--t2)}
+.v5 .dk:not(.mob) .pl-v5 .tip li .num{color:var(--t1);white-space:nowrap}
+.v5 .dk:not(.mob) .pl-v5 .eixo{height:18px;margin-top:10px}
+.v5 .dk:not(.mob) .pl-v5 .curva .prosa{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:16px;max-width:78ch}
+.v5 .dk:not(.mob) .pl-v5 .eventos{padding:40px 0 34px;border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .pl-v5 .secao-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:6px}
+.v5 .dk:not(.mob) .pl-v5 .ano-div{padding:22px 0 8px;border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .pl-v5 .evrow{display:grid;grid-template-columns:64px 1fr 150px 130px 190px;gap:16px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);transition:padding-left .35s var(--ease)}
+.v5 .dk:not(.mob) .pl-v5 .evrow:hover{padding-left:6px}
+.v5 .dk:not(.mob) .pl-v5 .evrow .v{text-align:right}
+.v5 .dk:not(.mob) .pl-v5 .evrow .ac{display:flex;gap:8px;justify-content:flex-end}
+.v5 .dk:not(.mob) .pl-v5 .evrow .ac .btn-sm{padding:6px 13px;font-size:12px}
+.v5 .dk:not(.mob) .pl-v5 .lista-foot{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding:16px 0 0;font:400 12.5px var(--int)}
+.v5 .dk:not(.mob) .pl-v5 .vazio-l{padding:22px 0 6px}
+.v5 .dk:not(.mob) .pl-v5 .vazio-l + .btn-sm{margin-top:8px}
+@media (max-width:960px){
+  .v5 .dk:not(.mob) .pl-v5 .objeto{flex-direction:column;align-items:flex-start}
+  .v5 .dk:not(.mob) .pl-v5 .principal{grid-template-columns:1fr}
+  .v5 .dk:not(.mob) .pl-v5 .evrow{grid-template-columns:56px 1fr 120px}
+  .v5 .dk:not(.mob) .pl-v5 .evrow .st,.v5 .dk:not(.mob) .pl-v5 .evrow .ac{grid-column:2/-1}
+}
+
+/* ── mobile ── */
+.v5 .mob .pl-v5 .objeto{padding:18px 0 18px;border-bottom:1px solid var(--line)}
+.v5 .mob .pl-v5 .objeto a.eyebrow{display:inline-flex;align-items:center;min-height:40px}
+.v5 .mob .pl-v5 .objeto h1{font:500 26px/1.15 var(--gro);letter-spacing:-.035em;margin-top:2px}
+.v5 .mob .pl-v5 .cenarios{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:16px -20px 0;padding:0 20px 2px}
+.v5 .mob .pl-v5 .cenarios::-webkit-scrollbar{display:none}
+.v5 .mob .pl-v5 .cenarios .chip{min-height:40px;flex:none;white-space:nowrap;font-size:13px}
+.v5 .mob .pl-v5 .principal{padding:22px 0 24px;border-bottom:1px solid var(--line)}
+.v5 .mob .pl-v5 .principal .eb{display:flex;align-items:center;gap:10px}
+.v5 .mob .pl-v5 .principal .big{margin-top:10px}
+.v5 .mob .pl-v5 .principal .de{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:10px}
+.v5 .mob .pl-v5 .principal .mini{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.v5 .mob .pl-v5 .principal .mini span{font:400 11px/1.4 var(--int);margin-top:6px}
+.v5 .mob .pl-v5 .principal .sy{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.v5 .mob .pl-v5 .curva{padding:26px 0 22px;border-bottom:1px solid var(--line)}
+.v5 .mob .pl-v5 .curva .leg{display:flex;gap:14px;flex-wrap:wrap;font:400 11px var(--int);color:var(--t3);margin-top:10px}
+.v5 .mob .pl-v5 .curva .leg i{margin-right:5px;vertical-align:0}
+.v5 .mob .pl-v5 .chart{height:clamp(170px,24dvh,220px);margin-top:18px;touch-action:pan-y}
+.v5 .mob .pl-v5 .chart .ev{left:-3.5px;width:7px;height:7px;top:calc(-3.5px + var(--o,0) * 10px);box-shadow:0 0 0 2px var(--bg)}
+.v5 .mob .pl-v5 .chart .ring{left:-8px;top:-8px;width:16px;height:16px}
+.v5 .mob .pl-v5 .chart .rot{font-size:9px;letter-spacing:.12em}
+.v5 .mob .pl-v5 .chart .rot.mn{top:12px}
+.v5 .mob .pl-v5 .chart .rot.mn .num{font-size:10.5px}
+.v5 .mob .pl-v5 .chart .hoje span{left:6px;font-size:9px;letter-spacing:.12em}
+.v5 .mob .pl-v5 .chart .dot0{left:-3.5px;top:-3.5px;width:7px;height:7px}
+.v5 .mob .pl-v5 .chart .zr{font-size:9px;letter-spacing:.12em}
+.v5 .mob .pl-v5 .eixo{height:16px;margin-top:8px}
+.v5 .mob .pl-v5 .eixo span{font-size:9px;letter-spacing:.1em;display:none}
+.v5 .mob .pl-v5 .eixo span.k,.v5 .mob .pl-v5 .eixo span.cr{display:block}
+.v5 .mob .pl-v5 .eixo span:first-child{transform:none;margin-left:-8px}
+.v5 .mob .pl-v5 .eixo span:last-child{transform:translateX(-80%)}
+.v5 .mob .pl-v5 .leitura{font:400 12.5px/1.6 var(--int);color:var(--t2);margin-top:14px;border-left:2px solid var(--line-h);padding-left:12px;min-height:40px}
+.v5 .mob .pl-v5 .leitura b{color:var(--t1);font-weight:600}
+.v5 .mob .pl-v5 .leitura b.w{color:var(--coral)}
+.v5 .mob .pl-v5 .curva .prosa{font:400 13px/1.6 var(--int);color:var(--t2);margin-top:14px}
+.v5 .mob .pl-v5 .eventos{padding:26px 0 20px;border-bottom:1px solid var(--line)}
+.v5 .mob .pl-v5 .secao-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.v5 .mob .pl-v5 .secao-head .btn-sm{min-height:40px;padding:10px 14px}
+.v5 .mob .pl-v5 .dica{font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:4px}
+.v5 .mob .pl-v5 .ano-div{padding:18px 0 6px;border-bottom:1px solid var(--line)}
+.v5 .mob .pl-v5 .evrow{display:grid;grid-template-columns:48px 1fr auto;gap:4px 12px;align-items:start;padding:13px 0;min-height:48px;border-bottom:1px solid var(--line);cursor:pointer}
+.v5 .mob .pl-v5 .evrow:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px;border-radius:6px}
+.v5 .mob .pl-v5 .evrow .d{font-size:10.5px;padding-top:2px}
+.v5 .mob .pl-v5 .evrow small{font-size:11.5px;line-height:1.45}
+.v5 .mob .pl-v5 .evrow .sl{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.v5 .mob .pl-v5 .evrow .v{font-size:13px;padding-top:1px}
+.v5 .mob .pl-v5 .vazio-l{padding:20px 0 6px}
+.v5 .mob .pl-v5 .vazio-l + .btn-sm{min-height:40px;margin-top:8px}
+.v5 .mob .pl-v5 .lista-foot{display:flex;flex-direction:column;gap:4px;padding:14px 0 0;font:400 12.5px/1.6 var(--int)}
+
+/* ── painel de evento (fora do <main>: vale também no Calendário) ── */
+.v5 .painel .pform-evento{display:flex;flex-direction:column;gap:18px}
+.v5 .painel textarea.ck-note{resize:vertical;min-height:72px;font:400 13px/1.5 var(--int)}
+.v5 .painel .aviso{font:400 12px/1.5 var(--int);color:var(--t3);margin-top:8px}
+.v5 .painel .err{font:500 12.5px var(--int);color:var(--coral);min-height:1em}
+.v5 .mob .painel .pform-evento{gap:16px}
+.v5 .mob .painel .ck-note{min-height:46px}
+.v5 .mob .painel textarea.ck-note{resize:none;min-height:70px;font:400 14px/1.5 var(--int)}
+.v5 .mob .painel .sel select{min-height:46px}
+.v5 .mob .painel .btn-sm.ghost.perigo{padding:12px 18px}
+.v5 .mob .painel .confirma{display:block}

@@ -22,9 +22,18 @@ export interface Budget {
 }
 
 export interface BudgetWithSpend extends Budget {
+  /**
+   * `amount` aqui é o limite EFETIVO do mês (base + sobra do rollover): é o que
+   * hub, diário e barras comparam com o gasto. Para editar, use `limiteBase`
+   * (o valor gravado no banco) e `sobra` (o que veio do mês anterior).
+   */
   gasto: number
   pct: number
   isActive: boolean
+  /** limite gravado no banco, sem a sobra do rollover */
+  limiteBase: number
+  /** sobra do mês anterior somada ao limite (0 sem rollover ou sem envelope anterior) */
+  sobra: number
 }
 
 export interface EnvelopeFormData {
@@ -181,17 +190,18 @@ export function useBudgets({ month, year }: { month: number; year: number }): Us
       // Enrich budgets with spend + rollover
       const enriched: BudgetWithSpend[] = (budgetsRes.data ?? []).map((b) => {
         const raw = b as unknown as Budget
-        let effectiveAmount = raw.amount
+        const limiteBase = raw.amount
+        let sobra = 0
 
         // Apply rollover if enabled
         if (raw.rollover) {
           const prevBudget = prevBudgetByCat.get(raw.category_id)
           if (prevBudget) {
             const prevSpend = prevSpendMap.get(raw.category_id) ?? 0
-            const leftover = Math.max(0, prevBudget.amount - prevSpend)
-            effectiveAmount = raw.amount + leftover
+            sobra = Math.max(0, prevBudget.amount - prevSpend)
           }
         }
+        const effectiveAmount = limiteBase + sobra
 
         const gasto = spendMap.get(raw.category_id) ?? 0
         const pct = effectiveAmount > 0 ? Math.round((gasto / effectiveAmount) * 100) : 0
@@ -199,6 +209,8 @@ export function useBudgets({ month, year }: { month: number; year: number }): Us
         return {
           ...raw,
           amount: effectiveAmount,
+          limiteBase,
+          sobra,
           gasto,
           pct,
           isActive: gasto > 0,

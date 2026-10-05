@@ -5,9 +5,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { queryKeys } from '@/lib/query-keys'
 import { useCategories, type Category } from './use-categories'
-import { parseCSV, mapTransactions, detectBankProfile, type ParsedTransaction, type ColumnMapping } from '@/lib/import/csv-parser'
+import { parseCSV, mapTransactions, detectBankProfile, detectBankName, type ParsedTransaction, type ColumnMapping } from '@/lib/import/csv-parser'
 import { parseOFX } from '@/lib/import/ofx-parser'
 import { extractTextFromPdf, detectBankFromPdf, parsePdfTransactions } from '@/lib/import/pdf-parser'
+import { selecaoInicial, type ErroImportacao } from '@/lib/financas/importar'
 
 export type ImportStep = 'upload' | 'mapping' | 'preview' | 'importing' | 'done'
 
@@ -31,6 +32,16 @@ export interface UseImportReturn {
   importTotal: number
   importedCount: number
   error: string | null
+  /** classifica o erro para a tela v5 (texto em lib/financas/importar) */
+  errorKind: ErroImportacao | null
+  /** banco reconhecido (CSV com perfil específico ou PDF); null em OFX e CSV genérico */
+  bankName: string | null
+  /** lendo o arquivo (PDF leva mais) */
+  reading: boolean
+  /** a regra de duplicata ainda está rodando: a seleção inicial só vale depois dela */
+  checkingDuplicates: boolean
+  /** primeiras linhas do CSV, para a prévia do mapeamento de colunas */
+  sampleRows: Record<string, string>[]
   categories: Category[]
   categoryAssignments: Map<number, string>
   uncategorizedCount: number
@@ -38,12 +49,13 @@ export interface UseImportReturn {
 
   setFile: (file: File) => Promise<void>
   setColumnMapping: (mapping: ColumnMapping) => void
-  applyMapping: () => void
+  applyMapping: (mapping?: ColumnMapping) => void
   toggleSkip: (index: number) => void
   toggleAll: (skip: boolean) => void
   setCategoryForTransaction: (index: number, categoryId: string | null) => void
   setCategoryForAll: (categoryId: string) => void
-  executeImport: () => Promise<void>
+  /** true quando todos os lotes entraram */
+  executeImport: () => Promise<boolean>
   reset: () => void
 }
 
@@ -165,7 +177,7 @@ function suggestCategory(
   return null
 }
 
-function buildCategorySuggestions(
+export function buildCategorySuggestions(
   txs: ParsedTransaction[],
   categories: Category[],
 ): Map<number, string> {
@@ -178,6 +190,7 @@ function buildCategorySuggestions(
 }
 
 export function useImport(): UseImportReturn {
+  const queryClient = useQueryClient()
   const [step, setStep] = useState<ImportStep>('upload')
   const [file, setFileState] = useState<File | null>(null)
   const [fileName, setFileName] = useState('')
@@ -191,15 +204,31 @@ export function useImport(): UseImportReturn {
   const [importTotal, setImportTotal] = useState(0)
   const [importedCount, setImportedCount] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [errorKind, setErrorKind] = useState<ErroImportacao | null>(null)
+  const [bankName, setBankName] = useState<string | null>(null)
+  const [reading, setReading] = useState(false)
+  const [checkingDuplicates, setCheckingDuplicates] = useState(false)
+  const [sampleRows, setSampleRows] = useState<Record<string, string>[]>([])
   const [categoryAssignments, setCategoryAssignments] = useState<Map<number, string>>(new Map())
   const rawRowsRef = useRef<Record<string, string>[]>([])
 
   const { categories, refetch: refetchCategories } = useCategories()
 
-  // Auto-suggest categories when transactions are parsed and categories are available
+  function fail(kind: ErroImportacao, message: string) {
+    setErrorKind(kind)
+    setError(message)
+  }
+
+  // Auto-suggest categories when transactions are parsed and categories are available.
+  // Escolhas já feitas pelo usuário são preservadas (criar uma categoria recarrega a lista).
   useEffect(() => {
     if (parsedData.length === 0 || categories.length === 0) return
-    setCategoryAssignments(buildCategorySuggestions(parsedData, categories))
+    const suggestions = buildCategorySuggestions(parsedData, categories)
+    setCategoryAssignments(prev => {
+      const next = new Map(suggestions)
+      prev.forEach((v, k) => next.set(k, v))
+      return next
+    })
   }, [parsedData, categories])
 
   const setCategoryForTransaction = useCallback((index: number, categoryId: string | null) => {
@@ -227,82 +256,112 @@ export function useImport(): UseImportReturn {
     (_, i) => !skippedIndices.has(i) && !categoryAssignments.has(i)
   ).length
 
+  /** Limpa o que veio de um arquivo anterior antes de ler o próximo. */
+  function clearParsed() {
+    setParsedData([])
+    setHeaders([])
+    setColumnMappingState(null)
+    setDuplicateIndices(new Set())
+    setSkippedIndices(new Set())
+    setCategoryAssignments(new Map())
+    setSampleRows([])
+    setBankName(null)
+    setStep('upload')
+    rawRowsRef.current = []
+  }
+
+  /** Entra na revisão: tudo marcado até a regra de duplicata dizer o que desmarcar. */
+  async function startPreview(txs: ParsedTransaction[], bank: string | null) {
+    setParsedData(txs)
+    setSkippedIndices(new Set())
+    setBankName(bank)
+    setStep('preview')
+    await detectDuplicates(txs)
+  }
+
   const setFile = useCallback(async (f: File) => {
     setError(null)
+    setErrorKind(null)
+    clearParsed()
     setFileState(f)
     setFileName(f.name)
+    setReading(true)
 
     const ext = f.name.split('.').pop()?.toLowerCase()
 
-    if (ext === 'pdf') {
-      setFileType('pdf')
-      try {
-        const pages = await extractTextFromPdf(f)
-        const bankProfile = detectBankFromPdf(pages)
-        const txs = parsePdfTransactions(pages, bankProfile)
+    try {
+      if (ext === 'pdf') {
+        setFileType('pdf')
+        try {
+          const pages = await extractTextFromPdf(f)
+          const bankProfile = detectBankFromPdf(pages)
+          const txs = parsePdfTransactions(pages, bankProfile)
+          if (txs.length === 0) {
+            fail('vazio', 'Não foi possível extrair transações deste PDF. Tente exportar o extrato em CSV.')
+            return
+          }
+          await startPreview(txs, bankProfile?.name ?? null)
+        } catch (e) {
+          const senha = e instanceof Error && e.name === 'PasswordException'
+          fail(senha ? 'senha' : 'pdf', 'Erro ao processar o PDF. Verifique se o arquivo não está protegido por senha.')
+        }
+      } else if (ext === 'ofx' || ext === 'qfx') {
+        const content = await f.text()
+        setFileType('ofx')
+        const txs = parseOFX(content)
         if (txs.length === 0) {
-          setError('Não foi possível extrair transações deste PDF. Tente exportar o extrato em CSV.')
+          fail('vazio', 'Nenhuma transação encontrada no arquivo OFX.')
           return
         }
-        setParsedData(txs)
-        setSkippedIndices(new Set(txs.map((_, i) => i)))
-        setStep('preview')
-        await detectDuplicates(txs)
-      } catch {
-        setError('Erro ao processar o PDF. Verifique se o arquivo não está protegido por senha.')
-      }
-    } else if (ext === 'ofx' || ext === 'qfx') {
-      const content = await f.text()
-      setFileType('ofx')
-      const txs = parseOFX(content)
-      if (txs.length === 0) {
-        setError('Nenhuma transação encontrada no arquivo OFX.')
-        return
-      }
-      setParsedData(txs)
-      setSkippedIndices(new Set(txs.map((_, i) => i)))
-      setStep('preview')
-      await detectDuplicates(txs)
-    } else {
-      const content = await f.text()
-      setFileType('csv')
-      const { headers: h, rows } = parseCSV(content)
-      if (rows.length === 0) {
-        setError('Arquivo CSV vazio ou inválido.')
-        return
-      }
-      setHeaders(h)
-      rawRowsRef.current = rows
-
-      const autoMapping = detectBankProfile(h)
-      if (autoMapping) {
-        setColumnMappingState(autoMapping)
-        const txs = mapTransactions(rows, autoMapping)
-        setParsedData(txs)
-        setSkippedIndices(new Set(txs.map((_, i) => i)))
-        setStep('preview')
-        await detectDuplicates(txs)
+        await startPreview(txs, null)
       } else {
-        setStep('mapping')
+        const content = await f.text()
+        setFileType('csv')
+        const { headers: h, rows } = parseCSV(content)
+        if (rows.length === 0) {
+          fail('vazio', 'Arquivo CSV vazio ou inválido.')
+          return
+        }
+        setHeaders(h)
+        rawRowsRef.current = rows
+        setSampleRows(rows.slice(0, 2))
+
+        const autoMapping = detectBankProfile(h)
+        if (autoMapping) {
+          setColumnMappingState(autoMapping)
+          const txs = mapTransactions(rows, autoMapping)
+          if (txs.length === 0) {
+            fail('vazio', 'Nenhuma transação válida encontrada neste arquivo.')
+            return
+          }
+          await startPreview(txs, detectBankName(h))
+        } else {
+          setStep('mapping')
+        }
       }
+    } finally {
+      setReading(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const setColumnMapping = useCallback((mapping: ColumnMapping) => {
     setColumnMappingState(mapping)
   }, [])
 
-  const applyMapping = useCallback(() => {
-    if (!columnMapping) return
-    const txs = mapTransactions(rawRowsRef.current, columnMapping)
+  const applyMapping = useCallback((mapping?: ColumnMapping) => {
+    const m = mapping ?? columnMapping
+    if (!m) return
+    setColumnMappingState(m)
+    const txs = mapTransactions(rawRowsRef.current, m)
     if (txs.length === 0) {
-      setError('Nenhuma transação válida encontrada com o mapeamento selecionado.')
+      fail('mapeamento', 'Nenhuma transação válida encontrada com o mapeamento selecionado.')
       return
     }
-    setParsedData(txs)
-    setSkippedIndices(new Set(txs.map((_, i) => i)))
-    setStep('preview')
-    detectDuplicates(txs)
+    setError(null)
+    setErrorKind(null)
+    void startPreview(txs, null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnMapping])
 
   const toggleSkip = useCallback((index: number) => {
@@ -323,6 +382,7 @@ export function useImport(): UseImportReturn {
   }, [parsedData])
 
   async function detectDuplicates(txs: ParsedTransaction[]) {
+    setCheckingDuplicates(true)
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
@@ -344,7 +404,7 @@ export function useImport(): UseImportReturn {
       if (!existing || existing.length === 0) return
 
       const existingSet = new Set(
-        existing.map(e => `${e.date}|${e.amount}|${e.description.toLowerCase().trim()}`)
+        existing.map(e => `${e.date}|${e.amount}|${(e.description ?? '').toLowerCase().trim()}`)
       )
 
       const dupes = new Set<number>()
@@ -355,13 +415,19 @@ export function useImport(): UseImportReturn {
         }
       })
       setDuplicateIndices(dupes)
+      // seleção inicial: reconhecidas marcadas, possíveis duplicatas desmarcadas
+      const { puladas } = selecaoInicial(txs.length, dupes)
+      setSkippedIndices(prev => new Set([...prev, ...puladas]))
     } catch {
       // Non-blocking: duplicates just won't be detected
+    } finally {
+      setCheckingDuplicates(false)
     }
   }
 
-  const executeImport = useCallback(async () => {
+  const executeImport = useCallback(async (): Promise<boolean> => {
     setError(null)
+    setErrorKind(null)
     setStep('importing')
 
     const indicesToImport = parsedData
@@ -372,12 +438,13 @@ export function useImport(): UseImportReturn {
     setImportProgress(0)
     setImportedCount(0)
 
+    let total = 0
+    const done: number[] = []
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Usuário não autenticado')
 
-      let total = 0
       for (let i = 0; i < indicesToImport.length; i += BATCH_SIZE) {
         const batchIndices = indicesToImport.slice(i, i + BATCH_SIZE)
         const rows = batchIndices.map(idx => ({
@@ -402,16 +469,26 @@ export function useImport(): UseImportReturn {
         }
 
         total += batchIndices.length
+        done.push(...batchIndices)
         setImportProgress(total)
         setImportedCount(total)
       }
 
       setStep('done')
+      return true
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido ao importar')
+      // o que já entrou sai da seleção: tentar de novo manda só o resto
+      if (done.length > 0) setSkippedIndices(prev => new Set([...prev, ...done]))
+      fail(done.length > 0 ? 'lote' : 'generico', err instanceof Error ? err.message : 'Erro desconhecido ao importar')
       setStep('preview')
+      return false
+    } finally {
+      if (total > 0) {
+        queryClient.invalidateQueries({ queryKey: ['import-history'] })
+        queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+      }
     }
-  }, [parsedData, skippedIndices, categoryAssignments, fileName])
+  }, [parsedData, skippedIndices, categoryAssignments, fileName, queryClient])
 
   const reset = useCallback(() => {
     setStep('upload')
@@ -428,6 +505,9 @@ export function useImport(): UseImportReturn {
     setImportTotal(0)
     setImportedCount(0)
     setError(null)
+    setErrorKind(null)
+    setBankName(null)
+    setSampleRows([])
     rawRowsRef.current = []
   }, [])
 
@@ -436,7 +516,7 @@ export function useImport(): UseImportReturn {
     parsedData, headers, columnMapping,
     duplicateIndices, skippedIndices,
     importProgress, importTotal, importedCount,
-    error,
+    error, errorKind, bankName, reading, checkingDuplicates, sampleRows,
     categories, categoryAssignments, uncategorizedCount, refetchCategories,
     setFile, setColumnMapping, applyMapping,
     toggleSkip, toggleAll,
@@ -454,38 +534,43 @@ export interface ImportBatch {
   totalIncome: number
   totalExpense: number
   dateRange: { min: string; max: string }
+  /** quando o lote entrou (maior created_at do grupo), ISO; null se a coluna não veio */
+  importedAt: string | null
 }
 
 export function useImportHistory() {
   const queryClient = useQueryClient()
 
-  const { data: batches = [], isLoading } = useQuery({
+  const { data: batches = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['import-history'],
     queryFn: async (): Promise<ImportBatch[]> => {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return []
 
-      const sb = supabase as any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sb = supabase as unknown as { from: (t: string) => any }
       const { data, error } = await sb
         .from('transactions')
-        .select('notes, date, amount, type')
+        .select('notes, date, amount, type, created_at')
         .eq('user_id', user.id)
         .like('notes', 'Importado de %')
         .order('date', { ascending: false })
 
-      if (error || !data) return []
+      if (error) throw new Error(error.message)
+      if (!data) return []
 
-      const groups = new Map<string, { notes: string; dates: string[]; income: number; expense: number; count: number }>()
+      const groups = new Map<string, { notes: string; dates: string[]; income: number; expense: number; count: number; at: string | null }>()
 
-      for (const tx of data as { notes: string; date: string; amount: number; type: string }[]) {
+      for (const tx of data as { notes: string; date: string; amount: number; type: string; created_at: string | null }[]) {
         if (!tx.notes) continue
         if (!groups.has(tx.notes)) {
-          groups.set(tx.notes, { notes: tx.notes, dates: [], income: 0, expense: 0, count: 0 })
+          groups.set(tx.notes, { notes: tx.notes, dates: [], income: 0, expense: 0, count: 0, at: null })
         }
         const g = groups.get(tx.notes)!
         g.dates.push(tx.date)
         g.count++
+        if (tx.created_at && (!g.at || tx.created_at > g.at)) g.at = tx.created_at
         if (tx.type === 'income') g.income += tx.amount
         else g.expense += tx.amount
       }
@@ -500,6 +585,7 @@ export function useImportHistory() {
           min: g.dates.reduce((a, b) => (a < b ? a : b)),
           max: g.dates.reduce((a, b) => (a > b ? a : b)),
         },
+        importedAt: g.at,
       }))
     },
   })
@@ -510,7 +596,8 @@ export function useImportHistory() {
     if (!user) throw new Error('Não autenticado')
 
     // Count first for feedback
-    const sb = supabase as any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sb = supabase as unknown as { from: (t: string) => any }
     const { count } = await sb
       .from('transactions')
       .select('id', { count: 'exact', head: true })
@@ -531,5 +618,5 @@ export function useImportHistory() {
     return count ?? 0
   }, [queryClient])
 
-  return { batches, isLoading, deleteBatch }
+  return { batches, isLoading, isError, refetch, deleteBatch }
 }

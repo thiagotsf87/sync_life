@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { queryKeys } from '@/lib/query-keys'
-import type { Category } from './use-categories'
 import { syncFinanceCategoryToFuturo } from '@/lib/integrations/futuro'
 import { updateStreak } from '@/hooks/use-panorama'
 import { addXP } from '@/hooks/use-xp'
@@ -68,6 +67,10 @@ interface UseTransactionsReturn {
   remove: (id: string) => Promise<void>
 }
 
+// schema drift (user_accounts, is_future fora do Database manual): contorno tipado, como no hub v5
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SbAny = { from: (t: string) => any }
+
 function isDateInFuture(dateStr: string): boolean {
   const txDate = new Date(dateStr + 'T00:00:00')
   const today = new Date()
@@ -98,7 +101,7 @@ async function fetchTransactions(
   const startDate = `${options.year}-${monthStr}-01`
   const endDate = new Date(options.year, options.month, 0).toISOString().split('T')[0]
 
-  let query = (supabase as any)
+  let query = (supabase as unknown as SbAny)
     .from('transactions')
     .select(`
       id, amount, type, description, date,
@@ -135,40 +138,10 @@ async function fetchTransactions(
   }
 }
 
-// ─── Hook ──────────────────────────────────────────────────────────────────────
+// ─── Mutations (compartilhadas com a tela v5, que lista por conta própria) ────
 
-export function useTransactions(options: UseTransactionsOptions): UseTransactionsReturn {
-  const PAGE_SIZE = options.pageSize ?? 30
+export function useTransactionMutations() {
   const queryClient = useQueryClient()
-
-  // Debounce search
-  const [debouncedSearch, setDebouncedSearch] = useState(options.search ?? '')
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(options.search ?? ''), 300)
-    return () => clearTimeout(timer)
-  }, [options.search])
-
-  const queryKey = queryKeys.transactions.list({
-    month: options.month,
-    year: options.year,
-    type: options.type,
-    search: debouncedSearch,
-    categoryId: options.categoryId,
-    sort: options.sort,
-    page: options.page,
-  })
-
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey,
-    queryFn: () => fetchTransactions(options, debouncedSearch),
-  })
-
-  const transactions = data?.transactions ?? []
-  const total = data?.total ?? 0
-
-  const refresh = useCallback(() => { refetch() }, [refetch])
-
-  // ─── Mutations ─────────────────────────────────────────────────────────────
 
   const createMutation = useMutation({
     mutationFn: async (formData: TransacaoFormData): Promise<Transaction> => {
@@ -176,7 +149,7 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Não autenticado')
 
-      const sb = supabase as any
+      const sb = supabase as unknown as SbAny
       const { data: created, error: err } = await sb
         .from('transactions')
         .insert({
@@ -217,7 +190,7 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
       if (!user) throw new Error('Não autenticado')
 
       const updatePayload: Record<string, unknown> = { updated_at: new Date().toISOString() }
-      if (formData.category_id !== undefined) updatePayload.category_id = formData.category_id
+      if (formData.category_id !== undefined) updatePayload.category_id = formData.category_id || null
       if (formData.amount !== undefined) updatePayload.amount = formData.amount
       if (formData.type !== undefined) updatePayload.type = formData.type
       if (formData.description !== undefined) updatePayload.description = formData.description
@@ -230,7 +203,7 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
       if (formData.account_from_id !== undefined) updatePayload.account_from_id = formData.account_from_id || null
       if (formData.account_to_id !== undefined) updatePayload.account_to_id = formData.account_to_id || null
 
-      const sb = supabase as any
+      const sb = supabase as unknown as SbAny
       const { data: updated, error: err } = await sb
         .from('transactions')
         .update(updatePayload)
@@ -261,7 +234,7 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Não autenticado')
 
-      const { data: existing } = await (supabase as any)
+      const { data: existing } = await (supabase as unknown as SbAny)
         .from('transactions')
         .select('category_id')
         .eq('id', id)
@@ -298,6 +271,42 @@ export function useTransactions(options: UseTransactionsOptions): UseTransaction
     (id: string) => removeMutation.mutateAsync(id),
     [removeMutation],
   )
+
+  return { create, update, remove }
+}
+
+// ─── Hook ──────────────────────────────────────────────────────────────────────
+
+export function useTransactions(options: UseTransactionsOptions): UseTransactionsReturn {
+  const PAGE_SIZE = options.pageSize ?? 30
+  // Debounce search
+  const [debouncedSearch, setDebouncedSearch] = useState(options.search ?? '')
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(options.search ?? ''), 300)
+    return () => clearTimeout(timer)
+  }, [options.search])
+
+  const queryKey = queryKeys.transactions.list({
+    month: options.month,
+    year: options.year,
+    type: options.type,
+    search: debouncedSearch,
+    categoryId: options.categoryId,
+    sort: options.sort,
+    page: options.page,
+  })
+
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey,
+    queryFn: () => fetchTransactions(options, debouncedSearch),
+  })
+
+  const transactions = data?.transactions ?? []
+  const total = data?.total ?? 0
+
+  const refresh = useCallback(() => { refetch() }, [refetch])
+
+  const { create, update, remove } = useTransactionMutations()
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 

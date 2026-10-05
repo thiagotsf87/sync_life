@@ -1,0 +1,305 @@
+/* SyncLife DS v5 · Finanças > Importar extrato (T4, 3 passos), Fase 2. Porte 1:1 de
+   prototypes/v5/app/financas-importar.html (desktop) e .mobile.html (mobile). As peças comuns
+   (bar, sy/fala/fontes/falar, sel, btn-sm, titulo, subnav, confirma, voltar/subbar) estão em
+   styles/app-v5.css; o que o protótipo pegava de shared/auth.css (.fld e .msg) é portado aqui,
+   escopado. Desktop: `.v5 .dk:not(.mob) .importar`; mobile: `.v5 .mob .importar`. */
+
+/* ── primitivas que o protótipo herdava de base.css e auth.css ── */
+.v5 .importar .chip{font:500 12.5px var(--int);color:var(--t2);border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;background:transparent;
+  display:inline-flex;align-items:baseline;gap:7px;transition:border-color .3s var(--ease),color .3s var(--ease)}
+.v5 .importar .chip:hover{border-color:var(--line-h);color:var(--t1)}
+.v5 .importar .chip[aria-pressed=true]{border-color:var(--roxo);color:var(--t1)}
+.v5 .importar .fld{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.v5 .importar .fld .lblrow{display:flex;justify-content:space-between;align-items:baseline}
+.v5 .importar .fld label{font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+.v5 .importar .fld input{width:100%;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:13px 16px;font:400 14.5px var(--int);color:var(--t1);outline:none;
+  transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+.v5 .importar .fld input::placeholder{color:var(--t3)}
+.v5 .importar .fld input:focus{border-color:var(--roxo);box-shadow:0 0 0 3px rgba(104,64,255,.12)}
+.v5 .importar .fld input.err{border-color:var(--coral);box-shadow:0 0 0 3px rgba(248,65,49,.08)}
+.v5 .importar .msg{font:400 12px/1.5 var(--int);color:var(--t3)}
+.v5 .importar .msg.err{color:var(--coral)}
+.v5 .importar button:focus-visible,.v5 .importar select:focus-visible,.v5 .importar a:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px}
+
+/* blocos de estado (erro, lendo, esqueleto) */
+.v5 .importar .erro{border-left:3px solid var(--coral);padding:10px 14px;font:400 13px/1.55 var(--int);color:var(--t2);margin-top:18px}
+.v5 .importar .erro b{color:var(--coral);font-weight:600;display:block;margin-bottom:2px}
+.v5 .importar .erro .lnk{background:none;border:none;cursor:pointer;padding:0;font:600 13px var(--int);color:var(--t1)}
+.v5 .importar .erro .lnk:hover{text-decoration:underline}
+.v5 .importar .skel span{display:block;height:10px;border-radius:5px;background:var(--s2);margin-top:12px}
+.v5 .importar .sk{display:block;height:12px;border-radius:6px;background:var(--line)}
+.v5 .importar .sk.l1{width:min(560px,92%);height:16px;margin-top:4px}
+.v5 .importar .sk.l2{width:min(320px,60%);margin-top:12px}
+.v5 .importar .lendo{margin-top:18px}
+.v5 .importar .lendo .nm{font:500 15px var(--gro);letter-spacing:-.015em;color:var(--t1)}
+.v5 .importar .lendo .n{font:400 12.5px/1.6 var(--int);color:var(--t3);margin-top:6px}
+.v5 .importar .quieto{font:400 12.5px/1.6 var(--int);color:var(--t3);padding:14px 0 0}
+
+/* ── passos numerados (G-09), hairline entre eles ── */
+.v5 .importar .fsec .shead > .eyebrow{color:var(--roxo)}
+.v5 .importar .estado{font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
+.v5 .importar .estado.ok{color:var(--ele);border-color:rgba(161,255,98,.4)}
+
+/* 01 · arquivo concluído (objeto: o arquivo) + zona de soltar */
+.v5 .importar .arq .ic{width:40px;height:40px;border-radius:11px;background:var(--s1);border:1px solid var(--line);display:grid;place-items:center;color:var(--t2)}
+.v5 .importar .arq .nm{color:var(--t1)}
+.v5 .importar .arq .meta{color:var(--t3)}
+.v5 .importar .arq .meta b{color:var(--ele);font-weight:600}
+.v5 .importar .drop .dz-t{color:var(--t1)}
+.v5 .importar .drop label.btn-sm{cursor:pointer}
+.v5 .importar .drop .fmts{color:var(--t3)}
+.v5 .importar .drop.sobre{border-color:var(--roxo);background:rgba(104,64,255,.06)}
+
+/* passo extra: mapear colunas */
+.v5 .importar .map{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.v5 .importar .map .sel{margin-top:6px}
+.v5 .importar .map label{display:block;font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3)}
+.v5 .importar .prev{font:400 12px/1.7 var(--int);color:var(--t3);margin-top:12px;overflow-wrap:anywhere}
+.v5 .importar .map-acts{margin-top:14px}
+.v5 .importar .lead{color:var(--t3)}
+
+/* 02 · revisão */
+.v5 .importar .rev-foot{display:flex;gap:16px;color:var(--t3)}
+.v5 .importar .rev-foot .num{color:var(--t1);font-weight:700}
+.v5 .importar .rev-foot .ele{color:var(--ele)}
+.v5 .importar .semcat{color:var(--coral);font-weight:500}
+.v5 .importar .tag{font:700 9px var(--gro);letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3);white-space:nowrap}
+.v5 .importar .tag.dup{border-color:rgba(248,65,49,.45);color:var(--coral)}
+
+/* caixa de marcar (objeto): quadrado que muda por estado */
+.v5 .importar .cb{cursor:pointer}
+.v5 .importar .cb:focus-visible{outline:2px solid rgba(104,64,255,.6)}
+.v5 .importar .cb i{display:block;border:1.5px solid var(--line-h);position:relative;transition:background .25s var(--ease),border-color .25s var(--ease)}
+.v5 .importar .cb[aria-checked=true] > i,.v5 .importar .cb[aria-checked=mixed] > i{background:var(--roxo);border-color:var(--roxo)}
+
+/* 03 · categorias */
+.v5 .importar .catln.primeira{border-top:1px solid var(--line)}
+.v5 .importar .s3st{color:var(--coral)}
+.v5 .importar .s3st.ok{color:var(--ele)}
+.v5 .importar .bulk .lbl{color:var(--t2)}
+.v5 .importar .bulk-msg{color:var(--t3)}
+.v5 .importar .catln .d{color:var(--t3)}
+.v5 .importar .catln .ds{color:var(--t1)}
+.v5 .importar .catln .v.in{color:var(--ele)}
+.v5 .importar .catln .sel{margin-top:0}
+.v5 .importar .novacat{border-left:2px solid var(--roxo)}
+.v5 .importar .novacat .eyebrow{display:block;margin-bottom:12px}
+.v5 .importar .novacat .pills{display:flex;gap:8px}
+.v5 .importar .novacat .acts{display:flex;gap:8px}
+
+/* concluído */
+.v5 .importar .feito{border-bottom:1px solid var(--line)}
+.v5 .importar .feito .eyebrow{color:var(--ele)}
+.v5 .importar .feito h2{font-family:var(--gro);font-weight:500;letter-spacing:-.03em}
+.v5 .importar .feito p{color:var(--t2)}
+.v5 .importar .feito .ele{color:var(--ele)}
+.v5 .importar .feito .acts{display:flex;gap:10px}
+
+/* histórico de lotes */
+.v5 .importar .lote .nm{font-family:var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.v5 .importar .lote .meta{color:var(--t3)}
+.v5 .importar .lote .vals{display:flex;font-family:var(--gro);font-weight:700}
+.v5 .importar .lote .vals .ele{color:var(--ele)}
+.v5 .importar .lote .msg{grid-column:1 / -1}
+.v5 .importar .lote.desfeito .nm{color:var(--t3);text-decoration:line-through}
+.v5 .importar .lote.novo{box-shadow:inset 3px 0 0 var(--ele);padding-left:14px}
+
+/* ── SaveBar: pílula do T4 com a ação principal ── */
+.v5 .importar .savebar{position:fixed;z-index:70;display:flex;align-items:center;
+  background:#0d0c0cf2;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line-h);
+  visibility:hidden;transition:transform .55s var(--ease),visibility 0s linear .55s}
+.v5 .importar .savebar.on{visibility:visible;transition-delay:0s}
+.v5 .importar .savebar .sb-txt{font:500 13px var(--int);color:var(--t2)}
+.v5 .importar .savebar .sb-txt b{color:var(--t1);font-weight:700}
+.v5 .importar .savebar .sb-txt .w{color:var(--coral)}
+.v5 .importar .savebar .btn-sm[disabled]{opacity:.45;cursor:not-allowed}
+.v5 .importar .savebar .sb-ok{font:500 13px var(--int);color:var(--ele);white-space:nowrap}
+.v5 .importar .savebar.saved .sb-txt,.v5 .importar .savebar.saved .btn-sm{display:none}
+@media (prefers-reduced-motion:reduce){.v5 .importar .savebar{transition:none}}
+
+/* ═══ desktop ═══ */
+.v5 .dk:not(.mob) .importar{padding-bottom:140px}
+.v5 .dk:not(.mob) .importar section[id],.v5 .dk:not(.mob) .importar div[id]{scroll-margin-top:130px}
+.v5 .dk:not(.mob) .importar .voltar + .titulo{padding-top:18px}
+.v5 .dk:not(.mob) .importar .titulo .eyebrow a{color:inherit;transition:color .3s var(--ease)}
+.v5 .dk:not(.mob) .importar .titulo .eyebrow a:hover{color:var(--t1)}
+.v5 .dk:not(.mob) .importar .titulo .sub{font:400 14px/1.6 var(--int);color:var(--t2);margin-top:10px;max-width:58ch}
+.v5 .dk:not(.mob) .importar .form-col{max-width:900px}
+.v5 .dk:not(.mob) .importar .fsec{padding:36px 0 34px;border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .importar .fsec .shead{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.v5 .dk:not(.mob) .importar .fsec .lead{font:400 13px/1.6 var(--int);color:var(--t3);margin:8px 0 20px;max-width:60ch}
+
+.v5 .dk:not(.mob) .importar .arq{display:grid;grid-template-columns:40px 1fr auto;gap:16px;align-items:center;margin-top:18px}
+.v5 .dk:not(.mob) .importar .arq .nm{font:500 15px var(--gro);letter-spacing:-.015em}
+.v5 .dk:not(.mob) .importar .arq .meta{font:400 12.5px var(--int);margin-top:3px}
+.v5 .dk:not(.mob) .importar .drop{margin-top:20px;border:1px dashed var(--line-h);border-radius:16px;padding:30px 28px;text-align:center;transition:border-color .3s var(--ease),background .3s var(--ease)}
+.v5 .dk:not(.mob) .importar .drop .dz-t{font:500 17px var(--gro);letter-spacing:-.02em}
+.v5 .dk:not(.mob) .importar .drop .dz-a{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+.v5 .dk:not(.mob) .importar .drop .fmts{font:400 12.5px/1.6 var(--int);margin:16px auto 0;max-width:60ch}
+
+.v5 .dk:not(.mob) .importar .sy{margin-top:22px}
+.v5 .dk:not(.mob) .importar .rev-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:30px}
+.v5 .dk:not(.mob) .importar .rev-bar .chip{padding:8px 14px;font-size:12px}
+.v5 .dk:not(.mob) .importar .rev-bar .cnt{margin-left:auto;font:400 12.5px var(--int);color:var(--t3)}
+.v5 .dk:not(.mob) .importar .rev-bar .cnt b{color:var(--t1);font-weight:700}
+.v5 .dk:not(.mob) .importar .rev{width:100%;border-collapse:collapse;margin-top:14px}
+.v5 .dk:not(.mob) .importar .rev th{font:700 9.5px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-h)}
+.v5 .dk:not(.mob) .importar .rev th.v{text-align:right}
+.v5 .dk:not(.mob) .importar .rev td{padding:9px 10px;border-bottom:1px solid var(--line);font:400 13.5px/1.4 var(--int);color:var(--t1);vertical-align:middle}
+.v5 .dk:not(.mob) .importar .rev td.ck,.v5 .dk:not(.mob) .importar .rev th.ck{width:44px;padding:0}
+.v5 .dk:not(.mob) .importar .rev .d{font:600 12px var(--gro);color:var(--t3);white-space:nowrap;width:64px}
+.v5 .dk:not(.mob) .importar .rev .tp{color:var(--t3);font-size:12.5px;width:84px}
+.v5 .dk:not(.mob) .importar .rev th.tp{font-size:9.5px}
+.v5 .dk:not(.mob) .importar .rev .ct{color:var(--t2);font-size:12.5px;width:150px}
+.v5 .dk:not(.mob) .importar .rev td.v{text-align:right;font:700 13.5px var(--gro);letter-spacing:-.02em;white-space:nowrap;width:130px}
+.v5 .dk:not(.mob) .importar .rev tr.in td.v{color:var(--ele)}
+.v5 .dk:not(.mob) .importar .rev tbody tr{cursor:pointer}
+.v5 .dk:not(.mob) .importar .rev tbody tr:hover td{background:rgba(255,255,255,.02)}
+.v5 .dk:not(.mob) .importar .rev tr.off td:not(.ck){opacity:.42}
+.v5 .dk:not(.mob) .importar .rev .ds small{display:block;font:400 11.5px var(--int);color:var(--t3);margin-top:3px}
+.v5 .dk:not(.mob) .importar .semcat:hover{text-decoration:underline}
+.v5 .dk:not(.mob) .importar .tag{margin-left:8px;vertical-align:1px}
+.v5 .dk:not(.mob) .importar .rev-foot{justify-content:space-between;flex-wrap:wrap;padding:14px 0 0;font:400 12.5px var(--int)}
+.v5 .dk:not(.mob) .importar .cb{width:40px;height:40px;display:grid;place-items:center;border-radius:10px}
+.v5 .dk:not(.mob) .importar .cb:focus-visible{outline-offset:-2px}
+.v5 .dk:not(.mob) .importar .cb i{width:18px;height:18px;border-radius:5px}
+.v5 .dk:not(.mob) .importar .cb[aria-checked=true] i::after{content:"";position:absolute;left:5px;top:1.5px;width:4px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.v5 .dk:not(.mob) .importar .cb[aria-checked=mixed] i::after{content:"";position:absolute;left:3.5px;top:6.5px;width:8px;height:2px;background:#fff;border-radius:1px}
+
+.v5 .dk:not(.mob) .importar .s3st{font:500 12.5px var(--int)}
+.v5 .dk:not(.mob) .importar .bulk{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:2px 0 14px}
+.v5 .dk:not(.mob) .importar .bulk .lbl{font:500 12.5px var(--int)}
+.v5 .dk:not(.mob) .importar .bulk .sel{margin-top:0;width:220px}
+.v5 .dk:not(.mob) .importar .bulk .sel select,.v5 .dk:not(.mob) .importar .catln .sel select{padding:10px 40px 10px 14px;font-size:13px}
+.v5 .dk:not(.mob) .importar .bulk-msg{font:400 12.5px/1.5 var(--int);min-height:1.5em}
+.v5 .dk:not(.mob) .importar .catln{display:grid;grid-template-columns:64px 1fr 130px 240px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .importar .catln .d{font:600 12px var(--gro)}
+.v5 .dk:not(.mob) .importar .catln .ds{font:400 13.5px var(--int)}
+.v5 .dk:not(.mob) .importar .catln .v{font:700 13.5px var(--gro);text-align:right}
+.v5 .dk:not(.mob) .importar .novacat{padding:16px 0 6px 18px;margin:14px 0 14px}
+.v5 .dk:not(.mob) .importar .novacat .lin{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end}
+.v5 .dk:not(.mob) .importar .novacat .fld{margin-bottom:6px}
+.v5 .dk:not(.mob) .importar .novacat .acts{margin-top:10px}
+
+.v5 .dk:not(.mob) .importar .feito{padding:36px 0 34px}
+.v5 .dk:not(.mob) .importar .feito h2{font-size:26px;line-height:1.15;margin-top:10px}
+.v5 .dk:not(.mob) .importar .feito p{font:400 14px/1.6 var(--int);margin-top:10px;max-width:62ch}
+.v5 .dk:not(.mob) .importar .feito .acts{margin-top:20px}
+.v5 .dk:not(.mob) .importar .feito .acts .btn-sm{padding:11px 20px;font-size:13px}
+
+.v5 .dk:not(.mob) .importar .hist{padding:40px 0 10px}
+.v5 .dk:not(.mob) .importar .hist .lead{font:400 13px/1.6 var(--int);margin:8px 0 10px;max-width:62ch}
+.v5 .dk:not(.mob) .importar .lote{display:grid;grid-template-columns:1fr auto auto;gap:4px 22px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .importar .lote .nm{font-size:14px;font-weight:500}
+.v5 .dk:not(.mob) .importar .lote .meta{font:400 12.5px var(--int);margin-top:3px}
+.v5 .dk:not(.mob) .importar .lote .vals{gap:14px;font-size:13px;white-space:nowrap}
+.v5 .dk:not(.mob) .importar .lote .confirma{grid-column:1 / -1;margin-top:10px}
+
+.v5 .dk:not(.mob) .importar .savebar{left:50%;bottom:22px;gap:22px;border-radius:999px;padding:8px 8px 8px 22px;box-shadow:0 24px 60px -24px rgba(0,0,0,.7);
+  transform:translate(-50%,140%)}
+.v5 .dk:not(.mob) .importar .savebar.on{transform:translate(-50%,0)}
+.v5 .dk:not(.mob) .importar .savebar .sb-txt{white-space:nowrap}
+.v5 .dk:not(.mob) .importar .savebar .btn-sm{padding:10px 18px}
+.v5 .dk:not(.mob) .importar .savebar .sb-ok{padding:10px 14px 10px 0}
+@media (max-width:960px){
+  .v5 .dk:not(.mob) .importar .catln{grid-template-columns:56px 1fr 110px}
+  .v5 .dk:not(.mob) .importar .catln .sel{grid-column:1 / -1}
+  .v5 .dk:not(.mob) .importar .rev .tp{display:none}
+  .v5 .dk:not(.mob) .importar .map{grid-template-columns:1fr}
+}
+
+/* ═══ mobile ═══ */
+.v5 .mob .importar{padding-bottom:calc(56px + env(safe-area-inset-bottom) + 76px)}
+.v5 .mob .importar section[id],.v5 .mob .importar div[id]{scroll-margin-top:120px}
+.v5 .mob .importar input,.v5 .mob .importar select,.v5 .mob .importar button,.v5 .mob .importar textarea{scroll-margin-top:120px;scroll-margin-bottom:150px} /* foco nunca sob a subbar nem sob a SaveBar */
+.v5 .mob .importar .titulo{padding:26px 0 24px}
+.v5 .mob .importar .titulo .eyebrow a{display:inline-flex;align-items:center;min-height:40px;margin:-10px 0 -10px}
+.v5 .mob .importar .titulo h1{font:500 28px/1.1 var(--gro);letter-spacing:-.035em;margin-top:8px}
+.v5 .mob .importar .titulo .sub{font:400 13.5px/1.6 var(--int);color:var(--t2);margin-top:10px}
+.v5 .mob .importar .fsec{padding:28px 0 26px;border-bottom:1px solid var(--line)}
+.v5 .mob .importar .shead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.v5 .mob .importar .lead{font:400 12.5px/1.6 var(--int);margin:8px 0 16px}
+.v5 .mob .importar .estado{font-size:9px;padding:4px 9px}
+
+.v5 .mob .importar .arq{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:center;margin-top:16px}
+.v5 .mob .importar .arq .nm{font:500 14.5px var(--gro);letter-spacing:-.015em;word-break:break-all}
+.v5 .mob .importar .arq .meta{font:400 12px/1.5 var(--int);margin-top:2px}
+.v5 .mob .importar .arq .btn-sm{grid-column:1 / -1;justify-content:center;min-height:44px;margin-top:4px}
+.v5 .mob .importar .drop{margin-top:16px;border:1px dashed var(--line-h);border-radius:16px;padding:22px 18px;text-align:center}
+.v5 .mob .importar .drop .dz-t{font:500 16px var(--gro);letter-spacing:-.02em}
+.v5 .mob .importar .drop .dz-a{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.v5 .mob .importar .drop .btn-sm{justify-content:center;min-height:44px;padding:12px 18px;font-size:13px;cursor:pointer}
+.v5 .mob .importar .drop .fmts{font:400 12px/1.6 var(--int);margin-top:14px}
+.v5 .mob .importar .map label{margin-top:10px}
+.v5 .mob .importar .map{grid-template-columns:1fr;gap:0}
+.v5 .mob .importar .map-acts .btn-sm{min-height:44px;justify-content:center;width:100%}
+
+.v5 .mob .importar .sy{margin-top:18px}
+.v5 .mob .importar .filtros{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:22px -20px 0;padding:0 20px}
+.v5 .mob .importar .filtros::-webkit-scrollbar{display:none}
+.v5 .mob .importar .filtros .chip{flex:none;min-height:40px;align-items:center;padding:9px 14px;font-size:12.5px}
+.v5 .mob .importar .tool{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px}
+.v5 .mob .importar .tool .cnt{font:400 12.5px var(--int);color:var(--t3)}
+.v5 .mob .importar .tool .cnt b{color:var(--t1);font-weight:700}
+.v5 .mob .importar .cb{background:none;border:none;color:var(--t1)}
+.v5 .mob .importar .cb i{width:20px;height:20px;border-radius:6px;flex:none}
+.v5 .mob .importar .cb[aria-checked=true] > i::after{content:"";position:absolute;left:6px;top:2px;width:4.5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.v5 .mob .importar .cb[aria-checked=mixed] > i::after{content:"";position:absolute;left:4px;top:7.5px;width:9px;height:2px;background:#fff;border-radius:1px}
+.v5 .mob .importar .cb:focus-visible{outline-offset:2px;border-radius:8px}
+.v5 .mob .importar #ckAll{display:inline-flex;align-items:center;gap:10px;min-height:44px;font:500 13px var(--int);color:var(--t2);padding:0}
+.v5 .mob .importar .cards{list-style:none;margin-top:6px;border-top:1px solid var(--line)}
+.v5 .mob .importar .cards .ln{border-bottom:1px solid var(--line)}
+.v5 .mob .importar .cards .cb{width:100%;min-height:64px;display:grid;grid-template-columns:34px 1fr auto;gap:3px 10px;align-items:center;text-align:left;padding:12px 0}
+.v5 .mob .importar .cards .cb > i{grid-row:1 / span 2}
+.v5 .mob .importar .cards .ds{font:500 14.5px var(--int);color:var(--t1);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v5 .mob .importar .cards .v{font:700 13.5px var(--gro);letter-spacing:-.02em;white-space:nowrap;text-align:right}
+.v5 .mob .importar .cards .ln.in .v{color:var(--ele)}
+.v5 .mob .importar .cards .meta{grid-column:2 / -1;font:400 12px var(--int);color:var(--t3)}
+.v5 .mob .importar .cards .dupl{grid-column:2 / -1;font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:4px}
+.v5 .mob .importar .cards .ln.off .ds,.v5 .mob .importar .cards .ln.off .v,.v5 .mob .importar .cards .ln.off .meta{opacity:.42}
+.v5 .mob .importar .tag{margin-right:8px}
+.v5 .mob .importar .rev-foot{flex-direction:column;gap:4px;padding:14px 0 0;font:400 12.5px var(--int)}
+
+.v5 .mob .importar .s3st{font:500 12px var(--int);text-align:right}
+.v5 .mob .importar .bulk{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 0 8px}
+.v5 .mob .importar .bulk .lbl{grid-column:1 / -1;font:700 10px var(--gro);letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+.v5 .mob .importar .bulk .sel{grid-column:1 / -1;margin-top:0}
+.v5 .mob .importar .bulk .btn-sm{justify-content:center;min-height:44px;font-size:13px}
+.v5 .mob .importar .sel select{min-height:48px;font-size:15px}
+.v5 .mob .importar .bulk-msg{font:400 12.5px/1.5 var(--int);min-height:1.5em;margin-bottom:6px}
+.v5 .mob .importar .catln{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
+.v5 .mob .importar .catln .d{font:700 10.5px var(--gro);letter-spacing:.06em;text-transform:uppercase}
+.v5 .mob .importar .catln .ds{font:500 14px var(--int)}
+.v5 .mob .importar .catln .v{font:700 13.5px var(--gro);white-space:nowrap}
+.v5 .mob .importar .catln .sel{grid-column:1 / -1;margin-top:8px}
+.v5 .mob .importar .novacat{padding:14px 0 4px 16px;margin:14px 0}
+.v5 .mob .importar .novacat .fld input{min-height:48px;font-size:15px}
+.v5 .mob .importar .novacat .fld{margin-bottom:10px}
+.v5 .mob .importar .novacat .pills .chip{min-height:44px;align-items:center;padding:11px 18px;font-size:13.5px}
+.v5 .mob .importar .novacat .acts{margin-top:14px}
+.v5 .mob .importar .novacat .acts .btn-sm{min-height:44px;padding:12px 18px;font-size:13px}
+
+.v5 .mob .importar .feito{padding:28px 0 26px}
+.v5 .mob .importar .feito h2{font-size:24px;line-height:1.15;margin-top:10px}
+.v5 .mob .importar .feito p{font:400 13.5px/1.6 var(--int);margin-top:10px}
+.v5 .mob .importar .feito .acts{flex-direction:column;margin-top:18px}
+.v5 .mob .importar .feito .acts .btn-sm{justify-content:center;min-height:46px;font-size:13.5px}
+
+.v5 .mob .importar .hist{padding:30px 0 6px}
+.v5 .mob .importar .lote{padding:16px 0;border-bottom:1px solid var(--line)}
+.v5 .mob .importar .lote .nm{font-size:14px;font-weight:500;word-break:break-all}
+.v5 .mob .importar .lote .meta{font:400 12px/1.5 var(--int);margin-top:3px}
+.v5 .mob .importar .lote .vals{gap:14px;font-size:13px;margin-top:8px}
+.v5 .mob .importar .lote .vals:empty{display:none}
+.v5 .mob .importar .lote .btn-sm.perigo{margin-top:12px;min-height:44px;padding:11px 16px;font-size:13px}
+.v5 .mob .importar .lote .confirma{margin-top:12px}
+.v5 .mob .importar .lote .confirma button{min-height:40px;padding:0 4px}
+
+/* SaveBar mobile: barra fixa logo acima da bottom bar */
+.v5 .mob .importar .savebar{left:0;right:0;bottom:calc(56px + env(safe-area-inset-bottom));z-index:69;justify-content:space-between;gap:12px;
+  border:none;border-top:1px solid var(--line-h);padding:10px 20px;box-shadow:0 -24px 60px -30px rgba(0,0,0,.7);
+  transform:translateY(calc(100% + 56px))}
+.v5 .mob .importar .savebar.on{transform:none}
+.v5 .mob .importar .savebar .sb-txt{font:500 12px/1.35 var(--int);flex:1;min-width:0}
+.v5 .mob .importar .savebar .btn-sm{min-height:44px;padding:10px 16px;font-size:13px;white-space:nowrap}
+.v5 .mob .importar .savebar .sb-ok{min-height:44px;display:inline-flex;align-items:center}

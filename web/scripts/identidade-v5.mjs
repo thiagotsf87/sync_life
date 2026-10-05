@@ -4,7 +4,7 @@
 //   node scripts/identidade-v5.mjs login      abre um Chromium visível em /login; VOCÊ entra,
 //                                             o script só guarda a sessão em
 //                                             ../.playwright-mcp/auth-state.json (ignorado pelo git)
-//   node scripts/identidade-v5.mjs comparar   captura protótipo e rota, desktop 1440 e mobile 390,
+//   node scripts/identidade-v5.mjs comparar [prefixo]   captura protótipo e rota, desktop 1440 e mobile 390,
 //                                             e escreve o diff em ../.playwright-mcp/identidade/
 //
 // Requisitos: app em `next start` (nunca dev: Turbopack e service worker) em APP_URL
@@ -30,6 +30,14 @@ const PARES = [
   { nome: 'life-score', proto: 'app/life-score-v2', rota: '/dashboard/score' },
   { nome: 'sua-semana', proto: 'app/sua-semana', rota: '/dashboard/review' },
   { nome: 'conversa', proto: 'app/conversa', rota: '/coach' },
+  // Fase 2 · subtelas de Finanças
+  { nome: 'fin-transacoes', proto: 'app/financas-transacoes', rota: '/financas/transacoes' },
+  { nome: 'fin-orcamentos', proto: 'app/financas-orcamentos', rota: '/financas/orcamentos' },
+  { nome: 'fin-recorrentes', proto: 'app/financas-recorrentes', rota: '/financas/recorrentes' },
+  { nome: 'fin-planejamento', proto: 'app/financas-planejamento', rota: '/financas/planejamento' },
+  { nome: 'fin-calendario', proto: 'app/financas-calendario', rota: '/financas/calendario' },
+  { nome: 'fin-relatorios', proto: 'app/financas-relatorios', rota: '/financas/relatorios' },
+  { nome: 'fin-importar', proto: 'app/financas-importar', rota: '/financas/importar' },
 ]
 const VIEWPORTS = [
   { nome: 'desktop', width: 1440, height: 900, mobile: false },
@@ -109,7 +117,9 @@ async function comparar() {
   if (!fs.existsSync(ESTADO)) console.log('Aviso: sem sessão guardada; rodando sem login (rotas autenticadas vão redirecionar).')
   const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] })
   const linhas = []
-  for (const par of PARES) {
+  // `comparar fin-` roda só os pares cujo nome começa com o filtro (padrão: todos)
+  const filtro = process.argv[3] ?? ''
+  for (const par of PARES.filter((x) => x.nome.startsWith(filtro))) {
     for (const vp of VIEWPORTS) {
       const sufixo = vp.mobile ? '.mobile' : ''
       const proto = await capturar(b, `${PROTO}/${par.proto}${sufixo}.html?v=${Date.now()}`, vp, false)

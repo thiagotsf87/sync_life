@@ -1,0 +1,191 @@
+/* SyncLife DS v5 · Finanças · Relatórios (Fase 2). Porte de prototypes/v5/app/financas-relatorios.html (desktop)
+   e financas-relatorios.mobile.html (mobile). As peças comuns (.titulo, .sy, .fala, .fontes, .falar, .nums, .duo,
+   .duo2, .sel, .btn-sm, .subnav, subtela/subbar/voltar, .sec e .rv/.boot) estão em styles/app-v5.css e v5.css; aqui só o
+   que é desta tela. Escopo `.v5 .relatorios` (classe do <main>); mobile sob `.v5 .mob .relatorios`. */
+
+/* ── cabeçalho curto ── */
+.v5 .relatorios .titulo{padding-top:18px}
+.v5 .relatorios .titulo .eyebrow a{transition:color .3s var(--ease)}
+.v5 .relatorios .titulo .eyebrow a:hover{color:var(--t1)}
+.v5 .relatorios .th-row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.v5 .relatorios .per-sub{font:400 13.5px/1.5 var(--int);color:var(--t2);margin-top:8px}
+.v5 .relatorios .btn-sm:disabled{opacity:.4;cursor:default}
+
+/* pílulas de período (mesma física do .chip; PRO como marca discreta, sem cadeado) */
+.v5 .relatorios .periodos{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.v5 .relatorios .per{display:inline-flex;align-items:baseline;gap:7px;border:1px solid var(--line);border-radius:999px;background:transparent;
+  padding:8px 15px;font:500 12.5px var(--int);color:var(--t2);cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease)}
+.v5 .relatorios .per:hover{border-color:var(--line-h);color:var(--t1)}
+.v5 .relatorios .per[aria-pressed="true"]{border-color:var(--roxo);color:var(--t1)}
+.v5 .relatorios .per .pro{font:700 9px var(--gro);letter-spacing:.16em;color:var(--t3)}
+.v5 .relatorios .custom{display:flex;align-items:center;gap:10px;margin-top:12px;font:400 12.5px var(--int);color:var(--t3)}
+.v5 .relatorios .custom .sel{margin-top:0;min-width:150px}
+.v5 .relatorios .custom .sel select{padding:9px 36px 9px 14px;font-size:13px}
+.v5 .relatorios .sy{margin-top:24px}
+
+/* carregando: hairlines quietas na primeira carga; nas trocas o conteúdo anterior fica a 35% */
+.v5 .relatorios .sk{display:block;height:12px;border-radius:6px;background:var(--line)}
+.v5 .relatorios .sk.l1{width:min(560px,92%);height:16px;margin-top:4px}
+.v5 .relatorios .sk.l2{width:min(320px,60%);margin-top:12px}
+.v5 .relatorios .rel-sk{padding:30px 0 44px}
+.v5 .relatorios .rel-sk .l4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.v5 .relatorios .rel-sk span{display:block;height:28px;border-radius:6px;background:var(--s2)}
+.v5 .relatorios .rel-sk .big{height:90px;margin-top:12px}
+.v5 .anim .relatorios .rel-sk span{animation:v5-rel-pulso 1.4s var(--ease) infinite alternate}
+@keyframes v5-rel-pulso{from{opacity:.55}to{opacity:1}}
+.v5 .relatorios .rel-corpo.busy{opacity:.35;pointer-events:none;transition:opacity .25s var(--ease)}
+.v5 .anim .relatorios .rel-corpo.troca :is(.nums .v,.plot,.cats-box,.top-box){animation:v5-rel-troca .45s var(--ease)}
+@keyframes v5-rel-troca{from{opacity:.35}to{opacity:1}}
+
+/* erro: linha coral; vazio: frase + saída */
+.v5 .relatorios .rel-erro{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-left:3px solid var(--coral);
+  padding:10px 14px;margin-top:30px;font:400 13px var(--int);color:var(--coral)}
+.v5 .relatorios .rel-erro button{background:none;border:none;color:var(--t1);font:600 12.5px var(--int);cursor:pointer;padding:0;white-space:nowrap}
+.v5 .relatorios .rel-vazio{padding:40px 0 56px;border-bottom:1px solid var(--line)}
+.v5 .relatorios .rel-vazio .t{font:500 15px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.v5 .relatorios .rel-vazio .s{font:400 12.5px var(--int);color:var(--t3);margin:6px 0 16px;max-width:52ch}
+
+/* ── blocos de evidência ── */
+.v5 .relatorios .blk-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.v5 .relatorios .leg{display:flex;gap:16px;font:500 11.5px var(--int);color:var(--t3)}
+.v5 .relatorios .leg i{display:inline-block;width:14px;height:2px;vertical-align:middle;margin-right:6px;background:var(--ele)}
+.v5 .relatorios .leg i.dsp{background:repeating-linear-gradient(90deg,var(--t2) 0 4px,transparent 4px 7px)}
+.v5 .relatorios .leg i.la{background:var(--t2);height:4px;border-radius:2px}
+.v5 .relatorios .leg i.lb{background:var(--line-h);height:2px}
+.v5 .relatorios .leg i.mt{background:repeating-linear-gradient(90deg,var(--t1) 0 4px,transparent 4px 7px);opacity:.6}
+.v5 .relatorios .leg i.ok{height:8px;width:8px;border-radius:2px}
+/* linha opcional de Sy sobre um gráfico (o corpo de 40px fica só no topo) */
+.v5 .relatorios .syl{font:400 13px/1.55 var(--int);color:var(--t2);margin-top:10px;max-width:60ch}
+.v5 .relatorios .syl::before{content:"Sy";font:700 10.5px var(--gro);letter-spacing:.08em;color:var(--roxo);margin-right:9px}
+.v5 .relatorios .syl .num{color:var(--t1);font-weight:600}
+.v5 .relatorios .syl .num.w{color:var(--coral)}
+
+/* gráfico de colunas por mês (SVG à mão, estilo do fluxo do hub) */
+.v5 .relatorios .cht{margin-top:18px;outline:none;cursor:crosshair}
+.v5 .relatorios .cht:focus-visible .plot{outline:1px solid rgba(104,64,255,.55);outline-offset:6px;border-radius:4px}
+.v5 .relatorios .plot{position:relative}
+.v5 .relatorios .plot svg{display:block;width:100%;height:var(--h)}
+.v5 .relatorios .yl{position:absolute;right:0;transform:translateY(-130%);font:500 10.5px var(--gro);color:var(--t3);pointer-events:none}
+.v5 .relatorios .zona{position:absolute;top:-2px;transform:translateY(-100%);padding:0 0 4px 8px;font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3);white-space:nowrap;pointer-events:none}
+.v5 .relatorios .zona:first-of-type{padding-left:0}
+.v5 .relatorios .guia{position:absolute;top:0;bottom:0;width:1px;background:var(--line-h);opacity:0;pointer-events:none;transition:opacity .2s var(--ease)}
+.v5 .relatorios .xl{position:relative;height:16px;margin-top:8px}
+.v5 .relatorios .xl span{position:absolute;transform:translateX(-50%);font:700 10px var(--gro);letter-spacing:.14em;text-transform:uppercase;color:var(--t3)}
+.v5 .relatorios .xl span.ant{opacity:.5}
+.v5 .relatorios .vl{position:absolute;transform:translate(-50%,-130%);font:600 11.5px var(--gro);color:var(--t2);pointer-events:none;background:var(--bg);padding:0 4px;line-height:1.3}
+.v5 .relatorios .vl.ok{color:var(--ele)}
+.v5 .relatorios .vl.ant{opacity:.45}
+.v5 .relatorios .c1 .cht{margin-top:30px}
+
+/* tooltip de gráfico: objeto escuro, uma peça só */
+.v5 .relatorios .tip{position:fixed;z-index:85;min-width:190px;max-width:260px;background:#0f0d0d;border:1px solid var(--line-h);border-radius:12px;padding:11px 13px;
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.8);pointer-events:none;font:400 12px/1.4 var(--int);color:var(--t2)}
+.v5 .relatorios .tip b{display:block;font:600 13px var(--gro);letter-spacing:-.01em;color:var(--t1);margin-bottom:6px}
+.v5 .relatorios .tip b small{font:400 11.5px var(--int);color:var(--t3)}
+.v5 .relatorios .tip span{display:flex;align-items:center;gap:0;padding:2px 0}
+.v5 .relatorios .tip em{font-style:normal;font-weight:600;color:var(--t1);margin-left:auto;padding-left:16px}
+.v5 .relatorios .tip hr{border:none;border-top:1px solid var(--line);margin:6px 0}
+.v5 .relatorios .tip .k{display:inline-block;width:10px;height:2px;margin-right:7px;vertical-align:middle;background:var(--ele)}
+.v5 .relatorios .tip .k.dsp{background:var(--t2)}
+
+/* categorias atual × anterior (linhas hairline com duas trilhas) */
+.v5 .relatorios .crow{display:grid;grid-template-columns:1fr 64px 92px 64px;gap:6px 16px;align-items:baseline;padding:13px 0 14px;border-bottom:1px solid var(--line);
+  outline:none;transition:padding-left .35s var(--ease)}
+.v5 .relatorios .crow:hover,.v5 .relatorios .crow.hl,.v5 .relatorios .crow:focus-visible{padding-left:6px}
+.v5 .relatorios .crow .nm{font:500 14px var(--int);color:var(--t1)}
+.v5 .relatorios .crow .tr{width:60px;height:16px;align-self:center}
+.v5 .relatorios .crow .v{font:700 13px var(--gro);color:var(--t1);text-align:right;white-space:nowrap}
+.v5 .relatorios .crow .dl{font:600 12px var(--gro);color:var(--t3);text-align:right;white-space:nowrap}
+.v5 .relatorios .crow.up .dl{color:var(--coral)}
+.v5 .relatorios .crow.down .dl{color:var(--ele)}
+.v5 .relatorios .crow .bars{grid-column:1/-1;display:flex;flex-direction:column;gap:3px}
+.v5 .relatorios .crow .bars i{display:block;height:4px;width:var(--w);background:var(--t2);border-radius:2px}
+.v5 .relatorios .crow .bars i.b{height:2px;background:var(--line-h)}
+.v5 .relatorios .outras{font:400 12px var(--int);color:var(--t3);padding:14px 0 0;margin-top:0;border-top:none}
+.v5 .relatorios .outras .num{color:var(--t2)}
+
+/* top 5 despesas */
+.v5 .relatorios .top{list-style:none;margin-top:8px}
+.v5 .relatorios .trow{display:grid;grid-template-columns:28px 1fr auto;gap:4px 14px;align-items:baseline;padding:13px 0 14px;border-bottom:1px solid var(--line);outline:none;transition:padding-left .35s var(--ease)}
+.v5 .relatorios .trow:hover,.v5 .relatorios .trow.hl,.v5 .relatorios .trow:focus-visible{padding-left:6px}
+.v5 .relatorios .trow .ix{font:700 12px var(--gro);color:var(--t3)}
+.v5 .relatorios .trow.hl .ix,.v5 .relatorios .trow:hover .ix{color:var(--roxo)}
+.v5 .relatorios .trow .ds{display:block;font:500 14px var(--int);color:var(--t1)}
+.v5 .relatorios .trow .mt{display:block;font:400 11.5px var(--int);color:var(--t3);margin-top:2px}
+.v5 .relatorios .trow .v{font:700 13.5px var(--gro);color:var(--t2);white-space:nowrap}
+.v5 .relatorios .trow .tbar{grid-column:2/-1;height:3px;background:var(--s2);border-radius:2px;overflow:hidden;margin-top:6px}
+.v5 .relatorios .trow .tbar i{display:block;height:100%;width:var(--w);background:var(--t3);border-radius:2px}
+.v5 .relatorios .vazio-top{font:400 13px var(--int);color:var(--t3);padding:16px 0}
+
+/* mês a mês (recolhido) */
+.v5 .relatorios .mm{padding:30px 0 34px;border-bottom:1px solid var(--line)}
+.v5 .relatorios .mm summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.v5 .relatorios .mm summary::-webkit-details-marker{display:none}
+.v5 .relatorios .mm summary .eyebrow::after{content:" +";color:var(--roxo)}
+.v5 .relatorios .mm[open] summary .eyebrow::after{content:" –"}
+.v5 .relatorios .mm summary small{font:400 12px var(--int);color:var(--t3)}
+.v5 .relatorios .mm .mm-tab{overflow-x:auto}
+.v5 .relatorios .mm table{width:100%;border-collapse:collapse;margin-top:16px}
+.v5 .relatorios .mm th{font:700 9.5px var(--gro);letter-spacing:.16em;text-transform:uppercase;color:var(--t3);text-align:right;padding:10px 0 10px 14px;border-bottom:1px solid var(--line-h);white-space:nowrap}
+.v5 .relatorios .mm th:first-child,.v5 .relatorios .mm td:first-child{text-align:left;padding-left:0}
+.v5 .relatorios .mm td{font:400 13px var(--int);color:var(--t2);text-align:right;padding:11px 0 11px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.v5 .relatorios .mm td:first-child{color:var(--t1);font-weight:500}
+.v5 .relatorios .mm td small{font-size:11px;color:var(--t3);font-weight:400}
+.v5 .relatorios .mm td.num{font-family:var(--gro);font-weight:600;font-size:12.5px}
+.v5 .relatorios .mm tfoot td{color:var(--t1);border-bottom:none;font-weight:600}
+
+/* exportar */
+.v5 .relatorios .exp{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:26px 0 60px;border-bottom:none}
+.v5 .relatorios .exp .fmt{font:400 12px var(--int);color:var(--t3)}
+.v5 .relatorios .exp .csv-ok{font:500 12.5px var(--int);color:var(--ele)}
+.v5 .relatorios .exp .csv-ok:empty{display:none}
+
+@media (max-width:960px){
+  .v5 .dk:not(.mob) .relatorios .th-row{flex-direction:column;align-items:flex-start}
+}
+
+/* ═══ mobile dedicado (390×844): ajustes sobre as peças acima ═══ */
+.v5 .mob .relatorios .titulo{padding:22px 0 24px}
+.v5 .mob .relatorios .titulo .eyebrow a{display:inline-flex;align-items:center;min-height:40px;margin:-12px 0 -10px}
+.v5 .mob .relatorios .per-sub{font-size:12.5px}
+/* período em pílulas com scroll-x (sangra até a borda) */
+.v5 .mob .relatorios .periodos{flex-wrap:nowrap;overflow-x:auto;margin:18px -20px 0;padding:0 20px 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-padding:0 20px}
+.v5 .mob .relatorios .periodos::-webkit-scrollbar{display:none}
+.v5 .mob .relatorios .per{flex-shrink:0;white-space:nowrap;min-height:40px;align-items:center;padding:0 15px;font-size:13px}
+.v5 .mob .relatorios .custom{flex-wrap:wrap}
+.v5 .mob .relatorios .custom .sel{flex:1;min-width:0}
+.v5 .mob .relatorios .custom .sel select{padding:12px 34px 12px 14px;font-size:14px;min-height:44px}
+.v5 .mob .relatorios .sy{margin-top:20px}
+/* seções */
+.v5 .mob .relatorios .sec .blk-head{align-items:center}
+.v5 .mob .relatorios .leg{gap:12px;font-size:11px}
+.v5 .mob .relatorios .syl{font-size:12.5px}
+.v5 .mob .relatorios .cht{margin-top:14px}
+.v5 .mob .relatorios .c1 .cht{margin-top:14px}
+.v5 .mob .relatorios .xl span{font-size:9.5px;letter-spacing:.12em}
+.v5 .mob .relatorios .vl{font-size:11px}
+.v5 .mob .relatorios .crow{grid-template-columns:1fr auto 70px;gap:6px 12px;padding:13px 0}
+.v5 .mob .relatorios .crow .nm{font-size:14px}
+.v5 .mob .relatorios .trow{grid-template-columns:22px 1fr auto;gap:3px 12px;padding:13px 0;min-height:48px}
+.v5 .mob .relatorios .trow .ds{font-size:13.5px}
+.v5 .mob .relatorios .trow .v{font-size:13px}
+.v5 .mob .relatorios .trow:last-child{border-bottom:none}
+.v5 .mob .relatorios .tip{max-width:240px;min-width:180px}
+/* mês a mês em linhas (sem tabela larga) */
+.v5 .mob .relatorios .mm.sec{padding:4px 0 6px}
+.v5 .mob .relatorios .mm summary{min-height:56px;align-items:center}
+.v5 .mob .relatorios .mm summary small{display:none}
+.v5 .mob .relatorios .mrow2{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+.v5 .mob .relatorios .mrow2 .nm{font:500 14px var(--int);color:var(--t1)}
+.v5 .mob .relatorios .mrow2 .nm small{font:400 11px var(--int);color:var(--t3)}
+.v5 .mob .relatorios .mrow2 .v{font:700 13.5px var(--gro);color:var(--t1)}
+.v5 .mob .relatorios .mrow2 .sb{grid-column:1/-1;font:400 11.5px var(--gro);color:var(--t3)}
+.v5 .mob .relatorios .mrow2.tot{border-bottom:none}
+.v5 .mob .relatorios .mrow2.tot .nm{font-weight:600}
+.v5 .mob .relatorios .exp{display:block;padding:24px 0 34px}
+.v5 .mob .relatorios .exp .btn-sm{width:100%;justify-content:center;min-height:44px;font-size:13.5px}
+.v5 .mob .relatorios .exp .fmt{display:block;margin-top:10px;font-size:11.5px;line-height:1.5}
+.v5 .mob .relatorios .exp .csv-ok{display:block;margin-top:8px}
+.v5 .mob .relatorios .rel-sk .l4{grid-template-columns:1fr 1fr}
+.v5 .mob .relatorios .rel-vazio .btn-sm{min-height:44px}
+.v5 .mob .relatorios .rel-erro button{min-height:40px}

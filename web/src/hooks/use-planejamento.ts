@@ -3,6 +3,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { RecurringTransaction } from '@/hooks/use-recorrentes'
+import {
+  projetar, mediaVariavel, inicioJanelaVariavel, hojeSP,
+  type CenarioId, type EntradaProjecao, type TxVariavel,
+} from '@/lib/financas/planejamento'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
@@ -64,9 +68,20 @@ export interface EventFormData {
   planned_date: string
   category_id: string
   notes: string
+  /** Fase 2: "Previsto" ou "Confirmado" no painel (confirmar só marca o evento) */
+  is_confirmed?: boolean
+}
+
+/** renda e gasto variáveis médios dos últimos 3 meses cheios (Fase 2) */
+export interface VariavelMedio {
+  renda: number
+  gasto: number
+  meses: number
 }
 
 export type ScenarioKey = 'p' | 'r' | 'o'
+
+const CENARIO_POR_CHAVE: Record<ScenarioKey, CenarioId> = { p: 'pessimista', r: 'realista', o: 'otimista' }
 
 export const SCENARIOS = [
   { key: 'p' as ScenarioKey, label: 'Pessimista', icon: '📉', activeClass: 'bg-[rgba(219,100,120,0.15)] text-[#DB6478]' },
@@ -110,14 +125,38 @@ function occursInMonth(rec: RecurringTransaction, year: number, month: number): 
   }
 }
 
+/** adapta as linhas do banco para a entrada pura da projeção (lib/financas/planejamento) */
+export function entradaProjecao(
+  recurringItems: RecurringTransaction[],
+  planningEvents: PlanningEvent[],
+  currentBalance: number,
+  variavel: VariavelMedio,
+  hoje: string = hojeSP(),
+): EntradaProjecao {
+  return {
+    hoje,
+    saldoHoje: currentBalance,
+    recorrentes: recurringItems.map(r => ({
+      nome: r.name, tipo: r.type, valor: Number(r.amount), frequencia: r.frequency, inicio: r.start_date, fim: r.end_date,
+    })),
+    rendaVariavel: variavel.renda,
+    gastoVariavel: variavel.gasto,
+    eventos: planningEvents.map(e => ({
+      id: e.id, nome: e.name, tipo: e.type === 'income' ? 'in' as const : 'out' as const, valor: Number(e.amount), data: e.planned_date,
+      confirmado: e.is_confirmed, categoria: e.categories?.name ?? null, nota: e.notes,
+    })),
+  }
+}
+
 function buildProjection(input: {
   recurringItems: RecurringTransaction[]
   planningEvents: PlanningEvent[]
   currentBalance: number
+  variavel: VariavelMedio
   scenario: ScenarioKey
   nMonths: number
 }): { projectedEvents: ProjectedEvent[]; balanceData: BalanceDataPoint[]; months: MonthData[] } {
-  const { recurringItems, planningEvents, currentBalance, scenario, nMonths } = input
+  const { recurringItems, planningEvents, currentBalance, variavel, scenario, nMonths } = input
 
   const today = new Date()
   const startMonth = new Date(today.getFullYear(), today.getMonth(), 1)
@@ -183,14 +222,11 @@ function buildProjection(input: {
     })
   }
 
-  // 3. Month-by-month balance
-  const balanceData: BalanceDataPoint[] = []
-  let running = currentBalance
-  for (const m of months) {
-    const net = projectedEvents.filter(e => e.monthIndex === m.index).reduce((s, e) => s + e.amount, 0)
-    running += net
-    balanceData.push({ monthIndex: m.index, balance: running })
-  }
+  // 3. Saldo mês a mês: regra única de lib/financas/planejamento (recorrentes normalizadas por
+  //    mês, renda e gasto variáveis médios, mês corrente proporcional, eventos sem multiplicador)
+  const entrada = entradaProjecao(recurringItems, planningEvents, currentBalance, variavel)
+  const serie = projetar(entrada, CENARIO_POR_CHAVE[scenario])
+  const balanceData: BalanceDataPoint[] = months.map(m => ({ monthIndex: m.index, balance: serie[m.index] ?? 0 }))
 
   // 4. Mark warn events
   for (let i = 1; i < balanceData.length; i++) {
@@ -210,6 +246,50 @@ function buildProjection(input: {
   return { projectedEvents, balanceData, months }
 }
 
+// schema drift: o Database manual não cobre estas tabelas; contorno tipado, sem `any` solto
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Cliente = { from: (t: string) => any }
+const tabelas = (c: ReturnType<typeof createClient>): Cliente => c as unknown as Cliente
+
+// ─── ESCRITA (sem estado: o painel de evento também é usado fora desta tela) ──
+
+export async function inserirEventoPlanejado(formData: EventFormData): Promise<void> {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
+  const { error: err } = await tabelas(supabase).from('planning_events').insert({
+    user_id: user.id,
+    type: formData.type,
+    name: formData.name.trim(),
+    amount: parseFloat(formData.amount.replace(',', '.')),
+    planned_date: formData.planned_date,
+    category_id: formData.category_id || null,
+    notes: formData.notes || null,
+    is_confirmed: formData.is_confirmed ?? false,
+  })
+  if (err) throw new Error(err.message)
+}
+
+export async function alterarEventoPlanejado(id: string, updates: Partial<EventFormData>): Promise<void> {
+  const sb = tabelas(createClient())
+  const payload: Record<string, unknown> = {}
+  if (updates.type)         payload.type = updates.type
+  if (updates.name)         payload.name = updates.name.trim()
+  if (updates.amount)       payload.amount = parseFloat(updates.amount.replace(',', '.'))
+  if (updates.planned_date) payload.planned_date = updates.planned_date
+  if ('category_id' in updates) payload.category_id = updates.category_id || null
+  if ('notes' in updates)       payload.notes = updates.notes || null
+  if (typeof updates.is_confirmed === 'boolean') payload.is_confirmed = updates.is_confirmed
+  const { error: err } = await sb.from('planning_events').update(payload).eq('id', id)
+  if (err) throw new Error(err.message)
+}
+
+export async function removerEventoPlanejado(id: string): Promise<void> {
+  const sb = tabelas(createClient())
+  const { error: err } = await sb.from('planning_events').delete().eq('id', id)
+  if (err) throw new Error(err.message)
+}
+
 // ─── HOOK ─────────────────────────────────────────────────────────────────────
 
 interface UsePlanejamentoReturn {
@@ -222,6 +302,8 @@ interface UsePlanejamentoReturn {
   scenario: ScenarioKey
   setScenario: (s: ScenarioKey) => void
   currentBalance: number
+  recurringItems: RecurringTransaction[]
+  variavel: VariavelMedio
   bal6m: number
   bal12m: number
   nextCritical: CriticalPoint | null
@@ -236,6 +318,7 @@ export function usePlanejamento(): UsePlanejamentoReturn {
   const [planningEvents, setPlanningEvents] = useState<PlanningEvent[]>([])
   const [recurringItems, setRecurringItems] = useState<RecurringTransaction[]>([])
   const [profile, setProfile] = useState<{ current_balance: number; monthly_income: number } | null>(null)
+  const [variavel, setVariavel] = useState<VariavelMedio>({ renda: 0, gasto: 0, meses: 0 })
   const [scenario, setScenario] = useState<ScenarioKey>('r')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -248,11 +331,11 @@ export function usePlanejamento(): UsePlanejamentoReturn {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setLoading(false); return }
 
-    const today = new Date().toISOString().split('T')[0]
+    const today = hojeSP()
 
-    const sb = supabase as any
+    const sb = tabelas(supabase)
 
-    const [eventsRes, recurringRes, profileRes] = await Promise.all([
+    const [eventsRes, recurringRes, profileRes, txRes] = await Promise.all([
       sb
         .from('planning_events')
         .select('*, categories(id, name, icon, color)')
@@ -270,16 +353,26 @@ export function usePlanejamento(): UsePlanejamentoReturn {
         .select('current_balance, monthly_income')
         .eq('id', user.id)
         .single(),
+      // renda e gasto variáveis: meses cheios anteriores ao corrente (a regra filtra recorrentes e transferências)
+      sb
+        .from('transactions')
+        .select('amount, type, date, recurring_transaction_id')
+        .eq('user_id', user.id)
+        .gte('date', inicioJanelaVariavel(today))
+        .lt('date', `${today.slice(0, 7)}-01`),
     ]) as [
       { data: PlanningEvent[] | null; error: unknown },
       { data: RecurringTransaction[] | null; error: unknown },
       { data: { current_balance: number; monthly_income: number } | null; error: unknown },
+      { data: TxVariavel[] | null; error: unknown },
     ]
 
     if (eventsRes.data)  setPlanningEvents(eventsRes.data ?? [])
     if (recurringRes.data) setRecurringItems(recurringRes.data ?? [])
     if (profileRes.data) setProfile(profileRes.data)
-    if (eventsRes.error || recurringRes.error) setError('Erro ao carregar dados de planejamento.')
+    const media = mediaVariavel(txRes.data ?? [], today)
+    setVariavel({ renda: media.renda, gasto: media.gasto, meses: media.meses })
+    if (eventsRes.error || recurringRes.error || txRes.error) setError('Erro ao carregar dados de planejamento.')
     setLoading(false)
   }, [])
 
@@ -289,9 +382,10 @@ export function usePlanejamento(): UsePlanejamentoReturn {
     recurringItems,
     planningEvents,
     currentBalance: profile?.current_balance ?? 0,
+    variavel,
     scenario,
     nMonths: 13,
-  }), [recurringItems, planningEvents, profile, scenario])
+  }), [recurringItems, planningEvents, profile, variavel, scenario])
 
   const bal6m = balanceData[Math.min(6, balanceData.length - 1)]?.balance ?? 0
   const bal12m = balanceData[Math.min(12, balanceData.length - 1)]?.balance ?? 0
@@ -313,48 +407,22 @@ export function usePlanejamento(): UsePlanejamentoReturn {
   }, [balanceData, projectedEvents, months])
 
   const createEvent = useCallback(async (formData: EventFormData): Promise<void> => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Não autenticado')
-    const { error: err } = await supabase.from('planning_events').insert({
-      user_id: user.id,
-      type: formData.type,
-      name: formData.name.trim(),
-      amount: parseFloat(formData.amount.replace(',', '.')),
-      planned_date: formData.planned_date,
-      category_id: formData.category_id || null,
-      notes: formData.notes || null,
-      is_confirmed: false,
-    } as any)
-    if (err) throw new Error(err.message)
+    await inserirEventoPlanejado(formData)
     await fetchData()
   }, [fetchData])
 
   const updateEvent = useCallback(async (id: string, updates: Partial<EventFormData>): Promise<void> => {
-    const sb = createClient() as any
-    const payload: Record<string, unknown> = {}
-    if (updates.type)         payload.type = updates.type
-    if (updates.name)         payload.name = updates.name.trim()
-    if (updates.amount)       payload.amount = parseFloat(updates.amount.replace(',', '.'))
-    if (updates.planned_date) payload.planned_date = updates.planned_date
-    if ('category_id' in updates) payload.category_id = updates.category_id || null
-    if ('notes' in updates)       payload.notes = updates.notes || null
-    const { error: err } = await sb.from('planning_events').update(payload).eq('id', id)
-    if (err) throw new Error(err.message)
+    await alterarEventoPlanejado(id, updates)
     await fetchData()
   }, [fetchData])
 
   const deleteEvent = useCallback(async (id: string): Promise<void> => {
-    const sb = createClient() as any
-    const { error: err } = await sb.from('planning_events').delete().eq('id', id)
-    if (err) throw new Error(err.message)
+    await removerEventoPlanejado(id)
     await fetchData()
   }, [fetchData])
 
   const confirmEvent = useCallback(async (id: string): Promise<void> => {
-    const sb = createClient() as any
-    const { error: err } = await sb.from('planning_events').update({ is_confirmed: true }).eq('id', id)
-    if (err) throw new Error(err.message)
+    await alterarEventoPlanejado(id, { is_confirmed: true })
     await fetchData()
   }, [fetchData])
 
@@ -363,6 +431,7 @@ export function usePlanejamento(): UsePlanejamentoReturn {
     loading, error,
     scenario, setScenario,
     currentBalance: profile?.current_balance ?? 0,
+    recurringItems, variavel,
     bal6m, bal12m, nextCritical,
     createEvent, updateEvent, deleteEvent, confirmEvent,
     refresh: fetchData,

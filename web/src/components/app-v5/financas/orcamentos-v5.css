@@ -1,0 +1,158 @@
+/* Fase 2 · Orçamentos (T2 com barras) · CSS só desta tela, porte do <style> inline de
+   prototypes/v5/app/financas-orcamentos.html (desktop) e financas-orcamentos.mobile.html (mobile dedicado).
+   Escopo: `main.orcamentos`. Desktop sob `.v5 .dk:not(.mob)`; o `html.mob` do protótipo vira `.v5 .mob`.
+   O painel de edição mora fora do <main>: seu conteúdo leva `.orc-painel`. Peças já comuns
+   (.orc, .sy, .lab, .opc, .imp, .evid, .recibo, .colofao, .sec-head, .sel, .ck-note, .btn-sm, .painel,
+   .confirma, .subnav, .subbar) ficam em styles/app-v5.css. Fora do porte: a anotação .proto-estados. */
+
+/* chip do base.css do protótipo (não existe global em web/) */
+.v5 .orcamentos .chip,
+.v5 .orc-painel .chip{font:500 12.5px var(--int);color:var(--t2);border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;background:transparent;
+  display:inline-flex;align-items:baseline;gap:7px;transition:border-color .3s var(--ease),color .3s var(--ease)}
+.v5 .orcamentos .chip:hover,
+.v5 .orc-painel .chip:hover{border-color:var(--line-h);color:var(--t1)}
+.v5 .orcamentos .chip.on,
+.v5 .orc-painel .chip.on{border-color:var(--roxo);color:var(--t1)}
+.v5 .orcamentos .chip .n{font:700 10px var(--gro);color:var(--t3)}
+.v5 .orcamentos .chip.on .n{color:var(--roxo)}
+
+/* ── comum às duas árvores ── */
+.v5 .orcamentos .titulo .eyebrow a{transition:color .3s var(--ease)}
+.v5 .orcamentos .titulo .eyebrow a:hover{color:var(--t1)}
+.v5 .orcamentos .mes-out{display:block;font:400 11.5px var(--int);color:var(--t3);min-height:1em}
+.v5 .orcamentos .lnums .v.w{color:var(--coral)}
+.v5 .orcamentos .lnums .v{font-weight:700;letter-spacing:-.035em}
+.v5 .orcamentos .lnums .d{font:400 12px var(--int);color:var(--t3)}
+
+.v5 .orcamentos .envs .orc{cursor:pointer}
+.v5 .orcamentos .envs .orc:focus-visible{outline:2px solid rgba(104,64,255,.6);outline-offset:2px;border-radius:6px}
+.v5 .orcamentos .envs .orc .nm{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.v5 .orcamentos .envs .orc.nova{background:rgba(161,255,98,.10);box-shadow:inset 3px 0 0 var(--ele)}
+.v5 .anim .orcamentos .envs .orc{transition:padding-left .35s var(--ease),background 1.8s var(--ease),box-shadow 1.8s var(--ease)}
+.v5 .orcamentos .barra{grid-column:1/-1;position:relative}
+.v5 .orcamentos .barra .track{height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
+.v5 .orcamentos .barra .track i{display:block;height:100%;width:var(--w);background:var(--t2);border-radius:2px}
+.v5 .anim .orcamentos .barra .track i{transition:width .7s var(--ease)}
+.v5 .orcamentos .orc.warn .barra .track i{background:var(--coral)}
+.v5 .orcamentos .barra .marca{position:absolute;top:-4px;left:var(--a);width:1.5px;height:12px;background:var(--t3);border-radius:1px;transform:translateX(-50%)}
+.v5 .orcamentos .tag{font:700 9px var(--gro);letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--t3);white-space:nowrap}
+.v5 .orcamentos .tag.warn{border-color:rgba(248,65,49,.45);color:var(--coral)}
+.v5 .orcamentos .tag.estourado{background:var(--coral);border-color:var(--coral);color:#fff}
+.v5 .orcamentos .tag.roll{border-color:rgba(161,255,98,.4);color:var(--ele)}
+.v5 .orcamentos .tag.prev{border-color:rgba(104,64,255,.6);color:var(--t1)}
+.v5 .orcamentos .sem-resultado{font:400 13px var(--int);color:var(--t3)}
+.v5 .orcamentos .envs-foot b{color:var(--t1);font-weight:700}
+.v5 .orcamentos .quieta{border-top:1px solid var(--line);font:400 12.5px/1.6 var(--int);color:var(--t3)}
+.v5 .orcamentos .quieta + .quieta{margin-top:0}
+.v5 .orcamentos .quieta b{color:var(--t2);font-weight:600}
+.v5 .orcamentos .quieta .lk{background:none;border:none;cursor:pointer;padding:0;font:500 12.5px var(--int);color:var(--t2);transition:color .3s var(--ease)}
+.v5 .orcamentos .quieta .lk:hover{color:var(--t1)}
+.v5 .orcamentos .imp label b{font:700 11px var(--gro);color:var(--roxo);margin-right:4px}
+
+/* carregando e erro: hairlines quietas, sem spinner */
+.v5 .orcamentos .sk-rows{padding:18px 0 28px}
+.v5 .orcamentos .sk-row{height:52px;border-bottom:1px solid var(--line)}
+.v5 .orcamentos .sk-row:last-child{border-bottom:none}
+.v5 .orcamentos .sk{display:block;height:12px;border-radius:6px;background:var(--line)}
+.v5 .orcamentos .sk.l1{width:min(560px,92%);height:16px;margin-top:4px}
+.v5 .orcamentos .sk.l2{width:min(320px,60%);margin-top:12px}
+.v5 .orcamentos .erro{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-left:3px solid var(--coral);padding:10px 14px;margin-top:18px;font:400 13px var(--int);color:var(--coral)}
+.v5 .orcamentos .erro button{background:none;border:none;color:var(--t1);font:600 12.5px var(--int);cursor:pointer;padding:0;white-space:nowrap}
+
+/* mês vazio: copiar do mês anterior */
+.v5 .orcamentos .vazio{padding:26px 0 8px}
+.v5 .orcamentos .vazio .t{font:500 16px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.v5 .orcamentos .vazio .t small{display:block;font:400 12.5px/1.55 var(--int);color:var(--t3);margin-top:6px}
+.v5 .orcamentos .copia{border-top:1px solid var(--line);margin-top:14px}
+.v5 .orcamentos .copia label{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font:400 13px var(--int);color:var(--t1);cursor:pointer}
+.v5 .orcamentos .copia input{accent-color:var(--roxo);width:15px;height:15px}
+.v5 .orcamentos .copia .num{font:700 12.5px var(--gro);color:var(--t2)}
+.v5 .orcamentos .copia small{font:400 11px var(--int);color:var(--t3);margin-left:6px}
+.v5 .orcamentos .copia-acts{display:flex;align-items:center;gap:12px;margin-top:12px;font:400 11.5px var(--int);color:var(--t3)}
+
+/* conteúdo do painel (fora do <main>) */
+.v5 .orc-painel{display:contents}
+.v5 .orc-painel textarea.ck-note{resize:vertical;min-height:76px;font:400 13px/1.5 var(--int)}
+.v5 .orc-painel .trava{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px dashed var(--line-h);border-radius:12px;padding:11px 16px;font:500 13.5px var(--int);color:var(--t1)}
+.v5 .orc-painel .trava small{font:400 11px var(--int);color:var(--t3);text-align:right}
+.v5 .orc-painel .base{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.v5 .orc-painel .base div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;font:400 12.5px var(--int);color:var(--t3)}
+.v5 .orc-painel .base div + div{border-top:1px solid var(--line)}
+.v5 .orc-painel .base b{font:700 13.5px var(--gro);color:var(--t1)}
+.v5 .orc-painel .base b.ele{color:var(--ele)}
+.v5 .orc-painel .hint{font:400 11.5px/1.5 var(--int);color:var(--t3);margin-top:8px}
+.v5 .orc-painel .f .eyebrow{display:block}
+
+/* ── desktop ── */
+.v5 .dk:not(.mob) .orcamentos .titulo{padding:18px 0 30px}
+.v5 .dk:not(.mob) .orcamentos .cabrow{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.v5 .dk:not(.mob) .orcamentos .mes{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:999px;padding:3px}
+.v5 .dk:not(.mob) .orcamentos .mes button{width:32px;height:32px;border-radius:50%;border:none;background:none;color:var(--t2);cursor:pointer;font:500 15px var(--int);transition:background .3s var(--ease),color .3s var(--ease)}
+.v5 .dk:not(.mob) .orcamentos .mes button:hover{background:var(--s2);color:var(--t1)}
+.v5 .dk:not(.mob) .orcamentos .mes span{font:600 12.5px var(--gro);letter-spacing:-.01em;color:var(--t1);padding:0 10px}
+.v5 .dk:not(.mob) .orcamentos .mes-out{text-align:right;margin-top:6px}
+.v5 .dk:not(.mob) .orcamentos .lnums{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .orcamentos .lnums > div{padding:20px clamp(16px,2.2vw,30px) 20px;border-right:1px solid var(--line)}
+.v5 .dk:not(.mob) .orcamentos .lnums > div:first-child{padding-left:0}
+.v5 .dk:not(.mob) .orcamentos .lnums > div:last-child{border-right:none}
+.v5 .dk:not(.mob) .orcamentos .lnums .v{font-size:24px;line-height:1;margin-top:10px}
+.v5 .dk:not(.mob) .orcamentos .lnums .d{margin-top:7px}
+.v5 .dk:not(.mob) .orcamentos .filtros{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:20px 0 16px}
+.v5 .dk:not(.mob) .orcamentos .filtros .chip{padding:8px 14px;font-size:12px}
+.v5 .dk:not(.mob) .orcamentos .captura{display:grid;grid-template-columns:1fr 170px 190px auto;gap:10px;align-items:center;padding:16px 0 14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.v5 .dk:not(.mob) .orcamentos .captura .ck-note{width:100%;min-width:0;height:44px;padding:0 16px}
+.v5 .dk:not(.mob) .orcamentos .captura .ck-note.num{font-size:14px}
+.v5 .dk:not(.mob) .orcamentos .captura .sel{margin-top:0}
+.v5 .dk:not(.mob) .orcamentos .captura .sel select{height:44px;padding:0 40px 0 16px}
+.v5 .dk:not(.mob) .orcamentos .captura .btn-sm.roxo{height:44px;padding:0 20px;font-size:13px;justify-content:center}
+.v5 .dk:not(.mob) .orcamentos .cap-foot{grid-column:1/-1;display:flex;justify-content:space-between;gap:16px;font:400 11.5px var(--int);color:var(--t3)}
+.v5 .dk:not(.mob) .orcamentos .cap-foot output{color:var(--ele);font-weight:600;min-height:1em}
+.v5 .dk:not(.mob) .orcamentos .envs{padding:6px 0 0}
+.v5 .dk:not(.mob) .orcamentos .envs .orc{padding:16px 0 17px}
+.v5 .dk:not(.mob) .orcamentos .envs .orc .nm{font-size:14.5px}
+.v5 .dk:not(.mob) .orcamentos .sem-resultado{padding:24px 0 8px}
+.v5 .dk:not(.mob) .orcamentos .envs-foot{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding:16px 0 0;font:400 12.5px var(--int);color:var(--t3)}
+.v5 .dk:not(.mob) .orcamentos .quieta{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding:14px 0;margin-top:18px}
+.v5 .dk:not(.mob) .orcamentos .quieta .lk{white-space:nowrap}
+
+/* ── mobile dedicado (390×844) ── */
+.v5 .mob .orcamentos .titulo{padding:14px 0 22px}
+.v5 .mob .orcamentos .titulo .eyebrow a{display:inline-flex;align-items:center;min-height:40px}
+.v5 .mob .orcamentos .titulo h1{margin-top:2px}
+.v5 .mob .orcamentos .mes{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:999px;padding:2px;margin-top:16px}
+.v5 .mob .orcamentos .mes button{width:40px;height:40px;border-radius:50%;border:none;background:none;color:var(--t2);cursor:pointer;font:500 17px var(--int)}
+.v5 .mob .orcamentos .mes span{font:600 13.5px var(--gro);letter-spacing:-.01em;color:var(--t1)}
+.v5 .mob .orcamentos .mes-out{text-align:center;margin-top:6px}
+.v5 .mob .orcamentos .sy{margin-top:18px}
+.v5 .mob .orcamentos .lnums{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+.v5 .mob .orcamentos .lnums > div{padding:16px 14px;border-bottom:1px solid var(--line)}
+.v5 .mob .orcamentos .lnums > div:nth-child(odd){padding-left:0;border-right:1px solid var(--line)}
+.v5 .mob .orcamentos .lnums > div:nth-child(even){padding-right:0}
+.v5 .mob .orcamentos .lnums > div:nth-child(n+3){border-bottom:none}
+.v5 .mob .orcamentos .lnums .v{font-size:21px;line-height:1;margin-top:8px}
+.v5 .mob .orcamentos .lnums .d{font-size:11px;line-height:1.4;margin-top:6px}
+.v5 .mob .orcamentos .filtros{display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:16px 20px 14px;border-bottom:1px solid var(--line)}
+.v5 .mob .orcamentos .filtros::-webkit-scrollbar{display:none}
+.v5 .mob .orcamentos .filtros .chip{min-height:40px;white-space:nowrap;flex:none;font-size:13px;align-items:center}
+.v5 .mob .orcamentos .filtros .chip .n{font-size:10.5px}
+.v5 .mob .orcamentos .envs{padding:2px 0 0}
+.v5 .mob .orcamentos .envs .orc{min-height:48px;padding:15px 0 16px}
+.v5 .mob .orcamentos .envs .orc .nm{gap:8px;font-size:14.5px}
+.v5 .mob .orcamentos .sem-resultado{padding:22px 0 6px}
+.v5 .mob .orcamentos .envs-foot{display:flex;flex-direction:column;gap:4px;padding:14px 0 0;font:400 12.5px/1.6 var(--int);color:var(--t3)}
+.v5 .mob .orcamentos .quieta{padding:14px 0 4px;margin-top:16px}
+.v5 .mob .orcamentos .quieta .lk{display:flex;align-items:center;min-height:40px;font-size:13px}
+.v5 .mob .orcamentos .vazio{padding:22px 0 6px}
+.v5 .mob .orcamentos .copia label{min-height:44px;font-size:13.5px;padding:0}
+.v5 .mob .orcamentos .copia input{width:16px;height:16px}
+.v5 .mob .orcamentos .copia-acts{display:block}
+.v5 .mob .orcamentos .copia-acts .btn-sm{width:100%;justify-content:center;min-height:48px;margin-bottom:10px}
+.v5 .mob .orc-painel .trava{flex-direction:column;align-items:flex-start;gap:4px;font-size:14px}
+.v5 .mob .orc-painel .trava small{text-align:left;font-size:11.5px}
+.v5 .mob .orc-painel .sel select{min-height:46px}
+.v5 .mob .orc-painel .ck-note{min-height:46px}
+.v5 .mob .orc-painel textarea.ck-note{resize:none;min-height:72px;font:400 14px/1.5 var(--int)}
+
+@media (max-width:960px){
+  .v5 .dk:not(.mob) .orcamentos .captura{grid-template-columns:1fr 1fr}
+}

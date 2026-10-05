@@ -155,6 +155,11 @@ export function calcUpcoming(recorrentes: RecurrenteWithCategory[], days: number
   return result.sort((a, b) => a.date.getTime() - b.date.getTime())
 }
 
+// Schema drift (a tabela não está no Database manual): contorno tipado com uma linha de eslint
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TabelaRec = { from: (t: string) => any }
+const tabelaRec = () => (createClient() as unknown as TabelaRec).from('recurring_transactions')
+
 // ─── HOOK ─────────────────────────────────────────────────────────────────────
 
 interface UseRecorrentesReturn {
@@ -183,13 +188,14 @@ export function useRecorrentes(): UseRecorrentesReturn {
   const [error, setError] = useState<string | null>(null)
   const cancelled = useRef(false)
 
-  const fetchData = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+  // `silent`: recarrega depois de salvar/pausar/excluir sem voltar ao esqueleto
+  const fetchData = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true)
 
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user || cancelled.current) { setLoading(false); return }
+    setError(null)
 
     const { data, error: fetchError } = await supabase
       .from('recurring_transactions')
@@ -212,7 +218,9 @@ export function useRecorrentes(): UseRecorrentesReturn {
 
   useEffect(() => {
     cancelled.current = false
-    fetchData()
+    // já nasce com loading = true: a primeira leitura é "silenciosa" (sem setState síncrono)
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- leitura inicial no mount (os setState vêm depois do await)
+    void fetchData(true)
     return () => { cancelled.current = true }
   }, [fetchData])
 
@@ -240,11 +248,10 @@ export function useRecorrentes(): UseRecorrentesReturn {
   const upcomingOccurrences = calcUpcoming(recorrentes, 30)
 
   const createRecorrente = useCallback(async (formData: RecorrenteFormData) => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await createClient().auth.getUser()
     if (!user) throw new Error('Não autenticado')
 
-    const { error: err } = await supabase.from('recurring_transactions').insert({
+    const { error: err } = await tabelaRec().insert({
       user_id: user.id,
       type: formData.type,
       name: formData.name.trim(),
@@ -257,14 +264,13 @@ export function useRecorrentes(): UseRecorrentesReturn {
       notes: formData.notes || null,
       is_active: true,
       is_paused: false,
-    } as any)
+    })
 
     if (err) throw new Error(err.message)
-    await fetchData()
+    await fetchData(true)
   }, [fetchData])
 
   const updateRecorrente = useCallback(async (id: string, updates: Partial<RecorrenteFormData>) => {
-    const supabase = createClient()
     const payload: Record<string, unknown> = { updated_at: new Date().toISOString() }
     if (updates.type) payload.type = updates.type
     if (updates.name) payload.name = updates.name.trim()
@@ -276,41 +282,37 @@ export function useRecorrentes(): UseRecorrentesReturn {
     if ('category_id' in updates) payload.category_id = updates.category_id || null
     if ('notes' in updates) payload.notes = updates.notes || null
 
-    const { error: err } = await (createClient() as any)
-      .from('recurring_transactions')
+    const { error: err } = await tabelaRec()
       .update(payload)
       .eq('id', id)
 
     if (err) throw new Error(err.message)
-    await fetchData()
+    await fetchData(true)
   }, [fetchData])
 
   const togglePause = useCallback(async (id: string, currentPaused: boolean) => {
-    const { error: err } = await (createClient() as any)
-      .from('recurring_transactions')
+    const { error: err } = await tabelaRec()
       .update({ is_paused: !currentPaused, updated_at: new Date().toISOString() })
       .eq('id', id)
     if (err) throw new Error(err.message)
-    await fetchData()
+    await fetchData(true)
   }, [fetchData])
 
   const deleteRecorrente = useCallback(async (id: string) => {
-    const { error: err } = await (createClient() as any)
-      .from('recurring_transactions')
+    const { error: err } = await tabelaRec()
       .update({ is_active: false, updated_at: new Date().toISOString() })
       .eq('id', id)
     if (err) throw new Error(err.message)
-    await fetchData()
+    await fetchData(true)
   }, [fetchData])
 
   const markAsPaid = useCallback(async (id: string) => {
     const today = new Date().toISOString().split('T')[0]
-    const { error: err } = await (createClient() as any)
-      .from('recurring_transactions')
+    const { error: err } = await tabelaRec()
       .update({ last_paid_at: today, updated_at: new Date().toISOString() })
       .eq('id', id)
     if (err) throw new Error(err.message)
-    await fetchData()
+    await fetchData(true)
   }, [fetchData])
 
   return {
@@ -319,6 +321,6 @@ export function useRecorrentes(): UseRecorrentesReturn {
     activeCount, totalCount,
     totalExpenseMonthly, totalIncomeMonthly, netMonthly, totalExpenseAnnual,
     createRecorrente, updateRecorrente, togglePause, deleteRecorrente, markAsPaid,
-    refresh: fetchData,
+    refresh: () => { void fetchData() },
   }
 }
