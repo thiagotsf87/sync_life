@@ -173,8 +173,11 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
   construídos por 7 agentes em paralelo a partir do brief; QA limpo nos 14; testes de interação de 35 a 57 por tela.
   Laboratórios: teto de Lazer (Orçamentos) e data do notebook (Planejamento). Hub de Finanças ligado às subtelas.
 
-### Aguardando o usuário
-Aprovação tela a tela + os pontos para decidir (na página de revisão e na anotação de cada protótipo).
+### Aprovação (2026-10-05)
+**As 7 telas foram APROVADAS pelo usuário**, com os pontos para decidir como propostos. Dúvida levantada na aprovação:
+**como se chega a cada subtela.** Diagnóstico: do hub, o desktop só leva a Transações e o mobile a Transações, Orçamentos e
+Recorrentes; Planejamento, Calendário, Relatórios e Importar só aparecem no rodapé "Mais em Finanças" de outra subtela.
+Proposta em aberto (decisão do usuário): navegação interna da área (ver resposta da sessão).
 
 ### Limitações conhecidas do mock (no app os dados reais decidem)
 - `SL_MOCK.transacoes` põe o Salário em 30/set, mas o hub conta os R$ 4.150 em outubro; Aluguel aparece pago (Moradia 1.240)
