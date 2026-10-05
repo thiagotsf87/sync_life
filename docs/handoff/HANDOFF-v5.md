@@ -5,7 +5,41 @@
 > Regras invioláveis: fidelidade ao `DESIGN-SYSTEM-v5.md` (protótipos vencem em divergência); protótipo → aprovação
 > explícita do usuário → implementação → teste de identidade; mobile = protótipo dedicado por tela; handoff toda sessão.
 
-## Onde estamos
+## ONDE PARAMOS (fim da sessão 30, 2026-10-05) — leia isto primeiro
+
+**Fases 0, 1 e 2 do rollout sem metáfora estão FECHADAS e no app (`web/`).** Meu dia, Finanças (hub + 7 subtelas), Life Score, Sua semana,
+arquivo da conversa com Sy e a intenção composta, todos D+M, com teste de identidade com login. Plano: `docs/superpowers/plans/2026-10-03-rollout-ds-v5-sem-metafora.md`.
+Faltam as Fases 3 a 8 (Tempo e Futuro, Corpo e Mente, Patrimônio e Carreira, Experiências e Conquistas, Configurações e Sy, varredura).
+
+**Próxima atividade: Fase 3 (Tempo 03 + Futuro 02, 11 telas).** Ainda NADA dela foi feito. O ciclo é o mesmo das fases 1 e 2:
+1. Escrever o brief (`docs/superpowers/plans/2026-10-0X-fase3-...-brief.md`, molde: `2026-10-05-fase2-financas-brief.md`) com o inventário v3 de cada tela
+   (usar um agente Explore, como na Fase 2) e as correções embutidas. Tabela da fase: plano-mãe §4 Fase 3. `/futuro/nova` e `/futuro/novo` viram uma só.
+2. Gerar o mock da fase em `prototypes/v5/shared/mock-data.js` (bloco `SL_MOCK.<area>`, por script, coerente com Meu dia: margem de hoje depende da agenda,
+   laboratório do jantar depende das metas).
+3. Protótipos D+M em paralelo (1 agente por tela, só seus 2 arquivos), QA com `web/scripts/qa-proto-v5.mjs`, revisão minha, página de revisão privada
+   (Artifact) para o usuário aprovar tela a tela. Usar a faixa `.subnav` (Visão geral + subtelas) em todas as telas da área.
+4. Depois da aprovação: base comum (já existe: `SubtelaV5`, `SubnavArea`, `Painel`, `Confirma`; criar a lista de subtelas da área em `SubnavArea.tsx`), plano de
+   implementação (molde: `2026-10-05-fase2-implementacao-web.md`), agentes em paralelo (só seus arquivos, sem build), build ÚNICO na sessão principal,
+   teste de identidade com login, remover rotas v3 e órfãos, handoff.
+
+**Como retomar o ambiente local** (os processos em background morrem em 2h):
+- Protótipos: `cd prototypes/v5 && python -m http.server 8765` (nunca `file://`).
+- App contra HOMOLOG: `cd web && rm -rf .next && NEXT_PUBLIC_SUPABASE_ENV=homolog npm run build && NEXT_PUBLIC_SUPABASE_ENV=homolog node node_modules/next/dist/bin/next start -p 3006`
+  (a variável é inlined no build; `next start`, nunca dev). Se o build falhar em `next/font/google` (Syne), é falha passageira de rede: repetir.
+- Login do teste de identidade: `cd web && node scripts/identidade-v5.mjs login` (janela visível; guarda a sessão em `.playwright-mcp/auth-state.json`, fora do git).
+  Conta de teste = o e-mail do usuário em homolog (id `85603fcb…`), semeada por SQL (mock completo de Finanças, abril a outubro). Comparar:
+  `node scripts/identidade-v5.mjs comparar [prefixo]` (ex.: `fin-`). Os projetos Supabase pausam por inatividade (`restore_project`, ~3 min).
+- Supabase: `xmtzpjtbqhgwmebycxmx` = **PRODUÇÃO** (congelada até o fim do plano, nada novo sobe), `bculmhmoxxpjlcilkgmp` = **HOMOLOG**.
+
+**Produção CONGELADA até a Fase 8 (decisão do usuário).** Fila de produção: migration 029, **030 (transfer em `transactions.type`)**, e a reconciliação das 11 tabelas
+ausentes (a escrever como 031, `CREATE TABLE IF NOT EXISTS`, sem drop), mais a 021 (cobrança) se for ativar planos. Detalhes e achados em "Fase 2 FECHADA" abaixo.
+
+**Push:** em 2026-10-05 o usuário pediu para commitar e dar push de `poc/ds-v5` (antes era só local). O que NÃO vai ao git: `prototypes/codex-diario/` (estudo do Codex,
+referência de produto autorizada) e `.claude/launch.json`. Commits por caminho explícito, nunca `git add -A` na raiz.
+
+---
+
+## Estado anterior (sessão 28, mantido para contexto)
 
 **Ondas 00 e 01 fechadas e no ar em `web/`.** Landing (r15 desktop + m1 mobile), marca 3D, pricing,
 login, cadastro, senhas e onboarding, todas com teste de identidade passado.
