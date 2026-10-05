@@ -173,7 +173,30 @@ Tags: `poc-landing-r4` · `poc-landing-viva-r15` · `poc-landing-viva-mobile-m1`
   construídos por 7 agentes em paralelo a partir do brief; QA limpo nos 14; testes de interação de 35 a 57 por tela.
   Laboratórios: teto de Lazer (Orçamentos) e data do notebook (Planejamento). Hub de Finanças ligado às subtelas.
 
-### Implementação da Fase 2 em `web/` (em andamento)
+### Fase 2 FECHADA: 7 subtelas de Finanças no app (2026-10-05)
+- **No ar em `web/`** (commit `bd05f9f`): Transações, Orçamentos (laboratório do teto), Recorrentes, Planejamento (cenários + laboratório), Calendário,
+  Relatórios e Importar, D+M, sobre a base comum. Rotas v3 e 33 arquivos v3 órfãos removidos. `tsc` 0, 1180 testes, eslint limpo nos arquivos novos
+  (5 erros antigos em `use-budgets.ts` e `use-relatorios.ts`, de antes da fase).
+- **Identidade com login** (`identidade-v5.mjs comparar fin-`): diferença em desktop de 1,4% a 4,0% (Transações 37% por ter 18 linhas reais contra 4 do mock;
+  Importar só tem o passo 01 sem arquivo, o fluxo foi testado subindo um CSV). Fechamento projetado idêntico no hub, Orçamentos e Calendário (R$ 3.715).
+- **Faixa de subtelas** (`SubnavArea`) no topo de todas as telas de Finanças, hub incluído; é o padrão das próximas áreas.
+
+#### Bugs de produção encontrados e corrigidos no caminho
+1. **Parser de CSV multiplicava por 100 valores com ponto decimal** (regex do formato BR sem âncora: `-182.40` virava 18240; o Nubank exporta assim).
+   Corrigido em `lib/import/csv-parser.ts` com testes de regressão (o teste antigo afirmava o bug como "esperado").
+2. **A aba Transferência nunca salvava:** `transactions.type` só aceitava income/expense (CHECK de 002), em homolog E em produção. **Migration 030**
+   (`030_transactions_type_transfer.sql`) aplicada em homolog; **entra na fila de produção**.
+3. **Contexto de Sy em Finanças só levava o resumo das transações;** agora leva orçamentos, recorrentes, metas, planejamento, proventos e contas.
+
+#### Achados que NÃO foram corrigidos (decisão para a sessão de subida)
+- **Migration 021 (cobrança) nunca foi aplicada em nenhum ambiente:** `use-plan-limits` consulta `subscription_status` etc. e leva 400, então o plano
+  cai sempre em FREE (limite de 5 recorrentes aparece, curva do Planejamento apaga depois do 7º mês). Em produção é o mesmo. Decidir: aplicar a 021 ou
+  ajustar a consulta.
+- `is_future` de transações é calculado só na criação; nenhuma rotina vira o flag quando a data chega.
+- Nenhuma rotina gera transações a partir das recorrentes (Transações e Calendário expandem as ocorrências na leitura).
+- Fila de produção atualizada: **029, 030 (transfer), 031 (reconciliação das 11 tabelas, a escrever)**, mais 021 se for ativar cobrança.
+
+### Implementação da Fase 2 em `web/` (histórico da sessão)
 - Plano: `docs/superpowers/plans/2026-10-05-fase2-implementacao-web.md`. Base comum commitada (`SubnavArea`, `SubtelaV5`, `Painel`, `Confirma`, CSS no
   fim de `app-v5.css`, prop `onRegistrar` no chrome). Onda A em paralelo (6 agentes: Transações, Orçamentos, Recorrentes, Planejamento, Relatórios,
   Importar); Onda B: Calendário (depende de `TransacaoPainel` e `EventoPlanejadoPainel`).
