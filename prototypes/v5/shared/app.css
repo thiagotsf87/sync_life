@@ -567,3 +567,68 @@ html.mob .metas .mrow:last-of-type{border-bottom:none}
 html.mob .rec{gap:12px;padding:14px 0}
 html.mob .rec .tag{padding:3px 7px}
 html.mob .agenda{font:400 12px/1.6 var(--int);color:var(--t3);padding:12px 0 0}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Fase 2 · peças promovidas ao shared (antes inline em _intencao.mobile e _t2-lista)
+   As páginas que já as tinham inline seguem iguais: as regras são as mesmas.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── chrome mobile: bottom bar (aprovada na Fase 1) · sem FAB; Sy no centro como pílula ──
+   Markup: <nav class="bbar"> com 5 itens (Meu dia · 01 Finanças · Fale com Sy · Áreas · Registrar).
+   Nas páginas .mob o modbar sai do markup e o bar superior fica só com a marca e o "+". */
+html.mob body{padding-bottom:calc(56px + env(safe-area-inset-bottom))}
+html.mob .bbar{position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(56px + env(safe-area-inset-bottom));
+  padding:0 6px env(safe-area-inset-bottom);display:grid;grid-template-columns:1fr 1fr auto 1fr 1fr;align-items:center;
+  background:rgba(21,19,19,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+html.mob .bbar a,html.mob .bbar button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  height:48px;min-height:48px;min-width:48px;background:none;border:none;border-radius:12px;padding:0 2px;cursor:pointer;
+  color:var(--t3);font:500 10px/1 var(--int);transition:color .3s var(--ease)}
+html.mob .bbar a:hover,html.mob .bbar button:hover{color:var(--t1)}
+html.mob .bbar .on{color:var(--t1)}
+html.mob .bbar .on::before{content:"";position:absolute;top:-1px;left:50%;width:22px;height:2px;background:var(--roxo);transform:translateX(-50%)}
+html.mob .bbar .g{font:700 13px/1 var(--gro);letter-spacing:-.02em;height:18px;display:flex;align-items:center}
+html.mob .bbar .on .g{color:var(--roxo)}
+html.mob .bbar svg{width:18px;height:18px;display:block}
+html.mob .bbar .sypill{flex-direction:row;gap:8px;height:44px;min-height:44px;padding:4px 14px 4px 5px;margin:0 4px;
+  border:1px solid rgba(104,64,255,.5);border-radius:999px;background:#0f0d0d;color:var(--t1);font:600 11.5px/1 var(--int)}
+html.mob .bbar .sypill:hover{border-color:var(--roxo)}
+html.mob .bbar .sy40{width:34px;height:34px;border-radius:10px}
+/* sheet de Áreas: a mesma peça .camada.sheet, mais baixa, com linhas de toque inteiro.
+   Ordem no DOM: a camada de Sy vem ANTES do sheet de Áreas (app.js pega a primeira .camada). */
+html.mob .camada.sheet.areas{height:auto;max-height:86dvh}
+html.mob .areas .cbody{gap:0;padding:4px 22px 22px}
+html.mob .arow{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;min-height:50px;padding:0;border-bottom:1px solid var(--line);
+  font:500 15px var(--int);color:var(--t1);transition:padding-left .35s var(--ease)}
+html.mob .arow:last-child{border-bottom:none}
+html.mob .arow .n{font:700 11.5px var(--gro);color:var(--roxo)}
+html.mob .arow .sc{font:700 14px var(--gro);letter-spacing:-.02em;color:var(--t2)}
+html.mob .arow small{font:400 11.5px var(--int);color:var(--t3);margin-left:8px}
+html.mob .asep{height:10px;border-bottom:1px solid var(--line-h);margin-bottom:6px}
+
+/* ── painel lateral de edição (desktop) · T2/T3: editar um item sem sair da lista ──
+   Mesmo visual da camada de Sy. No mobile a mesma peça vira sheet (.painel.sheet, ver _t2-lista.mobile). */
+.painel{position:fixed;top:0;right:0;bottom:0;width:min(420px,92vw);background:var(--s1);border-left:1px solid var(--line);z-index:80;
+  display:flex;flex-direction:column;transform:translateX(105%);visibility:hidden;transition:transform .55s var(--ease),visibility 0s .55s;box-shadow:-24px 0 60px -30px rgba(0,0,0,.6)}
+.painel.open{transform:none;visibility:visible;transition-delay:0s}
+.painel .phead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
+.painel .phead h2{font:500 17px var(--gro);letter-spacing:-.02em;margin-top:6px}
+.painel .x{background:none;border:1px solid var(--line);border-radius:999px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease)}
+.painel .x:hover{border-color:var(--line-h);color:var(--t1)}
+.painel .pbody{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:18px}
+.painel .f .eyebrow{display:block;margin-bottom:8px}
+.painel .ck-note{width:100%;display:block}
+.painel input[type=date]{color-scheme:dark}
+.painel .sel{margin-top:0}
+.painel .tipo{display:flex;gap:8px}
+.painel .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.painel .pfoot{padding:16px 22px 20px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.painel .acts{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.btn-sm.ghost.perigo{color:var(--coral);border-color:rgba(248,65,49,.35)}
+.btn-sm.ghost.perigo:hover{border-color:var(--coral);color:var(--coral)}
+/* irreversível pede licença inline (nunca modal de confirmação) */
+.confirma{border-left:3px solid var(--coral);padding:10px 14px;font:400 12.5px/1.6 var(--int);color:var(--t2);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.confirma b{color:var(--t1);font-weight:600}
+.confirma button{background:none;border:none;font:600 12.5px var(--int);cursor:pointer;padding:0;color:var(--t2)}
+.confirma button.sim{color:var(--coral)}
+.confirma button:hover{text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.painel{transition:none}}

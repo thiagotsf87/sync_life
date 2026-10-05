@@ -65,6 +65,20 @@ window.SLApp = (function () {
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && camada.classList.contains('open')) close(); });
     }
 
+    // ── sheet de Áreas (bottom bar mobile, Fase 1; promovido na Fase 2) ──
+    // Idempotente: páginas que ainda trazem o mesmo wiring inline continuam funcionando.
+    var sh = document.getElementById('sheetAreas');
+    if (sh && scrim && !sh.dataset.ligado) {
+      sh.dataset.ligado = '1';
+      var gat = document.querySelectorAll('[data-areas-open]');
+      var abrirA = function () { sh.classList.add('open'); scrim.classList.add('open'); gat.forEach(function (g) { g.setAttribute('aria-expanded', 'true'); }); var x = sh.querySelector('.x'); if (x) x.focus(); };
+      var fecharA = function () { if (!sh.classList.contains('open')) return; sh.classList.remove('open'); scrim.classList.remove('open'); gat.forEach(function (g) { g.setAttribute('aria-expanded', 'false'); }); };
+      gat.forEach(function (g) { g.addEventListener('click', abrirA); });
+      sh.querySelectorAll('[data-areas-close]').forEach(function (x) { x.addEventListener('click', fecharA); });
+      scrim.addEventListener('click', fecharA);
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fecharA(); });
+    }
+
     // ── check-in ──
     var ck = document.querySelector('.checkin');
     if (ck) {

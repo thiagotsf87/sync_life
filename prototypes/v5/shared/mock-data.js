@@ -212,3 +212,986 @@ window.SL_MOCK = {
   fmtBRL(n) { return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); },
   fmtBRL0(n) { return 'R$ ' + n.toLocaleString('pt-BR', { maximumFractionDigits: 0 }); },
 };
+
+// ── Fase 2 · Finanças, subtelas (gerado por um script; números coerentes com financas/orcamentos/transacoes acima) ──
+window.SL_MOCK.fin = {
+ "contas": [
+  {
+   "id": "c1",
+   "nome": "Nubank",
+   "tipo": "conta corrente"
+  },
+  {
+   "id": "c2",
+   "nome": "Inter",
+   "tipo": "conta corrente"
+  },
+  {
+   "id": "c3",
+   "nome": "Carteira",
+   "tipo": "dinheiro"
+  }
+ ],
+ "recorrentes": {
+  "itens": [
+   {
+    "id": "r1",
+    "nome": "Salário",
+    "tipo": "in",
+    "valor": 4150,
+    "freq": "mensal",
+    "dia": 30,
+    "cat": "Renda",
+    "inicio": "2024-03-30",
+    "prox": "2026-10-30",
+    "mensal": 4150.0
+   },
+   {
+    "id": "r2",
+    "nome": "Aluguel",
+    "tipo": "out",
+    "valor": 1200,
+    "freq": "mensal",
+    "dia": 6,
+    "cat": "Moradia",
+    "inicio": "2025-02-06",
+    "prox": "2026-10-06",
+    "mensal": 1200.0
+   },
+   {
+    "id": "r3",
+    "nome": "Aporte automático",
+    "tipo": "out",
+    "valor": 580,
+    "freq": "mensal",
+    "dia": 8,
+    "cat": "Investimento",
+    "inicio": "2026-01-08",
+    "prox": "2026-10-08",
+    "nota": "vai para a meta Viagem Itália",
+    "mensal": 580.0
+   },
+   {
+    "id": "r4",
+    "nome": "Internet",
+    "tipo": "out",
+    "valor": 89.9,
+    "freq": "mensal",
+    "dia": 8,
+    "cat": "Assinaturas",
+    "inicio": "2025-06-08",
+    "prox": "2026-10-08",
+    "mensal": 89.9
+   },
+   {
+    "id": "r5",
+    "nome": "Streaming",
+    "tipo": "out",
+    "valor": 55.9,
+    "freq": "mensal",
+    "dia": 12,
+    "cat": "Assinaturas",
+    "inicio": "2025-01-12",
+    "prox": "2026-10-12",
+    "mensal": 55.9
+   },
+   {
+    "id": "r6",
+    "nome": "Academia",
+    "tipo": "out",
+    "valor": 119.9,
+    "freq": "mensal",
+    "dia": 15,
+    "cat": "Saúde",
+    "inicio": "2026-02-15",
+    "prox": "2026-10-15",
+    "mensal": 119.9
+   },
+   {
+    "id": "r7",
+    "nome": "Faxina",
+    "tipo": "out",
+    "valor": 180,
+    "freq": "quinzenal",
+    "dia": null,
+    "cat": "Moradia",
+    "inicio": "2026-03-03",
+    "prox": "2026-10-14",
+    "mensal": 390.6
+   },
+   {
+    "id": "r8",
+    "nome": "Seguro do carro",
+    "tipo": "out",
+    "valor": 1680,
+    "freq": "anual",
+    "dia": 10,
+    "cat": "Transporte",
+    "inicio": "2026-03-10",
+    "prox": "2027-03-10",
+    "mensal": 140.0
+   },
+   {
+    "id": "r9",
+    "nome": "Contador do MEI",
+    "tipo": "out",
+    "valor": 240,
+    "freq": "trimestral",
+    "dia": 20,
+    "cat": "Impostos",
+    "inicio": "2026-01-20",
+    "prox": "2026-10-20",
+    "mensal": 80.0
+   },
+   {
+    "id": "r10",
+    "nome": "App de idiomas",
+    "tipo": "out",
+    "valor": 39.9,
+    "freq": "mensal",
+    "dia": 22,
+    "cat": "Assinaturas",
+    "inicio": "2025-09-22",
+    "prox": null,
+    "pausada": true,
+    "mensal": 39.9
+   }
+  ],
+  "totais": {
+   "saidaMensal": 2656.3,
+   "entradaMensal": 4150.0,
+   "liquido": 1493.7,
+   "custoAnual": 31875.6,
+   "comprometidoPct": 53,
+   "base": "profiles.monthly_income (R$ 5.000)"
+  },
+  "ativas": 9,
+  "pausadas": 1,
+  "limiteFree": 5,
+  "plano": "PRO",
+  "regra": "normalização mensal: semanal ×4,33 · quinzenal ×2,17 · trimestral ÷3 · anual ÷12; aviso quando faltam 7 dias ou menos"
+ },
+ "planejamento": {
+  "saldoHoje": 1840,
+  "meses": [
+   "out/26",
+   "nov/26",
+   "dez/26",
+   "jan/27",
+   "fev/27",
+   "mar/27",
+   "abr/27",
+   "mai/27",
+   "jun/27",
+   "jul/27",
+   "ago/27",
+   "set/27",
+   "out/27"
+  ],
+  "projecao": {
+   "realista": [
+    2120,
+    5628,
+    8237,
+    4781,
+    5234,
+    488,
+    1682,
+    3116,
+    4549,
+    5743,
+    7177,
+    8610,
+    9804
+   ],
+   "otimista": [
+    4340,
+    10268,
+    15297,
+    14333,
+    17206,
+    15384,
+    19069,
+    22923,
+    26777,
+    30462,
+    34316,
+    38169,
+    41855
+   ],
+   "pessimista": [
+    -100,
+    988,
+    1177,
+    -4771,
+    -6737,
+    -14407,
+    -15706,
+    -16692,
+    -17678,
+    -18976,
+    -19962,
+    -20948,
+    -22247
+   ]
+  },
+  "eventos": [
+   {
+    "id": "p8",
+    "nome": "Revisão do carro",
+    "tipo": "out",
+    "valor": 620,
+    "data": "2026-10-24",
+    "cat": "Transporte",
+    "confirmado": false
+   },
+   {
+    "id": "p1",
+    "nome": "13º salário, 1ª parcela",
+    "tipo": "in",
+    "valor": 2075,
+    "data": "2026-11-28",
+    "cat": "Renda",
+    "confirmado": true
+   },
+   {
+    "id": "p3",
+    "nome": "Presentes de Natal",
+    "tipo": "out",
+    "valor": 900,
+    "data": "2026-12-15",
+    "cat": "Lazer",
+    "confirmado": false
+   },
+   {
+    "id": "p2",
+    "nome": "13º salário, 2ª parcela",
+    "tipo": "in",
+    "valor": 2075,
+    "data": "2026-12-18",
+    "cat": "Renda",
+    "confirmado": false
+   },
+   {
+    "id": "p4",
+    "nome": "Gastos na Itália",
+    "tipo": "out",
+    "valor": 3200,
+    "data": "2027-01-12",
+    "cat": "Lazer",
+    "confirmado": false,
+    "nota": "o que a meta não cobre: comida e passeios"
+   },
+   {
+    "id": "p5",
+    "nome": "IPVA",
+    "tipo": "out",
+    "valor": 1450,
+    "data": "2027-01-20",
+    "cat": "Transporte",
+    "confirmado": false
+   },
+   {
+    "id": "p6",
+    "nome": "IPTU",
+    "tipo": "out",
+    "valor": 980,
+    "data": "2027-02-10",
+    "cat": "Moradia",
+    "confirmado": false
+   },
+   {
+    "id": "p7",
+    "nome": "Troca do notebook",
+    "tipo": "out",
+    "valor": 4500,
+    "data": "2027-03-15",
+    "cat": "Trabalho",
+    "confirmado": false,
+    "nota": "meta Notebook novo, 07 Carreira"
+   }
+  ],
+  "saldo6m": 1682,
+  "saldo12m": 9804,
+  "proximoCritico": {
+   "realista": {
+    "mes": "jan/27",
+    "de": 8237,
+    "para": 4781,
+    "motivo": "Gastos na Itália"
+   },
+   "otimista": null,
+   "pessimista": {
+    "mes": "jan/27",
+    "de": 1177,
+    "para": -4771,
+    "motivo": "Gastos na Itália"
+   }
+  },
+  "lab": {
+   "antecipar": {
+    "data": "2026-12-10",
+    "serie": [
+     2120,
+     5628,
+     3737,
+     281,
+     734,
+     488,
+     1682,
+     3116,
+     4549,
+     5743,
+     7177,
+     8610,
+     9804
+    ],
+    "minimo": 281,
+    "mesMinimo": "jan/27",
+    "saldo6m": 1682,
+    "saldo12m": 9804
+   },
+   "manter": {
+    "data": "2027-03-15",
+    "serie": [
+     2120,
+     5628,
+     8237,
+     4781,
+     5234,
+     488,
+     1682,
+     3116,
+     4549,
+     5743,
+     7177,
+     8610,
+     9804
+    ],
+    "minimo": 488,
+    "mesMinimo": "mar/27",
+    "saldo6m": 1682,
+    "saldo12m": 9804
+   },
+   "adiar": {
+    "data": "2027-05-15",
+    "serie": [
+     2120,
+     5628,
+     8237,
+     4781,
+     5234,
+     4988,
+     6182,
+     3116,
+     4549,
+     5743,
+     7177,
+     8610,
+     9804
+    ],
+    "minimo": 2120,
+    "mesMinimo": "out/26",
+    "saldo6m": 6182,
+    "saldo12m": 9804
+   }
+  },
+  "variavelMensal": 880,
+  "rendaVariavelMensal": 600,
+  "variavelRestanteOutubro": 574,
+  "regra": "13 meses a partir de outubro; inclui a renda e o gasto variáveis médios de jul a set (R$ 600 e R$ 880 por mês; o v3 ignorava os dois); recorrentes normalizadas por mês (iguais a Recorrentes; o v3 contava semanal e quinzenal 1× por mês); cenários: receita ×1,3 / ×0,7 e despesa ×0,7 / ×1,3; eventos planejados sem multiplicador; crítico = queda maior que 30% vinda de saldo positivo"
+ },
+ "orcamentos": {
+  "mes": "outubro de 2026",
+  "diasRestantes": 28,
+  "envelopes": [
+   {
+    "cat": "Moradia",
+    "limite": 1800,
+    "gasto": 1240,
+    "alerta": 85,
+    "rollover": false,
+    "limiteEfetivo": 1800,
+    "pct": 69,
+    "estado": "ok"
+   },
+   {
+    "cat": "Mercado",
+    "limite": 650,
+    "gasto": 520,
+    "alerta": 85,
+    "rollover": false,
+    "limiteEfetivo": 650,
+    "pct": 80,
+    "estado": "ok"
+   },
+   {
+    "cat": "Lazer",
+    "limite": 420,
+    "gasto": 410,
+    "alerta": 80,
+    "rollover": false,
+    "nota": "inclui jantares fora",
+    "limiteEfetivo": 420,
+    "pct": 98,
+    "estado": "atencao"
+   },
+   {
+    "cat": "Transporte",
+    "limite": 400,
+    "gasto": 310,
+    "alerta": 85,
+    "rollover": false,
+    "limiteEfetivo": 400,
+    "pct": 78,
+    "estado": "ok"
+   },
+   {
+    "cat": "Saúde",
+    "limite": 250,
+    "gasto": 180,
+    "alerta": 85,
+    "rollover": true,
+    "sobraAnterior": 50,
+    "limiteEfetivo": 300,
+    "pct": 60,
+    "estado": "ok"
+   },
+   {
+    "cat": "Assinaturas",
+    "limite": 220,
+    "gasto": 200,
+    "alerta": 90,
+    "rollover": false,
+    "limiteEfetivo": 220,
+    "pct": 91,
+    "estado": "atencao"
+   }
+  ],
+  "totalOrcado": 3790,
+  "totalGasto": 2860,
+  "disponivel": 930,
+  "foraDeEnvelope": {
+   "Investimento": 300
+  },
+  "receitasRealizadas": 5000,
+  "naoAlocado": 1210,
+  "regra5030_20": {
+   "base": 5000,
+   "necessidades": 2500,
+   "desejos": 1500,
+   "poupanca": 1000
+  },
+  "lab": {
+   "envelope": "Lazer",
+   "tetoAtual": 420,
+   "opcoes": [
+    420,
+    470,
+    520
+   ],
+   "fechamentoBase": 2120,
+   "poupadoBase": 1950,
+   "poupancaBase": 39,
+   "aporteItaliaMes": 580,
+   "itaAtual": 8600,
+   "itaMeta": 12700,
+   "regra": "cada R$ 1 a mais no teto de Lazer sai do fechamento projetado (R$ 2.120) e do que fica poupado (R$ 1.950, 39% das receitas); o que sobrar acima de R$ 1.800 no fechamento pode antecipar a Itália, além do aporte fixo de R$ 580",
+   "efeitos": {
+    "420": {
+     "fechamento": 2120,
+     "poupancaPct": 39,
+     "aporteExtraItalia": 320
+    },
+    "470": {
+     "fechamento": 2070,
+     "poupancaPct": 38,
+     "aporteExtraItalia": 270
+    },
+    "520": {
+     "fechamento": 2020,
+     "poupancaPct": 37,
+     "aporteExtraItalia": 220
+    }
+   }
+  }
+ },
+ "relatorios": {
+  "periodoPadrao": "Último trimestre · julho a setembro",
+  "comparadoCom": "abril a junho",
+  "periodos": [
+   "Mês atual",
+   "Último trimestre",
+   "Último semestre",
+   "Últimos 12 meses",
+   "Ano atual",
+   "Personalizado"
+  ],
+  "periodosPro": [
+   "Último semestre",
+   "Últimos 12 meses",
+   "Personalizado"
+  ],
+  "mensal": {
+   "abr": {
+    "rec": 4650,
+    "desp": 3380,
+    "cats": {
+     "Moradia": 1240,
+     "Mercado": 600,
+     "Lazer": 380,
+     "Transporte": 330,
+     "Saúde": 210
+    },
+    "saldo": 1270,
+    "poupancaPct": 25
+   },
+   "mai": {
+    "rec": 4720,
+    "desp": 3290,
+    "cats": {
+     "Moradia": 1240,
+     "Mercado": 580,
+     "Lazer": 350,
+     "Transporte": 300,
+     "Saúde": 190
+    },
+    "saldo": 1430,
+    "poupancaPct": 29
+   },
+   "jun": {
+    "rec": 4800,
+    "desp": 3450,
+    "cats": {
+     "Moradia": 1240,
+     "Mercado": 610,
+     "Lazer": 420,
+     "Transporte": 320,
+     "Saúde": 230
+    },
+    "saldo": 1350,
+    "poupancaPct": 27
+   },
+   "jul": {
+    "rec": 4750,
+    "desp": 3520,
+    "cats": {
+     "Moradia": 1240,
+     "Mercado": 640,
+     "Lazer": 470,
+     "Transporte": 330,
+     "Saúde": 200
+    },
+    "saldo": 1230,
+    "poupancaPct": 25
+   },
+   "ago": {
+    "rec": 4900,
+    "desp": 3250,
+    "cats": {
+     "Moradia": 1240,
+     "Mercado": 590,
+     "Lazer": 360,
+     "Transporte": 310,
+     "Saúde": 190
+    },
+    "saldo": 1650,
+    "poupancaPct": 33
+   },
+   "set": {
+    "rec": 4630,
+    "desp": 2987,
+    "cats": {
+     "Moradia": 1240,
+     "Mercado": 706,
+     "Lazer": 310,
+     "Transporte": 290,
+     "Saúde": 140
+    },
+    "saldo": 1643,
+    "poupancaPct": 33
+   },
+   "out": {
+    "rec": 5000,
+    "desp": 3160,
+    "cats": {
+     "Moradia": 1240,
+     "Mercado": 520,
+     "Lazer": 410,
+     "Transporte": 310,
+     "Saúde": 180
+    },
+    "parcial": true,
+    "saldo": 1840,
+    "poupancaPct": 37
+   }
+  },
+  "kpis": {
+   "receitas": {
+    "atual": 14280,
+    "anterior": 14170,
+    "delta": 0.8
+   },
+   "despesas": {
+    "atual": 9757,
+    "anterior": 10120,
+    "delta": -3.6
+   },
+   "saldo": {
+    "atual": 4523,
+    "anterior": 4050,
+    "delta": 11.7
+   },
+   "poupancaMedia": {
+    "atual": 30,
+    "anterior": 27,
+    "meta": 30
+   }
+  },
+  "categorias": [
+   {
+    "cat": "Moradia",
+    "atual": 3720,
+    "anterior": 3720,
+    "delta": 0.0
+   },
+   {
+    "cat": "Mercado",
+    "atual": 1936,
+    "anterior": 1790,
+    "delta": 8.2
+   },
+   {
+    "cat": "Lazer",
+    "atual": 1140,
+    "anterior": 1150,
+    "delta": -0.9
+   },
+   {
+    "cat": "Transporte",
+    "atual": 930,
+    "anterior": 950,
+    "delta": -2.1
+   },
+   {
+    "cat": "Saúde",
+    "atual": 530,
+    "anterior": 630,
+    "delta": -15.9
+   }
+  ],
+  "melhorMes": "ago",
+  "topDespesas": [
+   {
+    "d": "1 jul",
+    "desc": "Aluguel",
+    "cat": "Moradia",
+    "valor": 1200
+   },
+   {
+    "d": "1 ago",
+    "desc": "Aluguel",
+    "cat": "Moradia",
+    "valor": 1200
+   },
+   {
+    "d": "1 set",
+    "desc": "Aluguel",
+    "cat": "Moradia",
+    "valor": 1200
+   },
+   {
+    "d": "14 jul",
+    "desc": "Show no Allianz",
+    "cat": "Lazer",
+    "valor": 380
+   },
+   {
+    "d": "10 set",
+    "desc": "Mercado do mês",
+    "cat": "Mercado",
+    "valor": 610
+   }
+  ],
+  "transacoesNoPeriodo": 97,
+  "csv": "separador ;, BOM UTF-8, decimal com vírgula; colunas Data;Descrição;Categoria;Tipo;Valor;Método;Notas"
+ },
+ "importar": {
+  "arquivo": "extrato-nubank-setembro.csv",
+  "banco": "Nubank",
+  "formato": "CSV",
+  "reconhecido": true,
+  "formatos": [
+   "PDF",
+   "CSV",
+   "OFX",
+   "QFX"
+  ],
+  "passos": [
+   "Arquivo",
+   "Revisão",
+   "Categorias"
+  ],
+  "linhas": [
+   {
+    "data": "2026-09-01",
+    "desc": "Salario Empresa X",
+    "valor": 4150,
+    "tipo": "in",
+    "cat": "Renda",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-01",
+    "desc": "Aluguel setembro",
+    "valor": -1200,
+    "tipo": "out",
+    "cat": "Moradia",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-02",
+    "desc": "Aporte CDB",
+    "valor": -300,
+    "tipo": "out",
+    "cat": "Investimento",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-05",
+    "desc": "Netflix.com",
+    "valor": -55.9,
+    "tipo": "out",
+    "cat": "Assinaturas",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-08",
+    "desc": "Pao de Acucar",
+    "valor": -214.3,
+    "tipo": "out",
+    "cat": "Mercado",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-10",
+    "desc": "Mercado Extra",
+    "valor": -395.7,
+    "tipo": "out",
+    "cat": "Mercado",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-12",
+    "desc": "Posto Shell",
+    "valor": -190,
+    "tipo": "out",
+    "cat": "Transporte",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-14",
+    "desc": "Pix recebido Joao",
+    "valor": 600,
+    "tipo": "in",
+    "cat": null,
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-15",
+    "desc": "Smart Fit",
+    "valor": -119.9,
+    "tipo": "out",
+    "cat": "Saúde",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-18",
+    "desc": "Drogasil",
+    "valor": -64.9,
+    "tipo": "out",
+    "cat": "Saúde",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-20",
+    "desc": "Ingresso.com",
+    "valor": -142,
+    "tipo": "out",
+    "cat": "Lazer",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-22",
+    "desc": "Uber *trip",
+    "valor": -24.9,
+    "tipo": "out",
+    "cat": "Transporte",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-24",
+    "desc": "Pg *Loja do Ze",
+    "valor": -88,
+    "tipo": "out",
+    "cat": null,
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-26",
+    "desc": "Ifood",
+    "valor": -76.4,
+    "tipo": "out",
+    "cat": "Lazer",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-27",
+    "desc": "Tarifa pacote",
+    "valor": -32,
+    "tipo": "out",
+    "cat": null,
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-28",
+    "desc": "Uber *trip",
+    "valor": -24.9,
+    "tipo": "out",
+    "cat": "Transporte",
+    "duplicata": false
+   },
+   {
+    "data": "2026-09-29",
+    "desc": "Cafe Tal",
+    "valor": -42,
+    "tipo": "out",
+    "cat": "Lazer",
+    "duplicata": true
+   },
+   {
+    "data": "2026-09-30",
+    "desc": "Padaria Real",
+    "valor": -96,
+    "tipo": "out",
+    "cat": "Mercado",
+    "duplicata": true
+   }
+  ],
+  "reconhecidas": 15,
+  "semCategoria": 3,
+  "duplicatas": 2,
+  "historico": [
+   {
+    "arquivo": "extrato-inter-agosto.ofx",
+    "quando": "2 set",
+    "n": 22,
+    "de": "1 ago",
+    "ate": "31 ago",
+    "entradas": 4900,
+    "saidas": 2980
+   },
+   {
+    "arquivo": "fatura-nubank-julho.pdf",
+    "quando": "4 ago",
+    "n": 31,
+    "de": "1 jul",
+    "ate": "31 jul",
+    "entradas": 0,
+    "saidas": 1412.6
+   }
+  ],
+  "regras": "duplicata = mesma data, valor e descrição de uma transação já registrada; só sinaliza. Lote identificado por notes = \"Importado de {arquivo}\" (desfazer apaga o lote)."
+ },
+ "calendario": {
+  "mes": "outubro de 2026",
+  "inicioSemana": "domingo",
+  "saldoInicial": 1840,
+  "extras": [
+   {
+    "d": 6,
+    "tipo": "recorrente",
+    "desc": "Aluguel",
+    "valor": -1200
+   },
+   {
+    "d": 8,
+    "tipo": "recorrente",
+    "desc": "Aporte automático",
+    "valor": -580
+   },
+   {
+    "d": 8,
+    "tipo": "recorrente",
+    "desc": "Internet",
+    "valor": -89.9
+   },
+   {
+    "d": 12,
+    "tipo": "recorrente",
+    "desc": "Streaming",
+    "valor": -55.9
+   },
+   {
+    "d": 14,
+    "tipo": "recorrente",
+    "desc": "Faxina",
+    "valor": -180
+   },
+   {
+    "d": 15,
+    "tipo": "recorrente",
+    "desc": "Academia",
+    "valor": -119.9
+   },
+   {
+    "d": 15,
+    "tipo": "provento",
+    "desc": "Provento previsto: MXRF11",
+    "valor": 42.3,
+    "fonte": "06 Patrimônio"
+   },
+   {
+    "d": 20,
+    "tipo": "recorrente",
+    "desc": "Contador do MEI",
+    "valor": -240
+   },
+   {
+    "d": 24,
+    "tipo": "planejado",
+    "desc": "Revisão do carro",
+    "valor": -620
+   },
+   {
+    "d": 28,
+    "tipo": "recorrente",
+    "desc": "Faxina",
+    "valor": -180
+   },
+   {
+    "d": 30,
+    "tipo": "recorrente",
+    "desc": "Salário",
+    "valor": 4150
+   }
+  ],
+  "feitos": [
+   {
+    "d": 1,
+    "entradas": 4150,
+    "saidas": 2187.3
+   },
+   {
+    "d": 2,
+    "entradas": 850,
+    "saidas": 740.3
+   },
+   {
+    "d": 3,
+    "entradas": 0,
+    "saidas": 232.4
+   }
+  ]
+ }
+};
